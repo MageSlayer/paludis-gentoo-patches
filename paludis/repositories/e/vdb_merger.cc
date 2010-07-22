@@ -52,7 +52,7 @@ namespace paludis
     {
         VDBMergerParams params;
         FSEntry realroot;
-        std::tr1::shared_ptr<SafeOFStream> contents_file;
+        std::shared_ptr<SafeOFStream> contents_file;
 
         std::list<std::string> config_protect;
         std::list<std::string> config_protect_mask;
@@ -83,7 +83,7 @@ VDBMerger::VDBMerger(const VDBMergerParams & p) :
     Merger(make_named_values<MergerParams>(
                 n::environment() = p.environment(),
                 n::fix_mtimes_before() = p.fix_mtimes_before(),
-                n::get_new_ids_or_minus_one() = std::tr1::bind(&get_new_ids_or_minus_one, p.environment(), std::tr1::placeholders::_1),
+                n::get_new_ids_or_minus_one() = std::bind(&get_new_ids_or_minus_one, p.environment(), std::placeholders::_1),
                 n::image() = p.image(),
                 n::install_under() = FSEntry("/"),
                 n::merged_entries() = p.merged_entries(),
@@ -103,7 +103,7 @@ VDBMerger::~VDBMerger()
 Hook
 VDBMerger::extend_hook(const Hook & h)
 {
-    std::tr1::shared_ptr<const FSEntrySequence> bashrc_files(_imp->params.environment()->bashrc_files());
+    std::shared_ptr<const FSEntrySequence> bashrc_files(_imp->params.environment()->bashrc_files());
 
     if (_imp->params.package_id())
     {

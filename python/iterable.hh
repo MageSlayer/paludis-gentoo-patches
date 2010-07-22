@@ -25,7 +25,7 @@
 
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
-#include <tr1/type_traits>
+#include <type_traits>
 
 namespace paludis
 {
@@ -34,13 +34,13 @@ namespace paludis
         template <typename From_, typename To_>
         struct IsConvertible
         {
-            static const bool value = std::tr1::is_convertible<From_, To_>::value;
+            static const bool value = std::is_convertible<From_, To_>::value;
         };
 
         template <typename From_, typename Tag_>
         struct IsConvertible<From_, WrappedValue<Tag_> >
         {
-            static const bool value = std::tr1::is_convertible<From_, typename WrappedValueTraits<Tag_>::UnderlyingType>::value;
+            static const bool value = std::is_convertible<From_, typename WrappedValueTraits<Tag_>::UnderlyingType>::value;
         };
 
         template <typename To_, typename From_, typename C_, bool>
@@ -79,7 +79,7 @@ namespace paludis
             RegisterSequenceSPTRFromPython(const std::string & name)
             {
                 boost::python::converter::registry::push_back(&convertible, &construct,
-                        boost::python::type_id<std::tr1::shared_ptr<Sequence<V_> > >());
+                        boost::python::type_id<std::shared_ptr<Sequence<V_> > >());
 
                 _name = name;
             }
@@ -97,7 +97,7 @@ namespace paludis
             static void
             construct(PyObject * obj_ptr, boost::python::converter::rvalue_from_python_stage1_data * data)
             {
-                typedef boost::python::converter::rvalue_from_python_storage<std::tr1::shared_ptr<Sequence<V_> > >
+                typedef boost::python::converter::rvalue_from_python_storage<std::shared_ptr<Sequence<V_> > >
                     Storage;
                 void * storage = reinterpret_cast<Storage *>(data)->storage.bytes;
 
@@ -105,13 +105,13 @@ namespace paludis
 
                 if (obj_ptr == Py_None)
                 {
-                    new (storage) std::tr1::shared_ptr<Sequence<V_> >();
+                    new (storage) std::shared_ptr<Sequence<V_> >();
                     return;
                 }
                 else
-                    new (storage) std::tr1::shared_ptr<Sequence<V_> >(new Sequence<V_>());
+                    new (storage) std::shared_ptr<Sequence<V_> >(new Sequence<V_>());
 
-                Sequence<V_> * s(reinterpret_cast<std::tr1::shared_ptr<Sequence<V_> > *>(storage)->get());
+                Sequence<V_> * s(reinterpret_cast<std::shared_ptr<Sequence<V_> > *>(storage)->get());
 
                 boost::python::list l = boost::python::extract<boost::python::list>(obj_ptr);
 
@@ -130,7 +130,7 @@ namespace paludis
                     }
                     else
                     {
-                        typedef std::tr1::shared_ptr<Sequence<V_> > sptr;
+                        typedef std::shared_ptr<Sequence<V_> > sptr;
                         reinterpret_cast<sptr *>(storage)->sptr::~shared_ptr();
 
                         throw PythonContainerConversionError(_name, "sequence", o.ptr()->ob_type->tp_name);
@@ -149,7 +149,7 @@ namespace paludis
             RegisterSetSPTRFromPython(const std::string & name)
             {
                 boost::python::converter::registry::push_back(&convertible, &construct,
-                        boost::python::type_id<std::tr1::shared_ptr<Set<V_> > >());
+                        boost::python::type_id<std::shared_ptr<Set<V_> > >());
 
                 _name = name;
             }
@@ -167,7 +167,7 @@ namespace paludis
             static void
             construct(PyObject * obj_ptr, boost::python::converter::rvalue_from_python_stage1_data * data)
             {
-                typedef boost::python::converter::rvalue_from_python_storage<std::tr1::shared_ptr<Set<V_> > >
+                typedef boost::python::converter::rvalue_from_python_storage<std::shared_ptr<Set<V_> > >
                     Storage;
                 void * storage = reinterpret_cast<Storage *>(data)->storage.bytes;
 
@@ -175,13 +175,13 @@ namespace paludis
 
                 if (obj_ptr == Py_None)
                 {
-                    new (storage) std::tr1::shared_ptr<Set<V_> >();
+                    new (storage) std::shared_ptr<Set<V_> >();
                     return;
                 }
                 else
-                    new (storage) std::tr1::shared_ptr<Set<V_> >(new Set<V_>());
+                    new (storage) std::shared_ptr<Set<V_> >(new Set<V_>());
 
-                Set<V_> * s(reinterpret_cast<std::tr1::shared_ptr<Set<V_> > *>(storage)->get());
+                Set<V_> * s(reinterpret_cast<std::shared_ptr<Set<V_> > *>(storage)->get());
 
                 boost::python::list l = boost::python::extract<boost::python::list>(obj_ptr);
 
@@ -200,7 +200,7 @@ namespace paludis
                     }
                     else
                     {
-                        typedef std::tr1::shared_ptr<Set<V_> > sptr;
+                        typedef std::shared_ptr<Set<V_> > sptr;
                         reinterpret_cast<sptr *>(storage)->sptr::~shared_ptr();
 
                         throw PythonContainerConversionError(_name, "set", o.ptr()->ob_type->tp_name);
@@ -226,9 +226,9 @@ namespace paludis
 
                     if (converter)
                     {
-                        if (std::tr1::is_same<C_, Sequence<typename C_::value_type> >::value)
+                        if (std::is_same<C_, Sequence<typename C_::value_type> >::value)
                             RegisterSequenceSPTRFromPython<typename C_::value_type> tmp(name);
-                        else if (std::tr1::is_same<C_, Set<typename C_::value_type> >::value)
+                        else if (std::is_same<C_, Set<typename C_::value_type> >::value)
                             RegisterSetSPTRFromPython<typename C_::value_type> tmp(name);
                         else
                             throw PythonError("Can't register l-value converter for '" + name +"'.");

@@ -88,9 +88,9 @@ namespace
     {
         try
         {
-            std::tr1::shared_ptr<Environment> env = value_to_environment(en);
-            std::tr1::shared_ptr<const PackageDepSpec> spec = value_to_package_dep_spec(a);
-            std::tr1::shared_ptr<const PackageID> target = value_to_package_id(t);
+            std::shared_ptr<Environment> env = value_to_environment(en);
+            std::shared_ptr<const PackageDepSpec> spec = value_to_package_dep_spec(a);
+            std::shared_ptr<const PackageID> target = value_to_package_id(t);
             MatchPackageOptions options(value_to_match_package_options(o));
             return match_package(*env, *spec, *target, options) ? Qtrue : Qfalse;
         }
@@ -114,9 +114,9 @@ namespace
     {
         try
         {
-            std::tr1::shared_ptr<Environment> env = value_to_environment(en);
-            std::tr1::shared_ptr<const SetSpecTree> spec = value_to_dep_tree<SetSpecTree>(a);
-            std::tr1::shared_ptr<const PackageID> target = value_to_package_id(t);
+            std::shared_ptr<Environment> env = value_to_environment(en);
+            std::shared_ptr<const SetSpecTree> spec = value_to_dep_tree<SetSpecTree>(a);
+            std::shared_ptr<const PackageID> target = value_to_package_id(t);
             MatchPackageOptions options(value_to_match_package_options(o));
             return match_package_in_set(*env, *spec, *target, options) ? Qtrue : Qfalse;
         }

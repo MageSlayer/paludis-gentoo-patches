@@ -28,7 +28,7 @@ using namespace paludis::accounts_repository;
 
 namespace
 {
-    int generic_importance(const Environment * const, const std::tr1::function<std::string (const std::string &)> & f)
+    int generic_importance(const Environment * const, const std::function<std::string (const std::string &)> & f)
     {
         if (! f("importance").empty())
             return destringify<int>(f("importance"));
@@ -48,7 +48,7 @@ namespace paludis
     void register_repositories<repository_groups::accounts>(const repository_groups::accounts * const,
             RepositoryFactory * const factory)
     {
-        std::tr1::shared_ptr<Set<std::string> > accounts_formats(new Set<std::string>);
+        std::shared_ptr<Set<std::string> > accounts_formats(new Set<std::string>);
         accounts_formats->insert("accounts");
 
         factory->add_repository_format(accounts_formats,
@@ -58,7 +58,7 @@ namespace paludis
                 &AccountsRepository::repository_factory_dependencies
                 );
 
-        std::tr1::shared_ptr<Set<std::string> > installed_accounts_formats(new Set<std::string>);
+        std::shared_ptr<Set<std::string> > installed_accounts_formats(new Set<std::string>);
         installed_accounts_formats->insert("installed_accounts");
         installed_accounts_formats->insert("installed-accounts");
 

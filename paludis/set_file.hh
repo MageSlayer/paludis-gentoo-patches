@@ -29,7 +29,7 @@
 #include <paludis/spec_tree.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/dep_tag-fwd.hh>
-#include <tr1/functional>
+#include <functional>
 #include <iosfwd>
 
 /** \file
@@ -70,9 +70,9 @@ namespace paludis
     {
         NamedValue<n::environment, const Environment *> environment;
         NamedValue<n::file_name, FSEntry> file_name;
-        NamedValue<n::parser, std::tr1::function<PackageDepSpec (const std::string &)> > parser;
+        NamedValue<n::parser, std::function<PackageDepSpec (const std::string &)> > parser;
         NamedValue<n::set_operator_mode, SetFileSetOperatorMode> set_operator_mode;
-        NamedValue<n::tag, std::tr1::shared_ptr<const DepTag> > tag;
+        NamedValue<n::tag, std::shared_ptr<const DepTag> > tag;
         NamedValue<n::type, SetFileType> type;
     };
 
@@ -129,7 +129,7 @@ namespace paludis
             /**
              * Fetch our contents.
              */
-            const std::tr1::shared_ptr<const SetSpecTree> contents() const;
+            const std::shared_ptr<const SetSpecTree> contents() const;
 
             /**
              * Rewrite our contents.

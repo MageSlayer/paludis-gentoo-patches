@@ -38,7 +38,7 @@
 #include <algorithm>
 #include <set>
 #include <cstdlib>
-#include <tr1/memory>
+#include <memory>
 
 using namespace paludis;
 using namespace cave;
@@ -49,7 +49,7 @@ namespace
     {
         private:
             const std::set<std::string> & _paths;
-            const std::tr1::function<void (const FSEntry &)> _displayer;
+            const std::function<void (const FSEntry &)> _displayer;
 
             bool is_executable_in_path(const FSEntry & file)
             {
@@ -70,7 +70,7 @@ namespace
         public:
             ExecutablesDisplayer(
                     const std::set<std::string> & p,
-                    const std::tr1::function<void (const FSEntry &)> & d) :
+                    const std::function<void (const FSEntry &)> & d) :
                 _paths(p),
                 _displayer(d)
             {
@@ -103,11 +103,11 @@ namespace
 
 int
 paludis::cave::executables_common(
-        const std::tr1::shared_ptr<Environment> & env,
+        const std::shared_ptr<Environment> & env,
         const std::string & param,
-        const std::tr1::function<void (const FSEntry &)> & displayer)
+        const std::function<void (const FSEntry &)> & displayer)
 {
-    std::tr1::shared_ptr<const PackageIDSequence> entries(
+    std::shared_ptr<const PackageIDSequence> entries(
             (*env)[selection::AllVersionsSorted(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec(
                             param, env.get(),
@@ -127,7 +127,7 @@ paludis::cave::executables_common(
     {
         if ((*t)->contents_key())
         {
-            std::tr1::shared_ptr<const Contents> contents((*t)->contents_key()->value());
+            std::shared_ptr<const Contents> contents((*t)->contents_key()->value());
             std::for_each(indirect_iterator(contents->begin()), indirect_iterator(contents->end()), accept_visitor(ed));
         }
     }

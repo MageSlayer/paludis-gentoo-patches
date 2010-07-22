@@ -180,9 +180,9 @@ SecurityContext::~SecurityContext()
 {
 }
 
-std::tr1::shared_ptr<const SecurityContext> SecurityContext::current_context()
+std::shared_ptr<const SecurityContext> SecurityContext::current_context()
 {
-    std::tr1::shared_ptr<SecurityContext> p(new SecurityContext);
+    std::shared_ptr<SecurityContext> p(new SecurityContext);
     security_context_t con;
     if (0 != libselinux.getcon(&con))
         throw SELinuxException("Couldn't get current security context.");
@@ -190,9 +190,9 @@ std::tr1::shared_ptr<const SecurityContext> SecurityContext::current_context()
     return p;
 }
 
-std::tr1::shared_ptr<const SecurityContext> SecurityContext::fs_create_context()
+std::shared_ptr<const SecurityContext> SecurityContext::fs_create_context()
 {
-    std::tr1::shared_ptr<SecurityContext> p(new SecurityContext);
+    std::shared_ptr<SecurityContext> p(new SecurityContext);
     security_context_t con;
     if (0 != libselinux.getfscreatecon(&con))
         throw SELinuxException("Couldn't get current filesystem creation context.");
@@ -206,7 +206,7 @@ std::ostream & paludis::operator<<(std::ostream & os, const SecurityContext & co
     return os;
 }
 
-FSCreateCon::FSCreateCon(const std::tr1::shared_ptr<const SecurityContext> & newfscreatecon)
+FSCreateCon::FSCreateCon(const std::shared_ptr<const SecurityContext> & newfscreatecon)
     : _context(newfscreatecon), _prev_context(SecurityContext::fs_create_context())
 {
     if (0 != libselinux.setfscreatecon(_context->_imp->_context))
@@ -239,9 +239,9 @@ bool MatchPathCon::good() const
     return _good;
 }
 
-std::tr1::shared_ptr<const SecurityContext> MatchPathCon::match(const std::string & path, mode_t mode) const
+std::shared_ptr<const SecurityContext> MatchPathCon::match(const std::string & path, mode_t mode) const
 {
-    std::tr1::shared_ptr<SecurityContext> p(new SecurityContext);
+    std::shared_ptr<SecurityContext> p(new SecurityContext);
     security_context_t context;
     if (0 != libselinux.matchpathcon(path.c_str(), mode, &context))
     {
@@ -256,7 +256,7 @@ std::tr1::shared_ptr<const SecurityContext> MatchPathCon::match(const std::strin
     return p;
 }
 
-int paludis::setfilecon(const paludis::FSEntry & path, const std::tr1::shared_ptr<const SecurityContext> & con)
+int paludis::setfilecon(const paludis::FSEntry & path, const std::shared_ptr<const SecurityContext> & con)
 {
     return libselinux.setfilecon(stringify(path).c_str(), con->_imp->_context);
 }

@@ -33,13 +33,13 @@ namespace paludis
     struct Implementation<OutputManagerFromEnvironment>
     {
         const Environment * const env;
-        const std::tr1::shared_ptr<const PackageID> id;
+        const std::shared_ptr<const PackageID> id;
         const OutputExclusivity output_exclusivity;
         const ClientOutputFeatures client_output_features;
 
-        std::tr1::shared_ptr<OutputManager> result;
+        std::shared_ptr<OutputManager> result;
 
-        Implementation(const Environment * const e, const std::tr1::shared_ptr<const PackageID> & i,
+        Implementation(const Environment * const e, const std::shared_ptr<const PackageID> & i,
                 const OutputExclusivity x, const ClientOutputFeatures & c) :
             env(e),
             id(i),
@@ -52,7 +52,7 @@ namespace paludis
 
 OutputManagerFromEnvironment::OutputManagerFromEnvironment(
         const Environment * const e,
-        const std::tr1::shared_ptr<const PackageID> & i,
+        const std::shared_ptr<const PackageID> & i,
         const OutputExclusivity x,
         const ClientOutputFeatures & c) :
     PrivateImplementationPattern<OutputManagerFromEnvironment>(new Implementation<OutputManagerFromEnvironment>(
@@ -64,7 +64,7 @@ OutputManagerFromEnvironment::~OutputManagerFromEnvironment()
 {
 }
 
-const std::tr1::shared_ptr<OutputManager>
+const std::shared_ptr<OutputManager>
 OutputManagerFromEnvironment::operator() (const Action & a)
 {
     if (! _imp->result)
@@ -76,7 +76,7 @@ OutputManagerFromEnvironment::operator() (const Action & a)
     return _imp->result;
 }
 
-const std::tr1::shared_ptr<OutputManager>
+const std::shared_ptr<OutputManager>
 OutputManagerFromEnvironment::output_manager_if_constructed()
 {
     return _imp->result;

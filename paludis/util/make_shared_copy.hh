@@ -36,7 +36,7 @@
 namespace paludis
 {
     template <typename T_>
-    std::tr1::shared_ptr<T_>
+    std::shared_ptr<T_>
     make_shared_copy(const T_ & t)
     {
         return make_shared_ptr(new T_(t));

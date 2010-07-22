@@ -34,8 +34,8 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/tribool.hh>
 #include <paludis/serialise-impl.hh>
-#include <tr1/unordered_set>
-#include <tr1/unordered_map>
+#include <unordered_set>
+#include <unordered_map>
 #include <algorithm>
 #include <list>
 #include <set>
@@ -45,10 +45,10 @@ using namespace paludis::resolver;
 
 #include <paludis/resolver/nag-se.cc>
 
-typedef std::tr1::unordered_set<NAGIndex, Hash<NAGIndex> > Nodes;
-typedef std::tr1::unordered_map<NAGIndex, NAGEdgeProperties, Hash<NAGIndex> > NodesWithProperties;
-typedef std::tr1::unordered_map<NAGIndex, NodesWithProperties, Hash<NAGIndex> > Edges;
-typedef std::tr1::unordered_map<NAGIndex, Nodes, Hash<NAGIndex> > PlainEdges;
+typedef std::unordered_set<NAGIndex, Hash<NAGIndex> > Nodes;
+typedef std::unordered_map<NAGIndex, NAGEdgeProperties, Hash<NAGIndex> > NodesWithProperties;
+typedef std::unordered_map<NAGIndex, NodesWithProperties, Hash<NAGIndex> > Edges;
+typedef std::unordered_map<NAGIndex, Nodes, Hash<NAGIndex> > PlainEdges;
 
 std::size_t
 NAGIndex::hash() const
@@ -177,10 +177,10 @@ namespace
         NamedValue<n::lowlink, int> lowlink;
     };
 
-    typedef std::tr1::unordered_map<NAGIndex, TarjanData, Hash<NAGIndex> > TarjanDataMap;
+    typedef std::unordered_map<NAGIndex, TarjanData, Hash<NAGIndex> > TarjanDataMap;
     typedef std::list<NAGIndex> TarjanStack;
-    typedef std::tr1::unordered_map<NAGIndex, StronglyConnectedComponent, Hash<NAGIndex> > StronglyConnectedComponentsByRepresentative;
-    typedef std::tr1::unordered_map<NAGIndex, NAGIndex, Hash<NAGIndex> > RepresentativeNodes;
+    typedef std::unordered_map<NAGIndex, StronglyConnectedComponent, Hash<NAGIndex> > StronglyConnectedComponentsByRepresentative;
+    typedef std::unordered_map<NAGIndex, NAGIndex, Hash<NAGIndex> > RepresentativeNodes;
 
     TarjanDataMap::iterator tarjan(const NAGIndex & node, const Edges & edges, TarjanDataMap & data, TarjanStack & stack, int & index,
             StronglyConnectedComponentsByRepresentative & result)
@@ -229,7 +229,7 @@ namespace
         return node_data;
     }
 
-    int order_score_one(const NAGIndex & n, const std::tr1::function<Tribool (const NAGIndex &)> & order_early_fn)
+    int order_score_one(const NAGIndex & n, const std::function<Tribool (const NAGIndex &)> & order_early_fn)
     {
         /* lower scores are 'better' and mean 'order earlier' */
         Tribool order_early(order_early_fn(n));
@@ -255,7 +255,7 @@ namespace
     }
 
     std::pair<int, NAGIndex> order_score(const NAGIndex & r, const StronglyConnectedComponent & scc,
-            const std::tr1::function<Tribool (const NAGIndex &)> & order_early_fn)
+            const std::function<Tribool (const NAGIndex &)> & order_early_fn)
     {
         int best_score(-1);
 
@@ -271,9 +271,9 @@ namespace
     }
 }
 
-const std::tr1::shared_ptr<const SortedStronglyConnectedComponents>
+const std::shared_ptr<const SortedStronglyConnectedComponents>
 NAG::sorted_strongly_connected_components(
-        const std::tr1::function<Tribool (const NAGIndex &)> & order_early_fn
+        const std::function<Tribool (const NAGIndex &)> & order_early_fn
         ) const
 {
     StronglyConnectedComponentsByRepresentative sccs;
@@ -320,7 +320,7 @@ NAG::sorted_strongly_connected_components(
 
     /* topological sort with consistent ordering (mostly to make test cases
      * easier). we know there're no cycles. */
-    std::tr1::shared_ptr<SortedStronglyConnectedComponents> result(new SortedStronglyConnectedComponents);
+    std::shared_ptr<SortedStronglyConnectedComponents> result(new SortedStronglyConnectedComponents);
 
     typedef std::set<std::pair<int, NAGIndex> > OrderableNow;
     OrderableNow orderable_now;
@@ -415,13 +415,13 @@ NAG::serialise(Serialiser & s) const
     w.member(SerialiserFlags<>(), "edge.count", stringify(c));
 }
 
-const std::tr1::shared_ptr<NAG>
+const std::shared_ptr<NAG>
 NAG::deserialise(Deserialisation & d)
 {
     Context context("When deserialising NAG:");
 
     Deserialisator v(d, "NAG");
-    std::tr1::shared_ptr<NAG> result(new NAG);
+    std::shared_ptr<NAG> result(new NAG);
 
     {
         Deserialisator vv(*v.find_remove_member("nodes"), "c");

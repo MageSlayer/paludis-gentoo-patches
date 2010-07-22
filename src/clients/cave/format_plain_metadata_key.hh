@@ -22,7 +22,7 @@
 
 #include <paludis/util/attributes.hh>
 #include <paludis/metadata_key-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 #include <string>
 
 namespace paludis
@@ -30,13 +30,13 @@ namespace paludis
     namespace cave
     {
         std::string format_plain_metadata_key(
-                const std::tr1::shared_ptr<const MetadataKey> &,
+                const std::shared_ptr<const MetadataKey> &,
                 const std::string & value_for_i,
                 const std::string & format)
             PALUDIS_VISIBLE PALUDIS_ATTRIBUTE((warn_unused_result));
 
         std::string format_plain_metadata_key_value(
-                const std::tr1::shared_ptr<const MetadataKey> &)
+                const std::shared_ptr<const MetadataKey> &)
             PALUDIS_VISIBLE PALUDIS_ATTRIBUTE((warn_unused_result));
     }
 }

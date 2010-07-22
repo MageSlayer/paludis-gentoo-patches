@@ -47,10 +47,10 @@ namespace
     struct PurgeCommandLine :
         CaveCommandCommandLine
     {
-        std::tr1::shared_ptr<ResolveCommandLineResolutionOptions> resolution_options;
-        std::tr1::shared_ptr<ResolveCommandLineExecutionOptions> execution_options;
-        std::tr1::shared_ptr<ResolveCommandLineDisplayOptions> display_options;
-        std::tr1::shared_ptr<ResolveCommandLineProgramOptions> program_options;
+        std::shared_ptr<ResolveCommandLineResolutionOptions> resolution_options;
+        std::shared_ptr<ResolveCommandLineExecutionOptions> execution_options;
+        std::shared_ptr<ResolveCommandLineDisplayOptions> display_options;
+        std::shared_ptr<ResolveCommandLineProgramOptions> program_options;
 
         PurgeCommandLine(const bool for_docs) :
             resolution_options(for_docs ? make_null_shared_ptr() : make_shared_ptr(new ResolveCommandLineResolutionOptions(this))),
@@ -88,8 +88,8 @@ PurgeCommand::important() const
 
 int
 PurgeCommand::run(
-        const std::tr1::shared_ptr<Environment> & env,
-        const std::tr1::shared_ptr<const Sequence<std::string > > & args
+        const std::shared_ptr<Environment> & env,
+        const std::shared_ptr<const Sequence<std::string > > & args
         )
 {
     PurgeCommandLine cmdline(false);
@@ -111,7 +111,7 @@ PurgeCommand::run(
             *cmdline.program_options, make_null_shared_ptr(), make_null_shared_ptr(), make_null_shared_ptr(), true);
 }
 
-std::tr1::shared_ptr<args::ArgsHandler>
+std::shared_ptr<args::ArgsHandler>
 PurgeCommand::make_doc_cmdline()
 {
     return make_shared_ptr(new PurgeCommandLine(true));

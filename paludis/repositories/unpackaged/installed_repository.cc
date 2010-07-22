@@ -70,9 +70,9 @@ namespace paludis
         const InstalledUnpackagedRepositoryParams params;
         mutable NDBAM ndbam;
 
-        std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > location_key;
-        std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > root_key;
-        std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key;
+        std::shared_ptr<const MetadataValueKey<FSEntry> > location_key;
+        std::shared_ptr<const MetadataValueKey<FSEntry> > root_key;
+        std::shared_ptr<const MetadataValueKey<std::string> > format_key;
 
         Implementation(const InstalledUnpackagedRepositoryParams & p) :
             params(p),
@@ -117,11 +117,11 @@ InstalledUnpackagedRepository::_add_metadata_keys() const
     add_metadata_key(_imp->format_key);
 }
 
-std::tr1::shared_ptr<const PackageIDSequence>
+std::shared_ptr<const PackageIDSequence>
 InstalledUnpackagedRepository::package_ids(const QualifiedPackageName & q) const
 {
-    std::tr1::shared_ptr<NDBAMEntrySequence> entries(_imp->ndbam.entries(q));
-    std::tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
+    std::shared_ptr<NDBAMEntrySequence> entries(_imp->ndbam.entries(q));
+    std::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
 
     for (IndirectIterator<NDBAMEntrySequence::ConstIterator> e(entries->begin()), e_end(entries->end()) ;
             e != e_end ; ++e)
@@ -136,19 +136,19 @@ InstalledUnpackagedRepository::package_ids(const QualifiedPackageName & q) const
     return result;
 }
 
-std::tr1::shared_ptr<const QualifiedPackageNameSet>
+std::shared_ptr<const QualifiedPackageNameSet>
 InstalledUnpackagedRepository::package_names(const CategoryNamePart & c) const
 {
     return _imp->ndbam.package_names(c);
 }
 
-std::tr1::shared_ptr<const CategoryNamePartSet>
+std::shared_ptr<const CategoryNamePartSet>
 InstalledUnpackagedRepository::category_names() const
 {
     return _imp->ndbam.category_names();
 }
 
-std::tr1::shared_ptr<const CategoryNamePartSet>
+std::shared_ptr<const CategoryNamePartSet>
 InstalledUnpackagedRepository::category_names_containing_package(
         const PackageNamePart & p) const
 {
@@ -250,8 +250,8 @@ namespace
         return std::make_pair(uid, gid);
     }
 
-    bool slot_is_same(const std::tr1::shared_ptr<const PackageID> & a,
-            const std::tr1::shared_ptr<const PackageID> & b)
+    bool slot_is_same(const std::shared_ptr<const PackageID> & a,
+            const std::shared_ptr<const PackageID> & b)
     {
         if (a->slot_key())
             return b->slot_key() && a->slot_key()->value() == b->slot_key()->value();
@@ -263,7 +263,7 @@ namespace
 void
 InstalledUnpackagedRepository::merge(const MergeParams & m)
 {
-    using namespace std::tr1::placeholders;
+    using namespace std::placeholders;
 
     Context context("When merging '" + stringify(*m.package_id()) + "' at '" + stringify(m.image_dir())
             + "' to InstalledUnpackagedRepository repository '" + stringify(name()) + "':");
@@ -293,9 +293,9 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
         rewrite_ids_over_to_root = kk->value();
     }
 
-    std::tr1::shared_ptr<const PackageID> if_overwritten_id, if_same_name_id;
+    std::shared_ptr<const PackageID> if_overwritten_id, if_same_name_id;
     {
-        std::tr1::shared_ptr<const PackageIDSequence> ids(package_ids(m.package_id()->name()));
+        std::shared_ptr<const PackageIDSequence> ids(package_ids(m.package_id()->name()));
         for (PackageIDSequence::ConstIterator v(ids->begin()), v_end(ids->end()) ;
                 v != v_end ; ++v)
         {
@@ -360,7 +360,7 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
                 n::contents_file() = target_ver_dir / "contents",
                 n::environment() = _imp->params.environment(),
                 n::fix_mtimes_before() = m.build_start_time(),
-                n::get_new_ids_or_minus_one() = std::tr1::bind(&get_new_ids_or_minus_one,
+                n::get_new_ids_or_minus_one() = std::bind(&get_new_ids_or_minus_one,
                         _imp->params.environment(), rewrite_ids_over_to_root, _1),
                 n::image() = m.image_dir(),
                 n::install_under() = install_under,
@@ -385,7 +385,7 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
 
     if (if_overwritten_id)
     {
-        std::tr1::static_pointer_cast<const InstalledUnpackagedID>(if_overwritten_id)->uninstall(true,
+        std::static_pointer_cast<const InstalledUnpackagedID>(if_overwritten_id)->uninstall(true,
                 if_overwritten_id, m.output_manager());
     }
 }
@@ -432,28 +432,28 @@ InstalledUnpackagedRepository::need_keys_added() const
 {
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataValueKey<std::string> >
 InstalledUnpackagedRepository::format_key() const
 {
     return _imp->format_key;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSEntry> >
 InstalledUnpackagedRepository::location_key() const
 {
     return _imp->location_key;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSEntry> >
 InstalledUnpackagedRepository::installed_root_key() const
 {
     return _imp->root_key;
 }
 
-std::tr1::shared_ptr<Repository>
+std::shared_ptr<Repository>
 InstalledUnpackagedRepository::repository_factory_create(
         Environment * const env,
-        const std::tr1::function<std::string (const std::string &)> & f)
+        const std::function<std::string (const std::string &)> & f)
 {
     Context context("When creating InstalledUnpackagedRepository:");
 
@@ -476,15 +476,15 @@ InstalledUnpackagedRepository::repository_factory_create(
 RepositoryName
 InstalledUnpackagedRepository::repository_factory_name(
         const Environment * const,
-        const std::tr1::function<std::string (const std::string &)> &)
+        const std::function<std::string (const std::string &)> &)
 {
     return RepositoryName("installed-unpackaged");
 }
 
-std::tr1::shared_ptr<const RepositoryNameSet>
+std::shared_ptr<const RepositoryNameSet>
 InstalledUnpackagedRepository::repository_factory_dependencies(
         const Environment * const,
-        const std::tr1::function<std::string (const std::string &)> &)
+        const std::function<std::string (const std::string &)> &)
 {
     return make_shared_ptr(new RepositoryNameSet);
 }
@@ -502,18 +502,18 @@ InstalledUnpackagedRepository::perform_hook(const Hook &)
 }
 
 bool
-InstalledUnpackagedRepository::sync(const std::tr1::shared_ptr<OutputManager> &) const
+InstalledUnpackagedRepository::sync(const std::shared_ptr<OutputManager> &) const
 {
     return false;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataValueKey<std::string> >
 InstalledUnpackagedRepository::accept_keywords_key() const
 {
     return make_null_shared_ptr();
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataValueKey<std::string> >
 InstalledUnpackagedRepository::sync_host_key() const
 {
     return make_null_shared_ptr();

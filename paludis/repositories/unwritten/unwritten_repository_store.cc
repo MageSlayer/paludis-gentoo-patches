@@ -37,20 +37,20 @@
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
-#include <tr1/functional>
-#include <tr1/unordered_map>
+#include <functional>
+#include <unordered_map>
 #include <algorithm>
 #include <set>
 
 using namespace paludis;
 using namespace paludis::unwritten_repository;
 
-typedef std::tr1::unordered_map<CategoryNamePart,
-        std::tr1::shared_ptr<QualifiedPackageNameSet>,
+typedef std::unordered_map<CategoryNamePart,
+        std::shared_ptr<QualifiedPackageNameSet>,
         Hash<CategoryNamePart> > PackageNames;
 
-typedef std::tr1::unordered_map<QualifiedPackageName,
-        std::tr1::shared_ptr<PackageIDSequence>,
+typedef std::unordered_map<QualifiedPackageName,
+        std::shared_ptr<PackageIDSequence>,
         Hash<QualifiedPackageName> > IDs;
 
 namespace paludis
@@ -59,7 +59,7 @@ namespace paludis
     struct Implementation<UnwrittenRepositoryStore>
     {
         const UnwrittenRepository * const repo;
-        mutable std::tr1::shared_ptr<CategoryNamePartSet> categories;
+        mutable std::shared_ptr<CategoryNamePartSet> categories;
         mutable PackageNames package_names;
         mutable IDs ids;
 
@@ -89,8 +89,8 @@ UnwrittenRepositoryStore::_populate(const Environment * const env, const FSEntry
 {
     Context context("When populating UnwrittenRepository from directory '" + stringify(f) + "':");
 
-    using namespace std::tr1::placeholders;
-    std::for_each(DirIterator(f), DirIterator(), std::tr1::bind(
+    using namespace std::placeholders;
+    std::for_each(DirIterator(f), DirIterator(), std::bind(
                 &UnwrittenRepositoryStore::_populate_one, this, env, _1));
 }
 
@@ -104,11 +104,11 @@ UnwrittenRepositoryStore::_populate_one(const Environment * const env, const FSE
 
     UnwrittenRepositoryFile file(f);
 
-    std::tr1::shared_ptr<Mask> mask(new UnwrittenMask);
+    std::shared_ptr<Mask> mask(new UnwrittenMask);
 
     QualifiedPackageName old_name("x/x");
-    std::tr1::shared_ptr<QualifiedPackageNameSet> pkgs;
-    std::tr1::shared_ptr<PackageIDSequence> ids;
+    std::shared_ptr<QualifiedPackageNameSet> pkgs;
+    std::shared_ptr<PackageIDSequence> ids;
     for (UnwrittenRepositoryFile::ConstIterator i(file.begin()), i_end(file.end()) ;
             i != i_end ; ++i)
     {
@@ -164,21 +164,21 @@ UnwrittenRepositoryStore::has_package_named(const QualifiedPackageName & q) cons
     return _imp->ids.end() != _imp->ids.find(q);
 }
 
-std::tr1::shared_ptr<const CategoryNamePartSet>
+std::shared_ptr<const CategoryNamePartSet>
 UnwrittenRepositoryStore::category_names() const
 {
     return _imp->categories;
 }
 
-std::tr1::shared_ptr<const CategoryNamePartSet>
+std::shared_ptr<const CategoryNamePartSet>
 UnwrittenRepositoryStore::unimportant_category_names() const
 {
-    std::tr1::shared_ptr<CategoryNamePartSet> result(make_shared_ptr(new CategoryNamePartSet));
+    std::shared_ptr<CategoryNamePartSet> result(make_shared_ptr(new CategoryNamePartSet));
     result->insert(CategoryNamePart("virtual"));
     return result;
 }
 
-std::tr1::shared_ptr<const QualifiedPackageNameSet>
+std::shared_ptr<const QualifiedPackageNameSet>
 UnwrittenRepositoryStore::package_names(const CategoryNamePart & c) const
 {
     PackageNames::iterator p(_imp->package_names.find(c));
@@ -188,7 +188,7 @@ UnwrittenRepositoryStore::package_names(const CategoryNamePart & c) const
         return p->second;
 }
 
-std::tr1::shared_ptr<const PackageIDSequence>
+std::shared_ptr<const PackageIDSequence>
 UnwrittenRepositoryStore::package_ids(const QualifiedPackageName & p) const
 {
     IDs::iterator i(_imp->ids.find(p));

@@ -47,7 +47,7 @@ namespace paludis
     {
         struct SanitisedDependency
         {
-            NamedValue<n::active_dependency_labels, std::tr1::shared_ptr<const DependenciesLabelSequence> > active_dependency_labels;
+            NamedValue<n::active_dependency_labels, std::shared_ptr<const DependenciesLabelSequence> > active_dependency_labels;
             NamedValue<n::active_dependency_labels_as_string, std::string> active_dependency_labels_as_string;
             NamedValue<n::metadata_key_human_name, std::string> metadata_key_human_name;
             NamedValue<n::metadata_key_raw_name, std::string> metadata_key_raw_name;
@@ -58,7 +58,7 @@ namespace paludis
 
             static SanitisedDependency deserialise(
                     Deserialisation & d,
-                    const std::tr1::shared_ptr<const PackageID> & for_id) PALUDIS_ATTRIBUTE((warn_unused_result));
+                    const std::shared_ptr<const PackageID> & for_id) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         class SanitisedDependencies :
@@ -68,9 +68,9 @@ namespace paludis
                 void _populate_one(
                         const Environment * const,
                         const Decider &,
-                        const std::tr1::shared_ptr<const Resolution> &,
-                        const std::tr1::shared_ptr<const PackageID> &,
-                        const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > (PackageID::* const) () const
+                        const std::shared_ptr<const Resolution> &,
+                        const std::shared_ptr<const PackageID> &,
+                        const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > (PackageID::* const) () const
                         );
 
             public:
@@ -80,8 +80,8 @@ namespace paludis
                 void populate(
                         const Environment * const,
                         const Decider &,
-                        const std::tr1::shared_ptr<const Resolution> &,
-                        const std::tr1::shared_ptr<const PackageID> &);
+                        const std::shared_ptr<const Resolution> &,
+                        const std::shared_ptr<const PackageID> &);
 
                 void add(const SanitisedDependency & d);
 

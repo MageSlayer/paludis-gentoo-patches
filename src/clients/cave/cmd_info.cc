@@ -86,7 +86,7 @@ namespace
 
     struct MetadataKeyComparator
     {
-        bool operator() (const std::tr1::shared_ptr<const MetadataKey> & a, const std::tr1::shared_ptr<const MetadataKey> & b) const
+        bool operator() (const std::shared_ptr<const MetadataKey> & a, const std::shared_ptr<const MetadataKey> & b) const
         {
             bool a_is_section(simple_visitor_cast<const MetadataSectionKey>(*a));
             bool b_is_section(simple_visitor_cast<const MetadataSectionKey>(*b));
@@ -147,8 +147,8 @@ namespace
         void visit(const MetadataSectionKey & k)
         {
             cout << format_general_his(f::info_metadata_subsection(), k.human_name(), indent, k.human_name());
-            std::set<std::tr1::shared_ptr<const MetadataKey>, MetadataKeyComparator> keys(k.begin_metadata(), k.end_metadata());
-            for (std::set<std::tr1::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
+            std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator> keys(k.begin_metadata(), k.end_metadata());
+            for (std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
                     s(keys.begin()), s_end(keys.end()) ; s != s_end ; ++s)
             {
                 InfoDisplayer i(cmdline, indent + 1);
@@ -253,21 +253,21 @@ namespace
             cout << format_general_his(f::info_metadata(), k.human_name(), indent, stringify(k.value()));
         }
 
-        void visit(const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > & k)
+        void visit(const MetadataValueKey<std::shared_ptr<const PackageID> > & k)
         {
             ColourFormatter f(indent);
             cout << format_general_his(f::info_metadata(), k.human_name(), indent, stringify(*k.value()));
         }
 
-        void visit(const MetadataValueKey<std::tr1::shared_ptr<const Contents> > &)
+        void visit(const MetadataValueKey<std::shared_ptr<const Contents> > &)
         {
         }
 
-        void visit(const MetadataValueKey<std::tr1::shared_ptr<const Choices> > &)
+        void visit(const MetadataValueKey<std::shared_ptr<const Choices> > &)
         {
         }
 
-        void visit(const MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> > &)
+        void visit(const MetadataValueKey<std::shared_ptr<const RepositoryMaskInfo> > &)
         {
         }
 
@@ -280,12 +280,12 @@ namespace
 
     void do_one_repository(
             const InfoCommandLine & cmdline,
-            const std::tr1::shared_ptr<Environment> &,
-            const std::tr1::shared_ptr<const Repository> & repo)
+            const std::shared_ptr<Environment> &,
+            const std::shared_ptr<const Repository> & repo)
     {
         cout << format_general_s(f::info_repository_heading(), stringify(repo->name()));
-        std::set<std::tr1::shared_ptr<const MetadataKey>, MetadataKeyComparator> keys(repo->begin_metadata(), repo->end_metadata());
-        for (std::set<std::tr1::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
+        std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator> keys(repo->begin_metadata(), repo->end_metadata());
+        for (std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
                 k(keys.begin()), k_end(keys.end()) ; k != k_end ; ++k)
         {
             if ((*k)->type() == mkt_internal)
@@ -299,11 +299,11 @@ namespace
 
     void do_env(
             const InfoCommandLine & cmdline,
-            const std::tr1::shared_ptr<Environment> & env)
+            const std::shared_ptr<Environment> & env)
     {
         cout << format_general_s(f::info_heading(), "Environment Information");
-        std::set<std::tr1::shared_ptr<const MetadataKey>, MetadataKeyComparator> keys(env->begin_metadata(), env->end_metadata());
-        for (std::set<std::tr1::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
+        std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator> keys(env->begin_metadata(), env->end_metadata());
+        for (std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
                 k(keys.begin()), k_end(keys.end()) ; k != k_end ; ++k)
         {
             if ((*k)->type() == mkt_internal)
@@ -317,12 +317,12 @@ namespace
 
     void do_about(
             const InfoCommandLine & cmdline,
-            const std::tr1::shared_ptr<Environment> &)
+            const std::shared_ptr<Environment> &)
     {
         cout << format_general_s(f::info_heading(), "Package Manager Information");
-        std::set<std::tr1::shared_ptr<const MetadataKey>, MetadataKeyComparator> keys(AboutMetadata::get_instance()->begin_metadata(),
+        std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator> keys(AboutMetadata::get_instance()->begin_metadata(),
                 AboutMetadata::get_instance()->end_metadata());
-        for (std::set<std::tr1::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
+        for (std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
                 k(keys.begin()), k_end(keys.end()) ; k != k_end ; ++k)
         {
             if ((*k)->type() == mkt_internal)
@@ -336,15 +336,15 @@ namespace
 
     void do_one_id(
             const InfoCommandLine &,
-            const std::tr1::shared_ptr<Environment> & env,
-            const std::tr1::shared_ptr<const PackageID> & id)
+            const std::shared_ptr<Environment> & env,
+            const std::shared_ptr<const PackageID> & id)
     {
         if (! id->supports_action(SupportsActionTest<InfoAction>()))
             return;
 
         cout << format_general_s(f::info_id_heading(), stringify(*id));
 
-        std::tr1::shared_ptr<Sequence<std::string> > args(new Sequence<std::string>);
+        std::shared_ptr<Sequence<std::string> > args(new Sequence<std::string>);
         args->push_back("info");
         args->push_back("--if-supported");
         args->push_back("--hooks");
@@ -358,14 +358,14 @@ namespace
 
     void do_one_param(
             const InfoCommandLine & cmdline,
-            const std::tr1::shared_ptr<Environment> & env,
+            const std::shared_ptr<Environment> & env,
             const std::string & param)
     {
         PackageDepSpec spec(parse_user_package_dep_spec(param, env.get(), UserPackageDepSpecOptions()));
 
-        const std::tr1::shared_ptr<const PackageIDSequence> installed_ids((*env)[selection::AllVersionsSorted(generator::Matches(
+        const std::shared_ptr<const PackageIDSequence> installed_ids((*env)[selection::AllVersionsSorted(generator::Matches(
                         spec, MatchPackageOptions()) | filter::InstalledAtRoot(env->root()))]);
-        const std::tr1::shared_ptr<const PackageIDSequence> installable_ids((*env)[selection::BestVersionOnly(generator::Matches(
+        const std::shared_ptr<const PackageIDSequence> installable_ids((*env)[selection::BestVersionOnly(generator::Matches(
                         spec, MatchPackageOptions()) | filter::SupportsAction<InstallAction>() | filter::NotMasked())]);
 
         if (installed_ids->empty() && installable_ids->empty())
@@ -389,8 +389,8 @@ InfoCommand::important() const
 
 int
 InfoCommand::run(
-        const std::tr1::shared_ptr<Environment> & env,
-        const std::tr1::shared_ptr<const Sequence<std::string > > & args
+        const std::shared_ptr<Environment> & env,
+        const std::shared_ptr<const Sequence<std::string > > & args
         )
 {
     InfoCommandLine cmdline;
@@ -427,7 +427,7 @@ InfoCommand::run(
     return EXIT_SUCCESS;
 }
 
-std::tr1::shared_ptr<args::ArgsHandler>
+std::shared_ptr<args::ArgsHandler>
 InfoCommand::make_doc_cmdline()
 {
     return make_shared_ptr(new InfoCommandLine);

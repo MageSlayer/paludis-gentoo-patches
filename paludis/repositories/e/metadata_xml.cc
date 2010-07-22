@@ -29,12 +29,12 @@
 #include <paludis/util/log.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/choice.hh>
-#include <tr1/unordered_map>
+#include <unordered_map>
 
 using namespace paludis;
 using namespace paludis::erepository;
 
-typedef std::tr1::unordered_map<FSEntry, std::tr1::shared_ptr<MetadataXML>, Hash<FSEntry> > Store;
+typedef std::unordered_map<FSEntry, std::shared_ptr<MetadataXML>, Hash<FSEntry> > Store;
 
 namespace paludis
 {
@@ -55,7 +55,7 @@ MetadataXMLPool::~MetadataXMLPool()
 {
 }
 
-const std::tr1::shared_ptr<const MetadataXML>
+const std::shared_ptr<const MetadataXML>
 MetadataXMLPool::metadata_if_exists(const FSEntry & f) const
 {
     Context context("When handling metadata.xml file '" + stringify(f) + "':");
@@ -67,7 +67,7 @@ MetadataXMLPool::metadata_if_exists(const FSEntry & f) const
         return i->second;
     else
     {
-        std::tr1::shared_ptr<MetadataXML> metadata_xml;
+        std::shared_ptr<MetadataXML> metadata_xml;
         if (f_real.is_regular_file_or_symlink_to_regular_file())
         {
             try

@@ -34,20 +34,20 @@
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
-#include <tr1/functional>
-#include <tr1/unordered_map>
+#include <functional>
+#include <unordered_map>
 #include <algorithm>
 #include <set>
 
 using namespace paludis;
 using namespace paludis::repository_repository;
 
-typedef std::tr1::unordered_map<CategoryNamePart,
-        std::tr1::shared_ptr<QualifiedPackageNameSet>,
+typedef std::unordered_map<CategoryNamePart,
+        std::shared_ptr<QualifiedPackageNameSet>,
         Hash<CategoryNamePart> > PackageNames;
 
-typedef std::tr1::unordered_map<QualifiedPackageName,
-        std::tr1::shared_ptr<PackageIDSequence>,
+typedef std::unordered_map<QualifiedPackageName,
+        std::shared_ptr<PackageIDSequence>,
         Hash<QualifiedPackageName> > IDs;
 
 namespace paludis
@@ -57,7 +57,7 @@ namespace paludis
     {
         const Environment * const env;
         const RepositoryRepository * const repo;
-        mutable std::tr1::shared_ptr<CategoryNamePartSet> categories;
+        mutable std::shared_ptr<CategoryNamePartSet> categories;
         mutable PackageNames package_names;
         mutable IDs ids;
 
@@ -93,7 +93,7 @@ RepositoryRepositoryStore::_populate()
 void
 RepositoryRepositoryStore::_populate_one(const RepositoryName & repo_name)
 {
-    const std::tr1::shared_ptr<RepositoryID> id(new RepositoryID(make_named_values<RepositoryIDParams>(
+    const std::shared_ptr<RepositoryID> id(new RepositoryID(make_named_values<RepositoryIDParams>(
                     n::environment() = _imp->env,
                     n::name() = CategoryNamePart("repository") + PackageNamePart(stringify(repo_name)),
                     n::repository() = _imp->repo
@@ -125,21 +125,21 @@ RepositoryRepositoryStore::has_package_named(const QualifiedPackageName & q) con
     return _imp->ids.end() != _imp->ids.find(q);
 }
 
-std::tr1::shared_ptr<const CategoryNamePartSet>
+std::shared_ptr<const CategoryNamePartSet>
 RepositoryRepositoryStore::category_names() const
 {
     return _imp->categories;
 }
 
-std::tr1::shared_ptr<const CategoryNamePartSet>
+std::shared_ptr<const CategoryNamePartSet>
 RepositoryRepositoryStore::unimportant_category_names() const
 {
-    std::tr1::shared_ptr<CategoryNamePartSet> result(make_shared_ptr(new CategoryNamePartSet));
+    std::shared_ptr<CategoryNamePartSet> result(make_shared_ptr(new CategoryNamePartSet));
     result->insert(CategoryNamePart("repository"));
     return result;
 }
 
-std::tr1::shared_ptr<const QualifiedPackageNameSet>
+std::shared_ptr<const QualifiedPackageNameSet>
 RepositoryRepositoryStore::package_names(const CategoryNamePart & c) const
 {
     PackageNames::iterator p(_imp->package_names.find(c));
@@ -149,7 +149,7 @@ RepositoryRepositoryStore::package_names(const CategoryNamePart & c) const
         return p->second;
 }
 
-std::tr1::shared_ptr<const PackageIDSequence>
+std::shared_ptr<const PackageIDSequence>
 RepositoryRepositoryStore::package_ids(const QualifiedPackageName & p) const
 {
     IDs::iterator i(_imp->ids.find(p));

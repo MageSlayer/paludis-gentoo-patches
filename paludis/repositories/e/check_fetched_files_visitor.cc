@@ -60,7 +60,7 @@ namespace paludis
     struct Implementation<CheckFetchedFilesVisitor>
     {
         const Environment * const env;
-        const std::tr1::shared_ptr<const PackageID> id;
+        const std::shared_ptr<const PackageID> id;
         const FSEntry distdir;
         const bool check_unneeded;
         const bool exclude_unmirrorable;
@@ -68,23 +68,23 @@ namespace paludis
         const bool ignore_not_in_manifest;
 
         std::set<std::string> done;
-        const std::tr1::shared_ptr<Sequence<FetchActionFailure> > failures;
+        const std::shared_ptr<Sequence<FetchActionFailure> > failures;
         bool need_nofetch;
         bool in_nofetch;
 
-        const std::tr1::shared_ptr<Manifest2Reader> m2r;
+        const std::shared_ptr<Manifest2Reader> m2r;
         const UseManifest use_manifest;
-        const std::tr1::shared_ptr<OutputManager> output_manager;
+        const std::shared_ptr<OutputManager> output_manager;
 
         Implementation(
                 const Environment * const e,
-                const std::tr1::shared_ptr<const PackageID> & i,
+                const std::shared_ptr<const PackageID> & i,
                 const FSEntry & d,
                 const bool c,
                 const bool n,
                 const FSEntry & m2,
                 const UseManifest um,
-                const std::tr1::shared_ptr<OutputManager> & md,
+                const std::shared_ptr<OutputManager> & md,
                 const bool x,
                 const bool u,
                 const bool nm) :
@@ -108,13 +108,13 @@ namespace paludis
 
 CheckFetchedFilesVisitor::CheckFetchedFilesVisitor(
         const Environment * const e,
-        const std::tr1::shared_ptr<const PackageID> & i,
+        const std::shared_ptr<const PackageID> & i,
         const FSEntry & d,
         const bool c,
         const bool n,
         const FSEntry & m2,
         const UseManifest um,
-        const std::tr1::shared_ptr<OutputManager> & md,
+        const std::shared_ptr<OutputManager> & md,
         const bool x,
         const bool u,
         const bool nm) :
@@ -433,7 +433,7 @@ CheckFetchedFilesVisitor::visit(const FetchableURISpecTree::NodeType<FetchableUR
     _imp->output_manager->stdout_stream() << std::endl;
 }
 
-const std::tr1::shared_ptr<const Sequence<FetchActionFailure> >
+const std::shared_ptr<const Sequence<FetchActionFailure> >
 CheckFetchedFilesVisitor::failures() const
 {
     return _imp->failures;

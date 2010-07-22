@@ -23,14 +23,14 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/simple_parser-fwd.hh>
-#include <tr1/functional>
+#include <functional>
 #include <string>
 
 namespace paludis
 {
     namespace simple_parser
     {
-        typedef std::tr1::function<std::string::size_type (const std::string &, const std::string::size_type)> SimpleParserMatchFunction;
+        typedef std::function<std::string::size_type (const std::string &, const std::string::size_type)> SimpleParserMatchFunction;
 
         class PALUDIS_VISIBLE SimpleParserExpression
         {

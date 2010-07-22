@@ -21,14 +21,14 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_UNPACKAGED_NDBAM_FWD_HH 1
 
 #include <paludis/util/sequence-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 
 namespace paludis
 {
     class NDBAM;
     struct NDBAMEntry;
 
-    typedef Sequence<std::tr1::shared_ptr<NDBAMEntry> > NDBAMEntrySequence;
+    typedef Sequence<std::shared_ptr<NDBAMEntry> > NDBAMEntrySequence;
 }
 
 #endif

@@ -23,7 +23,7 @@
 #include <paludis/name-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/fs_entry-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 
 namespace paludis
 {
@@ -43,7 +43,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            EclassMtimes(const ERepository *, const std::tr1::shared_ptr<const FSEntrySequence> &);
+            EclassMtimes(const ERepository *, const std::shared_ptr<const FSEntrySequence> &);
             ~EclassMtimes();
 
             ///\}

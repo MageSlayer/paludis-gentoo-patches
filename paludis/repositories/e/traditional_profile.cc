@@ -50,8 +50,8 @@
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 
-#include <tr1/unordered_map>
-#include <tr1/unordered_set>
+#include <unordered_map>
+#include <unordered_set>
 #include <list>
 #include <algorithm>
 #include <set>
@@ -63,17 +63,17 @@
 using namespace paludis;
 using namespace paludis::erepository;
 
-typedef std::tr1::unordered_map<std::string, std::tr1::shared_ptr<Set<UnprefixedChoiceName> > > KnownMap;
+typedef std::unordered_map<std::string, std::shared_ptr<Set<UnprefixedChoiceName> > > KnownMap;
 
 namespace
 {
-    typedef std::tr1::unordered_map<std::string, std::string, Hash<std::string> > EnvironmentVariablesMap;
-    typedef std::tr1::unordered_map<QualifiedPackageName,
-            std::list<std::pair<std::tr1::shared_ptr<const PackageDepSpec>, std::tr1::shared_ptr<const RepositoryMaskInfo> > >,
+    typedef std::unordered_map<std::string, std::string, Hash<std::string> > EnvironmentVariablesMap;
+    typedef std::unordered_map<QualifiedPackageName,
+            std::list<std::pair<std::shared_ptr<const PackageDepSpec>, std::shared_ptr<const RepositoryMaskInfo> > >,
             Hash<QualifiedPackageName> > PackageMaskMap;
 
-    typedef std::tr1::unordered_map<ChoiceNameWithPrefix, bool, Hash<ChoiceNameWithPrefix> > FlagStatusMap;
-    typedef std::list<std::pair<std::tr1::shared_ptr<const PackageDepSpec>, FlagStatusMap> > PackageFlagStatusMapList;
+    typedef std::unordered_map<ChoiceNameWithPrefix, bool, Hash<ChoiceNameWithPrefix> > FlagStatusMap;
+    typedef std::list<std::pair<std::shared_ptr<const PackageDepSpec>, FlagStatusMap> > PackageFlagStatusMapList;
 
     struct StackedValues
     {
@@ -133,7 +133,7 @@ namespace paludis
             const Environment * const env;
             const ERepository * const repository;
 
-            std::tr1::shared_ptr<FSEntrySequence> profiles_with_parents;
+            std::shared_ptr<FSEntrySequence> profiles_with_parents;
 
             ///\}
 
@@ -147,15 +147,15 @@ namespace paludis
             ///\name System package set
             ///\{
 
-            std::tr1::shared_ptr<SetSpecTree> system_packages;
-            std::tr1::shared_ptr<GeneralSetDepTag> system_tag;
+            std::shared_ptr<SetSpecTree> system_packages;
+            std::shared_ptr<GeneralSetDepTag> system_tag;
 
             ///\}
 
             ///\name Virtuals
             ///\{
 
-            std::tr1::shared_ptr<Map<QualifiedPackageName, PackageDepSpec> > virtuals;
+            std::shared_ptr<Map<QualifiedPackageName, PackageDepSpec> > virtuals;
 
             ///\}
 
@@ -163,15 +163,15 @@ namespace paludis
             ///\{
 
             std::set<std::pair<ChoicePrefixName, UnprefixedChoiceName> > use;
-            std::tr1::shared_ptr<Set<std::string> > use_expand;
-            std::tr1::shared_ptr<Set<std::string> > use_expand_hidden;
-            std::tr1::shared_ptr<Set<std::string> > use_expand_unprefixed;
-            std::tr1::shared_ptr<Set<std::string> > use_expand_implicit;
-            std::tr1::shared_ptr<Set<std::string> > iuse_implicit;
-            std::tr1::unordered_map<std::string, std::tr1::shared_ptr<Set<std::string> > > use_expand_values;
+            std::shared_ptr<Set<std::string> > use_expand;
+            std::shared_ptr<Set<std::string> > use_expand_hidden;
+            std::shared_ptr<Set<std::string> > use_expand_unprefixed;
+            std::shared_ptr<Set<std::string> > use_expand_implicit;
+            std::shared_ptr<Set<std::string> > iuse_implicit;
+            std::unordered_map<std::string, std::shared_ptr<Set<std::string> > > use_expand_values;
             KnownMap known_choice_value_names;
             mutable Mutex known_choice_value_names_for_separator_mutex;
-            mutable std::tr1::unordered_map<char, KnownMap> known_choice_value_names_for_separator;
+            mutable std::unordered_map<char, KnownMap> known_choice_value_names_for_separator;
             StackedValuesList stacked_values_list;
 
             ///\}
@@ -260,7 +260,7 @@ Implementation<TraditionalProfile>::load_profile_directory_recursively(const FSE
         return;
     }
 
-    const std::tr1::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(
+    const std::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(
                 repository->eapi_for_file(dir / "use.mask")));
 
     if (! eapi->supported())
@@ -340,7 +340,7 @@ Implementation<TraditionalProfile>::load_profile_make_defaults(const FSEntry & d
     if (! (dir / "make.defaults").exists())
         return;
 
-    const std::tr1::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(
+    const std::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(
                 repository->eapi_for_file(dir / "make.defaults")));
     if (! eapi->supported())
         throw ERepositoryConfigurationError("Can't use profile directory '" + stringify(dir) +
@@ -455,7 +455,7 @@ Implementation<TraditionalProfile>::load_profile_make_defaults(const FSEntry & d
             for (Set<std::string>::ConstIterator x(use_expand->begin()), x_end(use_expand->end()) ;
                     x != x_end ; ++x)
             {
-                std::tr1::shared_ptr<Set<std::string> > v(new Set<std::string>);
+                std::shared_ptr<Set<std::string> > v(new Set<std::string>);
                 tokenise_whitespace(environment_variables[use_expand_values_part_var + *x], v->inserter());
                 use_expand_values.insert(std::make_pair(*x, v));
             }
@@ -463,7 +463,7 @@ Implementation<TraditionalProfile>::load_profile_make_defaults(const FSEntry & d
             for (Set<std::string>::ConstIterator x(use_expand_unprefixed->begin()), x_end(use_expand_unprefixed->end()) ;
                     x != x_end ; ++x)
             {
-                std::tr1::shared_ptr<Set<std::string> > v(new Set<std::string>);
+                std::shared_ptr<Set<std::string> > v(new Set<std::string>);
                 tokenise_whitespace(environment_variables[use_expand_values_part_var + *x], v->inserter());
                 use_expand_values.insert(std::make_pair(*x, v));
             }
@@ -483,7 +483,7 @@ Implementation<TraditionalProfile>::load_profile_make_defaults(const FSEntry & d
 void
 Implementation<TraditionalProfile>::load_special_make_defaults_vars(const FSEntry & dir)
 {
-    const std::tr1::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(
+    const std::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(
                 repository->eapi_for_file(dir / "make.defaults")));
     if (! eapi->supported())
         throw ERepositoryConfigurationError("Can't use profile directory '" + stringify(dir) +
@@ -577,11 +577,11 @@ Implementation<TraditionalProfile>::make_vars_from_file_vars()
                     continue;
 
                 Context context_spec("When parsing '" + i->second + "':");
-                std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
+                std::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
                             parse_elike_package_dep_spec(i->second.substr(1),
                                 i->first->supported()->package_dep_spec_parse_options(),
                                 i->first->supported()->version_spec_options(),
-                                std::tr1::shared_ptr<const PackageID>())));
+                                std::shared_ptr<const PackageID>())));
 
                 spec->set_tag(system_tag);
                 system_packages->root()->append(spec);
@@ -614,7 +614,7 @@ Implementation<TraditionalProfile>::make_vars_from_file_vars()
                 virtuals->insert(v, parse_elike_package_dep_spec(tokens[1],
                             line->first->supported()->package_dep_spec_parse_options(),
                             line->first->supported()->version_spec_options(),
-                            std::tr1::shared_ptr<const PackageID>()));
+                            std::shared_ptr<const PackageID>()));
             }
         }
         catch (const InternalError &)
@@ -635,11 +635,11 @@ Implementation<TraditionalProfile>::make_vars_from_file_vars()
 
         try
         {
-            std::tr1::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(
+            std::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(
                         parse_elike_package_dep_spec(line->second.first,
                             line->first->supported()->package_dep_spec_parse_options(),
                             line->first->supported()->version_spec_options(),
-                            std::tr1::shared_ptr<const PackageID>())));
+                            std::shared_ptr<const PackageID>())));
 
             if (a->package_ptr())
                 package_mask[*a->package_ptr()].push_back(std::make_pair(a, line->second.second));
@@ -719,10 +719,10 @@ Implementation<TraditionalProfile>::load_spec_use_file(const EAPI & eapi, const 
 
         try
         {
-            std::tr1::shared_ptr<const PackageDepSpec> spec(new PackageDepSpec(
+            std::shared_ptr<const PackageDepSpec> spec(new PackageDepSpec(
                         parse_elike_package_dep_spec(*tokens.begin(), eapi.supported()->package_dep_spec_parse_options(),
                             eapi.supported()->version_spec_options(),
-                            std::tr1::shared_ptr<const PackageID>())));
+                            std::shared_ptr<const PackageID>())));
             PackageFlagStatusMapList::iterator n(m.insert(m.end(), std::make_pair(spec, FlagStatusMap())));
 
             for (std::list<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;
@@ -843,7 +843,7 @@ TraditionalProfile::~TraditionalProfile()
 {
 }
 
-std::tr1::shared_ptr<const FSEntrySequence>
+std::shared_ptr<const FSEntrySequence>
 TraditionalProfile::profiles_with_parents() const
 {
     return _imp->profiles_with_parents;
@@ -851,8 +851,8 @@ TraditionalProfile::profiles_with_parents() const
 
 bool
 TraditionalProfile::use_masked(
-        const std::tr1::shared_ptr<const PackageID> & id,
-        const std::tr1::shared_ptr<const Choice> & choice,
+        const std::shared_ptr<const PackageID> & id,
+        const std::shared_ptr<const Choice> & choice,
         const UnprefixedChoiceName & value_unprefixed,
         const ChoiceNameWithPrefix & value_prefixed
         ) const
@@ -887,8 +887,8 @@ TraditionalProfile::use_masked(
 
 bool
 TraditionalProfile::use_forced(
-        const std::tr1::shared_ptr<const PackageID> & id,
-        const std::tr1::shared_ptr<const Choice> & choice,
+        const std::shared_ptr<const PackageID> & id,
+        const std::shared_ptr<const Choice> & choice,
         const UnprefixedChoiceName & value_unprefixed,
         const ChoiceNameWithPrefix & value_prefixed
         ) const
@@ -923,8 +923,8 @@ TraditionalProfile::use_forced(
 
 Tribool
 TraditionalProfile::use_state_ignoring_masks(
-        const std::tr1::shared_ptr<const PackageID> & id,
-        const std::tr1::shared_ptr<const Choice> & choice,
+        const std::shared_ptr<const PackageID> & id,
+        const std::shared_ptr<const Choice> & choice,
         const UnprefixedChoiceName & value_unprefixed,
         const ChoiceNameWithPrefix & value_prefixed
         ) const
@@ -953,7 +953,7 @@ TraditionalProfile::use_state_ignoring_masks(
 namespace
 {
     void
-    add_flag_status_map(const std::tr1::shared_ptr<Set<UnprefixedChoiceName> > result,
+    add_flag_status_map(const std::shared_ptr<Set<UnprefixedChoiceName> > result,
             const FlagStatusMap & m, const std::string & prefix)
     {
         for (FlagStatusMap::const_iterator it(m.begin()),
@@ -963,7 +963,7 @@ namespace
     }
 
     void
-    add_package_flag_status_map_list(const std::tr1::shared_ptr<Set<UnprefixedChoiceName> > result,
+    add_package_flag_status_map_list(const std::shared_ptr<Set<UnprefixedChoiceName> > result,
             const PackageFlagStatusMapList & m, const std::string & prefix)
     {
         for (PackageFlagStatusMapList::const_iterator it(m.begin()),
@@ -972,16 +972,16 @@ namespace
     }
 }
 
-const std::tr1::shared_ptr<const Set<UnprefixedChoiceName> >
+const std::shared_ptr<const Set<UnprefixedChoiceName> >
 TraditionalProfile::known_choice_value_names(
-        const std::tr1::shared_ptr<const ERepositoryID> & id,
-        const std::tr1::shared_ptr<const Choice> & choice
+        const std::shared_ptr<const ERepositoryID> & id,
+        const std::shared_ptr<const Choice> & choice
         ) const
 {
     Lock l(_imp->known_choice_value_names_for_separator_mutex);
 
     char separator(id->eapi()->supported()->choices_options()->use_expand_separator());
-    std::tr1::unordered_map<char, KnownMap>::iterator it(_imp->known_choice_value_names_for_separator.find(separator));
+    std::unordered_map<char, KnownMap>::iterator it(_imp->known_choice_value_names_for_separator.find(separator));
     if (_imp->known_choice_value_names_for_separator.end() == it)
         it = _imp->known_choice_value_names_for_separator.insert(std::make_pair(separator, KnownMap())).first;
 
@@ -990,7 +990,7 @@ TraditionalProfile::known_choice_value_names(
     KnownMap::const_iterator it2(it->second.find(lower_x));
     if (it->second.end() == it2)
     {
-        std::tr1::shared_ptr<Set<UnprefixedChoiceName> > result(new Set<UnprefixedChoiceName>);
+        std::shared_ptr<Set<UnprefixedChoiceName> > result(new Set<UnprefixedChoiceName>);
         it2 = it->second.insert(std::make_pair(lower_x, result)).first;
 
         KnownMap::const_iterator i(_imp->known_choice_value_names.find(lower_x));
@@ -1025,70 +1025,70 @@ TraditionalProfile::environment_variable(const std::string & s) const
         return i->second;
 }
 
-const std::tr1::shared_ptr<const SetSpecTree>
+const std::shared_ptr<const SetSpecTree>
 TraditionalProfile::system_packages() const
 {
     return _imp->system_packages;
 }
 
-const std::tr1::shared_ptr<const Map<QualifiedPackageName, PackageDepSpec> >
+const std::shared_ptr<const Map<QualifiedPackageName, PackageDepSpec> >
 TraditionalProfile::virtuals() const
 {
     return _imp->virtuals;
 }
 
-const std::tr1::shared_ptr<const RepositoryMaskInfo>
+const std::shared_ptr<const RepositoryMaskInfo>
 TraditionalProfile::profile_masked(const PackageID & id) const
 {
     PackageMaskMap::const_iterator rr(_imp->package_mask.find(id.name()));
     if (_imp->package_mask.end() == rr)
-        return std::tr1::shared_ptr<const RepositoryMaskInfo>();
+        return std::shared_ptr<const RepositoryMaskInfo>();
     else
     {
-        for (std::list<std::pair<std::tr1::shared_ptr<const PackageDepSpec>, std::tr1::shared_ptr<const RepositoryMaskInfo> > >::const_iterator k(rr->second.begin()),
+        for (std::list<std::pair<std::shared_ptr<const PackageDepSpec>, std::shared_ptr<const RepositoryMaskInfo> > >::const_iterator k(rr->second.begin()),
                 k_end(rr->second.end()) ; k != k_end ; ++k)
             if (match_package(*_imp->env, *k->first, id, MatchPackageOptions()))
                 return k->second;
     }
 
-    return std::tr1::shared_ptr<const RepositoryMaskInfo>();
+    return std::shared_ptr<const RepositoryMaskInfo>();
 }
 
-const std::tr1::shared_ptr<const Set<std::string> >
+const std::shared_ptr<const Set<std::string> >
 TraditionalProfile::use_expand() const
 {
     return _imp->use_expand;
 }
 
-const std::tr1::shared_ptr<const Set<std::string> >
+const std::shared_ptr<const Set<std::string> >
 TraditionalProfile::use_expand_hidden() const
 {
     return _imp->use_expand_hidden;
 }
 
-const std::tr1::shared_ptr<const Set<std::string> >
+const std::shared_ptr<const Set<std::string> >
 TraditionalProfile::use_expand_unprefixed() const
 {
     return _imp->use_expand_unprefixed;
 }
 
-const std::tr1::shared_ptr<const Set<std::string> >
+const std::shared_ptr<const Set<std::string> >
 TraditionalProfile::use_expand_implicit() const
 {
     return _imp->use_expand_implicit;
 }
 
-const std::tr1::shared_ptr<const Set<std::string> >
+const std::shared_ptr<const Set<std::string> >
 TraditionalProfile::use_expand_values(const std::string & x) const
 {
     Context context("When finding USE_EXPAND_VALUES_" + x + ":");
-    std::tr1::unordered_map<std::string, std::tr1::shared_ptr<Set<std::string> > >::const_iterator i(_imp->use_expand_values.find(x));
+    std::unordered_map<std::string, std::shared_ptr<Set<std::string> > >::const_iterator i(_imp->use_expand_values.find(x));
     if (i == _imp->use_expand_values.end())
         throw InternalError(PALUDIS_HERE, "Oops. We need USE_EXPAND_VALUES_" + x + ", but it's not in the map");
     return i->second;
 }
 
-const std::tr1::shared_ptr<const Set<std::string> >
+const std::shared_ptr<const Set<std::string> >
 TraditionalProfile::iuse_implicit() const
 {
     return _imp->iuse_implicit;

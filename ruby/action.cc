@@ -173,28 +173,28 @@ namespace
     static VALUE
     supports_action_test_new(VALUE self, VALUE action_class)
     {
-        std::tr1::shared_ptr<const SupportsActionTestBase> * ptr(0);
+        std::shared_ptr<const SupportsActionTestBase> * ptr(0);
 
         try
         {
             if (Qtrue == rb_funcall2(action_class, rb_intern("<="), 1, install_action_value_ptr()))
-                ptr = new std::tr1::shared_ptr<const SupportsActionTestBase>(make_shared_ptr(new SupportsActionTest<InstallAction>()));
+                ptr = new std::shared_ptr<const SupportsActionTestBase>(make_shared_ptr(new SupportsActionTest<InstallAction>()));
             else if (Qtrue == rb_funcall2(action_class, rb_intern("<="), 1, uninstall_action_value_ptr()))
-                ptr = new std::tr1::shared_ptr<const SupportsActionTestBase>(make_shared_ptr(new SupportsActionTest<UninstallAction>()));
+                ptr = new std::shared_ptr<const SupportsActionTestBase>(make_shared_ptr(new SupportsActionTest<UninstallAction>()));
             else if (Qtrue == rb_funcall2(action_class, rb_intern("<="), 1, pretend_action_value_ptr()))
-                ptr = new std::tr1::shared_ptr<const SupportsActionTestBase>(make_shared_ptr(new SupportsActionTest<PretendAction>()));
+                ptr = new std::shared_ptr<const SupportsActionTestBase>(make_shared_ptr(new SupportsActionTest<PretendAction>()));
             else if (Qtrue == rb_funcall2(action_class, rb_intern("<="), 1, config_action_value_ptr()))
-                ptr = new std::tr1::shared_ptr<const SupportsActionTestBase>(make_shared_ptr(new SupportsActionTest<ConfigAction>()));
+                ptr = new std::shared_ptr<const SupportsActionTestBase>(make_shared_ptr(new SupportsActionTest<ConfigAction>()));
             else if (Qtrue == rb_funcall2(action_class, rb_intern("<="), 1, fetch_action_value_ptr()))
-                ptr = new std::tr1::shared_ptr<const SupportsActionTestBase>(make_shared_ptr(new SupportsActionTest<FetchAction>()));
+                ptr = new std::shared_ptr<const SupportsActionTestBase>(make_shared_ptr(new SupportsActionTest<FetchAction>()));
             else if (Qtrue == rb_funcall2(action_class, rb_intern("<="), 1, info_action_value_ptr()))
-                ptr = new std::tr1::shared_ptr<const SupportsActionTestBase>(make_shared_ptr(new SupportsActionTest<InfoAction>()));
+                ptr = new std::shared_ptr<const SupportsActionTestBase>(make_shared_ptr(new SupportsActionTest<InfoAction>()));
             else if (Qtrue == rb_funcall2(action_class, rb_intern("<="), 1, pretend_fetch_action_value_ptr()))
-                ptr = new std::tr1::shared_ptr<const SupportsActionTestBase>(make_shared_ptr(new SupportsActionTest<PretendFetchAction>()));
+                ptr = new std::shared_ptr<const SupportsActionTestBase>(make_shared_ptr(new SupportsActionTest<PretendFetchAction>()));
             else
                 rb_raise(rb_eTypeError, "Can't convert %s into an Action subclass", rb_obj_classname(action_class));
 
-            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::tr1::shared_ptr<const SupportsActionTestBase> >::free, ptr));
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::shared_ptr<const SupportsActionTestBase> >::free, ptr));
             rb_obj_call_init(tdata, 0, &self);
             return tdata;
         }
@@ -205,7 +205,7 @@ namespace
         }
     }
 
-    std::tr1::shared_ptr<OutputManager> make_standard_output_manager(const Action &)
+    std::shared_ptr<OutputManager> make_standard_output_manager(const Action &)
     {
         return make_shared_ptr(new StandardOutputManager);
     }
@@ -262,7 +262,7 @@ namespace
                         n::ignore_unfetched() = false,
                         n::make_output_manager() = &make_standard_output_manager,
                         n::safe_resume() = v_safe_resume,
-                        n::want_phase() = std::tr1::bind(return_literal_function(wp_yes))
+                        n::want_phase() = std::bind(return_literal_function(wp_yes))
                     ));
 
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<FetchActionOptions>::free, ptr));
@@ -284,9 +284,9 @@ namespace
     fetch_action_new(VALUE self, VALUE opts)
     {
         const FetchActionOptions opts_ptr(value_to_fetch_action_options(opts));
-        std::tr1::shared_ptr<Action> * a(
-                new std::tr1::shared_ptr<Action>(new FetchAction(opts_ptr)));
-        VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::tr1::shared_ptr<Action> >::free, a));
+        std::shared_ptr<Action> * a(
+                new std::shared_ptr<Action>(new FetchAction(opts_ptr)));
+        VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::shared_ptr<Action> >::free, a));
         rb_obj_call_init(tdata, 1, &self);
         return tdata;
     }
@@ -300,9 +300,9 @@ namespace
     VALUE
     fetch_action_options(VALUE self)
     {
-        std::tr1::shared_ptr<Action> * p;
-        Data_Get_Struct(self, std::tr1::shared_ptr<Action>, p);
-        return fetch_action_options_to_value(std::tr1::static_pointer_cast<FetchAction>(*p)->options);
+        std::shared_ptr<Action> * p;
+        Data_Get_Struct(self, std::shared_ptr<Action>, p);
+        return fetch_action_options_to_value(std::static_pointer_cast<FetchAction>(*p)->options);
     }
 
     /*
@@ -476,8 +476,8 @@ namespace
                         n::make_output_manager() = &make_standard_output_manager
                         ));
 
-            std::tr1::shared_ptr<Action> * a(new std::tr1::shared_ptr<Action>(new A_(options)));
-            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::tr1::shared_ptr<Action> >::free, a));
+            std::shared_ptr<Action> * a(new std::shared_ptr<Action>(new A_(options)));
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::shared_ptr<Action> >::free, a));
             rb_obj_call_init(tdata, 1, &self);
             return tdata;
         }
@@ -488,7 +488,7 @@ namespace
         return wp_yes;
     }
 
-    void cannot_perform_uninstall(const std::tr1::shared_ptr<const PackageID> & id, const UninstallActionOptions &)
+    void cannot_perform_uninstall(const std::shared_ptr<const PackageID> & id, const UninstallActionOptions &)
     {
         throw InternalError(PALUDIS_HERE, "Can't uninstall '" + stringify(*id) + "'");
     }
@@ -508,7 +508,7 @@ namespace
         try
         {
             bool v_no_config_protect;
-            std::tr1::shared_ptr<Repository> v_destination;
+            std::shared_ptr<Repository> v_destination;
 
             if (1 == argc && rb_obj_is_kind_of(argv[0], rb_cHash))
             {
@@ -572,9 +572,9 @@ namespace
     install_action_new(VALUE self, VALUE opts)
     {
         const InstallActionOptions opts_ptr(value_to_install_action_options(opts));
-        std::tr1::shared_ptr<Action> * a(
-                new std::tr1::shared_ptr<Action>(new InstallAction(opts_ptr)));
-        VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::tr1::shared_ptr<Action> >::free, a));
+        std::shared_ptr<Action> * a(
+                new std::shared_ptr<Action>(new InstallAction(opts_ptr)));
+        VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::shared_ptr<Action> >::free, a));
         rb_obj_call_init(tdata, 1, &self);
         return tdata;
     }
@@ -588,9 +588,9 @@ namespace
     VALUE
     install_action_options(VALUE self)
     {
-        std::tr1::shared_ptr<Action> * p;
-        Data_Get_Struct(self, std::tr1::shared_ptr<Action>, p);
-        return install_action_options_to_value(std::tr1::static_pointer_cast<InstallAction>(*p)->options);
+        std::shared_ptr<Action> * p;
+        Data_Get_Struct(self, std::shared_ptr<Action>, p);
+        return install_action_options_to_value(std::static_pointer_cast<InstallAction>(*p)->options);
     }
 
     bool ignore_nothing(const FSEntry &)
@@ -648,9 +648,9 @@ namespace
     uninstall_action_new(VALUE self, VALUE opts)
     {
         const UninstallActionOptions opts_ptr(value_to_uninstall_action_options(opts));
-        std::tr1::shared_ptr<Action> * a(
-                new std::tr1::shared_ptr<Action>(new UninstallAction(opts_ptr)));
-        VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::tr1::shared_ptr<Action> >::free, a));
+        std::shared_ptr<Action> * a(
+                new std::shared_ptr<Action>(new UninstallAction(opts_ptr)));
+        VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::shared_ptr<Action> >::free, a));
         rb_obj_call_init(tdata, 1, &self);
         return tdata;
     }
@@ -664,9 +664,9 @@ namespace
     VALUE
     uninstall_action_options(VALUE self)
     {
-        std::tr1::shared_ptr<Action> * p;
-        Data_Get_Struct(self, std::tr1::shared_ptr<Action>, p);
-        return uninstall_action_options_to_value(std::tr1::static_pointer_cast<UninstallAction>(*p)->options);
+        std::shared_ptr<Action> * p;
+        Data_Get_Struct(self, std::shared_ptr<Action>, p);
+        return uninstall_action_options_to_value(std::static_pointer_cast<UninstallAction>(*p)->options);
     }
 
     /*
@@ -694,9 +694,9 @@ namespace
     VALUE
     pretend_action_failed(VALUE self)
     {
-        std::tr1::shared_ptr<Action> * p;
-        Data_Get_Struct(self, std::tr1::shared_ptr<Action>, p);
-        return bool_to_value(std::tr1::static_pointer_cast<PretendAction>(*p)->failed());
+        std::shared_ptr<Action> * p;
+        Data_Get_Struct(self, std::shared_ptr<Action>, p);
+        return bool_to_value(std::static_pointer_cast<PretendAction>(*p)->failed());
     }
 
     /*
@@ -708,9 +708,9 @@ namespace
     VALUE
     pretend_action_set_failed(VALUE self)
     {
-        std::tr1::shared_ptr<Action> * p;
-        Data_Get_Struct(self, std::tr1::shared_ptr<Action>, p);
-        std::tr1::static_pointer_cast<PretendAction>(*p)->set_failed();
+        std::shared_ptr<Action> * p;
+        Data_Get_Struct(self, std::shared_ptr<Action>, p);
+        std::static_pointer_cast<PretendAction>(*p)->set_failed();
         return Qnil;
     }
 
@@ -855,13 +855,13 @@ namespace
     }
 }
 
-std::tr1::shared_ptr<const SupportsActionTestBase>
+std::shared_ptr<const SupportsActionTestBase>
 paludis::ruby::value_to_supports_action_test_base(VALUE v)
 {
     if (rb_obj_is_kind_of(v, c_supports_action_test))
     {
-        std::tr1::shared_ptr<const SupportsActionTestBase> * v_ptr;
-        Data_Get_Struct(v, std::tr1::shared_ptr<const SupportsActionTestBase>, v_ptr);
+        std::shared_ptr<const SupportsActionTestBase> * v_ptr;
+        Data_Get_Struct(v, std::shared_ptr<const SupportsActionTestBase>, v_ptr);
         return *v_ptr;
     }
     else
@@ -871,13 +871,13 @@ paludis::ruby::value_to_supports_action_test_base(VALUE v)
 
 }
 
-std::tr1::shared_ptr<Action>
+std::shared_ptr<Action>
 paludis::ruby::value_to_action(VALUE v)
 {
     if (rb_obj_is_kind_of(v, c_action))
     {
-        std::tr1::shared_ptr<Action> * v_ptr;
-        Data_Get_Struct(v, std::tr1::shared_ptr<Action>, v_ptr);
+        std::shared_ptr<Action> * v_ptr;
+        Data_Get_Struct(v, std::shared_ptr<Action>, v_ptr);
         return *v_ptr;
     }
     else

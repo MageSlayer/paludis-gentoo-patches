@@ -65,7 +65,7 @@ namespace
         cout << endl;
     }
 
-    std::string from_keys(const std::tr1::shared_ptr<const Map<std::string, std::string> > & m,
+    std::string from_keys(const std::shared_ptr<const Map<std::string, std::string> > & m,
             const std::string & k)
     {
         Map<std::string, std::string>::ConstIterator mm(m->find(k));
@@ -132,7 +132,7 @@ main(int argc, char *argv[])
         paludis_command.append(CommandLine::get_instance()->install_args.paludis_command_fragment());
         paludis_command.append(CommandLine::get_instance()->dl_args.paludis_command_fragment());
 
-        std::tr1::shared_ptr<Environment> env(EnvironmentFactory::get_instance()->create(env_spec));
+        std::shared_ptr<Environment> env(EnvironmentFactory::get_instance()->create(env_spec));
         env->set_paludis_command(paludis_command);
 
         std::vector<std::string> params(
@@ -150,8 +150,8 @@ main(int argc, char *argv[])
 
         if (CommandLine::get_instance()->a_preserve_metadata.specified())
         {
-            std::tr1::shared_ptr<const PackageIDSequence> old_ids((*env)[selection::AllVersionsSorted(generator::Package(q))]);
-            std::tr1::shared_ptr<const PackageID> old_id;
+            std::shared_ptr<const PackageIDSequence> old_ids((*env)[selection::AllVersionsSorted(generator::Package(q))]);
+            std::shared_ptr<const PackageID> old_id;
             for (PackageIDSequence::ConstIterator i(old_ids->begin()), i_end(old_ids->end()) ;
                     i != i_end ; ++i)
             {
@@ -187,7 +187,7 @@ main(int argc, char *argv[])
                     CommandLine::get_instance()->a_run_dependency.begin_args(),
                     CommandLine::get_instance()->a_run_dependency.end_args(), ", ");
 
-        std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+        std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
         keys->insert("location", stringify(
                     CommandLine::get_instance()->a_location.specified() ?
                     FSEntry(CommandLine::get_instance()->a_location.argument()) :
@@ -206,10 +206,10 @@ main(int argc, char *argv[])
         keys->insert("description", description);
         keys->insert("build_dependencies", build_dependencies);
         keys->insert("run_dependencies", run_dependencies);
-        std::tr1::shared_ptr<Repository> repo(RepositoryFactory::get_instance()->create(env.get(),
-                    std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+        std::shared_ptr<Repository> repo(RepositoryFactory::get_instance()->create(env.get(),
+                    std::bind(from_keys, keys, std::placeholders::_1)));
         env->package_database()->add_repository(10, repo);
-        std::tr1::shared_ptr<const PackageIDSequence> ids(repo->package_ids(q));
+        std::shared_ptr<const PackageIDSequence> ids(repo->package_ids(q));
         if (1 != std::distance(ids->begin(), ids->end()))
             throw InternalError(PALUDIS_HERE, "ids is '" + join(indirect_iterator(ids->begin()), indirect_iterator(
                             ids->end()), " ") + "'");

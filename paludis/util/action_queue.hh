@@ -22,7 +22,7 @@
 
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/attributes.hh>
-#include <tr1/functional>
+#include <functional>
 
 namespace paludis
 {
@@ -51,7 +51,7 @@ namespace paludis
             /**
              * Enqueue an item.
              */
-            void enqueue(const std::tr1::function<void () throw ()> &);
+            void enqueue(const std::function<void () throw ()> &);
 
             /**
              * Complete any pending tasks.

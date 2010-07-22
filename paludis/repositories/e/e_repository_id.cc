@@ -25,10 +25,10 @@
 using namespace paludis;
 using namespace paludis::erepository;
 
-std::tr1::shared_ptr<const Set<std::string> >
+std::shared_ptr<const Set<std::string> >
 ERepositoryID::breaks_portage() const
 {
-    std::tr1::shared_ptr<Set<std::string> > why(new Set<std::string>);
+    std::shared_ptr<Set<std::string> > why(new Set<std::string>);
     if (version().has_try_part() || version().has_scm_part() || version().has_local_revision())
         why->insert("version");
     if ((! eapi()->supported()) || eapi()->supported()->breaks_portage())

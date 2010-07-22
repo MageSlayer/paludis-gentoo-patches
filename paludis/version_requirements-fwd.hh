@@ -23,7 +23,7 @@
 #include <paludis/util/sequence-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/version_spec-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 #include <iosfwd>
 
 /** \file

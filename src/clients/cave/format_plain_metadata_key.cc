@@ -44,26 +44,26 @@ namespace
             s << k.value().seconds();
         }
 
-        void visit(const MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> > & k)
+        void visit(const MetadataValueKey<std::shared_ptr<const RepositoryMaskInfo> > & k)
         {
             if (k.value())
             {
-                const std::tr1::shared_ptr<const Sequence<std::string> > c(k.value()->comment());
+                const std::shared_ptr<const Sequence<std::string> > c(k.value()->comment());
                 s << join(c->begin(), c->end(), " ") << " " << k.value()->mask_file();
             }
         }
 
-        void visit(const MetadataValueKey<std::tr1::shared_ptr<const Contents> > &)
+        void visit(const MetadataValueKey<std::shared_ptr<const Contents> > &)
         {
             s << "<unprintable>";
         }
 
-        void visit(const MetadataValueKey<std::tr1::shared_ptr<const Choices> > &)
+        void visit(const MetadataValueKey<std::shared_ptr<const Choices> > &)
         {
             s << "<unprintable>";
         }
 
-        void visit(const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > & k)
+        void visit(const MetadataValueKey<std::shared_ptr<const PackageID> > & k)
         {
             s << *k.value();
         }
@@ -168,11 +168,11 @@ namespace
 
 std::string
 paludis::cave::format_plain_metadata_key(
-        const std::tr1::shared_ptr<const MetadataKey> & k,
+        const std::shared_ptr<const MetadataKey> & k,
         const std::string & i,
         const std::string & f)
 {
-    std::tr1::shared_ptr<Map<char, std::string> > m(new Map<char, std::string>);
+    std::shared_ptr<Map<char, std::string> > m(new Map<char, std::string>);
     m->insert('r', k->raw_name());
     m->insert('h', k->human_name());
     m->insert('v', format_plain_metadata_key_value(k));
@@ -183,7 +183,7 @@ paludis::cave::format_plain_metadata_key(
 
 std::string
 paludis::cave::format_plain_metadata_key_value(
-        const std::tr1::shared_ptr<const MetadataKey> & k)
+        const std::shared_ptr<const MetadataKey> & k)
 {
     ValueGetter v;
     k->accept(v);

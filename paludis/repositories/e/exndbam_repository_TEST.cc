@@ -40,18 +40,18 @@ using namespace paludis;
 
 namespace
 {
-    void do_uninstall(const std::tr1::shared_ptr<const PackageID> & id, const UninstallActionOptions & u)
+    void do_uninstall(const std::shared_ptr<const PackageID> & id, const UninstallActionOptions & u)
     {
         UninstallAction a(u);
         id->perform_action(a);
     }
 
-    std::tr1::shared_ptr<OutputManager> make_standard_output_manager(const Action &)
+    std::shared_ptr<OutputManager> make_standard_output_manager(const Action &)
     {
         return make_shared_ptr(new StandardOutputManager);
     }
 
-    std::string from_keys(const std::tr1::shared_ptr<const Map<std::string, std::string> > & m,
+    std::string from_keys(const std::shared_ptr<const Map<std::string, std::string> > & m,
             const std::string & k)
     {
         Map<std::string, std::string>::ConstIterator mm(m->find(k));
@@ -76,12 +76,12 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "exndbam");
             keys->insert("location", stringify(FSEntry::cwd() / "exndbam_repository_TEST_dir" / "repo1"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "exndbam_repository_TEST_dir" / "build"));
-            std::tr1::shared_ptr<Repository> repo(ExndbamRepository::ExndbamRepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ExndbamRepository::ExndbamRepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             TEST_CHECK_STRINGIFY_EQUAL(repo->name(), "installed");
         }
     } test_exndbam_repository_repo_name;
@@ -101,11 +101,11 @@ namespace test_cases
         }
 
         void install(const Environment & env,
-                const std::tr1::shared_ptr<Repository> & exndbam_repo,
+                const std::shared_ptr<Repository> & exndbam_repo,
                 const std::string & chosen_one,
                 const std::string & victim) const
         {
-            std::tr1::shared_ptr<PackageIDSequence> replacing(new PackageIDSequence);
+            std::shared_ptr<PackageIDSequence> replacing(new PackageIDSequence);
             if (! victim.empty())
                 replacing->push_back(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec(victim,
@@ -126,7 +126,7 @@ namespace test_cases
         {
             TestEnvironment env(FSEntry("exndbam_repository_TEST_dir/root").realpath());
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "exndbam_repository_TEST_dir" / "postinsttest_src1"));
@@ -138,8 +138,8 @@ namespace test_cases
             keys->insert("distdir", stringify(FSEntry::cwd() / "exndbam_repository_TEST_dir" / "distdir"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "exndbam_repository_TEST_dir" / "build"));
             keys->insert("root", stringify(FSEntry("exndbam_repository_TEST_dir/root").realpath()));
-            std::tr1::shared_ptr<Repository> repo1(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo1(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo1);
 
             keys.reset(new Map<std::string, std::string>);
@@ -147,8 +147,8 @@ namespace test_cases
             keys->insert("location", stringify(FSEntry::cwd() / "exndbam_repository_TEST_dir" / "postinsttest"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "exndbam_repository_TEST_dir" / "build"));
             keys->insert("root", stringify(FSEntry("exndbam_repository_TEST_dir/root").realpath()));
-            std::tr1::shared_ptr<Repository> exndbam_repo(ExndbamRepository::ExndbamRepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> exndbam_repo(ExndbamRepository::ExndbamRepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(0, exndbam_repo);
 
             TEST_CHECK(exndbam_repo->package_ids(QualifiedPackageName("cat/pkg"))->empty());
@@ -159,7 +159,7 @@ namespace test_cases
                 install(env, exndbam_repo, "=cat/pkg-0::postinsttest", "");
                 exndbam_repo->invalidate();
 
-                std::tr1::shared_ptr<const PackageIDSequence> ids(exndbam_repo->package_ids(QualifiedPackageName("cat/pkg")));
+                std::shared_ptr<const PackageIDSequence> ids(exndbam_repo->package_ids(QualifiedPackageName("cat/pkg")));
                 TEST_CHECK_EQUAL(join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), " "), "cat/pkg-0::installed");
             }
 
@@ -169,7 +169,7 @@ namespace test_cases
                 install(env, exndbam_repo, "=cat/pkg-0::postinsttest", "");
                 exndbam_repo->invalidate();
 
-                std::tr1::shared_ptr<const PackageIDSequence> ids(exndbam_repo->package_ids(QualifiedPackageName("cat/pkg")));
+                std::shared_ptr<const PackageIDSequence> ids(exndbam_repo->package_ids(QualifiedPackageName("cat/pkg")));
                 TEST_CHECK_EQUAL(join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), " "), "cat/pkg-0::installed");
             }
 
@@ -179,7 +179,7 @@ namespace test_cases
                 install(env, exndbam_repo, "=cat/pkg-0.1::postinsttest", "=cat/pkg-0::installed");
                 exndbam_repo->invalidate();
 
-                std::tr1::shared_ptr<const PackageIDSequence> ids2(exndbam_repo->package_ids(QualifiedPackageName("cat/pkg")));
+                std::shared_ptr<const PackageIDSequence> ids2(exndbam_repo->package_ids(QualifiedPackageName("cat/pkg")));
                 TEST_CHECK_EQUAL(join(indirect_iterator(ids2->begin()), indirect_iterator(ids2->end()), " "), "cat/pkg-0.1::installed");
             }
 
@@ -189,7 +189,7 @@ namespace test_cases
                 install(env, exndbam_repo, "=cat/pkg-1::postinsttest", "=cat/pkg-0.1::installed");
                 exndbam_repo->invalidate();
 
-                std::tr1::shared_ptr<const PackageIDSequence> ids(env[selection::AllVersionsSorted(generator::Package(
+                std::shared_ptr<const PackageIDSequence> ids(env[selection::AllVersionsSorted(generator::Package(
                                 QualifiedPackageName("cat/pkg")) & generator::InRepository(RepositoryName("installed")))]);
                 TEST_CHECK_EQUAL(join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), " "), "cat/pkg-1::installed");
             }
@@ -200,7 +200,7 @@ namespace test_cases
                 install(env, exndbam_repo, "=cat/pkg-1::postinsttest", "");
                 exndbam_repo->invalidate();
 
-                std::tr1::shared_ptr<const PackageIDSequence> ids(exndbam_repo->package_ids(QualifiedPackageName("cat/pkg")));
+                std::shared_ptr<const PackageIDSequence> ids(exndbam_repo->package_ids(QualifiedPackageName("cat/pkg")));
                 TEST_CHECK_EQUAL(join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), " "), "cat/pkg-1::installed");
             }
 
@@ -210,7 +210,7 @@ namespace test_cases
                 install(env, exndbam_repo, "=cat/pkg-1.1::postinsttest", "=cat/pkg-1::installed");
                 exndbam_repo->invalidate();
 
-                std::tr1::shared_ptr<const PackageIDSequence> ids(exndbam_repo->package_ids(QualifiedPackageName("cat/pkg")));
+                std::shared_ptr<const PackageIDSequence> ids(exndbam_repo->package_ids(QualifiedPackageName("cat/pkg")));
                 TEST_CHECK_EQUAL(join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), " "), "cat/pkg-1.1::installed");
             }
 
@@ -220,7 +220,7 @@ namespace test_cases
                 install(env, exndbam_repo, "=cat/pkg-2::postinsttest", "");
                 exndbam_repo->invalidate();
 
-                std::tr1::shared_ptr<const PackageIDSequence> ids(env[selection::AllVersionsSorted(generator::Package(
+                std::shared_ptr<const PackageIDSequence> ids(env[selection::AllVersionsSorted(generator::Package(
                                 QualifiedPackageName("cat/pkg")) & generator::InRepository(RepositoryName("installed")))]);
                 TEST_CHECK_EQUAL(join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), " "), "cat/pkg-1.1::installed cat/pkg-2::installed");
             }
@@ -231,7 +231,7 @@ namespace test_cases
                 install(env, exndbam_repo, "=cat/pkg-0::postinsttest", "=cat/pkg-1.1::installed");
                 exndbam_repo->invalidate();
 
-                std::tr1::shared_ptr<const PackageIDSequence> ids2(env[selection::AllVersionsSorted(generator::Package(
+                std::shared_ptr<const PackageIDSequence> ids2(env[selection::AllVersionsSorted(generator::Package(
                                 QualifiedPackageName("cat/pkg")) & generator::InRepository(RepositoryName("installed")))]);
                 TEST_CHECK_EQUAL(join(indirect_iterator(ids2->begin()), indirect_iterator(ids2->end()), " "), "cat/pkg-0::installed cat/pkg-2::installed");
             }

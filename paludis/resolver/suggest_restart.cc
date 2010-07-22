@@ -32,16 +32,16 @@ namespace paludis
     struct Implementation<SuggestRestart>
     {
         const Resolvent resolvent;
-        const std::tr1::shared_ptr<const Decision> previous_decision;
-        const std::tr1::shared_ptr<const Constraint> problematic_constraint;
-        const std::tr1::shared_ptr<const Decision> new_decision;
-        const std::tr1::shared_ptr<const Constraint> suggested_preset;
+        const std::shared_ptr<const Decision> previous_decision;
+        const std::shared_ptr<const Constraint> problematic_constraint;
+        const std::shared_ptr<const Decision> new_decision;
+        const std::shared_ptr<const Constraint> suggested_preset;
 
         Implementation(const Resolvent & q,
-                const std::tr1::shared_ptr<const Decision> & pd,
-                const std::tr1::shared_ptr<const Constraint> & pc,
-                const std::tr1::shared_ptr<const Decision> & nd,
-                const std::tr1::shared_ptr<const Constraint> & nc
+                const std::shared_ptr<const Decision> & pd,
+                const std::shared_ptr<const Constraint> & pc,
+                const std::shared_ptr<const Decision> & nd,
+                const std::shared_ptr<const Constraint> & nc
                 ) :
             resolvent(q),
             previous_decision(pd),
@@ -54,10 +54,10 @@ namespace paludis
 }
 
 SuggestRestart::SuggestRestart(const Resolvent & q,
-        const std::tr1::shared_ptr<const Decision> & pd,
-        const std::tr1::shared_ptr<const Constraint> & pc,
-        const std::tr1::shared_ptr<const Decision> & nd,
-        const std::tr1::shared_ptr<const Constraint> & nc
+        const std::shared_ptr<const Decision> & pd,
+        const std::shared_ptr<const Constraint> & pc,
+        const std::shared_ptr<const Decision> & nd,
+        const std::shared_ptr<const Constraint> & nc
         ) throw () :
     PrivateImplementationPattern<SuggestRestart>(new Implementation<SuggestRestart>(q, pd, pc, nd, nc)),
     Exception("Suggesting restart with " + stringify(nc->spec()) + " for " + stringify(q))
@@ -82,25 +82,25 @@ SuggestRestart::resolvent() const
     return _imp->resolvent;
 }
 
-const std::tr1::shared_ptr<const Decision>
+const std::shared_ptr<const Decision>
 SuggestRestart::previous_decision() const
 {
     return _imp->previous_decision;
 }
 
-const std::tr1::shared_ptr<const Constraint>
+const std::shared_ptr<const Constraint>
 SuggestRestart::problematic_constraint() const
 {
     return _imp->problematic_constraint;
 }
 
-const std::tr1::shared_ptr<const Decision>
+const std::shared_ptr<const Decision>
 SuggestRestart::new_decision() const
 {
     return _imp->new_decision;
 }
 
-const std::tr1::shared_ptr<const Constraint>
+const std::shared_ptr<const Constraint>
 SuggestRestart::suggested_preset() const
 {
     return _imp->suggested_preset;

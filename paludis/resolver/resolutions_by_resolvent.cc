@@ -27,15 +27,15 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/serialise-impl.hh>
 #include <list>
-#include <tr1/unordered_map>
+#include <unordered_map>
 
 using namespace paludis;
 using namespace paludis::resolver;
 
 // we need iterators to remain valid after an insert, but we also need fast
 // lookups.
-typedef std::list<std::tr1::shared_ptr<Resolution> > ResolutionList;
-typedef std::tr1::unordered_map<Resolvent, ResolutionList::const_iterator, Hash<Resolvent> > ResolutionListIndex;
+typedef std::list<std::shared_ptr<Resolution> > ResolutionList;
+typedef std::unordered_map<Resolvent, ResolutionList::const_iterator, Hash<Resolvent> > ResolutionListIndex;
 
 namespace paludis
 {
@@ -49,7 +49,7 @@ namespace paludis
     template <>
     struct WrappedForwardIteratorTraits<ResolutionsByResolvent::ConstIteratorTag>
     {
-        typedef std::list<std::tr1::shared_ptr<Resolution> >::const_iterator UnderlyingIterator;
+        typedef std::list<std::shared_ptr<Resolution> >::const_iterator UnderlyingIterator;
     };
 }
 
@@ -85,7 +85,7 @@ ResolutionsByResolvent::find(const Resolvent & r) const
 }
 
 ResolutionsByResolvent::ConstIterator
-ResolutionsByResolvent::insert_new(const std::tr1::shared_ptr<Resolution> & r)
+ResolutionsByResolvent::insert_new(const std::shared_ptr<Resolution> & r)
 {
     ResolutionList::iterator i(_imp->resolution_list.insert(_imp->resolution_list.end(), r));
     if (! _imp->resolution_list_index.insert(std::make_pair(r->resolvent(), i)).second)
@@ -104,16 +104,16 @@ ResolutionsByResolvent::serialise(Serialiser & s) const
         ;
 }
 
-const std::tr1::shared_ptr<ResolutionsByResolvent>
+const std::shared_ptr<ResolutionsByResolvent>
 ResolutionsByResolvent::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "ResolutionsByResolvent");
     Deserialisator vv(*v.find_remove_member("items"), "c");
-    std::tr1::shared_ptr<ResolutionsByResolvent> result(new ResolutionsByResolvent);
+    std::shared_ptr<ResolutionsByResolvent> result(new ResolutionsByResolvent);
     for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
-        result->insert_new(vv.member<std::tr1::shared_ptr<Resolution> >(stringify(n)));
+        result->insert_new(vv.member<std::shared_ptr<Resolution> >(stringify(n)));
     return result;
 }
 
-template class WrappedForwardIterator<ResolutionsByResolvent::ConstIteratorTag, const std::tr1::shared_ptr<Resolution> >;
+template class WrappedForwardIterator<ResolutionsByResolvent::ConstIteratorTag, const std::shared_ptr<Resolution> >;
 

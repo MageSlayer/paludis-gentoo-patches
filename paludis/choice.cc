@@ -30,8 +30,8 @@
 
 using namespace paludis;
 
-typedef std::list<std::tr1::shared_ptr<const Choice> > ChoicesList;
-typedef std::list<std::tr1::shared_ptr<const ChoiceValue> > ChoiceList;
+typedef std::list<std::shared_ptr<const Choice> > ChoicesList;
+typedef std::list<std::shared_ptr<const ChoiceValue> > ChoiceList;
 
 namespace paludis
 {
@@ -168,7 +168,7 @@ Choices::~Choices()
 }
 
 void
-Choices::add(const std::tr1::shared_ptr<const Choice> & c)
+Choices::add(const std::shared_ptr<const Choice> & c)
 {
     _imp->choices.push_back(c);
 }
@@ -195,7 +195,7 @@ Choices::find(const ChoicePrefixName & p) const
     return end();
 }
 
-const std::tr1::shared_ptr<const ChoiceValue>
+const std::shared_ptr<const ChoiceValue>
 Choices::find_by_name_with_prefix(const ChoiceNameWithPrefix & f) const
 {
     for (ConstIterator i(begin()), i_end(end()) ;
@@ -210,7 +210,7 @@ Choices::find_by_name_with_prefix(const ChoiceNameWithPrefix & f) const
                 return *j;
     }
 
-    return std::tr1::shared_ptr<const ChoiceValue>();
+    return std::shared_ptr<const ChoiceValue>();
 }
 
 bool
@@ -254,7 +254,7 @@ Choice::~Choice()
 }
 
 void
-Choice::add(const std::tr1::shared_ptr<const ChoiceValue> & v)
+Choice::add(const std::shared_ptr<const ChoiceValue> & v)
 {
     _imp->values.push_back(v);
 }
@@ -320,8 +320,8 @@ ChoiceValue::~ChoiceValue()
 template class PrivateImplementationPattern<Choices>;
 template class PrivateImplementationPattern<Choice>;
 
-template class WrappedForwardIterator<Choices::ConstIteratorTag, const std::tr1::shared_ptr<const Choice> >;
-template class WrappedForwardIterator<Choice::ConstIteratorTag, const std::tr1::shared_ptr<const ChoiceValue> >;
+template class WrappedForwardIterator<Choices::ConstIteratorTag, const std::shared_ptr<const Choice> >;
+template class WrappedForwardIterator<Choice::ConstIteratorTag, const std::shared_ptr<const ChoiceValue> >;
 
 template class WrappedValue<UnprefixedChoiceNameTag>;
 template std::ostream & paludis::operator<< (std::ostream &, const WrappedValue<UnprefixedChoiceNameTag> &);

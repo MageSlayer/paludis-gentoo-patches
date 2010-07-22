@@ -22,10 +22,10 @@
 
 #include <paludis/util/sequence-fwd.hh>
 #include <paludis/environment-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 #include <string>
 
-int do_install(const std::tr1::shared_ptr<paludis::Environment> &,
-               const std::tr1::shared_ptr<const paludis::Sequence<std::string> > &);
+int do_install(const std::shared_ptr<paludis::Environment> &,
+               const std::shared_ptr<const paludis::Sequence<std::string> > &);
 
 #endif

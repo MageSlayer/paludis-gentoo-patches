@@ -35,7 +35,7 @@
 using namespace paludis;
 using namespace paludis::erepository;
 
-typedef std::list<std::tr1::shared_ptr<DependenciesLabelSequence> > LabelsStack;
+typedef std::list<std::shared_ptr<DependenciesLabelSequence> > LabelsStack;
 
 namespace
 {
@@ -69,7 +69,7 @@ namespace paludis
         std::string rdepend;
         std::string pdepend;
 
-        std::tr1::shared_ptr<DependenciesLabelSequence> default_labels;
+        std::shared_ptr<DependenciesLabelSequence> default_labels;
         LabelsStack labels;
 
         Implementation() :
@@ -134,7 +134,7 @@ DependenciesRewriter::visit(const DependencySpecTree::NodeType<DependenciesLabel
     _imp->rdepend.append(" " + stringify(*node.spec()) + get_annotations(*node.spec()));
     _imp->pdepend.append(" " + stringify(*node.spec()) + get_annotations(*node.spec()));
 
-    std::tr1::shared_ptr<DependenciesLabelSequence> labels(new DependenciesLabelSequence);
+    std::shared_ptr<DependenciesLabelSequence> labels(new DependenciesLabelSequence);
     std::copy(node.spec()->begin(), node.spec()->end(), labels->back_inserter());
     *_imp->labels.begin() = labels;
 }
@@ -143,7 +143,7 @@ void
 DependenciesRewriter::visit(const DependencySpecTree::NodeType<AllDepSpec>::Type & node)
 {
     _imp->labels.push_front(*_imp->labels.begin());
-    RunOnDestruction restore_labels(std::tr1::bind(std::tr1::mem_fn(&LabelsStack::pop_front), &_imp->labels));
+    RunOnDestruction restore_labels(std::bind(std::mem_fn(&LabelsStack::pop_front), &_imp->labels));
 
     std::string d(_imp->depend), r(_imp->rdepend), p(_imp->pdepend);
     _imp->depend.clear();
@@ -161,7 +161,7 @@ void
 DependenciesRewriter::visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type & node)
 {
     _imp->labels.push_front(*_imp->labels.begin());
-    RunOnDestruction restore_labels(std::tr1::bind(std::tr1::mem_fn(&LabelsStack::pop_front), &_imp->labels));
+    RunOnDestruction restore_labels(std::bind(std::mem_fn(&LabelsStack::pop_front), &_imp->labels));
 
     std::string d(_imp->depend), r(_imp->rdepend), p(_imp->pdepend);
     _imp->depend.clear();
@@ -179,7 +179,7 @@ void
 DependenciesRewriter::visit(const DependencySpecTree::NodeType<ConditionalDepSpec>::Type & node)
 {
     _imp->labels.push_front(*_imp->labels.begin());
-    RunOnDestruction restore_labels(std::tr1::bind(std::tr1::mem_fn(&LabelsStack::pop_front), &_imp->labels));
+    RunOnDestruction restore_labels(std::bind(std::mem_fn(&LabelsStack::pop_front), &_imp->labels));
 
     std::string d(_imp->depend), r(_imp->rdepend), p(_imp->pdepend);
     _imp->depend.clear();

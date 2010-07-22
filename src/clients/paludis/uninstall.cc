@@ -53,7 +53,7 @@ namespace
             int _count, _current_count, _error_count;
 
         public:
-            OurUninstallTask(std::tr1::shared_ptr<Environment> e) :
+            OurUninstallTask(std::shared_ptr<Environment> e) :
                 UninstallTask(e.get()),
                 _count(0),
                 _current_count(0),
@@ -131,7 +131,7 @@ namespace
                     else
                         max_count = std::numeric_limits<long>::max();
 
-                    for (Set<std::tr1::shared_ptr<DepTag> >::ConstIterator
+                    for (Set<std::shared_ptr<DepTag> >::ConstIterator
                             tag(d.tags()->begin()),
                             tag_end(d.tags()->end()) ;
                             tag != tag_end ; ++tag)
@@ -219,7 +219,7 @@ namespace
             }
     };
 
-    int real_uninstall(std::tr1::shared_ptr<Environment> env, bool unused)
+    int real_uninstall(std::shared_ptr<Environment> env, bool unused)
     {
         int return_code(0);
 
@@ -331,13 +331,13 @@ namespace
 }
 
 int
-do_uninstall(const std::tr1::shared_ptr<Environment> & env)
+do_uninstall(const std::shared_ptr<Environment> & env)
 {
     return real_uninstall(env, false);
 }
 
 int
-do_uninstall_unused(const std::tr1::shared_ptr<Environment> & env)
+do_uninstall_unused(const std::shared_ptr<Environment> & env)
 {
     return real_uninstall(env, true);
 }

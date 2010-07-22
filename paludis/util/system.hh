@@ -23,8 +23,8 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
-#include <tr1/memory>
-#include <tr1/functional>
+#include <memory>
+#include <functional>
 #include <string>
 #include <sys/types.h>
 
@@ -194,7 +194,7 @@ namespace paludis
              */
             Command & with_pipe_command_handler(
                     const std::string & env_var_prefix,
-                    const std::tr1::function<std::string (const std::string &)> &);
+                    const std::function<std::string (const std::string &)> &);
 
             /**
              * Specify a stream to which stdout is captured and written.
@@ -268,12 +268,12 @@ namespace paludis
             /**
              * The uid for setuid.
              */
-            std::tr1::shared_ptr<const uid_t> uid() const;
+            std::shared_ptr<const uid_t> uid() const;
 
             /**
              * The gid for setgid.
              */
-            std::tr1::shared_ptr<const gid_t> gid() const;
+            std::shared_ptr<const gid_t> gid() const;
 
             /**
              * The stdout prefix.
@@ -299,7 +299,7 @@ namespace paludis
             /**
              * The pipe command handler.
              */
-            const std::tr1::function<std::string (const std::string &)> & pipe_command_handler() const;
+            const std::function<std::string (const std::string &)> & pipe_command_handler() const;
 
             /**
              * The pipe command env var prefix.

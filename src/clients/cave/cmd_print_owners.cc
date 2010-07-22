@@ -69,7 +69,7 @@ namespace
         }
     };
 
-    void print_package_id(const std::tr1::shared_ptr<const PackageID> & id)
+    void print_package_id(const std::shared_ptr<const PackageID> & id)
     {
         cout << *id << endl;
     }
@@ -77,8 +77,8 @@ namespace
 
 int
 PrintOwnersCommand::run(
-        const std::tr1::shared_ptr<Environment> & env,
-        const std::tr1::shared_ptr<const Sequence<std::string > > & args
+        const std::shared_ptr<Environment> & env,
+        const std::shared_ptr<const Sequence<std::string > > & args
         )
 {
     PrintOwnersCommandLine cmdline;
@@ -96,7 +96,7 @@ PrintOwnersCommand::run(
     return owner_common(env, cmdline.a_match.argument(), *cmdline.begin_parameters(), &print_package_id);
 }
 
-std::tr1::shared_ptr<args::ArgsHandler>
+std::shared_ptr<args::ArgsHandler>
 PrintOwnersCommand::make_doc_cmdline()
 {
     return make_shared_ptr(new PrintOwnersCommandLine);

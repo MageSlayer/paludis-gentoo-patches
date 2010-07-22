@@ -29,15 +29,15 @@
 using namespace paludis;
 using namespace paludis::resolver;
 
-const std::tr1::shared_ptr<Destination>
+const std::shared_ptr<Destination>
 Destination::deserialise(Deserialisation & d)
 
 {
     Deserialisator v(d, "Destination");
-    std::tr1::shared_ptr<PackageIDSequence> replacing(new PackageIDSequence);
+    std::shared_ptr<PackageIDSequence> replacing(new PackageIDSequence);
     Deserialisator vv(*v.find_remove_member("replacing"), "c");
     for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
-        replacing->push_back(vv.member<std::tr1::shared_ptr<const PackageID> >(stringify(n)));
+        replacing->push_back(vv.member<std::shared_ptr<const PackageID> >(stringify(n)));
 
 
     return make_shared_ptr(new Destination(make_named_values<Destination>(

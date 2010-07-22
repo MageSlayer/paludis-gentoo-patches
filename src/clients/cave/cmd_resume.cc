@@ -104,14 +104,14 @@ namespace
     };
 
     int perform_resolution(
-            const std::tr1::shared_ptr<Environment> & env,
-            const std::tr1::shared_ptr<ResumeData> & data,
+            const std::shared_ptr<Environment> & env,
+            const std::shared_ptr<ResumeData> & data,
             const ResolveCommandLineExecutionOptions & execution_options,
             const ResolveCommandLineProgramOptions & program_options)
     {
         Context context("When performing chosen resolution:");
 
-        std::tr1::shared_ptr<Sequence<std::string> > args(new Sequence<std::string>);
+        std::shared_ptr<Sequence<std::string> > args(new Sequence<std::string>);
 
         for (args::ArgsSection::GroupsConstIterator g(program_options.begin()), g_end(program_options.end()) ;
                 g != g_end ; ++g)
@@ -120,7 +120,7 @@ namespace
                     o != o_end ; ++o)
                 if ((*o)->specified())
                 {
-                    const std::tr1::shared_ptr<const Sequence<std::string> > f((*o)->forwardable_args());
+                    const std::shared_ptr<const Sequence<std::string> > f((*o)->forwardable_args());
                     std::copy(f->begin(), f->end(), args->back_inserter());
                 }
         }
@@ -132,7 +132,7 @@ namespace
                     o != o_end ; ++o)
                 if ((*o)->specified())
                 {
-                    const std::tr1::shared_ptr<const Sequence<std::string> > f((*o)->forwardable_args());
+                    const std::shared_ptr<const Sequence<std::string> > f((*o)->forwardable_args());
                     std::copy(f->begin(), f->end(), args->back_inserter());
                 }
         }
@@ -221,9 +221,9 @@ namespace
     };
 
     void fix_lists(
-            const std::tr1::shared_ptr<Environment> &,
+            const std::shared_ptr<Environment> &,
             const ResumeCommandLine & cmdline,
-            const std::tr1::shared_ptr<JobLists> & lists)
+            const std::shared_ptr<JobLists> & lists)
     {
         for (JobList<ExecuteJob>::ConstIterator c(lists->execute_job_list()->begin()),
                 c_end(lists->execute_job_list()->end()) ;
@@ -253,8 +253,8 @@ ResumeCommand::important() const
 
 int
 ResumeCommand::run(
-        const std::tr1::shared_ptr<Environment> & env,
-        const std::tr1::shared_ptr<const Sequence<std::string > > & args
+        const std::shared_ptr<Environment> & env,
+        const std::shared_ptr<const Sequence<std::string > > & args
         )
 {
     ResumeCommandLine cmdline;
@@ -269,7 +269,7 @@ ResumeCommand::run(
     if (! cmdline.execution_options.a_resume_file.specified())
         throw args::DoHelp("--" + cmdline.execution_options.a_resume_file.long_name() + " must be specified");
 
-    std::tr1::shared_ptr<ResumeData> data;
+    std::shared_ptr<ResumeData> data;
     {
         FSEntry f(cmdline.execution_options.a_resume_file.argument());
         if (! f.exists())
@@ -284,7 +284,7 @@ ResumeCommand::run(
     return perform_resolution(env, data, cmdline.execution_options, cmdline.program_options);
 }
 
-std::tr1::shared_ptr<args::ArgsHandler>
+std::shared_ptr<args::ArgsHandler>
 ResumeCommand::make_doc_cmdline()
 {
     return make_shared_ptr(new ResumeCommandLine);

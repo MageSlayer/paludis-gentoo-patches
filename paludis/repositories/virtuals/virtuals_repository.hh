@@ -22,7 +22,7 @@
 
 #include <paludis/repository.hh>
 #include <paludis/util/map-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 
 namespace paludis
 {
@@ -35,7 +35,7 @@ namespace paludis
         public Repository,
         public RepositoryMakeVirtualsInterface,
         private PrivateImplementationPattern<VirtualsRepository>,
-        public std::tr1::enable_shared_from_this<VirtualsRepository>
+        public std::enable_shared_from_this<VirtualsRepository>
     {
         private:
             PrivateImplementationPattern<VirtualsRepository>::ImpPtr & _imp;
@@ -62,19 +62,19 @@ namespace paludis
 
             static RepositoryName repository_factory_name(
                     const Environment * const env,
-                    const std::tr1::function<std::string (const std::string &)> &);
+                    const std::function<std::string (const std::string &)> &);
 
-            static std::tr1::shared_ptr<Repository> repository_factory_create(
+            static std::shared_ptr<Repository> repository_factory_create(
                     const Environment * const env,
-                    const std::tr1::function<std::string (const std::string &)> &);
+                    const std::function<std::string (const std::string &)> &);
 
-            static std::tr1::shared_ptr<const RepositoryNameSet> repository_factory_dependencies(
+            static std::shared_ptr<const RepositoryNameSet> repository_factory_dependencies(
                     const Environment * const env,
-                    const std::tr1::function<std::string (const std::string &)> &);
+                    const std::function<std::string (const std::string &)> &);
 
             ///\}
 
-            virtual std::tr1::shared_ptr<const CategoryNamePartSet> unimportant_category_names() const;
+            virtual std::shared_ptr<const CategoryNamePartSet> unimportant_category_names() const;
 
             virtual void invalidate();
 
@@ -86,15 +86,15 @@ namespace paludis
 
             /* Repository */
 
-            virtual std::tr1::shared_ptr<const PackageIDSequence> package_ids(
+            virtual std::shared_ptr<const PackageIDSequence> package_ids(
                     const QualifiedPackageName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::tr1::shared_ptr<const QualifiedPackageNameSet> package_names(
+            virtual std::shared_ptr<const QualifiedPackageNameSet> package_names(
                     const CategoryNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::tr1::shared_ptr<const CategoryNamePartSet> category_names() const
+            virtual std::shared_ptr<const CategoryNamePartSet> category_names() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual bool has_package_named(const QualifiedPackageName &) const
@@ -107,21 +107,21 @@ namespace paludis
 
             virtual bool some_ids_might_not_be_masked() const;
 
-            virtual bool sync(const std::tr1::shared_ptr<OutputManager> &) const;
+            virtual bool sync(const std::shared_ptr<OutputManager> &) const;
 
             /* RepositoryMakeVirtualsInterface */
 
-            virtual const std::tr1::shared_ptr<const PackageID> make_virtual_package_id(
-                    const QualifiedPackageName & virtual_name, const std::tr1::shared_ptr<const PackageID> & provider) const
+            virtual const std::shared_ptr<const PackageID> make_virtual_package_id(
+                    const QualifiedPackageName & virtual_name, const std::shared_ptr<const PackageID> & provider) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /* Keys */
 
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > location_key() const;
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const;
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > accept_keywords_key() const;
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > sync_host_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > location_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<std::string> > accept_keywords_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<std::string> > sync_host_key() const;
 
             ///\name Set methods
             ///\{

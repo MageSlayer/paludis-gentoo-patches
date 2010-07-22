@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_UTIL_MAKE_SHARED_PTR_HH 1
 
 #include <paludis/util/make_shared_ptr-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 
 /** \file
  * Declarations for the make_shared_ptr function.
@@ -36,14 +36,14 @@
 namespace paludis
 {
     template <typename T_>
-    std::tr1::shared_ptr<T_>
+    std::shared_ptr<T_>
     make_shared_ptr(T_ * const t)
     {
-        return std::tr1::shared_ptr<T_>(t);
+        return std::shared_ptr<T_>(t);
     }
 
     /**
-     * An object that can convert itself into an empty std::tr1::shared_ptr<>
+     * An object that can convert itself into an empty std::shared_ptr<>
      * of any type.
      *
      * \see make_null_shared_ptr()
@@ -53,9 +53,9 @@ namespace paludis
     struct PALUDIS_VISIBLE NullSharedPtr
     {
         template <typename T_>
-        inline operator std::tr1::shared_ptr<T_> () const
+        inline operator std::shared_ptr<T_> () const
         {
-            return std::tr1::shared_ptr<T_>();
+            return std::shared_ptr<T_>();
         }
     };
 

@@ -32,7 +32,7 @@ namespace paludis
     class ELikeConditionalDepSpecParseError;
 
     ConditionalDepSpec parse_elike_conditional_dep_spec(const std::string &,
-            const Environment * const, const std::tr1::shared_ptr<const PackageID> &,
+            const Environment * const, const std::shared_ptr<const PackageID> &,
             const bool no_warning_for_unlisted) PALUDIS_VISIBLE;
 
     bool elike_conditional_dep_spec_is_inverse(const ConditionalDepSpec & spec) PALUDIS_VISIBLE;

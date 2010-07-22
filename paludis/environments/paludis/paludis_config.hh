@@ -112,14 +112,14 @@ namespace paludis
                 ///\name Config files
                 ///\{
 
-                std::tr1::shared_ptr<const KeywordsConf> keywords_conf() const;
-                std::tr1::shared_ptr<const UseConf> use_conf() const;
-                std::tr1::shared_ptr<const LicensesConf> licenses_conf() const;
-                std::tr1::shared_ptr<const PackageMaskConf> package_mask_conf() const;
-                std::tr1::shared_ptr<const PackageMaskConf> package_unmask_conf() const;
-                std::tr1::shared_ptr<const MirrorsConf> mirrors_conf() const;
-                std::tr1::shared_ptr<const World> world() const;
-                std::tr1::shared_ptr<const OutputConf> output_conf() const;
+                std::shared_ptr<const KeywordsConf> keywords_conf() const;
+                std::shared_ptr<const UseConf> use_conf() const;
+                std::shared_ptr<const LicensesConf> licenses_conf() const;
+                std::shared_ptr<const PackageMaskConf> package_mask_conf() const;
+                std::shared_ptr<const PackageMaskConf> package_unmask_conf() const;
+                std::shared_ptr<const MirrorsConf> mirrors_conf() const;
+                std::shared_ptr<const World> world() const;
+                std::shared_ptr<const OutputConf> output_conf() const;
 
                 ///\}
 
@@ -127,21 +127,21 @@ namespace paludis
                 ///\{
 
                 struct RepositoryConstIteratorTag;
-                typedef WrappedForwardIterator<RepositoryConstIteratorTag, const std::tr1::function<std::string (const std::string &)> >
+                typedef WrappedForwardIterator<RepositoryConstIteratorTag, const std::function<std::string (const std::string &)> >
                     RepositoryConstIterator;
 
                 RepositoryConstIterator begin_repositories() const;
 
                 RepositoryConstIterator end_repositories() const;
 
-                const std::tr1::function<std::string (const std::string &)> repo_func_from_file(const FSEntry &);
+                const std::function<std::string (const std::string &)> repo_func_from_file(const FSEntry &);
 
                 ///\}
 
                 /**
                  * Our bashrc files.
                  */
-                std::tr1::shared_ptr<const FSEntrySequence> bashrc_files() const;
+                std::shared_ptr<const FSEntrySequence> bashrc_files() const;
 
                 /**
                  * The ROOT.

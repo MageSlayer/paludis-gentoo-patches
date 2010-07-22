@@ -36,7 +36,7 @@
 #include <paludis/spec_tree-fwd.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/package_id-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 
 namespace paludis
 {

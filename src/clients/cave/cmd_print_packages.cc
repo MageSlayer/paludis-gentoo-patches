@@ -64,8 +64,8 @@ namespace
 
 int
 PrintPackagesCommand::run(
-        const std::tr1::shared_ptr<Environment> & env,
-        const std::tr1::shared_ptr<const Sequence<std::string > > & args
+        const std::shared_ptr<Environment> & env,
+        const std::shared_ptr<const Sequence<std::string > > & args
         )
 {
     PrintPackagesCommandLine cmdline;
@@ -85,11 +85,11 @@ PrintPackagesCommand::run(
     for (PackageDatabase::RepositoryConstIterator r(env->package_database()->begin_repositories()), r_end(env->package_database()->end_repositories());
             r != r_end; ++r)
     {
-        std::tr1::shared_ptr<const CategoryNamePartSet> categories((*r)->category_names());
+        std::shared_ptr<const CategoryNamePartSet> categories((*r)->category_names());
         for (CategoryNamePartSet::ConstIterator c(categories->begin()), c_end(categories->end());
                 c != c_end; ++c)
         {
-            std::tr1::shared_ptr<const QualifiedPackageNameSet> packages((*r)->package_names(*c));
+            std::shared_ptr<const QualifiedPackageNameSet> packages((*r)->package_names(*c));
             std::copy(packages->begin(), packages->end(), std::inserter(all_packages, all_packages.begin()));
         }
     }
@@ -99,7 +99,7 @@ PrintPackagesCommand::run(
     return EXIT_SUCCESS;
 }
 
-std::tr1::shared_ptr<args::ArgsHandler>
+std::shared_ptr<args::ArgsHandler>
 PrintPackagesCommand::make_doc_cmdline()
 {
     return make_shared_ptr(new PrintPackagesCommandLine);

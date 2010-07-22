@@ -30,7 +30,7 @@ namespace test_cases
     typedef ActiveObjectPtr<int *> ActiveIntPtr;
     TESTCASE_SEMIREGULAR(ActiveIntPtr, ActiveIntPtr(new int(10)));
 
-    typedef ActiveObjectPtr<std::tr1::shared_ptr<int> > ActiveSharedIntPtr;
+    typedef ActiveObjectPtr<std::shared_ptr<int> > ActiveSharedIntPtr;
     TESTCASE_SEMIREGULAR(ActiveSharedIntPtr, ActiveSharedIntPtr(make_shared_ptr(new int(10))));
 
     struct TestDereference : TestCase
@@ -42,7 +42,7 @@ namespace test_cases
             ActiveObjectPtr<std::string *> p(new std::string("monkey"));
             TEST_CHECK_EQUAL(p->length(), 6u);
 
-            ActiveObjectPtr<std::tr1::shared_ptr<std::string> > q(
+            ActiveObjectPtr<std::shared_ptr<std::string> > q(
                     make_shared_ptr(new std::string("chimp")));
             TEST_CHECK_EQUAL(q->length(), 5u);
         }
@@ -57,7 +57,7 @@ namespace test_cases
             ActiveObjectPtr<std::string *> p(new std::string("monkey"));
             TEST_CHECK_EQUAL(p.value()->length(), 6u);
 
-            ActiveObjectPtr<std::tr1::shared_ptr<std::string> > q(
+            ActiveObjectPtr<std::shared_ptr<std::string> > q(
                     make_shared_ptr(new std::string("chimp")));
             TEST_CHECK_EQUAL(q.value()->length(), 5u);
         }

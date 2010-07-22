@@ -34,7 +34,7 @@ namespace paludis
         class ERepositoryID;
 
         class EChoicesKey :
-            public MetadataValueKey<std::tr1::shared_ptr<const Choices> >,
+            public MetadataValueKey<std::shared_ptr<const Choices> >,
             private PrivateImplementationPattern<EChoicesKey>
         {
             private:
@@ -44,16 +44,16 @@ namespace paludis
             public:
                 EChoicesKey(
                         const Environment * const,
-                        const std::tr1::shared_ptr<const ERepositoryID> &,
+                        const std::shared_ptr<const ERepositoryID> &,
                         const std::string &,
                         const std::string &,
                         const MetadataKeyType,
-                        const std::tr1::shared_ptr<const ERepository> & maybe_profile,
-                        const std::tr1::shared_ptr<const Map<ChoiceNameWithPrefix, std::string> > & maybe_descriptions);
+                        const std::shared_ptr<const ERepository> & maybe_profile,
+                        const std::shared_ptr<const Map<ChoiceNameWithPrefix, std::string> > & maybe_descriptions);
 
                 ~EChoicesKey();
 
-                const std::tr1::shared_ptr<const Choices> value() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::shared_ptr<const Choices> value() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));

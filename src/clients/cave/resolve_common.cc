@@ -92,19 +92,19 @@ using std::endl;
 
 namespace
 {
-    typedef std::map<Resolvent, std::tr1::shared_ptr<Constraints> > InitialConstraints;
+    typedef std::map<Resolvent, std::shared_ptr<Constraints> > InitialConstraints;
     typedef std::list<PackageDepSpec> PackageDepSpecList;
 
     struct DestinationTypesFinder
     {
         const Environment * const env;
         const ResolveCommandLineResolutionOptions & resolution_options;
-        const std::tr1::shared_ptr<const PackageID> package_id;
+        const std::shared_ptr<const PackageID> package_id;
 
         DestinationTypesFinder(
                 const Environment * const e,
                 const ResolveCommandLineResolutionOptions & c,
-                const std::tr1::shared_ptr<const PackageID> & i) :
+                const std::shared_ptr<const PackageID> & i) :
             env(e),
             resolution_options(c),
             package_id(i)
@@ -184,8 +184,8 @@ namespace
             const Environment * const env,
             const ResolveCommandLineResolutionOptions & resolution_options,
             const PackageDepSpec &,
-            const std::tr1::shared_ptr<const PackageID> & id,
-            const std::tr1::shared_ptr<const Reason> & reason)
+            const std::shared_ptr<const PackageID> & id,
+            const std::shared_ptr<const Reason> & reason)
     {
         DestinationTypesFinder f(env, resolution_options, id);
         return reason->accept_returning<DestinationTypes>(f);
@@ -194,7 +194,7 @@ namespace
     FilteredGenerator make_destination_filtered_generator(
             const Environment * const,
             const ResolveCommandLineResolutionOptions &,
-            const std::tr1::shared_ptr<const Generator> & all_binary_repos_generator,
+            const std::shared_ptr<const Generator> & all_binary_repos_generator,
             const Generator & g,
             const Resolvent & r)
     {
@@ -219,9 +219,9 @@ namespace
     FilteredGenerator make_destination_filtered_generator_with_resolution(
             const Environment * const env,
             const ResolveCommandLineResolutionOptions & resolution_options,
-            const std::tr1::shared_ptr<const Generator> & all_binary_repos_generator,
+            const std::shared_ptr<const Generator> & all_binary_repos_generator,
             const Generator & g,
-            const std::tr1::shared_ptr<const Resolution> & r)
+            const std::shared_ptr<const Resolution> & r)
     {
         return make_destination_filtered_generator(env, resolution_options, all_binary_repos_generator, g, r->resolvent());
     }
@@ -229,9 +229,9 @@ namespace
     FilteredGenerator make_origin_filtered_generator(
             const Environment * const,
             const ResolveCommandLineResolutionOptions &,
-            const std::tr1::shared_ptr<const Generator> & not_binary_repos_generator,
+            const std::shared_ptr<const Generator> & not_binary_repos_generator,
             const Generator & g,
-            const std::tr1::shared_ptr<const Resolution> & r)
+            const std::shared_ptr<const Resolution> & r)
     {
         switch (r->resolvent().destination_type())
         {
@@ -248,11 +248,11 @@ namespace
         throw InternalError(PALUDIS_HERE, "bad dt");
     }
 
-    const std::tr1::shared_ptr<const Sequence<std::string> > add_resolver_targets(
-            const std::tr1::shared_ptr<Environment> & env,
-            const std::tr1::shared_ptr<Resolver> & resolver,
+    const std::shared_ptr<const Sequence<std::string> > add_resolver_targets(
+            const std::shared_ptr<Environment> & env,
+            const std::shared_ptr<Resolver> & resolver,
             const ResolveCommandLineResolutionOptions &,
-            const std::tr1::shared_ptr<const Sequence<std::pair<std::string, std::string> > > & targets,
+            const std::shared_ptr<const Sequence<std::pair<std::string, std::string> > > & targets,
             bool & is_set)
     {
         Context context("When adding targets from commandline:");
@@ -260,7 +260,7 @@ namespace
         if (targets->empty())
             throw args::DoHelp("Must specify at least one target");
 
-        const std::tr1::shared_ptr<Sequence<std::string> > result(new Sequence<std::string>);
+        const std::shared_ptr<Sequence<std::string> > result(new Sequence<std::string>);
         bool seen_sets(false), seen_packages(false);
         for (Sequence<std::pair<std::string, std::string> >::ConstIterator p(targets->begin()), p_end(targets->end()) ;
                 p != p_end ; ++p)
@@ -415,9 +415,9 @@ namespace
             const ResolveCommandLineResolutionOptions & resolution_options,
             const PackageDepSpecList & without,
             const PackageDepSpecList & with,
-            const std::tr1::shared_ptr<const Resolution> &,
+            const std::shared_ptr<const Resolution> &,
             const PackageDepSpec & spec,
-            const std::tr1::shared_ptr<const Reason> & reason)
+            const std::shared_ptr<const Reason> & reason)
     {
         if (spec.package_ptr())
         {
@@ -474,7 +474,7 @@ namespace
         }
     }
 
-    bool is_scm_older_than(const std::tr1::shared_ptr<const PackageID> & id, const int n)
+    bool is_scm_older_than(const std::shared_ptr<const PackageID> & id, const int n)
     {
         if (id->version().is_scm() || is_scm_name(id->name()))
         {
@@ -492,13 +492,13 @@ namespace
     bool installed_is_scm_older_than(
             const Environment * const env,
             const ResolveCommandLineResolutionOptions & resolution_options,
-            const std::tr1::shared_ptr<const Generator> & all_binary_repos_generator,
+            const std::shared_ptr<const Generator> & all_binary_repos_generator,
             const Resolvent & q,
             const int n)
     {
         Context context("When working out whether '" + stringify(q) + "' has installed SCM packages:");
 
-        const std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsUnsorted(
+        const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsUnsorted(
                     make_destination_filtered_generator(env, resolution_options, all_binary_repos_generator,
                         generator::Package(q.package()), q) |
                     make_slot_filter(q)
@@ -514,14 +514,14 @@ namespace
         return false;
     }
 
-    const std::tr1::shared_ptr<Constraints> make_initial_constraints_for(
+    const std::shared_ptr<Constraints> make_initial_constraints_for(
             const Environment * const env,
             const ResolveCommandLineResolutionOptions & resolution_options,
-            const std::tr1::shared_ptr<const Generator> & all_binary_repos_generator,
+            const std::shared_ptr<const Generator> & all_binary_repos_generator,
             const PackageDepSpecList & without,
             const Resolvent & resolvent)
     {
-        const std::tr1::shared_ptr<Constraints> result(new Constraints);
+        const std::shared_ptr<Constraints> result(new Constraints);
 
         int n(reinstall_scm_days(resolution_options));
         if ((-1 != n) && installed_is_scm_older_than(env, resolution_options, all_binary_repos_generator, resolvent, n)
@@ -540,12 +540,12 @@ namespace
         return result;
     }
 
-    const std::tr1::shared_ptr<Constraints> initial_constraints_for_fn(
+    const std::shared_ptr<Constraints> initial_constraints_for_fn(
             const Environment * const env,
             const ResolveCommandLineResolutionOptions & resolution_options,
             const PackageDepSpecList & without,
             const InitialConstraints & initial_constraints,
-            const std::tr1::shared_ptr<const Generator> & all_binary_repos_generator,
+            const std::shared_ptr<const Generator> & all_binary_repos_generator,
             const Resolvent & resolvent)
     {
         InitialConstraints::const_iterator i(initial_constraints.find(resolvent));
@@ -598,24 +598,24 @@ namespace
         }
     };
 
-    bool is_target(const std::tr1::shared_ptr<const Reason> & reason)
+    bool is_target(const std::shared_ptr<const Reason> & reason)
     {
         IsTargetVisitor v;
         return reason->accept_returning<bool>(v);
     }
 
-    const std::tr1::shared_ptr<Resolvents>
+    const std::shared_ptr<Resolvents>
     get_resolvents_for_fn(const Environment * const env,
             const ResolveCommandLineResolutionOptions & resolution_options,
             const PackageDepSpec & spec,
-            const std::tr1::shared_ptr<const SlotName> & maybe_slot,
-            const std::tr1::shared_ptr<const Reason> & reason,
+            const std::shared_ptr<const SlotName> & maybe_slot,
+            const std::shared_ptr<const Reason> & reason,
             const DestinationTypes & extra_dts)
     {
-        std::tr1::shared_ptr<PackageIDSequence> result_ids(new PackageIDSequence);
-        std::tr1::shared_ptr<const PackageID> best;
+        std::shared_ptr<PackageIDSequence> result_ids(new PackageIDSequence);
+        std::shared_ptr<const PackageID> best;
 
-        const std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::BestVersionOnly(
+        const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::BestVersionOnly(
                     generator::Matches(spec, MatchPackageOptions() + mpo_ignore_additional_requirements) |
                     filter::SupportsAction<InstallAction>() |
                     filter::NotMasked() |
@@ -624,7 +624,7 @@ namespace
         if (! ids->empty())
             best = *ids->begin();
 
-        const std::tr1::shared_ptr<const PackageIDSequence> installed_ids((*env)[selection::BestVersionInEachSlot(
+        const std::shared_ptr<const PackageIDSequence> installed_ids((*env)[selection::BestVersionInEachSlot(
                     generator::Matches(spec, MatchPackageOptions()) |
                     filter::InstalledAtRoot(FSEntry("/")))]);
 
@@ -660,7 +660,7 @@ namespace
             throw args::DoHelp("Don't understand argument '" + arg.argument() + "' to '--"
                     + arg.long_name() + "'");
 
-        std::tr1::shared_ptr<Resolvents> result(new Resolvents);
+        std::shared_ptr<Resolvents> result(new Resolvents);
         for (PackageIDSequence::ConstIterator i(result_ids->begin()), i_end(result_ids->end()) ;
                 i != i_end ; ++i)
         {
@@ -678,7 +678,7 @@ namespace
             const ResolveCommandLineResolutionOptions &,
             const PackageDepSpecList & no_blockers_from,
             const PackageDepSpecList & no_dependencies_from,
-            const std::tr1::shared_ptr<const PackageID> & id,
+            const std::shared_ptr<const PackageID> & id,
             const bool is_block)
     {
         const PackageDepSpecList & list(is_block ? no_blockers_from : no_dependencies_from);
@@ -736,7 +736,7 @@ namespace
                 if (dep.spec().if_block())
                     return false;
 
-                const std::tr1::shared_ptr<const PackageIDSequence> installed_ids(
+                const std::shared_ptr<const PackageIDSequence> installed_ids(
                         (*env)[selection::SomeArbitraryVersion(
                             generator::Matches(*dep.spec().if_package(), MatchPackageOptions()) |
                             filter::InstalledAtRoot(FSEntry("/")))]);
@@ -789,7 +789,7 @@ namespace
             const PackageDepSpecList & ignore_from,
             const PackageDepSpecList & no_blockers_from,
             const PackageDepSpecList & no_dependencies_from,
-            const std::tr1::shared_ptr<const Resolution> & resolution,
+            const std::shared_ptr<const Resolution> & resolution,
             const SanitisedDependency & dep)
     {
         CareAboutDepFnVisitor v(env, resolution_options, no_blockers_from, no_dependencies_from, dep);
@@ -849,7 +849,7 @@ namespace
             /* we also take suggestions and recommendations that have already been installed */
             if (dep.spec().if_package())
             {
-                const std::tr1::shared_ptr<const PackageIDSequence> installed_ids(
+                const std::shared_ptr<const PackageIDSequence> installed_ids(
                         (*env)[selection::SomeArbitraryVersion(
                             generator::Matches(*dep.spec().if_package(), MatchPackageOptions()) |
                             filter::InstalledAtRoot(FSEntry("/")))]);
@@ -863,13 +863,13 @@ namespace
             return si_ignore;
     }
 
-    const std::tr1::shared_ptr<const Repository>
+    const std::shared_ptr<const Repository>
     find_repository_for_fn(const Environment * const env,
             const ResolveCommandLineResolutionOptions &,
-            const std::tr1::shared_ptr<const Resolution> & resolution,
+            const std::shared_ptr<const Resolution> & resolution,
             const ChangesToMakeDecision & decision)
     {
-        std::tr1::shared_ptr<const Repository> result;
+        std::shared_ptr<const Repository> result;
         for (PackageDatabase::RepositoryConstIterator r(env->package_database()->begin_repositories()),
                 r_end(env->package_database()->end_repositories()) ;
                 r != r_end ; ++r)
@@ -929,7 +929,7 @@ namespace
     bool match_any(
             const Environment * const env,
             const PackageDepSpecList & list,
-            const std::tr1::shared_ptr<const PackageID> & i)
+            const std::shared_ptr<const PackageID> & i)
     {
         for (PackageDepSpecList::const_iterator l(list.begin()), l_end(list.end()) ;
                 l != l_end ; ++l)
@@ -985,8 +985,8 @@ namespace
     bool allowed_to_remove_fn(
             const Environment * const env,
             const PackageDepSpecList & list,
-            const std::tr1::shared_ptr<const Resolution> & resolution,
-            const std::tr1::shared_ptr<const PackageID> & i)
+            const std::shared_ptr<const Resolution> & resolution,
+            const std::shared_ptr<const PackageID> & i)
     {
         for (Constraints::ConstIterator c(resolution->constraints()->begin()),
                 c_end(resolution->constraints()->end()) ;
@@ -1000,7 +1000,7 @@ namespace
     bool remove_if_dependent_fn(
             const Environment * const env,
             const PackageDepSpecList & list,
-            const std::tr1::shared_ptr<const PackageID> & i)
+            const std::shared_ptr<const PackageID> & i)
     {
         return match_any(env, list, i);
     }
@@ -1036,42 +1036,42 @@ namespace
             const QualifiedPackageName & q)
     {
         if (favour.end() != std::find_if(favour.begin(), favour.end(),
-                    std::tr1::bind(&prefer_or_avoid_one, env, q, std::tr1::placeholders::_1)))
+                    std::bind(&prefer_or_avoid_one, env, q, std::placeholders::_1)))
             return true;
         if (avoid.end() != std::find_if(avoid.begin(), avoid.end(),
-                    std::tr1::bind(&prefer_or_avoid_one, env, q, std::tr1::placeholders::_1)))
+                    std::bind(&prefer_or_avoid_one, env, q, std::placeholders::_1)))
             return false;
         return indeterminate;
     }
 
     struct ChosenIDVisitor
     {
-        const std::tr1::shared_ptr<const PackageID> visit(const ChangesToMakeDecision & decision) const
+        const std::shared_ptr<const PackageID> visit(const ChangesToMakeDecision & decision) const
         {
             return decision.origin_id();
         }
 
-        const std::tr1::shared_ptr<const PackageID> visit(const BreakDecision & decision) const
+        const std::shared_ptr<const PackageID> visit(const BreakDecision & decision) const
         {
             return decision.existing_id();
         }
 
-        const std::tr1::shared_ptr<const PackageID> visit(const ExistingNoChangeDecision & decision) const
+        const std::shared_ptr<const PackageID> visit(const ExistingNoChangeDecision & decision) const
         {
             return decision.existing_id();
         }
 
-        const std::tr1::shared_ptr<const PackageID> visit(const NothingNoChangeDecision &) const
+        const std::shared_ptr<const PackageID> visit(const NothingNoChangeDecision &) const
         {
             return make_null_shared_ptr();
         }
 
-        const std::tr1::shared_ptr<const PackageID> visit(const RemoveDecision &) const
+        const std::shared_ptr<const PackageID> visit(const RemoveDecision &) const
         {
             return make_null_shared_ptr();
         }
 
-        const std::tr1::shared_ptr<const PackageID> visit(const UnableToMakeDecision &) const
+        const std::shared_ptr<const PackageID> visit(const UnableToMakeDecision &) const
         {
             return make_null_shared_ptr();
         }
@@ -1082,9 +1082,9 @@ namespace
             const ResolveCommandLineResolutionOptions &,
             const PackageDepSpecList & early,
             const PackageDepSpecList & late,
-            const std::tr1::shared_ptr<const Resolution> & r)
+            const std::shared_ptr<const Resolution> & r)
     {
-        const std::tr1::shared_ptr<const PackageID> id(r->decision()->accept_returning<std::tr1::shared_ptr<const PackageID> >(
+        const std::shared_ptr<const PackageID> id(r->decision()->accept_returning<std::shared_ptr<const PackageID> >(
                     ChosenIDVisitor()));
         if (id)
         {
@@ -1105,7 +1105,7 @@ namespace
         const PackageDepSpecList & permit_old_version;
         const PackageDepSpecList & allowed_to_break_specs;
         const bool allowed_to_break_system;
-        const std::tr1::shared_ptr<const PackageID> id;
+        const std::shared_ptr<const PackageID> id;
 
         ConfirmFnVisitor(const Environment * const e,
                 const ResolveCommandLineResolutionOptions & r,
@@ -1113,7 +1113,7 @@ namespace
                 const PackageDepSpecList & o,
                 const PackageDepSpecList & a,
                 const bool s,
-                const std::tr1::shared_ptr<const PackageID> & i) :
+                const std::shared_ptr<const PackageID> & i) :
             env(e),
             resolution_options(r),
             permit_downgrade(d),
@@ -1176,25 +1176,25 @@ namespace
             const PackageDepSpecList & permit_old_version,
             const PackageDepSpecList & allowed_to_break_specs,
             const bool allowed_to_break_system,
-            const std::tr1::shared_ptr<const Resolution> & r,
-            const std::tr1::shared_ptr<const RequiredConfirmation> & c)
+            const std::shared_ptr<const Resolution> & r,
+            const std::shared_ptr<const RequiredConfirmation> & c)
     {
         return c->accept_returning<bool>(ConfirmFnVisitor(env, resolution_options, permit_downgrade, permit_old_version,
                     allowed_to_break_specs, allowed_to_break_system,
-                    r->decision()->accept_returning<std::tr1::shared_ptr<const PackageID> >(ChosenIDVisitor())
+                    r->decision()->accept_returning<std::shared_ptr<const PackageID> >(ChosenIDVisitor())
                     ));
     }
 
-    const std::tr1::shared_ptr<ConstraintSequence> get_constraints_for_dependent_fn(
+    const std::shared_ptr<ConstraintSequence> get_constraints_for_dependent_fn(
             const Environment * const env,
             const PackageDepSpecList & list,
-            const std::tr1::shared_ptr<const Resolution> &,
-            const std::tr1::shared_ptr<const PackageID> & id,
-            const std::tr1::shared_ptr<const ChangeByResolventSequence> & ids)
+            const std::shared_ptr<const Resolution> &,
+            const std::shared_ptr<const PackageID> & id,
+            const std::shared_ptr<const ChangeByResolventSequence> & ids)
     {
-        const std::tr1::shared_ptr<ConstraintSequence> result(new ConstraintSequence);
+        const std::shared_ptr<ConstraintSequence> result(new ConstraintSequence);
 
-        std::tr1::shared_ptr<PackageDepSpec> spec;
+        std::shared_ptr<PackageDepSpec> spec;
         if (match_any(env, list, id))
             spec = make_shared_copy(id->uniquely_identifying_spec());
         else
@@ -1210,7 +1210,7 @@ namespace
         for (ChangeByResolventSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                 i != i_end ; ++i)
         {
-            const std::tr1::shared_ptr<DependentReason> reason(new DependentReason(*i));
+            const std::shared_ptr<DependentReason> reason(new DependentReason(*i));
 
             result->push_back(make_shared_ptr(new Constraint(make_named_values<Constraint>(
                                 n::destination_type() = dt_install_to_slash,
@@ -1225,14 +1225,14 @@ namespace
         return result;
     }
 
-    const std::tr1::shared_ptr<ConstraintSequence> get_constraints_for_purge_fn(
+    const std::shared_ptr<ConstraintSequence> get_constraints_for_purge_fn(
             const Environment * const env,
             const PackageDepSpecList & list,
-            const std::tr1::shared_ptr<const Resolution> &,
-            const std::tr1::shared_ptr<const PackageID> & id,
-            const std::tr1::shared_ptr<const ChangeByResolventSequence> & ids)
+            const std::shared_ptr<const Resolution> &,
+            const std::shared_ptr<const PackageID> & id,
+            const std::shared_ptr<const ChangeByResolventSequence> & ids)
     {
-        const std::tr1::shared_ptr<ConstraintSequence> result(new ConstraintSequence);
+        const std::shared_ptr<ConstraintSequence> result(new ConstraintSequence);
 
         PartiallyMadePackageDepSpec partial_spec((PartiallyMadePackageDepSpecOptions()));
         partial_spec.package(id->name());
@@ -1241,7 +1241,7 @@ namespace
                             id->slot_key()->value(), false)));
         PackageDepSpec spec(partial_spec);
 
-        const std::tr1::shared_ptr<WasUsedByReason> reason(new WasUsedByReason(ids));
+        const std::shared_ptr<WasUsedByReason> reason(new WasUsedByReason(ids));
 
         result->push_back(make_shared_ptr(new Constraint(make_named_values<Constraint>(
                             n::destination_type() = dt_install_to_slash,
@@ -1255,18 +1255,18 @@ namespace
         return result;
     }
 
-    const std::tr1::shared_ptr<ConstraintSequence> get_constraints_for_via_binary_fn(
+    const std::shared_ptr<ConstraintSequence> get_constraints_for_via_binary_fn(
             const Environment * const,
-            const std::tr1::shared_ptr<const Resolution> & resolution,
-            const std::tr1::shared_ptr<const Resolution> & other_resolution)
+            const std::shared_ptr<const Resolution> & resolution,
+            const std::shared_ptr<const Resolution> & other_resolution)
     {
-        const std::tr1::shared_ptr<ConstraintSequence> result(new ConstraintSequence);
+        const std::shared_ptr<ConstraintSequence> result(new ConstraintSequence);
 
         PartiallyMadePackageDepSpec partial_spec((PartiallyMadePackageDepSpecOptions()));
         partial_spec.package(resolution->resolvent().package());
         PackageDepSpec spec(partial_spec);
 
-        const std::tr1::shared_ptr<ViaBinaryReason> reason(new ViaBinaryReason(other_resolution->resolvent()));
+        const std::shared_ptr<ViaBinaryReason> reason(new ViaBinaryReason(other_resolution->resolvent()));
 
         result->push_back(make_shared_ptr(new Constraint(make_named_values<Constraint>(
                             n::destination_type() = resolution->resolvent().destination_type(),
@@ -1283,7 +1283,7 @@ namespace
     bool can_use_fn(
             const Environment * const env,
             const PackageDepSpecList & list,
-            const std::tr1::shared_ptr<const PackageID> & id)
+            const std::shared_ptr<const PackageID> & id)
     {
         return ! match_any(env, list, id);
     }
@@ -1291,7 +1291,7 @@ namespace
     bool always_via_binary_fn(
             const Environment * const env,
             const PackageDepSpecList & list,
-            const std::tr1::shared_ptr<const Resolution> & resolution)
+            const std::shared_ptr<const Resolution> & resolution)
     {
         const ChangesToMakeDecision * changes_decision(simple_visitor_cast<const ChangesToMakeDecision>(*resolution->decision()));
         if (! changes_decision)
@@ -1308,22 +1308,22 @@ namespace
     }
 
     int display_resolution(
-            const std::tr1::shared_ptr<Environment> & env,
-            const std::tr1::shared_ptr<const Resolved> & resolved,
+            const std::shared_ptr<Environment> & env,
+            const std::shared_ptr<const Resolved> & resolved,
             const ResolveCommandLineResolutionOptions &,
             const ResolveCommandLineDisplayOptions & display_options,
             const ResolveCommandLineProgramOptions & program_options,
-            const std::tr1::shared_ptr<const Map<std::string, std::string> > & keys_if_import,
-            const std::tr1::shared_ptr<const Sequence<std::pair<std::string, std::string> > > & targets)
+            const std::shared_ptr<const Map<std::string, std::string> > & keys_if_import,
+            const std::shared_ptr<const Sequence<std::pair<std::string, std::string> > > & targets)
     {
         Context context("When displaying chosen resolution:");
 
         StringListStream ser_stream;
-        Thread ser_thread(std::tr1::bind(&serialise_resolved,
-                    std::tr1::ref(ser_stream),
-                    std::tr1::cref(*resolved)));
+        Thread ser_thread(std::bind(&serialise_resolved,
+                    std::ref(ser_stream),
+                    std::cref(*resolved)));
 
-        std::tr1::shared_ptr<Sequence<std::string> > args(new Sequence<std::string>);
+        std::shared_ptr<Sequence<std::string> > args(new Sequence<std::string>);
 
         for (args::ArgsSection::GroupsConstIterator g(display_options.begin()), g_end(display_options.end()) ;
                 g != g_end ; ++g)
@@ -1332,7 +1332,7 @@ namespace
                     o != o_end ; ++o)
                 if ((*o)->specified())
                 {
-                    const std::tr1::shared_ptr<const Sequence<std::string> > f((*o)->forwardable_args());
+                    const std::shared_ptr<const Sequence<std::string> > f((*o)->forwardable_args());
                     std::copy(f->begin(), f->end(), args->back_inserter());
                 }
         }
@@ -1376,19 +1376,19 @@ namespace
     }
 
     int perform_resolution(
-            const std::tr1::shared_ptr<Environment> & env,
-            const std::tr1::shared_ptr<const Resolved> & resolved,
+            const std::shared_ptr<Environment> & env,
+            const std::shared_ptr<const Resolved> & resolved,
             const ResolveCommandLineResolutionOptions & resolution_options,
             const ResolveCommandLineExecutionOptions & execution_options,
             const ResolveCommandLineProgramOptions & program_options,
-            const std::tr1::shared_ptr<const Map<std::string, std::string> > & keys_if_import,
-            const std::tr1::shared_ptr<const Sequence<std::pair<std::string, std::string> > > & targets,
-            const std::tr1::shared_ptr<const Sequence<std::string> > & world_specs,
+            const std::shared_ptr<const Map<std::string, std::string> > & keys_if_import,
+            const std::shared_ptr<const Sequence<std::pair<std::string, std::string> > > & targets,
+            const std::shared_ptr<const Sequence<std::string> > & world_specs,
             const bool is_set)
     {
         Context context("When performing chosen resolution:");
 
-        std::tr1::shared_ptr<Sequence<std::string> > args(new Sequence<std::string>);
+        std::shared_ptr<Sequence<std::string> > args(new Sequence<std::string>);
 
         if (is_set)
             args->push_back("--set");
@@ -1400,7 +1400,7 @@ namespace
                     o != o_end ; ++o)
                 if ((*o)->specified())
                 {
-                    const std::tr1::shared_ptr<const Sequence<std::string> > f((*o)->forwardable_args());
+                    const std::shared_ptr<const Sequence<std::string> > f((*o)->forwardable_args());
                     std::copy(f->begin(), f->end(), args->back_inserter());
                 }
         }
@@ -1412,7 +1412,7 @@ namespace
                     o != o_end ; ++o)
                 if ((*o)->specified())
                 {
-                    const std::tr1::shared_ptr<const Sequence<std::string> > f((*o)->forwardable_args());
+                    const std::shared_ptr<const Sequence<std::string> > f((*o)->forwardable_args());
                     std::copy(f->begin(), f->end(), args->back_inserter());
                 }
         }
@@ -1574,8 +1574,8 @@ namespace
             std::cout << "* " << r->resolvent() << std::endl;
 
             std::cout << "    Had decided upon ";
-            const std::tr1::shared_ptr<const PackageID> id(r->previous_decision()->accept_returning<
-                    std::tr1::shared_ptr<const PackageID> >(ChosenIDVisitor()));
+            const std::shared_ptr<const PackageID> id(r->previous_decision()->accept_returning<
+                    std::shared_ptr<const PackageID> >(ChosenIDVisitor()));
             if (id)
                 std::cout << *id;
             else
@@ -1596,14 +1596,14 @@ namespace
 
 int
 paludis::cave::resolve_common(
-        const std::tr1::shared_ptr<Environment> & env,
+        const std::shared_ptr<Environment> & env,
         const ResolveCommandLineResolutionOptions & resolution_options,
         const ResolveCommandLineExecutionOptions & execution_options,
         const ResolveCommandLineDisplayOptions & display_options,
         const ResolveCommandLineProgramOptions & program_options,
-        const std::tr1::shared_ptr<const Map<std::string, std::string> > & keys_if_import,
-        const std::tr1::shared_ptr<const Sequence<std::pair<std::string, std::string> > > & targets_if_not_purge,
-        const std::tr1::shared_ptr<const Sequence<std::string> > & world_specs_if_not_auto,
+        const std::shared_ptr<const Map<std::string, std::string> > & keys_if_import,
+        const std::shared_ptr<const Sequence<std::pair<std::string, std::string> > > & targets_if_not_purge,
+        const std::shared_ptr<const Sequence<std::string> > & world_specs_if_not_auto,
         const bool purge)
 {
     int retcode(0);
@@ -1747,7 +1747,7 @@ paludis::cave::resolve_common(
                     UserPackageDepSpecOptions() + updso_allow_wildcards));
 #endif
 
-    std::tr1::shared_ptr<Generator> all_binary_repos_generator, not_binary_repos_generator;
+    std::shared_ptr<Generator> all_binary_repos_generator, not_binary_repos_generator;
     for (PackageDatabase::RepositoryConstIterator r(env->package_database()->begin_repositories()),
             r_end(env->package_database()->end_repositories()) ;
             r != r_end ; ++r)
@@ -1778,12 +1778,12 @@ paludis::cave::resolve_common(
             i_end(resolution_options.a_preset.end_args()) ;
             i != i_end ; ++i)
     {
-        const std::tr1::shared_ptr<const Reason> reason(new PresetReason("preset", make_null_shared_ptr()));
+        const std::shared_ptr<const Reason> reason(new PresetReason("preset", make_null_shared_ptr()));
         PackageDepSpec spec(parse_user_package_dep_spec(*i, env.get(), UserPackageDepSpecOptions()));
         DestinationTypes all_dts;
         for (EnumIterator<DestinationType> t, t_end(last_dt) ; t != t_end ; ++t)
             all_dts += *t;
-        const std::tr1::shared_ptr<const Resolvents> resolvents(get_resolvents_for_fn(
+        const std::shared_ptr<const Resolvents> resolvents(get_resolvents_for_fn(
                     env.get(), resolution_options, spec, make_null_shared_ptr(), reason,
                     all_dts));
 
@@ -1793,7 +1793,7 @@ paludis::cave::resolve_common(
         for (Resolvents::ConstIterator r(resolvents->begin()), r_end(resolvents->end()) ;
                 r != r_end ; ++r)
         {
-            const std::tr1::shared_ptr<Constraint> constraint(new Constraint(make_named_values<Constraint>(
+            const std::shared_ptr<Constraint> constraint(new Constraint(make_named_values<Constraint>(
                             n::destination_type() = r->destination_type(),
                             n::nothing_is_fine_too() = true,
                             n::reason() = reason,
@@ -1807,59 +1807,59 @@ paludis::cave::resolve_common(
         }
     }
 
-    using std::tr1::placeholders::_1;
-    using std::tr1::placeholders::_2;
-    using std::tr1::placeholders::_3;
-    using std::tr1::placeholders::_4;
+    using std::placeholders::_1;
+    using std::placeholders::_2;
+    using std::placeholders::_3;
+    using std::placeholders::_4;
 
     ResolverFunctions resolver_functions(make_named_values<ResolverFunctions>(
-                n::allowed_to_remove_fn() = std::tr1::bind(&allowed_to_remove_fn,
-                    env.get(), std::tr1::cref(allowed_to_remove_specs), _1, _2),
-                n::always_via_binary_fn() = std::tr1::bind(&always_via_binary_fn,
-                    env.get(), std::tr1::cref(via_binary_specs), _1),
-                n::can_use_fn() = std::tr1::bind(&can_use_fn,
-                    env.get(), std::tr1::cref(not_usable_specs), _1),
-                n::confirm_fn() = std::tr1::bind(&confirm_fn,
-                    env.get(), std::tr1::cref(resolution_options), std::tr1::cref(permit_downgrade),
-                    std::tr1::cref(permit_old_version), std::tr1::cref(allowed_to_break_specs),
+                n::allowed_to_remove_fn() = std::bind(&allowed_to_remove_fn,
+                    env.get(), std::cref(allowed_to_remove_specs), _1, _2),
+                n::always_via_binary_fn() = std::bind(&always_via_binary_fn,
+                    env.get(), std::cref(via_binary_specs), _1),
+                n::can_use_fn() = std::bind(&can_use_fn,
+                    env.get(), std::cref(not_usable_specs), _1),
+                n::confirm_fn() = std::bind(&confirm_fn,
+                    env.get(), std::cref(resolution_options), std::cref(permit_downgrade),
+                    std::cref(permit_old_version), std::cref(allowed_to_break_specs),
                     allowed_to_break_system, _1, _2),
-                n::find_repository_for_fn() = std::tr1::bind(&find_repository_for_fn,
-                    env.get(), std::tr1::cref(resolution_options), _1, _2),
-                n::get_constraints_for_dependent_fn() = std::tr1::bind(&get_constraints_for_dependent_fn,
-                    env.get(), std::tr1::cref(less_restrictive_remove_blockers_specs), _1, _2, _3),
-                n::get_constraints_for_purge_fn() = std::tr1::bind(&get_constraints_for_purge_fn,
-                    env.get(), std::tr1::cref(purge_specs), _1, _2, _3),
-                n::get_constraints_for_via_binary_fn() = std::tr1::bind(&get_constraints_for_via_binary_fn,
+                n::find_repository_for_fn() = std::bind(&find_repository_for_fn,
+                    env.get(), std::cref(resolution_options), _1, _2),
+                n::get_constraints_for_dependent_fn() = std::bind(&get_constraints_for_dependent_fn,
+                    env.get(), std::cref(less_restrictive_remove_blockers_specs), _1, _2, _3),
+                n::get_constraints_for_purge_fn() = std::bind(&get_constraints_for_purge_fn,
+                    env.get(), std::cref(purge_specs), _1, _2, _3),
+                n::get_constraints_for_via_binary_fn() = std::bind(&get_constraints_for_via_binary_fn,
                     env.get(), _1, _2),
-                n::get_destination_types_for_fn() = std::tr1::bind(&get_destination_types_for_fn,
-                    env.get(), std::tr1::cref(resolution_options), _1, _2, _3),
-                n::get_initial_constraints_for_fn() = std::tr1::bind(&initial_constraints_for_fn,
-                    env.get(), std::tr1::cref(resolution_options), std::tr1::cref(without),
-                    std::tr1::cref(initial_constraints), all_binary_repos_generator, _1),
-                n::get_resolvents_for_fn() = std::tr1::bind(&get_resolvents_for_fn,
-                    env.get(), std::tr1::cref(resolution_options), _1, _2, _3, DestinationTypes()),
-                n::get_use_existing_fn() = std::tr1::bind(&use_existing_fn,
-                    env.get(), std::tr1::cref(resolution_options), std::tr1::cref(without), std::tr1::cref(with), _1, _2, _3),
-                n::interest_in_spec_fn() = std::tr1::bind(&interest_in_spec_fn,
-                    env.get(), std::tr1::cref(resolution_options), std::tr1::cref(take), std::tr1::cref(take_from),
-                    std::tr1::cref(ignore), std::tr1::cref(ignore_from), std::tr1::cref(no_blockers_from),
-                    std::tr1::cref(no_dependencies_from), _1, _2),
-                n::make_destination_filtered_generator_fn() = std::tr1::bind(&make_destination_filtered_generator_with_resolution,
-                    env.get(), std::tr1::cref(resolution_options), all_binary_repos_generator, _1, _2),
-                n::make_origin_filtered_generator_fn() = std::tr1::bind(&make_origin_filtered_generator,
-                    env.get(), std::tr1::cref(resolution_options), not_binary_repos_generator, _1, _2),
-                n::order_early_fn() = std::tr1::bind(&order_early_fn,
-                    env.get(), std::tr1::cref(resolution_options), std::tr1::cref(early), std::tr1::cref(late), _1),
-                n::prefer_or_avoid_fn() = std::tr1::bind(&prefer_or_avoid_fn,
-                    env.get(), std::tr1::cref(resolution_options), std::tr1::cref(favour), std::tr1::cref(avoid), _1),
-                n::remove_if_dependent_fn() = std::tr1::bind(&remove_if_dependent_fn,
-                    env.get(), std::tr1::cref(remove_if_dependent_specs), _1)
+                n::get_destination_types_for_fn() = std::bind(&get_destination_types_for_fn,
+                    env.get(), std::cref(resolution_options), _1, _2, _3),
+                n::get_initial_constraints_for_fn() = std::bind(&initial_constraints_for_fn,
+                    env.get(), std::cref(resolution_options), std::cref(without),
+                    std::cref(initial_constraints), all_binary_repos_generator, _1),
+                n::get_resolvents_for_fn() = std::bind(&get_resolvents_for_fn,
+                    env.get(), std::cref(resolution_options), _1, _2, _3, DestinationTypes()),
+                n::get_use_existing_fn() = std::bind(&use_existing_fn,
+                    env.get(), std::cref(resolution_options), std::cref(without), std::cref(with), _1, _2, _3),
+                n::interest_in_spec_fn() = std::bind(&interest_in_spec_fn,
+                    env.get(), std::cref(resolution_options), std::cref(take), std::cref(take_from),
+                    std::cref(ignore), std::cref(ignore_from), std::cref(no_blockers_from),
+                    std::cref(no_dependencies_from), _1, _2),
+                n::make_destination_filtered_generator_fn() = std::bind(&make_destination_filtered_generator_with_resolution,
+                    env.get(), std::cref(resolution_options), all_binary_repos_generator, _1, _2),
+                n::make_origin_filtered_generator_fn() = std::bind(&make_origin_filtered_generator,
+                    env.get(), std::cref(resolution_options), not_binary_repos_generator, _1, _2),
+                n::order_early_fn() = std::bind(&order_early_fn,
+                    env.get(), std::cref(resolution_options), std::cref(early), std::cref(late), _1),
+                n::prefer_or_avoid_fn() = std::bind(&prefer_or_avoid_fn,
+                    env.get(), std::cref(resolution_options), std::cref(favour), std::cref(avoid), _1),
+                n::remove_if_dependent_fn() = std::bind(&remove_if_dependent_fn,
+                    env.get(), std::cref(remove_if_dependent_specs), _1)
                 ));
 
     ScopedSelectionCache selection_cache(env.get());
-    std::tr1::shared_ptr<Resolver> resolver(new Resolver(env.get(), resolver_functions));
+    std::shared_ptr<Resolver> resolver(new Resolver(env.get(), resolver_functions));
     bool is_set(false);
-    std::tr1::shared_ptr<const Sequence<std::string> > targets_cleaned_up;
+    std::shared_ptr<const Sequence<std::string> > targets_cleaned_up;
     std::list<SuggestRestart> restarts;
 
     try
@@ -1867,7 +1867,7 @@ paludis::cave::resolve_common(
         {
             DisplayCallback display_callback("Resolving: ");
             ScopedNotifierCallback display_callback_holder(env.get(),
-                    NotifierCallbackFunction(std::tr1::cref(display_callback)));
+                    NotifierCallbackFunction(std::cref(display_callback)));
 
             while (true)
             {

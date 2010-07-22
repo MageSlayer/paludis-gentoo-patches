@@ -24,17 +24,17 @@
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/environment-fwd.hh>
 #include <string>
-#include <tr1/functional>
-#include <tr1/memory>
+#include <functional>
+#include <memory>
 
 namespace paludis
 {
     namespace cave
     {
         int executables_common(
-                const std::tr1::shared_ptr<Environment> & env,
+                const std::shared_ptr<Environment> & env,
                 const std::string &,
-                const std::tr1::function<void (const FSEntry &)> &);
+                const std::function<void (const FSEntry &)> &);
     }
 }
 

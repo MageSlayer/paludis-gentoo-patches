@@ -44,14 +44,14 @@ namespace paludis
     template <>
     struct Implementation<MyOptionsRequirementsVerifier>
     {
-        const std::tr1::shared_ptr<const ERepositoryID> id;
+        const std::shared_ptr<const ERepositoryID> id;
 
-        std::tr1::shared_ptr<Sequence<std::string> > unmet_requirements;
+        std::shared_ptr<Sequence<std::string> > unmet_requirements;
         std::list<ChoicePrefixName> current_prefix_stack;
         std::list<ChildrenList> current_children_stack;
         std::list<int> number_enabled_stack;
 
-        Implementation(const std::tr1::shared_ptr<const ERepositoryID> & i) :
+        Implementation(const std::shared_ptr<const ERepositoryID> & i) :
             id(i),
             unmet_requirements(new Sequence<std::string>)
         {
@@ -62,7 +62,7 @@ namespace paludis
     };
 }
 
-MyOptionsRequirementsVerifier::MyOptionsRequirementsVerifier(const std::tr1::shared_ptr<const ERepositoryID> & id) :
+MyOptionsRequirementsVerifier::MyOptionsRequirementsVerifier(const std::shared_ptr<const ERepositoryID> & id) :
     PrivateImplementationPattern<MyOptionsRequirementsVerifier>(new Implementation<MyOptionsRequirementsVerifier>(id))
 {
 }
@@ -71,7 +71,7 @@ MyOptionsRequirementsVerifier::~MyOptionsRequirementsVerifier()
 {
 }
 
-const std::tr1::shared_ptr<const Sequence<std::string> >
+const std::shared_ptr<const Sequence<std::string> >
 MyOptionsRequirementsVerifier::unmet_requirements() const
 {
     return _imp->unmet_requirements;
@@ -85,8 +85,8 @@ MyOptionsRequirementsVerifier::visit(const PlainTextSpecTree::NodeType<PlainText
 
 namespace
 {
-    const std::tr1::shared_ptr<const ChoiceValue> find_choice_value(
-            const std::tr1::shared_ptr<const ERepositoryID> & id,
+    const std::shared_ptr<const ChoiceValue> find_choice_value(
+            const std::shared_ptr<const ERepositoryID> & id,
             const ChoicePrefixName & prefix,
             const ChoiceNameWithPrefix & name_with_prefix)
     {
@@ -110,7 +110,7 @@ namespace
 
 void
 MyOptionsRequirementsVerifier::verify_one(const ChoicePrefixName & spec_prefix,
-        const std::string & spec_text, const std::tr1::shared_ptr<const MetadataSectionKey> & annotations_key)
+        const std::string & spec_text, const std::shared_ptr<const MetadataSectionKey> & annotations_key)
 {
     std::pair<UnprefixedChoiceName, bool> active_myoption(parse_myoption(spec_text));
     ChoiceNameWithPrefix active_flag((
@@ -119,7 +119,7 @@ MyOptionsRequirementsVerifier::verify_one(const ChoicePrefixName & spec_prefix,
             stringify(active_myoption.first));
 
     {
-        std::tr1::shared_ptr<const ChoiceValue> choice_value(find_choice_value(_imp->id, spec_prefix, active_flag));
+        std::shared_ptr<const ChoiceValue> choice_value(find_choice_value(_imp->id, spec_prefix, active_flag));
 
         if (choice_value)
         {
@@ -183,7 +183,7 @@ MyOptionsRequirementsVerifier::verify_one(const ChoicePrefixName & spec_prefix,
 
                 UnprefixedChoiceName suffix(req_flag_s);
 
-                std::tr1::shared_ptr<const ChoiceValue> choice_value;
+                std::shared_ptr<const ChoiceValue> choice_value;
                 if (_imp->id->choices_key())
                     for (Choices::ConstIterator k(_imp->id->choices_key()->value()->begin()),
                             k_end(_imp->id->choices_key()->value()->end()) ;
@@ -242,7 +242,7 @@ MyOptionsRequirementsVerifier::visit(const PlainTextSpecTree::NodeType<PlainText
                     ! stringify(*_imp->current_prefix_stack.begin()).empty() ? stringify(*_imp->current_prefix_stack.begin()) +
                     stringify(_imp->id->eapi()->supported()->choices_options()->use_expand_separator()) : "") +
                 stringify(active_myoption.first));
-        std::tr1::shared_ptr<const ChoiceValue> choice_value(find_choice_value(_imp->id, *_imp->current_prefix_stack.begin(), active_flag));
+        std::shared_ptr<const ChoiceValue> choice_value(find_choice_value(_imp->id, *_imp->current_prefix_stack.begin(), active_flag));
 
         if (choice_value && choice_value->enabled() == active_myoption.second)
             for (std::list<int>::iterator l(_imp->number_enabled_stack.begin()), l_end(_imp->number_enabled_stack.end()) ;

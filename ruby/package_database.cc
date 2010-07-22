@@ -42,8 +42,8 @@ namespace
     {
         try
         {
-            std::tr1::shared_ptr<PackageDatabase> * self_ptr;
-            Data_Get_Struct(self, std::tr1::shared_ptr<PackageDatabase>, self_ptr);
+            std::shared_ptr<PackageDatabase> * self_ptr;
+            Data_Get_Struct(self, std::shared_ptr<PackageDatabase>, self_ptr);
             return rb_str_new2(stringify((*self_ptr)->favourite_repository()).c_str());
         }
         catch (const std::exception & e)
@@ -67,8 +67,8 @@ namespace
         {
             if (1 == argc || 2 == argc)
             {
-                std::tr1::shared_ptr<PackageDatabase> * self_ptr;
-                Data_Get_Struct(self, std::tr1::shared_ptr<PackageDatabase>, self_ptr);
+                std::shared_ptr<PackageDatabase> * self_ptr;
+                Data_Get_Struct(self, std::shared_ptr<PackageDatabase>, self_ptr);
                 return rb_str_new2(stringify((*self_ptr)->fetch_unique_qualified_package_name(
                                 PackageNamePart(StringValuePtr(argv[0])), 2 == argc ? value_to_filter(argv[1]) : filter::All())).c_str());
             }
@@ -94,8 +94,8 @@ namespace
     {
         try
         {
-            std::tr1::shared_ptr<PackageDatabase> * self_ptr;
-            Data_Get_Struct(self, std::tr1::shared_ptr<PackageDatabase>, self_ptr);
+            std::shared_ptr<PackageDatabase> * self_ptr;
+            Data_Get_Struct(self, std::shared_ptr<PackageDatabase>, self_ptr);
 
             if (rb_block_given_p())
             {
@@ -128,8 +128,8 @@ namespace
     {
         try
         {
-            std::tr1::shared_ptr<PackageDatabase> * self_ptr;
-            Data_Get_Struct(self, std::tr1::shared_ptr<PackageDatabase>, self_ptr);
+            std::shared_ptr<PackageDatabase> * self_ptr;
+            Data_Get_Struct(self, std::shared_ptr<PackageDatabase>, self_ptr);
 
             return repository_to_value((*self_ptr)->fetch_repository(RepositoryName(StringValuePtr(name))));
         }
@@ -150,8 +150,8 @@ namespace
     {
         try
         {
-            std::tr1::shared_ptr<PackageDatabase> * self_ptr;
-            Data_Get_Struct(self, std::tr1::shared_ptr<PackageDatabase>, self_ptr);
+            std::shared_ptr<PackageDatabase> * self_ptr;
+            Data_Get_Struct(self, std::shared_ptr<PackageDatabase>, self_ptr);
 
             return (*self_ptr)->more_important_than(RepositoryName(StringValuePtr(name1)),
                     RepositoryName(StringValuePtr(name2))) ? Qtrue : Qfalse;
@@ -173,8 +173,8 @@ namespace
     {
         try
         {
-            std::tr1::shared_ptr<PackageDatabase> * self_ptr;
-            Data_Get_Struct(self, std::tr1::shared_ptr<PackageDatabase>, self_ptr);
+            std::shared_ptr<PackageDatabase> * self_ptr;
+            Data_Get_Struct(self, std::shared_ptr<PackageDatabase>, self_ptr);
 
             return ((*self_ptr)->has_repository_named(RepositoryName(StringValuePtr(name)))) ? true : false;
         }
@@ -195,10 +195,10 @@ namespace
     {
         try
         {
-            std::tr1::shared_ptr<PackageDatabase> * self_ptr;
-            Data_Get_Struct(self, std::tr1::shared_ptr<PackageDatabase>, self_ptr);
+            std::shared_ptr<PackageDatabase> * self_ptr;
+            Data_Get_Struct(self, std::shared_ptr<PackageDatabase>, self_ptr);
 
-            std::tr1::shared_ptr<Repository> repo(value_to_repository(repo_v));
+            std::shared_ptr<Repository> repo(value_to_repository(repo_v));
 
             (*self_ptr)->add_repository(NUM2INT(importance), repo);
             return Qnil;
@@ -235,13 +235,13 @@ namespace
 }
 
 VALUE
-paludis::ruby::package_database_to_value(std::tr1::shared_ptr<PackageDatabase> m)
+paludis::ruby::package_database_to_value(std::shared_ptr<PackageDatabase> m)
 {
-    std::tr1::shared_ptr<PackageDatabase> * m_ptr(0);
+    std::shared_ptr<PackageDatabase> * m_ptr(0);
     try
     {
-        m_ptr = new std::tr1::shared_ptr<PackageDatabase>(m);
-        return Data_Wrap_Struct(c_package_database, 0, &Common<std::tr1::shared_ptr<PackageDatabase> >::free, m_ptr);
+        m_ptr = new std::shared_ptr<PackageDatabase>(m);
+        return Data_Wrap_Struct(c_package_database, 0, &Common<std::shared_ptr<PackageDatabase> >::free, m_ptr);
     }
     catch (const std::exception & e)
     {

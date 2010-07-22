@@ -32,12 +32,12 @@ namespace paludis
             private PrivateImplementationPattern<EUnacceptedMask>
         {
             public:
-                EUnacceptedMask(const char, const std::string &, const std::tr1::shared_ptr<const MetadataKey> &);
+                EUnacceptedMask(const char, const std::string &, const std::shared_ptr<const MetadataKey> &);
                 ~EUnacceptedMask();
 
                 char key() const;
                 const std::string description() const;
-                const std::tr1::shared_ptr<const MetadataKey> unaccepted_key() const;
+                const std::shared_ptr<const MetadataKey> unaccepted_key() const;
         };
 
         class EUnsupportedMask :
@@ -58,12 +58,12 @@ namespace paludis
             private PrivateImplementationPattern<ERepositoryMask>
         {
             public:
-                ERepositoryMask(const char, const std::string &, const std::tr1::shared_ptr<const MetadataKey> &);
+                ERepositoryMask(const char, const std::string &, const std::shared_ptr<const MetadataKey> &);
                 ~ERepositoryMask();
 
                 virtual char key() const;
                 const std::string description() const;
-                const std::tr1::shared_ptr<const MetadataKey> mask_key() const;
+                const std::shared_ptr<const MetadataKey> mask_key() const;
         };
     }
 }

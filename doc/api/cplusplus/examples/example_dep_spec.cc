@@ -40,7 +40,7 @@ int main(int argc, char * argv[])
                 "example_dep_spec", "EXAMPLE_DEP_SPEC_OPTIONS", "EXAMPLE_DEP_SPEC_CMDLINE");
 
         /* We start with an Environment, respecting the user's '--environment' choice. */
-        std::tr1::shared_ptr<Environment> env(EnvironmentFactory::get_instance()->create(
+        std::shared_ptr<Environment> env(EnvironmentFactory::get_instance()->create(
                     CommandLine::get_instance()->a_environment.argument()));
 
         /* For each command line parameter... */
@@ -142,7 +142,7 @@ int main(int argc, char * argv[])
 
             /* And display packages matching that spec */
             cout << "    " << left << setw(24) << "Matches:" << " ";
-            std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(generator::Matches(spec, MatchPackageOptions()))]);
+            std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(generator::Matches(spec, MatchPackageOptions()))]);
             bool need_indent(false);
             for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                     i != i_end ; ++i)

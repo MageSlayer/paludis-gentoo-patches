@@ -108,13 +108,13 @@ namespace paludis
             NamedValue<n::distdir, FSEntry> distdir;
             NamedValue<n::ebuild_dir, FSEntry> ebuild_dir;
             NamedValue<n::ebuild_file, FSEntry> ebuild_file;
-            NamedValue<n::eclassdirs, std::tr1::shared_ptr<const FSEntrySequence> > eclassdirs;
+            NamedValue<n::eclassdirs, std::shared_ptr<const FSEntrySequence> > eclassdirs;
             NamedValue<n::environment, const Environment *> environment;
-            NamedValue<n::exlibsdirs, std::tr1::shared_ptr<const FSEntrySequence> > exlibsdirs;
+            NamedValue<n::exlibsdirs, std::shared_ptr<const FSEntrySequence> > exlibsdirs;
             NamedValue<n::files_dir, FSEntry> files_dir;
-            NamedValue<n::maybe_output_manager, std::tr1::shared_ptr<OutputManager> > maybe_output_manager;
+            NamedValue<n::maybe_output_manager, std::shared_ptr<OutputManager> > maybe_output_manager;
             NamedValue<n::package_builddir, FSEntry> package_builddir;
-            NamedValue<n::package_id, std::tr1::shared_ptr<const erepository::ERepositoryID> > package_id;
+            NamedValue<n::package_id, std::shared_ptr<const erepository::ERepositoryID> > package_id;
             NamedValue<n::portdir, FSEntry> portdir;
             NamedValue<n::root, std::string> root;
             NamedValue<n::sandbox, bool> sandbox;
@@ -133,9 +133,9 @@ namespace paludis
         {
             NamedValue<n::a, std::string> a;
             NamedValue<n::aa, std::string> aa;
-            NamedValue<n::expand_vars, std::tr1::shared_ptr<const Map<std::string, std::string> > > expand_vars;
-            NamedValue<n::profiles, std::tr1::shared_ptr<const FSEntrySequence> > profiles;
-            NamedValue<n::profiles_with_parents, std::tr1::shared_ptr<const FSEntrySequence> > profiles_with_parents;
+            NamedValue<n::expand_vars, std::shared_ptr<const Map<std::string, std::string> > > expand_vars;
+            NamedValue<n::profiles, std::shared_ptr<const FSEntrySequence> > profiles;
+            NamedValue<n::profiles_with_parents, std::shared_ptr<const FSEntrySequence> > profiles_with_parents;
             NamedValue<n::use, std::string> use;
             NamedValue<n::use_expand, std::string> use_expand;
             NamedValue<n::use_expand_hidden, std::string> use_expand_hidden;
@@ -152,10 +152,10 @@ namespace paludis
         {
             NamedValue<n::a, std::string> a;
             NamedValue<n::aa, std::string> aa;
-            NamedValue<n::expand_vars, std::tr1::shared_ptr<const Map<std::string, std::string> > > expand_vars;
+            NamedValue<n::expand_vars, std::shared_ptr<const Map<std::string, std::string> > > expand_vars;
             NamedValue<n::loadsaveenv_dir, FSEntry> loadsaveenv_dir;
-            NamedValue<n::profiles, std::tr1::shared_ptr<const FSEntrySequence> > profiles;
-            NamedValue<n::profiles_with_parents, std::tr1::shared_ptr<const FSEntrySequence> > profiles_with_parents;
+            NamedValue<n::profiles, std::shared_ptr<const FSEntrySequence> > profiles;
+            NamedValue<n::profiles_with_parents, std::shared_ptr<const FSEntrySequence> > profiles_with_parents;
             NamedValue<n::slot, std::string> slot;
             NamedValue<n::use, std::string> use;
             NamedValue<n::use_expand, std::string> use_expand;
@@ -175,11 +175,11 @@ namespace paludis
             NamedValue<n::aa, std::string> aa;
             NamedValue<n::config_protect, std::string> config_protect;
             NamedValue<n::config_protect_mask, std::string> config_protect_mask;
-            NamedValue<n::expand_vars, std::tr1::shared_ptr<const Map<std::string, std::string> > > expand_vars;
+            NamedValue<n::expand_vars, std::shared_ptr<const Map<std::string, std::string> > > expand_vars;
             NamedValue<n::loadsaveenv_dir, FSEntry> loadsaveenv_dir;
-            NamedValue<n::profiles, std::tr1::shared_ptr<const FSEntrySequence> > profiles;
-            NamedValue<n::profiles_with_parents, std::tr1::shared_ptr<const FSEntrySequence> > profiles_with_parents;
-            NamedValue<n::replacing_ids, std::tr1::shared_ptr<const PackageIDSequence> > replacing_ids;
+            NamedValue<n::profiles, std::shared_ptr<const FSEntrySequence> > profiles;
+            NamedValue<n::profiles_with_parents, std::shared_ptr<const FSEntrySequence> > profiles_with_parents;
+            NamedValue<n::replacing_ids, std::shared_ptr<const PackageIDSequence> > replacing_ids;
             NamedValue<n::slot, std::string> slot;
             NamedValue<n::use, std::string> use;
             NamedValue<n::use_expand, std::string> use_expand;
@@ -195,9 +195,9 @@ namespace paludis
          */
         struct EbuildPretendCommandParams
         {
-            NamedValue<n::expand_vars, std::tr1::shared_ptr<const Map<std::string, std::string> > > expand_vars;
-            NamedValue<n::profiles, std::tr1::shared_ptr<const FSEntrySequence> > profiles;
-            NamedValue<n::profiles_with_parents, std::tr1::shared_ptr<const FSEntrySequence> > profiles_with_parents;
+            NamedValue<n::expand_vars, std::shared_ptr<const Map<std::string, std::string> > > expand_vars;
+            NamedValue<n::profiles, std::shared_ptr<const FSEntrySequence> > profiles;
+            NamedValue<n::profiles_with_parents, std::shared_ptr<const FSEntrySequence> > profiles_with_parents;
             NamedValue<n::use, std::string> use;
             NamedValue<n::use_expand, std::string> use_expand;
             NamedValue<n::use_expand_hidden, std::string> use_expand_hidden;
@@ -212,10 +212,10 @@ namespace paludis
          */
         struct EbuildBadOptionsCommandParams
         {
-            NamedValue<n::expand_vars, std::tr1::shared_ptr<const Map<std::string, std::string> > > expand_vars;
-            NamedValue<n::profiles, std::tr1::shared_ptr<const FSEntrySequence> > profiles;
-            NamedValue<n::profiles_with_parents, std::tr1::shared_ptr<const FSEntrySequence> > profiles_with_parents;
-            NamedValue<n::unmet_requirements, std::tr1::shared_ptr<const Sequence<std::string> > > unmet_requirements;
+            NamedValue<n::expand_vars, std::shared_ptr<const Map<std::string, std::string> > > expand_vars;
+            NamedValue<n::profiles, std::shared_ptr<const FSEntrySequence> > profiles;
+            NamedValue<n::profiles_with_parents, std::shared_ptr<const FSEntrySequence> > profiles_with_parents;
+            NamedValue<n::unmet_requirements, std::shared_ptr<const Sequence<std::string> > > unmet_requirements;
             NamedValue<n::use, std::string> use;
             NamedValue<n::use_expand, std::string> use_expand;
             NamedValue<n::use_expand_hidden, std::string> use_expand_hidden;
@@ -232,7 +232,7 @@ namespace paludis
         {
             NamedValue<n::load_environment, const FSEntry *> load_environment;
             NamedValue<n::loadsaveenv_dir, FSEntry> loadsaveenv_dir;
-            NamedValue<n::replaced_by, std::tr1::shared_ptr<const PackageID> > replaced_by;
+            NamedValue<n::replaced_by, std::shared_ptr<const PackageID> > replaced_by;
             NamedValue<n::unmerge_only, bool> unmerge_only;
         };
 
@@ -257,11 +257,11 @@ namespace paludis
          */
         struct EbuildInfoCommandParams
         {
-            NamedValue<n::expand_vars, std::tr1::shared_ptr<const Map<std::string, std::string> > > expand_vars;
-            NamedValue<n::info_vars, std::tr1::shared_ptr<const Set<std::string> > > info_vars;
+            NamedValue<n::expand_vars, std::shared_ptr<const Map<std::string, std::string> > > expand_vars;
+            NamedValue<n::info_vars, std::shared_ptr<const Set<std::string> > > info_vars;
             NamedValue<n::load_environment, const FSEntry *> load_environment;
-            NamedValue<n::profiles, std::tr1::shared_ptr<const FSEntrySequence> > profiles;
-            NamedValue<n::profiles_with_parents, std::tr1::shared_ptr<const FSEntrySequence> > profiles_with_parents;
+            NamedValue<n::profiles, std::shared_ptr<const FSEntrySequence> > profiles;
+            NamedValue<n::profiles_with_parents, std::shared_ptr<const FSEntrySequence> > profiles_with_parents;
             NamedValue<n::use, std::string> use;
             NamedValue<n::use_ebuild_file, bool> use_ebuild_file;
             NamedValue<n::use_expand, std::string> use_expand;
@@ -279,9 +279,9 @@ namespace paludis
         {
             NamedValue<n::environment, const Environment *> environment;
             NamedValue<n::environment_file, FSEntry> environment_file;
-            NamedValue<n::maybe_output_manager, std::tr1::shared_ptr<OutputManager> > maybe_output_manager;
+            NamedValue<n::maybe_output_manager, std::shared_ptr<OutputManager> > maybe_output_manager;
             NamedValue<n::output_directory, FSEntry> output_directory;
-            NamedValue<n::package_id, std::tr1::shared_ptr<const erepository::ERepositoryID> > package_id;
+            NamedValue<n::package_id, std::shared_ptr<const erepository::ERepositoryID> > package_id;
         };
 
         /**
@@ -300,9 +300,9 @@ namespace paludis
             NamedValue<n::environment, const Environment *> environment;
             NamedValue<n::environment_file, FSEntry> environment_file;
             NamedValue<n::image, FSEntry> image;
-            NamedValue<n::maybe_output_manager, std::tr1::shared_ptr<OutputManager> > maybe_output_manager;
+            NamedValue<n::maybe_output_manager, std::shared_ptr<OutputManager> > maybe_output_manager;
             NamedValue<n::merger_options, MergerOptions> merger_options;
-            NamedValue<n::package_id, std::tr1::shared_ptr<const erepository::ERepositoryID> > package_id;
+            NamedValue<n::package_id, std::shared_ptr<const erepository::ERepositoryID> > package_id;
         };
 
         /**
@@ -731,7 +731,7 @@ namespace paludis
             public EbuildCommand
         {
             private:
-                std::tr1::shared_ptr<Map<std::string, std::string> > keys;
+                std::shared_ptr<Map<std::string, std::string> > keys;
                 std::string captured_stdout;
                 std::string captured_stderr;
 
@@ -748,7 +748,7 @@ namespace paludis
 
                 Command extend_command(const Command &);
 
-                void load(const std::tr1::shared_ptr<const EbuildID> &);
+                void load(const std::shared_ptr<const EbuildID> &);
         };
     }
 }

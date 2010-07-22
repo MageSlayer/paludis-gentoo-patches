@@ -22,7 +22,7 @@
 
 #include "command_command_line.hh"
 #include <paludis/environment-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 
 namespace paludis
 {

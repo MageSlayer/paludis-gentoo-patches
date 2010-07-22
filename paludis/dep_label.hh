@@ -28,7 +28,7 @@
 #include <paludis/util/type_list.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
-#include <tr1/functional>
+#include <functional>
 
 /** \file
  * Declarations for dependency label-related classes.
@@ -146,13 +146,13 @@ namespace paludis
     {
         private:
             const std::string _text;
-            const std::tr1::function<bool ()> _enabled;
+            const std::function<bool ()> _enabled;
 
         public:
             ///\name Basic operations
             ///\{
 
-            ConcreteDependenciesLabel(const std::string &, const std::tr1::function<bool ()> &);
+            ConcreteDependenciesLabel(const std::string &, const std::function<bool ()> &);
             ~ConcreteDependenciesLabel();
 
             ///\}
@@ -181,8 +181,8 @@ namespace paludis
     extern template class ConcreteDependenciesLabel<DependenciesRecommendationLabelTag>;
     extern template class ConcreteDependenciesLabel<DependenciesTestLabelTag>;
 
-    extern template class WrappedForwardIterator<Sequence<std::tr1::shared_ptr<const DependenciesLabel> >::ConstIteratorTag,
-             const std::tr1::shared_ptr<const DependenciesLabel> >;
+    extern template class WrappedForwardIterator<Sequence<std::shared_ptr<const DependenciesLabel> >::ConstIteratorTag,
+             const std::shared_ptr<const DependenciesLabel> >;
 }
 
 #endif

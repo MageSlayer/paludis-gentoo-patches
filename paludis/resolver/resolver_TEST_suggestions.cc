@@ -43,7 +43,7 @@
 #include <test/test_framework.hh>
 
 #include <list>
-#include <tr1/functional>
+#include <functional>
 #include <algorithm>
 #include <map>
 
@@ -71,7 +71,7 @@ namespace test_cases
 
         void run()
         {
-            std::tr1::shared_ptr<const Resolved> resolved(get_resolved("suggestion/target"));
+            std::shared_ptr<const Resolved> resolved(get_resolved("suggestion/target"));
 
             check_resolved(resolved,
                     n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
@@ -98,7 +98,7 @@ namespace test_cases
 
         void run()
         {
-            std::tr1::shared_ptr<const Resolved> resolved(get_resolved("unmeetable-suggestion/target"));
+            std::shared_ptr<const Resolved> resolved(get_resolved("unmeetable-suggestion/target"));
 
             check_resolved(resolved,
                     n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
@@ -125,7 +125,7 @@ namespace test_cases
 
         void run()
         {
-            std::tr1::shared_ptr<const Resolved> resolved(get_resolved("suggestion-then-dependency/target"));
+            std::shared_ptr<const Resolved> resolved(get_resolved("suggestion-then-dependency/target"));
 
             check_resolved(resolved,
                     n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()

@@ -45,10 +45,10 @@ NoSuchMatcherError::NoSuchMatcherError(const std::string & msg) throw () :
 namespace
 {
     template <typename M_>
-    static std::tr1::shared_ptr<Matcher>
+    static std::shared_ptr<Matcher>
     make(const std::string & s)
     {
-        return std::tr1::shared_ptr<Matcher>(new M_(s));
+        return std::shared_ptr<Matcher>(new M_(s));
     }
 }
 
@@ -56,7 +56,7 @@ MatcherFactory::MatcherFactory()
 {
 }
 
-const std::tr1::shared_ptr<Matcher>
+const std::shared_ptr<Matcher>
 MatcherFactory::create(const std::string & s, const std::string & t) const
 {
     if (s == "exact")

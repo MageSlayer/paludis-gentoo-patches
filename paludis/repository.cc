@@ -35,7 +35,7 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/distribution-impl.hh>
 #include <paludis/environment.hh>
-#include <tr1/functional>
+#include <functional>
 #include <map>
 #include <list>
 #include <utility>
@@ -44,9 +44,9 @@
 
 using namespace paludis;
 
-template class Set<std::tr1::shared_ptr<Repository> >;
-template class WrappedForwardIterator<Set<std::tr1::shared_ptr<Repository> >::ConstIteratorTag, const std::tr1::shared_ptr<Repository> >;
-template class WrappedOutputIterator<Set<std::tr1::shared_ptr<Repository> >::InserterTag, std::tr1::shared_ptr<Repository> >;
+template class Set<std::shared_ptr<Repository> >;
+template class WrappedForwardIterator<Set<std::shared_ptr<Repository> >::ConstIteratorTag, const std::shared_ptr<Repository> >;
+template class WrappedOutputIterator<Set<std::shared_ptr<Repository> >::InserterTag, std::shared_ptr<Repository> >;
 
 template class Sequence<RepositoryVirtualsEntry>;
 template class WrappedForwardIterator<Sequence<RepositoryVirtualsEntry>::ConstIteratorTag, const RepositoryVirtualsEntry>;
@@ -88,7 +88,7 @@ namespace
 {
     struct RepositoryDistribution
     {
-        NamedValue<n::repository_blacklist, std::tr1::function<std::string (const std::string &)> > repository_blacklist;
+        NamedValue<n::repository_blacklist, std::function<std::string (const std::string &)> > repository_blacklist;
     };
 
     typedef ExtraDistributionData<RepositoryDistribution> RepositoryDistributionData;
@@ -104,11 +104,11 @@ namespace paludis
             return "repository_blacklist.conf";
         }
 
-        static std::tr1::shared_ptr<RepositoryDistribution> make_data(const std::tr1::shared_ptr<const KeyValueConfigFile> & k)
+        static std::shared_ptr<RepositoryDistribution> make_data(const std::shared_ptr<const KeyValueConfigFile> & k)
         {
             return make_shared_ptr(new RepositoryDistribution(make_named_values<RepositoryDistribution>(
-                            n::repository_blacklist() = std::tr1::bind(std::tr1::mem_fn(&KeyValueConfigFile::get),
-                                    k, std::tr1::placeholders::_1)
+                            n::repository_blacklist() = std::bind(std::mem_fn(&KeyValueConfigFile::get),
+                                    k, std::placeholders::_1)
                             )));
         }
     };
@@ -156,13 +156,13 @@ Repository::name() const
     return _imp->name;
 }
 
-std::tr1::shared_ptr<const CategoryNamePartSet>
+std::shared_ptr<const CategoryNamePartSet>
 Repository::category_names_containing_package(const PackageNamePart & p) const
 {
     Context context("When finding category names containing package '" + stringify(p) + "':");
 
-    std::tr1::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
-    std::tr1::shared_ptr<const CategoryNamePartSet> cats(category_names());
+    std::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
+    std::shared_ptr<const CategoryNamePartSet> cats(category_names());
     for (CategoryNamePartSet::ConstIterator c(cats->begin()), c_end(cats->end()) ;
             c != c_end ; ++c)
         if (has_package_named(*c + p))
@@ -211,7 +211,7 @@ Repository::can_be_favourite_repository() const
     return some_ids_might_support_action(SupportsActionTest<InstallAction>());
 }
 
-std::tr1::shared_ptr<const CategoryNamePartSet>
+std::shared_ptr<const CategoryNamePartSet>
 Repository::unimportant_category_names() const
 {
     return make_shared_ptr(new CategoryNamePartSet);

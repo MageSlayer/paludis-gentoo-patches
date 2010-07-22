@@ -37,7 +37,7 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/metadata_key.hh>
-#include <tr1/functional>
+#include <functional>
 #include <algorithm>
 #include <list>
 #include <map>
@@ -51,13 +51,13 @@ namespace paludis
     template <>
     struct Implementation<DepSpec>
     {
-        std::tr1::shared_ptr<const MetadataSectionKey> annotations_key;
+        std::shared_ptr<const MetadataSectionKey> annotations_key;
 
         Implementation()
         {
         }
 
-        Implementation(const std::tr1::shared_ptr<const MetadataSectionKey> & k) :
+        Implementation(const std::shared_ptr<const MetadataSectionKey> & k) :
             annotations_key(k)
         {
         }
@@ -74,14 +74,14 @@ DepSpec::~DepSpec()
 {
 }
 
-const std::tr1::shared_ptr<const MetadataSectionKey>
+const std::shared_ptr<const MetadataSectionKey>
 DepSpec::annotations_key() const
 {
     return _imp->annotations_key;
 }
 
 void
-DepSpec::set_annotations_key(const std::tr1::shared_ptr<const MetadataSectionKey> & k)
+DepSpec::set_annotations_key(const std::shared_ptr<const MetadataSectionKey> & k)
 {
     clear_metadata_keys();
     _imp->annotations_key = k;
@@ -93,10 +93,10 @@ AnyDepSpec::AnyDepSpec()
 {
 }
 
-std::tr1::shared_ptr<DepSpec>
+std::shared_ptr<DepSpec>
 AnyDepSpec::clone() const
 {
-    std::tr1::shared_ptr<AnyDepSpec> result(new AnyDepSpec);
+    std::shared_ptr<AnyDepSpec> result(new AnyDepSpec);
     result->set_annotations_key(annotations_key());
     return result;
 }
@@ -116,10 +116,10 @@ AllDepSpec::need_keys_added() const
 {
 }
 
-std::tr1::shared_ptr<DepSpec>
+std::shared_ptr<DepSpec>
 AllDepSpec::clone() const
 {
-    std::tr1::shared_ptr<AllDepSpec> result(new AllDepSpec);
+    std::shared_ptr<AllDepSpec> result(new AllDepSpec);
     result->set_annotations_key(annotations_key());
     return result;
 }
@@ -129,11 +129,11 @@ namespace paludis
     template <>
     struct Implementation<ConditionalDepSpec>
     {
-        const std::tr1::shared_ptr<const ConditionalDepSpecData> data;
+        const std::shared_ptr<const ConditionalDepSpecData> data;
         Mutex mutex;
         bool added_keys;
 
-        Implementation(const std::tr1::shared_ptr<const ConditionalDepSpecData> & d) :
+        Implementation(const std::shared_ptr<const ConditionalDepSpecData> & d) :
             data(d),
             added_keys(false)
         {
@@ -141,7 +141,7 @@ namespace paludis
     };
 }
 
-ConditionalDepSpec::ConditionalDepSpec(const std::tr1::shared_ptr<const ConditionalDepSpecData> & d) :
+ConditionalDepSpec::ConditionalDepSpec(const std::shared_ptr<const ConditionalDepSpecData> & d) :
     PrivateImplementationPattern<ConditionalDepSpec>(new Implementation<ConditionalDepSpec>(d)),
     _imp(PrivateImplementationPattern<ConditionalDepSpec>::_imp)
 {
@@ -178,9 +178,9 @@ ConditionalDepSpec::need_keys_added() const
     if (! _imp->added_keys)
     {
         _imp->added_keys = true;
-        using namespace std::tr1::placeholders;
+        using namespace std::placeholders;
         std::for_each(_imp->data->begin_metadata(), _imp->data->end_metadata(),
-                std::tr1::bind(&ConditionalDepSpec::add_metadata_key, this, _1));
+                std::bind(&ConditionalDepSpec::add_metadata_key, this, _1));
     }
 }
 
@@ -204,7 +204,7 @@ ConditionalDepSpec::condition_meetable() const
     return _imp->data->condition_meetable();
 }
 
-const std::tr1::shared_ptr<const ConditionalDepSpecData>
+const std::shared_ptr<const ConditionalDepSpecData>
 ConditionalDepSpec::data() const
 {
     return _imp->data;
@@ -238,10 +238,10 @@ NamedSetDepSpec::name() const
     return _name;
 }
 
-std::tr1::shared_ptr<DepSpec>
+std::shared_ptr<DepSpec>
 NamedSetDepSpec::clone() const
 {
-    std::tr1::shared_ptr<NamedSetDepSpec> result(new NamedSetDepSpec(_name));
+    std::shared_ptr<NamedSetDepSpec> result(new NamedSetDepSpec(_name));
     result->set_annotations_key(annotations_key());
     return result;
 }
@@ -366,10 +366,10 @@ PlainTextDepSpec::PlainTextDepSpec(const std::string & s) :
 {
 }
 
-std::tr1::shared_ptr<DepSpec>
+std::shared_ptr<DepSpec>
 PlainTextDepSpec::clone() const
 {
-    std::tr1::shared_ptr<PlainTextDepSpec> result(new PlainTextDepSpec(text()));
+    std::shared_ptr<PlainTextDepSpec> result(new PlainTextDepSpec(text()));
     result->set_annotations_key(annotations_key());
     return result;
 }
@@ -388,10 +388,10 @@ PlainTextLabelDepSpec::~PlainTextLabelDepSpec()
 {
 }
 
-std::tr1::shared_ptr<DepSpec>
+std::shared_ptr<DepSpec>
 PlainTextLabelDepSpec::clone() const
 {
-    std::tr1::shared_ptr<PlainTextLabelDepSpec> result(new PlainTextLabelDepSpec(text()));
+    std::shared_ptr<PlainTextLabelDepSpec> result(new PlainTextLabelDepSpec(text()));
     result->set_annotations_key(annotations_key());
     return result;
 }
@@ -412,10 +412,10 @@ LicenseDepSpec::LicenseDepSpec(const std::string & s) :
 {
 }
 
-std::tr1::shared_ptr<DepSpec>
+std::shared_ptr<DepSpec>
 LicenseDepSpec::clone() const
 {
-    std::tr1::shared_ptr<LicenseDepSpec> result(new LicenseDepSpec(text()));
+    std::shared_ptr<LicenseDepSpec> result(new LicenseDepSpec(text()));
     result->set_annotations_key(annotations_key());
     return result;
 }
@@ -430,10 +430,10 @@ SimpleURIDepSpec::SimpleURIDepSpec(const std::string & s) :
 {
 }
 
-std::tr1::shared_ptr<DepSpec>
+std::shared_ptr<DepSpec>
 SimpleURIDepSpec::clone() const
 {
-    std::tr1::shared_ptr<SimpleURIDepSpec> result(new SimpleURIDepSpec(text()));
+    std::shared_ptr<SimpleURIDepSpec> result(new SimpleURIDepSpec(text()));
     result->set_annotations_key(annotations_key());
     return result;
 }
@@ -455,10 +455,10 @@ BlockDepSpec::strong() const
     return _strong;
 }
 
-std::tr1::shared_ptr<DepSpec>
+std::shared_ptr<DepSpec>
 BlockDepSpec::clone() const
 {
-    std::tr1::shared_ptr<BlockDepSpec> result(new BlockDepSpec(*this));
+    std::shared_ptr<BlockDepSpec> result(new BlockDepSpec(*this));
     result->set_annotations_key(annotations_key());
     return result;
 }
@@ -514,10 +514,10 @@ FetchableURIDepSpec::filename() const
     return orig.substr(p+1);
 }
 
-std::tr1::shared_ptr<DepSpec>
+std::shared_ptr<DepSpec>
 FetchableURIDepSpec::clone() const
 {
-    std::tr1::shared_ptr<FetchableURIDepSpec> result(new FetchableURIDepSpec(text()));
+    std::shared_ptr<FetchableURIDepSpec> result(new FetchableURIDepSpec(text()));
     result->set_annotations_key(annotations_key());
     return result;
 }
@@ -527,19 +527,19 @@ namespace paludis
     template <typename T_>
     struct Implementation<LabelsDepSpec<T_ > >
     {
-        std::list<std::tr1::shared_ptr<const T_> > items;
+        std::list<std::shared_ptr<const T_> > items;
     };
 
     template <>
     struct WrappedForwardIteratorTraits<DependenciesLabelsDepSpec::ConstIteratorTag>
     {
-        typedef std::list<std::tr1::shared_ptr<const DependenciesLabel> >::const_iterator UnderlyingIterator;
+        typedef std::list<std::shared_ptr<const DependenciesLabel> >::const_iterator UnderlyingIterator;
     };
 
     template <>
     struct WrappedForwardIteratorTraits<URILabelsDepSpec::ConstIteratorTag>
     {
-        typedef std::list<std::tr1::shared_ptr<const URILabel> >::const_iterator UnderlyingIterator;
+        typedef std::list<std::shared_ptr<const URILabel> >::const_iterator UnderlyingIterator;
     };
 }
 
@@ -556,13 +556,13 @@ LabelsDepSpec<T_>::~LabelsDepSpec()
 }
 
 template <typename T_>
-std::tr1::shared_ptr<DepSpec>
+std::shared_ptr<DepSpec>
 LabelsDepSpec<T_>::clone() const
 {
-    using namespace std::tr1::placeholders;
-    std::tr1::shared_ptr<LabelsDepSpec<T_> > my_clone(new LabelsDepSpec<T_>);
+    using namespace std::placeholders;
+    std::shared_ptr<LabelsDepSpec<T_> > my_clone(new LabelsDepSpec<T_>);
     my_clone->set_annotations_key(annotations_key());
-    std::for_each(begin(), end(), std::tr1::bind(std::tr1::mem_fn(&LabelsDepSpec<T_>::add_label), my_clone.get(), _1));
+    std::for_each(begin(), end(), std::bind(std::mem_fn(&LabelsDepSpec<T_>::add_label), my_clone.get(), _1));
     return my_clone;
 }
 
@@ -582,7 +582,7 @@ LabelsDepSpec<T_>::end() const
 
 template <typename T_>
 void
-LabelsDepSpec<T_>::add_label(const std::tr1::shared_ptr<const T_> & item)
+LabelsDepSpec<T_>::add_label(const std::shared_ptr<const T_> & item)
 {
     _imp->items.push_back(item);
 }
@@ -602,10 +602,10 @@ namespace paludis
     template <>
     struct Implementation<PackageDepSpec>
     {
-        const std::tr1::shared_ptr<const PackageDepSpecData> data;
-        std::tr1::shared_ptr<const DepTag> tag;
+        const std::shared_ptr<const PackageDepSpecData> data;
+        std::shared_ptr<const DepTag> tag;
 
-        Implementation(const std::tr1::shared_ptr<const PackageDepSpecData> & d, const std::tr1::shared_ptr<const DepTag> & t) :
+        Implementation(const std::shared_ptr<const PackageDepSpecData> & d, const std::shared_ptr<const DepTag> & t) :
             data(d),
             tag(t)
         {
@@ -613,10 +613,10 @@ namespace paludis
     };
 }
 
-PackageDepSpec::PackageDepSpec(const std::tr1::shared_ptr<const PackageDepSpecData> & d) :
+PackageDepSpec::PackageDepSpec(const std::shared_ptr<const PackageDepSpecData> & d) :
     Cloneable<DepSpec>(),
     StringDepSpec(d->as_string()),
-    PrivateImplementationPattern<PackageDepSpec>(new Implementation<PackageDepSpec>(d, std::tr1::shared_ptr<const DepTag>())),
+    PrivateImplementationPattern<PackageDepSpec>(new Implementation<PackageDepSpec>(d, std::shared_ptr<const DepTag>())),
     _imp(PrivateImplementationPattern<PackageDepSpec>::_imp)
 {
     set_annotations_key(d->annotations_key());
@@ -636,25 +636,25 @@ PackageDepSpec::PackageDepSpec(const PackageDepSpec & d) :
     set_annotations_key(d.annotations_key());
 }
 
-std::tr1::shared_ptr<const QualifiedPackageName>
+std::shared_ptr<const QualifiedPackageName>
 PackageDepSpec::package_ptr() const
 {
     return _imp->data->package_ptr();
 }
 
-std::tr1::shared_ptr<const PackageNamePart>
+std::shared_ptr<const PackageNamePart>
 PackageDepSpec::package_name_part_ptr() const
 {
     return _imp->data->package_name_part_ptr();
 }
 
-std::tr1::shared_ptr<const CategoryNamePart>
+std::shared_ptr<const CategoryNamePart>
 PackageDepSpec::category_name_part_ptr() const
 {
     return _imp->data->category_name_part_ptr();
 }
 
-std::tr1::shared_ptr<const VersionRequirements>
+std::shared_ptr<const VersionRequirements>
 PackageDepSpec::version_requirements_ptr() const
 {
     return _imp->data->version_requirements_ptr();
@@ -666,56 +666,56 @@ PackageDepSpec::version_requirements_mode() const
     return _imp->data->version_requirements_mode();
 }
 
-std::tr1::shared_ptr<const SlotRequirement>
+std::shared_ptr<const SlotRequirement>
 PackageDepSpec::slot_requirement_ptr() const
 {
     return _imp->data->slot_requirement_ptr();
 }
 
-std::tr1::shared_ptr<const RepositoryName>
+std::shared_ptr<const RepositoryName>
 PackageDepSpec::in_repository_ptr() const
 {
     return _imp->data->in_repository_ptr();
 }
 
-std::tr1::shared_ptr<const InstallableToRepository>
+std::shared_ptr<const InstallableToRepository>
 PackageDepSpec::installable_to_repository_ptr() const
 {
     return _imp->data->installable_to_repository_ptr();
 }
 
-std::tr1::shared_ptr<const RepositoryName>
+std::shared_ptr<const RepositoryName>
 PackageDepSpec::from_repository_ptr() const
 {
     return _imp->data->from_repository_ptr();
 }
 
-std::tr1::shared_ptr<const FSEntry>
+std::shared_ptr<const FSEntry>
 PackageDepSpec::installed_at_path_ptr() const
 {
     return _imp->data->installed_at_path_ptr();
 }
 
-std::tr1::shared_ptr<const InstallableToPath>
+std::shared_ptr<const InstallableToPath>
 PackageDepSpec::installable_to_path_ptr() const
 {
     return _imp->data->installable_to_path_ptr();
 }
 
-std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirements>
+std::shared_ptr<const AdditionalPackageDepSpecRequirements>
 PackageDepSpec::additional_requirements_ptr() const
 {
     return _imp->data->additional_requirements_ptr();
 }
 
-std::tr1::shared_ptr<const DepTag>
+std::shared_ptr<const DepTag>
 PackageDepSpec::tag() const
 {
     return _imp->tag;
 }
 
 void
-PackageDepSpec::set_tag(const std::tr1::shared_ptr<const DepTag> & s)
+PackageDepSpec::set_tag(const std::shared_ptr<const DepTag> & s)
 {
     _imp->tag = s;
 }
@@ -726,7 +726,7 @@ PackageDepSpec::_as_string() const
     return _imp->data->as_string();
 }
 
-std::tr1::shared_ptr<const PackageDepSpecData>
+std::shared_ptr<const PackageDepSpecData>
 PackageDepSpec::data() const
 {
     return _imp->data;
@@ -759,19 +759,19 @@ namespace
     struct PartiallyMadePackageDepSpecData :
         PackageDepSpecData
     {
-        std::tr1::shared_ptr<const QualifiedPackageName> package;
-        std::tr1::shared_ptr<const PackageNamePart> package_name_part;
-        std::tr1::shared_ptr<const CategoryNamePart> category_name_part;
-        std::tr1::shared_ptr<VersionRequirements> version_requirements;
+        std::shared_ptr<const QualifiedPackageName> package;
+        std::shared_ptr<const PackageNamePart> package_name_part;
+        std::shared_ptr<const CategoryNamePart> category_name_part;
+        std::shared_ptr<VersionRequirements> version_requirements;
         VersionRequirementsMode version_requirements_mode_v;
-        std::tr1::shared_ptr<const SlotRequirement> slot;
-        std::tr1::shared_ptr<const RepositoryName> in_repository;
-        std::tr1::shared_ptr<const RepositoryName> from_repository;
-        std::tr1::shared_ptr<const InstallableToRepository> installable_to_repository;
-        std::tr1::shared_ptr<const FSEntry> installed_at_path;
-        std::tr1::shared_ptr<const InstallableToPath> installable_to_path;
-        std::tr1::shared_ptr<AdditionalPackageDepSpecRequirements> additional_requirements;
-        std::tr1::shared_ptr<const MetadataSectionKey> annotations;
+        std::shared_ptr<const SlotRequirement> slot;
+        std::shared_ptr<const RepositoryName> in_repository;
+        std::shared_ptr<const RepositoryName> from_repository;
+        std::shared_ptr<const InstallableToRepository> installable_to_repository;
+        std::shared_ptr<const FSEntry> installed_at_path;
+        std::shared_ptr<const InstallableToPath> installable_to_path;
+        std::shared_ptr<AdditionalPackageDepSpecRequirements> additional_requirements;
+        std::shared_ptr<const MetadataSectionKey> annotations;
         PartiallyMadePackageDepSpecOptions options_for_partially_made_package_dep_spec_v;
 
         PartiallyMadePackageDepSpecData(const PartiallyMadePackageDepSpecOptions & o) :
@@ -992,22 +992,22 @@ namespace
             return s.str();
         }
 
-        virtual std::tr1::shared_ptr<const QualifiedPackageName> package_ptr() const
+        virtual std::shared_ptr<const QualifiedPackageName> package_ptr() const
         {
             return package;
         }
 
-        virtual std::tr1::shared_ptr<const PackageNamePart> package_name_part_ptr() const
+        virtual std::shared_ptr<const PackageNamePart> package_name_part_ptr() const
         {
             return package_name_part;
         }
 
-        virtual std::tr1::shared_ptr<const CategoryNamePart> category_name_part_ptr() const
+        virtual std::shared_ptr<const CategoryNamePart> category_name_part_ptr() const
         {
             return category_name_part;
         }
 
-        virtual std::tr1::shared_ptr<const VersionRequirements> version_requirements_ptr() const
+        virtual std::shared_ptr<const VersionRequirements> version_requirements_ptr() const
         {
             return version_requirements;
         }
@@ -1017,42 +1017,42 @@ namespace
             return version_requirements_mode_v;
         }
 
-        virtual std::tr1::shared_ptr<const SlotRequirement> slot_requirement_ptr() const
+        virtual std::shared_ptr<const SlotRequirement> slot_requirement_ptr() const
         {
             return slot;
         }
 
-        virtual std::tr1::shared_ptr<const RepositoryName> in_repository_ptr() const
+        virtual std::shared_ptr<const RepositoryName> in_repository_ptr() const
         {
             return in_repository;
         }
 
-        virtual std::tr1::shared_ptr<const InstallableToRepository> installable_to_repository_ptr() const
+        virtual std::shared_ptr<const InstallableToRepository> installable_to_repository_ptr() const
         {
             return installable_to_repository;
         }
 
-        virtual std::tr1::shared_ptr<const RepositoryName> from_repository_ptr() const
+        virtual std::shared_ptr<const RepositoryName> from_repository_ptr() const
         {
             return from_repository;
         }
 
-        virtual std::tr1::shared_ptr<const FSEntry> installed_at_path_ptr() const
+        virtual std::shared_ptr<const FSEntry> installed_at_path_ptr() const
         {
             return installed_at_path;
         }
 
-        virtual std::tr1::shared_ptr<const InstallableToPath> installable_to_path_ptr() const
+        virtual std::shared_ptr<const InstallableToPath> installable_to_path_ptr() const
         {
             return installable_to_path;
         }
 
-        virtual std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements_ptr() const
+        virtual std::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements_ptr() const
         {
             return additional_requirements;
         }
 
-        virtual std::tr1::shared_ptr<const MetadataSectionKey> annotations_key() const
+        virtual std::shared_ptr<const MetadataSectionKey> annotations_key() const
         {
             return annotations;
         }
@@ -1069,7 +1069,7 @@ namespace paludis
     template <>
     struct Implementation<PartiallyMadePackageDepSpec>
     {
-        std::tr1::shared_ptr<PartiallyMadePackageDepSpecData> data;
+        std::shared_ptr<PartiallyMadePackageDepSpecData> data;
 
         Implementation(const PartiallyMadePackageDepSpecOptions & o) :
             data(new PartiallyMadePackageDepSpecData(o))
@@ -1115,7 +1115,7 @@ PartiallyMadePackageDepSpec::package(const QualifiedPackageName & name)
 }
 
 PartiallyMadePackageDepSpec &
-PartiallyMadePackageDepSpec::slot_requirement(const std::tr1::shared_ptr<const SlotRequirement> & s)
+PartiallyMadePackageDepSpec::slot_requirement(const std::shared_ptr<const SlotRequirement> & s)
 {
     _imp->data->slot = s;
     return *this;
@@ -1187,7 +1187,7 @@ PartiallyMadePackageDepSpec::version_requirements_mode(const VersionRequirements
 }
 
 PartiallyMadePackageDepSpec &
-PartiallyMadePackageDepSpec::additional_requirement(const std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> & req)
+PartiallyMadePackageDepSpec::additional_requirement(const std::shared_ptr<const AdditionalPackageDepSpecRequirement> & req)
 {
     if (! _imp->data->additional_requirements)
         _imp->data->additional_requirements.reset(new AdditionalPackageDepSpecRequirements);
@@ -1203,7 +1203,7 @@ PartiallyMadePackageDepSpec::clear_additional_requirements()
 }
 
 PartiallyMadePackageDepSpec &
-PartiallyMadePackageDepSpec::annotations(const std::tr1::shared_ptr<const MetadataSectionKey> & a)
+PartiallyMadePackageDepSpec::annotations(const std::shared_ptr<const MetadataSectionKey> & a)
 {
     _imp->data->annotations = a;
     return *this;
@@ -1223,8 +1223,8 @@ PartiallyMadePackageDepSpec::to_package_dep_spec() const
 template class LabelsDepSpec<URILabel>;
 template class LabelsDepSpec<DependenciesLabel>;
 
-template class Sequence<std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> >;
-template class WrappedForwardIterator<AdditionalPackageDepSpecRequirements::ConstIteratorTag, const std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> >;
+template class Sequence<std::shared_ptr<const AdditionalPackageDepSpecRequirement> >;
+template class WrappedForwardIterator<AdditionalPackageDepSpecRequirements::ConstIteratorTag, const std::shared_ptr<const AdditionalPackageDepSpecRequirement> >;
 
 template class Cloneable<DepSpec>;
 template class PrivateImplementationPattern<ConditionalDepSpec>;
@@ -1236,7 +1236,7 @@ template class PrivateImplementationPattern<URILabelsDepSpec>;
 template class PrivateImplementationPattern<DependenciesLabelsDepSpec>;
 
 template class WrappedForwardIterator<DependenciesLabelsDepSpec::ConstIteratorTag,
-         const std::tr1::shared_ptr<const DependenciesLabel> >;
+         const std::shared_ptr<const DependenciesLabel> >;
 template class WrappedForwardIterator<URILabelsDepSpec::ConstIteratorTag,
-         const std::tr1::shared_ptr<const URILabel> >;
+         const std::shared_ptr<const URILabel> >;
 

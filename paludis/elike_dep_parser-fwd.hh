@@ -23,26 +23,26 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/map-fwd.hh>
 #include <paludis/name-fwd.hh>
-#include <tr1/functional>
-#include <tr1/memory>
+#include <functional>
+#include <memory>
 #include <string>
 
 namespace paludis
 {
     struct ELikeDepParserCallbacks;
 
-    typedef std::tr1::function<void (const std::string &)> ELikeDepParserStringFunction;
-    typedef std::tr1::function<void (const std::string &, const std::string &)> ELikeDepParserArrowFunction;
-    typedef std::tr1::function<void ()> ELikeDepParserAnyFunction;
-    typedef std::tr1::function<void ()> ELikeDepParserAllFunction;
-    typedef std::tr1::function<void (const std::string &)> ELikeDepParserUseFunction;
-    typedef std::tr1::function<void (const std::string &)> ELikeDepParserLabelFunction;
-    typedef std::tr1::function<void ()> ELikeDepParserPushFunction;
-    typedef std::tr1::function<void ()> ELikeDepParserPopFunction;
-    typedef std::tr1::function<void ()> ELikeDepParserShouldBeEmptyFunction;
-    typedef std::tr1::function<void (const std::string &, const std::string::size_type &, const std::string &)> ELikeDepParserErrorFunction;
-    typedef std::tr1::function<void ()> ELikeDepParserUseUnderAnyFunction;
-    typedef std::tr1::function<void (const std::tr1::shared_ptr<const Map<std::string, std::string> > &)>
+    typedef std::function<void (const std::string &)> ELikeDepParserStringFunction;
+    typedef std::function<void (const std::string &, const std::string &)> ELikeDepParserArrowFunction;
+    typedef std::function<void ()> ELikeDepParserAnyFunction;
+    typedef std::function<void ()> ELikeDepParserAllFunction;
+    typedef std::function<void (const std::string &)> ELikeDepParserUseFunction;
+    typedef std::function<void (const std::string &)> ELikeDepParserLabelFunction;
+    typedef std::function<void ()> ELikeDepParserPushFunction;
+    typedef std::function<void ()> ELikeDepParserPopFunction;
+    typedef std::function<void ()> ELikeDepParserShouldBeEmptyFunction;
+    typedef std::function<void (const std::string &, const std::string::size_type &, const std::string &)> ELikeDepParserErrorFunction;
+    typedef std::function<void ()> ELikeDepParserUseUnderAnyFunction;
+    typedef std::function<void (const std::shared_ptr<const Map<std::string, std::string> > &)>
         ELikeDepParserAnnotationsFunction;
 
     void parse_elike_dependencies(const std::string &, const ELikeDepParserCallbacks & callbacks) PALUDIS_VISIBLE;

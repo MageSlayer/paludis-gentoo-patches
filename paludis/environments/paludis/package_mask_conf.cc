@@ -39,12 +39,12 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <list>
 #include <algorithm>
-#include <tr1/functional>
+#include <functional>
 
 using namespace paludis;
 using namespace paludis::paludis_environment;
 
-typedef std::list<std::pair<SetName, std::tr1::shared_ptr<const SetSpecTree> > > Sets;
+typedef std::list<std::pair<SetName, std::shared_ptr<const SetSpecTree> > > Sets;
 
 namespace paludis
 {
@@ -52,7 +52,7 @@ namespace paludis
     struct Implementation<PackageMaskConf>
     {
         const PaludisEnvironment * const env;
-        std::list<std::tr1::shared_ptr<const PackageDepSpec> > masks;
+        std::list<std::shared_ptr<const PackageDepSpec> > masks;
         mutable Sets sets;
         mutable Mutex set_mutex;
 
@@ -77,7 +77,7 @@ PackageMaskConf::add(const FSEntry & filename)
 {
     Context context("When adding source '" + stringify(filename) + "' as a package mask or unmask file:");
 
-    std::tr1::shared_ptr<LineConfigFile> f(make_bashable_conf(filename, LineConfigFileOptions()));
+    std::shared_ptr<LineConfigFile> f(make_bashable_conf(filename, LineConfigFileOptions()));
     if (! f)
         return;
 
@@ -86,7 +86,7 @@ PackageMaskConf::add(const FSEntry & filename)
     {
         try
         {
-            _imp->masks.push_back(std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(parse_user_package_dep_spec(
+            _imp->masks.push_back(std::shared_ptr<PackageDepSpec>(new PackageDepSpec(parse_user_package_dep_spec(
                                 *line, _imp->env,
                                 UserPackageDepSpecOptions() + updso_allow_wildcards + updso_no_disambiguation + updso_throw_if_set))));
         }
@@ -100,11 +100,11 @@ PackageMaskConf::add(const FSEntry & filename)
 bool
 PackageMaskConf::query(const PackageID & e) const
 {
-    using namespace std::tr1::placeholders;
+    using namespace std::placeholders;
     if (indirect_iterator(_imp->masks.end()) != std::find_if(
             indirect_iterator(_imp->masks.begin()),
             indirect_iterator(_imp->masks.end()),
-            std::tr1::bind(&match_package, std::tr1::ref(*_imp->env), _1, std::tr1::cref(e), MatchPackageOptions())))
+            std::bind(&match_package, std::ref(*_imp->env), _1, std::cref(e), MatchPackageOptions())))
         return true;
 
     {

@@ -28,8 +28,8 @@
 #include <paludis/create_output_manager_info-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/action-fwd.hh>
-#include <tr1/memory>
-#include <tr1/functional>
+#include <memory>
+#include <functional>
 #include <string>
 
 namespace paludis
@@ -65,11 +65,11 @@ namespace paludis
         public:
             IPCInputManager(
                     const Environment * const,
-                    const std::tr1::function<void (const std::tr1::shared_ptr<OutputManager> &)> &);
+                    const std::function<void (const std::shared_ptr<OutputManager> &)> &);
 
             ~IPCInputManager();
 
-            const std::tr1::function<std::string (const std::string &)> pipe_command_handler()
+            const std::function<std::string (const std::string &)> pipe_command_handler()
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
@@ -83,7 +83,7 @@ namespace paludis
              * this method returns around for longer will also work, if, for
              * example, any 'finished' messages are to be displayed later on.
              */
-            const std::tr1::shared_ptr<OutputManager> underlying_output_manager_if_constructed() const
+            const std::shared_ptr<OutputManager> underlying_output_manager_if_constructed() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
@@ -93,16 +93,16 @@ namespace paludis
         public:
             OutputManagerFromIPC(
                     const Environment * const,
-                    const std::tr1::shared_ptr<const PackageID> &,
+                    const std::shared_ptr<const PackageID> &,
                     const OutputExclusivity,
                     const ClientOutputFeatures &
                     );
 
             ~OutputManagerFromIPC();
 
-            const std::tr1::shared_ptr<OutputManager> operator() (const Action &);
+            const std::shared_ptr<OutputManager> operator() (const Action &);
 
-            const std::tr1::shared_ptr<OutputManager> output_manager_if_constructed();
+            const std::shared_ptr<OutputManager> output_manager_if_constructed();
 
             void construct_standard_if_unconstructed();
     };

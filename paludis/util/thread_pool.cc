@@ -21,7 +21,7 @@
 #include <paludis/util/thread.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <tr1/memory>
+#include <memory>
 #include <deque>
 
 using namespace paludis;
@@ -31,7 +31,7 @@ namespace paludis
     template <>
     struct Implementation<ThreadPool>
     {
-        std::deque<std::tr1::shared_ptr<Thread> > threads;
+        std::deque<std::shared_ptr<Thread> > threads;
     };
 }
 
@@ -45,7 +45,7 @@ ThreadPool::~ThreadPool()
 }
 
 void
-ThreadPool::create_thread(const std::tr1::function<void () throw ()> & f)
+ThreadPool::create_thread(const std::function<void () throw ()> & f)
 {
     _imp->threads.push_back(make_shared_ptr(new Thread(f)));
 }

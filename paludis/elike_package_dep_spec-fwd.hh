@@ -26,7 +26,7 @@
 #include <paludis/package_id-fwd.hh>
 #include <paludis/version_operator-fwd.hh>
 #include <paludis/version_spec-fwd.hh>
-#include <tr1/functional>
+#include <functional>
 #include <iosfwd>
 
 namespace paludis
@@ -47,13 +47,13 @@ namespace paludis
 
     PackageDepSpec parse_elike_package_dep_spec(const std::string & ss, const ELikePackageDepSpecOptions &,
             const VersionSpecOptions &,
-            const std::tr1::shared_ptr<const PackageID> &)
+            const std::shared_ptr<const PackageID> &)
         PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
 
     PartiallyMadePackageDepSpec partial_parse_elike_package_dep_spec(const std::string & ss,
             const ELikePackageDepSpecOptions &,
             const VersionSpecOptions &,
-            const std::tr1::shared_ptr<const PackageID> &)
+            const std::shared_ptr<const PackageID> &)
         PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
 
     void elike_check_sanity(const std::string & s) PALUDIS_VISIBLE;
@@ -62,7 +62,7 @@ namespace paludis
             const ELikePackageDepSpecOptions & options,
             const VersionSpecOptions & version_options,
             bool & had_bracket_version_requirements,
-            bool & had_use_requirements, const std::tr1::shared_ptr<const PackageID> & id) PALUDIS_VISIBLE;
+            bool & had_use_requirements, const std::shared_ptr<const PackageID> & id) PALUDIS_VISIBLE;
 
     void elike_remove_trailing_repo_if_exists(std::string & s, PartiallyMadePackageDepSpec & result,
             const ELikePackageDepSpecOptions & options) PALUDIS_VISIBLE;

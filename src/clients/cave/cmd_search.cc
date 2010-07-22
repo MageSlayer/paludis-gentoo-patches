@@ -102,22 +102,22 @@ namespace
     };
 
     void found_match(
-            const std::tr1::shared_ptr<Environment> & env,
-            const std::tr1::shared_ptr<Set<QualifiedPackageName> > & result,
+            const std::shared_ptr<Environment> & env,
+            const std::shared_ptr<Set<QualifiedPackageName> > & result,
             const PackageDepSpec & spec)
     {
-        const std::tr1::shared_ptr<const PackageID> id(*((*env)[selection::RequireExactlyOne(
+        const std::shared_ptr<const PackageID> id(*((*env)[selection::RequireExactlyOne(
                         generator::Matches(spec, MatchPackageOptions()))])->begin());
         result->insert(id->name());
     }
 
     void found_candidate(
-            const std::tr1::shared_ptr<Environment> & env,
+            const std::shared_ptr<Environment> & env,
             MatchCommand & match_command,
             const SearchCommandLineMatchOptions & match_options,
             const PackageDepSpec & spec,
-            const std::tr1::shared_ptr<const Set<std::string> > & patterns,
-            const std::tr1::function<void (const PackageDepSpec &)> & success
+            const std::shared_ptr<const Set<std::string> > & patterns,
+            const std::function<void (const PackageDepSpec &)> & success
             )
     {
         if (match_command.run_hosted(env, match_options, patterns, spec))
@@ -255,8 +255,8 @@ SearchCommand::important() const
 
 int
 SearchCommand::run(
-        const std::tr1::shared_ptr<Environment> & env,
-        const std::tr1::shared_ptr<const Sequence<std::string > > & args
+        const std::shared_ptr<Environment> & env,
+        const std::shared_ptr<const Sequence<std::string > > & args
         )
 {
     SearchCommandLine cmdline;
@@ -271,27 +271,27 @@ SearchCommand::run(
     if (cmdline.begin_parameters() == cmdline.end_parameters())
         throw args::DoHelp("search requires at least one parameter");
 
-    const std::tr1::shared_ptr<Sequence<std::string> > show_args(new Sequence<std::string>);
+    const std::shared_ptr<Sequence<std::string> > show_args(new Sequence<std::string>);
 
     {
         DisplayCallback display_callback;
         ScopedNotifierCallback display_callback_holder(env.get(),
-                NotifierCallbackFunction(std::tr1::cref(display_callback)));
+                NotifierCallbackFunction(std::cref(display_callback)));
 
-        const std::tr1::shared_ptr<Set<std::string> > patterns(new Set<std::string>);
+        const std::shared_ptr<Set<std::string> > patterns(new Set<std::string>);
         std::copy(cmdline.begin_parameters(), cmdline.end_parameters(), patterns->inserter());
 
         FindCandidatesCommand find_candidates_command;
         MatchCommand match_command;
 
-        std::tr1::shared_ptr<Set<QualifiedPackageName> > matches(new Set<QualifiedPackageName>);
+        std::shared_ptr<Set<QualifiedPackageName> > matches(new Set<QualifiedPackageName>);
         find_candidates_command.run_hosted(env, cmdline.search_options, cmdline.match_options,
-                patterns, std::tr1::bind(
-                    &found_candidate, env, std::tr1::ref(match_command), std::tr1::cref(cmdline.match_options),
-                    std::tr1::placeholders::_1, patterns, std::tr1::function<void (const PackageDepSpec &)>(std::tr1::bind(
-                            &found_match, env, std::tr1::ref(matches), std::tr1::placeholders::_1
+                patterns, std::bind(
+                    &found_candidate, env, std::ref(match_command), std::cref(cmdline.match_options),
+                    std::placeholders::_1, patterns, std::function<void (const PackageDepSpec &)>(std::bind(
+                            &found_match, env, std::ref(matches), std::placeholders::_1
                             ))),
-                std::tr1::bind(&step, std::tr1::ref(display_callback), std::tr1::placeholders::_1)
+                std::bind(&step, std::ref(display_callback), std::placeholders::_1)
                 );
 
         for (Set<QualifiedPackageName>::ConstIterator p(matches->begin()), p_end(matches->end()) ;
@@ -317,7 +317,7 @@ SearchCommand::run(
     return show_command.run(env, show_args);
 }
 
-std::tr1::shared_ptr<args::ArgsHandler>
+std::shared_ptr<args::ArgsHandler>
 SearchCommand::make_doc_cmdline()
 {
     return make_shared_ptr(new SearchCommandLine);

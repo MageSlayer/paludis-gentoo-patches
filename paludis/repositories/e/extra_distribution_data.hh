@@ -24,7 +24,7 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/util/set.hh>
-#include <tr1/memory>
+#include <memory>
 #include <string>
 
 namespace paludis
@@ -65,12 +65,12 @@ namespace paludis
             NamedValue<n::default_provides_cache, std::string> default_provides_cache;
             NamedValue<n::default_write_cache, std::string> default_write_cache;
             NamedValue<n::news_directory, FSEntry> news_directory;
-            NamedValue<n::qa_category_dir_checks, std::tr1::shared_ptr<const Set<std::string> > > qa_category_dir_checks;
-            NamedValue<n::qa_eclass_file_contents_checks, std::tr1::shared_ptr<const Set<std::string> > > qa_eclass_file_contents_checks;
-            NamedValue<n::qa_package_dir_checks, std::tr1::shared_ptr<const Set<std::string> > > qa_package_dir_checks;
-            NamedValue<n::qa_package_id_checks, std::tr1::shared_ptr<const Set<std::string> > > qa_package_id_checks;
-            NamedValue<n::qa_package_id_file_contents_checks, std::tr1::shared_ptr<const Set<std::string> > > qa_package_id_file_contents_checks;
-            NamedValue<n::qa_tree_checks, std::tr1::shared_ptr<const Set<std::string> > > qa_tree_checks;
+            NamedValue<n::qa_category_dir_checks, std::shared_ptr<const Set<std::string> > > qa_category_dir_checks;
+            NamedValue<n::qa_eclass_file_contents_checks, std::shared_ptr<const Set<std::string> > > qa_eclass_file_contents_checks;
+            NamedValue<n::qa_package_dir_checks, std::shared_ptr<const Set<std::string> > > qa_package_dir_checks;
+            NamedValue<n::qa_package_id_checks, std::shared_ptr<const Set<std::string> > > qa_package_id_checks;
+            NamedValue<n::qa_package_id_file_contents_checks, std::shared_ptr<const Set<std::string> > > qa_package_id_file_contents_checks;
+            NamedValue<n::qa_tree_checks, std::shared_ptr<const Set<std::string> > > qa_tree_checks;
         };
 
         typedef ExtraDistributionData<EDistribution> EExtraDistributionData;

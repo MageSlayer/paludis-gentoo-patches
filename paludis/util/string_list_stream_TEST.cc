@@ -21,7 +21,7 @@
 #include <paludis/util/thread.hh>
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
-#include <tr1/functional>
+#include <functional>
 
 using namespace test;
 using namespace paludis;
@@ -74,7 +74,7 @@ namespace test_cases
         void run()
         {
             StringListStream s;
-            Thread t(std::tr1::bind(&write_to, std::tr1::ref(s)));
+            Thread t(std::bind(&write_to, std::ref(s)));
 
             std::string l;
             for (int n(0) ; n < 100 ; ++n)

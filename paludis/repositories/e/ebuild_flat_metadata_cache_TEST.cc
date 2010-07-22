@@ -43,7 +43,7 @@ using namespace paludis;
 
 namespace
 {
-    std::string from_keys(const std::tr1::shared_ptr<const Map<std::string, std::string> > & m,
+    std::string from_keys(const std::shared_ptr<const Map<std::string, std::string> > & m,
             const std::string & k)
     {
         Map<std::string, std::string>::ConstIterator mm(m->find(k));
@@ -64,18 +64,18 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
             keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+            std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_list-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
@@ -92,18 +92,18 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
             keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            const std::tr1::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
+            const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_list-stale-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
@@ -120,7 +120,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
@@ -128,11 +128,11 @@ namespace test_cases
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
             keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             keys->insert("eapi_when_unknown", "1");
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            const std::tr1::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
+            const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_list-guessed-eapi-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
@@ -149,18 +149,18 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
             keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+            std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_list-eclass-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
@@ -180,18 +180,18 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
             keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            const std::tr1::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
+            const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_list-eclass-stale-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
@@ -208,18 +208,18 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
             keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            const std::tr1::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
+            const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_list-eclass-wrong-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
@@ -236,18 +236,18 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
             keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            const std::tr1::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
+            const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_list-eclass-gone-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
@@ -264,18 +264,18 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
             keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+            std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_list-detection-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
@@ -292,18 +292,18 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
             keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+            std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
@@ -320,7 +320,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
@@ -328,11 +328,11 @@ namespace test_cases
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
             keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             keys->insert("eapi_when_unknown", "1");
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            const std::tr1::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
+            const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-guessed-eapi-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
@@ -349,18 +349,18 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
             keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            const std::tr1::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
+            const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-guessed-eapi-extension-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
@@ -377,18 +377,18 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
             keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+            std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-no-guessed-eapi-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
@@ -405,18 +405,18 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
             keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+            std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-empty-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
@@ -434,18 +434,18 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
             keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            const std::tr1::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
+            const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-stale-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
@@ -462,18 +462,18 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
             keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            const std::tr1::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
+            const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-no-mtime-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
@@ -490,18 +490,18 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
             keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            const std::tr1::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
+            const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-no-mtime-stale-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
@@ -518,18 +518,18 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
             keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            const std::tr1::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
+            const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-bad-mtime-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
@@ -546,18 +546,18 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
             keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            const std::tr1::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
+            const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-no-eapi-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
@@ -574,18 +574,18 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
             keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            const std::tr1::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
+            const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-duplicate-key-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
@@ -602,18 +602,18 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
             keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+            std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-eclass-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
@@ -633,18 +633,18 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
             keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+            std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-eclass-stale-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
@@ -661,18 +661,18 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
             keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+            std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-eclass-wrong-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
@@ -689,17 +689,17 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+            std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-eclass-gone-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
@@ -716,18 +716,18 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
             keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+            std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-full-eclass-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
@@ -747,18 +747,18 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
             keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+            std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-full-eclass-nonstandard-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
@@ -778,18 +778,18 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
             keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+            std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-full-eclass-stale-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
@@ -806,18 +806,18 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
             keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+            std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-full-eclass-wrong-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
@@ -834,18 +834,18 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
             keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+            std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-full-eclass-gone-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
@@ -862,25 +862,25 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
             keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+            std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-eclasses-truncated-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
             TEST_CHECK(id->short_description_key());
             TEST_CHECK_EQUAL(id->short_description_key()->value(), "The Generated Description flat_hash-eclasses-truncated");
 
-            std::tr1::shared_ptr<const PackageID> id2(*env[selection::RequireExactlyOne(generator::Matches(
+            std::shared_ptr<const PackageID> id2(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-eclasses-truncated-2",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
@@ -897,18 +897,18 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
             keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+            std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-eclasses-bad-mtime-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
@@ -925,18 +925,18 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
             keys->insert("profiles", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
             keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+            std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-eclasses-spaces-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
@@ -953,7 +953,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
@@ -961,11 +961,11 @@ namespace test_cases
             keys->insert("eapi_when_unknown", "exheres-0");
             keys->insert("eapi_when_unspecified", "exheres-0");
             keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+            std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-exlib-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
@@ -985,7 +985,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
@@ -993,11 +993,11 @@ namespace test_cases
             keys->insert("eapi_when_unknown", "exheres-0");
             keys->insert("eapi_when_unspecified", "exheres-0");
             keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+            std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-exlib-percat-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
@@ -1017,7 +1017,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
@@ -1025,11 +1025,11 @@ namespace test_cases
             keys->insert("eapi_when_unknown", "exheres-0");
             keys->insert("eapi_when_unspecified", "exheres-0");
             keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+            std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-exlib-stale-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
@@ -1046,7 +1046,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
@@ -1054,11 +1054,11 @@ namespace test_cases
             keys->insert("eapi_when_unknown", "exheres-0");
             keys->insert("eapi_when_unspecified", "exheres-0");
             keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+            std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-exlib-wrong-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
@@ -1075,7 +1075,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
@@ -1083,11 +1083,11 @@ namespace test_cases
             keys->insert("eapi_when_unknown", "exheres-0");
             keys->insert("eapi_when_unspecified", "exheres-0");
             keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+            std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-exlib-gone-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
@@ -1104,7 +1104,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
@@ -1112,18 +1112,18 @@ namespace test_cases
             keys->insert("eapi_when_unknown", "exheres-0");
             keys->insert("eapi_when_unspecified", "exheres-0");
             keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+            std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-exlibs-truncated-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
             TEST_CHECK(id->short_description_key());
             TEST_CHECK_EQUAL(id->short_description_key()->value(), "The Generated Description flat_hash-exlibs-truncated");
 
-            std::tr1::shared_ptr<const PackageID> id2(*env[selection::RequireExactlyOne(generator::Matches(
+            std::shared_ptr<const PackageID> id2(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-exlibs-truncated-2",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
@@ -1140,7 +1140,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
@@ -1148,11 +1148,11 @@ namespace test_cases
             keys->insert("eapi_when_unknown", "exheres-0");
             keys->insert("eapi_when_unspecified", "exheres-0");
             keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+            std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-exlibs-bad-mtime-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
@@ -1169,7 +1169,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
@@ -1177,11 +1177,11 @@ namespace test_cases
             keys->insert("eapi_when_unknown", "exheres-0");
             keys->insert("eapi_when_unspecified", "exheres-0");
             keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+            std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-exlibs-spaces-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
@@ -1204,7 +1204,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
@@ -1212,11 +1212,11 @@ namespace test_cases
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
             keys->insert("write_cache", "ebuild_flat_metadata_cache_TEST_dir/cache");
             keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+            std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/write-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
@@ -1240,7 +1240,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
@@ -1248,11 +1248,11 @@ namespace test_cases
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
             keys->insert("write_cache", "ebuild_flat_metadata_cache_TEST_dir/cache");
             keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+            std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/write-eapi1-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
@@ -1276,7 +1276,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
@@ -1286,11 +1286,11 @@ namespace test_cases
                     + " " + stringify((FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/extra_eclasses").realpath()));
             keys->insert("write_cache", "ebuild_flat_metadata_cache_TEST_dir/cache");
             keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+            std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/write-eclasses-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
@@ -1314,7 +1314,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
@@ -1323,11 +1323,11 @@ namespace test_cases
             keys->insert("eapi_when_unspecified", "exheres-0");
             keys->insert("write_cache", "ebuild_flat_metadata_cache_TEST_dir/cache");
             keys->insert("builddir", stringify(FSEntry::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+            std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/write-exlibs-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 

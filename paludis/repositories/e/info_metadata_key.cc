@@ -42,7 +42,7 @@
 #include <paludis/formatter.hh>
 #include <map>
 #include <algorithm>
-#include <tr1/functional>
+#include <functional>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -52,12 +52,12 @@ namespace paludis
     template <>
     struct Implementation<InfoVarsMetadataKey>
     {
-        const std::tr1::shared_ptr<const FSEntrySequence> locations;
+        const std::shared_ptr<const FSEntrySequence> locations;
 
         mutable Mutex mutex;
-        mutable std::tr1::shared_ptr<Set<std::string> > value;
+        mutable std::shared_ptr<Set<std::string> > value;
 
-        Implementation(const std::tr1::shared_ptr<const FSEntrySequence> & l) :
+        Implementation(const std::shared_ptr<const FSEntrySequence> & l) :
             locations(l)
         {
         }
@@ -67,13 +67,13 @@ namespace paludis
     struct Implementation<InfoPkgsMetadataKey>
     {
         const Environment * const env;
-        const std::tr1::shared_ptr<const FSEntrySequence> locations;
+        const std::shared_ptr<const FSEntrySequence> locations;
         const ERepository * const e_repository;
 
         mutable Mutex mutex;
         mutable bool added;
 
-        Implementation(const Environment * const e, const std::tr1::shared_ptr<const FSEntrySequence> & l,
+        Implementation(const Environment * const e, const std::shared_ptr<const FSEntrySequence> & l,
                 const ERepository * const r) :
             env(e),
             locations(l),
@@ -84,7 +84,7 @@ namespace paludis
     };
 }
 
-InfoVarsMetadataKey::InfoVarsMetadataKey(const std::tr1::shared_ptr<const FSEntrySequence> & f) :
+InfoVarsMetadataKey::InfoVarsMetadataKey(const std::shared_ptr<const FSEntrySequence> & f) :
     PrivateImplementationPattern<InfoVarsMetadataKey>(new Implementation<InfoVarsMetadataKey>(f))
 {
 }
@@ -93,7 +93,7 @@ InfoVarsMetadataKey::~InfoVarsMetadataKey()
 {
 }
 
-const std::tr1::shared_ptr<const Set<std::string> >
+const std::shared_ptr<const Set<std::string> >
 InfoVarsMetadataKey::value() const
 {
     Lock l(_imp->mutex);
@@ -138,7 +138,7 @@ InfoVarsMetadataKey::type() const
 }
 
 InfoPkgsMetadataKey::InfoPkgsMetadataKey(const Environment * const e,
-        const std::tr1::shared_ptr<const FSEntrySequence> & f,
+        const std::shared_ptr<const FSEntrySequence> & f,
         const ERepository * const r) :
     PrivateImplementationPattern<InfoPkgsMetadataKey>(new Implementation<InfoPkgsMetadataKey>(e, f, r)),
     _imp(PrivateImplementationPattern<InfoPkgsMetadataKey>::_imp)
@@ -176,26 +176,26 @@ InfoPkgsMetadataKey::need_keys_added() const
     for (std::map<std::string, std::string>::const_iterator i(info_pkgs.begin()), i_end(info_pkgs.end()) ;
             i != i_end ; ++i)
     {
-        std::tr1::shared_ptr<const EAPI> eapi(erepository::EAPIData::get_instance()->eapi_from_string(i->second));
-        std::tr1::shared_ptr<MetadataKey> key;
+        std::shared_ptr<const EAPI> eapi(erepository::EAPIData::get_instance()->eapi_from_string(i->second));
+        std::shared_ptr<MetadataKey> key;
 
         if (eapi->supported())
         {
-            std::tr1::shared_ptr<const PackageIDSequence> q((*_imp->env)[selection::AllVersionsSorted(
+            std::shared_ptr<const PackageIDSequence> q((*_imp->env)[selection::AllVersionsSorted(
                         generator::Matches(parse_elike_package_dep_spec(i->first,
                                 eapi->supported()->package_dep_spec_parse_options(),
                                 eapi->supported()->version_spec_options(),
-                                std::tr1::shared_ptr<const PackageID>()), MatchPackageOptions()) |
+                                std::shared_ptr<const PackageID>()), MatchPackageOptions()) |
                         filter::InstalledAtRoot(_imp->env->root()))]);
 
             if (q->empty())
                 key.reset(new LiteralMetadataValueKey<std::string>(i->first, i->first, mkt_normal, "(none)"));
             else
             {
-                using namespace std::tr1::placeholders;
-                std::tr1::shared_ptr<Set<std::string> > s(new Set<std::string>);
+                using namespace std::placeholders;
+                std::shared_ptr<Set<std::string> > s(new Set<std::string>);
                 std::transform(indirect_iterator(q->begin()), indirect_iterator(q->end()), s->inserter(),
-                        std::tr1::bind(std::tr1::mem_fn(&PackageID::canonical_form), _1, idcf_version));
+                        std::bind(std::mem_fn(&PackageID::canonical_form), _1, idcf_version));
                 key.reset(new LiteralMetadataStringSetKey(i->first, i->first, mkt_normal, s));
             }
         }
@@ -217,8 +217,8 @@ namespace
 std::string
 InfoVarsMetadataKey::pretty_print_flat(const Formatter<std::string> & f) const
 {
-    using namespace std::tr1::placeholders;
-    return join(value()->begin(), value()->end(), " ", std::tr1::bind(&format_string, _1, f));
+    using namespace std::placeholders;
+    return join(value()->begin(), value()->end(), " ", std::bind(&format_string, _1, f));
 }
 
 const std::string

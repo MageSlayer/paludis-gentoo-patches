@@ -62,7 +62,7 @@ PretendJob::origin_id_spec() const
     return _imp->origin_id_spec;
 }
 
-const std::tr1::shared_ptr<PretendJob>
+const std::shared_ptr<PretendJob>
 PretendJob::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "PretendJob");
@@ -84,7 +84,7 @@ ExecuteJob::~ExecuteJob()
 {
 }
 
-const std::tr1::shared_ptr<ExecuteJob>
+const std::shared_ptr<ExecuteJob>
 ExecuteJob::deserialise(Deserialisation & d)
 {
     if (d.class_name() == "FetchJob")
@@ -102,12 +102,12 @@ namespace paludis
     template <>
     struct Implementation<FetchJob>
     {
-        const std::tr1::shared_ptr<const JobRequirements> requirements;
+        const std::shared_ptr<const JobRequirements> requirements;
         const PackageDepSpec origin_id_spec;
-        std::tr1::shared_ptr<JobState> state;
+        std::shared_ptr<JobState> state;
 
         Implementation(
-                const std::tr1::shared_ptr<const JobRequirements> & r,
+                const std::shared_ptr<const JobRequirements> & r,
                 const PackageDepSpec & o) :
             requirements(r),
             origin_id_spec(o)
@@ -117,7 +117,7 @@ namespace paludis
 }
 
 FetchJob::FetchJob(
-        const std::tr1::shared_ptr<const JobRequirements> & r,
+        const std::shared_ptr<const JobRequirements> & r,
         const PackageDepSpec & o) :
     PrivateImplementationPattern<FetchJob>(new Implementation<FetchJob>(r, o))
 {
@@ -133,42 +133,42 @@ FetchJob::origin_id_spec() const
     return _imp->origin_id_spec;
 }
 
-const std::tr1::shared_ptr<JobState>
+const std::shared_ptr<JobState>
 FetchJob::state() const
 {
     return _imp->state;
 }
 
 void
-FetchJob::set_state(const std::tr1::shared_ptr<JobState> & s)
+FetchJob::set_state(const std::shared_ptr<JobState> & s)
 {
     _imp->state = s;
 }
 
-const std::tr1::shared_ptr<const JobRequirements>
+const std::shared_ptr<const JobRequirements>
 FetchJob::requirements() const
 {
     return _imp->requirements;
 }
 
-const std::tr1::shared_ptr<FetchJob>
+const std::shared_ptr<FetchJob>
 FetchJob::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "FetchJob");
 
-    std::tr1::shared_ptr<JobRequirements> requirements(new JobRequirements);
+    std::shared_ptr<JobRequirements> requirements(new JobRequirements);
     {
         Deserialisator vv(*v.find_remove_member("requirements"), "c");
         for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
             requirements->push_back(vv.member<JobRequirement>(stringify(n)));
     }
 
-    std::tr1::shared_ptr<FetchJob> result(new FetchJob(
+    std::shared_ptr<FetchJob> result(new FetchJob(
                 requirements,
                 parse_user_package_dep_spec(v.member<std::string>("origin_id_spec"),
                     d.deserialiser().environment(), UserPackageDepSpecOptions() + updso_no_disambiguation)
                 ));
-    result->set_state(v.member<std::tr1::shared_ptr<JobState> >("state"));
+    result->set_state(v.member<std::shared_ptr<JobState> >("state"));
     return result;
 }
 
@@ -187,20 +187,20 @@ namespace paludis
     template <>
     struct Implementation<InstallJob>
     {
-        const std::tr1::shared_ptr<const JobRequirements> requirements;
+        const std::shared_ptr<const JobRequirements> requirements;
         const PackageDepSpec origin_id_spec;
         const RepositoryName destination_repository_name;
         const DestinationType destination_type;
-        const std::tr1::shared_ptr<const Sequence<PackageDepSpec> > replacing_specs;
+        const std::shared_ptr<const Sequence<PackageDepSpec> > replacing_specs;
 
-        std::tr1::shared_ptr<JobState> state;
+        std::shared_ptr<JobState> state;
 
         Implementation(
-                const std::tr1::shared_ptr<const JobRequirements> & q,
+                const std::shared_ptr<const JobRequirements> & q,
                 const PackageDepSpec & o,
                 const RepositoryName & d,
                 const DestinationType t,
-                const std::tr1::shared_ptr<const Sequence<PackageDepSpec> > & r
+                const std::shared_ptr<const Sequence<PackageDepSpec> > & r
                 ) :
             requirements(q),
             origin_id_spec(o),
@@ -213,11 +213,11 @@ namespace paludis
 }
 
 InstallJob::InstallJob(
-        const std::tr1::shared_ptr<const JobRequirements> & q,
+        const std::shared_ptr<const JobRequirements> & q,
         const PackageDepSpec & o,
         const RepositoryName & d,
         const DestinationType t,
-        const std::tr1::shared_ptr<const Sequence<PackageDepSpec> > & r
+        const std::shared_ptr<const Sequence<PackageDepSpec> > & r
         ) :
     PrivateImplementationPattern<InstallJob>(new Implementation<InstallJob>(q, o, d, t, r))
 {
@@ -245,36 +245,36 @@ InstallJob::destination_type() const
     return _imp->destination_type;
 }
 
-const std::tr1::shared_ptr<const Sequence<PackageDepSpec> >
+const std::shared_ptr<const Sequence<PackageDepSpec> >
 InstallJob::replacing_specs() const
 {
     return _imp->replacing_specs;
 }
 
-const std::tr1::shared_ptr<JobState>
+const std::shared_ptr<JobState>
 InstallJob::state() const
 {
     return _imp->state;
 }
 
 void
-InstallJob::set_state(const std::tr1::shared_ptr<JobState> & s)
+InstallJob::set_state(const std::shared_ptr<JobState> & s)
 {
     _imp->state = s;
 }
 
-const std::tr1::shared_ptr<const JobRequirements>
+const std::shared_ptr<const JobRequirements>
 InstallJob::requirements() const
 {
     return _imp->requirements;
 }
 
-const std::tr1::shared_ptr<InstallJob>
+const std::shared_ptr<InstallJob>
 InstallJob::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "InstallJob");
 
-    std::tr1::shared_ptr<Sequence<PackageDepSpec> > replacing_specs(new Sequence<PackageDepSpec>);
+    std::shared_ptr<Sequence<PackageDepSpec> > replacing_specs(new Sequence<PackageDepSpec>);
     {
         Deserialisator vv(*v.find_remove_member("replacing_specs"), "c");
         for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
@@ -282,14 +282,14 @@ InstallJob::deserialise(Deserialisation & d)
                         d.deserialiser().environment(), UserPackageDepSpecOptions() + updso_no_disambiguation));
     }
 
-    std::tr1::shared_ptr<JobRequirements> requirements(new JobRequirements);
+    std::shared_ptr<JobRequirements> requirements(new JobRequirements);
     {
         Deserialisator vv(*v.find_remove_member("requirements"), "c");
         for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
             requirements->push_back(vv.member<JobRequirement>(stringify(n)));
     }
 
-    std::tr1::shared_ptr<InstallJob> result(new InstallJob(
+    std::shared_ptr<InstallJob> result(new InstallJob(
                 requirements,
                 parse_user_package_dep_spec(v.member<std::string>("origin_id_spec"),
                     d.deserialiser().environment(), UserPackageDepSpecOptions() + updso_no_disambiguation),
@@ -298,14 +298,14 @@ InstallJob::deserialise(Deserialisation & d)
                 replacing_specs
                 ));
 
-    result->set_state(v.member<std::tr1::shared_ptr<JobState> >("state"));
+    result->set_state(v.member<std::shared_ptr<JobState> >("state"));
     return result;
 }
 
 void
 InstallJob::serialise(Serialiser & s) const
 {
-    std::tr1::shared_ptr<Sequence<std::string> > replacing_specs_s(new Sequence<std::string>);
+    std::shared_ptr<Sequence<std::string> > replacing_specs_s(new Sequence<std::string>);
     for (Sequence<PackageDepSpec>::ConstIterator r(replacing_specs()->begin()),
             r_end(replacing_specs()->end()) ;
             r != r_end ; ++r)
@@ -326,14 +326,14 @@ namespace paludis
     template <>
     struct Implementation<UninstallJob>
     {
-        const std::tr1::shared_ptr<const JobRequirements> requirements;
-        const std::tr1::shared_ptr<const Sequence<PackageDepSpec> > ids_to_remove_specs;
+        const std::shared_ptr<const JobRequirements> requirements;
+        const std::shared_ptr<const Sequence<PackageDepSpec> > ids_to_remove_specs;
 
-        std::tr1::shared_ptr<JobState> state;
+        std::shared_ptr<JobState> state;
 
         Implementation(
-                const std::tr1::shared_ptr<const JobRequirements> & q,
-                const std::tr1::shared_ptr<const Sequence<PackageDepSpec> > & r
+                const std::shared_ptr<const JobRequirements> & q,
+                const std::shared_ptr<const Sequence<PackageDepSpec> > & r
                 ) :
             requirements(q),
             ids_to_remove_specs(r)
@@ -343,8 +343,8 @@ namespace paludis
 }
 
 UninstallJob::UninstallJob(
-        const std::tr1::shared_ptr<const JobRequirements> & q,
-        const std::tr1::shared_ptr<const Sequence<PackageDepSpec> > & r
+        const std::shared_ptr<const JobRequirements> & q,
+        const std::shared_ptr<const Sequence<PackageDepSpec> > & r
         ) :
     PrivateImplementationPattern<UninstallJob>(new Implementation<UninstallJob>(q, r))
 {
@@ -354,36 +354,36 @@ UninstallJob::~UninstallJob()
 {
 }
 
-const std::tr1::shared_ptr<const Sequence<PackageDepSpec> >
+const std::shared_ptr<const Sequence<PackageDepSpec> >
 UninstallJob::ids_to_remove_specs() const
 {
     return _imp->ids_to_remove_specs;
 }
 
-const std::tr1::shared_ptr<JobState>
+const std::shared_ptr<JobState>
 UninstallJob::state() const
 {
     return _imp->state;
 }
 
 void
-UninstallJob::set_state(const std::tr1::shared_ptr<JobState> & s)
+UninstallJob::set_state(const std::shared_ptr<JobState> & s)
 {
     _imp->state = s;
 }
 
-const std::tr1::shared_ptr<const JobRequirements>
+const std::shared_ptr<const JobRequirements>
 UninstallJob::requirements() const
 {
     return _imp->requirements;
 }
 
-const std::tr1::shared_ptr<UninstallJob>
+const std::shared_ptr<UninstallJob>
 UninstallJob::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "UninstallJob");
 
-    std::tr1::shared_ptr<Sequence<PackageDepSpec> > ids_to_remove_specs(new Sequence<PackageDepSpec> );
+    std::shared_ptr<Sequence<PackageDepSpec> > ids_to_remove_specs(new Sequence<PackageDepSpec> );
     {
         Deserialisator vv(*v.find_remove_member("ids_to_remove_specs"), "c");
         for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
@@ -391,26 +391,26 @@ UninstallJob::deserialise(Deserialisation & d)
                         d.deserialiser().environment(), UserPackageDepSpecOptions() + updso_no_disambiguation));
     }
 
-    std::tr1::shared_ptr<JobRequirements> requirements(new JobRequirements);
+    std::shared_ptr<JobRequirements> requirements(new JobRequirements);
     {
         Deserialisator vv(*v.find_remove_member("requirements"), "c");
         for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
             requirements->push_back(vv.member<JobRequirement>(stringify(n)));
     }
 
-    std::tr1::shared_ptr<UninstallJob> result(new UninstallJob(
+    std::shared_ptr<UninstallJob> result(new UninstallJob(
                 requirements,
                 ids_to_remove_specs
                 ));
 
-    result->set_state(v.member<std::tr1::shared_ptr<JobState> >("state"));
+    result->set_state(v.member<std::shared_ptr<JobState> >("state"));
     return result;
 }
 
 void
 UninstallJob::serialise(Serialiser & s) const
 {
-    std::tr1::shared_ptr<Sequence<std::string> > ids_to_remove_specs_s(new Sequence<std::string>);
+    std::shared_ptr<Sequence<std::string> > ids_to_remove_specs_s(new Sequence<std::string>);
     for (Sequence<PackageDepSpec>::ConstIterator r(ids_to_remove_specs()->begin()),
             r_end(ids_to_remove_specs()->end()) ;
             r != r_end ; ++r)

@@ -31,7 +31,7 @@ using namespace paludis::erepository;
 
 template class Singleton<LayoutFactory>;
 
-Layout::Layout(const std::tr1::shared_ptr<const FSEntrySequence> & l) :
+Layout::Layout(const std::shared_ptr<const FSEntrySequence> & l) :
     _master_repositories_locations(l)
 {
 }
@@ -40,7 +40,7 @@ Layout::~Layout()
 {
 }
 
-const std::tr1::shared_ptr<const FSEntrySequence>
+const std::shared_ptr<const FSEntrySequence>
 Layout::master_repositories_locations() const
 {
     return _master_repositories_locations;
@@ -55,11 +55,11 @@ Layout::sync_filter_file() const
 namespace
 {
     template <typename T_>
-    std::tr1::shared_ptr<Layout>
+    std::shared_ptr<Layout>
     make_layout(const ERepository * const n, const FSEntry & b,
-            std::tr1::shared_ptr<const FSEntrySequence> f)
+            std::shared_ptr<const FSEntrySequence> f)
     {
-        return std::tr1::shared_ptr<Layout>(new T_(n, b, f));
+        return std::shared_ptr<Layout>(new T_(n, b, f));
     }
 }
 
@@ -67,12 +67,12 @@ LayoutFactory::LayoutFactory()
 {
 }
 
-const std::tr1::shared_ptr<Layout>
+const std::shared_ptr<Layout>
 LayoutFactory::create(
         const std::string & s,
         const ERepository * const r,
         const FSEntry & f,
-        const std::tr1::shared_ptr<const FSEntrySequence> & ff) const
+        const std::shared_ptr<const FSEntrySequence> & ff) const
 {
     if (s == "traditional")
         return make_layout<TraditionalLayout>(r, f, ff);

@@ -37,13 +37,13 @@ int main(int argc, char * argv[])
                 "example_package_database", "EXAMPLE_PACKAGE_DATABASE_OPTIONS", "EXAMPLE_PACKAGE_DATABASE_CMDLINE");
 
         /* We start with an Environment, respecting the user's '--environment' choice. */
-        std::tr1::shared_ptr<Environment> env(EnvironmentFactory::get_instance()->create(
+        std::shared_ptr<Environment> env(EnvironmentFactory::get_instance()->create(
                     CommandLine::get_instance()->a_environment.argument()));
 
         /* Mostly PackageDatabase is used by Environment. But some methods are useful: */
         if (env->package_database()->has_repository_named(RepositoryName("gentoo")))
         {
-            std::tr1::shared_ptr<const Repository> repo(env->package_database()->fetch_repository(RepositoryName("gentoo")));
+            std::shared_ptr<const Repository> repo(env->package_database()->fetch_repository(RepositoryName("gentoo")));
             cout << "Repository 'gentoo' exists, and has format '" <<
                 (repo->format_key() ? repo->format_key()->value() : "") << "'" << endl;
         }

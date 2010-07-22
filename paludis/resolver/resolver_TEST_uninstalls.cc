@@ -46,7 +46,7 @@
 #include <test/test_framework.hh>
 
 #include <list>
-#include <tr1/functional>
+#include <functional>
 #include <algorithm>
 #include <map>
 
@@ -92,13 +92,13 @@ namespace test_cases
         virtual ResolverFunctions get_resolver_functions(InitialConstraints & initial_constraints)
         {
             ResolverFunctions result(ResolverUninstallsTestCase::get_resolver_functions(initial_constraints));
-            result.confirm_fn() = std::tr1::bind(return_literal_function(confirm));
+            result.confirm_fn() = std::bind(return_literal_function(confirm));
             return result;
         }
 
         void run()
         {
-            std::tr1::shared_ptr<const Resolved> resolved(get_resolved(BlockDepSpec(
+            std::shared_ptr<const Resolved> resolved(get_resolved(BlockDepSpec(
                             "!breaking/target",
                             parse_user_package_dep_spec("breaking/target", &env, UserPackageDepSpecOptions()),
                             false)));

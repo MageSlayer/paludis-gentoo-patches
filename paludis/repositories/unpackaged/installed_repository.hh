@@ -79,18 +79,18 @@ namespace paludis
 
             void deindex(const QualifiedPackageName &) const;
 
-            virtual std::tr1::shared_ptr<const PackageIDSequence> package_ids(
+            virtual std::shared_ptr<const PackageIDSequence> package_ids(
                     const QualifiedPackageName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::tr1::shared_ptr<const QualifiedPackageNameSet> package_names(
+            virtual std::shared_ptr<const QualifiedPackageNameSet> package_names(
                     const CategoryNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::tr1::shared_ptr<const CategoryNamePartSet> category_names() const
+            virtual std::shared_ptr<const CategoryNamePartSet> category_names() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::tr1::shared_ptr<const CategoryNamePartSet> category_names_containing_package(
+            virtual std::shared_ptr<const CategoryNamePartSet> category_names_containing_package(
                     const PackageNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -108,26 +108,26 @@ namespace paludis
 
             /* Keys */
 
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > location_key() const;
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const;
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > accept_keywords_key() const;
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > sync_host_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > location_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<std::string> > accept_keywords_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<std::string> > sync_host_key() const;
 
             ///\name RepositoryFactory functions
             ///\{
 
             static RepositoryName repository_factory_name(
                     const Environment * const env,
-                    const std::tr1::function<std::string (const std::string &)> &);
+                    const std::function<std::string (const std::string &)> &);
 
-            static std::tr1::shared_ptr<Repository> repository_factory_create(
+            static std::shared_ptr<Repository> repository_factory_create(
                     Environment * const env,
-                    const std::tr1::function<std::string (const std::string &)> &);
+                    const std::function<std::string (const std::string &)> &);
 
-            static std::tr1::shared_ptr<const RepositoryNameSet> repository_factory_dependencies(
+            static std::shared_ptr<const RepositoryNameSet> repository_factory_dependencies(
                     const Environment * const env,
-                    const std::tr1::function<std::string (const std::string &)> &);
+                    const std::function<std::string (const std::string &)> &);
 
             ///\}
 
@@ -141,7 +141,7 @@ namespace paludis
             virtual HookResult perform_hook(const Hook & hook)
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool sync(const std::tr1::shared_ptr<OutputManager> &) const;
+            virtual bool sync(const std::shared_ptr<OutputManager> &) const;
     };
 }
 

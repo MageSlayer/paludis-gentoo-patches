@@ -22,9 +22,9 @@
 
 #include <paludis/util/indirect_iterator-fwd.hh>
 #include <paludis/util/operators.hh>
-#include <tr1/memory>
-#include <tr1/functional>
-#include <tr1/type_traits>
+#include <memory>
+#include <functional>
+#include <type_traits>
 
 namespace paludis
 {
@@ -41,13 +41,13 @@ namespace paludis
     };
 
     template <typename T_>
-    struct IndirectIteratorValueType<std::tr1::shared_ptr<T_> >
+    struct IndirectIteratorValueType<std::shared_ptr<T_> >
     {
         typedef T_ Type;
     };
 
     template <typename T_>
-    struct IndirectIteratorValueType<std::tr1::shared_ptr<const T_> >
+    struct IndirectIteratorValueType<std::shared_ptr<const T_> >
     {
         typedef const T_ Type;
     };
@@ -65,7 +65,7 @@ namespace paludis
     };
 
     /**
-     * An IndirectIterator turns an iterator over T_ * or std::tr1::shared_ptr<T_> into an iterator
+     * An IndirectIterator turns an iterator over T_ * or std::shared_ptr<T_> into an iterator
      * over T_.
      *
      * \ingroup g_iterator
@@ -96,9 +96,9 @@ namespace paludis
             ///\name Standard library typedefs
             ///\{
 
-            typedef typename std::tr1::remove_reference<Value_>::type & value_type;
-            typedef typename std::tr1::remove_reference<Value_>::type & reference;
-            typedef typename std::tr1::remove_reference<Value_>::type * pointer;
+            typedef typename std::remove_reference<Value_>::type & value_type;
+            typedef typename std::remove_reference<Value_>::type & reference;
+            typedef typename std::remove_reference<Value_>::type * pointer;
             typedef std::ptrdiff_t difference_type;
             typedef std::forward_iterator_tag iterator_category;
 

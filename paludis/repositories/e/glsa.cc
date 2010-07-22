@@ -34,7 +34,7 @@ using namespace paludis;
 
 typedef std::list<std::string> Archs;
 typedef std::list<erepository::GLSARange> Ranges;
-typedef std::list<std::tr1::shared_ptr<const GLSAPackage> > Packages;
+typedef std::list<std::shared_ptr<const GLSAPackage> > Packages;
 
 namespace paludis
 {
@@ -170,7 +170,7 @@ GLSA::end_packages() const
 }
 
 void
-GLSA::add_package(const std::tr1::shared_ptr<const GLSAPackage> & p)
+GLSA::add_package(const std::shared_ptr<const GLSAPackage> & p)
 {
     _imp->packages.push_back(p);
 }
@@ -199,7 +199,7 @@ GLSA::title() const
     return _imp->title;
 }
 
-std::tr1::shared_ptr<GLSA>
+std::shared_ptr<GLSA>
 GLSA::create_from_xml_file(const std::string & filename)
 {
     if (! erepository::XMLThingsHandle::get_instance()->create_glsa_from_xml_file())

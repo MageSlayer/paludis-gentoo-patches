@@ -89,13 +89,13 @@ int main(int argc, char * argv[])
 
         Log::get_instance()->set_program_name(argv[0]);
         Log::get_instance()->set_log_level(cmdline.a_log_level.option());
-        std::tr1::shared_ptr<Environment> env(EnvironmentFactory::get_instance()->create(cmdline.a_environment.argument()));
+        std::shared_ptr<Environment> env(EnvironmentFactory::get_instance()->create(cmdline.a_environment.argument()));
 
         env->set_paludis_command(std::string(BINDIR"/paludis")
                + " --" + cmdline.a_log_level.long_name() + " " + cmdline.a_log_level.argument()
                + " --" + cmdline.a_environment.long_name() + " " + (cmdline.a_environment.argument().empty() ? ":" : cmdline.a_environment.argument()));
 
-        std::tr1::shared_ptr<Sequence<std::string> > seq(new Sequence<std::string>);
+        std::shared_ptr<Sequence<std::string> > seq(new Sequence<std::string>);
         std::copy(next(cmdline.begin_parameters()), cmdline.end_parameters(), seq->back_inserter());
 
         return cave::CommandFactory::get_instance()->create(*cmdline.begin_parameters())->run(env, seq);

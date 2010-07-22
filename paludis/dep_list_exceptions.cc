@@ -35,7 +35,7 @@ AllMaskedError::AllMaskedError(const PackageDepSpec & q) throw () :
 }
 
 AdditionalRequirementsNotMetError::AdditionalRequirementsNotMetError(const PackageDepSpec & q,
-        const std::tr1::shared_ptr<const PackageID> & i) throw () :
+        const std::shared_ptr<const PackageID> & i) throw () :
     DepListError("Error searching for '" + stringify(q) + "': additional requirements are not met on '" + stringify(*i) + "'"),
     _query(q),
     _id(i)
@@ -68,7 +68,7 @@ DowngradeNotAllowedError::~DowngradeNotAllowedError() throw ()
 namespace
 {
     std::string
-    destinations_to_string(std::tr1::shared_ptr<const DestinationsSet> dd)
+    destinations_to_string(std::shared_ptr<const DestinationsSet> dd)
     {
         std::string result;
         bool need_comma(false);
@@ -86,7 +86,7 @@ namespace
 }
 
 NoDestinationError::NoDestinationError(const PackageID & p,
-        const std::tr1::shared_ptr<const DestinationsSet> & d) throw () :
+        const std::shared_ptr<const DestinationsSet> & d) throw () :
     DepListError("No suitable destination for '" + stringify(p) + "' in (" +
             destinations_to_string(d) + ")")
 {

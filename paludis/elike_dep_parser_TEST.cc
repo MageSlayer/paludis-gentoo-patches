@@ -43,7 +43,7 @@ namespace
     {
     }
 
-    void handle_annotations(std::string & s, const std::tr1::shared_ptr<const Map<std::string, std::string> > & m)
+    void handle_annotations(std::string & s, const std::shared_ptr<const Map<std::string, std::string> > & m)
     {
         s.append("[");
         for (Map<std::string, std::string>::ConstIterator i(m->begin()), i_end(m->end()) ;
@@ -61,20 +61,20 @@ namespace test_cases
 
         void run()
         {
-            using namespace std::tr1::placeholders;
+            using namespace std::placeholders;
 
             std::string in("|| ( a b ( c d e ) )"), out;
             ELikeDepParserCallbacks callbacks(make_named_values<ELikeDepParserCallbacks>(
-                        n::on_all() = std::tr1::bind(&handler, std::tr1::ref(out), "all<", "", "", "", ""),
-                        n::on_annotations() = std::tr1::bind(&handle_annotations, std::tr1::ref(out), _1),
-                        n::on_any() = std::tr1::bind(&handler, std::tr1::ref(out), "any<", "", "", "", ""),
-                        n::on_arrow() = std::tr1::bind(&handler, std::tr1::ref(out), "a<", _1, ", ", _2, ">"),
-                        n::on_error() = std::tr1::bind(&handler, std::tr1::ref(out), "error<", _1, ">", "", ""),
-                        n::on_label() = std::tr1::bind(&handler, std::tr1::ref(out), "label<", _1, "", "", ""),
-                        n::on_pop() = std::tr1::bind(&handler, std::tr1::ref(out), ">", "", "", "", ""),
-                        n::on_should_be_empty() = std::tr1::bind(&handler, std::tr1::ref(out), "EMPTY", "", "", "", ""),
-                        n::on_string() = std::tr1::bind(&handler, std::tr1::ref(out), "s<", _1, ">", "", ""),
-                        n::on_use() = std::tr1::bind(&handler, std::tr1::ref(out), "use<", _1, ", ", "", ""),
+                        n::on_all() = std::bind(&handler, std::ref(out), "all<", "", "", "", ""),
+                        n::on_annotations() = std::bind(&handle_annotations, std::ref(out), _1),
+                        n::on_any() = std::bind(&handler, std::ref(out), "any<", "", "", "", ""),
+                        n::on_arrow() = std::bind(&handler, std::ref(out), "a<", _1, ", ", _2, ">"),
+                        n::on_error() = std::bind(&handler, std::ref(out), "error<", _1, ">", "", ""),
+                        n::on_label() = std::bind(&handler, std::ref(out), "label<", _1, "", "", ""),
+                        n::on_pop() = std::bind(&handler, std::ref(out), ">", "", "", "", ""),
+                        n::on_should_be_empty() = std::bind(&handler, std::ref(out), "EMPTY", "", "", "", ""),
+                        n::on_string() = std::bind(&handler, std::ref(out), "s<", _1, ">", "", ""),
+                        n::on_use() = std::bind(&handler, std::ref(out), "use<", _1, ", ", "", ""),
                         n::on_use_under_any() = &do_nothing
                         ));
             parse_elike_dependencies(in, callbacks);
@@ -88,20 +88,20 @@ namespace test_cases
 
         void run()
         {
-            using namespace std::tr1::placeholders;
+            using namespace std::placeholders;
 
             std::string in("( ( ) )"), out;
             ELikeDepParserCallbacks callbacks(make_named_values<ELikeDepParserCallbacks>(
-                        n::on_all() = std::tr1::bind(&handler, std::tr1::ref(out), "all<", "", "", "", ""),
-                        n::on_annotations() = std::tr1::bind(&handle_annotations, std::tr1::ref(out), _1),
-                        n::on_any() = std::tr1::bind(&handler, std::tr1::ref(out), "any<", "", "", "", ""),
-                        n::on_arrow() = std::tr1::bind(&handler, std::tr1::ref(out), "a<", _1, ", ", _2, ">"),
-                        n::on_error() = std::tr1::bind(&handler, std::tr1::ref(out), "error<", _1, ">", "", ""),
-                        n::on_label() = std::tr1::bind(&handler, std::tr1::ref(out), "label<", _1, "", "", ""),
-                        n::on_pop() = std::tr1::bind(&handler, std::tr1::ref(out), ">", "", "", "", ""),
-                        n::on_should_be_empty() = std::tr1::bind(&handler, std::tr1::ref(out), "EMPTY", "", "", "", ""),
-                        n::on_string() = std::tr1::bind(&handler, std::tr1::ref(out), "s<", _1, ">", "", ""),
-                        n::on_use() = std::tr1::bind(&handler, std::tr1::ref(out), "use<", _1, ", ", "", ""),
+                        n::on_all() = std::bind(&handler, std::ref(out), "all<", "", "", "", ""),
+                        n::on_annotations() = std::bind(&handle_annotations, std::ref(out), _1),
+                        n::on_any() = std::bind(&handler, std::ref(out), "any<", "", "", "", ""),
+                        n::on_arrow() = std::bind(&handler, std::ref(out), "a<", _1, ", ", _2, ">"),
+                        n::on_error() = std::bind(&handler, std::ref(out), "error<", _1, ">", "", ""),
+                        n::on_label() = std::bind(&handler, std::ref(out), "label<", _1, "", "", ""),
+                        n::on_pop() = std::bind(&handler, std::ref(out), ">", "", "", "", ""),
+                        n::on_should_be_empty() = std::bind(&handler, std::ref(out), "EMPTY", "", "", "", ""),
+                        n::on_string() = std::bind(&handler, std::ref(out), "s<", _1, ">", "", ""),
+                        n::on_use() = std::bind(&handler, std::ref(out), "use<", _1, ", ", "", ""),
                         n::on_use_under_any() = &do_nothing
                     ));
             parse_elike_dependencies(in, callbacks);
@@ -115,20 +115,20 @@ namespace test_cases
 
         void run()
         {
-            using namespace std::tr1::placeholders;
+            using namespace std::placeholders;
 
             std::string in("a [[ first = foo second = [ bar baz ] ]]"), out;
             ELikeDepParserCallbacks callbacks(make_named_values<ELikeDepParserCallbacks>(
-                        n::on_all() = std::tr1::bind(&handler, std::tr1::ref(out), "all<", "", "", "", ""),
-                        n::on_annotations() = std::tr1::bind(&handle_annotations, std::tr1::ref(out), _1),
-                        n::on_any() = std::tr1::bind(&handler, std::tr1::ref(out), "any<", "", "", "", ""),
-                        n::on_arrow() = std::tr1::bind(&handler, std::tr1::ref(out), "a<", _1, ", ", _2, ">"),
-                        n::on_error() = std::tr1::bind(&handler, std::tr1::ref(out), "error<", _1, ">", "", ""),
-                        n::on_label() = std::tr1::bind(&handler, std::tr1::ref(out), "label<", _1, "", "", ""),
-                        n::on_pop() = std::tr1::bind(&handler, std::tr1::ref(out), ">", "", "", "", ""),
-                        n::on_should_be_empty() = std::tr1::bind(&handler, std::tr1::ref(out), "EMPTY", "", "", "", ""),
-                        n::on_string() = std::tr1::bind(&handler, std::tr1::ref(out), "s<", _1, ">", "", ""),
-                        n::on_use() = std::tr1::bind(&handler, std::tr1::ref(out), "use<", _1, ", ", "", ""),
+                        n::on_all() = std::bind(&handler, std::ref(out), "all<", "", "", "", ""),
+                        n::on_annotations() = std::bind(&handle_annotations, std::ref(out), _1),
+                        n::on_any() = std::bind(&handler, std::ref(out), "any<", "", "", "", ""),
+                        n::on_arrow() = std::bind(&handler, std::ref(out), "a<", _1, ", ", _2, ">"),
+                        n::on_error() = std::bind(&handler, std::ref(out), "error<", _1, ">", "", ""),
+                        n::on_label() = std::bind(&handler, std::ref(out), "label<", _1, "", "", ""),
+                        n::on_pop() = std::bind(&handler, std::ref(out), ">", "", "", "", ""),
+                        n::on_should_be_empty() = std::bind(&handler, std::ref(out), "EMPTY", "", "", "", ""),
+                        n::on_string() = std::bind(&handler, std::ref(out), "s<", _1, ">", "", ""),
+                        n::on_use() = std::bind(&handler, std::ref(out), "use<", _1, ", ", "", ""),
                         n::on_use_under_any() = &do_nothing
                     ));
             parse_elike_dependencies(in, callbacks);

@@ -450,7 +450,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
+            std::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
             idcat->build_dependencies_key()->set_from_string("enabled? ( cat/two )");
             idcat->choices_key()->add("", "enabled");
             repo->add_version("cat", "two", "1");
@@ -472,7 +472,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
+            std::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
             idcat->build_dependencies_key()->set_from_string("!enabled? ( cat/two )");
             idcat->choices_key()->add("", "enabled");
             repo->add_version("cat", "two", "1");
@@ -493,7 +493,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
+            std::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
             idcat->build_dependencies_key()->set_from_string("disabled? ( cat/two )");
             idcat->choices_key()->add("", "disabled");
             repo->add_version("cat", "two", "1");
@@ -514,7 +514,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
+            std::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
             idcat->build_dependencies_key()->set_from_string("!disabled? ( cat/two )");
             idcat->choices_key()->add("", "disabled");
             repo->add_version("cat", "two", "1");
@@ -536,7 +536,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
+            std::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
             idcat->build_dependencies_key()->set_from_string("|| ( enabled? ( cat/two ) cat/three )");
             idcat->choices_key()->add("", "enabled");
             repo->add_version("cat", "two", "1");
@@ -559,7 +559,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
+            std::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
             idcat->build_dependencies_key()->set_from_string("|| ( !enabled? ( cat/two ) cat/three )");
             idcat->choices_key()->add("", "enabled");
             repo->add_version("cat", "two", "1");
@@ -582,7 +582,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
+            std::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
             idcat->build_dependencies_key()->set_from_string("|| ( disabled? ( cat/two ) cat/three )");
             idcat->choices_key()->add("", "disabled");
             repo->add_version("cat", "two", "1");
@@ -605,7 +605,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
+            std::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
             idcat->build_dependencies_key()->set_from_string("|| ( !disabled? ( cat/two ) cat/three )");
             idcat->choices_key()->add("", "disabled");
             repo->add_version("cat", "two", "1");
@@ -628,7 +628,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
+            std::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
             idcat->build_dependencies_key()->set_from_string("cat/three || ( enabled? ( cat/two ) cat/three )");
             idcat->choices_key()->add("", "enabled");
             repo->add_version("cat", "two", "1");
@@ -651,7 +651,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
+            std::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
             idcat->build_dependencies_key()->set_from_string("cat/three || ( !enabled? ( cat/two ) cat/three )");
             idcat->choices_key()->add("", "enabled");
             repo->add_version("cat", "two", "1");
@@ -674,7 +674,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
+            std::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
             idcat->build_dependencies_key()->set_from_string("cat/three || ( disabled? ( cat/two ) cat/three )");
             idcat->choices_key()->add("", "disabled");
             repo->add_version("cat", "two", "1");
@@ -697,7 +697,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
+            std::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
             idcat->build_dependencies_key()->set_from_string("cat/three || ( !disabled? ( cat/two ) cat/three )");
             idcat->choices_key()->add("", "disabled");
             repo->add_version("cat", "two", "1");
@@ -720,7 +720,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
+            std::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
             idcat->build_dependencies_key()->set_from_string("cat/three || ( enabled? ( cat/three ) cat/two )");
             idcat->choices_key()->add("", "enabled");
             repo->add_version("cat", "two", "1");
@@ -743,7 +743,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
+            std::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
             idcat->build_dependencies_key()->set_from_string("cat/three || ( !enabled? ( cat/three ) cat/two )");
             idcat->choices_key()->add("", "enabled");
             repo->add_version("cat", "two", "1");
@@ -767,7 +767,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
+            std::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
             idcat->build_dependencies_key()->set_from_string("cat/three || ( disabled? ( cat/three ) cat/two )");
             idcat->choices_key()->add("", "disabled");
             repo->add_version("cat", "two", "1");
@@ -791,7 +791,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
+            std::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
             idcat->build_dependencies_key()->set_from_string("cat/three || ( !disabled? ( cat/three ) cat/two )");
             idcat->choices_key()->add("", "disabled");
             repo->add_version("cat", "two", "1");
@@ -814,7 +814,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
+            std::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
             idcat->build_dependencies_key()->set_from_string("|| ( enabled1? ( cat/two ) enabled2? ( cat/three ) )");
             idcat->choices_key()->add("", "enabled1");
             idcat->choices_key()->add("", "enabled2");
@@ -838,7 +838,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
+            std::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
             idcat->build_dependencies_key()->set_from_string("|| ( !enabled1? ( cat/two ) enabled2? ( cat/three ) )");
             idcat->choices_key()->add("", "enabled1");
             idcat->choices_key()->add("", "enabled2");
@@ -862,7 +862,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
+            std::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "one", "1"));
             idcat->build_dependencies_key()->set_from_string("|| ( !enabled1? ( cat/two ) !enabled2? ( cat/three ) )");
             idcat->choices_key()->add("", "enabled1");
             idcat->choices_key()->add("", "enabled2");
@@ -1325,7 +1325,7 @@ namespace test_cases
         void populate_repo()
         {
             repo->add_version("cat", "one", "1")->provide_key()->set_from_string("virtual/foo");
-            std::tr1::shared_ptr<FakePackageID> m(repo->add_version("cat", "two", "2"));
+            std::shared_ptr<FakePackageID> m(repo->add_version("cat", "two", "2"));
             m->provide_key()->set_from_string("virtual/foo");
             m->build_dependencies_key()->set_from_string("cat/one");
         }
@@ -1349,9 +1349,9 @@ namespace test_cases
     {
         void set_options(DepListOptions & opts)
         {
-            using namespace std::tr1::placeholders;
+            using namespace std::placeholders;
             opts.override_masks().reset(new DepListOverrideMasksFunctions);
-            opts.override_masks()->push_back(std::tr1::bind(&override_tilde_keywords, &env, _1, _2));
+            opts.override_masks()->push_back(std::bind(&override_tilde_keywords, &env, _1, _2));
         }
 
         void populate_repo()
@@ -1421,9 +1421,9 @@ namespace test_cases
     {
         void set_options(DepListOptions & opts)
         {
-            using namespace std::tr1::placeholders;
+            using namespace std::placeholders;
             opts.override_masks().reset(new DepListOverrideMasksFunctions);
-            opts.override_masks()->push_back(std::tr1::bind(&override_tilde_keywords, &env, _1, _2));
+            opts.override_masks()->push_back(std::bind(&override_tilde_keywords, &env, _1, _2));
         }
 
         void populate_repo()
@@ -1449,19 +1449,19 @@ namespace test_cases
     {
         void populate_repo()
         {
-            std::tr1::shared_ptr<FakePackageID> idcat1(repo->add_version("cat1", "enabled", "1"));
+            std::shared_ptr<FakePackageID> idcat1(repo->add_version("cat1", "enabled", "1"));
             idcat1->build_dependencies_key()->set_from_string("( cat2/enabled[pkgname?] )");
             idcat1->choices_key()->add("", "pkgname");
             repo->add_version("cat2", "enabled", "1")->choices_key()->add("", "pkgname");
-            std::tr1::shared_ptr<FakePackageID> idcat3(repo->add_version("cat3", "disabled", "1"));
+            std::shared_ptr<FakePackageID> idcat3(repo->add_version("cat3", "disabled", "1"));
             idcat3->build_dependencies_key()->set_from_string("( cat4/enabled[pkgname?] )");
             idcat3->choices_key()->add("", "pkgname");
             repo->add_version("cat4", "enabled", "1")->choices_key()->add("", "pkgname");
-            std::tr1::shared_ptr<FakePackageID> idcat5(repo->add_version("cat5", "disabled", "1"));
+            std::shared_ptr<FakePackageID> idcat5(repo->add_version("cat5", "disabled", "1"));
             idcat5->build_dependencies_key()->set_from_string("( cat6/disabled[pkgname?] )");
             idcat5->choices_key()->add("", "pkgname");
             repo->add_version("cat6", "disabled", "1")->choices_key()->add("", "pkgname");
-            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "all", "1"));
+            std::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "all", "1"));
             idcat->build_dependencies_key()->set_from_string("( cat5/disabled cat3/disabled cat1/enabled )");
             idcat->choices_key()->add("", "pkgname");
         }
@@ -1487,7 +1487,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            std::tr1::shared_ptr<FakePackageID> idcat1(repo->add_version("cat1", "enabled", "1"));
+            std::shared_ptr<FakePackageID> idcat1(repo->add_version("cat1", "enabled", "1"));
             idcat1->build_dependencies_key()->set_from_string("( cat2/disabled[pkgname?] )");
             idcat1->choices_key()->add("", "pkgname");
             repo->add_version("cat2", "disabled", "1")->choices_key()->add("", "pkgname");
@@ -1517,19 +1517,19 @@ namespace test_cases
     {
         void populate_repo()
         {
-            std::tr1::shared_ptr<FakePackageID> idcat1(repo->add_version("cat1", "disabled", "1"));
+            std::shared_ptr<FakePackageID> idcat1(repo->add_version("cat1", "disabled", "1"));
             idcat1->build_dependencies_key()->set_from_string("( cat2/enabled[pkgname!?] )");
             idcat1->choices_key()->add("", "pkgname");
             repo->add_version("cat2", "enabled", "1")->choices_key()->add("", "pkgname");
-            std::tr1::shared_ptr<FakePackageID> idcat3(repo->add_version("cat3", "enabled", "1"));
+            std::shared_ptr<FakePackageID> idcat3(repo->add_version("cat3", "enabled", "1"));
             idcat3->build_dependencies_key()->set_from_string("( cat4/enabled[pkgname!?] )");
             idcat3->choices_key()->add("", "pkgname");
             repo->add_version("cat4", "enabled", "1")->choices_key()->add("", "pkgname");
-            std::tr1::shared_ptr<FakePackageID> idcat5(repo->add_version("cat5", "enabled", "1"));
+            std::shared_ptr<FakePackageID> idcat5(repo->add_version("cat5", "enabled", "1"));
             idcat5->build_dependencies_key()->set_from_string("( cat6/disabled[pkgname!?] )");
             idcat5->choices_key()->add("", "pkgname");
             repo->add_version("cat6", "disabled", "1")->choices_key()->add("", "pkgname");
-            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "all", "1"));
+            std::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "all", "1"));
             idcat->build_dependencies_key()->set_from_string("( cat5/enabled cat3/enabled cat1/disabled )");
             idcat->choices_key()->add("", "pkgname");
         }
@@ -1555,7 +1555,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            std::tr1::shared_ptr<FakePackageID> idcat1(repo->add_version("cat1", "disabled", "1"));
+            std::shared_ptr<FakePackageID> idcat1(repo->add_version("cat1", "disabled", "1"));
             idcat1->build_dependencies_key()->set_from_string("( cat2/disabled[pkgname!?] )");
             idcat1->choices_key()->add("", "pkgname");
             repo->add_version("cat2", "disabled", "1")->choices_key()->add("", "pkgname");
@@ -1585,19 +1585,19 @@ namespace test_cases
     {
         void populate_repo()
         {
-            std::tr1::shared_ptr<FakePackageID> idcat1(repo->add_version("cat1", "enabled", "1"));
+            std::shared_ptr<FakePackageID> idcat1(repo->add_version("cat1", "enabled", "1"));
             idcat1->build_dependencies_key()->set_from_string("( cat2/disabled[-pkgname?] )");
             idcat1->choices_key()->add("", "pkgname");
             repo->add_version("cat2", "disabled", "1")->choices_key()->add("", "pkgname");
-            std::tr1::shared_ptr<FakePackageID> idcat3(repo->add_version("cat3", "disabled", "1"));
+            std::shared_ptr<FakePackageID> idcat3(repo->add_version("cat3", "disabled", "1"));
             idcat3->build_dependencies_key()->set_from_string("( cat4/enabled[-pkgname?] )");
             idcat3->choices_key()->add("", "pkgname");
             repo->add_version("cat4", "enabled", "1")->choices_key()->add("", "pkgname");
-            std::tr1::shared_ptr<FakePackageID> idcat5(repo->add_version("cat5", "disabled", "1"));
+            std::shared_ptr<FakePackageID> idcat5(repo->add_version("cat5", "disabled", "1"));
             idcat5->build_dependencies_key()->set_from_string("( cat6/disabled[-pkgname?] )");
             idcat5->choices_key()->add("", "pkgname");
             repo->add_version("cat6", "disabled", "1")->choices_key()->add("", "pkgname");
-            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "all", "1"));
+            std::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "all", "1"));
             idcat->build_dependencies_key()->set_from_string("( cat5/disabled cat3/disabled cat1/enabled )");
             idcat->choices_key()->add("", "pkgname");
         }
@@ -1623,7 +1623,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            std::tr1::shared_ptr<FakePackageID> idcat1(repo->add_version("cat1", "enabled", "1"));
+            std::shared_ptr<FakePackageID> idcat1(repo->add_version("cat1", "enabled", "1"));
             idcat1->build_dependencies_key()->set_from_string("( cat2/enabled[-pkgname?] )");
             idcat1->choices_key()->add("", "pkgname");
             repo->add_version("cat2", "enabled", "1")->choices_key()->add("", "pkgname");
@@ -1653,19 +1653,19 @@ namespace test_cases
     {
         void populate_repo()
         {
-            std::tr1::shared_ptr<FakePackageID> idcat1(repo->add_version("cat1", "disabled", "1"));
+            std::shared_ptr<FakePackageID> idcat1(repo->add_version("cat1", "disabled", "1"));
             idcat1->build_dependencies_key()->set_from_string("( cat2/disabled[-pkgname!?] )");
             idcat1->choices_key()->add("", "pkgname");
             repo->add_version("cat2", "disabled", "1")->choices_key()->add("", "pkgname");
-            std::tr1::shared_ptr<FakePackageID> idcat3(repo->add_version("cat3", "enabled", "1"));
+            std::shared_ptr<FakePackageID> idcat3(repo->add_version("cat3", "enabled", "1"));
             idcat3->build_dependencies_key()->set_from_string("( cat4/enabled[-pkgname!?] )");
             idcat3->choices_key()->add("", "pkgname");
             repo->add_version("cat4", "enabled", "1")->choices_key()->add("", "pkgname");
-            std::tr1::shared_ptr<FakePackageID> idcat5(repo->add_version("cat5", "enabled", "1"));
+            std::shared_ptr<FakePackageID> idcat5(repo->add_version("cat5", "enabled", "1"));
             idcat5->build_dependencies_key()->set_from_string("( cat6/disabled[-pkgname!?] )");
             idcat5->choices_key()->add("", "pkgname");
             repo->add_version("cat6", "disabled", "1")->choices_key()->add("", "pkgname");
-            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "all", "1"));
+            std::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "all", "1"));
             idcat->build_dependencies_key()->set_from_string("( cat5/enabled cat3/enabled cat1/disabled )");
             idcat->choices_key()->add("", "pkgname");
         }
@@ -1691,7 +1691,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            std::tr1::shared_ptr<FakePackageID> idcat1(repo->add_version("cat1", "disabled", "1"));
+            std::shared_ptr<FakePackageID> idcat1(repo->add_version("cat1", "disabled", "1"));
             idcat1->build_dependencies_key()->set_from_string("( cat2/disabled[-pkgname!?] )");
             idcat1->choices_key()->add("", "pkgname");
             repo->add_version("cat2", "enabled", "1")->choices_key()->add("", "pkgname");
@@ -1721,15 +1721,15 @@ namespace test_cases
     {
         void populate_repo()
         {
-            std::tr1::shared_ptr<FakePackageID> idcat1(repo->add_version("cat1", "enabled", "1"));
+            std::shared_ptr<FakePackageID> idcat1(repo->add_version("cat1", "enabled", "1"));
             idcat1->build_dependencies_key()->set_from_string("( cat2/enabled[pkgname=] )");
             idcat1->choices_key()->add("", "pkgname");
             repo->add_version("cat2", "enabled", "1")->choices_key()->add("", "pkgname");
-            std::tr1::shared_ptr<FakePackageID> idcat3(repo->add_version("cat3", "disabled", "1"));
+            std::shared_ptr<FakePackageID> idcat3(repo->add_version("cat3", "disabled", "1"));
             idcat3->build_dependencies_key()->set_from_string("( cat4/disabled[pkgname=] )");
             idcat3->choices_key()->add("", "pkgname");
             repo->add_version("cat4", "disabled", "1")->choices_key()->add("", "pkgname");
-            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "all", "1"));
+            std::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "all", "1"));
             idcat->build_dependencies_key()->set_from_string("( cat3/disabled cat1/enabled )");
             idcat->choices_key()->add("", "pkgname");
         }
@@ -1753,7 +1753,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            std::tr1::shared_ptr<FakePackageID> idcat1(repo->add_version("cat1", "enabled", "1"));
+            std::shared_ptr<FakePackageID> idcat1(repo->add_version("cat1", "enabled", "1"));
             idcat1->build_dependencies_key()->set_from_string("( cat2/disabled[pkgname=] )");
             idcat1->choices_key()->add("", "pkgname");
             repo->add_version("cat2", "disabled", "1")->choices_key()->add("", "pkgname");
@@ -1783,7 +1783,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            std::tr1::shared_ptr<FakePackageID> idcat1(repo->add_version("cat1", "disabled", "1"));
+            std::shared_ptr<FakePackageID> idcat1(repo->add_version("cat1", "disabled", "1"));
             idcat1->build_dependencies_key()->set_from_string("( cat2/enabled[pkgname=] )");
             idcat1->choices_key()->add("", "pkgname");
             repo->add_version("cat2", "enabled", "1")->choices_key()->add("", "pkgname");
@@ -1813,15 +1813,15 @@ namespace test_cases
     {
         void populate_repo()
         {
-            std::tr1::shared_ptr<FakePackageID> idcat1(repo->add_version("cat1", "enabled", "1"));
+            std::shared_ptr<FakePackageID> idcat1(repo->add_version("cat1", "enabled", "1"));
             idcat1->build_dependencies_key()->set_from_string("( cat2/disabled[pkgname!=] )");
             idcat1->choices_key()->add("", "pkgname");
             repo->add_version("cat2", "disabled", "1")->choices_key()->add("", "pkgname");
-            std::tr1::shared_ptr<FakePackageID> idcat3(repo->add_version("cat3", "disabled", "1"));
+            std::shared_ptr<FakePackageID> idcat3(repo->add_version("cat3", "disabled", "1"));
             idcat3->build_dependencies_key()->set_from_string("( cat4/enabled[pkgname!=] )");
             idcat3->choices_key()->add("", "pkgname");
             repo->add_version("cat4", "enabled", "1")->choices_key()->add("", "pkgname");
-            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "all", "1"));
+            std::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "all", "1"));
             idcat->build_dependencies_key()->set_from_string("( cat3/disabled cat1/enabled )");
             idcat->choices_key()->add("", "pkgname");
         }
@@ -1845,7 +1845,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            std::tr1::shared_ptr<FakePackageID> idcat1(repo->add_version("cat1", "enabled", "1"));
+            std::shared_ptr<FakePackageID> idcat1(repo->add_version("cat1", "enabled", "1"));
             idcat1->build_dependencies_key()->set_from_string("( cat2/disabled[pkgname!=] )");
             idcat1->choices_key()->add("", "pkgname");
             repo->add_version("cat2", "enabled", "1")->choices_key()->add("", "pkgname");
@@ -1875,7 +1875,7 @@ namespace test_cases
     {
         void populate_repo()
         {
-            std::tr1::shared_ptr<FakePackageID> idcat1(repo->add_version("cat1", "disabled", "1"));
+            std::shared_ptr<FakePackageID> idcat1(repo->add_version("cat1", "disabled", "1"));
             idcat1->build_dependencies_key()->set_from_string("( cat2/enabled[pkgname!=] )");
             idcat1->choices_key()->add("", "pkgname");
             repo->add_version("cat2", "disabled", "1")->choices_key()->add("", "pkgname");
@@ -1906,7 +1906,7 @@ namespace test_cases
         void populate_repo()
         {
             repo->add_version("cat", "pkg-bin", "1");
-            std::tr1::shared_ptr<FakePackageID> catpkg(repo->add_version("cat", "pkg", "1"));
+            std::shared_ptr<FakePackageID> catpkg(repo->add_version("cat", "pkg", "1"));
             catpkg->build_dependencies_key()->set_from_string("|| ( cat/pkg-bin cat/pkg )");
         }
 
@@ -1929,11 +1929,11 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            std::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("repo"))));
             env.package_database()->add_repository(1, repo);
-            std::tr1::shared_ptr<FakeInstalledRepository> destination_repo(new FakeInstalledRepository(
+            std::shared_ptr<FakeInstalledRepository> destination_repo(new FakeInstalledRepository(
                         make_named_values<FakeInstalledRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("installed_repo"),
@@ -1976,11 +1976,11 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            std::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("repo"))));
             env.package_database()->add_repository(1, repo);
-            std::tr1::shared_ptr<FakeInstalledRepository> destination_repo(new FakeInstalledRepository(
+            std::shared_ptr<FakeInstalledRepository> destination_repo(new FakeInstalledRepository(
                         make_named_values<FakeInstalledRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("installed_repo"),
@@ -2024,13 +2024,13 @@ namespace test_cases
         {
             TestEnvironment env;
 
-            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            std::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("repo"))));
             env.package_database()->add_repository(1, repo);
             repo->add_version("cat", "one", "1");
 
-            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
+            std::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
                         make_named_values<FakeInstalledRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("installed_repo"),
@@ -2058,13 +2058,13 @@ namespace test_cases
         {
             TestEnvironment env;
 
-            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            std::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("repo"))));
             env.package_database()->add_repository(1, repo);
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/two");
 
-            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
+            std::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
                         make_named_values<FakeInstalledRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("installed_repo"),
@@ -2093,13 +2093,13 @@ namespace test_cases
         {
             TestEnvironment env;
 
-            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            std::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("repo"))));
             env.package_database()->add_repository(1, repo);
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/two");
 
-            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
+            std::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
                         make_named_values<FakeInstalledRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("installed_repo"),
@@ -2130,13 +2130,13 @@ namespace test_cases
         {
             TestEnvironment env;
 
-            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            std::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("repo"))));
             env.package_database()->add_repository(1, repo);
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/two");
 
-            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
+            std::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
                         make_named_values<FakeInstalledRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("installed_repo"),
@@ -2164,13 +2164,13 @@ namespace test_cases
 
             DepList d3(&env, DepListOptions());
             d3.options()->fall_back() = dl_fall_back_as_needed_except_targets;
-            std::tr1::shared_ptr<SetSpecTree> t3(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
+            std::shared_ptr<SetSpecTree> t3(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
             t3->root()->append(make_shared_ptr(new PackageDepSpec(parse_user_package_dep_spec("cat/one", &env, UserPackageDepSpecOptions()))));
             t3->root()->append(make_shared_ptr(new PackageDepSpec(parse_user_package_dep_spec("cat/two", &env, UserPackageDepSpecOptions()))));
             TEST_CHECK_THROWS(d3.add(*t3, env.default_destinations()), DepListError);
 
             DepList d4(&env, DepListOptions());
-            std::tr1::shared_ptr<SetSpecTree> t4(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
+            std::shared_ptr<SetSpecTree> t4(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
             t4->root()->append(make_shared_ptr(new PackageDepSpec(parse_user_package_dep_spec("cat/one", &env, UserPackageDepSpecOptions()))));
             t4->root()->append(make_shared_ptr(new PackageDepSpec(parse_user_package_dep_spec("cat/three", &env, UserPackageDepSpecOptions()))));
             TEST_CHECK_THROWS(d4.add(*t4, env.default_destinations()), DepListError);
@@ -2188,14 +2188,14 @@ namespace test_cases
         {
             TestEnvironment env;
 
-            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            std::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("repo"))));
             env.package_database()->add_repository(1, repo);
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/two");
             repo->add_version("cat", "two", "2");
 
-            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
+            std::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
                         make_named_values<FakeInstalledRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("installed_repo"),
@@ -2214,7 +2214,7 @@ namespace test_cases
             DepList d2(&env, DepListOptions());
             d2.options()->upgrade() = dl_upgrade_as_needed;
 
-            std::tr1::shared_ptr<SetSpecTree> t2(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
+            std::shared_ptr<SetSpecTree> t2(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
             t2->root()->append(make_shared_ptr(new PackageDepSpec(parse_user_package_dep_spec("cat/one", &env, UserPackageDepSpecOptions()))));
             t2->root()->append(make_shared_ptr(new PackageDepSpec(parse_user_package_dep_spec("cat/two", &env, UserPackageDepSpecOptions()))));
             d2.add(*t2, env.default_destinations());
@@ -2233,7 +2233,7 @@ namespace test_cases
         {
             TestEnvironment env;
 
-            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            std::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("repo"))));
             env.package_database()->add_repository(1, repo);
@@ -2246,7 +2246,7 @@ namespace test_cases
             repo->add_version("cat", "five-svn", "0");
             repo->add_version("cat", "six-darcs", "0");
 
-            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
+            std::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
                         make_named_values<FakeInstalledRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("installed_repo"),
@@ -2282,18 +2282,18 @@ namespace test_cases
         {
             TestEnvironment env;
 
-            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            std::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("repo"))));
             env.package_database()->add_repository(1, repo);
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/three");
-            std::tr1::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "two", "1"));
+            std::shared_ptr<FakePackageID> idcat(repo->add_version("cat", "two", "1"));
             idcat->build_dependencies_key()->set_from_string("enabled? ( || ( ( <cat/three-1 cat/three:0 =cat/four-1 ) cat/five ) )");
             idcat->choices_key()->add("", "enabled");
             repo->add_version("cat", "three", "0.9");
             repo->add_version("cat", "four", "1");
 
-            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
+            std::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
                         make_named_values<FakeInstalledRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("installed_repo"),
@@ -2306,11 +2306,11 @@ namespace test_cases
             d1.options()->dependency_tags() = true;
             PackageDepSpec with_target_tag(parse_user_package_dep_spec("cat/one",
                         &env, UserPackageDepSpecOptions()));
-            with_target_tag.set_tag(std::tr1::shared_ptr<const DepTag>(new TargetDepTag));
+            with_target_tag.set_tag(std::shared_ptr<const DepTag>(new TargetDepTag));
             d1.add(with_target_tag, env.default_destinations());
             PackageDepSpec with_set_tag(parse_user_package_dep_spec("cat/two",
                         &env, UserPackageDepSpecOptions()));
-            with_set_tag.set_tag(std::tr1::shared_ptr<const DepTag>(new GeneralSetDepTag(SetName("set"), "test")));
+            with_set_tag.set_tag(std::shared_ptr<const DepTag>(new GeneralSetDepTag(SetName("set"), "test")));
             d1.add(with_set_tag, env.default_destinations());
 
             TEST_CHECK_EQUAL(join(d1.begin(), d1.end(), " "), "cat/three-0.9:0::repo cat/one-1:0::repo "
@@ -2318,7 +2318,7 @@ namespace test_cases
 
             // tags for cat/three
             DepList::Iterator it(d1.begin());
-            std::tr1::shared_ptr<DepListEntryTags> tags(it->tags());
+            std::shared_ptr<DepListEntryTags> tags(it->tags());
             TEST_CHECK_EQUAL(tags->size(), 3U);
 
             // tags for cat/one
@@ -2332,8 +2332,8 @@ namespace test_cases
             tags = it->tags();
             TEST_CHECK_EQUAL(tags->size(), 1U);
             TEST_CHECK_EQUAL(tags->begin()->tag()->category(), "dependency");
-            std::tr1::shared_ptr<const DependencyDepTag> deptag(
-                std::tr1::static_pointer_cast<const DependencyDepTag>(tags->begin()->tag()));
+            std::shared_ptr<const DependencyDepTag> deptag(
+                std::static_pointer_cast<const DependencyDepTag>(tags->begin()->tag()));
             TEST_CHECK_EQUAL(deptag->short_text(), "cat/two-1:0::repo");
             TEST_CHECK_STRINGIFY_EQUAL(*deptag->dependency(), "=cat/four-1");
 

@@ -52,7 +52,7 @@
 #include <paludis/filtered_generator.hh>
 #include <paludis/action-fwd.hh>
 #include <paludis/metadata_key.hh>
-#include <tr1/functional>
+#include <functional>
 #include <algorithm>
 #include <list>
 #include <map>
@@ -97,10 +97,10 @@ ERepositorySets::~ERepositorySets()
 {
 }
 
-const std::tr1::shared_ptr<const SetSpecTree>
+const std::shared_ptr<const SetSpecTree>
 ERepositorySets::package_set(const SetName & ss) const
 {
-    using namespace std::tr1::placeholders;
+    using namespace std::placeholders;
 
     if ("system" == ss.value())
         throw InternalError(PALUDIS_HERE, "system set should've been handled by ERepository");
@@ -113,7 +113,7 @@ ERepositorySets::package_set(const SetName & ss) const
 
     if ((_imp->params.setsdir() / (stringify(s.first) + ".conf")).exists())
     {
-        std::tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(ss, stringify(_imp->e_repository->name())));
+        std::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(ss, stringify(_imp->e_repository->name())));
 
         FSEntry ff(_imp->params.setsdir() / (stringify(s.first) + ".conf"));
         Context context("When loading package set '" + stringify(s.first) + "' from '" + stringify(ff) + "':");
@@ -121,7 +121,7 @@ ERepositorySets::package_set(const SetName & ss) const
         SetFile f(make_named_values<SetFileParams>(
                     n::environment() = _imp->environment,
                     n::file_name() = ff,
-                    n::parser() = std::tr1::bind(&parse_user_package_dep_spec, _1, _imp->environment, UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set, filter::All()),
+                    n::parser() = std::bind(&parse_user_package_dep_spec, _1, _imp->environment, UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set, filter::All()),
                     n::set_operator_mode() = s.second,
                     n::tag() = tag,
                     n::type() = sft_paludis_conf
@@ -133,26 +133,26 @@ ERepositorySets::package_set(const SetName & ss) const
         return make_null_shared_ptr();
 }
 
-std::tr1::shared_ptr<const SetNameSet>
+std::shared_ptr<const SetNameSet>
 ERepositorySets::sets_list() const
 {
     Context context("While generating the list of sets:");
 
-    std::tr1::shared_ptr<SetNameSet> result(new SetNameSet);
+    std::shared_ptr<SetNameSet> result(new SetNameSet);
     result->insert(SetName("insecurity"));
     result->insert(SetName("security"));
     result->insert(SetName("system"));
 
     if (_imp->params.setsdir().exists())
     {
-        using namespace std::tr1::placeholders;
+        using namespace std::placeholders;
 
         std::list<FSEntry> repo_sets;
         std::remove_copy_if(
                 DirIterator(_imp->params.setsdir()),
                 DirIterator(),
                 std::back_inserter(repo_sets),
-                std::tr1::bind(std::logical_not<bool>(), std::tr1::bind(is_file_with_extension, _1, ".conf", IsFileWithOptions())));
+                std::bind(std::logical_not<bool>(), std::bind(is_file_with_extension, _1, ".conf", IsFileWithOptions())));
 
         std::list<FSEntry>::const_iterator f(repo_sets.begin()),
             f_end(repo_sets.end());
@@ -250,17 +250,17 @@ namespace
     }
 }
 
-const std::tr1::shared_ptr<const SetSpecTree>
+const std::shared_ptr<const SetSpecTree>
 ERepositorySets::security_set(bool insecurity) const
 {
     Context context("When building security or insecurity package set:");
 
-    std::tr1::shared_ptr<SetSpecTree> security_packages(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
+    std::shared_ptr<SetSpecTree> security_packages(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
 
     if (!_imp->params.securitydir().is_directory_or_symlink_to_directory())
         return security_packages;
 
-    std::map<std::string, std::tr1::shared_ptr<GLSADepTag> > glsa_tags;
+    std::map<std::string, std::shared_ptr<GLSADepTag> > glsa_tags;
 
     for (DirIterator f(_imp->params.securitydir()), f_end ; f != f_end; ++f)
     {
@@ -269,7 +269,7 @@ ERepositorySets::security_set(bool insecurity) const
 
         Context local_context("When parsing security advisory '" + stringify(*f) + "':");
 
-        const std::tr1::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(
+        const std::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(
                     _imp->e_repository->eapi_for_file(*f)));
         if (! eapi->supported())
             throw GLSAError("Can't use advisory '" + stringify(*f) +
@@ -280,14 +280,14 @@ ERepositorySets::security_set(bool insecurity) const
 
         try
         {
-            std::tr1::shared_ptr<const GLSA> glsa(GLSA::create_from_xml_file(stringify(*f)));
+            std::shared_ptr<const GLSA> glsa(GLSA::create_from_xml_file(stringify(*f)));
             Context local_local_context("When handling GLSA '" + glsa->id() + "' from '" +
                     stringify(*f) + "':");
 
             for (GLSA::PackagesConstIterator glsa_pkg(glsa->begin_packages()),
                     glsa_pkg_end(glsa->end_packages()) ; glsa_pkg != glsa_pkg_end ; ++glsa_pkg)
             {
-                std::tr1::shared_ptr<const PackageIDSequence> candidates;
+                std::shared_ptr<const PackageIDSequence> candidates;
                 if (insecurity)
                     candidates = (*_imp->environment)[selection::AllVersionsSorted(generator::Package(glsa_pkg->name()))];
                 else
@@ -302,12 +302,12 @@ ERepositorySets::security_set(bool insecurity) const
                         continue;
 
                     if (glsa_tags.end() == glsa_tags.find(glsa->id()))
-                        glsa_tags.insert(std::make_pair(glsa->id(), std::tr1::shared_ptr<GLSADepTag>(
+                        glsa_tags.insert(std::make_pair(glsa->id(), std::shared_ptr<GLSADepTag>(
                                         new GLSADepTag(glsa->id(), glsa->title(), *f))));
 
                     if (insecurity)
                     {
-                        std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
+                        std::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
                                     make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
                                     .package((*c)->name())
                                     .version_requirement(make_named_values<VersionRequirement>(
@@ -325,7 +325,7 @@ ERepositorySets::security_set(bool insecurity) const
                         /* we need to find the best not vulnerable installable package that isn't masked
                          * that's in the same slot as our vulnerable installed package. */
                         bool ok(false);
-                        std::tr1::shared_ptr<const PackageIDSequence> available(
+                        std::shared_ptr<const PackageIDSequence> available(
                                 (*_imp->environment)[selection::AllVersionsSorted(
                                     generator::Package(glsa_pkg->name()) |
                                     filter::SameSlot(*c) |
@@ -341,7 +341,7 @@ ERepositorySets::security_set(bool insecurity) const
                                 continue;
                             }
 
-                            std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
+                            std::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
                                         .package((*r)->name())
                                         .version_requirement(make_named_values<VersionRequirement>(
                                                 n::version_operator() = vo_equal,

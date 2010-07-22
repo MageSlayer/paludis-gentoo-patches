@@ -33,10 +33,10 @@ using namespace paludis::erepository;
 
 namespace
 {
-    const std::tr1::shared_ptr<MirrorsSequence>
+    const std::shared_ptr<MirrorsSequence>
     get_mirrors_fn(const std::string & m)
     {
-        const std::tr1::shared_ptr<MirrorsSequence> result(new MirrorsSequence);
+        const std::shared_ptr<MirrorsSequence> result(new MirrorsSequence);
         if (m == "example")
             result->push_back("http://fake-example/fake-example/");
         if (m == "repo")
@@ -54,7 +54,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            const std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            const std::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("repo")
                             )));
@@ -84,7 +84,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            const std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            const std::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("repo")
                             )));

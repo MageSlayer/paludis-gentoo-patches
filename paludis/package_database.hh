@@ -243,18 +243,18 @@ namespace paludis
              * same name as the new Repository already exists in our
              * collection.
              */
-            void add_repository(int importance, const std::tr1::shared_ptr<Repository>);
+            void add_repository(int importance, const std::shared_ptr<Repository>);
 
             /**
              * Fetch a named repository.
              */
-            std::tr1::shared_ptr<const Repository> fetch_repository(const RepositoryName &) const
+            std::shared_ptr<const Repository> fetch_repository(const RepositoryName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Fetch a named repository.
              */
-            std::tr1::shared_ptr<Repository> fetch_repository(const RepositoryName &)
+            std::shared_ptr<Repository> fetch_repository(const RepositoryName &)
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
@@ -295,7 +295,7 @@ namespace paludis
             ///\{
 
             struct RepositoryConstIteratorTag;
-            typedef WrappedForwardIterator<RepositoryConstIteratorTag, const std::tr1::shared_ptr<Repository> > RepositoryConstIterator;
+            typedef WrappedForwardIterator<RepositoryConstIteratorTag, const std::shared_ptr<Repository> > RepositoryConstIterator;
 
             RepositoryConstIterator begin_repositories() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -306,7 +306,7 @@ namespace paludis
             ///\}
     };
 
-    extern template class WrappedForwardIterator<PackageDatabase::RepositoryConstIteratorTag, const std::tr1::shared_ptr<Repository> >;
+    extern template class WrappedForwardIterator<PackageDatabase::RepositoryConstIteratorTag, const std::shared_ptr<Repository> >;
     extern template class WrappedForwardIterator<AmbiguousPackageNameError::OptionsConstIteratorTag, const std::string>;
 }
 

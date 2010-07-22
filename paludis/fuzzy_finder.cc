@@ -78,10 +78,10 @@ namespace
             {
             }
 
-            virtual std::tr1::shared_ptr<const QualifiedPackageNameSet> packages(
+            virtual std::shared_ptr<const QualifiedPackageNameSet> packages(
                     const Environment * const,
-                    const std::tr1::shared_ptr<const RepositoryNameSet> &,
-                    const std::tr1::shared_ptr<const QualifiedPackageNameSet> &) const;
+                    const std::shared_ptr<const RepositoryNameSet> &,
+                    const std::shared_ptr<const QualifiedPackageNameSet> &) const;
 
             virtual std::string as_string() const
             {
@@ -89,12 +89,12 @@ namespace
             }
     };
 
-    std::tr1::shared_ptr<const QualifiedPackageNameSet>
+    std::shared_ptr<const QualifiedPackageNameSet>
     FuzzyPackageNameFilterHandler::packages(const Environment * const,
-            const std::tr1::shared_ptr<const RepositoryNameSet> &,
-            const std::tr1::shared_ptr<const QualifiedPackageNameSet> & pkgs) const
+            const std::shared_ptr<const RepositoryNameSet> &,
+            const std::shared_ptr<const QualifiedPackageNameSet> & pkgs) const
     {
-        std::tr1::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
+        std::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
 
         for (QualifiedPackageNameSet::ConstIterator p(pkgs->begin()),
                     p_end(pkgs->end()); p_end != p; ++p)
@@ -154,7 +154,7 @@ FuzzyCandidatesFinder::FuzzyCandidatesFinder(const Environment & e, const std::s
             g = g & generator::FromRepository(*pds.from_repository_ptr());
     }
 
-    std::tr1::shared_ptr<const PackageIDSequence> ids(e[selection::BestVersionOnly(g | FuzzyPackageName(package) | filter)]);
+    std::shared_ptr<const PackageIDSequence> ids(e[selection::BestVersionOnly(g | FuzzyPackageName(package) | filter)]);
 
     for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end())
             ; i != i_end ; ++i)

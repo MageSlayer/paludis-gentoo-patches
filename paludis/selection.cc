@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -39,12 +39,11 @@
 #include <paludis/metadata_key.hh>
 #include <algorithm>
 #include <functional>
-#include <tr1/functional>
 #include <map>
 
 using namespace paludis;
 
-DidNotGetExactlyOneError::DidNotGetExactlyOneError(const std::string & s, const std::tr1::shared_ptr<const PackageIDSet> & r) throw () :
+DidNotGetExactlyOneError::DidNotGetExactlyOneError(const std::string & s, const std::shared_ptr<const PackageIDSet> & r) throw () :
     Exception("Did not get unique result for '" + stringify(s) + "' (got { " + join(indirect_iterator(r->begin()),
                     indirect_iterator(r->end()), ", ") + "})")
 {
@@ -55,16 +54,16 @@ namespace paludis
     template <>
     struct Implementation<Selection>
     {
-        std::tr1::shared_ptr<const SelectionHandler> handler;
+        std::shared_ptr<const SelectionHandler> handler;
 
-        Implementation(const std::tr1::shared_ptr<const SelectionHandler> & h) :
+        Implementation(const std::shared_ptr<const SelectionHandler> & h) :
             handler(h)
         {
         }
     };
 }
 
-Selection::Selection(const std::tr1::shared_ptr<const SelectionHandler> & h) :
+Selection::Selection(const std::shared_ptr<const SelectionHandler> & h) :
     PrivateImplementationPattern<Selection>(new Implementation<Selection>(h))
 {
 }
@@ -86,7 +85,7 @@ Selection::operator= (const Selection & other)
     return *this;
 }
 
-std::tr1::shared_ptr<PackageIDSequence>
+std::shared_ptr<PackageIDSequence>
 Selection::perform_select(const Environment * const env) const
 {
     Context context("When finding " + _imp->handler->as_string() + ":");
@@ -101,7 +100,7 @@ Selection::as_string() const
 
 namespace
 {
-    std::string slot_as_string(const std::tr1::shared_ptr<const PackageID> & id)
+    std::string slot_as_string(const std::shared_ptr<const PackageID> & id)
     {
         if (id->slot_key())
             return stringify(id->slot_key()->value());
@@ -118,27 +117,27 @@ namespace
             {
             }
 
-            virtual std::tr1::shared_ptr<PackageIDSequence> perform_select(const Environment * const env) const
+            virtual std::shared_ptr<PackageIDSequence> perform_select(const Environment * const env) const
             {
-                std::tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
+                std::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
 
-                std::tr1::shared_ptr<const RepositoryNameSet> r(_fg.filter().repositories(env, _fg.generator().repositories(env)));
+                std::shared_ptr<const RepositoryNameSet> r(_fg.filter().repositories(env, _fg.generator().repositories(env)));
                 if (r->empty())
                     return result;
 
-                std::tr1::shared_ptr<const CategoryNamePartSet> c(_fg.filter().categories(env, r, _fg.generator().categories(env, r)));
+                std::shared_ptr<const CategoryNamePartSet> c(_fg.filter().categories(env, r, _fg.generator().categories(env, r)));
                 if (c->empty())
                     return result;
 
-                std::tr1::shared_ptr<const QualifiedPackageNameSet> p(_fg.filter().packages(env, r, _fg.generator().packages(env, r, c)));
+                std::shared_ptr<const QualifiedPackageNameSet> p(_fg.filter().packages(env, r, _fg.generator().packages(env, r, c)));
                 if (p->empty())
                     return result;
 
                 for (QualifiedPackageNameSet::ConstIterator q(p->begin()), q_end(p->end()) ; q != q_end ; ++q)
                 {
-                    std::tr1::shared_ptr<QualifiedPackageNameSet> s(new QualifiedPackageNameSet);
+                    std::shared_ptr<QualifiedPackageNameSet> s(new QualifiedPackageNameSet);
                     s->insert(*q);
-                    std::tr1::shared_ptr<const PackageIDSet> i(_fg.filter().ids(env, _fg.generator().ids(env, r, s)));
+                    std::shared_ptr<const PackageIDSet> i(_fg.filter().ids(env, _fg.generator().ids(env, r, s)));
                     if (! i->empty())
                     {
                         result->push_back(*i->begin());
@@ -164,29 +163,29 @@ namespace
             {
             }
 
-            virtual std::tr1::shared_ptr<PackageIDSequence> perform_select(const Environment * const env) const
+            virtual std::shared_ptr<PackageIDSequence> perform_select(const Environment * const env) const
             {
-                using namespace std::tr1::placeholders;
+                using namespace std::placeholders;
 
-                std::tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
+                std::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
 
-                std::tr1::shared_ptr<const RepositoryNameSet> r(_fg.filter().repositories(env, _fg.generator().repositories(env)));
+                std::shared_ptr<const RepositoryNameSet> r(_fg.filter().repositories(env, _fg.generator().repositories(env)));
                 if (r->empty())
                     return result;
 
-                std::tr1::shared_ptr<const CategoryNamePartSet> c(_fg.filter().categories(env, r, _fg.generator().categories(env, r)));
+                std::shared_ptr<const CategoryNamePartSet> c(_fg.filter().categories(env, r, _fg.generator().categories(env, r)));
                 if (c->empty())
                     return result;
 
-                std::tr1::shared_ptr<const QualifiedPackageNameSet> p(_fg.filter().packages(env, r, _fg.generator().packages(env, r, c)));
+                std::shared_ptr<const QualifiedPackageNameSet> p(_fg.filter().packages(env, r, _fg.generator().packages(env, r, c)));
                 if (p->empty())
                     return result;
 
                 for (QualifiedPackageNameSet::ConstIterator q(p->begin()), q_end(p->end()) ; q != q_end ; ++q)
                 {
-                    std::tr1::shared_ptr<QualifiedPackageNameSet> s(new QualifiedPackageNameSet);
+                    std::shared_ptr<QualifiedPackageNameSet> s(new QualifiedPackageNameSet);
                     s->insert(*q);
-                    std::tr1::shared_ptr<const PackageIDSet> i(_fg.filter().ids(env, _fg.generator().ids(env, r, s)));
+                    std::shared_ptr<const PackageIDSet> i(_fg.filter().ids(env, _fg.generator().ids(env, r, s)));
                     if (! i->empty())
                         result->push_back(*std::max_element(i->begin(), i->end(), PackageIDComparator(env->package_database().get())));
                 }
@@ -209,25 +208,25 @@ namespace
             {
             }
 
-            virtual std::tr1::shared_ptr<PackageIDSequence> perform_select(const Environment * const env) const
+            virtual std::shared_ptr<PackageIDSequence> perform_select(const Environment * const env) const
             {
-                using namespace std::tr1::placeholders;
+                using namespace std::placeholders;
 
-                std::tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
+                std::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
 
-                std::tr1::shared_ptr<const RepositoryNameSet> r(_fg.filter().repositories(env, _fg.generator().repositories(env)));
+                std::shared_ptr<const RepositoryNameSet> r(_fg.filter().repositories(env, _fg.generator().repositories(env)));
                 if (r->empty())
                     return result;
 
-                std::tr1::shared_ptr<const CategoryNamePartSet> c(_fg.filter().categories(env, r, _fg.generator().categories(env, r)));
+                std::shared_ptr<const CategoryNamePartSet> c(_fg.filter().categories(env, r, _fg.generator().categories(env, r)));
                 if (c->empty())
                     return result;
 
-                std::tr1::shared_ptr<const QualifiedPackageNameSet> p(_fg.filter().packages(env, r, _fg.generator().packages(env, r, c)));
+                std::shared_ptr<const QualifiedPackageNameSet> p(_fg.filter().packages(env, r, _fg.generator().packages(env, r, c)));
                 if (p->empty())
                     return result;
 
-                std::tr1::shared_ptr<const PackageIDSet> i(_fg.filter().ids(env, _fg.generator().ids(env, r, p)));
+                std::shared_ptr<const PackageIDSet> i(_fg.filter().ids(env, _fg.generator().ids(env, r, p)));
                 std::copy(i->begin(), i->end(), result->back_inserter());
                 result->sort(PackageIDComparator(env->package_database().get()));
 
@@ -249,25 +248,25 @@ namespace
             {
             }
 
-            virtual std::tr1::shared_ptr<PackageIDSequence> perform_select(const Environment * const env) const
+            virtual std::shared_ptr<PackageIDSequence> perform_select(const Environment * const env) const
             {
-                using namespace std::tr1::placeholders;
+                using namespace std::placeholders;
 
-                std::tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
+                std::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
 
-                std::tr1::shared_ptr<const RepositoryNameSet> r(_fg.filter().repositories(env, _fg.generator().repositories(env)));
+                std::shared_ptr<const RepositoryNameSet> r(_fg.filter().repositories(env, _fg.generator().repositories(env)));
                 if (r->empty())
                     return result;
 
-                std::tr1::shared_ptr<const CategoryNamePartSet> c(_fg.filter().categories(env, r, _fg.generator().categories(env, r)));
+                std::shared_ptr<const CategoryNamePartSet> c(_fg.filter().categories(env, r, _fg.generator().categories(env, r)));
                 if (c->empty())
                     return result;
 
-                std::tr1::shared_ptr<const QualifiedPackageNameSet> p(_fg.filter().packages(env, r, _fg.generator().packages(env, r, c)));
+                std::shared_ptr<const QualifiedPackageNameSet> p(_fg.filter().packages(env, r, _fg.generator().packages(env, r, c)));
                 if (p->empty())
                     return result;
 
-                std::tr1::shared_ptr<const PackageIDSet> i(_fg.filter().ids(env, _fg.generator().ids(env, r, p)));
+                std::shared_ptr<const PackageIDSet> i(_fg.filter().ids(env, _fg.generator().ids(env, r, p)));
                 std::copy(i->begin(), i->end(), result->back_inserter());
 
                 return result;
@@ -288,27 +287,27 @@ namespace
             {
             }
 
-            virtual std::tr1::shared_ptr<PackageIDSequence> perform_select(const Environment * const env) const
+            virtual std::shared_ptr<PackageIDSequence> perform_select(const Environment * const env) const
             {
-                using namespace std::tr1::placeholders;
+                using namespace std::placeholders;
 
-                std::tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
+                std::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
 
-                std::tr1::shared_ptr<const RepositoryNameSet> r(_fg.filter().repositories(env, _fg.generator().repositories(env)));
+                std::shared_ptr<const RepositoryNameSet> r(_fg.filter().repositories(env, _fg.generator().repositories(env)));
                 if (r->empty())
                     return result;
 
-                std::tr1::shared_ptr<const CategoryNamePartSet> c(_fg.filter().categories(env, r, _fg.generator().categories(env, r)));
+                std::shared_ptr<const CategoryNamePartSet> c(_fg.filter().categories(env, r, _fg.generator().categories(env, r)));
                 if (c->empty())
                     return result;
 
-                std::tr1::shared_ptr<const QualifiedPackageNameSet> p(_fg.filter().packages(env, r, _fg.generator().packages(env, r, c)));
+                std::shared_ptr<const QualifiedPackageNameSet> p(_fg.filter().packages(env, r, _fg.generator().packages(env, r, c)));
                 if (p->empty())
                     return result;
 
-                std::tr1::shared_ptr<const PackageIDSet> id(_fg.filter().ids(env, _fg.generator().ids(env, r, p)));
+                std::shared_ptr<const PackageIDSet> id(_fg.filter().ids(env, _fg.generator().ids(env, r, p)));
 
-                typedef std::map<std::pair<QualifiedPackageName, std::string>, std::tr1::shared_ptr<PackageIDSequence> > SlotMap;
+                typedef std::map<std::pair<QualifiedPackageName, std::string>, std::shared_ptr<PackageIDSequence> > SlotMap;
                 SlotMap by_slot;
                 for (PackageIDSet::ConstIterator i(id->begin()), i_end(id->end()) ;
                         i != i_end ; ++i)
@@ -354,27 +353,27 @@ namespace
             {
             }
 
-            virtual std::tr1::shared_ptr<PackageIDSequence> perform_select(const Environment * const env) const
+            virtual std::shared_ptr<PackageIDSequence> perform_select(const Environment * const env) const
             {
-                using namespace std::tr1::placeholders;
+                using namespace std::placeholders;
 
-                std::tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
+                std::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
 
-                std::tr1::shared_ptr<const RepositoryNameSet> r(_fg.filter().repositories(env, _fg.generator().repositories(env)));
+                std::shared_ptr<const RepositoryNameSet> r(_fg.filter().repositories(env, _fg.generator().repositories(env)));
                 if (r->empty())
                     return result;
 
-                std::tr1::shared_ptr<const CategoryNamePartSet> c(_fg.filter().categories(env, r, _fg.generator().categories(env, r)));
+                std::shared_ptr<const CategoryNamePartSet> c(_fg.filter().categories(env, r, _fg.generator().categories(env, r)));
                 if (c->empty())
                     return result;
 
-                std::tr1::shared_ptr<const QualifiedPackageNameSet> p(_fg.filter().packages(env, r, _fg.generator().packages(env, r, c)));
+                std::shared_ptr<const QualifiedPackageNameSet> p(_fg.filter().packages(env, r, _fg.generator().packages(env, r, c)));
                 if (p->empty())
                     return result;
 
-                std::tr1::shared_ptr<const PackageIDSet> id(_fg.filter().ids(env, _fg.generator().ids(env, r, p)));
+                std::shared_ptr<const PackageIDSet> id(_fg.filter().ids(env, _fg.generator().ids(env, r, p)));
 
-                typedef std::map<std::pair<QualifiedPackageName, std::string>, std::tr1::shared_ptr<PackageIDSequence> > SlotMap;
+                typedef std::map<std::pair<QualifiedPackageName, std::string>, std::shared_ptr<PackageIDSequence> > SlotMap;
                 SlotMap by_slot;
                 for (PackageIDSet::ConstIterator i(id->begin()), i_end(id->end()) ;
                         i != i_end ; ++i)
@@ -420,25 +419,25 @@ namespace
             {
             }
 
-            virtual std::tr1::shared_ptr<PackageIDSequence> perform_select(const Environment * const env) const
+            virtual std::shared_ptr<PackageIDSequence> perform_select(const Environment * const env) const
             {
-                using namespace std::tr1::placeholders;
+                using namespace std::placeholders;
 
-                std::tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
+                std::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
 
-                std::tr1::shared_ptr<const RepositoryNameSet> r(_fg.filter().repositories(env, _fg.generator().repositories(env)));
+                std::shared_ptr<const RepositoryNameSet> r(_fg.filter().repositories(env, _fg.generator().repositories(env)));
                 if (r->empty())
                     throw DidNotGetExactlyOneError(as_string(), make_shared_ptr(new PackageIDSet));
 
-                std::tr1::shared_ptr<const CategoryNamePartSet> c(_fg.filter().categories(env, r, _fg.generator().categories(env, r)));
+                std::shared_ptr<const CategoryNamePartSet> c(_fg.filter().categories(env, r, _fg.generator().categories(env, r)));
                 if (c->empty())
                     throw DidNotGetExactlyOneError(as_string(), make_shared_ptr(new PackageIDSet));
 
-                std::tr1::shared_ptr<const QualifiedPackageNameSet> p(_fg.filter().packages(env, r, _fg.generator().packages(env, r, c)));
+                std::shared_ptr<const QualifiedPackageNameSet> p(_fg.filter().packages(env, r, _fg.generator().packages(env, r, c)));
                 if (p->empty())
                     throw DidNotGetExactlyOneError(as_string(), make_shared_ptr(new PackageIDSet));
 
-                std::tr1::shared_ptr<const PackageIDSet> i(_fg.filter().ids(env, _fg.generator().ids(env, r, p)));
+                std::shared_ptr<const PackageIDSet> i(_fg.filter().ids(env, _fg.generator().ids(env, r, p)));
 
                 if (i->empty() || next(i->begin()) != i->end())
                     throw DidNotGetExactlyOneError(as_string(), i);

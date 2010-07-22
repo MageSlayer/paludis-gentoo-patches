@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_UTIL_MAKE_SHARED_COPY_FWD_HH 1
 
 #include <paludis/util/attributes.hh>
-#include <tr1/memory>
+#include <memory>
 
 /** \file
  * Forward declarations for paludis/make_shared_copy.hh .
@@ -38,7 +38,7 @@ namespace paludis
      * \since 0.36
      */
     template <typename T_>
-    std::tr1::shared_ptr<T_>
+    std::shared_ptr<T_>
     make_shared_copy(const T_ & t) PALUDIS_ATTRIBUTE((warn_unused_result));
 }
 

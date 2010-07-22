@@ -39,7 +39,7 @@
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 
-#include <tr1/type_traits>
+#include <type_traits>
 #include <list>
 
 using namespace paludis;
@@ -59,41 +59,41 @@ namespace paludis
     template<>
     struct Implementation<PythonCompositeDepSpec>
     {
-        std::list<std::tr1::shared_ptr<const PythonDepSpec> > children;
+        std::list<std::shared_ptr<const PythonDepSpec> > children;
     };
 
     template <>
     struct WrappedForwardIteratorTraits<PythonCompositeDepSpec::ConstIteratorTag>
     {
-        typedef std::list<std::tr1::shared_ptr<const PythonDepSpec> >::const_iterator UnderlyingIterator;
+        typedef std::list<std::shared_ptr<const PythonDepSpec> >::const_iterator UnderlyingIterator;
     };
 
     template<>
     struct Implementation<PythonPackageDepSpec>
     {
-        std::tr1::shared_ptr<const QualifiedPackageName> package_ptr;
-        std::tr1::shared_ptr<const CategoryNamePart> category_name_part_ptr;
-        std::tr1::shared_ptr<const PackageNamePart> package_name_part_ptr;
-        std::tr1::shared_ptr<VersionRequirements> version_requirements;
+        std::shared_ptr<const QualifiedPackageName> package_ptr;
+        std::shared_ptr<const CategoryNamePart> category_name_part_ptr;
+        std::shared_ptr<const PackageNamePart> package_name_part_ptr;
+        std::shared_ptr<VersionRequirements> version_requirements;
         VersionRequirementsMode version_requirements_mode;
-        std::tr1::shared_ptr<const SlotRequirement> slot;
-        std::tr1::shared_ptr<const RepositoryName> in_repository;
-        std::tr1::shared_ptr<const RepositoryName> from_repository;
-        std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements;
-        std::tr1::shared_ptr<const DepTag> tag;
+        std::shared_ptr<const SlotRequirement> slot;
+        std::shared_ptr<const RepositoryName> in_repository;
+        std::shared_ptr<const RepositoryName> from_repository;
+        std::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements;
+        std::shared_ptr<const DepTag> tag;
         const std::string str;
 
         Implementation(
-                const std::tr1::shared_ptr<const QualifiedPackageName> & q,
-                const std::tr1::shared_ptr<const CategoryNamePart> & c,
-                const std::tr1::shared_ptr<const PackageNamePart> & p,
-                const std::tr1::shared_ptr<VersionRequirements> & v,
+                const std::shared_ptr<const QualifiedPackageName> & q,
+                const std::shared_ptr<const CategoryNamePart> & c,
+                const std::shared_ptr<const PackageNamePart> & p,
+                const std::shared_ptr<VersionRequirements> & v,
                 const VersionRequirementsMode m,
-                const std::tr1::shared_ptr<const SlotRequirement> & s,
-                const std::tr1::shared_ptr<const RepositoryName> & ri,
-                const std::tr1::shared_ptr<const RepositoryName> & rf,
-                const std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirements> & u,
-                const std::tr1::shared_ptr<const DepTag> & t,
+                const std::shared_ptr<const SlotRequirement> & s,
+                const std::shared_ptr<const RepositoryName> & ri,
+                const std::shared_ptr<const RepositoryName> & rf,
+                const std::shared_ptr<const AdditionalPackageDepSpecRequirements> & u,
+                const std::shared_ptr<const DepTag> & t,
                 const std::string & st) :
             package_ptr(q),
             category_name_part_ptr(c),
@@ -121,7 +121,7 @@ PythonCompositeDepSpec::~PythonCompositeDepSpec()
 }
 
 void
-PythonCompositeDepSpec::add_child(const std::tr1::shared_ptr<const PythonDepSpec> c)
+PythonCompositeDepSpec::add_child(const std::shared_ptr<const PythonDepSpec> c)
 {
     _imp->children.push_back(c);
 }
@@ -171,7 +171,7 @@ PythonConditionalDepSpec::condition_meetable() const
     return _data->condition_meetable();
 }
 
-const std::tr1::shared_ptr<const ConditionalDepSpecData>
+const std::shared_ptr<const ConditionalDepSpecData>
 PythonConditionalDepSpec::data() const
 {
     return _data;
@@ -204,13 +204,13 @@ PythonStringDepSpec::text() const
 }
 
 template <typename T_>
-std::tr1::shared_ptr<T_>
-deep_copy(const std::tr1::shared_ptr<const T_> & x)
+std::shared_ptr<T_>
+deep_copy(const std::shared_ptr<const T_> & x)
 {
     if (x)
-        return std::tr1::shared_ptr<T_>(new T_(*x));
+        return std::shared_ptr<T_>(new T_(*x));
     else
-        return std::tr1::shared_ptr<T_>();
+        return std::shared_ptr<T_>();
 }
 
 PythonPackageDepSpec::PythonPackageDepSpec(const PackageDepSpec & p) :
@@ -300,30 +300,30 @@ PythonPackageDepSpec::operator PackageDepSpec() const
 }
 
 
-PythonPackageDepSpec::operator std::tr1::shared_ptr<PackageDepSpec>() const
+PythonPackageDepSpec::operator std::shared_ptr<PackageDepSpec>() const
 {
     return make_shared_ptr(new PackageDepSpec(*this));
 }
 
-std::tr1::shared_ptr<const QualifiedPackageName>
+std::shared_ptr<const QualifiedPackageName>
 PythonPackageDepSpec::package_ptr() const
 {
     return _imp->package_ptr;
 }
 
-std::tr1::shared_ptr<const PackageNamePart>
+std::shared_ptr<const PackageNamePart>
 PythonPackageDepSpec::package_name_part_ptr() const
 {
     return _imp->package_name_part_ptr;
 }
 
-std::tr1::shared_ptr<const CategoryNamePart>
+std::shared_ptr<const CategoryNamePart>
 PythonPackageDepSpec::category_name_part_ptr() const
 {
     return _imp->category_name_part_ptr;
 }
 
-std::tr1::shared_ptr<const VersionRequirements>
+std::shared_ptr<const VersionRequirements>
 PythonPackageDepSpec::version_requirements_ptr() const
 {
     return _imp->version_requirements;
@@ -341,31 +341,31 @@ PythonPackageDepSpec::set_version_requirements_mode(const VersionRequirementsMod
     _imp->version_requirements_mode = m;
 }
 
-std::tr1::shared_ptr<const SlotRequirement>
+std::shared_ptr<const SlotRequirement>
 PythonPackageDepSpec::slot_requirement_ptr() const
 {
     return _imp->slot;
 }
 
-std::tr1::shared_ptr<const RepositoryName>
+std::shared_ptr<const RepositoryName>
 PythonPackageDepSpec::in_repository_ptr() const
 {
     return _imp->in_repository;
 }
 
-std::tr1::shared_ptr<const RepositoryName>
+std::shared_ptr<const RepositoryName>
 PythonPackageDepSpec::from_repository_ptr() const
 {
     return _imp->from_repository;
 }
 
-std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirements>
+std::shared_ptr<const AdditionalPackageDepSpecRequirements>
 PythonPackageDepSpec::additional_requirements_ptr() const
 {
     return _imp->additional_requirements;
 }
 
-std::tr1::shared_ptr<const DepTag>
+std::shared_ptr<const DepTag>
 PythonPackageDepSpec::tag() const
 {
     return _imp->tag;
@@ -378,7 +378,7 @@ PythonPackageDepSpec::py_str() const
 }
 
 void
-PythonPackageDepSpec::set_tag(const std::tr1::shared_ptr<const DepTag> & s)
+PythonPackageDepSpec::set_tag(const std::shared_ptr<const DepTag> & s)
 {
     _imp->tag = s;
 }
@@ -436,7 +436,7 @@ PythonSimpleURIDepSpec::PythonSimpleURIDepSpec(const SimpleURIDepSpec & d) :
 {
 }
 
-PythonBlockDepSpec::PythonBlockDepSpec(const std::string & t, const std::tr1::shared_ptr<const PythonPackageDepSpec> & a, const bool s) :
+PythonBlockDepSpec::PythonBlockDepSpec(const std::string & t, const std::shared_ptr<const PythonPackageDepSpec> & a, const bool s) :
     PythonStringDepSpec(t),
     _spec(a),
     _strong(s)
@@ -450,7 +450,7 @@ PythonBlockDepSpec::PythonBlockDepSpec(const BlockDepSpec & d) :
 {
 }
 
-std::tr1::shared_ptr<const PythonPackageDepSpec>
+std::shared_ptr<const PythonPackageDepSpec>
 PythonBlockDepSpec::blocking() const
 {
     return _spec;
@@ -530,27 +530,27 @@ SpecTreeToPython::~SpecTreeToPython()
 void
 SpecTreeToPython::visit(const GenericSpecTree::NodeType<AllDepSpec>::Type & node)
 {
-    std::tr1::shared_ptr<PythonAllDepSpec> py_cds(new PythonAllDepSpec(*node.spec()));
+    std::shared_ptr<PythonAllDepSpec> py_cds(new PythonAllDepSpec(*node.spec()));
     _current_parent->add_child(py_cds);
-    Save<std::tr1::shared_ptr<PythonCompositeDepSpec> > old_parent(&_current_parent, py_cds);
+    Save<std::shared_ptr<PythonCompositeDepSpec> > old_parent(&_current_parent, py_cds);
     std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
 }
 
 void
 SpecTreeToPython::visit(const GenericSpecTree::NodeType<AnyDepSpec>::Type & node)
 {
-    std::tr1::shared_ptr<PythonAnyDepSpec> py_cds(new PythonAnyDepSpec(*node.spec()));
+    std::shared_ptr<PythonAnyDepSpec> py_cds(new PythonAnyDepSpec(*node.spec()));
     _current_parent->add_child(py_cds);
-    Save<std::tr1::shared_ptr<PythonCompositeDepSpec> > old_parent(&_current_parent, py_cds);
+    Save<std::shared_ptr<PythonCompositeDepSpec> > old_parent(&_current_parent, py_cds);
     std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
 }
 
 void
 SpecTreeToPython::visit(const GenericSpecTree::NodeType<ConditionalDepSpec>::Type & node)
 {
-    std::tr1::shared_ptr<PythonConditionalDepSpec> py_cds(new PythonConditionalDepSpec(*node.spec()));
+    std::shared_ptr<PythonConditionalDepSpec> py_cds(new PythonConditionalDepSpec(*node.spec()));
     _current_parent->add_child(py_cds);
-    Save<std::tr1::shared_ptr<PythonCompositeDepSpec> > old_parent(&_current_parent, py_cds);
+    Save<std::shared_ptr<PythonCompositeDepSpec> > old_parent(&_current_parent, py_cds);
     std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
 }
 
@@ -614,7 +614,7 @@ SpecTreeToPython::visit(const GenericSpecTree::NodeType<DependenciesLabelsDepSpe
     _current_parent->add_child(make_shared_ptr(new PythonDependenciesLabelsDepSpec(*node.spec())));
 }
 
-const std::tr1::shared_ptr<const PythonDepSpec>
+const std::shared_ptr<const PythonDepSpec>
 SpecTreeToPython::result() const
 {
     return *_current_parent->begin();
@@ -725,7 +725,7 @@ Dispatcher<H_, D_, PyD_, false>::do_dispatch(SpecTreeFromPython<H_> *, const PyD
 template <typename H_, typename D_, typename PyD_>
 void dispatch(SpecTreeFromPython<H_> * const v, const PyD_ & d)
 {
-    Dispatcher<H_, D_, PyD_, std::tr1::is_convertible<D_, AllowedTypes<H_> >::value>::do_dispatch(v, d);
+    Dispatcher<H_, D_, PyD_, std::is_convertible<D_, AllowedTypes<H_> >::value>::do_dispatch(v, d);
 }
 
 template <typename H_>
@@ -835,7 +835,7 @@ template <typename H_>
 void
 SpecTreeFromPython<H_>::real_visit(const PythonAllDepSpec & d)
 {
-    Save<std::tr1::shared_ptr<typename H_::BasicInnerNode> > old_add_to(&_add_to, _add_to->append(make_shared_ptr(new AllDepSpec())));
+    Save<std::shared_ptr<typename H_::BasicInnerNode> > old_add_to(&_add_to, _add_to->append(make_shared_ptr(new AllDepSpec())));
     std::for_each(indirect_iterator(d.begin()), indirect_iterator(d.end()), accept_visitor(*this));
 }
 
@@ -843,7 +843,7 @@ template <typename H_>
 void
 SpecTreeFromPython<H_>::real_visit(const PythonAnyDepSpec & d)
 {
-    Save<std::tr1::shared_ptr<typename H_::BasicInnerNode> > old_add_to(&_add_to, _add_to->append(make_shared_ptr(new AnyDepSpec())));
+    Save<std::shared_ptr<typename H_::BasicInnerNode> > old_add_to(&_add_to, _add_to->append(make_shared_ptr(new AnyDepSpec())));
     std::for_each(indirect_iterator(d.begin()), indirect_iterator(d.end()), accept_visitor(*this));
 }
 
@@ -851,7 +851,7 @@ template <typename H_>
 void
 SpecTreeFromPython<H_>::real_visit(const PythonConditionalDepSpec & d)
 {
-    Save<std::tr1::shared_ptr<typename H_::BasicInnerNode> > old_add_to(&_add_to, _add_to->append(make_shared_ptr(new ConditionalDepSpec(d.data()))));
+    Save<std::shared_ptr<typename H_::BasicInnerNode> > old_add_to(&_add_to, _add_to->append(make_shared_ptr(new ConditionalDepSpec(d.data()))));
     std::for_each(indirect_iterator(d.begin()), indirect_iterator(d.end()), accept_visitor(*this));
 }
 
@@ -926,7 +926,7 @@ SpecTreeFromPython<H_>::real_visit(const PythonBlockDepSpec & d)
 }
 
 template <typename H_>
-std::tr1::shared_ptr<H_>
+std::shared_ptr<H_>
 SpecTreeFromPython<H_>::result() const
 {
     return _result;
@@ -937,11 +937,11 @@ struct RegisterSpecTreeToPython
 {
     RegisterSpecTreeToPython()
     {
-        bp::to_python_converter<std::tr1::shared_ptr<const T_>, RegisterSpecTreeToPython<T_> >();
+        bp::to_python_converter<std::shared_ptr<const T_>, RegisterSpecTreeToPython<T_> >();
     }
 
     static PyObject *
-    convert(const std::tr1::shared_ptr<const T_> & n)
+    convert(const std::shared_ptr<const T_> & n)
     {
         SpecTreeToPython v;
         n->root()->accept(v);
@@ -955,7 +955,7 @@ struct RegisterDepSpecToPython
     RegisterDepSpecToPython()
     {
         bp::to_python_converter<From_, RegisterDepSpecToPython<From_, To_> >();
-        bp::to_python_converter<std::tr1::shared_ptr<const From_>, RegisterDepSpecToPython<From_, To_> >();
+        bp::to_python_converter<std::shared_ptr<const From_>, RegisterDepSpecToPython<From_, To_> >();
     }
 
     static PyObject *
@@ -966,7 +966,7 @@ struct RegisterDepSpecToPython
     }
 
     static PyObject *
-    convert(const std::tr1::shared_ptr<const From_> & d)
+    convert(const std::shared_ptr<const From_> & d)
     {
         To_ pyd(*d);
         return bp::incref(bp::object(pyd).ptr());
@@ -979,7 +979,7 @@ struct RegisterSpecTreeSharedPtrFromPython
     RegisterSpecTreeSharedPtrFromPython()
     {
         bp::converter::registry::push_back(&convertible, &construct,
-                boost::python::type_id<std::tr1::shared_ptr<const H_> >());
+                boost::python::type_id<std::shared_ptr<const H_> >());
     }
 
     static void *
@@ -994,14 +994,14 @@ struct RegisterSpecTreeSharedPtrFromPython
     static void
     construct(PyObject * obj_ptr, bp::converter::rvalue_from_python_stage1_data * data)
     {
-        typedef bp::converter::rvalue_from_python_storage<std::tr1::shared_ptr<const H_> > Storage;
+        typedef bp::converter::rvalue_from_python_storage<std::shared_ptr<const H_> > Storage;
         void * storage = reinterpret_cast<Storage *>(data)->storage.bytes;
 
         SpecTreeFromPython<H_> v;
         PythonDepSpec * p = bp::extract<PythonDepSpec *>(obj_ptr);
         p->accept(v);
 
-        new (storage) std::tr1::shared_ptr<const H_>(v.result());
+        new (storage) std::shared_ptr<const H_>(v.result());
         data->convertible = storage;
     }
 };
@@ -1158,11 +1158,11 @@ void expose_dep_spec()
            );
 
     bp::implicitly_convertible<PythonPackageDepSpec, PackageDepSpec>();
-    bp::implicitly_convertible<PythonPackageDepSpec, std::tr1::shared_ptr<PackageDepSpec> >();
-    bp::implicitly_convertible<std::tr1::shared_ptr<PackageDepSpec>, std::tr1::shared_ptr<const PackageDepSpec> >();
+    bp::implicitly_convertible<PythonPackageDepSpec, std::shared_ptr<PackageDepSpec> >();
+    bp::implicitly_convertible<std::shared_ptr<PackageDepSpec>, std::shared_ptr<const PackageDepSpec> >();
     RegisterDepSpecToPython<PackageDepSpec, PythonPackageDepSpec>();
 
-    bp::class_<PythonPackageDepSpec, std::tr1::shared_ptr<const PythonPackageDepSpec>, bp::bases<PythonStringDepSpec> >
+    bp::class_<PythonPackageDepSpec, std::shared_ptr<const PythonPackageDepSpec>, bp::bases<PythonStringDepSpec> >
         (
          "PackageDepSpec",
          "A PackageDepSpec represents a package name (for example, 'app-editors/vim'),"
@@ -1330,7 +1330,7 @@ void expose_dep_spec()
          "BlockDepSpec",
          "A BlockDepSpec represents a block on a package name (for example, 'app-editors/vim'), \n"
          "possibly with associated version and SLOT restrictions.",
-         bp::init<std::string, std::tr1::shared_ptr<const PythonPackageDepSpec>, bool>("__init__(string, PackageDepSpec, bool)")
+         bp::init<std::string, std::shared_ptr<const PythonPackageDepSpec>, bool>("__init__(string, PackageDepSpec, bool)")
         )
         .add_property("blocking", &PythonBlockDepSpec::blocking,
                 "[ro] PackageDepSpec\n"
@@ -1351,5 +1351,5 @@ void expose_dep_spec()
 }
 
 template class WrappedForwardIterator<PythonCompositeDepSpec::ConstIteratorTag,
-         const std::tr1::shared_ptr<const PythonDepSpec> >;
+         const std::shared_ptr<const PythonDepSpec> >;
 

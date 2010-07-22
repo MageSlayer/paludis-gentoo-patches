@@ -34,17 +34,17 @@ namespace paludis
                 bool important() const;
 
                 int run(
-                        const std::tr1::shared_ptr<Environment> &,
-                        const std::tr1::shared_ptr<const Sequence<std::string > > & args
+                        const std::shared_ptr<Environment> &,
+                        const std::shared_ptr<const Sequence<std::string > > & args
                         );
 
                 int run(
-                        const std::tr1::shared_ptr<Environment> &,
-                        const std::tr1::shared_ptr<const Sequence<std::string > > & args,
-                        const std::tr1::shared_ptr<const resolver::Resolved> & maybe_resolved
+                        const std::shared_ptr<Environment> &,
+                        const std::shared_ptr<const Sequence<std::string > > & args,
+                        const std::shared_ptr<const resolver::Resolved> & maybe_resolved
                         );
 
-                std::tr1::shared_ptr<args::ArgsHandler> make_doc_cmdline();
+                std::shared_ptr<args::ArgsHandler> make_doc_cmdline();
         };
     }
 }

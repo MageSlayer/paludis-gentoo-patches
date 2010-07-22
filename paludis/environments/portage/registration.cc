@@ -26,10 +26,10 @@ using namespace paludis;
 
 namespace
 {
-    std::tr1::shared_ptr<Environment>
+    std::shared_ptr<Environment>
     make_portage_environment(const std::string & s)
     {
-        return std::tr1::shared_ptr<Environment>(new PortageEnvironment(s));
+        return std::shared_ptr<Environment>(new PortageEnvironment(s));
     }
 }
 
@@ -44,7 +44,7 @@ namespace paludis
     void register_environment<environment_groups::portage>(const environment_groups::portage * const,
             EnvironmentFactory * const factory)
     {
-        std::tr1::shared_ptr<Set<std::string> > portage_formats(new Set<std::string>);
+        std::shared_ptr<Set<std::string> > portage_formats(new Set<std::string>);
         portage_formats->insert("portage");
         factory->add_environment_format(portage_formats, &make_portage_environment);
     }

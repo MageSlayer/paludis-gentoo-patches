@@ -32,7 +32,7 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/make_shared_ptr.hh>
-#include <tr1/functional>
+#include <functional>
 #include <algorithm>
 #include <set>
 
@@ -45,13 +45,13 @@ namespace paludis
     {
         bool result;
         const DepList * const dep_list;
-        std::tr1::shared_ptr<const DestinationsSet> destinations;
+        std::shared_ptr<const DestinationsSet> destinations;
         const Environment * const environment;
-        const std::tr1::shared_ptr<const PackageID> id;
+        const std::shared_ptr<const PackageID> id;
         std::set<SetName> recursing_sets;
 
-        Implementation(const DepList * const d, std::tr1::shared_ptr<const DestinationsSet> dd,
-                const Environment * const e, const std::tr1::shared_ptr<const PackageID> & p) :
+        Implementation(const DepList * const d, std::shared_ptr<const DestinationsSet> dd,
+                const Environment * const e, const std::shared_ptr<const PackageID> & p) :
             result(true),
             dep_list(d),
             destinations(dd),
@@ -62,8 +62,8 @@ namespace paludis
     };
 }
 
-QueryVisitor::QueryVisitor(const DepList * const d, const std::tr1::shared_ptr<const DestinationsSet> & dd,
-        const Environment * const e, const std::tr1::shared_ptr<const PackageID> & id) :
+QueryVisitor::QueryVisitor(const DepList * const d, const std::shared_ptr<const DestinationsSet> & dd,
+        const Environment * const e, const std::shared_ptr<const PackageID> & id) :
     PrivateImplementationPattern<QueryVisitor>(new Implementation<QueryVisitor>(d, dd, e, id))
 {
 }
@@ -81,7 +81,7 @@ QueryVisitor::result() const
 void
 QueryVisitor::visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & node)
 {
-    using namespace std::tr1::placeholders;
+    using namespace std::placeholders;
 
     /* a pda matches if we'll be installed by the time we reach the current point. This
      * means that merely being installed is not enough, if we'll have our version changed
@@ -90,12 +90,12 @@ QueryVisitor::visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & n
     _imp->result = false;
 
     // TODO: check destinations
-    std::tr1::shared_ptr<const PackageIDSequence> matches((*_imp->environment)[selection::AllVersionsUnsorted(
+    std::shared_ptr<const PackageIDSequence> matches((*_imp->environment)[selection::AllVersionsUnsorted(
                 generator::Matches(*node.spec(), _imp->dep_list->options()->match_package_options()) |
                 filter::InstalledAtRoot(_imp->environment->root()))]);
 
     if (indirect_iterator(matches->end()) != std::find_if(indirect_iterator(matches->begin()), indirect_iterator(matches->end()),
-                std::tr1::bind(std::logical_not<bool>(), std::tr1::bind(std::tr1::mem_fn(&DepList::replaced), _imp->dep_list, _1))))
+                std::bind(std::logical_not<bool>(), std::bind(std::mem_fn(&DepList::replaced), _imp->dep_list, _1))))
     {
         _imp->result = true;
         return;
@@ -114,7 +114,7 @@ QueryVisitor::visit(const DependencySpecTree::NodeType<NamedSetDepSpec>::Type & 
 {
     Context context("When expanding named set '" + stringify(*node.spec()) + "':");
 
-    std::tr1::shared_ptr<const SetSpecTree> set(_imp->environment->set(node.spec()->name()));
+    std::shared_ptr<const SetSpecTree> set(_imp->environment->set(node.spec()->name()));
 
     if (! set)
     {
@@ -187,7 +187,7 @@ void
 QueryVisitor::visit(const DependencySpecTree::NodeType<BlockDepSpec>::Type & node)
 {
     DependencySpecTree tree(make_shared_ptr(new AllDepSpec));
-    tree.root()->append(std::tr1::static_pointer_cast<const PackageDepSpec>(node.spec()->blocking().clone()));
+    tree.root()->append(std::static_pointer_cast<const PackageDepSpec>(node.spec()->blocking().clone()));
     tree.root()->accept(*this);
     _imp->result = !_imp->result;
 }

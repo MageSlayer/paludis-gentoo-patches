@@ -109,9 +109,9 @@ namespace
     struct AnyDepSpecChildHandler
     {
         const Decider & decider;
-        const std::tr1::shared_ptr<const Resolution> our_resolution;
-        const std::tr1::shared_ptr<const PackageID> our_id;
-        const std::tr1::function<SanitisedDependency (const PackageOrBlockDepSpec &)> parent_make_sanitised;
+        const std::shared_ptr<const Resolution> our_resolution;
+        const std::shared_ptr<const PackageID> our_id;
+        const std::function<SanitisedDependency (const PackageOrBlockDepSpec &)> parent_make_sanitised;
 
         bool super_complicated, nested;
 
@@ -120,9 +120,9 @@ namespace
 
         bool seen_any;
 
-        AnyDepSpecChildHandler(const Decider & r, const std::tr1::shared_ptr<const Resolution> & q,
-                const std::tr1::shared_ptr<const PackageID> & o,
-                const std::tr1::function<SanitisedDependency (const PackageOrBlockDepSpec &)> & f) :
+        AnyDepSpecChildHandler(const Decider & r, const std::shared_ptr<const Resolution> & q,
+                const std::shared_ptr<const PackageID> & o,
+                const std::function<SanitisedDependency (const PackageOrBlockDepSpec &)> & f) :
             decider(r),
             our_resolution(q),
             our_id(o),
@@ -138,7 +138,7 @@ namespace
         {
             seen_any = true;
 
-            const std::tr1::shared_ptr<const RewrittenSpec> if_rewritten(decider.rewrite_if_special(spec,
+            const std::shared_ptr<const RewrittenSpec> if_rewritten(decider.rewrite_if_special(spec,
                         make_shared_copy(our_resolution->resolvent())));
             if (if_rewritten)
                 if_rewritten->as_spec_tree()->root()->accept(*this);
@@ -219,7 +219,7 @@ namespace
             std::list<SanitisedDependency> l;
             h.commit(
                     parent_make_sanitised,
-                    std::tr1::bind(&list_push_back<SanitisedDependency>, &l, std::tr1::placeholders::_1)
+                    std::bind(&list_push_back<SanitisedDependency>, &l, std::placeholders::_1)
                     );
 
             if (active_sublist)
@@ -249,8 +249,8 @@ namespace
         }
 
         void commit(
-                const std::tr1::function<SanitisedDependency (const PackageOrBlockDepSpec &)> & make_sanitised,
-                const std::tr1::function<void (const SanitisedDependency &)> & apply)
+                const std::function<SanitisedDependency (const PackageOrBlockDepSpec &)> & make_sanitised,
+                const std::function<void (const SanitisedDependency &)> & apply)
         {
             if (! seen_any)
             {
@@ -300,21 +300,21 @@ namespace
     {
         const Environment * const env;
         const Decider & decider;
-        const std::tr1::shared_ptr<const Resolution> our_resolution;
-        const std::tr1::shared_ptr<const PackageID> & our_id;
+        const std::shared_ptr<const Resolution> our_resolution;
+        const std::shared_ptr<const PackageID> & our_id;
         SanitisedDependencies & sanitised_dependencies;
         const std::string raw_name;
         const std::string human_name;
         std::string original_specs_as_string;
-        std::list<std::tr1::shared_ptr<const DependenciesLabelSequence> > labels_stack;
+        std::list<std::shared_ptr<const DependenciesLabelSequence> > labels_stack;
 
         Finder(
                 const Environment * const e,
                 const Decider & r,
-                const std::tr1::shared_ptr<const Resolution> & q,
-                const std::tr1::shared_ptr<const PackageID> & f,
+                const std::shared_ptr<const Resolution> & q,
+                const std::shared_ptr<const PackageID> & f,
                 SanitisedDependencies & s,
-                const std::tr1::shared_ptr<const DependenciesLabelSequence> & l,
+                const std::shared_ptr<const DependenciesLabelSequence> & l,
                 const std::string & rn,
                 const std::string & hn,
                 const std::string & a) :
@@ -333,7 +333,7 @@ namespace
 
         void add(const SanitisedDependency & dep)
         {
-            const std::tr1::shared_ptr<const RewrittenSpec> if_rewritten(decider.rewrite_if_special(dep.spec(),
+            const std::shared_ptr<const RewrittenSpec> if_rewritten(decider.rewrite_if_special(dep.spec(),
                         make_shared_copy(our_resolution->resolvent())));
             if (if_rewritten)
                 if_rewritten->as_spec_tree()->root()->accept(*this);
@@ -397,17 +397,17 @@ namespace
             }
 
             AnyDepSpecChildHandler h(decider, our_resolution, our_id,
-                    std::tr1::bind(&Finder::make_sanitised, this, std::tr1::placeholders::_1));
+                    std::bind(&Finder::make_sanitised, this, std::placeholders::_1));
             std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(h));
             h.commit(
-                    std::tr1::bind(&Finder::make_sanitised, this, std::tr1::placeholders::_1),
-                    std::tr1::bind(&Finder::add, this, std::tr1::placeholders::_1)
+                    std::bind(&Finder::make_sanitised, this, std::placeholders::_1),
+                    std::bind(&Finder::add, this, std::placeholders::_1)
                     );
         }
 
         void visit(const DependencySpecTree::NodeType<NamedSetDepSpec>::Type & node)
         {
-            const std::tr1::shared_ptr<const SetSpecTree> set(env->set(node.spec()->name()));
+            const std::shared_ptr<const SetSpecTree> set(env->set(node.spec()->name()));
             if (set)
                 set->root()->accept(*this);
             else
@@ -416,7 +416,7 @@ namespace
 
         void visit(const DependencySpecTree::NodeType<DependenciesLabelsDepSpec>::Type & node)
         {
-            std::tr1::shared_ptr<DependenciesLabelSequence> labels(new DependenciesLabelSequence);
+            std::shared_ptr<DependenciesLabelSequence> labels(new DependenciesLabelSequence);
             std::copy(node.spec()->begin(), node.spec()->end(), labels->back_inserter());
             *labels_stack.begin() = labels;
         }
@@ -451,9 +451,9 @@ void
 SanitisedDependencies::_populate_one(
         const Environment * const env,
         const Decider & decider,
-        const std::tr1::shared_ptr<const Resolution> & resolution,
-        const std::tr1::shared_ptr<const PackageID> & id,
-        const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > (PackageID::* const pmf) () const
+        const std::shared_ptr<const Resolution> & resolution,
+        const std::shared_ptr<const PackageID> & id,
+        const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > (PackageID::* const pmf) () const
         )
 {
     Context context("When finding dependencies for '" + stringify(*id) + "' from key '" + ((*id).*pmf)()->raw_name() + "':");
@@ -467,8 +467,8 @@ void
 SanitisedDependencies::populate(
         const Environment * const env,
         const Decider & decider,
-        const std::tr1::shared_ptr<const Resolution> & resolution,
-        const std::tr1::shared_ptr<const PackageID> & id)
+        const std::shared_ptr<const Resolution> & resolution,
+        const std::shared_ptr<const PackageID> & id)
 {
     Context context("When finding dependencies for '" + stringify(*id) + "':");
 
@@ -518,7 +518,7 @@ SanitisedDependency::serialise(Serialiser & s) const
 }
 
 SanitisedDependency
-SanitisedDependency::deserialise(Deserialisation & d, const std::tr1::shared_ptr<const PackageID> & from_id)
+SanitisedDependency::deserialise(Deserialisation & d, const std::shared_ptr<const PackageID> & from_id)
 {
     Context context("When deserialising:");
 

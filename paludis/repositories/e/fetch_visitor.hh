@@ -30,13 +30,13 @@
 #include <paludis/package_id-fwd.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/spec_tree.hh>
-#include <tr1/memory>
+#include <memory>
 
 namespace paludis
 {
     namespace erepository
     {
-        typedef std::tr1::function<std::tr1::shared_ptr<const MirrorsSequence> (const std::string &)> GetMirrorsFunction;
+        typedef std::function<std::shared_ptr<const MirrorsSequence> (const std::string &)> GetMirrorsFunction;
 
         class PALUDIS_VISIBLE FetchVisitor :
             private PrivateImplementationPattern<FetchVisitor>
@@ -44,15 +44,15 @@ namespace paludis
             public:
                 FetchVisitor(
                         const Environment * const,
-                        const std::tr1::shared_ptr<const PackageID> &,
+                        const std::shared_ptr<const PackageID> &,
                         const EAPI & eapi,
                         const FSEntry & distdir,
                         const bool fetch_unneeded,
                         const bool userpriv,
                         const std::string & mirrors_name,
-                        const std::tr1::shared_ptr<const URILabel> & initial_label,
+                        const std::shared_ptr<const URILabel> & initial_label,
                         const bool safe_resume,
-                        const std::tr1::shared_ptr<OutputManager> &,
+                        const std::shared_ptr<OutputManager> &,
                         const GetMirrorsFunction &);
 
                 ~FetchVisitor();

@@ -33,7 +33,7 @@ namespace
         return new int(10);
     }
 
-    std::tr1::shared_ptr<int> make_ten_shared()
+    std::shared_ptr<int> make_ten_shared()
     {
         return make_shared_ptr(new int(10));
     }
@@ -43,7 +43,7 @@ namespace
         return new std::string("monkey");
     }
 
-    std::tr1::shared_ptr<std::string> make_chimp_shared()
+    std::shared_ptr<std::string> make_chimp_shared()
     {
         return make_shared_ptr(new std::string("chimp"));
     }
@@ -54,7 +54,7 @@ namespace test_cases
     typedef DeferredConstructionPtr<int *> DeferredIntPtr;
     TESTCASE_SEMIREGULAR(DeferredIntPtr, DeferredIntPtr(make_ten));
 
-    typedef DeferredConstructionPtr<std::tr1::shared_ptr<int> > DeferredSharedIntPtr;
+    typedef DeferredConstructionPtr<std::shared_ptr<int> > DeferredSharedIntPtr;
     TESTCASE_SEMIREGULAR(DeferredSharedIntPtr, DeferredSharedIntPtr(make_ten_shared));
 
     struct TestDereference : TestCase
@@ -66,7 +66,7 @@ namespace test_cases
             DeferredConstructionPtr<std::string *> p(make_monkey);
             TEST_CHECK_EQUAL(p->length(), 6u);
 
-            DeferredConstructionPtr<std::tr1::shared_ptr<std::string> > q(make_chimp_shared);
+            DeferredConstructionPtr<std::shared_ptr<std::string> > q(make_chimp_shared);
             TEST_CHECK_EQUAL(q->length(), 5u);
         }
     } test_dereference;
@@ -81,8 +81,8 @@ namespace test_cases
                     DeferredConstructionPtr<std::string *>(make_monkey)));
             TEST_CHECK_EQUAL(p->length(), 6u);
 
-            ActiveObjectPtr<DeferredConstructionPtr<std::tr1::shared_ptr<std::string> > > q((
-                    DeferredConstructionPtr<std::tr1::shared_ptr<std::string> >(make_chimp_shared)));
+            ActiveObjectPtr<DeferredConstructionPtr<std::shared_ptr<std::string> > > q((
+                    DeferredConstructionPtr<std::shared_ptr<std::string> >(make_chimp_shared)));
             TEST_CHECK_EQUAL(q->length(), 5u);
         }
     } test_dereferred_active;
@@ -97,14 +97,14 @@ namespace test_cases
             Flag() : value(false) { }
         };
 
-        static std::tr1::shared_ptr<Flag> make_flag()
+        static std::shared_ptr<Flag> make_flag()
         {
             return make_shared_ptr(new Flag);
         }
 
         void run()
         {
-            DeferredConstructionPtr<std::tr1::shared_ptr<Flag> > f(make_flag);
+            DeferredConstructionPtr<std::shared_ptr<Flag> > f(make_flag);
             f->value = true;
             TEST_CHECK(f->value);
         }
@@ -120,15 +120,15 @@ namespace test_cases
             Flag() : value(false) { }
         };
 
-        static std::tr1::shared_ptr<Flag> make_flag()
+        static std::shared_ptr<Flag> make_flag()
         {
             return make_shared_ptr(new Flag);
         }
 
         void run()
         {
-            ActiveObjectPtr<DeferredConstructionPtr<std::tr1::shared_ptr<Flag> > > f((
-                    DeferredConstructionPtr<std::tr1::shared_ptr<Flag> >(make_flag)));
+            ActiveObjectPtr<DeferredConstructionPtr<std::shared_ptr<Flag> > > f((
+                    DeferredConstructionPtr<std::shared_ptr<Flag> >(make_flag)));
             f->value = true;
             TEST_CHECK(f->value);
         }

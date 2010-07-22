@@ -32,27 +32,27 @@ namespace paludis
             public PackageID
         {
             public:
-                virtual const std::tr1::shared_ptr<const EAPI> eapi() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-                virtual const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > inherited_key() const = 0;
-                virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> > license_key() const = 0;
-                virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > restrict_key() const = 0;
-                virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > properties_key() const = 0;
-                virtual const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_use_key() const = 0;
-                virtual const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_iuse_key() const = 0;
-                virtual const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_iuse_effective_key() const = 0;
-                virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > raw_myoptions_key() const = 0;
-                virtual const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_use_expand_key() const = 0;
-                virtual const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_use_expand_hidden_key() const = 0;
-                virtual const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > defined_phases_key() const = 0;
+                virtual const std::shared_ptr<const EAPI> eapi() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+                virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > inherited_key() const = 0;
+                virtual const std::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> > license_key() const = 0;
+                virtual const std::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > restrict_key() const = 0;
+                virtual const std::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > properties_key() const = 0;
+                virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_use_key() const = 0;
+                virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_iuse_key() const = 0;
+                virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_iuse_effective_key() const = 0;
+                virtual const std::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > raw_myoptions_key() const = 0;
+                virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_use_expand_key() const = 0;
+                virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_use_expand_hidden_key() const = 0;
+                virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > defined_phases_key() const = 0;
 
-                virtual std::tr1::shared_ptr<const Set<std::string> > breaks_portage() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual std::shared_ptr<const Set<std::string> > breaks_portage() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::tr1::shared_ptr<ChoiceValue> make_choice_value(
-                        const std::tr1::shared_ptr<const Choice> &, const UnprefixedChoiceName &, const Tribool,
+                virtual std::shared_ptr<ChoiceValue> make_choice_value(
+                        const std::shared_ptr<const Choice> &, const UnprefixedChoiceName &, const Tribool,
                         const bool, const bool, const std::string &, const bool)
                     const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-                virtual void add_build_options(const std::tr1::shared_ptr<Choices> &) const = 0;
+                virtual void add_build_options(const std::shared_ptr<Choices> &) const = 0;
 
                 virtual void purge_invalid_cache() const = 0;
         };

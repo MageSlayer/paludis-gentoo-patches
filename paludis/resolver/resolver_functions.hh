@@ -40,7 +40,7 @@
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/generator-fwd.hh>
 #include <paludis/filtered_generator-fwd.hh>
-#include <tr1/functional>
+#include <functional>
 
 namespace paludis
 {
@@ -68,93 +68,93 @@ namespace paludis
 
     namespace resolver
     {
-        typedef std::tr1::function<bool (
-                const std::tr1::shared_ptr<const Resolution> &,
-                const std::tr1::shared_ptr<const PackageID> &
+        typedef std::function<bool (
+                const std::shared_ptr<const Resolution> &,
+                const std::shared_ptr<const PackageID> &
                 )> AllowedToRemoveFunction;
 
-        typedef std::tr1::function<bool (
-                const std::tr1::shared_ptr<const Resolution> &
+        typedef std::function<bool (
+                const std::shared_ptr<const Resolution> &
                 )> AlwaysViaBinaryFunction;
 
-        typedef std::tr1::function<bool (
-                const std::tr1::shared_ptr<const PackageID> &
+        typedef std::function<bool (
+                const std::shared_ptr<const PackageID> &
                 )> CanUseFunction;
 
-        typedef std::tr1::function<bool (
-                const std::tr1::shared_ptr<const Resolution> &,
-                const std::tr1::shared_ptr<const RequiredConfirmation> &
+        typedef std::function<bool (
+                const std::shared_ptr<const Resolution> &,
+                const std::shared_ptr<const RequiredConfirmation> &
                 )> ConfirmFunction;
 
-        typedef std::tr1::function<const std::tr1::shared_ptr<const Repository> (
-                const std::tr1::shared_ptr<const Resolution> &,
+        typedef std::function<const std::shared_ptr<const Repository> (
+                const std::shared_ptr<const Resolution> &,
                 const ChangesToMakeDecision &
                 )> FindRepositoryForFunction;
 
-        typedef std::tr1::function<std::tr1::shared_ptr<ConstraintSequence> (
-                const std::tr1::shared_ptr<const Resolution> &,
-                const std::tr1::shared_ptr<const PackageID> &,
-                const std::tr1::shared_ptr<const ChangeByResolventSequence> &
+        typedef std::function<std::shared_ptr<ConstraintSequence> (
+                const std::shared_ptr<const Resolution> &,
+                const std::shared_ptr<const PackageID> &,
+                const std::shared_ptr<const ChangeByResolventSequence> &
                 )> GetConstraintsForDependentFunction;
 
-        typedef std::tr1::function<std::tr1::shared_ptr<ConstraintSequence> (
-                const std::tr1::shared_ptr<const Resolution> &,
-                const std::tr1::shared_ptr<const PackageID> &,
-                const std::tr1::shared_ptr<const ChangeByResolventSequence> &
+        typedef std::function<std::shared_ptr<ConstraintSequence> (
+                const std::shared_ptr<const Resolution> &,
+                const std::shared_ptr<const PackageID> &,
+                const std::shared_ptr<const ChangeByResolventSequence> &
                 )> GetConstraintsForPurgeFunction;
 
-        typedef std::tr1::function<std::tr1::shared_ptr<ConstraintSequence> (
-                const std::tr1::shared_ptr<const Resolution> &,
-                const std::tr1::shared_ptr<const Resolution> &
+        typedef std::function<std::shared_ptr<ConstraintSequence> (
+                const std::shared_ptr<const Resolution> &,
+                const std::shared_ptr<const Resolution> &
                 )> GetConstraintsForViaBinaryFunction;
 
-        typedef std::tr1::function<DestinationTypes (
+        typedef std::function<DestinationTypes (
                 const PackageDepSpec &,
-                const std::tr1::shared_ptr<const PackageID> &,
-                const std::tr1::shared_ptr<const Reason> &
+                const std::shared_ptr<const PackageID> &,
+                const std::shared_ptr<const Reason> &
                 )> GetDestinationTypesForFunction;
 
-        typedef std::tr1::function<std::tr1::shared_ptr<Constraints> (
+        typedef std::function<std::shared_ptr<Constraints> (
                 const Resolvent &
                 )> GetInitialConstraintsFunction;
 
-        typedef std::tr1::function<std::tr1::shared_ptr<Resolvents> (
+        typedef std::function<std::shared_ptr<Resolvents> (
                 const PackageDepSpec &,
-                const std::tr1::shared_ptr<const SlotName> &,
-                const std::tr1::shared_ptr<const Reason> &
+                const std::shared_ptr<const SlotName> &,
+                const std::shared_ptr<const Reason> &
                 )> GetResolventsForFunction;
 
-        typedef std::tr1::function<UseExisting (
-                const std::tr1::shared_ptr<const Resolution> &,
+        typedef std::function<UseExisting (
+                const std::shared_ptr<const Resolution> &,
                 const PackageDepSpec &,
-                const std::tr1::shared_ptr<const Reason> &
+                const std::shared_ptr<const Reason> &
                 )> GetUseExistingFunction;
 
-        typedef std::tr1::function<SpecInterest (
-                const std::tr1::shared_ptr<const Resolution> &,
+        typedef std::function<SpecInterest (
+                const std::shared_ptr<const Resolution> &,
                 const SanitisedDependency &
                 )> InterestInSpecFunction;
 
-        typedef std::tr1::function<FilteredGenerator (
+        typedef std::function<FilteredGenerator (
                 const Generator &,
-                const std::tr1::shared_ptr<const Resolution> &
+                const std::shared_ptr<const Resolution> &
                 )> MakeDestinationFilteredGeneratorFunction;
 
-        typedef std::tr1::function<FilteredGenerator (
+        typedef std::function<FilteredGenerator (
                 const Generator &,
-                const std::tr1::shared_ptr<const Resolution> &
+                const std::shared_ptr<const Resolution> &
                 )> MakeOriginFilteredGeneratorFunction;
 
-        typedef std::tr1::function<Tribool (
-                const std::tr1::shared_ptr<const Resolution> &
+        typedef std::function<Tribool (
+                const std::shared_ptr<const Resolution> &
                 )> OrderEarlyFunction;
 
-        typedef std::tr1::function<Tribool (
+        typedef std::function<Tribool (
                 const QualifiedPackageName &
                 )> PreferOrAvoidFunction;
 
-        typedef std::tr1::function<bool (
-                const std::tr1::shared_ptr<const PackageID> &
+        typedef std::function<bool (
+                const std::shared_ptr<const PackageID> &
                 )> RemoveIfDependentFunction;
 
         struct ResolverFunctions

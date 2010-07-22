@@ -36,7 +36,7 @@ FormatStringError::FormatStringError(const std::string & f, const std::string & 
 std::string
 paludis::cave::format_string(
         const std::string & f,
-        const std::tr1::shared_ptr<Map<char, std::string> > & m
+        const std::shared_ptr<Map<char, std::string> > & m
         )
 {
     std::string result;

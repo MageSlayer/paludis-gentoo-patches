@@ -79,11 +79,11 @@ namespace
 
     struct SetPrinter
     {
-        const std::tr1::shared_ptr<const Environment> env;
+        const std::shared_ptr<const Environment> env;
         const PrintSetCommandLine & cmdline;
         std::set<SetName> & recursing;
 
-        SetPrinter(const std::tr1::shared_ptr<const Environment> & e, const PrintSetCommandLine & c, std::set<SetName> & r) :
+        SetPrinter(const std::shared_ptr<const Environment> & e, const PrintSetCommandLine & c, std::set<SetName> & r) :
             env(e),
             cmdline(c),
             recursing(r)
@@ -103,7 +103,7 @@ namespace
                 if (! recursing.insert(name).second)
                     throw RecursivelyDefinedSetError(stringify(name));
 
-                const std::tr1::shared_ptr<const SetSpecTree> set(env->set(name));
+                const std::shared_ptr<const SetSpecTree> set(env->set(name));
                 if (! set)
                     throw NoSuchSetError(stringify(name));
 
@@ -124,8 +124,8 @@ namespace
 
 int
 PrintSetCommand::run(
-        const std::tr1::shared_ptr<Environment> & env,
-        const std::tr1::shared_ptr<const Sequence<std::string > > & args
+        const std::shared_ptr<Environment> & env,
+        const std::shared_ptr<const Sequence<std::string > > & args
         )
 {
     PrintSetCommandLine cmdline;
@@ -140,7 +140,7 @@ PrintSetCommand::run(
     if (1 != std::distance(cmdline.begin_parameters(), cmdline.end_parameters()))
         throw args::DoHelp("print-ids takes exactly one parameter");
 
-    const std::tr1::shared_ptr<const SetSpecTree> set(env->set(SetName(*cmdline.begin_parameters())));
+    const std::shared_ptr<const SetSpecTree> set(env->set(SetName(*cmdline.begin_parameters())));
     if (! set)
         throw NothingMatching(*cmdline.begin_parameters());
 
@@ -150,7 +150,7 @@ PrintSetCommand::run(
     return EXIT_SUCCESS;
 }
 
-std::tr1::shared_ptr<args::ArgsHandler>
+std::shared_ptr<args::ArgsHandler>
 PrintSetCommand::make_doc_cmdline()
 {
     return make_shared_ptr(new PrintSetCommandLine);

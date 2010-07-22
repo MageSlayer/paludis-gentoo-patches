@@ -24,7 +24,7 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/map-fwd.hh>
 #include <paludis/metadata_key.hh>
-#include <tr1/memory>
+#include <memory>
 
 namespace paludis
 {
@@ -33,7 +33,7 @@ namespace paludis
         public MetadataSectionKey
     {
         public:
-            ELikeAnnotations(const std::tr1::shared_ptr<const Map<std::string, std::string> > &);
+            ELikeAnnotations(const std::shared_ptr<const Map<std::string, std::string> > &);
             ~ELikeAnnotations();
 
             void need_keys_added() const;

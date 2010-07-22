@@ -55,7 +55,7 @@ namespace paludis
 
                 struct ConstIteratorTag;
                 typedef WrappedForwardIterator<ConstIteratorTag,
-                        const std::pair<const std::string, std::tr1::shared_ptr<const RepositoryMaskInfo> > > ConstIterator;
+                        const std::pair<const std::string, std::shared_ptr<const RepositoryMaskInfo> > > ConstIterator;
                 ConstIterator begin() const;
                 ConstIterator end() const;
 
@@ -64,7 +64,7 @@ namespace paludis
     }
 
     extern template class WrappedForwardIterator<erepository::MaskFile::ConstIteratorTag,
-             const std::pair<const std::string, std::tr1::shared_ptr<const RepositoryMaskInfo> > >;
+             const std::pair<const std::string, std::shared_ptr<const RepositoryMaskInfo> > >;
 }
 
 #endif

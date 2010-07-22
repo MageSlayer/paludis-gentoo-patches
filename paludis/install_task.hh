@@ -69,24 +69,24 @@ namespace paludis
             void _main_actions_all(const int y, const DepList::Iterator dep_last_package);
 
             void _one(const DepList::Iterator, const int, const int, const int, const int, const bool is_first, const bool is_last,
-                    std::tr1::shared_ptr<OutputManagerFromEnvironment> &);
-            void _clean(const DepList::Iterator, const std::tr1::shared_ptr<const PackageID> & id,
+                    std::shared_ptr<OutputManagerFromEnvironment> &);
+            void _clean(const DepList::Iterator, const std::shared_ptr<const PackageID> & id,
                     const UninstallActionOptions &,
                     const std::string & cpvr, const int x, const int y, const int s, const int f);
             void _display_failure_summary();
 
             void _add_target(const std::string &);
-            void _add_package_id(const std::tr1::shared_ptr<const PackageID> &);
+            void _add_package_id(const std::shared_ptr<const PackageID> &);
 
-            std::tr1::shared_ptr<const PackageDepSpec> _unsatisfied(const DepListEntry &) const;
-            std::tr1::shared_ptr<const PackageID> _dependent(const DepListEntry &) const;
+            std::shared_ptr<const PackageDepSpec> _unsatisfied(const DepListEntry &) const;
+            std::shared_ptr<const PackageID> _dependent(const DepListEntry &) const;
 
         protected:
             ///\name Basic operations
             ///\{
 
             InstallTask(Environment * const env, const DepListOptions & options,
-                    const std::tr1::shared_ptr<const DestinationsSet> & destinations);
+                    const std::shared_ptr<const DestinationsSet> & destinations);
 
             ///\}
 
@@ -115,9 +115,9 @@ namespace paludis
             void set_add_to_world_spec(const std::string &);
             void set_safe_resume(const bool);
             void set_continue_on_failure(const InstallTaskContinueOnFailure);
-            void set_skip_phases(const std::tr1::shared_ptr<const Set<std::string> > &);
-            void set_skip_until_phases(const std::tr1::shared_ptr<const Set<std::string> > &);
-            void set_abort_at_phases(const std::tr1::shared_ptr<const Set<std::string> > &);
+            void set_skip_phases(const std::shared_ptr<const Set<std::string> > &);
+            void set_skip_until_phases(const std::shared_ptr<const Set<std::string> > &);
+            void set_abort_at_phases(const std::shared_ptr<const Set<std::string> > &);
             void set_phase_options_apply_to_first(const bool);
             void set_phase_options_apply_to_last(const bool);
             void set_phase_options_apply_to_all(const bool);
@@ -127,9 +127,9 @@ namespace paludis
             ///\name Targets
             ///\{
 
-            void set_targets_from_user_specs(const std::tr1::shared_ptr<const Sequence<std::string> > &);
-            void set_targets_from_exact_packages(const std::tr1::shared_ptr<const PackageIDSequence> &);
-            void set_targets_from_serialisation(const std::string &, const std::tr1::shared_ptr<const Sequence<std::string> > &);
+            void set_targets_from_user_specs(const std::shared_ptr<const Sequence<std::string> > &);
+            void set_targets_from_exact_packages(const std::shared_ptr<const PackageIDSequence> &);
+            void set_targets_from_serialisation(const std::string &, const std::shared_ptr<const Sequence<std::string> > &);
 
             void clear();
             void override_target_type(const DepListTargetType);
@@ -155,7 +155,7 @@ namespace paludis
             virtual void on_display_failure_summary_success(const DepListEntry &) = 0;
             virtual void on_display_failure_summary_failure(const DepListEntry &) = 0;
             virtual void on_display_failure_summary_skipped_unsatisfied(const DepListEntry &, const PackageDepSpec &) = 0;
-            virtual void on_display_failure_summary_skipped_dependent(const DepListEntry &, const std::tr1::shared_ptr<const PackageID> &) = 0;
+            virtual void on_display_failure_summary_skipped_dependent(const DepListEntry &, const std::shared_ptr<const PackageID> &) = 0;
             virtual void on_display_failure_summary_totals(const int, const int, const int, const int, const int) = 0;
             virtual void on_display_failure_summary_post() = 0;
 
@@ -179,7 +179,7 @@ namespace paludis
 
             virtual void on_skip_unsatisfied(const DepListEntry &, const PackageDepSpec &,
                     const int x, const int y, const int s, const int f) = 0;
-            virtual void on_skip_dependent(const DepListEntry &, const std::tr1::shared_ptr<const PackageID> &,
+            virtual void on_skip_dependent(const DepListEntry &, const std::shared_ptr<const PackageID> &,
                     const int x, const int y, const int s, const int f) = 0;
             virtual void on_skip_already_done(const DepListEntry &, const int, const int, const int, const int) = 0;
 
@@ -211,17 +211,17 @@ namespace paludis
             virtual void on_had_both_package_and_set_targets_error(const HadBothPackageAndSetTargets &) = 0;
             virtual void on_multiple_set_targets_specified(const MultipleSetTargetsSpecified &) = 0;
 
-            virtual void on_non_fetch_action_error(const std::tr1::shared_ptr<OutputManager> &,
+            virtual void on_non_fetch_action_error(const std::shared_ptr<OutputManager> &,
                     const ActionFailedError &) = 0;
-            virtual void on_fetch_action_error(const std::tr1::shared_ptr<OutputManager> &,
+            virtual void on_fetch_action_error(const std::shared_ptr<OutputManager> &,
                     const ActionFailedError &,
-                    const std::tr1::shared_ptr<const Sequence<FetchActionFailure> > &) = 0;
+                    const std::shared_ptr<const Sequence<FetchActionFailure> > &) = 0;
 
-            virtual void on_phase_skip(const std::tr1::shared_ptr<OutputManager> & output_manager, const std::string & phase) = 0;
-            virtual void on_phase_abort(const std::tr1::shared_ptr<OutputManager> & output_manager, const std::string & phase) = 0;
-            virtual void on_phase_skip_until(const std::tr1::shared_ptr<OutputManager> & output_manager, const std::string & phase) = 0;
-            virtual void on_phase_proceed_conditionally(const std::tr1::shared_ptr<OutputManager> & output_manager, const std::string & phase) = 0;
-            virtual void on_phase_proceed_unconditionally(const std::tr1::shared_ptr<OutputManager> & output_manager, const std::string & phase) = 0;
+            virtual void on_phase_skip(const std::shared_ptr<OutputManager> & output_manager, const std::string & phase) = 0;
+            virtual void on_phase_abort(const std::shared_ptr<OutputManager> & output_manager, const std::string & phase) = 0;
+            virtual void on_phase_skip_until(const std::shared_ptr<OutputManager> & output_manager, const std::string & phase) = 0;
+            virtual void on_phase_proceed_conditionally(const std::shared_ptr<OutputManager> & output_manager, const std::string & phase) = 0;
+            virtual void on_phase_proceed_unconditionally(const std::shared_ptr<OutputManager> & output_manager, const std::string & phase) = 0;
 
             ///\}
 
@@ -229,7 +229,7 @@ namespace paludis
             ///\{
 
             virtual void world_update_set(const SetName &);
-            virtual void world_update_packages(const std::tr1::shared_ptr<const SetSpecTree> &);
+            virtual void world_update_packages(const std::shared_ptr<const SetSpecTree> &);
 
             ///\}
 

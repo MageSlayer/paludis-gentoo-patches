@@ -60,7 +60,7 @@ namespace paludis
                 /**
                  * Query a collection of keywords.
                  */
-                bool query(const std::tr1::shared_ptr<const KeywordNameSet> &, const PackageID &) const;
+                bool query(const std::shared_ptr<const KeywordNameSet> &, const PackageID &) const;
         };
     }
 }

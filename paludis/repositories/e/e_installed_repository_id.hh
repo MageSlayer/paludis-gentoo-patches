@@ -32,7 +32,7 @@ namespace paludis
     {
         class EInstalledRepositoryID :
             public ERepositoryID,
-            public std::tr1::enable_shared_from_this<EInstalledRepositoryID>,
+            public std::enable_shared_from_this<EInstalledRepositoryID>,
             private PrivateImplementationPattern<EInstalledRepositoryID>
         {
             private:
@@ -44,7 +44,7 @@ namespace paludis
 
                 EInstalledRepositoryID(const QualifiedPackageName &, const VersionSpec &,
                         const Environment * const,
-                        const std::tr1::shared_ptr<const Repository> &,
+                        const std::shared_ptr<const Repository> &,
                         const FSEntry & file);
 
             public:
@@ -55,43 +55,43 @@ namespace paludis
 
                 virtual const QualifiedPackageName name() const;
                 virtual const VersionSpec version() const;
-                virtual const std::tr1::shared_ptr<const Repository> repository() const;
-                virtual const std::tr1::shared_ptr<const EAPI> eapi() const;
+                virtual const std::shared_ptr<const Repository> repository() const;
+                virtual const std::shared_ptr<const EAPI> eapi() const;
 
-                virtual const std::tr1::shared_ptr<const MetadataValueKey<SlotName> > slot_key() const;
-                virtual const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > > virtual_for_key() const;
-                virtual const std::tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> > keywords_key() const;
-                virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> > provide_key() const;
-                virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_key() const;
-                virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies_key() const;
-                virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > post_dependencies_key() const;
-                virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > suggested_dependencies_key() const;
-                virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > dependencies_key() const;
-                virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > restrict_key() const;
-                virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > properties_key() const;
-                virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> > fetches_key() const;
-                virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > homepage_key() const;
-                virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > short_description_key() const;
-                virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > long_description_key() const;
-                virtual const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Contents> > > contents_key() const;
-                virtual const std::tr1::shared_ptr<const MetadataTimeKey> installed_time_key() const;
-                virtual const std::tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> > contains_key() const;
-                virtual const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > > contained_in_key() const;
-                virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > fs_location_key() const;
-                virtual const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > from_repositories_key() const;
+                virtual const std::shared_ptr<const MetadataValueKey<SlotName> > slot_key() const;
+                virtual const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > > virtual_for_key() const;
+                virtual const std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> > keywords_key() const;
+                virtual const std::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> > provide_key() const;
+                virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_key() const;
+                virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies_key() const;
+                virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > post_dependencies_key() const;
+                virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > suggested_dependencies_key() const;
+                virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > dependencies_key() const;
+                virtual const std::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > restrict_key() const;
+                virtual const std::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > properties_key() const;
+                virtual const std::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> > fetches_key() const;
+                virtual const std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > homepage_key() const;
+                virtual const std::shared_ptr<const MetadataValueKey<std::string> > short_description_key() const;
+                virtual const std::shared_ptr<const MetadataValueKey<std::string> > long_description_key() const;
+                virtual const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Contents> > > contents_key() const;
+                virtual const std::shared_ptr<const MetadataTimeKey> installed_time_key() const;
+                virtual const std::shared_ptr<const MetadataCollectionKey<PackageIDSequence> > contains_key() const;
+                virtual const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > > contained_in_key() const;
+                virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > fs_location_key() const;
+                virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > from_repositories_key() const;
 
-                virtual const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_use_key() const;
-                virtual const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_iuse_key() const;
-                virtual const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_iuse_effective_key() const;
-                virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > raw_myoptions_key() const;
-                virtual const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_use_expand_key() const;
-                virtual const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_use_expand_hidden_key() const;
-                virtual const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > > choices_key() const;
-                virtual const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > inherited_key() const;
-                virtual const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > defined_phases_key() const;
-                virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> > license_key() const;
+                virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_use_key() const;
+                virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_iuse_key() const;
+                virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_iuse_effective_key() const;
+                virtual const std::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > raw_myoptions_key() const;
+                virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_use_expand_key() const;
+                virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_use_expand_hidden_key() const;
+                virtual const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Choices> > > choices_key() const;
+                virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > inherited_key() const;
+                virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > defined_phases_key() const;
+                virtual const std::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> > license_key() const;
 
-                virtual const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > behaviours_key() const;
+                virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > behaviours_key() const;
 
                 virtual bool supports_action(const SupportsActionTestBase &) const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual void perform_action(Action &) const;
@@ -105,13 +105,13 @@ namespace paludis
                 virtual std::string fs_location_raw_name() const = 0;
                 virtual std::string fs_location_human_name() const = 0;
                 virtual std::string contents_filename() const = 0;
-                virtual std::tr1::shared_ptr<MetadataValueKey<std::tr1::shared_ptr<const Contents> > > make_contents_key() const = 0;
+                virtual std::shared_ptr<MetadataValueKey<std::shared_ptr<const Contents> > > make_contents_key() const = 0;
 
-                virtual std::tr1::shared_ptr<ChoiceValue> make_choice_value(
-                        const std::tr1::shared_ptr<const Choice> &, const UnprefixedChoiceName &, const Tribool,
+                virtual std::shared_ptr<ChoiceValue> make_choice_value(
+                        const std::shared_ptr<const Choice> &, const UnprefixedChoiceName &, const Tribool,
                         const bool, const bool, const std::string &, const bool) const;
 
-                virtual void add_build_options(const std::tr1::shared_ptr<Choices> &) const;
+                virtual void add_build_options(const std::shared_ptr<Choices> &) const;
 
                 virtual void purge_invalid_cache() const;
                 virtual void can_drop_in_memory_cache() const;

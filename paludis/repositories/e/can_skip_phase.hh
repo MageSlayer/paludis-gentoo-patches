@@ -28,7 +28,7 @@ namespace paludis
 {
     namespace erepository
     {
-        bool can_skip_phase(const std::tr1::shared_ptr<const ERepositoryID> & id,
+        bool can_skip_phase(const std::shared_ptr<const ERepositoryID> & id,
                 const EAPIPhase &) PALUDIS_ATTRIBUTE((warn_unused_result));
     }
 }

@@ -65,7 +65,7 @@ namespace
 }
 
 bool
-paludis::erepository::can_skip_phase(const std::tr1::shared_ptr<const ERepositoryID> & id,
+paludis::erepository::can_skip_phase(const std::shared_ptr<const ERepositoryID> & id,
         const EAPIPhase & phase)
 {
     if (! id->defined_phases_key())

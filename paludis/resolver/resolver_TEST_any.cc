@@ -45,7 +45,7 @@
 #include <test/test_framework.hh>
 
 #include <list>
-#include <tr1/functional>
+#include <functional>
 #include <algorithm>
 #include <map>
 
@@ -73,7 +73,7 @@ namespace test_cases
 
         void run()
         {
-            std::tr1::shared_ptr<const Resolved> resolved(get_resolved("test/target"));
+            std::shared_ptr<const Resolved> resolved(get_resolved("test/target"));
 
             check_resolved(resolved,
                     n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
@@ -103,7 +103,7 @@ namespace test_cases
 
         void run()
         {
-            std::tr1::shared_ptr<const Resolved> resolved(get_resolved("test/target"));
+            std::shared_ptr<const Resolved> resolved(get_resolved("test/target"));
 
             check_resolved(resolved,
                     n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
@@ -134,7 +134,7 @@ namespace test_cases
 
         void run()
         {
-            std::tr1::shared_ptr<const Resolved> resolved(get_resolved("test/target"));
+            std::shared_ptr<const Resolved> resolved(get_resolved("test/target"));
 
             check_resolved(resolved,
                     n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
@@ -171,9 +171,9 @@ namespace test_cases
 
         void run()
         {
-            std::tr1::shared_ptr<const Resolved> resolved(get_resolved("preferences/target"));
+            std::shared_ptr<const Resolved> resolved(get_resolved("preferences/target"));
 
-            std::tr1::shared_ptr<DecisionChecks> checks;
+            std::shared_ptr<DecisionChecks> checks;
 
             if (a.is_true())
             {

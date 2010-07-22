@@ -23,7 +23,7 @@
 #include <paludis/util/no_type.hh>
 #include <paludis/resolver/orderer_notes-fwd.hh>
 #include <paludis/resolver/decision-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 
 namespace paludis
 {
@@ -32,7 +32,7 @@ namespace paludis
         template <typename Decision_, typename Notes_ = NoType<0u> *>
         struct Decisions;
 
-        typedef Decisions<ChangeOrRemoveDecision, std::tr1::shared_ptr<const OrdererNotes> > OrderedChangeOrRemoveDecisions;
+        typedef Decisions<ChangeOrRemoveDecision, std::shared_ptr<const OrdererNotes> > OrderedChangeOrRemoveDecisions;
     }
 }
 

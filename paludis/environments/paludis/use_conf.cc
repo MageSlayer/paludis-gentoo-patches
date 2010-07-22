@@ -36,7 +36,7 @@ namespace paludis
     struct Implementation<UseConf>
     {
         const PaludisEnvironment * const env;
-        const std::tr1::shared_ptr<PaludisLikeOptionsConf> handler;
+        const std::shared_ptr<PaludisLikeOptionsConf> handler;
 
         Implementation(const PaludisEnvironment * const e) :
             env(e),
@@ -69,8 +69,8 @@ UseConf::add(const FSEntry & filename)
 
 const Tribool
 UseConf::want_choice_enabled(
-        const std::tr1::shared_ptr<const PackageID> & id,
-        const std::tr1::shared_ptr<const Choice> & choice,
+        const std::shared_ptr<const PackageID> & id,
+        const std::shared_ptr<const Choice> & choice,
         const UnprefixedChoiceName & f
         ) const
 {
@@ -82,8 +82,8 @@ UseConf::want_choice_enabled(
 
 const std::string
 UseConf::value_for_choice_parameter(
-        const std::tr1::shared_ptr<const PackageID> & id,
-        const std::tr1::shared_ptr<const Choice> & choice,
+        const std::shared_ptr<const PackageID> & id,
+        const std::shared_ptr<const Choice> & choice,
         const UnprefixedChoiceName & f
         ) const
 {
@@ -94,10 +94,10 @@ UseConf::value_for_choice_parameter(
 }
 
 
-std::tr1::shared_ptr<const Set<UnprefixedChoiceName> >
+std::shared_ptr<const Set<UnprefixedChoiceName> >
 UseConf::known_choice_value_names(
-        const std::tr1::shared_ptr<const PackageID> & id,
-        const std::tr1::shared_ptr<const Choice> & choice
+        const std::shared_ptr<const PackageID> & id,
+        const std::shared_ptr<const Choice> & choice
         ) const
 {
     Context context("When loading known use expand names for prefix '" + stringify(choice->prefix()) + "':");

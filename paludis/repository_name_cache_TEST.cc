@@ -41,7 +41,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            const std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            const std::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("repo")
                             )));
@@ -59,7 +59,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            const std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            const std::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("repo")
                             )));
@@ -79,7 +79,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            const std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            const std::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("repo")
                             )));
@@ -99,7 +99,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            const std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            const std::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("repo")
                             )));
@@ -119,7 +119,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            const std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            const std::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("repo")
                             )));
@@ -139,7 +139,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            const std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            const std::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("repo")
                             )));
@@ -148,12 +148,12 @@ namespace test_cases
             RepositoryNameCache cache(FSEntry("repository_name_cache_TEST_dir/good_repo"), repo.get());
             TEST_CHECK(cache.usable());
 
-            std::tr1::shared_ptr<const CategoryNamePartSet> foo(cache.category_names_containing_package(PackageNamePart("foo")));
+            std::shared_ptr<const CategoryNamePartSet> foo(cache.category_names_containing_package(PackageNamePart("foo")));
             TEST_CHECK(cache.usable());
             TEST_CHECK(foo);
             TEST_CHECK_EQUAL(join(foo->begin(), foo->end(), " "), "bar baz");
 
-            std::tr1::shared_ptr<const CategoryNamePartSet> moo(cache.category_names_containing_package(PackageNamePart("moo")));
+            std::shared_ptr<const CategoryNamePartSet> moo(cache.category_names_containing_package(PackageNamePart("moo")));
             TEST_CHECK(cache.usable());
             TEST_CHECK(moo);
             TEST_CHECK(moo->empty());
@@ -167,7 +167,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            const std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            const std::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("repo")
                             )));
@@ -181,12 +181,12 @@ namespace test_cases
             cache.regenerate_cache();
             TEST_CHECK(cache.usable());
 
-            std::tr1::shared_ptr<const CategoryNamePartSet> foo(cache.category_names_containing_package(PackageNamePart("foo")));
+            std::shared_ptr<const CategoryNamePartSet> foo(cache.category_names_containing_package(PackageNamePart("foo")));
             TEST_CHECK(cache.usable());
             TEST_CHECK(foo);
             TEST_CHECK_EQUAL(join(foo->begin(), foo->end(), " "), "bar baz");
 
-            std::tr1::shared_ptr<const CategoryNamePartSet> moo(cache.category_names_containing_package(PackageNamePart("moo")));
+            std::shared_ptr<const CategoryNamePartSet> moo(cache.category_names_containing_package(PackageNamePart("moo")));
             TEST_CHECK(cache.usable());
             TEST_CHECK(moo);
             TEST_CHECK(moo->empty());

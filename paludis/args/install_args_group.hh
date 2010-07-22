@@ -114,7 +114,7 @@ namespace paludis
                 /**
                  * Fetch our specified destinations set.
                  */
-                std::tr1::shared_ptr<const DestinationsSet> destinations(Environment *) const;
+                std::shared_ptr<const DestinationsSet> destinations(Environment *) const;
 
                 /**
                  * Populate an InstallTask from our values.

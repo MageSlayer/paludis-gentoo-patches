@@ -25,7 +25,7 @@
 #include <paludis/resolver/job-fwd.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/serialise-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 
 namespace paludis
 {
@@ -39,10 +39,10 @@ namespace paludis
     {
         struct JobLists
         {
-            NamedValue<n::execute_job_list, std::tr1::shared_ptr<JobList<ExecuteJob> > > execute_job_list;
-            NamedValue<n::pretend_job_list, std::tr1::shared_ptr<JobList<PretendJob> > > pretend_job_list;
+            NamedValue<n::execute_job_list, std::shared_ptr<JobList<ExecuteJob> > > execute_job_list;
+            NamedValue<n::pretend_job_list, std::shared_ptr<JobList<PretendJob> > > pretend_job_list;
 
-            static const std::tr1::shared_ptr<JobLists> deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
+            static const std::shared_ptr<JobLists> deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
             void serialise(Serialiser &) const;
         };
     }

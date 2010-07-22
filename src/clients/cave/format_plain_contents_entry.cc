@@ -68,13 +68,13 @@ namespace
 
 std::string
 paludis::cave::format_plain_contents_entry(
-        const std::tr1::shared_ptr<const ContentsEntry> & c,
+        const std::shared_ptr<const ContentsEntry> & c,
         const std::string & f)
 {
     ValueGetter v;
     c->accept(v);
 
-    std::tr1::shared_ptr<Map<char, std::string> > m(new Map<char, std::string>);
+    std::shared_ptr<Map<char, std::string> > m(new Map<char, std::string>);
     m->insert('n', stringify(c->location_key()->value()));
     m->insert('d', stringify(c->location_key()->value().dirname()));
     m->insert('b', stringify(c->location_key()->value().basename()));

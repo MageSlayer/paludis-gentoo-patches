@@ -55,94 +55,94 @@ namespace paludis
             private PrivateImplementationPattern<Decider>
         {
             private:
-                const std::tr1::shared_ptr<Resolution> _create_resolution_for_resolvent(const Resolvent &) const;
-                const std::tr1::shared_ptr<Resolution> _resolution_for_resolvent(const Resolvent &, const Tribool);
+                const std::shared_ptr<Resolution> _create_resolution_for_resolvent(const Resolvent &) const;
+                const std::shared_ptr<Resolution> _resolution_for_resolvent(const Resolvent &, const Tribool);
 
-                const std::tr1::shared_ptr<const Resolvents> _get_resolvents_for_blocker(const BlockDepSpec &) const;
+                const std::shared_ptr<const Resolvents> _get_resolvents_for_blocker(const BlockDepSpec &) const;
 
                 const DestinationTypes _get_destination_types_for_blocker(const BlockDepSpec &) const;
 
-                const std::tr1::shared_ptr<const Resolvents> _get_resolvents_for(
+                const std::shared_ptr<const Resolvents> _get_resolvents_for(
                         const PackageDepSpec & spec,
-                        const std::tr1::shared_ptr<const Reason> & reason) const;
+                        const std::shared_ptr<const Reason> & reason) const;
 
                 const DestinationTypes _get_destination_types_for(
                         const PackageDepSpec & spec,
-                        const std::tr1::shared_ptr<const PackageID> &,
-                        const std::tr1::shared_ptr<const Reason> &) const;
+                        const std::shared_ptr<const PackageID> &,
+                        const std::shared_ptr<const Reason> &) const;
 
-                const std::tr1::shared_ptr<const Resolvents> _get_error_resolvents_for(
+                const std::shared_ptr<const Resolvents> _get_error_resolvents_for(
                             const PackageDepSpec & spec,
-                            const std::tr1::shared_ptr<const Reason> & reason) const;
+                            const std::shared_ptr<const Reason> & reason) const;
 
-                const std::tr1::shared_ptr<ConstraintSequence> _make_constraints_from_target(
-                        const std::tr1::shared_ptr<const Resolution> &,
+                const std::shared_ptr<ConstraintSequence> _make_constraints_from_target(
+                        const std::shared_ptr<const Resolution> &,
                         const PackageOrBlockDepSpec &,
-                        const std::tr1::shared_ptr<const Reason> &) const;
+                        const std::shared_ptr<const Reason> &) const;
 
-                const std::tr1::shared_ptr<ConstraintSequence> _make_constraints_from_dependency(
-                        const std::tr1::shared_ptr<const Resolution> &,
+                const std::shared_ptr<ConstraintSequence> _make_constraints_from_dependency(
+                        const std::shared_ptr<const Resolution> &,
                         const SanitisedDependency &,
-                        const std::tr1::shared_ptr<const Reason> &,
+                        const std::shared_ptr<const Reason> &,
                         const SpecInterest) const;
 
-                const std::tr1::shared_ptr<ConstraintSequence> _make_constraints_from_blocker(
-                        const std::tr1::shared_ptr<const Resolution> &,
+                const std::shared_ptr<ConstraintSequence> _make_constraints_from_blocker(
+                        const std::shared_ptr<const Resolution> &,
                         const BlockDepSpec & dep,
-                        const std::tr1::shared_ptr<const Reason> & reason) const;
+                        const std::shared_ptr<const Reason> & reason) const;
 
-                const std::tr1::shared_ptr<ConstraintSequence> _make_constraints_for_dependent(
-                        const std::tr1::shared_ptr<const Resolution> & resolution,
-                        const std::tr1::shared_ptr<const PackageID> &,
-                        const std::tr1::shared_ptr<const ChangeByResolventSequence> &) const;
+                const std::shared_ptr<ConstraintSequence> _make_constraints_for_dependent(
+                        const std::shared_ptr<const Resolution> & resolution,
+                        const std::shared_ptr<const PackageID> &,
+                        const std::shared_ptr<const ChangeByResolventSequence> &) const;
 
-                const std::tr1::shared_ptr<ConstraintSequence> _make_constraints_for_purge(
-                        const std::tr1::shared_ptr<const Resolution> & resolution,
-                        const std::tr1::shared_ptr<const PackageID> &,
-                        const std::tr1::shared_ptr<const ChangeByResolventSequence> &) const;
+                const std::shared_ptr<ConstraintSequence> _make_constraints_for_purge(
+                        const std::shared_ptr<const Resolution> & resolution,
+                        const std::shared_ptr<const PackageID> &,
+                        const std::shared_ptr<const ChangeByResolventSequence> &) const;
 
-                const std::tr1::shared_ptr<ConstraintSequence> _make_constraints_from_other_destination(
-                        const std::tr1::shared_ptr<const Resolution> & resolution,
-                        const std::tr1::shared_ptr<const Resolution> & from_resolution,
-                        const std::tr1::shared_ptr<const Constraint> & from_constraint) const;
+                const std::shared_ptr<ConstraintSequence> _make_constraints_from_other_destination(
+                        const std::shared_ptr<const Resolution> & resolution,
+                        const std::shared_ptr<const Resolution> & from_resolution,
+                        const std::shared_ptr<const Constraint> & from_constraint) const;
 
-                const std::tr1::shared_ptr<ConstraintSequence> _make_constraints_for_via_binary(
-                        const std::tr1::shared_ptr<const Resolution> & resolution,
-                        const std::tr1::shared_ptr<const Resolution> & from_resolution) const;
+                const std::shared_ptr<ConstraintSequence> _make_constraints_for_via_binary(
+                        const std::shared_ptr<const Resolution> & resolution,
+                        const std::shared_ptr<const Resolution> & from_resolution) const;
 
                 void _apply_resolution_constraint(
-                        const std::tr1::shared_ptr<Resolution> &,
-                        const std::tr1::shared_ptr<const Constraint> &);
+                        const std::shared_ptr<Resolution> &,
+                        const std::shared_ptr<const Constraint> &);
 
                 bool _check_constraint(
-                        const std::tr1::shared_ptr<const Constraint> & constraint,
-                        const std::tr1::shared_ptr<const Decision> & decision) const;
+                        const std::shared_ptr<const Constraint> & constraint,
+                        const std::shared_ptr<const Decision> & decision) const;
 
                 bool _verify_new_constraint(
-                        const std::tr1::shared_ptr<const Resolution> &,
-                        const std::tr1::shared_ptr<const Constraint> &);
+                        const std::shared_ptr<const Resolution> &,
+                        const std::shared_ptr<const Constraint> &);
 
                 void _made_wrong_decision(
-                        const std::tr1::shared_ptr<Resolution> & resolution,
-                        const std::tr1::shared_ptr<const Constraint> & constraint);
+                        const std::shared_ptr<Resolution> & resolution,
+                        const std::shared_ptr<const Constraint> & constraint);
 
                 void _suggest_restart_with(
-                        const std::tr1::shared_ptr<const Resolution> & resolution,
-                        const std::tr1::shared_ptr<const Constraint> & constraint,
-                        const std::tr1::shared_ptr<const Decision> & decision) const PALUDIS_ATTRIBUTE((noreturn));
+                        const std::shared_ptr<const Resolution> & resolution,
+                        const std::shared_ptr<const Constraint> & constraint,
+                        const std::shared_ptr<const Decision> & decision) const PALUDIS_ATTRIBUTE((noreturn));
 
-                const std::tr1::shared_ptr<const Constraint> _make_constraint_for_preloading(
-                        const std::tr1::shared_ptr<const Decision> & d,
-                        const std::tr1::shared_ptr<const Constraint> & c) const;
+                const std::shared_ptr<const Constraint> _make_constraint_for_preloading(
+                        const std::shared_ptr<const Decision> & d,
+                        const std::shared_ptr<const Constraint> & c) const;
 
                 const PackageDepSpec _make_spec_for_preloading(const PackageDepSpec & spec) const;
 
-                const std::tr1::shared_ptr<const PackageIDSequence> _find_replacing(
-                        const std::tr1::shared_ptr<const PackageID> &,
-                        const std::tr1::shared_ptr<const Repository> &) const;
+                const std::shared_ptr<const PackageIDSequence> _find_replacing(
+                        const std::shared_ptr<const PackageID> &,
+                        const std::shared_ptr<const Repository> &) const;
 
-                const std::tr1::shared_ptr<const Repository> _find_repository_for(
-                        const std::tr1::shared_ptr<const Resolution> &,
+                const std::shared_ptr<const Repository> _find_repository_for(
+                        const std::shared_ptr<const Resolution> &,
                         const ChangesToMakeDecision &) const;
 
                 void _resolve_decide_with_dependencies();
@@ -152,138 +152,138 @@ namespace paludis
                 void _resolve_destinations();
                 void _resolve_confirmations();
 
-                bool _via_binary(const std::tr1::shared_ptr<const Resolution> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
-                bool _always_via_binary(const std::tr1::shared_ptr<const Resolution> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                bool _via_binary(const std::shared_ptr<const Resolution> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                bool _always_via_binary(const std::shared_ptr<const Resolution> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 void _fixup_changes_to_make_decision(
-                        const std::tr1::shared_ptr<const Resolution> &,
+                        const std::shared_ptr<const Resolution> &,
                         ChangesToMakeDecision &) const;
 
-                const std::tr1::shared_ptr<Destination> _make_destination_for(
-                        const std::tr1::shared_ptr<const Resolution> & resolution,
+                const std::shared_ptr<Destination> _make_destination_for(
+                        const std::shared_ptr<const Resolution> & resolution,
                         const ChangesToMakeDecision &) const;
 
                 const ChangeType _make_change_type_for(
-                        const std::tr1::shared_ptr<const Resolution> & resolution,
+                        const std::shared_ptr<const Resolution> & resolution,
                         const ChangesToMakeDecision &) const;
 
                 FilteredGenerator _make_destination_filtered_generator(
                         const Generator &,
-                        const std::tr1::shared_ptr<const Resolution> &) const;
+                        const std::shared_ptr<const Resolution> &) const;
 
                 FilteredGenerator _make_origin_filtered_generator(
                         const Generator &,
-                        const std::tr1::shared_ptr<const Resolution> &) const;
+                        const std::shared_ptr<const Resolution> &) const;
 
-                void _decide(const std::tr1::shared_ptr<Resolution> & resolution);
-                void _copy_other_destination_constraints(const std::tr1::shared_ptr<Resolution> & resolution);
+                void _decide(const std::shared_ptr<Resolution> & resolution);
+                void _copy_other_destination_constraints(const std::shared_ptr<Resolution> & resolution);
 
-                const std::tr1::shared_ptr<Decision> _try_to_find_decision_for(
-                        const std::tr1::shared_ptr<const Resolution> & resolution) const;
+                const std::shared_ptr<Decision> _try_to_find_decision_for(
+                        const std::shared_ptr<const Resolution> & resolution) const;
 
-                const std::tr1::shared_ptr<Decision> _cannot_decide_for(
-                        const std::tr1::shared_ptr<const Resolution> & resolution) const;
+                const std::shared_ptr<Decision> _cannot_decide_for(
+                        const std::shared_ptr<const Resolution> & resolution) const;
 
                 void _add_dependencies_if_necessary(
-                        const std::tr1::shared_ptr<Resolution> & our_resolution);
+                        const std::shared_ptr<Resolution> & our_resolution);
 
                 SpecInterest _interest_in_spec(
-                        const std::tr1::shared_ptr<const Resolution> &,
+                        const std::shared_ptr<const Resolution> &,
                         const SanitisedDependency &) const;
 
-                const std::tr1::shared_ptr<Constraints> _initial_constraints_for(const Resolvent &) const;
+                const std::shared_ptr<Constraints> _initial_constraints_for(const Resolvent &) const;
 
-                bool _same_slot(const std::tr1::shared_ptr<const PackageID> & a,
-                        const std::tr1::shared_ptr<const PackageID> & b) const;
+                bool _same_slot(const std::shared_ptr<const PackageID> & a,
+                        const std::shared_ptr<const PackageID> & b) const;
 
-                const std::tr1::shared_ptr<const PackageID> _find_existing_id_for(
-                        const std::tr1::shared_ptr<const Resolution> &) const;
-                const std::tr1::shared_ptr<const PackageIDSequence> _find_installable_id_candidates_for(
-                        const std::tr1::shared_ptr<const Resolution> &,
+                const std::shared_ptr<const PackageID> _find_existing_id_for(
+                        const std::shared_ptr<const Resolution> &) const;
+                const std::shared_ptr<const PackageIDSequence> _find_installable_id_candidates_for(
+                        const std::shared_ptr<const Resolution> &,
                         const bool include_errors) const;
-                const std::pair<const std::tr1::shared_ptr<const PackageID>, bool> _find_installable_id_for(
-                        const std::tr1::shared_ptr<const Resolution> &) const;
-                const std::pair<const std::tr1::shared_ptr<const PackageID>, bool> _find_id_for_from(
-                        const std::tr1::shared_ptr<const Resolution> &,
-                        const std::tr1::shared_ptr<const PackageIDSequence> &) const;
+                const std::pair<const std::shared_ptr<const PackageID>, bool> _find_installable_id_for(
+                        const std::shared_ptr<const Resolution> &) const;
+                const std::pair<const std::shared_ptr<const PackageID>, bool> _find_id_for_from(
+                        const std::shared_ptr<const Resolution> &,
+                        const std::shared_ptr<const PackageIDSequence> &) const;
 
-                const std::tr1::shared_ptr<const Constraints> _get_unmatching_constraints(
-                        const std::tr1::shared_ptr<const Resolution> &,
-                        const std::tr1::shared_ptr<const PackageID> &,
+                const std::shared_ptr<const Constraints> _get_unmatching_constraints(
+                        const std::shared_ptr<const Resolution> &,
+                        const std::shared_ptr<const PackageID> &,
                         const bool existing) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 UnsuitableCandidate _make_unsuitable_candidate(
-                        const std::tr1::shared_ptr<const Resolution> &,
-                        const std::tr1::shared_ptr<const PackageID> &,
+                        const std::shared_ptr<const Resolution> &,
+                        const std::shared_ptr<const PackageID> &,
                         const bool existing) const;
 
                 bool _already_met(const SanitisedDependency &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 bool _installed_but_allowed_to_remove(
-                        const std::tr1::shared_ptr<const Resolution> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                        const std::shared_ptr<const Resolution> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                const std::tr1::shared_ptr<const PackageIDSequence> _installed_ids(
-                        const std::tr1::shared_ptr<const Resolution> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::shared_ptr<const PackageIDSequence> _installed_ids(
+                        const std::shared_ptr<const Resolution> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 bool _allowed_to_remove(
-                        const std::tr1::shared_ptr<const Resolution> &,
-                        const std::tr1::shared_ptr<const PackageID> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                        const std::shared_ptr<const Resolution> &,
+                        const std::shared_ptr<const PackageID> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                bool _remove_if_dependent(const std::tr1::shared_ptr<const PackageID> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                bool _remove_if_dependent(const std::shared_ptr<const PackageID> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 const std::pair<
-                    std::tr1::shared_ptr<const ChangeByResolventSequence>,
-                    std::tr1::shared_ptr<const ChangeByResolventSequence> > _collect_changing() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                    std::shared_ptr<const ChangeByResolventSequence>,
+                    std::shared_ptr<const ChangeByResolventSequence> > _collect_changing() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                const std::tr1::shared_ptr<const PackageIDSequence> _collect_staying(
-                        const std::tr1::shared_ptr<const ChangeByResolventSequence> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::shared_ptr<const PackageIDSequence> _collect_staying(
+                        const std::shared_ptr<const ChangeByResolventSequence> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                const std::tr1::shared_ptr<const ChangeByResolventSequence> _dependent_upon(
-                        const std::tr1::shared_ptr<const PackageID> &,
-                        const std::tr1::shared_ptr<const ChangeByResolventSequence> &,
-                        const std::tr1::shared_ptr<const ChangeByResolventSequence> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::shared_ptr<const ChangeByResolventSequence> _dependent_upon(
+                        const std::shared_ptr<const PackageID> &,
+                        const std::shared_ptr<const ChangeByResolventSequence> &,
+                        const std::shared_ptr<const ChangeByResolventSequence> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                void _confirm(const std::tr1::shared_ptr<const Resolution> & resolution);
+                void _confirm(const std::shared_ptr<const Resolution> & resolution);
 
-                const std::tr1::shared_ptr<const PackageIDSet> _collect_installed() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::shared_ptr<const PackageIDSet> _collect_installed() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                const std::tr1::shared_ptr<const PackageIDSet> _accumulate_deps_and_provides(
-                        const std::tr1::shared_ptr<const PackageIDSet> &,
-                        const std::tr1::shared_ptr<const PackageIDSequence> &,
+                const std::shared_ptr<const PackageIDSet> _accumulate_deps_and_provides(
+                        const std::shared_ptr<const PackageIDSet> &,
+                        const std::shared_ptr<const PackageIDSequence> &,
                         const bool recurse) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                const std::tr1::shared_ptr<const PackageIDSet> _collect_depped_upon(
-                        const std::tr1::shared_ptr<const PackageID> &,
-                        const std::tr1::shared_ptr<const PackageIDSequence> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::shared_ptr<const PackageIDSet> _collect_depped_upon(
+                        const std::shared_ptr<const PackageID> &,
+                        const std::shared_ptr<const PackageIDSequence> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                const std::tr1::shared_ptr<const PackageIDSet> _collect_provided(
-                        const std::tr1::shared_ptr<const PackageID> & id) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::shared_ptr<const PackageIDSet> _collect_provided(
+                        const std::shared_ptr<const PackageID> & id) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                const std::tr1::shared_ptr<const PackageIDSet> _collect_world(
-                        const std::tr1::shared_ptr<const PackageIDSet> & from) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::shared_ptr<const PackageIDSet> _collect_world(
+                        const std::shared_ptr<const PackageIDSet> & from) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 bool _can_use(
-                        const std::tr1::shared_ptr<const PackageID> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                        const std::shared_ptr<const PackageID> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             public:
                 Decider(const Environment * const,
                         const ResolverFunctions &,
-                        const std::tr1::shared_ptr<ResolutionsByResolvent> &);
+                        const std::shared_ptr<ResolutionsByResolvent> &);
                 ~Decider();
 
                 void resolve();
 
-                void add_target_with_reason(const PackageOrBlockDepSpec &, const std::tr1::shared_ptr<const Reason> &);
+                void add_target_with_reason(const PackageOrBlockDepSpec &, const std::shared_ptr<const Reason> &);
 
                 void purge();
 
                 std::pair<AnyChildScore, OperatorScore> find_any_score(
-                        const std::tr1::shared_ptr<const Resolution> &,
-                        const std::tr1::shared_ptr<const PackageID> &,
+                        const std::shared_ptr<const Resolution> &,
+                        const std::shared_ptr<const PackageID> &,
                         const SanitisedDependency &) const;
 
-                const std::tr1::shared_ptr<const RewrittenSpec> rewrite_if_special(const PackageOrBlockDepSpec &,
-                        const std::tr1::shared_ptr<const Resolvent> & maybe_from) const;
+                const std::shared_ptr<const RewrittenSpec> rewrite_if_special(const PackageOrBlockDepSpec &,
+                        const std::shared_ptr<const Resolvent> & maybe_from) const;
         };
     }
 }

@@ -93,9 +93,9 @@ namespace
     }
 
     void check_candidates(
-            const std::tr1::function<void (const PackageDepSpec &)> & yield,
-            const std::tr1::function<void (const std::string &)> & step,
-            const std::tr1::shared_ptr<const PackageIDSequence> & ids)
+            const std::function<void (const PackageDepSpec &)> & yield,
+            const std::function<void (const std::string &)> & step,
+            const std::shared_ptr<const PackageIDSequence> & ids)
     {
         for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                 i != i_end ; ++i)
@@ -108,8 +108,8 @@ namespace
 
 int
 FindCandidatesCommand::run(
-        const std::tr1::shared_ptr<Environment> & env,
-        const std::tr1::shared_ptr<const Sequence<std::string > > & args
+        const std::shared_ptr<Environment> & env,
+        const std::shared_ptr<const Sequence<std::string > > & args
         )
 {
     FindCandidatesCommandLine cmdline;
@@ -124,7 +124,7 @@ FindCandidatesCommand::run(
     if (cmdline.begin_parameters() == cmdline.end_parameters())
         throw args::DoHelp("find-candidates requires at least one parameter");
 
-    const std::tr1::shared_ptr<Set<std::string> > patterns(new Set<std::string>);
+    const std::shared_ptr<Set<std::string> > patterns(new Set<std::string>);
     std::copy(cmdline.begin_parameters(), cmdline.end_parameters(), patterns->inserter());
 
     run_hosted(env, cmdline.search_options, cmdline.match_options, patterns, &print_spec, &no_step);
@@ -138,12 +138,12 @@ typedef std::set<QualifiedPackageName> QualifiedPackageNames;
 
 void
 FindCandidatesCommand::run_hosted(
-        const std::tr1::shared_ptr<Environment> & env,
+        const std::shared_ptr<Environment> & env,
         const SearchCommandLineCandidateOptions & search_options,
         const SearchCommandLineMatchOptions &,
-        const std::tr1::shared_ptr<const Set<std::string> > &,
-        const std::tr1::function<void (const PackageDepSpec &)> & yield,
-        const std::tr1::function<void (const std::string &)> & step)
+        const std::shared_ptr<const Set<std::string> > &,
+        const std::function<void (const PackageDepSpec &)> & yield,
+        const std::function<void (const std::string &)> & step)
 {
     if (! search_options.a_matching.specified())
     {
@@ -160,8 +160,8 @@ FindCandidatesCommand::run_hosted(
         for (RepositoryNames::const_iterator r(repository_names.begin()), r_end(repository_names.end()) ;
                 r != r_end ; ++r)
         {
-            const std::tr1::shared_ptr<const Repository> repo(env->package_database()->fetch_repository(*r));
-            const std::tr1::shared_ptr<const CategoryNamePartSet> cats(repo->category_names());
+            const std::shared_ptr<const Repository> repo(env->package_database()->fetch_repository(*r));
+            const std::shared_ptr<const CategoryNamePartSet> cats(repo->category_names());
             std::copy(cats->begin(), cats->end(), std::inserter(category_names, category_names.end()));
         }
 
@@ -171,11 +171,11 @@ FindCandidatesCommand::run_hosted(
         for (RepositoryNames::const_iterator r(repository_names.begin()), r_end(repository_names.end()) ;
                 r != r_end ; ++r)
         {
-            const std::tr1::shared_ptr<const Repository> repo(env->package_database()->fetch_repository(*r));
+            const std::shared_ptr<const Repository> repo(env->package_database()->fetch_repository(*r));
             for (CategoryNames::const_iterator c(category_names.begin()), c_end(category_names.end()) ;
                     c != c_end ; ++c)
             {
-                const std::tr1::shared_ptr<const QualifiedPackageNameSet> qpns(repo->package_names(*c));
+                const std::shared_ptr<const QualifiedPackageNameSet> qpns(repo->package_names(*c));
                 std::copy(qpns->begin(), qpns->end(), std::inserter(package_names, package_names.end()));
             }
         }
@@ -187,13 +187,13 @@ FindCandidatesCommand::run_hosted(
         {
             if (search_options.a_all_versions.specified())
             {
-                const std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsUnsorted(
+                const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsUnsorted(
                             generator::Package(*q))]);
                 check_candidates(yield, step, ids);
             }
             else
             {
-                std::tr1::shared_ptr<const PackageIDSequence> ids;
+                std::shared_ptr<const PackageIDSequence> ids;
 
                 ids = ((*env)[selection::BestVersionOnly(generator::Package(*q) | filter::SupportsAction<InstallAction>() | filter::NotMasked())]);
                 if (ids->empty())
@@ -209,7 +209,7 @@ FindCandidatesCommand::run_hosted(
     {
         step("Searching matches");
 
-        std::tr1::shared_ptr<Generator> match_generator;
+        std::shared_ptr<Generator> match_generator;
 
         for (args::StringSetArg::ConstIterator k(search_options.a_matching.begin_args()),
                 k_end(search_options.a_matching.end_args()) ;
@@ -225,20 +225,20 @@ FindCandidatesCommand::run_hosted(
 
         if (search_options.a_all_versions.specified())
         {
-            const std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsUnsorted(
+            const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsUnsorted(
                         *match_generator)]);
             check_candidates(yield, step, ids);
         }
         else
         {
-            const std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::BestVersionOnly(
+            const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::BestVersionOnly(
                         *match_generator)]);
             check_candidates(yield, step, ids);
         }
     }
 }
 
-std::tr1::shared_ptr<args::ArgsHandler>
+std::shared_ptr<args::ArgsHandler>
 FindCandidatesCommand::make_doc_cmdline()
 {
     return make_shared_ptr(new FindCandidatesCommandLine);

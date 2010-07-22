@@ -20,67 +20,67 @@
 #ifndef PALUDIS_GUARD_PALUDIS_UTIL_REMOVE_SHARED_PTR_HH
 #define PALUDIS_GUARD_PALUDIS_UTIL_REMOVE_SHARED_PTR_HH 1
 
-#include <tr1/memory>
+#include <memory>
 
 namespace paludis
 {
     /**
-     * Like std::tr1::remove_pointer for std::tr1::shared_ptr.
+     * Like std::remove_pointer for std::shared_ptr.
      *
      * \ingroup g_utils
      */
     template <typename T_>
     struct RemoveSharedPtr
     {
-        /// T_ with the std::tr1::shared_ptr removed.
+        /// T_ with the std::shared_ptr removed.
         typedef T_ Type;
     };
 
     /**
-     * Like std::tr1::remove_pointer for std::tr1::shared_ptr.
+     * Like std::remove_pointer for std::shared_ptr.
      *
      * \ingroup g_utils
      */
     template <typename T_>
-    struct RemoveSharedPtr<std::tr1::shared_ptr<T_> >
+    struct RemoveSharedPtr<std::shared_ptr<T_> >
     {
-        /// T_ with the std::tr1::shared_ptr removed.
+        /// T_ with the std::shared_ptr removed.
         typedef T_ Type;
     };
 
     /**
-     * Like std::tr1::remove_pointer for std::tr1::shared_ptr.
+     * Like std::remove_pointer for std::shared_ptr.
      *
      * \ingroup g_utils
      */
     template <typename T_>
-    struct RemoveSharedPtr<std::tr1::shared_ptr<const T_> >
+    struct RemoveSharedPtr<std::shared_ptr<const T_> >
     {
-        /// T_ with the std::tr1::shared_ptr removed.
+        /// T_ with the std::shared_ptr removed.
         typedef const T_ Type;
     };
 
     /**
-     * Like std::tr1::remove_pointer for std::tr1::shared_ptr.
+     * Like std::remove_pointer for std::shared_ptr.
      *
      * \ingroup g_utils
      */
     template <typename T_>
     struct RemoveSharedPtr<const T_>
     {
-        /// T_ with the std::tr1::shared_ptr removed.
+        /// T_ with the std::shared_ptr removed.
         typedef const typename RemoveSharedPtr<T_>::Type Type;
     };
 
     /**
-     * Like std::tr1::remove_pointer for std::tr1::shared_ptr.
+     * Like std::remove_pointer for std::shared_ptr.
      *
      * \ingroup g_utils
      */
     template <typename T_>
     struct RemoveSharedPtr<T_ &>
     {
-        /// T_ with the std::tr1::shared_ptr removed.
+        /// T_ with the std::shared_ptr removed.
         typedef typename RemoveSharedPtr<T_>::Type Type;
     };
 }

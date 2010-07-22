@@ -25,12 +25,12 @@
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/environment.hh>
 #include <paludis/selection.hh>
-#include <tr1/unordered_map>
+#include <unordered_map>
 #include <algorithm>
 
 using namespace paludis;
 
-typedef std::tr1::unordered_map<std::string, std::tr1::shared_ptr<const PackageIDSequence> > Cache;
+typedef std::unordered_map<std::string, std::shared_ptr<const PackageIDSequence> > Cache;
 
 namespace paludis
 {
@@ -45,7 +45,7 @@ namespace paludis
     struct Implementation<ScopedSelectionCache>
     {
         Environment * const environment;
-        const std::tr1::shared_ptr<SelectionCache> selection_cache;
+        const std::shared_ptr<SelectionCache> selection_cache;
 
         Implementation(Environment * const e) :
             environment(e),
@@ -64,7 +64,7 @@ SelectionCache::~SelectionCache()
 {
 }
 
-const std::tr1::shared_ptr<PackageIDSequence>
+const std::shared_ptr<PackageIDSequence>
 SelectionCache::perform_select(const Environment * const env, const Selection & s) const
 {
     std::string ss(s.as_string());
@@ -78,7 +78,7 @@ SelectionCache::perform_select(const Environment * const env, const Selection & 
             i = _imp->cache.insert(std::make_pair(ss, s.perform_select(env))).first;
     }
 
-    std::tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
+    std::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
     std::copy(i->second->begin(), i->second->end(), result->back_inserter());
     return result;
 }

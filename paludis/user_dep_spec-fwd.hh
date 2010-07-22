@@ -27,7 +27,7 @@
 #include <paludis/package_id-fwd.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/version_spec-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 #include <iosfwd>
 
 namespace paludis

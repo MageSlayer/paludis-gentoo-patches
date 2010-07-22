@@ -43,9 +43,9 @@ namespace paludis
     {
         struct RewrittenSpec
         {
-            NamedValue<n::specs, std::tr1::shared_ptr<Sequence<PackageOrBlockDepSpec> > > specs;
+            NamedValue<n::specs, std::shared_ptr<Sequence<PackageOrBlockDepSpec> > > specs;
 
-            const std::tr1::shared_ptr<const DependencySpecTree> as_spec_tree() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::shared_ptr<const DependencySpecTree> as_spec_tree() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         class PALUDIS_VISIBLE SpecRewriter :
@@ -58,8 +58,8 @@ namespace paludis
                 SpecRewriter(const Environment * const);
                 ~SpecRewriter();
 
-                const std::tr1::shared_ptr<const RewrittenSpec> rewrite_if_special(const PackageOrBlockDepSpec &,
-                        const std::tr1::shared_ptr<const Resolvent> & maybe_from) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::shared_ptr<const RewrittenSpec> rewrite_if_special(const PackageOrBlockDepSpec &,
+                        const std::shared_ptr<const Resolvent> & maybe_from) const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 

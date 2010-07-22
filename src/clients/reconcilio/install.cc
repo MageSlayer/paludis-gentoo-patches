@@ -23,7 +23,7 @@
 
 #include <paludis/util/sequence-impl.hh>
 #include <src/output/console_install_task.hh>
-#include <tr1/functional>
+#include <functional>
 #include <algorithm>
 #include <iostream>
 
@@ -35,11 +35,11 @@ namespace
         public ConsoleInstallTask
     {
         private:
-            std::tr1::shared_ptr<Environment> _env;
+            std::shared_ptr<Environment> _env;
 
         public:
-            OurInstallTask(const std::tr1::shared_ptr<Environment> & env, const DepListOptions & options,
-                    const std::tr1::shared_ptr<const DestinationsSet> & destinations) :
+            OurInstallTask(const std::shared_ptr<Environment> & env, const DepListOptions & options,
+                    const std::shared_ptr<const DestinationsSet> & destinations) :
                 ConsoleInstallTask(env.get(), options, destinations),
                 _env(env)
             {
@@ -129,9 +129,9 @@ namespace
 }
 
 int
-do_install(const std::tr1::shared_ptr<Environment> & env, const std::tr1::shared_ptr<const Sequence<std::string> > & targets)
+do_install(const std::shared_ptr<Environment> & env, const std::shared_ptr<const Sequence<std::string> > & targets)
 {
-    using namespace std::tr1::placeholders;
+    using namespace std::placeholders;
 
     DepListOptions options;
     CommandLine::get_instance()->dl_args.populate_dep_list_options(env.get(), options);

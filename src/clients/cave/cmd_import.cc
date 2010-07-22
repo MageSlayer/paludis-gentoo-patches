@@ -155,7 +155,7 @@ namespace
         }
     };
 
-    std::string from_keys(const std::tr1::shared_ptr<const Map<std::string, std::string> > & m,
+    std::string from_keys(const std::shared_ptr<const Map<std::string, std::string> > & m,
             const std::string & k)
     {
         Map<std::string, std::string>::ConstIterator mm(m->find(k));
@@ -168,8 +168,8 @@ namespace
 
 int
 ImportCommand::run(
-        const std::tr1::shared_ptr<Environment> & env,
-        const std::tr1::shared_ptr<const Sequence<std::string > > & args
+        const std::shared_ptr<Environment> & env,
+        const std::shared_ptr<const Sequence<std::string > > & args
         )
 {
     ImportCommandLine cmdline;
@@ -202,8 +202,8 @@ ImportCommand::run(
 
     if (cmdline.a_preserve_metadata.specified())
     {
-        std::tr1::shared_ptr<const PackageIDSequence> old_ids((*env)[selection::AllVersionsSorted(generator::Package(package))]);
-        std::tr1::shared_ptr<const PackageID> old_id;
+        std::shared_ptr<const PackageIDSequence> old_ids((*env)[selection::AllVersionsSorted(generator::Package(package))]);
+        std::shared_ptr<const PackageID> old_id;
         for (PackageIDSequence::ConstIterator i(old_ids->begin()), i_end(old_ids->end()) ;
                 i != i_end ; ++i)
         {
@@ -239,7 +239,7 @@ ImportCommand::run(
                 cmdline.a_run_dependency.begin_args(),
                 cmdline.a_run_dependency.end_args(), ", ");
 
-    std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+    std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
     keys->insert("location", stringify(
                 cmdline.a_location.specified() ?
                 FSEntry(cmdline.a_location.argument()) :
@@ -258,10 +258,10 @@ ImportCommand::run(
     keys->insert("description", description);
     keys->insert("build_dependencies", build_dependencies);
     keys->insert("run_dependencies", run_dependencies);
-    std::tr1::shared_ptr<Repository> repo(RepositoryFactory::get_instance()->create(env.get(),
-                std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+    std::shared_ptr<Repository> repo(RepositoryFactory::get_instance()->create(env.get(),
+                std::bind(from_keys, keys, std::placeholders::_1)));
     env->package_database()->add_repository(10, repo);
-    std::tr1::shared_ptr<const PackageIDSequence> ids(repo->package_ids(package));
+    std::shared_ptr<const PackageIDSequence> ids(repo->package_ids(package));
     if (1 != std::distance(ids->begin(), ids->end()))
         throw InternalError(PALUDIS_HERE, "ids is '" + join(indirect_iterator(ids->begin()), indirect_iterator(
                         ids->end()), " ") + "'");
@@ -272,10 +272,10 @@ ImportCommand::run(
     if (cmdline.a_execute.specified())
         resolve_cmdline.resolution_options.a_execute.set_specified(true);
 
-    std::tr1::shared_ptr<Sequence<std::pair<std::string, std::string> > > targets(new Sequence<std::pair<std::string, std::string> >);
+    std::shared_ptr<Sequence<std::pair<std::string, std::string> > > targets(new Sequence<std::pair<std::string, std::string> >);
     targets->push_back(std::make_pair(stringify((*ids->begin())->name()), ""));
 
-    std::tr1::shared_ptr<Sequence<std::string> > world_specs(new Sequence<std::string>);
+    std::shared_ptr<Sequence<std::string> > world_specs(new Sequence<std::string>);
     world_specs->push_back(stringify((*ids->begin())->name()));
 
     return resolve_common(env,
@@ -286,7 +286,7 @@ ImportCommand::run(
             keys, targets, world_specs, false);
 }
 
-std::tr1::shared_ptr<args::ArgsHandler>
+std::shared_ptr<args::ArgsHandler>
 ImportCommand::make_doc_cmdline()
 {
     return make_shared_ptr(new ImportCommandLine);

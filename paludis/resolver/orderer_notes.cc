@@ -33,7 +33,7 @@ OrdererNotes::serialise(Serialiser & s) const
         ;
 }
 
-const std::tr1::shared_ptr<OrdererNotes>
+const std::shared_ptr<OrdererNotes>
 OrdererNotes::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "OrdererNotes");

@@ -71,7 +71,7 @@ namespace paludis
     struct Implementation<ConfigFile::Source>
     {
         std::string filename;
-        std::tr1::shared_ptr<const std::string> text;
+        std::shared_ptr<const std::string> text;
 
         Implementation(const FSEntry & f) :
             filename(stringify(f))
@@ -79,7 +79,7 @@ namespace paludis
             try
             {
                 SafeIFStream ff(f);
-                std::tr1::shared_ptr<std::string> t(new std::string);
+                std::shared_ptr<std::string> t(new std::string);
                 std::copy((std::istreambuf_iterator<char>(ff)), std::istreambuf_iterator<char>(), std::back_inserter(*t));
                 text = t;
             }
@@ -96,12 +96,12 @@ namespace paludis
 
         Implementation(std::istream & ff)
         {
-            std::tr1::shared_ptr<std::string> t(new std::string);
+            std::shared_ptr<std::string> t(new std::string);
             std::copy((std::istreambuf_iterator<char>(ff)), std::istreambuf_iterator<char>(), std::back_inserter(*t));
             text = t;
         }
 
-        Implementation(const std::string & f, const std::tr1::shared_ptr<const std::string> & t) :
+        Implementation(const std::string & f, const std::shared_ptr<const std::string> & t) :
             filename(f),
             text(t)
         {
@@ -628,7 +628,7 @@ KeyValueConfigFile::KeyValueConfigFile(
 
             Context local_context("When following 'source '" + filename + "' statement:");
             KeyValueConfigFile kv(FSEntry(filename), o,
-                    std::tr1::bind(&default_from_kv, std::tr1::cref(*this), std::tr1::placeholders::_1, std::tr1::placeholders::_2), i);
+                    std::bind(&default_from_kv, std::cref(*this), std::placeholders::_1, std::placeholders::_2), i);
             for (KeyValueConfigFile::ConstIterator k(kv.begin()), k_end(kv.end()) ;
                     k != k_end ; ++k)
                 _imp->values[k->first] = k->second;

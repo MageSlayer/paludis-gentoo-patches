@@ -59,7 +59,7 @@ namespace paludis
              * Our rewritten spec, or a zero pointer if we couldn't do any
              * rewriting.
              */
-            std::tr1::shared_ptr<PackageDepSpec> spec() const;
+            std::shared_ptr<PackageDepSpec> spec() const;
 
             ///\name Visit methods
             ///\{

@@ -43,7 +43,7 @@ namespace test_cases
         {
             bool x(false);
             {
-                Thread t(std::tr1::bind(&make_true, std::tr1::ref(x)));
+                Thread t(std::bind(&make_true, std::ref(x)));
             }
             TEST_CHECK(x);
         }

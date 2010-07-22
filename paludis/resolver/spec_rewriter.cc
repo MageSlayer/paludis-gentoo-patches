@@ -45,10 +45,10 @@ using namespace paludis::resolver;
 
 typedef std::map<QualifiedPackageName, std::set<QualifiedPackageName> > Rewrites;
 
-const std::tr1::shared_ptr<const DependencySpecTree>
+const std::shared_ptr<const DependencySpecTree>
 RewrittenSpec::as_spec_tree() const
 {
-    const std::tr1::shared_ptr<DependencySpecTree> result(new DependencySpecTree(make_shared_ptr(new AllDepSpec)));
+    const std::shared_ptr<DependencySpecTree> result(new DependencySpecTree(make_shared_ptr(new AllDepSpec)));
 
     for (Sequence<PackageOrBlockDepSpec>::ConstIterator i(specs()->begin()), i_end(specs()->end()) ;
             i != i_end ; ++i)
@@ -86,8 +86,8 @@ SpecRewriter::SpecRewriter(const Environment * const e) :
 
 SpecRewriter::~SpecRewriter() = default;
 
-const std::tr1::shared_ptr<const RewrittenSpec>
-SpecRewriter::rewrite_if_special(const PackageOrBlockDepSpec & s, const std::tr1::shared_ptr<const Resolvent> & maybe_our_resolvent) const
+const std::shared_ptr<const RewrittenSpec>
+SpecRewriter::rewrite_if_special(const PackageOrBlockDepSpec & s, const std::shared_ptr<const Resolvent> & maybe_our_resolvent) const
 {
     if (s.if_package() && s.if_package()->package_ptr())
     {
@@ -99,7 +99,7 @@ SpecRewriter::rewrite_if_special(const PackageOrBlockDepSpec & s, const std::tr1
         if (r == _imp->rewrites.end())
             return make_null_shared_ptr();
 
-        const std::tr1::shared_ptr<RewrittenSpec> result(new RewrittenSpec(make_named_values<RewrittenSpec>(
+        const std::shared_ptr<RewrittenSpec> result(new RewrittenSpec(make_named_values<RewrittenSpec>(
                         n::specs() = make_shared_ptr(new Sequence<PackageOrBlockDepSpec>)
                         )));
 
@@ -119,7 +119,7 @@ SpecRewriter::rewrite_if_special(const PackageOrBlockDepSpec & s, const std::tr1
         if (r == _imp->rewrites.end())
             return make_null_shared_ptr();
 
-        const std::tr1::shared_ptr<RewrittenSpec> result(new RewrittenSpec(make_named_values<RewrittenSpec>(
+        const std::shared_ptr<RewrittenSpec> result(new RewrittenSpec(make_named_values<RewrittenSpec>(
                         n::specs() = make_shared_ptr(new Sequence<PackageOrBlockDepSpec>)
                         )));
 
@@ -152,7 +152,7 @@ SpecRewriter::_need_rewrites() const
         return;
     _imp->has_rewrites = true;
 
-    const std::tr1::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::AllVersionsSorted(
+    const std::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::AllVersionsSorted(
                 generator::InRepository(RepositoryName("virtuals")) +
                 generator::InRepository(RepositoryName("installed-virtuals"))
                 )]);

@@ -27,7 +27,7 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/timestamp-fwd.hh>
 #include <string>
-#include <tr1/memory>
+#include <memory>
 #include <iosfwd>
 #include <sys/types.h>
 #include <sys/stat.h>

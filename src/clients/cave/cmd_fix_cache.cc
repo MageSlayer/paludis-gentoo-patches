@@ -83,8 +83,8 @@ namespace
 
 int
 FixCacheCommand::run(
-        const std::tr1::shared_ptr<Environment> & env,
-        const std::tr1::shared_ptr<const Sequence<std::string > > & args
+        const std::shared_ptr<Environment> & env,
+        const std::shared_ptr<const Sequence<std::string > > & args
         )
 {
     FixCacheCommandLine cmdline;
@@ -142,14 +142,14 @@ FixCacheCommand::run(
             r != r_end; ++r)
     {
         cout << format_general_s(f::fix_cache_fixing(), stringify(*r));
-        const std::tr1::shared_ptr<Repository> repo(env->package_database()->fetch_repository(*r));
+        const std::shared_ptr<Repository> repo(env->package_database()->fetch_repository(*r));
         repo->regenerate_cache();
     }
 
     return EXIT_SUCCESS;
 }
 
-std::tr1::shared_ptr<args::ArgsHandler>
+std::shared_ptr<args::ArgsHandler>
 FixCacheCommand::make_doc_cmdline()
 {
     return make_shared_ptr(new FixCacheCommandLine);

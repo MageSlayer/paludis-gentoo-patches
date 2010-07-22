@@ -24,7 +24,7 @@
 #include <paludis/package_id-fwd.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/output_manager-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 
 namespace paludis
 {
@@ -44,8 +44,8 @@ namespace paludis
         {
             NamedValue<n::debug_dir, FSEntry> debug_dir;
             NamedValue<n::image_dir, FSEntry> image_dir;
-            NamedValue<n::output_manager, std::tr1::shared_ptr<OutputManager> > output_manager;
-            NamedValue<n::package_id, std::tr1::shared_ptr<const PackageID> > package_id;
+            NamedValue<n::output_manager, std::shared_ptr<OutputManager> > output_manager;
+            NamedValue<n::package_id, std::shared_ptr<const PackageID> > package_id;
             NamedValue<n::split, bool> split;
             NamedValue<n::strip, bool> strip;
         };

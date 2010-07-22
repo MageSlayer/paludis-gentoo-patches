@@ -32,7 +32,7 @@ namespace bp = boost::python;
 struct DepTagCategoryFactoryWrapper
 {
     // More convenient way of creating DepTagCategories
-    static std::tr1::shared_ptr<const DepTagCategory>
+    static std::shared_ptr<const DepTagCategory>
     create(const DepTagCategoryFactory & self, const std::string & id)
     {
         return self.create(id);
@@ -161,7 +161,7 @@ void expose_dep_tag()
         (
          "DependencyDepTag",
          "DepTag subclass for dependencies.",
-         bp::init<const std::tr1::shared_ptr<const PackageID> &, const PackageDepSpec &>(
+         bp::init<const std::shared_ptr<const PackageID> &, const PackageDepSpec &>(
                     "__init__(PackageID, PackageDepSpec)"
                     )
         )

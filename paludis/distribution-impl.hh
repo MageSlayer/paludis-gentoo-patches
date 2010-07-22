@@ -26,7 +26,7 @@
 #include <paludis/util/config_file.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <tr1/unordered_map>
+#include <unordered_map>
 
 namespace paludis
 {
@@ -34,7 +34,7 @@ namespace paludis
     struct Implementation<ExtraDistributionData<Data_> >
     {
         mutable Mutex mutex;
-        mutable std::tr1::unordered_map<std::string, std::tr1::shared_ptr<const Data_>, Hash<std::string> > values;
+        mutable std::unordered_map<std::string, std::shared_ptr<const Data_>, Hash<std::string> > values;
     };
 
     template <typename Data_>
@@ -52,18 +52,18 @@ namespace paludis
     struct ExtraDistributionDataData;
 
     template <typename Data_>
-    const std::tr1::shared_ptr<const Data_>
+    const std::shared_ptr<const Data_>
     ExtraDistributionData<Data_>::data_from_distribution(const Distribution & d) const
     {
         Lock lock(this->_imp->mutex);
-        typename std::tr1::unordered_map<std::string, std::tr1::shared_ptr<const Data_>, Hash<std::string> >::const_iterator v(
+        typename std::unordered_map<std::string, std::shared_ptr<const Data_>, Hash<std::string> >::const_iterator v(
                 this->_imp->values.find(d.name()));
         if (this->_imp->values.end() != v)
             return v->second;
 
-        std::tr1::shared_ptr<KeyValueConfigFile> k(new KeyValueConfigFile(d.extra_data_dir() / ExtraDistributionDataData<Data_>::config_file_name(),
+        std::shared_ptr<KeyValueConfigFile> k(new KeyValueConfigFile(d.extra_data_dir() / ExtraDistributionDataData<Data_>::config_file_name(),
                     KeyValueConfigFileOptions(), &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation));
-        std::tr1::shared_ptr<const Data_> data(ExtraDistributionDataData<Data_>::make_data(k));
+        std::shared_ptr<const Data_> data(ExtraDistributionDataData<Data_>::make_data(k));
         this->_imp->values.insert(std::make_pair(d.name(), data));
         return data;
     }

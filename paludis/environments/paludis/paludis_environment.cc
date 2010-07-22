@@ -58,7 +58,6 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/standard_output_manager.hh>
 
-#include <tr1/functional>
 #include <functional>
 #include <algorithm>
 #include <list>
@@ -74,22 +73,22 @@ namespace paludis
     {
         mutable Mutex hook_mutex;
         mutable bool done_hooks;
-        mutable std::tr1::shared_ptr<Hooker> hooker;
+        mutable std::shared_ptr<Hooker> hooker;
         mutable std::list<std::pair<FSEntry, bool> > hook_dirs;
 
-        std::tr1::shared_ptr<PaludisConfig> config;
+        std::shared_ptr<PaludisConfig> config;
         std::string paludis_command;
 
-        std::tr1::shared_ptr<PackageDatabase> package_database;
+        std::shared_ptr<PackageDatabase> package_database;
 
         mutable Mutex sets_mutex;
-        mutable std::map<SetName, std::tr1::shared_ptr<const SetSpecTree> > sets;
+        mutable std::map<SetName, std::shared_ptr<const SetSpecTree> > sets;
 
-        std::tr1::shared_ptr<LiteralMetadataValueKey<std::string> > format_key;
-        std::tr1::shared_ptr<LiteralMetadataValueKey<FSEntry> > config_location_key;
-        std::tr1::shared_ptr<LiteralMetadataValueKey<FSEntry> > world_file_key;
+        std::shared_ptr<LiteralMetadataValueKey<std::string> > format_key;
+        std::shared_ptr<LiteralMetadataValueKey<FSEntry> > config_location_key;
+        std::shared_ptr<LiteralMetadataValueKey<FSEntry> > world_file_key;
 
-        Implementation(PaludisEnvironment * const e, std::tr1::shared_ptr<PaludisConfig> c) :
+        Implementation(PaludisEnvironment * const e, std::shared_ptr<PaludisConfig> c) :
             done_hooks(false),
             config(c),
             paludis_command("paludis"),
@@ -100,7 +99,7 @@ namespace paludis
             world_file_key(config->world()->location_if_set() ? make_shared_ptr(
                         new LiteralMetadataValueKey<FSEntry>("world_file", "World file", mkt_normal,
                             *config->world()->location_if_set()))
-                    : std::tr1::shared_ptr<LiteralMetadataValueKey<FSEntry> >())
+                    : std::shared_ptr<LiteralMetadataValueKey<FSEntry> >())
         {
         }
 
@@ -145,7 +144,7 @@ namespace paludis
 
 PaludisEnvironment::PaludisEnvironment(const std::string & s) :
     PrivateImplementationPattern<PaludisEnvironment>(new Implementation<PaludisEnvironment>(
-                this, std::tr1::shared_ptr<PaludisConfig>(new PaludisConfig(this, s)))),
+                this, std::shared_ptr<PaludisConfig>(new PaludisConfig(this, s)))),
     _imp(PrivateImplementationPattern<PaludisEnvironment>::_imp)
 {
     Context context("When loading paludis environment:");
@@ -167,7 +166,7 @@ PaludisEnvironment::~PaludisEnvironment()
 }
 
 bool
-PaludisEnvironment::accept_keywords(const std::tr1::shared_ptr<const KeywordNameSet> & k,
+PaludisEnvironment::accept_keywords(const std::shared_ptr<const KeywordNameSet> & k,
         const PackageID & e) const
 {
     return _imp->config->keywords_conf()->query(k, e);
@@ -192,7 +191,7 @@ PaludisEnvironment::unmasked_by_user(const PackageID & d) const
     return _imp->config->package_unmask_conf()->query(d);
 }
 
-std::tr1::shared_ptr<const FSEntrySequence>
+std::shared_ptr<const FSEntrySequence>
 PaludisEnvironment::bashrc_files() const
 {
     return _imp->config->bashrc_files();
@@ -227,46 +226,46 @@ PaludisEnvironment::perform_hook(const Hook & hook) const
     return _imp->hooker->perform_hook(hook);
 }
 
-std::tr1::shared_ptr<const FSEntrySequence>
+std::shared_ptr<const FSEntrySequence>
 PaludisEnvironment::hook_dirs() const
 {
     Lock lock(_imp->hook_mutex);
 
     _imp->need_hook_dirs(_imp->config->config_dir());
 
-    std::tr1::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
+    std::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
     std::transform(_imp->hook_dirs.begin(), _imp->hook_dirs.end(), result->back_inserter(),
-            std::tr1::mem_fn(&std::pair<FSEntry, bool>::first));
+            std::mem_fn(&std::pair<FSEntry, bool>::first));
 
     return result;
 }
 
-std::tr1::shared_ptr<const FSEntrySequence>
+std::shared_ptr<const FSEntrySequence>
 PaludisEnvironment::fetchers_dirs() const
 {
-    std::tr1::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
+    std::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
 
     result->push_back(FSEntry(_imp->config->config_dir()) / "fetchers");
 
     if (getenv_with_default("PALUDIS_NO_GLOBAL_FETCHERS", "").empty())
     {
-        std::tr1::shared_ptr<const FSEntrySequence> r(EnvironmentImplementation::fetchers_dirs());
+        std::shared_ptr<const FSEntrySequence> r(EnvironmentImplementation::fetchers_dirs());
         std::copy(r->begin(), r->end(), result->back_inserter());
     }
 
     return result;
 }
 
-std::tr1::shared_ptr<const FSEntrySequence>
+std::shared_ptr<const FSEntrySequence>
 PaludisEnvironment::syncers_dirs() const
 {
-    std::tr1::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
+    std::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
 
     result->push_back(FSEntry(_imp->config->config_dir()) / "syncers");
 
     if (getenv_with_default("PALUDIS_NO_GLOBAL_SYNCERS", "").empty())
     {
-        std::tr1::shared_ptr<const FSEntrySequence> r(EnvironmentImplementation::syncers_dirs());
+        std::shared_ptr<const FSEntrySequence> r(EnvironmentImplementation::syncers_dirs());
         std::copy(r->begin(), r->end(), result->back_inserter());
     }
 
@@ -297,7 +296,7 @@ PaludisEnvironment::remove_from_world(const SetName & s) const
     return _imp->config->world()->remove_from_world(s);
 }
 
-std::tr1::shared_ptr<const MirrorsSequence>
+std::shared_ptr<const MirrorsSequence>
 PaludisEnvironment::mirrors(const std::string & m) const
 {
     return _imp->config->mirrors_conf()->query(m);
@@ -335,13 +334,13 @@ PaludisEnvironment::config_dir() const
     return _imp->config->config_dir();
 }
 
-std::tr1::shared_ptr<PackageDatabase>
+std::shared_ptr<PackageDatabase>
 PaludisEnvironment::package_database()
 {
     return _imp->package_database;
 }
 
-std::tr1::shared_ptr<const PackageDatabase>
+std::shared_ptr<const PackageDatabase>
 PaludisEnvironment::package_database() const
 {
     return _imp->package_database;
@@ -407,12 +406,12 @@ namespace
     };
 }
 
-const std::tr1::shared_ptr<const Mask>
+const std::shared_ptr<const Mask>
 PaludisEnvironment::mask_for_breakage(const PackageID & id) const
 {
     if (! _imp->config->accept_all_breaks_portage())
     {
-        std::tr1::shared_ptr<const Set<std::string> > breakages(id.breaks_portage());
+        std::shared_ptr<const Set<std::string> > breakages(id.breaks_portage());
         if (breakages)
         {
             std::list<std::string> bad_breakages;
@@ -424,16 +423,16 @@ PaludisEnvironment::mask_for_breakage(const PackageID & id) const
         }
     }
 
-    return std::tr1::shared_ptr<const Mask>();
+    return std::shared_ptr<const Mask>();
 }
 
-const std::tr1::shared_ptr<const Mask>
+const std::shared_ptr<const Mask>
 PaludisEnvironment::mask_for_user(const PackageID & d, const bool o) const
 {
     if (_imp->config->package_mask_conf()->query(d))
         return make_shared_ptr(new UserConfigMask(o));
 
-    return std::tr1::shared_ptr<const Mask>();
+    return std::shared_ptr<const Mask>();
 }
 
 void
@@ -441,13 +440,13 @@ PaludisEnvironment::need_keys_added() const
 {
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataValueKey<std::string> >
 PaludisEnvironment::format_key() const
 {
     return _imp->format_key;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSEntry> >
 PaludisEnvironment::config_location_key() const
 {
     return _imp->config_location_key;
@@ -455,8 +454,8 @@ PaludisEnvironment::config_location_key() const
 
 const Tribool
 PaludisEnvironment::want_choice_enabled(
-        const std::tr1::shared_ptr<const PackageID> & id,
-        const std::tr1::shared_ptr<const Choice> & choice,
+        const std::shared_ptr<const PackageID> & id,
+        const std::shared_ptr<const Choice> & choice,
         const UnprefixedChoiceName & value
         ) const
 {
@@ -465,24 +464,24 @@ PaludisEnvironment::want_choice_enabled(
 
 const std::string
 PaludisEnvironment::value_for_choice_parameter(
-        const std::tr1::shared_ptr<const PackageID> & id,
-        const std::tr1::shared_ptr<const Choice> & choice,
+        const std::shared_ptr<const PackageID> & id,
+        const std::shared_ptr<const Choice> & choice,
         const UnprefixedChoiceName & value
         ) const
 {
     return _imp->config->use_conf()->value_for_choice_parameter(id, choice, value);
 }
 
-std::tr1::shared_ptr<const Set<UnprefixedChoiceName> >
+std::shared_ptr<const Set<UnprefixedChoiceName> >
 PaludisEnvironment::known_choice_value_names(
-        const std::tr1::shared_ptr<const PackageID> & id,
-        const std::tr1::shared_ptr<const Choice> & choice
+        const std::shared_ptr<const PackageID> & id,
+        const std::shared_ptr<const Choice> & choice
         ) const
 {
     return _imp->config->use_conf()->known_choice_value_names(id, choice);
 }
 
-const std::tr1::shared_ptr<OutputManager>
+const std::shared_ptr<OutputManager>
 PaludisEnvironment::create_output_manager(const CreateOutputManagerInfo & i) const
 {
     return _imp->config->output_conf()->create_output_manager(i);
@@ -490,12 +489,12 @@ PaludisEnvironment::create_output_manager(const CreateOutputManagerInfo & i) con
 
 namespace
 {
-    std::tr1::shared_ptr<const SetSpecTree> make_world_set(const std::tr1::shared_ptr<const World> & world)
+    std::shared_ptr<const SetSpecTree> make_world_set(const std::shared_ptr<const World> & world)
     {
         return world->world_set();
     }
 
-    std::tr1::shared_ptr<const SetSpecTree> make_set(
+    std::shared_ptr<const SetSpecTree> make_set(
             const Environment * const env,
             const FSEntry & f,
             const SetName & n,
@@ -504,13 +503,13 @@ namespace
     {
         Context context("When making set '" + stringify(f) + "':");
 
-        const std::tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(n, stringify(f.basename())));
+        const std::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(n, stringify(f.basename())));
 
         SetFile s(make_named_values<SetFileParams>(
                     n::environment() = env,
                     n::file_name() = f,
-                    n::parser() = std::tr1::bind(&parse_user_package_dep_spec,
-                            std::tr1::placeholders::_1, env, UserPackageDepSpecOptions() + updso_allow_wildcards,
+                    n::parser() = std::bind(&parse_user_package_dep_spec,
+                            std::placeholders::_1, env, UserPackageDepSpecOptions() + updso_allow_wildcards,
                             filter::All()),
                     n::set_operator_mode() = mode,
                     n::tag() = tag,
@@ -524,7 +523,7 @@ void
 PaludisEnvironment::populate_sets() const
 {
     Lock lock(_imp->sets_mutex);
-    add_set(SetName("world"), SetName("world::environment"), std::tr1::bind(&make_world_set, _imp->config->world()), true);
+    add_set(SetName("world"), SetName("world::environment"), std::bind(&make_world_set, _imp->config->world()), true);
 
     FSEntry sets_dir(FSEntry(_imp->config->config_dir()) / "sets");
     Context context("When looking in sets directory '" + stringify(sets_dir) + "':");
@@ -538,26 +537,26 @@ PaludisEnvironment::populate_sets() const
         if (is_file_with_extension(*d, ".bash", IsFileWithOptions()))
         {
             SetName n(strip_trailing_string(d->basename(), ".bash"));
-            add_set(n, n, std::tr1::bind(&make_set, this, *d, n, sfsmo_natural, sft_paludis_bash), false);
+            add_set(n, n, std::bind(&make_set, this, *d, n, sfsmo_natural, sft_paludis_bash), false);
 
             SetName n_s(stringify(n) + "*");
-            add_set(n_s, n_s, std::tr1::bind(&make_set, this, *d, n_s, sfsmo_star, sft_paludis_bash), false);
+            add_set(n_s, n_s, std::bind(&make_set, this, *d, n_s, sfsmo_star, sft_paludis_bash), false);
         }
         else if (is_file_with_extension(*d, ".conf", IsFileWithOptions()))
         {
             SetName n(strip_trailing_string(d->basename(), ".conf"));
-            add_set(n, n, std::tr1::bind(&make_set, this, *d, n, sfsmo_natural, sft_paludis_conf), false);
+            add_set(n, n, std::bind(&make_set, this, *d, n, sfsmo_natural, sft_paludis_conf), false);
 
             SetName n_s(stringify(n) + "*");
-            add_set(n_s, n_s, std::tr1::bind(&make_set, this, *d, n_s, sfsmo_star, sft_paludis_conf), false);
+            add_set(n_s, n_s, std::bind(&make_set, this, *d, n_s, sfsmo_star, sft_paludis_conf), false);
         }
     }
 }
 
-const std::tr1::shared_ptr<Repository>
+const std::shared_ptr<Repository>
 PaludisEnvironment::repository_from_new_config_file(const FSEntry & f)
 {
-    const std::tr1::function<std::string (const std::string &)> repo_func(_imp->config->repo_func_from_file(f));
+    const std::function<std::string (const std::string &)> repo_func(_imp->config->repo_func_from_file(f));
     if (! repo_func)
         throw PaludisConfigError("File '" + stringify(f) + "' does not describe a valid repository");
     return RepositoryFactory::get_instance()->create(this, repo_func);

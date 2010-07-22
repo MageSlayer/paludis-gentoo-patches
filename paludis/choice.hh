@@ -27,7 +27,7 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/util/wrapped_value.hh>
-#include <tr1/memory>
+#include <memory>
 #include <string>
 
 /** \file
@@ -152,13 +152,13 @@ namespace paludis
             /**
              * Add a new Choice to our collection.
              */
-            void add(const std::tr1::shared_ptr<const Choice> &);
+            void add(const std::shared_ptr<const Choice> &);
 
             ///\name Iterate over Choice children
             ///\{
 
             struct ConstIteratorTag;
-            typedef WrappedForwardIterator<ConstIteratorTag, const std::tr1::shared_ptr<const Choice> > ConstIterator;
+            typedef WrappedForwardIterator<ConstIteratorTag, const std::shared_ptr<const Choice> > ConstIterator;
             ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
             ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -177,7 +177,7 @@ namespace paludis
              * to hunt around in all the subkeys manually. Prefixes work too, e.g. "linguas_en" for
              * 0-based EAPIs or "linguas:en" for exheres EAPIs.
              */
-            const std::tr1::shared_ptr<const ChoiceValue> find_by_name_with_prefix(
+            const std::shared_ptr<const ChoiceValue> find_by_name_with_prefix(
                     const ChoiceNameWithPrefix &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
@@ -232,7 +232,7 @@ namespace paludis
             /**
              * Add a new ChoiceValue.
              */
-            void add(const std::tr1::shared_ptr<const ChoiceValue> &);
+            void add(const std::shared_ptr<const ChoiceValue> &);
 
             ///\name Properties
             ///\{
@@ -290,7 +290,7 @@ namespace paludis
             ///\{
 
             struct ConstIteratorTag;
-            typedef WrappedForwardIterator<ConstIteratorTag, const std::tr1::shared_ptr<const ChoiceValue> > ConstIterator;
+            typedef WrappedForwardIterator<ConstIteratorTag, const std::shared_ptr<const ChoiceValue> > ConstIterator;
             ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
             ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -373,8 +373,8 @@ namespace paludis
     extern template class PrivateImplementationPattern<Choices>;
     extern template class PrivateImplementationPattern<Choice>;
 
-    extern template class WrappedForwardIterator<Choices::ConstIteratorTag, const std::tr1::shared_ptr<const Choice> >;
-    extern template class WrappedForwardIterator<Choice::ConstIteratorTag, const std::tr1::shared_ptr<const ChoiceValue> >;
+    extern template class WrappedForwardIterator<Choices::ConstIteratorTag, const std::shared_ptr<const Choice> >;
+    extern template class WrappedForwardIterator<Choice::ConstIteratorTag, const std::shared_ptr<const ChoiceValue> >;
 }
 
 #endif

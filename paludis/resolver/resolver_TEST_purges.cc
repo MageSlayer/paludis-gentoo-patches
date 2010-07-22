@@ -43,7 +43,7 @@
 #include <test/test_framework.hh>
 
 #include <list>
-#include <tr1/functional>
+#include <functional>
 #include <algorithm>
 #include <map>
 
@@ -64,9 +64,9 @@ namespace
 
     UseExisting
     use_existing_if_possible_except_target(
-            const std::tr1::shared_ptr<const Resolution> &,
+            const std::shared_ptr<const Resolution> &,
             const PackageDepSpec & s,
-            const std::tr1::shared_ptr<const Reason> &)
+            const std::shared_ptr<const Reason> &)
     {
         if (s.package_ptr() && s.package_ptr()->package() == PackageNamePart("target"))
             return ue_never;
@@ -96,14 +96,14 @@ namespace test_cases
         virtual ResolverFunctions get_resolver_functions(InitialConstraints & initial_constraints)
         {
             ResolverFunctions result(ResolverPurgesTestCase::get_resolver_functions(initial_constraints));
-            result.get_use_existing_fn() = std::tr1::bind(&use_existing_if_possible_except_target, std::tr1::placeholders::_1,
-                    std::tr1::placeholders::_2, std::tr1::placeholders::_3);
+            result.get_use_existing_fn() = std::bind(&use_existing_if_possible_except_target, std::placeholders::_1,
+                    std::placeholders::_2, std::placeholders::_3);
             return result;
         }
 
         void run()
         {
-            std::tr1::shared_ptr<const Resolved> resolved(get_resolved("purges/target"));
+            std::shared_ptr<const Resolved> resolved(get_resolved("purges/target"));
             check_resolved(resolved,
                     n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                         .change(QualifiedPackageName("purges/new-dep"))

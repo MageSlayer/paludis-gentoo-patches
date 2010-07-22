@@ -26,7 +26,7 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/serialise-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 
 namespace paludis
 {
@@ -40,22 +40,22 @@ namespace paludis
                 ~ResolutionsByResolvent();
 
                 struct ConstIteratorTag;
-                typedef WrappedForwardIterator<ConstIteratorTag, const std::tr1::shared_ptr<Resolution> > ConstIterator;
+                typedef WrappedForwardIterator<ConstIteratorTag, const std::shared_ptr<Resolution> > ConstIterator;
                 ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 ConstIterator find(const Resolvent &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                ConstIterator insert_new(const std::tr1::shared_ptr<Resolution> &);
+                ConstIterator insert_new(const std::shared_ptr<Resolution> &);
 
                 void serialise(Serialiser &) const;
 
-                static const std::tr1::shared_ptr<ResolutionsByResolvent> deserialise(
+                static const std::shared_ptr<ResolutionsByResolvent> deserialise(
                         Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 
     extern template class WrappedForwardIterator<resolver::ResolutionsByResolvent::ConstIteratorTag,
-           const std::tr1::shared_ptr<resolver::Resolution> >;
+           const std::shared_ptr<resolver::Resolution> >;
 }
 
 #endif

@@ -36,7 +36,7 @@ using namespace paludis;
 
 namespace
 {
-    std::tr1::shared_ptr<SetSpecTree> get_installed_set(
+    std::shared_ptr<SetSpecTree> get_installed_set(
             const Environment * const env,
             const Repository * const repo,
             const bool slots)
@@ -44,9 +44,9 @@ namespace
         Context context("When making " + std::string(slots ? "installed-slots" : "installed-packages") +
                 " set from '" + stringify(repo->name()) + "':");
 
-        std::tr1::shared_ptr<SetSpecTree> result(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
+        std::shared_ptr<SetSpecTree> result(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
 
-        std::tr1::shared_ptr<const PackageIDSequence> ids;
+        std::shared_ptr<const PackageIDSequence> ids;
         if (slots)
             ids = ((*env)[selection::BestVersionInEachSlot(generator::InRepository(repo->name()))]);
         else
@@ -77,8 +77,8 @@ paludis::add_common_sets_for_installed_repo(
         const Repository & repo)
 {
     env->add_set(SetName("installed-packages"), SetName("installed-packages::" + stringify(repo.name())),
-            std::tr1::bind(&get_installed_set, env, &repo, false), true);
+            std::bind(&get_installed_set, env, &repo, false), true);
     env->add_set(SetName("installed-slots"), SetName("installed-slots::" + stringify(repo.name())),
-            std::tr1::bind(&get_installed_set, env, &repo, true), true);
+            std::bind(&get_installed_set, env, &repo, true), true);
 }
 

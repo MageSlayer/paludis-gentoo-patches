@@ -23,7 +23,7 @@
 #include <paludis/util/graph-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/exception.hh>
-#include <tr1/memory>
+#include <memory>
 
 /** \file
  * Declarations for DirectedGraph and related utilities.
@@ -77,7 +77,7 @@ namespace paludis
             }
 
             template <typename Node_>
-            NoSuchGraphNodeError(const std::tr1::shared_ptr<Node_> & node) throw () :
+            NoSuchGraphNodeError(const std::shared_ptr<Node_> & node) throw () :
                 GraphError("Node '" + stringify(*node) + "' does not exist")
             {
             }
@@ -120,13 +120,13 @@ namespace paludis
     {
         private:
             class RemainingNodes;
-            std::tr1::shared_ptr<const RemainingNodes> _remaining_nodes;
+            std::shared_ptr<const RemainingNodes> _remaining_nodes;
 
         public:
             ///\name Basic operations
             ///\{
 
-            NoGraphTopologicalOrderExistsError(const std::tr1::shared_ptr<const RemainingNodes> &) throw ();
+            NoGraphTopologicalOrderExistsError(const std::shared_ptr<const RemainingNodes> &) throw ();
             ~NoGraphTopologicalOrderExistsError() throw ();
 
             ///\}
@@ -134,7 +134,7 @@ namespace paludis
             /**
              * The nodes remaining in the graph.
              */
-            std::tr1::shared_ptr<const RemainingNodes> remaining_nodes() const;
+            std::shared_ptr<const RemainingNodes> remaining_nodes() const;
     };
 
     /**

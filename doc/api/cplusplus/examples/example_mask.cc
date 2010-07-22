@@ -79,11 +79,11 @@ int main(int argc, char * argv[])
                 "example_mask", "EXAMPLE_MASK_OPTIONS", "EXAMPLE_MASK_CMDLINE");
 
         /* We start with an Environment, respecting the user's '--environment' choice. */
-        std::tr1::shared_ptr<Environment> env(EnvironmentFactory::get_instance()->create(
+        std::shared_ptr<Environment> env(EnvironmentFactory::get_instance()->create(
                     CommandLine::get_instance()->a_environment.argument()));
 
         /* Fetch package IDs for 'sys-apps/paludis'. */
-        std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(
+        std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(
                     generator::Package(QualifiedPackageName("sys-apps/paludis")))]);
 
         /* For each ID: */

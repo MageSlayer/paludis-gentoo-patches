@@ -76,7 +76,7 @@ namespace
             std::cout << k.value() << std::endl;
         }
 
-        void visit(const MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> >  &)
+        void visit(const MetadataValueKey<std::shared_ptr<const RepositoryMaskInfo> >  &)
         {
             std::cout << "(unprintable)" << std::endl;
             return_code |= 1;
@@ -88,13 +88,13 @@ namespace
             return_code |= 1;
         }
 
-        void visit(const MetadataValueKey<std::tr1::shared_ptr<const Contents> > &)
+        void visit(const MetadataValueKey<std::shared_ptr<const Contents> > &)
         {
             std::cout << "(unprintable)" << std::endl;
             return_code |= 1;
         }
 
-        void visit(const MetadataValueKey<std::tr1::shared_ptr<const Choices> > &)
+        void visit(const MetadataValueKey<std::shared_ptr<const Choices> > &)
         {
             std::cout << "(unprintable)" << std::endl;
             return_code |= 1;
@@ -166,7 +166,7 @@ namespace
             std::cout << k.pretty_print_flat(f) << std::endl;
         }
 
-        void visit(const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > & k)
+        void visit(const MetadataValueKey<std::shared_ptr<const PackageID> > & k)
         {
             std::cout << *k.value() << std::endl;
         }
@@ -178,16 +178,16 @@ namespace
     };
 }
 
-int do_has_version(const std::tr1::shared_ptr<Environment> & env)
+int do_has_version(const std::shared_ptr<Environment> & env)
 {
     int return_code(0);
 
     Context context("When performing has-version action from command line:");
 
     std::string query(*CommandLine::get_instance()->begin_parameters());
-    std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
+    std::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
                 parse_user_package_dep_spec(query, env.get(), UserPackageDepSpecOptions())));
-    std::tr1::shared_ptr<const PackageIDSequence> entries((*env)[selection::SomeArbitraryVersion(
+    std::shared_ptr<const PackageIDSequence> entries((*env)[selection::SomeArbitraryVersion(
                 generator::Matches(*spec, MatchPackageOptions()) | filter::InstalledAtRoot(env->root()))]);
 
     if (entries->empty())
@@ -196,16 +196,16 @@ int do_has_version(const std::tr1::shared_ptr<Environment> & env)
     return return_code;
 }
 
-int do_best_version(const std::tr1::shared_ptr<Environment> & env)
+int do_best_version(const std::shared_ptr<Environment> & env)
 {
     int return_code(0);
 
     Context context("When performing best-version action from command line:");
 
     std::string query(*CommandLine::get_instance()->begin_parameters());
-    std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
+    std::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
                 parse_user_package_dep_spec(query, env.get(), UserPackageDepSpecOptions())));
-    std::tr1::shared_ptr<const PackageIDSequence> entries((*env)[selection::AllVersionsSorted(
+    std::shared_ptr<const PackageIDSequence> entries((*env)[selection::AllVersionsSorted(
                 generator::Matches(*spec, MatchPackageOptions()) | filter::InstalledAtRoot(env->root()))]);
 
     /* make built_with_use work for virtuals... icky... */
@@ -218,7 +218,7 @@ int do_best_version(const std::tr1::shared_ptr<Environment> & env)
             "' resolves to '" << **entries->last() << "', which is a virtual for '"
             << *(*entries->last())->virtual_for_key()->value() << "'. This will break with "
             "new style virtuals.";
-        std::tr1::shared_ptr<PackageIDSequence> new_entries(new PackageIDSequence);
+        std::shared_ptr<PackageIDSequence> new_entries(new PackageIDSequence);
         new_entries->push_back((*entries->last())->virtual_for_key()->value());
         entries = new_entries;
     }
@@ -237,16 +237,16 @@ int do_best_version(const std::tr1::shared_ptr<Environment> & env)
     return return_code;
 }
 
-int do_match(const std::tr1::shared_ptr<Environment> & env)
+int do_match(const std::shared_ptr<Environment> & env)
 {
     int return_code(0);
 
     Context context("When performing match action from command line:");
 
     std::string query(*CommandLine::get_instance()->begin_parameters());
-    std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
+    std::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
                 parse_user_package_dep_spec(query, env.get(), UserPackageDepSpecOptions())));
-    std::tr1::shared_ptr<const PackageIDSequence> entries((*env)[selection::AllVersionsSorted(
+    std::shared_ptr<const PackageIDSequence> entries((*env)[selection::AllVersionsSorted(
                 generator::Matches(*spec, MatchPackageOptions()) | filter::InstalledAtRoot(env->root()))]);
 
     while (! entries->empty())
@@ -258,7 +258,7 @@ int do_match(const std::tr1::shared_ptr<Environment> & env)
                 "' resolves to '" << **entries->last() << "', which is a virtual for '"
                 << *(*entries->last())->virtual_for_key()->value() << "'. This will break with "
                 "new style virtuals.";
-        std::tr1::shared_ptr<PackageIDSequence> new_entries(new PackageIDSequence);
+        std::shared_ptr<PackageIDSequence> new_entries(new PackageIDSequence);
         new_entries->push_back((*entries->last())->virtual_for_key()->value());
         entries = new_entries;
     }
@@ -280,7 +280,7 @@ int do_match(const std::tr1::shared_ptr<Environment> & env)
     return return_code;
 }
 
-int do_environment_variable(const std::tr1::shared_ptr<Environment> & env)
+int do_environment_variable(const std::shared_ptr<Environment> & env)
 {
     int return_code(0);
 
@@ -288,10 +288,10 @@ int do_environment_variable(const std::tr1::shared_ptr<Environment> & env)
 
     std::string spec_str(*CommandLine::get_instance()->begin_parameters());
     std::string var_str(* next(CommandLine::get_instance()->begin_parameters()));
-    std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
+    std::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
                 parse_user_package_dep_spec(spec_str, env.get(), UserPackageDepSpecOptions())));
 
-    std::tr1::shared_ptr<const PackageIDSequence> entries((*env)[selection::AllVersionsSorted(
+    std::shared_ptr<const PackageIDSequence> entries((*env)[selection::AllVersionsSorted(
                 generator::Matches(*spec, MatchPackageOptions()) | filter::InstalledAtRoot(env->root()))]);
 
     if (entries->empty())
@@ -314,14 +314,14 @@ int do_environment_variable(const std::tr1::shared_ptr<Environment> & env)
     return return_code;
 }
 
-int do_configuration_variable(const std::tr1::shared_ptr<Environment> & env)
+int do_configuration_variable(const std::shared_ptr<Environment> & env)
 {
     Context context("When performing configuration-variable action from command line:");
 
     std::string repo_str(*CommandLine::get_instance()->begin_parameters());
     std::string var_str(* next(CommandLine::get_instance()->begin_parameters()));
 
-    const std::tr1::shared_ptr<const Repository> repo(env->package_database()->fetch_repository(RepositoryName(repo_str)));
+    const std::shared_ptr<const Repository> repo(env->package_database()->fetch_repository(RepositoryName(repo_str)));
     Repository::MetadataConstIterator i(repo->find_metadata(var_str));
     if (i == repo->end_metadata())
         return 1;
@@ -350,11 +350,11 @@ int do_list_repository_formats()
     return return_code;
 }
 
-int do_list_sync_protocols(const std::tr1::shared_ptr<Environment> & env)
+int do_list_sync_protocols(const std::shared_ptr<Environment> & env)
 {
     std::map<std::string, std::string> syncers;
 
-    std::tr1::shared_ptr<const FSEntrySequence> sd(env->syncers_dirs());
+    std::shared_ptr<const FSEntrySequence> sd(env->syncers_dirs());
     for (FSEntrySequence::ConstIterator d(sd->begin()),
             d_end(sd->end()) ; d != d_end ; ++d)
     {
@@ -396,7 +396,7 @@ int do_list_sync_protocols(const std::tr1::shared_ptr<Environment> & env)
     return return_code;
 }
 
-int do_regenerate_cache(const std::tr1::shared_ptr<Environment> & env, bool installed)
+int do_regenerate_cache(const std::shared_ptr<Environment> & env, bool installed)
 {
     Context context("When performing cache regeneration action from command line:");
 

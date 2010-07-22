@@ -34,7 +34,7 @@ using namespace paludis;
 
 namespace
 {
-    std::string from_keys(const std::tr1::shared_ptr<const Map<std::string, std::string> > & m,
+    std::string from_keys(const std::shared_ptr<const Map<std::string, std::string> > & m,
             const std::string & k)
     {
         Map<std::string, std::string>::ConstIterator mm(m->find(k));
@@ -54,13 +54,13 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "cran_installed");
             keys->insert("library", "cran_installed_repository_TEST_dir/library");
             keys->insert("location", "cran_installed_repository_TEST_dir/repo1");
             keys->insert("builddir", "cran_installed_repository_TEST_dir/tmp");
-            std::tr1::shared_ptr<Repository> repo(CRANInstalledRepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(CRANInstalledRepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             TEST_CHECK(repo->has_category_named(CategoryNamePart("cran")));
         }
     } test_cran_repository_installed_packages;

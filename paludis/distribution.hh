@@ -27,7 +27,7 @@
 #include <paludis/util/named_value.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/singleton.hh>
-#include <tr1/memory>
+#include <memory>
 
 /** \file
  * Declarations for distributions.
@@ -126,7 +126,7 @@ namespace paludis
             /**
              * Fetch a distribution from a named string.
              */
-            std::tr1::shared_ptr<const Distribution> distribution_from_string(const std::string &) const;
+            std::shared_ptr<const Distribution> distribution_from_string(const std::string &) const;
     };
 
     /**
@@ -153,7 +153,7 @@ namespace paludis
             /**
              * Fetch our data from a given distribution.
              */
-            const std::tr1::shared_ptr<const Data_> data_from_distribution(
+            const std::shared_ptr<const Data_> data_from_distribution(
                     const Distribution &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
     };

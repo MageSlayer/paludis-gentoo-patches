@@ -28,7 +28,7 @@ using namespace paludis;
 
 namespace
 {
-    int virtual_importance(const Environment * const, const std::tr1::function<std::string (const std::string &)> & f)
+    int virtual_importance(const Environment * const, const std::function<std::string (const std::string &)> & f)
     {
         if (! f("importance").empty())
             return destringify<int>(f("importance"));
@@ -48,7 +48,7 @@ namespace paludis
     void register_repositories<repository_groups::virtuals>(const repository_groups::virtuals * const,
             RepositoryFactory * const factory)
     {
-        std::tr1::shared_ptr<Set<std::string> > virtuals_formats(new Set<std::string>);
+        std::shared_ptr<Set<std::string> > virtuals_formats(new Set<std::string>);
         virtuals_formats->insert("virtuals");
 
         factory->add_repository_format(
@@ -59,7 +59,7 @@ namespace paludis
                 &VirtualsRepository::repository_factory_dependencies
                 );
 
-        std::tr1::shared_ptr<Set<std::string> > installed_virtuals_formats(new Set<std::string>);
+        std::shared_ptr<Set<std::string> > installed_virtuals_formats(new Set<std::string>);
         installed_virtuals_formats->insert("installed_virtuals");
         installed_virtuals_formats->insert("installed-virtuals");
 

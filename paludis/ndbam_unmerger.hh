@@ -27,7 +27,7 @@
 #include <paludis/unmerger.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/package_id-fwd.hh>
-#include <tr1/functional>
+#include <functional>
 
 namespace paludis
 {
@@ -52,10 +52,10 @@ namespace paludis
         NamedValue<n::config_protect_mask, std::string> config_protect_mask;
         NamedValue<n::contents_file, FSEntry> contents_file;
         NamedValue<n::environment, const Environment *> environment;
-        NamedValue<n::ignore, const std::tr1::function<bool (const FSEntry &)> > ignore;
+        NamedValue<n::ignore, const std::function<bool (const FSEntry &)> > ignore;
         NamedValue<n::ndbam, const NDBAM *> ndbam;
-        NamedValue<n::output_manager, std::tr1::shared_ptr<OutputManager> > output_manager;
-        NamedValue<n::package_id, std::tr1::shared_ptr<const PackageID> > package_id;
+        NamedValue<n::output_manager, std::shared_ptr<OutputManager> > output_manager;
+        NamedValue<n::package_id, std::shared_ptr<const PackageID> > package_id;
         NamedValue<n::root, FSEntry> root;
     };
 
@@ -79,9 +79,9 @@ namespace paludis
         private:
             Implementation<NDBAMUnmerger> * _imp;
 
-            void _add_file(const std::tr1::shared_ptr<const ContentsEntry> &);
-            void _add_dir(const std::tr1::shared_ptr<const ContentsEntry> &);
-            void _add_sym(const std::tr1::shared_ptr<const ContentsEntry> &);
+            void _add_file(const std::shared_ptr<const ContentsEntry> &);
+            void _add_dir(const std::shared_ptr<const ContentsEntry> &);
+            void _add_sym(const std::shared_ptr<const ContentsEntry> &);
 
         protected:
             bool config_protected(const FSEntry &) const;
@@ -91,10 +91,10 @@ namespace paludis
 
             void display(const std::string &) const;
 
-            bool check_file(const std::tr1::shared_ptr<const ContentsEntry> &) const;
-            bool check_dir(const std::tr1::shared_ptr<const ContentsEntry> &) const;
-            bool check_sym(const std::tr1::shared_ptr<const ContentsEntry> &) const;
-            bool check_misc(const std::tr1::shared_ptr<const ContentsEntry> &) const;
+            bool check_file(const std::shared_ptr<const ContentsEntry> &) const;
+            bool check_dir(const std::shared_ptr<const ContentsEntry> &) const;
+            bool check_sym(const std::shared_ptr<const ContentsEntry> &) const;
+            bool check_misc(const std::shared_ptr<const ContentsEntry> &) const;
 
         public:
             ///\name Basic operations

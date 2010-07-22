@@ -27,7 +27,7 @@ using namespace paludis;
 using namespace paludis::spec_tree_internals;
 
 template <typename Tree_, typename Item_>
-LeafNode<Tree_, Item_>::LeafNode(const std::tr1::shared_ptr<const Item_> & i) :
+LeafNode<Tree_, Item_>::LeafNode(const std::shared_ptr<const Item_> & i) :
     _spec(i)
 {
 }
@@ -40,7 +40,7 @@ LeafNode<Tree_, Item_>::operator LeafNode<OtherTree_, Item_> () const
 }
 
 template <typename Tree_, typename Item_>
-const std::tr1::shared_ptr<const Item_>
+const std::shared_ptr<const Item_>
 LeafNode<Tree_, Item_>::spec() const
 {
     return _spec;
@@ -68,17 +68,17 @@ BasicInnerNode<Tree_>::end() const
 
 template <typename Tree_>
 void
-BasicInnerNode<Tree_>::append_node(const std::tr1::shared_ptr<const BasicNode<Tree_> > & t)
+BasicInnerNode<Tree_>::append_node(const std::shared_ptr<const BasicNode<Tree_> > & t)
 {
     _child_list->push_back(t);
 }
 
 template <typename Tree_>
 template <typename T_>
-const std::tr1::shared_ptr<typename Tree_::template NodeType<T_>::Type>
-BasicInnerNode<Tree_>::append(const std::tr1::shared_ptr<const T_> & t)
+const std::shared_ptr<typename Tree_::template NodeType<T_>::Type>
+BasicInnerNode<Tree_>::append(const std::shared_ptr<const T_> & t)
 {
-    const std::tr1::shared_ptr<typename Tree_::template NodeType<T_>::Type> tt(
+    const std::shared_ptr<typename Tree_::template NodeType<T_>::Type> tt(
             make_shared_ptr(new typename Tree_::template NodeType<T_>::Type(t)));
     append_node(tt);
     return tt;
@@ -86,46 +86,46 @@ BasicInnerNode<Tree_>::append(const std::tr1::shared_ptr<const T_> & t)
 
 template <typename Tree_>
 template <typename T_>
-const std::tr1::shared_ptr<typename Tree_::template NodeType<T_>::Type>
-BasicInnerNode<Tree_>::append(const std::tr1::shared_ptr<T_> & t)
+const std::shared_ptr<typename Tree_::template NodeType<T_>::Type>
+BasicInnerNode<Tree_>::append(const std::shared_ptr<T_> & t)
 {
-    return append(std::tr1::shared_ptr<const T_>(t));
+    return append(std::shared_ptr<const T_>(t));
 }
 
 template <typename Tree_, typename Item_>
-InnerNode<Tree_, Item_>::InnerNode(const std::tr1::shared_ptr<const Item_> & i) :
+InnerNode<Tree_, Item_>::InnerNode(const std::shared_ptr<const Item_> & i) :
     _spec(i)
 {
 }
 
 template <typename Tree_, typename Item_>
-const std::tr1::shared_ptr<const Item_>
+const std::shared_ptr<const Item_>
 InnerNode<Tree_, Item_>::spec() const
 {
     return _spec;
 }
 
 template <typename NodeList_, typename RootNode_>
-SpecTree<NodeList_, RootNode_>::SpecTree(const std::tr1::shared_ptr<RootNode_> & spec) :
+SpecTree<NodeList_, RootNode_>::SpecTree(const std::shared_ptr<RootNode_> & spec) :
     _root(make_shared_ptr(new typename InnerNodeType<RootNode_>::Type(spec)))
 {
 }
 
 template <typename NodeList_, typename RootNode_>
-SpecTree<NodeList_, RootNode_>::SpecTree(const std::tr1::shared_ptr<const RootNode_> & spec) :
+SpecTree<NodeList_, RootNode_>::SpecTree(const std::shared_ptr<const RootNode_> & spec) :
     _root(make_shared_ptr(new typename InnerNodeType<RootNode_>::Type(spec)))
 {
 }
 
 template <typename NodeList_, typename RootNode_>
-const std::tr1::shared_ptr<typename SpecTree<NodeList_, RootNode_>::template InnerNodeType<RootNode_>::Type>
+const std::shared_ptr<typename SpecTree<NodeList_, RootNode_>::template InnerNodeType<RootNode_>::Type>
 SpecTree<NodeList_, RootNode_>::root()
 {
     return _root;
 }
 
 template <typename NodeList_, typename RootNode_>
-const std::tr1::shared_ptr<const typename SpecTree<NodeList_, RootNode_>::template InnerNodeType<RootNode_>::Type>
+const std::shared_ptr<const typename SpecTree<NodeList_, RootNode_>::template InnerNodeType<RootNode_>::Type>
 SpecTree<NodeList_, RootNode_>::root() const
 {
     return _root;
@@ -138,7 +138,7 @@ namespace
     {
         InnerNode<OtherTree_, Item_> result;
 
-        InnerNodeCopier(const std::tr1::shared_ptr<const Item_> & i) :
+        InnerNodeCopier(const std::shared_ptr<const Item_> & i) :
             result(i)
         {
         }
@@ -171,7 +171,7 @@ namespace paludis
     template <typename T_>
     struct WrappedForwardIteratorTraits<BasicInnerNodeConstIteratorTag<T_> >
     {
-        typedef typename Sequence<std::tr1::shared_ptr<const BasicNode<T_> > >::ConstIterator UnderlyingIterator;
+        typedef typename Sequence<std::shared_ptr<const BasicNode<T_> > >::ConstIterator UnderlyingIterator;
     };
 }
 
@@ -242,19 +242,19 @@ template class SpecTree<MakeTypeList<
 
 /* GenericSpecTree */
 
-template const std::tr1::shared_ptr<GenericSpecTree::NodeType<PackageDepSpec>::Type>
-    BasicInnerNode<GenericSpecTree>::append<PackageDepSpec>(const std::tr1::shared_ptr<const PackageDepSpec> &);
-template const std::tr1::shared_ptr<GenericSpecTree::NodeType<PackageDepSpec>::Type>
-    BasicInnerNode<GenericSpecTree>::append<PackageDepSpec>(const std::tr1::shared_ptr<PackageDepSpec> &);
+template const std::shared_ptr<GenericSpecTree::NodeType<PackageDepSpec>::Type>
+    BasicInnerNode<GenericSpecTree>::append<PackageDepSpec>(const std::shared_ptr<const PackageDepSpec> &);
+template const std::shared_ptr<GenericSpecTree::NodeType<PackageDepSpec>::Type>
+    BasicInnerNode<GenericSpecTree>::append<PackageDepSpec>(const std::shared_ptr<PackageDepSpec> &);
 
-template const std::tr1::shared_ptr<GenericSpecTree::NodeType<NamedSetDepSpec>::Type>
-    BasicInnerNode<GenericSpecTree>::append<NamedSetDepSpec>(const std::tr1::shared_ptr<const NamedSetDepSpec> &);
-template const std::tr1::shared_ptr<GenericSpecTree::NodeType<NamedSetDepSpec>::Type>
-    BasicInnerNode<GenericSpecTree>::append<NamedSetDepSpec>(const std::tr1::shared_ptr<NamedSetDepSpec> &);
+template const std::shared_ptr<GenericSpecTree::NodeType<NamedSetDepSpec>::Type>
+    BasicInnerNode<GenericSpecTree>::append<NamedSetDepSpec>(const std::shared_ptr<const NamedSetDepSpec> &);
+template const std::shared_ptr<GenericSpecTree::NodeType<NamedSetDepSpec>::Type>
+    BasicInnerNode<GenericSpecTree>::append<NamedSetDepSpec>(const std::shared_ptr<NamedSetDepSpec> &);
 
 template class BasicInnerNode<GenericSpecTree>;
 template class WrappedForwardIterator<BasicInnerNode<GenericSpecTree>::ConstIteratorTag,
-         const std::tr1::shared_ptr<const BasicNode<GenericSpecTree> > >;
+         const std::shared_ptr<const BasicNode<GenericSpecTree> > >;
 
 template class LeafNode<GenericSpecTree, PackageDepSpec>;
 template class LeafNode<GenericSpecTree, BlockDepSpec>;
@@ -272,45 +272,45 @@ template class InnerNode<GenericSpecTree, ConditionalDepSpec>;
 
 /* DependencySpecTree */
 
-template const std::tr1::shared_ptr<DependencySpecTree::NodeType<PackageDepSpec>::Type>
-    BasicInnerNode<DependencySpecTree>::append<PackageDepSpec>(const std::tr1::shared_ptr<const PackageDepSpec> &);
-template const std::tr1::shared_ptr<DependencySpecTree::NodeType<PackageDepSpec>::Type>
-    BasicInnerNode<DependencySpecTree>::append<PackageDepSpec>(const std::tr1::shared_ptr<PackageDepSpec> &);
+template const std::shared_ptr<DependencySpecTree::NodeType<PackageDepSpec>::Type>
+    BasicInnerNode<DependencySpecTree>::append<PackageDepSpec>(const std::shared_ptr<const PackageDepSpec> &);
+template const std::shared_ptr<DependencySpecTree::NodeType<PackageDepSpec>::Type>
+    BasicInnerNode<DependencySpecTree>::append<PackageDepSpec>(const std::shared_ptr<PackageDepSpec> &);
 
-template const std::tr1::shared_ptr<DependencySpecTree::NodeType<NamedSetDepSpec>::Type>
-    BasicInnerNode<DependencySpecTree>::append<NamedSetDepSpec>(const std::tr1::shared_ptr<const NamedSetDepSpec> &);
-template const std::tr1::shared_ptr<DependencySpecTree::NodeType<NamedSetDepSpec>::Type>
-    BasicInnerNode<DependencySpecTree>::append<NamedSetDepSpec>(const std::tr1::shared_ptr<NamedSetDepSpec> &);
+template const std::shared_ptr<DependencySpecTree::NodeType<NamedSetDepSpec>::Type>
+    BasicInnerNode<DependencySpecTree>::append<NamedSetDepSpec>(const std::shared_ptr<const NamedSetDepSpec> &);
+template const std::shared_ptr<DependencySpecTree::NodeType<NamedSetDepSpec>::Type>
+    BasicInnerNode<DependencySpecTree>::append<NamedSetDepSpec>(const std::shared_ptr<NamedSetDepSpec> &);
 
-template const std::tr1::shared_ptr<DependencySpecTree::NodeType<BlockDepSpec>::Type>
-    BasicInnerNode<DependencySpecTree>::append<BlockDepSpec>(const std::tr1::shared_ptr<const BlockDepSpec> &);
-template const std::tr1::shared_ptr<DependencySpecTree::NodeType<BlockDepSpec>::Type>
-    BasicInnerNode<DependencySpecTree>::append<BlockDepSpec>(const std::tr1::shared_ptr<BlockDepSpec> &);
+template const std::shared_ptr<DependencySpecTree::NodeType<BlockDepSpec>::Type>
+    BasicInnerNode<DependencySpecTree>::append<BlockDepSpec>(const std::shared_ptr<const BlockDepSpec> &);
+template const std::shared_ptr<DependencySpecTree::NodeType<BlockDepSpec>::Type>
+    BasicInnerNode<DependencySpecTree>::append<BlockDepSpec>(const std::shared_ptr<BlockDepSpec> &);
 
-template const std::tr1::shared_ptr<DependencySpecTree::NodeType<DependenciesLabelsDepSpec>::Type>
-    BasicInnerNode<DependencySpecTree>::append<DependenciesLabelsDepSpec>(const std::tr1::shared_ptr<const DependenciesLabelsDepSpec> &);
-template const std::tr1::shared_ptr<DependencySpecTree::NodeType<DependenciesLabelsDepSpec>::Type>
-    BasicInnerNode<DependencySpecTree>::append<DependenciesLabelsDepSpec>(const std::tr1::shared_ptr<DependenciesLabelsDepSpec> &);
+template const std::shared_ptr<DependencySpecTree::NodeType<DependenciesLabelsDepSpec>::Type>
+    BasicInnerNode<DependencySpecTree>::append<DependenciesLabelsDepSpec>(const std::shared_ptr<const DependenciesLabelsDepSpec> &);
+template const std::shared_ptr<DependencySpecTree::NodeType<DependenciesLabelsDepSpec>::Type>
+    BasicInnerNode<DependencySpecTree>::append<DependenciesLabelsDepSpec>(const std::shared_ptr<DependenciesLabelsDepSpec> &);
 
-template const std::tr1::shared_ptr<DependencySpecTree::NodeType<AnyDepSpec>::Type>
-    BasicInnerNode<DependencySpecTree>::append<AnyDepSpec>(const std::tr1::shared_ptr<const AnyDepSpec> &);
-template const std::tr1::shared_ptr<DependencySpecTree::NodeType<AnyDepSpec>::Type>
-    BasicInnerNode<DependencySpecTree>::append<AnyDepSpec>(const std::tr1::shared_ptr<AnyDepSpec> &);
+template const std::shared_ptr<DependencySpecTree::NodeType<AnyDepSpec>::Type>
+    BasicInnerNode<DependencySpecTree>::append<AnyDepSpec>(const std::shared_ptr<const AnyDepSpec> &);
+template const std::shared_ptr<DependencySpecTree::NodeType<AnyDepSpec>::Type>
+    BasicInnerNode<DependencySpecTree>::append<AnyDepSpec>(const std::shared_ptr<AnyDepSpec> &);
 
-template const std::tr1::shared_ptr<DependencySpecTree::NodeType<AllDepSpec>::Type>
-    BasicInnerNode<DependencySpecTree>::append<AllDepSpec>(const std::tr1::shared_ptr<const AllDepSpec> &);
-template const std::tr1::shared_ptr<DependencySpecTree::NodeType<AllDepSpec>::Type>
-    BasicInnerNode<DependencySpecTree>::append<AllDepSpec>(const std::tr1::shared_ptr<AllDepSpec> &);
+template const std::shared_ptr<DependencySpecTree::NodeType<AllDepSpec>::Type>
+    BasicInnerNode<DependencySpecTree>::append<AllDepSpec>(const std::shared_ptr<const AllDepSpec> &);
+template const std::shared_ptr<DependencySpecTree::NodeType<AllDepSpec>::Type>
+    BasicInnerNode<DependencySpecTree>::append<AllDepSpec>(const std::shared_ptr<AllDepSpec> &);
 
-template const std::tr1::shared_ptr<DependencySpecTree::NodeType<ConditionalDepSpec>::Type>
-    BasicInnerNode<DependencySpecTree>::append<ConditionalDepSpec>(const std::tr1::shared_ptr<const ConditionalDepSpec> &);
-template const std::tr1::shared_ptr<DependencySpecTree::NodeType<ConditionalDepSpec>::Type>
-    BasicInnerNode<DependencySpecTree>::append<ConditionalDepSpec>(const std::tr1::shared_ptr<ConditionalDepSpec> &);
+template const std::shared_ptr<DependencySpecTree::NodeType<ConditionalDepSpec>::Type>
+    BasicInnerNode<DependencySpecTree>::append<ConditionalDepSpec>(const std::shared_ptr<const ConditionalDepSpec> &);
+template const std::shared_ptr<DependencySpecTree::NodeType<ConditionalDepSpec>::Type>
+    BasicInnerNode<DependencySpecTree>::append<ConditionalDepSpec>(const std::shared_ptr<ConditionalDepSpec> &);
 
 
 template class BasicInnerNode<DependencySpecTree>;
 template class WrappedForwardIterator<BasicInnerNode<DependencySpecTree>::ConstIteratorTag,
-         const std::tr1::shared_ptr<const BasicNode<DependencySpecTree> > >;
+         const std::shared_ptr<const BasicNode<DependencySpecTree> > >;
 
 template class LeafNode<DependencySpecTree, PackageDepSpec>;
 template class LeafNode<DependencySpecTree, BlockDepSpec>;
@@ -322,53 +322,53 @@ template class InnerNode<DependencySpecTree, ConditionalDepSpec>;
 
 /* SetSpecTree */
 
-template const std::tr1::shared_ptr<SetSpecTree::NodeType<PackageDepSpec>::Type>
-    BasicInnerNode<SetSpecTree>::append<PackageDepSpec>(const std::tr1::shared_ptr<const PackageDepSpec> &);
-template const std::tr1::shared_ptr<SetSpecTree::NodeType<PackageDepSpec>::Type>
-    BasicInnerNode<SetSpecTree>::append<PackageDepSpec>(const std::tr1::shared_ptr<PackageDepSpec> &);
+template const std::shared_ptr<SetSpecTree::NodeType<PackageDepSpec>::Type>
+    BasicInnerNode<SetSpecTree>::append<PackageDepSpec>(const std::shared_ptr<const PackageDepSpec> &);
+template const std::shared_ptr<SetSpecTree::NodeType<PackageDepSpec>::Type>
+    BasicInnerNode<SetSpecTree>::append<PackageDepSpec>(const std::shared_ptr<PackageDepSpec> &);
 
-template const std::tr1::shared_ptr<SetSpecTree::NodeType<NamedSetDepSpec>::Type>
-    BasicInnerNode<SetSpecTree>::append<NamedSetDepSpec>(const std::tr1::shared_ptr<const NamedSetDepSpec> &);
-template const std::tr1::shared_ptr<SetSpecTree::NodeType<NamedSetDepSpec>::Type>
-    BasicInnerNode<SetSpecTree>::append<NamedSetDepSpec>(const std::tr1::shared_ptr<NamedSetDepSpec> &);
+template const std::shared_ptr<SetSpecTree::NodeType<NamedSetDepSpec>::Type>
+    BasicInnerNode<SetSpecTree>::append<NamedSetDepSpec>(const std::shared_ptr<const NamedSetDepSpec> &);
+template const std::shared_ptr<SetSpecTree::NodeType<NamedSetDepSpec>::Type>
+    BasicInnerNode<SetSpecTree>::append<NamedSetDepSpec>(const std::shared_ptr<NamedSetDepSpec> &);
 
-template const std::tr1::shared_ptr<SetSpecTree::NodeType<AllDepSpec>::Type>
-    BasicInnerNode<SetSpecTree>::append<AllDepSpec>(const std::tr1::shared_ptr<const AllDepSpec> &);
-template const std::tr1::shared_ptr<SetSpecTree::NodeType<AllDepSpec>::Type>
-    BasicInnerNode<SetSpecTree>::append<AllDepSpec>(const std::tr1::shared_ptr<AllDepSpec> &);
+template const std::shared_ptr<SetSpecTree::NodeType<AllDepSpec>::Type>
+    BasicInnerNode<SetSpecTree>::append<AllDepSpec>(const std::shared_ptr<const AllDepSpec> &);
+template const std::shared_ptr<SetSpecTree::NodeType<AllDepSpec>::Type>
+    BasicInnerNode<SetSpecTree>::append<AllDepSpec>(const std::shared_ptr<AllDepSpec> &);
 
 template class BasicInnerNode<SetSpecTree>;
 template class WrappedForwardIterator<BasicInnerNode<SetSpecTree>::ConstIteratorTag,
-         const std::tr1::shared_ptr<const BasicNode<SetSpecTree> > >;
+         const std::shared_ptr<const BasicNode<SetSpecTree> > >;
 template class LeafNode<SetSpecTree, PackageDepSpec>;
 template class LeafNode<SetSpecTree, NamedSetDepSpec>;
 template class InnerNode<SetSpecTree, AllDepSpec>;
 
 /* PlainTextSpecTree */
 
-template const std::tr1::shared_ptr<PlainTextSpecTree::NodeType<PlainTextDepSpec>::Type>
-    BasicInnerNode<PlainTextSpecTree>::append<PlainTextDepSpec>(const std::tr1::shared_ptr<const PlainTextDepSpec> &);
-template const std::tr1::shared_ptr<PlainTextSpecTree::NodeType<PlainTextDepSpec>::Type>
-    BasicInnerNode<PlainTextSpecTree>::append<PlainTextDepSpec>(const std::tr1::shared_ptr<PlainTextDepSpec> &);
+template const std::shared_ptr<PlainTextSpecTree::NodeType<PlainTextDepSpec>::Type>
+    BasicInnerNode<PlainTextSpecTree>::append<PlainTextDepSpec>(const std::shared_ptr<const PlainTextDepSpec> &);
+template const std::shared_ptr<PlainTextSpecTree::NodeType<PlainTextDepSpec>::Type>
+    BasicInnerNode<PlainTextSpecTree>::append<PlainTextDepSpec>(const std::shared_ptr<PlainTextDepSpec> &);
 
-template const std::tr1::shared_ptr<PlainTextSpecTree::NodeType<PlainTextLabelDepSpec>::Type>
-    BasicInnerNode<PlainTextSpecTree>::append<PlainTextLabelDepSpec>(const std::tr1::shared_ptr<const PlainTextLabelDepSpec> &);
-template const std::tr1::shared_ptr<PlainTextSpecTree::NodeType<PlainTextLabelDepSpec>::Type>
-    BasicInnerNode<PlainTextSpecTree>::append<PlainTextLabelDepSpec>(const std::tr1::shared_ptr<PlainTextLabelDepSpec> &);
+template const std::shared_ptr<PlainTextSpecTree::NodeType<PlainTextLabelDepSpec>::Type>
+    BasicInnerNode<PlainTextSpecTree>::append<PlainTextLabelDepSpec>(const std::shared_ptr<const PlainTextLabelDepSpec> &);
+template const std::shared_ptr<PlainTextSpecTree::NodeType<PlainTextLabelDepSpec>::Type>
+    BasicInnerNode<PlainTextSpecTree>::append<PlainTextLabelDepSpec>(const std::shared_ptr<PlainTextLabelDepSpec> &);
 
-template const std::tr1::shared_ptr<PlainTextSpecTree::NodeType<AllDepSpec>::Type>
-    BasicInnerNode<PlainTextSpecTree>::append<AllDepSpec>(const std::tr1::shared_ptr<const AllDepSpec> &);
-template const std::tr1::shared_ptr<PlainTextSpecTree::NodeType<AllDepSpec>::Type>
-    BasicInnerNode<PlainTextSpecTree>::append<AllDepSpec>(const std::tr1::shared_ptr<AllDepSpec> &);
+template const std::shared_ptr<PlainTextSpecTree::NodeType<AllDepSpec>::Type>
+    BasicInnerNode<PlainTextSpecTree>::append<AllDepSpec>(const std::shared_ptr<const AllDepSpec> &);
+template const std::shared_ptr<PlainTextSpecTree::NodeType<AllDepSpec>::Type>
+    BasicInnerNode<PlainTextSpecTree>::append<AllDepSpec>(const std::shared_ptr<AllDepSpec> &);
 
-template const std::tr1::shared_ptr<PlainTextSpecTree::NodeType<ConditionalDepSpec>::Type>
-    BasicInnerNode<PlainTextSpecTree>::append<ConditionalDepSpec>(const std::tr1::shared_ptr<const ConditionalDepSpec> &);
-template const std::tr1::shared_ptr<PlainTextSpecTree::NodeType<ConditionalDepSpec>::Type>
-    BasicInnerNode<PlainTextSpecTree>::append<ConditionalDepSpec>(const std::tr1::shared_ptr<ConditionalDepSpec> &);
+template const std::shared_ptr<PlainTextSpecTree::NodeType<ConditionalDepSpec>::Type>
+    BasicInnerNode<PlainTextSpecTree>::append<ConditionalDepSpec>(const std::shared_ptr<const ConditionalDepSpec> &);
+template const std::shared_ptr<PlainTextSpecTree::NodeType<ConditionalDepSpec>::Type>
+    BasicInnerNode<PlainTextSpecTree>::append<ConditionalDepSpec>(const std::shared_ptr<ConditionalDepSpec> &);
 
 template class BasicInnerNode<PlainTextSpecTree>;
 template class WrappedForwardIterator<BasicInnerNode<PlainTextSpecTree>::ConstIteratorTag,
-         const std::tr1::shared_ptr<const BasicNode<PlainTextSpecTree> > >;
+         const std::shared_ptr<const BasicNode<PlainTextSpecTree> > >;
 template class LeafNode<PlainTextSpecTree, PlainTextDepSpec>;
 template class LeafNode<PlainTextSpecTree, PlainTextLabelDepSpec>;
 template class InnerNode<PlainTextSpecTree, AllDepSpec>;
@@ -376,77 +376,77 @@ template class InnerNode<PlainTextSpecTree, ConditionalDepSpec>;
 
 /* ProvideSpecTree */
 
-template const std::tr1::shared_ptr<ProvideSpecTree::NodeType<PackageDepSpec>::Type>
-    BasicInnerNode<ProvideSpecTree>::append<PackageDepSpec>(const std::tr1::shared_ptr<const PackageDepSpec> &);
-template const std::tr1::shared_ptr<ProvideSpecTree::NodeType<PackageDepSpec>::Type>
-    BasicInnerNode<ProvideSpecTree>::append<PackageDepSpec>(const std::tr1::shared_ptr<PackageDepSpec> &);
+template const std::shared_ptr<ProvideSpecTree::NodeType<PackageDepSpec>::Type>
+    BasicInnerNode<ProvideSpecTree>::append<PackageDepSpec>(const std::shared_ptr<const PackageDepSpec> &);
+template const std::shared_ptr<ProvideSpecTree::NodeType<PackageDepSpec>::Type>
+    BasicInnerNode<ProvideSpecTree>::append<PackageDepSpec>(const std::shared_ptr<PackageDepSpec> &);
 
-template const std::tr1::shared_ptr<ProvideSpecTree::NodeType<ConditionalDepSpec>::Type>
-    BasicInnerNode<ProvideSpecTree>::append<ConditionalDepSpec>(const std::tr1::shared_ptr<const ConditionalDepSpec> &);
-template const std::tr1::shared_ptr<ProvideSpecTree::NodeType<ConditionalDepSpec>::Type>
-    BasicInnerNode<ProvideSpecTree>::append<ConditionalDepSpec>(const std::tr1::shared_ptr<ConditionalDepSpec> &);
+template const std::shared_ptr<ProvideSpecTree::NodeType<ConditionalDepSpec>::Type>
+    BasicInnerNode<ProvideSpecTree>::append<ConditionalDepSpec>(const std::shared_ptr<const ConditionalDepSpec> &);
+template const std::shared_ptr<ProvideSpecTree::NodeType<ConditionalDepSpec>::Type>
+    BasicInnerNode<ProvideSpecTree>::append<ConditionalDepSpec>(const std::shared_ptr<ConditionalDepSpec> &);
 
-template const std::tr1::shared_ptr<ProvideSpecTree::NodeType<AllDepSpec>::Type>
-    BasicInnerNode<ProvideSpecTree>::append<AllDepSpec>(const std::tr1::shared_ptr<const AllDepSpec> &);
-template const std::tr1::shared_ptr<ProvideSpecTree::NodeType<AllDepSpec>::Type>
-    BasicInnerNode<ProvideSpecTree>::append<AllDepSpec>(const std::tr1::shared_ptr<AllDepSpec> &);
+template const std::shared_ptr<ProvideSpecTree::NodeType<AllDepSpec>::Type>
+    BasicInnerNode<ProvideSpecTree>::append<AllDepSpec>(const std::shared_ptr<const AllDepSpec> &);
+template const std::shared_ptr<ProvideSpecTree::NodeType<AllDepSpec>::Type>
+    BasicInnerNode<ProvideSpecTree>::append<AllDepSpec>(const std::shared_ptr<AllDepSpec> &);
 
 template class BasicInnerNode<ProvideSpecTree>;
 template class WrappedForwardIterator<BasicInnerNode<ProvideSpecTree>::ConstIteratorTag,
-         const std::tr1::shared_ptr<const BasicNode<ProvideSpecTree> > >;
+         const std::shared_ptr<const BasicNode<ProvideSpecTree> > >;
 template class LeafNode<ProvideSpecTree, PackageDepSpec>;
 template class InnerNode<ProvideSpecTree, ConditionalDepSpec>;
 template class InnerNode<ProvideSpecTree, AllDepSpec>;
 
 /* SimpleURISpecTree */
 
-template const std::tr1::shared_ptr<SimpleURISpecTree::NodeType<SimpleURIDepSpec>::Type>
-    BasicInnerNode<SimpleURISpecTree>::append<SimpleURIDepSpec>(const std::tr1::shared_ptr<const SimpleURIDepSpec> &);
-template const std::tr1::shared_ptr<SimpleURISpecTree::NodeType<SimpleURIDepSpec>::Type>
-    BasicInnerNode<SimpleURISpecTree>::append<SimpleURIDepSpec>(const std::tr1::shared_ptr<SimpleURIDepSpec> &);
+template const std::shared_ptr<SimpleURISpecTree::NodeType<SimpleURIDepSpec>::Type>
+    BasicInnerNode<SimpleURISpecTree>::append<SimpleURIDepSpec>(const std::shared_ptr<const SimpleURIDepSpec> &);
+template const std::shared_ptr<SimpleURISpecTree::NodeType<SimpleURIDepSpec>::Type>
+    BasicInnerNode<SimpleURISpecTree>::append<SimpleURIDepSpec>(const std::shared_ptr<SimpleURIDepSpec> &);
 
-template const std::tr1::shared_ptr<SimpleURISpecTree::NodeType<ConditionalDepSpec>::Type>
-    BasicInnerNode<SimpleURISpecTree>::append<ConditionalDepSpec>(const std::tr1::shared_ptr<const ConditionalDepSpec> &);
-template const std::tr1::shared_ptr<SimpleURISpecTree::NodeType<ConditionalDepSpec>::Type>
-    BasicInnerNode<SimpleURISpecTree>::append<ConditionalDepSpec>(const std::tr1::shared_ptr<ConditionalDepSpec> &);
+template const std::shared_ptr<SimpleURISpecTree::NodeType<ConditionalDepSpec>::Type>
+    BasicInnerNode<SimpleURISpecTree>::append<ConditionalDepSpec>(const std::shared_ptr<const ConditionalDepSpec> &);
+template const std::shared_ptr<SimpleURISpecTree::NodeType<ConditionalDepSpec>::Type>
+    BasicInnerNode<SimpleURISpecTree>::append<ConditionalDepSpec>(const std::shared_ptr<ConditionalDepSpec> &);
 
-template const std::tr1::shared_ptr<SimpleURISpecTree::NodeType<AllDepSpec>::Type>
-    BasicInnerNode<SimpleURISpecTree>::append<AllDepSpec>(const std::tr1::shared_ptr<const AllDepSpec> &);
-template const std::tr1::shared_ptr<SimpleURISpecTree::NodeType<AllDepSpec>::Type>
-    BasicInnerNode<SimpleURISpecTree>::append<AllDepSpec>(const std::tr1::shared_ptr<AllDepSpec> &);
+template const std::shared_ptr<SimpleURISpecTree::NodeType<AllDepSpec>::Type>
+    BasicInnerNode<SimpleURISpecTree>::append<AllDepSpec>(const std::shared_ptr<const AllDepSpec> &);
+template const std::shared_ptr<SimpleURISpecTree::NodeType<AllDepSpec>::Type>
+    BasicInnerNode<SimpleURISpecTree>::append<AllDepSpec>(const std::shared_ptr<AllDepSpec> &);
 
 template class BasicInnerNode<SimpleURISpecTree>;
 template class WrappedForwardIterator<BasicInnerNode<SimpleURISpecTree>::ConstIteratorTag,
-         const std::tr1::shared_ptr<const BasicNode<SimpleURISpecTree> > >;
+         const std::shared_ptr<const BasicNode<SimpleURISpecTree> > >;
 template class LeafNode<SimpleURISpecTree, SimpleURIDepSpec>;
 template class InnerNode<SimpleURISpecTree, AllDepSpec>;
 template class InnerNode<SimpleURISpecTree, ConditionalDepSpec>;
 
 /* FetchableURISpecTree */
 
-template const std::tr1::shared_ptr<FetchableURISpecTree::NodeType<FetchableURIDepSpec>::Type>
-    BasicInnerNode<FetchableURISpecTree>::append<FetchableURIDepSpec>(const std::tr1::shared_ptr<const FetchableURIDepSpec> &);
-template const std::tr1::shared_ptr<FetchableURISpecTree::NodeType<FetchableURIDepSpec>::Type>
-    BasicInnerNode<FetchableURISpecTree>::append<FetchableURIDepSpec>(const std::tr1::shared_ptr<FetchableURIDepSpec> &);
+template const std::shared_ptr<FetchableURISpecTree::NodeType<FetchableURIDepSpec>::Type>
+    BasicInnerNode<FetchableURISpecTree>::append<FetchableURIDepSpec>(const std::shared_ptr<const FetchableURIDepSpec> &);
+template const std::shared_ptr<FetchableURISpecTree::NodeType<FetchableURIDepSpec>::Type>
+    BasicInnerNode<FetchableURISpecTree>::append<FetchableURIDepSpec>(const std::shared_ptr<FetchableURIDepSpec> &);
 
-template const std::tr1::shared_ptr<FetchableURISpecTree::NodeType<URILabelsDepSpec>::Type>
-    BasicInnerNode<FetchableURISpecTree>::append<URILabelsDepSpec>(const std::tr1::shared_ptr<const URILabelsDepSpec> &);
-template const std::tr1::shared_ptr<FetchableURISpecTree::NodeType<URILabelsDepSpec>::Type>
-    BasicInnerNode<FetchableURISpecTree>::append<URILabelsDepSpec>(const std::tr1::shared_ptr<URILabelsDepSpec> &);
+template const std::shared_ptr<FetchableURISpecTree::NodeType<URILabelsDepSpec>::Type>
+    BasicInnerNode<FetchableURISpecTree>::append<URILabelsDepSpec>(const std::shared_ptr<const URILabelsDepSpec> &);
+template const std::shared_ptr<FetchableURISpecTree::NodeType<URILabelsDepSpec>::Type>
+    BasicInnerNode<FetchableURISpecTree>::append<URILabelsDepSpec>(const std::shared_ptr<URILabelsDepSpec> &);
 
-template const std::tr1::shared_ptr<FetchableURISpecTree::NodeType<ConditionalDepSpec>::Type>
-    BasicInnerNode<FetchableURISpecTree>::append<ConditionalDepSpec>(const std::tr1::shared_ptr<const ConditionalDepSpec> &);
-template const std::tr1::shared_ptr<FetchableURISpecTree::NodeType<ConditionalDepSpec>::Type>
-    BasicInnerNode<FetchableURISpecTree>::append<ConditionalDepSpec>(const std::tr1::shared_ptr<ConditionalDepSpec> &);
+template const std::shared_ptr<FetchableURISpecTree::NodeType<ConditionalDepSpec>::Type>
+    BasicInnerNode<FetchableURISpecTree>::append<ConditionalDepSpec>(const std::shared_ptr<const ConditionalDepSpec> &);
+template const std::shared_ptr<FetchableURISpecTree::NodeType<ConditionalDepSpec>::Type>
+    BasicInnerNode<FetchableURISpecTree>::append<ConditionalDepSpec>(const std::shared_ptr<ConditionalDepSpec> &);
 
-template const std::tr1::shared_ptr<FetchableURISpecTree::NodeType<AllDepSpec>::Type>
-    BasicInnerNode<FetchableURISpecTree>::append<AllDepSpec>(const std::tr1::shared_ptr<const AllDepSpec> &);
-template const std::tr1::shared_ptr<FetchableURISpecTree::NodeType<AllDepSpec>::Type>
-    BasicInnerNode<FetchableURISpecTree>::append<AllDepSpec>(const std::tr1::shared_ptr<AllDepSpec> &);
+template const std::shared_ptr<FetchableURISpecTree::NodeType<AllDepSpec>::Type>
+    BasicInnerNode<FetchableURISpecTree>::append<AllDepSpec>(const std::shared_ptr<const AllDepSpec> &);
+template const std::shared_ptr<FetchableURISpecTree::NodeType<AllDepSpec>::Type>
+    BasicInnerNode<FetchableURISpecTree>::append<AllDepSpec>(const std::shared_ptr<AllDepSpec> &);
 
 template class BasicInnerNode<FetchableURISpecTree>;
 template class WrappedForwardIterator<BasicInnerNode<FetchableURISpecTree>::ConstIteratorTag,
-         const std::tr1::shared_ptr<const BasicNode<FetchableURISpecTree> > >;
+         const std::shared_ptr<const BasicNode<FetchableURISpecTree> > >;
 
 template class LeafNode<FetchableURISpecTree, FetchableURIDepSpec>;
 template class LeafNode<FetchableURISpecTree, URILabelsDepSpec>;
@@ -455,29 +455,29 @@ template class InnerNode<FetchableURISpecTree, ConditionalDepSpec>;
 
 /* LicenseSpecTree */
 
-template const std::tr1::shared_ptr<LicenseSpecTree::NodeType<LicenseDepSpec>::Type>
-    BasicInnerNode<LicenseSpecTree>::append<LicenseDepSpec>(const std::tr1::shared_ptr<const LicenseDepSpec> &);
-template const std::tr1::shared_ptr<LicenseSpecTree::NodeType<LicenseDepSpec>::Type>
-    BasicInnerNode<LicenseSpecTree>::append<LicenseDepSpec>(const std::tr1::shared_ptr<LicenseDepSpec> &);
+template const std::shared_ptr<LicenseSpecTree::NodeType<LicenseDepSpec>::Type>
+    BasicInnerNode<LicenseSpecTree>::append<LicenseDepSpec>(const std::shared_ptr<const LicenseDepSpec> &);
+template const std::shared_ptr<LicenseSpecTree::NodeType<LicenseDepSpec>::Type>
+    BasicInnerNode<LicenseSpecTree>::append<LicenseDepSpec>(const std::shared_ptr<LicenseDepSpec> &);
 
-template const std::tr1::shared_ptr<LicenseSpecTree::NodeType<AnyDepSpec>::Type>
-    BasicInnerNode<LicenseSpecTree>::append<AnyDepSpec>(const std::tr1::shared_ptr<const AnyDepSpec> &);
-template const std::tr1::shared_ptr<LicenseSpecTree::NodeType<AnyDepSpec>::Type>
-    BasicInnerNode<LicenseSpecTree>::append<AnyDepSpec>(const std::tr1::shared_ptr<AnyDepSpec> &);
+template const std::shared_ptr<LicenseSpecTree::NodeType<AnyDepSpec>::Type>
+    BasicInnerNode<LicenseSpecTree>::append<AnyDepSpec>(const std::shared_ptr<const AnyDepSpec> &);
+template const std::shared_ptr<LicenseSpecTree::NodeType<AnyDepSpec>::Type>
+    BasicInnerNode<LicenseSpecTree>::append<AnyDepSpec>(const std::shared_ptr<AnyDepSpec> &);
 
-template const std::tr1::shared_ptr<LicenseSpecTree::NodeType<AllDepSpec>::Type>
-    BasicInnerNode<LicenseSpecTree>::append<AllDepSpec>(const std::tr1::shared_ptr<const AllDepSpec> &);
-template const std::tr1::shared_ptr<LicenseSpecTree::NodeType<AllDepSpec>::Type>
-    BasicInnerNode<LicenseSpecTree>::append<AllDepSpec>(const std::tr1::shared_ptr<AllDepSpec> &);
+template const std::shared_ptr<LicenseSpecTree::NodeType<AllDepSpec>::Type>
+    BasicInnerNode<LicenseSpecTree>::append<AllDepSpec>(const std::shared_ptr<const AllDepSpec> &);
+template const std::shared_ptr<LicenseSpecTree::NodeType<AllDepSpec>::Type>
+    BasicInnerNode<LicenseSpecTree>::append<AllDepSpec>(const std::shared_ptr<AllDepSpec> &);
 
-template const std::tr1::shared_ptr<LicenseSpecTree::NodeType<ConditionalDepSpec>::Type>
-    BasicInnerNode<LicenseSpecTree>::append<ConditionalDepSpec>(const std::tr1::shared_ptr<const ConditionalDepSpec> &);
-template const std::tr1::shared_ptr<LicenseSpecTree::NodeType<ConditionalDepSpec>::Type>
-    BasicInnerNode<LicenseSpecTree>::append<ConditionalDepSpec>(const std::tr1::shared_ptr<ConditionalDepSpec> &);
+template const std::shared_ptr<LicenseSpecTree::NodeType<ConditionalDepSpec>::Type>
+    BasicInnerNode<LicenseSpecTree>::append<ConditionalDepSpec>(const std::shared_ptr<const ConditionalDepSpec> &);
+template const std::shared_ptr<LicenseSpecTree::NodeType<ConditionalDepSpec>::Type>
+    BasicInnerNode<LicenseSpecTree>::append<ConditionalDepSpec>(const std::shared_ptr<ConditionalDepSpec> &);
 
 template class BasicInnerNode<LicenseSpecTree>;
 template class WrappedForwardIterator<BasicInnerNode<LicenseSpecTree>::ConstIteratorTag,
-         const std::tr1::shared_ptr<const BasicNode<LicenseSpecTree> > >;
+         const std::shared_ptr<const BasicNode<LicenseSpecTree> > >;
 
 template class LeafNode<LicenseSpecTree, LicenseDepSpec>;
 template class InnerNode<LicenseSpecTree, AllDepSpec>;

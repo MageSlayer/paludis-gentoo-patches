@@ -41,8 +41,8 @@
 #include <paludis/environment.hh>
 #include <paludis/spec_tree.hh>
 #include <paludis/package_dep_spec_properties.hh>
-#include <tr1/unordered_map>
-#include <tr1/unordered_set>
+#include <unordered_map>
+#include <unordered_set>
 #include <list>
 #include <vector>
 #include <algorithm>
@@ -100,7 +100,7 @@ namespace
         }
     };
 
-    typedef std::tr1::unordered_multiset<Value, Hash<Value> > Values;
+    typedef std::unordered_multiset<Value, Hash<Value> > Values;
 
     struct ValuesGroup
     {
@@ -122,20 +122,20 @@ namespace
     struct SetNameWithValuesGroups
     {
         NamedValue<n::set_name, SetName> set_name;
-        NamedValue<n::set_value, ActiveObjectPtr<DeferredConstructionPtr<std::tr1::shared_ptr<const SetSpecTree> > > > set_value;
+        NamedValue<n::set_value, ActiveObjectPtr<DeferredConstructionPtr<std::shared_ptr<const SetSpecTree> > > > set_value;
         NamedValue<n::values_groups, ValuesGroups> values_groups;
     };
 
     typedef std::list<SetNameWithValuesGroups> SetNamesWithValuesGroups;
 
-    typedef std::tr1::unordered_map<QualifiedPackageName, SpecsWithValuesGroups, Hash<QualifiedPackageName> > SpecificSpecs;
+    typedef std::unordered_map<QualifiedPackageName, SpecsWithValuesGroups, Hash<QualifiedPackageName> > SpecificSpecs;
 
-    const std::tr1::shared_ptr<const SetSpecTree> make_set_value(
+    const std::shared_ptr<const SetSpecTree> make_set_value(
             const Environment * const env,
             const FSEntry from,
             const SetName name)
     {
-        std::tr1::shared_ptr<const SetSpecTree> result(env->set(name));
+        std::shared_ptr<const SetSpecTree> result(env->set(name));
         if (! result)
         {
             Log::get_instance()->message("paludislike_options_conf.bad_set", ll_warning, lc_context)
@@ -179,7 +179,7 @@ PaludisLikeOptionsConf::add_file(const FSEntry & f)
 {
     Context context("When adding '" + stringify(f) + "':");
 
-    const std::tr1::shared_ptr<const LineConfigFile> file(_imp->params.make_config_file()(f, LineConfigFileOptions()));
+    const std::shared_ptr<const LineConfigFile> file(_imp->params.make_config_file()(f, LineConfigFileOptions()));
     if (! file)
         return;
 
@@ -195,7 +195,7 @@ PaludisLikeOptionsConf::add_file(const FSEntry & f)
         ValuesGroups * values_groups(0);
         try
         {
-            std::tr1::shared_ptr<PackageDepSpec> d(new PackageDepSpec(parse_user_package_dep_spec(
+            std::shared_ptr<PackageDepSpec> d(new PackageDepSpec(parse_user_package_dep_spec(
                             tokens.at(0), _imp->params.environment(),
                             UserPackageDepSpecOptions() + updso_allow_wildcards + updso_no_disambiguation + updso_throw_if_set)));
 
@@ -234,8 +234,8 @@ PaludisLikeOptionsConf::add_file(const FSEntry & f)
             values_groups = &_imp->set_specs.insert(_imp->set_specs.end(),
                     make_named_values<SetNameWithValuesGroups>(
                         n::set_name() = n,
-                        n::set_value() = DeferredConstructionPtr<std::tr1::shared_ptr<const SetSpecTree> >(
-                                std::tr1::bind(&make_set_value, _imp->params.environment(), f, n)),
+                        n::set_value() = DeferredConstructionPtr<std::shared_ptr<const SetSpecTree> >(
+                                std::bind(&make_set_value, _imp->params.environment(), f, n)),
                         n::values_groups() = ValuesGroups()
                         ))->values_groups();
         }
@@ -353,7 +353,7 @@ namespace
 
     void check_values_groups(
             const Environment * const,
-            const std::tr1::shared_ptr<const PackageID> &,
+            const std::shared_ptr<const PackageID> &,
             const ChoicePrefixName & prefix,
             const UnprefixedChoiceName & unprefixed_name,
             const ValuesGroups & values_groups,
@@ -392,10 +392,10 @@ namespace
 
     void collect_known_from_values_groups(
             const Environment * const,
-            const std::tr1::shared_ptr<const PackageID> &,
+            const std::shared_ptr<const PackageID> &,
             const ChoicePrefixName & prefix,
             const ValuesGroups & values_groups,
-            const std::tr1::shared_ptr<Set<UnprefixedChoiceName> > & known)
+            const std::shared_ptr<Set<UnprefixedChoiceName> > & known)
     {
 
         for (ValuesGroups::const_iterator i(values_groups.begin()), i_end(values_groups.end()) ;
@@ -412,7 +412,7 @@ namespace
 
     void check_specs_with_values_groups(
             const Environment * const env,
-            const std::tr1::shared_ptr<const PackageID> & maybe_id,
+            const std::shared_ptr<const PackageID> & maybe_id,
             const ChoicePrefixName & prefix,
             const UnprefixedChoiceName & unprefixed_name,
             const SpecsWithValuesGroups & specs_with_values_groups,
@@ -442,10 +442,10 @@ namespace
 
     void collect_known_from_specs_with_values_groups(
             const Environment * const env,
-            const std::tr1::shared_ptr<const PackageID> & maybe_id,
+            const std::shared_ptr<const PackageID> & maybe_id,
             const ChoicePrefixName & prefix,
             const SpecsWithValuesGroups & specs_with_values_groups,
-            const std::tr1::shared_ptr<Set<UnprefixedChoiceName> > & known)
+            const std::shared_ptr<Set<UnprefixedChoiceName> > & known)
     {
         for (SpecsWithValuesGroups::const_iterator i(specs_with_values_groups.begin()),
                 i_end(specs_with_values_groups.end()) ;
@@ -469,7 +469,7 @@ namespace
 
 const std::pair<Tribool, bool>
 PaludisLikeOptionsConf::want_choice_enabled_locked(
-        const std::tr1::shared_ptr<const PackageID> & maybe_id,
+        const std::shared_ptr<const PackageID> & maybe_id,
         const ChoicePrefixName & prefix,
         const UnprefixedChoiceName & unprefixed_name
         ) const
@@ -531,7 +531,7 @@ PaludisLikeOptionsConf::want_choice_enabled_locked(
 
 const std::string
 PaludisLikeOptionsConf::value_for_choice_parameter(
-        const std::tr1::shared_ptr<const PackageID> & id,
+        const std::shared_ptr<const PackageID> & id,
         const ChoicePrefixName & prefix,
         const UnprefixedChoiceName & unprefixed_name
         ) const
@@ -584,13 +584,13 @@ PaludisLikeOptionsConf::value_for_choice_parameter(
     return "";
 }
 
-const std::tr1::shared_ptr<const Set<UnprefixedChoiceName> >
+const std::shared_ptr<const Set<UnprefixedChoiceName> >
 PaludisLikeOptionsConf::known_choice_value_names(
-        const std::tr1::shared_ptr<const PackageID> & maybe_id,
+        const std::shared_ptr<const PackageID> & maybe_id,
         const ChoicePrefixName & prefix
         ) const
 {
-    const std::tr1::shared_ptr<Set<UnprefixedChoiceName> > result(new Set<UnprefixedChoiceName>);
+    const std::shared_ptr<Set<UnprefixedChoiceName> > result(new Set<UnprefixedChoiceName>);
 
     /* Any specific matches? */
     if (maybe_id)

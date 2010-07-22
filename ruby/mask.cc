@@ -37,41 +37,41 @@ namespace
     struct V
     {
         VALUE value;
-        std::tr1::shared_ptr<const Mask> mm;
+        std::shared_ptr<const Mask> mm;
 
-        V(std::tr1::shared_ptr<const Mask> _m) :
+        V(std::shared_ptr<const Mask> _m) :
             mm(_m)
         {
         }
 
         void visit(const UserMask &)
         {
-            value = Data_Wrap_Struct(c_user_mask, 0, &Common<std::tr1::shared_ptr<const Mask> >::free,
-                    new std::tr1::shared_ptr<const Mask>(mm));
+            value = Data_Wrap_Struct(c_user_mask, 0, &Common<std::shared_ptr<const Mask> >::free,
+                    new std::shared_ptr<const Mask>(mm));
         }
 
         void visit(const UnacceptedMask &)
         {
-            value = Data_Wrap_Struct(c_unaccepted_mask, 0, &Common<std::tr1::shared_ptr<const Mask> >::free,
-                    new std::tr1::shared_ptr<const Mask>(mm));
+            value = Data_Wrap_Struct(c_unaccepted_mask, 0, &Common<std::shared_ptr<const Mask> >::free,
+                    new std::shared_ptr<const Mask>(mm));
         }
 
         void visit(const UnsupportedMask &)
         {
-            value = Data_Wrap_Struct(c_unsupported_mask, 0, &Common<std::tr1::shared_ptr<const Mask> >::free,
-                    new std::tr1::shared_ptr<const Mask>(mm));
+            value = Data_Wrap_Struct(c_unsupported_mask, 0, &Common<std::shared_ptr<const Mask> >::free,
+                    new std::shared_ptr<const Mask>(mm));
         }
 
         void visit(const RepositoryMask &)
         {
-            value = Data_Wrap_Struct(c_repository_mask, 0, &Common<std::tr1::shared_ptr<const Mask> >::free,
-                    new std::tr1::shared_ptr<const Mask>(mm));
+            value = Data_Wrap_Struct(c_repository_mask, 0, &Common<std::shared_ptr<const Mask> >::free,
+                    new std::shared_ptr<const Mask>(mm));
         }
 
         void visit(const AssociationMask &)
         {
-            value = Data_Wrap_Struct(c_association_mask, 0, &Common<std::tr1::shared_ptr<const Mask> >::free,
-                    new std::tr1::shared_ptr<const Mask>(mm));
+            value = Data_Wrap_Struct(c_association_mask, 0, &Common<std::shared_ptr<const Mask> >::free,
+                    new std::shared_ptr<const Mask>(mm));
         }
     };
 
@@ -90,8 +90,8 @@ namespace
     VALUE
     mask_key(VALUE self)
     {
-        std::tr1::shared_ptr<const Mask> * ptr;
-        Data_Get_Struct(self, std::tr1::shared_ptr<const Mask>, ptr);
+        std::shared_ptr<const Mask> * ptr;
+        Data_Get_Struct(self, std::shared_ptr<const Mask>, ptr);
         char c = (*ptr)->key();
         const char* c_ptr = &c;
         return rb_str_new2(c_ptr);
@@ -119,9 +119,9 @@ namespace
         static VALUE
         fetch(VALUE self)
         {
-            std::tr1::shared_ptr<const Mask> * ptr;
-            Data_Get_Struct(self, std::tr1::shared_ptr<const Mask>, ptr);
-            std::tr1::shared_ptr<const T_> cast_ptr(std::tr1::static_pointer_cast<const T_>(*ptr));
+            std::shared_ptr<const Mask> * ptr;
+            Data_Get_Struct(self, std::shared_ptr<const Mask>, ptr);
+            std::shared_ptr<const T_> cast_ptr(std::static_pointer_cast<const T_>(*ptr));
             return rb_str_new2(((*cast_ptr).*m_)().c_str());
         }
     };
@@ -142,15 +142,15 @@ namespace
      *
      * Fetch a metadata key explaining the mask.
      */
-    template <typename T_, const std::tr1::shared_ptr<const MetadataKey> (T_::* m_) () const>
+    template <typename T_, const std::shared_ptr<const MetadataKey> (T_::* m_) () const>
     struct MaskMetadataKey
     {
         static VALUE
         fetch(VALUE self)
         {
-            std::tr1::shared_ptr<const Mask> * ptr;
-            Data_Get_Struct(self, std::tr1::shared_ptr<const Mask>, ptr);
-            std::tr1::shared_ptr<const T_> cast_ptr(std::tr1::static_pointer_cast<const T_>(*ptr));
+            std::shared_ptr<const Mask> * ptr;
+            Data_Get_Struct(self, std::shared_ptr<const Mask>, ptr);
+            std::shared_ptr<const T_> cast_ptr(std::static_pointer_cast<const T_>(*ptr));
             return ((*cast_ptr).*m_)() ? metadata_key_to_value(((*cast_ptr).*m_)()) : Qnil;
         }
     };
@@ -164,9 +164,9 @@ namespace
     VALUE
     association_mask_associated_package(VALUE self)
     {
-        std::tr1::shared_ptr<const Mask> * ptr;
-        Data_Get_Struct(self, std::tr1::shared_ptr<const Mask>, ptr);
-        std::tr1::shared_ptr<const AssociationMask> cast_ptr(std::tr1::static_pointer_cast<const AssociationMask>(*ptr));
+        std::shared_ptr<const Mask> * ptr;
+        Data_Get_Struct(self, std::shared_ptr<const Mask>, ptr);
+        std::shared_ptr<const AssociationMask> cast_ptr(std::static_pointer_cast<const AssociationMask>(*ptr));
         return (cast_ptr)->associated_package() ? package_id_to_value((cast_ptr)->associated_package()) : Qnil;
     }
 
@@ -243,7 +243,7 @@ namespace
 }
 
 VALUE
-paludis::ruby::mask_to_value(std::tr1::shared_ptr<const Mask> m)
+paludis::ruby::mask_to_value(std::shared_ptr<const Mask> m)
 {
     try
     {

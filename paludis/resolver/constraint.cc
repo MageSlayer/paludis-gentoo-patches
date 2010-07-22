@@ -42,7 +42,7 @@ namespace paludis
         bool nothing_is_fine_too;
         bool all_untaken;
 
-        Sequence<std::tr1::shared_ptr<const Constraint> > constraints;
+        Sequence<std::shared_ptr<const Constraint> > constraints;
 
         Implementation() :
             strictest_use_existing(static_cast<UseExisting>(last_ue - 1)),
@@ -55,7 +55,7 @@ namespace paludis
     template <>
     struct WrappedForwardIteratorTraits<Constraints::ConstIteratorTag>
     {
-        typedef Sequence<std::tr1::shared_ptr<const Constraint> >::ConstIterator UnderlyingIterator;
+        typedef Sequence<std::shared_ptr<const Constraint> >::ConstIterator UnderlyingIterator;
     };
 }
 
@@ -99,7 +99,7 @@ Constraints::end() const
 }
 
 void
-Constraints::add(const std::tr1::shared_ptr<const Constraint> & c)
+Constraints::add(const std::shared_ptr<const Constraint> & c)
 {
     _imp->constraints.push_back(c);
     _imp->strictest_use_existing = std::min(_imp->strictest_use_existing, c->use_existing());
@@ -121,14 +121,14 @@ Constraints::serialise(Serialiser & s) const
         ;
 }
 
-const std::tr1::shared_ptr<Constraints>
+const std::shared_ptr<Constraints>
 Constraints::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "Constraints");
     Deserialisator vv(*v.find_remove_member("items"), "c");
-    std::tr1::shared_ptr<Constraints> result(new Constraints);
+    std::shared_ptr<Constraints> result(new Constraints);
     for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
-        result->add(vv.member<std::tr1::shared_ptr<Constraint> >(stringify(n)));
+        result->add(vv.member<std::shared_ptr<Constraint> >(stringify(n)));
     return result;
 }
 
@@ -149,56 +149,56 @@ namespace
 {
     struct IDFinder
     {
-        const std::tr1::shared_ptr<const PackageID> visit(const DependencyReason & r) const
+        const std::shared_ptr<const PackageID> visit(const DependencyReason & r) const
         {
             return r.from_id();
         }
 
-        const std::tr1::shared_ptr<const PackageID> visit(const SetReason &) const
+        const std::shared_ptr<const PackageID> visit(const SetReason &) const
         {
             return make_null_shared_ptr();
         }
 
-        const std::tr1::shared_ptr<const PackageID> visit(const LikeOtherDestinationTypeReason &) const
+        const std::shared_ptr<const PackageID> visit(const LikeOtherDestinationTypeReason &) const
         {
             return make_null_shared_ptr();
         }
 
-        const std::tr1::shared_ptr<const PackageID> visit(const PresetReason &) const
+        const std::shared_ptr<const PackageID> visit(const PresetReason &) const
         {
             return make_null_shared_ptr();
         }
 
-        const std::tr1::shared_ptr<const PackageID> visit(const TargetReason &) const
+        const std::shared_ptr<const PackageID> visit(const TargetReason &) const
         {
             return make_null_shared_ptr();
         }
 
-        const std::tr1::shared_ptr<const PackageID> visit(const DependentReason &) const
+        const std::shared_ptr<const PackageID> visit(const DependentReason &) const
         {
             return make_null_shared_ptr();
         }
 
-        const std::tr1::shared_ptr<const PackageID> visit(const ViaBinaryReason &) const
+        const std::shared_ptr<const PackageID> visit(const ViaBinaryReason &) const
         {
             return make_null_shared_ptr();
         }
 
-        const std::tr1::shared_ptr<const PackageID> visit(const WasUsedByReason &) const
+        const std::shared_ptr<const PackageID> visit(const WasUsedByReason &) const
         {
             return make_null_shared_ptr();
         }
     };
 }
 
-const std::tr1::shared_ptr<Constraint>
+const std::shared_ptr<Constraint>
 Constraint::deserialise(Deserialisation & d)
 {
     Context context("When deserialising:");
 
     Deserialisator v(d, "Constraint");
 
-    const std::tr1::shared_ptr<Reason> reason(v.member<std::tr1::shared_ptr<Reason> >("reason"));
+    const std::shared_ptr<Reason> reason(v.member<std::shared_ptr<Reason> >("reason"));
     IDFinder id_finder;
 
     return make_shared_ptr(new Constraint(make_named_values<Constraint>(
@@ -206,15 +206,15 @@ Constraint::deserialise(Deserialisation & d)
                     n::nothing_is_fine_too() = v.member<bool>("nothing_is_fine_too"),
                     n::reason() = reason,
                     n::spec() = PackageOrBlockDepSpec::deserialise(*v.find_remove_member("spec"),
-                            reason->accept_returning<std::tr1::shared_ptr<const PackageID> >(id_finder)),
+                            reason->accept_returning<std::shared_ptr<const PackageID> >(id_finder)),
                     n::untaken() = v.member<bool>("untaken"),
                     n::use_existing() = destringify<UseExisting>(v.member<std::string>("use_existing"))
             )));
 }
 
 template class PrivateImplementationPattern<Constraints>;
-template class WrappedForwardIterator<Constraints::ConstIteratorTag, const std::tr1::shared_ptr<const Constraint> >;
+template class WrappedForwardIterator<Constraints::ConstIteratorTag, const std::shared_ptr<const Constraint> >;
 
-template class Sequence<std::tr1::shared_ptr<const Constraint> >;
-template class WrappedForwardIterator<ConstraintSequence::ConstIteratorTag, const std::tr1::shared_ptr<const Constraint> >;
+template class Sequence<std::shared_ptr<const Constraint> >;
+template class WrappedForwardIterator<ConstraintSequence::ConstIteratorTag, const std::shared_ptr<const Constraint> >;
 

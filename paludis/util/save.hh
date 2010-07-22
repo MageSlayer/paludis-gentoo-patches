@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_SAVE_HH 1
 
 #include <paludis/util/attributes.hh>
-#include <tr1/functional>
+#include <functional>
 
 /** \file
  * Declarations for the Save and RunOnDestruction classes.
@@ -99,10 +99,10 @@ namespace paludis
             RunOnDestruction(const RunOnDestruction &);
             void operator= (const RunOnDestruction &);
 
-            const std::tr1::function<void ()> _f;
+            const std::function<void ()> _f;
 
         public:
-            RunOnDestruction(const std::tr1::function<void ()> & f) :
+            RunOnDestruction(const std::function<void ()> & f) :
                 _f(f)
             {
             }

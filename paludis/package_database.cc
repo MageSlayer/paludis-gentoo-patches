@@ -40,7 +40,7 @@
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/member_iterator.hh>
-#include <tr1/functional>
+#include <functional>
 #include <algorithm>
 #include <list>
 #include <map>
@@ -59,7 +59,7 @@ namespace paludis
     template <>
     struct WrappedForwardIteratorTraits<PackageDatabase::RepositoryConstIteratorTag>
     {
-        typedef std::list<std::tr1::shared_ptr<Repository> >::const_iterator UnderlyingIterator;
+        typedef std::list<std::shared_ptr<Repository> >::const_iterator UnderlyingIterator;
     };
 }
 
@@ -154,8 +154,8 @@ namespace paludis
     template<>
     struct Implementation<PackageDatabase>
     {
-        std::list<std::tr1::shared_ptr<Repository> > repositories;
-        std::multimap<int, std::list<std::tr1::shared_ptr<Repository> >::iterator> repository_importances;
+        std::list<std::shared_ptr<Repository> > repositories;
+        std::multimap<int, std::list<std::shared_ptr<Repository> >::iterator> repository_importances;
         const Environment * environment;
     };
 }
@@ -171,7 +171,7 @@ PackageDatabase::~PackageDatabase()
 }
 
 void
-PackageDatabase::add_repository(int i, const std::tr1::shared_ptr<Repository> r)
+PackageDatabase::add_repository(int i, const std::shared_ptr<Repository> r)
 {
     Context c("When adding a repository named '" + stringify(r->name()) + "':");
 
@@ -180,8 +180,8 @@ PackageDatabase::add_repository(int i, const std::tr1::shared_ptr<Repository> r)
         if (r_c->name() == r->name())
             throw DuplicateRepositoryError(stringify(r->name()));
 
-    std::list<std::tr1::shared_ptr<Repository> >::iterator q(_imp->repositories.end());
-    for (std::multimap<int, std::list<std::tr1::shared_ptr<Repository> >::iterator>::iterator
+    std::list<std::shared_ptr<Repository> >::iterator q(_imp->repositories.end());
+    for (std::multimap<int, std::list<std::shared_ptr<Repository> >::iterator>::iterator
             p(_imp->repository_importances.begin()), p_end(_imp->repository_importances.end()) ;
             p != p_end ; ++p)
         if (p->first > i)
@@ -231,9 +231,9 @@ namespace
         typedef QualifiedPackageName argument_type;
         typedef bool result_type;
 
-        const std::tr1::shared_ptr<QPNIMap> _map;
+        const std::shared_ptr<QPNIMap> _map;
 
-        IsImportant(const std::tr1::shared_ptr<QPNIMap> & m) :
+        IsImportant(const std::shared_ptr<QPNIMap> & m) :
             _map(m)
         {
         }
@@ -249,9 +249,9 @@ namespace
         typedef QualifiedPackageName argument_type;
         typedef bool result_type;
 
-        const std::tr1::shared_ptr<QPNIMap> _map;
+        const std::shared_ptr<QPNIMap> _map;
 
-        IsInUnimportantRepo(const std::tr1::shared_ptr<QPNIMap> & m) :
+        IsInUnimportantRepo(const std::shared_ptr<QPNIMap> & m) :
             _map(m)
         {
         }
@@ -272,10 +272,10 @@ PackageDatabase::fetch_unique_qualified_package_name(const PackageNamePart & p, 
     // respectively that at least one repository containing the package thinks
     // the category is important and that the package is in a repository
     // that reports it is important itself
-    std::tr1::shared_ptr<QPNIMap> result(new QPNIMap);
+    std::shared_ptr<QPNIMap> result(new QPNIMap);
     std::set<std::pair<CategoryNamePart, RepositoryName>, CategoryRepositoryNamePairComparator> checked;
 
-    std::tr1::shared_ptr<const PackageIDSequence> pkgs((*_imp->environment)[selection::AllVersionsUnsorted(
+    std::shared_ptr<const PackageIDSequence> pkgs((*_imp->environment)[selection::AllVersionsUnsorted(
                 generator::Matches(make_package_dep_spec(PartiallyMadePackageDepSpecOptions()).package_name_part(p), MatchPackageOptions()) | f)]);
 
     for (IndirectIterator<PackageIDSequence::ConstIterator> it(pkgs->begin()),
@@ -287,7 +287,7 @@ PackageDatabase::fetch_unique_qualified_package_name(const PackageNamePart & p, 
         if (! checked.insert(std::make_pair(it->name().category(), it->repository()->name())).second)
             continue;
 
-        std::tr1::shared_ptr<const CategoryNamePartSet> unimportant_cats(it->repository()->unimportant_category_names());
+        std::shared_ptr<const CategoryNamePartSet> unimportant_cats(it->repository()->unimportant_category_names());
         bool is_important(unimportant_cats->end() == unimportant_cats->find(it->name().category()));
         bool is_in_important_repo(! it->repository()->is_unimportant());
         QPNIMap::iterator i(result->insert(std::make_pair(it->name(), std::make_pair(is_important, is_in_important_repo))).first);
@@ -299,7 +299,7 @@ PackageDatabase::fetch_unique_qualified_package_name(const PackageNamePart & p, 
         throw NoSuchPackageError(stringify(p));
     if (result->size() > 1)
     {
-        using namespace std::tr1::placeholders;
+        using namespace std::placeholders;
 
         std::list<QualifiedPackageName> qpns;
 
@@ -311,28 +311,28 @@ PackageDatabase::fetch_unique_qualified_package_name(const PackageNamePart & p, 
 
             std::remove_copy_if(first_iterator(result->begin()), first_iterator(result->end()),
                     std::front_inserter(qpns),
-                    std::tr1::bind(std::logical_and<bool>(),
-                        std::tr1::bind(std::not1(is_important), _1),
-                        std::tr1::bind(std::not1(is_installed), _1)));
+                    std::bind(std::logical_and<bool>(),
+                        std::bind(std::not1(is_important), _1),
+                        std::bind(std::not1(is_installed), _1)));
 
             if (! qpns.empty() && next(qpns.begin()) == qpns.end())
                 break;
 
-            qpns.remove_if(std::tr1::bind(is_in_unimportant_repo, _1));
+            qpns.remove_if(std::bind(is_in_unimportant_repo, _1));
 
             if (! qpns.empty() && next(qpns.begin()) == qpns.end())
                 break;
 
-            qpns.remove_if(std::tr1::bind(std::logical_and<bool>(),
-                        std::tr1::bind(is_important, _1),
-                        std::tr1::bind(std::not1(is_installed), _1)));
+            qpns.remove_if(std::bind(std::logical_and<bool>(),
+                        std::bind(is_important, _1),
+                        std::bind(std::not1(is_installed), _1)));
 
             if (! qpns.empty() && next(qpns.begin()) == qpns.end())
                 break;
 
-            qpns.remove_if(std::tr1::bind(std::logical_and<bool>(),
-                        std::tr1::bind(std::not1(is_important), _1),
-                        std::tr1::bind(is_installed, _1)));
+            qpns.remove_if(std::bind(std::logical_and<bool>(),
+                        std::bind(std::not1(is_important), _1),
+                        std::bind(is_installed, _1)));
 
             if (! qpns.empty() && next(qpns.begin()) == qpns.end())
                 break;
@@ -352,7 +352,7 @@ PackageDatabase::fetch_unique_qualified_package_name(const PackageNamePart & p, 
         return result->begin()->first;
 }
 
-std::tr1::shared_ptr<const Repository>
+std::shared_ptr<const Repository>
 PackageDatabase::fetch_repository(const RepositoryName & n) const
 {
     for (RepositoryConstIterator r(begin_repositories()), r_end(end_repositories()) ;
@@ -363,7 +363,7 @@ PackageDatabase::fetch_repository(const RepositoryName & n) const
     throw NoSuchRepositoryError(n);
 }
 
-std::tr1::shared_ptr<Repository>
+std::shared_ptr<Repository>
 PackageDatabase::fetch_repository(const RepositoryName & n)
 {
     for (RepositoryConstIterator r(begin_repositories()), r_end(end_repositories()) ;
@@ -437,5 +437,5 @@ PackageDatabase::all_filter()
 }
 
 template class WrappedForwardIterator<AmbiguousPackageNameError::OptionsConstIteratorTag, const std::string>;
-template class WrappedForwardIterator<PackageDatabase::RepositoryConstIteratorTag, const std::tr1::shared_ptr<Repository> >;
+template class WrappedForwardIterator<PackageDatabase::RepositoryConstIteratorTag, const std::shared_ptr<Repository> >;
 

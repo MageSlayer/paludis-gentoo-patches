@@ -61,8 +61,8 @@ ScriptCommand::~ScriptCommand()
 
 int
 ScriptCommand::run(
-        const std::tr1::shared_ptr<Environment> &,
-        const std::tr1::shared_ptr<const Sequence<std::string > > & args
+        const std::shared_ptr<Environment> &,
+        const std::shared_ptr<const Sequence<std::string > > & args
         )
 {
     std::string arg_str;
@@ -76,7 +76,7 @@ ScriptCommand::run(
     throw InternalError(PALUDIS_HERE, "become_command failed");
 }
 
-std::tr1::shared_ptr<args::ArgsHandler>
+std::shared_ptr<args::ArgsHandler>
 ScriptCommand::make_doc_cmdline()
 {
     throw InternalError(PALUDIS_HERE, "no script cmdline");

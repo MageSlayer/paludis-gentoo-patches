@@ -28,7 +28,7 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/sequence-fwd.hh>
 #include <paludis/util/options-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 
 /** \file
  * Forward declarations for paludis/dep_spec.hh .
@@ -101,7 +101,7 @@ namespace paludis
      * \since 0.26
      * \ingroup g_dep_spec
      */
-    typedef Sequence<std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> > AdditionalPackageDepSpecRequirements;
+    typedef Sequence<std::shared_ptr<const AdditionalPackageDepSpecRequirement> > AdditionalPackageDepSpecRequirements;
 
     /**
      * Create a PackageDepSpec from various rules.

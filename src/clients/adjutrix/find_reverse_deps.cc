@@ -81,7 +81,7 @@ namespace
             {
             }
 
-            void check(const std::tr1::shared_ptr<const DependencySpecTree> & tree, const std::string & depname)
+            void check(const std::shared_ptr<const DependencySpecTree> & tree, const std::string & depname)
             {
                 _depname = depname;
                 tree->root()->accept(*this);
@@ -109,7 +109,7 @@ namespace
             {
                 Context context("When expanding named set '" + stringify(*node.spec()) + "':");
 
-                std::tr1::shared_ptr<const SetSpecTree> set(_env->set(node.spec()->name()));
+                std::shared_ptr<const SetSpecTree> set(_env->set(node.spec()->name()));
 
                 if (! set)
                 {
@@ -160,9 +160,9 @@ namespace
     void
         ReverseDepChecker::visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & node)
     {
-        std::tr1::shared_ptr<const PackageIDSequence> dep_entries((*_env)[selection::AllVersionsSorted(
+        std::shared_ptr<const PackageIDSequence> dep_entries((*_env)[selection::AllVersionsSorted(
                     generator::Matches(*node.spec(), MatchPackageOptions() + mpo_ignore_additional_requirements))]);
-        std::tr1::shared_ptr<PackageIDSequence> matches(new PackageIDSequence);
+        std::shared_ptr<PackageIDSequence> matches(new PackageIDSequence);
 
         bool header_written = false;
 
@@ -211,7 +211,7 @@ namespace
     {
         Context context("When checking package '" + stringify(p) + "':");
 
-        std::tr1::shared_ptr<const PackageIDSequence> p_entries(env[selection::AllVersionsSorted(generator::Package(p))]);
+        std::shared_ptr<const PackageIDSequence> p_entries(env[selection::AllVersionsSorted(generator::Package(p))]);
 
         bool found_matches(false);
 
@@ -257,7 +257,7 @@ int do_find_reverse_deps(NoConfigEnvironment & env)
 {
     Context context("When performing find-reverse-deps action:");
 
-    std::tr1::shared_ptr<PackageDepSpec> spec;
+    std::shared_ptr<PackageDepSpec> spec;
     try
     {
         spec.reset(new PackageDepSpec(parse_user_package_dep_spec(*CommandLine::get_instance()->begin_parameters(),
@@ -302,7 +302,7 @@ int do_find_reverse_deps(NoConfigEnvironment & env)
         return 5;
     }
 
-    std::tr1::shared_ptr<const PackageIDSequence> entries(env[selection::AllVersionsSorted(generator::Matches(
+    std::shared_ptr<const PackageIDSequence> entries(env[selection::AllVersionsSorted(generator::Matches(
                     *spec, MatchPackageOptions()))]);
     int ret(0);
 
@@ -324,7 +324,7 @@ int do_find_reverse_deps(NoConfigEnvironment & env)
 
         write_repository_header(stringify(*spec), stringify(r->name()));
 
-        std::tr1::shared_ptr<const CategoryNamePartSet> cat_names(r->category_names());
+        std::shared_ptr<const CategoryNamePartSet> cat_names(r->category_names());
         for (CategoryNamePartSet::ConstIterator c(cat_names->begin()), c_end(cat_names->end()) ;
                 c != c_end ; ++c)
         {
@@ -337,7 +337,7 @@ int do_find_reverse_deps(NoConfigEnvironment & env)
                             stringify(*c)))
                     continue;
 
-            std::tr1::shared_ptr<const QualifiedPackageNameSet> pkg_names(r->package_names(*c));
+            std::shared_ptr<const QualifiedPackageNameSet> pkg_names(r->package_names(*c));
             for (QualifiedPackageNameSet::ConstIterator p(pkg_names->begin()), p_end(pkg_names->end()) ;
                     p != p_end ; ++p)
             {

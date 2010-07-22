@@ -59,7 +59,7 @@ namespace
 {
     struct MetadataKeyComparator
     {
-        bool operator() (const std::tr1::shared_ptr<const MetadataKey> & a, const std::tr1::shared_ptr<const MetadataKey> & b) const
+        bool operator() (const std::shared_ptr<const MetadataKey> & a, const std::shared_ptr<const MetadataKey> & b) const
         {
             bool a_is_section(simple_visitor_cast<const MetadataSectionKey>(*a));
             bool b_is_section(simple_visitor_cast<const MetadataSectionKey>(*b));
@@ -84,10 +84,10 @@ namespace
         {
             cout << endl;
             cout << indent << colour(cl_heading, k.human_name() + ":") << endl;
-            std::set<std::tr1::shared_ptr<const MetadataKey>, MetadataKeyComparator > keys(
+            std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator > keys(
                     k.begin_metadata(), k.end_metadata());
             InfoDisplayer i(indent + "    ");
-            for (std::set<std::tr1::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
+            for (std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
                     e(keys.begin()), e_end(keys.end()) ; e != e_end ; ++e)
                 if ((*e)->type() != mkt_internal)
                     accept_visitor(i)(**e);
@@ -118,17 +118,17 @@ namespace
             cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.value() << endl;
         }
 
-        void visit(const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > & k)
+        void visit(const MetadataValueKey<std::shared_ptr<const PackageID> > & k)
         {
             cout << std::setw(30) << (indent + k.human_name() + ":") << " " << *k.value() << endl;
         }
 
-        void visit(const MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> >  & k)
+        void visit(const MetadataValueKey<std::shared_ptr<const RepositoryMaskInfo> >  & k)
         {
             cout << std::setw(30) << (indent + k.human_name() + ":") << " " << endl;
         }
 
-        void visit(const MetadataValueKey<std::tr1::shared_ptr<const Contents> > & k)
+        void visit(const MetadataValueKey<std::shared_ptr<const Contents> > & k)
         {
             cout << std::setw(30) << (indent + k.human_name() + ":") << " " << endl;
         }
@@ -205,7 +205,7 @@ namespace
             cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.pretty_print_flat(f) << endl;
         }
 
-        void visit(const MetadataValueKey<std::tr1::shared_ptr<const Choices> > & k)
+        void visit(const MetadataValueKey<std::shared_ptr<const Choices> > & k)
         {
             cout << std::setw(30) << (indent + k.human_name() + ":") << " " << endl;
         }
@@ -213,22 +213,22 @@ namespace
 }
 
 int do_one_info(
-        const std::tr1::shared_ptr<const Environment> & env,
+        const std::shared_ptr<const Environment> & env,
         const std::string & q)
 {
     Context local_context("When handling query '" + q + "':");
 
-    std::tr1::shared_ptr<PackageDepSpec> spec(
+    std::shared_ptr<PackageDepSpec> spec(
             new PackageDepSpec(parse_user_package_dep_spec(q, env.get(), UserPackageDepSpecOptions())));
 
-    std::tr1::shared_ptr<const PackageIDSequence>
+    std::shared_ptr<const PackageIDSequence>
         entries((*env)[selection::AllVersionsSorted(generator::Matches(*spec, MatchPackageOptions()))]),
         installed_entries((*env)[selection::AllVersionsSorted(
                     generator::Matches(*spec, MatchPackageOptions()) | filter::InstalledAtRoot(env->root()))]),
         installable_entries((*env)[selection::AllVersionsSorted(
                     generator::Matches(*spec, MatchPackageOptions()) | filter::SupportsAction<InstallAction>() | filter::NotMasked())]);
 
-    std::tr1::shared_ptr<PackageIDSequence> to_show_entries(new PackageIDSequence);
+    std::shared_ptr<PackageIDSequence> to_show_entries(new PackageIDSequence);
 
     if (entries->empty())
         throw NoSuchPackageError(q);
@@ -247,7 +247,7 @@ int do_one_info(
     {
         OutputManagerFromEnvironment output_manager_holder(env.get(), *p, oe_exclusive, ClientOutputFeatures());
         InfoActionOptions options(make_named_values<InfoActionOptions>(
-                    n::make_output_manager() = std::tr1::ref(output_manager_holder)
+                    n::make_output_manager() = std::ref(output_manager_holder)
                     ));
         InfoAction a(options);
 
@@ -272,7 +272,7 @@ int do_one_info(
 }
 
 int
-do_info(const std::tr1::shared_ptr<const Environment> & env)
+do_info(const std::shared_ptr<const Environment> & env)
 {
     int return_code(0);
 
@@ -341,10 +341,10 @@ do_info(const std::tr1::shared_ptr<const Environment> & env)
 
     {
         cout << colour(cl_heading, "Environment:") << endl;
-        std::set<std::tr1::shared_ptr<const MetadataKey>, MetadataKeyComparator> keys(
+        std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator> keys(
                 env->begin_metadata(), env->end_metadata());
         InfoDisplayer i("    ");
-        for (std::set<std::tr1::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
+        for (std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
                 k(keys.begin()), k_end(keys.end()) ; k != k_end ; ++k)
             if ((*k)->type() != mkt_internal)
                 accept_visitor(i)(**k);
@@ -356,9 +356,9 @@ do_info(const std::tr1::shared_ptr<const Environment> & env)
             r != r_end ; ++r)
     {
         cout << "Repository " << colour(cl_repository_name, r->name()) << ":" << endl;
-        std::set<std::tr1::shared_ptr<const MetadataKey>, MetadataKeyComparator> keys(r->begin_metadata(), r->end_metadata());
+        std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator> keys(r->begin_metadata(), r->end_metadata());
         InfoDisplayer i("    ");
-        for (std::set<std::tr1::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
+        for (std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
                 k(keys.begin()), k_end(keys.end()) ; k != k_end ; ++k)
             if ((*k)->type() != mkt_internal)
                 accept_visitor(i)(**k);

@@ -39,26 +39,26 @@ namespace
 
 template <typename L_>
 struct class_concrete_uri_label :
-    bp::class_<L_, std::tr1::shared_ptr<L_>, bp::bases<URILabel>, boost::noncopyable>
+    bp::class_<L_, std::shared_ptr<L_>, bp::bases<URILabel>, boost::noncopyable>
 {
     class_concrete_uri_label(const std::string & name) :
-        bp::class_<L_, std::tr1::shared_ptr<L_>, bp::bases<URILabel>, boost::noncopyable>
+        bp::class_<L_, std::shared_ptr<L_>, bp::bases<URILabel>, boost::noncopyable>
         (
          name.c_str(),
          "A concrete URI label class.",
          bp::init<const std::string &>("__init__(string)")
         )
     {
-        bp::implicitly_convertible<std::tr1::shared_ptr<L_>, std::tr1::shared_ptr<URILabel> >();
+        bp::implicitly_convertible<std::shared_ptr<L_>, std::shared_ptr<URILabel> >();
     }
 };
 
 template <typename L_>
 struct class_concrete_dependencies_label :
-    bp::class_<L_, std::tr1::shared_ptr<L_>, bp::bases<DependenciesLabel>, boost::noncopyable>
+    bp::class_<L_, std::shared_ptr<L_>, bp::bases<DependenciesLabel>, boost::noncopyable>
 {
     class_concrete_dependencies_label(const std::string & name) :
-        bp::class_<L_, std::tr1::shared_ptr<L_>, bp::bases<DependenciesLabel>, boost::noncopyable>
+        bp::class_<L_, std::shared_ptr<L_>, bp::bases<DependenciesLabel>, boost::noncopyable>
         (
          name.c_str(),
          "A concrete dependencies label class.",
@@ -70,7 +70,7 @@ struct class_concrete_dependencies_label :
                 "__init__(String, bool)"
            );
 
-        bp::implicitly_convertible<std::tr1::shared_ptr<L_>, std::tr1::shared_ptr<DependenciesLabel> >();
+        bp::implicitly_convertible<std::shared_ptr<L_>, std::shared_ptr<DependenciesLabel> >();
     }
 };
 

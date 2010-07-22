@@ -39,20 +39,20 @@
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
-#include <tr1/functional>
-#include <tr1/unordered_map>
+#include <functional>
+#include <unordered_map>
 #include <algorithm>
 #include <set>
 
 using namespace paludis;
 using namespace paludis::unavailable_repository;
 
-typedef std::tr1::unordered_map<CategoryNamePart,
-        std::tr1::shared_ptr<QualifiedPackageNameSet>,
+typedef std::unordered_map<CategoryNamePart,
+        std::shared_ptr<QualifiedPackageNameSet>,
         Hash<CategoryNamePart> > PackageNames;
 
-typedef std::tr1::unordered_map<QualifiedPackageName,
-        std::tr1::shared_ptr<PackageIDSequence>,
+typedef std::unordered_map<QualifiedPackageName,
+        std::shared_ptr<PackageIDSequence>,
         Hash<QualifiedPackageName> > IDs;
 
 namespace paludis
@@ -61,7 +61,7 @@ namespace paludis
     struct Implementation<UnavailableRepositoryStore>
     {
         const UnavailableRepository * const repo;
-        mutable std::tr1::shared_ptr<CategoryNamePartSet> categories;
+        mutable std::shared_ptr<CategoryNamePartSet> categories;
         mutable PackageNames package_names;
         mutable IDs ids;
 
@@ -93,8 +93,8 @@ UnavailableRepositoryStore::_populate(const Environment * const env, const FSEnt
 {
     Context context("When populating UnavailableRepository from directory '" + stringify(f) + "':");
 
-    using namespace std::tr1::placeholders;
-    std::for_each(DirIterator(f), DirIterator(), std::tr1::bind(
+    using namespace std::placeholders;
+    std::for_each(DirIterator(f), DirIterator(), std::bind(
                 &UnavailableRepositoryStore::_populate_one, this, env, _1));
 }
 
@@ -122,7 +122,7 @@ UnavailableRepositoryStore::_populate_one(const Environment * const env, const F
         return;
     }
 
-    std::tr1::shared_ptr<MetadataValueKey<std::string> > repository_homepage, repository_description,
+    std::shared_ptr<MetadataValueKey<std::string> > repository_homepage, repository_description,
         repository_format, repository_sync;
     if (! file.homepage().empty())
         repository_homepage.reset(new LiteralMetadataValueKey<std::string>(
@@ -138,16 +138,16 @@ UnavailableRepositoryStore::_populate_one(const Environment * const env, const F
                 "REPOSITORY_SYNC", "Repository sync", mkt_normal, file.sync()));
 
     {
-        std::tr1::shared_ptr<Mask> mask(new UnavailableMask);
-        std::tr1::shared_ptr<Set<std::string> > from_repositories_set(new Set<std::string>);
+        std::shared_ptr<Mask> mask(new UnavailableMask);
+        std::shared_ptr<Set<std::string> > from_repositories_set(new Set<std::string>);
         from_repositories_set->insert(file.repo_name());
-        std::tr1::shared_ptr<MetadataCollectionKey<Set<std::string> > > from_repositories(
+        std::shared_ptr<MetadataCollectionKey<Set<std::string> > > from_repositories(
                 new LiteralMetadataStringSetKey("OWNING_REPOSITORY", "Owning repository",
                     mkt_significant, from_repositories_set));
 
         QualifiedPackageName old_name("x/x");
-        std::tr1::shared_ptr<QualifiedPackageNameSet> pkgs;
-        std::tr1::shared_ptr<PackageIDSequence> ids;
+        std::shared_ptr<QualifiedPackageNameSet> pkgs;
+        std::shared_ptr<PackageIDSequence> ids;
         for (UnavailableRepositoryFile::ConstIterator i(file.begin()), i_end(file.end()) ;
                 i != i_end ; ++i)
         {
@@ -191,13 +191,13 @@ UnavailableRepositoryStore::_populate_one(const Environment * const env, const F
 
     if (file.autoconfigurable())
     {
-        const std::tr1::shared_ptr<NoConfigurationInformationMask> no_configuration_mask(new NoConfigurationInformationMask);
-        std::tr1::shared_ptr<UnavailableRepositoryDependenciesKey> deps;
+        const std::shared_ptr<NoConfigurationInformationMask> no_configuration_mask(new NoConfigurationInformationMask);
+        std::shared_ptr<UnavailableRepositoryDependenciesKey> deps;
         if (! file.dependencies().empty())
             deps.reset(new UnavailableRepositoryDependenciesKey(env, "dependencies", "Dependencies", mkt_dependencies,
                         file.dependencies()));
 
-        const std::tr1::shared_ptr<UnavailableRepositoryID> id(new UnavailableRepositoryID(
+        const std::shared_ptr<UnavailableRepositoryID> id(new UnavailableRepositoryID(
                     make_named_values<UnavailableRepositoryIDParams>(
                         n::dependencies() = deps,
                         n::description() = repository_description,
@@ -237,22 +237,22 @@ UnavailableRepositoryStore::has_package_named(const QualifiedPackageName & q) co
     return _imp->ids.end() != _imp->ids.find(q);
 }
 
-std::tr1::shared_ptr<const CategoryNamePartSet>
+std::shared_ptr<const CategoryNamePartSet>
 UnavailableRepositoryStore::category_names() const
 {
     return _imp->categories;
 }
 
-std::tr1::shared_ptr<const CategoryNamePartSet>
+std::shared_ptr<const CategoryNamePartSet>
 UnavailableRepositoryStore::unimportant_category_names() const
 {
-    std::tr1::shared_ptr<CategoryNamePartSet> result(make_shared_ptr(new CategoryNamePartSet));
+    std::shared_ptr<CategoryNamePartSet> result(make_shared_ptr(new CategoryNamePartSet));
     result->insert(CategoryNamePart("virtual"));
     result->insert(CategoryNamePart("repository"));
     return result;
 }
 
-std::tr1::shared_ptr<const QualifiedPackageNameSet>
+std::shared_ptr<const QualifiedPackageNameSet>
 UnavailableRepositoryStore::package_names(const CategoryNamePart & c) const
 {
     PackageNames::iterator p(_imp->package_names.find(c));
@@ -262,7 +262,7 @@ UnavailableRepositoryStore::package_names(const CategoryNamePart & c) const
         return p->second;
 }
 
-std::tr1::shared_ptr<const PackageIDSequence>
+std::shared_ptr<const PackageIDSequence>
 UnavailableRepositoryStore::package_ids(const QualifiedPackageName & p) const
 {
     IDs::iterator i(_imp->ids.find(p));

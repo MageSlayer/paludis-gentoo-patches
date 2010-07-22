@@ -245,12 +245,12 @@ namespace
             texts.push_back(stringify(k.value()));
         }
 
-        void visit(const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > & k)
+        void visit(const MetadataValueKey<std::shared_ptr<const PackageID> > & k)
         {
             texts.push_back(stringify(*k.value()));
         }
 
-        void visit(const MetadataValueKey<std::tr1::shared_ptr<const Choices> > & k)
+        void visit(const MetadataValueKey<std::shared_ptr<const Choices> > & k)
         {
             for (Choices::ConstIterator c(k.value()->begin()), c_end(k.value()->end()) ;
                     c != c_end ; ++c)
@@ -259,11 +259,11 @@ namespace
                     texts.push_back(stringify((*i)->name_with_prefix()));
         }
 
-        void visit(const MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> > &)
+        void visit(const MetadataValueKey<std::shared_ptr<const RepositoryMaskInfo> > &)
         {
         }
 
-        void visit(const MetadataValueKey<std::tr1::shared_ptr<const Contents> > &)
+        void visit(const MetadataValueKey<std::shared_ptr<const Contents> > &)
         {
         }
 
@@ -334,7 +334,7 @@ namespace
             std::transform(k.value()->begin(), k.value()->end(), std::back_inserter(texts), &stringify<KeywordName>);
         }
 
-        void visit(const MetadataCollectionKey<Sequence<std::tr1::shared_ptr<const PackageID> > > & k)
+        void visit(const MetadataCollectionKey<Sequence<std::shared_ptr<const PackageID> > > & k)
         {
             std::transform(indirect_iterator(k.value()->begin()), indirect_iterator(k.value()->end()),
                     std::back_inserter(texts), &stringify<PackageID>);
@@ -345,8 +345,8 @@ namespace
 
 int
 MatchCommand::run(
-        const std::tr1::shared_ptr<Environment> & env,
-        const std::tr1::shared_ptr<const Sequence<std::string > > & args
+        const std::shared_ptr<Environment> & env,
+        const std::shared_ptr<const Sequence<std::string > > & args
         )
 {
     MatchCommandLine cmdline;
@@ -363,7 +363,7 @@ MatchCommand::run(
 
     PackageDepSpec spec(parse_user_package_dep_spec(*cmdline.begin_parameters(), env.get(), UserPackageDepSpecOptions()));
 
-    const std::tr1::shared_ptr<Set<std::string> > patterns(new Set<std::string>);
+    const std::shared_ptr<Set<std::string> > patterns(new Set<std::string>);
     std::copy(next(cmdline.begin_parameters()), cmdline.end_parameters(), patterns->inserter());
 
     return run_hosted(env, cmdline.match_options, patterns, spec) ? EXIT_SUCCESS : EXIT_FAILURE;
@@ -371,12 +371,12 @@ MatchCommand::run(
 
 bool
 MatchCommand::run_hosted(
-        const std::tr1::shared_ptr<Environment> & env,
+        const std::shared_ptr<Environment> & env,
         const SearchCommandLineMatchOptions & match_options,
-        const std::tr1::shared_ptr<const Set<std::string> > & patterns,
+        const std::shared_ptr<const Set<std::string> > & patterns,
         const PackageDepSpec & spec)
 {
-    const std::tr1::shared_ptr<const PackageID> id(*((*env)[selection::RequireExactlyOne(
+    const std::shared_ptr<const PackageID> id(*((*env)[selection::RequireExactlyOne(
                     generator::Matches(spec, MatchPackageOptions()))])->begin());
 
     std::list<std::string> texts;
@@ -412,7 +412,7 @@ MatchCommand::run_hosted(
             t != t_end ; ++t)
     {
         bool current(patterns->end() != std::find_if(patterns->begin(), patterns->end(),
-                    std::tr1::bind(&match, *t, std::tr1::placeholders::_1, match_options.a_type.argument())));
+                    std::bind(&match, *t, std::placeholders::_1, match_options.a_type.argument())));
 
         if (match_options.a_not.specified())
             current = ! current;
@@ -424,7 +424,7 @@ MatchCommand::run_hosted(
     return match_options.a_and.specified() ? all : any;
 }
 
-std::tr1::shared_ptr<args::ArgsHandler>
+std::shared_ptr<args::ArgsHandler>
 MatchCommand::make_doc_cmdline()
 {
     return make_shared_ptr(new MatchCommandLine);

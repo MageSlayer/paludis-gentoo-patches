@@ -32,7 +32,7 @@
 #include <list>
 #include <set>
 #include <algorithm>
-#include <tr1/type_traits>
+#include <type_traits>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -85,8 +85,8 @@ namespace paludis
     {
         const ERepository * const repository;
 
-        typedef std::list<std::pair<std::tr1::shared_ptr<const EAPI>,
-                const typename std::tr1::remove_reference<typename F_::ConstIterator::value_type>::type> > Lines;
+        typedef std::list<std::pair<std::shared_ptr<const EAPI>,
+                const typename std::remove_reference<typename F_::ConstIterator::value_type>::type> > Lines;
         Lines lines;
 
         std::set<std::string> removed;
@@ -100,15 +100,15 @@ namespace paludis
     template <>
     struct WrappedForwardIteratorTraits<ProfileFile<LineConfigFile>::ConstIteratorTag>
     {
-        typedef std::list<std::pair<std::tr1::shared_ptr<const EAPI>,
-                const std::tr1::remove_reference<LineConfigFile::ConstIterator::value_type>::type> >::const_iterator UnderlyingIterator;
+        typedef std::list<std::pair<std::shared_ptr<const EAPI>,
+                const std::remove_reference<LineConfigFile::ConstIterator::value_type>::type> >::const_iterator UnderlyingIterator;
     };
 
     template <>
     struct WrappedForwardIteratorTraits<ProfileFile<MaskFile>::ConstIteratorTag>
     {
-        typedef std::list<std::pair<std::tr1::shared_ptr<const EAPI>,
-                const std::tr1::remove_reference<MaskFile::ConstIterator::value_type>::type> >::const_iterator UnderlyingIterator;
+        typedef std::list<std::pair<std::shared_ptr<const EAPI>,
+                const std::remove_reference<MaskFile::ConstIterator::value_type>::type> >::const_iterator UnderlyingIterator;
     };
 }
 
@@ -121,7 +121,7 @@ ProfileFile<F_>::add_file(const FSEntry & f)
     if (! f.exists())
         return;
 
-    const std::tr1::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(
+    const std::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(
                 this->_imp->repository->eapi_for_file(f)));
     if (! eapi->supported())
         throw ERepositoryConfigurationError("Can't use profile file '" + stringify(f) +
@@ -130,7 +130,7 @@ ProfileFile<F_>::add_file(const FSEntry & f)
     F_ file(f, LineConfigFileOptions() + lcfo_disallow_continuations);
     for (typename F_::ConstIterator line(file.begin()), line_end(file.end()) ; line != line_end ; ++line)
     {
-        const std::string key(FileEntryTraits<const typename std::tr1::remove_reference<typename F_::ConstIterator::value_type>::type>::extract_key(*line));
+        const std::string key(FileEntryTraits<const typename std::remove_reference<typename F_::ConstIterator::value_type>::type>::extract_key(*line));
         if (0 == key.compare(0, 1, "-", 0, 1))
         {
             typename Implementation<ProfileFile>::Lines::iterator i(
@@ -189,11 +189,11 @@ ProfileFile<F_>::end() const
 
 template class ProfileFile<LineConfigFile>;
 template class WrappedForwardIterator<ProfileFile<LineConfigFile>::ConstIteratorTag, const std::pair<
-    std::tr1::shared_ptr<const EAPI>,
-    const std::tr1::remove_reference<LineConfigFile::ConstIterator::value_type>::type> >;
+    std::shared_ptr<const EAPI>,
+    const std::remove_reference<LineConfigFile::ConstIterator::value_type>::type> >;
 
 template class ProfileFile<MaskFile>;
 template class WrappedForwardIterator<ProfileFile<MaskFile>::ConstIteratorTag, const std::pair<
-    std::tr1::shared_ptr<const EAPI>,
-    const std::tr1::remove_reference<MaskFile::ConstIterator::value_type>::type> >;
+    std::shared_ptr<const EAPI>,
+    const std::remove_reference<MaskFile::ConstIterator::value_type>::type> >;
 

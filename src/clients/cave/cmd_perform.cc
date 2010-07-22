@@ -189,13 +189,13 @@ namespace
 
     struct OutputManagerFromIPCOrEnvironment
     {
-        std::tr1::shared_ptr<OutputManagerFromIPC> manager_if_ipc;
-        std::tr1::shared_ptr<OutputManagerFromEnvironment> manager_if_env;
+        std::shared_ptr<OutputManagerFromIPC> manager_if_ipc;
+        std::shared_ptr<OutputManagerFromEnvironment> manager_if_env;
 
         OutputManagerFromIPCOrEnvironment(
                 const Environment * const e,
                 const PerformCommandLine & cmdline,
-                const std::tr1::shared_ptr<const PackageID> & id)
+                const std::shared_ptr<const PackageID> & id)
         {
             if (cmdline.a_managed_output.specified())
                 manager_if_ipc.reset(new OutputManagerFromIPC(e, id, get_output_exclusivity(cmdline),
@@ -205,7 +205,7 @@ namespace
                             ClientOutputFeatures() + cof_summary_at_end));
         }
 
-        const std::tr1::shared_ptr<OutputManager> operator() (const Action & a)
+        const std::shared_ptr<OutputManager> operator() (const Action & a)
         {
             if (manager_if_env)
                 return (*manager_if_env)(a);
@@ -213,7 +213,7 @@ namespace
                 return (*manager_if_ipc)(a);
         }
 
-        const std::tr1::shared_ptr<OutputManager> output_manager_if_constructed()
+        const std::shared_ptr<OutputManager> output_manager_if_constructed()
         {
             if (manager_if_env)
                 return manager_if_env->output_manager_if_constructed();
@@ -231,9 +231,9 @@ namespace
     };
 
     void execute(
-            const std::tr1::shared_ptr<Environment> & env,
+            const std::shared_ptr<Environment> & env,
             const PerformCommandLine & cmdline,
-            const std::tr1::shared_ptr<const PackageID> & id,
+            const std::shared_ptr<const PackageID> & id,
             const std::string & action_name,
             Action & action)
     {
@@ -268,9 +268,9 @@ namespace
     }
 
     void perform_uninstall(
-            const std::tr1::shared_ptr<Environment> & env,
+            const std::shared_ptr<Environment> & env,
             const PerformCommandLine & cmdline,
-            const std::tr1::shared_ptr<const PackageID> & id,
+            const std::shared_ptr<const PackageID> & id,
             const std::string & action_name,
             const UninstallActionOptions & options)
     {
@@ -298,7 +298,7 @@ namespace
         WantPhase operator() (const std::string & phase)
         {
             output_manager_holder.construct_standard_if_unconstructed();
-            std::tr1::shared_ptr<OutputManager> output_manager(output_manager_holder.output_manager_if_constructed());
+            std::shared_ptr<OutputManager> output_manager(output_manager_holder.output_manager_if_constructed());
 
             if (cmdline.a_abort_at_phase.end_args() != std::find(
                         cmdline.a_abort_at_phase.begin_args(), cmdline.a_abort_at_phase.end_args(), phase))
@@ -366,8 +366,8 @@ namespace
 
 int
 PerformCommand::run(
-        const std::tr1::shared_ptr<Environment> & env,
-        const std::tr1::shared_ptr<const Sequence<std::string > > & args
+        const std::shared_ptr<Environment> & env,
+        const std::shared_ptr<const Sequence<std::string > > & args
         )
 {
     PerformCommandLine cmdline;
@@ -388,13 +388,13 @@ PerformCommand::run(
 
     PackageDepSpec spec(parse_user_package_dep_spec(*next(cmdline.begin_parameters()), env.get(),
                 UserPackageDepSpecOptions()));
-    const std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsUnsorted(
+    const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsUnsorted(
                 generator::Matches(spec, MatchPackageOptions()))]);
     if (ids->empty())
         throw NothingMatching(spec);
     else if (1 != std::distance(ids->begin(), ids->end()))
         throw BeMoreSpecific(spec, ids);
-    const std::tr1::shared_ptr<const PackageID> id(*ids->begin());
+    const std::shared_ptr<const PackageID> id(*ids->begin());
 
     FetchParts parts;
     parts += fp_regulars;
@@ -410,7 +410,7 @@ PerformCommand::run(
 
         OutputManagerFromIPCOrEnvironment output_manager_holder(env.get(), cmdline, id);
         ConfigActionOptions options(make_named_values<ConfigActionOptions>(
-                    n::make_output_manager() = std::tr1::ref(output_manager_holder)
+                    n::make_output_manager() = std::ref(output_manager_holder)
                     ));
         ConfigAction config_action(options);
         execute(env, cmdline, id, action, config_action);
@@ -422,14 +422,14 @@ PerformCommand::run(
 
         OutputManagerFromIPCOrEnvironment output_manager_holder(env.get(), cmdline, id);
         WantInstallPhase want_phase(cmdline, output_manager_holder);
-        std::tr1::shared_ptr<Sequence<FetchActionFailure> > failures(new Sequence<FetchActionFailure>);
+        std::shared_ptr<Sequence<FetchActionFailure> > failures(new Sequence<FetchActionFailure>);
         FetchActionOptions options(make_named_values<FetchActionOptions>(
                     n::errors() = failures,
                     n::exclude_unmirrorable() = cmdline.a_exclude_unmirrorable.specified(),
                     n::fetch_parts() = parts,
                     n::ignore_not_in_manifest() = false,
                     n::ignore_unfetched() = cmdline.a_ignore_unfetched.specified(),
-                    n::make_output_manager() = std::tr1::ref(output_manager_holder),
+                    n::make_output_manager() = std::ref(output_manager_holder),
                     n::safe_resume() = true,
                     n::want_phase() = want_phase
                     ));
@@ -465,9 +465,9 @@ PerformCommand::run(
                     n::fetch_parts() = parts,
                     n::ignore_not_in_manifest() = false,
                     n::ignore_unfetched() = cmdline.a_ignore_unfetched.specified(),
-                    n::make_output_manager() = std::tr1::ref(output_manager_holder),
+                    n::make_output_manager() = std::ref(output_manager_holder),
                     n::safe_resume() = true,
-                    n::want_phase() = std::tr1::bind(return_literal_function(wp_yes))
+                    n::want_phase() = std::bind(return_literal_function(wp_yes))
                     ));
         OurPretendFetchAction pretend_fetch_action(options);
         execute(env, cmdline, id, action, pretend_fetch_action);
@@ -489,7 +489,7 @@ PerformCommand::run(
 
         OutputManagerFromIPCOrEnvironment output_manager_holder(env.get(), cmdline, id);
         InfoActionOptions options(make_named_values<InfoActionOptions>(
-                    n::make_output_manager() = std::tr1::ref(output_manager_holder)
+                    n::make_output_manager() = std::ref(output_manager_holder)
                     ));
         InfoAction info_action(options);
         execute(env, cmdline, id, action, info_action);
@@ -502,16 +502,16 @@ PerformCommand::run(
         if (! cmdline.a_destination.specified())
             throw args::DoHelp("--destination must be specified for an install");
 
-        const std::tr1::shared_ptr<Repository> destination(env->package_database()->fetch_repository(
+        const std::shared_ptr<Repository> destination(env->package_database()->fetch_repository(
                     RepositoryName(cmdline.a_destination.argument())));
 
-        const std::tr1::shared_ptr<PackageIDSequence> replacing(new PackageIDSequence);
+        const std::shared_ptr<PackageIDSequence> replacing(new PackageIDSequence);
         for (args::StringSetArg::ConstIterator p(cmdline.a_replacing.begin_args()),
                 p_end(cmdline.a_replacing.end_args()) ;
                 p != p_end ; ++p)
         {
             PackageDepSpec rspec(parse_user_package_dep_spec(*p, env.get(), UserPackageDepSpecOptions()));
-            const std::tr1::shared_ptr<const PackageIDSequence> rids((*env)[selection::AllVersionsUnsorted(
+            const std::shared_ptr<const PackageIDSequence> rids((*env)[selection::AllVersionsUnsorted(
                         generator::Matches(rspec, MatchPackageOptions()))]);
             if (rids->empty())
                 throw NothingMatching(rspec);
@@ -525,10 +525,10 @@ PerformCommand::run(
         WantInstallPhase want_phase(cmdline, output_manager_holder);
         InstallActionOptions options(make_named_values<InstallActionOptions>(
                     n::destination() = destination,
-                    n::make_output_manager() = std::tr1::ref(output_manager_holder),
-                    n::perform_uninstall() = std::tr1::bind(&perform_uninstall,
-                            env, std::tr1::cref(cmdline), std::tr1::placeholders::_1,
-                            action, std::tr1::placeholders::_2
+                    n::make_output_manager() = std::ref(output_manager_holder),
+                    n::perform_uninstall() = std::bind(&perform_uninstall,
+                            env, std::cref(cmdline), std::placeholders::_1,
+                            action, std::placeholders::_2
                             ),
                     n::replacing() = replacing,
                     n::want_phase() = want_phase
@@ -543,7 +543,7 @@ PerformCommand::run(
 
         OutputManagerFromIPCOrEnvironment output_manager_holder(env.get(), cmdline, id);
         PretendActionOptions options(make_named_values<PretendActionOptions>(
-                    n::make_output_manager() = std::tr1::ref(output_manager_holder)
+                    n::make_output_manager() = std::ref(output_manager_holder)
                     ));
         PretendAction pretend_action(options);
         execute(env, cmdline, id, action, pretend_action);
@@ -561,7 +561,7 @@ PerformCommand::run(
                     n::if_for_install_id() = make_null_shared_ptr(),
                     n::ignore_for_unmerge() = &ignore_nothing,
                     n::is_overwrite() = false,
-                    n::make_output_manager() = std::tr1::ref(output_manager_holder)
+                    n::make_output_manager() = std::ref(output_manager_holder)
                     ));
         UninstallAction uninstall_action(options);
         execute(env, cmdline, id, action, uninstall_action);
@@ -572,7 +572,7 @@ PerformCommand::run(
     return EXIT_SUCCESS;
 }
 
-std::tr1::shared_ptr<args::ArgsHandler>
+std::shared_ptr<args::ArgsHandler>
 PerformCommand::make_doc_cmdline()
 {
     return make_shared_ptr(new PerformCommandLine);

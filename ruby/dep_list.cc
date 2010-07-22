@@ -50,13 +50,13 @@ namespace
     static VALUE c_dep_list_entry;
     static VALUE c_dep_list_override_masks_functions;
 
-    std::tr1::shared_ptr<DepListOverrideMasksFunctions>
+    std::shared_ptr<DepListOverrideMasksFunctions>
     value_to_dep_list_override_masks_functions(VALUE v)
     {
         if (rb_obj_is_kind_of(v, c_dep_list_override_masks_functions))
         {
-            std::tr1::shared_ptr<DepListOverrideMasksFunctions> * v_ptr;
-            Data_Get_Struct(v, std::tr1::shared_ptr<DepListOverrideMasksFunctions>, v_ptr);
+            std::shared_ptr<DepListOverrideMasksFunctions> * v_ptr;
+            Data_Get_Struct(v, std::shared_ptr<DepListOverrideMasksFunctions>, v_ptr);
             return *v_ptr;
         }
         else
@@ -66,13 +66,13 @@ namespace
     }
 
     VALUE
-    dep_list_override_masks_functions_to_value(std::tr1::shared_ptr<DepListOverrideMasksFunctions> m)
+    dep_list_override_masks_functions_to_value(std::shared_ptr<DepListOverrideMasksFunctions> m)
     {
-        std::tr1::shared_ptr<DepListOverrideMasksFunctions> * m_ptr(0);
+        std::shared_ptr<DepListOverrideMasksFunctions> * m_ptr(0);
         try
         {
-            m_ptr = new std::tr1::shared_ptr<DepListOverrideMasksFunctions>(m);
-            return  Data_Wrap_Struct(c_dep_list_override_masks_functions, 0, &Common<std::tr1::shared_ptr<DepListOverrideMasksFunctions> >::free, m_ptr);
+            m_ptr = new std::shared_ptr<DepListOverrideMasksFunctions>(m);
+            return  Data_Wrap_Struct(c_dep_list_override_masks_functions, 0, &Common<std::shared_ptr<DepListOverrideMasksFunctions> >::free, m_ptr);
         }
         catch (const std::exception & e)
         {
@@ -81,13 +81,13 @@ namespace
         }
     }
 
-    std::tr1::shared_ptr<DepListOptions>
+    std::shared_ptr<DepListOptions>
     value_to_dep_list_options(VALUE v)
     {
         if (rb_obj_is_kind_of(v, c_dep_list_options))
         {
-            std::tr1::shared_ptr<DepListOptions> * v_ptr;
-            Data_Get_Struct(v, std::tr1::shared_ptr<DepListOptions>, v_ptr);
+            std::shared_ptr<DepListOptions> * v_ptr;
+            Data_Get_Struct(v, std::shared_ptr<DepListOptions>, v_ptr);
             return *v_ptr;
         }
         else
@@ -97,13 +97,13 @@ namespace
     }
 
     VALUE
-    dep_list_options_to_value(std::tr1::shared_ptr<DepListOptions> m)
+    dep_list_options_to_value(std::shared_ptr<DepListOptions> m)
     {
-        std::tr1::shared_ptr<DepListOptions> * m_ptr(0);
+        std::shared_ptr<DepListOptions> * m_ptr(0);
         try
         {
-            m_ptr = new std::tr1::shared_ptr<DepListOptions>(m);
-            return  Data_Wrap_Struct(c_dep_list_options, 0, &Common<std::tr1::shared_ptr<DepListOptions> >::free, m_ptr);
+            m_ptr = new std::shared_ptr<DepListOptions>(m);
+            return  Data_Wrap_Struct(c_dep_list_options, 0, &Common<std::shared_ptr<DepListOptions> >::free, m_ptr);
         }
         catch (const std::exception & e)
         {
@@ -130,11 +130,11 @@ namespace
     {
         if (argc != 0)
             rb_raise(rb_eArgError, "No Arguments Please, we're british");
-        std::tr1::shared_ptr<DepListOverrideMasksFunctions> * ptr(0);
+        std::shared_ptr<DepListOverrideMasksFunctions> * ptr(0);
         try
         {
-            ptr = new std::tr1::shared_ptr<DepListOverrideMasksFunctions>(new DepListOverrideMasksFunctions);
-            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::tr1::shared_ptr<DepListOverrideMasksFunctions> >::free, ptr));
+            ptr = new std::shared_ptr<DepListOverrideMasksFunctions>(new DepListOverrideMasksFunctions);
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::shared_ptr<DepListOverrideMasksFunctions> >::free, ptr));
             rb_obj_call_init(tdata, argc, argv);
             return tdata;
         }
@@ -189,13 +189,13 @@ namespace
     VALUE
     dep_list_options_new(int argc, VALUE *argv, VALUE self)
     {
-        std::tr1::shared_ptr<DepListOptions> * ptr(0);
+        std::shared_ptr<DepListOptions> * ptr(0);
         if (0 == argc)
         {
             try
             {
-                ptr = new std::tr1::shared_ptr<DepListOptions>(new DepListOptions);
-                VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::tr1::shared_ptr<DepListOptions> >::free, ptr));
+                ptr = new std::shared_ptr<DepListOptions>(new DepListOptions);
+                VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::shared_ptr<DepListOptions> >::free, ptr));
                 rb_obj_call_init(tdata, argc, argv);
                 return tdata;
             }
@@ -228,7 +228,7 @@ namespace
                 int value_for_use;
                 int value_for_blocks;
                 bool value_for_dependency_tags;
-                std::tr1::shared_ptr<DepListOverrideMasksFunctions> value_for_override_masks_functions;
+                std::shared_ptr<DepListOverrideMasksFunctions> value_for_override_masks_functions;
                 MatchPackageOptions value_for_match_package_options;
 
                 if (1 == argc && rb_obj_is_kind_of(argv[0], rb_cHash))
@@ -382,7 +382,7 @@ namespace
                 if (value_for_circular < 0 ||  value_for_blocks >= last_dl_blocks)
                     rb_raise(rb_eArgError, "blocks out of range");
 
-                ptr = new std::tr1::shared_ptr<DepListOptions>(new DepListOptions);
+                ptr = new std::shared_ptr<DepListOptions>(new DepListOptions);
                 (*ptr)->blocks() = static_cast<DepListBlocksOption>(value_for_blocks);
                 (*ptr)->circular() = static_cast<DepListCircularOption>(value_for_circular);
                 (*ptr)->dependency_tags() = value_for_dependency_tags;
@@ -405,7 +405,7 @@ namespace
                 (*ptr)->upgrade() = static_cast<DepListUpgradeOption>(value_for_upgrade);
                 (*ptr)->use() = static_cast<DepListUseOption>(value_for_use);
 
-                VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::tr1::shared_ptr<DepListOptions> >::free, ptr));
+                VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::shared_ptr<DepListOptions> >::free, ptr));
                 rb_obj_call_init(tdata, argc, argv);
                 return tdata;
             }
@@ -719,16 +719,16 @@ namespace
         static VALUE
         fetch(VALUE self)
         {
-            std::tr1::shared_ptr<DepListOptions> * p;
-            Data_Get_Struct(self, std::tr1::shared_ptr<DepListOptions>, p);
+            std::shared_ptr<DepListOptions> * p;
+            Data_Get_Struct(self, std::shared_ptr<DepListOptions>, p);
             return INT2FIX(((**p).*m_)());
         }
 
         static VALUE
         set (VALUE self, VALUE val)
         {
-            std::tr1::shared_ptr<DepListOptions> * p;
-            Data_Get_Struct(self, std::tr1::shared_ptr<DepListOptions>, p);
+            std::shared_ptr<DepListOptions> * p;
+            Data_Get_Struct(self, std::shared_ptr<DepListOptions>, p);
             try
             {
                 ((**p).*m_)() = static_cast<T_>(NUM2INT(val));
@@ -750,8 +750,8 @@ namespace
     VALUE
     dep_list_options_dependency_tags(VALUE self)
     {
-        std::tr1::shared_ptr<DepListOptions> * p;
-        Data_Get_Struct(self, std::tr1::shared_ptr<DepListOptions>, p);
+        std::shared_ptr<DepListOptions> * p;
+        Data_Get_Struct(self, std::shared_ptr<DepListOptions>, p);
         return (*p)->dependency_tags() ? Qtrue : Qfalse;
     }
 
@@ -764,8 +764,8 @@ namespace
     VALUE
     dep_list_options_dependency_tags_set(VALUE self, VALUE tags)
     {
-        std::tr1::shared_ptr<DepListOptions> * p;
-        Data_Get_Struct(self, std::tr1::shared_ptr<DepListOptions>, p);
+        std::shared_ptr<DepListOptions> * p;
+        Data_Get_Struct(self, std::shared_ptr<DepListOptions>, p);
         try
         {
             if (Qtrue == tags)
@@ -797,8 +797,8 @@ namespace
     VALUE
     dep_list_options_override_masks(VALUE self)
     {
-        std::tr1::shared_ptr<DepListOptions> * p;
-        Data_Get_Struct(self, std::tr1::shared_ptr<DepListOptions>, p);
+        std::shared_ptr<DepListOptions> * p;
+        Data_Get_Struct(self, std::shared_ptr<DepListOptions>, p);
         return (*p)->override_masks() ? dep_list_override_masks_functions_to_value((*p)->override_masks()) : Qnil;
     }
 
@@ -811,8 +811,8 @@ namespace
     VALUE
     dep_list_options_override_masks_set(VALUE self, VALUE omf)
     {
-        std::tr1::shared_ptr<DepListOptions> * p;
-        Data_Get_Struct(self, std::tr1::shared_ptr<DepListOptions>, p);
+        std::shared_ptr<DepListOptions> * p;
+        Data_Get_Struct(self, std::shared_ptr<DepListOptions>, p);
         try
         {
             (*p)->override_masks() = value_to_dep_list_override_masks_functions(omf);
@@ -833,8 +833,8 @@ namespace
     VALUE
     dep_list_options_match_package_options(VALUE self)
     {
-        std::tr1::shared_ptr<DepListOptions> * p;
-        Data_Get_Struct(self, std::tr1::shared_ptr<DepListOptions>, p);
+        std::shared_ptr<DepListOptions> * p;
+        Data_Get_Struct(self, std::shared_ptr<DepListOptions>, p);
         return match_package_options_to_value((*p)->match_package_options());
     }
 
@@ -847,8 +847,8 @@ namespace
     VALUE
     dep_list_options_match_package_options_set(VALUE self, VALUE omf)
     {
-        std::tr1::shared_ptr<DepListOptions> * p;
-        Data_Get_Struct(self, std::tr1::shared_ptr<DepListOptions>, p);
+        std::shared_ptr<DepListOptions> * p;
+        Data_Get_Struct(self, std::shared_ptr<DepListOptions>, p);
         try
         {
             (*p)->match_package_options() = value_to_match_package_options(omf);
@@ -915,12 +915,12 @@ namespace
             Data_Get_Struct(self, DepList, p);
             if (!rb_obj_is_kind_of(d, rb_cArray))
                 rb_raise(rb_eTypeError, "Can't convert %s into Array", rb_obj_classname(d));
-            std::tr1::shared_ptr<DestinationsSet> destinations(new DestinationsSet);
+            std::shared_ptr<DestinationsSet> destinations(new DestinationsSet);
 
             for (long i = 0 ; i < RARRAY_LEN(d) ; ++i)
                 destinations->insert(value_to_repository(rb_ary_entry(d, i)));
 
-            std::tr1::shared_ptr<const SetSpecTree> sst(value_to_dep_tree<SetSpecTree>(da));
+            std::shared_ptr<const SetSpecTree> sst(value_to_dep_tree<SetSpecTree>(da));
             p->add(*sst, destinations);
             return self;
         }
@@ -975,7 +975,7 @@ namespace
             Data_Get_Struct(self, DepList, p);
             if (!rb_obj_is_kind_of(d, rb_cArray))
                 rb_raise(rb_eTypeError, "Can't convert %s into Array", rb_obj_classname(d));
-            std::tr1::shared_ptr<DestinationsCollection> destinations(new DestinationsCollection::Concrete);
+            std::shared_ptr<DestinationsCollection> destinations(new DestinationsCollection::Concrete);
 
             for (long i = 0 ; i < RARRAY_LEN(d) ; ++i)
                 destinations->insert(value_to_repository(rb_ary_entry(d, i)));
@@ -1109,32 +1109,32 @@ namespace
     VALUE
     dep_list_override_masks_functions_bind(int argc, VALUE* argv, VALUE self)
     {
-        using namespace std::tr1::placeholders;
+        using namespace std::placeholders;
 
         if (argc < 1 || argc > 2)
             rb_raise(rb_eArgError, "Expected one or two arguments, not %d", argc);
         Check_Type(argv[0], T_SYMBOL);
-        std::tr1::shared_ptr<DepListOverrideMasksFunctions> * p;
-        Data_Get_Struct(self, std::tr1::shared_ptr<DepListOverrideMasksFunctions>, p);
+        std::shared_ptr<DepListOverrideMasksFunctions> * p;
+        Data_Get_Struct(self, std::shared_ptr<DepListOverrideMasksFunctions>, p);
         if (rb_intern("tilde_keywords") == SYM2ID(argv[0]))
         {
             if (2 != argc)
                 rb_raise(rb_eArgError, "Expected two arguments, not %d", argc);
-            std::tr1::shared_ptr<Environment> env = value_to_environment(argv[1]);
-            (*p)->push_back(std::tr1::bind(&override_tilde_keywords, env.get(), _1, _2));
+            std::shared_ptr<Environment> env = value_to_environment(argv[1]);
+            (*p)->push_back(std::bind(&override_tilde_keywords, env.get(), _1, _2));
         }
         else if (rb_intern("unkeyworded") == SYM2ID(argv[0]))
         {
             if (2 != argc)
                 rb_raise(rb_eArgError, "Expected two arguments, not %d", argc);
-            std::tr1::shared_ptr<Environment> env = value_to_environment(argv[1]);
-            (*p)->push_back(std::tr1::bind(&override_unkeyworded, env.get(), _1, _2));
+            std::shared_ptr<Environment> env = value_to_environment(argv[1]);
+            (*p)->push_back(std::bind(&override_unkeyworded, env.get(), _1, _2));
         }
         else if (rb_intern("repository_masks") == SYM2ID(argv[0]))
         {
             if (1 != argc)
                 rb_raise(rb_eArgError, "Expected one argument, not %d", argc);
-            (*p)->push_back(std::tr1::bind(&override_repository_masks, _2));
+            (*p)->push_back(std::bind(&override_repository_masks, _2));
         }
         else if (rb_intern("license") == SYM2ID(argv[0]))
         {
@@ -1142,7 +1142,7 @@ namespace
             {
                 rb_raise(rb_eArgError, "Expected one argument, not %d", argc);
             }
-            (*p)->push_back(std::tr1::bind(&override_license, _2));
+            (*p)->push_back(std::bind(&override_license, _2));
         }
         else
         {

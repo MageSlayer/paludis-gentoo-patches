@@ -53,10 +53,10 @@ namespace
         args::ArgsGroup g_target_options;
         args::SwitchArg a_all_versions;
 
-        std::tr1::shared_ptr<ResolveCommandLineResolutionOptions> resolution_options;
-        std::tr1::shared_ptr<ResolveCommandLineExecutionOptions> execution_options;
-        std::tr1::shared_ptr<ResolveCommandLineDisplayOptions> display_options;
-        std::tr1::shared_ptr<ResolveCommandLineProgramOptions> program_options;
+        std::shared_ptr<ResolveCommandLineResolutionOptions> resolution_options;
+        std::shared_ptr<ResolveCommandLineExecutionOptions> execution_options;
+        std::shared_ptr<ResolveCommandLineDisplayOptions> display_options;
+        std::shared_ptr<ResolveCommandLineProgramOptions> program_options;
 
         UninstallCommandLine(const bool for_docs) :
             g_target_options(main_options_section(), "Target options", "Target options"),
@@ -89,7 +89,7 @@ namespace
         }
     };
 
-    bool has_multiple_versions(const std::tr1::shared_ptr<const PackageIDSequence> & ids)
+    bool has_multiple_versions(const std::shared_ptr<const PackageIDSequence> & ids)
     {
         QualifiedPackageName old_qpn("x/x");
         for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
@@ -112,8 +112,8 @@ UninstallCommand::important() const
 
 int
 UninstallCommand::run(
-        const std::tr1::shared_ptr<Environment> & env,
-        const std::tr1::shared_ptr<const Sequence<std::string > > & args
+        const std::shared_ptr<Environment> & env,
+        const std::shared_ptr<const Sequence<std::string > > & args
         )
 {
     UninstallCommandLine cmdline(false);
@@ -128,17 +128,17 @@ UninstallCommand::run(
     cmdline.resolution_options->apply_shortcuts();
     cmdline.resolution_options->verify(env);
 
-    std::tr1::shared_ptr<Sequence<std::pair<std::string, std::string> > > targets(new Sequence<std::pair<std::string, std::string> >);
-    std::tr1::shared_ptr<Sequence<std::string> > targets_cleaned_up(new Sequence<std::string>);
+    std::shared_ptr<Sequence<std::pair<std::string, std::string> > > targets(new Sequence<std::pair<std::string, std::string> >);
+    std::shared_ptr<Sequence<std::string> > targets_cleaned_up(new Sequence<std::string>);
 
     std::set<QualifiedPackageName> qpns_being_changed;
-    std::tr1::shared_ptr<PackageIDSequence> ids_going_away(new PackageIDSequence);
+    std::shared_ptr<PackageIDSequence> ids_going_away(new PackageIDSequence);
 
     for (UninstallCommandLine::ParametersConstIterator p(cmdline.begin_parameters()), p_end(cmdline.end_parameters()) ;
             p != p_end ; ++p)
     {
         PackageDepSpec spec(parse_user_package_dep_spec(*p, env.get(), UserPackageDepSpecOptions() + updso_allow_wildcards));
-        const std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(
+        const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(
                     generator::Matches(spec, MatchPackageOptions()) | filter::SupportsAction<UninstallAction>())]);
         if (ids->empty())
             throw NothingMatching(spec);
@@ -164,7 +164,7 @@ UninstallCommand::run(
             q != q_end ; ++q)
     {
         bool removing_all_slots(true);
-        const std::tr1::shared_ptr<const PackageIDSequence> all_uninstallable((*env)[selection::AllVersionsSorted(
+        const std::shared_ptr<const PackageIDSequence> all_uninstallable((*env)[selection::AllVersionsSorted(
                     generator::Package(*q) | filter::SupportsAction<UninstallAction>())]);
         for (PackageIDSequence::ConstIterator i(all_uninstallable->begin()), i_end(all_uninstallable->end()) ;
                 i != i_end ; ++i)
@@ -189,7 +189,7 @@ UninstallCommand::run(
             *cmdline.program_options, make_null_shared_ptr(), targets, targets_cleaned_up, false);
 }
 
-std::tr1::shared_ptr<args::ArgsHandler>
+std::shared_ptr<args::ArgsHandler>
 UninstallCommand::make_doc_cmdline()
 {
     return make_shared_ptr(new UninstallCommandLine(true));

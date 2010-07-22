@@ -43,8 +43,8 @@
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/repository_factory.hh>
 #include <paludis/choice.hh>
-#include <tr1/unordered_map>
-#include <tr1/functional>
+#include <unordered_map>
+#include <functional>
 #include <algorithm>
 #include <set>
 #include <list>
@@ -68,16 +68,16 @@ namespace paludis
         bool accept_unstable;
         bool is_vdb;
 
-        std::tr1::shared_ptr<Repository> main_repo;
-        std::tr1::shared_ptr<Repository> master_repo;
-        std::list<std::tr1::shared_ptr<Repository> > extra_repos;
+        std::shared_ptr<Repository> main_repo;
+        std::shared_ptr<Repository> master_repo;
+        std::list<std::shared_ptr<Repository> > extra_repos;
 
         std::string paludis_command;
 
-        std::tr1::shared_ptr<PackageDatabase> package_database;
+        std::shared_ptr<PackageDatabase> package_database;
 
-        std::tr1::shared_ptr<LiteralMetadataValueKey<std::string> > format_key;
-        std::tr1::shared_ptr<LiteralMetadataValueKey<FSEntry> > repository_dir_key;
+        std::shared_ptr<LiteralMetadataValueKey<std::string> > format_key;
+        std::shared_ptr<LiteralMetadataValueKey<FSEntry> > repository_dir_key;
 
         Implementation(NoConfigEnvironment * const env, const no_config_environment::Params & params);
         void initialise(NoConfigEnvironment * const env);
@@ -143,7 +143,7 @@ namespace
         throw ConfigurationError("Can't work out what kind of repository this is");
     }
 
-    std::string from_keys(const std::tr1::shared_ptr<const Map<std::string, std::string> > & m,
+    std::string from_keys(const std::shared_ptr<const Map<std::string, std::string> > & m,
             const std::string & k)
     {
         Map<std::string, std::string>::ConstIterator mm(m->find(k));
@@ -196,7 +196,7 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
             repository_dirs.insert(std::make_pair(*d, false));
         }
 
-        std::tr1::unordered_map<RepositoryName, std::tr1::function<std::string (const std::string &)>,
+        std::unordered_map<RepositoryName, std::function<std::string (const std::string &)>,
             Hash<RepositoryName> > repo_configs;
 
         for (std::map<FSEntry, bool>::const_iterator r(repository_dirs.begin()), r_end(repository_dirs.end()) ;
@@ -204,7 +204,7 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
         {
             Context local_context("When reading repository at location '" + stringify(r->first) + "':");
 
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
 
             if (params.extra_params())
                 std::copy(params.extra_params()->begin(), params.extra_params()->end(), keys->inserter());
@@ -226,8 +226,8 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
             if ((r->first / "metadata" / "profiles_desc.conf").exists())
                 keys->insert("layout", "exheres");
 
-            std::tr1::function<std::string (const std::string &)> repo_func(
-                    std::tr1::bind(&from_keys, keys, std::tr1::placeholders::_1));
+            std::function<std::string (const std::string &)> repo_func(
+                    std::bind(&from_keys, keys, std::placeholders::_1));
 
             RepositoryName name(RepositoryFactory::get_instance()->name(env, repo_func));
             if (ignored_one && r->second && stringify(name) == params.master_repository_name())
@@ -245,14 +245,14 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
 
         /* work out order for repository creation */
         DirectedGraph<RepositoryName, bool> repository_deps;
-        std::for_each(first_iterator(repo_configs.begin()), first_iterator(repo_configs.end()), std::tr1::bind(
-                    std::tr1::mem_fn(&DirectedGraph<RepositoryName, bool>::add_node),
-                    &repository_deps, std::tr1::placeholders::_1));
+        std::for_each(first_iterator(repo_configs.begin()), first_iterator(repo_configs.end()), std::bind(
+                    std::mem_fn(&DirectedGraph<RepositoryName, bool>::add_node),
+                    &repository_deps, std::placeholders::_1));
 
-        for (std::tr1::unordered_map<RepositoryName, std::tr1::function<std::string (const std::string &)>, Hash<RepositoryName> >::const_iterator
+        for (std::unordered_map<RepositoryName, std::function<std::string (const std::string &)>, Hash<RepositoryName> >::const_iterator
                 r(repo_configs.begin()), r_end(repo_configs.end()) ; r != r_end ; ++r)
         {
-            std::tr1::shared_ptr<const RepositoryNameSet> deps(RepositoryFactory::get_instance()->dependencies(
+            std::shared_ptr<const RepositoryNameSet> deps(RepositoryFactory::get_instance()->dependencies(
                         env, r->second));
             for (RepositoryNameSet::ConstIterator d(deps->begin()), d_end(deps->end()) ;
                     d != d_end ; ++d)
@@ -279,12 +279,12 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
             for (std::list<RepositoryName>::const_iterator o(ordered_repos.begin()), o_end(ordered_repos.end()) ;
                     o != o_end ; ++o)
             {
-                std::tr1::unordered_map<RepositoryName, std::tr1::function<std::string (const std::string &)>, Hash<RepositoryName> >::const_iterator
+                std::unordered_map<RepositoryName, std::function<std::string (const std::string &)>, Hash<RepositoryName> >::const_iterator
                     c(repo_configs.find(*o));
                 if (c == repo_configs.end())
                     throw InternalError(PALUDIS_HERE, "*o not in repo_configs");
 
-                std::tr1::shared_ptr<Repository> repo(RepositoryFactory::get_instance()->create(env, c->second));
+                std::shared_ptr<Repository> repo(RepositoryFactory::get_instance()->create(env, c->second));
                 if (repo->name() == main_repository_name)
                 {
                     main_repo = repo;
@@ -313,18 +313,18 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
             throw ConfigurationError("Can't find repository '" + params.master_repository_name() + "'");
 
 #ifdef ENABLE_VIRTUALS_REPOSITORY
-        std::tr1::shared_ptr<Map<std::string, std::string> > v_keys(new Map<std::string, std::string>);
+        std::shared_ptr<Map<std::string, std::string> > v_keys(new Map<std::string, std::string>);
         v_keys->insert("format", "virtuals");
         if ((*DistributionData::get_instance()->distribution_from_string(env->distribution())).support_old_style_virtuals())
             package_database->add_repository(-2, RepositoryFactory::get_instance()->create(env,
-                        std::tr1::bind(from_keys, v_keys, std::tr1::placeholders::_1)));
+                        std::bind(from_keys, v_keys, std::placeholders::_1)));
 #endif
     }
     else
     {
         Log::get_instance()->message("no_config_environment.vdb_detected", ll_debug, lc_context) << "VDB, using vdb_db";
 
-        std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+        std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
         if (params.extra_params())
             std::copy(params.extra_params()->begin(), params.extra_params()->end(), keys->inserter());
 
@@ -334,9 +334,9 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
         keys->insert("location", stringify(top_level_dir.realpath()));
 
         package_database->add_repository(1, RepositoryFactory::get_instance()->create(env,
-                    std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+                    std::bind(from_keys, keys, std::placeholders::_1)));
 
-        std::tr1::shared_ptr<Map<std::string, std::string> > iv_keys(
+        std::shared_ptr<Map<std::string, std::string> > iv_keys(
                 new Map<std::string, std::string>);
         iv_keys->insert("root", "/");
         iv_keys->insert("format", "installed_virtuals");
@@ -344,7 +344,7 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
 #ifdef ENABLE_VIRTUALS_REPOSITORY
         if ((*DistributionData::get_instance()->distribution_from_string(env->distribution())).support_old_style_virtuals())
             package_database->add_repository(-2, RepositoryFactory::get_instance()->create(env,
-                        std::tr1::bind(from_keys, iv_keys, std::tr1::placeholders::_1)));
+                        std::bind(from_keys, iv_keys, std::placeholders::_1)));
 #endif
     }
 }
@@ -392,37 +392,37 @@ NoConfigEnvironment::set_accept_unstable(const bool value)
         (*it)->invalidate_masks();
 }
 
-std::tr1::shared_ptr<Repository>
+std::shared_ptr<Repository>
 NoConfigEnvironment::main_repository()
 {
     return _imp->main_repo;
 }
 
-std::tr1::shared_ptr<const Repository>
+std::shared_ptr<const Repository>
 NoConfigEnvironment::main_repository() const
 {
     return _imp->main_repo;
 }
 
-std::tr1::shared_ptr<Repository>
+std::shared_ptr<Repository>
 NoConfigEnvironment::master_repository()
 {
     return _imp->master_repo;
 }
 
-std::tr1::shared_ptr<const Repository>
+std::shared_ptr<const Repository>
 NoConfigEnvironment::master_repository() const
 {
     return _imp->master_repo;
 }
 
-std::tr1::shared_ptr<PackageDatabase>
+std::shared_ptr<PackageDatabase>
 NoConfigEnvironment::package_database()
 {
     return _imp->package_database;
 }
 
-std::tr1::shared_ptr<const PackageDatabase>
+std::shared_ptr<const PackageDatabase>
 NoConfigEnvironment::package_database() const
 {
     return _imp->package_database;
@@ -441,7 +441,7 @@ NoConfigEnvironment::set_paludis_command(const std::string & s)
 }
 
 bool
-NoConfigEnvironment::accept_keywords(const std::tr1::shared_ptr<const KeywordNameSet> & keywords,
+NoConfigEnvironment::accept_keywords(const std::shared_ptr<const KeywordNameSet> & keywords,
         const PackageID &) const
 {
     if (_imp->is_vdb)
@@ -502,16 +502,16 @@ NoConfigEnvironment::unmasked_by_user(const PackageID &) const
     return false;
 }
 
-const std::tr1::shared_ptr<const Mask>
+const std::shared_ptr<const Mask>
 NoConfigEnvironment::mask_for_breakage(const PackageID &) const
 {
-    return std::tr1::shared_ptr<const Mask>();
+    return std::shared_ptr<const Mask>();
 }
 
-const std::tr1::shared_ptr<const Mask>
+const std::shared_ptr<const Mask>
 NoConfigEnvironment::mask_for_user(const PackageID &, const bool) const
 {
-    return std::tr1::shared_ptr<const Mask>();
+    return std::shared_ptr<const Mask>();
 }
 
 uid_t
@@ -526,7 +526,7 @@ NoConfigEnvironment::reduced_gid() const
     return getgid();
 }
 
-std::tr1::shared_ptr<const MirrorsSequence>
+std::shared_ptr<const MirrorsSequence>
 NoConfigEnvironment::mirrors(const std::string &) const
 {
     return make_shared_ptr(new MirrorsSequence);
@@ -550,7 +550,7 @@ NoConfigEnvironment::perform_hook(const Hook &) const
     return make_named_values<HookResult>(n::max_exit_status() = 0, n::output() = "");
 }
 
-std::tr1::shared_ptr<const FSEntrySequence>
+std::shared_ptr<const FSEntrySequence>
 NoConfigEnvironment::hook_dirs() const
 {
     return make_shared_ptr(new FSEntrySequence);
@@ -561,22 +561,22 @@ NoConfigEnvironment::need_keys_added() const
 {
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataValueKey<std::string> >
 NoConfigEnvironment::format_key() const
 {
     return _imp->format_key;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSEntry> >
 NoConfigEnvironment::config_location_key() const
 {
-    return std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >();
+    return std::shared_ptr<const MetadataValueKey<FSEntry> >();
 }
 
 const Tribool
 NoConfigEnvironment::want_choice_enabled(
-        const std::tr1::shared_ptr<const PackageID> &,
-        const std::tr1::shared_ptr<const Choice> &,
+        const std::shared_ptr<const PackageID> &,
+        const std::shared_ptr<const Choice> &,
         const UnprefixedChoiceName &
         ) const
 {
@@ -585,24 +585,24 @@ NoConfigEnvironment::want_choice_enabled(
 
 const std::string
 NoConfigEnvironment::value_for_choice_parameter(
-        const std::tr1::shared_ptr<const PackageID> &,
-        const std::tr1::shared_ptr<const Choice> &,
+        const std::shared_ptr<const PackageID> &,
+        const std::shared_ptr<const Choice> &,
         const UnprefixedChoiceName &
         ) const
 {
     return "";
 }
 
-std::tr1::shared_ptr<const Set<UnprefixedChoiceName> >
+std::shared_ptr<const Set<UnprefixedChoiceName> >
 NoConfigEnvironment::known_choice_value_names(
-        const std::tr1::shared_ptr<const PackageID> &,
-        const std::tr1::shared_ptr<const Choice> &
+        const std::shared_ptr<const PackageID> &,
+        const std::shared_ptr<const Choice> &
         ) const
 {
     return make_shared_ptr(new Set<UnprefixedChoiceName>);
 }
 
-const std::tr1::shared_ptr<OutputManager>
+const std::shared_ptr<OutputManager>
 NoConfigEnvironment::create_output_manager(const CreateOutputManagerInfo &) const
 {
     return make_shared_ptr(new StandardOutputManager);
@@ -613,7 +613,7 @@ NoConfigEnvironment::populate_sets() const
 {
 }
 
-const std::tr1::shared_ptr<Repository>
+const std::shared_ptr<Repository>
 NoConfigEnvironment::repository_from_new_config_file(const FSEntry &)
 {
     throw InternalError(PALUDIS_HERE, "can't create repositories on the fly for NoConfigEnvironment");

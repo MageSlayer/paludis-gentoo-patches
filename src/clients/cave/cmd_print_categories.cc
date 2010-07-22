@@ -79,8 +79,8 @@ namespace
 
 int
 PrintCategoriesCommand::run(
-        const std::tr1::shared_ptr<Environment> & env,
-        const std::tr1::shared_ptr<const Sequence<std::string > > & args
+        const std::shared_ptr<Environment> & env,
+        const std::shared_ptr<const Sequence<std::string > > & args
         )
 {
     PrintCategoriesCommandLine cmdline;
@@ -110,13 +110,13 @@ PrintCategoriesCommand::run(
             for (args::StringSetArg::ConstIterator p(cmdline.a_containing.begin_args()), p_end(cmdline.a_containing.end_args()) ;
                     p != p_end ; ++p)
             {
-                std::tr1::shared_ptr<const CategoryNamePartSet> cats((*r)->category_names_containing_package(PackageNamePart(*p)));
+                std::shared_ptr<const CategoryNamePartSet> cats((*r)->category_names_containing_package(PackageNamePart(*p)));
                 std::copy(cats->begin(), cats->end(), std::inserter(categories, categories.begin()));
             }
         }
         else
         {
-            std::tr1::shared_ptr<const CategoryNamePartSet> cats((*r)->category_names());
+            std::shared_ptr<const CategoryNamePartSet> cats((*r)->category_names());
             std::copy(cats->begin(), cats->end(), std::inserter(categories, categories.begin()));
         }
     }
@@ -126,7 +126,7 @@ PrintCategoriesCommand::run(
     return EXIT_SUCCESS;
 }
 
-std::tr1::shared_ptr<args::ArgsHandler>
+std::shared_ptr<args::ArgsHandler>
 PrintCategoriesCommand::make_doc_cmdline()
 {
     return make_shared_ptr(new PrintCategoriesCommandLine);

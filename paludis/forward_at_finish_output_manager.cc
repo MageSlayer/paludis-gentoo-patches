@@ -37,14 +37,14 @@ namespace paludis
         std::stringstream stdout_stream;
         std::stringstream stderr_stream;
         const bool if_success, if_failure;
-        const std::tr1::shared_ptr<OutputManager> child;
+        const std::shared_ptr<OutputManager> child;
         bool success;
         bool nothing_more_to_come;
 
         Implementation(
                 const bool s,
                 const bool f,
-                const std::tr1::shared_ptr<OutputManager> & m
+                const std::shared_ptr<OutputManager> & m
                 ) :
             if_success(s),
             if_failure(f),
@@ -59,7 +59,7 @@ namespace paludis
 ForwardAtFinishOutputManager::ForwardAtFinishOutputManager(
         const bool s,
         const bool f,
-        const std::tr1::shared_ptr<OutputManager> & m) :
+        const std::shared_ptr<OutputManager> & m) :
     PrivateImplementationPattern<ForwardAtFinishOutputManager>(
             new Implementation<ForwardAtFinishOutputManager>(s, f, m))
 {
@@ -127,15 +127,15 @@ ForwardAtFinishOutputManager::nothing_more_to_come()
     _imp->nothing_more_to_come = true;
 }
 
-const std::tr1::shared_ptr<const Set<std::string> >
+const std::shared_ptr<const Set<std::string> >
 ForwardAtFinishOutputManager::factory_managers()
 {
-    std::tr1::shared_ptr<Set<std::string> > result(new Set<std::string>);
+    std::shared_ptr<Set<std::string> > result(new Set<std::string>);
     result->insert("forward_at_finish");
     return result;
 }
 
-const std::tr1::shared_ptr<OutputManager>
+const std::shared_ptr<OutputManager>
 ForwardAtFinishOutputManager::factory_create(
         const OutputManagerFactory::KeyFunction & key_func,
         const OutputManagerFactory::CreateChildFunction & create_child_function,
@@ -146,7 +146,7 @@ ForwardAtFinishOutputManager::factory_create(
     if (child_s.empty())
         throw ConfigurationError("Key 'child' not specified when creating a forward_on_failure output manager");
 
-    std::tr1::shared_ptr<OutputManager> child(create_child_function(child_s));
+    std::shared_ptr<OutputManager> child(create_child_function(child_s));
 
     return make_shared_ptr(new ForwardAtFinishOutputManager(
                 destringify<bool>(if_success_s),

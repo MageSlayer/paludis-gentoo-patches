@@ -44,10 +44,10 @@ using namespace paludis::erepository;
 
 namespace
 {
-    const std::tr1::shared_ptr<const MirrorsSequence>
+    const std::shared_ptr<const MirrorsSequence>
     get_mirrors_fn(const std::string & m)
     {
-        const std::tr1::shared_ptr<MirrorsSequence> result(new MirrorsSequence);
+        const std::shared_ptr<MirrorsSequence> result(new MirrorsSequence);
         if (m == "repo")
             result->push_back("http://fake-repo/fake-repo/");
         if (m == "example")
@@ -65,17 +65,17 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            const std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            const std::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("repo")
                             )));
             env.package_database()->add_repository(1, repo);
-            std::tr1::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
+            std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
             TEST_CHECK(FSEntry("fetch_visitor_TEST_dir/in/input1").exists());
             TEST_CHECK(! FSEntry("fetch_visitor_TEST_dir/out/input1").exists());
 
-            const std::tr1::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string("exheres-0"));
+            const std::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string("exheres-0"));
             FetchVisitor v(&env, *env[selection::RequireExactlyOne(
                         generator::Matches(parse_user_package_dep_spec("=cat/pkg-1",
                                 &env, UserPackageDepSpecOptions()), MatchPackageOptions()))]->begin(),

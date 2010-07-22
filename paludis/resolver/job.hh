@@ -30,7 +30,7 @@
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/serialise-fwd.hh>
 #include <paludis/name-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 
 namespace paludis
 {
@@ -47,7 +47,7 @@ namespace paludis
 
                 const PackageDepSpec origin_id_spec() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                static const std::tr1::shared_ptr<PretendJob> deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
+                static const std::shared_ptr<PretendJob> deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
                 void serialise(Serialiser &) const;
         };
 
@@ -58,12 +58,12 @@ namespace paludis
             public:
                 virtual ~ExecuteJob();
 
-                virtual const std::tr1::shared_ptr<JobState> state() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-                virtual void set_state(const std::tr1::shared_ptr<JobState> &) = 0;
+                virtual const std::shared_ptr<JobState> state() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+                virtual void set_state(const std::shared_ptr<JobState> &) = 0;
 
-                virtual const std::tr1::shared_ptr<const JobRequirements> requirements() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+                virtual const std::shared_ptr<const JobRequirements> requirements() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-                static const std::tr1::shared_ptr<ExecuteJob> deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
+                static const std::shared_ptr<ExecuteJob> deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual void serialise(Serialiser &) const = 0;
         };
 
@@ -74,19 +74,19 @@ namespace paludis
         {
             public:
                 FetchJob(
-                        const std::tr1::shared_ptr<const JobRequirements> &,
+                        const std::shared_ptr<const JobRequirements> &,
                         const PackageDepSpec &
                         );
                 ~FetchJob();
 
                 const PackageDepSpec origin_id_spec() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual const std::tr1::shared_ptr<JobState> state() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual void set_state(const std::tr1::shared_ptr<JobState> &);
+                virtual const std::shared_ptr<JobState> state() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual void set_state(const std::shared_ptr<JobState> &);
 
-                virtual const std::tr1::shared_ptr<const JobRequirements> requirements() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual const std::shared_ptr<const JobRequirements> requirements() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                static const std::tr1::shared_ptr<FetchJob> deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
+                static const std::shared_ptr<FetchJob> deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual void serialise(Serialiser &) const;
         };
 
@@ -97,24 +97,24 @@ namespace paludis
         {
             public:
                 InstallJob(
-                        const std::tr1::shared_ptr<const JobRequirements> &,
+                        const std::shared_ptr<const JobRequirements> &,
                         const PackageDepSpec &,
                         const RepositoryName &,
                         const DestinationType,
-                        const std::tr1::shared_ptr<const Sequence<PackageDepSpec> > &);
+                        const std::shared_ptr<const Sequence<PackageDepSpec> > &);
                 ~InstallJob();
 
                 const PackageDepSpec origin_id_spec() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 const RepositoryName destination_repository_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 DestinationType destination_type() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                const std::tr1::shared_ptr<const Sequence<PackageDepSpec> > replacing_specs() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::shared_ptr<const Sequence<PackageDepSpec> > replacing_specs() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual const std::tr1::shared_ptr<JobState> state() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual void set_state(const std::tr1::shared_ptr<JobState> &);
+                virtual const std::shared_ptr<JobState> state() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual void set_state(const std::shared_ptr<JobState> &);
 
-                virtual const std::tr1::shared_ptr<const JobRequirements> requirements() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual const std::shared_ptr<const JobRequirements> requirements() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                static const std::tr1::shared_ptr<InstallJob> deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
+                static const std::shared_ptr<InstallJob> deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual void serialise(Serialiser &) const;
         };
 
@@ -125,19 +125,19 @@ namespace paludis
         {
             public:
                 UninstallJob(
-                        const std::tr1::shared_ptr<const JobRequirements> &,
-                        const std::tr1::shared_ptr<const Sequence<PackageDepSpec> > &
+                        const std::shared_ptr<const JobRequirements> &,
+                        const std::shared_ptr<const Sequence<PackageDepSpec> > &
                         );
                 ~UninstallJob();
 
-                const std::tr1::shared_ptr<const Sequence<PackageDepSpec> > ids_to_remove_specs() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::shared_ptr<const Sequence<PackageDepSpec> > ids_to_remove_specs() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual const std::tr1::shared_ptr<JobState> state() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual void set_state(const std::tr1::shared_ptr<JobState> &);
+                virtual const std::shared_ptr<JobState> state() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual void set_state(const std::shared_ptr<JobState> &);
 
-                virtual const std::tr1::shared_ptr<const JobRequirements> requirements() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual const std::shared_ptr<const JobRequirements> requirements() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                static const std::tr1::shared_ptr<UninstallJob> deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
+                static const std::shared_ptr<UninstallJob> deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual void serialise(Serialiser &) const;
         };
     }

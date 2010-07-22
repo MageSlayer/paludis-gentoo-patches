@@ -30,7 +30,7 @@ namespace
      * we just use a StandardOutputManager, which sticks everything to stdout /
      * stderr. More complex clients may use Environment::create_output_manager
      * to use the user's preferences for logging etc. */
-    std::tr1::shared_ptr<OutputManager> make_standard_output_manager(const Action &)
+    std::shared_ptr<OutputManager> make_standard_output_manager(const Action &)
     {
         return make_shared_ptr(new StandardOutputManager);
     }
@@ -46,11 +46,11 @@ int main(int argc, char * argv[])
                 "example_action", "EXAMPLE_ACTION_OPTIONS", "EXAMPLE_ACTION_CMDLINE");
 
         /* We start with an Environment, respecting the user's '--environment' choice. */
-        std::tr1::shared_ptr<Environment> env(EnvironmentFactory::get_instance()->create(
+        std::shared_ptr<Environment> env(EnvironmentFactory::get_instance()->create(
                     CommandLine::get_instance()->a_environment.argument()));
 
         /* Fetch package IDs for 'sys-apps/paludis'. */
-        std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(
+        std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(
                     generator::Package(QualifiedPackageName("sys-apps/paludis")))]);
 
         /* For each ID: */
@@ -58,7 +58,7 @@ int main(int argc, char * argv[])
                 i != i_end ; ++i)
         {
             /* Failures go here: */
-            const std::tr1::shared_ptr<Sequence<FetchActionFailure> > failures(new Sequence<FetchActionFailure>);
+            const std::shared_ptr<Sequence<FetchActionFailure> > failures(new Sequence<FetchActionFailure>);
 
             /* Do we support a FetchAction? We find out by creating a
              * SupportsActionTest<FetchAction> object, and querying via the
@@ -84,7 +84,7 @@ int main(int argc, char * argv[])
                             n::ignore_unfetched() = false,
                             n::make_output_manager() = &make_standard_output_manager,
                             n::safe_resume() = true,
-                            n::want_phase() = std::tr1::bind(return_literal_function(wp_yes))
+                            n::want_phase() = std::bind(return_literal_function(wp_yes))
                             ));
                 try
                 {

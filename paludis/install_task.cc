@@ -41,7 +41,6 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/make_shared_copy.hh>
@@ -55,9 +54,8 @@
 #include <paludis/output_manager_from_environment.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/standard_output_manager.hh>
-#include <tr1/functional>
-#include <sstream>
 #include <functional>
+#include <sstream>
 #include <algorithm>
 #include <list>
 #include <vector>
@@ -83,9 +81,9 @@ namespace
     WantPhase want_phase_function(
             InstallTask * const task,
             OutputManagerFromEnvironment & output_manager_holder,
-            const std::tr1::shared_ptr<const Set<std::string> > & abort_at_phases,
-            const std::tr1::shared_ptr<const Set<std::string> > & skip_phases,
-            const std::tr1::shared_ptr<const Set<std::string> > & skip_until_phases,
+            const std::shared_ptr<const Set<std::string> > & abort_at_phases,
+            const std::shared_ptr<const Set<std::string> > & skip_phases,
+            const std::shared_ptr<const Set<std::string> > & skip_until_phases,
             bool & done_any, const std::string & phase)
     {
         output_manager_holder.construct_standard_if_unconstructed();
@@ -126,9 +124,9 @@ namespace paludis
         DepList dep_list;
 
         std::list<std::string> raw_targets;
-        std::tr1::shared_ptr<SetSpecTree> targets;
-        std::tr1::shared_ptr<std::string> add_to_world_spec;
-        std::tr1::shared_ptr<const DestinationsSet> destinations;
+        std::shared_ptr<SetSpecTree> targets;
+        std::shared_ptr<std::string> add_to_world_spec;
+        std::shared_ptr<const DestinationsSet> destinations;
 
         bool pretend;
         bool fetch_only;
@@ -141,9 +139,9 @@ namespace paludis
 
         InstallTaskContinueOnFailure continue_on_failure;
 
-        std::tr1::shared_ptr<const Set<std::string> > abort_at_phases;
-        std::tr1::shared_ptr<const Set<std::string> > skip_phases;
-        std::tr1::shared_ptr<const Set<std::string> > skip_until_phases;
+        std::shared_ptr<const Set<std::string> > abort_at_phases;
+        std::shared_ptr<const Set<std::string> > skip_phases;
+        std::shared_ptr<const Set<std::string> > skip_until_phases;
 
         bool phase_options_apply_to_first;
         bool phase_options_apply_to_last;
@@ -152,7 +150,7 @@ namespace paludis
         bool had_resolution_failures;
 
         Implementation<InstallTask>(Environment * const e, const DepListOptions & o,
-                std::tr1::shared_ptr<const DestinationsSet> d) :
+                std::shared_ptr<const DestinationsSet> d) :
             env(e),
             dep_list(e, o),
             targets(new SetSpecTree(make_shared_ptr(new AllDepSpec))),
@@ -184,7 +182,7 @@ namespace paludis
 }
 
 InstallTask::InstallTask(Environment * const env, const DepListOptions & options,
-        const std::tr1::shared_ptr<const DestinationsSet> & d) :
+        const std::shared_ptr<const DestinationsSet> & d) :
     PrivateImplementationPattern<InstallTask>(new Implementation<InstallTask>(env, options, d))
 {
 }
@@ -205,22 +203,22 @@ InstallTask::clear()
 }
 
 void
-InstallTask::set_targets_from_user_specs(const std::tr1::shared_ptr<const Sequence<std::string> > & s)
+InstallTask::set_targets_from_user_specs(const std::shared_ptr<const Sequence<std::string> > & s)
 {
-    using namespace std::tr1::placeholders;
-    std::for_each(s->begin(), s->end(), std::tr1::bind(&InstallTask::_add_target, this, _1));
+    using namespace std::placeholders;
+    std::for_each(s->begin(), s->end(), std::bind(&InstallTask::_add_target, this, _1));
 }
 
 void
-InstallTask::set_targets_from_exact_packages(const std::tr1::shared_ptr<const PackageIDSequence> & s)
+InstallTask::set_targets_from_exact_packages(const std::shared_ptr<const PackageIDSequence> & s)
 {
-    using namespace std::tr1::placeholders;
-    std::for_each(s->begin(), s->end(), std::tr1::bind(&InstallTask::_add_package_id, this, _1));
+    using namespace std::placeholders;
+    std::for_each(s->begin(), s->end(), std::bind(&InstallTask::_add_package_id, this, _1));
 }
 
 namespace
 {
-    std::tr1::shared_ptr<DepListEntryHandled> handled_from_string(const std::string & s,
+    std::shared_ptr<DepListEntryHandled> handled_from_string(const std::string & s,
             const Environment * const env)
     {
         Context context("When decoding DepListEntryHandled value '" + s + "':");
@@ -278,7 +276,7 @@ namespace
 
 void
 InstallTask::set_targets_from_serialisation(const std::string & format,
-        const std::tr1::shared_ptr<const Sequence<std::string> > & ss)
+        const std::shared_ptr<const Sequence<std::string> > & ss)
 {
     if (format != "0.25" && format != "0.37")
         throw InternalError(PALUDIS_HERE, "Serialisation format '" + format + "' not supported by this version of Paludis");
@@ -298,14 +296,14 @@ InstallTask::set_targets_from_serialisation(const std::string & format,
 
         if (tokens.empty())
             throw InternalError(PALUDIS_HERE, "Serialised value '" + *s + "' too short: no package_id");
-        const std::tr1::shared_ptr<const PackageID> package_id(*(*_imp->env)[selection::RequireExactlyOne(
+        const std::shared_ptr<const PackageID> package_id(*(*_imp->env)[selection::RequireExactlyOne(
                     generator::Matches(parse_user_package_dep_spec(*tokens.begin(),
                             _imp->env, UserPackageDepSpecOptions()), MatchPackageOptions()))]->begin());
         tokens.pop_front();
 
         if (tokens.empty())
             throw InternalError(PALUDIS_HERE, "Serialised value '" + *s + "' too short: no destination");
-        std::tr1::shared_ptr<Repository> destination;
+        std::shared_ptr<Repository> destination;
         if ("0" != *tokens.begin())
             destination = _imp->env->package_database()->fetch_repository(RepositoryName(*tokens.begin()));
         tokens.pop_front();
@@ -317,7 +315,7 @@ InstallTask::set_targets_from_serialisation(const std::string & format,
 
         if (tokens.empty())
             throw InternalError(PALUDIS_HERE, "Serialised value '" + *s + "' too short: no handled");
-        std::tr1::shared_ptr<DepListEntryHandled> handled(handled_from_string(*tokens.begin(), _imp->env));
+        std::shared_ptr<DepListEntryHandled> handled(handled_from_string(*tokens.begin(), _imp->env));
         tokens.pop_front();
 
         if (! tokens.empty())
@@ -465,11 +463,11 @@ InstallTask::_add_target(const std::string & target)
 {
     Context context("When adding install target '" + target + "':");
 
-    std::tr1::shared_ptr<SetSpecTree> s;
+    std::shared_ptr<SetSpecTree> s;
 
     try
     {
-        std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(parse_user_package_dep_spec(target,
+        std::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(parse_user_package_dep_spec(target,
                         _imp->env, UserPackageDepSpecOptions() + updso_throw_if_set + updso_allow_wildcards,
                         filter::SupportsAction<InstallAction>())));
 
@@ -499,18 +497,18 @@ InstallTask::_add_target(const std::string & target)
         if (spec->package_ptr())
         {
             /* no wildcards */
-            spec->set_tag(std::tr1::shared_ptr<const DepTag>(new TargetDepTag));
+            spec->set_tag(std::shared_ptr<const DepTag>(new TargetDepTag));
             _imp->targets->root()->append(spec);
         }
         else
         {
-            std::tr1::shared_ptr<const PackageIDSequence> names((*_imp->env)[selection::BestVersionOnly(
+            std::shared_ptr<const PackageIDSequence> names((*_imp->env)[selection::BestVersionOnly(
                         generator::Matches(*spec, MatchPackageOptions()) | filter::SupportsAction<InstallAction>())]);
 
             if (names->empty())
             {
                 /* no match. we'll get an error from this later anyway. */
-                spec->set_tag(std::tr1::shared_ptr<const DepTag>(new TargetDepTag));
+                spec->set_tag(std::shared_ptr<const DepTag>(new TargetDepTag));
                 _imp->targets->root()->append(spec);
             }
             else
@@ -519,8 +517,8 @@ InstallTask::_add_target(const std::string & target)
                 {
                     PartiallyMadePackageDepSpec p(*spec);
                     p.package((*i)->name());
-                    std::tr1::shared_ptr<PackageDepSpec> specn(new PackageDepSpec(p));
-                    specn->set_tag(std::tr1::shared_ptr<const DepTag>(new TargetDepTag));
+                    std::shared_ptr<PackageDepSpec> specn(new PackageDepSpec(p));
+                    specn->set_tag(std::shared_ptr<const DepTag>(new TargetDepTag));
                     _imp->targets->root()->append(specn);
                 }
         }
@@ -544,7 +542,7 @@ InstallTask::_add_target(const std::string & target)
 }
 
 void
-InstallTask::_add_package_id(const std::tr1::shared_ptr<const PackageID> & target)
+InstallTask::_add_package_id(const std::shared_ptr<const PackageID> & target)
 {
     Context context("When adding install target '" + stringify(*target) + "' from ID:");
 
@@ -568,8 +566,8 @@ InstallTask::_add_package_id(const std::tr1::shared_ptr<const PackageID> & targe
     if (target->slot_key())
         part_spec.slot_requirement(make_shared_ptr(new UserSlotExactRequirement(target->slot_key()->value())));
 
-    std::tr1::shared_ptr<PackageDepSpec> spec(make_shared_copy(PackageDepSpec(part_spec)));
-    spec->set_tag(std::tr1::shared_ptr<const DepTag>(new TargetDepTag));
+    std::shared_ptr<PackageDepSpec> spec(make_shared_copy(PackageDepSpec(part_spec)));
+    spec->set_tag(std::shared_ptr<const DepTag>(new TargetDepTag));
     _imp->targets->root()->append(spec);
 
     _imp->raw_targets.push_back(stringify(*spec));
@@ -748,7 +746,7 @@ InstallTask::_pretend()
             if (dep->package_id()->supports_action(pretend_action_query))
             {
                 PretendActionOptions options(make_named_values<PretendActionOptions>(
-                            n::make_output_manager() = std::tr1::ref(output_manager_holder)
+                            n::make_output_manager() = std::ref(output_manager_holder)
                             ));
                 PretendAction pretend_action(options);
                 dep->package_id()->perform_action(pretend_action);
@@ -768,9 +766,9 @@ InstallTask::_pretend()
                             n::fetch_parts() = FetchParts() + fp_regulars + fp_extras,
                             n::ignore_not_in_manifest() = false,
                             n::ignore_unfetched() = true,
-                            n::make_output_manager() = std::tr1::ref(output_manager_holder),
+                            n::make_output_manager() = std::ref(output_manager_holder),
                             n::safe_resume() = _imp->safe_resume,
-                            n::want_phase() = std::tr1::bind(return_literal_function(wp_yes))
+                            n::want_phase() = std::bind(return_literal_function(wp_yes))
                             ));
                 FetchAction fetch_action(options);
                 try
@@ -818,7 +816,7 @@ InstallTask::_pretend()
 void
 InstallTask::_clean(
         const DepList::Iterator dep,
-        const std::tr1::shared_ptr<const PackageID> & id,
+        const std::shared_ptr<const PackageID> & id,
         const UninstallActionOptions & options,
         const std::string & cpvr,
         const int x, const int y, const int s, const int f)
@@ -850,7 +848,7 @@ InstallTask::_clean(
 
 void
 InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const int s, const int f, const bool is_first, const bool is_last,
-        std::tr1::shared_ptr<OutputManagerFromEnvironment> & output_manager_holder)
+        std::shared_ptr<OutputManagerFromEnvironment> & output_manager_holder)
 {
     std::string cpvr(stringify(*dep->package_id()));
 
@@ -906,7 +904,7 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
             output_manager_holder.reset(new OutputManagerFromEnvironment(_imp->env, dep->package_id(),
                         oe_exclusive, ClientOutputFeatures()));
 
-            std::tr1::shared_ptr<PackageIDSequence> replacing;
+            std::shared_ptr<PackageIDSequence> replacing;
 
             // look for packages with the same name in the same slot in the destination repos
             if (dep->destination())
@@ -920,11 +918,11 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
 
             InstallActionOptions install_options(make_named_values<InstallActionOptions>(
                         n::destination() = dep->destination(),
-                        n::make_output_manager() = std::tr1::ref(*output_manager_holder),
-                        n::perform_uninstall() = std::tr1::bind(&InstallTask::_clean, this, dep,
-                                std::tr1::placeholders::_1, std::tr1::placeholders::_2, cpvr, x, y, s, f),
+                        n::make_output_manager() = std::ref(*output_manager_holder),
+                        n::perform_uninstall() = std::bind(&InstallTask::_clean, this, dep,
+                                std::placeholders::_1, std::placeholders::_2, cpvr, x, y, s, f),
                         n::replacing() = replacing,
-                        n::want_phase() = std::tr1::function<WantPhase (const std::string &)>()
+                        n::want_phase() = std::function<WantPhase (const std::string &)>()
                     ));
 
             bool done_any(false);
@@ -940,12 +938,12 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
                     apply_phases = true;
             }
             if (apply_phases)
-                install_options.want_phase() = std::tr1::bind(&want_phase_function, this, std::tr1::ref(*output_manager_holder),
-                    std::tr1::cref(_imp->abort_at_phases), std::tr1::cref(_imp->skip_phases), std::tr1::cref(_imp->skip_until_phases),
-                    std::tr1::ref(done_any), std::tr1::placeholders::_1);
+                install_options.want_phase() = std::bind(&want_phase_function, this, std::ref(*output_manager_holder),
+                    std::cref(_imp->abort_at_phases), std::cref(_imp->skip_phases), std::cref(_imp->skip_until_phases),
+                    std::ref(done_any), std::placeholders::_1);
             else
-                install_options.want_phase() = std::tr1::bind(&want_all_phases_function, this, std::tr1::ref(*output_manager_holder),
-                    std::tr1::ref(done_any), std::tr1::placeholders::_1);
+                install_options.want_phase() = std::bind(&want_all_phases_function, this, std::ref(*output_manager_holder),
+                    std::ref(done_any), std::placeholders::_1);
 
             InstallAction install_action(install_options);
             dep->package_id()->perform_action(install_action);
@@ -1069,7 +1067,7 @@ InstallTask::_main_actions_all(const int y, const DepList::Iterator dep_last_pac
 
                 case itcof_if_satisfied:
                     {
-                        std::tr1::shared_ptr<const PackageDepSpec> d(_unsatisfied(*dep));
+                        std::shared_ptr<const PackageDepSpec> d(_unsatisfied(*dep));
                         if (! d)
                             break;
                         dep->handled().reset(new DepListEntryHandledSkippedUnsatisfied(*d));
@@ -1080,7 +1078,7 @@ InstallTask::_main_actions_all(const int y, const DepList::Iterator dep_last_pac
 
                 case itcof_if_independent:
                     {
-                        std::tr1::shared_ptr<const PackageID> d(_dependent(*dep));
+                        std::shared_ptr<const PackageID> d(_dependent(*dep));
                         if (! d)
                             break;
                         dep->handled().reset(new DepListEntryHandledSkippedDependent(d));
@@ -1097,7 +1095,7 @@ InstallTask::_main_actions_all(const int y, const DepList::Iterator dep_last_pac
             }
         }
 
-        std::tr1::shared_ptr<OutputManagerFromEnvironment> output_manager_holder;
+        std::shared_ptr<OutputManagerFromEnvironment> output_manager_holder;
         try
         {
             _one(dep, x, y, s, f, is_first, is_last, output_manager_holder);
@@ -1120,7 +1118,7 @@ InstallTask::_main_actions_all(const int y, const DepList::Iterator dep_last_pac
 void
 InstallTask::_main_actions()
 {
-    using namespace std::tr1::placeholders;
+    using namespace std::placeholders;
 
     _main_actions_pre_hooks();
 
@@ -1168,7 +1166,7 @@ InstallTask::_do_world_updates()
                                 "() \t\r\n"));
                 }
 
-                std::tr1::shared_ptr<SetSpecTree> all(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
+                std::shared_ptr<SetSpecTree> all(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
                 std::list<std::string> tokens;
                 tokenise_whitespace(*_imp->add_to_world_spec, std::back_inserter(tokens));
                 if ((! tokens.empty()) && ("(" == *tokens.begin()) && (")" == *previous(tokens.end())))
@@ -1460,7 +1458,7 @@ namespace
 }
 
 void
-InstallTask::world_update_packages(const std::tr1::shared_ptr<const SetSpecTree> & a)
+InstallTask::world_update_packages(const std::shared_ptr<const SetSpecTree> & a)
 {
     WorldTargetFinder w(_imp->env, this);
     a->root()->accept(w);
@@ -1484,7 +1482,7 @@ namespace
     {
         const Environment * const env;
         const PackageID & id;
-        std::tr1::shared_ptr<const PackageDepSpec> failure;
+        std::shared_ptr<const PackageDepSpec> failure;
         std::set<SetName> recursing_sets;
 
         CheckSatisfiedVisitor(const Environment * const e,
@@ -1541,7 +1539,7 @@ namespace
 
         void visit(const DependencySpecTree::NodeType<NamedSetDepSpec>::Type & node)
         {
-            std::tr1::shared_ptr<const SetSpecTree> set(env->set(node.spec()->name()));
+            std::shared_ptr<const SetSpecTree> set(env->set(node.spec()->name()));
 
             if (! set)
             {
@@ -1564,7 +1562,7 @@ namespace
     };
 }
 
-std::tr1::shared_ptr<const PackageDepSpec>
+std::shared_ptr<const PackageDepSpec>
 InstallTask::_unsatisfied(const DepListEntry & e) const
 {
     Context context("When checking whether dependencies for '" + stringify(*e.package_id()) + "' are satisfied:");
@@ -1652,17 +1650,17 @@ namespace
     {
         const Environment * const env;
         const DepList & dep_list;
-        const std::tr1::shared_ptr<const PackageID> id;
-        std::tr1::shared_ptr<PackageIDSet> already_checked;
+        const std::shared_ptr<const PackageID> id;
+        std::shared_ptr<PackageIDSet> already_checked;
 
-        std::tr1::shared_ptr<const PackageID> failure;
+        std::shared_ptr<const PackageID> failure;
         std::set<SetName> recursing_sets;
 
         CheckIndependentVisitor(
                 const Environment * const e,
                 const DepList & d,
-                const std::tr1::shared_ptr<const PackageID> & i,
-                const std::tr1::shared_ptr<PackageIDSet> & a) :
+                const std::shared_ptr<const PackageID> & i,
+                const std::shared_ptr<PackageIDSet> & a) :
             env(e),
             dep_list(d),
             id(i),
@@ -1715,7 +1713,7 @@ namespace
 
             /* no match on the dep list, fall back to installed packages. if
              * there are no matches here it's not a problem because of or-deps. */
-            std::tr1::shared_ptr<const PackageIDSequence> installed((*env)[selection::AllVersionsUnsorted(
+            std::shared_ptr<const PackageIDSequence> installed((*env)[selection::AllVersionsUnsorted(
                         generator::Matches(*node.spec(), MatchPackageOptions()) |
                         filter::InstalledAtRoot(env->root()))]);
 
@@ -1766,7 +1764,7 @@ namespace
 
         void visit(const DependencySpecTree::NodeType<NamedSetDepSpec>::Type & node)
         {
-            std::tr1::shared_ptr<const SetSpecTree> set(env->set(node.spec()->name()));
+            std::shared_ptr<const SetSpecTree> set(env->set(node.spec()->name()));
 
             if (! set)
             {
@@ -1803,12 +1801,12 @@ InstallTask::had_action_failures() const
 }
 
 
-std::tr1::shared_ptr<const PackageID>
+std::shared_ptr<const PackageID>
 InstallTask::_dependent(const DepListEntry & e) const
 {
     Context context("When checking whether dependencies for '" + stringify(*e.package_id()) + "' are independent of failed packages:");
 
-    std::tr1::shared_ptr<PackageIDSet> already_checked(new PackageIDSet);
+    std::shared_ptr<PackageIDSet> already_checked(new PackageIDSet);
     CheckIndependentVisitor v(environment(), _imp->dep_list, e.package_id(), already_checked);
     already_checked->insert(e.package_id());
 
@@ -1893,19 +1891,19 @@ InstallTask::already_done(const DepListEntry & e) const
 }
 
 void
-InstallTask::set_skip_phases(const std::tr1::shared_ptr<const Set<std::string> > & s)
+InstallTask::set_skip_phases(const std::shared_ptr<const Set<std::string> > & s)
 {
     _imp->skip_phases = s;
 }
 
 void
-InstallTask::set_skip_until_phases(const std::tr1::shared_ptr<const Set<std::string> > & s)
+InstallTask::set_skip_until_phases(const std::shared_ptr<const Set<std::string> > & s)
 {
     _imp->skip_until_phases = s;
 }
 
 void
-InstallTask::set_abort_at_phases(const std::tr1::shared_ptr<const Set<std::string> > & s)
+InstallTask::set_abort_at_phases(const std::shared_ptr<const Set<std::string> > & s)
 {
     _imp->abort_at_phases = s;
 }
@@ -1937,9 +1935,9 @@ InstallTask::make_fetch_action_options(const DepListEntry &, OutputManagerFromEn
             n::fetch_parts() = FetchParts() + fp_regulars + fp_extras,
             n::ignore_not_in_manifest() = false,
             n::ignore_unfetched() = false,
-            n::make_output_manager() = std::tr1::ref(o),
+            n::make_output_manager() = std::ref(o),
             n::safe_resume() = _imp->safe_resume,
-            n::want_phase() = std::tr1::bind(return_literal_function(wp_yes))
+            n::want_phase() = std::bind(return_literal_function(wp_yes))
             );
 }
 

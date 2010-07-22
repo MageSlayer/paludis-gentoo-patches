@@ -44,7 +44,7 @@ paludis::override_tilde_keywords(const Environment * const e, const PackageID & 
     if (! k)
         return false;
 
-    std::tr1::shared_ptr<KeywordNameSet> kk(new KeywordNameSet);
+    std::shared_ptr<KeywordNameSet> kk(new KeywordNameSet);
     for (KeywordNameSet::ConstIterator i(k->value()->begin()), i_end(k->value()->end()) ;
             i != i_end ; ++i)
     {
@@ -69,7 +69,7 @@ paludis::override_unkeyworded(const Environment * const e, const PackageID & id,
     if (! k)
         return false;
 
-    std::tr1::shared_ptr<KeywordNameSet> kk(new KeywordNameSet);
+    std::shared_ptr<KeywordNameSet> kk(new KeywordNameSet);
     for (KeywordNameSet::ConstIterator i(k->value()->begin()), i_end(k->value()->end()) ;
             i != i_end ; ++i)
         if ('-' == stringify(*i).at(0))

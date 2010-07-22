@@ -30,8 +30,8 @@
 
 #include <iosfwd>
 #include <string>
-#include <tr1/memory>
-#include <tr1/functional>
+#include <memory>
+#include <functional>
 
 /** \file
  * Declarations for the ConfigFile classes.
@@ -202,8 +202,8 @@ namespace paludis
         private PrivateImplementationPattern<KeyValueConfigFile>
     {
         public:
-            typedef std::tr1::function<std::string (const KeyValueConfigFile &, const std::string &)> DefaultFunction;
-            typedef std::tr1::function<std::string (const KeyValueConfigFile &,
+            typedef std::function<std::string (const KeyValueConfigFile &, const std::string &)> DefaultFunction;
+            typedef std::function<std::string (const KeyValueConfigFile &,
                     const std::string & var, const std::string & old_value, const std::string & new_value)> TransformationFunction;
 
             static std::string no_defaults(const KeyValueConfigFile &, const std::string &);

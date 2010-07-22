@@ -71,58 +71,58 @@ namespace paludis
         const QualifiedPackageName name;
         const VersionSpec version;
         const Environment * const environment;
-        const std::tr1::shared_ptr<const ERepository> repository;
+        const std::shared_ptr<const ERepository> repository;
         const FSEntry ebuild;
-        mutable std::tr1::shared_ptr<const EAPI> eapi;
+        mutable std::shared_ptr<const EAPI> eapi;
         const std::string guessed_eapi;
         const time_t master_mtime;
-        const std::tr1::shared_ptr<const EclassMtimes> eclass_mtimes;
+        const std::shared_ptr<const EclassMtimes> eclass_mtimes;
         mutable bool has_keys;
         mutable bool has_masks;
 
-        mutable std::tr1::shared_ptr<const ESlotKey> slot;
-        mutable std::tr1::shared_ptr<const LiteralMetadataValueKey<FSEntry> > fs_location;
-        mutable std::tr1::shared_ptr<const LiteralMetadataValueKey<std::string> > short_description;
-        mutable std::tr1::shared_ptr<const LiteralMetadataValueKey<std::string> > long_description;
-        mutable std::tr1::shared_ptr<const LiteralMetadataValueKey<std::string> > captured_stdout_key;
-        mutable std::tr1::shared_ptr<const LiteralMetadataValueKey<std::string> > captured_stderr_key;
-        mutable std::tr1::shared_ptr<const EDependenciesKey> raw_dependencies;
-        mutable std::tr1::shared_ptr<const EDependenciesKey> build_dependencies;
-        mutable std::tr1::shared_ptr<const EDependenciesKey> run_dependencies;
-        mutable std::tr1::shared_ptr<const EDependenciesKey> post_dependencies;
-        mutable std::tr1::shared_ptr<const EProvideKey> provide;
-        mutable std::tr1::shared_ptr<const EPlainTextSpecKey> restrictions;
-        mutable std::tr1::shared_ptr<const EPlainTextSpecKey> properties;
-        mutable std::tr1::shared_ptr<const EFetchableURIKey> src_uri;
-        mutable std::tr1::shared_ptr<const ESimpleURIKey> homepage;
-        mutable std::tr1::shared_ptr<const ELicenseKey> license;
-        mutable std::tr1::shared_ptr<const EKeywordsKey> keywords;
-        mutable std::tr1::shared_ptr<const EStringSetKey> raw_iuse;
-        mutable std::tr1::shared_ptr<const LiteralMetadataStringSetKey> raw_iuse_effective;
-        mutable std::tr1::shared_ptr<const EMyOptionsKey> raw_myoptions;
-        mutable std::tr1::shared_ptr<const EStringSetKey> inherited;
-        mutable std::tr1::shared_ptr<const EStringSetKey> raw_use;
-        mutable std::tr1::shared_ptr<const LiteralMetadataStringSetKey> raw_use_expand;
-        mutable std::tr1::shared_ptr<const LiteralMetadataStringSetKey> raw_use_expand_hidden;
-        mutable std::tr1::shared_ptr<EMutableRepositoryMaskInfoKey> repository_mask;
-        mutable std::tr1::shared_ptr<EMutableRepositoryMaskInfoKey> profile_mask;
-        mutable std::tr1::shared_ptr<const EPlainTextSpecKey> remote_ids;
-        mutable std::tr1::shared_ptr<const EPlainTextSpecKey> bugs_to;
-        mutable std::tr1::shared_ptr<const ESimpleURIKey> upstream_changelog;
-        mutable std::tr1::shared_ptr<const ESimpleURIKey> upstream_documentation;
-        mutable std::tr1::shared_ptr<const ESimpleURIKey> upstream_release_notes;
-        mutable std::tr1::shared_ptr<const EChoicesKey> choices;
-        mutable std::tr1::shared_ptr<const EStringSetKey> defined_phases;
+        mutable std::shared_ptr<const ESlotKey> slot;
+        mutable std::shared_ptr<const LiteralMetadataValueKey<FSEntry> > fs_location;
+        mutable std::shared_ptr<const LiteralMetadataValueKey<std::string> > short_description;
+        mutable std::shared_ptr<const LiteralMetadataValueKey<std::string> > long_description;
+        mutable std::shared_ptr<const LiteralMetadataValueKey<std::string> > captured_stdout_key;
+        mutable std::shared_ptr<const LiteralMetadataValueKey<std::string> > captured_stderr_key;
+        mutable std::shared_ptr<const EDependenciesKey> raw_dependencies;
+        mutable std::shared_ptr<const EDependenciesKey> build_dependencies;
+        mutable std::shared_ptr<const EDependenciesKey> run_dependencies;
+        mutable std::shared_ptr<const EDependenciesKey> post_dependencies;
+        mutable std::shared_ptr<const EProvideKey> provide;
+        mutable std::shared_ptr<const EPlainTextSpecKey> restrictions;
+        mutable std::shared_ptr<const EPlainTextSpecKey> properties;
+        mutable std::shared_ptr<const EFetchableURIKey> src_uri;
+        mutable std::shared_ptr<const ESimpleURIKey> homepage;
+        mutable std::shared_ptr<const ELicenseKey> license;
+        mutable std::shared_ptr<const EKeywordsKey> keywords;
+        mutable std::shared_ptr<const EStringSetKey> raw_iuse;
+        mutable std::shared_ptr<const LiteralMetadataStringSetKey> raw_iuse_effective;
+        mutable std::shared_ptr<const EMyOptionsKey> raw_myoptions;
+        mutable std::shared_ptr<const EStringSetKey> inherited;
+        mutable std::shared_ptr<const EStringSetKey> raw_use;
+        mutable std::shared_ptr<const LiteralMetadataStringSetKey> raw_use_expand;
+        mutable std::shared_ptr<const LiteralMetadataStringSetKey> raw_use_expand_hidden;
+        mutable std::shared_ptr<EMutableRepositoryMaskInfoKey> repository_mask;
+        mutable std::shared_ptr<EMutableRepositoryMaskInfoKey> profile_mask;
+        mutable std::shared_ptr<const EPlainTextSpecKey> remote_ids;
+        mutable std::shared_ptr<const EPlainTextSpecKey> bugs_to;
+        mutable std::shared_ptr<const ESimpleURIKey> upstream_changelog;
+        mutable std::shared_ptr<const ESimpleURIKey> upstream_documentation;
+        mutable std::shared_ptr<const ESimpleURIKey> upstream_release_notes;
+        mutable std::shared_ptr<const EChoicesKey> choices;
+        mutable std::shared_ptr<const EStringSetKey> defined_phases;
 
-        std::tr1::shared_ptr<DependenciesLabelSequence> raw_dependencies_labels;
-        std::tr1::shared_ptr<DependenciesLabelSequence> build_dependencies_labels;
-        std::tr1::shared_ptr<DependenciesLabelSequence> run_dependencies_labels;
-        std::tr1::shared_ptr<DependenciesLabelSequence> post_dependencies_labels;
+        std::shared_ptr<DependenciesLabelSequence> raw_dependencies_labels;
+        std::shared_ptr<DependenciesLabelSequence> build_dependencies_labels;
+        std::shared_ptr<DependenciesLabelSequence> run_dependencies_labels;
+        std::shared_ptr<DependenciesLabelSequence> post_dependencies_labels;
 
         Implementation(const QualifiedPackageName & q, const VersionSpec & v,
                 const Environment * const e,
-                const std::tr1::shared_ptr<const ERepository> r, const FSEntry & f, const std::string & g,
-                const time_t t, const std::tr1::shared_ptr<const EclassMtimes> & m) :
+                const std::shared_ptr<const ERepository> r, const FSEntry & f, const std::string & g,
+                const time_t t, const std::shared_ptr<const EclassMtimes> & m) :
             name(q),
             version(v),
             environment(e),
@@ -155,11 +155,11 @@ namespace paludis
 
 EbuildID::EbuildID(const QualifiedPackageName & q, const VersionSpec & v,
         const Environment * const e,
-        const std::tr1::shared_ptr<const ERepository> & r,
+        const std::shared_ptr<const ERepository> & r,
         const FSEntry & f,
         const std::string & g,
         const time_t t,
-        const std::tr1::shared_ptr<const EclassMtimes> & m) :
+        const std::shared_ptr<const EclassMtimes> & m) :
     PrivateImplementationPattern<EbuildID>(new Implementation<EbuildID>(q, v, e, r, f, g.empty() ? r->params().eapi_when_unknown() : g, t, m)),
     _imp(PrivateImplementationPattern<EbuildID>::_imp)
 {
@@ -299,13 +299,13 @@ EbuildID::need_keys_added() const
     add_metadata_key(make_shared_ptr(new LiteralMetadataValueKey<std::string>("EAPI", "EAPI", mkt_internal, _imp->eapi->name())));
 
     _imp->repository_mask = make_shared_ptr(new EMutableRepositoryMaskInfoKey(shared_from_this(), "repository_mask", "Repository masked",
-        std::tr1::static_pointer_cast<const ERepository>(repository())->repository_masked(*this), mkt_internal));
+        std::static_pointer_cast<const ERepository>(repository())->repository_masked(*this), mkt_internal));
     add_metadata_key(_imp->repository_mask);
     _imp->profile_mask = make_shared_ptr(new EMutableRepositoryMaskInfoKey(shared_from_this(), "profile_mask", "Profile masked",
-        std::tr1::static_pointer_cast<const ERepository>(repository())->profile()->profile_masked(*this), mkt_internal));
+        std::static_pointer_cast<const ERepository>(repository())->profile()->profile_masked(*this), mkt_internal));
     add_metadata_key(_imp->profile_mask);
 
-    std::tr1::shared_ptr<const Map<ChoiceNameWithPrefix, std::string> > maybe_use_descriptions;
+    std::shared_ptr<const Map<ChoiceNameWithPrefix, std::string> > maybe_use_descriptions;
     if (_imp->eapi->supported())
     {
         _imp->raw_use_expand = make_shared_ptr(new LiteralMetadataStringSetKey(
@@ -319,7 +319,7 @@ EbuildID::need_keys_added() const
                     mkt_internal,
                     e_repository()->profile()->use_expand_hidden()));
 
-        std::tr1::shared_ptr<const MetadataXML> m(MetadataXMLPool::get_instance()->metadata_if_exists(
+        std::shared_ptr<const MetadataXML> m(MetadataXMLPool::get_instance()->metadata_if_exists(
                     _imp->fs_location->value().dirname() / "metadata.xml"));
         if (m)
         {
@@ -335,7 +335,7 @@ EbuildID::need_keys_added() const
 
         if (_imp->eapi->supported()->choices_options()->profile_iuse_injection())
         {
-            std::tr1::shared_ptr<Set<std::string> > iuse_effective(new Set<std::string>);
+            std::shared_ptr<Set<std::string> > iuse_effective(new Set<std::string>);
             if (! _imp->raw_iuse)
                 throw InternalError(PALUDIS_HERE, "no raw_iuse?");
 
@@ -343,8 +343,8 @@ EbuildID::need_keys_added() const
             std::copy(e_repository()->profile()->iuse_implicit()->begin(), e_repository()->profile()->iuse_implicit()->end(),
                     iuse_effective->inserter());
 
-            const std::tr1::shared_ptr<const Set<std::string> > use_expand(e_repository()->profile()->use_expand());
-            const std::tr1::shared_ptr<const Set<std::string> > use_expand_unprefixed(e_repository()->profile()->use_expand_unprefixed());
+            const std::shared_ptr<const Set<std::string> > use_expand(e_repository()->profile()->use_expand());
+            const std::shared_ptr<const Set<std::string> > use_expand_unprefixed(e_repository()->profile()->use_expand_unprefixed());
             const std::string separator(stringify(_imp->eapi->supported()->choices_options()->use_expand_separator()));
 
             for (Set<std::string>::ConstIterator x(e_repository()->profile()->use_expand_implicit()->begin()),
@@ -361,7 +361,7 @@ EbuildID::need_keys_added() const
                     Log::get_instance()->message("e.ebuild.iuse_effective.neither", ll_qa, lc_context)
                         << "USE_EXPAND_IMPLICIT value " << *x << " is not in either USE_EXPAND or USE_EXPAND_UNPREFIXED";
 
-                const std::tr1::shared_ptr<const Set<std::string> > values(e_repository()->profile()->use_expand_values(*x));
+                const std::shared_ptr<const Set<std::string> > values(e_repository()->profile()->use_expand_values(*x));
                 for (Set<std::string>::ConstIterator v(values->begin()), v_end(values->end()) ;
                         v != v_end ; ++v)
                 {
@@ -515,7 +515,7 @@ EbuildID::need_masks_added() const
             add_mask(make_shared_ptr(new ERepositoryMask('P', "profile", _imp->profile_mask)));
 
         /* user */
-        std::tr1::shared_ptr<const Mask> user_mask(_imp->environment->mask_for_user(*this, false));
+        std::shared_ptr<const Mask> user_mask(_imp->environment->mask_for_user(*this, false));
         if (user_mask)
             add_mask(user_mask);
     }
@@ -538,7 +538,7 @@ EbuildID::need_masks_added() const
                                 ))));
 
         /* user */
-        std::tr1::shared_ptr<const Mask> user_mask(_imp->environment->mask_for_user(*this, true));
+        std::shared_ptr<const Mask> user_mask(_imp->environment->mask_for_user(*this, true));
         if (user_mask)
             add_overridden_mask(make_shared_ptr(new OverriddenMask(
                             make_named_values<OverriddenMask>(
@@ -549,7 +549,7 @@ EbuildID::need_masks_added() const
     }
 
     /* break portage */
-    std::tr1::shared_ptr<const Mask> breaks_mask(_imp->environment->mask_for_breakage(*this));
+    std::shared_ptr<const Mask> breaks_mask(_imp->environment->mask_for_breakage(*this));
     if (breaks_mask)
         add_mask(breaks_mask);
 }
@@ -564,8 +564,8 @@ EbuildID::invalidate_masks() const
 
     _imp->has_masks = false;
     PackageID::invalidate_masks();
-    _imp->repository_mask->set_value(std::tr1::static_pointer_cast<const ERepository>(repository())->repository_masked(*this));
-    _imp->profile_mask->set_value(std::tr1::static_pointer_cast<const ERepository>(repository())->profile()->profile_masked(*this));
+    _imp->repository_mask->set_value(std::static_pointer_cast<const ERepository>(repository())->repository_masked(*this));
+    _imp->profile_mask->set_value(std::static_pointer_cast<const ERepository>(repository())->profile()->profile_masked(*this));
 }
 
 const std::string
@@ -624,13 +624,13 @@ EbuildID::version() const
     return _imp->version;
 }
 
-const std::tr1::shared_ptr<const Repository>
+const std::shared_ptr<const Repository>
 EbuildID::repository() const
 {
     return _imp->repository;
 }
 
-const std::tr1::shared_ptr<const EAPI>
+const std::shared_ptr<const EAPI>
 EbuildID::eapi() const
 {
     if (_imp->eapi)
@@ -644,188 +644,188 @@ EbuildID::eapi() const
     return _imp->eapi;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >
+const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > >
 EbuildID::virtual_for_key() const
 {
-    return std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >();
+    return std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > >();
 }
 
-const std::tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
+const std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
 EbuildID::keywords_key() const
 {
     need_keys_added();
     return _imp->keywords;
 }
 
-const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 EbuildID::raw_iuse_key() const
 {
     need_keys_added();
     return _imp->raw_iuse;
 }
 
-const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 EbuildID::raw_iuse_effective_key() const
 {
     need_keys_added();
     return _imp->raw_iuse_effective;
 }
 
-const std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> >
+const std::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> >
 EbuildID::raw_myoptions_key() const
 {
     need_keys_added();
     return _imp->raw_myoptions;
 }
 
-const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 EbuildID::raw_use_key() const
 {
     need_keys_added();
     return _imp->raw_use;
 }
 
-const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 EbuildID::raw_use_expand_key() const
 {
     need_keys_added();
     return _imp->raw_use_expand;
 }
 
-const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 EbuildID::raw_use_expand_hidden_key() const
 {
     need_keys_added();
     return _imp->raw_use_expand_hidden;
 }
 
-const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 EbuildID::behaviours_key() const
 {
     return make_null_shared_ptr();
 }
 
-const std::tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> >
+const std::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> >
 EbuildID::license_key() const
 {
     need_keys_added();
     return _imp->license;
 }
 
-const std::tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >
+const std::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >
 EbuildID::provide_key() const
 {
     need_keys_added();
     return _imp->provide;
 }
 
-const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 EbuildID::dependencies_key() const
 {
     need_keys_added();
     return _imp->raw_dependencies;
 }
 
-const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 EbuildID::build_dependencies_key() const
 {
     need_keys_added();
     return _imp->build_dependencies;
 }
 
-const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 EbuildID::run_dependencies_key() const
 {
     need_keys_added();
     return _imp->run_dependencies;
 }
 
-const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 EbuildID::post_dependencies_key() const
 {
     need_keys_added();
     return _imp->post_dependencies;
 }
 
-const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 EbuildID::suggested_dependencies_key() const
 {
-    return std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+    return std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
 }
 
-const std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> >
+const std::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> >
 EbuildID::restrict_key() const
 {
     need_keys_added();
     return _imp->restrictions;
 }
 
-const std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> >
+const std::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> >
 EbuildID::properties_key() const
 {
     need_keys_added();
     return _imp->properties;
 }
 
-const std::tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
+const std::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
 EbuildID::fetches_key() const
 {
     need_keys_added();
     return _imp->src_uri;
 }
 
-const std::tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
+const std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
 EbuildID::homepage_key() const
 {
     need_keys_added();
     return _imp->homepage;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataValueKey<std::string> >
 EbuildID::short_description_key() const
 {
     need_keys_added();
     return _imp->short_description;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataValueKey<std::string> >
 EbuildID::long_description_key() const
 {
     need_keys_added();
     return _imp->long_description;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Contents> > >
+const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Contents> > >
 EbuildID::contents_key() const
 {
-    return std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Contents> > >();
+    return std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Contents> > >();
 }
 
-const std::tr1::shared_ptr<const MetadataTimeKey>
+const std::shared_ptr<const MetadataTimeKey>
 EbuildID::installed_time_key() const
 {
-    return std::tr1::shared_ptr<const MetadataTimeKey>();
+    return std::shared_ptr<const MetadataTimeKey>();
 }
 
-const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 EbuildID::from_repositories_key() const
 {
-    return std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >();
+    return std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >();
 }
 
-const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 EbuildID::inherited_key() const
 {
     return _imp->inherited;
 }
 
-const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 EbuildID::defined_phases_key() const
 {
     return _imp->defined_phases;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSEntry> >
 EbuildID::fs_location_key() const
 {
     Lock l(_imp->mutex);
@@ -865,7 +865,7 @@ EbuildID::guessed_eapi_name() const
     return _imp->guessed_eapi;
 }
 
-std::tr1::shared_ptr<const ERepository>
+std::shared_ptr<const ERepository>
 EbuildID::e_repository() const
 {
     return _imp->repository;
@@ -943,7 +943,7 @@ EbuildID::load_post_depend(const std::string & r, const std::string & h, const s
 }
 
 void
-EbuildID::load_src_uri(const std::tr1::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
+EbuildID::load_src_uri(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
     Lock l(_imp->mutex);
     _imp->src_uri.reset(new EFetchableURIKey(_imp->environment, shared_from_this(), m, v, mkt_dependencies));
@@ -959,7 +959,7 @@ EbuildID::load_homepage(const std::string & r, const std::string & h, const std:
 }
 
 void
-EbuildID::load_license(const std::tr1::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
+EbuildID::load_license(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
     Lock l(_imp->mutex);
     _imp->license.reset(new ELicenseKey(_imp->environment, shared_from_this(), m, v, mkt_internal));
@@ -967,7 +967,7 @@ EbuildID::load_license(const std::tr1::shared_ptr<const EAPIMetadataVariable> & 
 }
 
 void
-EbuildID::load_restrict(const std::tr1::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
+EbuildID::load_restrict(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
     Lock l(_imp->mutex);
     _imp->restrictions.reset(new EPlainTextSpecKey(_imp->environment, shared_from_this(), m, v, mkt_internal));
@@ -975,7 +975,7 @@ EbuildID::load_restrict(const std::tr1::shared_ptr<const EAPIMetadataVariable> &
 }
 
 void
-EbuildID::load_properties(const std::tr1::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
+EbuildID::load_properties(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
     Lock l(_imp->mutex);
     _imp->properties.reset(new EPlainTextSpecKey(_imp->environment, shared_from_this(), m, v, mkt_internal));
@@ -1066,7 +1066,7 @@ EbuildID::load_upstream_release_notes(const std::string & r, const std::string &
 }
 
 void
-EbuildID::load_bugs_to(const std::tr1::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
+EbuildID::load_bugs_to(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
     Lock l(_imp->mutex);
     _imp->bugs_to.reset(new EPlainTextSpecKey(_imp->environment, shared_from_this(), m, v, mkt_normal));
@@ -1074,7 +1074,7 @@ EbuildID::load_bugs_to(const std::tr1::shared_ptr<const EAPIMetadataVariable> & 
 }
 
 void
-EbuildID::load_remote_ids(const std::tr1::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
+EbuildID::load_remote_ids(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
     Lock l(_imp->mutex);
     _imp->remote_ids.reset(new EPlainTextSpecKey(_imp->environment, shared_from_this(), m, v, mkt_internal));
@@ -1082,7 +1082,7 @@ EbuildID::load_remote_ids(const std::tr1::shared_ptr<const EAPIMetadataVariable>
 }
 
 void
-EbuildID::load_slot(const std::tr1::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
+EbuildID::load_slot(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
     Lock l(_imp->mutex);
     _imp->slot.reset(new ESlotKey(m, v, mkt_internal));
@@ -1141,46 +1141,46 @@ namespace
 {
     struct PerformAction
     {
-        const std::tr1::shared_ptr<const PackageID> id;
+        const std::shared_ptr<const PackageID> id;
 
-        PerformAction(const std::tr1::shared_ptr<const PackageID> i) :
+        PerformAction(const std::shared_ptr<const PackageID> i) :
             id(i)
         {
         }
 
         void visit(InstallAction & a)
         {
-            std::tr1::static_pointer_cast<const ERepository>(id->repository())->install(
-                    std::tr1::static_pointer_cast<const ERepositoryID>(id),
+            std::static_pointer_cast<const ERepository>(id->repository())->install(
+                    std::static_pointer_cast<const ERepositoryID>(id),
                     a.options);
         }
 
         void visit(FetchAction & a)
         {
-            std::tr1::static_pointer_cast<const ERepository>(id->repository())->fetch(
-                    std::tr1::static_pointer_cast<const ERepositoryID>(id),
+            std::static_pointer_cast<const ERepository>(id->repository())->fetch(
+                    std::static_pointer_cast<const ERepositoryID>(id),
                     a.options);
         }
 
         void visit(PretendFetchAction & a)
         {
-            std::tr1::static_pointer_cast<const ERepository>(id->repository())->pretend_fetch(
-                    std::tr1::static_pointer_cast<const ERepositoryID>(id),
+            std::static_pointer_cast<const ERepository>(id->repository())->pretend_fetch(
+                    std::static_pointer_cast<const ERepositoryID>(id),
                     a);
         }
 
         void visit(PretendAction & action)
         {
-            if (! std::tr1::static_pointer_cast<const ERepository>(id->repository())->pretend(
-                        std::tr1::static_pointer_cast<const ERepositoryID>(id),
+            if (! std::static_pointer_cast<const ERepository>(id->repository())->pretend(
+                        std::static_pointer_cast<const ERepositoryID>(id),
                         action))
                 action.set_failed();
         }
 
         void visit(InfoAction & action)
         {
-            std::tr1::static_pointer_cast<const ERepository>(id->repository())->info(
-                    std::tr1::static_pointer_cast<const ERepositoryID>(id),
+            std::static_pointer_cast<const ERepository>(id->repository())->info(
+                    std::static_pointer_cast<const ERepositoryID>(id),
                     action);
         }
 
@@ -1209,70 +1209,70 @@ EbuildID::perform_action(Action & a) const
     a.accept(b);
 }
 
-const std::tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >
+const std::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >
 EbuildID::contains_key() const
 {
-    return std::tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >();
+    return std::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >();
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >
+const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > >
 EbuildID::contained_in_key() const
 {
-    return std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >();
+    return std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > >();
 }
 
-const std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> >
+const std::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> >
 EbuildID::remote_ids_key() const
 {
     need_keys_added();
     return _imp->remote_ids;
 }
 
-const std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> >
+const std::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> >
 EbuildID::bugs_to_key() const
 {
     need_keys_added();
     return _imp->bugs_to;
 }
 
-const std::tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
+const std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
 EbuildID::upstream_changelog_key() const
 {
     need_keys_added();
     return _imp->upstream_changelog;
 }
 
-const std::tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
+const std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
 EbuildID::upstream_documentation_key() const
 {
     need_keys_added();
     return _imp->upstream_documentation;
 }
 
-const std::tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
+const std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
 EbuildID::upstream_release_notes_key() const
 {
     need_keys_added();
     return _imp->upstream_release_notes;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > >
+const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Choices> > >
 EbuildID::choices_key() const
 {
     need_keys_added();
     return _imp->choices;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<SlotName> >
+const std::shared_ptr<const MetadataValueKey<SlotName> >
 EbuildID::slot_key() const
 {
     need_keys_added();
     return _imp->slot;
 }
 
-std::tr1::shared_ptr<ChoiceValue>
+std::shared_ptr<ChoiceValue>
 EbuildID::make_choice_value(
-        const std::tr1::shared_ptr<const Choice> & choice,
+        const std::shared_ptr<const Choice> & choice,
         const UnprefixedChoiceName & value_name,
         const Tribool iuse_default,
         const bool iuse_default_wins,
@@ -1378,11 +1378,11 @@ namespace
 }
 
 void
-EbuildID::add_build_options(const std::tr1::shared_ptr<Choices> & choices) const
+EbuildID::add_build_options(const std::shared_ptr<Choices> & choices) const
 {
     if (eapi()->supported())
     {
-        std::tr1::shared_ptr<Choice> build_options(new Choice(make_named_values<ChoiceParams>(
+        std::shared_ptr<Choice> build_options(new Choice(make_named_values<ChoiceParams>(
                         n::consider_added_or_changed() = false,
                         n::contains_every_value() = false,
                         n::hidden() = false,

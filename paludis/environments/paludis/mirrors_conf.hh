@@ -60,7 +60,7 @@ namespace paludis
                 /**
                  * Query a mirror.
                  */
-                std::tr1::shared_ptr<const MirrorsSequence> query(const std::string &) const
+                std::shared_ptr<const MirrorsSequence> query(const std::string &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }

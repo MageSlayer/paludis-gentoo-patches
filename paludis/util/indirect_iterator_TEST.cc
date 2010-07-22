@@ -46,14 +46,14 @@ namespace test_cases
 {
     struct IndirectIteratorVecCPIntTest : TestCase
     {
-        IndirectIteratorVecCPIntTest() : TestCase("vector<std::tr1::shared_ptr<int> >") { }
+        IndirectIteratorVecCPIntTest() : TestCase("vector<std::shared_ptr<int> >") { }
 
         void run()
         {
-            std::vector<std::tr1::shared_ptr<int> > v;
-            v.push_back(std::tr1::shared_ptr<int>(new int(5)));
-            v.push_back(std::tr1::shared_ptr<int>(new int(10)));
-            IndirectIterator<std::vector<std::tr1::shared_ptr<int> >::iterator, int> vi(v.begin()), vi_end(v.end());
+            std::vector<std::shared_ptr<int> > v;
+            v.push_back(std::shared_ptr<int>(new int(5)));
+            v.push_back(std::shared_ptr<int>(new int(10)));
+            IndirectIterator<std::vector<std::shared_ptr<int> >::iterator, int> vi(v.begin()), vi_end(v.end());
             TEST_CHECK(vi != vi_end);
             TEST_CHECK(vi < vi_end);
             TEST_CHECK(! (vi > vi_end));
@@ -72,14 +72,14 @@ namespace test_cases
      */
     struct IndirectIteratorListCPIntTest : TestCase
     {
-        IndirectIteratorListCPIntTest() : TestCase("list<std::tr1::shared_ptr<int> >") { }
+        IndirectIteratorListCPIntTest() : TestCase("list<std::shared_ptr<int> >") { }
 
         void run()
         {
-            std::list<std::tr1::shared_ptr<int> > v;
-            v.push_back(std::tr1::shared_ptr<int>(new int(5)));
-            v.push_back(std::tr1::shared_ptr<int>(new int(10)));
-            IndirectIterator<std::list<std::tr1::shared_ptr<int> >::iterator> vi(v.begin()), vi_end(v.end());
+            std::list<std::shared_ptr<int> > v;
+            v.push_back(std::shared_ptr<int>(new int(5)));
+            v.push_back(std::shared_ptr<int>(new int(10)));
+            IndirectIterator<std::list<std::shared_ptr<int> >::iterator> vi(v.begin()), vi_end(v.end());
             TEST_CHECK(vi != vi_end);
             TEST_CHECK_EQUAL(*vi, 5);
             TEST_CHECK(++vi != vi_end);

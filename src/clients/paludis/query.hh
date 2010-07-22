@@ -32,6 +32,6 @@ namespace paludis
 }
 
 /// Handle --query.
-int do_query(const std::tr1::shared_ptr<paludis::Environment> &);
+int do_query(const std::shared_ptr<paludis::Environment> &);
 
 #endif

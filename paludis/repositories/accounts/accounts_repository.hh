@@ -56,7 +56,7 @@ namespace paludis
             private PrivateImplementationPattern<AccountsRepository>,
             public Repository,
             public RepositoryDestinationInterface,
-            public std::tr1::enable_shared_from_this<AccountsRepository>
+            public std::enable_shared_from_this<AccountsRepository>
         {
             private:
                 PrivateImplementationPattern<AccountsRepository>::ImpPtr & _imp;
@@ -77,15 +77,15 @@ namespace paludis
 
                 static RepositoryName repository_factory_name(
                         const Environment * const env,
-                        const std::tr1::function<std::string (const std::string &)> &);
+                        const std::function<std::string (const std::string &)> &);
 
-                static std::tr1::shared_ptr<Repository> repository_factory_create(
+                static std::shared_ptr<Repository> repository_factory_create(
                         Environment * const env,
-                        const std::tr1::function<std::string (const std::string &)> &);
+                        const std::function<std::string (const std::string &)> &);
 
-                static std::tr1::shared_ptr<const RepositoryNameSet> repository_factory_dependencies(
+                static std::shared_ptr<const RepositoryNameSet> repository_factory_dependencies(
                         const Environment * const env,
-                        const std::tr1::function<std::string (const std::string &)> &);
+                        const std::function<std::string (const std::string &)> &);
 
                 ///\}
 
@@ -94,26 +94,26 @@ namespace paludis
 
                 static RepositoryName repository_factory_installed_name(
                         const Environment * const env,
-                        const std::tr1::function<std::string (const std::string &)> &);
+                        const std::function<std::string (const std::string &)> &);
 
-                static std::tr1::shared_ptr<Repository> repository_factory_installed_create(
+                static std::shared_ptr<Repository> repository_factory_installed_create(
                         Environment * const env,
-                        const std::tr1::function<std::string (const std::string &)> &);
+                        const std::function<std::string (const std::string &)> &);
 
-                static std::tr1::shared_ptr<const RepositoryNameSet> repository_factory_installed_dependencies(
+                static std::shared_ptr<const RepositoryNameSet> repository_factory_installed_dependencies(
                         const Environment * const env,
-                        const std::tr1::function<std::string (const std::string &)> &);
+                        const std::function<std::string (const std::string &)> &);
 
                 ///\}
 
                 ///\name Specific metadata keys
                 ///\{
 
-                virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
-                virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > location_key() const;
-                virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const;
-                virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > accept_keywords_key() const;
-                virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > sync_host_key() const;
+                virtual const std::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
+                virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > location_key() const;
+                virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const;
+                virtual const std::shared_ptr<const MetadataValueKey<std::string> > accept_keywords_key() const;
+                virtual const std::shared_ptr<const MetadataValueKey<std::string> > sync_host_key() const;
 
                 ///\}
 
@@ -123,13 +123,13 @@ namespace paludis
                 virtual const bool is_unimportant() const;
                 virtual bool has_category_named(const CategoryNamePart & c) const;
                 virtual bool has_package_named(const QualifiedPackageName & q) const;
-                virtual std::tr1::shared_ptr<const CategoryNamePartSet> category_names() const;
-                virtual std::tr1::shared_ptr<const CategoryNamePartSet> unimportant_category_names() const;
-                virtual std::tr1::shared_ptr<const CategoryNamePartSet> category_names_containing_package(
+                virtual std::shared_ptr<const CategoryNamePartSet> category_names() const;
+                virtual std::shared_ptr<const CategoryNamePartSet> unimportant_category_names() const;
+                virtual std::shared_ptr<const CategoryNamePartSet> category_names_containing_package(
                         const PackageNamePart & p) const;
-                virtual std::tr1::shared_ptr<const QualifiedPackageNameSet> package_names(
+                virtual std::shared_ptr<const QualifiedPackageNameSet> package_names(
                         const CategoryNamePart & c) const;
-                virtual std::tr1::shared_ptr<const PackageIDSequence> package_ids(const QualifiedPackageName & p) const;
+                virtual std::shared_ptr<const PackageIDSequence> package_ids(const QualifiedPackageName & p) const;
                 virtual bool some_ids_might_support_action(const SupportsActionTestBase &) const;
                 virtual bool some_ids_might_not_be_masked() const;
 
@@ -143,7 +143,7 @@ namespace paludis
                 virtual void regenerate_cache() const;
 
                 virtual HookResult perform_hook(const Hook & hook);
-                virtual bool sync(const std::tr1::shared_ptr<OutputManager> &) const;
+                virtual bool sync(const std::shared_ptr<OutputManager> &) const;
 
                 ///\}
 

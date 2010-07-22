@@ -43,7 +43,7 @@ int main(int argc, char * argv[])
          * the environment class to use (e.g. 'paludis', 'portage') and the
          * second part is passed as parameters to be handled by that
          * environment's constructor. */
-        std::tr1::shared_ptr<Environment> env(EnvironmentFactory::get_instance()->create(
+        std::shared_ptr<Environment> env(EnvironmentFactory::get_instance()->create(
                     CommandLine::get_instance()->a_environment.argument()));
 
         /* A lot of the Environment members aren't very useful to clients. The
@@ -55,7 +55,7 @@ int main(int argc, char * argv[])
          * The package database has its own examples, so we'll start with sets:
          * */
 
-        std::tr1::shared_ptr<const SetSpecTree> world(env->set(SetName("world")));
+        std::shared_ptr<const SetSpecTree> world(env->set(SetName("world")));
         if (world)
         {
             cout << "World set exists" << endl;

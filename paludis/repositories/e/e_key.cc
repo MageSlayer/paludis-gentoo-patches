@@ -52,15 +52,15 @@
 #include <paludis/dep_spec_flattener.hh>
 #include <paludis/literal_metadata_key.hh>
 
-#include <tr1/functional>
+#include <functional>
 #include <list>
 #include <vector>
 
 using namespace paludis;
 using namespace paludis::erepository;
 
-EMutableRepositoryMaskInfoKey::EMutableRepositoryMaskInfoKey(const std::tr1::shared_ptr<const ERepositoryID> &,
-        const std::string & r, const std::string & h, const std::tr1::shared_ptr<const RepositoryMaskInfo> & v, const MetadataKeyType t) :
+EMutableRepositoryMaskInfoKey::EMutableRepositoryMaskInfoKey(const std::shared_ptr<const ERepositoryID> &,
+        const std::string & r, const std::string & h, const std::shared_ptr<const RepositoryMaskInfo> & v, const MetadataKeyType t) :
     _value(v),
     _r(r),
     _h(h),
@@ -72,14 +72,14 @@ EMutableRepositoryMaskInfoKey::~EMutableRepositoryMaskInfoKey()
 {
 }
 
-const std::tr1::shared_ptr<const RepositoryMaskInfo>
+const std::shared_ptr<const RepositoryMaskInfo>
 EMutableRepositoryMaskInfoKey::value() const
 {
     return _value;
 }
 
 void
-EMutableRepositoryMaskInfoKey::set_value(const std::tr1::shared_ptr<const RepositoryMaskInfo> & v)
+EMutableRepositoryMaskInfoKey::set_value(const std::shared_ptr<const RepositoryMaskInfo> & v)
 {
     _value = v;
 }
@@ -108,11 +108,11 @@ namespace paludis
     struct Implementation<EDependenciesKey>
     {
         const Environment * const env;
-        const std::tr1::shared_ptr<const ERepositoryID> id;
+        const std::shared_ptr<const ERepositoryID> id;
         const std::string string_value;
         mutable Mutex value_mutex;
-        mutable std::tr1::shared_ptr<const DependencySpecTree> value;
-        const std::tr1::shared_ptr<const DependenciesLabelSequence> labels;
+        mutable std::shared_ptr<const DependencySpecTree> value;
+        const std::shared_ptr<const DependenciesLabelSequence> labels;
 
         const std::string raw_name;
         const std::string human_name;
@@ -120,8 +120,8 @@ namespace paludis
 
         Implementation(
                 const Environment * const e,
-                const std::tr1::shared_ptr<const ERepositoryID> & i, const std::string & v,
-                const std::tr1::shared_ptr<const DependenciesLabelSequence> & s,
+                const std::shared_ptr<const ERepositoryID> & i, const std::string & v,
+                const std::shared_ptr<const DependenciesLabelSequence> & s,
                 const std::string & r, const std::string & h, const MetadataKeyType & t) :
             env(e),
             id(i),
@@ -137,9 +137,9 @@ namespace paludis
 
 EDependenciesKey::EDependenciesKey(
         const Environment * const e,
-        const std::tr1::shared_ptr<const ERepositoryID> & id,
+        const std::shared_ptr<const ERepositoryID> & id,
         const std::string & r, const std::string & h, const std::string & v,
-        const std::tr1::shared_ptr<const DependenciesLabelSequence> & l, const MetadataKeyType t) :
+        const std::shared_ptr<const DependenciesLabelSequence> & l, const MetadataKeyType t) :
     PrivateImplementationPattern<EDependenciesKey>(new Implementation<EDependenciesKey>(e, id, v, l, r, h, t))
 {
 }
@@ -148,7 +148,7 @@ EDependenciesKey::~EDependenciesKey()
 {
 }
 
-const std::tr1::shared_ptr<const DependencySpecTree>
+const std::shared_ptr<const DependencySpecTree>
 EDependenciesKey::value() const
 {
     Lock l(_imp->value_mutex);
@@ -160,7 +160,7 @@ EDependenciesKey::value() const
     return _imp->value;
 }
 
-const std::tr1::shared_ptr<const DependenciesLabelSequence>
+const std::shared_ptr<const DependenciesLabelSequence>
 EDependenciesKey::initial_labels() const
 {
     return _imp->labels;
@@ -208,17 +208,17 @@ namespace paludis
     struct Implementation<ELicenseKey>
     {
         const Environment * const env;
-        const std::tr1::shared_ptr<const ERepositoryID> id;
+        const std::shared_ptr<const ERepositoryID> id;
         const std::string string_value;
         mutable Mutex value_mutex;
-        mutable std::tr1::shared_ptr<const LicenseSpecTree> value;
+        mutable std::shared_ptr<const LicenseSpecTree> value;
 
-        const std::tr1::shared_ptr<const EAPIMetadataVariable> variable;
+        const std::shared_ptr<const EAPIMetadataVariable> variable;
         const MetadataKeyType type;
 
         Implementation(const Environment * const e,
-                const std::tr1::shared_ptr<const ERepositoryID> & i, const std::string & v,
-                const std::tr1::shared_ptr<const EAPIMetadataVariable> & m, const MetadataKeyType t) :
+                const std::shared_ptr<const ERepositoryID> & i, const std::string & v,
+                const std::shared_ptr<const EAPIMetadataVariable> & m, const MetadataKeyType t) :
             env(e),
             id(i),
             string_value(v),
@@ -231,8 +231,8 @@ namespace paludis
 
 ELicenseKey::ELicenseKey(
         const Environment * const e,
-        const std::tr1::shared_ptr<const ERepositoryID> & id,
-        const std::tr1::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v, const MetadataKeyType t) :
+        const std::shared_ptr<const ERepositoryID> & id,
+        const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v, const MetadataKeyType t) :
     PrivateImplementationPattern<ELicenseKey>(new Implementation<ELicenseKey>(e, id, v, m, t))
 {
 }
@@ -241,7 +241,7 @@ ELicenseKey::~ELicenseKey()
 {
 }
 
-const std::tr1::shared_ptr<const LicenseSpecTree>
+const std::shared_ptr<const LicenseSpecTree>
 ELicenseKey::value() const
 {
     Lock l(_imp->value_mutex);
@@ -295,17 +295,17 @@ namespace paludis
     struct Implementation<EFetchableURIKey>
     {
         const Environment * const env;
-        const std::tr1::shared_ptr<const ERepositoryID> id;
-        const std::tr1::shared_ptr<const EAPIMetadataVariable> variable;
+        const std::shared_ptr<const ERepositoryID> id;
+        const std::shared_ptr<const EAPIMetadataVariable> variable;
         const std::string string_value;
         const MetadataKeyType type;
 
         mutable Mutex value_mutex;
-        mutable std::tr1::shared_ptr<const FetchableURISpecTree> value;
-        mutable std::tr1::shared_ptr<const URILabel> initial_label;
+        mutable std::shared_ptr<const FetchableURISpecTree> value;
+        mutable std::shared_ptr<const URILabel> initial_label;
 
-        Implementation(const Environment * const e, const std::tr1::shared_ptr<const ERepositoryID> & i,
-                const std::tr1::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v,
+        Implementation(const Environment * const e, const std::shared_ptr<const ERepositoryID> & i,
+                const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v,
                 const MetadataKeyType t) :
             env(e),
             id(i),
@@ -318,8 +318,8 @@ namespace paludis
 }
 
 EFetchableURIKey::EFetchableURIKey(const Environment * const e,
-        const std::tr1::shared_ptr<const ERepositoryID> & id,
-        const std::tr1::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v, const MetadataKeyType t) :
+        const std::shared_ptr<const ERepositoryID> & id,
+        const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v, const MetadataKeyType t) :
     PrivateImplementationPattern<EFetchableURIKey>(new Implementation<EFetchableURIKey>(e, id, m, v, t))
 {
 }
@@ -328,7 +328,7 @@ EFetchableURIKey::~EFetchableURIKey()
 {
 }
 
-const std::tr1::shared_ptr<const FetchableURISpecTree>
+const std::shared_ptr<const FetchableURISpecTree>
 EFetchableURIKey::value() const
 {
     Lock l(_imp->value_mutex);
@@ -359,7 +359,7 @@ EFetchableURIKey::pretty_print_flat(const FetchableURISpecTree::ItemFormatter & 
     return stringify(p);
 }
 
-const std::tr1::shared_ptr<const URILabel>
+const std::shared_ptr<const URILabel>
 EFetchableURIKey::initial_label() const
 {
     Lock l(_imp->value_mutex);
@@ -419,16 +419,16 @@ namespace paludis
     struct Implementation<ESimpleURIKey>
     {
         const Environment * const env;
-        const std::tr1::shared_ptr<const ERepositoryID> id;
+        const std::shared_ptr<const ERepositoryID> id;
         const std::string string_value;
         mutable Mutex value_mutex;
-        mutable std::tr1::shared_ptr<const SimpleURISpecTree> value;
+        mutable std::shared_ptr<const SimpleURISpecTree> value;
 
         const std::string raw_name;
         const std::string human_name;
         const MetadataKeyType type;
 
-        Implementation(const Environment * const e, const std::tr1::shared_ptr<const ERepositoryID> & i,
+        Implementation(const Environment * const e, const std::shared_ptr<const ERepositoryID> & i,
                 const std::string & v,
                 const std::string & r, const std::string & h, const MetadataKeyType t) :
             env(e),
@@ -443,7 +443,7 @@ namespace paludis
 }
 
 ESimpleURIKey::ESimpleURIKey(const Environment * const e,
-        const std::tr1::shared_ptr<const ERepositoryID> & id,
+        const std::shared_ptr<const ERepositoryID> & id,
         const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
     PrivateImplementationPattern<ESimpleURIKey>(new Implementation<ESimpleURIKey>(e, id, v, r, h, t))
 {
@@ -453,7 +453,7 @@ ESimpleURIKey::~ESimpleURIKey()
 {
 }
 
-const std::tr1::shared_ptr<const SimpleURISpecTree>
+const std::shared_ptr<const SimpleURISpecTree>
 ESimpleURIKey::value() const
 {
     Lock l(_imp->value_mutex);
@@ -508,16 +508,16 @@ namespace paludis
     struct Implementation<EPlainTextSpecKey>
     {
         const Environment * const env;
-        const std::tr1::shared_ptr<const ERepositoryID> id;
+        const std::shared_ptr<const ERepositoryID> id;
         const std::string string_value;
         mutable Mutex value_mutex;
-        mutable std::tr1::shared_ptr<const PlainTextSpecTree> value;
+        mutable std::shared_ptr<const PlainTextSpecTree> value;
 
-        const std::tr1::shared_ptr<const EAPIMetadataVariable> variable;
+        const std::shared_ptr<const EAPIMetadataVariable> variable;
         const MetadataKeyType type;
 
-        Implementation(const Environment * const e, const std::tr1::shared_ptr<const ERepositoryID> & i, const std::string & v,
-                const std::tr1::shared_ptr<const EAPIMetadataVariable> & m,
+        Implementation(const Environment * const e, const std::shared_ptr<const ERepositoryID> & i, const std::string & v,
+                const std::shared_ptr<const EAPIMetadataVariable> & m,
                 const MetadataKeyType t) :
             env(e),
             id(i),
@@ -530,8 +530,8 @@ namespace paludis
 }
 
 EPlainTextSpecKey::EPlainTextSpecKey(const Environment * const e,
-        const std::tr1::shared_ptr<const ERepositoryID> & id,
-        const std::tr1::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v, const MetadataKeyType t) :
+        const std::shared_ptr<const ERepositoryID> & id,
+        const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v, const MetadataKeyType t) :
     PrivateImplementationPattern<EPlainTextSpecKey>(new Implementation<EPlainTextSpecKey>(e, id, v, m, t))
 {
 }
@@ -540,7 +540,7 @@ EPlainTextSpecKey::~EPlainTextSpecKey()
 {
 }
 
-const std::tr1::shared_ptr<const PlainTextSpecTree>
+const std::shared_ptr<const PlainTextSpecTree>
 EPlainTextSpecKey::value() const
 {
     Lock l(_imp->value_mutex);
@@ -595,16 +595,16 @@ namespace paludis
     struct Implementation<EMyOptionsKey>
     {
         const Environment * const env;
-        const std::tr1::shared_ptr<const ERepositoryID> id;
+        const std::shared_ptr<const ERepositoryID> id;
         const std::string string_value;
         mutable Mutex value_mutex;
-        mutable std::tr1::shared_ptr<const PlainTextSpecTree> value;
+        mutable std::shared_ptr<const PlainTextSpecTree> value;
 
         const std::string raw_name;
         const std::string human_name;
         const MetadataKeyType type;
 
-        Implementation(const Environment * const e, const std::tr1::shared_ptr<const ERepositoryID> & i, const std::string & v,
+        Implementation(const Environment * const e, const std::shared_ptr<const ERepositoryID> & i, const std::string & v,
                 const std::string & r, const std::string & h, const MetadataKeyType t) :
             env(e),
             id(i),
@@ -618,7 +618,7 @@ namespace paludis
 }
 
 EMyOptionsKey::EMyOptionsKey(const Environment * const e,
-        const std::tr1::shared_ptr<const ERepositoryID> & id,
+        const std::shared_ptr<const ERepositoryID> & id,
         const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
     PrivateImplementationPattern<EMyOptionsKey>(new Implementation<EMyOptionsKey>(e, id, v, r, h, t))
 {
@@ -628,7 +628,7 @@ EMyOptionsKey::~EMyOptionsKey()
 {
 }
 
-const std::tr1::shared_ptr<const PlainTextSpecTree>
+const std::shared_ptr<const PlainTextSpecTree>
 EMyOptionsKey::value() const
 {
     Lock l(_imp->value_mutex);
@@ -683,16 +683,16 @@ namespace paludis
     struct Implementation<EProvideKey>
     {
         const Environment * const env;
-        const std::tr1::shared_ptr<const ERepositoryID> id;
+        const std::shared_ptr<const ERepositoryID> id;
         const std::string string_value;
         mutable Mutex value_mutex;
-        mutable std::tr1::shared_ptr<const ProvideSpecTree> value;
+        mutable std::shared_ptr<const ProvideSpecTree> value;
 
         const std::string raw_name;
         const std::string human_name;
         const MetadataKeyType type;
 
-        Implementation(const Environment * const e, const std::tr1::shared_ptr<const ERepositoryID> & i, const std::string & v,
+        Implementation(const Environment * const e, const std::shared_ptr<const ERepositoryID> & i, const std::string & v,
                 const std::string & r, const std::string & h, const MetadataKeyType t) :
             env(e),
             id(i),
@@ -705,7 +705,7 @@ namespace paludis
     };
 }
 
-EProvideKey::EProvideKey(const Environment * const e, const std::tr1::shared_ptr<const ERepositoryID> & id,
+EProvideKey::EProvideKey(const Environment * const e, const std::shared_ptr<const ERepositoryID> & id,
         const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
     PrivateImplementationPattern<EProvideKey>(new Implementation<EProvideKey>(e, id, v, r, h, t))
 {
@@ -715,7 +715,7 @@ EProvideKey::~EProvideKey()
 {
 }
 
-const std::tr1::shared_ptr<const ProvideSpecTree>
+const std::shared_ptr<const ProvideSpecTree>
 EProvideKey::value() const
 {
     Lock l(_imp->value_mutex);
@@ -769,17 +769,17 @@ namespace paludis
     template <>
     struct Implementation<EKeywordsKey>
     {
-        const std::tr1::shared_ptr<const ERepositoryID> id;
+        const std::shared_ptr<const ERepositoryID> id;
         const Environment * const env;
         const std::string string_value;
         mutable Mutex value_mutex;
-        mutable std::tr1::shared_ptr<KeywordNameSet> value;
+        mutable std::shared_ptr<KeywordNameSet> value;
 
         const std::string raw_name;
         const std::string human_name;
         const MetadataKeyType type;
 
-        Implementation(const std::tr1::shared_ptr<const ERepositoryID> & i, const Environment * const e, const std::string & v,
+        Implementation(const std::shared_ptr<const ERepositoryID> & i, const Environment * const e, const std::string & v,
                 const std::string & r, const std::string & h, const MetadataKeyType t) :
             id(i),
             env(e),
@@ -792,7 +792,7 @@ namespace paludis
     };
 }
 
-EKeywordsKey::EKeywordsKey(const Environment * const e, const std::tr1::shared_ptr<const ERepositoryID> & id,
+EKeywordsKey::EKeywordsKey(const Environment * const e, const std::shared_ptr<const ERepositoryID> & id,
         const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
     PrivateImplementationPattern<EKeywordsKey>(new Implementation<EKeywordsKey>(id, e, v, r, h, t))
 {
@@ -802,7 +802,7 @@ EKeywordsKey::~EKeywordsKey()
 {
 }
 
-const std::tr1::shared_ptr<const KeywordNameSet>
+const std::shared_ptr<const KeywordNameSet>
 EKeywordsKey::value() const
 {
     Lock l(_imp->value_mutex);
@@ -825,7 +825,7 @@ EKeywordsKey::pretty_print_flat(const Formatter<KeywordName> & f) const
         if (! result.empty())
             result.append(" ");
 
-        std::tr1::shared_ptr<KeywordNameSet> k(new KeywordNameSet);
+        std::shared_ptr<KeywordNameSet> k(new KeywordNameSet);
         k->insert(*i);
         if (_imp->env->accept_keywords(k, *_imp->id))
             result.append(f.format(*i, format::Accepted()));
@@ -859,16 +859,16 @@ namespace paludis
     template <>
     struct Implementation<EStringSetKey>
     {
-        const std::tr1::shared_ptr<const ERepositoryID> id;
+        const std::shared_ptr<const ERepositoryID> id;
         const std::string string_value;
         mutable Mutex value_mutex;
-        mutable std::tr1::shared_ptr<Set<std::string> > value;
+        mutable std::shared_ptr<Set<std::string> > value;
 
         const std::string raw_name;
         const std::string human_name;
         const MetadataKeyType type;
 
-        Implementation(const std::tr1::shared_ptr<const ERepositoryID> & i, const std::string & v,
+        Implementation(const std::shared_ptr<const ERepositoryID> & i, const std::string & v,
                 const std::string & r, const std::string & h, const MetadataKeyType t) :
             id(i),
             string_value(v),
@@ -880,7 +880,7 @@ namespace paludis
     };
 }
 
-EStringSetKey::EStringSetKey(const std::tr1::shared_ptr<const ERepositoryID> & id,
+EStringSetKey::EStringSetKey(const std::shared_ptr<const ERepositoryID> & id,
         const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
     PrivateImplementationPattern<EStringSetKey>(new Implementation<EStringSetKey>(id, v, r, h, t))
 {
@@ -890,7 +890,7 @@ EStringSetKey::~EStringSetKey()
 {
 }
 
-const std::tr1::shared_ptr<const Set<std::string> >
+const std::shared_ptr<const Set<std::string> >
 EStringSetKey::value() const
 {
     Lock l(_imp->value_mutex);
@@ -933,8 +933,8 @@ namespace
 std::string
 EStringSetKey::pretty_print_flat(const Formatter<std::string> & f) const
 {
-    using namespace std::tr1::placeholders;
-    return join(value()->begin(), value()->end(), " ", std::tr1::bind(&format_string, _1, f));
+    using namespace std::placeholders;
+    return join(value()->begin(), value()->end(), " ", std::bind(&format_string, _1, f));
 }
 
 namespace paludis
@@ -942,16 +942,16 @@ namespace paludis
     template <>
     struct Implementation<EContentsKey>
     {
-        const std::tr1::shared_ptr<const ERepositoryID> id;
+        const std::shared_ptr<const ERepositoryID> id;
         const FSEntry filename;
         mutable Mutex value_mutex;
-        mutable std::tr1::shared_ptr<Contents> value;
+        mutable std::shared_ptr<Contents> value;
 
         const std::string raw_name;
         const std::string human_name;
         const MetadataKeyType type;
 
-        Implementation(const std::tr1::shared_ptr<const ERepositoryID> & i, const FSEntry & v,
+        Implementation(const std::shared_ptr<const ERepositoryID> & i, const FSEntry & v,
                 const std::string & r, const std::string & h, const MetadataKeyType & t) :
             id(i),
             filename(v),
@@ -963,7 +963,7 @@ namespace paludis
     };
 }
 
-EContentsKey::EContentsKey(const std::tr1::shared_ptr<const ERepositoryID> & id,
+EContentsKey::EContentsKey(const std::shared_ptr<const ERepositoryID> & id,
         const std::string & r, const std::string & h, const FSEntry & v, const MetadataKeyType t) :
     PrivateImplementationPattern<EContentsKey>(new Implementation<EContentsKey>(id, v, r, h, t))
 {
@@ -973,7 +973,7 @@ EContentsKey::~EContentsKey()
 {
 }
 
-const std::tr1::shared_ptr<const Contents>
+const std::shared_ptr<const Contents>
 EContentsKey::value() const
 {
     Lock l(_imp->value_mutex);
@@ -1011,7 +1011,7 @@ EContentsKey::value() const
 
         if ("obj" == tokens.at(0))
         {
-            std::tr1::shared_ptr<ContentsEntry> e(new ContentsFileEntry(tokens.at(1)));
+            std::shared_ptr<ContentsEntry> e(new ContentsFileEntry(tokens.at(1)));
             e->add_metadata_key(make_shared_ptr(new LiteralMetadataTimeKey("mtime", "mtime", mkt_normal,
                             Timestamp(destringify<time_t>(tokens.at(3)), 0))));
             e->add_metadata_key(make_shared_ptr(new LiteralMetadataValueKey<std::string>("md5", "md5", mkt_normal, tokens.at(2))));
@@ -1019,18 +1019,18 @@ EContentsKey::value() const
         }
         else if ("dir" == tokens.at(0))
         {
-            std::tr1::shared_ptr<ContentsEntry> e(new ContentsDirEntry(tokens.at(1)));
+            std::shared_ptr<ContentsEntry> e(new ContentsDirEntry(tokens.at(1)));
             _imp->value->add(e);
         }
         else if ("sym" == tokens.at(0))
         {
-            std::tr1::shared_ptr<ContentsEntry> e(new ContentsSymEntry(tokens.at(1), tokens.at(2)));
+            std::shared_ptr<ContentsEntry> e(new ContentsSymEntry(tokens.at(1), tokens.at(2)));
             e->add_metadata_key(make_shared_ptr(new LiteralMetadataTimeKey("mtime", "mtime", mkt_normal,
                             Timestamp(destringify<time_t>(tokens.at(3)), 0))));
             _imp->value->add(e);
         }
         else if ("misc" == tokens.at(0) || "fif" == tokens.at(0) || "dev" == tokens.at(0))
-            _imp->value->add(std::tr1::shared_ptr<ContentsEntry>(new ContentsOtherEntry(tokens.at(1))));
+            _imp->value->add(std::shared_ptr<ContentsEntry>(new ContentsOtherEntry(tokens.at(1))));
         else
             Log::get_instance()->message("e.contents.unknown", ll_warning, lc_context) << "CONTENTS has unsupported entry type '" <<
                 tokens.at(0) << "', skipping";
@@ -1062,16 +1062,16 @@ namespace paludis
     template <>
     struct Implementation<EMTimeKey>
     {
-        const std::tr1::shared_ptr<const ERepositoryID> id;
+        const std::shared_ptr<const ERepositoryID> id;
         const FSEntry filename;
         mutable Mutex value_mutex;
-        mutable std::tr1::shared_ptr<Timestamp> value;
+        mutable std::shared_ptr<Timestamp> value;
 
         const std::string raw_name;
         const std::string human_name;
         const MetadataKeyType type;
 
-        Implementation(const std::tr1::shared_ptr<const ERepositoryID> & i, const FSEntry & v,
+        Implementation(const std::shared_ptr<const ERepositoryID> & i, const FSEntry & v,
                 const std::string & r, const std::string & h, const MetadataKeyType t) :
             id(i),
             filename(v),
@@ -1083,7 +1083,7 @@ namespace paludis
     };
 }
 
-EMTimeKey::EMTimeKey(const std::tr1::shared_ptr<const ERepositoryID> & id,
+EMTimeKey::EMTimeKey(const std::shared_ptr<const ERepositoryID> & id,
         const std::string & r, const std::string & h, const FSEntry & v, const MetadataKeyType t) :
     PrivateImplementationPattern<EMTimeKey>(new Implementation<EMTimeKey>(id, v, r, h, t))
 {
@@ -1141,10 +1141,10 @@ namespace paludis
     struct Implementation<ESlotKey>
     {
         const SlotName value;
-        const std::tr1::shared_ptr<const EAPIMetadataVariable> variable;
+        const std::shared_ptr<const EAPIMetadataVariable> variable;
         const MetadataKeyType type;
 
-        Implementation(const SlotName & v, const std::tr1::shared_ptr<const EAPIMetadataVariable> & m, const MetadataKeyType t) :
+        Implementation(const SlotName & v, const std::shared_ptr<const EAPIMetadataVariable> & m, const MetadataKeyType t) :
             value(v),
             variable(m),
             type(t)
@@ -1153,7 +1153,7 @@ namespace paludis
     };
 }
 
-ESlotKey::ESlotKey(const std::tr1::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v, const MetadataKeyType t) :
+ESlotKey::ESlotKey(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v, const MetadataKeyType t) :
     PrivateImplementationPattern<ESlotKey>(new Implementation<ESlotKey>(SlotName(v), m, t))
 {
 }

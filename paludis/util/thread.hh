@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_UTIL_THREAD_HH 1
 
 #include <paludis/util/attributes.hh>
-#include <tr1/functional>
+#include <functional>
 #include <string>
 #include <pthread.h>
 
@@ -51,7 +51,7 @@ namespace paludis
     {
         private:
             pthread_t * const _thread;
-            const std::tr1::function<void () throw ()> _func;
+            const std::function<void () throw ()> _func;
             std::string _exception;
 
             static void * thread_func(void *);
@@ -60,7 +60,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            Thread(const std::tr1::function<void () throw ()> &);
+            Thread(const std::function<void () throw ()> &);
             ~Thread();
 
             ///\}
@@ -68,7 +68,7 @@ namespace paludis
             /**
              * Adapt a function for use in IdleActionPool.
              */
-            static void idle_adapter(const std::tr1::function<void () throw ()> &);
+            static void idle_adapter(const std::function<void () throw ()> &);
     };
 }
 

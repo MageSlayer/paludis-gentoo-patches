@@ -38,7 +38,7 @@
 #include <paludis/fuzzy_finder.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/filter.hh>
-#include <tr1/functional>
+#include <functional>
 #include <set>
 #include <map>
 #include <list>
@@ -52,7 +52,7 @@ using std::endl;
 
 int do_what_needs_keywording(NoConfigEnvironment & env)
 {
-    using namespace std::tr1::placeholders;
+    using namespace std::placeholders;
 
     int return_code(0);
 
@@ -60,7 +60,7 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
 
     if (env.default_destinations()->empty())
     {
-        std::tr1::shared_ptr<Repository> fake_destination(new FakeInstalledRepository(
+        std::shared_ptr<Repository> fake_destination(new FakeInstalledRepository(
                     make_named_values<FakeInstalledRepositoryParams>(
                         n::environment() = &env,
                         n::name() = RepositoryName("fake_destination"),
@@ -78,9 +78,9 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
     d_options.use() = dl_use_deps_take_all;
     d_options.blocks() = dl_blocks_discard_completely;
     d_options.override_masks().reset(new DepListOverrideMasksFunctions);
-    d_options.override_masks()->push_back(std::tr1::bind(&override_tilde_keywords, &env, _1, _2));
-    d_options.override_masks()->push_back(std::tr1::bind(&override_unkeyworded, &env, _1, _2));
-    d_options.override_masks()->push_back(std::tr1::bind(&override_repository_masks, _2));
+    d_options.override_masks()->push_back(std::bind(&override_tilde_keywords, &env, _1, _2));
+    d_options.override_masks()->push_back(std::bind(&override_unkeyworded, &env, _1, _2));
+    d_options.override_masks()->push_back(std::bind(&override_repository_masks, _2));
     d_options.match_package_options() += mpo_ignore_additional_requirements;
 
     DepList d(&env, d_options);
@@ -141,7 +141,7 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
 
             if (p->package_id()->keywords_key())
             {
-                std::tr1::shared_ptr<const KeywordNameSet> keywords(p->package_id()->keywords_key()->value());
+                std::shared_ptr<const KeywordNameSet> keywords(p->package_id()->keywords_key()->value());
                 for (KeywordNameSet::ConstIterator k(keywords->begin()), k_end(keywords->end()) ;
                         k != k_end ; ++k)
                     if (*k == KeywordName("-*")

@@ -50,14 +50,14 @@ namespace paludis
 
         struct UnwrittenRepositoryFileEntry
         {
-            NamedValue<n::added_by, std::tr1::shared_ptr<const MetadataValueKey<std::string> > > added_by;
-            NamedValue<n::bug_ids, std::tr1::shared_ptr<const MetadataCollectionKey<Sequence<std::string> > > > bug_ids;
-            NamedValue<n::comment, std::tr1::shared_ptr<const MetadataValueKey<std::string> > > comment;
-            NamedValue<n::description, std::tr1::shared_ptr<const MetadataValueKey<std::string> > > description;
-            NamedValue<n::homepage, std::tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > > homepage;
+            NamedValue<n::added_by, std::shared_ptr<const MetadataValueKey<std::string> > > added_by;
+            NamedValue<n::bug_ids, std::shared_ptr<const MetadataCollectionKey<Sequence<std::string> > > > bug_ids;
+            NamedValue<n::comment, std::shared_ptr<const MetadataValueKey<std::string> > > comment;
+            NamedValue<n::description, std::shared_ptr<const MetadataValueKey<std::string> > > description;
+            NamedValue<n::homepage, std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > > homepage;
             NamedValue<n::name, QualifiedPackageName> name;
-            NamedValue<n::remote_ids, std::tr1::shared_ptr<const MetadataCollectionKey<Sequence<std::string> > > > remote_ids;
-            NamedValue<n::slot, std::tr1::shared_ptr<const MetadataValueKey<SlotName> > > slot;
+            NamedValue<n::remote_ids, std::shared_ptr<const MetadataCollectionKey<Sequence<std::string> > > > remote_ids;
+            NamedValue<n::slot, std::shared_ptr<const MetadataValueKey<SlotName> > > slot;
             NamedValue<n::version, VersionSpec> version;
         };
 

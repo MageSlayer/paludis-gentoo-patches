@@ -101,44 +101,44 @@ namespace
 
     struct GetInfo
     {
-        const std::pair<std::tr1::shared_ptr<const MetadataKey>, std::string> visit(const UserMask &) const
+        const std::pair<std::shared_ptr<const MetadataKey>, std::string> visit(const UserMask &) const
         {
             return std::make_pair(make_null_shared_ptr(), "");
         }
 
-        const std::pair<std::tr1::shared_ptr<const MetadataKey>, std::string> visit(const UnacceptedMask & m) const
+        const std::pair<std::shared_ptr<const MetadataKey>, std::string> visit(const UnacceptedMask & m) const
         {
             return std::make_pair(m.unaccepted_key(), "");
         }
 
-        const std::pair<std::tr1::shared_ptr<const MetadataKey>, std::string> visit(const RepositoryMask & m) const
+        const std::pair<std::shared_ptr<const MetadataKey>, std::string> visit(const RepositoryMask & m) const
         {
             return std::make_pair(m.mask_key(), "");
         }
 
-        const std::pair<std::tr1::shared_ptr<const MetadataKey>, std::string> visit(const UnsupportedMask &) const
+        const std::pair<std::shared_ptr<const MetadataKey>, std::string> visit(const UnsupportedMask &) const
         {
             return std::make_pair(make_null_shared_ptr(), "");
         }
 
-        const std::pair<std::tr1::shared_ptr<const MetadataKey>, std::string> visit(const AssociationMask & m) const
+        const std::pair<std::shared_ptr<const MetadataKey>, std::string> visit(const AssociationMask & m) const
         {
             return std::make_pair(make_null_shared_ptr(), stringify(*m.associated_package()));
         }
     };
 
     void do_one_mask(
-            const std::tr1::shared_ptr<const Mask> & mask,
+            const std::shared_ptr<const Mask> & mask,
             const MaskOverrideReason & override,
             const PrintIDMasksCommandLine & cmdline
             )
     {
-        std::tr1::shared_ptr<Map<char, std::string> > m(new Map<char, std::string>);
+        std::shared_ptr<Map<char, std::string> > m(new Map<char, std::string>);
         m->insert('k', std::string(1, mask->key()));
         m->insert('d', mask->description());
 
-        std::pair<std::tr1::shared_ptr<const MetadataKey>, std::string> info(
-                mask->accept_returning<std::pair<std::tr1::shared_ptr<const MetadataKey>, std::string> >(GetInfo()));
+        std::pair<std::shared_ptr<const MetadataKey>, std::string> info(
+                mask->accept_returning<std::pair<std::shared_ptr<const MetadataKey>, std::string> >(GetInfo()));
         m->insert('r', info.first ? info.first->raw_name() : "");
         m->insert('=', info.first ? "=" : "");
         m->insert('h', info.first ? info.first->human_name() : "");
@@ -165,8 +165,8 @@ namespace
 
 int
 PrintIDMasksCommand::run(
-        const std::tr1::shared_ptr<Environment> & env,
-        const std::tr1::shared_ptr<const Sequence<std::string > > & args
+        const std::shared_ptr<Environment> & env,
+        const std::shared_ptr<const Sequence<std::string > > & args
         )
 {
     PrintIDMasksCommandLine cmdline;
@@ -183,7 +183,7 @@ PrintIDMasksCommand::run(
 
     PackageDepSpec spec(parse_user_package_dep_spec(*cmdline.begin_parameters(), env.get(), UserPackageDepSpecOptions()));
 
-    std::tr1::shared_ptr<const PackageIDSequence> entries(
+    std::shared_ptr<const PackageIDSequence> entries(
             (*env)[selection::AllVersionsSorted(generator::Matches(spec, MatchPackageOptions()))]);
 
     if (entries->empty())
@@ -205,7 +205,7 @@ PrintIDMasksCommand::run(
     return EXIT_SUCCESS;
 }
 
-std::tr1::shared_ptr<args::ArgsHandler>
+std::shared_ptr<args::ArgsHandler>
 PrintIDMasksCommand::make_doc_cmdline()
 {
     return make_shared_ptr(new PrintIDMasksCommandLine);

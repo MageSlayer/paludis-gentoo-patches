@@ -230,7 +230,7 @@ Implementation<ElfLinkageChecker>::handle_library(const FSEntry & file, const El
                 ll_debug, lc_context) << "Known symlinks are " <<
             join(second_iterator(range.first), second_iterator(range.second), " ");
         std::transform(second_iterator(range.first), second_iterator(range.second),
-                       std::back_inserter(libraries[arch]), std::tr1::mem_fn(&FSEntry::basename));
+                       std::back_inserter(libraries[arch]), std::mem_fn(&FSEntry::basename));
     }
 }
 
@@ -261,9 +261,9 @@ ElfLinkageChecker::add_extra_lib_dir(const FSEntry & dir)
 
 void
 ElfLinkageChecker::need_breakage_added(
-    const std::tr1::function<void (const FSEntry &, const std::string &)> & callback)
+    const std::function<void (const FSEntry &, const std::string &)> & callback)
 {
-    using namespace std::tr1::placeholders;
+    using namespace std::placeholders;
 
     typedef std::map<std::string, std::set<ElfArchitecture> > AllMissing;
     AllMissing all_missing;
@@ -331,7 +331,7 @@ ElfLinkageChecker::need_breakage_added(
                  arch_it_end(missing_it->second.end()); arch_it_end != arch_it; ++arch_it)
             std::for_each(_imp->needed[*arch_it][missing_it->first].begin(),
                           _imp->needed[*arch_it][missing_it->first].end(),
-                          std::tr1::bind(callback, _1, missing_it->first));
+                          std::bind(callback, _1, missing_it->first));
 
 }
 

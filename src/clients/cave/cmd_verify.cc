@@ -87,12 +87,12 @@ namespace
 
     struct Verifier
     {
-        const std::tr1::shared_ptr<const PackageID> id;
+        const std::shared_ptr<const PackageID> id;
 
         int exit_status;
         bool done_heading;
 
-        Verifier(const std::tr1::shared_ptr<const PackageID> & i) :
+        Verifier(const std::shared_ptr<const PackageID> & i) :
             id(i),
             exit_status(0),
             done_heading(false)
@@ -187,8 +187,8 @@ namespace
 
 int
 VerifyCommand::run(
-        const std::tr1::shared_ptr<Environment> & env,
-        const std::tr1::shared_ptr<const Sequence<std::string > > & args
+        const std::shared_ptr<Environment> & env,
+        const std::shared_ptr<const Sequence<std::string > > & args
         )
 {
     VerifyCommandLine cmdline;
@@ -206,7 +206,7 @@ VerifyCommand::run(
     PackageDepSpec spec(parse_user_package_dep_spec(*cmdline.begin_parameters(), env.get(),
                 UserPackageDepSpecOptions() + updso_allow_wildcards, filter::InstalledAtRoot(env->root())));
 
-    std::tr1::shared_ptr<const PackageIDSequence> entries(
+    std::shared_ptr<const PackageIDSequence> entries(
             (*env)[selection::AllVersionsSorted(generator::Matches(spec, MatchPackageOptions()) | filter::InstalledAtRoot(env->root()))]);
 
     if (entries->empty())
@@ -229,7 +229,7 @@ VerifyCommand::run(
     return exit_status;
 }
 
-std::tr1::shared_ptr<args::ArgsHandler>
+std::shared_ptr<args::ArgsHandler>
 VerifyCommand::make_doc_cmdline()
 {
     return make_shared_ptr(new VerifyCommandLine);

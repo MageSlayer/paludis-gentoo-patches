@@ -135,8 +135,8 @@ namespace
 
 int
 FixLinkageCommand::run(
-        const std::tr1::shared_ptr<Environment> & env,
-        const std::tr1::shared_ptr<const Sequence<std::string > > & args
+        const std::shared_ptr<Environment> & env,
+        const std::shared_ptr<const Sequence<std::string > > & args
         )
 {
     FixLinkageCommandLine cmdline;
@@ -166,11 +166,11 @@ FixLinkageCommand::run(
         resolve_cmdline.resolution_options.a_execute.set_specified(true);
 
     std::string library(cmdline.a_library.argument());
-    std::tr1::shared_ptr<BrokenLinkageFinder> finder;
+    std::shared_ptr<BrokenLinkageFinder> finder;
     {
         DisplayCallback display_callback("Searching: ");
         ScopedNotifierCallback display_callback_holder(env.get(),
-                NotifierCallbackFunction(std::tr1::cref(display_callback)));
+                NotifierCallbackFunction(std::cref(display_callback)));
         finder.reset(new BrokenLinkageFinder(env.get(), cmdline.a_library.argument()));
     }
 
@@ -184,7 +184,7 @@ FixLinkageCommand::run(
         return EXIT_SUCCESS;
     }
 
-    std::tr1::shared_ptr<Sequence<std::pair<std::string, std::string> > > targets(new Sequence<std::pair<std::string, std::string> >);
+    std::shared_ptr<Sequence<std::pair<std::string, std::string> > > targets(new Sequence<std::pair<std::string, std::string> >);
 
     for (BrokenLinkageFinder::BrokenPackageConstIterator pkg_it(finder->begin_broken_packages()),
              pkg_it_end(finder->end_broken_packages()); pkg_it_end != pkg_it; ++pkg_it)
@@ -223,7 +223,7 @@ FixLinkageCommand::run(
         targets->push_back(std::make_pair(stringify(PackageDepSpec(part_spec)), join(broken_files.begin(), broken_files.end(), ", ")));
     }
 
-    std::tr1::shared_ptr<const PackageID> orphans;
+    std::shared_ptr<const PackageID> orphans;
     if (finder->begin_broken_files(orphans) != finder->end_broken_files(orphans))
     {
         if (library.empty())
@@ -251,7 +251,7 @@ FixLinkageCommand::run(
             make_null_shared_ptr(), targets, make_null_shared_ptr(), false);
 }
 
-std::tr1::shared_ptr<args::ArgsHandler>
+std::shared_ptr<args::ArgsHandler>
 FixLinkageCommand::make_doc_cmdline()
 {
     return make_shared_ptr(new FixLinkageCommandLine);

@@ -31,8 +31,8 @@
 #include <paludis/util/hashes.hh>
 #include <paludis/util/safe_ofstream.hh>
 #include <paludis/util/safe_ifstream.hh>
-#include <tr1/unordered_map>
-#include <tr1/memory>
+#include <unordered_map>
+#include <memory>
 #include <set>
 #include <cstring>
 #include <cerrno>
@@ -41,7 +41,7 @@ using namespace paludis;
 
 namespace paludis
 {
-    typedef std::tr1::unordered_map<PackageNamePart, std::set<CategoryNamePart>, Hash<PackageNamePart> > NameCacheMap;
+    typedef std::unordered_map<PackageNamePart, std::set<CategoryNamePart>, Hash<PackageNamePart> > NameCacheMap;
 
     template<>
     struct Implementation<RepositoryNameCache>
@@ -189,20 +189,20 @@ RepositoryNameCache::~RepositoryNameCache()
 {
 }
 
-std::tr1::shared_ptr<const CategoryNamePartSet>
+std::shared_ptr<const CategoryNamePartSet>
 RepositoryNameCache::category_names_containing_package(const PackageNamePart & p) const
 {
     Lock l(_imp->mutex);
 
     if (! usable())
-        return std::tr1::shared_ptr<const CategoryNamePartSet>();
+        return std::shared_ptr<const CategoryNamePartSet>();
 
     Context context("When using name cache at '" + stringify(_imp->location) + "':");
 
-    std::tr1::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
+    std::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
     NameCacheMap::iterator r(_imp->find(p));
     if (_imp->name_cache_map.end() == r)
-        return std::tr1::shared_ptr<const CategoryNamePartSet>();
+        return std::shared_ptr<const CategoryNamePartSet>();
 
     std::copy(r->second.begin(), r->second.end(), result->inserter());
     return result;
@@ -232,19 +232,19 @@ RepositoryNameCache::regenerate_cache() const
     if (FSEntry(_imp->location).mkdir(main_cache_dir.permissions()))
         FSEntry(_imp->location).chmod(main_cache_dir.permissions());
 
-    std::tr1::unordered_map<std::string, std::string, Hash<std::string> > m;
+    std::unordered_map<std::string, std::string, Hash<std::string> > m;
 
-    std::tr1::shared_ptr<const CategoryNamePartSet> cats(_imp->repo->category_names());
+    std::shared_ptr<const CategoryNamePartSet> cats(_imp->repo->category_names());
     for (CategoryNamePartSet::ConstIterator c(cats->begin()), c_end(cats->end()) ;
             c != c_end ; ++c)
     {
-        std::tr1::shared_ptr<const QualifiedPackageNameSet> pkgs(_imp->repo->package_names(*c));
+        std::shared_ptr<const QualifiedPackageNameSet> pkgs(_imp->repo->package_names(*c));
         for (QualifiedPackageNameSet::ConstIterator p(pkgs->begin()), p_end(pkgs->end()) ;
                 p != p_end ; ++p)
             m[stringify(p->package())].append(stringify(*c) + "\n");
     }
 
-    for (std::tr1::unordered_map<std::string, std::string, Hash<std::string> >::const_iterator e(m.begin()), e_end(m.end()) ;
+    for (std::unordered_map<std::string, std::string, Hash<std::string> >::const_iterator e(m.begin()), e_end(m.end()) ;
             e != e_end ; ++e)
     {
         try
@@ -283,7 +283,7 @@ RepositoryNameCache::add(const QualifiedPackageName & q)
 
     Context context("When adding '" + stringify(q) + "' to name cache at '" + stringify(_imp->location) + "':");
 
-    std::tr1::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
+    std::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
     NameCacheMap::iterator r(_imp->find(q.package()));
     if (_imp->name_cache_map.end() == r)
         return;
@@ -302,7 +302,7 @@ RepositoryNameCache::remove(const QualifiedPackageName & q)
 
     Context context("When removing '" + stringify(q) + "' from name cache at '" + stringify(_imp->location) + "':");
 
-    std::tr1::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
+    std::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
     NameCacheMap::iterator r(_imp->find(q.package()));
     if (_imp->name_cache_map.end() == r)
         return;

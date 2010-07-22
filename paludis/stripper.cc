@@ -25,7 +25,7 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/log.hh>
-#include <tr1/functional>
+#include <functional>
 #include <sstream>
 #include <list>
 #include <set>
@@ -158,8 +158,8 @@ Stripper::do_split(const FSEntry & f, const FSEntry & g)
         for (FSEntry d(g.dirname()) ; (! d.exists()) && (d != _imp->options.image_dir()) ; d = d.dirname())
             to_make.push_front(d);
 
-        using namespace std::tr1::placeholders;
-        std::for_each(to_make.begin(), to_make.end(), std::tr1::bind(std::tr1::mem_fn(&FSEntry::mkdir), _1, 0755));
+        using namespace std::placeholders;
+        std::for_each(to_make.begin(), to_make.end(), std::bind(std::mem_fn(&FSEntry::mkdir), _1, 0755));
     }
 
     if (0 != run_command(Command("objcopy --only-keep-debug '" + stringify(f) + "' '" + stringify(g) + "'")))

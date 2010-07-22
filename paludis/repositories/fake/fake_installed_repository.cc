@@ -41,8 +41,8 @@ namespace paludis
     template <>
     struct Implementation<FakeInstalledRepository>
     {
-        std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key;
-        std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key;
+        std::shared_ptr<const MetadataValueKey<std::string> > format_key;
+        std::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key;
         const bool supports_uninstall;
         const bool is_suitable_destination;
 
@@ -85,20 +85,20 @@ FakeInstalledRepository::is_suitable_destination_for(const PackageID &) const
     return _imp->is_suitable_destination;
 }
 
-std::tr1::shared_ptr<const FakeInstalledRepository::ProvidesSequence>
+std::shared_ptr<const FakeInstalledRepository::ProvidesSequence>
 FakeInstalledRepository::provided_packages() const
 {
-    std::tr1::shared_ptr<ProvidesSequence> result(new ProvidesSequence);
+    std::shared_ptr<ProvidesSequence> result(new ProvidesSequence);
 
-    std::tr1::shared_ptr<const CategoryNamePartSet> cats(category_names());
+    std::shared_ptr<const CategoryNamePartSet> cats(category_names());
     for (CategoryNamePartSet::ConstIterator c(cats->begin()), c_end(cats->end()) ;
             c != c_end ; ++c)
     {
-        std::tr1::shared_ptr<const QualifiedPackageNameSet> pkgs(package_names(*c));
+        std::shared_ptr<const QualifiedPackageNameSet> pkgs(package_names(*c));
         for (QualifiedPackageNameSet::ConstIterator p(pkgs->begin()), p_end(pkgs->end()) ;
                 p != p_end ; ++p)
         {
-            std::tr1::shared_ptr<const PackageIDSequence> vers(package_ids(*p));
+            std::shared_ptr<const PackageIDSequence> vers(package_ids(*p));
             for (PackageIDSequence::ConstIterator v(vers->begin()), v_end(vers->end()) ;
                     v != v_end ; ++v)
             {
@@ -204,19 +204,19 @@ FakeInstalledRepository::is_unimportant() const
     return false;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataValueKey<std::string> >
 FakeInstalledRepository::format_key() const
 {
     return _imp->format_key;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSEntry> >
 FakeInstalledRepository::location_key() const
 {
-    return std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >();
+    return std::shared_ptr<const MetadataValueKey<FSEntry> >();
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSEntry> >
 FakeInstalledRepository::installed_root_key() const
 {
     return _imp->installed_root_key;
@@ -224,15 +224,15 @@ FakeInstalledRepository::installed_root_key() const
 
 RepositoryName FakeInstalledRepository::repository_factory_name(
         const Environment * const,
-        const std::tr1::function<std::string (const std::string &)> & f)
+        const std::function<std::string (const std::string &)> & f)
 {
     return RepositoryName(f("name"));
 }
 
-std::tr1::shared_ptr<Repository>
+std::shared_ptr<Repository>
 FakeInstalledRepository::repository_factory_create(
         Environment * const env,
-        const std::tr1::function<std::string (const std::string &)> & f)
+        const std::function<std::string (const std::string &)> & f)
 {
     Context context("When creating FakeInstalledRepository:");
     RepositoryName name(f("name"));
@@ -245,21 +245,21 @@ FakeInstalledRepository::repository_factory_create(
                     )));
 }
 
-std::tr1::shared_ptr<const RepositoryNameSet>
+std::shared_ptr<const RepositoryNameSet>
 FakeInstalledRepository::repository_factory_dependencies(
         const Environment * const,
-        const std::tr1::function<std::string (const std::string&)> &)
+        const std::function<std::string (const std::string&)> &)
 {
     return make_shared_ptr(new RepositoryNameSet);
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataValueKey<std::string> >
 FakeInstalledRepository::accept_keywords_key() const
 {
     return make_null_shared_ptr();
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataValueKey<std::string> >
 FakeInstalledRepository::sync_host_key() const
 {
     return make_null_shared_ptr();

@@ -38,7 +38,7 @@
 #include <paludis/util/forward_parallel_for_each.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/destringify.hh>
-#include <tr1/functional>
+#include <functional>
 #include <list>
 #include <set>
 #include <map>
@@ -204,12 +204,12 @@ namespace
     {
         typedef bool result;
 
-        const std::list<std::tr1::shared_ptr<Matcher> > & matchers;
-        const std::list<std::tr1::shared_ptr<Extractor> > & extractors;
+        const std::list<std::shared_ptr<Matcher> > & matchers;
+        const std::list<std::shared_ptr<Extractor> > & extractors;
 
         Matches(
-                const std::list<std::tr1::shared_ptr<Matcher> > & m,
-                const std::list<std::tr1::shared_ptr<Extractor> > & e) :
+                const std::list<std::shared_ptr<Matcher> > & m,
+                const std::list<std::shared_ptr<Extractor> > & e) :
             matchers(m),
             extractors(e)
         {
@@ -217,9 +217,9 @@ namespace
 
         bool operator() (const PackageID & id) const
         {
-            for (std::list<std::tr1::shared_ptr<Extractor> >::const_iterator e(extractors.begin()), e_end(extractors.end()) ;
+            for (std::list<std::shared_ptr<Extractor> >::const_iterator e(extractors.begin()), e_end(extractors.end()) ;
                     e != e_end ; ++e)
-                for (std::list<std::tr1::shared_ptr<Matcher> >::const_iterator m(matchers.begin()), m_end(matchers.end()) ;
+                for (std::list<std::shared_ptr<Matcher> >::const_iterator m(matchers.begin()), m_end(matchers.end()) ;
                         m != m_end ; ++m)
                     if ((**e)(**m, id))
                         return true;
@@ -228,26 +228,26 @@ namespace
         }
     };
 
-    std::tr1::shared_ptr<const PackageID> fetch_id(
+    std::shared_ptr<const PackageID> fetch_id(
             const Environment & env,
-            const std::tr1::shared_ptr<const Repository> & r,
+            const std::shared_ptr<const Repository> & r,
             const QualifiedPackageName & q,
-            const std::tr1::function<bool (const PackageID &)> & e,
-            const std::tr1::function<bool (const PackageID &)> & m,
+            const std::function<bool (const PackageID &)> & e,
+            const std::function<bool (const PackageID &)> & m,
             const bool all_versions,
             const bool invert_match,
             const DisplayCallback & display_callback)
     {
-        std::tr1::shared_ptr<const PackageIDSequence> ids(r->package_ids(q));
+        std::shared_ptr<const PackageIDSequence> ids(r->package_ids(q));
         if (ids->empty())
-            return std::tr1::shared_ptr<const PackageID>();
+            return std::shared_ptr<const PackageID>();
         else
         {
-            std::list<std::tr1::shared_ptr<const PackageID> > sids(ids->begin(), ids->end());
+            std::list<std::shared_ptr<const PackageID> > sids(ids->begin(), ids->end());
             PackageIDComparator c(env.package_database().get());
             sids.sort(c);
 
-            for (std::list<std::tr1::shared_ptr<const PackageID> >::const_reverse_iterator i(sids.rbegin()), i_end(sids.rend()) ;
+            for (std::list<std::shared_ptr<const PackageID> >::const_reverse_iterator i(sids.rbegin()), i_end(sids.rend()) ;
                     i != i_end ; ++i)
             {
                 try
@@ -261,7 +261,7 @@ namespace
                         {
                             (*i)->can_drop_in_memory_cache();
                             if (! all_versions)
-                                return std::tr1::shared_ptr<const PackageID>();
+                                return std::shared_ptr<const PackageID>();
                         }
                     }
                     else
@@ -278,25 +278,25 @@ namespace
                 }
             }
 
-            return std::tr1::shared_ptr<const PackageID>();
+            return std::shared_ptr<const PackageID>();
         }
     }
 
     void set_id(
             const Environment & env,
-            const std::list<std::tr1::shared_ptr<const Repository> > & repos,
-            std::pair<const QualifiedPackageName, std::tr1::shared_ptr<const PackageID> > & q,
-            const std::tr1::function<bool (const PackageID &)> & e,
-            const std::tr1::function<bool (const PackageID &)> & m,
+            const std::list<std::shared_ptr<const Repository> > & repos,
+            std::pair<const QualifiedPackageName, std::shared_ptr<const PackageID> > & q,
+            const std::function<bool (const PackageID &)> & e,
+            const std::function<bool (const PackageID &)> & m,
             const bool all_versions,
             const bool invert_match,
             const DisplayCallback & display_callback)
     {
-        std::tr1::shared_ptr<const PackageID> best_id;
-        for (std::list<std::tr1::shared_ptr<const Repository> >::const_iterator r(repos.begin()), r_end(repos.end()) ;
+        std::shared_ptr<const PackageID> best_id;
+        for (std::list<std::shared_ptr<const Repository> >::const_iterator r(repos.begin()), r_end(repos.end()) ;
                 r != r_end ; ++r)
         {
-            std::tr1::shared_ptr<const PackageID> id(fetch_id(env, *r, q.first, e, m, all_versions, invert_match,
+            std::shared_ptr<const PackageID> id(fetch_id(env, *r, q.first, e, m, all_versions, invert_match,
                         display_callback));
             if (id)
             {
@@ -318,23 +318,23 @@ namespace
 int
 do_search(Environment & env)
 {
-    using namespace std::tr1::placeholders;
+    using namespace std::placeholders;
 
     std::cout << "Searching: " << std::flush;
     DisplayCallback display_callback;
-    ScopedNotifierCallback display_callback_holder(&env, NotifierCallbackFunction(std::tr1::cref(display_callback)));
+    ScopedNotifierCallback display_callback_holder(&env, NotifierCallbackFunction(std::cref(display_callback)));
 
     if (CommandLine::get_instance()->a_repository.specified() &&
         ! CommandLine::get_instance()->a_kind.specified())
         CommandLine::get_instance()->a_kind.set_argument("all");
 
-    std::list<std::tr1::shared_ptr<Matcher> > matchers;
+    std::list<std::shared_ptr<Matcher> > matchers;
     for (CommandLine::ParametersConstIterator p(CommandLine::get_instance()->begin_parameters()),
             p_end(CommandLine::get_instance()->end_parameters()) ; p != p_end ; ++p)
         matchers.push_back(MatcherFactory::get_instance()->create(
                     CommandLine::get_instance()->a_matcher.argument(), *p));
 
-    std::list<std::tr1::shared_ptr<Extractor> > extractors;
+    std::list<std::shared_ptr<Extractor> > extractors;
     if (CommandLine::get_instance()->a_keys.begin_args() == CommandLine::get_instance()->a_keys.end_args())
         extractors.push_back(make_shared_ptr(new NameDescriptionExtractor));
     else
@@ -345,7 +345,7 @@ do_search(Environment & env)
                             CommandLine::get_instance()->a_enabled_only.specified(),
                             env)));
 
-    std::list<std::tr1::shared_ptr<const Repository> > repos;
+    std::list<std::shared_ptr<const Repository> > repos;
     for (PackageDatabase::RepositoryConstIterator r(env.package_database()->begin_repositories()),
             r_end(env.package_database()->end_repositories()) ; r != r_end ; ++r)
     {
@@ -353,14 +353,14 @@ do_search(Environment & env)
             if (CommandLine::get_instance()->a_repository.end_args() ==
                     std::find_if(CommandLine::get_instance()->a_repository.begin_args(),
                         CommandLine::get_instance()->a_repository.end_args(),
-                        std::tr1::bind(std::equal_to<std::string>(), _1, stringify((*r)->name()))))
+                        std::bind(std::equal_to<std::string>(), _1, stringify((*r)->name()))))
                 continue;
 
         if (CommandLine::get_instance()->a_repository_format.begin_args() != CommandLine::get_instance()->a_repository_format.end_args())
             if (CommandLine::get_instance()->a_repository_format.end_args() ==
                     std::find_if(CommandLine::get_instance()->a_repository_format.begin_args(),
                         CommandLine::get_instance()->a_repository_format.end_args(),
-                        std::tr1::bind(std::equal_to<std::string>(), _1, (*r)->format_key() ? (*r)->format_key()->value() : "?")))
+                        std::bind(std::equal_to<std::string>(), _1, (*r)->format_key() ? (*r)->format_key()->value() : "?")))
                 continue;
 
         if (CommandLine::get_instance()->a_kind.argument() == "installable")
@@ -388,34 +388,34 @@ do_search(Environment & env)
                 create_inserter<CategoryNamePart>(std::inserter(cats, cats.begin())));
     else
     {
-        for (std::list<std::tr1::shared_ptr<const Repository> >::const_iterator r(repos.begin()), r_end(repos.end()) ;
+        for (std::list<std::shared_ptr<const Repository> >::const_iterator r(repos.begin()), r_end(repos.end()) ;
                 r != r_end ; ++r)
         {
-            std::tr1::shared_ptr<const CategoryNamePartSet> c((*r)->category_names());
+            std::shared_ptr<const CategoryNamePartSet> c((*r)->category_names());
             std::copy(c->begin(), c->end(), std::inserter(cats, cats.begin()));
         }
     }
 
-    std::map<QualifiedPackageName, std::tr1::shared_ptr<const PackageID> > ids;
+    std::map<QualifiedPackageName, std::shared_ptr<const PackageID> > ids;
     if (CommandLine::get_instance()->a_package.begin_args() != CommandLine::get_instance()->a_package.end_args())
     {
         for (std::set<CategoryNamePart>::const_iterator c(cats.begin()), c_end(cats.end()) ;
                 c != c_end ; ++c)
             for (args::StringSetArg::ConstIterator i(CommandLine::get_instance()->a_package.begin_args()),
                     i_end(CommandLine::get_instance()->a_package.end_args()) ; i != i_end ; ++i)
-                ids.insert(std::make_pair(*c + PackageNamePart(*i), std::tr1::shared_ptr<const PackageID>()));
+                ids.insert(std::make_pair(*c + PackageNamePart(*i), std::shared_ptr<const PackageID>()));
     }
     else
     {
-        for (std::list<std::tr1::shared_ptr<const Repository> >::const_iterator r(repos.begin()), r_end(repos.end()) ;
+        for (std::list<std::shared_ptr<const Repository> >::const_iterator r(repos.begin()), r_end(repos.end()) ;
                 r != r_end ; ++r)
             for (std::set<CategoryNamePart>::const_iterator c(cats.begin()), c_end(cats.end()) ;
                     c != c_end ; ++c)
             {
-                std::tr1::shared_ptr<const QualifiedPackageNameSet> q((*r)->package_names(*c));
+                std::shared_ptr<const QualifiedPackageNameSet> q((*r)->package_names(*c));
                 for (QualifiedPackageNameSet::ConstIterator i(q->begin()), i_end(q->end()) ;
                         i != i_end ; ++i)
-                    ids.insert(std::make_pair(*i, std::tr1::shared_ptr<const PackageID>()));
+                    ids.insert(std::make_pair(*i, std::shared_ptr<const PackageID>()));
             }
     }
 
@@ -430,10 +430,10 @@ do_search(Environment & env)
 
     const unsigned n_threads(destringify<int>(getenv_with_default("INQUISITIO_THREADS", "5")));
     forward_parallel_for_each(ids.begin(), ids.end(),
-            std::tr1::bind(&set_id, std::tr1::cref(env), std::tr1::cref(repos), _1, eligible, matches,
+            std::bind(&set_id, std::cref(env), std::cref(repos), _1, eligible, matches,
                 CommandLine::get_instance()->a_all_versions.specified(),
                 CommandLine::get_instance()->a_not.specified(),
-                std::tr1::cref(display_callback)),
+                std::cref(display_callback)),
             n_threads, 10);
 
     display_callback_holder.remove_now();
@@ -441,7 +441,7 @@ do_search(Environment & env)
 
     bool any(false);
     InquisitioQueryTask task(&env);
-    for (std::map<QualifiedPackageName, std::tr1::shared_ptr<const PackageID> >::const_iterator
+    for (std::map<QualifiedPackageName, std::shared_ptr<const PackageID> >::const_iterator
             i(ids.begin()), i_end(ids.end()) ; i != i_end ; ++i)
         if (i->second)
         {

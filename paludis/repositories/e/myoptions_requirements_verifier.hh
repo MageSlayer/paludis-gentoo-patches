@@ -26,7 +26,7 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/spec_tree.hh>
-#include <tr1/memory>
+#include <memory>
 
 namespace paludis
 {
@@ -37,13 +37,13 @@ namespace paludis
         {
             private:
                 void verify_one(const ChoicePrefixName &, const std::string &,
-                        const std::tr1::shared_ptr<const MetadataSectionKey> &);
+                        const std::shared_ptr<const MetadataSectionKey> &);
 
             public:
-                MyOptionsRequirementsVerifier(const std::tr1::shared_ptr<const ERepositoryID> &);
+                MyOptionsRequirementsVerifier(const std::shared_ptr<const ERepositoryID> &);
                 ~MyOptionsRequirementsVerifier();
 
-                const std::tr1::shared_ptr<const Sequence<std::string> > unmet_requirements() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::shared_ptr<const Sequence<std::string> > unmet_requirements() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 void visit(const PlainTextSpecTree::NodeType<PlainTextLabelDepSpec>::Type & node);
                 void visit(const PlainTextSpecTree::NodeType<PlainTextDepSpec>::Type & node);

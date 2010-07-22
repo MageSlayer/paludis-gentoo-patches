@@ -25,14 +25,14 @@
 
 using namespace paludis;
 
-typedef std::list<std::tr1::shared_ptr<const ContentsEntry> > Entries;
+typedef std::list<std::shared_ptr<const ContentsEntry> > Entries;
 
 namespace paludis
 {
     template <>
     struct Implementation<ContentsEntry>
     {
-        const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > location_key;
+        const std::shared_ptr<const MetadataValueKey<FSEntry> > location_key;
 
         Implementation(const FSEntry & n) :
             location_key(make_shared_ptr(new LiteralMetadataValueKey<FSEntry>("location", "location", mkt_significant, n)))
@@ -57,7 +57,7 @@ ContentsEntry::need_keys_added() const
 {
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSEntry> >
 ContentsEntry::location_key() const
 {
     return _imp->location_key;
@@ -83,7 +83,7 @@ namespace paludis
     template <>
     struct Implementation<ContentsSymEntry>
     {
-        const std::tr1::shared_ptr<const MetadataValueKey<std::string> > target_key;
+        const std::shared_ptr<const MetadataValueKey<std::string> > target_key;
 
         Implementation(const std::string & t) :
             target_key(make_shared_ptr(new LiteralMetadataValueKey<std::string>("target", "target", mkt_normal, t)))
@@ -104,7 +104,7 @@ ContentsSymEntry::~ContentsSymEntry()
 {
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataValueKey<std::string> >
 ContentsSymEntry::target_key() const
 {
     return _imp->target_key;
@@ -135,7 +135,7 @@ Contents::~Contents()
 }
 
 void
-Contents::add(const std::tr1::shared_ptr<const ContentsEntry> & c)
+Contents::add(const std::shared_ptr<const ContentsEntry> & c)
 {
     _imp->c.push_back(c);
 }
@@ -156,5 +156,5 @@ template class PrivateImplementationPattern<Contents>;
 template class PrivateImplementationPattern<ContentsEntry>;
 template class PrivateImplementationPattern<ContentsSymEntry>;
 
-template class WrappedForwardIterator<Contents::ConstIteratorTag, const std::tr1::shared_ptr<const ContentsEntry> >;
+template class WrappedForwardIterator<Contents::ConstIteratorTag, const std::shared_ptr<const ContentsEntry> >;
 

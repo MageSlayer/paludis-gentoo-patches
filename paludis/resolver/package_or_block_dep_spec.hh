@@ -37,8 +37,8 @@ namespace paludis
     {
         struct PackageOrBlockDepSpec
         {
-            NamedValue<n::if_block, std::tr1::shared_ptr<BlockDepSpec> > if_block;
-            NamedValue<n::if_package, std::tr1::shared_ptr<PackageDepSpec> > if_package;
+            NamedValue<n::if_block, std::shared_ptr<BlockDepSpec> > if_block;
+            NamedValue<n::if_package, std::shared_ptr<PackageDepSpec> > if_package;
 
             PackageOrBlockDepSpec(const BlockDepSpec &);
             PackageOrBlockDepSpec(const PackageDepSpec &);
@@ -47,7 +47,7 @@ namespace paludis
 
             static PackageOrBlockDepSpec deserialise(
                     Deserialisation & d,
-                    const std::tr1::shared_ptr<const PackageID> & for_id) PALUDIS_ATTRIBUTE((warn_unused_result));
+                    const std::shared_ptr<const PackageID> & for_id) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 }

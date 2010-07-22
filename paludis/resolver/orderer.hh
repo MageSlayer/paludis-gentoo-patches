@@ -32,7 +32,7 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/tribool-fwd.hh>
 #include <paludis/environment-fwd.hh>
-#include <tr1/functional>
+#include <functional>
 
 namespace paludis
 {
@@ -44,20 +44,20 @@ namespace paludis
             private:
                 void _check_self_deps_and_schedule(
                         const NAGIndex &,
-                        const std::tr1::shared_ptr<const ChangeOrRemoveDecision> &,
-                        const std::tr1::shared_ptr<OrdererNotes> &);
+                        const std::shared_ptr<const ChangeOrRemoveDecision> &,
+                        const std::shared_ptr<OrdererNotes> &);
 
                 void _schedule(
                         const NAGIndex &,
-                        const std::tr1::shared_ptr<const ChangeOrRemoveDecision> &,
-                        const std::tr1::shared_ptr<const OrdererNotes> &);
+                        const std::shared_ptr<const ChangeOrRemoveDecision> &,
+                        const std::shared_ptr<const OrdererNotes> &);
 
                 void _order_sub_ssccs(
                         const NAG &,
                         const StronglyConnectedComponent & top_scc,
-                        const std::tr1::shared_ptr<const SortedStronglyConnectedComponents> & sub_ssccs,
+                        const std::shared_ptr<const SortedStronglyConnectedComponents> & sub_ssccs,
                         const bool can_recurse,
-                        const std::tr1::function<Tribool (const NAGIndex &)> & order_early_fn);
+                        const std::function<Tribool (const NAGIndex &)> & order_early_fn);
 
                 Tribool _order_early(
                         const NAGIndex &) const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -66,13 +66,13 @@ namespace paludis
                         const Resolvent & resolvent) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 void _add_binary_cleverness(
-                        const std::tr1::shared_ptr<const Resolution> & resolvent);
+                        const std::shared_ptr<const Resolution> & resolvent);
 
             public:
                 Orderer(
                         const Environment * const,
                         const ResolverFunctions &,
-                        const std::tr1::shared_ptr<Resolved> &);
+                        const std::shared_ptr<Resolved> &);
                 ~Orderer();
 
                 void resolve();

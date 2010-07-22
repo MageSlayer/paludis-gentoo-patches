@@ -32,13 +32,13 @@ namespace paludis
     template <typename Job_>
     struct Implementation<JobList<Job_> >
     {
-        std::vector<std::tr1::shared_ptr<Job_> > list;
+        std::vector<std::shared_ptr<Job_> > list;
     };
 
     template <typename Job_>
     struct WrappedForwardIteratorTraits<JobListConstIteratorTag<Job_> >
     {
-        typedef typename std::vector<std::tr1::shared_ptr<Job_> >::const_iterator UnderlyingIterator;
+        typedef typename std::vector<std::shared_ptr<Job_> >::const_iterator UnderlyingIterator;
     };
 }
 
@@ -55,9 +55,9 @@ JobList<Job_>::~JobList()
 
 template <typename Job_>
 JobNumber
-JobList<Job_>::append(const std::tr1::shared_ptr<Job_> & i)
+JobList<Job_>::append(const std::shared_ptr<Job_> & i)
 {
-    typename std::vector<std::tr1::shared_ptr<Job_> >::const_iterator p(_imp->list.insert(_imp->list.end(), i));
+    typename std::vector<std::shared_ptr<Job_> >::const_iterator p(_imp->list.insert(_imp->list.end(), i));
     return p - _imp->list.begin();
 }
 
@@ -90,14 +90,14 @@ JobList<Job_>::fetch(const JobNumber n) const
 }
 
 template <typename Job_>
-const std::tr1::shared_ptr<JobList<Job_> >
+const std::shared_ptr<JobList<Job_> >
 JobList<Job_>::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "JobList");
     Deserialisator vv(*v.find_remove_member("items"), "c");
-    std::tr1::shared_ptr<JobList> result(new JobList);
+    std::shared_ptr<JobList> result(new JobList);
     for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
-        result->append(vv.member<std::tr1::shared_ptr<Job_> >(stringify(n)));
+        result->append(vv.member<std::shared_ptr<Job_> >(stringify(n)));
     return result;
 }
 
@@ -111,8 +111,8 @@ JobList<Job_>::serialise(Serialiser & s) const
 }
 
 template class JobList<PretendJob>;
-template class WrappedForwardIterator<JobListConstIteratorTag<PretendJob>, const std::tr1::shared_ptr<PretendJob> >;
+template class WrappedForwardIterator<JobListConstIteratorTag<PretendJob>, const std::shared_ptr<PretendJob> >;
 
 template class JobList<ExecuteJob>;
-template class WrappedForwardIterator<JobListConstIteratorTag<ExecuteJob>, const std::tr1::shared_ptr<ExecuteJob> >;
+template class WrappedForwardIterator<JobListConstIteratorTag<ExecuteJob>, const std::shared_ptr<ExecuteJob> >;
 

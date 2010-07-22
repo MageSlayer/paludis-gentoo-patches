@@ -42,11 +42,11 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            std::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("repo"))));
             env.package_database()->add_repository(1, repo);
-            std::tr1::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
+            std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
             AAVisitor p1;
             parse_fetchable_uri("( a -> b c x? ( d e ) )", &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->root()->accept(p1);

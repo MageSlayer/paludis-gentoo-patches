@@ -30,13 +30,13 @@ namespace paludis
     template <>
     struct Implementation<AboutMetadata>
     {
-        std::tr1::shared_ptr<LiteralMetadataValueKey<std::string> > package_key;
-        std::tr1::shared_ptr<LiteralMetadataValueKey<std::string> > version_key;
+        std::shared_ptr<LiteralMetadataValueKey<std::string> > package_key;
+        std::shared_ptr<LiteralMetadataValueKey<std::string> > version_key;
 
-        std::tr1::shared_ptr<LiteralMetadataValueKey<std::string> > build_cxxflags_key;
-        std::tr1::shared_ptr<LiteralMetadataValueKey<std::string> > build_ldflags_key;
-        std::tr1::shared_ptr<LiteralMetadataValueKey<std::string> > build_cxx_key;
-        std::tr1::shared_ptr<LiteralMetadataValueKey<std::string> > build_date_key;
+        std::shared_ptr<LiteralMetadataValueKey<std::string> > build_cxxflags_key;
+        std::shared_ptr<LiteralMetadataValueKey<std::string> > build_ldflags_key;
+        std::shared_ptr<LiteralMetadataValueKey<std::string> > build_cxx_key;
+        std::shared_ptr<LiteralMetadataValueKey<std::string> > build_date_key;
 
         Implementation() :
             package_key(new LiteralMetadataValueKey<std::string>("PALUDIS_PACKAGE", "Package Name", mkt_significant, PALUDIS_PACKAGE)),

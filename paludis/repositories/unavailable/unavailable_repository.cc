@@ -37,7 +37,7 @@ using namespace paludis::unavailable_repository;
 
 namespace
 {
-    std::tr1::shared_ptr<UnavailableRepositoryStore>
+    std::shared_ptr<UnavailableRepositoryStore>
     make_store(const UnavailableRepository * const repo, const UnavailableRepositoryParams & p)
     {
         return make_shared_ptr(new UnavailableRepositoryStore(p.environment(), repo, p.location()));
@@ -51,14 +51,14 @@ namespace paludis
     {
         const UnavailableRepositoryParams params;
 
-        const std::tr1::shared_ptr<LiteralMetadataValueKey<std::string> > format_key;
-        const std::tr1::shared_ptr<LiteralMetadataValueKey<FSEntry> > location_key;
-        const std::tr1::shared_ptr<LiteralMetadataValueKey<std::string> > sync_key;
-        const std::tr1::shared_ptr<LiteralMetadataValueKey<std::string> > sync_options_key;
-        const std::tr1::shared_ptr<LiteralMetadataValueKey<std::string> > sync_host_key;
+        const std::shared_ptr<LiteralMetadataValueKey<std::string> > format_key;
+        const std::shared_ptr<LiteralMetadataValueKey<FSEntry> > location_key;
+        const std::shared_ptr<LiteralMetadataValueKey<std::string> > sync_key;
+        const std::shared_ptr<LiteralMetadataValueKey<std::string> > sync_options_key;
+        const std::shared_ptr<LiteralMetadataValueKey<std::string> > sync_host_key;
 
         const ActiveObjectPtr<DeferredConstructionPtr<
-            std::tr1::shared_ptr<UnavailableRepositoryStore> > > store;
+            std::shared_ptr<UnavailableRepositoryStore> > > store;
 
         Implementation(const UnavailableRepository * const repo, const UnavailableRepositoryParams & p) :
             params(p),
@@ -71,8 +71,8 @@ namespace paludis
             sync_options_key(new LiteralMetadataValueKey<std::string> (
                         "sync_options", "sync_options", mkt_normal, params.sync_options())),
             sync_host_key(new LiteralMetadataValueKey<std::string> ("sync_host", "sync_host", mkt_internal, extract_host_from_url(params.sync()))),
-            store(DeferredConstructionPtr<std::tr1::shared_ptr<UnavailableRepositoryStore> > (
-                        std::tr1::bind(&make_store, repo, std::tr1::cref(params))))
+            store(DeferredConstructionPtr<std::shared_ptr<UnavailableRepositoryStore> > (
+                        std::bind(&make_store, repo, std::cref(params))))
         {
         }
     };
@@ -133,22 +133,22 @@ UnavailableRepository::need_keys_added() const
 {
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataValueKey<std::string> >
 UnavailableRepository::format_key() const
 {
     return _imp->format_key;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSEntry> >
 UnavailableRepository::location_key() const
 {
     return _imp->location_key;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSEntry> >
 UnavailableRepository::installed_root_key() const
 {
-    return std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >();
+    return std::shared_ptr<const MetadataValueKey<FSEntry> >();
 }
 
 void
@@ -175,31 +175,31 @@ UnavailableRepository::has_package_named(const QualifiedPackageName & q) const
     return _imp->store->has_package_named(q);
 }
 
-std::tr1::shared_ptr<const CategoryNamePartSet>
+std::shared_ptr<const CategoryNamePartSet>
 UnavailableRepository::category_names() const
 {
     return _imp->store->category_names();
 }
 
-std::tr1::shared_ptr<const CategoryNamePartSet>
+std::shared_ptr<const CategoryNamePartSet>
 UnavailableRepository::unimportant_category_names() const
 {
     return _imp->store->unimportant_category_names();
 }
 
-std::tr1::shared_ptr<const CategoryNamePartSet>
+std::shared_ptr<const CategoryNamePartSet>
 UnavailableRepository::category_names_containing_package(const PackageNamePart & p) const
 {
     return Repository::category_names_containing_package(p);
 }
 
-std::tr1::shared_ptr<const QualifiedPackageNameSet>
+std::shared_ptr<const QualifiedPackageNameSet>
 UnavailableRepository::package_names(const CategoryNamePart & c) const
 {
     return _imp->store->package_names(c);
 }
 
-std::tr1::shared_ptr<const PackageIDSequence>
+std::shared_ptr<const PackageIDSequence>
 UnavailableRepository::package_ids(const QualifiedPackageName & p) const
 {
     return _imp->store->package_ids(p);
@@ -260,7 +260,7 @@ UnavailableRepository::some_ids_might_not_be_masked() const
 }
 
 bool
-UnavailableRepository::sync(const std::tr1::shared_ptr<OutputManager> & output_manager) const
+UnavailableRepository::sync(const std::shared_ptr<OutputManager> & output_manager) const
 {
     Context context("When syncing repository '" + stringify(name()) + "':");
 
@@ -303,10 +303,10 @@ UnavailableRepository::sync(const std::tr1::shared_ptr<OutputManager> & output_m
     return true;
 }
 
-std::tr1::shared_ptr<Repository>
+std::shared_ptr<Repository>
 UnavailableRepository::repository_factory_create(
         Environment * const env,
-        const std::tr1::function<std::string (const std::string &)> & f)
+        const std::function<std::string (const std::string &)> & f)
 {
     Context context("When making unavailable repository from repo_file '" + f("repo_file") + "':");
 
@@ -322,7 +322,7 @@ UnavailableRepository::repository_factory_create(
 
     std::string sync_options(f("sync_options"));
 
-    return std::tr1::shared_ptr<UnavailableRepository>(new UnavailableRepository(
+    return std::shared_ptr<UnavailableRepository>(new UnavailableRepository(
                 make_named_values<UnavailableRepositoryParams>(
                     n::environment() = env,
                     n::location() = location,
@@ -335,7 +335,7 @@ UnavailableRepository::repository_factory_create(
 RepositoryName
 UnavailableRepository::repository_factory_name(
         const Environment * const,
-        const std::tr1::function<std::string (const std::string &)> & f)
+        const std::function<std::string (const std::string &)> & f)
 {
     if (f("name").empty())
         return RepositoryName("unavailable");
@@ -343,10 +343,10 @@ UnavailableRepository::repository_factory_name(
         return RepositoryName(f("name"));
 }
 
-std::tr1::shared_ptr<const RepositoryNameSet>
+std::shared_ptr<const RepositoryNameSet>
 UnavailableRepository::repository_factory_dependencies(
         const Environment * const,
-        const std::tr1::function<std::string (const std::string &)> &)
+        const std::function<std::string (const std::string &)> &)
 {
     return make_shared_ptr(new RepositoryNameSet);
 }
@@ -362,13 +362,13 @@ UnavailableRepository::perform_hook(const Hook &)
     return make_named_values<HookResult>(n::max_exit_status() = 0, n::output() = "");
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataValueKey<std::string> >
 UnavailableRepository::accept_keywords_key() const
 {
     return make_null_shared_ptr();
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataValueKey<std::string> >
 UnavailableRepository::sync_host_key() const
 {
     return _imp->sync_host_key;

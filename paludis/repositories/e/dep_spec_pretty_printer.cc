@@ -54,7 +54,7 @@ namespace paludis
     {
         std::stringstream s;
         const Environment * const env;
-        const std::tr1::shared_ptr<const PackageID> id;
+        const std::shared_ptr<const PackageID> id;
         GenericSpecTree::ItemFormatter formatter;
         unsigned indent;
         bool extra_label_indent;
@@ -66,7 +66,7 @@ namespace paludis
 
         Implementation(
                 const Environment * const e,
-                const std::tr1::shared_ptr<const PackageID> & i,
+                const std::shared_ptr<const PackageID> & i,
                 const GenericSpecTree::ItemFormatter & f,
                 unsigned in,
                 bool b,
@@ -88,7 +88,7 @@ namespace paludis
 
 DepSpecPrettyPrinter::DepSpecPrettyPrinter(
         const Environment * const e,
-        const std::tr1::shared_ptr<const PackageID> & id,
+        const std::shared_ptr<const PackageID> & id,
         const GenericSpecTree::ItemFormatter & f,
         unsigned i,
         bool b,

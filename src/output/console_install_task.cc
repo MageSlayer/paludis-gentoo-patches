@@ -22,21 +22,20 @@
 #include "colour_formatter.hh"
 #include "mask_displayer.hh"
 
-#include <paludis/util/log.hh>
-#include <paludis/util/pretty_print.hh>
-#include <paludis/util/strip.hh>
-#include <paludis/util/tokeniser.hh>
-#include <paludis/util/mutex.hh>
-#include <paludis/util/join.hh>
-#include <paludis/util/safe_ofstream.hh>
-#include <paludis/util/system.hh>
-#include <paludis/util/iterator_funcs.hh>
-#include <paludis/util/simple_visitor_cast.hh>
-#include <paludis/util/make_shared_ptr.hh>
-#include <paludis/util/pretty_print.hh>
-#include <paludis/util/sequence.hh>
-#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/iterator_funcs.hh>
+#include <paludis/util/join.hh>
+#include <paludis/util/log.hh>
+#include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/mutex.hh>
+#include <paludis/util/pretty_print.hh>
+#include <paludis/util/safe_ofstream.hh>
+#include <paludis/util/sequence.hh>
+#include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/strip.hh>
+#include <paludis/util/system.hh>
+#include <paludis/util/tokeniser.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/action.hh>
 #include <paludis/repository.hh>
 #include <paludis/package_database.hh>
@@ -56,7 +55,7 @@
 #include <paludis/dep_list.hh>
 #include <paludis/notifier_callback.hh>
 
-#include <tr1/functional>
+#include <functional>
 #include <algorithm>
 #include <set>
 #include <list>
@@ -107,7 +106,7 @@ namespace
 
 ConsoleInstallTask::ConsoleInstallTask(Environment * const env,
         const DepListOptions & options,
-        const std::tr1::shared_ptr<const DestinationsSet> & d) :
+        const std::shared_ptr<const DestinationsSet> & d) :
     InstallTask(env, options, d),
     _download_size(0),
     _download_size_overflow(false),
@@ -159,7 +158,7 @@ ConsoleInstallTask::exit_status() const
 }
 
 bool
-ConsoleInstallTask::try_to_set_targets_from_user_specs(const std::tr1::shared_ptr<const Sequence<std::string> > & s)
+ConsoleInstallTask::try_to_set_targets_from_user_specs(const std::shared_ptr<const Sequence<std::string> > & s)
 {
     bool is_ok(true);
     try
@@ -305,8 +304,8 @@ ConsoleInstallTask::on_build_deplist_pre()
 
     _callback_displayer.reset(new CallbackDisplayer(output_stream()));
     _notifier_callback.reset(new NotifierCallbackID(environment()->add_notifier_callback(
-                    std::tr1::bind(std::tr1::mem_fn(&ConsoleInstallTask::_notifier_callback_fn),
-                        this, std::tr1::placeholders::_1))));
+                    std::bind(std::mem_fn(&ConsoleInstallTask::_notifier_callback_fn),
+                        this, std::placeholders::_1))));
 }
 
 void
@@ -412,7 +411,7 @@ ConsoleInstallTask::display_use_summary_entry(const ChoiceValueDescriptions::con
     bool all_same(true);
     std::string description((*i->second.begin())->choices_key()->value()->find_by_name_with_prefix(
                 i->first)->description());
-    for (std::list<std::tr1::shared_ptr<const PackageID> >::const_iterator j(i->second.begin()), j_end(i->second.end()) ;
+    for (std::list<std::shared_ptr<const PackageID> >::const_iterator j(i->second.begin()), j_end(i->second.end()) ;
             j != j_end ; ++j)
         if ((*j)->choices_key()->value()->find_by_name_with_prefix(i->first)->description() != description)
             all_same = false;
@@ -433,7 +432,7 @@ ConsoleInstallTask::display_use_summary_entry(const ChoiceValueDescriptions::con
                             i->first)->unprefixed_name())) + ": ");
             output_starred_item(desc.str());
         }
-        for (std::list<std::tr1::shared_ptr<const PackageID> >::const_iterator j(i->second.begin()), j_end(i->second.end()) ;
+        for (std::list<std::shared_ptr<const PackageID> >::const_iterator j(i->second.begin()), j_end(i->second.end()) ;
                 j != j_end ; ++j)
         {
             std::stringstream desc;
@@ -507,18 +506,18 @@ ConsoleInstallTask::on_display_merge_list_entry(const DepListEntry & d)
     if (already_done(d))
         return;
 
-    std::tr1::shared_ptr<RepositoryName> repo;
+    std::shared_ptr<RepositoryName> repo;
     if (d.destination())
         repo.reset(new RepositoryName(d.destination()->name()));
 
-    std::tr1::shared_ptr<const PackageIDSequence> existing_repo((*environment())[selection::AllVersionsSorted(repo ?
+    std::shared_ptr<const PackageIDSequence> existing_repo((*environment())[selection::AllVersionsSorted(repo ?
                 generator::Matches(make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
                     .package(d.package_id()->name()).in_repository(*repo), MatchPackageOptions()) :
                 generator::Matches(make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
                     .package(d.package_id()->name()), MatchPackageOptions()) | filter::InstalledAtRoot(environment()->root())
                 )]);;
 
-    std::tr1::shared_ptr<const PackageIDSequence> existing_slot_repo((*environment())[selection::AllVersionsSorted((repo ?
+    std::shared_ptr<const PackageIDSequence> existing_slot_repo((*environment())[selection::AllVersionsSorted((repo ?
                     generator::Matches(make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
                         .package(d.package_id()->name()).in_repository(*repo), MatchPackageOptions()) :
                     generator::Matches(make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
@@ -626,7 +625,7 @@ ConsoleInstallTask::on_skip_unsatisfied(const DepListEntry & d, const PackageDep
 }
 
 void
-ConsoleInstallTask::on_skip_dependent(const DepListEntry & d, const std::tr1::shared_ptr<const PackageID> & id,
+ConsoleInstallTask::on_skip_dependent(const DepListEntry & d, const std::shared_ptr<const PackageID> & id,
         const int x, const int y, const int s, const int f)
 {
     std::string m("(" + make_x_of_y(x, y, s, f) + ") Skipping " + stringify(*d.package_id()) +
@@ -804,7 +803,7 @@ ConsoleInstallTask::display_merge_list_post_tags()
     for (std::set<std::string>::iterator cat(tag_categories.begin()),
             cat_end(tag_categories.end()) ; cat != cat_end ; ++cat)
     {
-        std::tr1::shared_ptr<const DepTagCategory> c(DepTagCategoryFactory::get_instance()->create(*cat));
+        std::shared_ptr<const DepTagCategory> c(DepTagCategoryFactory::get_instance()->create(*cat));
 
         if (! c->visible())
             continue;
@@ -846,9 +845,9 @@ ConsoleInstallTask::display_tag_summary_tag_pre_text(const DepTagCategory & c)
 }
 
 void
-ConsoleInstallTask::display_tag_summary_tag(const std::tr1::shared_ptr<const DepTag> & t)
+ConsoleInstallTask::display_tag_summary_tag(const std::shared_ptr<const DepTag> & t)
 {
-    std::tr1::shared_ptr<DepTagSummaryDisplayer> displayer(make_dep_tag_summary_displayer());
+    std::shared_ptr<DepTagSummaryDisplayer> displayer(make_dep_tag_summary_displayer());
     t->accept(*displayer.get());
 }
 
@@ -975,7 +974,7 @@ void
 ConsoleInstallTask::display_merge_list_entry_repository(const DepListEntry & d, const DisplayMode m)
 {
     // XXX fix this once the new resolver's in
-    std::tr1::shared_ptr<const PackageIDSequence> inst((*environment())[selection::BestVersionOnly(
+    std::shared_ptr<const PackageIDSequence> inst((*environment())[selection::BestVersionOnly(
                 generator::Package(d.package_id()->name()) |
                 filter::SameSlot(d.package_id()) |
                 filter::InstalledAtRoot(environment()->root()))]);
@@ -1020,8 +1019,8 @@ ConsoleInstallTask::display_merge_list_entry_slot(const DepListEntry & d, const 
 
 void
 ConsoleInstallTask::display_merge_list_entry_status_and_update_counts(const DepListEntry & d,
-        const std::tr1::shared_ptr<const PackageIDSequence> & existing_repo,
-        const std::tr1::shared_ptr<const PackageIDSequence> & existing_slot_repo,
+        const std::shared_ptr<const PackageIDSequence> & existing_repo,
+        const std::shared_ptr<const PackageIDSequence> & existing_slot_repo,
         const DisplayMode m)
 {
     switch (m)
@@ -1048,7 +1047,7 @@ ConsoleInstallTask::display_merge_list_entry_status_and_update_counts(const DepL
                 std::string destination_str;
                 if (! d.package_id()->virtual_for_key())
                 {
-                    std::tr1::shared_ptr<const DestinationsSet> default_destinations(environment()->default_destinations());
+                    std::shared_ptr<const DestinationsSet> default_destinations(environment()->default_destinations());
                     if (default_destinations->end() == default_destinations->find(d.destination()))
                         destination_str = " ::" + stringify(d.destination()->name());
                 }
@@ -1126,8 +1125,8 @@ ConsoleInstallTask::display_merge_list_entry_status_and_update_counts(const DepL
 void
 ConsoleInstallTask::display_merge_list_entry_choices(const DepListEntry & d,
         const DisplayMode m,
-        const std::tr1::shared_ptr<const PackageIDSequence> & existing_repo,
-        const std::tr1::shared_ptr<const PackageIDSequence> & existing_slot_repo
+        const std::shared_ptr<const PackageIDSequence> & existing_repo,
+        const std::shared_ptr<const PackageIDSequence> & existing_slot_repo
         )
 {
     switch (m)
@@ -1142,12 +1141,12 @@ ConsoleInstallTask::display_merge_list_entry_choices(const DepListEntry & d,
                 if (! d.package_id()->choices_key())
                     break;
 
-                std::tr1::shared_ptr<const PackageID> old_id;
+                std::shared_ptr<const PackageID> old_id;
                 if (existing_slot_repo && ! existing_slot_repo->empty())
                     old_id = *existing_slot_repo->last();
                 else if (existing_repo && ! existing_repo->empty())
                     old_id = *existing_repo->last();
-                std::tr1::shared_ptr<const Choices> old_choices;
+                std::shared_ptr<const Choices> old_choices;
                 if (old_id && old_id->choices_key())
                     old_choices = old_id->choices_key()->value();
 
@@ -1203,7 +1202,7 @@ ConsoleInstallTask::display_merge_list_entry_choices(const DepListEntry & d,
                         {
                             if (old_choices)
                             {
-                                std::tr1::shared_ptr<const ChoiceValue> old_choice(old_choices->find_by_name_with_prefix((*i)->name_with_prefix()));
+                                std::shared_ptr<const ChoiceValue> old_choice(old_choices->find_by_name_with_prefix((*i)->name_with_prefix()));
                                 if (! old_choice)
                                     added = true;
                                 else if (old_choice->enabled() != (*i)->enabled())
@@ -1250,8 +1249,8 @@ ConsoleInstallTask::display_merge_list_entry_choices(const DepListEntry & d,
 
 void
 ConsoleInstallTask::display_merge_list_entry_description(const DepListEntry & d,
-        const std::tr1::shared_ptr<const PackageIDSequence> & existing_slot_repo,
-        const std::tr1::shared_ptr<const PackageIDSequence> &,
+        const std::shared_ptr<const PackageIDSequence> & existing_slot_repo,
+        const std::shared_ptr<const PackageIDSequence> &,
         const DisplayMode m)
 {
     if ((! d.package_id()->short_description_key()) || d.package_id()->short_description_key()->value().empty())
@@ -1292,11 +1291,11 @@ namespace
     struct FindDistfilesSize :
         PretendFetchAction
     {
-        std::tr1::shared_ptr<Set<FSEntry> > already_downloaded;
+        std::shared_ptr<Set<FSEntry> > already_downloaded;
         unsigned long size;
         bool overflow;
 
-        FindDistfilesSize(const FetchActionOptions & o, const std::tr1::shared_ptr<Set<FSEntry> > & a) :
+        FindDistfilesSize(const FetchActionOptions & o, const std::shared_ptr<Set<FSEntry> > & a) :
             PretendFetchAction(o),
             already_downloaded(a),
             size(0),
@@ -1384,7 +1383,7 @@ ConsoleInstallTask::display_merge_list_entry_non_package_tags(const DepListEntry
 
         all_tags()->insert(*tag);
 
-        std::tr1::shared_ptr<EntryDepTagDisplayer> displayer(make_entry_dep_tag_displayer());
+        std::shared_ptr<EntryDepTagDisplayer> displayer(make_entry_dep_tag_displayer());
         tag->tag()->accept(*displayer.get());
         tag_titles.append(displayer->text());
         tag_titles.append(", ");
@@ -1443,8 +1442,8 @@ ConsoleInstallTask::display_merge_list_entry_package_tags(const DepListEntry & d
         if (tag->tag()->category() != "dependency")
             continue;
 
-        std::tr1::shared_ptr<const PackageDepSpec> spec(
-            std::tr1::static_pointer_cast<const DependencyDepTag>(tag->tag())->dependency());
+        std::shared_ptr<const PackageDepSpec> spec(
+            std::static_pointer_cast<const DependencyDepTag>(tag->tag())->dependency());
         if (d.kind() != dlk_masked && d.kind() != dlk_block && (*environment())[selection::SomeArbitraryVersion(
                 generator::Matches(*spec, MatchPackageOptions()) |
                 filter::InstalledAtRoot(environment()->root()))]->empty())
@@ -1515,16 +1514,16 @@ ConsoleInstallTask::display_merge_list_entry_end(const DepListEntry &, const Dis
     output_endl();
 }
 
-std::tr1::shared_ptr<DepTagSummaryDisplayer>
+std::shared_ptr<DepTagSummaryDisplayer>
 ConsoleInstallTask::make_dep_tag_summary_displayer()
 {
-    return std::tr1::shared_ptr<DepTagSummaryDisplayer>(new DepTagSummaryDisplayer(this));
+    return std::shared_ptr<DepTagSummaryDisplayer>(new DepTagSummaryDisplayer(this));
 }
 
-std::tr1::shared_ptr<EntryDepTagDisplayer>
+std::shared_ptr<EntryDepTagDisplayer>
 ConsoleInstallTask::make_entry_dep_tag_displayer()
 {
-    return std::tr1::shared_ptr<EntryDepTagDisplayer>(new EntryDepTagDisplayer());
+    return std::shared_ptr<EntryDepTagDisplayer>(new EntryDepTagDisplayer());
 }
 
 EntryDepTagDisplayer::EntryDepTagDisplayer()
@@ -1593,7 +1592,7 @@ ConsoleInstallTask::on_ambiguous_package_name_error(const AmbiguousPackageNameEr
 
 void
 ConsoleInstallTask::on_non_fetch_action_error(
-        const std::tr1::shared_ptr<OutputManager> & output_manager, const ActionFailedError & e)
+        const std::shared_ptr<OutputManager> & output_manager, const ActionFailedError & e)
 {
     output_manager->stdout_stream() << endl;
     output_manager->stdout_stream() << "Install error:" << endl;
@@ -1605,8 +1604,8 @@ ConsoleInstallTask::on_non_fetch_action_error(
 
 void
 ConsoleInstallTask::on_fetch_action_error(
-        const std::tr1::shared_ptr<OutputManager> & output_manager, const ActionFailedError & e,
-        const std::tr1::shared_ptr<const Sequence<FetchActionFailure> > & failures)
+        const std::shared_ptr<OutputManager> & output_manager, const ActionFailedError & e,
+        const std::shared_ptr<const Sequence<FetchActionFailure> > & failures)
 {
     output_manager->stdout_stream() << endl;
     output_manager->stdout_stream() << "Fetch error:" << endl;
@@ -1683,7 +1682,7 @@ ConsoleInstallTask::on_all_masked_error(const AllMaskedError & e)
 {
     try
     {
-        std::tr1::shared_ptr<const PackageIDSequence> p(
+        std::shared_ptr<const PackageIDSequence> p(
                 (*environment())[selection::AllVersionsSorted(
                     generator::Matches(e.query(), MatchPackageOptions())
                     | filter::SupportsAction<InstallAction>())]);
@@ -1843,7 +1842,7 @@ ConsoleInstallTask::on_display_failure_summary_skipped_unsatisfied(const DepList
 
 void
 ConsoleInstallTask::on_display_failure_summary_skipped_dependent(const DepListEntry & e,
-        const std::tr1::shared_ptr<const PackageID> & id)
+        const std::shared_ptr<const PackageID> & id)
 {
     output_starred_item_no_endl("");
     output_stream() << colour(cl_package_name, *e.package_id()) << ": skipped (dependent upon '"
@@ -1981,31 +1980,31 @@ ConsoleInstallTask::perform_hook(const Hook & hook)
 }
 
 void
-ConsoleInstallTask::on_phase_skip(const std::tr1::shared_ptr<OutputManager> & output_manager, const std::string & phase)
+ConsoleInstallTask::on_phase_skip(const std::shared_ptr<OutputManager> & output_manager, const std::string & phase)
 {
     output_manager->stdout_stream() << "+++ Skipping phase '" + phase + "' as instructed" << endl;
 }
 
 void
-ConsoleInstallTask::on_phase_abort(const std::tr1::shared_ptr<OutputManager> & output_manager, const std::string & phase)
+ConsoleInstallTask::on_phase_abort(const std::shared_ptr<OutputManager> & output_manager, const std::string & phase)
 {
     output_manager->stdout_stream() << "+++ Aborting at phase '" + phase + "' as instructed" << endl;
 }
 
 void
-ConsoleInstallTask::on_phase_skip_until(const std::tr1::shared_ptr<OutputManager> & output_manager, const std::string & phase)
+ConsoleInstallTask::on_phase_skip_until(const std::shared_ptr<OutputManager> & output_manager, const std::string & phase)
 {
     output_manager->stdout_stream() << "+++ Skipping phase '" + phase + "' as instructed since it is before a start phase" << endl;
 }
 
 void
-ConsoleInstallTask::on_phase_proceed_conditionally(const std::tr1::shared_ptr<OutputManager> & output_manager, const std::string & phase)
+ConsoleInstallTask::on_phase_proceed_conditionally(const std::shared_ptr<OutputManager> & output_manager, const std::string & phase)
 {
     output_manager->stdout_stream() << "+++ Executing phase '" + phase + "' as instructed" << endl;
 }
 
 void
-ConsoleInstallTask::on_phase_proceed_unconditionally(const std::tr1::shared_ptr<OutputManager> &, const std::string &)
+ConsoleInstallTask::on_phase_proceed_unconditionally(const std::shared_ptr<OutputManager> &, const std::string &)
 {
 }
 

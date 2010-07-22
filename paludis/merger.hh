@@ -80,7 +80,7 @@ namespace paludis
          */
         NamedValue<n::fix_mtimes_before, Timestamp> fix_mtimes_before;
 
-        NamedValue<n::get_new_ids_or_minus_one, std::tr1::function<std::pair<uid_t, gid_t> (const FSEntry &)> > get_new_ids_or_minus_one;
+        NamedValue<n::get_new_ids_or_minus_one, std::function<std::pair<uid_t, gid_t> (const FSEntry &)> > get_new_ids_or_minus_one;
         NamedValue<n::image, FSEntry> image;
         NamedValue<n::install_under, FSEntry> install_under;
 
@@ -89,7 +89,7 @@ namespace paludis
          *
          * \since 0.41
          */
-        NamedValue<n::merged_entries, std::tr1::shared_ptr<FSEntrySet> > merged_entries;
+        NamedValue<n::merged_entries, std::shared_ptr<FSEntrySet> > merged_entries;
 
         NamedValue<n::no_chown, bool> no_chown;
         NamedValue<n::options, MergerOptions> options;

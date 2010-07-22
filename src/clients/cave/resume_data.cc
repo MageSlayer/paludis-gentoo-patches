@@ -32,7 +32,7 @@ using namespace paludis;
 using namespace paludis::resolver;
 using namespace cave;
 
-const std::tr1::shared_ptr<ResumeData>
+const std::shared_ptr<ResumeData>
 ResumeData::deserialise(Deserialisation & d)
 {
     if (d.class_name() != "ResumeData@" + stringify(PALUDIS_VERSION))
@@ -40,14 +40,14 @@ ResumeData::deserialise(Deserialisation & d)
 
     Deserialisator v(d, "ResumeData@" + stringify(PALUDIS_VERSION));
 
-    std::tr1::shared_ptr<Sequence<std::string> > targets(new Sequence<std::string>);
+    std::shared_ptr<Sequence<std::string> > targets(new Sequence<std::string>);
     {
         Deserialisator vv(*v.find_remove_member("targets"), "c");
         for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
             targets->push_back(vv.member<std::string>(stringify(n)));
     }
 
-    std::tr1::shared_ptr<Sequence<std::string> > world_specs(new Sequence<std::string>);
+    std::shared_ptr<Sequence<std::string> > world_specs(new Sequence<std::string>);
     {
         Deserialisator vv(*v.find_remove_member("world_specs"), "c");
         for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
@@ -55,7 +55,7 @@ ResumeData::deserialise(Deserialisation & d)
     }
 
     return make_shared_copy(make_named_values<ResumeData>(
-                n::job_lists() = v.member<std::tr1::shared_ptr<JobLists> >("job_lists"),
+                n::job_lists() = v.member<std::shared_ptr<JobLists> >("job_lists"),
                 n::preserve_world() = v.member<bool>("preserve_world"),
                 n::target_set() = v.member<bool>("target_set"),
                 n::targets() = targets,

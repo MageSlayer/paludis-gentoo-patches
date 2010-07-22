@@ -24,7 +24,7 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/metadata_key.hh>
-#include <tr1/functional>
+#include <functional>
 #include <list>
 #include <algorithm>
 
@@ -35,13 +35,13 @@ namespace paludis
     template <>
     struct Implementation<MetadataKeyHolder>
     {
-        mutable std::list<std::tr1::shared_ptr<const MetadataKey> > keys;
+        mutable std::list<std::shared_ptr<const MetadataKey> > keys;
     };
 
     template <>
     struct WrappedForwardIteratorTraits<MetadataKeyHolder::MetadataConstIteratorTag>
     {
-        typedef std::list<std::tr1::shared_ptr<const MetadataKey> >::const_iterator UnderlyingIterator;
+        typedef std::list<std::shared_ptr<const MetadataKey> >::const_iterator UnderlyingIterator;
     };
 }
 
@@ -55,12 +55,12 @@ MetadataKeyHolder::~MetadataKeyHolder()
 }
 
 void
-MetadataKeyHolder::add_metadata_key(const std::tr1::shared_ptr<const MetadataKey> & k) const
+MetadataKeyHolder::add_metadata_key(const std::shared_ptr<const MetadataKey> & k) const
 {
-    using namespace std::tr1::placeholders;
+    using namespace std::placeholders;
 
     if (indirect_iterator(_imp->keys.end()) != std::find_if(indirect_iterator(_imp->keys.begin()), indirect_iterator(_imp->keys.end()),
-                std::tr1::bind(std::equal_to<std::string>(), k->raw_name(), std::tr1::bind(std::tr1::mem_fn(&MetadataKey::raw_name), _1))))
+                std::bind(std::equal_to<std::string>(), k->raw_name(), std::bind(std::mem_fn(&MetadataKey::raw_name), _1))))
         throw ConfigurationError("Tried to add duplicate key '" + k->raw_name() + "'");
 
     _imp->keys.push_back(k);
@@ -83,13 +83,13 @@ MetadataKeyHolder::end_metadata() const
 MetadataKeyHolder::MetadataConstIterator
 MetadataKeyHolder::find_metadata(const std::string & s) const
 {
-    using namespace std::tr1::placeholders;
+    using namespace std::placeholders;
 
     need_keys_added();
 
-    // std::tr1::mem_fn on a sptr doesn't work with boost
+    // std::mem_fn on a sptr doesn't work with boost
     // return std::find_if(begin_metadata(), end_metadata(),
-    //        std::tr1::bind(std::equal_to<std::string>(), s, std::tr1::bind(std::tr1::mem_fn(&MetadataKey::raw_name), _1)));
+    //        std::bind(std::equal_to<std::string>(), s, std::bind(std::mem_fn(&MetadataKey::raw_name), _1)));
 
     for (MetadataConstIterator i(begin_metadata()), i_end(end_metadata()) ;
             i != i_end ; ++i)
@@ -104,5 +104,5 @@ MetadataKeyHolder::clear_metadata_keys() const
     _imp->keys.clear();
 }
 
-template class WrappedForwardIterator<MetadataKeyHolder::MetadataConstIteratorTag, const std::tr1::shared_ptr<const MetadataKey> >;
+template class WrappedForwardIterator<MetadataKeyHolder::MetadataConstIteratorTag, const std::shared_ptr<const MetadataKey> >;
 

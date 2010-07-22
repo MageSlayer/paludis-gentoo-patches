@@ -22,7 +22,7 @@
 
 #include <paludis/util/set-fwd.hh>
 #include <paludis/repository-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 
 /** \file
  * Forward declarations for paludis/repository.hh .
@@ -52,7 +52,7 @@ namespace paludis
      *
      * \ingroup g_repository
      */
-    typedef Set<std::tr1::shared_ptr<Repository> > DestinationsSet;
+    typedef Set<std::shared_ptr<Repository> > DestinationsSet;
 
     struct MergeParams;
 }

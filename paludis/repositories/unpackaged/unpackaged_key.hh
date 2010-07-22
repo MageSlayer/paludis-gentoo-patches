@@ -36,17 +36,17 @@ namespace paludis
             public:
                 UnpackagedDependencyKey(const Environment * const env,
                         const std::string & r, const std::string & h, const MetadataKeyType t,
-                        const std::tr1::shared_ptr<const DependenciesLabelSequence> &,
+                        const std::shared_ptr<const DependenciesLabelSequence> &,
                         const std::string & v);
                 ~UnpackagedDependencyKey();
 
-                const std::tr1::shared_ptr<const DependencySpecTree> value() const;
+                const std::shared_ptr<const DependencySpecTree> value() const;
 
                 std::string pretty_print(const DependencySpecTree::ItemFormatter & f) const;
 
                 std::string pretty_print_flat(const DependencySpecTree::ItemFormatter & f) const;
 
-                virtual const std::tr1::shared_ptr<const DependenciesLabelSequence> initial_labels() const
+                virtual const std::shared_ptr<const DependenciesLabelSequence> initial_labels() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -55,7 +55,7 @@ namespace paludis
         };
 
         class UnpackagedChoicesKey :
-            public MetadataValueKey<std::tr1::shared_ptr<const Choices> >,
+            public MetadataValueKey<std::shared_ptr<const Choices> >,
             private PrivateImplementationPattern<UnpackagedChoicesKey>
         {
             public:
@@ -64,7 +64,7 @@ namespace paludis
                         const UnpackagedID * const id);
                 ~UnpackagedChoicesKey();
 
-                virtual const std::tr1::shared_ptr<const Choices> value() const;
+                virtual const std::shared_ptr<const Choices> value() const;
 
                 virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));

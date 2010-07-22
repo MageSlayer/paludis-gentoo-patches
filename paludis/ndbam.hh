@@ -31,7 +31,7 @@
 #include <paludis/version_spec.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/contents-fwd.hh>
-#include <tr1/functional>
+#include <functional>
 
 namespace paludis
 {
@@ -50,9 +50,9 @@ namespace paludis
     {
         NamedValue<n::fs_location, FSEntry> fs_location;
         NamedValue<n::magic, std::string> magic;
-        NamedValue<n::mutex, std::tr1::shared_ptr<Mutex> > mutex;
+        NamedValue<n::mutex, std::shared_ptr<Mutex> > mutex;
         NamedValue<n::name, QualifiedPackageName> name;
-        NamedValue<n::package_id, std::tr1::shared_ptr<PackageID> > package_id;
+        NamedValue<n::package_id, std::shared_ptr<PackageID> > package_id;
         NamedValue<n::slot, SlotName> slot;
         NamedValue<n::version, VersionSpec> version;
     };
@@ -79,7 +79,7 @@ namespace paludis
              * \param version_options \since 0.38
              */
             NDBAM(const FSEntry &,
-                    const std::tr1::function<bool (const std::string &)> & check_format,
+                    const std::function<bool (const std::string &)> & check_format,
                     const std::string & preferred_format, const VersionSpecOptions & version_options);
             ~NDBAM();
 
@@ -88,14 +88,14 @@ namespace paludis
             ///\name Repository method implementations
             ///\{
 
-            std::tr1::shared_ptr<const CategoryNamePartSet> category_names()
+            std::shared_ptr<const CategoryNamePartSet> category_names()
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            std::tr1::shared_ptr<const QualifiedPackageNameSet> package_names(
+            std::shared_ptr<const QualifiedPackageNameSet> package_names(
                     const CategoryNamePart & c)
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            std::tr1::shared_ptr<const CategoryNamePartSet> category_names_containing_package(
+            std::shared_ptr<const CategoryNamePartSet> category_names_containing_package(
                     const PackageNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -105,7 +105,7 @@ namespace paludis
             bool has_category_named(const CategoryNamePart &)
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            std::tr1::shared_ptr<NDBAMEntrySequence> entries(const QualifiedPackageName &)
+            std::shared_ptr<NDBAMEntrySequence> entries(const QualifiedPackageName &)
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             void add_entry(const QualifiedPackageName &, const FSEntry &);
@@ -117,9 +117,9 @@ namespace paludis
              * Parse the contents file for a given ID, using the provided callbacks.
              */
             void parse_contents(const PackageID &,
-                    const std::tr1::function<void (const std::tr1::shared_ptr<const ContentsEntry> &)> & on_file,
-                    const std::tr1::function<void (const std::tr1::shared_ptr<const ContentsEntry> &)> & on_dir,
-                    const std::tr1::function<void (const std::tr1::shared_ptr<const ContentsEntry> &)> & on_sym
+                    const std::function<void (const std::shared_ptr<const ContentsEntry> &)> & on_file,
+                    const std::function<void (const std::shared_ptr<const ContentsEntry> &)> & on_dir,
+                    const std::function<void (const std::shared_ptr<const ContentsEntry> &)> & on_sym
                     ) const;
 
             /**

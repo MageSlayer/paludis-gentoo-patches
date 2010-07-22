@@ -169,7 +169,7 @@ namespace
         Filter * ptr(0);
         try
         {
-            std::tr1::shared_ptr<const PackageID> id = value_to_package_id(id_v);
+            std::shared_ptr<const PackageID> id = value_to_package_id(id_v);
             ptr = new filter::SameSlot(id);
             VALUE data(Data_Wrap_Struct(self, 0, &Common<Filter>::free, ptr));
             rb_obj_call_init(data, 1, &id_v);

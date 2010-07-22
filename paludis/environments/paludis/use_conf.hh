@@ -60,22 +60,22 @@ namespace paludis
                 void add(const FSEntry &);
 
                 const Tribool want_choice_enabled(
-                        const std::tr1::shared_ptr<const PackageID> &,
-                        const std::tr1::shared_ptr<const Choice> &,
+                        const std::shared_ptr<const PackageID> &,
+                        const std::shared_ptr<const Choice> &,
                         const UnprefixedChoiceName &
                         ) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 const std::string value_for_choice_parameter(
-                        const std::tr1::shared_ptr<const PackageID> &,
-                        const std::tr1::shared_ptr<const Choice> &,
+                        const std::shared_ptr<const PackageID> &,
+                        const std::shared_ptr<const Choice> &,
                         const UnprefixedChoiceName &
                         ) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                std::tr1::shared_ptr<const Set<UnprefixedChoiceName> > known_choice_value_names(
-                        const std::tr1::shared_ptr<const PackageID> &,
-                        const std::tr1::shared_ptr<const Choice> &
+                std::shared_ptr<const Set<UnprefixedChoiceName> > known_choice_value_names(
+                        const std::shared_ptr<const PackageID> &,
+                        const std::shared_ptr<const Choice> &
                         ) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
         };

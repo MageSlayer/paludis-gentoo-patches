@@ -32,15 +32,15 @@ namespace bp = boost::python;
 struct DepListWrapper
 {
     static void
-    add(DepList & self, std::tr1::shared_ptr<const SetSpecTree> st,
-            std::tr1::shared_ptr<const DestinationsSet> & d)
+    add(DepList & self, std::shared_ptr<const SetSpecTree> st,
+            std::shared_ptr<const DestinationsSet> & d)
     {
         self.add(*st, d);
     }
 
     static bool
-    already_installed(const DepList & self, std::tr1::shared_ptr<const DependencySpecTree> st,
-            std::tr1::shared_ptr<const DestinationsSet> & d)
+    already_installed(const DepList & self, std::shared_ptr<const DependencySpecTree> st,
+            std::shared_ptr<const DestinationsSet> & d)
     {
         return self.already_installed(*st->root(), d);
     }
@@ -247,17 +247,17 @@ void expose_dep_list()
                 )
 
         .add_property("package_id",
-                &named_values_getter<DepListEntry, n::package_id, std::tr1::shared_ptr<const PackageID>, &DepListEntry::package_id>,
+                &named_values_getter<DepListEntry, n::package_id, std::shared_ptr<const PackageID>, &DepListEntry::package_id>,
                 "[ro] PackageID"
                 )
 
         .add_property("tags",
-                &named_values_getter<DepListEntry, n::tags, std::tr1::shared_ptr<DepListEntryTags>, &DepListEntry::tags>,
+                &named_values_getter<DepListEntry, n::tags, std::shared_ptr<DepListEntryTags>, &DepListEntry::tags>,
                 "[ro] DepListEntryTags"
                 )
 
         .add_property("destination",
-                &named_values_getter<DepListEntry, n::destination, std::tr1::shared_ptr<Repository>, &DepListEntry::destination>,
+                &named_values_getter<DepListEntry, n::destination, std::shared_ptr<Repository>, &DepListEntry::destination>,
                 "[ro] Repository"
                 )
 
@@ -270,7 +270,7 @@ void expose_dep_list()
     /**
      * DepList
      */
-    std::tr1::shared_ptr<DepListOptions> (DepList::* options_ptr)() = &DepList::options;
+    std::shared_ptr<DepListOptions> (DepList::* options_ptr)() = &DepList::options;
     DepList::Iterator (DepList::*dl_begin_ptr)() = &DepList::begin;
     DepList::Iterator (DepList::*dl_end_ptr)() = &DepList::end;
     bp::class_<DepList, boost::noncopyable>

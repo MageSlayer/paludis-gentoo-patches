@@ -64,7 +64,7 @@ namespace paludis
      */
     struct RepositoryMaskInfo
     {
-        NamedValue<n::comment, std::tr1::shared_ptr<const Sequence<std::string> > > comment;
+        NamedValue<n::comment, std::shared_ptr<const Sequence<std::string> > > comment;
         NamedValue<n::mask_file, FSEntry> mask_file;
     };
 
@@ -139,7 +139,7 @@ namespace paludis
             /**
              * Fetch the metadata key that is not accepted.
              */
-            virtual const std::tr1::shared_ptr<const MetadataKey> unaccepted_key() const = 0;
+            virtual const std::shared_ptr<const MetadataKey> unaccepted_key() const = 0;
     };
 
     /**
@@ -159,7 +159,7 @@ namespace paludis
              * Fetch a metadata key explaining the mask. May return a zero
              * pointer, if no more information is available.
              */
-            virtual const std::tr1::shared_ptr<const MetadataKey> mask_key() const = 0;
+            virtual const std::shared_ptr<const MetadataKey> mask_key() const = 0;
     };
 
     /**
@@ -201,7 +201,7 @@ namespace paludis
             /**
              * Fetch the associated package.
              */
-            virtual const std::tr1::shared_ptr<const PackageID> associated_package() const = 0;
+            virtual const std::shared_ptr<const PackageID> associated_package() const = 0;
     };
 
     /**
@@ -212,7 +212,7 @@ namespace paludis
      */
     struct OverriddenMask
     {
-        NamedValue<n::mask, std::tr1::shared_ptr<const Mask> > mask;
+        NamedValue<n::mask, std::shared_ptr<const Mask> > mask;
         NamedValue<n::override_reason, MaskOverrideReason> override_reason;
 
     };

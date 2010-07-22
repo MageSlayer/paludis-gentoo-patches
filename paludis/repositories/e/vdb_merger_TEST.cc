@@ -89,7 +89,7 @@ namespace
                             n::merged_entries() = make_shared_ptr(new FSEntrySet),
                             n::options() = MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs,
                             n::output_manager() = make_shared_ptr(new StandardOutputManager),
-                            n::package_id() = std::tr1::shared_ptr<PackageID>(),
+                            n::package_id() = std::shared_ptr<PackageID>(),
                             n::root() = root_dir
                         ))
             {

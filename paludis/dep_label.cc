@@ -73,7 +73,7 @@ DependenciesLabel::~DependenciesLabel()
 
 template <typename T_>
 ConcreteDependenciesLabel<T_>::ConcreteDependenciesLabel(const std::string & t,
-        const std::tr1::function<bool ()> & e) :
+        const std::function<bool ()> & e) :
     _text(t),
     _enabled(e)
 {
@@ -115,10 +115,10 @@ template class ConcreteDependenciesLabel<DependenciesSuggestionLabelTag>;
 template class ConcreteDependenciesLabel<DependenciesRecommendationLabelTag>;
 template class ConcreteDependenciesLabel<DependenciesTestLabelTag>;
 
-template class Sequence<std::tr1::shared_ptr<const DependenciesLabel> >;
-template class WrappedForwardIterator<Sequence<std::tr1::shared_ptr<const DependenciesLabel> >::ConstIteratorTag,
-         const std::tr1::shared_ptr<const DependenciesLabel> >;
-template class WrappedOutputIterator<Sequence<std::tr1::shared_ptr<const DependenciesLabel> >::InserterTag,
-         std::tr1::shared_ptr<const DependenciesLabel> >;
+template class Sequence<std::shared_ptr<const DependenciesLabel> >;
+template class WrappedForwardIterator<Sequence<std::shared_ptr<const DependenciesLabel> >::ConstIteratorTag,
+         const std::shared_ptr<const DependenciesLabel> >;
+template class WrappedOutputIterator<Sequence<std::shared_ptr<const DependenciesLabel> >::InserterTag,
+         std::shared_ptr<const DependenciesLabel> >;
 
 

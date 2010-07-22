@@ -27,8 +27,8 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/serialise-fwd.hh>
-#include <tr1/memory>
-#include <tr1/functional>
+#include <memory>
+#include <functional>
 
 namespace paludis
 {
@@ -80,8 +80,8 @@ namespace paludis
 
                 void verify_edges() const;
 
-                const std::tr1::shared_ptr<const SortedStronglyConnectedComponents> sorted_strongly_connected_components(
-                        const std::tr1::function<Tribool (const NAGIndex &)> & order_early_fn
+                const std::shared_ptr<const SortedStronglyConnectedComponents> sorted_strongly_connected_components(
+                        const std::function<Tribool (const NAGIndex &)> & order_early_fn
                         ) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 struct EdgesFromConstIteratorTag;
@@ -95,7 +95,7 @@ namespace paludis
                 NodesConstIterator end_nodes() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 void serialise(Serialiser &) const;
-                static const std::tr1::shared_ptr<NAG> deserialise(Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
+                static const std::shared_ptr<NAG> deserialise(Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 

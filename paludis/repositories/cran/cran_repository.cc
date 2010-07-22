@@ -50,16 +50,15 @@
 #include <paludis/output_manager.hh>
 #include <paludis/syncer.hh>
 #include <paludis/hook.hh>
-#include <tr1/unordered_map>
-#include <tr1/functional>
+#include <unordered_map>
 #include <functional>
 #include <algorithm>
 
 using namespace paludis;
 
-typedef std::tr1::unordered_map<
+typedef std::unordered_map<
         QualifiedPackageName,
-        std::tr1::shared_ptr<const cranrepository::CRANPackageID>,
+        std::shared_ptr<const cranrepository::CRANPackageID>,
         Hash<QualifiedPackageName> >
     IDMap;
 
@@ -70,24 +69,24 @@ namespace paludis
     {
         CRANRepositoryParams params;
 
-        mutable std::tr1::shared_ptr<Mutex> big_nasty_mutex;
+        mutable std::shared_ptr<Mutex> big_nasty_mutex;
         mutable bool has_ids;
         mutable IDMap ids;
 
-        Implementation(const CRANRepositoryParams &, const std::tr1::shared_ptr<Mutex> &);
+        Implementation(const CRANRepositoryParams &, const std::shared_ptr<Mutex> &);
         ~Implementation();
 
-        std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > location_key;
-        std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > distdir_key;
-        std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key;
-        std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > builddir_key;
-        std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > library_key;
-        std::tr1::shared_ptr<const MetadataValueKey<std::string> > sync_key;
-        std::tr1::shared_ptr<const MetadataValueKey<std::string> > sync_host_key;
+        std::shared_ptr<const MetadataValueKey<FSEntry> > location_key;
+        std::shared_ptr<const MetadataValueKey<FSEntry> > distdir_key;
+        std::shared_ptr<const MetadataValueKey<std::string> > format_key;
+        std::shared_ptr<const MetadataValueKey<FSEntry> > builddir_key;
+        std::shared_ptr<const MetadataValueKey<FSEntry> > library_key;
+        std::shared_ptr<const MetadataValueKey<std::string> > sync_key;
+        std::shared_ptr<const MetadataValueKey<std::string> > sync_host_key;
     };
 }
 
-Implementation<CRANRepository>::Implementation(const CRANRepositoryParams & p, const std::tr1::shared_ptr<Mutex> & m) :
+Implementation<CRANRepository>::Implementation(const CRANRepositoryParams & p, const std::shared_ptr<Mutex> & m) :
     params(p),
     big_nasty_mutex(m),
     has_ids(false),
@@ -160,45 +159,45 @@ CRANRepository::has_package_named(const QualifiedPackageName & q) const
     return _imp->ids.end() != _imp->ids.find(q);
 }
 
-std::tr1::shared_ptr<const CategoryNamePartSet>
+std::shared_ptr<const CategoryNamePartSet>
 CRANRepository::category_names() const
 {
     Context context("When fetching category names in " + stringify(name()) + ":");
     Lock l(*_imp->big_nasty_mutex);
 
-    std::tr1::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
+    std::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
     result->insert(CategoryNamePart("cran"));
 
     return result;
 }
 
-std::tr1::shared_ptr<const QualifiedPackageNameSet>
+std::shared_ptr<const QualifiedPackageNameSet>
 CRANRepository::package_names(const CategoryNamePart & c) const
 {
     Context context("When fetching package names in category '" + stringify(c)
             + "' in " + stringify(name()) + ":");
     Lock l(*_imp->big_nasty_mutex);
 
-    std::tr1::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
+    std::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
     if (! has_category_named(c))
         return result;
 
     need_ids();
 
     std::transform(_imp->ids.begin(), _imp->ids.end(), result->inserter(),
-            std::tr1::mem_fn(&std::pair<const QualifiedPackageName, std::tr1::shared_ptr<const cranrepository::CRANPackageID> >::first));
+            std::mem_fn(&std::pair<const QualifiedPackageName, std::shared_ptr<const cranrepository::CRANPackageID> >::first));
 
     return result;
 }
 
-std::tr1::shared_ptr<const PackageIDSequence>
+std::shared_ptr<const PackageIDSequence>
 CRANRepository::package_ids(const QualifiedPackageName & n) const
 {
     Context context("When fetching versions of '" + stringify(n) + "' in "
             + stringify(name()) + ":");
     Lock l(*_imp->big_nasty_mutex);
 
-    std::tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
+    std::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
     if (! has_package_named(n))
         return result;
 
@@ -223,7 +222,7 @@ CRANRepository::need_ids() const
     for (DirIterator d(_imp->params.location()), d_end ; d != d_end ; ++d)
         if (is_file_with_extension(*d, ".DESCRIPTION", IsFileWithOptions()))
         {
-            std::tr1::shared_ptr<cranrepository::CRANPackageID> id(new cranrepository::CRANPackageID(_imp->params.environment(),
+            std::shared_ptr<cranrepository::CRANPackageID> id(new cranrepository::CRANPackageID(_imp->params.environment(),
                         shared_from_this(), *d));
             if (! _imp->ids.insert(std::make_pair(id->name(), id)).second)
                 Log::get_instance()->message("cran.id.duplicate", ll_warning, lc_context)
@@ -233,7 +232,7 @@ CRANRepository::need_ids() const
                 for (PackageIDSequence::ConstIterator i(id->contains_key()->value()->begin()),
                         i_end(id->contains_key()->value()->end()) ; i != i_end ; ++i)
                     if (! _imp->ids.insert(std::make_pair((*i)->name(),
-                                    std::tr1::static_pointer_cast<const cranrepository::CRANPackageID>(*i))).second)
+                                    std::static_pointer_cast<const cranrepository::CRANPackageID>(*i))).second)
                         Log::get_instance()->message("cran.id.duplicate", ll_warning, lc_context) << "Couldn't insert package '" << **i
                             << "', which is contained in '" << *id << "', due to name collision";
         }
@@ -254,17 +253,17 @@ CRANRepository::fetch_repo_name(const std::string & location)
 
 #if 0
 void
-CRANRepository::do_install(const std::tr1::shared_ptr<const PackageID> & id_uncasted, const InstallOptions & o) const
+CRANRepository::do_install(const std::shared_ptr<const PackageID> & id_uncasted, const InstallOptions & o) const
 {
     if (id_uncasted->repository().get() != this)
         throw PackageInstallActionError("Couldn't install '" + stringify(*id_uncasted) + "' using repository '" +
                 stringify(name()) + "'");
 
-    const std::tr1::shared_ptr<const CRANPackageID> id(std::tr1::static_pointer_cast<const CRANPackageID>(id_uncasted));
+    const std::shared_ptr<const CRANPackageID> id(std::static_pointer_cast<const CRANPackageID>(id_uncasted));
     if (id->bundle_member_key())
         return;
 
-    std::tr1::shared_ptr<const FSEntrySequence> bashrc_files(_imp->params.environment->bashrc_files());
+    std::shared_ptr<const FSEntrySequence> bashrc_files(_imp->params.environment->bashrc_files());
 
     Command cmd(Command(LIBEXECDIR "/paludis/cran.bash fetch")
             .with_setenv("CATEGORY", "cran")
@@ -342,7 +341,7 @@ CRANRepository::do_install(const std::tr1::shared_ptr<const PackageID> & id_unca
 #endif
 
 bool
-CRANRepository::sync(const std::tr1::shared_ptr<OutputManager> & output_manager) const
+CRANRepository::sync(const std::shared_ptr<OutputManager> & output_manager) const
 {
     Context context("When syncing repository '" + stringify(name()) + "':");
     Lock l(*_imp->big_nasty_mutex);
@@ -390,10 +389,10 @@ CRANRepository::sync(const std::tr1::shared_ptr<OutputManager> & output_manager)
     return true;
 }
 
-std::tr1::shared_ptr<Repository>
+std::shared_ptr<Repository>
 CRANRepository::repository_factory_create(
         Environment * const env,
-        const std::tr1::function<std::string (const std::string &)> & f)
+        const std::function<std::string (const std::string &)> & f)
 {
     Context context("When making CRAN repository from repo_file '" + f("repo_file") + "':");
 
@@ -421,7 +420,7 @@ CRANRepository::repository_factory_create(
     if (builddir.empty())
         builddir = "/var/tmp/paludis";
 
-    return std::tr1::shared_ptr<Repository>(new CRANRepository(make_named_values<CRANRepositoryParams>(
+    return std::shared_ptr<Repository>(new CRANRepository(make_named_values<CRANRepositoryParams>(
                     n::builddir() = builddir,
                     n::distdir() = distdir,
                     n::environment() = env,
@@ -435,17 +434,17 @@ CRANRepository::repository_factory_create(
 RepositoryName
 CRANRepository::repository_factory_name(
         const Environment * const,
-        const std::tr1::function<std::string (const std::string &)> & f)
+        const std::function<std::string (const std::string &)> & f)
 {
     if (f("location").empty())
         throw CRANRepositoryConfigurationError("Key 'location' not specified or empty");
     return fetch_repo_name(f("location"));
 }
 
-std::tr1::shared_ptr<const RepositoryNameSet>
+std::shared_ptr<const RepositoryNameSet>
 CRANRepository::repository_factory_dependencies(
         const Environment * const,
-        const std::tr1::function<std::string (const std::string &)> &)
+        const std::function<std::string (const std::string &)> &)
 {
     return make_shared_ptr(new RepositoryNameSet);
 }
@@ -534,25 +533,25 @@ CRANRepository::need_keys_added() const
 {
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataValueKey<std::string> >
 CRANRepository::format_key() const
 {
     return _imp->format_key;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSEntry> >
 CRANRepository::location_key() const
 {
     return _imp->location_key;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSEntry> >
 CRANRepository::installed_root_key() const
 {
-    return std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >();
+    return std::shared_ptr<const MetadataValueKey<FSEntry> >();
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataValueKey<std::string> >
 CRANRepository::sync_host_key() const
 {
     return _imp->sync_host_key;
@@ -569,7 +568,7 @@ CRANRepository::perform_hook(const Hook &)
     return make_named_values<HookResult>(n::max_exit_status() = 0, n::output() = "");
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataValueKey<std::string> >
 CRANRepository::accept_keywords_key() const
 {
     return make_null_shared_ptr();

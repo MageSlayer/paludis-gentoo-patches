@@ -55,10 +55,10 @@ namespace paludis
         const Environment * const env;
         const ResolverFunctions fns;
 
-        const std::tr1::shared_ptr<Resolved> resolved;
+        const std::shared_ptr<Resolved> resolved;
 
-        const std::tr1::shared_ptr<Decider> decider;
-        const std::tr1::shared_ptr<Orderer> orderer;
+        const std::shared_ptr<Decider> decider;
+        const std::shared_ptr<Orderer> orderer;
 
         Implementation(const Environment * const e, const ResolverFunctions & f) :
             env(e),
@@ -106,13 +106,13 @@ namespace
     struct SetExpander
     {
         const Environment * const env;
-        const std::tr1::shared_ptr<Decider> & decider;
-        const std::tr1::shared_ptr<const Reason> reason;
+        const std::shared_ptr<Decider> & decider;
+        const std::shared_ptr<const Reason> reason;
         RecursingNames & recurse;
 
         SetExpander(const Environment * const e,
-                const std::tr1::shared_ptr<Decider> & d,
-                const std::tr1::shared_ptr<const Reason> & r,
+                const std::shared_ptr<Decider> & d,
+                const std::shared_ptr<const Reason> & r,
                 RecursingNames & c) :
             env(e),
             decider(d),
@@ -126,7 +126,7 @@ namespace
             if (! recurse.insert(n.spec()->name()).second)
                 throw RecursivelyDefinedSetError(stringify(n.spec()->name()));
 
-            const std::tr1::shared_ptr<const SetSpecTree> set(env->set(n.spec()->name()));
+            const std::shared_ptr<const SetSpecTree> set(env->set(n.spec()->name()));
             if (! set)
                 throw NoSuchSetError(stringify(n.spec()->name()));
 
@@ -154,7 +154,7 @@ Resolver::add_target(const SetName & set_name, const std::string & extra_informa
     Context context("When adding set target '" + stringify(set_name) + "':");
     _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
 
-    const std::tr1::shared_ptr<const SetSpecTree> set(_imp->env->set(set_name));
+    const std::shared_ptr<const SetSpecTree> set(_imp->env->set(set_name));
     if (! set)
         throw NoSuchSetError(stringify(set_name));
 
@@ -176,7 +176,7 @@ Resolver::resolve()
     _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Done"));
 }
 
-const std::tr1::shared_ptr<const Resolved>
+const std::shared_ptr<const Resolved>
 Resolver::resolved() const
 {
     return _imp->resolved;

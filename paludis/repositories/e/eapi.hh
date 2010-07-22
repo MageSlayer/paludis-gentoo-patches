@@ -31,7 +31,7 @@
 #include <paludis/name.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/merger-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 
 namespace paludis
 {
@@ -241,39 +241,39 @@ namespace paludis
                 /**
                  * Make an EAPI.
                  */
-                std::tr1::shared_ptr<const EAPI> eapi_from_string(const std::string &) const;
+                std::shared_ptr<const EAPI> eapi_from_string(const std::string &) const;
 
                 /**
                  * Make the unknown EAPI.
                  */
-                std::tr1::shared_ptr<const EAPI> unknown_eapi() const;
+                std::shared_ptr<const EAPI> unknown_eapi() const;
         };
 
         struct EAPI
         {
             NamedValue<n::exported_name, std::string> exported_name;
             NamedValue<n::name, std::string> name;
-            NamedValue<n::supported, std::tr1::shared_ptr<const SupportedEAPI> > supported;
+            NamedValue<n::supported, std::shared_ptr<const SupportedEAPI> > supported;
         };
 
         struct SupportedEAPI
         {
-            NamedValue<n::annotations, std::tr1::shared_ptr<const EAPIAnnotations> > annotations;
+            NamedValue<n::annotations, std::shared_ptr<const EAPIAnnotations> > annotations;
             NamedValue<n::breaks_portage, bool> breaks_portage;
             NamedValue<n::can_be_pbin, bool> can_be_pbin;
-            NamedValue<n::choices_options, std::tr1::shared_ptr<const EAPIChoicesOptions> > choices_options;
-            NamedValue<n::dependency_labels, std::tr1::shared_ptr<const EAPILabels> > dependency_labels;
+            NamedValue<n::choices_options, std::shared_ptr<const EAPIChoicesOptions> > choices_options;
+            NamedValue<n::dependency_labels, std::shared_ptr<const EAPILabels> > dependency_labels;
             NamedValue<n::dependency_spec_tree_parse_options, erepository::DependencySpecTreeParseOptions> dependency_spec_tree_parse_options;
-            NamedValue<n::ebuild_environment_variables, std::tr1::shared_ptr<const EAPIEbuildEnvironmentVariables> > ebuild_environment_variables;
-            NamedValue<n::ebuild_metadata_variables, std::tr1::shared_ptr<const EAPIEbuildMetadataVariables> > ebuild_metadata_variables;
-            NamedValue<n::ebuild_options, std::tr1::shared_ptr<const EAPIEbuildOptions> > ebuild_options;
-            NamedValue<n::ebuild_phases, std::tr1::shared_ptr<const EAPIEbuildPhases> > ebuild_phases;
+            NamedValue<n::ebuild_environment_variables, std::shared_ptr<const EAPIEbuildEnvironmentVariables> > ebuild_environment_variables;
+            NamedValue<n::ebuild_metadata_variables, std::shared_ptr<const EAPIEbuildMetadataVariables> > ebuild_metadata_variables;
+            NamedValue<n::ebuild_options, std::shared_ptr<const EAPIEbuildOptions> > ebuild_options;
+            NamedValue<n::ebuild_phases, std::shared_ptr<const EAPIEbuildPhases> > ebuild_phases;
             NamedValue<n::iuse_flag_parse_options, IUseFlagParseOptions> iuse_flag_parse_options;
             NamedValue<n::merger_options, MergerOptions> merger_options;
             NamedValue<n::package_dep_spec_parse_options, ELikePackageDepSpecOptions> package_dep_spec_parse_options;
-            NamedValue<n::pipe_commands, std::tr1::shared_ptr<const EAPIPipeCommands> > pipe_commands;
-            NamedValue<n::tools_options, std::tr1::shared_ptr<const EAPIToolsOptions> > tools_options;
-            NamedValue<n::uri_labels, std::tr1::shared_ptr<const EAPILabels> > uri_labels;
+            NamedValue<n::pipe_commands, std::shared_ptr<const EAPIPipeCommands> > pipe_commands;
+            NamedValue<n::tools_options, std::shared_ptr<const EAPIToolsOptions> > tools_options;
+            NamedValue<n::uri_labels, std::shared_ptr<const EAPILabels> > uri_labels;
             NamedValue<n::userpriv_cannot_use_root, bool> userpriv_cannot_use_root;
             NamedValue<n::version_spec_options, VersionSpecOptions> version_spec_options;
         };
@@ -331,35 +331,35 @@ namespace paludis
 
         struct EAPIEbuildMetadataVariables
         {
-            NamedValue<n::bugs_to, std::tr1::shared_ptr<const EAPIMetadataVariable> > bugs_to;
-            NamedValue<n::build_depend, std::tr1::shared_ptr<const EAPIMetadataVariable> > build_depend;
-            NamedValue<n::defined_phases, std::tr1::shared_ptr<const EAPIMetadataVariable> > defined_phases;
-            NamedValue<n::dependencies, std::tr1::shared_ptr<const EAPIMetadataVariable> > dependencies;
-            NamedValue<n::eapi, std::tr1::shared_ptr<const EAPIMetadataVariable> > eapi;
-            NamedValue<n::homepage, std::tr1::shared_ptr<const EAPIMetadataVariable> > homepage;
-            NamedValue<n::inherited, std::tr1::shared_ptr<const EAPIMetadataVariable> > inherited;
-            NamedValue<n::iuse, std::tr1::shared_ptr<const EAPIMetadataVariable> > iuse;
-            NamedValue<n::iuse_effective, std::tr1::shared_ptr<const EAPIMetadataVariable> > iuse_effective;
-            NamedValue<n::keywords, std::tr1::shared_ptr<const EAPIMetadataVariable> > keywords;
-            NamedValue<n::license, std::tr1::shared_ptr<const EAPIMetadataVariable> > license;
-            NamedValue<n::long_description, std::tr1::shared_ptr<const EAPIMetadataVariable> > long_description;
+            NamedValue<n::bugs_to, std::shared_ptr<const EAPIMetadataVariable> > bugs_to;
+            NamedValue<n::build_depend, std::shared_ptr<const EAPIMetadataVariable> > build_depend;
+            NamedValue<n::defined_phases, std::shared_ptr<const EAPIMetadataVariable> > defined_phases;
+            NamedValue<n::dependencies, std::shared_ptr<const EAPIMetadataVariable> > dependencies;
+            NamedValue<n::eapi, std::shared_ptr<const EAPIMetadataVariable> > eapi;
+            NamedValue<n::homepage, std::shared_ptr<const EAPIMetadataVariable> > homepage;
+            NamedValue<n::inherited, std::shared_ptr<const EAPIMetadataVariable> > inherited;
+            NamedValue<n::iuse, std::shared_ptr<const EAPIMetadataVariable> > iuse;
+            NamedValue<n::iuse_effective, std::shared_ptr<const EAPIMetadataVariable> > iuse_effective;
+            NamedValue<n::keywords, std::shared_ptr<const EAPIMetadataVariable> > keywords;
+            NamedValue<n::license, std::shared_ptr<const EAPIMetadataVariable> > license;
+            NamedValue<n::long_description, std::shared_ptr<const EAPIMetadataVariable> > long_description;
             NamedValue<n::minimum_flat_list_size, int> minimum_flat_list_size;
-            NamedValue<n::myoptions, std::tr1::shared_ptr<const EAPIMetadataVariable> > myoptions;
-            NamedValue<n::pdepend, std::tr1::shared_ptr<const EAPIMetadataVariable> > pdepend;
-            NamedValue<n::properties, std::tr1::shared_ptr<const EAPIMetadataVariable> > properties;
-            NamedValue<n::provide, std::tr1::shared_ptr<const EAPIMetadataVariable> > provide;
-            NamedValue<n::remote_ids, std::tr1::shared_ptr<const EAPIMetadataVariable> > remote_ids;
-            NamedValue<n::restrictions, std::tr1::shared_ptr<const EAPIMetadataVariable> > restrictions;
-            NamedValue<n::run_depend, std::tr1::shared_ptr<const EAPIMetadataVariable> > run_depend;
-            NamedValue<n::short_description, std::tr1::shared_ptr<const EAPIMetadataVariable> > short_description;
-            NamedValue<n::slot, std::tr1::shared_ptr<const EAPIMetadataVariable> > slot;
-            NamedValue<n::src_uri, std::tr1::shared_ptr<const EAPIMetadataVariable> > src_uri;
-            NamedValue<n::upstream_changelog, std::tr1::shared_ptr<const EAPIMetadataVariable> > upstream_changelog;
-            NamedValue<n::upstream_documentation, std::tr1::shared_ptr<const EAPIMetadataVariable> > upstream_documentation;
-            NamedValue<n::upstream_release_notes, std::tr1::shared_ptr<const EAPIMetadataVariable> > upstream_release_notes;
-            NamedValue<n::use, std::tr1::shared_ptr<const EAPIMetadataVariable> > use;
-            NamedValue<n::use_expand, std::tr1::shared_ptr<const EAPIMetadataVariable> > use_expand;
-            NamedValue<n::use_expand_hidden, std::tr1::shared_ptr<const EAPIMetadataVariable> > use_expand_hidden;
+            NamedValue<n::myoptions, std::shared_ptr<const EAPIMetadataVariable> > myoptions;
+            NamedValue<n::pdepend, std::shared_ptr<const EAPIMetadataVariable> > pdepend;
+            NamedValue<n::properties, std::shared_ptr<const EAPIMetadataVariable> > properties;
+            NamedValue<n::provide, std::shared_ptr<const EAPIMetadataVariable> > provide;
+            NamedValue<n::remote_ids, std::shared_ptr<const EAPIMetadataVariable> > remote_ids;
+            NamedValue<n::restrictions, std::shared_ptr<const EAPIMetadataVariable> > restrictions;
+            NamedValue<n::run_depend, std::shared_ptr<const EAPIMetadataVariable> > run_depend;
+            NamedValue<n::short_description, std::shared_ptr<const EAPIMetadataVariable> > short_description;
+            NamedValue<n::slot, std::shared_ptr<const EAPIMetadataVariable> > slot;
+            NamedValue<n::src_uri, std::shared_ptr<const EAPIMetadataVariable> > src_uri;
+            NamedValue<n::upstream_changelog, std::shared_ptr<const EAPIMetadataVariable> > upstream_changelog;
+            NamedValue<n::upstream_documentation, std::shared_ptr<const EAPIMetadataVariable> > upstream_documentation;
+            NamedValue<n::upstream_release_notes, std::shared_ptr<const EAPIMetadataVariable> > upstream_release_notes;
+            NamedValue<n::use, std::shared_ptr<const EAPIMetadataVariable> > use;
+            NamedValue<n::use_expand, std::shared_ptr<const EAPIMetadataVariable> > use_expand;
+            NamedValue<n::use_expand_hidden, std::shared_ptr<const EAPIMetadataVariable> > use_expand_hidden;
         };
 
         struct EAPIEbuildOptions
@@ -386,9 +386,9 @@ namespace paludis
             NamedValue<n::non_empty_variables, std::string> non_empty_variables;
             NamedValue<n::rdepend_defaults_to_depend, bool> rdepend_defaults_to_depend;
             NamedValue<n::require_use_expand_in_iuse, bool> require_use_expand_in_iuse;
-            NamedValue<n::restrict_fetch, std::tr1::shared_ptr<Set<std::string> > > restrict_fetch;
-            NamedValue<n::restrict_mirror, std::tr1::shared_ptr<Set<std::string> > > restrict_mirror;
-            NamedValue<n::restrict_primaryuri, std::tr1::shared_ptr<Set<std::string> > > restrict_primaryuri;
+            NamedValue<n::restrict_fetch, std::shared_ptr<Set<std::string> > > restrict_fetch;
+            NamedValue<n::restrict_mirror, std::shared_ptr<Set<std::string> > > restrict_mirror;
+            NamedValue<n::restrict_primaryuri, std::shared_ptr<Set<std::string> > > restrict_primaryuri;
             NamedValue<n::save_base_variables, std::string> save_base_variables;
             NamedValue<n::save_unmodifiable_variables, std::string> save_unmodifiable_variables;
             NamedValue<n::save_variables, std::string> save_variables;

@@ -57,7 +57,7 @@ namespace
         public:
             virtual ~SetFileHandler();
 
-            virtual std::tr1::shared_ptr<SetSpecTree> contents() const = 0;
+            virtual std::shared_ptr<SetSpecTree> contents() const = 0;
             virtual bool add(const std::string &) = 0;
             virtual bool remove(const std::string &) = 0;
             virtual void rewrite() const = 0;
@@ -71,14 +71,14 @@ namespace
 
             const SetFileParams _p;
             std::list<std::string> _lines;
-            mutable std::tr1::shared_ptr<SetSpecTree> _contents;
+            mutable std::shared_ptr<SetSpecTree> _contents;
 
             void _create_contents() const;
 
         public:
             PaludisConfHandler(const SetFileParams &);
 
-            virtual std::tr1::shared_ptr<SetSpecTree> contents() const;
+            virtual std::shared_ptr<SetSpecTree> contents() const;
             virtual bool add(const std::string &);
             virtual bool remove(const std::string &);
             virtual void rewrite() const;
@@ -89,12 +89,12 @@ namespace
     {
         private:
             const SetFileParams _p;
-            std::tr1::shared_ptr<SetSpecTree> _contents;
+            std::shared_ptr<SetSpecTree> _contents;
 
         public:
             PaludisBashHandler(const SetFileParams &);
 
-            virtual std::tr1::shared_ptr<SetSpecTree> contents() const;
+            virtual std::shared_ptr<SetSpecTree> contents() const;
             virtual bool add(const std::string &) PALUDIS_ATTRIBUTE((noreturn));
             virtual bool remove(const std::string &) PALUDIS_ATTRIBUTE((noreturn));
             virtual void rewrite() const PALUDIS_ATTRIBUTE((noreturn));
@@ -108,20 +108,20 @@ namespace
 
             const SetFileParams _p;
             std::list<std::string> _lines;
-            mutable std::tr1::shared_ptr<SetSpecTree> _contents;
+            mutable std::shared_ptr<SetSpecTree> _contents;
 
             void _create_contents() const;
 
         public:
             SimpleHandler(const SetFileParams &);
 
-            virtual std::tr1::shared_ptr<SetSpecTree> contents() const;
+            virtual std::shared_ptr<SetSpecTree> contents() const;
             virtual bool add(const std::string &);
             virtual bool remove(const std::string &);
             virtual void rewrite() const;
     };
 
-    std::tr1::shared_ptr<SetFileHandler>
+    std::shared_ptr<SetFileHandler>
     make_handler(const SetFileParams & p)
     {
         Context context("When making SetFileHandler for '" + stringify(p.file_name()) + "':");
@@ -129,13 +129,13 @@ namespace
         switch (p.type())
         {
             case sft_simple:
-                return std::tr1::shared_ptr<SetFileHandler>(new SimpleHandler(p));
+                return std::shared_ptr<SetFileHandler>(new SimpleHandler(p));
 
             case sft_paludis_conf:
-                return std::tr1::shared_ptr<SetFileHandler>(new PaludisConfHandler(p));
+                return std::shared_ptr<SetFileHandler>(new PaludisConfHandler(p));
 
             case sft_paludis_bash:
-                return std::tr1::shared_ptr<SetFileHandler>(new PaludisBashHandler(p));
+                return std::shared_ptr<SetFileHandler>(new PaludisBashHandler(p));
 
             case last_sft:
                 break;
@@ -163,7 +163,7 @@ namespace
     };
 
     void
-    do_one_conf_line(const std::string & line, std::tr1::shared_ptr<SetSpecTree> result,
+    do_one_conf_line(const std::string & line, std::shared_ptr<SetSpecTree> result,
             const SetFileParams & params)
     {
         if (line.empty())
@@ -194,7 +194,7 @@ namespace
             {
                 if (std::string::npos == tokens.at(1).find('/'))
                 {
-                    std::tr1::shared_ptr<NamedSetDepSpec> spec;
+                    std::shared_ptr<NamedSetDepSpec> spec;
                     switch (params.set_operator_mode())
                     {
                         case sfsmo_natural:
@@ -218,7 +218,7 @@ namespace
                 }
                 else
                 {
-                    std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(params.parser()(tokens.at(1))));
+                    std::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(params.parser()(tokens.at(1))));
                     if (params.tag())
                         spec->set_tag(params.tag());
                     result->root()->append(spec);
@@ -233,7 +233,7 @@ namespace
                     return;
                 }
 
-                std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(params.parser()(tokens.at(1))));
+                std::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(params.parser()(tokens.at(1))));
                 if (params.tag())
                     spec->set_tag(params.tag());
 
@@ -260,7 +260,7 @@ namespace
                     return;
                 }
 
-                std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(params.parser()(tokens.at(1))));
+                std::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(params.parser()(tokens.at(1))));
                 if (params.tag())
                     spec->set_tag(params.tag());
 
@@ -338,12 +338,12 @@ SimpleHandler::_create_contents() const
         {
             if (std::string::npos == i->find('/'))
             {
-                std::tr1::shared_ptr<NamedSetDepSpec> p(new NamedSetDepSpec(SetName(*i)));
+                std::shared_ptr<NamedSetDepSpec> p(new NamedSetDepSpec(SetName(*i)));
                 _contents->root()->append(p);
             }
             else
             {
-                std::tr1::shared_ptr<PackageDepSpec> p(new PackageDepSpec(_p.parser()(stringify(*i))));
+                std::shared_ptr<PackageDepSpec> p(new PackageDepSpec(_p.parser()(stringify(*i))));
                 if (_p.tag())
                     p->set_tag(_p.tag());
                 _contents->root()->append(p);
@@ -361,7 +361,7 @@ SimpleHandler::_create_contents() const
     }
 }
 
-std::tr1::shared_ptr<SetSpecTree>
+std::shared_ptr<SetSpecTree>
 SimpleHandler::contents() const
 {
     Lock l(_mutex);
@@ -457,7 +457,7 @@ PaludisConfHandler::_create_contents() const
         do_one_conf_line(*i, _contents, _p);
 }
 
-std::tr1::shared_ptr<SetSpecTree>
+std::shared_ptr<SetSpecTree>
 PaludisConfHandler::contents() const
 {
     Lock l(_mutex);
@@ -560,7 +560,7 @@ PaludisBashHandler::PaludisBashHandler(const SetFileParams & p) :
     }
 }
 
-std::tr1::shared_ptr<SetSpecTree>
+std::shared_ptr<SetSpecTree>
 PaludisBashHandler::contents() const
 {
     return _contents;
@@ -590,7 +590,7 @@ namespace paludis
     struct Implementation<SetFile>
     {
         const SetFileParams params;
-        std::tr1::shared_ptr<SetFileHandler> handler;
+        std::shared_ptr<SetFileHandler> handler;
 
         Implementation(const SetFileParams & p) :
             params(p),
@@ -609,7 +609,7 @@ SetFile::~SetFile()
 {
 }
 
-const std::tr1::shared_ptr<const SetSpecTree>
+const std::shared_ptr<const SetSpecTree>
 SetFile::contents() const
 {
     return _imp->handler->contents();

@@ -22,13 +22,13 @@
 
 #include <paludis/util/sequence-fwd.hh>
 #include <paludis/output_manager-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 
 namespace paludis
 {
     class TeeOutputManager;
 
-    typedef Sequence<std::tr1::shared_ptr<OutputManager> > OutputManagerSequence;
+    typedef Sequence<std::shared_ptr<OutputManager> > OutputManagerSequence;
 }
 
 #endif

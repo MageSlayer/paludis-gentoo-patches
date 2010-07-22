@@ -38,13 +38,13 @@ namespace paludis
                         const std::string & v);
                 ~UnavailableRepositoryDependenciesKey();
 
-                const std::tr1::shared_ptr<const DependencySpecTree> value() const;
+                const std::shared_ptr<const DependencySpecTree> value() const;
 
                 std::string pretty_print(const DependencySpecTree::ItemFormatter & f) const;
 
                 std::string pretty_print_flat(const DependencySpecTree::ItemFormatter & f) const;
 
-                virtual const std::tr1::shared_ptr<const DependenciesLabelSequence> initial_labels() const
+                virtual const std::shared_ptr<const DependenciesLabelSequence> initial_labels() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));

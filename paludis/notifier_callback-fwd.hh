@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_NOTIFIER_CALLBACK_FWD_HH
 #define PALUDIS_GUARD_PALUDIS_NOTIFIER_CALLBACK_FWD_HH 1
 
-#include <tr1/functional>
+#include <functional>
 
 namespace paludis
 {
@@ -30,7 +30,7 @@ namespace paludis
     struct NotifierCallbackResolverStageEvent;
     struct NotifierCallbackLinkageStepEvent;
 
-    typedef std::tr1::function<void (const NotifierCallbackEvent &) > NotifierCallbackFunction;
+    typedef std::function<void (const NotifierCallbackEvent &) > NotifierCallbackFunction;
 
     typedef unsigned NotifierCallbackID;
 

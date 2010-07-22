@@ -102,7 +102,7 @@ namespace
         };
     }
 
-    std::string extract_children_text(const std::tr1::shared_ptr<const xmlXPathObject> & object)
+    std::string extract_children_text(const std::shared_ptr<const xmlXPathObject> & object)
     {
         std::string result;
         for (int j = 0 ; j != object->nodesetval->nodeNr ; ++j)
@@ -111,18 +111,18 @@ namespace
     }
 
     template <typename T_>
-    std::tr1::shared_ptr<T_> manage_libxml_ptr(T_ * const p, void (* d) (T_ * const))
+    std::shared_ptr<T_> manage_libxml_ptr(T_ * const p, void (* d) (T_ * const))
     {
         if (! p)
             throw XMLError("libxml2 returned null for " + std::string(__PRETTY_FUNCTION__));
-        return std::tr1::shared_ptr<T_>(p, d);
+        return std::shared_ptr<T_>(p, d);
     }
 
 #ifdef ENABLE_XML
     class GLSAHandler
     {
         private:
-            std::tr1::shared_ptr<GLSA> _glsa;
+            std::shared_ptr<GLSA> _glsa;
 
         public:
             GLSAHandler() :
@@ -157,7 +157,7 @@ namespace
                 }
             }
 
-            void handle_package_archs(xmlDocPtr doc, xmlAttr * const attr, std::tr1::shared_ptr<GLSAPackage> pkg)
+            void handle_package_archs(xmlDocPtr doc, xmlAttr * const attr, std::shared_ptr<GLSAPackage> pkg)
             {
                 for (xmlAttr * a(attr) ; a ; a = a->next)
                 {
@@ -193,7 +193,7 @@ namespace
                 }
             }
 
-            void handle_package_children(xmlDocPtr doc, xmlNode * const node, std::tr1::shared_ptr<GLSAPackage> pkg)
+            void handle_package_children(xmlDocPtr doc, xmlNode * const node, std::shared_ptr<GLSAPackage> pkg)
             {
                 for (xmlNode * n(node) ; n ; n = n->next)
                 {
@@ -239,7 +239,7 @@ namespace
                         {
                             std::string m;
                             handle_package_name(doc, n->properties, m);
-                            std::tr1::shared_ptr<GLSAPackage> pkg(new GLSAPackage(QualifiedPackageName(m)));
+                            std::shared_ptr<GLSAPackage> pkg(new GLSAPackage(QualifiedPackageName(m)));
                             handle_package_archs(doc, n->properties, pkg);
                             handle_package_children(doc, n->children, pkg);
                             _glsa->add_package(pkg);
@@ -253,7 +253,7 @@ namespace
 
             }
 
-            std::tr1::shared_ptr<GLSA> glsa()
+            std::shared_ptr<GLSA> glsa()
             {
                 return _glsa;
             }
@@ -264,12 +264,12 @@ namespace
 
 #ifdef ENABLE_XML
 
-std::tr1::shared_ptr<GLSA>
+std::shared_ptr<GLSA>
 paludis_xml_things_create_glsa_from_xml_file(const std::string & filename)
 {
     try
     {
-        std::tr1::shared_ptr<xmlDoc> doc(manage_libxml_ptr(xmlParseFile(filename.c_str()), &xmlFreeDoc));
+        std::shared_ptr<xmlDoc> doc(manage_libxml_ptr(xmlParseFile(filename.c_str()), &xmlFreeDoc));
 
         GLSAHandler h;
         h.handle_node(doc.get(), xmlDocGetRootElement(doc.get()));
@@ -281,10 +281,10 @@ paludis_xml_things_create_glsa_from_xml_file(const std::string & filename)
     }
 }
 
-std::tr1::shared_ptr<erepository::MetadataXML>
+std::shared_ptr<erepository::MetadataXML>
 paludis_xml_things_create_metadata_xml_from_xml_file(const FSEntry & filename)
 {
-    std::tr1::shared_ptr<erepository::MetadataXML> result(new erepository::MetadataXML(
+    std::shared_ptr<erepository::MetadataXML> result(new erepository::MetadataXML(
                 make_named_values<erepository::MetadataXML>(
                     n::herds() = make_shared_ptr(new Sequence<std::string>),
                     n::long_description() = "",
@@ -292,14 +292,14 @@ paludis_xml_things_create_metadata_xml_from_xml_file(const FSEntry & filename)
                     n::uses() = make_shared_ptr(new Map<ChoiceNameWithPrefix, std::string>)
                     )));
 
-    std::tr1::shared_ptr<xmlDoc> doc(manage_libxml_ptr(xmlParseFile(stringify(filename).c_str()), &xmlFreeDoc));
+    std::shared_ptr<xmlDoc> doc(manage_libxml_ptr(xmlParseFile(stringify(filename).c_str()), &xmlFreeDoc));
 
-    std::tr1::shared_ptr<xmlXPathContext>
+    std::shared_ptr<xmlXPathContext>
         doc_context(manage_libxml_ptr(xmlXPathNewContext(doc.get()), &xmlXPathFreeContext)),
         sub_context(manage_libxml_ptr(xmlXPathNewContext(doc.get()), &xmlXPathFreeContext)),
         text_context(manage_libxml_ptr(xmlXPathNewContext(doc.get()), &xmlXPathFreeContext));
 
-    std::tr1::shared_ptr<xmlXPathObject>
+    std::shared_ptr<xmlXPathObject>
         herd_object(manage_libxml_ptr(xmlXPathEvalExpression(stupid_libxml_string(
                             "//pkgmetadata/herd"), doc_context.get()), xmlXPathFreeObject)),
         maintainer_object(manage_libxml_ptr(xmlXPathEvalExpression(stupid_libxml_string(
@@ -310,7 +310,7 @@ paludis_xml_things_create_metadata_xml_from_xml_file(const FSEntry & filename)
     for (int i = 0 ; i != herd_object->nodesetval->nodeNr ; ++i)
     {
         text_context->node = herd_object->nodesetval->nodeTab[i];
-        std::tr1::shared_ptr<xmlXPathObject> text_object(manage_libxml_ptr(
+        std::shared_ptr<xmlXPathObject> text_object(manage_libxml_ptr(
                     xmlXPathEvalExpression(stupid_libxml_string("descendant::text()"),
                         text_context.get()), xmlXPathFreeObject));
 
@@ -322,7 +322,7 @@ paludis_xml_things_create_metadata_xml_from_xml_file(const FSEntry & filename)
         std::string name, email;
 
         sub_context->node = maintainer_object->nodesetval->nodeTab[i];
-        std::tr1::shared_ptr<xmlXPathObject>
+        std::shared_ptr<xmlXPathObject>
             name_object(manage_libxml_ptr(xmlXPathEvalExpression(stupid_libxml_string("./name[position()=1]"),
                         sub_context.get()), xmlXPathFreeObject)),
             email_object(manage_libxml_ptr(xmlXPathEvalExpression(stupid_libxml_string("./email[position()=1]"),
@@ -331,7 +331,7 @@ paludis_xml_things_create_metadata_xml_from_xml_file(const FSEntry & filename)
         if (name_object->nodesetval->nodeNr)
         {
             text_context->node = name_object->nodesetval->nodeTab[0];
-            std::tr1::shared_ptr<xmlXPathObject> text_object(manage_libxml_ptr(
+            std::shared_ptr<xmlXPathObject> text_object(manage_libxml_ptr(
                         xmlXPathEvalExpression(stupid_libxml_string("descendant::text()"),
                             text_context.get()), xmlXPathFreeObject));
             name = extract_children_text(text_object);
@@ -340,7 +340,7 @@ paludis_xml_things_create_metadata_xml_from_xml_file(const FSEntry & filename)
         if (email_object->nodesetval->nodeNr)
         {
             text_context->node = email_object->nodesetval->nodeTab[0];
-            std::tr1::shared_ptr<xmlXPathObject> text_object(manage_libxml_ptr(
+            std::shared_ptr<xmlXPathObject> text_object(manage_libxml_ptr(
                         xmlXPathEvalExpression(stupid_libxml_string("descendant::text()"),
                             text_context.get()), xmlXPathFreeObject));
             email = extract_children_text(text_object);
@@ -365,14 +365,14 @@ paludis_xml_things_create_metadata_xml_from_xml_file(const FSEntry & filename)
     for (int i = 0 ; i != use_object->nodesetval->nodeNr ; ++i)
     {
         sub_context->node = use_object->nodesetval->nodeTab[i];
-        std::tr1::shared_ptr<xmlXPathObject> flag_object(
+        std::shared_ptr<xmlXPathObject> flag_object(
                 manage_libxml_ptr(xmlXPathEvalExpression(stupid_libxml_string("./flag[@name]"),
                         sub_context.get()), xmlXPathFreeObject));
 
         for (int k = 0 ; k != flag_object->nodesetval->nodeNr ; ++k)
         {
             text_context->node = flag_object->nodesetval->nodeTab[k];
-            std::tr1::shared_ptr<xmlXPathObject>
+            std::shared_ptr<xmlXPathObject>
                 text_object(manage_libxml_ptr(xmlXPathEvalExpression(stupid_libxml_string("descendant::text()"),
                             text_context.get()), xmlXPathFreeObject)),
                 name_object(manage_libxml_ptr(xmlXPathEvalExpression(stupid_libxml_string("@name"),
@@ -394,7 +394,7 @@ paludis_xml_things_create_metadata_xml_from_xml_file(const FSEntry & filename)
         }
     }
 
-    std::tr1::shared_ptr<xmlXPathObject> longdesc_object;
+    std::shared_ptr<xmlXPathObject> longdesc_object;
     longdesc_object = manage_libxml_ptr(xmlXPathEvalExpression(stupid_libxml_string(
                     "//pkgmetadata/longdescription[@lang=\"en\"]"), doc_context.get()), xmlXPathFreeObject);
     if (0 == longdesc_object->nodesetval || 0 == longdesc_object->nodesetval->nodeNr)
@@ -406,7 +406,7 @@ paludis_xml_things_create_metadata_xml_from_xml_file(const FSEntry & filename)
         for (int i = 0 ; i != longdesc_object->nodesetval->nodeNr ; ++i)
         {
             text_context->node = longdesc_object->nodesetval->nodeTab[i];
-            std::tr1::shared_ptr<xmlXPathObject> text_object(manage_libxml_ptr(
+            std::shared_ptr<xmlXPathObject> text_object(manage_libxml_ptr(
                         xmlXPathEvalExpression(stupid_libxml_string("descendant::text()"),
                             text_context.get()), xmlXPathFreeObject));
 

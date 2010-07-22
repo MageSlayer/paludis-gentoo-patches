@@ -87,7 +87,7 @@ namespace test_cases
         void populate_repo()
         {
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/two");
-            std::tr1::shared_ptr<FakePackageID> two_m(repo->add_version("cat", "two", "1"));
+            std::shared_ptr<FakePackageID> two_m(repo->add_version("cat", "two", "1"));
             two_m->build_dependencies_key()->set_from_string("!virtual/two");
             two_m->provide_key()->set_from_string("virtual/two");
         }
@@ -108,7 +108,7 @@ namespace test_cases
         void populate_repo()
         {
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/two");
-            std::tr1::shared_ptr<FakePackageID> two_m(repo->add_version("cat", "two", "1"));
+            std::shared_ptr<FakePackageID> two_m(repo->add_version("cat", "two", "1"));
             two_m->build_dependencies_key()->set_from_string("!virtual/two");
             two_m->provide_key()->set_from_string("virtual/two");
             installed_repo->add_version("other", "two", "1")->provide_key()->set_from_string("virtual/two");
@@ -217,11 +217,11 @@ namespace test_cases
 
         void populate_repo()
         {
-            std::tr1::shared_ptr<FakePackageID> one_m(repo->add_version("cat", "one", "1"));
+            std::shared_ptr<FakePackageID> one_m(repo->add_version("cat", "one", "1"));
             one_m->provide_key()->set_from_string("virtual/one");
             one_m->build_dependencies_key()->set_from_string("!virtual/one");
             one_m->run_dependencies_key()->set_from_string("!virtual/one");
-            std::tr1::shared_ptr<FakePackageID> i_one_m(installed_repo->add_version("cat", "one", "1"));
+            std::shared_ptr<FakePackageID> i_one_m(installed_repo->add_version("cat", "one", "1"));
             i_one_m->provide_key()->set_from_string("virtual/one");
             i_one_m->run_dependencies_key()->set_from_string("!virtual/one");
         }
@@ -240,11 +240,11 @@ namespace test_cases
 
         void populate_repo()
         {
-            std::tr1::shared_ptr<FakePackageID> one_m(repo->add_version("cat", "one", "1"));
+            std::shared_ptr<FakePackageID> one_m(repo->add_version("cat", "one", "1"));
             one_m->provide_key()->set_from_string("virtual/one");
             one_m->build_dependencies_key()->set_from_string("!virtual/one");
             one_m->run_dependencies_key()->set_from_string("!virtual/one");
-            std::tr1::shared_ptr<FakePackageID> i_one_m(installed_repo->add_version("cat", "one", "1"));
+            std::shared_ptr<FakePackageID> i_one_m(installed_repo->add_version("cat", "one", "1"));
             i_one_m->provide_key()->set_from_string("virtual/one");
             i_one_m->run_dependencies_key()->set_from_string("!virtual/one");
         }
@@ -269,7 +269,7 @@ namespace test_cases
         void populate_repo()
         {
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/two");
-            std::tr1::shared_ptr<FakePackageID> two_m(repo->add_version("cat", "two", "2"));
+            std::shared_ptr<FakePackageID> two_m(repo->add_version("cat", "two", "2"));
             two_m->provide_key()->set_from_string("virtual/two");
             two_m->build_dependencies_key()->set_from_string("!virtual/two");
             installed_repo->add_version("cat", "two", "1")->provide_key()->set_from_string("virtual/two");
@@ -320,7 +320,7 @@ namespace test_cases
         void populate_repo()
         {
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/two");
-            std::tr1::shared_ptr<FakePackageID> two_m(repo->add_version("cat", "two", "2"));
+            std::shared_ptr<FakePackageID> two_m(repo->add_version("cat", "two", "2"));
             two_m->build_dependencies_key()->set_from_string("!<virtual/two-2");
             two_m->provide_key()->set_from_string("virtual/two");
             installed_repo->add_version("cat", "two", "1")->provide_key()->set_from_string("virtual/two");
@@ -349,7 +349,7 @@ namespace test_cases
         void populate_repo()
         {
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/two");
-            std::tr1::shared_ptr<FakePackageID> two_m(repo->add_version("cat", "two", "2"));
+            std::shared_ptr<FakePackageID> two_m(repo->add_version("cat", "two", "2"));
             two_m->build_dependencies_key()->set_from_string("!<virtual/two-2");
             two_m->provide_key()->set_from_string("virtual/two");
             installed_repo->add_version("other", "two", "1")->provide_key()->set_from_string("virtual/two");

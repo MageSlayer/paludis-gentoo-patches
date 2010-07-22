@@ -58,7 +58,7 @@ namespace paludis
                 /* RepositoryEnvironmentVariableInterface */
 
                 virtual std::string get_environment_variable(
-                        const std::tr1::shared_ptr<const PackageID> & for_package,
+                        const std::shared_ptr<const PackageID> & for_package,
                         const std::string & var) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -75,7 +75,7 @@ namespace paludis
 
                 /* Repository */
 
-                virtual std::tr1::shared_ptr<const CategoryNamePartSet> unimportant_category_names() const;
+                virtual std::shared_ptr<const CategoryNamePartSet> unimportant_category_names() const;
 
                 virtual const bool is_unimportant() const;
 
@@ -86,21 +86,21 @@ namespace paludis
                 HookResult perform_hook(const Hook & hook)
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual bool sync(const std::tr1::shared_ptr<OutputManager> &) const;
+                virtual bool sync(const std::shared_ptr<OutputManager> &) const;
 
                 ///\name For use by EInstalledRepositoryID
                 ///\{
 
                 virtual void perform_uninstall(
-                        const std::tr1::shared_ptr<const erepository::ERepositoryID> & id,
+                        const std::shared_ptr<const erepository::ERepositoryID> & id,
                         const UninstallAction &) const = 0;
 
                 virtual void perform_config(
-                        const std::tr1::shared_ptr<const erepository::ERepositoryID> & id,
+                        const std::shared_ptr<const erepository::ERepositoryID> & id,
                         const ConfigAction &) const;
 
                 virtual void perform_info(
-                        const std::tr1::shared_ptr<const erepository::ERepositoryID> & id,
+                        const std::shared_ptr<const erepository::ERepositoryID> & id,
                         const InfoAction &) const;
 
                 ///\}

@@ -22,7 +22,7 @@
 #define PALUDIS_GUARD_PALUDIS_UTIL_CLONE_HH 1
 
 #include <paludis/util/attributes.hh>
-#include <tr1/memory>
+#include <memory>
 
 /** \file
  * Declares the Cloneable class and helpers.
@@ -52,7 +52,7 @@ namespace paludis
             /**
              * Return a new copy of ourselves.
              */
-            virtual std::tr1::shared_ptr<T_> clone() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+            virtual std::shared_ptr<T_> clone() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}
 
@@ -76,7 +76,7 @@ namespace paludis
         public virtual Cloneable<Base_>
     {
         public:
-            virtual std::tr1::shared_ptr<Base_> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual std::shared_ptr<Base_> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\name Basic operations
             ///\{

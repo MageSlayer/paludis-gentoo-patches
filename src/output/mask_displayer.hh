@@ -31,7 +31,7 @@ namespace paludis
         private PrivateImplementationPattern<MaskDisplayer>
     {
         public:
-            MaskDisplayer(const Environment * const, const std::tr1::shared_ptr<const PackageID> &,
+            MaskDisplayer(const Environment * const, const std::shared_ptr<const PackageID> &,
                     const bool want_description);
             ~MaskDisplayer();
 

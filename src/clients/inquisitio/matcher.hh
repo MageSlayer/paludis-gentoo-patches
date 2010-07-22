@@ -23,7 +23,7 @@
 #include <paludis/util/singleton.hh>
 #include <paludis/util/exception.hh>
 #include <string>
-#include <tr1/memory>
+#include <memory>
 
 namespace inquisitio
 {
@@ -56,7 +56,7 @@ namespace inquisitio
             MatcherFactory();
 
         public:
-            const std::tr1::shared_ptr<Matcher> create(const std::string &, const std::string &) const
+            const std::shared_ptr<Matcher> create(const std::string &, const std::string &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }

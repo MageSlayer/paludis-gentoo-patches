@@ -22,7 +22,7 @@
 
 #include <paludis/util/mutex.hh>
 #include <paludis/util/thread_pool.hh>
-#include <tr1/functional>
+#include <functional>
 
 /** \file
  * Declarations for the forward_parallel_for_each function.
@@ -88,8 +88,8 @@ namespace paludis
         ThreadPool threads;
 
         for (unsigned n(0) ; n != n_threads ; ++n)
-            threads.create_thread(std::tr1::bind(&forward_parallel_for_each_thread_func<Iter_, Func_>, std::tr1::ref(cur),
-                        std::tr1::cref(end), std::tr1::ref(mutex), std::tr1::ref(func), n_at_once));
+            threads.create_thread(std::bind(&forward_parallel_for_each_thread_func<Iter_, Func_>, std::ref(cur),
+                        std::cref(end), std::ref(mutex), std::ref(func), n_at_once));
     }
 }
 

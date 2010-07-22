@@ -49,8 +49,8 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            QueryVisitor(const DepList * const, const std::tr1::shared_ptr<const DestinationsSet> &,
-                    const Environment * const, const std::tr1::shared_ptr<const PackageID> &);
+            QueryVisitor(const DepList * const, const std::shared_ptr<const DestinationsSet> &,
+                    const Environment * const, const std::shared_ptr<const PackageID> &);
 
             ~QueryVisitor();
 

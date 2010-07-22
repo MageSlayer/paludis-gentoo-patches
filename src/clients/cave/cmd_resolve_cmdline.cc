@@ -24,14 +24,14 @@
 #include <paludis/package_database.hh>
 #include <paludis/util/map.hh>
 #include <paludis/repository_factory.hh>
-#include <tr1/memory>
+#include <memory>
 
 using namespace paludis;
 using namespace cave;
 
 namespace
 {
-    std::string from_keys(const std::tr1::shared_ptr<const Map<std::string, std::string> > & m,
+    std::string from_keys(const std::shared_ptr<const Map<std::string, std::string> > & m,
             const std::string & k)
     {
         Map<std::string, std::string>::ConstIterator mm(m->find(k));
@@ -357,12 +357,12 @@ ResolveCommandLineImportOptions::ResolveCommandLineImportOptions(args::ArgsHandl
 }
 
 void
-ResolveCommandLineImportOptions::apply(const std::tr1::shared_ptr<Environment> & env) const
+ResolveCommandLineImportOptions::apply(const std::shared_ptr<Environment> & env) const
 {
     if (! a_unpackaged_repository_params.specified())
         return;
 
-    std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+    std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
     for (args::StringSetArg::ConstIterator a(a_unpackaged_repository_params.begin_args()),
             a_end(a_unpackaged_repository_params.end_args()) ;
             a != a_end ; ++a)
@@ -373,8 +373,8 @@ ResolveCommandLineImportOptions::apply(const std::tr1::shared_ptr<Environment> &
         keys->insert(a->substr(0, p), a->substr(p + 1));
     }
 
-    std::tr1::shared_ptr<Repository> repo(RepositoryFactory::get_instance()->create(env.get(),
-                std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+    std::shared_ptr<Repository> repo(RepositoryFactory::get_instance()->create(env.get(),
+                std::bind(from_keys, keys, std::placeholders::_1)));
     env->package_database()->add_repository(10, repo);
 }
 
@@ -427,7 +427,7 @@ ResolveCommandLineResolutionOptions::apply_shortcuts()
 }
 
 void
-ResolveCommandLineResolutionOptions::verify(const std::tr1::shared_ptr<const Environment> &)
+ResolveCommandLineResolutionOptions::verify(const std::shared_ptr<const Environment> &)
 {
 }
 

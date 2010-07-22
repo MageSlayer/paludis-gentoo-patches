@@ -26,7 +26,7 @@
 #include <paludis/environment-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/util/attributes.hh>
-#include <tr1/memory>
+#include <memory>
 
 namespace paludis
 {
@@ -48,7 +48,7 @@ namespace paludis
 
             virtual std::string as_string() const = 0;
 
-            virtual std::tr1::shared_ptr<PackageIDSequence> perform_select(const Environment * const) const
+            virtual std::shared_ptr<PackageIDSequence> perform_select(const Environment * const) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 }

@@ -84,7 +84,7 @@ using namespace paludis::resolver;
 using std::cout;
 using std::endl;
 
-typedef std::map<ChoiceNameWithPrefix, std::tr1::shared_ptr<PackageIDSequence> > ChoiceValuesToExplain;
+typedef std::map<ChoiceNameWithPrefix, std::shared_ptr<PackageIDSequence> > ChoiceValuesToExplain;
 typedef std::map<std::string, ChoiceValuesToExplain> ChoicesToExplain;
 
 namespace
@@ -121,7 +121,7 @@ namespace
     };
 
     std::string get_annotation(
-            const std::tr1::shared_ptr<const MetadataSectionKey> & section,
+            const std::shared_ptr<const MetadataSectionKey> & section,
             const std::string & name)
     {
         MetadataSectionKey::MetadataConstIterator i(section->find_metadata(name));
@@ -157,7 +157,7 @@ namespace
         }
 
         std::pair<std::string, Tribool> annotate(
-                const std::tr1::shared_ptr<const MetadataSectionKey> & key,
+                const std::shared_ptr<const MetadataSectionKey> & key,
                 const std::pair<std::string, Tribool> unannotated) const
         {
             if ((! key) || (! more_annotations))
@@ -257,49 +257,49 @@ namespace
 
     struct IDForDecisionOrNullVisitor
     {
-        const std::tr1::shared_ptr<const PackageID> visit(const ExistingNoChangeDecision & d) const
+        const std::shared_ptr<const PackageID> visit(const ExistingNoChangeDecision & d) const
         {
             return d.existing_id();
         }
 
-        const std::tr1::shared_ptr<const PackageID> visit(const BreakDecision & d) const
+        const std::shared_ptr<const PackageID> visit(const BreakDecision & d) const
         {
             return d.existing_id();
         }
 
-        const std::tr1::shared_ptr<const PackageID> visit(const ChangesToMakeDecision & d) const
+        const std::shared_ptr<const PackageID> visit(const ChangesToMakeDecision & d) const
         {
             return d.origin_id();
         }
 
-        const std::tr1::shared_ptr<const PackageID> visit(const UnableToMakeDecision &) const
+        const std::shared_ptr<const PackageID> visit(const UnableToMakeDecision &) const
         {
             return make_null_shared_ptr();
         }
 
-        const std::tr1::shared_ptr<const PackageID> visit(const RemoveDecision &) const
+        const std::shared_ptr<const PackageID> visit(const RemoveDecision &) const
         {
             return make_null_shared_ptr();
         }
 
-        const std::tr1::shared_ptr<const PackageID> visit(const NothingNoChangeDecision &) const
+        const std::shared_ptr<const PackageID> visit(const NothingNoChangeDecision &) const
         {
             return make_null_shared_ptr();
         }
     };
 
-    const std::tr1::shared_ptr<const PackageID> id_for_decision_or_null(const Decision & d)
+    const std::shared_ptr<const PackageID> id_for_decision_or_null(const Decision & d)
     {
-        return d.accept_returning<std::tr1::shared_ptr<const PackageID> >(IDForDecisionOrNullVisitor());
+        return d.accept_returning<std::shared_ptr<const PackageID> >(IDForDecisionOrNullVisitor());
     }
 
     bool decision_matches_spec(
-            const std::tr1::shared_ptr<Environment> & env,
+            const std::shared_ptr<Environment> & env,
             const Resolvent & resolvent,
             const Decision & decision,
             const PackageDepSpec & spec)
     {
-        const std::tr1::shared_ptr<const PackageID> maybe_id(id_for_decision_or_null(decision));
+        const std::shared_ptr<const PackageID> maybe_id(id_for_decision_or_null(decision));
         if (maybe_id)
             return match_package(*env, spec, *maybe_id, MatchPackageOptions());
         else
@@ -438,8 +438,8 @@ namespace
     }
 
     void display_explanations(
-            const std::tr1::shared_ptr<Environment> & env,
-            const std::tr1::shared_ptr<const Resolved> & resolved,
+            const std::shared_ptr<Environment> & env,
+            const std::shared_ptr<const Resolved> & resolved,
             const DisplayResolutionCommandLine & cmdline)
     {
         Context context("When displaying explanations:");
@@ -476,9 +476,9 @@ namespace
     }
 
     void display_one_description(
-            const std::tr1::shared_ptr<Environment> &,
+            const std::shared_ptr<Environment> &,
             const DisplayResolutionCommandLine & cmdline,
-            const std::tr1::shared_ptr<const PackageID> & id,
+            const std::shared_ptr<const PackageID> & id,
             const bool is_new)
     {
         if (id->short_description_key())
@@ -501,10 +501,10 @@ namespace
     }
 
     void display_choices(
-            const std::tr1::shared_ptr<Environment> &,
+            const std::shared_ptr<Environment> &,
             const DisplayResolutionCommandLine & cmdline,
-            const std::tr1::shared_ptr<const PackageID> & id,
-            const std::tr1::shared_ptr<const PackageID> & old_id,
+            const std::shared_ptr<const PackageID> & id,
+            const std::shared_ptr<const PackageID> & old_id,
             ChoicesToExplain & choices_to_explain
             )
     {
@@ -513,7 +513,7 @@ namespace
 
         ColourFormatter formatter(0);
 
-        std::tr1::shared_ptr<const Choices> old_choices;
+        std::shared_ptr<const Choices> old_choices;
         if (old_id && old_id->choices_key())
             old_choices = old_id->choices_key()->value();
 
@@ -568,7 +568,7 @@ namespace
                 {
                     if (old_choices)
                     {
-                        std::tr1::shared_ptr<const ChoiceValue> old_choice(
+                        std::shared_ptr<const ChoiceValue> old_choice(
                                 old_choices->find_by_name_with_prefix((*i)->name_with_prefix()));
                         if (! old_choice)
                             added = true;
@@ -620,7 +620,7 @@ namespace
     }
 
     void display_reasons(
-            const std::tr1::shared_ptr<const Resolution> & resolution,
+            const std::shared_ptr<const Resolution> & resolution,
             const bool more_annotations
             )
     {
@@ -708,7 +708,7 @@ namespace
     void display_confirmations(
             const ConfirmableDecision & decision)
     {
-        const std::tr1::shared_ptr<const RequiredConfirmations> r(decision.required_confirmations_if_any());
+        const std::shared_ptr<const RequiredConfirmations> r(decision.required_confirmations_if_any());
         if (r && ! r->empty())
             cout << c::bold_red() << "    Cannot proceed without: " << c::normal() <<
                 join(indirect_iterator(r->begin()), indirect_iterator(r->end()), ", ", stringify_confirmation) << endl;
@@ -770,10 +770,10 @@ namespace
     }
 
     void display_one_installish(
-            const std::tr1::shared_ptr<Environment> & env,
+            const std::shared_ptr<Environment> & env,
             const DisplayResolutionCommandLine & cmdline,
             const ChangesToMakeDecision & decision,
-            const std::tr1::shared_ptr<const Resolution> & resolution,
+            const std::shared_ptr<const Resolution> & resolution,
             const bool more_annotations,
             const bool confirmations,
             const bool untaken,
@@ -883,7 +883,7 @@ namespace
         }
         cout << endl;
 
-        std::tr1::shared_ptr<const PackageID> old_id;
+        std::shared_ptr<const PackageID> old_id;
         if (! decision.destination()->replacing()->empty())
             old_id = *decision.destination()->replacing()->begin();
 
@@ -899,9 +899,9 @@ namespace
     }
 
     void display_one_uninstall(
-            const std::tr1::shared_ptr<Environment> &,
+            const std::shared_ptr<Environment> &,
             const DisplayResolutionCommandLine &,
-            const std::tr1::shared_ptr<const Resolution> & resolution,
+            const std::shared_ptr<const Resolution> & resolution,
             const RemoveDecision & decision,
             const bool more_annotations,
             const bool confirmations,
@@ -965,7 +965,7 @@ namespace
 
     struct MaskedByKeyVisitor
     {
-        void visit(const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > & k)
+        void visit(const MetadataValueKey<std::shared_ptr<const PackageID> > & k)
         {
             cout << "            " << k.human_name() << " " << *k.value() << endl;
         }
@@ -1000,12 +1000,12 @@ namespace
             cout << "            " << k.human_name() << " " << pretty_print_time(k.value().seconds()) << endl;
         }
 
-        void visit(const MetadataValueKey<std::tr1::shared_ptr<const Contents> > & k)
+        void visit(const MetadataValueKey<std::shared_ptr<const Contents> > & k)
         {
             cout << "            " << k.human_name() << endl;
         }
 
-        void visit(const MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> > & k)
+        void visit(const MetadataValueKey<std::shared_ptr<const RepositoryMaskInfo> > & k)
         {
             cout << "            " << k.value()->mask_file() << endl;
             for (Sequence<std::string>::ConstIterator l(k.value()->comment()->begin()), l_end(k.value()->comment()->end()) ;
@@ -1084,7 +1084,7 @@ namespace
             cout << "            " << k.human_name() << " " << k.pretty_print_flat(formatter) << endl;
         }
 
-        void visit(const MetadataValueKey<std::tr1::shared_ptr<const Choices> > & k)
+        void visit(const MetadataValueKey<std::shared_ptr<const Choices> > & k)
         {
             ColourFormatter formatter(0);
             cout << "            " << k.human_name() << endl;
@@ -1127,8 +1127,8 @@ namespace
     };
 
     void display_unable_to_make_decision(
-            const std::tr1::shared_ptr<Environment> & env,
-            const std::tr1::shared_ptr<const Resolution> & resolution,
+            const std::shared_ptr<Environment> & env,
+            const std::shared_ptr<const Resolution> & resolution,
             const UnableToMakeDecision & d,
             const bool untaken)
     {
@@ -1202,7 +1202,7 @@ namespace
     }
 
     void display_choices_to_explain(
-            const std::tr1::shared_ptr<Environment> &,
+            const std::shared_ptr<Environment> &,
             const DisplayResolutionCommandLine &,
             const ChoicesToExplain & choices_to_explain)
     {
@@ -1216,7 +1216,7 @@ namespace
                     v != v_end ; ++v)
             {
                 bool all_same(true);
-                const std::tr1::shared_ptr<const ChoiceValue> first_choice_value(
+                const std::shared_ptr<const ChoiceValue> first_choice_value(
                         (*v->second->begin())->choices_key()->value()->find_by_name_with_prefix(v->first));
                 std::string description(first_choice_value->description());
                 for (PackageIDSequence::ConstIterator w(next(v->second->begin())), w_end(v->second->end()) ;
@@ -1236,7 +1236,7 @@ namespace
                     for (PackageIDSequence::ConstIterator w(v->second->begin()), w_end(v->second->end()) ;
                             w != w_end ; ++w)
                     {
-                        const std::tr1::shared_ptr<const ChoiceValue> value(
+                        const std::shared_ptr<const ChoiceValue> value(
                                 (*w)->choices_key()->value()->find_by_name_with_prefix(v->first));
                         cout << "        " << std::left << std::setw(30) <<
                             ((*w)->canonical_form(idcf_no_version) + ":") << " " << value->description() << endl;
@@ -1248,22 +1248,22 @@ namespace
         }
     }
 
-    std::pair<std::tr1::shared_ptr<const ConfirmableDecision>, std::tr1::shared_ptr<const OrdererNotes> >
-    get_decision_and_notes(const std::tr1::shared_ptr<const ConfirmableDecision> & d)
+    std::pair<std::shared_ptr<const ConfirmableDecision>, std::shared_ptr<const OrdererNotes> >
+    get_decision_and_notes(const std::shared_ptr<const ConfirmableDecision> & d)
     {
         return std::make_pair(d, make_null_shared_ptr());
     }
 
-    std::pair<std::tr1::shared_ptr<const ConfirmableDecision>, std::tr1::shared_ptr<const OrdererNotes> >
-    get_decision_and_notes(const std::pair<std::tr1::shared_ptr<const ConfirmableDecision>, std::tr1::shared_ptr<const OrdererNotes> > & d)
+    std::pair<std::shared_ptr<const ConfirmableDecision>, std::shared_ptr<const OrdererNotes> >
+    get_decision_and_notes(const std::pair<std::shared_ptr<const ConfirmableDecision>, std::shared_ptr<const OrdererNotes> > & d)
     {
         return d;
     }
 
     void display_one_break(
-            const std::tr1::shared_ptr<Environment> &,
+            const std::shared_ptr<Environment> &,
             const DisplayResolutionCommandLine &,
-            const std::tr1::shared_ptr<const Resolution> & resolution,
+            const std::shared_ptr<const Resolution> & resolution,
             const BreakDecision & decision,
             const bool more_annotations,
             const bool untaken)
@@ -1281,9 +1281,9 @@ namespace
 
     struct DisplayAVisitor
     {
-        const std::tr1::shared_ptr<Environment> env;
+        const std::shared_ptr<Environment> env;
         const DisplayResolutionCommandLine & cmdline;
-        const std::tr1::shared_ptr<const Resolution> resolution;
+        const std::shared_ptr<const Resolution> resolution;
         const bool more_annotations;
         const bool unconfirmed;
         const bool untaken;
@@ -1292,9 +1292,9 @@ namespace
         ChoicesToExplain & choices_to_explain;
 
         DisplayAVisitor(
-                const std::tr1::shared_ptr<Environment> & e,
+                const std::shared_ptr<Environment> & e,
                 const DisplayResolutionCommandLine & c,
-                const std::tr1::shared_ptr<const Resolution> & r,
+                const std::shared_ptr<const Resolution> & r,
                 bool m,
                 bool uc,
                 bool ut,
@@ -1356,9 +1356,9 @@ namespace
 
     template <typename Decisions_>
     void display_a_changes_and_removes(
-            const std::tr1::shared_ptr<Environment> & env,
-            const std::tr1::shared_ptr<const Resolved> & resolved,
-            const std::tr1::shared_ptr<Decisions_> & decisions,
+            const std::shared_ptr<Environment> & env,
+            const std::shared_ptr<const Resolved> & resolved,
+            const std::shared_ptr<Decisions_> & decisions,
             const DisplayResolutionCommandLine & cmdline,
             ChoicesToExplain & choices_to_explain,
             const bool more_annotations,
@@ -1384,8 +1384,8 @@ namespace
             any = true;
 
             const std::pair<
-                std::tr1::shared_ptr<const ConfirmableDecision>,
-                std::tr1::shared_ptr<const OrdererNotes> > star_i(get_decision_and_notes(*i));
+                std::shared_ptr<const ConfirmableDecision>,
+                std::shared_ptr<const OrdererNotes> > star_i(get_decision_and_notes(*i));
 
             DisplayAVisitor v(
                     env,
@@ -1407,8 +1407,8 @@ namespace
     }
 
     void display_changes_and_removes(
-            const std::tr1::shared_ptr<Environment> & env,
-            const std::tr1::shared_ptr<const Resolved> & resolved,
+            const std::shared_ptr<Environment> & env,
+            const std::shared_ptr<const Resolved> & resolved,
             const DisplayResolutionCommandLine & cmdline,
             ChoicesToExplain & choices_to_explain)
     {
@@ -1417,8 +1417,8 @@ namespace
     }
 
     void display_unorderable_changes_and_removed(
-            const std::tr1::shared_ptr<Environment> & env,
-            const std::tr1::shared_ptr<const Resolved> & resolved,
+            const std::shared_ptr<Environment> & env,
+            const std::shared_ptr<const Resolved> & resolved,
             const DisplayResolutionCommandLine & cmdline,
             ChoicesToExplain & choices_to_explain)
     {
@@ -1428,8 +1428,8 @@ namespace
     }
 
     void display_untaken_changes_and_removes(
-            const std::tr1::shared_ptr<Environment> & env,
-            const std::tr1::shared_ptr<const Resolved> & resolved,
+            const std::shared_ptr<Environment> & env,
+            const std::shared_ptr<const Resolved> & resolved,
             const DisplayResolutionCommandLine & cmdline,
             ChoicesToExplain & choices_to_explain)
     {
@@ -1439,9 +1439,9 @@ namespace
     }
 
     void display_an_errors(
-            const std::tr1::shared_ptr<Environment> & env,
-            const std::tr1::shared_ptr<const Resolved> & resolved,
-            const std::tr1::shared_ptr<const Decisions<UnableToMakeDecision> > & decisions,
+            const std::shared_ptr<Environment> & env,
+            const std::shared_ptr<const Resolved> & resolved,
+            const std::shared_ptr<const Decisions<UnableToMakeDecision> > & decisions,
             const DisplayResolutionCommandLine &,
             const bool untaken)
     {
@@ -1470,8 +1470,8 @@ namespace
     }
 
     void display_taken_errors(
-            const std::tr1::shared_ptr<Environment> & env,
-            const std::tr1::shared_ptr<const Resolved> & resolved,
+            const std::shared_ptr<Environment> & env,
+            const std::shared_ptr<const Resolved> & resolved,
             const DisplayResolutionCommandLine & cmdline)
     {
         if (! resolved->taken_unable_to_make_decisions()->empty())
@@ -1479,8 +1479,8 @@ namespace
     }
 
     void display_untaken_errors(
-            const std::tr1::shared_ptr<Environment> & env,
-            const std::tr1::shared_ptr<const Resolved> & resolved,
+            const std::shared_ptr<Environment> & env,
+            const std::shared_ptr<const Resolved> & resolved,
             const DisplayResolutionCommandLine & cmdline)
     {
         if (! resolved->untaken_unable_to_make_decisions()->empty())
@@ -1488,8 +1488,8 @@ namespace
     }
 
     void display_taken_changes_requiring_confirmation(
-            const std::tr1::shared_ptr<Environment> & env,
-            const std::tr1::shared_ptr<const Resolved> & resolved,
+            const std::shared_ptr<Environment> & env,
+            const std::shared_ptr<const Resolved> & resolved,
             const DisplayResolutionCommandLine & cmdline)
     {
         ChoicesToExplain ignore_choices_to_explain;
@@ -1507,9 +1507,9 @@ DisplayResolutionCommand::important() const
 
 int
 DisplayResolutionCommand::run(
-        const std::tr1::shared_ptr<Environment> & env,
-        const std::tr1::shared_ptr<const Sequence<std::string > > & args,
-        const std::tr1::shared_ptr<const Resolved> & maybe_resolved
+        const std::shared_ptr<Environment> & env,
+        const std::shared_ptr<const Sequence<std::string > > & args,
+        const std::shared_ptr<const Resolved> & maybe_resolved
         )
 {
     DisplayResolutionCommandLine cmdline;
@@ -1523,7 +1523,7 @@ DisplayResolutionCommand::run(
 
     cmdline.import_options.apply(env);
 
-    std::tr1::shared_ptr<const Resolved> resolved(maybe_resolved);
+    std::shared_ptr<const Resolved> resolved(maybe_resolved);
     if (! resolved)
     {
         if (getenv_with_default("PALUDIS_SERIALISED_RESOLUTION_FD", "").empty())
@@ -1552,13 +1552,13 @@ DisplayResolutionCommand::run(
 
 int
 DisplayResolutionCommand::run(
-        const std::tr1::shared_ptr<Environment> & env,
-        const std::tr1::shared_ptr<const Sequence<std::string > > & args)
+        const std::shared_ptr<Environment> & env,
+        const std::shared_ptr<const Sequence<std::string > > & args)
 {
     return run(env, args, make_null_shared_ptr());
 }
 
-std::tr1::shared_ptr<args::ArgsHandler>
+std::shared_ptr<args::ArgsHandler>
 DisplayResolutionCommand::make_doc_cmdline()
 {
     return make_shared_ptr(new DisplayResolutionCommandLine);

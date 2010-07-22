@@ -36,10 +36,10 @@ namespace paludis
     }
 
     template<typename Base_, typename Child_>
-    std::tr1::shared_ptr<Base_>
+    std::shared_ptr<Base_>
     CloneUsingThis<Base_, Child_>::clone() const
     {
-        return std::tr1::shared_ptr<Base_>(new Child_(*static_cast<const Child_ *>(this)));
+        return std::shared_ptr<Base_>(new Child_(*static_cast<const Child_ *>(this)));
     }
 
     template<typename Base_, typename Child_>

@@ -42,7 +42,7 @@
 #include <paludis/filtered_generator-fwd.hh>
 #include <paludis/generator-fwd.hh>
 #include <test/test_framework.hh>
-#include <tr1/memory>
+#include <memory>
 #include <string>
 #include <map>
 #include <list>
@@ -53,126 +53,126 @@ namespace paludis
     {
         namespace resolver_test
         {
-            std::string from_keys(const std::tr1::shared_ptr<const Map<std::string, std::string> > & m,
+            std::string from_keys(const std::shared_ptr<const Map<std::string, std::string> > & m,
                     const std::string & k);
 
-            typedef std::map<Resolvent, std::tr1::shared_ptr<Constraints> > InitialConstraints;
+            typedef std::map<Resolvent, std::shared_ptr<Constraints> > InitialConstraints;
 
             SpecInterest interest_in_spec_fn(
-                    const std::tr1::shared_ptr<const Resolution> &,
+                    const std::shared_ptr<const Resolution> &,
                     const SanitisedDependency &);
 
-            const std::tr1::shared_ptr<Constraints> initial_constraints_for_fn(
+            const std::shared_ptr<Constraints> initial_constraints_for_fn(
                     const InitialConstraints & initial_constraints,
                     const Resolvent & resolvent);
 
-            const std::tr1::shared_ptr<ConstraintSequence>
+            const std::shared_ptr<ConstraintSequence>
             get_constraints_for_dependent_fn(
-                    const std::tr1::shared_ptr<const Resolution> &,
-                    const std::tr1::shared_ptr<const PackageID> & id,
-                    const std::tr1::shared_ptr<const ChangeByResolventSequence> & ids);
+                    const std::shared_ptr<const Resolution> &,
+                    const std::shared_ptr<const PackageID> & id,
+                    const std::shared_ptr<const ChangeByResolventSequence> & ids);
 
-            const std::tr1::shared_ptr<ConstraintSequence>
+            const std::shared_ptr<ConstraintSequence>
             get_constraints_for_purge_fn(
-                    const std::tr1::shared_ptr<const Resolution> &,
-                    const std::tr1::shared_ptr<const PackageID> & id,
-                    const std::tr1::shared_ptr<const ChangeByResolventSequence> & ids);
+                    const std::shared_ptr<const Resolution> &,
+                    const std::shared_ptr<const PackageID> & id,
+                    const std::shared_ptr<const ChangeByResolventSequence> & ids);
 
-            const std::tr1::shared_ptr<ConstraintSequence>
+            const std::shared_ptr<ConstraintSequence>
             get_constraints_for_via_binary_fn(
-                    const std::tr1::shared_ptr<const Resolution> &,
-                    const std::tr1::shared_ptr<const Resolution> &);
+                    const std::shared_ptr<const Resolution> &,
+                    const std::shared_ptr<const Resolution> &);
 
-            std::tr1::shared_ptr<Resolvents> get_resolvents_for_fn(const PackageDepSpec & spec,
-                    const std::tr1::shared_ptr<const SlotName> &,
-                    const std::tr1::shared_ptr<const Reason> &);
+            std::shared_ptr<Resolvents> get_resolvents_for_fn(const PackageDepSpec & spec,
+                    const std::shared_ptr<const SlotName> &,
+                    const std::shared_ptr<const Reason> &);
 
             UseExisting get_use_existing_fn(
-                    const std::tr1::shared_ptr<const Resolution> &,
+                    const std::shared_ptr<const Resolution> &,
                     const PackageDepSpec &,
-                    const std::tr1::shared_ptr<const Reason> &);
+                    const std::shared_ptr<const Reason> &);
 
-            const std::tr1::shared_ptr<const Repository> find_repository_for_fn(
+            const std::shared_ptr<const Repository> find_repository_for_fn(
                     const Environment * const,
-                    const std::tr1::shared_ptr<const Resolution> &,
+                    const std::shared_ptr<const Resolution> &,
                     const ChangesToMakeDecision &);
 
             FilteredGenerator make_destination_filtered_generator_fn(const Generator &,
-                    const std::tr1::shared_ptr<const Resolution> &);
+                    const std::shared_ptr<const Resolution> &);
 
             FilteredGenerator make_origin_filtered_generator_fn(const Generator &,
-                    const std::tr1::shared_ptr<const Resolution> &);
+                    const std::shared_ptr<const Resolution> &);
 
             DestinationTypes get_destination_types_for_fn(const PackageDepSpec &,
-                    const std::tr1::shared_ptr<const PackageID> &,
-                    const std::tr1::shared_ptr<const Reason> &);
+                    const std::shared_ptr<const PackageID> &,
+                    const std::shared_ptr<const Reason> &);
 
             bool allowed_to_remove_fn(
-                    const std::tr1::shared_ptr<const QualifiedPackageNameSet> &,
-                    const std::tr1::shared_ptr<const Resolution> &,
-                    const std::tr1::shared_ptr<const PackageID> &);
+                    const std::shared_ptr<const QualifiedPackageNameSet> &,
+                    const std::shared_ptr<const Resolution> &,
+                    const std::shared_ptr<const PackageID> &);
 
             bool remove_if_dependent_fn(
-                    const std::tr1::shared_ptr<const QualifiedPackageNameSet> &,
-                    const std::tr1::shared_ptr<const PackageID> &);
+                    const std::shared_ptr<const QualifiedPackageNameSet> &,
+                    const std::shared_ptr<const PackageID> &);
 
             Tribool prefer_or_avoid_fn(
-                        const std::tr1::shared_ptr<const Map<QualifiedPackageName, bool> > &,
+                        const std::shared_ptr<const Map<QualifiedPackageName, bool> > &,
                         const QualifiedPackageName &);
 
             Tribool order_early_fn(
-                        const std::tr1::shared_ptr<const Resolution> &);
+                        const std::shared_ptr<const Resolution> &);
 
             bool confirm_fn(
-                    const std::tr1::shared_ptr<const Resolution> &,
-                    const std::tr1::shared_ptr<const RequiredConfirmation> &);
+                    const std::shared_ptr<const Resolution> &,
+                    const std::shared_ptr<const RequiredConfirmation> &);
 
             bool can_use_fn(
-                    const std::tr1::shared_ptr<const PackageID> &);
+                    const std::shared_ptr<const PackageID> &);
 
             bool always_via_binary_fn(
-                    const std::tr1::shared_ptr<const Resolution> &);
+                    const std::shared_ptr<const Resolution> &);
 
             struct ResolverTestCase : test::TestCase
             {
                 TestEnvironment env;
-                std::tr1::shared_ptr<Repository> repo, inst_repo;
-                std::tr1::shared_ptr<FakeInstalledRepository> fake_inst_repo;
-                std::tr1::shared_ptr<QualifiedPackageNameSet> allowed_to_remove_names;
-                std::tr1::shared_ptr<QualifiedPackageNameSet> remove_if_dependent_names;
-                std::tr1::shared_ptr<Map<QualifiedPackageName, bool> > prefer_or_avoid_names;
+                std::shared_ptr<Repository> repo, inst_repo;
+                std::shared_ptr<FakeInstalledRepository> fake_inst_repo;
+                std::shared_ptr<QualifiedPackageNameSet> allowed_to_remove_names;
+                std::shared_ptr<QualifiedPackageNameSet> remove_if_dependent_names;
+                std::shared_ptr<Map<QualifiedPackageName, bool> > prefer_or_avoid_names;
 
                 ResolverTestCase(const std::string & group, const std::string & test_name, const std::string & eapi,
                         const std::string & layout);
 
-                const std::tr1::shared_ptr<const Resolved> get_resolved(const PackageOrBlockDepSpec & target);
-                const std::tr1::shared_ptr<const Resolved> get_resolved(const std::string & target);
+                const std::shared_ptr<const Resolved> get_resolved(const PackageOrBlockDepSpec & target);
+                const std::shared_ptr<const Resolved> get_resolved(const std::string & target);
 
                 virtual ResolverFunctions get_resolver_functions(InitialConstraints &);
 
                 struct DecisionChecks
                 {
-                    typedef std::tr1::function<bool (const std::tr1::shared_ptr<const Decision> &) > CheckFunction;
-                    typedef std::tr1::function<std::string (const std::tr1::shared_ptr<const Decision> &) > MessageFunction;
+                    typedef std::function<bool (const std::shared_ptr<const Decision> &) > CheckFunction;
+                    typedef std::function<std::string (const std::shared_ptr<const Decision> &) > MessageFunction;
                     typedef std::list<std::pair<CheckFunction, MessageFunction> > List;
                     List checks;
 
-                    static std::string check_generic_msg(const std::string & q, const std::tr1::shared_ptr<const Decision> & r);
+                    static std::string check_generic_msg(const std::string & q, const std::shared_ptr<const Decision> & r);
 
-                    static bool check_change(const QualifiedPackageName & q, const std::tr1::shared_ptr<const Decision> & r);
-                    static std::string check_change_msg(const QualifiedPackageName & q, const std::tr1::shared_ptr<const Decision> & r);
+                    static bool check_change(const QualifiedPackageName & q, const std::shared_ptr<const Decision> & r);
+                    static std::string check_change_msg(const QualifiedPackageName & q, const std::shared_ptr<const Decision> & r);
 
-                    static bool check_remove(const QualifiedPackageName & q, const std::tr1::shared_ptr<const Decision> & r);
-                    static std::string check_remove_msg(const QualifiedPackageName & q, const std::tr1::shared_ptr<const Decision> & r);
+                    static bool check_remove(const QualifiedPackageName & q, const std::shared_ptr<const Decision> & r);
+                    static std::string check_remove_msg(const QualifiedPackageName & q, const std::shared_ptr<const Decision> & r);
 
-                    static bool check_unable(const QualifiedPackageName & q, const std::tr1::shared_ptr<const Decision> & r);
-                    static std::string check_unable_msg(const QualifiedPackageName & q, const std::tr1::shared_ptr<const Decision> & r);
+                    static bool check_unable(const QualifiedPackageName & q, const std::shared_ptr<const Decision> & r);
+                    static std::string check_unable_msg(const QualifiedPackageName & q, const std::shared_ptr<const Decision> & r);
 
-                    static bool check_breaking(const QualifiedPackageName & q, const std::tr1::shared_ptr<const Decision> & r);
-                    static std::string check_breaking_msg(const QualifiedPackageName & q, const std::tr1::shared_ptr<const Decision> & r);
+                    static bool check_breaking(const QualifiedPackageName & q, const std::shared_ptr<const Decision> & r);
+                    static std::string check_breaking_msg(const QualifiedPackageName & q, const std::shared_ptr<const Decision> & r);
 
-                    static bool check_finished(const std::tr1::shared_ptr<const Decision> & r);
-                    static std::string check_finished_msg(const std::tr1::shared_ptr<const Decision> & r);
+                    static bool check_finished(const std::shared_ptr<const Decision> & r);
+                    static std::string check_finished_msg(const std::shared_ptr<const Decision> & r);
 
                     DecisionChecks & change(const QualifiedPackageName & q);
                     DecisionChecks & remove(const QualifiedPackageName & q);
@@ -183,20 +183,20 @@ namespace paludis
 
                 template <typename Decisions_>
                 void check_resolved_one(
-                        const std::tr1::shared_ptr<Decisions_> &,
-                        const std::tr1::shared_ptr<const DecisionChecks> &);
+                        const std::shared_ptr<Decisions_> &,
+                        const std::shared_ptr<const DecisionChecks> &);
 
                 void check_resolved(
-                        const std::tr1::shared_ptr<const Resolved> &,
-                        const NamedValue<n::taken_change_or_remove_decisions, const std::tr1::shared_ptr<const DecisionChecks> > &,
-                        const NamedValue<n::taken_unable_to_make_decisions, const std::tr1::shared_ptr<const DecisionChecks> > &,
-                        const NamedValue<n::taken_unconfirmed_decisions, const std::tr1::shared_ptr<const DecisionChecks> > &,
-                        const NamedValue<n::taken_unorderable_decisions, const std::tr1::shared_ptr<const DecisionChecks> > &,
-                        const NamedValue<n::untaken_change_or_remove_decisions, const std::tr1::shared_ptr<const DecisionChecks> > &,
-                        const NamedValue<n::untaken_unable_to_make_decisions, const std::tr1::shared_ptr<const DecisionChecks> > &
+                        const std::shared_ptr<const Resolved> &,
+                        const NamedValue<n::taken_change_or_remove_decisions, const std::shared_ptr<const DecisionChecks> > &,
+                        const NamedValue<n::taken_unable_to_make_decisions, const std::shared_ptr<const DecisionChecks> > &,
+                        const NamedValue<n::taken_unconfirmed_decisions, const std::shared_ptr<const DecisionChecks> > &,
+                        const NamedValue<n::taken_unorderable_decisions, const std::shared_ptr<const DecisionChecks> > &,
+                        const NamedValue<n::untaken_change_or_remove_decisions, const std::shared_ptr<const DecisionChecks> > &,
+                        const NamedValue<n::untaken_unable_to_make_decisions, const std::shared_ptr<const DecisionChecks> > &
                         );
 
-                const std::tr1::shared_ptr<FakePackageID> install(
+                const std::shared_ptr<FakePackageID> install(
                         const std::string & c, const std::string & p, const std::string & v);
             };
         }

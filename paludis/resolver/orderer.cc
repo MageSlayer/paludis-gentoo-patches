@@ -34,7 +34,6 @@
 #include <paludis/resolver/destination.hh>
 #include <paludis/resolver/orderer_notes.hh>
 #include <paludis/resolver/change_by_resolvent.hh>
-#include <paludis/resolver/resolver_functions.hh>
 #include <paludis/resolver/labels_classifier.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/exception.hh>
@@ -49,17 +48,17 @@
 #include <paludis/util/enum_iterator.hh>
 #include <paludis/environment.hh>
 #include <paludis/notifier_callback.hh>
-#include <tr1/unordered_set>
-#include <tr1/unordered_map>
+#include <unordered_set>
+#include <unordered_map>
 #include <algorithm>
 #include <list>
 
 using namespace paludis;
 using namespace paludis::resolver;
 
-typedef std::tr1::unordered_map<NAGIndex, std::tr1::shared_ptr<const ChangeOrRemoveDecision>, Hash<NAGIndex> > ChangeOrRemoveIndices;
-typedef std::tr1::unordered_map<NAGIndex, JobNumber, Hash<NAGIndex> > ChangeOrRemoveJobNumbers;
-typedef std::tr1::unordered_map<Resolvent, JobNumber, Hash<Resolvent> > FetchJobNumbers;
+typedef std::unordered_map<NAGIndex, std::shared_ptr<const ChangeOrRemoveDecision>, Hash<NAGIndex> > ChangeOrRemoveIndices;
+typedef std::unordered_map<NAGIndex, JobNumber, Hash<NAGIndex> > ChangeOrRemoveJobNumbers;
+typedef std::unordered_map<Resolvent, JobNumber, Hash<Resolvent> > FetchJobNumbers;
 
 namespace paludis
 {
@@ -68,7 +67,7 @@ namespace paludis
     {
         const Environment * const env;
         const ResolverFunctions fns;
-        const std::tr1::shared_ptr<Resolved> resolved;
+        const std::shared_ptr<Resolved> resolved;
         ChangeOrRemoveIndices change_or_remove_indices;
         FetchJobNumbers fetch_job_numbers;
         ChangeOrRemoveJobNumbers change_or_remove_job_numbers;
@@ -76,7 +75,7 @@ namespace paludis
         Implementation(
                 const Environment * const e,
                 const ResolverFunctions & f,
-                const std::tr1::shared_ptr<Resolved> & r) :
+                const std::shared_ptr<Resolved> & r) :
             env(e),
             fns(f),
             resolved(r)
@@ -88,7 +87,7 @@ namespace paludis
 Orderer::Orderer(
         const Environment * const e,
         const ResolverFunctions & f,
-        const std::tr1::shared_ptr<Resolved> & r) :
+        const std::shared_ptr<Resolved> & r) :
     PrivateImplementationPattern<Orderer>(new Implementation<Orderer>(e, f, r))
 {
 }
@@ -99,22 +98,22 @@ Orderer::~Orderer()
 
 namespace
 {
-    typedef std::tr1::unordered_set<Resolvent, Hash<Resolvent> > ResolventsSet;
+    typedef std::unordered_set<Resolvent, Hash<Resolvent> > ResolventsSet;
 
     struct DecisionDispatcher
     {
-        const std::tr1::shared_ptr<Resolved> resolved;
+        const std::shared_ptr<Resolved> resolved;
         ResolventsSet & ignore_dependencies_from_resolvents;
         ChangeOrRemoveIndices & change_or_remove_indices;
         const Resolvent resolvent;
-        const std::tr1::shared_ptr<const Decision> decision;
+        const std::shared_ptr<const Decision> decision;
 
         DecisionDispatcher(
-                const std::tr1::shared_ptr<Resolved> & r,
+                const std::shared_ptr<Resolved> & r,
                 ResolventsSet & i,
                 ChangeOrRemoveIndices & c,
                 const Resolvent & v,
-                const std::tr1::shared_ptr<const Decision> & d) :
+                const std::shared_ptr<const Decision> & d) :
             resolved(r),
             ignore_dependencies_from_resolvents(i),
             change_or_remove_indices(c),
@@ -127,10 +126,10 @@ namespace
         {
             if (decision->taken())
                 resolved->taken_unable_to_make_decisions()->push_back(
-                        std::tr1::static_pointer_cast<const UnableToMakeDecision>(decision));
+                        std::static_pointer_cast<const UnableToMakeDecision>(decision));
             else
                 resolved->untaken_unable_to_make_decisions()->push_back(
-                        std::tr1::static_pointer_cast<const UnableToMakeDecision>(decision));
+                        std::static_pointer_cast<const UnableToMakeDecision>(decision));
 
             ignore_dependencies_from_resolvents.insert(resolvent);
 
@@ -165,7 +164,7 @@ namespace
                             ));
                 resolved->nag()->add_node(fetched_index);
                 change_or_remove_indices.insert(std::make_pair(fetched_index,
-                            std::tr1::static_pointer_cast<const ChangeOrRemoveDecision>(decision)));
+                            std::static_pointer_cast<const ChangeOrRemoveDecision>(decision)));
 
                 NAGIndex done_index(make_named_values<NAGIndex>(
                             n::resolvent() = resolvent,
@@ -173,7 +172,7 @@ namespace
                             ));
                 resolved->nag()->add_node(done_index);
                 change_or_remove_indices.insert(std::make_pair(done_index,
-                            std::tr1::static_pointer_cast<const ChangeOrRemoveDecision>(decision)));
+                            std::static_pointer_cast<const ChangeOrRemoveDecision>(decision)));
 
                 resolved->nag()->add_edge(done_index, fetched_index,
                         make_named_values<NAGEdgeProperties>(
@@ -188,7 +187,7 @@ namespace
             else
             {
                 resolved->untaken_change_or_remove_decisions()->push_back(
-                        std::tr1::static_pointer_cast<const ChangesToMakeDecision>(decision));
+                        std::static_pointer_cast<const ChangesToMakeDecision>(decision));
                 return false;
             }
         }
@@ -203,13 +202,13 @@ namespace
                             ));
                 resolved->nag()->add_node(index);
                 change_or_remove_indices.insert(std::make_pair(index,
-                            std::tr1::static_pointer_cast<const ChangeOrRemoveDecision>(decision)));
+                            std::static_pointer_cast<const ChangeOrRemoveDecision>(decision)));
                 return true;
             }
             else
             {
                 resolved->untaken_change_or_remove_decisions()->push_back(
-                        std::tr1::static_pointer_cast<const ChangeOrRemoveDecision>(decision));
+                        std::static_pointer_cast<const ChangeOrRemoveDecision>(decision));
                 return false;
             }
         }
@@ -218,23 +217,23 @@ namespace
         {
             if (d.required_confirmations_if_any())
                 resolved->taken_unconfirmed_decisions()->push_back(
-                        std::tr1::static_pointer_cast<const BreakDecision>(decision));
+                        std::static_pointer_cast<const BreakDecision>(decision));
             return false;
         }
     };
 
     struct EdgesFromReasonVisitor
     {
-        const std::tr1::shared_ptr<NAG> nag;
+        const std::shared_ptr<NAG> nag;
         const ResolventsSet & ignore_dependencies_from_resolvents;
         const Resolvent resolvent;
-        const std::tr1::function<NAGIndexRole (const Resolvent &)> role_for_fetching;
+        const std::function<NAGIndexRole (const Resolvent &)> role_for_fetching;
 
         EdgesFromReasonVisitor(
-                const std::tr1::shared_ptr<NAG> & n,
+                const std::shared_ptr<NAG> & n,
                 const ResolventsSet & i,
                 const Resolvent & v,
-            const std::tr1::function<NAGIndexRole (const Resolvent &)> & f) :
+            const std::function<NAGIndexRole (const Resolvent &)> & f) :
             nag(n),
             ignore_dependencies_from_resolvents(i),
             resolvent(v),
@@ -437,7 +436,7 @@ Orderer::resolve()
         _add_binary_cleverness(*r);
 
         EdgesFromReasonVisitor edges_from_reason_visitor(_imp->resolved->nag(), ignore_dependencies_from_resolvents, (*r)->resolvent(),
-                std::tr1::bind(&Orderer::_role_for_fetching, this, std::tr1::placeholders::_1));
+                std::bind(&Orderer::_role_for_fetching, this, std::placeholders::_1));
         for (Constraints::ConstIterator c((*r)->constraints()->begin()),
                 c_end((*r)->constraints()->end()) ;
                 c != c_end ; ++c)
@@ -446,10 +445,10 @@ Orderer::resolve()
 
     _imp->resolved->nag()->verify_edges();
 
-    const std::tr1::function<Tribool (const NAGIndex &)> order_early_fn(std::tr1::bind(&Orderer::_order_early, this, std::tr1::placeholders::_1));
+    const std::function<Tribool (const NAGIndex &)> order_early_fn(std::bind(&Orderer::_order_early, this, std::placeholders::_1));
 
     _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Finding NAG SCCs"));
-    const std::tr1::shared_ptr<const SortedStronglyConnectedComponents> ssccs(
+    const std::shared_ptr<const SortedStronglyConnectedComponents> ssccs(
             _imp->resolved->nag()->sorted_strongly_connected_components(order_early_fn));
 
     _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Ordering SCCs"));
@@ -462,7 +461,7 @@ Orderer::resolve()
          * nodes. this matters for cycle resolution. we identify them now, even
          * though our scc might just contain a single install, rather than
          * adding in extra useless code for the special easy case. */
-        typedef std::tr1::unordered_set<NAGIndex, Hash<NAGIndex> > ChangesInSCC;
+        typedef std::unordered_set<NAGIndex, Hash<NAGIndex> > ChangesInSCC;
         ChangesInSCC changes_in_scc;
 
         for (Set<NAGIndex>::ConstIterator r(scc->nodes()->begin()), r_end(scc->nodes()->end()) ;
@@ -507,14 +506,14 @@ Orderer::resolve()
             scc_nag.verify_edges();
 
             /* now we try again, hopefully with lots of small SCCs now */
-            const std::tr1::shared_ptr<const SortedStronglyConnectedComponents> sub_ssccs(scc_nag.sorted_strongly_connected_components(order_early_fn));
+            const std::shared_ptr<const SortedStronglyConnectedComponents> sub_ssccs(scc_nag.sorted_strongly_connected_components(order_early_fn));
             _order_sub_ssccs(scc_nag, *scc, sub_ssccs, true, order_early_fn);
         }
     }
 }
 
 void
-Orderer::_add_binary_cleverness(const std::tr1::shared_ptr<const Resolution> & resolution)
+Orderer::_add_binary_cleverness(const std::shared_ptr<const Resolution> & resolution)
 {
     if (resolution->resolvent().destination_type() != dt_create_binary)
         return;
@@ -576,9 +575,9 @@ void
 Orderer::_order_sub_ssccs(
         const NAG & scc_nag,
         const StronglyConnectedComponent & top_scc,
-        const std::tr1::shared_ptr<const SortedStronglyConnectedComponents> & sub_ssccs,
+        const std::shared_ptr<const SortedStronglyConnectedComponents> & sub_ssccs,
         const bool can_recurse,
-        const std::tr1::function<Tribool (const NAGIndex &)> & order_early_fn)
+        const std::function<Tribool (const NAGIndex &)> & order_early_fn)
 {
     Context context("When ordering SSCCs" + std::string(can_recurse ? " for the first time" : " for the second time") + ":");
 
@@ -636,7 +635,7 @@ Orderer::_order_sub_ssccs(
 
             scc_nag_without_met_deps.verify_edges();
 
-            const std::tr1::shared_ptr<const SortedStronglyConnectedComponents> sub_ssccs_without_met_deps(
+            const std::shared_ptr<const SortedStronglyConnectedComponents> sub_ssccs_without_met_deps(
                     scc_nag_without_met_deps.sorted_strongly_connected_components(order_early_fn));
             _order_sub_ssccs(scc_nag_without_met_deps, top_scc, sub_ssccs_without_met_deps, false, order_early_fn);
         }
@@ -664,13 +663,13 @@ Orderer::_order_sub_ssccs(
 
 namespace
 {
-    typedef std::tr1::unordered_set<NAGIndex, Hash<NAGIndex> > RecursedRequirements;
+    typedef std::unordered_set<NAGIndex, Hash<NAGIndex> > RecursedRequirements;
 
     void populate_requirements(
-            const std::tr1::shared_ptr<const NAG> & nag,
+            const std::shared_ptr<const NAG> & nag,
             const ChangeOrRemoveJobNumbers & change_or_remove_job_numbers,
             const NAGIndex & index,
-            const std::tr1::shared_ptr<JobRequirements> & requirements,
+            const std::shared_ptr<JobRequirements> & requirements,
             const bool is_uninstall,
             const bool is_fetch,
             const bool recursing,
@@ -716,8 +715,8 @@ namespace
 void
 Orderer::_check_self_deps_and_schedule(
         const NAGIndex & index,
-        const std::tr1::shared_ptr<const ChangeOrRemoveDecision> & d,
-        const std::tr1::shared_ptr<OrdererNotes> & n)
+        const std::shared_ptr<const ChangeOrRemoveDecision> & d,
+        const std::shared_ptr<OrdererNotes> & n)
 {
     /* do we dep directly upon ourself? */
     bool direct_self_dep(false), self_dep_is_met(true), self_dep_is_not_build(true);
@@ -770,13 +769,13 @@ namespace
 
     struct ExtraScheduler
     {
-        const std::tr1::shared_ptr<const Resolved> resolved;
+        const std::shared_ptr<const Resolved> resolved;
         FetchJobNumbers & fetch_job_numbers;
         ChangeOrRemoveJobNumbers & change_or_remove_job_numbers;
         const NAGIndex index;
 
         ExtraScheduler(
-                const std::tr1::shared_ptr<const Resolved> & r,
+                const std::shared_ptr<const Resolved> & r,
                 FetchJobNumbers & f,
                 ChangeOrRemoveJobNumbers & i,
                 const NAGIndex & v) :
@@ -800,7 +799,7 @@ namespace
                         resolved->job_lists()->pretend_job_list()->append(make_shared_ptr(new PretendJob(
                                         changes_to_make_decision.origin_id()->uniquely_identifying_spec())));
 
-                        const std::tr1::shared_ptr<JobRequirements> requirements(new JobRequirements);
+                        const std::shared_ptr<JobRequirements> requirements(new JobRequirements);
                         requirements->push_back(make_named_values<JobRequirement>(
                                     n::job_number() = fetch_job_n->second,
                                     n::required_if() = JobRequirementIfs() + jri_require_for_satisfied + jri_require_for_independent
@@ -819,7 +818,7 @@ namespace
                                 recursed
                                 );
 
-                        const std::tr1::shared_ptr<Sequence<PackageDepSpec> > replacing(new Sequence<PackageDepSpec>);
+                        const std::shared_ptr<Sequence<PackageDepSpec> > replacing(new Sequence<PackageDepSpec>);
                         for (PackageIDSequence::ConstIterator i(changes_to_make_decision.destination()->replacing()->begin()),
                                 i_end(changes_to_make_decision.destination()->replacing()->end()) ;
                                 i != i_end ; ++i)
@@ -839,7 +838,7 @@ namespace
 
                 case nir_fetched:
                     {
-                        const std::tr1::shared_ptr<JobRequirements> requirements(new JobRequirements);
+                        const std::shared_ptr<JobRequirements> requirements(new JobRequirements);
 
                         RecursedRequirements recursed;
                         populate_requirements(
@@ -869,13 +868,13 @@ namespace
 
         void visit(const RemoveDecision & remove_decision) const
         {
-            const std::tr1::shared_ptr<Sequence<PackageDepSpec> > removing(new Sequence<PackageDepSpec>);
+            const std::shared_ptr<Sequence<PackageDepSpec> > removing(new Sequence<PackageDepSpec>);
             for (PackageIDSequence::ConstIterator i(remove_decision.ids()->begin()),
                     i_end(remove_decision.ids()->end()) ;
                     i != i_end ; ++i)
                 removing->push_back((*i)->uniquely_identifying_spec());
 
-            const std::tr1::shared_ptr<JobRequirements> requirements(new JobRequirements);
+            const std::shared_ptr<JobRequirements> requirements(new JobRequirements);
             RecursedRequirements recursed;
             populate_requirements(
                     resolved->nag(),
@@ -901,8 +900,8 @@ namespace
 void
 Orderer::_schedule(
         const NAGIndex & index,
-        const std::tr1::shared_ptr<const ChangeOrRemoveDecision> & d,
-        const std::tr1::shared_ptr<const OrdererNotes> & n)
+        const std::shared_ptr<const ChangeOrRemoveDecision> & d,
+        const std::shared_ptr<const OrdererNotes> & n)
 {
     do
     {

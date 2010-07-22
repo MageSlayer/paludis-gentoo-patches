@@ -47,7 +47,7 @@ namespace test_cases
             {
                 ThreadPool p;
                 for (int x(0) ; x < n_threads ; ++x)
-                    p.create_thread(std::tr1::bind(&make_one, std::tr1::ref(t[x])));
+                    p.create_thread(std::bind(&make_one, std::ref(t[x])));
             }
             TEST_CHECK(n_threads == std::count(t.begin(), t.end(), 1));
         }

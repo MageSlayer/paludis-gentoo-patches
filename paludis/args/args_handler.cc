@@ -32,7 +32,7 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/sequence-impl.hh>
 
-#include <tr1/memory>
+#include <memory>
 #include <algorithm>
 #include <sstream>
 #include <list>
@@ -59,12 +59,12 @@ namespace paludis
         std::list<std::string> notes;
         std::list<std::string> descriptions;
         std::list<std::pair<std::string, int> > see_alsos;
-        std::tr1::shared_ptr<Sequence<std::string> > separate_after_dashes_args;
+        std::shared_ptr<Sequence<std::string> > separate_after_dashes_args;
 
         std::map<std::string, ArgsOption *> longopts;
         std::map<char, ArgsOption *> shortopts;
 
-        std::tr1::shared_ptr<ArgsSection> main_options_section;
+        std::shared_ptr<ArgsSection> main_options_section;
 
         Implementation() :
             separate_after_dashes_args(new Sequence<std::string>)
@@ -174,7 +174,7 @@ ArgsHandler::add(ArgsSection * const s)
 
 void
 ArgsHandler::run(
-        const std::tr1::shared_ptr<const Sequence<std::string> > & argseq,
+        const std::shared_ptr<const Sequence<std::string> > & argseq,
         const std::string & client,
         const std::string & env_var,
         const std::string & env_prefix,
@@ -292,7 +292,7 @@ ArgsHandler::run(
         const std::string & env_prefix,
         const ArgsHandlerOptions & options)
 {
-    std::tr1::shared_ptr<Sequence<std::string> > s(new Sequence<std::string>);
+    std::shared_ptr<Sequence<std::string> > s(new Sequence<std::string>);
     std::copy(&argv[1], &argv[argc], create_inserter<std::string>(s->back_inserter()));
     run(s, client, env_var, env_prefix, options);
 }
@@ -465,7 +465,7 @@ ArgsHandler::add_description_line(const std::string & e)
     _imp->descriptions.push_back(e);
 }
 
-const std::tr1::shared_ptr<const Sequence<std::string> >
+const std::shared_ptr<const Sequence<std::string> >
 ArgsHandler::separate_after_dashes_args() const
 {
     return _imp->separate_after_dashes_args;

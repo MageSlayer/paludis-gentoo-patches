@@ -30,7 +30,7 @@ namespace paludis
         public:
             CommaSeparatedDepParser() = delete;
 
-            static std::tr1::shared_ptr<const DependencySpecTree> parse(
+            static std::shared_ptr<const DependencySpecTree> parse(
                     const Environment * const env, const std::string &);
     };
 }

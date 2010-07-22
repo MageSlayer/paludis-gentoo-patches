@@ -22,7 +22,7 @@
 
 #include <paludis/linkage_checker.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <tr1/functional>
+#include <functional>
 #include <iosfwd>
 
 namespace paludis
@@ -40,7 +40,7 @@ namespace paludis
 
             virtual void add_extra_lib_dir(const paludis::FSEntry &);
             virtual void need_breakage_added(
-                const std::tr1::function<void (const paludis::FSEntry &, const std::string &)> &);
+                const std::function<void (const paludis::FSEntry &, const std::string &)> &);
     };
 }
 

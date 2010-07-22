@@ -25,7 +25,7 @@
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/metadata_key-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 
 namespace paludis
 {
@@ -43,7 +43,7 @@ namespace paludis
 
         struct UnavailableRepositoryFileEntry
         {
-            NamedValue<n::description, std::tr1::shared_ptr<const MetadataValueKey<std::string> > > description;
+            NamedValue<n::description, std::shared_ptr<const MetadataValueKey<std::string> > > description;
             NamedValue<n::name, QualifiedPackageName> name;
             NamedValue<n::slot, SlotName> slot;
             NamedValue<n::version, VersionSpec> version;

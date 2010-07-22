@@ -25,8 +25,8 @@
 #include <paludis/output_manager_factory.hh>
 #include <paludis/util/set-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <tr1/memory>
-#include <tr1/functional>
+#include <memory>
+#include <functional>
 
 namespace paludis
 {
@@ -38,7 +38,7 @@ namespace paludis
             ForwardAtFinishOutputManager(
                     const bool if_success,
                     const bool if_failure,
-                    const std::tr1::shared_ptr<OutputManager> & child);
+                    const std::shared_ptr<OutputManager> & child);
             ~ForwardAtFinishOutputManager();
 
             virtual std::ostream & stdout_stream() PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -50,10 +50,10 @@ namespace paludis
             virtual void message(const MessageType, const std::string &);
             virtual void nothing_more_to_come();
 
-            static const std::tr1::shared_ptr<const Set<std::string> > factory_managers()
+            static const std::shared_ptr<const Set<std::string> > factory_managers()
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            static const std::tr1::shared_ptr<OutputManager> factory_create(
+            static const std::shared_ptr<OutputManager> factory_create(
                     const OutputManagerFactory::KeyFunction &,
                     const OutputManagerFactory::CreateChildFunction &,
                     const OutputManagerFactory::ReplaceVarsFunc &)

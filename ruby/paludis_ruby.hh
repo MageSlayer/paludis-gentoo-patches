@@ -82,15 +82,15 @@ namespace paludis
 
         /* constructors */
 
-        VALUE package_database_to_value(std::tr1::shared_ptr<PackageDatabase>);
-        VALUE repository_to_value(std::tr1::shared_ptr<Repository>);
+        VALUE package_database_to_value(std::shared_ptr<PackageDatabase>);
+        VALUE repository_to_value(std::shared_ptr<Repository>);
         VALUE version_spec_to_value(const VersionSpec &);
-        VALUE package_id_to_value(std::tr1::shared_ptr<const PackageID>);
-        VALUE dep_tag_to_value(std::tr1::shared_ptr<const DepTag>);
+        VALUE package_id_to_value(std::shared_ptr<const PackageID>);
+        VALUE dep_tag_to_value(std::shared_ptr<const DepTag>);
         VALUE qualified_package_name_to_value(const QualifiedPackageName &);
-        VALUE contents_to_value(std::tr1::shared_ptr<const Contents>);
-        VALUE repository_mask_info_to_value(std::tr1::shared_ptr<const RepositoryMaskInfo>);
-        VALUE metadata_key_to_value(std::tr1::shared_ptr<const MetadataKey> m);
+        VALUE contents_to_value(std::shared_ptr<const Contents>);
+        VALUE repository_mask_info_to_value(std::shared_ptr<const RepositoryMaskInfo>);
+        VALUE metadata_key_to_value(std::shared_ptr<const MetadataKey> m);
         VALUE fetch_action_failure_to_value(const FetchActionFailure &);
         VALUE generator_to_value(const Generator &);
         VALUE filter_to_value(const Filter &);
@@ -98,34 +98,34 @@ namespace paludis
 #ifdef ENABLE_RUBY_QA
         VALUE qa_message_to_value(const QAMessage &);
 #endif
-        template <typename T_> VALUE dep_tree_to_value(const std::tr1::shared_ptr<const T_> &);
-        template <typename T_> std::tr1::shared_ptr<const T_> value_to_dep_tree(VALUE);
-        VALUE package_dep_spec_to_value(const std::tr1::shared_ptr<const PackageDepSpec> &);
-        VALUE uri_label_to_value(const std::tr1::shared_ptr<const URILabel> &);
-        VALUE dependencies_label_to_value(const std::tr1::shared_ptr<const DependenciesLabel> &);
-        VALUE mask_to_value(std::tr1::shared_ptr<const Mask>);
-        VALUE choices_to_value(const std::tr1::shared_ptr<const Choices> & c);
-        VALUE choice_to_value(const std::tr1::shared_ptr<const Choice> & c);
-        VALUE choice_value_to_value(const std::tr1::shared_ptr<const ChoiceValue> & c);
+        template <typename T_> VALUE dep_tree_to_value(const std::shared_ptr<const T_> &);
+        template <typename T_> std::shared_ptr<const T_> value_to_dep_tree(VALUE);
+        VALUE package_dep_spec_to_value(const std::shared_ptr<const PackageDepSpec> &);
+        VALUE uri_label_to_value(const std::shared_ptr<const URILabel> &);
+        VALUE dependencies_label_to_value(const std::shared_ptr<const DependenciesLabel> &);
+        VALUE mask_to_value(std::shared_ptr<const Mask>);
+        VALUE choices_to_value(const std::shared_ptr<const Choices> & c);
+        VALUE choice_to_value(const std::shared_ptr<const Choice> & c);
+        VALUE choice_value_to_value(const std::shared_ptr<const ChoiceValue> & c);
         VALUE match_package_options_to_value(const MatchPackageOptions & c);
         VALUE bool_to_value(bool b);
 
         VersionSpec value_to_version_spec(VALUE v);
-        std::tr1::shared_ptr<const PackageID> value_to_package_id(VALUE);
-        std::tr1::shared_ptr<const PackageDepSpec> value_to_package_dep_spec(VALUE v);
-        std::tr1::shared_ptr<const DependenciesLabelsDepSpec> value_to_dependencies_labels_dep_spec(VALUE v);
-        std::tr1::shared_ptr<const DepSpec> value_to_dep_spec(VALUE v);
-        std::tr1::shared_ptr<const DepTag> value_to_dep_tag(VALUE v);
+        std::shared_ptr<const PackageID> value_to_package_id(VALUE);
+        std::shared_ptr<const PackageDepSpec> value_to_package_dep_spec(VALUE v);
+        std::shared_ptr<const DependenciesLabelsDepSpec> value_to_dependencies_labels_dep_spec(VALUE v);
+        std::shared_ptr<const DepSpec> value_to_dep_spec(VALUE v);
+        std::shared_ptr<const DepTag> value_to_dep_tag(VALUE v);
         QualifiedPackageName value_to_qualified_package_name(VALUE v);
-        std::tr1::shared_ptr<Environment> value_to_environment(VALUE v);
-        std::tr1::shared_ptr<NoConfigEnvironment> value_to_no_config_environment(VALUE v);
-        std::tr1::shared_ptr<Repository> value_to_repository(VALUE);
-        std::tr1::shared_ptr<const SupportsActionTestBase> value_to_supports_action_test_base(VALUE v);
-        std::tr1::shared_ptr<Action> value_to_action(VALUE v);
-        std::tr1::shared_ptr<const Choices> value_to_choices(VALUE v);
-        std::tr1::shared_ptr<const Choice> value_to_choice(VALUE v);
-        std::tr1::shared_ptr<const ChoiceValue> value_to_choice_value(VALUE v);
-        std::tr1::shared_ptr<const DependenciesLabel> value_to_dependencies_label(VALUE v);
+        std::shared_ptr<Environment> value_to_environment(VALUE v);
+        std::shared_ptr<NoConfigEnvironment> value_to_no_config_environment(VALUE v);
+        std::shared_ptr<Repository> value_to_repository(VALUE);
+        std::shared_ptr<const SupportsActionTestBase> value_to_supports_action_test_base(VALUE v);
+        std::shared_ptr<Action> value_to_action(VALUE v);
+        std::shared_ptr<const Choices> value_to_choices(VALUE v);
+        std::shared_ptr<const Choice> value_to_choice(VALUE v);
+        std::shared_ptr<const ChoiceValue> value_to_choice_value(VALUE v);
+        std::shared_ptr<const DependenciesLabel> value_to_dependencies_label(VALUE v);
         MatchPackageOptions value_to_match_package_options(VALUE v);
         bool value_to_bool(VALUE v);
 
@@ -227,7 +227,7 @@ namespace paludis
             {
                 T_ * self_ptr;
                 Data_Get_Struct(self, T_, self_ptr);
-                return INT2FIX(Hash<typename std::tr1::remove_const<typename T_::element_type>::type>()(**self_ptr));
+                return INT2FIX(Hash<typename std::remove_const<typename T_::element_type>::type>()(**self_ptr));
             }
 
 

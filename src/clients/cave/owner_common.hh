@@ -25,18 +25,18 @@
 #include <paludis/package_id-fwd.hh>
 #include <paludis/environment-fwd.hh>
 #include <string>
-#include <tr1/memory>
-#include <tr1/functional>
+#include <memory>
+#include <functional>
 
 namespace paludis
 {
     namespace cave
     {
         int owner_common(
-                const std::tr1::shared_ptr<Environment> & env,
+                const std::shared_ptr<Environment> & env,
                 const std::string & match,
                 const std::string & query,
-                const std::tr1::function<void (const std::tr1::shared_ptr<const PackageID> &)> &);
+                const std::function<void (const std::shared_ptr<const PackageID> &)> &);
     }
 }
 

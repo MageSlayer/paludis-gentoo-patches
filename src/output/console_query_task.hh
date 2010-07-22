@@ -29,7 +29,7 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/map-fwd.hh>
 #include <src/output/console_task.hh>
-#include <tr1/memory>
+#include <memory>
 
 namespace paludis
 {
@@ -40,31 +40,31 @@ namespace paludis
         protected:
             ConsoleQueryTask(const Environment * const env);
 
-            virtual void show_one(const PackageDepSpec &, const std::tr1::shared_ptr<const PackageID> & = std::tr1::shared_ptr<const PackageID>()) const;
+            virtual void show_one(const PackageDepSpec &, const std::shared_ptr<const PackageID> & = std::shared_ptr<const PackageID>()) const;
 
         public:
             virtual ~ConsoleQueryTask();
 
-            virtual void show(const PackageDepSpec &, const std::tr1::shared_ptr<const PackageID> & = std::tr1::shared_ptr<const PackageID>()) const;
+            virtual void show(const PackageDepSpec &, const std::shared_ptr<const PackageID> & = std::shared_ptr<const PackageID>()) const;
 
-            virtual void display_header(const PackageDepSpec &, const std::tr1::shared_ptr<const PackageID> &) const;
+            virtual void display_header(const PackageDepSpec &, const std::shared_ptr<const PackageID> &) const;
             virtual void display_versions_by_repository(const PackageDepSpec &,
-                    const std::tr1::shared_ptr<const PackageIDSequence> &, const std::tr1::shared_ptr<const PackageID> &) const;
-            virtual void display_metadata(const PackageDepSpec &, const std::tr1::shared_ptr<const PackageID> &) const;
+                    const std::shared_ptr<const PackageIDSequence> &, const std::shared_ptr<const PackageID> &) const;
+            virtual void display_metadata(const PackageDepSpec &, const std::shared_ptr<const PackageID> &) const;
 
             virtual void display_metadata_key(const std::string &, const std::string &,
                     const std::string &) const;
 
-            virtual void display_masks(const PackageDepSpec &, const std::tr1::shared_ptr<const PackageID> &) const;
+            virtual void display_masks(const PackageDepSpec &, const std::shared_ptr<const PackageID> &) const;
 
-            virtual void display_compact(const PackageDepSpec &, const std::tr1::shared_ptr<const PackageID> &) const;
+            virtual void display_compact(const PackageDepSpec &, const std::shared_ptr<const PackageID> &) const;
 
             virtual bool want_compact() const = 0;
             virtual bool want_deps() const = 0;
             virtual bool want_raw() const = 0;
             virtual bool want_authors() const = 0;
 
-            const std::tr1::shared_ptr<const Map<char, std::string> > masks_to_explain() const;
+            const std::shared_ptr<const Map<char, std::string> > masks_to_explain() const;
     };
 }
 

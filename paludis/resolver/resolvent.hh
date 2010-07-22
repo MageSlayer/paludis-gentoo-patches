@@ -22,7 +22,6 @@
 
 #include <paludis/resolver/resolvent-fwd.hh>
 #include <paludis/resolver/destination_types-fwd.hh>
-#include <paludis/resolver/destination_types-fwd.hh>
 #include <paludis/resolver/slot_name_or_null.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/util/sequence.hh>
@@ -31,7 +30,7 @@
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/name.hh>
-#include <tr1/memory>
+#include <memory>
 
 namespace paludis
 {
@@ -58,7 +57,7 @@ namespace paludis
             Resolvent(const PackageDepSpec &, const bool, const DestinationType);
             Resolvent(const PackageDepSpec &, const SlotName &, const DestinationType);
 
-            Resolvent(const std::tr1::shared_ptr<const PackageID> &, const DestinationType);
+            Resolvent(const std::shared_ptr<const PackageID> &, const DestinationType);
 
             void serialise(Serialiser &) const;
             static const Resolvent deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));

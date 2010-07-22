@@ -37,14 +37,14 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 
-#include <tr1/functional>
-#include <tr1/unordered_map>
+#include <functional>
+#include <unordered_map>
 #include <algorithm>
 #include <vector>
 
 using namespace paludis;
 
-typedef std::tr1::unordered_map<QualifiedPackageName, std::tr1::shared_ptr<PackageIDSequence>, Hash<QualifiedPackageName> > IDMap;
+typedef std::unordered_map<QualifiedPackageName, std::shared_ptr<PackageIDSequence>, Hash<QualifiedPackageName> > IDMap;
 
 namespace paludis
 {
@@ -54,14 +54,14 @@ namespace paludis
         const Environment * const env;
         const FSEntry root;
 
-        const std::tr1::shared_ptr<Mutex> ids_mutex;
+        const std::shared_ptr<Mutex> ids_mutex;
         mutable IDMap ids;
         mutable bool has_ids;
 
-        std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > root_key;
-        std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key;
+        std::shared_ptr<const MetadataValueKey<FSEntry> > root_key;
+        std::shared_ptr<const MetadataValueKey<std::string> > format_key;
 
-        Implementation(const Environment * const e, const FSEntry & r, std::tr1::shared_ptr<Mutex> m = make_shared_ptr(new Mutex)) :
+        Implementation(const Environment * const e, const FSEntry & r, std::shared_ptr<Mutex> m = make_shared_ptr(new Mutex)) :
             env(e),
             root(r),
             ids_mutex(m),
@@ -146,7 +146,7 @@ InstalledVirtualsRepository::need_ids() const
         if (! (**r).provides_interface())
             continue;
 
-        std::tr1::shared_ptr<const RepositoryProvidesInterface::ProvidesSequence> pp(
+        std::shared_ptr<const RepositoryProvidesInterface::ProvidesSequence> pp(
                 (**r).provides_interface()->provided_packages());
 
         for (RepositoryProvidesInterface::ProvidesSequence::ConstIterator p(
@@ -156,7 +156,7 @@ InstalledVirtualsRepository::need_ids() const
             if (i == _imp->ids.end())
                 i = _imp->ids.insert(std::make_pair((*p).virtual_name(), make_shared_ptr(new PackageIDSequence))).first;
 
-            std::tr1::shared_ptr<const PackageID> id(new virtuals::VirtualsPackageID(
+            std::shared_ptr<const PackageID> id(new virtuals::VirtualsPackageID(
                         _imp->env, shared_from_this(), (*p).virtual_name(), (*p).provided_by(), false));
             i->second->push_back(id);
         }
@@ -165,40 +165,40 @@ InstalledVirtualsRepository::need_ids() const
     _imp->has_ids = true;
 }
 
-std::tr1::shared_ptr<const PackageIDSequence>
+std::shared_ptr<const PackageIDSequence>
 InstalledVirtualsRepository::package_ids(const QualifiedPackageName & q) const
 {
     if (q.category().value() != "virtual")
-        return std::tr1::shared_ptr<PackageIDSequence>(new PackageIDSequence);
+        return std::shared_ptr<PackageIDSequence>(new PackageIDSequence);
 
     need_ids();
 
     IDMap::const_iterator i(_imp->ids.find(q));
     if (i == _imp->ids.end())
-        return std::tr1::shared_ptr<PackageIDSequence>(new PackageIDSequence);
+        return std::shared_ptr<PackageIDSequence>(new PackageIDSequence);
 
     return i->second;
 }
 
-std::tr1::shared_ptr<const QualifiedPackageNameSet>
+std::shared_ptr<const QualifiedPackageNameSet>
 InstalledVirtualsRepository::package_names(const CategoryNamePart & c) const
 {
     if (c.value() != "virtual")
-        return std::tr1::shared_ptr<QualifiedPackageNameSet>(new QualifiedPackageNameSet);
+        return std::shared_ptr<QualifiedPackageNameSet>(new QualifiedPackageNameSet);
 
     need_ids();
 
-    std::tr1::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
+    std::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
     std::transform(_imp->ids.begin(), _imp->ids.end(), result->inserter(),
-            std::tr1::mem_fn(&std::pair<const QualifiedPackageName, std::tr1::shared_ptr<PackageIDSequence> >::first));
+            std::mem_fn(&std::pair<const QualifiedPackageName, std::shared_ptr<PackageIDSequence> >::first));
 
     return result;
 }
 
-std::tr1::shared_ptr<const CategoryNamePartSet>
+std::shared_ptr<const CategoryNamePartSet>
 InstalledVirtualsRepository::category_names() const
 {
-    std::tr1::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
+    std::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
     result->insert(CategoryNamePart("virtual"));
     return result;
 }
@@ -306,27 +306,27 @@ InstalledVirtualsRepository::some_ids_might_not_be_masked() const
     return true;
 }
 
-std::tr1::shared_ptr<const CategoryNamePartSet>
+std::shared_ptr<const CategoryNamePartSet>
 InstalledVirtualsRepository::unimportant_category_names() const
 {
-    std::tr1::shared_ptr<CategoryNamePartSet> result(make_shared_ptr(new CategoryNamePartSet));
+    std::shared_ptr<CategoryNamePartSet> result(make_shared_ptr(new CategoryNamePartSet));
     result->insert(CategoryNamePart("virtual"));
     return result;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataValueKey<std::string> >
 InstalledVirtualsRepository::format_key() const
 {
     return _imp->format_key;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSEntry> >
 InstalledVirtualsRepository::location_key() const
 {
-    return std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >();
+    return std::shared_ptr<const MetadataValueKey<FSEntry> >();
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSEntry> >
 InstalledVirtualsRepository::installed_root_key() const
 {
     return _imp->root_key;
@@ -340,15 +340,15 @@ InstalledVirtualsRepository::need_keys_added() const
 RepositoryName
 InstalledVirtualsRepository::repository_factory_name(
         const Environment * const,
-        const std::tr1::function<std::string (const std::string &)> & f)
+        const std::function<std::string (const std::string &)> & f)
 {
     return make_name(FSEntry(f("root")));
 }
 
-std::tr1::shared_ptr<Repository>
+std::shared_ptr<Repository>
 InstalledVirtualsRepository::repository_factory_create(
         const Environment * const env,
-        const std::tr1::function<std::string (const std::string &)> & f)
+        const std::function<std::string (const std::string &)> & f)
 {
     if (f("root").empty())
         throw ConfigurationError("Key 'root' unspecified or empty");
@@ -356,10 +356,10 @@ InstalledVirtualsRepository::repository_factory_create(
     return make_shared_ptr(new InstalledVirtualsRepository(env, f("root")));
 }
 
-std::tr1::shared_ptr<const RepositoryNameSet>
+std::shared_ptr<const RepositoryNameSet>
 InstalledVirtualsRepository::repository_factory_dependencies(
         const Environment * const,
-        const std::tr1::function<std::string (const std::string &)> &)
+        const std::function<std::string (const std::string &)> &)
 {
     return make_shared_ptr(new RepositoryNameSet);
 }
@@ -396,18 +396,18 @@ InstalledVirtualsRepository::populate_sets() const
 }
 
 bool
-InstalledVirtualsRepository::sync(const std::tr1::shared_ptr<OutputManager> &) const
+InstalledVirtualsRepository::sync(const std::shared_ptr<OutputManager> &) const
 {
     return false;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataValueKey<std::string> >
 InstalledVirtualsRepository::accept_keywords_key() const
 {
     return make_null_shared_ptr();
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataValueKey<std::string> >
 InstalledVirtualsRepository::sync_host_key() const
 {
     return make_null_shared_ptr();

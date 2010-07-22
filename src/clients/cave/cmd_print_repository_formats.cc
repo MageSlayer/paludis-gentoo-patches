@@ -63,8 +63,8 @@ namespace
 
 int
 PrintRepositoryFormatsCommand::run(
-        const std::tr1::shared_ptr<Environment> &,
-        const std::tr1::shared_ptr<const Sequence<std::string > > & args
+        const std::shared_ptr<Environment> &,
+        const std::shared_ptr<const Sequence<std::string > > & args
         )
 {
     PrintRepositoryFormatsCommandLine cmdline;
@@ -90,7 +90,7 @@ PrintRepositoryFormatsCommand::run(
     return EXIT_FAILURE;
 }
 
-std::tr1::shared_ptr<args::ArgsHandler>
+std::shared_ptr<args::ArgsHandler>
 PrintRepositoryFormatsCommand::make_doc_cmdline()
 {
     return make_shared_ptr(new PrintRepositoryFormatsCommandLine);

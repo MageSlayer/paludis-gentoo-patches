@@ -47,56 +47,56 @@ namespace paludis
             public:
                 virtual ~Profile() = 0;
 
-                virtual std::tr1::shared_ptr<const FSEntrySequence> profiles_with_parents() const
+                virtual std::shared_ptr<const FSEntrySequence> profiles_with_parents() const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
                 virtual bool use_masked(
-                        const std::tr1::shared_ptr<const PackageID> &,
-                        const std::tr1::shared_ptr<const Choice> &,
+                        const std::shared_ptr<const PackageID> &,
+                        const std::shared_ptr<const Choice> &,
                         const UnprefixedChoiceName & value_unprefixed,
                         const ChoiceNameWithPrefix & value_prefixed
                         ) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
                 virtual bool use_forced(
-                        const std::tr1::shared_ptr<const PackageID> &,
-                        const std::tr1::shared_ptr<const Choice> &,
+                        const std::shared_ptr<const PackageID> &,
+                        const std::shared_ptr<const Choice> &,
                         const UnprefixedChoiceName & value_unprefixed,
                         const ChoiceNameWithPrefix & value_prefixed
                         ) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
                 virtual Tribool use_state_ignoring_masks(
-                        const std::tr1::shared_ptr<const PackageID> &,
-                        const std::tr1::shared_ptr<const Choice> &,
+                        const std::shared_ptr<const PackageID> &,
+                        const std::shared_ptr<const Choice> &,
                         const UnprefixedChoiceName & value_unprefixed,
                         const ChoiceNameWithPrefix & value_prefixed
                         ) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-                virtual const std::tr1::shared_ptr<const Set<UnprefixedChoiceName> > known_choice_value_names(
-                        const std::tr1::shared_ptr<const erepository::ERepositoryID> &,
-                        const std::tr1::shared_ptr<const Choice> &
+                virtual const std::shared_ptr<const Set<UnprefixedChoiceName> > known_choice_value_names(
+                        const std::shared_ptr<const erepository::ERepositoryID> &,
+                        const std::shared_ptr<const Choice> &
                         ) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-                virtual const std::tr1::shared_ptr<const Set<std::string> > use_expand() const
+                virtual const std::shared_ptr<const Set<std::string> > use_expand() const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-                virtual const std::tr1::shared_ptr<const Set<std::string> > use_expand_hidden() const
+                virtual const std::shared_ptr<const Set<std::string> > use_expand_hidden() const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-                virtual const std::tr1::shared_ptr<const Set<std::string> > use_expand_unprefixed() const
+                virtual const std::shared_ptr<const Set<std::string> > use_expand_unprefixed() const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-                virtual const std::tr1::shared_ptr<const Set<std::string> > use_expand_implicit() const
+                virtual const std::shared_ptr<const Set<std::string> > use_expand_implicit() const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-                virtual const std::tr1::shared_ptr<const Set<std::string> > iuse_implicit() const
+                virtual const std::shared_ptr<const Set<std::string> > iuse_implicit() const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-                virtual const std::tr1::shared_ptr<const Set<std::string> > use_expand_values(const std::string &) const
+                virtual const std::shared_ptr<const Set<std::string> > use_expand_values(const std::string &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
                 virtual const std::string environment_variable(const std::string &) const = 0;
 
-                virtual const std::tr1::shared_ptr<const RepositoryMaskInfo> profile_masked(const PackageID &) const = 0;
+                virtual const std::shared_ptr<const RepositoryMaskInfo> profile_masked(const PackageID &) const = 0;
 
-                virtual const std::tr1::shared_ptr<const SetSpecTree> system_packages() const = 0;
+                virtual const std::shared_ptr<const SetSpecTree> system_packages() const = 0;
 
-                virtual const std::tr1::shared_ptr<const Map<QualifiedPackageName, PackageDepSpec> >
+                virtual const std::shared_ptr<const Map<QualifiedPackageName, PackageDepSpec> >
                     virtuals() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
         };
 
@@ -109,7 +109,7 @@ namespace paludis
                 ProfileFactory();
 
             public:
-                const std::tr1::shared_ptr<Profile> create(
+                const std::shared_ptr<Profile> create(
                         const std::string &,
                         const Environment * const,
                         const ERepository * const,

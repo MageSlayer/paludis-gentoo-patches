@@ -42,7 +42,6 @@
 #include <paludis/repository.hh>
 #include <paludis/output_manager_from_environment.hh>
 #include <paludis/output_manager.hh>
-#include <tr1/functional>
 #include <map>
 #include <set>
 #include <list>
@@ -52,7 +51,7 @@
 using namespace paludis;
 
 AmbiguousUnmergeTargetError::AmbiguousUnmergeTargetError(const std::string & t,
-        const std::tr1::shared_ptr<const PackageIDSequence> m) throw () :
+        const std::shared_ptr<const PackageIDSequence> m) throw () :
     Exception("Ambiguous unmerge target '" + t + "'"),
     _t(t),
     _p(m)
@@ -89,7 +88,7 @@ namespace paludis
         Environment * const env;
 
         std::list<std::string> raw_targets;
-        std::list<std::tr1::shared_ptr<const PackageDepSpec> > targets;
+        std::list<std::shared_ptr<const PackageDepSpec> > targets;
 
         bool pretend;
         bool preserve_world;
@@ -158,7 +157,7 @@ UninstallTask::add_target(const std::string & target)
 
     try
     {
-        std::tr1::shared_ptr<PackageDepSpec> pds(new PackageDepSpec(parse_user_package_dep_spec(
+        std::shared_ptr<PackageDepSpec> pds(new PackageDepSpec(parse_user_package_dep_spec(
                         target, _imp->env, UserPackageDepSpecOptions() + updso_throw_if_set + updso_allow_wildcards,
                         filter::SupportsAction<UninstallAction>())));
 
@@ -169,18 +168,18 @@ UninstallTask::add_target(const std::string & target)
         if (pds->package_ptr())
         {
             /* don't need to dewildcard */
-            pds->set_tag(std::tr1::shared_ptr<const DepTag>(new TargetDepTag));
+            pds->set_tag(std::shared_ptr<const DepTag>(new TargetDepTag));
             _imp->targets.push_back(pds);
         }
         else
         {
             /* blech. wildcards. */
-            std::tr1::shared_ptr<const PackageIDSequence> names((*_imp->env)[selection::BestVersionOnly(
+            std::shared_ptr<const PackageIDSequence> names((*_imp->env)[selection::BestVersionOnly(
                         generator::Matches(*pds, MatchPackageOptions()) | filter::SupportsAction<UninstallAction>())]);
             if (names->empty())
             {
                 /* no match. we'll get an error from this later anyway. */
-                pds->set_tag(std::tr1::shared_ptr<const DepTag>(new TargetDepTag));
+                pds->set_tag(std::shared_ptr<const DepTag>(new TargetDepTag));
                 _imp->targets.push_back(pds);
             }
             else
@@ -190,8 +189,8 @@ UninstallTask::add_target(const std::string & target)
                 {
                     PartiallyMadePackageDepSpec p(*pds);
                     p.package((*i)->name());
-                    std::tr1::shared_ptr<PackageDepSpec> pdsn(new PackageDepSpec(p));
-                    pdsn->set_tag(std::tr1::shared_ptr<const DepTag>(new TargetDepTag));
+                    std::shared_ptr<PackageDepSpec> pdsn(new PackageDepSpec(p));
+                    pdsn->set_tag(std::shared_ptr<const DepTag>(new TargetDepTag));
                     _imp->targets.push_back(pdsn);
                 }
             }
@@ -205,7 +204,7 @@ UninstallTask::add_target(const std::string & target)
             throw HadBothPackageAndSetTargets();
         _imp->had_set_targets = true;
 
-        std::tr1::shared_ptr<const SetSpecTree> spec(_imp->env->set(SetName(target)));
+        std::shared_ptr<const SetSpecTree> spec(_imp->env->set(SetName(target)));
         DepSpecFlattener<SetSpecTree, PackageDepSpec> f(_imp->env);
         spec->root()->accept(f);
         std::copy(f.begin(), f.end(), std::back_inserter(_imp->targets));
@@ -238,7 +237,7 @@ namespace
 void
 UninstallTask::execute()
 {
-    using namespace std::tr1::placeholders;
+    using namespace std::placeholders;
 
     Context context("When executing uninstall task:");
 
@@ -254,12 +253,12 @@ UninstallTask::execute()
         list.add_unused();
     else
     {
-        for (std::list<std::tr1::shared_ptr<const PackageDepSpec> >::const_iterator t(_imp->targets.begin()),
+        for (std::list<std::shared_ptr<const PackageDepSpec> >::const_iterator t(_imp->targets.begin()),
                 t_end(_imp->targets.end()) ; t != t_end ; ++t)
         {
             Context local_context("When looking for target '" + stringify(**t) + "':");
 
-            std::tr1::shared_ptr<const PackageIDSequence> r((*_imp->env)[selection::AllVersionsSorted(
+            std::shared_ptr<const PackageIDSequence> r((*_imp->env)[selection::AllVersionsSorted(
                         generator::Matches(**t, MatchPackageOptions()) |
                         filter::SupportsAction<UninstallAction>())]);
             if (r->empty())
@@ -316,7 +315,7 @@ UninstallTask::execute()
     {
         on_update_world_pre();
 
-        std::tr1::shared_ptr<SetSpecTree> all(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
+        std::shared_ptr<SetSpecTree> all(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
 
         std::map<QualifiedPackageName, std::set<VersionSpec> > being_removed;
         for (UninstallList::ConstIterator i(list.begin()), i_end(list.end()) ; i != i_end ; ++i)
@@ -327,7 +326,7 @@ UninstallTask::execute()
                 i(being_removed.begin()), i_end(being_removed.end()) ; i != i_end ; ++i)
         {
             bool remove(true);
-            std::tr1::shared_ptr<const PackageIDSequence> installed((*_imp->env)[selection::AllVersionsUnsorted(
+            std::shared_ptr<const PackageIDSequence> installed((*_imp->env)[selection::AllVersionsUnsorted(
                         generator::Matches(make_package_dep_spec(PartiallyMadePackageDepSpecOptions()).package(i->first), MatchPackageOptions()) |
                         filter::InstalledAtRoot(_imp->env->root())
                         )]);
@@ -386,7 +385,7 @@ UninstallTask::execute()
                         n::if_for_install_id() = make_null_shared_ptr(),
                         n::ignore_for_unmerge() = &ignore_nothing,
                         n::is_overwrite() = false,
-                        n::make_output_manager() = std::tr1::ref(output_manager_holder)
+                        n::make_output_manager() = std::ref(output_manager_holder)
                         ));
             i->package_id()->perform_action(uninstall_action);
 
@@ -474,11 +473,11 @@ namespace
 }
 
 void
-UninstallTask::world_remove_packages(const std::tr1::shared_ptr<const SetSpecTree> & a)
+UninstallTask::world_remove_packages(const std::shared_ptr<const SetSpecTree> & a)
 {
     WorldTargetFinder w(_imp->env, this);
     a->root()->accept(w);
 }
 
-template class WrappedForwardIterator<AmbiguousUnmergeTargetError::ConstIteratorTag, const std::tr1::shared_ptr<const PackageID> >;
+template class WrappedForwardIterator<AmbiguousUnmergeTargetError::ConstIteratorTag, const std::shared_ptr<const PackageID> >;
 

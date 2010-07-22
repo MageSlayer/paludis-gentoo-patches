@@ -29,7 +29,7 @@
 #include <paludis/elike_choices.hh>
 #include <paludis/comma_separated_dep_printer.hh>
 #include <paludis/comma_separated_dep_parser.hh>
-#include <tr1/memory>
+#include <memory>
 
 using namespace paludis;
 using namespace paludis::unpackaged_repositories;
@@ -40,15 +40,15 @@ namespace paludis
     struct Implementation<UnpackagedDependencyKey>
     {
         const Environment * const env;
-        const std::tr1::shared_ptr<const DependencySpecTree> value;
-        const std::tr1::shared_ptr<const DependenciesLabelSequence> labels;
+        const std::shared_ptr<const DependencySpecTree> value;
+        const std::shared_ptr<const DependenciesLabelSequence> labels;
 
         const std::string raw_name;
         const std::string human_name;
         const MetadataKeyType type;
 
         Implementation(const Environment * const e, const std::string & v,
-                const std::tr1::shared_ptr<const DependenciesLabelSequence> & l,
+                const std::shared_ptr<const DependenciesLabelSequence> & l,
                 const std::string & r, const std::string & h, const MetadataKeyType t) :
             env(e),
             value(CommaSeparatedDepParser::parse(env, v)),
@@ -63,7 +63,7 @@ namespace paludis
 
 UnpackagedDependencyKey::UnpackagedDependencyKey(const Environment * const env,
         const std::string & r, const std::string & h, const MetadataKeyType t,
-        const std::tr1::shared_ptr<const DependenciesLabelSequence> & l,
+        const std::shared_ptr<const DependenciesLabelSequence> & l,
         const std::string & v) :
     PrivateImplementationPattern<UnpackagedDependencyKey>(new Implementation<UnpackagedDependencyKey>(env, v, l, r, h, t))
 {
@@ -73,7 +73,7 @@ UnpackagedDependencyKey::~UnpackagedDependencyKey()
 {
 }
 
-const std::tr1::shared_ptr<const DependencySpecTree>
+const std::shared_ptr<const DependencySpecTree>
 UnpackagedDependencyKey::value() const
 {
     return _imp->value;
@@ -113,7 +113,7 @@ UnpackagedDependencyKey::pretty_print_flat(const DependencySpecTree::ItemFormatt
     return p.result();
 }
 
-const std::tr1::shared_ptr<const DependenciesLabelSequence>
+const std::shared_ptr<const DependenciesLabelSequence>
 UnpackagedDependencyKey::initial_labels() const
 {
     return _imp->labels;
@@ -128,7 +128,7 @@ namespace paludis
         const UnpackagedID * const id;
 
         mutable Mutex mutex;
-        mutable std::tr1::shared_ptr<Choices> value;
+        mutable std::shared_ptr<Choices> value;
 
         const std::string raw_name;
         const std::string human_name;
@@ -156,14 +156,14 @@ UnpackagedChoicesKey::~UnpackagedChoicesKey()
 {
 }
 
-const std::tr1::shared_ptr<const Choices>
+const std::shared_ptr<const Choices>
 UnpackagedChoicesKey::value() const
 {
     Lock lock(_imp->mutex);
     if (! _imp->value)
     {
         _imp->value.reset(new Choices);
-        std::tr1::shared_ptr<Choice> build_options(new Choice(make_named_values<ChoiceParams>(
+        std::shared_ptr<Choice> build_options(new Choice(make_named_values<ChoiceParams>(
                         n::consider_added_or_changed() = false,
                         n::contains_every_value() = false,
                         n::hidden() = false,

@@ -47,7 +47,7 @@
 #include <paludis/choice.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
-#include <tr1/functional>
+#include <functional>
 #include <set>
 #include <string>
 
@@ -58,18 +58,18 @@ using namespace paludis;
 
 namespace
 {
-    void cannot_uninstall(const std::tr1::shared_ptr<const PackageID> & id, const UninstallActionOptions &)
+    void cannot_uninstall(const std::shared_ptr<const PackageID> & id, const UninstallActionOptions &)
     {
         if (id)
             throw InternalError(PALUDIS_HERE, "cannot uninstall");
     }
 
-    std::tr1::shared_ptr<OutputManager> make_standard_output_manager(const Action &)
+    std::shared_ptr<OutputManager> make_standard_output_manager(const Action &)
     {
         return make_shared_ptr(new StandardOutputManager);
     }
 
-    std::string from_keys(const std::tr1::shared_ptr<const Map<std::string, std::string> > & m,
+    std::string from_keys(const std::shared_ptr<const Map<std::string, std::string> > & m,
             const std::string & k)
     {
         Map<std::string, std::string>::ConstIterator mm(m->find(k));
@@ -113,7 +113,7 @@ namespace
 #endif
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_ever_dir" / "repo1"));
@@ -124,11 +124,11 @@ namespace
             keys->insert("profile_eapi", "exheres-0");
             keys->insert("distdir", stringify(FSEntry::cwd() / "e_repository_TEST_ever_dir" / "distdir"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "e_repository_TEST_ever_dir" / "build"));
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
+            std::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
                         make_named_values<FakeInstalledRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("installed"),
@@ -140,15 +140,15 @@ namespace
             env.package_database()->add_repository(2, installed_repo);
 
 #ifdef ENABLE_VIRTUALS_REPOSITORY
-            std::tr1::shared_ptr<Map<std::string, std::string> > iv_keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > iv_keys(new Map<std::string, std::string>);
             iv_keys->insert("root", "/");
             iv_keys->insert("format", "installed_virtuals");
             env.package_database()->add_repository(-2, RepositoryFactory::get_instance()->create(&env,
-                        std::tr1::bind(from_keys, iv_keys, std::tr1::placeholders::_1)));
-            std::tr1::shared_ptr<Map<std::string, std::string> > v_keys(new Map<std::string, std::string>);
+                        std::bind(from_keys, iv_keys, std::placeholders::_1)));
+            std::shared_ptr<Map<std::string, std::string> > v_keys(new Map<std::string, std::string>);
             v_keys->insert("format", "virtuals");
             env.package_database()->add_repository(-2, RepositoryFactory::get_instance()->create(&env,
-                        std::tr1::bind(from_keys, v_keys, std::tr1::placeholders::_1)));
+                        std::bind(from_keys, v_keys, std::placeholders::_1)));
 #endif
 
             InstallAction action(make_named_values<InstallActionOptions>(
@@ -159,7 +159,7 @@ namespace
                         n::want_phase() = &want_all_phases
                     ));
 
-            const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+            const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("cat/" + test,
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
             TEST_CHECK(id);

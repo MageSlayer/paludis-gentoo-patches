@@ -36,7 +36,7 @@
 #include <paludis/spec_tree-fwd.hh>
 #include <paludis/filtered_generator-fwd.hh>
 #include <paludis/generator-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 
 namespace paludis
 {
@@ -57,7 +57,7 @@ namespace paludis
 
                 void resolve();
 
-                const std::tr1::shared_ptr<const Resolved> resolved() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::shared_ptr<const Resolved> resolved() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 }

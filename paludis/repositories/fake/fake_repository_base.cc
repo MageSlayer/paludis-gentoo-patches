@@ -29,7 +29,7 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/hook.hh>
-#include <tr1/functional>
+#include <functional>
 #include <map>
 #include <algorithm>
 
@@ -46,9 +46,9 @@ namespace paludis
     template<>
     struct Implementation<FakeRepositoryBase>
     {
-        std::tr1::shared_ptr<CategoryNamePartSet> category_names;
-        std::map<CategoryNamePart, std::tr1::shared_ptr<PackageNamePartSet> > package_names;
-        std::map<QualifiedPackageName, std::tr1::shared_ptr<PackageIDSequence> > ids;
+        std::shared_ptr<CategoryNamePartSet> category_names;
+        std::map<CategoryNamePart, std::shared_ptr<PackageNamePartSet> > package_names;
+        std::map<QualifiedPackageName, std::shared_ptr<PackageIDSequence> > ids;
 
         const Environment * const env;
 
@@ -88,16 +88,16 @@ FakeRepositoryBase::has_package_named(const QualifiedPackageName & q) const
          _imp->package_names.find(q.category())->second->find(q.package()));
 }
 
-std::tr1::shared_ptr<const CategoryNamePartSet>
+std::shared_ptr<const CategoryNamePartSet>
 FakeRepositoryBase::category_names() const
 {
     return _imp->category_names;
 }
 
-std::tr1::shared_ptr<const QualifiedPackageNameSet>
+std::shared_ptr<const QualifiedPackageNameSet>
 FakeRepositoryBase::package_names(const CategoryNamePart & c) const
 {
-    std::tr1::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
+    std::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
     if (! has_category_named(c))
         return result;
 
@@ -108,13 +108,13 @@ FakeRepositoryBase::package_names(const CategoryNamePart & c) const
     return result;
 }
 
-std::tr1::shared_ptr<const PackageIDSequence>
+std::shared_ptr<const PackageIDSequence>
 FakeRepositoryBase::package_ids(const QualifiedPackageName & n) const
 {
     if (! has_category_named(n.category()))
-        return std::tr1::shared_ptr<PackageIDSequence>(new PackageIDSequence);
+        return std::shared_ptr<PackageIDSequence>(new PackageIDSequence);
     if (! has_package_named(n))
-        return std::tr1::shared_ptr<PackageIDSequence>(new PackageIDSequence);
+        return std::shared_ptr<PackageIDSequence>(new PackageIDSequence);
     return _imp->ids.find(n)->second;
 }
 
@@ -144,14 +144,14 @@ namespace
         {
         }
 
-        bool operator() (const std::tr1::shared_ptr<const PackageID> & i) const
+        bool operator() (const std::shared_ptr<const PackageID> & i) const
         {
             return i->version() == version;
         }
     };
 }
 
-std::tr1::shared_ptr<FakePackageID>
+std::shared_ptr<FakePackageID>
 FakeRepositoryBase::add_version(const QualifiedPackageName & q, const VersionSpec & v)
 {
     add_package(q);
@@ -160,12 +160,12 @@ FakeRepositoryBase::add_version(const QualifiedPackageName & q, const VersionSpe
                 _imp->ids.find(q)->second->end(), VersionIs(v)))
         throw InternalError(PALUDIS_HERE, "duplicate id added");
 
-    std::tr1::shared_ptr<FakePackageID> id(new FakePackageID(_imp->env, shared_from_this(), q, v));
+    std::shared_ptr<FakePackageID> id(new FakePackageID(_imp->env, shared_from_this(), q, v));
     _imp->ids.find(q)->second->push_back(id);
     return id;
 }
 
-std::tr1::shared_ptr<FakePackageID>
+std::shared_ptr<FakePackageID>
 FakeRepositoryBase::add_version(const std::string & c, const std::string & p,
         const std::string & v)
 {
@@ -180,7 +180,7 @@ FakeRepositoryBase::invalidate()
 void
 FakeRepositoryBase::invalidate_masks()
 {
-    for (std::map<QualifiedPackageName, std::tr1::shared_ptr<PackageIDSequence> >::iterator it(_imp->ids.begin()), it_end(_imp->ids.end());
+    for (std::map<QualifiedPackageName, std::shared_ptr<PackageIDSequence> >::iterator it(_imp->ids.begin()), it_end(_imp->ids.end());
          it_end != it; ++it)
         for (PackageIDSequence::ConstIterator it2(it->second->begin()), it2_end(it->second->end());
              it2_end != it2; ++it2)
@@ -210,7 +210,7 @@ FakeRepositoryBase::perform_hook(const Hook &)
 }
 
 bool
-FakeRepositoryBase::sync(const std::tr1::shared_ptr<OutputManager> &) const
+FakeRepositoryBase::sync(const std::shared_ptr<OutputManager> &) const
 {
     return false;
 }

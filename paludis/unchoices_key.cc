@@ -30,10 +30,10 @@ using namespace paludis;
 namespace
 {
     class PALUDIS_VISIBLE UnChoicesKey :
-        public MetadataValueKey<std::tr1::shared_ptr<const Choices> >
+        public MetadataValueKey<std::shared_ptr<const Choices> >
     {
         private:
-            std::tr1::shared_ptr<Choices> _value;
+            std::shared_ptr<Choices> _value;
 
         public:
             UnChoicesKey() :
@@ -54,7 +54,7 @@ namespace
             {
             }
 
-            const std::tr1::shared_ptr<const Choices> value() const
+            const std::shared_ptr<const Choices> value() const
             {
                 return _value;
             }
@@ -76,10 +76,10 @@ namespace
     };
 }
 
-std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > >
+std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Choices> > >
 paludis::unchoices_key()
 {
-    static std::tr1::shared_ptr<const UnChoicesKey> result(new UnChoicesKey);
+    static std::shared_ptr<const UnChoicesKey> result(new UnChoicesKey);
     return result;
 }
 

@@ -37,7 +37,7 @@ namespace paludis
     {
         struct SlotNameOrNull
         {
-            NamedValue<n::name_or_null, std::tr1::shared_ptr<const SlotName> > name_or_null;
+            NamedValue<n::name_or_null, std::shared_ptr<const SlotName> > name_or_null;
             NamedValue<n::null_means_unknown, bool> null_means_unknown;
 
             void serialise(Serialiser &) const;

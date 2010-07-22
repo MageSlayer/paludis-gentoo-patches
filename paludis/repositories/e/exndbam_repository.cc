@@ -24,7 +24,6 @@
 #include <paludis/repositories/e/eapi_phase.hh>
 #include <paludis/repositories/e/extra_distribution_data.hh>
 #include <paludis/repositories/e/can_skip_phase.hh>
-#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/sequence.hh>
@@ -47,7 +46,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/action.hh>
 #include <paludis/literal_metadata_key.hh>
-#include <tr1/functional>
+#include <functional>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -68,11 +67,11 @@ namespace paludis
         ExndbamRepositoryParams params;
         mutable NDBAM ndbam;
 
-        std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > location_key;
-        std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > root_key;
-        std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key;
-        std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > builddir_key;
-        std::tr1::shared_ptr<const MetadataValueKey<std::string> > eapi_when_unknown_key;
+        std::shared_ptr<const MetadataValueKey<FSEntry> > location_key;
+        std::shared_ptr<const MetadataValueKey<FSEntry> > root_key;
+        std::shared_ptr<const MetadataValueKey<std::string> > format_key;
+        std::shared_ptr<const MetadataValueKey<FSEntry> > builddir_key;
+        std::shared_ptr<const MetadataValueKey<std::string> > eapi_when_unknown_key;
 
         Implementation(const ExndbamRepositoryParams & p) :
             params(p),
@@ -131,10 +130,10 @@ ExndbamRepository::_add_metadata_keys() const
     add_metadata_key(_imp->eapi_when_unknown_key);
 }
 
-std::tr1::shared_ptr<Repository>
+std::shared_ptr<Repository>
 ExndbamRepository::repository_factory_create(
         Environment * const env,
-        const std::tr1::function<std::string (const std::string &)> & f)
+        const std::function<std::string (const std::string &)> & f)
 {
     Context context("When making Exndbam repository from repo_file '" + f("repo_file") + "':");
 
@@ -161,7 +160,7 @@ ExndbamRepository::repository_factory_create(
                 *DistributionData::get_instance()->distribution_from_string(
                     env->distribution()))->default_eapi_when_unknown();
 
-    return std::tr1::shared_ptr<Repository>(new ExndbamRepository(
+    return std::shared_ptr<Repository>(new ExndbamRepository(
                 RepositoryName(name),
                 make_named_values<ExndbamRepositoryParams>(
                     n::builddir() = builddir,
@@ -176,7 +175,7 @@ ExndbamRepository::repository_factory_create(
 RepositoryName
 ExndbamRepository::repository_factory_name(
         const Environment * const,
-        const std::tr1::function<std::string (const std::string &)> & f)
+        const std::function<std::string (const std::string &)> & f)
 {
     std::string name(f("name"));
     if (name.empty())
@@ -185,10 +184,10 @@ ExndbamRepository::repository_factory_name(
         return RepositoryName(name);
 }
 
-std::tr1::shared_ptr<const RepositoryNameSet>
+std::shared_ptr<const RepositoryNameSet>
 ExndbamRepository::repository_factory_dependencies(
         const Environment * const,
-        const std::tr1::function<std::string (const std::string &)> &)
+        const std::function<std::string (const std::string &)> &)
 {
     return make_shared_ptr(new RepositoryNameSet);
 }
@@ -205,11 +204,11 @@ ExndbamRepository::invalidate_masks()
 {
 }
 
-std::tr1::shared_ptr<const PackageIDSequence>
+std::shared_ptr<const PackageIDSequence>
 ExndbamRepository::package_ids(const QualifiedPackageName & q) const
 {
-    std::tr1::shared_ptr<NDBAMEntrySequence> entries(_imp->ndbam.entries(q));
-    std::tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
+    std::shared_ptr<NDBAMEntrySequence> entries(_imp->ndbam.entries(q));
+    std::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
 
     for (IndirectIterator<NDBAMEntrySequence::ConstIterator> e(entries->begin()), e_end(entries->end()) ;
             e != e_end ; ++e)
@@ -224,19 +223,19 @@ ExndbamRepository::package_ids(const QualifiedPackageName & q) const
     return result;
 }
 
-std::tr1::shared_ptr<const QualifiedPackageNameSet>
+std::shared_ptr<const QualifiedPackageNameSet>
 ExndbamRepository::package_names(const CategoryNamePart & c) const
 {
     return _imp->ndbam.package_names(c);
 }
 
-std::tr1::shared_ptr<const CategoryNamePartSet>
+std::shared_ptr<const CategoryNamePartSet>
 ExndbamRepository::category_names() const
 {
     return _imp->ndbam.category_names();
 }
 
-std::tr1::shared_ptr<const CategoryNamePartSet>
+std::shared_ptr<const CategoryNamePartSet>
 ExndbamRepository::category_names_containing_package(
         const PackageNamePart & p) const
 {
@@ -267,25 +266,25 @@ ExndbamRepositoryConfigurationError::ExndbamRepositoryConfigurationError(
 {
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataValueKey<std::string> >
 ExndbamRepository::format_key() const
 {
     return _imp->format_key;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSEntry> >
 ExndbamRepository::location_key() const
 {
     return _imp->location_key;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSEntry> >
 ExndbamRepository::installed_root_key() const
 {
     return _imp->root_key;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataValueKey<std::string> >
 ExndbamRepository::sync_host_key() const
 {
     return make_null_shared_ptr();
@@ -307,8 +306,8 @@ namespace
         return std::make_pair(uid, gid);
     }
 
-    bool slot_is_same(const std::tr1::shared_ptr<const PackageID> & a,
-            const std::tr1::shared_ptr<const PackageID> & b)
+    bool slot_is_same(const std::shared_ptr<const PackageID> & a,
+            const std::shared_ptr<const PackageID> & b)
     {
         if (a->slot_key())
             return b->slot_key() && a->slot_key()->value() == b->slot_key()->value();
@@ -316,12 +315,12 @@ namespace
             return ! b->slot_key();
     }
 
-    std::tr1::shared_ptr<OutputManager> this_output_manager(const std::tr1::shared_ptr<OutputManager> & o, const Action &)
+    std::shared_ptr<OutputManager> this_output_manager(const std::shared_ptr<OutputManager> & o, const Action &)
     {
         return o;
     }
 
-    bool ignore_merged(const std::tr1::shared_ptr<const FSEntrySet> & s,
+    bool ignore_merged(const std::shared_ptr<const FSEntrySet> & s,
             const FSEntry & f)
     {
         return s->end() != s->find(f);
@@ -337,9 +336,9 @@ ExndbamRepository::merge(const MergeParams & m)
     if (! is_suitable_destination_for(*m.package_id()))
         throw ActionFailedError("Not a suitable destination for '" + stringify(*m.package_id()) + "'");
 
-    std::tr1::shared_ptr<const PackageID> if_overwritten_id, if_same_name_id;
+    std::shared_ptr<const PackageID> if_overwritten_id, if_same_name_id;
     {
-        std::tr1::shared_ptr<const PackageIDSequence> ids(package_ids(m.package_id()->name()));
+        std::shared_ptr<const PackageIDSequence> ids(package_ids(m.package_id()->name()));
         for (PackageIDSequence::ConstIterator v(ids->begin()), v_end(ids->end()) ;
                 v != v_end ; ++v)
         {
@@ -378,7 +377,7 @@ ExndbamRepository::merge(const MergeParams & m)
                 n::environment_file() = m.environment_file(),
                 n::maybe_output_manager() = m.output_manager(),
                 n::output_directory() = target_ver_dir,
-                n::package_id() = std::tr1::static_pointer_cast<const ERepositoryID>(m.package_id())
+                n::package_id() = std::static_pointer_cast<const ERepositoryID>(m.package_id())
             ));
 
     write_vdb_entry_command();
@@ -405,7 +404,7 @@ ExndbamRepository::merge(const MergeParams & m)
     {
     }
 
-    bool fix_mtimes(std::tr1::static_pointer_cast<const ERepositoryID>(
+    bool fix_mtimes(std::static_pointer_cast<const ERepositoryID>(
                 m.package_id())->eapi()->supported()->ebuild_options()->fix_mtimes());
 
     NDBAMMerger merger(
@@ -415,7 +414,7 @@ ExndbamRepository::merge(const MergeParams & m)
                 n::contents_file() = target_ver_dir / "contents",
                 n::environment() = _imp->params.environment(),
                 n::fix_mtimes_before() = fix_mtimes ?  m.build_start_time() : Timestamp(0, 0),
-                n::get_new_ids_or_minus_one() = std::tr1::bind(&get_new_ids_or_minus_one, _imp->params.environment(), std::tr1::placeholders::_1),
+                n::get_new_ids_or_minus_one() = std::bind(&get_new_ids_or_minus_one, _imp->params.environment(), std::placeholders::_1),
                 n::image() = m.image_dir(),
                 n::install_under() = FSEntry("/"),
                 n::merged_entries() = m.merged_entries(),
@@ -445,31 +444,31 @@ ExndbamRepository::merge(const MergeParams & m)
         UninstallActionOptions uo(make_named_values<UninstallActionOptions>(
                     n::config_protect() = config_protect,
                     n::if_for_install_id() = m.package_id(),
-                    n::ignore_for_unmerge() = std::tr1::bind(&ignore_merged, m.merged_entries(),
-                            std::tr1::placeholders::_1),
+                    n::ignore_for_unmerge() = std::bind(&ignore_merged, m.merged_entries(),
+                            std::placeholders::_1),
                     n::is_overwrite() = true,
-                    n::make_output_manager() = std::tr1::bind(&this_output_manager, m.output_manager(), std::tr1::placeholders::_1)
+                    n::make_output_manager() = std::bind(&this_output_manager, m.output_manager(), std::placeholders::_1)
                     ));
         m.perform_uninstall()(if_overwritten_id, uo);
     }
 
-    if (std::tr1::static_pointer_cast<const ERepositoryID>(m.package_id())
+    if (std::static_pointer_cast<const ERepositoryID>(m.package_id())
             ->eapi()->supported()->ebuild_phases()->ebuild_new_upgrade_phase_order())
     {
-        const std::tr1::shared_ptr<const PackageIDSequence> & replace_candidates(package_ids(m.package_id()->name()));
+        const std::shared_ptr<const PackageIDSequence> & replace_candidates(package_ids(m.package_id()->name()));
         for (PackageIDSequence::ConstIterator it(replace_candidates->begin()),
                  it_end(replace_candidates->end()); it_end != it; ++it)
         {
-            std::tr1::shared_ptr<const ERepositoryID> candidate(std::tr1::static_pointer_cast<const ERepositoryID>(*it));
+            std::shared_ptr<const ERepositoryID> candidate(std::static_pointer_cast<const ERepositoryID>(*it));
             if (candidate != if_overwritten_id && candidate->fs_location_key()->value() != target_ver_dir && slot_is_same(candidate, m.package_id()))
             {
                 UninstallActionOptions uo(make_named_values<UninstallActionOptions>(
                             n::config_protect() = config_protect,
                             n::if_for_install_id() = m.package_id(),
-                            n::ignore_for_unmerge() = std::tr1::bind(&ignore_merged, m.merged_entries(),
-                                    std::tr1::placeholders::_1),
+                            n::ignore_for_unmerge() = std::bind(&ignore_merged, m.merged_entries(),
+                                    std::placeholders::_1),
                             n::is_overwrite() = false,
-                            n::make_output_manager() = std::tr1::bind(&this_output_manager, m.output_manager(), std::tr1::placeholders::_1)
+                            n::make_output_manager() = std::bind(&this_output_manager, m.output_manager(), std::placeholders::_1)
                             ));
                 m.perform_uninstall()(candidate, uo);
             }
@@ -485,7 +484,7 @@ ExndbamRepository::merge(const MergeParams & m)
 
 void
 ExndbamRepository::perform_uninstall(
-        const std::tr1::shared_ptr<const ERepositoryID> & id,
+        const std::shared_ptr<const ERepositoryID> & id,
         const UninstallAction & a) const
 {
     Context context("When uninstalling '" + stringify(*id) + (a.options.is_overwrite() ? "' for an overwrite:" : "':"));
@@ -494,12 +493,12 @@ ExndbamRepository::perform_uninstall(
         throw ActionFailedError("Couldn't uninstall '" + stringify(*id) +
                 "' because root ('" + stringify(_imp->params.root()) + "') is not a directory");
 
-    std::tr1::shared_ptr<OutputManager> output_manager(a.options.make_output_manager()(a));
+    std::shared_ptr<OutputManager> output_manager(a.options.make_output_manager()(a));
 
     FSEntry ver_dir(id->fs_location_key()->value().realpath());
-    std::tr1::shared_ptr<FSEntry> load_env(new FSEntry(ver_dir / "environment.bz2"));
+    std::shared_ptr<FSEntry> load_env(new FSEntry(ver_dir / "environment.bz2"));
 
-    std::tr1::shared_ptr<FSEntrySequence> eclassdirs(new FSEntrySequence);
+    std::shared_ptr<FSEntrySequence> eclassdirs(new FSEntrySequence);
     eclassdirs->push_back(ver_dir);
 
     EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_uninstall());
@@ -625,7 +624,7 @@ ExndbamRepository::perform_updates()
 {
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataValueKey<std::string> >
 ExndbamRepository::accept_keywords_key() const
 {
     return make_null_shared_ptr();

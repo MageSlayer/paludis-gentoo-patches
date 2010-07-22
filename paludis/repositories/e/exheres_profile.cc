@@ -45,7 +45,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/paludislike_options_conf.hh>
-#include <tr1/unordered_map>
+#include <unordered_map>
 #include <list>
 
 using namespace paludis;
@@ -53,16 +53,16 @@ using namespace paludis::erepository;
 
 namespace
 {
-    const std::tr1::shared_ptr<const LineConfigFile> make_config_file(
+    const std::shared_ptr<const LineConfigFile> make_config_file(
             const FSEntry & f,
             const LineConfigFileOptions & o)
     {
         return make_shared_ptr(new LineConfigFile(f, o));
     }
 
-    typedef std::tr1::unordered_map<std::string, std::string, Hash<std::string> > EnvironmentVariablesMap;
-    typedef std::tr1::unordered_map<QualifiedPackageName,
-            std::list<std::pair<std::tr1::shared_ptr<const PackageDepSpec>, std::tr1::shared_ptr<const RepositoryMaskInfo> > >,
+    typedef std::unordered_map<std::string, std::string, Hash<std::string> > EnvironmentVariablesMap;
+    typedef std::unordered_map<QualifiedPackageName,
+            std::list<std::pair<std::shared_ptr<const PackageDepSpec>, std::shared_ptr<const RepositoryMaskInfo> > >,
             Hash<QualifiedPackageName> > PackageMaskMap;
 }
 
@@ -74,7 +74,7 @@ namespace paludis
         const Environment * const env;
         const ERepository * const repository;
 
-        std::tr1::shared_ptr<FSEntrySequence> profiles_with_parents;
+        std::shared_ptr<FSEntrySequence> profiles_with_parents;
 
         PaludisLikeOptionsConf options_conf;
         EnvironmentVariablesMap environment_variables;
@@ -83,15 +83,15 @@ namespace paludis
         ProfileFile<MaskFile> package_mask_file;
         ProfileFile<LineConfigFile> packages_file;
 
-        const std::tr1::shared_ptr<Set<std::string> > use_expand;
-        const std::tr1::shared_ptr<Set<std::string> > use_expand_hidden;
-        const std::tr1::shared_ptr<Set<std::string> > use_expand_unprefixed;
-        const std::tr1::shared_ptr<Set<std::string> > use_expand_implicit;
-        const std::tr1::shared_ptr<Set<std::string> > iuse_implicit;
-        const std::tr1::shared_ptr<Set<std::string> > use_expand_values;
+        const std::shared_ptr<Set<std::string> > use_expand;
+        const std::shared_ptr<Set<std::string> > use_expand_hidden;
+        const std::shared_ptr<Set<std::string> > use_expand_unprefixed;
+        const std::shared_ptr<Set<std::string> > use_expand_implicit;
+        const std::shared_ptr<Set<std::string> > iuse_implicit;
+        const std::shared_ptr<Set<std::string> > use_expand_values;
 
-        const std::tr1::shared_ptr<SetSpecTree> system_packages;
-        const std::tr1::shared_ptr<GeneralSetDepTag> system_tag;
+        const std::shared_ptr<SetSpecTree> system_packages;
+        const std::shared_ptr<GeneralSetDepTag> system_tag;
 
         Implementation(const Environment * const e, const ERepository * const p,
                 const RepositoryName & name, const FSEntrySequence &,
@@ -132,7 +132,7 @@ ExheresProfile::ExheresProfile(
             l != l_end ; ++l)
         _load_dir(*l);
 
-    const std::tr1::shared_ptr<const Set<UnprefixedChoiceName> > s(_imp->options_conf.known_choice_value_names(
+    const std::shared_ptr<const Set<UnprefixedChoiceName> > s(_imp->options_conf.known_choice_value_names(
                 make_null_shared_ptr(), ChoicePrefixName("suboptions")));
     for (Set<UnprefixedChoiceName>::ConstIterator f(s->begin()), f_end(s->end()) ;
             f != f_end ; ++f)
@@ -140,7 +140,7 @@ ExheresProfile::ExheresProfile(
                     ChoicePrefixName("suboptions"), *f).first.is_true())
             _imp->use_expand->insert(stringify(*f));
 
-    const std::tr1::shared_ptr<const Set<UnprefixedChoiceName> > sh(_imp->options_conf.known_choice_value_names(
+    const std::shared_ptr<const Set<UnprefixedChoiceName> > sh(_imp->options_conf.known_choice_value_names(
                 make_null_shared_ptr(), ChoicePrefixName("hidden_suboptions")));
     for (Set<UnprefixedChoiceName>::ConstIterator f(sh->begin()), f_end(sh->end()) ;
             f != f_end ; ++f)
@@ -156,11 +156,11 @@ ExheresProfile::ExheresProfile(
                 continue;
 
             Context context_spec("When parsing '" + i->second + "':");
-            std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
+            std::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
                         parse_elike_package_dep_spec(i->second.substr(1),
                             i->first->supported()->package_dep_spec_parse_options(),
                             i->first->supported()->version_spec_options(),
-                            std::tr1::shared_ptr<const PackageID>())));
+                            std::shared_ptr<const PackageID>())));
 
             spec->set_tag(_imp->system_tag);
             _imp->system_packages->root()->append(spec);
@@ -174,11 +174,11 @@ ExheresProfile::ExheresProfile(
 
         try
         {
-            std::tr1::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(
+            std::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(
                         parse_elike_package_dep_spec(line->second.first,
                             line->first->supported()->package_dep_spec_parse_options(),
                             line->first->supported()->version_spec_options(),
-                            std::tr1::shared_ptr<const PackageID>())));
+                            std::shared_ptr<const PackageID>())));
 
             if (a->package_ptr())
                 _imp->package_mask[*a->package_ptr()].push_back(std::make_pair(a, line->second.second));
@@ -233,7 +233,7 @@ ExheresProfile::_load_dir(const FSEntry & f)
 
     if ((f / "make.defaults").exists())
     {
-        const std::tr1::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(
+        const std::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(
                     _imp->repository->eapi_for_file(f / "make.defaults")));
         if (! eapi->supported())
             throw ERepositoryConfigurationError("Can't use profile directory '" + stringify(f) +
@@ -252,7 +252,7 @@ ExheresProfile::_load_dir(const FSEntry & f)
     _imp->profiles_with_parents->push_back(f);
 }
 
-std::tr1::shared_ptr<const FSEntrySequence>
+std::shared_ptr<const FSEntrySequence>
 ExheresProfile::profiles_with_parents() const
 {
     return _imp->profiles_with_parents;
@@ -260,8 +260,8 @@ ExheresProfile::profiles_with_parents() const
 
 bool
 ExheresProfile::use_masked(
-        const std::tr1::shared_ptr<const PackageID> & id,
-        const std::tr1::shared_ptr<const Choice> & choice,
+        const std::shared_ptr<const PackageID> & id,
+        const std::shared_ptr<const Choice> & choice,
         const UnprefixedChoiceName & value_unprefixed,
         const ChoiceNameWithPrefix &
         ) const
@@ -273,8 +273,8 @@ ExheresProfile::use_masked(
 
 bool
 ExheresProfile::use_forced(
-        const std::tr1::shared_ptr<const PackageID> & id,
-        const std::tr1::shared_ptr<const Choice> & choice,
+        const std::shared_ptr<const PackageID> & id,
+        const std::shared_ptr<const Choice> & choice,
         const UnprefixedChoiceName & value_unprefixed,
         const ChoiceNameWithPrefix &
         ) const
@@ -286,8 +286,8 @@ ExheresProfile::use_forced(
 
 Tribool
 ExheresProfile::use_state_ignoring_masks(
-        const std::tr1::shared_ptr<const PackageID> & id,
-        const std::tr1::shared_ptr<const Choice> & choice,
+        const std::shared_ptr<const PackageID> & id,
+        const std::shared_ptr<const Choice> & choice,
         const UnprefixedChoiceName & value_unprefixed,
         const ChoiceNameWithPrefix &
         ) const
@@ -297,46 +297,46 @@ ExheresProfile::use_state_ignoring_masks(
     return enabled_locked.first;
 }
 
-const std::tr1::shared_ptr<const Set<UnprefixedChoiceName> >
+const std::shared_ptr<const Set<UnprefixedChoiceName> >
 ExheresProfile::known_choice_value_names(
-        const std::tr1::shared_ptr<const erepository::ERepositoryID> & id,
-        const std::tr1::shared_ptr<const Choice> & choice
+        const std::shared_ptr<const erepository::ERepositoryID> & id,
+        const std::shared_ptr<const Choice> & choice
         ) const
 {
     return _imp->options_conf.known_choice_value_names(id, choice->prefix());
 }
 
-const std::tr1::shared_ptr<const Set<std::string> >
+const std::shared_ptr<const Set<std::string> >
 ExheresProfile::use_expand() const
 {
     return _imp->use_expand;
 }
 
-const std::tr1::shared_ptr<const Set<std::string> >
+const std::shared_ptr<const Set<std::string> >
 ExheresProfile::use_expand_hidden() const
 {
     return _imp->use_expand_hidden;
 }
 
-const std::tr1::shared_ptr<const Set<std::string> >
+const std::shared_ptr<const Set<std::string> >
 ExheresProfile::use_expand_unprefixed() const
 {
     return _imp->use_expand_unprefixed;
 }
 
-const std::tr1::shared_ptr<const Set<std::string> >
+const std::shared_ptr<const Set<std::string> >
 ExheresProfile::use_expand_implicit() const
 {
     return _imp->use_expand_implicit;
 }
 
-const std::tr1::shared_ptr<const Set<std::string> >
+const std::shared_ptr<const Set<std::string> >
 ExheresProfile::iuse_implicit() const
 {
     return _imp->iuse_implicit;
 }
 
-const std::tr1::shared_ptr<const Set<std::string> >
+const std::shared_ptr<const Set<std::string> >
 ExheresProfile::use_expand_values(const std::string &) const
 {
     return _imp->use_expand_values;
@@ -357,30 +357,30 @@ ExheresProfile::environment_variable(const std::string & s) const
         return i->second;
 }
 
-const std::tr1::shared_ptr<const RepositoryMaskInfo>
+const std::shared_ptr<const RepositoryMaskInfo>
 ExheresProfile::profile_masked(const PackageID & id) const
 {
     PackageMaskMap::const_iterator rr(_imp->package_mask.find(id.name()));
     if (_imp->package_mask.end() == rr)
-        return std::tr1::shared_ptr<const RepositoryMaskInfo>();
+        return std::shared_ptr<const RepositoryMaskInfo>();
     else
     {
-        for (std::list<std::pair<std::tr1::shared_ptr<const PackageDepSpec>, std::tr1::shared_ptr<const RepositoryMaskInfo> > >::const_iterator k(rr->second.begin()),
+        for (std::list<std::pair<std::shared_ptr<const PackageDepSpec>, std::shared_ptr<const RepositoryMaskInfo> > >::const_iterator k(rr->second.begin()),
                 k_end(rr->second.end()) ; k != k_end ; ++k)
             if (match_package(*_imp->env, *k->first, id, MatchPackageOptions()))
                 return k->second;
     }
 
-    return std::tr1::shared_ptr<const RepositoryMaskInfo>();
+    return std::shared_ptr<const RepositoryMaskInfo>();
 }
 
-const std::tr1::shared_ptr<const SetSpecTree>
+const std::shared_ptr<const SetSpecTree>
 ExheresProfile::system_packages() const
 {
     return _imp->system_packages;
 }
 
-const std::tr1::shared_ptr<const Map<QualifiedPackageName, PackageDepSpec> >
+const std::shared_ptr<const Map<QualifiedPackageName, PackageDepSpec> >
 ExheresProfile::virtuals() const
 {
     return make_shared_ptr(new Map<QualifiedPackageName, PackageDepSpec>);

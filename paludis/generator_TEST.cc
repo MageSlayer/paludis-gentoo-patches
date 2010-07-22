@@ -47,9 +47,9 @@ namespace test_cases
     {
         Generator generator;
         TestEnvironment env;
-        std::tr1::shared_ptr<FakeRepository> repo1;
-        std::tr1::shared_ptr<FakeRepository> repo2;
-        std::tr1::shared_ptr<FakeInstalledRepository> inst_repo1;
+        std::shared_ptr<FakeRepository> repo1;
+        std::shared_ptr<FakeRepository> repo2;
+        std::shared_ptr<FakeInstalledRepository> inst_repo1;
 
         GeneratorTestCaseBase(const std::string & s, const Generator & f) :
             TestCase("generator " + s + " with " + stringify(f)),
@@ -87,12 +87,12 @@ namespace test_cases
         void run()
         {
             const std::string expected(get_expected());
-            std::tr1::shared_ptr<const PackageIDSequence> got(env[selection::AllVersionsSorted(generator)]);
+            std::shared_ptr<const PackageIDSequence> got(env[selection::AllVersionsSorted(generator)]);
 
             TEST_CHECK(got);
             TEST_CHECK_EQUAL(join(indirect_iterator(got->begin()), indirect_iterator(got->end()), ", "), expected);
 
-            std::tr1::shared_ptr<const PackageIDSequence> got_none(env[selection::AllVersionsSorted(generator |
+            std::shared_ptr<const PackageIDSequence> got_none(env[selection::AllVersionsSorted(generator |
                         filter::SupportsAction<InstallAction>() | filter::SupportsAction<UninstallAction>())]);
             TEST_CHECK(got_none);
             TEST_CHECK_EQUAL(join(indirect_iterator(got_none->begin()), indirect_iterator(got_none->end()), ", "), "");

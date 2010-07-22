@@ -32,12 +32,12 @@
 
 using namespace paludis;
 
-std::tr1::shared_ptr<DependencySpecTree>
+std::shared_ptr<DependencySpecTree>
 cranrepository::parse_depends(const std::string & s)
 {
     Context context("When parsing CRAN 'Depends:' string: '" + s + "':");
 
-    std::tr1::shared_ptr<DependencySpecTree> result(new DependencySpecTree(make_shared_ptr(new AllDepSpec)));
+    std::shared_ptr<DependencySpecTree> result(new DependencySpecTree(make_shared_ptr(new AllDepSpec)));
 
     std::list<std::string> specs;
 
@@ -67,7 +67,7 @@ cranrepository::parse_depends(const std::string & s)
     {
         Context local_context("When processing token '" + *a + "':");
 
-        std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(cranrepository::parse_cran_package_dep_spec(
+        std::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(cranrepository::parse_cran_package_dep_spec(
                         strip_leading(strip_trailing(*a, " \r\n\t"), " \r\n\t"))));
         result->root()->append(spec);
     }

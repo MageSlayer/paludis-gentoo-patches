@@ -37,7 +37,7 @@
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_shared_ptr.hh>
-#include <tr1/unordered_map>
+#include <unordered_map>
 #include <list>
 #include <vector>
 #include <map>
@@ -46,12 +46,12 @@ using namespace paludis;
 using namespace paludis::paludis_environment;
 
 typedef std::list<std::string> LicensesList;
-typedef std::map<std::tr1::shared_ptr<const PackageDepSpec>, LicensesList> PDSToLicensesList;
-typedef std::pair<std::tr1::shared_ptr<const SetSpecTree>, LicensesList> SetNameEntry;
+typedef std::map<std::shared_ptr<const PackageDepSpec>, LicensesList> PDSToLicensesList;
+typedef std::pair<std::shared_ptr<const SetSpecTree>, LicensesList> SetNameEntry;
 
-typedef std::tr1::unordered_map<QualifiedPackageName, PDSToLicensesList, Hash<QualifiedPackageName> > SpecificMap;
+typedef std::unordered_map<QualifiedPackageName, PDSToLicensesList, Hash<QualifiedPackageName> > SpecificMap;
 typedef PDSToLicensesList UnspecificMap;
-typedef std::tr1::unordered_map<SetName, SetNameEntry, Hash<SetName> > NamedSetMap;
+typedef std::unordered_map<SetName, SetNameEntry, Hash<SetName> > NamedSetMap;
 
 namespace paludis
 {
@@ -86,7 +86,7 @@ LicensesConf::add(const FSEntry & filename)
 {
     Context context("When adding source '" + stringify(filename) + "' as a licenses file:");
 
-    std::tr1::shared_ptr<LineConfigFile> f(make_bashable_conf(filename, LineConfigFileOptions()));
+    std::shared_ptr<LineConfigFile> f(make_bashable_conf(filename, LineConfigFileOptions()));
     if (! f)
         return;
 
@@ -101,7 +101,7 @@ LicensesConf::add(const FSEntry & filename)
 
         try
         {
-            std::tr1::shared_ptr<PackageDepSpec> d(new PackageDepSpec(parse_user_package_dep_spec(
+            std::shared_ptr<PackageDepSpec> d(new PackageDepSpec(parse_user_package_dep_spec(
                             tokens.at(0), _imp->env,
                             UserPackageDepSpecOptions() + updso_allow_wildcards + updso_no_disambiguation + updso_throw_if_set)));
             if (d->package_ptr())

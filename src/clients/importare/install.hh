@@ -22,10 +22,10 @@
 
 #include <paludis/environment-fwd.hh>
 #include <paludis/package_id-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 
 int do_install(
-        const std::tr1::shared_ptr<paludis::Environment> &,
-        const std::tr1::shared_ptr<const paludis::PackageID> & target);
+        const std::shared_ptr<paludis::Environment> &,
+        const std::shared_ptr<const paludis::PackageID> & target);
 
 #endif

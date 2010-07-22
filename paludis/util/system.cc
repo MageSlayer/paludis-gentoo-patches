@@ -25,7 +25,6 @@
 #include <paludis/util/destringify.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
-#include <paludis/util/destringify.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/safe_ofstream.hh>
 #include <paludis/util/pipe.hh>
@@ -167,14 +166,14 @@ namespace paludis
         CommandSetenvValues setenv_values;
         std::string chdir;
         bool echo_to_stderr;
-        std::tr1::shared_ptr<uid_t> uid;
-        std::tr1::shared_ptr<gid_t> gid;
+        std::shared_ptr<uid_t> uid;
+        std::shared_ptr<gid_t> gid;
         std::string stdout_prefix;
         std::string stderr_prefix;
         bool prefix_discard_blank_output;
         bool prefix_blank_lines;
         std::string pipe_command_env_var_prefix;
-        std::tr1::function<std::string (const std::string &)> pipe_command_handler;
+        std::function<std::string (const std::string &)> pipe_command_handler;
         std::ostream * captured_stdout_stream;
         std::ostream * captured_stderr_stream;
         std::ostream * output_stream;
@@ -188,12 +187,12 @@ namespace paludis
         Implementation(const std::string & c, bool cl = false,
                 const std::map<std::string, std::string> & s = make_me_a_frickin_map_because_gcc_sucks(),
                 const std::string & d = "", bool e = false,
-                std::tr1::shared_ptr<uid_t> u = std::tr1::shared_ptr<uid_t>(),
-                std::tr1::shared_ptr<gid_t> g = std::tr1::shared_ptr<gid_t>(),
+                std::shared_ptr<uid_t> u = std::shared_ptr<uid_t>(),
+                std::shared_ptr<gid_t> g = std::shared_ptr<gid_t>(),
                 const std::string & p = "", const std::string & q = "",
                 const bool b = false, const bool bb = false,
                 const std::string & ep = "",
-                const std::tr1::function<std::string (const std::string &)> & h = std::tr1::function<std::string (const std::string &)>(),
+                const std::function<std::string (const std::string &)> & h = std::function<std::string (const std::string &)>(),
                 std::ostream * cs = 0,
                 std::ostream * ds = 0,
                 std::ostream * os = 0,
@@ -260,8 +259,8 @@ Command::operator= (const Command & other)
     {
         _imp.reset(new Implementation<Command>(other._imp->command, other._imp->clearenv, other._imp->setenv_values,
                     other._imp->chdir, other._imp->echo_to_stderr,
-                    std::tr1::shared_ptr<uid_t>(),
-                    std::tr1::shared_ptr<gid_t>(),
+                    std::shared_ptr<uid_t>(),
+                    std::shared_ptr<gid_t>(),
                     other._imp->stdout_prefix,
                     other._imp->stderr_prefix,
                     other._imp->prefix_discard_blank_output,
@@ -412,13 +411,13 @@ Command::with_sydbox()
     return *this;
 }
 
-std::tr1::shared_ptr<const uid_t>
+std::shared_ptr<const uid_t>
 Command::uid() const
 {
     return _imp->uid;
 }
 
-std::tr1::shared_ptr<const gid_t>
+std::shared_ptr<const gid_t>
 Command::gid() const
 {
     return _imp->gid;
@@ -563,9 +562,9 @@ paludis::run_command(const Command & cmd)
     Log::get_instance()->message("util.system.execl", ll_debug, lc_no_context) << "execl /bin/sh -c " << command
         << " " << extras;
 
-    std::tr1::shared_ptr<Pipe> internal_command_reader(new Pipe), pipe_command_reader,
+    std::shared_ptr<Pipe> internal_command_reader(new Pipe), pipe_command_reader,
         pipe_command_response, input_stream, output_stream;
-    std::tr1::shared_ptr<Channel> captured_stdout, captured_stderr;
+    std::shared_ptr<Channel> captured_stdout, captured_stderr;
     if (cmd.pipe_command_handler())
     {
         pipe_command_reader.reset(new Pipe);
@@ -1129,7 +1128,7 @@ paludis::become_command(const Command & cmd)
     if (0 != pthread_sigmask(SIG_BLOCK, &intandterm, 0))
         throw InternalError(PALUDIS_HERE, "pthread_sigmask failed");
 
-    std::tr1::shared_ptr<Pipe> input_stream;
+    std::shared_ptr<Pipe> input_stream;
     if (cmd.input_stream())
     {
         input_stream.reset(new Pipe);
@@ -1336,7 +1335,7 @@ Command::with_stderr_prefix(const std::string & s)
 Command &
 Command::with_pipe_command_handler(
         const std::string & p,
-        const std::tr1::function<std::string (const std::string &)> & f)
+        const std::function<std::string (const std::string &)> & f)
 {
     _imp->pipe_command_env_var_prefix = p;
     _imp->pipe_command_handler = f;
@@ -1373,7 +1372,7 @@ Command::pipe_command_env_var_prefix() const
     return _imp->pipe_command_env_var_prefix;
 }
 
-const std::tr1::function<std::string (const std::string &)> &
+const std::function<std::string (const std::string &)> &
 Command::pipe_command_handler() const
 {
     return _imp->pipe_command_handler;

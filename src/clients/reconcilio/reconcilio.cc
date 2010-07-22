@@ -100,7 +100,7 @@ main(int argc, char *argv[])
         paludis_command.append(CommandLine::get_instance()->install_args.paludis_command_fragment());
         paludis_command.append(CommandLine::get_instance()->dl_args.paludis_command_fragment());
 
-        std::tr1::shared_ptr<Environment> env(EnvironmentFactory::get_instance()->create(
+        std::shared_ptr<Environment> env(EnvironmentFactory::get_instance()->create(
                     CommandLine::get_instance()->a_environment.argument()));
         env->set_paludis_command(paludis_command);
 

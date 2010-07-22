@@ -41,7 +41,7 @@
 #include <paludis/merger-fwd.hh>
 #include <paludis/hook-fwd.hh>
 #include <string>
-#include <tr1/functional>
+#include <functional>
 
 /** \file
  * Declarations for Repository classes.
@@ -108,7 +108,7 @@ namespace paludis
      */
     struct RepositoryProvidesEntry
     {
-        NamedValue<n::provided_by, std::tr1::shared_ptr<const PackageID> > provided_by;
+        NamedValue<n::provided_by, std::shared_ptr<const PackageID> > provided_by;
         NamedValue<n::virtual_name, QualifiedPackageName> virtual_name;
     };
 
@@ -122,7 +122,7 @@ namespace paludis
      */
     struct RepositoryVirtualsEntry
     {
-        NamedValue<n::provided_by_spec, std::tr1::shared_ptr<const PackageDepSpec> > provided_by_spec;
+        NamedValue<n::provided_by_spec, std::shared_ptr<const PackageDepSpec> > provided_by_spec;
         NamedValue<n::virtual_name, QualifiedPackageName> virtual_name;
     };
 
@@ -150,11 +150,11 @@ namespace paludis
          * We record things we merged here.
          * \since 0.41
          */
-        NamedValue<n::merged_entries, std::tr1::shared_ptr<FSEntrySet> > merged_entries;
+        NamedValue<n::merged_entries, std::shared_ptr<FSEntrySet> > merged_entries;
 
         NamedValue<n::options, MergerOptions> options;
-        NamedValue<n::output_manager, std::tr1::shared_ptr<OutputManager> > output_manager;
-        NamedValue<n::package_id, std::tr1::shared_ptr<const PackageID> > package_id;
+        NamedValue<n::output_manager, std::shared_ptr<OutputManager> > output_manager;
+        NamedValue<n::package_id, std::shared_ptr<const PackageID> > package_id;
 
         /**
          * Some merges need to do an uninstall mid-way through the merge process.
@@ -162,11 +162,11 @@ namespace paludis
          * \see InstallActionOptions::perform_uninstall
          * \since 0.36
          */
-        NamedValue<n::perform_uninstall, std::tr1::function<void (
-                const std::tr1::shared_ptr<const PackageID> &,
+        NamedValue<n::perform_uninstall, std::function<void (
+                const std::shared_ptr<const PackageID> &,
                 const UninstallActionOptions &)> > perform_uninstall;
 
-        NamedValue<n::used_this_for_config_protect, std::tr1::function<void (const std::string &)> > used_this_for_config_protect;
+        NamedValue<n::used_this_for_config_protect, std::function<void (const std::string &)> > used_this_for_config_protect;
     };
 
     /**
@@ -287,14 +287,14 @@ namespace paludis
              * implementations should not return zero here, but clients should still
              * check.
              */
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key() const = 0;
+            virtual const std::shared_ptr<const MetadataValueKey<std::string> > format_key() const = 0;
 
             /**
              * The location_key, if non-zero, holds the file or directory containing
              * our repository's data, the format of which depends on the value of
              * format_key.
              */
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > location_key() const = 0;
+            virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > location_key() const = 0;
 
             /**
              * The installed_root_key, if non-zero, specifies that we contain installed
@@ -303,7 +303,7 @@ namespace paludis
              * This key is currently used in various places to determine whether a repository is
              * an 'installed' repository or not.
              */
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const = 0;
+            virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const = 0;
 
             /**
              * The accept_keywords_key belonging to a NoConfigEnvironment's
@@ -314,7 +314,7 @@ namespace paludis
              *
              * \since 0.44
              */
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > accept_keywords_key() const = 0;
+            virtual const std::shared_ptr<const MetadataValueKey<std::string> > accept_keywords_key() const = 0;
 
             /**
              * The sync_host_key, if present, should have a value containing
@@ -325,7 +325,7 @@ namespace paludis
              *
              * \since 0.44
              */
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > sync_host_key() const = 0;
+            virtual const std::shared_ptr<const MetadataValueKey<std::string> > sync_host_key() const = 0;
 
             ///\}
 
@@ -345,12 +345,12 @@ namespace paludis
             /**
              * Fetch our category names.
              */
-            virtual std::tr1::shared_ptr<const CategoryNamePartSet> category_names() const = 0;
+            virtual std::shared_ptr<const CategoryNamePartSet> category_names() const = 0;
 
             /**
              * Fetch unimportant categories.
              */
-            virtual std::tr1::shared_ptr<const CategoryNamePartSet> unimportant_category_names() const;
+            virtual std::shared_ptr<const CategoryNamePartSet> unimportant_category_names() const;
 
             /**
              * Are we unimportant?
@@ -364,19 +364,19 @@ namespace paludis
             /**
              * Fetch categories that contain a named package.
              */
-            virtual std::tr1::shared_ptr<const CategoryNamePartSet> category_names_containing_package(
+            virtual std::shared_ptr<const CategoryNamePartSet> category_names_containing_package(
                     const PackageNamePart & p) const;
 
             /**
              * Fetch our package names.
              */
-            virtual std::tr1::shared_ptr<const QualifiedPackageNameSet> package_names(
+            virtual std::shared_ptr<const QualifiedPackageNameSet> package_names(
                     const CategoryNamePart & c) const = 0;
 
             /**
              * Fetch our IDs.
              */
-            virtual std::tr1::shared_ptr<const PackageIDSequence> package_ids(const QualifiedPackageName & p) const = 0;
+            virtual std::shared_ptr<const PackageIDSequence> package_ids(const QualifiedPackageName & p) const = 0;
 
             /**
              * Might some of our IDs support a particular action?
@@ -435,7 +435,7 @@ namespace paludis
              * \return True if we synced successfully, false if we skipped sync.
              * \since 0.42 (previously in an interface)
              */
-            virtual bool sync(const std::tr1::shared_ptr<OutputManager> &) const = 0;
+            virtual bool sync(const std::shared_ptr<OutputManager> &) const = 0;
 
             /**
              * Allow the Repository to drop any memory-cached metadata and
@@ -480,7 +480,7 @@ namespace paludis
              * Query an environment variable
              */
             virtual std::string get_environment_variable(
-                    const std::tr1::shared_ptr<const PackageID> & for_package,
+                    const std::shared_ptr<const PackageID> & for_package,
                     const std::string & var) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
@@ -510,7 +510,7 @@ namespace paludis
             /**
              * Fetch our virtual packages.
              */
-            virtual std::tr1::shared_ptr<const VirtualsSequence> virtual_packages() const
+            virtual std::shared_ptr<const VirtualsSequence> virtual_packages() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}
@@ -530,8 +530,8 @@ namespace paludis
         public:
             virtual ~RepositoryMakeVirtualsInterface();
 
-            virtual const std::tr1::shared_ptr<const PackageID> make_virtual_package_id(
-                    const QualifiedPackageName & virtual_name, const std::tr1::shared_ptr<const PackageID> & provider) const
+            virtual const std::shared_ptr<const PackageID> make_virtual_package_id(
+                    const QualifiedPackageName & virtual_name, const std::shared_ptr<const PackageID> & provider) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 
@@ -556,7 +556,7 @@ namespace paludis
             /**
              * Fetch our provided packages.
              */
-            virtual std::tr1::shared_ptr<const ProvidesSequence> provided_packages() const
+            virtual std::shared_ptr<const ProvidesSequence> provided_packages() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}

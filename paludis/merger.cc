@@ -40,7 +40,7 @@
 #include <cstdio>
 #include <list>
 #include <set>
-#include <tr1/unordered_map>
+#include <unordered_map>
 
 #include "config.h"
 #ifdef HAVE_XATTRS
@@ -51,7 +51,7 @@ using namespace paludis;
 
 #include <paludis/merger-se.cc>
 
-typedef std::tr1::unordered_map<std::pair<dev_t, ino_t>, std::string, Hash<std::pair<dev_t, ino_t> > > MergedMap;
+typedef std::unordered_map<std::pair<dev_t, ino_t>, std::string, Hash<std::pair<dev_t, ino_t> > > MergedMap;
 
 namespace paludis
 {
@@ -731,7 +731,7 @@ Merger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::st
         Log::get_instance()->message("merger.file.pre_hooks.failure", ll_warning, lc_context) <<
                 "Merge of '" << src << "' to '" << dst_dir << "' pre hooks returned non-zero";
 
-    std::tr1::shared_ptr<const SecurityContext> secctx(MatchPathCon::get_instance()->match(stringify(dst_real), src.permissions()));
+    std::shared_ptr<const SecurityContext> secctx(MatchPathCon::get_instance()->match(stringify(dst_real), src.permissions()));
     FSCreateCon createcon(secctx);
     if (0 != paludis::setfilecon(src, secctx))
         throw MergerError("Could not set SELinux context on '"
@@ -947,7 +947,7 @@ Merger::relabel_dir_recursive(const FSEntry & src, const FSEntry & dst)
     for (DirIterator d(src, DirIteratorOptions() + dio_include_dotfiles + dio_inode_sort), d_end ; d != d_end ; ++d)
     {
         mode_t mode(d->permissions());
-        std::tr1::shared_ptr<const SecurityContext> secctx(
+        std::shared_ptr<const SecurityContext> secctx(
                 MatchPathCon::get_instance()->match(stringify(dst / d->basename()), mode));
         if (0 != paludis::setfilecon(*d, secctx))
             throw MergerError("Could not set SELinux context on '"
@@ -976,7 +976,7 @@ Merger::install_dir(const FSEntry & src, const FSEntry & dst_dir)
         result += msi_setid_bits;
 
     FSEntry dst(dst_dir / src.basename());
-    std::tr1::shared_ptr<const SecurityContext> secctx(MatchPathCon::get_instance()->match(stringify(dst), mode));
+    std::shared_ptr<const SecurityContext> secctx(MatchPathCon::get_instance()->match(stringify(dst), mode));
     FSCreateCon createcon(secctx);
     if (0 != paludis::setfilecon(src, secctx))
         throw MergerError("Could not set SELinux context on '"
@@ -1203,7 +1203,7 @@ Merger::try_to_copy_xattrs(const FSEntry & src, int dst_fd, MergeStatusFlags & f
         return;
     }
 
-    std::tr1::shared_ptr<char> list_holder(static_cast<char *>(::operator new(list_sz)));
+    std::shared_ptr<char> list_holder(static_cast<char *>(::operator new(list_sz)));
     list_sz = flistxattr(src_fd, list_holder.get(), list_sz);
     if (-1 == list_sz)
     {
@@ -1226,7 +1226,7 @@ Merger::try_to_copy_xattrs(const FSEntry & src, int dst_fd, MergeStatusFlags & f
                 break;
             }
 
-            std::tr1::shared_ptr<char> value_holder(static_cast<char *>(::operator new(value_sz)));
+            std::shared_ptr<char> value_holder(static_cast<char *>(::operator new(value_sz)));
             value_sz = fgetxattr(src_fd, key.c_str(), value_holder.get(), value_sz);
             if (-1 == value_sz)
             {

@@ -32,7 +32,7 @@
 #include <paludis/package_database.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
-#include <tr1/memory>
+#include <memory>
 
 using namespace paludis;
 using namespace paludis::accounts_repository;
@@ -47,7 +47,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<AccountsRepository> repo(new AccountsRepository(
+            std::shared_ptr<AccountsRepository> repo(new AccountsRepository(
                         make_named_values<AccountsRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("accounts")

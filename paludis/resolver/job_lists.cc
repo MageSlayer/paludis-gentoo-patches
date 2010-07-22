@@ -35,14 +35,14 @@ JobLists::serialise(Serialiser & s) const
         ;
 }
 
-const std::tr1::shared_ptr<JobLists>
+const std::shared_ptr<JobLists>
 JobLists::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "JobLists");
 
     return make_shared_copy(make_named_values<JobLists>(
-            n::execute_job_list() = v.member<std::tr1::shared_ptr<JobList<ExecuteJob> > >("execute_job_list"),
-            n::pretend_job_list() = v.member<std::tr1::shared_ptr<JobList<PretendJob> > >("pretend_job_list")
+            n::execute_job_list() = v.member<std::shared_ptr<JobList<ExecuteJob> > >("execute_job_list"),
+            n::pretend_job_list() = v.member<std::shared_ptr<JobList<PretendJob> > >("pretend_job_list")
             ));
 }
 

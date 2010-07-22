@@ -43,7 +43,7 @@
 #include <test/test_framework.hh>
 
 #include <list>
-#include <tr1/functional>
+#include <functional>
 #include <algorithm>
 #include <map>
 
@@ -64,9 +64,9 @@ namespace
 
     UseExisting
     use_existing_if_same(
-            const std::tr1::shared_ptr<const Resolution> &,
+            const std::shared_ptr<const Resolution> &,
             const PackageDepSpec &,
-            const std::tr1::shared_ptr<const Reason> &)
+            const std::shared_ptr<const Reason> &)
     {
         return ue_if_same;
     }
@@ -86,14 +86,14 @@ namespace test_cases
         virtual ResolverFunctions get_resolver_functions(InitialConstraints & initial_constraints)
         {
             ResolverFunctions result(ResolverCyclesTestCase::get_resolver_functions(initial_constraints));
-            result.get_use_existing_fn() = std::tr1::bind(&use_existing_if_same, std::tr1::placeholders::_1,
-                    std::tr1::placeholders::_2, std::tr1::placeholders::_3);
+            result.get_use_existing_fn() = std::bind(&use_existing_if_same, std::placeholders::_1,
+                    std::placeholders::_2, std::placeholders::_3);
             return result;
         }
 
         void run()
         {
-            std::tr1::shared_ptr<const Resolved> resolved(get_resolved("no-changes/target"));
+            std::shared_ptr<const Resolved> resolved(get_resolved("no-changes/target"));
 
             check_resolved(resolved,
                     n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
@@ -123,7 +123,7 @@ namespace test_cases
 
         void run()
         {
-            std::tr1::shared_ptr<const Resolved> resolved(get_resolved("existing-usable/target"));
+            std::shared_ptr<const Resolved> resolved(get_resolved("existing-usable/target"));
 
             check_resolved(resolved,
                     n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
@@ -150,7 +150,7 @@ namespace test_cases
 
         void run()
         {
-            std::tr1::shared_ptr<const Resolved> resolved(get_resolved("mutual-run-deps/target"));
+            std::shared_ptr<const Resolved> resolved(get_resolved("mutual-run-deps/target"));
 
             check_resolved(resolved,
                     n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
@@ -179,7 +179,7 @@ namespace test_cases
 
         void run()
         {
-            std::tr1::shared_ptr<const Resolved> resolved(get_resolved("mutual-build-deps/target"));
+            std::shared_ptr<const Resolved> resolved(get_resolved("mutual-build-deps/target"));
 
             check_resolved(resolved,
                     n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
@@ -220,8 +220,8 @@ namespace test_cases
 
         void run()
         {
-            std::tr1::shared_ptr<const Resolved> resolved(get_resolved("triangle/target"));
-            std::tr1::shared_ptr<DecisionChecks> checks, u_checks;
+            std::shared_ptr<const Resolved> resolved(get_resolved("triangle/target"));
+            std::shared_ptr<DecisionChecks> checks, u_checks;
 
             if (b_installed)
             {
@@ -291,15 +291,15 @@ namespace test_cases
         virtual ResolverFunctions get_resolver_functions(InitialConstraints & initial_constraints)
         {
             ResolverFunctions result(ResolverCyclesTestCase::get_resolver_functions(initial_constraints));
-            result.get_use_existing_fn() = std::tr1::bind(&use_existing_if_same, std::tr1::placeholders::_1,
-                    std::tr1::placeholders::_2, std::tr1::placeholders::_3);
+            result.get_use_existing_fn() = std::bind(&use_existing_if_same, std::placeholders::_1,
+                    std::placeholders::_2, std::placeholders::_3);
             return result;
         }
 
         void run()
         {
-            std::tr1::shared_ptr<const Resolved> resolved(get_resolved(cat + "/target"));
-            std::tr1::shared_ptr<DecisionChecks> checks, u_checks;
+            std::shared_ptr<const Resolved> resolved(get_resolved(cat + "/target"));
+            std::shared_ptr<DecisionChecks> checks, u_checks;
 
             if (runtime || installed_version == 1)
             {

@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_SRC_OWNER_HH
 #define PALUDIS_GUARD_SRC_OWNER_HH 1
 
-#include <tr1/memory>
+#include <memory>
 
 /** \file
  * Declaration for the do_owner function.
@@ -32,6 +32,6 @@ namespace paludis
 }
 
 /// Handle --owner.
-int do_owner(const std::tr1::shared_ptr<paludis::Environment> &);
+int do_owner(const std::shared_ptr<paludis::Environment> &);
 
 #endif

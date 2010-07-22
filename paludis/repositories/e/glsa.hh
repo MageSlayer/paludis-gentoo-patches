@@ -25,7 +25,7 @@
 #include <paludis/util/named_value.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
-#include <tr1/memory>
+#include <memory>
 #include <string>
 
 namespace paludis
@@ -149,7 +149,7 @@ namespace paludis
             /**
              * Create a GLSA from an XML file.
              */
-            static std::tr1::shared_ptr<GLSA> create_from_xml_file(const std::string & filename);
+            static std::shared_ptr<GLSA> create_from_xml_file(const std::string & filename);
 
             ///\name Iterate over our packages.
             ///\{
@@ -164,7 +164,7 @@ namespace paludis
             /**
              * Add a package.
              */
-            void add_package(const std::tr1::shared_ptr<const GLSAPackage> &);
+            void add_package(const std::shared_ptr<const GLSAPackage> &);
 
             /**
              * Set our ID.

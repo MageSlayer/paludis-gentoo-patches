@@ -55,7 +55,7 @@ namespace paludis
     {
         public:
             DidNotGetExactlyOneError(const std::string &,
-                    const std::tr1::shared_ptr<const PackageIDSet> &) throw ();
+                    const std::shared_ptr<const PackageIDSet> &) throw ();
     };
 
     /**
@@ -72,7 +72,7 @@ namespace paludis
         private PrivateImplementationPattern<Selection>
     {
         protected:
-            Selection(const std::tr1::shared_ptr<const SelectionHandler> &);
+            Selection(const std::shared_ptr<const SelectionHandler> &);
 
         public:
             ///\name Basic operations
@@ -97,7 +97,7 @@ namespace paludis
             /**
              * For use by Environment, not to be called directly.
              */
-            std::tr1::shared_ptr<PackageIDSequence> perform_select(const Environment * const) const
+            std::shared_ptr<PackageIDSequence> perform_select(const Environment * const) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 

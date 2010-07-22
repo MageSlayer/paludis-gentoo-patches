@@ -136,34 +136,34 @@ namespace
             return "with mask '" + mask + "'";
         }
 
-        virtual std::tr1::shared_ptr<const RepositoryNameSet> repositories(
+        virtual std::shared_ptr<const RepositoryNameSet> repositories(
                 const Environment * const,
-                const std::tr1::shared_ptr<const RepositoryNameSet> & r) const
+                const std::shared_ptr<const RepositoryNameSet> & r) const
         {
             return r;
         }
 
-        virtual std::tr1::shared_ptr<const CategoryNamePartSet> categories(
+        virtual std::shared_ptr<const CategoryNamePartSet> categories(
                 const Environment * const,
-                const std::tr1::shared_ptr<const RepositoryNameSet> &,
-                const std::tr1::shared_ptr<const CategoryNamePartSet> & c) const
+                const std::shared_ptr<const RepositoryNameSet> &,
+                const std::shared_ptr<const CategoryNamePartSet> & c) const
         {
             return c;
         }
 
-        virtual std::tr1::shared_ptr<const QualifiedPackageNameSet> packages(
+        virtual std::shared_ptr<const QualifiedPackageNameSet> packages(
                 const Environment * const,
-                const std::tr1::shared_ptr<const RepositoryNameSet> &,
-                const std::tr1::shared_ptr<const QualifiedPackageNameSet> & q) const
+                const std::shared_ptr<const RepositoryNameSet> &,
+                const std::shared_ptr<const QualifiedPackageNameSet> & q) const
         {
             return q;
         }
 
-        virtual std::tr1::shared_ptr<const PackageIDSet> ids(
+        virtual std::shared_ptr<const PackageIDSet> ids(
                 const Environment * const,
-                const std::tr1::shared_ptr<const PackageIDSet> & c) const
+                const std::shared_ptr<const PackageIDSet> & c) const
         {
-            std::tr1::shared_ptr<PackageIDSet> result(new PackageIDSet);
+            std::shared_ptr<PackageIDSet> result(new PackageIDSet);
 
             for (PackageIDSet::ConstIterator i(c->begin()), i_end(c->end()) ;
                     i != i_end ; ++i)
@@ -247,9 +247,9 @@ namespace
 
     std::string format_id(
             const PrintIDsCommandLine & c,
-            const std::tr1::shared_ptr<const PackageID> & i)
+            const std::shared_ptr<const PackageID> & i)
     {
-        std::tr1::shared_ptr<Map<char, std::string> > m(new Map<char, std::string>);
+        std::shared_ptr<Map<char, std::string> > m(new Map<char, std::string>);
         m->insert('c', stringify(i->name().category()));
         m->insert('p', stringify(i->name().package()));
         m->insert('v', stringify(i->version()));
@@ -266,8 +266,8 @@ namespace
 
 int
 PrintIDsCommand::run(
-        const std::tr1::shared_ptr<Environment> & env,
-        const std::tr1::shared_ptr<const Sequence<std::string > > & args
+        const std::shared_ptr<Environment> & env,
+        const std::shared_ptr<const Sequence<std::string > > & args
         )
 {
     PrintIDsCommandLine cmdline;
@@ -331,7 +331,7 @@ PrintIDsCommand::run(
         }
     }
 
-    const std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(fg)]);
+    const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(fg)]);
     for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
             i != i_end ; ++i)
         cout << format_id(cmdline, *i);
@@ -339,7 +339,7 @@ PrintIDsCommand::run(
     return EXIT_SUCCESS;
 }
 
-std::tr1::shared_ptr<args::ArgsHandler>
+std::shared_ptr<args::ArgsHandler>
 PrintIDsCommand::make_doc_cmdline()
 {
     return make_shared_ptr(new PrintIDsCommandLine);

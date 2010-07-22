@@ -47,7 +47,7 @@ namespace paludis
         >::Type>
     {
         public:
-            static const std::tr1::shared_ptr<CreateOutputManagerInfo> deserialise(
+            static const std::shared_ptr<CreateOutputManagerInfo> deserialise(
                     Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual void serialise(Serialiser &) const = 0;
@@ -71,9 +71,9 @@ namespace paludis
              * \since 0.46
              */
             CreateOutputManagerForPackageIDActionInfo(
-                    const std::tr1::shared_ptr<const PackageID> & id,
+                    const std::shared_ptr<const PackageID> & id,
                     const std::string & action_name,
-                    const std::tr1::shared_ptr<const Set<std::string> > & action_flags,
+                    const std::shared_ptr<const Set<std::string> > & action_flags,
                     const OutputExclusivity output_exclusivity,
                     const ClientOutputFeatures & output_features);
 
@@ -81,14 +81,14 @@ namespace paludis
              * \since 0.46
              */
             CreateOutputManagerForPackageIDActionInfo(
-                    const std::tr1::shared_ptr<const PackageID> & id,
+                    const std::shared_ptr<const PackageID> & id,
                     const Action &,
                     const OutputExclusivity output_exclusivity,
                     const ClientOutputFeatures & output_features);
 
             ~CreateOutputManagerForPackageIDActionInfo();
 
-            const std::tr1::shared_ptr<const PackageID> package_id() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::shared_ptr<const PackageID> package_id() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * \since 0.44
@@ -98,7 +98,7 @@ namespace paludis
             /**
              * \since 0.44
              */
-            const std::tr1::shared_ptr<const Set<std::string> > action_flags() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::shared_ptr<const Set<std::string> > action_flags() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             OutputExclusivity output_exclusivity() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -109,7 +109,7 @@ namespace paludis
 
             virtual void serialise(Serialiser &) const;
 
-            static const std::tr1::shared_ptr<CreateOutputManagerForPackageIDActionInfo> deserialise(
+            static const std::shared_ptr<CreateOutputManagerForPackageIDActionInfo> deserialise(
                     Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
@@ -151,7 +151,7 @@ namespace paludis
 
             virtual void serialise(Serialiser &) const;
 
-            static const std::tr1::shared_ptr<CreateOutputManagerForRepositorySyncInfo> deserialise(
+            static const std::shared_ptr<CreateOutputManagerForRepositorySyncInfo> deserialise(
                     Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }

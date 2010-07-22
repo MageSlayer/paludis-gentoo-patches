@@ -32,7 +32,7 @@
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/name.hh>
 #include <paludis/about.hh>
-#include <tr1/unordered_map>
+#include <unordered_map>
 #include <list>
 #include "config.h"
 
@@ -59,7 +59,7 @@ namespace
         NamedValue<n::name_function, RepositoryFactory::NameFunction> name_function;
     };
 
-    typedef std::tr1::unordered_map<std::string, Funcs> Keys;
+    typedef std::unordered_map<std::string, Funcs> Keys;
 
     const Funcs & fetch(const Keys & keys, const std::string & key)
     {
@@ -134,7 +134,7 @@ RepositoryFactory::~RepositoryFactory()
 {
 }
 
-const std::tr1::shared_ptr<Repository>
+const std::shared_ptr<Repository>
 RepositoryFactory::create(
         Environment * const env,
         const KeyFunction & key_function
@@ -145,7 +145,7 @@ RepositoryFactory::create(
     return fetch(_imp->keys, key_function("format")).create_function()(env, key_function);
 }
 
-const std::tr1::shared_ptr<const RepositoryNameSet>
+const std::shared_ptr<const RepositoryNameSet>
 RepositoryFactory::dependencies(
         const Environment * const env,
         const KeyFunction & key_function
@@ -192,7 +192,7 @@ RepositoryFactory::end_keys() const
 
 void
 RepositoryFactory::add_repository_format(
-        const std::tr1::shared_ptr<const Set<std::string> > & formats,
+        const std::shared_ptr<const Set<std::string> > & formats,
         const NameFunction & name_function,
         const ImportanceFunction & importance_function,
         const CreateFunction & create_function,

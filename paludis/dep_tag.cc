@@ -43,10 +43,10 @@ template class PrivateImplementationPattern<DependencyDepTag>;
 
 namespace
 {
-    std::tr1::shared_ptr<DepTagCategory>
+    std::shared_ptr<DepTagCategory>
     make_glsa_dep_tag()
     {
-        return std::tr1::shared_ptr<DepTagCategory>(new DepTagCategory(
+        return std::shared_ptr<DepTagCategory>(new DepTagCategory(
                     true,
                     "glsa",
                     "Security advisories",
@@ -54,10 +54,10 @@ namespace
                     "Please read the advisories carefully and take appropriate action."));
     }
 
-    std::tr1::shared_ptr<DepTagCategory>
+    std::shared_ptr<DepTagCategory>
     make_general_set_dep_tag()
     {
-        return std::tr1::shared_ptr<DepTagCategory>(new DepTagCategory(
+        return std::shared_ptr<DepTagCategory>(new DepTagCategory(
                     true,
                     "general",
                     "General sets",
@@ -65,10 +65,10 @@ namespace
                     ""));
     }
 
-    std::tr1::shared_ptr<DepTagCategory>
+    std::shared_ptr<DepTagCategory>
     make_dependency_set_dep_tag()
     {
-        return std::tr1::shared_ptr<DepTagCategory>(new DepTagCategory(
+        return std::shared_ptr<DepTagCategory>(new DepTagCategory(
                     false,
                     "dependency",
                     "Dependencies",
@@ -76,10 +76,10 @@ namespace
                     ""));
     }
 
-    std::tr1::shared_ptr<DepTagCategory>
+    std::shared_ptr<DepTagCategory>
     make_target_dep_tag()
     {
-        return std::tr1::shared_ptr<DepTagCategory>(new DepTagCategory(
+        return std::shared_ptr<DepTagCategory>(new DepTagCategory(
                     false,
                     "target",
                     "Targets",
@@ -271,19 +271,19 @@ namespace paludis
         mutable Mutex mutex;
         mutable std::string str;
 
-        std::tr1::shared_ptr<const PackageID> id;
-        const std::tr1::shared_ptr<PackageDepSpec> spec;
+        std::shared_ptr<const PackageID> id;
+        const std::shared_ptr<PackageDepSpec> spec;
 
-        Implementation(const std::tr1::shared_ptr<const PackageID> & i, const PackageDepSpec & d) :
+        Implementation(const std::shared_ptr<const PackageID> & i, const PackageDepSpec & d) :
             id(i),
-            spec(std::tr1::static_pointer_cast<PackageDepSpec>(d.clone()))
+            spec(std::static_pointer_cast<PackageDepSpec>(d.clone()))
         {
-            spec->set_tag(std::tr1::shared_ptr<const DepTag>());
+            spec->set_tag(std::shared_ptr<const DepTag>());
         }
     };
 }
 
-DependencyDepTag::DependencyDepTag(const std::tr1::shared_ptr<const PackageID> & i, const PackageDepSpec & d) :
+DependencyDepTag::DependencyDepTag(const std::shared_ptr<const PackageID> & i, const PackageDepSpec & d) :
     PrivateImplementationPattern<DependencyDepTag>(new Implementation<DependencyDepTag>(i, d))
 {
 }
@@ -304,13 +304,13 @@ DependencyDepTag::category() const
     return "dependency";
 }
 
-const std::tr1::shared_ptr<const PackageID>
+const std::shared_ptr<const PackageID>
 DependencyDepTag::package_id() const
 {
     return _imp->id;
 }
 
-const std::tr1::shared_ptr<const PackageDepSpec>
+const std::shared_ptr<const PackageDepSpec>
 DependencyDepTag::dependency() const
 {
     return _imp->spec;
@@ -340,7 +340,7 @@ DepTagCategoryFactory::DepTagCategoryFactory()
 {
 }
 
-const std::tr1::shared_ptr<DepTagCategory>
+const std::shared_ptr<DepTagCategory>
 DepTagCategoryFactory::create(const std::string & s) const
 {
     if (s == "glsa")

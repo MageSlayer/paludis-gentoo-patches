@@ -64,46 +64,46 @@ namespace
 
     struct EInstalledRepositoryIDKeys
     {
-        std::tr1::shared_ptr<const MetadataValueKey<SlotName> > slot;
-        std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_use;
-        std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > inherited;
-        std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string > > > raw_iuse;
-        std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string > > > raw_iuse_effective;
-        std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > raw_myoptions;
-        std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string > > > raw_use_expand;
-        std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string > > > raw_use_expand_hidden;
-        std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > > choices;
-        std::tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> > license;
-        std::tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> > provide;
-        std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > raw_dependencies;
-        std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies;
-        std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies;
-        std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > post_dependencies;
-        std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > restrictions;
-        std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > properties;
-        std::tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> > src_uri;
-        std::tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > homepage;
-        std::tr1::shared_ptr<const MetadataValueKey<std::string> > short_description;
-        std::tr1::shared_ptr<const MetadataValueKey<std::string> > long_description;
-        std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Contents> > > contents;
-        std::tr1::shared_ptr<const MetadataTimeKey> installed_time;
-        std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > from_repositories;
-        std::tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > upstream_changelog;
-        std::tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > upstream_documentation;
-        std::tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > upstream_release_notes;
-        std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > remote_ids;
-        std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > bugs_to;
-        std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > defined_phases;
+        std::shared_ptr<const MetadataValueKey<SlotName> > slot;
+        std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_use;
+        std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > inherited;
+        std::shared_ptr<const MetadataCollectionKey<Set<std::string > > > raw_iuse;
+        std::shared_ptr<const MetadataCollectionKey<Set<std::string > > > raw_iuse_effective;
+        std::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > raw_myoptions;
+        std::shared_ptr<const MetadataCollectionKey<Set<std::string > > > raw_use_expand;
+        std::shared_ptr<const MetadataCollectionKey<Set<std::string > > > raw_use_expand_hidden;
+        std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Choices> > > choices;
+        std::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> > license;
+        std::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> > provide;
+        std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > raw_dependencies;
+        std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies;
+        std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies;
+        std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > post_dependencies;
+        std::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > restrictions;
+        std::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > properties;
+        std::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> > src_uri;
+        std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > homepage;
+        std::shared_ptr<const MetadataValueKey<std::string> > short_description;
+        std::shared_ptr<const MetadataValueKey<std::string> > long_description;
+        std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Contents> > > contents;
+        std::shared_ptr<const MetadataTimeKey> installed_time;
+        std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > from_repositories;
+        std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > upstream_changelog;
+        std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > upstream_documentation;
+        std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > upstream_release_notes;
+        std::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > remote_ids;
+        std::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > bugs_to;
+        std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > defined_phases;
 
-        std::tr1::shared_ptr<const MetadataValueKey<std::string> > asflags;
-        std::tr1::shared_ptr<const MetadataValueKey<std::string> > cbuild;
-        std::tr1::shared_ptr<const MetadataValueKey<std::string> > cflags;
-        std::tr1::shared_ptr<const MetadataValueKey<std::string> > chost;
-        std::tr1::shared_ptr<const MetadataValueKey<std::string> > ctarget;
-        std::tr1::shared_ptr<const MetadataValueKey<std::string> > cxxflags;
-        std::tr1::shared_ptr<const MetadataValueKey<std::string> > ldflags;
-        std::tr1::shared_ptr<const MetadataValueKey<std::string> > pkgmanager;
-        std::tr1::shared_ptr<const MetadataValueKey<std::string> > vdb_format;
+        std::shared_ptr<const MetadataValueKey<std::string> > asflags;
+        std::shared_ptr<const MetadataValueKey<std::string> > cbuild;
+        std::shared_ptr<const MetadataValueKey<std::string> > cflags;
+        std::shared_ptr<const MetadataValueKey<std::string> > chost;
+        std::shared_ptr<const MetadataValueKey<std::string> > ctarget;
+        std::shared_ptr<const MetadataValueKey<std::string> > cxxflags;
+        std::shared_ptr<const MetadataValueKey<std::string> > ldflags;
+        std::shared_ptr<const MetadataValueKey<std::string> > pkgmanager;
+        std::shared_ptr<const MetadataValueKey<std::string> > vdb_format;
     };
 }
 
@@ -117,23 +117,23 @@ namespace paludis
         const QualifiedPackageName name;
         const VersionSpec version;
         const Environment * const environment;
-        const std::tr1::shared_ptr<const Repository> repository;
+        const std::shared_ptr<const Repository> repository;
         const FSEntry dir;
 
-        mutable std::tr1::shared_ptr<EInstalledRepositoryIDKeys> keys;
+        mutable std::shared_ptr<EInstalledRepositoryIDKeys> keys;
 
         /* fs location and eapi are special */
-        std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > fs_location;
-        std::tr1::shared_ptr<const EAPI> eapi;
+        std::shared_ptr<const MetadataValueKey<FSEntry> > fs_location;
+        std::shared_ptr<const EAPI> eapi;
 
-        std::tr1::shared_ptr<DependenciesLabelSequence> raw_dependencies_labels;
-        std::tr1::shared_ptr<DependenciesLabelSequence> build_dependencies_labels;
-        std::tr1::shared_ptr<DependenciesLabelSequence> run_dependencies_labels;
-        std::tr1::shared_ptr<DependenciesLabelSequence> post_dependencies_labels;
+        std::shared_ptr<DependenciesLabelSequence> raw_dependencies_labels;
+        std::shared_ptr<DependenciesLabelSequence> build_dependencies_labels;
+        std::shared_ptr<DependenciesLabelSequence> run_dependencies_labels;
+        std::shared_ptr<DependenciesLabelSequence> post_dependencies_labels;
 
         Implementation(const QualifiedPackageName & q, const VersionSpec & v,
                 const Environment * const e,
-                const std::tr1::shared_ptr<const Repository> r, const FSEntry & f) :
+                const std::shared_ptr<const Repository> r, const FSEntry & f) :
             name(q),
             version(v),
             environment(e),
@@ -161,7 +161,7 @@ namespace paludis
 
 EInstalledRepositoryID::EInstalledRepositoryID(const QualifiedPackageName & q, const VersionSpec & v,
         const Environment * const e,
-        const std::tr1::shared_ptr<const Repository> & r,
+        const std::shared_ptr<const Repository> & r,
         const FSEntry & f) :
     PrivateImplementationPattern<EInstalledRepositoryID>(new Implementation<EInstalledRepositoryID>(q, v, e, r, f)),
     _imp(PrivateImplementationPattern<EInstalledRepositoryID>::_imp)
@@ -202,8 +202,8 @@ EInstalledRepositoryID::need_keys_added() const
         return;
     }
 
-    std::tr1::shared_ptr<const EAPIEbuildMetadataVariables> vars(eapi()->supported()->ebuild_metadata_variables());
-    std::tr1::shared_ptr<const EAPIEbuildEnvironmentVariables> env(eapi()->supported()->ebuild_environment_variables());
+    std::shared_ptr<const EAPIEbuildMetadataVariables> vars(eapi()->supported()->ebuild_metadata_variables());
+    std::shared_ptr<const EAPIEbuildEnvironmentVariables> env(eapi()->supported()->ebuild_environment_variables());
 
     if (! env->env_use().empty())
         if ((_imp->dir / env->env_use()).exists())
@@ -313,7 +313,7 @@ EInstalledRepositoryID::need_keys_added() const
         {
             DependenciesRewriter rewriter;
             std::string raw_deps_str(file_contents(_imp->dir / vars->dependencies()->name()));
-            std::tr1::shared_ptr<DependencySpecTree> raw_deps(parse_depend(raw_deps_str,
+            std::shared_ptr<DependencySpecTree> raw_deps(parse_depend(raw_deps_str,
                     _imp->environment, shared_from_this(), *eapi()));
             raw_deps->root()->accept(rewriter);
 
@@ -497,7 +497,7 @@ EInstalledRepositoryID::need_keys_added() const
 
     add_metadata_key(_imp->keys->choices);
 
-    std::tr1::shared_ptr<Set<std::string> > from_repositories_value(new Set<std::string>);
+    std::shared_ptr<Set<std::string> > from_repositories_value(new Set<std::string>);
     if ((_imp->dir / "REPOSITORY").exists())
         from_repositories_value->insert(file_contents(_imp->dir / "REPOSITORY"));
     if ((_imp->dir / "repository").exists())
@@ -629,13 +629,13 @@ EInstalledRepositoryID::version() const
     return _imp->version;
 }
 
-const std::tr1::shared_ptr<const Repository>
+const std::shared_ptr<const Repository>
 EInstalledRepositoryID::repository() const
 {
     return _imp->repository;
 }
 
-const std::tr1::shared_ptr<const EAPI>
+const std::shared_ptr<const EAPI>
 EInstalledRepositoryID::eapi() const
 {
     Lock l(_imp->mutex);
@@ -659,199 +659,199 @@ EInstalledRepositoryID::eapi() const
     return _imp->eapi;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >
+const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > >
 EInstalledRepositoryID::virtual_for_key() const
 {
-    return std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >();
+    return std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > >();
 }
 
-const std::tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
+const std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
 EInstalledRepositoryID::keywords_key() const
 {
-    return std::tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >();
+    return std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >();
 }
 
-const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 EInstalledRepositoryID::raw_use_key() const
 {
     need_keys_added();
     return _imp->keys->raw_use;
 }
 
-const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 EInstalledRepositoryID::raw_iuse_key() const
 {
     need_keys_added();
     return _imp->keys->raw_iuse;
 }
 
-const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 EInstalledRepositoryID::raw_iuse_effective_key() const
 {
     need_keys_added();
     return _imp->keys->raw_iuse_effective;
 }
 
-const std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> >
+const std::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> >
 EInstalledRepositoryID::raw_myoptions_key() const
 {
     need_keys_added();
     return _imp->keys->raw_myoptions;
 }
 
-const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 EInstalledRepositoryID::raw_use_expand_key() const
 {
     need_keys_added();
     return _imp->keys->raw_use_expand;
 }
 
-const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 EInstalledRepositoryID::raw_use_expand_hidden_key() const
 {
     need_keys_added();
     return _imp->keys->raw_use_expand_hidden;
 }
 
-const std::tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> >
+const std::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> >
 EInstalledRepositoryID::license_key() const
 {
     need_keys_added();
     return _imp->keys->license;
 }
 
-const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 EInstalledRepositoryID::behaviours_key() const
 {
     return make_null_shared_ptr();
 }
 
-const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 EInstalledRepositoryID::inherited_key() const
 {
     need_keys_added();
     return _imp->keys->inherited;
 }
 
-const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 EInstalledRepositoryID::defined_phases_key() const
 {
     need_keys_added();
     return _imp->keys->defined_phases;
 }
 
-const std::tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >
+const std::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >
 EInstalledRepositoryID::provide_key() const
 {
     need_keys_added();
     return _imp->keys->provide;
 }
 
-const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 EInstalledRepositoryID::dependencies_key() const
 {
     need_keys_added();
     return _imp->keys->raw_dependencies;
 }
 
-const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 EInstalledRepositoryID::build_dependencies_key() const
 {
     need_keys_added();
     return _imp->keys->build_dependencies;
 }
 
-const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 EInstalledRepositoryID::run_dependencies_key() const
 {
     need_keys_added();
     return _imp->keys->run_dependencies;
 }
 
-const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 EInstalledRepositoryID::post_dependencies_key() const
 {
     need_keys_added();
     return _imp->keys->post_dependencies;
 }
 
-const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 EInstalledRepositoryID::suggested_dependencies_key() const
 {
-    return std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+    return std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
 }
 
-const std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> >
+const std::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> >
 EInstalledRepositoryID::restrict_key() const
 {
     need_keys_added();
     return _imp->keys->restrictions;
 }
 
-const std::tr1::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> >
+const std::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> >
 EInstalledRepositoryID::properties_key() const
 {
     need_keys_added();
     return _imp->keys->properties;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > >
+const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Choices> > >
 EInstalledRepositoryID::choices_key() const
 {
     need_keys_added();
     return _imp->keys->choices;
 }
 
-const std::tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
+const std::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
 EInstalledRepositoryID::fetches_key() const
 {
     need_keys_added();
     return _imp->keys->src_uri;
 }
 
-const std::tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
+const std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
 EInstalledRepositoryID::homepage_key() const
 {
     need_keys_added();
     return _imp->keys->homepage;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataValueKey<std::string> >
 EInstalledRepositoryID::short_description_key() const
 {
     need_keys_added();
     return _imp->keys->short_description;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataValueKey<std::string> >
 EInstalledRepositoryID::long_description_key() const
 {
     need_keys_added();
     return _imp->keys->long_description;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Contents> > >
+const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Contents> > >
 EInstalledRepositoryID::contents_key() const
 {
     need_keys_added();
     return _imp->keys->contents;
 }
 
-const std::tr1::shared_ptr<const MetadataTimeKey>
+const std::shared_ptr<const MetadataTimeKey>
 EInstalledRepositoryID::installed_time_key() const
 {
     need_keys_added();
     return _imp->keys->installed_time;
 }
 
-const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 EInstalledRepositoryID::from_repositories_key() const
 {
     need_keys_added();
     return _imp->keys->from_repositories;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSEntry> >
 EInstalledRepositoryID::fs_location_key() const
 {
     // Avoid loading whole metadata
@@ -931,26 +931,26 @@ namespace
 {
     struct PerformAction
     {
-        const std::tr1::shared_ptr<const erepository::ERepositoryID> id;
+        const std::shared_ptr<const erepository::ERepositoryID> id;
 
-        PerformAction(const std::tr1::shared_ptr<const erepository::ERepositoryID> i) :
+        PerformAction(const std::shared_ptr<const erepository::ERepositoryID> i) :
             id(i)
         {
         }
 
         void visit(const UninstallAction & a)
         {
-            std::tr1::static_pointer_cast<const EInstalledRepository>(id->repository())->perform_uninstall(id, a);
+            std::static_pointer_cast<const EInstalledRepository>(id->repository())->perform_uninstall(id, a);
         }
 
         void visit(const ConfigAction & a)
         {
-            std::tr1::static_pointer_cast<const EInstalledRepository>(id->repository())->perform_config(id, a);
+            std::static_pointer_cast<const EInstalledRepository>(id->repository())->perform_config(id, a);
         }
 
         void visit(const InfoAction & a)
         {
-            std::tr1::static_pointer_cast<const EInstalledRepository>(id->repository())->perform_info(id, a);
+            std::static_pointer_cast<const EInstalledRepository>(id->repository())->perform_info(id, a);
         }
 
         void visit(const InstallAction & a) PALUDIS_ATTRIBUTE((noreturn));
@@ -987,27 +987,27 @@ EInstalledRepositoryID::perform_action(Action & a) const
     a.accept(b);
 }
 
-const std::tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >
+const std::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >
 EInstalledRepositoryID::contains_key() const
 {
-    return std::tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >();
+    return std::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >();
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >
+const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > >
 EInstalledRepositoryID::contained_in_key() const
 {
-    return std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >();
+    return std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > >();
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<SlotName> >
+const std::shared_ptr<const MetadataValueKey<SlotName> >
 EInstalledRepositoryID::slot_key() const
 {
     need_keys_added();
     return _imp->keys->slot;
 }
 
-std::tr1::shared_ptr<ChoiceValue>
-EInstalledRepositoryID::make_choice_value(const std::tr1::shared_ptr<const Choice> & c, const UnprefixedChoiceName & v,
+std::shared_ptr<ChoiceValue>
+EInstalledRepositoryID::make_choice_value(const std::shared_ptr<const Choice> & c, const UnprefixedChoiceName & v,
         const Tribool, const bool, const bool explicitly_listed, const std::string & override_description, const bool) const
 {
     if (! eapi()->supported())
@@ -1028,16 +1028,16 @@ EInstalledRepositoryID::make_choice_value(const std::tr1::shared_ptr<const Choic
     if (raw_use_key())
         enabled = (raw_use_key()->value()->end() != raw_use_key()->value()->find(name_with_prefix));
 
-    return make_shared_ptr(new EChoiceValue(c->prefix(), v, ChoiceNameWithPrefix(name_with_prefix), name(), std::tr1::shared_ptr<const UseDesc>(),
+    return make_shared_ptr(new EChoiceValue(c->prefix(), v, ChoiceNameWithPrefix(name_with_prefix), name(), std::shared_ptr<const UseDesc>(),
                 enabled, enabled, true, explicitly_listed, override_description, ""));
 }
 
 void
-EInstalledRepositoryID::add_build_options(const std::tr1::shared_ptr<Choices> & choices) const
+EInstalledRepositoryID::add_build_options(const std::shared_ptr<Choices> & choices) const
 {
     if (eapi()->supported())
     {
-        std::tr1::shared_ptr<Choice> build_options(new Choice(make_named_values<ChoiceParams>(
+        std::shared_ptr<Choice> build_options(new Choice(make_named_values<ChoiceParams>(
                         n::consider_added_or_changed() = false,
                         n::contains_every_value() = false,
                         n::hidden() = false,

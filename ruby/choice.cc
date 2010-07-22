@@ -40,7 +40,7 @@ namespace
     VALUE
     choices_each(VALUE self_v)
     {
-        std::tr1::shared_ptr<const Choices> self(value_to_choices(self_v));
+        std::shared_ptr<const Choices> self(value_to_choices(self_v));
         for (Choices::ConstIterator k(self->begin()), k_end(self->end()) ;
                 k != k_end ; ++k)
         {
@@ -66,7 +66,7 @@ namespace
     {
         try
         {
-            std::tr1::shared_ptr<const Choices> self(value_to_choices(self_v));
+            std::shared_ptr<const Choices> self(value_to_choices(self_v));
             std::string arg(StringValuePtr(arg_v));
             return bool_to_value(self->has_matching_contains_every_value_prefix(ChoiceNameWithPrefix(arg)));
         }
@@ -94,9 +94,9 @@ namespace
     {
         try
         {
-            std::tr1::shared_ptr<const Choices> self(value_to_choices(self_v));
+            std::shared_ptr<const Choices> self(value_to_choices(self_v));
             std::string arg(StringValuePtr(arg_v));
-            std::tr1::shared_ptr<const ChoiceValue> result(self->find_by_name_with_prefix(ChoiceNameWithPrefix(arg)));
+            std::shared_ptr<const ChoiceValue> result(self->find_by_name_with_prefix(ChoiceNameWithPrefix(arg)));
             if (result)
                 return choice_value_to_value(result);
             else
@@ -117,7 +117,7 @@ namespace
     VALUE
     choice_each(VALUE self_v)
     {
-        std::tr1::shared_ptr<const Choice> self(value_to_choice(self_v));
+        std::shared_ptr<const Choice> self(value_to_choice(self_v));
         for (Choice::ConstIterator k(self->begin()), k_end(self->end()) ;
                 k != k_end ; ++k)
         {
@@ -161,7 +161,7 @@ namespace
         {
             try
             {
-                std::tr1::shared_ptr<const Choice> self(value_to_choice(self_v));
+                std::shared_ptr<const Choice> self(value_to_choice(self_v));
                 return rb_str_new2(stringify(((*self).*r_)()).c_str());
             }
             catch (const std::exception & e)
@@ -220,7 +220,7 @@ namespace
         {
             try
             {
-                std::tr1::shared_ptr<const Choice> self(value_to_choice(self_v));
+                std::shared_ptr<const Choice> self(value_to_choice(self_v));
                 return bool_to_value(((*self).*r_)());
             }
             catch (const std::exception & e)
@@ -261,7 +261,7 @@ namespace
         {
             try
             {
-                std::tr1::shared_ptr<const ChoiceValue> self(value_to_choice_value(self_v));
+                std::shared_ptr<const ChoiceValue> self(value_to_choice_value(self_v));
                 return rb_str_new2(stringify(((*self).*r_)()).c_str());
             }
             catch (const std::exception & e)
@@ -314,7 +314,7 @@ namespace
         {
             try
             {
-                std::tr1::shared_ptr<const ChoiceValue> self(value_to_choice_value(self_v));
+                std::shared_ptr<const ChoiceValue> self(value_to_choice_value(self_v));
                 return bool_to_value(((*self).*r_)());
             }
             catch (const std::exception & e)
@@ -387,13 +387,13 @@ namespace
 }
 
 VALUE
-paludis::ruby::choices_to_value(const std::tr1::shared_ptr<const Choices> & m)
+paludis::ruby::choices_to_value(const std::shared_ptr<const Choices> & m)
 {
-    std::tr1::shared_ptr<const Choices> * m_ptr(0);
+    std::shared_ptr<const Choices> * m_ptr(0);
     try
     {
-        m_ptr = new std::tr1::shared_ptr<const Choices>(m);
-        return Data_Wrap_Struct(c_choices, 0, &Common<std::tr1::shared_ptr<const Choices> >::free, m_ptr);
+        m_ptr = new std::shared_ptr<const Choices>(m);
+        return Data_Wrap_Struct(c_choices, 0, &Common<std::shared_ptr<const Choices> >::free, m_ptr);
     }
     catch (const std::exception & e)
     {
@@ -402,13 +402,13 @@ paludis::ruby::choices_to_value(const std::tr1::shared_ptr<const Choices> & m)
     }
 }
 
-std::tr1::shared_ptr<const Choices>
+std::shared_ptr<const Choices>
 paludis::ruby::value_to_choices(VALUE v)
 {
     if (rb_obj_is_kind_of(v, c_choices))
     {
-        std::tr1::shared_ptr<const Choices> * v_ptr;
-        Data_Get_Struct(v, std::tr1::shared_ptr<const Choices>, v_ptr);
+        std::shared_ptr<const Choices> * v_ptr;
+        Data_Get_Struct(v, std::shared_ptr<const Choices>, v_ptr);
         return *v_ptr;
     }
     else
@@ -418,13 +418,13 @@ paludis::ruby::value_to_choices(VALUE v)
 }
 
 VALUE
-paludis::ruby::choice_to_value(const std::tr1::shared_ptr<const Choice> & m)
+paludis::ruby::choice_to_value(const std::shared_ptr<const Choice> & m)
 {
-    std::tr1::shared_ptr<const Choice> * m_ptr(0);
+    std::shared_ptr<const Choice> * m_ptr(0);
     try
     {
-        m_ptr = new std::tr1::shared_ptr<const Choice>(m);
-        return Data_Wrap_Struct(c_choice, 0, &Common<std::tr1::shared_ptr<const Choice> >::free, m_ptr);
+        m_ptr = new std::shared_ptr<const Choice>(m);
+        return Data_Wrap_Struct(c_choice, 0, &Common<std::shared_ptr<const Choice> >::free, m_ptr);
     }
     catch (const std::exception & e)
     {
@@ -433,13 +433,13 @@ paludis::ruby::choice_to_value(const std::tr1::shared_ptr<const Choice> & m)
     }
 }
 
-std::tr1::shared_ptr<const Choice>
+std::shared_ptr<const Choice>
 paludis::ruby::value_to_choice(VALUE v)
 {
     if (rb_obj_is_kind_of(v, c_choice))
     {
-        std::tr1::shared_ptr<const Choice> * v_ptr;
-        Data_Get_Struct(v, std::tr1::shared_ptr<const Choice>, v_ptr);
+        std::shared_ptr<const Choice> * v_ptr;
+        Data_Get_Struct(v, std::shared_ptr<const Choice>, v_ptr);
         return *v_ptr;
     }
     else
@@ -449,13 +449,13 @@ paludis::ruby::value_to_choice(VALUE v)
 }
 
 VALUE
-paludis::ruby::choice_value_to_value(const std::tr1::shared_ptr<const ChoiceValue> & m)
+paludis::ruby::choice_value_to_value(const std::shared_ptr<const ChoiceValue> & m)
 {
-    std::tr1::shared_ptr<const ChoiceValue> * m_ptr(0);
+    std::shared_ptr<const ChoiceValue> * m_ptr(0);
     try
     {
-        m_ptr = new std::tr1::shared_ptr<const ChoiceValue>(m);
-        return Data_Wrap_Struct(c_choice_value, 0, &Common<std::tr1::shared_ptr<const ChoiceValue> >::free, m_ptr);
+        m_ptr = new std::shared_ptr<const ChoiceValue>(m);
+        return Data_Wrap_Struct(c_choice_value, 0, &Common<std::shared_ptr<const ChoiceValue> >::free, m_ptr);
     }
     catch (const std::exception & e)
     {
@@ -464,13 +464,13 @@ paludis::ruby::choice_value_to_value(const std::tr1::shared_ptr<const ChoiceValu
     }
 }
 
-std::tr1::shared_ptr<const ChoiceValue>
+std::shared_ptr<const ChoiceValue>
 paludis::ruby::value_to_choice_value(VALUE v)
 {
     if (rb_obj_is_kind_of(v, c_choice_value))
     {
-        std::tr1::shared_ptr<const ChoiceValue> * v_ptr;
-        Data_Get_Struct(v, std::tr1::shared_ptr<const ChoiceValue>, v_ptr);
+        std::shared_ptr<const ChoiceValue> * v_ptr;
+        Data_Get_Struct(v, std::shared_ptr<const ChoiceValue>, v_ptr);
         return *v_ptr;
     }
     else

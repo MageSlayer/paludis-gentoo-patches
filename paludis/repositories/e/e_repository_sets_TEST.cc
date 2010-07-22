@@ -36,7 +36,7 @@ using namespace paludis;
 
 namespace
 {
-    std::string from_keys(const std::tr1::shared_ptr<const Map<std::string, std::string> > & m,
+    std::string from_keys(const std::shared_ptr<const Map<std::string, std::string> > & m,
             const std::string & k)
     {
         Map<std::string, std::string>::ConstIterator mm(m->find(k));
@@ -56,16 +56,16 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "e_repository_sets_TEST_dir/repo1"));
             keys->insert("profiles", "e_repository_sets_TEST_dir/repo1/profiles/profile");
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            std::tr1::shared_ptr<const SetNameSet> sets_list(env.set_names());
+            std::shared_ptr<const SetNameSet> sets_list(env.set_names());
             TEST_CHECK_EQUAL(join(sets_list->begin(), sets_list->end(), " "), "everything insecurity "
                     "insecurity::test-repo-1 "
                     "installed-packages installed-packages::default "
@@ -83,14 +83,14 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "e_repository_sets_TEST_dir/repo1"));
             keys->insert("profiles", "e_repository_sets_TEST_dir/repo1/profiles/profile");
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
-            std::tr1::shared_ptr<FakeInstalledRepository> installed(new FakeInstalledRepository(
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
+            std::shared_ptr<FakeInstalledRepository> installed(new FakeInstalledRepository(
                         make_named_values<FakeInstalledRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("installed"),
@@ -101,10 +101,10 @@ namespace test_cases
             env.package_database()->add_repository(0, installed);
             env.package_database()->add_repository(1, repo);
 
-            std::tr1::shared_ptr<const SetSpecTree> set1(env.set(SetName("set1::test-repo-1")));
+            std::shared_ptr<const SetSpecTree> set1(env.set(SetName("set1::test-repo-1")));
             TEST_CHECK(set1);
             StringifyFormatter ff;
-            erepository::DepSpecPrettyPrinter pretty(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
+            erepository::DepSpecPrettyPrinter pretty(0, std::shared_ptr<const PackageID>(), ff, 0, false, false);
             set1->root()->accept(pretty);
             TEST_CHECK_STRINGIFY_EQUAL(pretty, "cat-one/foo >=cat-two/bar-2");
         }
@@ -123,18 +123,18 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "e_repository_sets_TEST_dir/repo1"));
             keys->insert("profiles", "e_repository_sets_TEST_dir/repo1/profiles/profile");
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            std::tr1::shared_ptr<const SetSpecTree> insecurity(env.set(SetName("insecurity::test-repo-1")));
+            std::shared_ptr<const SetSpecTree> insecurity(env.set(SetName("insecurity::test-repo-1")));
             StringifyFormatter ff;
-            erepository::DepSpecPrettyPrinter pretty(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
+            erepository::DepSpecPrettyPrinter pretty(0, std::shared_ptr<const PackageID>(), ff, 0, false, false);
             insecurity->root()->accept(pretty);
             TEST_CHECK_STRINGIFY_EQUAL(pretty, "=cat-four/xyzzy-2.0.1::test-repo-1 =cat-four/xyzzy-2.0.2::test-repo-1 =cat-one/foo-1::test-repo-1 =cat-two/bar-1.5::test-repo-1 "
                                        "=cat-two/bar-1.5.1::test-repo-1 =cat-three/baz-1.0::test-repo-1 "
@@ -154,16 +154,16 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(
+            std::shared_ptr<Map<std::string, std::string> > keys(
                     new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "e_repository_sets_TEST_dir/repo1"));
             keys->insert("profiles", "e_repository_sets_TEST_dir/repo1/profiles/profile");
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
-            std::tr1::shared_ptr<FakeInstalledRepository> installed(new FakeInstalledRepository(
+            std::shared_ptr<FakeInstalledRepository> installed(new FakeInstalledRepository(
                         make_named_values<FakeInstalledRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("installed"),
@@ -177,9 +177,9 @@ namespace test_cases
             installed->add_version("cat-four", "xyzzy", "2.0.1")->set_slot(SlotName("2"));
             env.package_database()->add_repository(0, installed);
 
-            std::tr1::shared_ptr<const SetSpecTree> security(env.set(SetName("security::test-repo-1")));
+            std::shared_ptr<const SetSpecTree> security(env.set(SetName("security::test-repo-1")));
             StringifyFormatter ff;
-            erepository::DepSpecPrettyPrinter pretty(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
+            erepository::DepSpecPrettyPrinter pretty(0, std::shared_ptr<const PackageID>(), ff, 0, false, false);
             security->root()->accept(pretty);
             TEST_CHECK_STRINGIFY_EQUAL(pretty, "=cat-four/xyzzy-2.0.3::test-repo-1 =cat-two/bar-2.0::test-repo-1 =cat-three/baz-1.3::test-repo-1");
         }

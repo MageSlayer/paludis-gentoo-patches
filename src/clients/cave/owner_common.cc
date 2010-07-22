@@ -35,23 +35,23 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <algorithm>
-#include <tr1/functional>
+#include <functional>
 
 using namespace paludis;
 
 namespace
 {
-    bool handle_full(const std::string & q, const std::tr1::shared_ptr<const ContentsEntry> & e)
+    bool handle_full(const std::string & q, const std::shared_ptr<const ContentsEntry> & e)
     {
         return q == stringify(e->location_key()->value());
     }
 
-    bool handle_basename(const std::string & q, const std::tr1::shared_ptr<const ContentsEntry> & e)
+    bool handle_basename(const std::string & q, const std::shared_ptr<const ContentsEntry> & e)
     {
         return q == e->location_key()->value().basename();
     }
 
-    bool handle_partial(const std::string & q, const std::tr1::shared_ptr<const ContentsEntry> & e)
+    bool handle_partial(const std::string & q, const std::shared_ptr<const ContentsEntry> & e)
     {
         return std::string::npos != stringify(e->location_key()->value()).find(q);
     }
@@ -59,13 +59,13 @@ namespace
 
 int
 paludis::cave::owner_common(
-        const std::tr1::shared_ptr<Environment> & env,
+        const std::shared_ptr<Environment> & env,
         const std::string & match,
         const std::string & query,
-        const std::tr1::function<void (const std::tr1::shared_ptr<const PackageID> &)> & callback)
+        const std::function<void (const std::shared_ptr<const PackageID> &)> & callback)
 {
     bool found(false);
-    std::tr1::function<bool (const std::string &, const std::tr1::shared_ptr<const ContentsEntry> &)> handler;
+    std::function<bool (const std::string &, const std::shared_ptr<const ContentsEntry> &)> handler;
 
     if ("full" == match)
         handler = handle_full;
@@ -83,7 +83,7 @@ paludis::cave::owner_common(
             handler = handle_basename;
     }
 
-    std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(generator::All() |
+    std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(generator::All() |
                 filter::InstalledAtRoot(env->root()))]);
 
     for (PackageIDSequence::ConstIterator p(ids->begin()), p_end(ids->end()); p != p_end; ++p)
@@ -91,9 +91,9 @@ paludis::cave::owner_common(
         if (! (*p)->contents_key())
             continue;
 
-        std::tr1::shared_ptr<const Contents> contents((*p)->contents_key()->value());
-        if (contents->end() != std::find_if(contents->begin(), contents->end(), std::tr1::bind(handler, query,
-                        std::tr1::placeholders::_1)))
+        std::shared_ptr<const Contents> contents((*p)->contents_key()->value());
+        if (contents->end() != std::find_if(contents->begin(), contents->end(), std::bind(handler, query,
+                        std::placeholders::_1)))
         {
             callback(*p);
             found = true;

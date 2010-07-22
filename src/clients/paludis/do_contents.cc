@@ -58,14 +58,14 @@ namespace
 
 void
 do_one_contents_entry(
-        const std::tr1::shared_ptr<Environment>,
+        const std::shared_ptr<Environment>,
         const PackageID & e)
 {
     cout << "* " << colour(cl_package_name, e) << endl;
 
     if (e.contents_key())
     {
-        std::tr1::shared_ptr<const Contents> contents(e.contents_key()->value());
+        std::shared_ptr<const Contents> contents(e.contents_key()->value());
         ContentsDisplayer d;
         std::for_each(indirect_iterator(contents->begin()), indirect_iterator(contents->end()), accept_visitor(d));
     }
@@ -77,16 +77,16 @@ do_one_contents_entry(
 
 void
 do_one_contents(
-        const std::tr1::shared_ptr<Environment> env,
+        const std::shared_ptr<Environment> env,
         const std::string & q)
 {
     Context local_context("When handling query '" + q + "':");
 
-    std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
+    std::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
                 parse_user_package_dep_spec(q, env.get(), UserPackageDepSpecOptions() + updso_allow_wildcards,
                     filter::InstalledAtRoot(env->root()))));
 
-    std::tr1::shared_ptr<const PackageIDSequence> entries(
+    std::shared_ptr<const PackageIDSequence> entries(
             (*env)[selection::AllVersionsSorted(generator::Matches(*spec, MatchPackageOptions()) | filter::InstalledAtRoot(env->root()))]);
 
     if (entries->empty())
@@ -98,7 +98,7 @@ do_one_contents(
 }
 
 int
-do_contents(const std::tr1::shared_ptr<Environment> & env)
+do_contents(const std::shared_ptr<Environment> & env)
 {
     int return_code(0);
 

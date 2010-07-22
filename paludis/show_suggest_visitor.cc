@@ -34,13 +34,13 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/join.hh>
-#include <tr1/functional>
+#include <functional>
 #include <set>
 #include <list>
 
 using namespace paludis;
 
-typedef std::list<std::tr1::shared_ptr<DependenciesLabelSequence> > LabelsStack;
+typedef std::list<std::shared_ptr<DependenciesLabelSequence> > LabelsStack;
 
 namespace paludis
 {
@@ -48,16 +48,16 @@ namespace paludis
     struct Implementation<ShowSuggestVisitor>
     {
         DepList * const dep_list;
-        std::tr1::shared_ptr<const DestinationsSet> destinations;
+        std::shared_ptr<const DestinationsSet> destinations;
         const Environment * const environment;
-        const std::tr1::shared_ptr<const PackageID> id;
+        const std::shared_ptr<const PackageID> id;
         bool dependency_tags;
         const bool only_if_suggested_label;
         std::set<SetName> recursing_sets;
         LabelsStack labels;
 
-        Implementation(DepList * const d, std::tr1::shared_ptr<const DestinationsSet> dd,
-                const Environment * const e, const std::tr1::shared_ptr<const PackageID> & p, bool t, bool l) :
+        Implementation(DepList * const d, std::shared_ptr<const DestinationsSet> dd,
+                const Environment * const e, const std::shared_ptr<const PackageID> & p, bool t, bool l) :
             dep_list(d),
             destinations(dd),
             environment(e),
@@ -70,8 +70,8 @@ namespace paludis
     };
 }
 
-ShowSuggestVisitor::ShowSuggestVisitor(DepList * const d, const std::tr1::shared_ptr<const DestinationsSet> & dd,
-        const Environment * const e, const std::tr1::shared_ptr<const PackageID> & p, bool t, bool l) :
+ShowSuggestVisitor::ShowSuggestVisitor(DepList * const d, const std::shared_ptr<const DestinationsSet> & dd,
+        const Environment * const e, const std::shared_ptr<const PackageID> & p, bool t, bool l) :
     PrivateImplementationPattern<ShowSuggestVisitor>(new Implementation<ShowSuggestVisitor>(d, dd, e, p, t, l))
 {
 }
@@ -86,7 +86,7 @@ ShowSuggestVisitor::visit(const DependencySpecTree::NodeType<ConditionalDepSpec>
     if (node.spec()->condition_met())
     {
         _imp->labels.push_front(*_imp->labels.begin());
-        RunOnDestruction restore_labels(std::tr1::bind(std::tr1::mem_fn(&LabelsStack::pop_front), &_imp->labels));
+        RunOnDestruction restore_labels(std::bind(std::mem_fn(&LabelsStack::pop_front), &_imp->labels));
 
         std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
     }
@@ -96,7 +96,7 @@ void
 ShowSuggestVisitor::visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type & node)
 {
     _imp->labels.push_front(*_imp->labels.begin());
-    RunOnDestruction restore_labels(std::tr1::bind(std::tr1::mem_fn(&LabelsStack::pop_front), &_imp->labels));
+    RunOnDestruction restore_labels(std::bind(std::mem_fn(&LabelsStack::pop_front), &_imp->labels));
 
     std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
 }
@@ -105,7 +105,7 @@ void
 ShowSuggestVisitor::visit(const DependencySpecTree::NodeType<AllDepSpec>::Type & node)
 {
     _imp->labels.push_front(*_imp->labels.begin());
-    RunOnDestruction restore_labels(std::tr1::bind(std::tr1::mem_fn(&LabelsStack::pop_front), &_imp->labels));
+    RunOnDestruction restore_labels(std::bind(std::mem_fn(&LabelsStack::pop_front), &_imp->labels));
 
     std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
 }
@@ -165,7 +165,7 @@ namespace
         }
     };
 
-    bool is_suggest_label(const std::tr1::shared_ptr<const DependenciesLabel> & l)
+    bool is_suggest_label(const std::shared_ptr<const DependenciesLabel> & l)
     {
         return l->accept_returning<bool>(SuggestActiveVisitor());
     }
@@ -188,7 +188,7 @@ ShowSuggestVisitor::visit(const DependencySpecTree::NodeType<PackageDepSpec>::Ty
         }
     }
 
-    std::tr1::shared_ptr<const PackageIDSequence> installed_matches((*_imp->environment)[selection::AllVersionsSorted(
+    std::shared_ptr<const PackageIDSequence> installed_matches((*_imp->environment)[selection::AllVersionsSorted(
                 generator::Matches(*node.spec(), _imp->dep_list->options()->match_package_options())
                 | filter::InstalledAtRoot(_imp->environment->root()))]);
     if (! installed_matches->empty())
@@ -200,7 +200,7 @@ ShowSuggestVisitor::visit(const DependencySpecTree::NodeType<PackageDepSpec>::Ty
         return;
     }
 
-    std::tr1::shared_ptr<const PackageIDSequence> matches((*_imp->environment)[selection::AllVersionsSorted(
+    std::shared_ptr<const PackageIDSequence> matches((*_imp->environment)[selection::AllVersionsSorted(
                 generator::Matches(*node.spec(), _imp->dep_list->options()->match_package_options())
                 | filter::SupportsAction<InstallAction>())]);
     if (matches->empty())
@@ -227,7 +227,7 @@ ShowSuggestVisitor::visit(const DependencySpecTree::NodeType<PackageDepSpec>::Ty
 void
 ShowSuggestVisitor::visit(const DependencySpecTree::NodeType<DependenciesLabelsDepSpec>::Type & node)
 {
-    std::tr1::shared_ptr<DependenciesLabelSequence> labels(new DependenciesLabelSequence);
+    std::shared_ptr<DependenciesLabelSequence> labels(new DependenciesLabelSequence);
     std::copy(node.spec()->begin(), node.spec()->end(), labels->back_inserter());
     *_imp->labels.begin() = labels;
 }
@@ -237,7 +237,7 @@ ShowSuggestVisitor::visit(const DependencySpecTree::NodeType<NamedSetDepSpec>::T
 {
     Context context("When expanding named set '" + stringify(*node.spec()) + "':");
 
-    const std::tr1::shared_ptr<const SetSpecTree> set(_imp->environment->set(node.spec()->name()));
+    const std::shared_ptr<const SetSpecTree> set(_imp->environment->set(node.spec()->name()));
 
     if (! set)
     {

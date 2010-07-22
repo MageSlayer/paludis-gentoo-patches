@@ -29,7 +29,7 @@
 #include <paludis/util/options.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/serialise-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 
 namespace paludis
 {
@@ -49,14 +49,14 @@ namespace paludis
         {
             NamedValue<n::destination_type, DestinationType> destination_type;
             NamedValue<n::nothing_is_fine_too, bool> nothing_is_fine_too;
-            NamedValue<n::reason, std::tr1::shared_ptr<const Reason> > reason;
+            NamedValue<n::reason, std::shared_ptr<const Reason> > reason;
             NamedValue<n::spec, PackageOrBlockDepSpec> spec;
             NamedValue<n::untaken, bool> untaken;
             NamedValue<n::use_existing, UseExisting> use_existing;
 
             void serialise(Serialiser &) const;
 
-            static const std::tr1::shared_ptr<Constraint> deserialise(
+            static const std::shared_ptr<Constraint> deserialise(
                     Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
@@ -71,10 +71,10 @@ namespace paludis
                 bool all_untaken() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 UseExisting strictest_use_existing() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                void add(const std::tr1::shared_ptr<const Constraint> &);
+                void add(const std::shared_ptr<const Constraint> &);
 
                 struct ConstIteratorTag;
-                typedef WrappedForwardIterator<ConstIteratorTag, const std::tr1::shared_ptr<const Constraint> > ConstIterator;
+                typedef WrappedForwardIterator<ConstIteratorTag, const std::shared_ptr<const Constraint> > ConstIterator;
                 ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -82,14 +82,14 @@ namespace paludis
 
                 void serialise(Serialiser &) const;
 
-                static const std::tr1::shared_ptr<Constraints> deserialise(
+                static const std::shared_ptr<Constraints> deserialise(
                         Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 
     extern template class PrivateImplementationPattern<resolver::Constraints>;
     extern template class WrappedForwardIterator<resolver::Constraints::ConstIteratorTag,
-           const std::tr1::shared_ptr<const resolver::Constraint> >;
+           const std::shared_ptr<const resolver::Constraint> >;
 }
 
 #endif

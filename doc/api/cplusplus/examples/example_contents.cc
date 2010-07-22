@@ -66,11 +66,11 @@ int main(int argc, char * argv[])
                 "example_contents", "EXAMPLE_CONTENTS_OPTIONS", "EXAMPLE_CONTENTS_CMDLINE");
 
         /* We start with an Environment, respecting the user's '--environment' choice. */
-        std::tr1::shared_ptr<Environment> env(EnvironmentFactory::get_instance()->create(
+        std::shared_ptr<Environment> env(EnvironmentFactory::get_instance()->create(
                     CommandLine::get_instance()->a_environment.argument()));
 
         /* Fetch package IDs for installed 'sys-apps/paludis'. */
-        std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(
+        std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(
                     generator::Package(QualifiedPackageName("sys-apps/paludis")) |
                     filter::InstalledAtRoot(FSEntry("/")))]);
 
@@ -90,7 +90,7 @@ int main(int argc, char * argv[])
 
                 /* Visit the contents key's value's entries with our visitor. We use
                  * indirect_iterator because value()->begin() and ->end() return
-                 * iterators to std::tr1::shared_ptr<>s rather than raw objects. */
+                 * iterators to std::shared_ptr<>s rather than raw objects. */
                 ContentsPrinter p;
                 std::for_each(
                         indirect_iterator((*i)->contents_key()->value()->begin()),

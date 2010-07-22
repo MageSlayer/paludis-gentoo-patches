@@ -26,7 +26,7 @@
 #include <paludis/util/named_value.hh>
 #include <paludis/name.hh>
 #include <paludis/package_id-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 
 namespace paludis
 {
@@ -40,11 +40,11 @@ namespace paludis
     {
         struct Destination
         {
-            NamedValue<n::replacing, std::tr1::shared_ptr<const PackageIDSequence> > replacing;
+            NamedValue<n::replacing, std::shared_ptr<const PackageIDSequence> > replacing;
             NamedValue<n::repository, RepositoryName> repository;
 
             void serialise(Serialiser &) const;
-            static const std::tr1::shared_ptr<Destination> deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
+            static const std::shared_ptr<Destination> deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 }

@@ -42,7 +42,7 @@
 #include <paludis/util/set.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/package_database.hh>
-#include <tr1/functional>
+#include <functional>
 #include <iostream>
 #include <map>
 
@@ -51,11 +51,11 @@ using std::cout;
 using std::cerr;
 using std::endl;
 
-typedef std::multimap<std::tr1::shared_ptr<const PackageID>, std::string, PackageIDComparator> IDMap;
+typedef std::multimap<std::shared_ptr<const PackageID>, std::string, PackageIDComparator> IDMap;
 
 namespace
 {
-    std::tr1::shared_ptr<OutputManager> make_standard_output_manager(const Action &)
+    std::shared_ptr<OutputManager> make_standard_output_manager(const Action &)
     {
         return make_shared_ptr(new StandardOutputManager);
     }
@@ -89,7 +89,7 @@ namespace
         throw ConfigurationError("Cannot find tree location (try specifying --repository-dir)");
      }
 
-    bool fetch_ids(const std::tr1::shared_ptr<const PackageIDSequence> & ids, IDMap & results, unsigned & success, unsigned & total)
+    bool fetch_ids(const std::shared_ptr<const PackageIDSequence> & ids, IDMap & results, unsigned & success, unsigned & total)
     {
         bool no_conflict_with_manifest(true);
         for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
@@ -100,7 +100,7 @@ namespace
             cout << "Processing " << colour(cl_package_name, stringify(**i)) << "..." << endl;
             ++total;
 
-            const std::tr1::shared_ptr<Sequence<FetchActionFailure> > failures(new Sequence<FetchActionFailure>);
+            const std::shared_ptr<Sequence<FetchActionFailure> > failures(new Sequence<FetchActionFailure>);
             try
             {
                 if ((*i)->supports_action(SupportsActionTest<FetchAction>()))
@@ -113,7 +113,7 @@ namespace
                                 n::ignore_unfetched() = false,
                                 n::make_output_manager() = &make_standard_output_manager,
                                 n::safe_resume() = true,
-                                n::want_phase() = std::tr1::bind(return_literal_function(wp_yes))
+                                n::want_phase() = std::bind(return_literal_function(wp_yes))
                                 ));
                     (*i)->perform_action(a);
                     ++success;
@@ -224,13 +224,13 @@ main(int argc, char *argv[])
         }
         else
         {
-            std::tr1::shared_ptr<FSEntrySequence> extra_repository_dirs(new FSEntrySequence);
+            std::shared_ptr<FSEntrySequence> extra_repository_dirs(new FSEntrySequence);
             for (args::StringSequenceArg::ConstIterator d(CommandLine::get_instance()->a_extra_repository_dir.begin_args()),
                         d_end(CommandLine::get_instance()->a_extra_repository_dir.end_args()) ;
                         d != d_end ; ++d)
                 extra_repository_dirs->push_back(*d);
 
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("distdir", CommandLine::get_instance()->a_download_directory.argument());
 
             NoConfigEnvironment env(make_named_values<no_config_environment::Params>(
@@ -250,7 +250,7 @@ main(int argc, char *argv[])
 
             unsigned success(0), total(0);
 
-            std::tr1::shared_ptr<const CategoryNamePartSet> cat_names(env.main_repository()->category_names());
+            std::shared_ptr<const CategoryNamePartSet> cat_names(env.main_repository()->category_names());
             for (CategoryNamePartSet::ConstIterator c(cat_names->begin()), c_end(cat_names->end()) ;
                     c != c_end ; ++c)
             {
@@ -261,7 +261,7 @@ main(int argc, char *argv[])
                             stringify(*c)))
                         continue;
 
-                std::tr1::shared_ptr<const QualifiedPackageNameSet> pkg_names(env.main_repository()->package_names(*c));
+                std::shared_ptr<const QualifiedPackageNameSet> pkg_names(env.main_repository()->package_names(*c));
                 for (QualifiedPackageNameSet::ConstIterator p(pkg_names->begin()), p_end(pkg_names->end()) ;
                         p != p_end ; ++p)
                 {
@@ -272,7 +272,7 @@ main(int argc, char *argv[])
                                 stringify(p->package())))
                             continue;
 
-                    const std::tr1::shared_ptr<const PackageIDSequence> ids(env[selection::AllVersionsSorted(
+                    const std::shared_ptr<const PackageIDSequence> ids(env[selection::AllVersionsSorted(
                             generator::Package(*p) & generator::InRepository(env.main_repository()->name()))]);
 
                     cout << "Making manifest for: " << colour(cl_package_name, stringify(*p)) << "..." << endl;
@@ -297,7 +297,7 @@ main(int argc, char *argv[])
                 << ": " << total << " IDs, " << success << " successes, " << (total - success) << " failures" << endl << endl;
 
             int exit_status(0);
-            std::tr1::shared_ptr<const PackageID> old_id;
+            std::shared_ptr<const PackageID> old_id;
             for (IDMap::const_iterator r(results.begin()), r_end(results.end()) ; r != r_end ; ++r)
             {
                 exit_status |= 1;

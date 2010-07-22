@@ -32,7 +32,7 @@ namespace test_cases
 
         void run()
         {
-            const std::tr1::function<int ()> f = return_literal_function(3);
+            const std::function<int ()> f = return_literal_function(3);
             TEST_CHECK_EQUAL(f(), 3);
         }
     } test_return_literal_function;

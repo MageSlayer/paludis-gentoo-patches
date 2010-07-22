@@ -60,20 +60,20 @@ namespace paludis
     struct Implementation<EChoicesKey>
     {
         mutable Mutex mutex;
-        mutable std::tr1::shared_ptr<Choices> value;
+        mutable std::shared_ptr<Choices> value;
 
         const Environment * const env;
-        const std::tr1::shared_ptr<const ERepositoryID> id;
-        const std::tr1::shared_ptr<const ERepository> maybe_e_repository;
-        const std::tr1::shared_ptr<const Map<ChoiceNameWithPrefix, std::string> > maybe_descriptions;
+        const std::shared_ptr<const ERepositoryID> id;
+        const std::shared_ptr<const ERepository> maybe_e_repository;
+        const std::shared_ptr<const Map<ChoiceNameWithPrefix, std::string> > maybe_descriptions;
 
         const std::string raw_name;
         const std::string human_name;
         const MetadataKeyType type;
 
-        Implementation(const Environment * const e, const std::tr1::shared_ptr<const ERepositoryID> & i,
-                const std::tr1::shared_ptr<const ERepository> & p,
-                const std::tr1::shared_ptr<const Map<ChoiceNameWithPrefix, std::string> > & d,
+        Implementation(const Environment * const e, const std::shared_ptr<const ERepositoryID> & i,
+                const std::shared_ptr<const ERepository> & p,
+                const std::shared_ptr<const Map<ChoiceNameWithPrefix, std::string> > & d,
                 const std::string & r, const std::string & h, const MetadataKeyType t) :
             env(e),
             id(i),
@@ -89,10 +89,10 @@ namespace paludis
 
 EChoicesKey::EChoicesKey(
         const Environment * const e,
-        const std::tr1::shared_ptr<const ERepositoryID> & i,
+        const std::shared_ptr<const ERepositoryID> & i,
         const std::string & r, const std::string & h, const MetadataKeyType t,
-        const std::tr1::shared_ptr<const ERepository> & p,
-        const std::tr1::shared_ptr<const Map<ChoiceNameWithPrefix, std::string> > & d) :
+        const std::shared_ptr<const ERepository> & p,
+        const std::shared_ptr<const Map<ChoiceNameWithPrefix, std::string> > & d) :
     PrivateImplementationPattern<EChoicesKey>(new Implementation<EChoicesKey>(e, i, p, d, r, h, t))
 {
 }
@@ -193,9 +193,9 @@ namespace
         }
     };
 
-    std::tr1::shared_ptr<ChoiceValue> make_myoption(
-            const std::tr1::shared_ptr<const ERepositoryID> & id,
-            std::tr1::shared_ptr<Choice> & choice,
+    std::shared_ptr<ChoiceValue> make_myoption(
+            const std::shared_ptr<const ERepositoryID> & id,
+            std::shared_ptr<Choice> & choice,
             MyOptionsFinder::Values::const_iterator & v,
             const Tribool s,
             const bool b)
@@ -210,7 +210,7 @@ namespace
         return id->make_choice_value(choice, v->first, s, false, b, description, false);
     }
 
-    std::string get_maybe_description(const std::tr1::shared_ptr<const Map<ChoiceNameWithPrefix, std::string> > & m,
+    std::string get_maybe_description(const std::shared_ptr<const Map<ChoiceNameWithPrefix, std::string> > & m,
             const ChoiceNameWithPrefix & k)
     {
         if (m)
@@ -242,7 +242,7 @@ namespace
 
     void add_choice_to_map(std::map<ChoiceNameWithPrefix, ChoiceOptions> & values,
            const std::pair<ChoiceNameWithPrefix, ChoiceOptions> & flag,
-           const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & key)
+           const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & key)
     {
         std::map<ChoiceNameWithPrefix, ChoiceOptions>::iterator i(values.find(flag.first));
         if (values.end() == i)
@@ -268,7 +268,7 @@ namespace
     }
 }
 
-const std::tr1::shared_ptr<const Choices>
+const std::shared_ptr<const Choices>
 EChoicesKey::value() const
 {
     Lock l(_imp->mutex);
@@ -294,7 +294,7 @@ EChoicesKey::populate_myoptions() const
 {
     Context local_context("When using raw_myoptions_key to populate choices:");
 
-    std::tr1::shared_ptr<Choice> options(new Choice(make_named_values<ChoiceParams>(
+    std::shared_ptr<Choice> options(new Choice(make_named_values<ChoiceParams>(
                     n::consider_added_or_changed() = true,
                     n::contains_every_value() = false,
                     n::hidden() = false,
@@ -305,7 +305,7 @@ EChoicesKey::populate_myoptions() const
                 )));
     _imp->value->add(options);
 
-    std::tr1::shared_ptr<const Set<std::string> > hidden;
+    std::shared_ptr<const Set<std::string> > hidden;
     if (_imp->id->raw_use_expand_hidden_key())
         hidden = _imp->id->raw_use_expand_hidden_key()->value();
 
@@ -322,7 +322,7 @@ EChoicesKey::populate_myoptions() const
 
             std::string lower_u;
             std::transform(u->begin(), u->end(), std::back_inserter(lower_u), &::tolower);
-            std::tr1::shared_ptr<Choice> exp(new Choice(make_named_values<ChoiceParams>(
+            std::shared_ptr<Choice> exp(new Choice(make_named_values<ChoiceParams>(
                             n::consider_added_or_changed() = true,
                             n::contains_every_value() = false,
                             n::hidden() = hidden ? hidden->end() != hidden->find(*u) : false,
@@ -368,7 +368,7 @@ EChoicesKey::populate_iuse() const
 {
     Context local_context("When using raw_iuse_key and raw_use_key to populate choices:");
 
-    std::tr1::shared_ptr<Choice> use(new Choice(make_named_values<ChoiceParams>(
+    std::shared_ptr<Choice> use(new Choice(make_named_values<ChoiceParams>(
                     n::consider_added_or_changed() = true,
                     n::contains_every_value() = false,
                     n::hidden() = false,
@@ -381,7 +381,7 @@ EChoicesKey::populate_iuse() const
 
     bool has_fancy_test_flag(false);
 
-    std::tr1::shared_ptr<const Set<std::string> > hidden;
+    std::shared_ptr<const Set<std::string> > hidden;
     if (_imp->id->raw_use_expand_hidden_key())
         hidden = _imp->id->raw_use_expand_hidden_key()->value();
 
@@ -436,7 +436,7 @@ EChoicesKey::populate_iuse() const
         for (std::map<ChoiceNameWithPrefix, ChoiceOptions>::const_iterator it(values.begin()),
                  it_end(values.end()) ; it != it_end ; ++it)
         {
-            std::tr1::shared_ptr<const ChoiceValue> choice(_imp->id->make_choice_value(
+            std::shared_ptr<const ChoiceValue> choice(_imp->id->make_choice_value(
                         use, UnprefixedChoiceName(stringify(it->first)), it->second.default_value(), false,
                         ! it->second.implicit(), get_maybe_description(_imp->maybe_descriptions, it->first), false));
             use->add(choice);
@@ -476,7 +476,7 @@ EChoicesKey::populate_iuse() const
     std::string env_arch(_imp->id->eapi()->supported()->ebuild_environment_variables()->env_arch());
     if ((! env_arch.empty()) && _imp->maybe_e_repository && ! _imp->id->eapi()->supported()->ebuild_options()->require_use_expand_in_iuse())
     {
-        std::tr1::shared_ptr<Choice> arch(new Choice(make_named_values<ChoiceParams>(
+        std::shared_ptr<Choice> arch(new Choice(make_named_values<ChoiceParams>(
                         n::consider_added_or_changed() = false,
                         n::contains_every_value() = false,
                         n::hidden() = true,
@@ -500,7 +500,7 @@ EChoicesKey::populate_iuse() const
         {
             std::string lower_u;
             std::transform(u->begin(), u->end(), std::back_inserter(lower_u), &::tolower);
-            std::tr1::shared_ptr<Choice> exp(new Choice(make_named_values<ChoiceParams>(
+            std::shared_ptr<Choice> exp(new Choice(make_named_values<ChoiceParams>(
                             n::consider_added_or_changed() = true,
                             n::contains_every_value() = ! _imp->id->eapi()->supported()->ebuild_options()->require_use_expand_in_iuse(),
                             n::hidden() = hidden ? hidden->end() != hidden->find(*u) : false,
@@ -515,12 +515,12 @@ EChoicesKey::populate_iuse() const
 
             if (! _imp->id->eapi()->supported()->ebuild_options()->require_use_expand_in_iuse())
             {
-                std::tr1::shared_ptr<const Set<UnprefixedChoiceName> > e_values(_imp->env->known_choice_value_names(_imp->id, exp));
+                std::shared_ptr<const Set<UnprefixedChoiceName> > e_values(_imp->env->known_choice_value_names(_imp->id, exp));
                 std::copy(e_values->begin(), e_values->end(), std::inserter(values, values.begin()));
 
                 if (_imp->maybe_e_repository)
                 {
-                    std::tr1::shared_ptr<const Set<UnprefixedChoiceName> > r_values(
+                    std::shared_ptr<const Set<UnprefixedChoiceName> > r_values(
                         _imp->maybe_e_repository->profile()->known_choice_value_names(_imp->id, exp));
                     std::copy(r_values->begin(), r_values->end(), std::inserter(values, values.begin()));
                 }
@@ -559,7 +559,7 @@ EChoicesKey::populate_iuse() const
 
     if (has_fancy_test_flag)
     {
-        std::tr1::shared_ptr<const ChoiceValue> choice;
+        std::shared_ptr<const ChoiceValue> choice;
 
         choice = _imp->value->find_by_name_with_prefix(ELikeRecommendedTestsChoiceValue::canonical_name_with_prefix());
         if (! choice)

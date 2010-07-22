@@ -29,7 +29,7 @@ using namespace paludis;
 
 namespace
 {
-    int generic_importance(const Environment * const, const std::tr1::function<std::string (const std::string &)> & f)
+    int generic_importance(const Environment * const, const std::function<std::string (const std::string &)> & f)
     {
         if (! f("importance").empty())
             return destringify<int>(f("importance"));
@@ -49,7 +49,7 @@ namespace paludis
     void register_repositories<repository_groups::unpackaged>(const repository_groups::unpackaged * const,
             RepositoryFactory * const factory)
     {
-        std::tr1::shared_ptr<Set<std::string> > unpackaged_formats(new Set<std::string>);
+        std::shared_ptr<Set<std::string> > unpackaged_formats(new Set<std::string>);
         unpackaged_formats->insert("unpackaged");
 
         factory->add_repository_format(
@@ -60,7 +60,7 @@ namespace paludis
                 &UnpackagedRepository::repository_factory_dependencies
                 );
 
-        std::tr1::shared_ptr<Set<std::string> > installed_unpackaged_formats(new Set<std::string>);
+        std::shared_ptr<Set<std::string> > installed_unpackaged_formats(new Set<std::string>);
         installed_unpackaged_formats->insert("installed_unpackaged");
         installed_unpackaged_formats->insert("installed-unpackaged");
 

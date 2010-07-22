@@ -28,7 +28,7 @@ using namespace paludis::repository_repository;
 
 namespace
 {
-    int generic_importance(const Environment * const, const std::tr1::function<std::string (const std::string &)> & f)
+    int generic_importance(const Environment * const, const std::function<std::string (const std::string &)> & f)
     {
         if (! f("importance").empty())
             return destringify<int>(f("importance"));
@@ -48,7 +48,7 @@ namespace paludis
     void register_repositories<repository_groups::repository>(const repository_groups::repository * const,
             RepositoryFactory * const factory)
     {
-        std::tr1::shared_ptr<Set<std::string> > repository_formats(new Set<std::string>);
+        std::shared_ptr<Set<std::string> > repository_formats(new Set<std::string>);
         repository_formats->insert("repository");
 
         factory->add_repository_format(repository_formats,

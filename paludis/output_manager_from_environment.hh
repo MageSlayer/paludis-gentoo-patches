@@ -37,15 +37,15 @@ namespace paludis
         public:
             OutputManagerFromEnvironment(
                     const Environment * const,
-                    const std::tr1::shared_ptr<const PackageID> &,
+                    const std::shared_ptr<const PackageID> &,
                     const OutputExclusivity,
                     const ClientOutputFeatures &);
 
             ~OutputManagerFromEnvironment();
 
-            const std::tr1::shared_ptr<OutputManager> operator() (const Action &);
+            const std::shared_ptr<OutputManager> operator() (const Action &);
 
-            const std::tr1::shared_ptr<OutputManager> output_manager_if_constructed();
+            const std::shared_ptr<OutputManager> output_manager_if_constructed();
 
             void construct_standard_if_unconstructed();
     };

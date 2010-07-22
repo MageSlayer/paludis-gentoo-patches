@@ -43,7 +43,7 @@
 #include <paludis/util/timestamp.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/metadata_key.hh>
-#include <tr1/functional>
+#include <functional>
 #include <list>
 #include <map>
 #include <vector>
@@ -87,7 +87,7 @@ NDBAMUnmerger::~NDBAMUnmerger()
 Hook
 NDBAMUnmerger::extend_hook(const Hook & h) const
 {
-    std::tr1::shared_ptr<const FSEntrySequence> bashrc_files(_imp->options.environment()->bashrc_files());
+    std::shared_ptr<const FSEntrySequence> bashrc_files(_imp->options.environment()->bashrc_files());
 
     Hook result(Unmerger::extend_hook(h)
         ("CONFIG_PROTECT", _imp->options.config_protect())
@@ -156,19 +156,19 @@ NDBAMUnmerger::make_tidy(const FSEntry & f) const
 }
 
 void
-NDBAMUnmerger::_add_file(const std::tr1::shared_ptr<const ContentsEntry> & e)
+NDBAMUnmerger::_add_file(const std::shared_ptr<const ContentsEntry> & e)
 {
     add_unmerge_entry(et_file, e);
 }
 
 void
-NDBAMUnmerger::_add_dir(const std::tr1::shared_ptr<const ContentsEntry> & e)
+NDBAMUnmerger::_add_dir(const std::shared_ptr<const ContentsEntry> & e)
 {
     add_unmerge_entry(et_dir, e);
 }
 
 void
-NDBAMUnmerger::_add_sym(const std::tr1::shared_ptr<const ContentsEntry> & e)
+NDBAMUnmerger::_add_sym(const std::shared_ptr<const ContentsEntry> & e)
 {
     add_unmerge_entry(et_sym, e);
 }
@@ -176,11 +176,11 @@ NDBAMUnmerger::_add_sym(const std::tr1::shared_ptr<const ContentsEntry> & e)
 void
 NDBAMUnmerger::populate_unmerge_set()
 {
-    using namespace std::tr1::placeholders;
+    using namespace std::placeholders;
     _imp->options.ndbam()->parse_contents(*_imp->options.package_id(),
-            std::tr1::bind(&NDBAMUnmerger::_add_file, this, _1),
-            std::tr1::bind(&NDBAMUnmerger::_add_dir, this, _1),
-            std::tr1::bind(&NDBAMUnmerger::_add_sym, this, _1)
+            std::bind(&NDBAMUnmerger::_add_file, this, _1),
+            std::bind(&NDBAMUnmerger::_add_dir, this, _1),
+            std::bind(&NDBAMUnmerger::_add_sym, this, _1)
             );
 }
 
@@ -202,7 +202,7 @@ namespace
 }
 
 bool
-NDBAMUnmerger::check_file(const std::tr1::shared_ptr<const ContentsEntry> & e) const
+NDBAMUnmerger::check_file(const std::shared_ptr<const ContentsEntry> & e) const
 {
     const FSEntry f(e->location_key()->value());
 
@@ -233,7 +233,7 @@ NDBAMUnmerger::check_file(const std::tr1::shared_ptr<const ContentsEntry> & e) c
 }
 
 bool
-NDBAMUnmerger::check_sym(const std::tr1::shared_ptr<const ContentsEntry> & e) const
+NDBAMUnmerger::check_sym(const std::shared_ptr<const ContentsEntry> & e) const
 {
     const FSEntry f(e->location_key()->value());
 
@@ -252,13 +252,13 @@ NDBAMUnmerger::check_sym(const std::tr1::shared_ptr<const ContentsEntry> & e) co
 }
 
 bool
-NDBAMUnmerger::check_misc(const std::tr1::shared_ptr<const ContentsEntry> &) const
+NDBAMUnmerger::check_misc(const std::shared_ptr<const ContentsEntry> &) const
 {
     return false;
 }
 
 bool
-NDBAMUnmerger::check_dir(const std::tr1::shared_ptr<const ContentsEntry> & e) const
+NDBAMUnmerger::check_dir(const std::shared_ptr<const ContentsEntry> & e) const
 {
     const FSEntry f(e->location_key()->value());
 

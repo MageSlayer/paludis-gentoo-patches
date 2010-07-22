@@ -48,7 +48,7 @@ namespace
         if (! parser.consume(+simple_parser::any_of(" \t\r\n")))
             error(parser, callbacks, "Expected space after '[['");
 
-        std::tr1::shared_ptr<Map<std::string, std::string> > annotations(new Map<std::string, std::string>);
+        std::shared_ptr<Map<std::string, std::string> > annotations(new Map<std::string, std::string>);
         while (true)
         {
             std::string word;

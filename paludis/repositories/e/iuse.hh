@@ -25,7 +25,7 @@
 #include <paludis/util/tribool-fwd.hh>
 #include <paludis/repositories/e/eapi-fwd.hh>
 #include <paludis/choice-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 #include <string>
 #include <iosfwd>
 
@@ -37,7 +37,7 @@ namespace paludis
 
         typedef Options<IUseFlagParseOption> IUseFlagParseOptions;
 
-        std::pair<ChoiceNameWithPrefix, Tribool> parse_iuse(const std::tr1::shared_ptr<const EAPI> &, const std::string &)
+        std::pair<ChoiceNameWithPrefix, Tribool> parse_iuse(const std::shared_ptr<const EAPI> &, const std::string &)
             PALUDIS_VISIBLE PALUDIS_ATTRIBUTE((warn_unused_result));
     }
 }

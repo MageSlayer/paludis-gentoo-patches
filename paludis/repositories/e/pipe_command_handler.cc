@@ -68,12 +68,12 @@ namespace
 
         std::string prefix;
 
-        const std::tr1::shared_ptr<const PackageID> id;
+        const std::shared_ptr<const PackageID> id;
         const std::string description_annotation;
         const std::string joiner;
 
         MyOptionsRewriter(
-                const std::tr1::shared_ptr<const PackageID> & i,
+                const std::shared_ptr<const PackageID> & i,
                 const std::string & d,
                 const std::string & j) :
             id(i),
@@ -140,7 +140,7 @@ namespace
 
             if ((! seen_description) && (id->choices_key()) && (! desc_from.empty()))
             {
-                const std::tr1::shared_ptr<const ChoiceValue> choice(
+                const std::shared_ptr<const ChoiceValue> choice(
                         id->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix(desc_from)));
                 if (choice && (! choice->description().empty()) && (! description_annotation.empty()))
                 {
@@ -162,8 +162,8 @@ namespace
 
 std::string
 paludis::erepository::pipe_command_handler(const Environment * const environment,
-        const std::tr1::shared_ptr<const PackageID> & package_id, const std::string & s,
-        const std::tr1::shared_ptr<OutputManager> & maybe_output_manager)
+        const std::shared_ptr<const PackageID> & package_id, const std::string & s,
+        const std::shared_ptr<OutputManager> & maybe_output_manager)
 {
     Context context("In ebuild pipe command handler:");
 
@@ -256,14 +256,14 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
             }
             else
             {
-                std::tr1::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(tokens[1]));
+                std::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(tokens[1]));
                 if (! eapi->supported())
                     return "EBEST_VERSION EAPI " + tokens[1] + " unsupported";
 
                 PackageDepSpec spec(parse_elike_package_dep_spec(tokens[2],
                             eapi->supported()->package_dep_spec_parse_options(),
                             eapi->supported()->version_spec_options(), package_id));
-                std::tr1::shared_ptr<const PackageIDSequence> entries((*environment)[selection::AllVersionsSorted(
+                std::shared_ptr<const PackageIDSequence> entries((*environment)[selection::AllVersionsSorted(
                             generator::Matches(spec, MatchPackageOptions()) | filter::InstalledAtRoot(environment->root()))]);
                 if (eapi->supported()->pipe_commands()->rewrite_virtuals() && (! entries->empty()) &&
                         (*entries->last())->virtual_for_key())
@@ -272,7 +272,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                         "' resolves to '" << **entries->last() << "', which is a virtual for '"
                         << *(*entries->last())->virtual_for_key()->value() << "'. This will break with "
                         "new style virtuals.";
-                    std::tr1::shared_ptr<PackageIDSequence> new_entries(new PackageIDSequence);
+                    std::shared_ptr<PackageIDSequence> new_entries(new PackageIDSequence);
                     new_entries->push_back((*entries->last())->virtual_for_key()->value());
                     entries = new_entries;
                 }
@@ -297,14 +297,14 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
             }
             else
             {
-                std::tr1::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(tokens[1]));
+                std::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(tokens[1]));
                 if (! eapi->supported())
                     return "EHAS_VERSION EAPI " + tokens[1] + " unsupported";
 
                 PackageDepSpec spec(parse_elike_package_dep_spec(tokens[2],
                             eapi->supported()->package_dep_spec_parse_options(),
                             eapi->supported()->version_spec_options(), package_id));
-                std::tr1::shared_ptr<const PackageIDSequence> entries((*environment)[selection::SomeArbitraryVersion(
+                std::shared_ptr<const PackageIDSequence> entries((*environment)[selection::SomeArbitraryVersion(
                             generator::Matches(spec, MatchPackageOptions()) | filter::InstalledAtRoot(environment->root()))]);
                 if (entries->empty())
                     return "O1;";
@@ -321,18 +321,18 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
             }
             else
             {
-                std::tr1::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(tokens[1]));
+                std::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(tokens[1]));
                 if (! eapi->supported())
                     return "EMATCH EAPI " + tokens[1] + " unsupported";
 
                 PackageDepSpec spec(parse_elike_package_dep_spec(tokens[2],
                             eapi->supported()->package_dep_spec_parse_options(),
                             eapi->supported()->version_spec_options(), package_id));
-                std::tr1::shared_ptr<const PackageIDSequence> entries((*environment)[selection::AllVersionsSorted(
+                std::shared_ptr<const PackageIDSequence> entries((*environment)[selection::AllVersionsSorted(
                             generator::Matches(spec, MatchPackageOptions()) | filter::InstalledAtRoot(environment->root()))]);
                 if (eapi->supported()->pipe_commands()->rewrite_virtuals() && (! entries->empty()))
                 {
-                    std::tr1::shared_ptr<PackageIDSequence> new_entries(new PackageIDSequence);
+                    std::shared_ptr<PackageIDSequence> new_entries(new PackageIDSequence);
                     for (PackageIDSequence::ConstIterator i(entries->begin()), i_end(entries->end()) ;
                             i != i_end ; ++i)
                     {
@@ -372,7 +372,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
             {
                 if (! environment->package_database()->has_repository_named(RepositoryName("installed")))
                     return "Eno installed repository available";
-                std::tr1::shared_ptr<const Repository> repo(environment->package_database()->fetch_repository(RepositoryName("installed")));
+                std::shared_ptr<const Repository> repo(environment->package_database()->fetch_repository(RepositoryName("installed")));
                 Repository::MetadataConstIterator key(repo->find_metadata("location"));
                 if (repo->end_metadata() == key)
                     return "Einstalled repository has no location key";
@@ -390,7 +390,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
             }
             else
             {
-                std::tr1::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(tokens[1]));
+                std::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(tokens[1]));
                 if (! eapi->supported())
                     return "EOPTIONQ EAPI " + tokens[1] + " unsupported";
 
@@ -398,7 +398,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                     return "EOPTIONQ ID " + stringify(*package_id) + " has no choices";
 
                 ChoiceNameWithPrefix name(tokens[2]);
-                std::tr1::shared_ptr<const ChoiceValue> value(package_id->choices_key()->value()->find_by_name_with_prefix(name));
+                std::shared_ptr<const ChoiceValue> value(package_id->choices_key()->value()->find_by_name_with_prefix(name));
                 if (! value)
                 {
                     if (package_id->choices_key()->value()->has_matching_contains_every_value_prefix(name))
@@ -421,7 +421,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                 return "Ebad REWRITE_VAR command";
             }
 
-            std::tr1::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(tokens[1]));
+            std::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(tokens[1]));
             if (! eapi->supported())
                 return "EREWRITE_VAR EAPI " + tokens[1] + " unsupported";
 
@@ -443,11 +443,11 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                 if (! mm)
                     throw InternalError(PALUDIS_HERE, "oops. key '" + var + "' isn't a DependencySpecTree key");
 
-                std::tr1::shared_ptr<const DependencySpecTree> before(mm->value());
-                std::tr1::shared_ptr<const DependencySpecTree> after(fix_locked_dependencies(
+                std::shared_ptr<const DependencySpecTree> before(mm->value());
+                std::shared_ptr<const DependencySpecTree> after(fix_locked_dependencies(
                             environment, *eapi, package_id, before));
                 StringifyFormatter ff;
-                DepSpecPrettyPrinter p(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
+                DepSpecPrettyPrinter p(0, std::shared_ptr<const PackageID>(), ff, 0, false, false);
                 after->root()->accept(p);
                 return "O0;" + stringify(p);
             }
@@ -476,7 +476,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
         }
         else if (tokens[0] == "EVER")
         {
-            std::tr1::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(tokens[1]));
+            std::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(tokens[1]));
             if (! eapi->supported())
                 return "EVER EAPI " + tokens[1] + " unsupported";
             if (tokens.size() < 3)

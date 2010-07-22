@@ -76,16 +76,16 @@ namespace paludis
 
             ///\}
 
-            virtual std::tr1::shared_ptr<const FSEntrySequence> bashrc_files() const
+            virtual std::shared_ptr<const FSEntrySequence> bashrc_files() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::tr1::shared_ptr<const FSEntrySequence> syncers_dirs() const
+            virtual std::shared_ptr<const FSEntrySequence> syncers_dirs() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::tr1::shared_ptr<const FSEntrySequence> fetchers_dirs() const
+            virtual std::shared_ptr<const FSEntrySequence> fetchers_dirs() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::tr1::shared_ptr<const FSEntrySequence> hook_dirs() const
+            virtual std::shared_ptr<const FSEntrySequence> hook_dirs() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual const FSEntry root() const
@@ -97,7 +97,7 @@ namespace paludis
             virtual gid_t reduced_gid() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::tr1::shared_ptr<const MirrorsSequence> mirrors(const std::string &) const
+            virtual std::shared_ptr<const MirrorsSequence> mirrors(const std::string &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual HookResult perform_hook(const Hook &) const
@@ -108,25 +108,25 @@ namespace paludis
 
             virtual void set_paludis_command(const std::string &);
 
-            virtual std::tr1::shared_ptr<PackageDatabase> package_database()
+            virtual std::shared_ptr<PackageDatabase> package_database()
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::tr1::shared_ptr<const PackageDatabase> package_database() const
+            virtual std::shared_ptr<const PackageDatabase> package_database() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual std::string distribution() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool accept_keywords(const std::tr1::shared_ptr<const KeywordNameSet> &, const PackageID &) const
+            virtual bool accept_keywords(const std::shared_ptr<const KeywordNameSet> &, const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual bool accept_license(const std::string &, const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const std::tr1::shared_ptr<const Mask> mask_for_breakage(const PackageID &) const
+            virtual const std::shared_ptr<const Mask> mask_for_breakage(const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const std::tr1::shared_ptr<const Mask> mask_for_user(const PackageID &, const bool) const
+            virtual const std::shared_ptr<const Mask> mask_for_user(const PackageID &, const bool) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual bool unmasked_by_user(const PackageID &) const
@@ -140,33 +140,33 @@ namespace paludis
 
             virtual bool remove_from_world(const SetName &) const;
 
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > config_location_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > config_location_key() const;
 
             virtual const Tribool want_choice_enabled(
-                    const std::tr1::shared_ptr<const PackageID> &,
-                    const std::tr1::shared_ptr<const Choice> &,
+                    const std::shared_ptr<const PackageID> &,
+                    const std::shared_ptr<const Choice> &,
                     const UnprefixedChoiceName &
                     ) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual const std::string value_for_choice_parameter(
-                    const std::tr1::shared_ptr<const PackageID> &,
-                    const std::tr1::shared_ptr<const Choice> &,
+                    const std::shared_ptr<const PackageID> &,
+                    const std::shared_ptr<const Choice> &,
                     const UnprefixedChoiceName &
                     ) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::tr1::shared_ptr<const Set<UnprefixedChoiceName> > known_choice_value_names(
-                    const std::tr1::shared_ptr<const PackageID> &,
-                    const std::tr1::shared_ptr<const Choice> &
+            virtual std::shared_ptr<const Set<UnprefixedChoiceName> > known_choice_value_names(
+                    const std::shared_ptr<const PackageID> &,
+                    const std::shared_ptr<const Choice> &
                     ) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const std::tr1::shared_ptr<OutputManager> create_output_manager(
+            virtual const std::shared_ptr<OutputManager> create_output_manager(
                     const CreateOutputManagerInfo &) const;
 
-            virtual const std::tr1::shared_ptr<Repository> repository_from_new_config_file(
+            virtual const std::shared_ptr<Repository> repository_from_new_config_file(
                     const FSEntry &) PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual void update_config_files_for_package_move(

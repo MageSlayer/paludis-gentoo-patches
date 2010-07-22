@@ -37,7 +37,7 @@ using namespace paludis;
 
 namespace
 {
-    std::string predefined(const std::tr1::shared_ptr<const Map<std::string, std::string> > & m,
+    std::string predefined(const std::shared_ptr<const Map<std::string, std::string> > & m,
             const KeyValueConfigFile &, const std::string & s)
     {
         if (m->end() == m->find(s))
@@ -227,7 +227,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(ff.get("z"), "foofoo\\$");
 
             std::stringstream t;
-            std::tr1::shared_ptr<Map<std::string, std::string> > t_defs(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > t_defs(new Map<std::string, std::string>);
             t_defs->insert("a", "moo");
             t_defs->insert("d", "bar");
             t_defs->insert("e", "baz");
@@ -239,7 +239,7 @@ namespace test_cases
             t << "g = foo \\" << std::endl;
             t << "    bar" << std::endl;
             KeyValueConfigFile fg(t, KeyValueConfigFileOptions(),
-                    std::tr1::bind(&predefined, t_defs, std::tr1::placeholders::_1, std::tr1::placeholders::_2),
+                    std::bind(&predefined, t_defs, std::placeholders::_1, std::placeholders::_2),
                     &KeyValueConfigFile::no_transformation);
 
             TEST_CHECK_EQUAL(fg.get("a"), "foo");
@@ -262,7 +262,7 @@ namespace test_cases
 
             std::stringstream d_s;
             d_s << "foo=oink" << std::endl;
-            std::tr1::shared_ptr<KeyValueConfigFile> d_ff(new KeyValueConfigFile(d_s, KeyValueConfigFileOptions(),
+            std::shared_ptr<KeyValueConfigFile> d_ff(new KeyValueConfigFile(d_s, KeyValueConfigFileOptions(),
                         &predefined_from_env,
                         &KeyValueConfigFile::no_transformation));
 
@@ -270,7 +270,7 @@ namespace test_cases
             s << "x=${foo}" << std::endl;
             s << "y=${moo}" << std::endl;
             KeyValueConfigFile ff(s, KeyValueConfigFileOptions(),
-                    std::tr1::bind(&predefined_from_config_file, std::tr1::cref(*d_ff), std::tr1::placeholders::_1, std::tr1::placeholders::_2),
+                    std::bind(&predefined_from_config_file, std::cref(*d_ff), std::placeholders::_1, std::placeholders::_2),
                     &KeyValueConfigFile::no_transformation);
 
             TEST_CHECK_EQUAL(ff.get("x"), "oink");

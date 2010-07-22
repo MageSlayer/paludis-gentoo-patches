@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_UTIL_RETURN_LITERAL_FUNCTION_FWD_HH 1
 
 #include <paludis/util/attributes.hh>
-#include <tr1/functional>
+#include <functional>
 
 namespace paludis
 {
@@ -29,7 +29,7 @@ namespace paludis
     struct ReturnLiteralFunction;
 
     template <typename T_>
-    std::tr1::function<T_ ()> return_literal_function(const T_ &)
+    std::function<T_ ()> return_literal_function(const T_ &)
     PALUDIS_VISIBLE PALUDIS_ATTRIBUTE((warn_unused_result));
 }
 

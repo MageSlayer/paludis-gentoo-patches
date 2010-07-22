@@ -27,7 +27,7 @@
 #include <paludis/util/return_literal_function.hh>
 #include <paludis/standard_output_manager.hh>
 #include <paludis/repository.hh>
-#include <tr1/memory>
+#include <memory>
 
 using namespace paludis;
 using namespace paludis::python;
@@ -58,12 +58,12 @@ namespace
         return wp_yes;
     }
 
-    std::tr1::shared_ptr<OutputManager> make_standard_output_manager(const Action &)
+    std::shared_ptr<OutputManager> make_standard_output_manager(const Action &)
     {
         return make_shared_ptr(new StandardOutputManager);
     }
 
-    void cannot_perform_uninstall(const std::tr1::shared_ptr<const PackageID> & id, const UninstallActionOptions &)
+    void cannot_perform_uninstall(const std::shared_ptr<const PackageID> & id, const UninstallActionOptions &)
     {
         throw InternalError(PALUDIS_HERE, "Can't uninstall '" + stringify(*id) + "'");
     }
@@ -74,7 +74,7 @@ namespace
     }
 
     InstallActionOptions * make_install_action_options(
-            const std::tr1::shared_ptr<paludis::Repository> & r)
+            const std::shared_ptr<paludis::Repository> & r)
     {
         return new InstallActionOptions(make_named_values<InstallActionOptions>(
                     n::destination() = r,
@@ -137,7 +137,7 @@ namespace
                     n::ignore_unfetched() = false,
                     n::make_output_manager() = &make_standard_output_manager,
                     n::safe_resume() = safe_resume,
-                    n::want_phase() = std::tr1::bind(return_literal_function(wp_yes))
+                    n::want_phase() = std::bind(return_literal_function(wp_yes))
                     ));
     }
 
@@ -171,8 +171,8 @@ void expose_action()
             )
 
         .add_property("destination",
-                &named_values_getter<InstallActionOptions, n::destination, std::tr1::shared_ptr<Repository>, &InstallActionOptions::destination>,
-                &named_values_setter<InstallActionOptions, n::destination, std::tr1::shared_ptr<Repository>, &InstallActionOptions::destination>,
+                &named_values_getter<InstallActionOptions, n::destination, std::shared_ptr<Repository>, &InstallActionOptions::destination>,
+                &named_values_setter<InstallActionOptions, n::destination, std::shared_ptr<Repository>, &InstallActionOptions::destination>,
                 "[rw] Repository"
                 )
         ;

@@ -30,9 +30,9 @@
 
 using namespace paludis;
 
-typedef std::list<std::tr1::shared_ptr<Executive> > ExecutiveList;
+typedef std::list<std::shared_ptr<Executive> > ExecutiveList;
 typedef std::map<std::string, ExecutiveList> Queues;
-typedef std::list<std::tr1::shared_ptr<Executive> > ReadyForPost;
+typedef std::list<std::shared_ptr<Executive> > ReadyForPost;
 
 Executive::~Executive()
 {
@@ -73,7 +73,7 @@ Executor::~Executor()
 }
 
 void
-Executor::_one(const std::tr1::shared_ptr<Executive> executive)
+Executor::_one(const std::shared_ptr<Executive> executive)
 {
     executive->execute_threaded();
 
@@ -102,7 +102,7 @@ Executor::done() const
 }
 
 void
-Executor::add(const std::tr1::shared_ptr<Executive> & x)
+Executor::add(const std::shared_ptr<Executive> & x)
 {
     ++_imp->pending;
     _imp->queues.insert(std::make_pair(x->queue_name(), ExecutiveList())).first->second.push_back(x);
@@ -111,7 +111,7 @@ Executor::add(const std::tr1::shared_ptr<Executive> & x)
 void
 Executor::execute()
 {
-    typedef std::map<std::string, std::pair<std::tr1::shared_ptr<Thread>, std::tr1::shared_ptr<Executive> > > Running;
+    typedef std::map<std::string, std::pair<std::shared_ptr<Thread>, std::shared_ptr<Executive> > > Running;
     Running running;
 
     Lock lock(_imp->mutex);
@@ -131,7 +131,7 @@ Executor::execute()
             --_imp->pending;
             (*q->second.begin())->pre_execute_exclusive();
             running.insert(std::make_pair(q->first, std::make_pair(make_shared_ptr(new Thread(
-                                std::tr1::bind(&Executor::_one, this, *q->second.begin()))), *q->second.begin())));
+                                std::bind(&Executor::_one, this, *q->second.begin()))), *q->second.begin())));
             q->second.erase(q->second.begin());
             if (q->second.empty())
                 _imp->queues.erase(q++);

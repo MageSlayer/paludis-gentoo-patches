@@ -110,11 +110,11 @@ namespace test_cases
     {
         protected:
             TestEnvironment env;
-            std::tr1::shared_ptr<FakeRepository> repo;
-            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo;
+            std::shared_ptr<FakeRepository> repo;
+            std::shared_ptr<FakeInstalledRepository> installed_repo;
 #ifdef ENABLE_VIRTUALS_REPOSITORY
-            std::tr1::shared_ptr<Repository> virtuals_repo;
-            std::tr1::shared_ptr<Repository> installed_virtuals_repo;
+            std::shared_ptr<Repository> virtuals_repo;
+            std::shared_ptr<Repository> installed_virtuals_repo;
 #endif
             std::list<std::string> expected;
             std::string merge_target;

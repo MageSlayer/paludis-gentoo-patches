@@ -22,7 +22,7 @@
 
 #include <paludis/util/attributes.hh>
 #include <paludis/util/sequence-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 #include <iosfwd>
 
 /** \file
@@ -218,7 +218,7 @@ namespace paludis
      * \ingroup g_dep_spec
      * \since 0.42
      */
-    typedef Sequence<std::tr1::shared_ptr<const DependenciesLabel> > DependenciesLabelSequence;
+    typedef Sequence<std::shared_ptr<const DependenciesLabel> > DependenciesLabelSequence;
 
     /**
      * A DependenciesLabel can be written to a stream.

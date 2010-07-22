@@ -27,7 +27,7 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/no_type.hh>
 #include <paludis/serialise-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 
 namespace paludis
 {
@@ -39,13 +39,13 @@ namespace paludis
         template <typename Decision_, typename Notes_>
         struct DecisionsIteratorValueType
         {
-            typedef const std::pair<std::tr1::shared_ptr<const Decision_>, Notes_> Type;
+            typedef const std::pair<std::shared_ptr<const Decision_>, Notes_> Type;
         };
 
         template <typename Decision_>
         struct DecisionsIteratorValueType<Decision_, NoType<0u> *>
         {
-            typedef const std::tr1::shared_ptr<const Decision_> Type;
+            typedef const std::shared_ptr<const Decision_> Type;
         };
 
         template <typename Decision_, typename Notes_>
@@ -59,7 +59,7 @@ namespace paludis
                 ~Decisions();
 
                 void push_back(
-                        const std::tr1::shared_ptr<const Decision_> &,
+                        const std::shared_ptr<const Decision_> &,
                         const Notes_ & = static_cast<NoType<0u> *>(0));
 
                 typedef DecisionsConstIteratorTag<Decision_, Notes_> ConstIteratorTag;
@@ -71,29 +71,29 @@ namespace paludis
                 bool empty() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 void serialise(Serialiser &) const;
-                static const std::tr1::shared_ptr<Decisions> deserialise(Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
+                static const std::shared_ptr<Decisions> deserialise(Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         extern template class Decisions<UnableToMakeDecision>;
         extern template class Decisions<ChangesToMakeDecision>;
         extern template class Decisions<ChangeOrRemoveDecision>;
         extern template class Decisions<ConfirmableDecision>;
-        extern template class Decisions<ChangeOrRemoveDecision, std::tr1::shared_ptr<const OrdererNotes> >;
+        extern template class Decisions<ChangeOrRemoveDecision, std::shared_ptr<const OrdererNotes> >;
     }
 
     extern template class WrappedForwardIterator<resolver::Decisions<resolver::UnableToMakeDecision>::ConstIteratorTag,
-           const std::tr1::shared_ptr<const resolver::UnableToMakeDecision> >;
+           const std::shared_ptr<const resolver::UnableToMakeDecision> >;
     extern template class WrappedForwardIterator<resolver::Decisions<resolver::ChangesToMakeDecision>::ConstIteratorTag,
-           const std::tr1::shared_ptr<const resolver::ChangesToMakeDecision> >;
+           const std::shared_ptr<const resolver::ChangesToMakeDecision> >;
     extern template class WrappedForwardIterator<resolver::Decisions<resolver::ChangeOrRemoveDecision>::ConstIteratorTag,
-           const std::tr1::shared_ptr<const resolver::ChangeOrRemoveDecision> >;
+           const std::shared_ptr<const resolver::ChangeOrRemoveDecision> >;
     extern template class WrappedForwardIterator<resolver::Decisions<resolver::ConfirmableDecision>::ConstIteratorTag,
-           const std::tr1::shared_ptr<const resolver::ConfirmableDecision> >;
+           const std::shared_ptr<const resolver::ConfirmableDecision> >;
     extern template class WrappedForwardIterator<resolver::Decisions<resolver::ChangeOrRemoveDecision,
-           std::tr1::shared_ptr<const resolver::OrdererNotes> >::ConstIteratorTag,
+           std::shared_ptr<const resolver::OrdererNotes> >::ConstIteratorTag,
            const std::pair<
-               std::tr1::shared_ptr<const resolver::ChangeOrRemoveDecision>,
-               std::tr1::shared_ptr<const resolver::OrdererNotes> > >;
+               std::shared_ptr<const resolver::ChangeOrRemoveDecision>,
+               std::shared_ptr<const resolver::OrdererNotes> > >;
 }
 
 #endif

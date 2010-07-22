@@ -29,7 +29,7 @@ namespace paludis
 {
     namespace cranrepository
     {
-        std::tr1::shared_ptr<DependencySpecTree> parse_depends(const std::string & s) PALUDIS_VISIBLE;
+        std::shared_ptr<DependencySpecTree> parse_depends(const std::string & s) PALUDIS_VISIBLE;
     }
 }
 

@@ -25,8 +25,8 @@
 #include <paludis/util/set-fwd.hh>
 
 #include <paludis/package_id-fwd.hh>
-#include <tr1/memory>
-#include <tr1/functional>
+#include <memory>
+#include <functional>
 #include <string>
 
 namespace paludis
@@ -45,7 +45,7 @@ namespace paludis
 
             virtual void add_extra_lib_dir(const paludis::FSEntry &) = 0;
             virtual void need_breakage_added(
-                const std::tr1::function<void (const paludis::FSEntry &, const std::string &)> &) = 0;
+                const std::function<void (const paludis::FSEntry &, const std::string &)> &) = 0;
 
     };
 }

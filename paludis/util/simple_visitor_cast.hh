@@ -22,7 +22,7 @@
 
 #include <paludis/util/simple_visitor_cast-fwd.hh>
 #include <paludis/util/simple_visitor.hh>
-#include <tr1/type_traits>
+#include <type_traits>
 
 namespace paludis
 {
@@ -68,7 +68,7 @@ namespace paludis
     {
         /* verify that we are attempting to simple_visitor_cast something that
          * could potentially be true */
-        typedef typename VerifySimpleVisitorCastType<To_, From_, std::tr1::is_base_of<From_, To_>::value>::IsOK TypeIsOK;
+        typedef typename VerifySimpleVisitorCastType<To_, From_, std::is_base_of<From_, To_>::value>::IsOK TypeIsOK;
 
         SimpleVisitorCaster<To_, typename CopyConst<From_, typename From_::VisitableBaseClass>::Type> q;
         return from.template accept_returning<To_ *>(q);

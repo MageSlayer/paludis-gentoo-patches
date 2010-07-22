@@ -28,7 +28,7 @@
 #include <paludis/set_file.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/dep_tag.hh>
-#include <tr1/functional>
+#include <functional>
 
 using namespace paludis;
 using namespace paludis::paludis_environment;
@@ -39,10 +39,10 @@ namespace paludis
     struct Implementation<World>
     {
         const Environment * const env;
-        const std::tr1::shared_ptr<const FSEntry> maybe_world_file;
+        const std::shared_ptr<const FSEntry> maybe_world_file;
         mutable Mutex mutex;
 
-        Implementation(const Environment * const e, const std::tr1::shared_ptr<const FSEntry> & m) :
+        Implementation(const Environment * const e, const std::shared_ptr<const FSEntry> & m) :
             env(e),
             maybe_world_file(m)
         {
@@ -50,7 +50,7 @@ namespace paludis
     };
 }
 
-World::World(const Environment * const e, const std::tr1::shared_ptr<const FSEntry> & f) :
+World::World(const Environment * const e, const std::shared_ptr<const FSEntry> & f) :
     PrivateImplementationPattern<World>(new Implementation<World>(e, f))
 {
 }
@@ -86,7 +86,7 @@ World::remove_from_world(const QualifiedPackageName & q) const
 bool
 World::_add_string_to_world(const std::string & n) const
 {
-    using namespace std::tr1::placeholders;
+    using namespace std::placeholders;
 
     if (! _imp->maybe_world_file)
     {
@@ -118,9 +118,9 @@ World::_add_string_to_world(const std::string & n) const
     SetFile world(make_named_values<SetFileParams>(
                 n::environment() = _imp->env,
                 n::file_name() = *_imp->maybe_world_file,
-                n::parser() = std::tr1::bind(&parse_user_package_dep_spec, _1, _imp->env, UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set, filter::All()),
+                n::parser() = std::bind(&parse_user_package_dep_spec, _1, _imp->env, UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set, filter::All()),
                 n::set_operator_mode() = sfsmo_natural,
-                n::tag() = std::tr1::shared_ptr<DepTag>(),
+                n::tag() = std::shared_ptr<DepTag>(),
                 n::type() = sft_simple
                 ));
     bool result(world.add(n));
@@ -132,7 +132,7 @@ World::_add_string_to_world(const std::string & n) const
 bool
 World::_remove_string_from_world(const std::string & n) const
 {
-    using namespace std::tr1::placeholders;
+    using namespace std::placeholders;
     bool result(false);
 
     if (! _imp->maybe_world_file)
@@ -151,9 +151,9 @@ World::_remove_string_from_world(const std::string & n) const
         SetFile world(make_named_values<SetFileParams>(
                 n::environment() = _imp->env,
                 n::file_name() = *_imp->maybe_world_file,
-                n::parser() = std::tr1::bind(&parse_user_package_dep_spec, _1, _imp->env, UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set, filter::All()),
+                n::parser() = std::bind(&parse_user_package_dep_spec, _1, _imp->env, UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set, filter::All()),
                 n::set_operator_mode() = sfsmo_natural,
-                n::tag() = std::tr1::shared_ptr<DepTag>(),
+                n::tag() = std::shared_ptr<DepTag>(),
                 n::type() = sft_simple
                 ));
 
@@ -171,12 +171,12 @@ World::update_config_files_for_package_move(const PackageDepSpec & s, const Qual
         _add_string_to_world(stringify(PartiallyMadePackageDepSpec(s).package(n)));
 }
 
-const std::tr1::shared_ptr<const SetSpecTree>
+const std::shared_ptr<const SetSpecTree>
 World::world_set() const
 {
-    using namespace std::tr1::placeholders;
+    using namespace std::placeholders;
 
-    std::tr1::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(SetName("world"), "Environment"));
+    std::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(SetName("world"), "Environment"));
 
     if (_imp->maybe_world_file)
     {
@@ -185,7 +185,7 @@ World::world_set() const
             SetFile world(make_named_values<SetFileParams>(
                     n::environment() = _imp->env,
                     n::file_name() = *_imp->maybe_world_file,
-                    n::parser() = std::tr1::bind(&parse_user_package_dep_spec, _1, _imp->env, UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set, filter::All()),
+                    n::parser() = std::bind(&parse_user_package_dep_spec, _1, _imp->env, UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set, filter::All()),
                     n::set_operator_mode() = sfsmo_natural,
                     n::tag() = tag,
                     n::type() = sft_simple
@@ -200,7 +200,7 @@ World::world_set() const
     return make_shared_ptr(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
 }
 
-std::tr1::shared_ptr<const FSEntry>
+std::shared_ptr<const FSEntry>
 World::location_if_set() const
 {
     return _imp->maybe_world_file;

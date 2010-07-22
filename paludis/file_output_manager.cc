@@ -36,9 +36,9 @@ namespace paludis
     struct Implementation<FileOutputManager>
     {
         FSEntry filename;
-        std::tr1::shared_ptr<SafeOFStream> stream;
+        std::shared_ptr<SafeOFStream> stream;
         const bool keep_on_success, keep_on_empty;
-        const std::tr1::shared_ptr<OutputManager> summary_output_manager;
+        const std::shared_ptr<OutputManager> summary_output_manager;
         const std::string summary_output_message;
 
         bool succeeded, unlinked, nothing_more_to_come;
@@ -47,7 +47,7 @@ namespace paludis
                 const FSEntry & o,
                 const bool k,
                 const bool l,
-                const std::tr1::shared_ptr<OutputManager> & m,
+                const std::shared_ptr<OutputManager> & m,
                 const std::string & s
                 ) :
             filename(o),
@@ -65,7 +65,7 @@ namespace paludis
 }
 
 FileOutputManager::FileOutputManager(const FSEntry & o, const bool k, const bool l,
-        const std::tr1::shared_ptr<OutputManager> & m, const std::string & s) :
+        const std::shared_ptr<OutputManager> & m, const std::string & s) :
     PrivateImplementationPattern<FileOutputManager>(new Implementation<FileOutputManager>(o, k, l, m, s))
 {
 }
@@ -146,15 +146,15 @@ FileOutputManager::nothing_more_to_come()
     }
 }
 
-const std::tr1::shared_ptr<const Set<std::string> >
+const std::shared_ptr<const Set<std::string> >
 FileOutputManager::factory_managers()
 {
-    std::tr1::shared_ptr<Set<std::string> > result(new Set<std::string>);
+    std::shared_ptr<Set<std::string> > result(new Set<std::string>);
     result->insert("file");
     return result;
 }
 
-const std::tr1::shared_ptr<OutputManager>
+const std::shared_ptr<OutputManager>
 FileOutputManager::factory_create(
         const OutputManagerFactory::KeyFunction & key_func,
         const OutputManagerFactory::CreateChildFunction & create_child_function,
@@ -176,7 +176,7 @@ FileOutputManager::factory_create(
     if (keep_on_empty_s.empty())
         keep_on_empty_s = "true";
 
-    std::tr1::shared_ptr<OutputManager> summary_output_manager;
+    std::shared_ptr<OutputManager> summary_output_manager;
     if (! summary_output_manager_s.empty())
         summary_output_manager = create_child_function(summary_output_manager_s);
 

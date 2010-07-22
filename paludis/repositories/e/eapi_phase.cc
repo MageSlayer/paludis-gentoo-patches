@@ -32,7 +32,7 @@
 using namespace paludis;
 using namespace paludis::erepository;
 
-typedef std::list<std::tr1::shared_ptr<const EAPIPhase> > EAPIPhasesList;
+typedef std::list<std::shared_ptr<const EAPIPhase> > EAPIPhasesList;
 
 namespace paludis
 {

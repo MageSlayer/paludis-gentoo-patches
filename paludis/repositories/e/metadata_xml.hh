@@ -28,7 +28,7 @@
 #include <paludis/util/map-fwd.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/choice-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 
 namespace paludis
 {
@@ -44,10 +44,10 @@ namespace paludis
     {
         struct MetadataXML
         {
-            NamedValue<n::herds, std::tr1::shared_ptr<Sequence<std::string> > > herds;
+            NamedValue<n::herds, std::shared_ptr<Sequence<std::string> > > herds;
             NamedValue<n::long_description, std::string> long_description;
-            NamedValue<n::maintainers, std::tr1::shared_ptr<Sequence<std::string> > > maintainers;
-            NamedValue<n::uses, std::tr1::shared_ptr<Map<ChoiceNameWithPrefix, std::string> > > uses;
+            NamedValue<n::maintainers, std::shared_ptr<Sequence<std::string> > > maintainers;
+            NamedValue<n::uses, std::shared_ptr<Map<ChoiceNameWithPrefix, std::string> > > uses;
         };
 
         class PALUDIS_VISIBLE MetadataXMLPool :
@@ -61,7 +61,7 @@ namespace paludis
                 ~MetadataXMLPool();
 
             public:
-                const std::tr1::shared_ptr<const MetadataXML> metadata_if_exists(const FSEntry &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::shared_ptr<const MetadataXML> metadata_if_exists(const FSEntry &) const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 

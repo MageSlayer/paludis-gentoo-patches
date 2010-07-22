@@ -40,7 +40,7 @@ namespace paludis
     {
         struct ChangeByResolvent
         {
-            NamedValue<n::package_id, std::tr1::shared_ptr<const PackageID> > package_id;
+            NamedValue<n::package_id, std::shared_ptr<const PackageID> > package_id;
             NamedValue<n::resolvent, Resolvent> resolvent;
 
             void serialise(Serialiser &) const;

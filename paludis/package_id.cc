@@ -33,8 +33,8 @@
 #include <paludis/version_spec.hh>
 #include <paludis/repository.hh>
 #include <paludis/package_database.hh>
-#include <tr1/functional>
-#include <tr1/unordered_map>
+#include <functional>
+#include <unordered_map>
 #include <list>
 #include <algorithm>
 
@@ -47,20 +47,20 @@ namespace paludis
     template <>
     struct Implementation<PackageID>
     {
-        mutable std::list<std::tr1::shared_ptr<const Mask> > masks;
-        mutable std::list<std::tr1::shared_ptr<const OverriddenMask> > overridden_masks;
+        mutable std::list<std::shared_ptr<const Mask> > masks;
+        mutable std::list<std::shared_ptr<const OverriddenMask> > overridden_masks;
     };
 
     template <>
     struct WrappedForwardIteratorTraits<PackageID::MasksConstIteratorTag>
     {
-        typedef std::list<std::tr1::shared_ptr<const Mask> >::const_iterator UnderlyingIterator;
+        typedef std::list<std::shared_ptr<const Mask> >::const_iterator UnderlyingIterator;
     };
 
     template <>
     struct WrappedForwardIteratorTraits<PackageID::OverriddenMasksConstIteratorTag>
     {
-        typedef std::list<std::tr1::shared_ptr<const OverriddenMask> >::const_iterator UnderlyingIterator;
+        typedef std::list<std::shared_ptr<const OverriddenMask> >::const_iterator UnderlyingIterator;
     };
 }
 
@@ -75,13 +75,13 @@ PackageID::~PackageID()
 }
 
 void
-PackageID::add_mask(const std::tr1::shared_ptr<const Mask> & k) const
+PackageID::add_mask(const std::shared_ptr<const Mask> & k) const
 {
     _imp->masks.push_back(k);
 }
 
 void
-PackageID::add_overridden_mask(const std::tr1::shared_ptr<const OverriddenMask> & k) const
+PackageID::add_overridden_mask(const std::shared_ptr<const OverriddenMask> & k) const
 {
     _imp->overridden_masks.push_back(k);
 }
@@ -135,8 +135,8 @@ paludis::operator<< (std::ostream & s, const PackageID & i)
 }
 
 bool
-PackageIDSetComparator::operator() (const std::tr1::shared_ptr<const PackageID> & a,
-        const std::tr1::shared_ptr<const PackageID> & b) const
+PackageIDSetComparator::operator() (const std::shared_ptr<const PackageID> & a,
+        const std::shared_ptr<const PackageID> & b) const
 {
     if (a->name() < b->name())
         return true;
@@ -174,7 +174,7 @@ namespace paludis
     template <>
     struct Implementation<PackageIDComparator>
     {
-        std::tr1::unordered_map<RepositoryName, unsigned, Hash<RepositoryName> > m;
+        std::unordered_map<RepositoryName, unsigned, Hash<RepositoryName> > m;
     };
 }
 
@@ -198,8 +198,8 @@ PackageIDComparator::~PackageIDComparator()
 }
 
 bool
-PackageIDComparator::operator() (const std::tr1::shared_ptr<const PackageID> & a,
-        const std::tr1::shared_ptr<const PackageID> & b) const
+PackageIDComparator::operator() (const std::shared_ptr<const PackageID> & a,
+        const std::shared_ptr<const PackageID> & b) const
 {
     if (a->name() < b->name())
         return true;
@@ -213,7 +213,7 @@ PackageIDComparator::operator() (const std::tr1::shared_ptr<const PackageID> & a
     if (a->version() > b->version())
         return false;
 
-    std::tr1::unordered_map<RepositoryName, unsigned, Hash<RepositoryName> >::const_iterator
+    std::unordered_map<RepositoryName, unsigned, Hash<RepositoryName> >::const_iterator
         ma(_imp->m.find(a->repository()->name())),
         mb(_imp->m.find(b->repository()->name()));
 
@@ -243,20 +243,20 @@ PackageID::can_drop_in_memory_cache() const
 {
 }
 
-template class Sequence<std::tr1::shared_ptr<const PackageID> >;
-template class WrappedForwardIterator<Sequence<std::tr1::shared_ptr<const PackageID> >::ConstIteratorTag,
-         const std::tr1::shared_ptr<const PackageID> >;
-template class WrappedForwardIterator<Sequence<std::tr1::shared_ptr<const PackageID> >::ReverseConstIteratorTag,
-         const std::tr1::shared_ptr<const PackageID> >;
-template class WrappedOutputIterator<Sequence<std::tr1::shared_ptr<const PackageID> >::InserterTag,
-         std::tr1::shared_ptr<const PackageID> >;
+template class Sequence<std::shared_ptr<const PackageID> >;
+template class WrappedForwardIterator<Sequence<std::shared_ptr<const PackageID> >::ConstIteratorTag,
+         const std::shared_ptr<const PackageID> >;
+template class WrappedForwardIterator<Sequence<std::shared_ptr<const PackageID> >::ReverseConstIteratorTag,
+         const std::shared_ptr<const PackageID> >;
+template class WrappedOutputIterator<Sequence<std::shared_ptr<const PackageID> >::InserterTag,
+         std::shared_ptr<const PackageID> >;
 
-template class Set<std::tr1::shared_ptr<const PackageID>, PackageIDSetComparator>;
-template class WrappedForwardIterator<Set<std::tr1::shared_ptr<const PackageID>, PackageIDSetComparator>::ConstIteratorTag,
-         const std::tr1::shared_ptr<const PackageID> >;
-template class WrappedOutputIterator<Set<std::tr1::shared_ptr<const PackageID>, PackageIDSetComparator>::InserterTag,
-         std::tr1::shared_ptr<const PackageID> >;
+template class Set<std::shared_ptr<const PackageID>, PackageIDSetComparator>;
+template class WrappedForwardIterator<Set<std::shared_ptr<const PackageID>, PackageIDSetComparator>::ConstIteratorTag,
+         const std::shared_ptr<const PackageID> >;
+template class WrappedOutputIterator<Set<std::shared_ptr<const PackageID>, PackageIDSetComparator>::InserterTag,
+         std::shared_ptr<const PackageID> >;
 
-template class WrappedForwardIterator<PackageID::MasksConstIteratorTag, const std::tr1::shared_ptr<const Mask> >;
-template class WrappedForwardIterator<PackageID::OverriddenMasksConstIteratorTag, const std::tr1::shared_ptr<const OverriddenMask> >;
+template class WrappedForwardIterator<PackageID::MasksConstIteratorTag, const std::shared_ptr<const Mask> >;
+template class WrappedForwardIterator<PackageID::OverriddenMasksConstIteratorTag, const std::shared_ptr<const OverriddenMask> >;
 

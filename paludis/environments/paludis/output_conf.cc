@@ -73,17 +73,17 @@ namespace
         NamedValue<n::action_requirement, std::string> action_requirement;
         NamedValue<n::ignore_unfetched_requirement, Tribool> ignore_unfetched_requirement;
         NamedValue<n::manager, std::string> manager;
-        NamedValue<n::matches_requirement, std::tr1::shared_ptr<PackageDepSpec> > matches_requirement;
+        NamedValue<n::matches_requirement, std::shared_ptr<PackageDepSpec> > matches_requirement;
         NamedValue<n::name_requirement, std::string> name_requirement;
         NamedValue<n::output_exclusivity_requirement, OutputExclusivity> output_exclusivity_requirement;
         NamedValue<n::type_requirement, std::string> type_requirement;
     };
 
     typedef std::list<Rule> RuleList;
-    typedef std::map<std::string, std::tr1::shared_ptr<Map<std::string, std::string> > > Managers;
+    typedef std::map<std::string, std::shared_ptr<Map<std::string, std::string> > > Managers;
 
     std::string from_keys(
-            const std::tr1::shared_ptr<const Map<std::string, std::string> > & m,
+            const std::shared_ptr<const Map<std::string, std::string> > & m,
             const std::string & k)
     {
         if (m->end() == m->find(k))
@@ -226,11 +226,11 @@ namespace
     struct CreateVarsFromInfo
     {
         const Environment * const env;
-        std::tr1::shared_ptr<Map<std::string, std::string> > m;
+        std::shared_ptr<Map<std::string, std::string> > m;
 
         CreateVarsFromInfo(
                 const Environment * const e,
-                std::tr1::shared_ptr<Map<std::string, std::string> > & mm) :
+                std::shared_ptr<Map<std::string, std::string> > & mm) :
             env(e),
             m(mm)
         {
@@ -244,7 +244,7 @@ namespace
             m->insert("time", stringify(time(0)));
             m->insert("pid", stringify(getpid()));
 
-            const std::tr1::shared_ptr<const PaludisDistribution> dist(
+            const std::shared_ptr<const PaludisDistribution> dist(
                     PaludisExtraDistributionData::get_instance()->data_from_distribution(
                         *DistributionData::get_instance()->distribution_from_string(env->distribution())));
 
@@ -277,12 +277,12 @@ namespace
         }
     };
 
-    const std::tr1::shared_ptr<Map<std::string, std::string> >
+    const std::shared_ptr<Map<std::string, std::string> >
     vars_from_create_output_manager_info(
             const Environment * const env,
             const CreateOutputManagerInfo & i)
     {
-        std::tr1::shared_ptr<Map<std::string, std::string> > result(new Map<std::string, std::string>);
+        std::shared_ptr<Map<std::string, std::string> > result(new Map<std::string, std::string>);
         CreateVarsFromInfo v(env, result);
         i.accept(v);
         return result;
@@ -290,9 +290,9 @@ namespace
 
     const std::string replace_percent_vars(
         const std::string & s,
-        const std::tr1::shared_ptr<const Map<std::string, std::string> > & vars,
-        const std::tr1::shared_ptr<const Map<std::string, std::string> > & override_vars,
-        const std::tr1::shared_ptr<const Map<std::string, std::string> > & file_vars)
+        const std::shared_ptr<const Map<std::string, std::string> > & vars,
+        const std::shared_ptr<const Map<std::string, std::string> > & override_vars,
+        const std::shared_ptr<const Map<std::string, std::string> > & file_vars)
     {
         std::string result, token;
         SimpleParser parser(s);
@@ -329,7 +329,7 @@ OutputConf::add(const FSEntry & filename)
 {
     Context context("When adding source '" + stringify(filename) + "' as an output file:");
 
-    std::tr1::shared_ptr<KeyValueConfigFile> f(make_bashable_kv_conf(filename,
+    std::shared_ptr<KeyValueConfigFile> f(make_bashable_kv_conf(filename,
                 make_shared_ptr(new Map<std::string, std::string>),
                 KeyValueConfigFileOptions() + kvcfo_allow_sections));
     if (! f)
@@ -399,7 +399,7 @@ OutputConf::add(const FSEntry & filename)
         _imp->managers[m->first] = m->second;
 }
 
-const std::tr1::shared_ptr<OutputManager>
+const std::shared_ptr<OutputManager>
 OutputConf::create_output_manager(const CreateOutputManagerInfo & i) const
 {
     Context context("When creating output manager:");
@@ -412,7 +412,7 @@ OutputConf::create_output_manager(const CreateOutputManagerInfo & i) const
     throw PaludisConfigError("No matching output manager rule specified");
 }
 
-const std::tr1::shared_ptr<OutputManager>
+const std::shared_ptr<OutputManager>
 OutputConf::create_named_output_manager(const std::string & s, const CreateOutputManagerInfo & n) const
 {
     Context context("When creating output manager named '" + s + "':");
@@ -421,7 +421,7 @@ OutputConf::create_named_output_manager(const std::string & s, const CreateOutpu
     if (i == _imp->managers.end())
         throw PaludisConfigError("No output manager named '" + s + "' exists");
 
-    std::tr1::shared_ptr<Map<std::string, std::string> > vars(vars_from_create_output_manager_info(
+    std::shared_ptr<Map<std::string, std::string> > vars(vars_from_create_output_manager_info(
                 _imp->env, n));
 
     std::string handler;
@@ -466,10 +466,10 @@ OutputConf::create_named_output_manager(const std::string & s, const CreateOutpu
     }
     else
         return OutputManagerFactory::get_instance()->create(
-                std::tr1::bind(&from_keys, i->second, std::tr1::placeholders::_1),
-                std::tr1::bind(&OutputConf::create_named_output_manager, this,
-                    std::tr1::placeholders::_1, std::tr1::cref(n)),
-                std::tr1::bind(replace_percent_vars, std::tr1::placeholders::_1, vars, std::tr1::placeholders::_2,
+                std::bind(&from_keys, i->second, std::placeholders::_1),
+                std::bind(&OutputConf::create_named_output_manager, this,
+                    std::placeholders::_1, std::cref(n)),
+                std::bind(replace_percent_vars, std::placeholders::_1, vars, std::placeholders::_2,
                     i->second)
                 );
 }

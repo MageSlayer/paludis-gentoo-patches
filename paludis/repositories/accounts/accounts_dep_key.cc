@@ -41,20 +41,20 @@ namespace paludis
     struct Implementation<AccountsDepKey>
     {
         const Environment * const env;
-        const std::tr1::shared_ptr<std::list<std::tr1::shared_ptr<PackageDepSpec> > > specs;
-        const std::tr1::shared_ptr<DependencySpecTree> tree;
-        const std::tr1::shared_ptr<DependenciesLabelSequence> initial_labels;
+        const std::shared_ptr<std::list<std::shared_ptr<PackageDepSpec> > > specs;
+        const std::shared_ptr<DependencySpecTree> tree;
+        const std::shared_ptr<DependenciesLabelSequence> initial_labels;
 
-        Implementation(const Environment * const e, const std::tr1::shared_ptr<const Set<std::string> > & s) :
+        Implementation(const Environment * const e, const std::shared_ptr<const Set<std::string> > & s) :
             env(e),
-            specs(new std::list<std::tr1::shared_ptr<PackageDepSpec> >),
+            specs(new std::list<std::shared_ptr<PackageDepSpec> >),
             tree(new DependencySpecTree(make_shared_ptr(new AllDepSpec))),
             initial_labels(new DependenciesLabelSequence)
         {
             for (Set<std::string>::ConstIterator i(s->begin()), i_end(s->end()) ;
                     i != i_end ; ++i)
             {
-                std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
+                std::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
                                 .package(CategoryNamePart("group") + PackageNamePart(*i))));
                 specs->push_back(spec);
                 tree->root()->append(spec);
@@ -67,7 +67,7 @@ namespace paludis
 }
 
 AccountsDepKey::AccountsDepKey(const Environment * const e,
-        const std::tr1::shared_ptr<const Set<std::string> > & s) :
+        const std::shared_ptr<const Set<std::string> > & s) :
     PrivateImplementationPattern<AccountsDepKey>(new Implementation<AccountsDepKey>(e, s))
 {
 }
@@ -94,13 +94,13 @@ AccountsDepKey::type() const
     return mkt_dependencies;
 }
 
-const std::tr1::shared_ptr<const DependencySpecTree>
+const std::shared_ptr<const DependencySpecTree>
 AccountsDepKey::value() const
 {
     return _imp->tree;
 }
 
-const std::tr1::shared_ptr<const DependenciesLabelSequence>
+const std::shared_ptr<const DependenciesLabelSequence>
 AccountsDepKey::initial_labels() const
 {
     return _imp->initial_labels;
@@ -117,7 +117,7 @@ AccountsDepKey::pretty_print_flat(const DependencySpecTree::ItemFormatter & f) c
 {
     std::stringstream s;
 
-    for (std::list<std::tr1::shared_ptr<PackageDepSpec> >::const_iterator i(_imp->specs->begin()),
+    for (std::list<std::shared_ptr<PackageDepSpec> >::const_iterator i(_imp->specs->begin()),
             i_end(_imp->specs->end()) ; i != i_end ; ++i)
     {
         if (! s.str().empty())

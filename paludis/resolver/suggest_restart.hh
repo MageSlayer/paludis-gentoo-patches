@@ -39,18 +39,18 @@ namespace paludis
             public:
                 SuggestRestart(
                         const Resolvent &,
-                        const std::tr1::shared_ptr<const Decision> & previous_decision,
-                        const std::tr1::shared_ptr<const Constraint> & problematic_constraint,
-                        const std::tr1::shared_ptr<const Decision> & new_decision,
-                        const std::tr1::shared_ptr<const Constraint> & suggested_preset) throw ();
+                        const std::shared_ptr<const Decision> & previous_decision,
+                        const std::shared_ptr<const Constraint> & problematic_constraint,
+                        const std::shared_ptr<const Decision> & new_decision,
+                        const std::shared_ptr<const Constraint> & suggested_preset) throw ();
                 SuggestRestart(const SuggestRestart &);
                 ~SuggestRestart() throw ();
 
                 const Resolvent resolvent() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                const std::tr1::shared_ptr<const Decision> previous_decision() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                const std::tr1::shared_ptr<const Constraint> problematic_constraint() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                const std::tr1::shared_ptr<const Decision> new_decision() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                const std::tr1::shared_ptr<const Constraint> suggested_preset() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::shared_ptr<const Decision> previous_decision() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::shared_ptr<const Constraint> problematic_constraint() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::shared_ptr<const Decision> new_decision() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::shared_ptr<const Constraint> suggested_preset() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 

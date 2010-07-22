@@ -21,7 +21,7 @@
 #include <paludis/util/mutex.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/iterator_funcs.hh>
-#include <tr1/functional>
+#include <functional>
 #include <algorithm>
 #include <list>
 
@@ -91,10 +91,10 @@ TailOutputStreamBuf::_append(const std::string & s)
     }
 }
 
-const std::tr1::shared_ptr<const Sequence<std::string> >
+const std::shared_ptr<const Sequence<std::string> >
 TailOutputStreamBuf::tail(const bool clear)
 {
-    std::tr1::shared_ptr<Sequence<std::string> > result(new Sequence<std::string>);
+    std::shared_ptr<Sequence<std::string> > result(new Sequence<std::string>);
     Lock lock(_imp->mutex);
     for (std::list<std::string>::const_iterator i(_imp->tail.begin()), i_end(_imp->tail.end()), i_last(previous(_imp->tail.end())) ;
             i != i_end ; ++i)

@@ -42,16 +42,16 @@ namespace paludis
     template <>
     struct Implementation<Filter>
     {
-        std::tr1::shared_ptr<const FilterHandler> handler;
+        std::shared_ptr<const FilterHandler> handler;
 
-        Implementation(const std::tr1::shared_ptr<const FilterHandler> & h) :
+        Implementation(const std::shared_ptr<const FilterHandler> & h) :
             handler(h)
         {
         }
     };
 }
 
-Filter::Filter(const std::tr1::shared_ptr<const FilterHandler> & h) :
+Filter::Filter(const std::shared_ptr<const FilterHandler> & h) :
     PrivateImplementationPattern<Filter>(new Implementation<Filter>(h))
 {
 }
@@ -73,36 +73,36 @@ Filter::~Filter()
 {
 }
 
-std::tr1::shared_ptr<const RepositoryNameSet>
+std::shared_ptr<const RepositoryNameSet>
 Filter::repositories(
         const Environment * const env,
-        const std::tr1::shared_ptr<const RepositoryNameSet> & r) const
+        const std::shared_ptr<const RepositoryNameSet> & r) const
 {
     return _imp->handler->repositories(env, r);
 }
 
-std::tr1::shared_ptr<const CategoryNamePartSet>
+std::shared_ptr<const CategoryNamePartSet>
 Filter::categories(
         const Environment * const env,
-        const std::tr1::shared_ptr<const RepositoryNameSet> & r,
-        const std::tr1::shared_ptr<const CategoryNamePartSet> & c) const
+        const std::shared_ptr<const RepositoryNameSet> & r,
+        const std::shared_ptr<const CategoryNamePartSet> & c) const
 {
     return _imp->handler->categories(env, r, c);
 }
 
-std::tr1::shared_ptr<const QualifiedPackageNameSet>
+std::shared_ptr<const QualifiedPackageNameSet>
 Filter::packages(
         const Environment * const env,
-        const std::tr1::shared_ptr<const RepositoryNameSet> & r,
-        const std::tr1::shared_ptr<const QualifiedPackageNameSet> & c) const
+        const std::shared_ptr<const RepositoryNameSet> & r,
+        const std::shared_ptr<const QualifiedPackageNameSet> & c) const
 {
     return _imp->handler->packages(env, r, c);
 }
 
-std::tr1::shared_ptr<const PackageIDSet>
+std::shared_ptr<const PackageIDSet>
 Filter::ids(
         const Environment * const env,
-        const std::tr1::shared_ptr<const PackageIDSet> & i) const
+        const std::shared_ptr<const PackageIDSet> & i) const
 {
     return _imp->handler->ids(env, i);
 }
@@ -128,11 +128,11 @@ namespace
     struct SupportsActionFilterHandler :
         AllFilterHandlerBase
     {
-        virtual std::tr1::shared_ptr<const RepositoryNameSet> repositories(
+        virtual std::shared_ptr<const RepositoryNameSet> repositories(
                 const Environment * const env,
-                const std::tr1::shared_ptr<const RepositoryNameSet> & repos) const
+                const std::shared_ptr<const RepositoryNameSet> & repos) const
         {
-            std::tr1::shared_ptr<RepositoryNameSet> result(new RepositoryNameSet);
+            std::shared_ptr<RepositoryNameSet> result(new RepositoryNameSet);
 
             for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                     r != r_end ; ++r)
@@ -144,11 +144,11 @@ namespace
             return result;
         }
 
-        virtual std::tr1::shared_ptr<const PackageIDSet> ids(
+        virtual std::shared_ptr<const PackageIDSet> ids(
                 const Environment * const,
-                const std::tr1::shared_ptr<const PackageIDSet> & id) const
+                const std::shared_ptr<const PackageIDSet> & id) const
         {
-            std::tr1::shared_ptr<PackageIDSet> result(new PackageIDSet);
+            std::shared_ptr<PackageIDSet> result(new PackageIDSet);
 
             for (PackageIDSet::ConstIterator i(id->begin()), i_end(id->end()) ;
                     i != i_end ; ++i)
@@ -169,11 +169,11 @@ namespace
     struct NotMaskedFilterHandler :
         AllFilterHandlerBase
     {
-        virtual std::tr1::shared_ptr<const RepositoryNameSet> repositories(
+        virtual std::shared_ptr<const RepositoryNameSet> repositories(
                 const Environment * const env,
-                const std::tr1::shared_ptr<const RepositoryNameSet> & repos) const
+                const std::shared_ptr<const RepositoryNameSet> & repos) const
         {
-            std::tr1::shared_ptr<RepositoryNameSet> result(new RepositoryNameSet);
+            std::shared_ptr<RepositoryNameSet> result(new RepositoryNameSet);
 
             for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                     r != r_end ; ++r)
@@ -185,11 +185,11 @@ namespace
             return result;
         }
 
-        virtual std::tr1::shared_ptr<const PackageIDSet> ids(
+        virtual std::shared_ptr<const PackageIDSet> ids(
                 const Environment * const,
-                const std::tr1::shared_ptr<const PackageIDSet> & id) const
+                const std::shared_ptr<const PackageIDSet> & id) const
         {
-            std::tr1::shared_ptr<PackageIDSet> result(new PackageIDSet);
+            std::shared_ptr<PackageIDSet> result(new PackageIDSet);
 
             for (PackageIDSet::ConstIterator i(id->begin()), i_end(id->end()) ;
                     i != i_end ; ++i)
@@ -215,27 +215,27 @@ namespace
         {
         }
 
-        virtual std::tr1::shared_ptr<const RepositoryNameSet> repositories(
+        virtual std::shared_ptr<const RepositoryNameSet> repositories(
                 const Environment * const env,
-                const std::tr1::shared_ptr<const RepositoryNameSet> & repos) const
+                const std::shared_ptr<const RepositoryNameSet> & repos) const
         {
-            std::tr1::shared_ptr<RepositoryNameSet> result(new RepositoryNameSet);
+            std::shared_ptr<RepositoryNameSet> result(new RepositoryNameSet);
 
             for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                     r != r_end ; ++r)
             {
-                const std::tr1::shared_ptr<const Repository> repo(env->package_database()->fetch_repository(*r));
+                const std::shared_ptr<const Repository> repo(env->package_database()->fetch_repository(*r));
                 if (repo->installed_root_key() && root == repo->installed_root_key()->value())
                     result->insert(*r);
             }
 
             return result;
         }
-        virtual std::tr1::shared_ptr<const PackageIDSet> ids(
+        virtual std::shared_ptr<const PackageIDSet> ids(
                 const Environment * const,
-                const std::tr1::shared_ptr<const PackageIDSet> & id) const
+                const std::shared_ptr<const PackageIDSet> & id) const
         {
-            std::tr1::shared_ptr<PackageIDSet> result(new PackageIDSet);
+            std::shared_ptr<PackageIDSet> result(new PackageIDSet);
 
             for (PackageIDSet::ConstIterator i(id->begin()), i_end(id->end()) ;
                     i != i_end ; ++i)
@@ -262,32 +262,32 @@ namespace
         {
         }
 
-        virtual std::tr1::shared_ptr<const RepositoryNameSet> repositories(
+        virtual std::shared_ptr<const RepositoryNameSet> repositories(
                 const Environment * const env,
-                const std::tr1::shared_ptr<const RepositoryNameSet> & s) const
+                const std::shared_ptr<const RepositoryNameSet> & s) const
         {
             return f2.repositories(env, f1.repositories(env, s));
         }
 
-        virtual std::tr1::shared_ptr<const CategoryNamePartSet> categories(
+        virtual std::shared_ptr<const CategoryNamePartSet> categories(
                 const Environment * const env,
-                const std::tr1::shared_ptr<const RepositoryNameSet> & r,
-                const std::tr1::shared_ptr<const CategoryNamePartSet> & c) const
+                const std::shared_ptr<const RepositoryNameSet> & r,
+                const std::shared_ptr<const CategoryNamePartSet> & c) const
         {
             return f2.categories(env, r, f1.categories(env, r, c));
         }
 
-        virtual std::tr1::shared_ptr<const QualifiedPackageNameSet> packages(
+        virtual std::shared_ptr<const QualifiedPackageNameSet> packages(
                 const Environment * const env,
-                const std::tr1::shared_ptr<const RepositoryNameSet> & r,
-                const std::tr1::shared_ptr<const QualifiedPackageNameSet> & q) const
+                const std::shared_ptr<const RepositoryNameSet> & r,
+                const std::shared_ptr<const QualifiedPackageNameSet> & q) const
         {
             return f2.packages(env, r, f1.packages(env, r, q));
         }
 
-        virtual std::tr1::shared_ptr<const PackageIDSet> ids(
+        virtual std::shared_ptr<const PackageIDSet> ids(
                 const Environment * const env,
-                const std::tr1::shared_ptr<const PackageIDSet> & s) const
+                const std::shared_ptr<const PackageIDSet> & s) const
         {
             return f2.ids(env, f1.ids(env, s));
         }
@@ -301,18 +301,18 @@ namespace
     struct SameSlotHandler :
         AllFilterHandlerBase
     {
-        const std::tr1::shared_ptr<const PackageID> as_id;
+        const std::shared_ptr<const PackageID> as_id;
 
-        SameSlotHandler(const std::tr1::shared_ptr<const PackageID> & i) :
+        SameSlotHandler(const std::shared_ptr<const PackageID> & i) :
             as_id(i)
         {
         }
 
-        virtual std::tr1::shared_ptr<const PackageIDSet> ids(
+        virtual std::shared_ptr<const PackageIDSet> ids(
                 const Environment * const,
-                const std::tr1::shared_ptr<const PackageIDSet> & id) const
+                const std::shared_ptr<const PackageIDSet> & id) const
         {
-            std::tr1::shared_ptr<PackageIDSet> result(new PackageIDSet);
+            std::shared_ptr<PackageIDSet> result(new PackageIDSet);
 
             for (PackageIDSet::ConstIterator i(id->begin()), i_end(id->end()) ;
                     i != i_end ; ++i)
@@ -346,11 +346,11 @@ namespace
         {
         }
 
-        virtual std::tr1::shared_ptr<const PackageIDSet> ids(
+        virtual std::shared_ptr<const PackageIDSet> ids(
                 const Environment * const,
-                const std::tr1::shared_ptr<const PackageIDSet> & id) const
+                const std::shared_ptr<const PackageIDSet> & id) const
         {
-            std::tr1::shared_ptr<PackageIDSet> result(new PackageIDSet);
+            std::shared_ptr<PackageIDSet> result(new PackageIDSet);
 
             for (PackageIDSet::ConstIterator i(id->begin()), i_end(id->end()) ;
                     i != i_end ; ++i)
@@ -369,11 +369,11 @@ namespace
     struct NoSlotHandler :
         AllFilterHandlerBase
     {
-        virtual std::tr1::shared_ptr<const PackageIDSet> ids(
+        virtual std::shared_ptr<const PackageIDSet> ids(
                 const Environment * const,
-                const std::tr1::shared_ptr<const PackageIDSet> & id) const
+                const std::shared_ptr<const PackageIDSet> & id) const
         {
-            std::tr1::shared_ptr<PackageIDSet> result(new PackageIDSet);
+            std::shared_ptr<PackageIDSet> result(new PackageIDSet);
 
             for (PackageIDSet::ConstIterator i(id->begin()), i_end(id->end()) ;
                     i != i_end ; ++i)
@@ -401,11 +401,11 @@ namespace
         {
         }
 
-        virtual std::tr1::shared_ptr<const PackageIDSet> ids(
+        virtual std::shared_ptr<const PackageIDSet> ids(
                 const Environment * const env,
-                const std::tr1::shared_ptr<const PackageIDSet> & id) const
+                const std::shared_ptr<const PackageIDSet> & id) const
         {
-            std::tr1::shared_ptr<PackageIDSet> result(new PackageIDSet);
+            std::shared_ptr<PackageIDSet> result(new PackageIDSet);
 
             for (PackageIDSet::ConstIterator i(id->begin()), i_end(id->end()) ;
                     i != i_end ; ++i)
@@ -453,7 +453,7 @@ filter::And::And(const Filter & f1, const Filter & f2) :
 {
 }
 
-filter::SameSlot::SameSlot(const std::tr1::shared_ptr<const PackageID> & i) :
+filter::SameSlot::SameSlot(const std::shared_ptr<const PackageID> & i) :
     Filter(make_shared_ptr(new SameSlotHandler(i)))
 {
 }

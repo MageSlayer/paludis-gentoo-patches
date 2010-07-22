@@ -26,8 +26,8 @@
 #include <paludis/util/set-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/fs_entry-fwd.hh>
-#include <tr1/memory>
-#include <tr1/functional>
+#include <memory>
+#include <functional>
 
 namespace paludis
 {
@@ -39,7 +39,7 @@ namespace paludis
             FileOutputManager(const FSEntry &,
                     const bool keep_on_success,
                     const bool keep_on_empty,
-                    const std::tr1::shared_ptr<OutputManager> & summary_output_manager,
+                    const std::shared_ptr<OutputManager> & summary_output_manager,
                     const std::string & summary_output_message);
             ~FileOutputManager();
 
@@ -52,10 +52,10 @@ namespace paludis
             virtual void nothing_more_to_come();
             virtual void message(const MessageType, const std::string &);
 
-            static const std::tr1::shared_ptr<const Set<std::string> > factory_managers()
+            static const std::shared_ptr<const Set<std::string> > factory_managers()
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            static const std::tr1::shared_ptr<OutputManager> factory_create(
+            static const std::shared_ptr<OutputManager> factory_create(
                     const OutputManagerFactory::KeyFunction &,
                     const OutputManagerFactory::CreateChildFunction &,
                     const OutputManagerFactory::ReplaceVarsFunc &)

@@ -40,9 +40,9 @@ namespace paludis
     template<>
     struct Implementation<ExceptionRegister>
     {
-        std::map<std::string, std::tr1::shared_ptr<RegisteredExceptionBase> > exceptions;
+        std::map<std::string, std::shared_ptr<RegisteredExceptionBase> > exceptions;
     };
-    typedef std::map<std::string, std::tr1::shared_ptr<RegisteredExceptionBase> >::iterator ExceptionsIterator;
+    typedef std::map<std::string, std::shared_ptr<RegisteredExceptionBase> >::iterator ExceptionsIterator;
 }
 
 ExceptionRegister::ExceptionRegister() :
@@ -55,7 +55,7 @@ ExceptionRegister::~ExceptionRegister()
 }
 
 void
-ExceptionRegister::add_map_item(const std::string & name, std::tr1::shared_ptr<RegisteredExceptionBase> p)
+ExceptionRegister::add_map_item(const std::string & name, std::shared_ptr<RegisteredExceptionBase> p)
 {
     _imp->exceptions.insert(std::make_pair(name, p));
 }

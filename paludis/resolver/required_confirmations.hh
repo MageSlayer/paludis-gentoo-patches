@@ -37,7 +37,7 @@ namespace paludis
             public:
                 virtual void serialise(Serialiser &) const = 0;
 
-                static const std::tr1::shared_ptr<RequiredConfirmation> deserialise(
+                static const std::shared_ptr<RequiredConfirmation> deserialise(
                         Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
@@ -46,7 +46,7 @@ namespace paludis
             public ImplementAcceptMethods<RequiredConfirmation, DowngradeConfirmation>
         {
             public:
-                static const std::tr1::shared_ptr<DowngradeConfirmation> deserialise(
+                static const std::shared_ptr<DowngradeConfirmation> deserialise(
                         Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual void serialise(Serialiser &) const;
@@ -57,7 +57,7 @@ namespace paludis
             public ImplementAcceptMethods<RequiredConfirmation, NotBestConfirmation>
         {
             public:
-                static const std::tr1::shared_ptr<NotBestConfirmation> deserialise(
+                static const std::shared_ptr<NotBestConfirmation> deserialise(
                         Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual void serialise(Serialiser &) const;
@@ -68,7 +68,7 @@ namespace paludis
             public ImplementAcceptMethods<RequiredConfirmation, BreakConfirmation>
         {
             public:
-                static const std::tr1::shared_ptr<BreakConfirmation> deserialise(
+                static const std::shared_ptr<BreakConfirmation> deserialise(
                         Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual void serialise(Serialiser &) const;
@@ -79,7 +79,7 @@ namespace paludis
             public ImplementAcceptMethods<RequiredConfirmation, RemoveSystemPackageConfirmation>
         {
             public:
-                static const std::tr1::shared_ptr<RemoveSystemPackageConfirmation> deserialise(
+                static const std::shared_ptr<RemoveSystemPackageConfirmation> deserialise(
                         Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual void serialise(Serialiser &) const;

@@ -40,7 +40,7 @@
 #include <paludis/syncer.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/create_output_manager_info.hh>
-#include <tr1/functional>
+#include <functional>
 #include <cstdlib>
 #include <iostream>
 #include <list>
@@ -96,17 +96,17 @@ namespace
         bool skipped;
         std::string error;
 
-        const std::tr1::shared_ptr<Environment> env;
+        const std::shared_ptr<Environment> env;
         const SyncCommandLine & cmdline;
         const Executor * const executor;
         const RepositoryName name;
 
         Timestamp last_flushed, last_output;
 
-        std::tr1::shared_ptr<OutputManager> output_manager;
+        std::shared_ptr<OutputManager> output_manager;
 
         SyncExecutive(
-                const std::tr1::shared_ptr<Environment> & e,
+                const std::shared_ptr<Environment> & e,
                 const SyncCommandLine & c,
                 const Executor * const x,
                 const RepositoryName & n) :
@@ -128,7 +128,7 @@ namespace
             if (cmdline.a_sequential.specified())
                 return "";
 
-            const std::tr1::shared_ptr<const Repository> r(env->package_database()->fetch_repository(name));
+            const std::shared_ptr<const Repository> r(env->package_database()->fetch_repository(name));
             if (r->sync_host_key())
                 return r->sync_host_key()->value();
             else
@@ -161,7 +161,7 @@ namespace
                             ).max_exit_status())
                     throw SyncFailedError("Sync aborted by hook");
 
-                const std::tr1::shared_ptr<Repository> repo(env->package_database()->fetch_repository(name));
+                const std::shared_ptr<Repository> repo(env->package_database()->fetch_repository(name));
                 CreateOutputManagerForRepositorySyncInfo info(repo->name(),
                         cmdline.a_sequential.specified() ? oe_exclusive : oe_with_others,
                         ClientOutputFeatures() + cof_summary_at_end);
@@ -189,7 +189,7 @@ namespace
 
             try
             {
-                const std::tr1::shared_ptr<Repository> repo(env->package_database()->fetch_repository(name));
+                const std::shared_ptr<Repository> repo(env->package_database()->fetch_repository(name));
 
                 if (! repo->sync(output_manager))
                     skipped = true;
@@ -292,11 +292,11 @@ namespace
     };
 
     int sync_these(
-            const std::tr1::shared_ptr<Environment> & env,
+            const std::shared_ptr<Environment> & env,
             const SyncCommandLine & cmdline,
             const Repos & repos)
     {
-        std::list<std::tr1::shared_ptr<SyncExecutive> > executives;
+        std::list<std::shared_ptr<SyncExecutive> > executives;
 
         {
             Executor executor;
@@ -304,7 +304,7 @@ namespace
             for (Repos::const_iterator r(repos.begin()), r_end(repos.end()) ;
                     r != r_end ; ++r)
             {
-                const std::tr1::shared_ptr<SyncExecutive> x(new SyncExecutive(env, cmdline, &executor, *r));
+                const std::shared_ptr<SyncExecutive> x(new SyncExecutive(env, cmdline, &executor, *r));
                 executor.add(x);
                 executives.push_back(x);
             }
@@ -315,7 +315,7 @@ namespace
         int retcode(0);
 
         cout << format_general_s(f::sync_heading(), "Sync results");
-        for (std::list<std::tr1::shared_ptr<SyncExecutive> >::const_iterator x(executives.begin()),
+        for (std::list<std::shared_ptr<SyncExecutive> >::const_iterator x(executives.begin()),
                 x_end(executives.end()) ;
                 x != x_end ; ++x)
         {
@@ -349,8 +349,8 @@ SyncCommand::important() const
 
 int
 SyncCommand::run(
-        const std::tr1::shared_ptr<Environment> & env,
-        const std::tr1::shared_ptr<const Sequence<std::string > > & args
+        const std::shared_ptr<Environment> & env,
+        const std::shared_ptr<const Sequence<std::string > > & args
         )
 {
     SyncCommandLine cmdline;
@@ -409,7 +409,7 @@ SyncCommand::run(
     return retcode;
 }
 
-std::tr1::shared_ptr<args::ArgsHandler>
+std::shared_ptr<args::ArgsHandler>
 SyncCommand::make_doc_cmdline()
 {
     return make_shared_ptr(new SyncCommandLine);

@@ -31,8 +31,8 @@
 #include <paludis/choice-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/environment-fwd.hh>
-#include <tr1/memory>
-#include <tr1/functional>
+#include <memory>
+#include <functional>
 
 namespace paludis
 {
@@ -51,8 +51,8 @@ namespace paludis
      *
      * \since 0.44
      */
-    typedef std::tr1::function<
-        const std::tr1::shared_ptr<const LineConfigFile> (
+    typedef std::function<
+        const std::shared_ptr<const LineConfigFile> (
                 const FSEntry &,
                 const LineConfigFileOptions &)
         > PaludisLikeOptionsConfMakeConfigFileFunction;
@@ -87,21 +87,21 @@ namespace paludis
             void add_file(const FSEntry &);
 
             const std::pair<Tribool, bool> want_choice_enabled_locked(
-                    const std::tr1::shared_ptr<const PackageID> &,
+                    const std::shared_ptr<const PackageID> &,
                     const ChoicePrefixName &,
                     const UnprefixedChoiceName &
                     ) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             const std::string value_for_choice_parameter(
-                    const std::tr1::shared_ptr<const PackageID> &,
+                    const std::shared_ptr<const PackageID> &,
                     const ChoicePrefixName &,
                     const UnprefixedChoiceName &
                     ) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            const std::tr1::shared_ptr<const Set<UnprefixedChoiceName> > known_choice_value_names(
-                    const std::tr1::shared_ptr<const PackageID> &,
+            const std::shared_ptr<const Set<UnprefixedChoiceName> > known_choice_value_names(
+                    const std::shared_ptr<const PackageID> &,
                     const ChoicePrefixName &
                     ) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));

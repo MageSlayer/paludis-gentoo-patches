@@ -142,7 +142,7 @@ namespace paludis
         std::string class_name;
         std::string string_value;
         bool null;
-        std::list<std::tr1::shared_ptr<Deserialisation> > children;
+        std::list<std::shared_ptr<Deserialisation> > children;
 
         Implementation(Deserialiser & d, const std::string & i) :
             deserialiser(d),
@@ -156,7 +156,7 @@ namespace paludis
     struct Implementation<Deserialisator>
     {
         const std::string class_name;
-        std::map<std::string, std::tr1::shared_ptr<Deserialisation> > keys;
+        std::map<std::string, std::shared_ptr<Deserialisation> > keys;
 
         Implementation(const std::string & c) :
             class_name(c)
@@ -167,7 +167,7 @@ namespace paludis
     template <>
     struct WrappedForwardIteratorTraits<Deserialisation::ConstIteratorTag>
     {
-        typedef std::list<std::tr1::shared_ptr<Deserialisation> >::const_iterator UnderlyingIterator;
+        typedef std::list<std::shared_ptr<Deserialisation> >::const_iterator UnderlyingIterator;
     };
 }
 
@@ -273,7 +273,7 @@ Deserialisation::Deserialisation(const std::string & i, Deserialiser & d) :
                         k.append(1, c);
                     }
 
-                    std::tr1::shared_ptr<Deserialisation> de(new Deserialisation(k, d));
+                    std::shared_ptr<Deserialisation> de(new Deserialisation(k, d));
                     _imp->children.push_back(de);
                 }
             }
@@ -349,19 +349,19 @@ Deserialisator::~Deserialisator()
     }
 }
 
-const std::tr1::shared_ptr<Deserialisation>
+const std::shared_ptr<Deserialisation>
 Deserialisator::find_remove_member(const std::string & s)
 {
-    std::map<std::string, std::tr1::shared_ptr<Deserialisation> >::iterator i(_imp->keys.find(s));
+    std::map<std::string, std::shared_ptr<Deserialisation> >::iterator i(_imp->keys.find(s));
     if (i == _imp->keys.end())
         throw InternalError(PALUDIS_HERE, "no key '" + s + "'");
-    std::tr1::shared_ptr<Deserialisation> result(i->second);
+    std::shared_ptr<Deserialisation> result(i->second);
     _imp->keys.erase(i);
     return result;
 }
 
-std::tr1::shared_ptr<const PackageID>
-DeserialisatorHandler<std::tr1::shared_ptr<const PackageID> >::handle(Deserialisation & v)
+std::shared_ptr<const PackageID>
+DeserialisatorHandler<std::shared_ptr<const PackageID> >::handle(Deserialisation & v)
 {
     Context context("When deserialising:");
 
@@ -384,5 +384,5 @@ DeserialisatorHandler<std::tr1::shared_ptr<const PackageID> >::handle(Deserialis
 template class PrivateImplementationPattern<Deserialiser>;
 template class PrivateImplementationPattern<Deserialisation>;
 template class PrivateImplementationPattern<Deserialisator>;
-template class WrappedForwardIterator<Deserialisation::ConstIteratorTag, const std::tr1::shared_ptr<Deserialisation> >;
+template class WrappedForwardIterator<Deserialisation::ConstIteratorTag, const std::shared_ptr<Deserialisation> >;
 

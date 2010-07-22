@@ -26,13 +26,13 @@
 #include <paludis/dep_label.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/repository-fwd.hh>
-#include <tr1/functional>
+#include <functional>
 
 namespace paludis
 {
     namespace erepository
     {
-        typedef std::tr1::function<std::tr1::shared_ptr<const MirrorsSequence> (const std::string &)> GetMirrorsFunction;
+        typedef std::function<std::shared_ptr<const MirrorsSequence> (const std::string &)> GetMirrorsFunction;
 
         class PALUDIS_VISIBLE SourceURIFinder :
             private PrivateImplementationPattern<SourceURIFinder>

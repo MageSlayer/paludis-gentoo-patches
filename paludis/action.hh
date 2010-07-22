@@ -33,7 +33,7 @@
 #include <paludis/util/options.hh>
 #include <paludis/output_manager-fwd.hh>
 #include <paludis/util/type_list.hh>
-#include <tr1/functional>
+#include <functional>
 
 /** \file
  * Declarations for action-related classes.
@@ -84,7 +84,7 @@ namespace paludis
          *
          * \since 0.40
          */
-        NamedValue<n::errors, std::tr1::shared_ptr<Sequence<FetchActionFailure> > > errors;
+        NamedValue<n::errors, std::shared_ptr<Sequence<FetchActionFailure> > > errors;
 
         /**
          * \since 0.32
@@ -121,7 +121,7 @@ namespace paludis
          *
          * \since 0.36
          */
-        NamedValue<n::make_output_manager, std::tr1::function<std::tr1::shared_ptr<OutputManager> (
+        NamedValue<n::make_output_manager, std::function<std::shared_ptr<OutputManager> (
                 const FetchAction &)> > make_output_manager;
 
 
@@ -130,7 +130,7 @@ namespace paludis
         /**
          * \since 0.48
          */
-        NamedValue<n::want_phase, std::tr1::function<WantPhase (const std::string &)> > want_phase;
+        NamedValue<n::want_phase, std::function<WantPhase (const std::string &)> > want_phase;
     };
 
     /**
@@ -142,7 +142,7 @@ namespace paludis
      */
     struct InstallActionOptions
     {
-        NamedValue<n::destination, std::tr1::shared_ptr<Repository> > destination;
+        NamedValue<n::destination, std::shared_ptr<Repository> > destination;
 
         /**
          * This is a function to avoid chicken / egg problems when using
@@ -150,7 +150,7 @@ namespace paludis
          *
          * \since 0.36
          */
-        NamedValue<n::make_output_manager, std::tr1::function<std::tr1::shared_ptr<OutputManager> (
+        NamedValue<n::make_output_manager, std::function<std::shared_ptr<OutputManager> (
                 const InstallAction &)> > make_output_manager;
 
         /**
@@ -162,8 +162,8 @@ namespace paludis
          *
          * \since 0.36
          */
-        NamedValue<n::perform_uninstall, std::tr1::function<void (
-                const std::tr1::shared_ptr<const PackageID> &,
+        NamedValue<n::perform_uninstall, std::function<void (
+                const std::shared_ptr<const PackageID> &,
                 const UninstallActionOptions &
                 )> > perform_uninstall;
 
@@ -172,9 +172,9 @@ namespace paludis
          *
          * \since 0.36
          */
-        NamedValue<n::replacing, std::tr1::shared_ptr<const PackageIDSequence> > replacing;
+        NamedValue<n::replacing, std::shared_ptr<const PackageIDSequence> > replacing;
 
-        NamedValue<n::want_phase, std::tr1::function<WantPhase (const std::string &)> > want_phase;
+        NamedValue<n::want_phase, std::function<WantPhase (const std::string &)> > want_phase;
     };
 
     /**
@@ -194,14 +194,14 @@ namespace paludis
          *
          * \since 0.36
          */
-        NamedValue<n::if_for_install_id, std::tr1::shared_ptr<const PackageID> > if_for_install_id;
+        NamedValue<n::if_for_install_id, std::shared_ptr<const PackageID> > if_for_install_id;
 
         /**
          * Sometimes we never want to unmerge certain files.
          *
          * \since 0,38
          */
-        NamedValue<n::ignore_for_unmerge, std::tr1::function<bool (const FSEntry &)> > ignore_for_unmerge;
+        NamedValue<n::ignore_for_unmerge, std::function<bool (const FSEntry &)> > ignore_for_unmerge;
 
         /**
          * Some repositories need to do special handlings for direct overwrites
@@ -217,7 +217,7 @@ namespace paludis
          *
          * \since 0.36
          */
-        NamedValue<n::make_output_manager, std::tr1::function<std::tr1::shared_ptr<OutputManager> (
+        NamedValue<n::make_output_manager, std::function<std::shared_ptr<OutputManager> (
                 const UninstallAction &)> > make_output_manager;
     };
 
@@ -370,7 +370,7 @@ namespace paludis
          *
          * \since 0.36
          */
-        NamedValue<n::make_output_manager, std::tr1::function<std::tr1::shared_ptr<OutputManager> (
+        NamedValue<n::make_output_manager, std::function<std::shared_ptr<OutputManager> (
                 const PretendAction &)> > make_output_manager;
     };
 
@@ -463,7 +463,7 @@ namespace paludis
          *
          * \since 0.36
          */
-        NamedValue<n::make_output_manager, std::tr1::function<std::tr1::shared_ptr<OutputManager> (
+        NamedValue<n::make_output_manager, std::function<std::shared_ptr<OutputManager> (
                 const ConfigAction &)> > make_output_manager;
     };
 
@@ -518,7 +518,7 @@ namespace paludis
          *
          * \since 0.36
          */
-        NamedValue<n::make_output_manager, std::tr1::function<std::tr1::shared_ptr<OutputManager> (
+        NamedValue<n::make_output_manager, std::function<std::shared_ptr<OutputManager> (
                 const InfoAction &)> > make_output_manager;
     };
 

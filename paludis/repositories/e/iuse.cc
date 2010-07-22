@@ -33,7 +33,7 @@ using namespace paludis::erepository;
 #include <paludis/repositories/e/iuse-se.cc>
 
 std::pair<ChoiceNameWithPrefix, Tribool>
-paludis::erepository::parse_iuse(const std::tr1::shared_ptr<const EAPI> &, const std::string & s)
+paludis::erepository::parse_iuse(const std::shared_ptr<const EAPI> &, const std::string & s)
 {
     if (s.empty())
         return std::make_pair(ChoiceNameWithPrefix(s), indeterminate);

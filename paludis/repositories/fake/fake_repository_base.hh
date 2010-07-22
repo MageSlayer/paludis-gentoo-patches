@@ -45,7 +45,7 @@ namespace paludis
     class PALUDIS_VISIBLE FakeRepositoryBase :
         public Repository,
         private PrivateImplementationPattern<FakeRepositoryBase>,
-        public std::tr1::enable_shared_from_this<FakeRepositoryBase>
+        public std::enable_shared_from_this<FakeRepositoryBase>
     {
         private:
             PrivateImplementationPattern<FakeRepositoryBase>::ImpPtr & _imp;
@@ -79,14 +79,14 @@ namespace paludis
              * Add a version, and a package and category if necessary, and set some
              * default values for its metadata, and return said metadata.
              */
-            std::tr1::shared_ptr<FakePackageID> add_version(const QualifiedPackageName &, const VersionSpec &);
+            std::shared_ptr<FakePackageID> add_version(const QualifiedPackageName &, const VersionSpec &);
 
             /**
              * Add a version, and a package and category if necessary, and set some
              * default values for its metadata, and return said metadata (convenience
              * overload taking strings).
              */
-            std::tr1::shared_ptr<FakePackageID> add_version(const std::string & c, const std::string & p,
+            std::shared_ptr<FakePackageID> add_version(const std::string & c, const std::string & p,
                     const std::string & v);
 
             virtual void invalidate();
@@ -100,15 +100,15 @@ namespace paludis
 
             /* Repository */
 
-            virtual std::tr1::shared_ptr<const PackageIDSequence> package_ids(
+            virtual std::shared_ptr<const PackageIDSequence> package_ids(
                     const QualifiedPackageName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::tr1::shared_ptr<const QualifiedPackageNameSet> package_names(
+            virtual std::shared_ptr<const QualifiedPackageNameSet> package_names(
                     const CategoryNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::tr1::shared_ptr<const CategoryNamePartSet> category_names() const
+            virtual std::shared_ptr<const CategoryNamePartSet> category_names() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual bool has_package_named(const QualifiedPackageName &) const
@@ -117,7 +117,7 @@ namespace paludis
             virtual bool has_category_named(const CategoryNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool sync(const std::tr1::shared_ptr<OutputManager> &) const;
+            virtual bool sync(const std::shared_ptr<OutputManager> &) const;
 
             ///\name Set methods
             ///\{

@@ -23,7 +23,7 @@
 #include <paludis/util/active_object_ptr-fwd.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/make_shared_ptr.hh>
-#include <tr1/memory>
+#include <memory>
 
 namespace paludis
 {
@@ -32,13 +32,13 @@ namespace paludis
     {
         private:
             T_ _ptr;
-            std::tr1::shared_ptr<Mutex> _mutex;
+            std::shared_ptr<Mutex> _mutex;
 
             class Deref
             {
                 private:
                     const ActiveObjectPtr * _ptr;
-                    std::tr1::shared_ptr<Lock> _lock;
+                    std::shared_ptr<Lock> _lock;
 
                 public:
                     Deref(const ActiveObjectPtr * p) :

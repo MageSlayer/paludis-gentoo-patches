@@ -115,7 +115,7 @@ namespace
         Generator * ptr(0);
         try
         {
-            std::tr1::shared_ptr<const PackageDepSpec> spec(value_to_package_dep_spec(spec_v));
+            std::shared_ptr<const PackageDepSpec> spec(value_to_package_dep_spec(spec_v));
             MatchPackageOptions options(value_to_match_package_options(options_v));
             ptr = new generator::Matches(*spec, options);
             VALUE data(Data_Wrap_Struct(self, 0, &Common<Generator>::free, ptr));

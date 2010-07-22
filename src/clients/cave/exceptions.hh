@@ -24,7 +24,7 @@
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/name-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 
 namespace paludis
 {
@@ -42,7 +42,7 @@ namespace paludis
             public Exception
         {
             public:
-                BeMoreSpecific(const PackageDepSpec &, const std::tr1::shared_ptr<const PackageIDSequence> &) throw ();
+                BeMoreSpecific(const PackageDepSpec &, const std::shared_ptr<const PackageIDSequence> &) throw ();
         };
 
         class PALUDIS_VISIBLE BadIDForCommand :
@@ -51,7 +51,7 @@ namespace paludis
             public:
                 BadIDForCommand(
                         const PackageDepSpec &,
-                        const std::tr1::shared_ptr<const PackageID> &,
+                        const std::shared_ptr<const PackageID> &,
                         const std::string & r) throw ();
         };
 

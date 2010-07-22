@@ -33,21 +33,21 @@ namespace paludis
         {
             public:
                 AccountsDepKey(const Environment * const e,
-                        const std::tr1::shared_ptr<const Set<std::string> > &);
+                        const std::shared_ptr<const Set<std::string> > &);
                 ~AccountsDepKey();
 
                 virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual const std::tr1::shared_ptr<const DependencySpecTree> value() const
+                virtual const std::shared_ptr<const DependencySpecTree> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual std::string pretty_print(const DependencySpecTree::ItemFormatter &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual std::string pretty_print_flat(const DependencySpecTree::ItemFormatter &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual const std::tr1::shared_ptr<const DependenciesLabelSequence> initial_labels() const
+                virtual const std::shared_ptr<const DependenciesLabelSequence> initial_labels() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }

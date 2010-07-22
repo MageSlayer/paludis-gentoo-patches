@@ -26,7 +26,7 @@ using namespace paludis::erepository;
 
 VDBID::VDBID(const QualifiedPackageName & q, const VersionSpec & v,
         const Environment * const e,
-        const std::tr1::shared_ptr<const Repository> & r,
+        const std::shared_ptr<const Repository> & r,
         const FSEntry & f) :
     EInstalledRepositoryID(q, v, e, r, f)
 {
@@ -50,7 +50,7 @@ VDBID::contents_filename() const
     return "CONTENTS";
 }
 
-std::tr1::shared_ptr<MetadataValueKey<std::tr1::shared_ptr<const Contents> > >
+std::shared_ptr<MetadataValueKey<std::shared_ptr<const Contents> > >
 VDBID::make_contents_key() const
 {
     return make_shared_ptr(new EContentsKey(shared_from_this(), "CONTENTS", "Contents",

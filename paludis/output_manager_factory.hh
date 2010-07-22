@@ -21,16 +21,15 @@
 #define PALUDIS_GUARD_PALUDIS_OUTPUT_MANAGER_FACTORY_HH 1
 
 #include <paludis/output_manager_factory-fwd.hh>
+#include <paludis/output_manager-fwd.hh>
 #include <paludis/util/attributes.hh>
+#include <paludis/util/map-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/set-fwd.hh>
 #include <paludis/util/singleton.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
-#include <paludis/util/map-fwd.hh>
-#include <paludis/util/singleton.hh>
-#include <paludis/output_manager-fwd.hh>
-#include <paludis/util/set-fwd.hh>
-#include <tr1/functional>
-#include <tr1/memory>
+#include <functional>
+#include <memory>
 
 namespace paludis
 {
@@ -45,16 +44,16 @@ namespace paludis
             ~OutputManagerFactory();
 
         public:
-            typedef std::tr1::function<std::string (const std::string &)> KeyFunction;
+            typedef std::function<std::string (const std::string &)> KeyFunction;
 
-            typedef std::tr1::function<const std::tr1::shared_ptr<OutputManager> (
+            typedef std::function<const std::shared_ptr<OutputManager> (
                     const std::string &)> CreateChildFunction;
 
-            typedef std::tr1::function<std::string (
+            typedef std::function<std::string (
                     const std::string & pattern,
-                    const std::tr1::shared_ptr<const Map<std::string, std::string> > & extra_vars)> ReplaceVarsFunc;
+                    const std::shared_ptr<const Map<std::string, std::string> > & extra_vars)> ReplaceVarsFunc;
 
-            typedef std::tr1::function<const std::tr1::shared_ptr<OutputManager>(
+            typedef std::function<const std::shared_ptr<OutputManager>(
                     const KeyFunction &,
                     const CreateChildFunction &,
                     const ReplaceVarsFunc &
@@ -77,7 +76,7 @@ namespace paludis
              * used by, for example, FileOutputManager to allow the user to
              * specify the output file names.
              */
-            const std::tr1::shared_ptr<OutputManager> create(
+            const std::shared_ptr<OutputManager> create(
                     const KeyFunction & key_function,
                     const CreateChildFunction & create_child_function,
                     const ReplaceVarsFunc & replace_vars_func
@@ -92,7 +91,7 @@ namespace paludis
              * \param create_function is used to implement OutputManagerFactory::create.
              */
             void add_manager(
-                    const std::tr1::shared_ptr<const Set<std::string> > & managers,
+                    const std::shared_ptr<const Set<std::string> > & managers,
                     const CreateFunction & create_function
                     );
 

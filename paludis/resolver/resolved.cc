@@ -52,23 +52,23 @@ Resolved::deserialise(Deserialisation & d)
 
     return make_named_values<Resolved>(
             n::job_lists() =
-                v.member<std::tr1::shared_ptr<JobLists> >("job_lists"),
+                v.member<std::shared_ptr<JobLists> >("job_lists"),
             n::nag() =
-                v.member<std::tr1::shared_ptr<NAG> >("nag"),
+                v.member<std::shared_ptr<NAG> >("nag"),
             n::resolutions_by_resolvent() =
-                v.member<std::tr1::shared_ptr<ResolutionsByResolvent> >("resolutions_by_resolvent"),
+                v.member<std::shared_ptr<ResolutionsByResolvent> >("resolutions_by_resolvent"),
             n::taken_change_or_remove_decisions() =
-                v.member<std::tr1::shared_ptr<OrderedChangeOrRemoveDecisions> >("taken_change_or_remove_decisions"),
+                v.member<std::shared_ptr<OrderedChangeOrRemoveDecisions> >("taken_change_or_remove_decisions"),
             n::taken_unable_to_make_decisions() =
-                v.member<std::tr1::shared_ptr<Decisions<UnableToMakeDecision> > >("taken_unable_to_make_decisions"),
+                v.member<std::shared_ptr<Decisions<UnableToMakeDecision> > >("taken_unable_to_make_decisions"),
             n::taken_unconfirmed_decisions() =
-                v.member<std::tr1::shared_ptr<Decisions<ConfirmableDecision> > >("taken_unconfirmed_decisions"),
+                v.member<std::shared_ptr<Decisions<ConfirmableDecision> > >("taken_unconfirmed_decisions"),
             n::taken_unorderable_decisions() =
-                v.member<std::tr1::shared_ptr<OrderedChangeOrRemoveDecisions> >("taken_unorderable_decisions"),
+                v.member<std::shared_ptr<OrderedChangeOrRemoveDecisions> >("taken_unorderable_decisions"),
             n::untaken_change_or_remove_decisions() =
-                v.member<std::tr1::shared_ptr<Decisions<ChangeOrRemoveDecision> > >("untaken_change_or_remove_decisions"),
+                v.member<std::shared_ptr<Decisions<ChangeOrRemoveDecision> > >("untaken_change_or_remove_decisions"),
             n::untaken_unable_to_make_decisions() =
-                v.member<std::tr1::shared_ptr<Decisions<UnableToMakeDecision> > >("untaken_unable_to_make_decisions")
+                v.member<std::shared_ptr<Decisions<UnableToMakeDecision> > >("untaken_unable_to_make_decisions")
             );
 }
 

@@ -37,14 +37,14 @@ namespace test_cases
             TailOutputStream s(5);
 
             {
-                std::tr1::shared_ptr<const Sequence<std::string> > a(s.tail(false));
+                std::shared_ptr<const Sequence<std::string> > a(s.tail(false));
                 TEST_CHECK_EQUAL(join(a->begin(), a->end(), "/"), "");
             }
 
             s << "one" << std::endl;
 
             {
-                std::tr1::shared_ptr<const Sequence<std::string> > a(s.tail(false));
+                std::shared_ptr<const Sequence<std::string> > a(s.tail(false));
                 TEST_CHECK_EQUAL(join(a->begin(), a->end(), "/"), "one");
             }
 
@@ -54,19 +54,19 @@ namespace test_cases
             s << "five" << std::endl;
 
             {
-                std::tr1::shared_ptr<const Sequence<std::string> > a(s.tail(false));
+                std::shared_ptr<const Sequence<std::string> > a(s.tail(false));
                 TEST_CHECK_EQUAL(join(a->begin(), a->end(), "/"), "one/two/three/four/five");
             }
 
             s << "six" << std::endl;
 
             {
-                std::tr1::shared_ptr<const Sequence<std::string> > a(s.tail(true));
+                std::shared_ptr<const Sequence<std::string> > a(s.tail(true));
                 TEST_CHECK_EQUAL(join(a->begin(), a->end(), "/"), "two/three/four/five/six");
             }
 
             {
-                std::tr1::shared_ptr<const Sequence<std::string> > a(s.tail(false));
+                std::shared_ptr<const Sequence<std::string> > a(s.tail(false));
                 TEST_CHECK_EQUAL(join(a->begin(), a->end(), "/"), "");
             }
 
@@ -74,7 +74,7 @@ namespace test_cases
             s << "eight" << std::endl;
 
             {
-                std::tr1::shared_ptr<const Sequence<std::string> > a(s.tail(false));
+                std::shared_ptr<const Sequence<std::string> > a(s.tail(false));
                 TEST_CHECK_EQUAL(join(a->begin(), a->end(), "/"), "seven/eight");
             }
         }

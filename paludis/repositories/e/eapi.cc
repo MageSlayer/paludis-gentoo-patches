@@ -36,7 +36,7 @@
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_named_values.hh>
-#include <tr1/unordered_map>
+#include <unordered_map>
 #include <map>
 #include <vector>
 #include <list>
@@ -68,7 +68,7 @@ namespace
         return destringify<T_>(check_get(k, key));
     }
 
-    std::tr1::shared_ptr<const EAPIEbuildEnvironmentVariables> make_ebuild_environment_variables(const KeyValueConfigFile & k)
+    std::shared_ptr<const EAPIEbuildEnvironmentVariables> make_ebuild_environment_variables(const KeyValueConfigFile & k)
     {
         return make_shared_ptr(new EAPIEbuildEnvironmentVariables(make_named_values<EAPIEbuildEnvironmentVariables>(
                         n::description_choices() = check_get(k, "description_choices"),
@@ -104,7 +104,7 @@ namespace
             )));
     }
 
-    std::tr1::shared_ptr<EAPIMetadataVariable> make_metadata_variable(const KeyValueConfigFile & k, const std::string & s)
+    std::shared_ptr<EAPIMetadataVariable> make_metadata_variable(const KeyValueConfigFile & k, const std::string & s)
     {
         return make_shared_ptr(new EAPIMetadataVariable(make_named_values<EAPIMetadataVariable>(
                         n::description() = check_get(k, "description_" + s),
@@ -113,7 +113,7 @@ namespace
                         )));
     }
 
-    std::tr1::shared_ptr<const EAPIEbuildMetadataVariables> make_ebuild_metadata_variables(const KeyValueConfigFile & k)
+    std::shared_ptr<const EAPIEbuildMetadataVariables> make_ebuild_metadata_variables(const KeyValueConfigFile & k)
     {
         return make_shared_ptr(new EAPIEbuildMetadataVariables(make_named_values<EAPIEbuildMetadataVariables>(
             n::bugs_to() = make_metadata_variable(k, "bugs_to"),
@@ -148,14 +148,14 @@ namespace
             )));
     }
 
-    std::tr1::shared_ptr<Set<std::string> > make_set(const std::string & s)
+    std::shared_ptr<Set<std::string> > make_set(const std::string & s)
     {
-        std::tr1::shared_ptr<Set<std::string> > result(new Set<std::string>);
+        std::shared_ptr<Set<std::string> > result(new Set<std::string>);
         tokenise_whitespace(s, result->inserter());
         return result;
     }
 
-    std::tr1::shared_ptr<const EAPIEbuildOptions> make_ebuild_options(const KeyValueConfigFile & k)
+    std::shared_ptr<const EAPIEbuildOptions> make_ebuild_options(const KeyValueConfigFile & k)
     {
         return make_shared_ptr(new EAPIEbuildOptions(make_named_values<EAPIEbuildOptions>(
                         n::binary_from_env_variables() = check_get(k, "binary_from_env_variables"),
@@ -197,7 +197,7 @@ namespace
                 )));
     }
 
-    std::tr1::shared_ptr<const EAPIEbuildPhases> make_ebuild_phases(const KeyValueConfigFile & k)
+    std::shared_ptr<const EAPIEbuildPhases> make_ebuild_phases(const KeyValueConfigFile & k)
     {
         return make_shared_ptr(new EAPIEbuildPhases(make_named_values<EAPIEbuildPhases>(
                         n::ebuild_bad_options() = check_get(k, "ebuild_bad_options"),
@@ -214,7 +214,7 @@ namespace
             )));
     }
 
-    std::tr1::shared_ptr<const EAPIPipeCommands> make_pipe_commands(const KeyValueConfigFile & k)
+    std::shared_ptr<const EAPIPipeCommands> make_pipe_commands(const KeyValueConfigFile & k)
     {
         return make_shared_ptr(new EAPIPipeCommands(make_named_values<EAPIPipeCommands>(
                         n::no_slot_or_repo() = destringify_key<bool>(k, "pipe_commands_no_slot_or_repo"),
@@ -222,7 +222,7 @@ namespace
                         )));
     }
 
-    std::tr1::shared_ptr<const EAPIToolsOptions> make_tool_options(const KeyValueConfigFile & k)
+    std::shared_ptr<const EAPIToolsOptions> make_tool_options(const KeyValueConfigFile & k)
     {
         return make_shared_ptr(new EAPIToolsOptions(make_named_values<EAPIToolsOptions>(
                         n::dodoc_r() = destringify_key<bool>(k, "dodoc_r"),
@@ -237,7 +237,7 @@ namespace
                         )));
     }
 
-    std::tr1::shared_ptr<const EAPIAnnotations> make_annotations(const KeyValueConfigFile & k)
+    std::shared_ptr<const EAPIAnnotations> make_annotations(const KeyValueConfigFile & k)
     {
         return make_shared_ptr(new EAPIAnnotations(make_named_values<EAPIAnnotations>(
                         n::myoptions_description() = k.get("annotations_myoptions_description"),
@@ -249,7 +249,7 @@ namespace
                         )));
     }
 
-    std::tr1::shared_ptr<const EAPIChoicesOptions> make_choices_options(const KeyValueConfigFile & k)
+    std::shared_ptr<const EAPIChoicesOptions> make_choices_options(const KeyValueConfigFile & k)
     {
         return make_shared_ptr(new EAPIChoicesOptions(make_named_values<EAPIChoicesOptions>(
                         n::fancy_test_flag() = check_get(k, "fancy_test_flag"),
@@ -261,7 +261,7 @@ namespace
                         )));
     }
 
-    std::tr1::shared_ptr<const SupportedEAPI> make_supported_eapi(const KeyValueConfigFile & k)
+    std::shared_ptr<const SupportedEAPI> make_supported_eapi(const KeyValueConfigFile & k)
     {
         ELikePackageDepSpecOptions package_dep_spec_parse_options;
         {
@@ -341,7 +341,7 @@ namespace paludis
     template<>
     struct Implementation<EAPIData>
     {
-        std::tr1::unordered_map<std::string, std::tr1::shared_ptr<const EAPI>, Hash<std::string> > values;
+        std::unordered_map<std::string, std::shared_ptr<const EAPI>, Hash<std::string> > values;
 
         Implementation()
         {
@@ -355,10 +355,10 @@ namespace paludis
 
                 Context cc("When loading EAPI file '" + stringify(*d) + "':");
                 KeyValueConfigFile k(*d, KeyValueConfigFileOptions(),
-                        std::tr1::bind(&predefined, stringify(d->dirname()), std::tr1::placeholders::_1, std::tr1::placeholders::_2),
+                        std::bind(&predefined, stringify(d->dirname()), std::placeholders::_1, std::placeholders::_2),
                         &KeyValueConfigFile::no_transformation);
 
-                std::tr1::shared_ptr<EAPI> eapi(new EAPI(make_named_values<EAPI>(
+                std::shared_ptr<EAPI> eapi(new EAPI(make_named_values<EAPI>(
                                 n::exported_name() = check_get(k, "exported_name"),
                                 n::name() = strip_trailing_string(d->basename(), ".conf"),
                                 n::supported() = make_supported_eapi(k)
@@ -367,7 +367,7 @@ namespace paludis
                 values.insert(std::make_pair(strip_trailing_string(d->basename(), ".conf"), eapi));
             }
 
-            std::tr1::unordered_map<std::string, std::tr1::shared_ptr<const EAPI>, Hash<std::string> >::const_iterator i(values.find("0"));
+            std::unordered_map<std::string, std::shared_ptr<const EAPI>, Hash<std::string> >::const_iterator i(values.find("0"));
             if (i == values.end())
                 throw EAPIConfigurationError("No EAPI configuration found for EAPI 0");
             else
@@ -390,27 +390,27 @@ EAPIData::~EAPIData()
 {
 }
 
-std::tr1::shared_ptr<const EAPI>
+std::shared_ptr<const EAPI>
 EAPIData::eapi_from_string(const std::string & s) const
 {
-    std::tr1::unordered_map<std::string, std::tr1::shared_ptr<const EAPI>, Hash<std::string> >::const_iterator i(_imp->values.find(s));
+    std::unordered_map<std::string, std::shared_ptr<const EAPI>, Hash<std::string> >::const_iterator i(_imp->values.find(s));
     if (i != _imp->values.end())
         return i->second;
 
     return make_shared_ptr(new EAPI(make_named_values<EAPI>(
                     n::exported_name() = s,
                     n::name() = s,
-                    n::supported() = std::tr1::shared_ptr<const SupportedEAPI>())
+                    n::supported() = std::shared_ptr<const SupportedEAPI>())
                 ));
 }
 
-std::tr1::shared_ptr<const EAPI>
+std::shared_ptr<const EAPI>
 EAPIData::unknown_eapi() const
 {
     return make_shared_ptr(new EAPI(make_named_values<EAPI>(
                     n::exported_name() = "UNKNOWN",
                     n::name() = "UNKNOWN",
-                    n::supported() = std::tr1::shared_ptr<const SupportedEAPI>())
+                    n::supported() = std::shared_ptr<const SupportedEAPI>())
                 ));
 }
 

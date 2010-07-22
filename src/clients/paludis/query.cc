@@ -43,7 +43,7 @@ namespace
         public ConsoleQueryTask
     {
         public:
-            QueryTask(const std::tr1::shared_ptr<Environment> e) :
+            QueryTask(const std::shared_ptr<Environment> e) :
                 ConsoleQueryTask(e.get())
             {
             }
@@ -71,9 +71,9 @@ namespace
 }
 
 void do_one_package_query(
-        const std::tr1::shared_ptr<Environment> & env,
-        const std::tr1::shared_ptr<Map<char, std::string> > & masks_to_explain,
-        std::tr1::shared_ptr<PackageDepSpec> spec)
+        const std::shared_ptr<Environment> & env,
+        const std::shared_ptr<Map<char, std::string> > & masks_to_explain,
+        std::shared_ptr<PackageDepSpec> spec)
 {
     QueryTask query(env);
     query.show(*spec);
@@ -105,10 +105,10 @@ namespace
 }
 
 void do_one_set_query(
-        const std::tr1::shared_ptr<Environment> &,
+        const std::shared_ptr<Environment> &,
         const std::string & q,
-        const std::tr1::shared_ptr<Map<char, std::string> > &,
-        std::tr1::shared_ptr<const SetSpecTree> set)
+        const std::shared_ptr<Map<char, std::string> > &,
+        std::shared_ptr<const SetSpecTree> set)
 {
     cout << "* " << colour(cl_package_name, q) << endl;
     SetPrettyPrinter packages;
@@ -118,9 +118,9 @@ void do_one_set_query(
 }
 
 void do_one_query(
-        const std::tr1::shared_ptr<Environment> & env,
+        const std::shared_ptr<Environment> & env,
         const std::string & q,
-        const std::tr1::shared_ptr<Map<char, std::string> > & masks_to_explain)
+        const std::shared_ptr<Map<char, std::string> > & masks_to_explain)
 {
     Context local_context("When handling query '" + q + "':");
 
@@ -135,13 +135,13 @@ void do_one_query(
     }
 }
 
-int do_query(const std::tr1::shared_ptr<Environment> & env)
+int do_query(const std::shared_ptr<Environment> & env)
 {
     int return_code(0);
 
     Context context("When performing query action from command line:");
 
-    std::tr1::shared_ptr<Map<char, std::string> > masks_to_explain(new Map<char, std::string>());
+    std::shared_ptr<Map<char, std::string> > masks_to_explain(new Map<char, std::string>());
 
     CommandLine::ParametersConstIterator q(CommandLine::get_instance()->begin_parameters()),
         q_end(CommandLine::get_instance()->end_parameters());

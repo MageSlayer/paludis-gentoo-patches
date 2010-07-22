@@ -162,7 +162,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            DepListEntryHandledSkippedDependent(const std::tr1::shared_ptr<const PackageID> &);
+            DepListEntryHandledSkippedDependent(const std::shared_ptr<const PackageID> &);
             ~DepListEntryHandledSkippedDependent();
 
             ///\}
@@ -171,7 +171,7 @@ namespace paludis
              * Upon which PackageID are we dependent? If multiple dependent IDs are
              * unsatisfied, returns one of them.
              */
-            const std::tr1::shared_ptr<const PackageID> id() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::shared_ptr<const PackageID> id() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**

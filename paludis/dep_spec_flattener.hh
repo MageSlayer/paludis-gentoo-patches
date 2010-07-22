@@ -28,7 +28,7 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/no_type.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
-#include <tr1/memory>
+#include <memory>
 
 /** \file
  * Declarations for DepSpecFlattener.
@@ -107,7 +107,7 @@ namespace paludis
             ///\{
 
             struct ConstIteratorTag;
-            typedef WrappedForwardIterator<ConstIteratorTag, const std::tr1::shared_ptr<const Item_> > ConstIterator;
+            typedef WrappedForwardIterator<ConstIteratorTag, const std::shared_ptr<const Item_> > ConstIterator;
 
             ConstIterator begin() const;
             ConstIterator end() const;
@@ -121,13 +121,13 @@ namespace paludis
     extern template class DepSpecFlattener<SimpleURISpecTree, SimpleURIDepSpec>;
 
     extern template class WrappedForwardIterator<DepSpecFlattener<ProvideSpecTree, PackageDepSpec>::ConstIteratorTag,
-           const std::tr1::shared_ptr<const PackageDepSpec> >;
+           const std::shared_ptr<const PackageDepSpec> >;
     extern template class WrappedForwardIterator<DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec>::ConstIteratorTag,
-           const std::tr1::shared_ptr<const PlainTextDepSpec> >;
+           const std::shared_ptr<const PlainTextDepSpec> >;
     extern template class WrappedForwardIterator<DepSpecFlattener<SetSpecTree, PackageDepSpec>::ConstIteratorTag,
-           const std::tr1::shared_ptr<const PackageDepSpec> >;
+           const std::shared_ptr<const PackageDepSpec> >;
     extern template class WrappedForwardIterator<DepSpecFlattener<SimpleURISpecTree, SimpleURIDepSpec>::ConstIteratorTag,
-           const std::tr1::shared_ptr<const SimpleURIDepSpec> >;
+           const std::shared_ptr<const SimpleURIDepSpec> >;
 }
 
 #endif

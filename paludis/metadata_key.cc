@@ -25,7 +25,7 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/name.hh>
-#include <tr1/functional>
+#include <functional>
 #include <list>
 #include <algorithm>
 
@@ -71,7 +71,7 @@ ExtraMetadataValueKeyMethods<bool>::~ExtraMetadataValueKeyMethods()
 {
 }
 
-ExtraMetadataValueKeyMethods<std::tr1::shared_ptr<const PackageID> >::~ExtraMetadataValueKeyMethods()
+ExtraMetadataValueKeyMethods<std::shared_ptr<const PackageID> >::~ExtraMetadataValueKeyMethods()
 {
 }
 
@@ -118,8 +118,8 @@ template class MetadataValueKey<long>;
 template class MetadataValueKey<bool>;
 template class MetadataValueKey<FSEntry>;
 template class MetadataValueKey<SlotName>;
-template class MetadataValueKey<std::tr1::shared_ptr<const PackageID> >;
-template class MetadataValueKey<std::tr1::shared_ptr<const Contents> >;
-template class MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> >;
-template class MetadataValueKey<std::tr1::shared_ptr<const Choices> >;
+template class MetadataValueKey<std::shared_ptr<const PackageID> >;
+template class MetadataValueKey<std::shared_ptr<const Contents> >;
+template class MetadataValueKey<std::shared_ptr<const RepositoryMaskInfo> >;
+template class MetadataValueKey<std::shared_ptr<const Choices> >;
 

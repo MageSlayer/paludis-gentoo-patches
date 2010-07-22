@@ -84,7 +84,7 @@
 #include <list>
 #include <cstdlib>
 #include <algorithm>
-#include <tr1/unordered_map>
+#include <unordered_map>
 
 using namespace paludis;
 using namespace cave;
@@ -138,22 +138,22 @@ namespace
     };
 
     bool do_pretend(
-            const std::tr1::shared_ptr<Environment> & env,
+            const std::shared_ptr<Environment> & env,
             const ExecuteResolutionCommandLine & cmdline,
             const PackageDepSpec & origin_id_spec,
             const int x, const int y, const int prev_x,
-            std::tr1::shared_ptr<OutputManager> & output_manager_goes_here)
+            std::shared_ptr<OutputManager> & output_manager_goes_here)
     {
         Context context("When pretending for '" + stringify(origin_id_spec) + "':");
 
-        const std::tr1::shared_ptr<const PackageID> origin_id(*(*env)[selection::RequireExactlyOne(
+        const std::shared_ptr<const PackageID> origin_id(*(*env)[selection::RequireExactlyOne(
                     generator::Matches(origin_id_spec, MatchPackageOptions()))]->begin());
 
         if (0 != prev_x)
             cout << std::string(stringify(prev_x).length() + stringify(y).length() + 4, '\010');
         cout << x << " of " << y << std::flush;
 
-        std::tr1::shared_ptr<Sequence<std::string> > args(new Sequence<std::string>);
+        std::shared_ptr<Sequence<std::string> > args(new Sequence<std::string>);
 
         args->push_back("pretend");
         args->push_back("--hooks");
@@ -184,14 +184,14 @@ namespace
                     a != a_end ; ++a)
                 command = command + " " + args::escape(*a);
 
-            IPCInputManager input_manager(env.get(), std::tr1::function<void (const std::tr1::shared_ptr<OutputManager> &)>());
+            IPCInputManager input_manager(env.get(), std::function<void (const std::shared_ptr<OutputManager> &)>());
             paludis::Command cmd(command);
             cmd
                 .with_pipe_command_handler("PALUDIS_IPC", input_manager.pipe_command_handler())
                 ;
 
             retcode = run_command(cmd);
-            const std::tr1::shared_ptr<OutputManager> output_manager(input_manager.underlying_output_manager_if_constructed());
+            const std::shared_ptr<OutputManager> output_manager(input_manager.underlying_output_manager_if_constructed());
             if (output_manager)
             {
                 output_manager->nothing_more_to_come();
@@ -209,7 +209,7 @@ namespace
 
     void starting_action(
             const std::string & action,
-            const std::tr1::shared_ptr<const PackageIDSequence> & ids,
+            const std::shared_ptr<const PackageIDSequence> & ids,
             const int x, const int y)
     {
         cout << endl;
@@ -220,7 +220,7 @@ namespace
 
     void done_action(
             const std::string & action,
-            const std::tr1::shared_ptr<const PackageIDSequence> & ids,
+            const std::shared_ptr<const PackageIDSequence> & ids,
             const bool success)
     {
         cout << endl;
@@ -236,14 +236,14 @@ namespace
     void set_output_manager(
             Mutex & mutex,
             JobActiveState & active_state,
-            const std::tr1::shared_ptr<OutputManager> & o)
+            const std::shared_ptr<OutputManager> & o)
     {
         Lock lock(mutex);
         active_state.set_output_manager(o);
     }
 
     bool do_fetch(
-            const std::tr1::shared_ptr<Environment> & env,
+            const std::shared_ptr<Environment> & env,
             const ExecuteResolutionCommandLine & cmdline,
             const PackageDepSpec & id_spec,
             const int x, const int y, bool normal_only,
@@ -252,7 +252,7 @@ namespace
     {
         Context context("When fetching for '" + stringify(id_spec) + "':");
 
-        const std::tr1::shared_ptr<const PackageID> id(*(*env)[selection::RequireExactlyOne(
+        const std::shared_ptr<const PackageID> id(*(*env)[selection::RequireExactlyOne(
                     generator::Matches(id_spec, MatchPackageOptions()))]->begin());
 
         std::string command(cmdline.program_options.a_perform_program.argument());
@@ -303,8 +303,8 @@ namespace
                 command.append(" --" + cmdline.import_options.a_unpackaged_repository_params.long_name() + " '" + *p + "'");
         }
 
-        IPCInputManager input_manager(env.get(), std::tr1::bind(&set_output_manager, std::tr1::ref(job_mutex),
-                    std::tr1::ref(active_state), std::tr1::placeholders::_1));
+        IPCInputManager input_manager(env.get(), std::bind(&set_output_manager, std::ref(job_mutex),
+                    std::ref(active_state), std::placeholders::_1));
 
         paludis::Command cmd(command);
         cmd
@@ -316,17 +316,17 @@ namespace
     }
 
     bool do_install(
-            const std::tr1::shared_ptr<Environment> & env,
+            const std::shared_ptr<Environment> & env,
             const ExecuteResolutionCommandLine & cmdline,
             const PackageDepSpec & id_spec,
             const RepositoryName & destination_repository_name,
-            const std::tr1::shared_ptr<const Sequence<PackageDepSpec> > & replacing_specs,
+            const std::shared_ptr<const Sequence<PackageDepSpec> > & replacing_specs,
             const std::string & destination_string,
             const int x, const int y,
             Mutex & job_mutex,
             JobActiveState & active_state)
     {
-        const std::tr1::shared_ptr<const PackageID> id(*(*env)[selection::RequireExactlyOne(
+        const std::shared_ptr<const PackageID> id(*(*env)[selection::RequireExactlyOne(
                     generator::Matches(id_spec, MatchPackageOptions()))]->begin());
 
         Context context("When " + destination_string + " for '" + stringify(*id) + "':");
@@ -382,20 +382,20 @@ namespace
                 command.append(" --" + cmdline.import_options.a_unpackaged_repository_params.long_name() + " '" + *p + "'");
         }
 
-        IPCInputManager input_manager(env.get(), std::tr1::bind(&set_output_manager, std::tr1::ref(job_mutex),
-                    std::tr1::ref(active_state), std::tr1::placeholders::_1));
+        IPCInputManager input_manager(env.get(), std::bind(&set_output_manager, std::ref(job_mutex),
+                    std::ref(active_state), std::placeholders::_1));
         paludis::Command cmd(command);
         cmd
             .with_pipe_command_handler("PALUDIS_IPC", input_manager.pipe_command_handler())
             ;
 
         int retcode(run_command(cmd));
-        const std::tr1::shared_ptr<OutputManager> output_manager(input_manager.underlying_output_manager_if_constructed());
+        const std::shared_ptr<OutputManager> output_manager(input_manager.underlying_output_manager_if_constructed());
         return 0 == retcode;
     }
 
     bool do_uninstall(
-            const std::tr1::shared_ptr<Environment> & env,
+            const std::shared_ptr<Environment> & env,
             const ExecuteResolutionCommandLine & cmdline,
             const PackageDepSpec & id_spec,
             const int x, const int y,
@@ -404,7 +404,7 @@ namespace
     {
         Context context("When removing '" + stringify(id_spec) + "':");
 
-        const std::tr1::shared_ptr<const PackageID> id(*(*env)[selection::RequireExactlyOne(
+        const std::shared_ptr<const PackageID> id(*(*env)[selection::RequireExactlyOne(
                     generator::Matches(id_spec, MatchPackageOptions()))]->begin());
 
         std::string command(cmdline.program_options.a_perform_program.argument());
@@ -453,15 +453,15 @@ namespace
                 command.append(" --" + cmdline.import_options.a_unpackaged_repository_params.long_name() + " '" + *p + "'");
         }
 
-        IPCInputManager input_manager(env.get(), std::tr1::bind(&set_output_manager, std::tr1::ref(job_mutex),
-                    std::tr1::ref(active_state), std::tr1::placeholders::_1));
+        IPCInputManager input_manager(env.get(), std::bind(&set_output_manager, std::ref(job_mutex),
+                    std::ref(active_state), std::placeholders::_1));
         paludis::Command cmd(command);
         cmd
             .with_pipe_command_handler("PALUDIS_IPC", input_manager.pipe_command_handler())
             ;
 
         int retcode(run_command(cmd));
-        const std::tr1::shared_ptr<OutputManager> output_manager(input_manager.underlying_output_manager_if_constructed());
+        const std::shared_ptr<OutputManager> output_manager(input_manager.underlying_output_manager_if_constructed());
         if (output_manager)
             output_manager->succeeded();
 
@@ -469,7 +469,7 @@ namespace
     }
 
     void update_world(
-            const std::tr1::shared_ptr<Environment> & env,
+            const std::shared_ptr<Environment> & env,
             const ExecuteResolutionCommandLine & cmdline,
             const bool removes)
     {
@@ -562,7 +562,7 @@ namespace
     }
 
     void execute_update_world(
-            const std::tr1::shared_ptr<Environment> & env,
+            const std::shared_ptr<Environment> & env,
             const ExecuteResolutionCommandLine & cmdline)
     {
         if (cmdline.execution_options.a_preserve_world.specified())
@@ -575,8 +575,8 @@ namespace
     }
 
     int execute_pretends(
-            const std::tr1::shared_ptr<Environment> & env,
-            const std::tr1::shared_ptr<JobLists> & lists,
+            const std::shared_ptr<Environment> & env,
+            const std::shared_ptr<JobLists> & lists,
             const ExecuteResolutionCommandLine & cmdline)
     {
         bool failed(false);
@@ -594,7 +594,7 @@ namespace
             if (++x == 1)
                 cout << "Executing pretend actions: " << std::flush;
 
-            std::tr1::shared_ptr<OutputManager> output_manager_goes_here;
+            std::shared_ptr<OutputManager> output_manager_goes_here;
             failed = failed || ! do_pretend(env, cmdline, (*c)->origin_id_spec(), x, y, prev_x, output_manager_goes_here);
             prev_x = x;
         }
@@ -651,7 +651,7 @@ namespace
 
     struct ExecuteOneVisitor
     {
-        const std::tr1::shared_ptr<Environment> env;
+        const std::shared_ptr<Environment> env;
         const ExecuteResolutionCommandLine & cmdline;
         ExecuteCounts & counts;
         Mutex & job_mutex;
@@ -659,7 +659,7 @@ namespace
         int retcode;
 
         ExecuteOneVisitor(
-                const std::tr1::shared_ptr<Environment> & e,
+                const std::shared_ptr<Environment> & e,
                 const ExecuteResolutionCommandLine & c,
                 ExecuteCounts & k,
                 Mutex & m,
@@ -696,7 +696,7 @@ namespace
             if (destination_string.empty())
                 throw InternalError(PALUDIS_HERE, "unhandled dt");
 
-            const std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::RequireExactlyOne(
+            const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::RequireExactlyOne(
                         generator::Matches(install_item.origin_id_spec(), MatchPackageOptions()))]);
 
             switch (part)
@@ -710,7 +710,7 @@ namespace
 
                 case x1_main:
                     {
-                        const std::tr1::shared_ptr<JobActiveState> active_state(new JobActiveState);
+                        const std::shared_ptr<JobActiveState> active_state(new JobActiveState);
                         {
                             Lock lock(job_mutex);
                             install_item.set_state(active_state);
@@ -748,12 +748,12 @@ namespace
 
         int visit(UninstallJob & uninstall_item)
         {
-            const std::tr1::shared_ptr<PackageIDSequence> ids(new PackageIDSequence);
+            const std::shared_ptr<PackageIDSequence> ids(new PackageIDSequence);
             for (Sequence<PackageDepSpec>::ConstIterator i(uninstall_item.ids_to_remove_specs()->begin()),
                     i_end(uninstall_item.ids_to_remove_specs()->end()) ;
                     i != i_end ; ++i)
             {
-                const std::tr1::shared_ptr<const PackageID> id(*(*env)[selection::RequireExactlyOne(
+                const std::shared_ptr<const PackageID> id(*(*env)[selection::RequireExactlyOne(
                             generator::Matches(*i, MatchPackageOptions()))]->begin());
                 ids->push_back(id);
             }
@@ -769,7 +769,7 @@ namespace
 
                 case x1_main:
                     {
-                        const std::tr1::shared_ptr<JobActiveState> active_state(new JobActiveState);
+                        const std::shared_ptr<JobActiveState> active_state(new JobActiveState);
                         {
                             Lock lock(job_mutex);
                             uninstall_item.set_state(active_state);
@@ -800,7 +800,7 @@ namespace
 
         int visit(FetchJob & fetch_item)
         {
-            const std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::RequireExactlyOne(
+            const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::RequireExactlyOne(
                         generator::Matches(fetch_item.origin_id_spec(), MatchPackageOptions()))]);
 
             switch (part)
@@ -814,7 +814,7 @@ namespace
 
                 case x1_main:
                     {
-                        const std::tr1::shared_ptr<JobActiveState> active_state(new JobActiveState);
+                        const std::shared_ptr<JobActiveState> active_state(new JobActiveState);
                         {
                             Lock lock(job_mutex);
                             fetch_item.set_state(active_state);
@@ -911,10 +911,10 @@ namespace
     };
 
     std::string stringify_id_or_spec(
-            const std::tr1::shared_ptr<Environment> & env,
+            const std::shared_ptr<Environment> & env,
             const PackageDepSpec & spec)
     {
-        const std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::BestVersionOnly(
+        const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::BestVersionOnly(
                     generator::Matches(spec, MatchPackageOptions()))]);
         if (ids->empty())
             return stringify(spec);
@@ -924,13 +924,13 @@ namespace
 
     struct AlreadyDoneVisitor
     {
-        const std::tr1::shared_ptr<Environment> env;
+        const std::shared_ptr<Environment> env;
         ExecuteCounts & counts;
         int x, y;
         std::string text;
 
         AlreadyDoneVisitor(
-                const std::tr1::shared_ptr<Environment> & e,
+                const std::shared_ptr<Environment> & e,
                 ExecuteCounts & c) :
             env(e),
             counts(c)
@@ -954,16 +954,16 @@ namespace
         void visit(const UninstallJob & j)
         {
             text = "uninstall " + join(j.ids_to_remove_specs()->begin(), j.ids_to_remove_specs()->end(), ", ",
-                    std::tr1::bind(&stringify_id_or_spec, env, std::tr1::placeholders::_1));
+                    std::bind(&stringify_id_or_spec, env, std::placeholders::_1));
             x = ++counts.x_installs;
             y = counts.y_installs;
         }
     };
 
     void already_done_action(
-            const std::tr1::shared_ptr<Environment> & env,
+            const std::shared_ptr<Environment> & env,
             const std::string & state,
-            const std::tr1::shared_ptr<const ExecuteJob> & job,
+            const std::shared_ptr<const ExecuteJob> & job,
             ExecuteCounts & counts)
     {
         AlreadyDoneVisitor v(env, counts);
@@ -976,9 +976,9 @@ namespace
 
     struct MakeJobID
     {
-        const std::tr1::shared_ptr<Environment> env;
+        const std::shared_ptr<Environment> env;
 
-        MakeJobID(const std::tr1::shared_ptr<Environment> & e) :
+        MakeJobID(const std::shared_ptr<Environment> & e) :
             env(e)
         {
         }
@@ -986,7 +986,7 @@ namespace
         std::string visit(const UninstallJob & j) const
         {
             return "uninstalling " + join(j.ids_to_remove_specs()->begin(), j.ids_to_remove_specs()->end(), ", ",
-                    std::tr1::bind(stringify_id_or_spec, env, std::tr1::placeholders::_1));
+                    std::bind(stringify_id_or_spec, env, std::placeholders::_1));
         }
 
         std::string visit(const InstallJob & j) const
@@ -1002,27 +1002,27 @@ namespace
 
     struct GetOutputManager
     {
-        const std::tr1::shared_ptr<OutputManager> visit(const JobActiveState & s) const
+        const std::shared_ptr<OutputManager> visit(const JobActiveState & s) const
         {
             return s.output_manager();
         }
 
-        const std::tr1::shared_ptr<OutputManager> visit(const JobFailedState & s) const
+        const std::shared_ptr<OutputManager> visit(const JobFailedState & s) const
         {
             return s.output_manager();
         }
 
-        const std::tr1::shared_ptr<OutputManager> visit(const JobSucceededState & s) const
+        const std::shared_ptr<OutputManager> visit(const JobSucceededState & s) const
         {
             return s.output_manager();
         }
 
-        const std::tr1::shared_ptr<OutputManager> visit(const JobSkippedState &) const
+        const std::shared_ptr<OutputManager> visit(const JobSkippedState &) const
         {
             return make_null_shared_ptr();
         }
 
-        const std::tr1::shared_ptr<OutputManager> visit(const JobPendingState &) const
+        const std::shared_ptr<OutputManager> visit(const JobPendingState &) const
         {
             return make_null_shared_ptr();
         }
@@ -1059,10 +1059,10 @@ namespace
     struct ExecuteJobExecutive :
         Executive
     {
-        const std::tr1::shared_ptr<Environment> env;
+        const std::shared_ptr<Environment> env;
         const ExecuteResolutionCommandLine & cmdline;
-        const std::tr1::shared_ptr<ExecuteJob> job;
-        const std::tr1::shared_ptr<const JobLists> lists;
+        const std::shared_ptr<ExecuteJob> job;
+        const std::shared_ptr<const JobLists> lists;
         JobRequirementIf require_if;
         Mutex & retcode_mutex;
         int & retcode;
@@ -1076,10 +1076,10 @@ namespace
         bool want, already_done;
 
         ExecuteJobExecutive(
-                const std::tr1::shared_ptr<Environment> & e,
+                const std::shared_ptr<Environment> & e,
                 const ExecuteResolutionCommandLine & c,
-                const std::tr1::shared_ptr<ExecuteJob> & j,
-                const std::tr1::shared_ptr<const JobLists> & l,
+                const std::shared_ptr<ExecuteJob> & j,
+                const std::shared_ptr<const JobLists> & l,
                 JobRequirementIf r,
                 Mutex & m,
                 int & rc,
@@ -1122,7 +1122,7 @@ namespace
                 if (! r->required_if()[jri_fetching])
                     continue;
 
-                const std::tr1::shared_ptr<const ExecuteJob> req(*lists->execute_job_list()->fetch(r->job_number()));
+                const std::shared_ptr<const ExecuteJob> req(*lists->execute_job_list()->fetch(r->job_number()));
                 if (! req->state()->accept_returning<bool>(CanStartState()))
                     return false;
             }
@@ -1178,7 +1178,7 @@ namespace
                         if (! r->required_if()[require_if])
                             continue;
 
-                        const std::tr1::shared_ptr<const ExecuteJob> req(*lists->execute_job_list()->fetch(r->job_number()));
+                        const std::shared_ptr<const ExecuteJob> req(*lists->execute_job_list()->fetch(r->job_number()));
                         want = want && req->state()->accept_returning<bool>(ContinueAfterState());
                     }
                 }
@@ -1217,8 +1217,8 @@ namespace
                 return;
 
             Lock lock(job_mutex);
-            const std::tr1::shared_ptr<OutputManager> output_manager(
-                    job->state()->accept_returning<std::tr1::shared_ptr<OutputManager> >(GetOutputManager()));
+            const std::shared_ptr<OutputManager> output_manager(
+                    job->state()->accept_returning<std::shared_ptr<OutputManager> >(GetOutputManager()));
 
             if (output_manager)
             {
@@ -1249,8 +1249,8 @@ namespace
         void flush_threaded()
         {
             Lock lock(job_mutex);
-            const std::tr1::shared_ptr<OutputManager> output_manager(
-                    job->state()->accept_returning<std::tr1::shared_ptr<OutputManager> >(GetOutputManager()));
+            const std::shared_ptr<OutputManager> output_manager(
+                    job->state()->accept_returning<std::shared_ptr<OutputManager> >(GetOutputManager()));
 
             if (output_manager && output_manager->want_to_flush())
                 display_active();
@@ -1271,8 +1271,8 @@ namespace
                 retcode |= job->accept_returning<int>(execute);
 
                 Lock lock(job_mutex);
-                const std::tr1::shared_ptr<OutputManager> output_manager(
-                        job->state()->accept_returning<std::tr1::shared_ptr<OutputManager> >(GetOutputManager()));
+                const std::shared_ptr<OutputManager> output_manager(
+                        job->state()->accept_returning<std::shared_ptr<OutputManager> >(GetOutputManager()));
 
                 if (output_manager)
                 {
@@ -1285,8 +1285,8 @@ namespace
     };
 
     int execute_executions(
-            const std::tr1::shared_ptr<Environment> & env,
-            const std::tr1::shared_ptr<JobLists> & lists,
+            const std::shared_ptr<Environment> & env,
+            const std::shared_ptr<JobLists> & lists,
             const ExecuteResolutionCommandLine & cmdline)
     {
         int retcode(0);
@@ -1337,8 +1337,8 @@ namespace
     }
 
     int execute_resolution_main(
-            const std::tr1::shared_ptr<Environment> & env,
-            const std::tr1::shared_ptr<JobLists> & lists,
+            const std::shared_ptr<Environment> & env,
+            const std::shared_ptr<JobLists> & lists,
             const ExecuteResolutionCommandLine & cmdline)
     {
         for (JobList<ExecuteJob>::ConstIterator c(lists->execute_job_list()->begin()),
@@ -1365,9 +1365,9 @@ namespace
 
     struct SummaryNameVisitor
     {
-        const std::tr1::shared_ptr<Environment> env;
+        const std::shared_ptr<Environment> env;
 
-        SummaryNameVisitor(const std::tr1::shared_ptr<Environment> & e) :
+        SummaryNameVisitor(const std::shared_ptr<Environment> & e) :
             env(e)
         {
         }
@@ -1385,21 +1385,21 @@ namespace
         std::string visit(const UninstallJob & j) const
         {
             return "uninstall " + join(j.ids_to_remove_specs()->begin(), j.ids_to_remove_specs()->end(), ", ",
-                    std::tr1::bind(&stringify_id_or_spec, env, std::tr1::placeholders::_1));
+                    std::bind(&stringify_id_or_spec, env, std::placeholders::_1));
         }
 
     };
 
     struct SummaryDisplayer
     {
-        const std::tr1::shared_ptr<Environment> env;
-        const std::tr1::shared_ptr<const ExecuteJob> job;
+        const std::shared_ptr<Environment> env;
+        const std::shared_ptr<const ExecuteJob> job;
         const bool something_failed;
         bool & done_heading;
 
         SummaryDisplayer(
-                const std::tr1::shared_ptr<Environment> & e,
-                const std::tr1::shared_ptr<const ExecuteJob> & j,
+                const std::shared_ptr<Environment> & e,
+                const std::shared_ptr<const ExecuteJob> & j,
                 const bool s,
                 bool & b) :
             env(e),
@@ -1462,8 +1462,8 @@ namespace
     };
 
     void display_summary(
-            const std::tr1::shared_ptr<Environment> & env,
-            const std::tr1::shared_ptr<JobLists> & lists,
+            const std::shared_ptr<Environment> & env,
+            const std::shared_ptr<JobLists> & lists,
             const bool something_failed)
     {
         bool done_heading(false);
@@ -1479,15 +1479,15 @@ namespace
 
     struct NotASuccess
     {
-        bool operator() (const std::tr1::shared_ptr<const ExecuteJob> & job) const
+        bool operator() (const std::shared_ptr<const ExecuteJob> & job) const
         {
             return (! job->state()) || ! simple_visitor_cast<const JobSucceededState>(*job->state());
         }
     };
 
     void write_resume_file(
-            const std::tr1::shared_ptr<Environment> &,
-            const std::tr1::shared_ptr<JobLists> & lists,
+            const std::shared_ptr<Environment> &,
+            const std::shared_ptr<JobLists> & lists,
             const ExecuteResolutionCommandLine & cmdline)
     {
         if (! cmdline.execution_options.a_resume_file.specified())
@@ -1503,10 +1503,10 @@ namespace
         }
         else
         {
-            std::tr1::shared_ptr<Sequence<std::string> > targets(new Sequence<std::string>);
+            std::shared_ptr<Sequence<std::string> > targets(new Sequence<std::string>);
             std::copy(cmdline.begin_parameters(), cmdline.end_parameters(), targets->back_inserter());
 
-            std::tr1::shared_ptr<Sequence<std::string> > world_specs(new Sequence<std::string>);
+            std::shared_ptr<Sequence<std::string> > world_specs(new Sequence<std::string>);
             std::copy(cmdline.a_world_specs.begin_args(), cmdline.a_world_specs.end_args(), world_specs->back_inserter());
 
             ResumeData resume_data(make_named_values<ResumeData>(
@@ -1525,8 +1525,8 @@ namespace
     }
 
     int execute_resolution(
-            const std::tr1::shared_ptr<Environment> & env,
-            const std::tr1::shared_ptr<JobLists> & lists,
+            const std::shared_ptr<Environment> & env,
+            const std::shared_ptr<JobLists> & lists,
             const ExecuteResolutionCommandLine & cmdline)
     {
         Context context("When executing chosen resolution:");
@@ -1583,9 +1583,9 @@ ExecuteResolutionCommand::important() const
 
 int
 ExecuteResolutionCommand::run(
-        const std::tr1::shared_ptr<Environment> & env,
-        const std::tr1::shared_ptr<const Sequence<std::string > > & args,
-        const std::tr1::shared_ptr<JobLists> & maybe_lists
+        const std::shared_ptr<Environment> & env,
+        const std::shared_ptr<const Sequence<std::string > > & args,
+        const std::shared_ptr<JobLists> & maybe_lists
         )
 {
     ExecuteResolutionCommandLine cmdline;
@@ -1599,7 +1599,7 @@ ExecuteResolutionCommand::run(
 
     cmdline.import_options.apply(env);
 
-    std::tr1::shared_ptr<JobLists> lists(maybe_lists);
+    std::shared_ptr<JobLists> lists(maybe_lists);
     if (! lists)
     {
         if (getenv_with_default("PALUDIS_SERIALISED_RESOLUTION_FD", "").empty())
@@ -1618,13 +1618,13 @@ ExecuteResolutionCommand::run(
 
 int
 ExecuteResolutionCommand::run(
-        const std::tr1::shared_ptr<Environment> & env,
-        const std::tr1::shared_ptr<const Sequence<std::string > > & args)
+        const std::shared_ptr<Environment> & env,
+        const std::shared_ptr<const Sequence<std::string > > & args)
 {
     return run(env, args, make_null_shared_ptr());
 }
 
-std::tr1::shared_ptr<args::ArgsHandler>
+std::shared_ptr<args::ArgsHandler>
 ExecuteResolutionCommand::make_doc_cmdline()
 {
     return make_shared_ptr(new ExecuteResolutionCommandLine);

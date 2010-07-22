@@ -32,12 +32,12 @@ namespace paludis
     template <>
     struct Implementation<BufferOutputManager>
     {
-        const std::tr1::shared_ptr<OutputManager> child;
+        const std::shared_ptr<OutputManager> child;
         BufferOutputStream stdout_stream;
         BufferOutputStream stderr_stream;
 
         Implementation(
-                const std::tr1::shared_ptr<OutputManager> & c) :
+                const std::shared_ptr<OutputManager> & c) :
             child(c)
         {
         }
@@ -45,7 +45,7 @@ namespace paludis
 }
 
 BufferOutputManager::BufferOutputManager(
-        const std::tr1::shared_ptr<OutputManager> & c) :
+        const std::shared_ptr<OutputManager> & c) :
     PrivateImplementationPattern<BufferOutputManager>(new Implementation<BufferOutputManager>(c))
 {
 }
@@ -98,15 +98,15 @@ BufferOutputManager::nothing_more_to_come()
     _imp->child->nothing_more_to_come();
 }
 
-const std::tr1::shared_ptr<const Set<std::string> >
+const std::shared_ptr<const Set<std::string> >
 BufferOutputManager::factory_managers()
 {
-    std::tr1::shared_ptr<Set<std::string> > result(new Set<std::string>);
+    std::shared_ptr<Set<std::string> > result(new Set<std::string>);
     result->insert("buffer");
     return result;
 }
 
-const std::tr1::shared_ptr<OutputManager>
+const std::shared_ptr<OutputManager>
 BufferOutputManager::factory_create(
         const OutputManagerFactory::KeyFunction & key_func,
         const OutputManagerFactory::CreateChildFunction & create_child,
@@ -115,7 +115,7 @@ BufferOutputManager::factory_create(
     std::string child_str(key_func("child"));
     if (child_str.empty())
         throw ConfigurationError("No child specified for BufferOutputManager");
-    const std::tr1::shared_ptr<OutputManager> child(create_child(child_str));
+    const std::shared_ptr<OutputManager> child(create_child(child_str));
 
     return make_shared_ptr(new BufferOutputManager(child));
 }

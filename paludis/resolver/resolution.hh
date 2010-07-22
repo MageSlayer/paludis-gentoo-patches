@@ -25,7 +25,7 @@
 #include <paludis/resolver/decision-fwd.hh>
 #include <paludis/resolver/resolvent.hh>
 #include <paludis/util/named_value.hh>
-#include <tr1/memory>
+#include <memory>
 
 namespace paludis
 {
@@ -40,13 +40,13 @@ namespace paludis
     {
         struct Resolution
         {
-            NamedValue<n::constraints, std::tr1::shared_ptr<Constraints> > constraints;
-            NamedValue<n::decision, std::tr1::shared_ptr<Decision> > decision;
+            NamedValue<n::constraints, std::shared_ptr<Constraints> > constraints;
+            NamedValue<n::decision, std::shared_ptr<Decision> > decision;
             NamedValue<n::resolvent, Resolvent> resolvent;
 
             void serialise(Serialiser &) const;
 
-            static const std::tr1::shared_ptr<Resolution> deserialise(
+            static const std::shared_ptr<Resolution> deserialise(
                     Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }

@@ -42,11 +42,11 @@ int main(int argc, char * argv[])
                 "example_package_id", "EXAMPLE_PACKAGE_ID_OPTIONS", "EXAMPLE_PACKAGE_ID_CMDLINE");
 
         /* We start with an Environment, respecting the user's '--environment' choice. */
-        std::tr1::shared_ptr<Environment> env(EnvironmentFactory::get_instance()->create(
+        std::shared_ptr<Environment> env(EnvironmentFactory::get_instance()->create(
                     CommandLine::get_instance()->a_environment.argument()));
 
         /* Fetch package IDs for 'sys-apps/paludis'. */
-        std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(
+        std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(
                     generator::Package(QualifiedPackageName("sys-apps/paludis")))]);
 
         /* For each ID: */
@@ -118,7 +118,7 @@ int main(int argc, char * argv[])
 
             /* And various misc methods. Clients don't usually use these
              * directly. */
-            std::tr1::shared_ptr<const Set<std::string> > breaks_portage((*i)->breaks_portage());
+            std::shared_ptr<const Set<std::string> > breaks_portage((*i)->breaks_portage());
             cout << left << setw(30) << "    breaks_portage:" << " " << join(breaks_portage->begin(),
                     breaks_portage->end(), ", ") << endl;
             cout << left << setw(30) << "    extra_hash_value:" << " " << "0x" << hex << (*i)->extra_hash_value() << endl;

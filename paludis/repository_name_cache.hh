@@ -22,7 +22,7 @@
 
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/name.hh>
-#include <tr1/memory>
+#include <memory>
 
 /** \file
  * Declarations for RepositoryNameCache, which is used by some Repository
@@ -73,7 +73,7 @@ namespace paludis
              * fall back to Repository::do_category_names_containing_package or
              * its own implementation.
              */
-            std::tr1::shared_ptr<const CategoryNamePartSet> category_names_containing_package(
+            std::shared_ptr<const CategoryNamePartSet> category_names_containing_package(
                     const PackageNamePart & p) const;
 
             /**

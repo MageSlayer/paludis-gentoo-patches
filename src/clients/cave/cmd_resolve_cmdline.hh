@@ -22,7 +22,7 @@
 
 #include "command_command_line.hh"
 #include <paludis/environment-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 #include "config.h"
 
 namespace paludis
@@ -110,7 +110,7 @@ namespace paludis
             args::SwitchArg a_dump_restarts;
 
             void apply_shortcuts();
-            void verify(const std::tr1::shared_ptr<const Environment> & env);
+            void verify(const std::shared_ptr<const Environment> & env);
         };
 
         struct ResolveCommandLineExecutionOptions :
@@ -168,7 +168,7 @@ namespace paludis
             args::ArgsGroup g_import_options;
             args::StringSetArg a_unpackaged_repository_params;
 
-            void apply(const std::tr1::shared_ptr<Environment> & env) const;
+            void apply(const std::shared_ptr<Environment> & env) const;
         };
     }
 }

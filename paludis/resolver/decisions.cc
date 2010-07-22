@@ -37,31 +37,31 @@ namespace
     struct ContainerTraits
     {
         typedef std::list<std::pair<
-            std::tr1::shared_ptr<const Decision_>,
+            std::shared_ptr<const Decision_>,
             Notes_> > ContainerType;
 
         static void do_push_back(
                 ContainerType & c,
-                const std::tr1::shared_ptr<const Decision_> & d,
+                const std::shared_ptr<const Decision_> & d,
                 const Notes_ & n)
         {
             c.push_back(std::make_pair(d, n));
         }
 
         static void do_member(SerialiserObjectWriter & w, int n,
-                const std::pair<std::tr1::shared_ptr<const Decision_>, Notes_> & d)
+                const std::pair<std::shared_ptr<const Decision_>, Notes_> & d)
         {
             w.member(SerialiserFlags<serialise::might_be_null>(), stringify(n) + ".1", d.first);
             w.member(SerialiserFlags<serialise::might_be_null>(), stringify(n) + ".2", d.second);
         }
 
         static void do_extract(
-                std::tr1::shared_ptr<Decisions<Decision_, Notes_> > & result,
+                std::shared_ptr<Decisions<Decision_, Notes_> > & result,
                 Deserialisator & v,
                 int n)
         {
             result->push_back(
-                    v.member<std::tr1::shared_ptr<Decision_> >(stringify(n) + ".1"),
+                    v.member<std::shared_ptr<Decision_> >(stringify(n) + ".1"),
                     v.member<Notes_>(stringify(n) + ".2")
                     );
         }
@@ -70,27 +70,27 @@ namespace
     template <typename Decision_>
     struct ContainerTraits<Decision_, NoType<0u> *>
     {
-        typedef std::list<std::tr1::shared_ptr<const Decision_> > ContainerType;
+        typedef std::list<std::shared_ptr<const Decision_> > ContainerType;
 
         static void do_push_back(
                 ContainerType & c,
-                const std::tr1::shared_ptr<const Decision_> & d,
+                const std::shared_ptr<const Decision_> & d,
                 const NoType<0u> * const)
         {
             c.push_back(d);
         }
 
-        static void do_member(SerialiserObjectWriter & w, int n, const std::tr1::shared_ptr<const Decision_> & d)
+        static void do_member(SerialiserObjectWriter & w, int n, const std::shared_ptr<const Decision_> & d)
         {
             w.member(SerialiserFlags<serialise::might_be_null>(), stringify(n), d);
         }
 
         static void do_extract(
-                std::tr1::shared_ptr<Decisions<Decision_> > & result,
+                std::shared_ptr<Decisions<Decision_> > & result,
                 Deserialisator & v,
                 int n)
         {
-            result->push_back(v.member<std::tr1::shared_ptr<Decision_> >(stringify(n)));
+            result->push_back(v.member<std::shared_ptr<Decision_> >(stringify(n)));
         }
     };
 }
@@ -124,7 +124,7 @@ Decisions<Decision_, Notes_>::~Decisions()
 template <typename Decision_, typename Notes_>
 void
 Decisions<Decision_, Notes_>::push_back(
-        const std::tr1::shared_ptr<const Decision_> & d,
+        const std::shared_ptr<const Decision_> & d,
         const Notes_ & n)
 {
     ContainerTraits<Decision_, Notes_>::do_push_back(_imp->values, d, n);
@@ -166,11 +166,11 @@ Decisions<Decision_, Notes_>::serialise(Serialiser & s) const
 }
 
 template <typename Decision_, typename Notes_>
-const std::tr1::shared_ptr<Decisions<Decision_, Notes_> >
+const std::shared_ptr<Decisions<Decision_, Notes_> >
 Decisions<Decision_, Notes_>::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "Decisions");
-    std::tr1::shared_ptr<Decisions<Decision_, Notes_> > result(new Decisions<Decision_, Notes_>);
+    std::shared_ptr<Decisions<Decision_, Notes_> > result(new Decisions<Decision_, Notes_>);
     for (int n(1), n_end(v.member<int>("count") + 1) ; n != n_end ; ++n)
         ContainerTraits<Decision_, Notes_>::do_extract(result, v, n);
     return result;
@@ -180,18 +180,18 @@ template class Decisions<UnableToMakeDecision>;
 template class Decisions<ChangesToMakeDecision>;
 template class Decisions<ChangeOrRemoveDecision>;
 template class Decisions<ConfirmableDecision>;
-template class Decisions<ChangeOrRemoveDecision, std::tr1::shared_ptr<const OrdererNotes> >;
+template class Decisions<ChangeOrRemoveDecision, std::shared_ptr<const OrdererNotes> >;
 
 template class WrappedForwardIterator<Decisions<UnableToMakeDecision>::ConstIteratorTag,
-         const std::tr1::shared_ptr<const UnableToMakeDecision> >;
+         const std::shared_ptr<const UnableToMakeDecision> >;
 template class WrappedForwardIterator<Decisions<ChangesToMakeDecision>::ConstIteratorTag,
-         const std::tr1::shared_ptr<const ChangesToMakeDecision> >;
+         const std::shared_ptr<const ChangesToMakeDecision> >;
 template class WrappedForwardIterator<Decisions<ChangeOrRemoveDecision>::ConstIteratorTag,
-         const std::tr1::shared_ptr<const ChangeOrRemoveDecision> >;
+         const std::shared_ptr<const ChangeOrRemoveDecision> >;
 template class WrappedForwardIterator<Decisions<ConfirmableDecision>::ConstIteratorTag,
-         const std::tr1::shared_ptr<const ConfirmableDecision> >;
-template class WrappedForwardIterator<Decisions<ChangeOrRemoveDecision, std::tr1::shared_ptr<const OrdererNotes> >::ConstIteratorTag,
+         const std::shared_ptr<const ConfirmableDecision> >;
+template class WrappedForwardIterator<Decisions<ChangeOrRemoveDecision, std::shared_ptr<const OrdererNotes> >::ConstIteratorTag,
          const std::pair<
-             std::tr1::shared_ptr<const ChangeOrRemoveDecision>,
-             std::tr1::shared_ptr<const OrdererNotes> > >;
+             std::shared_ptr<const ChangeOrRemoveDecision>,
+             std::shared_ptr<const OrdererNotes> > >;
 

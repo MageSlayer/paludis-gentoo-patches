@@ -21,9 +21,9 @@
 #define PALUDIS_GUARD_SRC_CLIENTS_PALUDIS_INFO_HH 1
 
 #include <paludis/environment-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 
 /// Handle --info.
-int do_info(const std::tr1::shared_ptr<const paludis::Environment> &);
+int do_info(const std::shared_ptr<const paludis::Environment> &);
 
 #endif

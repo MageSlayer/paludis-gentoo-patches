@@ -24,7 +24,7 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/options.hh>
 #include <sys/types.h>
-#include <tr1/functional>
+#include <functional>
 #include <set>
 #include <cstring>
 #include <cerrno>
@@ -35,7 +35,7 @@ using namespace paludis;
 
 #include <paludis/util/dir_iterator-se.cc>
 
-typedef std::multiset<std::pair<ino_t, FSEntry>, std::tr1::function<bool (std::pair<ino_t, FSEntry>, std::pair<ino_t, FSEntry>)> > EntrySet;
+typedef std::multiset<std::pair<ino_t, FSEntry>, std::function<bool (std::pair<ino_t, FSEntry>, std::pair<ino_t, FSEntry>)> > EntrySet;
 template class PrivateImplementationPattern<DirIterator>;
 
 namespace paludis
@@ -48,10 +48,10 @@ namespace paludis
     template<>
     struct Implementation<DirIterator>
     {
-        std::tr1::shared_ptr<EntrySet> items;
+        std::shared_ptr<EntrySet> items;
         EntrySet::iterator iter;
 
-        Implementation(std::tr1::shared_ptr<EntrySet> ii) :
+        Implementation(std::shared_ptr<EntrySet> ii) :
             items(ii)
         {
         }
@@ -64,21 +64,21 @@ DirOpenError::DirOpenError(const FSEntry & location, const int errno_value) thro
 }
 
 DirIterator::DirIterator(const FSEntry & base, const DirIteratorOptions & options) :
-    PrivateImplementationPattern<DirIterator>(new Implementation<DirIterator>(std::tr1::shared_ptr<EntrySet>(new EntrySet)))
+    PrivateImplementationPattern<DirIterator>(new Implementation<DirIterator>(std::shared_ptr<EntrySet>(new EntrySet)))
 {
-    using namespace std::tr1::placeholders;
+    using namespace std::placeholders;
 
     if (options[dio_inode_sort])
         _imp->items.reset(new EntrySet(
-                    std::tr1::bind(std::less<ino_t>(),
-                        std::tr1::bind<ino_t>(std::tr1::mem_fn(&std::pair<ino_t, FSEntry>::first), _1),
-                        std::tr1::bind<ino_t>(std::tr1::mem_fn(&std::pair<ino_t, FSEntry>::first), _2))
+                    std::bind(std::less<ino_t>(),
+                        std::bind<ino_t>(std::mem_fn(&std::pair<ino_t, FSEntry>::first), _1),
+                        std::bind<ino_t>(std::mem_fn(&std::pair<ino_t, FSEntry>::first), _2))
                     ));
     else
         _imp->items.reset(new EntrySet(
-                    std::tr1::bind(std::less<FSEntry>(),
-                        std::tr1::bind<FSEntry>(std::tr1::mem_fn(&std::pair<ino_t, FSEntry>::second), _1),
-                        std::tr1::bind<FSEntry>(std::tr1::mem_fn(&std::pair<ino_t, FSEntry>::second), _2))
+                    std::bind(std::less<FSEntry>(),
+                        std::bind<FSEntry>(std::mem_fn(&std::pair<ino_t, FSEntry>::second), _1),
+                        std::bind<FSEntry>(std::mem_fn(&std::pair<ino_t, FSEntry>::second), _2))
                     ));
 
     DIR * d(opendir(stringify(base).c_str()));
@@ -126,7 +126,7 @@ DirIterator::DirIterator(const DirIterator & other) :
 }
 
 DirIterator::DirIterator() :
-    PrivateImplementationPattern<DirIterator>(new Implementation<DirIterator>(std::tr1::shared_ptr<EntrySet>(new EntrySet)))
+    PrivateImplementationPattern<DirIterator>(new Implementation<DirIterator>(std::shared_ptr<EntrySet>(new EntrySet)))
 {
     _imp->iter = _imp->items->end();
 }

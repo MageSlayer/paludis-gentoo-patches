@@ -26,8 +26,8 @@
 #include <cstddef>
 #include <utility>
 #include <string>
-#include <tr1/type_traits>
-#include <tr1/memory>
+#include <type_traits>
+#include <memory>
 
 namespace paludis
 {
@@ -58,7 +58,7 @@ namespace paludis
         public:
             std::size_t operator() (const T_ & t) const
             {
-                return hash_internals::DefaultHash<T_, std::tr1::is_integral<T_>::value>::hash(t);
+                return hash_internals::DefaultHash<T_, std::is_integral<T_>::value>::hash(t);
             }
     };
 
@@ -120,9 +120,9 @@ namespace paludis
     };
 
     template <typename T_>
-    struct Hash<std::tr1::shared_ptr<T_> >
+    struct Hash<std::shared_ptr<T_> >
     {
-        std::size_t operator() (const std::tr1::shared_ptr<const T_> & t) const
+        std::size_t operator() (const std::shared_ptr<const T_> & t) const
         {
             return Hash<T_>()(*t);
         }

@@ -78,7 +78,7 @@ namespace
     };
 
     template <typename Action_>
-    void do_one_action(const std::tr1::shared_ptr<const PackageID> & id)
+    void do_one_action(const std::shared_ptr<const PackageID> & id)
     {
         if (id->supports_action(SupportsActionTest<Action_>()))
             cout << ActionNames<Action_>::value << endl;
@@ -87,8 +87,8 @@ namespace
 
 int
 PrintIDActionsCommand::run(
-        const std::tr1::shared_ptr<Environment> & env,
-        const std::tr1::shared_ptr<const Sequence<std::string > > & args
+        const std::shared_ptr<Environment> & env,
+        const std::shared_ptr<const Sequence<std::string > > & args
         )
 {
     PrintIDActionsCommandLine cmdline;
@@ -105,7 +105,7 @@ PrintIDActionsCommand::run(
 
     PackageDepSpec spec(parse_user_package_dep_spec(*cmdline.begin_parameters(), env.get(), UserPackageDepSpecOptions()));
 
-    std::tr1::shared_ptr<const PackageIDSequence> entries(
+    std::shared_ptr<const PackageIDSequence> entries(
             (*env)[selection::AllVersionsSorted(generator::Matches(spec, MatchPackageOptions()))]);
 
     if (entries->empty())
@@ -114,7 +114,7 @@ PrintIDActionsCommand::run(
     if ((! cmdline.a_best.specified()) && (next(entries->begin()) != entries->end()))
         throw BeMoreSpecific(spec, entries);
 
-    const std::tr1::shared_ptr<const PackageID> id(*entries->last());
+    const std::shared_ptr<const PackageID> id(*entries->last());
 
     do_one_action<ConfigAction>(id);
     do_one_action<FetchAction>(id);
@@ -127,7 +127,7 @@ PrintIDActionsCommand::run(
     return EXIT_SUCCESS;
 }
 
-std::tr1::shared_ptr<args::ArgsHandler>
+std::shared_ptr<args::ArgsHandler>
 PrintIDActionsCommand::make_doc_cmdline()
 {
     return make_shared_ptr(new PrintIDActionsCommandLine);

@@ -46,7 +46,7 @@ using namespace paludis::accounts_repository;
 
 namespace
 {
-    std::tr1::shared_ptr<AccountsHandler> make_handler(const std::string & handler)
+    std::shared_ptr<AccountsHandler> make_handler(const std::string & handler)
     {
         if (handler == "dummy")
             return make_shared_ptr(new DummyAccountsHandler);
@@ -56,13 +56,13 @@ namespace
             throw AccountsRepositoryConfigurationError("Unknown accounts handler '" + handler + "'");
     }
 
-    std::tr1::shared_ptr<AccountsRepositoryStore>
+    std::shared_ptr<AccountsRepositoryStore>
     make_store(const AccountsRepository * const repo, const AccountsRepositoryParams & p)
     {
         return make_shared_ptr(new AccountsRepositoryStore(p.environment(), repo, false));
     }
 
-    std::tr1::shared_ptr<AccountsRepositoryStore>
+    std::shared_ptr<AccountsRepositoryStore>
     make_installed_store(const AccountsRepository * const repo, const InstalledAccountsRepositoryParams & p)
     {
         return make_shared_ptr(new AccountsRepositoryStore(p.environment(), repo, true));
@@ -74,21 +74,21 @@ namespace paludis
     template <>
     struct Implementation<AccountsRepository>
     {
-        const std::tr1::shared_ptr<const AccountsRepositoryParams> params_if_not_installed;
-        const std::tr1::shared_ptr<const InstalledAccountsRepositoryParams> params_if_installed;
-        const std::tr1::shared_ptr<AccountsHandler> handler_if_installed;
+        const std::shared_ptr<const AccountsRepositoryParams> params_if_not_installed;
+        const std::shared_ptr<const InstalledAccountsRepositoryParams> params_if_installed;
+        const std::shared_ptr<AccountsHandler> handler_if_installed;
 
-        const std::tr1::shared_ptr<LiteralMetadataValueKey<std::string> > format_key;
-        const std::tr1::shared_ptr<LiteralMetadataValueKey<std::string> > handler_key;
-        const std::tr1::shared_ptr<LiteralMetadataValueKey<FSEntry> > installed_root_key;
+        const std::shared_ptr<LiteralMetadataValueKey<std::string> > format_key;
+        const std::shared_ptr<LiteralMetadataValueKey<std::string> > handler_key;
+        const std::shared_ptr<LiteralMetadataValueKey<FSEntry> > installed_root_key;
 
-        const ActiveObjectPtr<DeferredConstructionPtr<std::tr1::shared_ptr<AccountsRepositoryStore> > > store;
+        const ActiveObjectPtr<DeferredConstructionPtr<std::shared_ptr<AccountsRepositoryStore> > > store;
 
         Implementation(AccountsRepository * const repo, const AccountsRepositoryParams & p) :
             params_if_not_installed(new AccountsRepositoryParams(p)),
             format_key(new LiteralMetadataValueKey<std::string> ("format", "format", mkt_significant, "accounts")),
-            store(DeferredConstructionPtr<std::tr1::shared_ptr<AccountsRepositoryStore> > (
-                        std::tr1::bind(&make_store, repo, std::tr1::cref(*params_if_not_installed))))
+            store(DeferredConstructionPtr<std::shared_ptr<AccountsRepositoryStore> > (
+                        std::bind(&make_store, repo, std::cref(*params_if_not_installed))))
         {
         }
 
@@ -98,8 +98,8 @@ namespace paludis
             format_key(new LiteralMetadataValueKey<std::string> ("format", "format", mkt_significant, "installed-accounts")),
             handler_key(new LiteralMetadataValueKey<std::string> ("handler", "handler", mkt_normal, p.handler())),
             installed_root_key(new LiteralMetadataValueKey<FSEntry>("root", "root", mkt_normal, p.root())),
-            store(DeferredConstructionPtr<std::tr1::shared_ptr<AccountsRepositoryStore> > (
-                        std::tr1::bind(&make_installed_store, repo, std::tr1::cref(*params_if_installed))))
+            store(DeferredConstructionPtr<std::shared_ptr<AccountsRepositoryStore> > (
+                        std::bind(&make_installed_store, repo, std::cref(*params_if_installed))))
         {
         }
     };
@@ -160,10 +160,10 @@ AccountsRepository::~AccountsRepository()
 {
 }
 
-std::tr1::shared_ptr<Repository>
+std::shared_ptr<Repository>
 AccountsRepository::repository_factory_create(
         Environment * const env,
-        const std::tr1::function<std::string (const std::string &)> & f)
+        const std::function<std::string (const std::string &)> & f)
 {
     Context context("When making accounts repository from repo_file '" + f("repo_file") + "':");
 
@@ -171,17 +171,17 @@ AccountsRepository::repository_factory_create(
     if (name_str.empty())
         name_str = "accounts";
 
-    return std::tr1::shared_ptr<AccountsRepository>(new AccountsRepository(
+    return std::shared_ptr<AccountsRepository>(new AccountsRepository(
                 make_named_values<AccountsRepositoryParams>(
                     n::environment() = env,
                     n::name() = RepositoryName(name_str)
                 )));
 }
 
-std::tr1::shared_ptr<Repository>
+std::shared_ptr<Repository>
 AccountsRepository::repository_factory_installed_create(
         Environment * const env,
-        const std::tr1::function<std::string (const std::string &)> & f)
+        const std::function<std::string (const std::string &)> & f)
 {
     Context context("When making accounts repository from repo_file '" + f("repo_file") + "':");
 
@@ -200,7 +200,7 @@ AccountsRepository::repository_factory_installed_create(
     if (root_str != "/")
         throw AccountsRepositoryConfigurationError("Values other than '/' for 'root' not yet supported");
 
-    return std::tr1::shared_ptr<AccountsRepository>(new AccountsRepository(
+    return std::shared_ptr<AccountsRepository>(new AccountsRepository(
                 make_named_values<InstalledAccountsRepositoryParams>(
                     n::environment() = env,
                     n::handler() = handler,
@@ -212,7 +212,7 @@ AccountsRepository::repository_factory_installed_create(
 RepositoryName
 AccountsRepository::repository_factory_name(
         const Environment * const,
-        const std::tr1::function<std::string (const std::string &)> & f)
+        const std::function<std::string (const std::string &)> & f)
 {
     if (f("name").empty())
         return RepositoryName("accounts");
@@ -223,7 +223,7 @@ AccountsRepository::repository_factory_name(
 RepositoryName
 AccountsRepository::repository_factory_installed_name(
         const Environment * const,
-        const std::tr1::function<std::string (const std::string &)> & f)
+        const std::function<std::string (const std::string &)> & f)
 {
     if (f("name").empty())
         return RepositoryName("installed-accounts");
@@ -231,41 +231,41 @@ AccountsRepository::repository_factory_installed_name(
         return RepositoryName(f("name"));
 }
 
-std::tr1::shared_ptr<const RepositoryNameSet>
+std::shared_ptr<const RepositoryNameSet>
 AccountsRepository::repository_factory_dependencies(
         const Environment * const,
-        const std::tr1::function<std::string (const std::string &)> &)
+        const std::function<std::string (const std::string &)> &)
 {
     return make_shared_ptr(new RepositoryNameSet);
 }
 
-std::tr1::shared_ptr<const RepositoryNameSet>
+std::shared_ptr<const RepositoryNameSet>
 AccountsRepository::repository_factory_installed_dependencies(
         const Environment * const,
-        const std::tr1::function<std::string (const std::string &)> &)
+        const std::function<std::string (const std::string &)> &)
 {
     return make_shared_ptr(new RepositoryNameSet);
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataValueKey<std::string> >
 AccountsRepository::format_key() const
 {
     return _imp->format_key;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSEntry> >
 AccountsRepository::location_key() const
 {
     return make_null_shared_ptr();
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSEntry> >
 AccountsRepository::installed_root_key() const
 {
     return _imp->installed_root_key;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataValueKey<std::string> >
 AccountsRepository::sync_host_key() const
 {
     return make_null_shared_ptr();
@@ -309,31 +309,31 @@ AccountsRepository::has_package_named(const QualifiedPackageName & q) const
     return _imp->store->has_package_named(q);
 }
 
-std::tr1::shared_ptr<const CategoryNamePartSet>
+std::shared_ptr<const CategoryNamePartSet>
 AccountsRepository::category_names() const
 {
     return _imp->store->category_names();
 }
 
-std::tr1::shared_ptr<const CategoryNamePartSet>
+std::shared_ptr<const CategoryNamePartSet>
 AccountsRepository::unimportant_category_names() const
 {
     return _imp->store->unimportant_category_names();
 }
 
-std::tr1::shared_ptr<const CategoryNamePartSet>
+std::shared_ptr<const CategoryNamePartSet>
 AccountsRepository::category_names_containing_package(const PackageNamePart & p) const
 {
     return Repository::category_names_containing_package(p);
 }
 
-std::tr1::shared_ptr<const QualifiedPackageNameSet>
+std::shared_ptr<const QualifiedPackageNameSet>
 AccountsRepository::package_names(const CategoryNamePart & c) const
 {
     return _imp->store->package_names(c);
 }
 
-std::tr1::shared_ptr<const PackageIDSequence>
+std::shared_ptr<const PackageIDSequence>
 AccountsRepository::package_ids(const QualifiedPackageName & p) const
 {
     return _imp->store->package_ids(p);
@@ -447,12 +447,12 @@ AccountsRepository::perform_hook(const Hook &)
 }
 
 bool
-AccountsRepository::sync(const std::tr1::shared_ptr<OutputManager> &) const
+AccountsRepository::sync(const std::shared_ptr<OutputManager> &) const
 {
     return false;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataValueKey<std::string> >
 AccountsRepository::accept_keywords_key() const
 {
     return make_null_shared_ptr();

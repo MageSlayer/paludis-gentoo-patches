@@ -28,8 +28,8 @@
 #include <paludis/util/no_type.hh>
 #include <paludis/util/singleton.hh>
 #include <paludis/environment-fwd.hh>
-#include <tr1/memory>
-#include <tr1/functional>
+#include <memory>
+#include <functional>
 
 namespace paludis
 {
@@ -54,7 +54,7 @@ namespace paludis
             ~EnvironmentFactory();
 
         public:
-            typedef std::tr1::function<const std::tr1::shared_ptr<Environment>(const std::string &)> CreateFunction;
+            typedef std::function<const std::shared_ptr<Environment>(const std::string &)> CreateFunction;
 
             /**
              * Create an Environment subclass from the specified spec.
@@ -70,7 +70,7 @@ namespace paludis
              *     the supplied string is taken as env (this includes an
              *     empty string).
              */
-            const std::tr1::shared_ptr<Environment> create(const std::string & spec) const
+            const std::shared_ptr<Environment> create(const std::string & spec) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
@@ -82,7 +82,7 @@ namespace paludis
              * \param create_function is used to implement EnvironmentFactory::create.
              */
             void add_environment_format(
-                    const std::tr1::shared_ptr<const Set<std::string> > & formats,
+                    const std::shared_ptr<const Set<std::string> > & formats,
                     const CreateFunction & create_function
                     );
     };

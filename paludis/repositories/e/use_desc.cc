@@ -31,12 +31,12 @@
 #include <paludis/util/hashes.hh>
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/choice.hh>
-#include <tr1/unordered_map>
+#include <unordered_map>
 
 using namespace paludis;
 
 template class Sequence<UseDescFileInfo>;
-typedef std::tr1::unordered_map<std::pair<ChoicePrefixName, UnprefixedChoiceName>, std::string,
+typedef std::unordered_map<std::pair<ChoicePrefixName, UnprefixedChoiceName>, std::string,
         Hash<std::pair<ChoicePrefixName, UnprefixedChoiceName> > > UseDescs;
 
 namespace paludis
@@ -44,7 +44,7 @@ namespace paludis
     template<>
     struct Implementation<UseDesc>
     {
-        std::tr1::unordered_map<QualifiedPackageName, UseDescs, Hash<QualifiedPackageName> > local_descs;
+        std::unordered_map<QualifiedPackageName, UseDescs, Hash<QualifiedPackageName> > local_descs;
         UseDescs global_descs;
 
         void add(const FSEntry & f, const ChoicePrefixName & prefix)
@@ -69,7 +69,7 @@ namespace paludis
             }
         }
 
-        Implementation(const std::tr1::shared_ptr<const UseDescFileInfoSequence> & f)
+        Implementation(const std::shared_ptr<const UseDescFileInfoSequence> & f)
         {
             for (UseDescFileInfoSequence::ConstIterator ff(f->begin()), ff_end(f->end()) ;
                     ff != ff_end ; ++ff)
@@ -78,7 +78,7 @@ namespace paludis
     };
 }
 
-UseDesc::UseDesc(const std::tr1::shared_ptr<const UseDescFileInfoSequence> & f) :
+UseDesc::UseDesc(const std::shared_ptr<const UseDescFileInfoSequence> & f) :
     PrivateImplementationPattern<UseDesc>(new Implementation<UseDesc>(f))
 {
 }
@@ -94,7 +94,7 @@ UseDesc::describe(
         const UnprefixedChoiceName & flag
         ) const
 {
-    std::tr1::unordered_map<QualifiedPackageName, UseDescs, Hash<QualifiedPackageName> >::const_iterator i(_imp->local_descs.find(id));
+    std::unordered_map<QualifiedPackageName, UseDescs, Hash<QualifiedPackageName> >::const_iterator i(_imp->local_descs.find(id));
     if (i != _imp->local_descs.end())
     {
         UseDescs::const_iterator j(i->second.find(std::make_pair(prefix, flag)));

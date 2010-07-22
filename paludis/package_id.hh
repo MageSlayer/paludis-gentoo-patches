@@ -40,7 +40,7 @@
 #include <paludis/version_spec-fwd.hh>
 #include <paludis/choice-fwd.hh>
 
-#include <tr1/memory>
+#include <memory>
 
 /** \file
  * Declarations for PackageID classes.
@@ -102,14 +102,14 @@ namespace paludis
             /**
              * Add a new Mask.
              */
-            virtual void add_mask(const std::tr1::shared_ptr<const Mask> &) const;
+            virtual void add_mask(const std::shared_ptr<const Mask> &) const;
 
             /**
              * Add a new OverriddenMask.
              *
              * \since 0.34
              */
-            virtual void add_overridden_mask(const std::tr1::shared_ptr<const OverriddenMask> &) const;
+            virtual void add_overridden_mask(const std::shared_ptr<const OverriddenMask> &) const;
 
             /**
              * This method will be called before any of the mask iteration
@@ -160,7 +160,7 @@ namespace paludis
             /**
              * What is our owning repository?
              */
-            virtual const std::tr1::shared_ptr<const Repository> repository() const = 0;
+            virtual const std::shared_ptr<const Repository> repository() const = 0;
 
             /**
              * Return a PackageDepSpec that uniquely identifies us.
@@ -183,37 +183,37 @@ namespace paludis
              *
              * \since 0.36
              */
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<SlotName> > slot_key() const = 0;
+            virtual const std::shared_ptr<const MetadataValueKey<SlotName> > slot_key() const = 0;
 
             /**
              * The virtual_for_key, if non-zero, indicates that we are an
              * (old-style) virtual for another package. This affects dependency
              * resolution.
              */
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > > virtual_for_key() const = 0;
+            virtual const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > > virtual_for_key() const = 0;
 
             /**
              * The keywords_key, if non-zero, is used by FindUnusedPackagesTask
              * to determine whether a package is unused.
              */
-            virtual const std::tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> > keywords_key() const = 0;
+            virtual const std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> > keywords_key() const = 0;
 
             /**
              * The provide_key, if non-zero, indicates that a package provides
              * certain old-style virtuals. This affects dependency resolution.
              */
-            virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> > provide_key() const = 0;
+            virtual const std::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> > provide_key() const = 0;
 
             /**
              * The contains_key, if non-zero, indicates that a package contains
              * other packages. This affects dependency resolution. */
-            virtual const std::tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> > contains_key() const = 0;
+            virtual const std::shared_ptr<const MetadataCollectionKey<PackageIDSequence> > contains_key() const = 0;
 
             /**
              * The contained_in_key, if non-zero, indicates that a package is
              * contained in another package. This affects dependency resolution.
              */
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > > contained_in_key() const = 0;
+            virtual const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > > contained_in_key() const = 0;
 
             /**
              * The dependencies_key, if non-zero, provides all of a package's
@@ -228,54 +228,54 @@ namespace paludis
              *
              * \since 0.41
              */
-            virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > dependencies_key() const = 0;
+            virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > dependencies_key() const = 0;
 
             /**
              * The build_dependencies_key, if non-zero, indicates a package's
              * build-time dependencies.
              */
-            virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_key() const = 0;
+            virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_key() const = 0;
 
             /**
              * The run_dependencies_key, if non-zero, indicates a package's
              * run-time dependencies.
              */
-            virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies_key() const = 0;
+            virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies_key() const = 0;
 
             /**
              * The post_dependencies_key, if non-zero, indicates a package's
              * post-merge dependencies.
              */
-            virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > post_dependencies_key() const = 0;
+            virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > post_dependencies_key() const = 0;
 
             /**
              * The suggested_dependencies_key, if non-zero, indicates a package's
              * suggested post-merge dependencies.
              */
-            virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > suggested_dependencies_key() const = 0;
+            virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > suggested_dependencies_key() const = 0;
 
             /**
              * The fetches_key, if non-zero, indicates files that have to be fetched
              * in order to install a package.
              */
-            virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> > fetches_key() const = 0;
+            virtual const std::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> > fetches_key() const = 0;
 
             /**
              * The homepage_key, if non-zero, describes a package's homepages.
              */
-            virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > homepage_key() const = 0;
+            virtual const std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > homepage_key() const = 0;
 
             /**
              * The short_description_key, if non-zero, provides a short (no more
              * than a few hundred characters) description of a package.
              */
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > short_description_key() const = 0;
+            virtual const std::shared_ptr<const MetadataValueKey<std::string> > short_description_key() const = 0;
 
             /**
              * The long_description_key, if non-zero, provides a long
              * description of a package.
              */
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > long_description_key() const = 0;
+            virtual const std::shared_ptr<const MetadataValueKey<std::string> > long_description_key() const = 0;
 
             /**
              * The contents_key, if non-zero, contains the contents of a
@@ -283,35 +283,35 @@ namespace paludis
              * for installable packages, this means the files that will be
              * installed (if known, which it may be for some binary packages).
              */
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Contents> > > contents_key() const = 0;
+            virtual const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Contents> > > contents_key() const = 0;
 
             /**
              * The installed_time_key, if non-zero, contains the time a package
              * was installed. It affects dependency resolution if DepList is
              * using dl_reinstall_scm_daily or dl_reinstall_scm_weekly.
              */
-            virtual const std::tr1::shared_ptr<const MetadataTimeKey> installed_time_key() const = 0;
+            virtual const std::shared_ptr<const MetadataTimeKey> installed_time_key() const = 0;
 
             /**
              * The from_repositories key, if non-zero, contains the set of repositories
              * that the ID is 'from'. An ID can be 'from' multiple repositories if, for
              * example, it was built via a binary package.
              */
-            virtual const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > from_repositories_key() const = 0;
+            virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > from_repositories_key() const = 0;
 
             /**
              * The fs_location_key, if non-zero, indicates the filesystem
              * location (for example, the ebuild file or VDB directory) that
              * best describes the location of a PackageID.
              */
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > fs_location_key() const = 0;
+            virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > fs_location_key() const = 0;
 
             /**
              * The choices_key, if non-zero, contains zero or more
-             * MetadataValueKey<std::tr1::shared_ptr<const Choice> > child
+             * MetadataValueKey<std::shared_ptr<const Choice> > child
              * keys holding choice information for this ID.
              */
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > > choices_key() const = 0;
+            virtual const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Choices> > > choices_key() const = 0;
 
             /**
              * The behaviours_key may contain strings indicating that the PackageID
@@ -324,7 +324,7 @@ namespace paludis
              *
              * \since 0.48
              */
-            virtual const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > behaviours_key() const = 0;
+            virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > behaviours_key() const = 0;
 
             ///\}
 
@@ -353,7 +353,7 @@ namespace paludis
             ///\{
 
             struct MasksConstIteratorTag;
-            typedef WrappedForwardIterator<MasksConstIteratorTag, const std::tr1::shared_ptr<const Mask> > MasksConstIterator;
+            typedef WrappedForwardIterator<MasksConstIteratorTag, const std::shared_ptr<const Mask> > MasksConstIterator;
 
             MasksConstIterator begin_masks() const PALUDIS_ATTRIBUTE((warn_unused_result));
             MasksConstIterator end_masks() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -378,7 +378,7 @@ namespace paludis
              * This method may be used by Environment implementations to apply a "we don't
              * want packages that break Portage" mask.
              */
-            virtual std::tr1::shared_ptr<const Set<std::string> > breaks_portage() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+            virtual std::shared_ptr<const Set<std::string> > breaks_portage() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}
 
@@ -387,7 +387,7 @@ namespace paludis
             ///\since 0.34
 
             struct OverriddenMasksConstIteratorTag;
-            typedef WrappedForwardIterator<OverriddenMasksConstIteratorTag, const std::tr1::shared_ptr<const OverriddenMask> > OverriddenMasksConstIterator;
+            typedef WrappedForwardIterator<OverriddenMasksConstIteratorTag, const std::shared_ptr<const OverriddenMask> > OverriddenMasksConstIterator;
 
             OverriddenMasksConstIterator begin_overridden_masks() const PALUDIS_ATTRIBUTE((warn_unused_result));
             OverriddenMasksConstIterator end_overridden_masks() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -456,8 +456,8 @@ namespace paludis
             /**
              * Perform an arbitrary less-than comparison.
              */
-            bool operator() (const std::tr1::shared_ptr<const PackageID> &,
-                    const std::tr1::shared_ptr<const PackageID> &) const;
+            bool operator() (const std::shared_ptr<const PackageID> &,
+                    const std::shared_ptr<const PackageID> &) const;
     };
 
     /**
@@ -493,12 +493,12 @@ namespace paludis
             /**
              * Perform the less-than comparison.
              */
-            bool operator() (const std::tr1::shared_ptr<const PackageID> &,
-                    const std::tr1::shared_ptr<const PackageID> &) const;
+            bool operator() (const std::shared_ptr<const PackageID> &,
+                    const std::shared_ptr<const PackageID> &) const;
     };
 
-    extern template class WrappedForwardIterator<PackageID::MasksConstIteratorTag, const std::tr1::shared_ptr<const Mask> >;
-    extern template class WrappedForwardIterator<PackageID::OverriddenMasksConstIteratorTag, const std::tr1::shared_ptr<const OverriddenMask> >;
+    extern template class WrappedForwardIterator<PackageID::MasksConstIteratorTag, const std::shared_ptr<const Mask> >;
+    extern template class WrappedForwardIterator<PackageID::OverriddenMasksConstIteratorTag, const std::shared_ptr<const OverriddenMask> >;
 }
 
 #endif

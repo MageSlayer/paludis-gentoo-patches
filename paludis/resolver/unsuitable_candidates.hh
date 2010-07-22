@@ -38,8 +38,8 @@ namespace paludis
     {
         struct UnsuitableCandidate
         {
-            NamedValue<n::package_id, std::tr1::shared_ptr<const PackageID> > package_id;
-            NamedValue<n::unmet_constraints, std::tr1::shared_ptr<const Constraints> > unmet_constraints;
+            NamedValue<n::package_id, std::shared_ptr<const PackageID> > package_id;
+            NamedValue<n::unmet_constraints, std::shared_ptr<const Constraints> > unmet_constraints;
 
             static UnsuitableCandidate deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
             void serialise(Serialiser &) const;

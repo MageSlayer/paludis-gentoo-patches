@@ -23,7 +23,7 @@
 #include <paludis/util/map-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/exception.hh>
-#include <tr1/memory>
+#include <memory>
 #include <string>
 
 namespace paludis
@@ -39,7 +39,7 @@ namespace paludis
 
         std::string format_string(
                 const std::string &,
-                const std::tr1::shared_ptr<Map<char, std::string> > &
+                const std::shared_ptr<Map<char, std::string> > &
                 ) PALUDIS_VISIBLE PALUDIS_ATTRIBUTE((warn_unused_result));
     }
 }

@@ -27,7 +27,7 @@
 #include <paludis/util/named_value.hh>
 #include <paludis/merger_entry_type.hh>
 #include <paludis/contents-fwd.hh>
-#include <tr1/functional>
+#include <functional>
 
 /** \file
  * Declarations for the Unmerger class, which can be used by Repository
@@ -62,7 +62,7 @@ namespace paludis
     struct UnmergerOptions
     {
         NamedValue<n::environment, const Environment *> environment;
-        NamedValue<n::ignore, const std::tr1::function<bool (const FSEntry &)> > ignore;
+        NamedValue<n::ignore, const std::function<bool (const FSEntry &)> > ignore;
         NamedValue<n::root, FSEntry> root;
     };
 
@@ -105,7 +105,7 @@ namespace paludis
             /**
              * Add entry to the unmerge set.
              */
-            void add_unmerge_entry(const EntryType, const std::tr1::shared_ptr<const ContentsEntry> &);
+            void add_unmerge_entry(const EntryType, const std::shared_ptr<const ContentsEntry> &);
 
             /**
              * Populate the unmerge set.
@@ -120,30 +120,30 @@ namespace paludis
             ///\name Unmerge operations
             ///\{
 
-            virtual void unmerge_file(const std::tr1::shared_ptr<const ContentsEntry> &) const;
-            virtual void unmerge_dir(const std::tr1::shared_ptr<const ContentsEntry> &) const;
-            virtual void unmerge_sym(const std::tr1::shared_ptr<const ContentsEntry> &) const;
-            virtual void unmerge_misc(const std::tr1::shared_ptr<const ContentsEntry> &) const;
+            virtual void unmerge_file(const std::shared_ptr<const ContentsEntry> &) const;
+            virtual void unmerge_dir(const std::shared_ptr<const ContentsEntry> &) const;
+            virtual void unmerge_sym(const std::shared_ptr<const ContentsEntry> &) const;
+            virtual void unmerge_misc(const std::shared_ptr<const ContentsEntry> &) const;
 
             ///\}
 
             ///\name Check operations
             ///\{
 
-            virtual bool check_file(const std::tr1::shared_ptr<const ContentsEntry> &) const;
-            virtual bool check_dir(const std::tr1::shared_ptr<const ContentsEntry> &) const;
-            virtual bool check_sym(const std::tr1::shared_ptr<const ContentsEntry> &) const;
-            virtual bool check_misc(const std::tr1::shared_ptr<const ContentsEntry> &) const;
+            virtual bool check_file(const std::shared_ptr<const ContentsEntry> &) const;
+            virtual bool check_dir(const std::shared_ptr<const ContentsEntry> &) const;
+            virtual bool check_sym(const std::shared_ptr<const ContentsEntry> &) const;
+            virtual bool check_misc(const std::shared_ptr<const ContentsEntry> &) const;
 
             ///\}
 
             ///\name Unlink operations
             ///\{
 
-            virtual void unlink_file(FSEntry, const std::tr1::shared_ptr<const ContentsEntry> &) const;
-            virtual void unlink_dir(FSEntry, const std::tr1::shared_ptr<const ContentsEntry> &) const;
-            virtual void unlink_sym(FSEntry, const std::tr1::shared_ptr<const ContentsEntry> &) const;
-            virtual void unlink_misc(FSEntry, const std::tr1::shared_ptr<const ContentsEntry> &) const;
+            virtual void unlink_file(FSEntry, const std::shared_ptr<const ContentsEntry> &) const;
+            virtual void unlink_dir(FSEntry, const std::shared_ptr<const ContentsEntry> &) const;
+            virtual void unlink_sym(FSEntry, const std::shared_ptr<const ContentsEntry> &) const;
+            virtual void unlink_misc(FSEntry, const std::shared_ptr<const ContentsEntry> &) const;
 
             ///\}
 

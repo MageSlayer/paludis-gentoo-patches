@@ -25,7 +25,7 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/sequence.hh>
-#include <tr1/memory>
+#include <memory>
 #include <iosfwd>
 #include <string>
 
@@ -141,7 +141,7 @@ namespace paludis
                  *
                  * \since 0.47
                  */
-                const std::tr1::shared_ptr<const Sequence<std::string> > separate_after_dashes_args() const
+                const std::shared_ptr<const Sequence<std::string> > separate_after_dashes_args() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 ///\}
@@ -308,7 +308,7 @@ namespace paludis
                  * a prefix to export our command line via the environment.
                  */
                 void run(
-                        const std::tr1::shared_ptr<const Sequence<std::string> > &,
+                        const std::shared_ptr<const Sequence<std::string> > &,
                         const std::string & client,
                         const std::string & env_var,
                         const std::string & env_prefix,

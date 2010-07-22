@@ -39,8 +39,8 @@
 #include <paludis/package_id-fwd.hh>
 #include <paludis/environment-fwd.hh>
 
-#include <tr1/memory>
-#include <tr1/functional>
+#include <memory>
+#include <functional>
 
 /** \file
  * Declarations for dependency spec classes.
@@ -90,13 +90,13 @@ namespace paludis
             /**
              * The annotations_key, if non-zero, contains any annotations.
              */
-            const std::tr1::shared_ptr<const MetadataSectionKey> annotations_key() const
+            const std::shared_ptr<const MetadataSectionKey> annotations_key() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Change the annotations key.
              */
-            void set_annotations_key(const std::tr1::shared_ptr<const MetadataSectionKey> &);
+            void set_annotations_key(const std::shared_ptr<const MetadataSectionKey> &);
 
             ///\}
     };
@@ -121,7 +121,7 @@ namespace paludis
 
             ///\}
 
-            virtual std::tr1::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual std::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -145,7 +145,7 @@ namespace paludis
 
             ///\}
 
-            virtual std::tr1::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual std::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -176,7 +176,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            ConditionalDepSpec(const std::tr1::shared_ptr<const ConditionalDepSpecData> &);
+            ConditionalDepSpec(const std::shared_ptr<const ConditionalDepSpecData> &);
             ConditionalDepSpec(const ConditionalDepSpec &);
             ~ConditionalDepSpec();
 
@@ -202,7 +202,7 @@ namespace paludis
              * This shouldn't generally be used by clients, but some repositories use it
              * to gain access to additional data stored in the ConditionalDepSpecData.
              */
-            const std::tr1::shared_ptr<const ConditionalDepSpecData> data() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::shared_ptr<const ConditionalDepSpecData> data() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -372,7 +372,7 @@ namespace paludis
             /**
              * Set our slot requirements, return ourself.
              */
-            PartiallyMadePackageDepSpec & slot_requirement(const std::tr1::shared_ptr<const SlotRequirement> &);
+            PartiallyMadePackageDepSpec & slot_requirement(const std::shared_ptr<const SlotRequirement> &);
 
             /**
              * Set our in-repository requirement, return ourself.
@@ -429,7 +429,7 @@ namespace paludis
              * Add an additional requirement, return ourself.
              */
             PartiallyMadePackageDepSpec & additional_requirement(
-                    const std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> &);
+                    const std::shared_ptr<const AdditionalPackageDepSpecRequirement> &);
 
             /**
              * Clear additional requirements, return ourself.
@@ -442,7 +442,7 @@ namespace paludis
              * Add annotations
              */
             PartiallyMadePackageDepSpec & annotations(
-                    const std::tr1::shared_ptr<const MetadataSectionKey> &);
+                    const std::shared_ptr<const MetadataSectionKey> &);
 
             /**
              * Turn ourselves into a PackageDepSpec.
@@ -502,7 +502,7 @@ namespace paludis
              *
              * \since 0.26
              */
-            PackageDepSpec(const std::tr1::shared_ptr<const PackageDepSpecData> &);
+            PackageDepSpec(const std::shared_ptr<const PackageDepSpecData> &);
 
             PackageDepSpec(const PackageDepSpec &);
 
@@ -513,22 +513,22 @@ namespace paludis
             /**
              * Fetch the package name (may be a zero pointer).
              */
-            std::tr1::shared_ptr<const QualifiedPackageName> package_ptr() const;
+            std::shared_ptr<const QualifiedPackageName> package_ptr() const;
 
             /**
              * Fetch the package name part, if wildcarded, or a zero pointer otherwise.
              */
-            std::tr1::shared_ptr<const PackageNamePart> package_name_part_ptr() const;
+            std::shared_ptr<const PackageNamePart> package_name_part_ptr() const;
 
             /**
              * Fetch the category name part, if wildcarded, or a zero pointer otherwise.
              */
-            std::tr1::shared_ptr<const CategoryNamePart> category_name_part_ptr() const;
+            std::shared_ptr<const CategoryNamePart> category_name_part_ptr() const;
 
             /**
              * Fetch the version requirements (may be a zero pointer).
              */
-            std::tr1::shared_ptr<const VersionRequirements> version_requirements_ptr() const;
+            std::shared_ptr<const VersionRequirements> version_requirements_ptr() const;
 
             /**
              * Fetch the version requirements mode.
@@ -538,58 +538,58 @@ namespace paludis
             /**
              * Fetch the slot requirement (may be a zero pointer).
              */
-            std::tr1::shared_ptr<const SlotRequirement> slot_requirement_ptr() const;
+            std::shared_ptr<const SlotRequirement> slot_requirement_ptr() const;
 
             /**
              * Fetch the in-repository requirement (may be a zero pointer).
              */
-            std::tr1::shared_ptr<const RepositoryName> in_repository_ptr() const;
+            std::shared_ptr<const RepositoryName> in_repository_ptr() const;
 
             /**
              * Fetch the installable-to-repository requirement (may be a zero pointer).
              *
              * \since 0.32
              */
-            std::tr1::shared_ptr<const InstallableToRepository> installable_to_repository_ptr() const;
+            std::shared_ptr<const InstallableToRepository> installable_to_repository_ptr() const;
 
             /**
              * Fetch the from-repository requirement (may be a zero pointer).
              */
-            std::tr1::shared_ptr<const RepositoryName> from_repository_ptr() const;
+            std::shared_ptr<const RepositoryName> from_repository_ptr() const;
 
             /**
              * Fetch the installed-at-path requirement (may be a zero pointer).
              *
              * \since 0.32
              */
-            std::tr1::shared_ptr<const FSEntry> installed_at_path_ptr() const;
+            std::shared_ptr<const FSEntry> installed_at_path_ptr() const;
 
             /**
              * Fetch the installable-to-path requirement (may be a zero pointer).
              *
              * \since 0.32
              */
-            std::tr1::shared_ptr<const InstallableToPath> installable_to_path_ptr() const;
+            std::shared_ptr<const InstallableToPath> installable_to_path_ptr() const;
 
             /**
              * Fetch any additional requirements (may be a zero pointer).
              */
-            std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements_ptr() const;
+            std::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements_ptr() const;
 
             /**
              * Fetch our tag.
              */
-            std::tr1::shared_ptr<const DepTag> tag() const;
+            std::shared_ptr<const DepTag> tag() const;
 
             /**
              * Set our tag.
              */
-            void set_tag(const std::tr1::shared_ptr<const DepTag> & s);
+            void set_tag(const std::shared_ptr<const DepTag> & s);
 
             /**
              * Access to our data.
              */
-            std::tr1::shared_ptr<const PackageDepSpecData> data() const;
+            std::shared_ptr<const PackageDepSpecData> data() const;
     };
 
     /**
@@ -616,22 +616,22 @@ namespace paludis
             /**
              * Fetch the package name (may be a zero pointer).
              */
-            virtual std::tr1::shared_ptr<const QualifiedPackageName> package_ptr() const = 0;
+            virtual std::shared_ptr<const QualifiedPackageName> package_ptr() const = 0;
 
             /**
              * Fetch the package name part, if wildcarded, or a zero pointer otherwise.
              */
-            virtual std::tr1::shared_ptr<const PackageNamePart> package_name_part_ptr() const = 0;
+            virtual std::shared_ptr<const PackageNamePart> package_name_part_ptr() const = 0;
 
             /**
              * Fetch the category name part, if wildcarded, or a zero pointer otherwise.
              */
-            virtual std::tr1::shared_ptr<const CategoryNamePart> category_name_part_ptr() const = 0;
+            virtual std::shared_ptr<const CategoryNamePart> category_name_part_ptr() const = 0;
 
             /**
              * Fetch the version requirements (may be a zero pointer).
              */
-            virtual std::tr1::shared_ptr<const VersionRequirements> version_requirements_ptr() const = 0;
+            virtual std::shared_ptr<const VersionRequirements> version_requirements_ptr() const = 0;
 
             /**
              * Fetch the version requirements mode.
@@ -641,48 +641,48 @@ namespace paludis
             /**
              * Fetch the slot name (may be a zero pointer).
              */
-            virtual std::tr1::shared_ptr<const SlotRequirement> slot_requirement_ptr() const = 0;
+            virtual std::shared_ptr<const SlotRequirement> slot_requirement_ptr() const = 0;
 
             /**
              * Fetch the from-repository requirement (may be a zero pointer).
              */
-            virtual std::tr1::shared_ptr<const RepositoryName> in_repository_ptr() const = 0;
+            virtual std::shared_ptr<const RepositoryName> in_repository_ptr() const = 0;
 
             /**
              * Fetch the installable-to-repository requirement (may be a zero pointer).
              *
              * \since 0.32
              */
-            virtual std::tr1::shared_ptr<const InstallableToRepository> installable_to_repository_ptr() const = 0;
+            virtual std::shared_ptr<const InstallableToRepository> installable_to_repository_ptr() const = 0;
 
             /**
              * Fetch the from-repository requirement (may be a zero pointer).
              */
-            virtual std::tr1::shared_ptr<const RepositoryName> from_repository_ptr() const = 0;
+            virtual std::shared_ptr<const RepositoryName> from_repository_ptr() const = 0;
 
             /**
              * Fetch the installed-at-path requirement (may be a zero pointer).
              *
              * \since 0.32
              */
-            virtual std::tr1::shared_ptr<const FSEntry> installed_at_path_ptr() const = 0;
+            virtual std::shared_ptr<const FSEntry> installed_at_path_ptr() const = 0;
 
             /**
              * Fetch the installable-to-path requirement (may be a zero pointer).
              *
              * \since 0.32
              */
-            virtual std::tr1::shared_ptr<const InstallableToPath> installable_to_path_ptr() const = 0;
+            virtual std::shared_ptr<const InstallableToPath> installable_to_path_ptr() const = 0;
 
             /**
              * Fetch the additional requirements (may be a zero pointer).
              */
-            virtual std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements_ptr() const = 0;
+            virtual std::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements_ptr() const = 0;
 
             /**
              * Fetch the annotations (may be a zero pointer).
              */
-            virtual std::tr1::shared_ptr<const MetadataSectionKey> annotations_key() const = 0;
+            virtual std::shared_ptr<const MetadataSectionKey> annotations_key() const = 0;
 
             /**
              * Fetch options if we're being used to construct a new PartiallyMadePackageDepSpec.
@@ -712,7 +712,7 @@ namespace paludis
 
             ///\}
 
-            virtual std::tr1::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual std::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -741,7 +741,7 @@ namespace paludis
             /// Fetch the name of our set.
             const SetName name() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::tr1::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual std::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -765,7 +765,7 @@ namespace paludis
 
             ///\}
 
-            virtual std::tr1::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual std::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -811,7 +811,7 @@ namespace paludis
              */
             std::string filename() const;
 
-            virtual std::tr1::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual std::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -837,7 +837,7 @@ namespace paludis
 
             ///\}
 
-            virtual std::tr1::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual std::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -904,7 +904,7 @@ namespace paludis
              */
             bool strong() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::tr1::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual std::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -940,18 +940,18 @@ namespace paludis
             ///\name Contained labels
             ///\{
 
-            void add_label(const std::tr1::shared_ptr<const Labels_> &);
+            void add_label(const std::shared_ptr<const Labels_> &);
 
             struct ConstIteratorTag;
             typedef WrappedForwardIterator<ConstIteratorTag,
-                    const std::tr1::shared_ptr<const Labels_> > ConstIterator;
+                    const std::shared_ptr<const Labels_> > ConstIterator;
 
             ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
             ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\}
 
-            virtual std::tr1::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual std::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     class PALUDIS_VISIBLE PlainTextLabelDepSpec :
@@ -969,7 +969,7 @@ namespace paludis
 
             ///\}
 
-            virtual std::tr1::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual std::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             const std::string label() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
@@ -985,9 +985,9 @@ namespace paludis
     extern template class PrivateImplementationPattern<PlainTextLabelDepSpec>;
 
     extern template class WrappedForwardIterator<DependenciesLabelsDepSpec::ConstIteratorTag,
-           const std::tr1::shared_ptr<const DependenciesLabel> >;
+           const std::shared_ptr<const DependenciesLabel> >;
     extern template class WrappedForwardIterator<URILabelsDepSpec::ConstIteratorTag,
-           const std::tr1::shared_ptr<const URILabel> >;
+           const std::shared_ptr<const URILabel> >;
 
 }
 

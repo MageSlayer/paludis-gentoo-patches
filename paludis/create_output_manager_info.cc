@@ -36,48 +36,48 @@ namespace
 {
     struct GetFlagsVisitor
     {
-        std::tr1::shared_ptr<Set<std::string> > visit(const InstallAction &) const
+        std::shared_ptr<Set<std::string> > visit(const InstallAction &) const
         {
             return make_shared_ptr(new Set<std::string>);
         }
 
-        std::tr1::shared_ptr<Set<std::string> > visit(const UninstallAction &) const
+        std::shared_ptr<Set<std::string> > visit(const UninstallAction &) const
         {
             return make_shared_ptr(new Set<std::string>);
         }
 
-        std::tr1::shared_ptr<Set<std::string> > visit(const PretendAction &) const
+        std::shared_ptr<Set<std::string> > visit(const PretendAction &) const
         {
             return make_shared_ptr(new Set<std::string>);
         }
 
-        std::tr1::shared_ptr<Set<std::string> > visit(const FetchAction & a) const
+        std::shared_ptr<Set<std::string> > visit(const FetchAction & a) const
         {
-            std::tr1::shared_ptr<Set<std::string> > result(new Set<std::string>);
+            std::shared_ptr<Set<std::string> > result(new Set<std::string>);
             if (a.options.ignore_unfetched())
                 result->insert(FetchAction::ignore_unfetched_flag_name());
             return result;
         }
 
-        std::tr1::shared_ptr<Set<std::string> > visit(const PretendFetchAction &) const
+        std::shared_ptr<Set<std::string> > visit(const PretendFetchAction &) const
         {
             return make_shared_ptr(new Set<std::string>);
         }
 
-        std::tr1::shared_ptr<Set<std::string> > visit(const ConfigAction &) const
+        std::shared_ptr<Set<std::string> > visit(const ConfigAction &) const
         {
             return make_shared_ptr(new Set<std::string>);
         }
 
-        std::tr1::shared_ptr<Set<std::string> > visit(const InfoAction &) const
+        std::shared_ptr<Set<std::string> > visit(const InfoAction &) const
         {
             return make_shared_ptr(new Set<std::string>);
         }
     };
 
-    std::tr1::shared_ptr<Set<std::string> > get_flags(const Action & a)
+    std::shared_ptr<Set<std::string> > get_flags(const Action & a)
     {
-        return a.accept_returning<std::tr1::shared_ptr<Set<std::string> > >(GetFlagsVisitor());
+        return a.accept_returning<std::shared_ptr<Set<std::string> > >(GetFlagsVisitor());
     }
 }
 
@@ -86,15 +86,15 @@ namespace paludis
     template <>
     struct Implementation<CreateOutputManagerForPackageIDActionInfo>
     {
-        const std::tr1::shared_ptr<const PackageID> id;
+        const std::shared_ptr<const PackageID> id;
         const std::string action_name;
-        const std::tr1::shared_ptr<const Set<std::string> > action_flags;
+        const std::shared_ptr<const Set<std::string> > action_flags;
         const OutputExclusivity output_exclusivity;
         const ClientOutputFeatures client_output_features;
 
-        Implementation(const std::tr1::shared_ptr<const PackageID> & i,
+        Implementation(const std::shared_ptr<const PackageID> & i,
                 const std::string & a,
-                const std::tr1::shared_ptr<const Set<std::string> > & f,
+                const std::shared_ptr<const Set<std::string> > & f,
                 const OutputExclusivity e,
                 const ClientOutputFeatures & c) :
             id(i),
@@ -122,7 +122,7 @@ namespace paludis
     };
 }
 
-const std::tr1::shared_ptr<CreateOutputManagerInfo>
+const std::shared_ptr<CreateOutputManagerInfo>
 CreateOutputManagerInfo::deserialise(Deserialisation & d)
 {
     if (d.class_name() == "CreateOutputManagerForPackageIDActionInfo")
@@ -134,7 +134,7 @@ CreateOutputManagerInfo::deserialise(Deserialisation & d)
 }
 
 CreateOutputManagerForPackageIDActionInfo::CreateOutputManagerForPackageIDActionInfo(
-        const std::tr1::shared_ptr<const PackageID> & i,
+        const std::shared_ptr<const PackageID> & i,
         const Action & a,
         const OutputExclusivity e,
         const ClientOutputFeatures & c) :
@@ -145,9 +145,9 @@ CreateOutputManagerForPackageIDActionInfo::CreateOutputManagerForPackageIDAction
 }
 
 CreateOutputManagerForPackageIDActionInfo::CreateOutputManagerForPackageIDActionInfo(
-        const std::tr1::shared_ptr<const PackageID> & i,
+        const std::shared_ptr<const PackageID> & i,
         const std::string & a,
-        const std::tr1::shared_ptr<const Set<std::string> > & f,
+        const std::shared_ptr<const Set<std::string> > & f,
         const OutputExclusivity e,
         const ClientOutputFeatures & c) :
     PrivateImplementationPattern<CreateOutputManagerForPackageIDActionInfo>(
@@ -159,7 +159,7 @@ CreateOutputManagerForPackageIDActionInfo::~CreateOutputManagerForPackageIDActio
 {
 }
 
-const std::tr1::shared_ptr<const PackageID>
+const std::shared_ptr<const PackageID>
 CreateOutputManagerForPackageIDActionInfo::package_id() const
 {
     return _imp->id;
@@ -171,7 +171,7 @@ CreateOutputManagerForPackageIDActionInfo::action_name() const
     return _imp->action_name;
 }
 
-const std::tr1::shared_ptr<const Set<std::string> >
+const std::shared_ptr<const Set<std::string> >
 CreateOutputManagerForPackageIDActionInfo::action_flags() const
 {
     return _imp->action_flags;
@@ -201,18 +201,18 @@ CreateOutputManagerForPackageIDActionInfo::serialise(Serialiser & s) const
         ;
 }
 
-const std::tr1::shared_ptr<CreateOutputManagerForPackageIDActionInfo>
+const std::shared_ptr<CreateOutputManagerForPackageIDActionInfo>
 CreateOutputManagerForPackageIDActionInfo::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "CreateOutputManagerForPackageIDActionInfo");
 
-    std::tr1::shared_ptr<Set<std::string> > action_flags(new Set<std::string>);
+    std::shared_ptr<Set<std::string> > action_flags(new Set<std::string>);
     Deserialisator vv(*v.find_remove_member("action_flags"), "c");
     for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
         action_flags->insert(vv.member<std::string>(stringify(n)));
 
     return make_shared_ptr(new CreateOutputManagerForPackageIDActionInfo(
-                v.member<std::tr1::shared_ptr<const PackageID> >("package_id"),
+                v.member<std::shared_ptr<const PackageID> >("package_id"),
                 v.member<std::string>("action_name"),
                 action_flags,
                 destringify<OutputExclusivity>(v.member<std::string>("output_exclusivity")),
@@ -259,7 +259,7 @@ CreateOutputManagerForRepositorySyncInfo::serialise(Serialiser & s) const
         ;
 }
 
-const std::tr1::shared_ptr<CreateOutputManagerForRepositorySyncInfo>
+const std::shared_ptr<CreateOutputManagerForRepositorySyncInfo>
 CreateOutputManagerForRepositorySyncInfo::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "CreateOutputManagerForRepositorySyncInfo");

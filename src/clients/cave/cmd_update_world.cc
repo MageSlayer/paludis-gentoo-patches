@@ -81,8 +81,8 @@ namespace
 
 int
 UpdateWorldCommand::run(
-        const std::tr1::shared_ptr<Environment> & env,
-        const std::tr1::shared_ptr<const Sequence<std::string > > & args
+        const std::shared_ptr<Environment> & env,
+        const std::shared_ptr<const Sequence<std::string > > & args
         )
 {
     UpdateWorldCommandLine cmdline;
@@ -151,7 +151,7 @@ UpdateWorldCommand::run(
     return EXIT_SUCCESS;
 }
 
-std::tr1::shared_ptr<args::ArgsHandler>
+std::shared_ptr<args::ArgsHandler>
 UpdateWorldCommand::make_doc_cmdline()
 {
     return make_shared_ptr(new UpdateWorldCommandLine);

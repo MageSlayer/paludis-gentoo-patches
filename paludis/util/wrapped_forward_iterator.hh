@@ -23,8 +23,8 @@
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/util/operators.hh>
 #include <paludis/util/attributes.hh>
-#include <tr1/functional>
-#include <tr1/type_traits>
+#include <functional>
+#include <type_traits>
 #include <iterator>
 
 namespace paludis
@@ -63,9 +63,9 @@ namespace paludis
             ///\name Standard library typedefs
             ///\{
 
-            typedef typename std::tr1::remove_reference<Value_>::type & value_type;
-            typedef typename std::tr1::remove_reference<Value_>::type & reference;
-            typedef typename std::tr1::remove_reference<Value_>::type * pointer;
+            typedef typename std::remove_reference<Value_>::type & value_type;
+            typedef typename std::remove_reference<Value_>::type & reference;
+            typedef typename std::remove_reference<Value_>::type * pointer;
             typedef std::ptrdiff_t difference_type;
             typedef std::forward_iterator_tag iterator_category;
 

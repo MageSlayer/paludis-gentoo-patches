@@ -52,14 +52,14 @@ namespace paludis
     {
         private:
             const std::string _t;
-            const std::tr1::shared_ptr<const PackageIDSequence> _p;
+            const std::shared_ptr<const PackageIDSequence> _p;
 
         public:
             ///\name Basic operations
             ///\{
 
             AmbiguousUnmergeTargetError(const std::string & our_target,
-                    const std::tr1::shared_ptr<const PackageIDSequence> matches) throw ();
+                    const std::shared_ptr<const PackageIDSequence> matches) throw ();
 
             ~AmbiguousUnmergeTargetError() throw ();
 
@@ -69,7 +69,7 @@ namespace paludis
             ///\{
 
             struct ConstIteratorTag;
-            typedef WrappedForwardIterator<ConstIteratorTag, const std::tr1::shared_ptr<const PackageID> > ConstIterator;
+            typedef WrappedForwardIterator<ConstIteratorTag, const std::shared_ptr<const PackageID> > ConstIterator;
             ConstIterator begin() const;
             ConstIterator end() const;
 
@@ -158,7 +158,7 @@ namespace paludis
             ///\{
 
             virtual void world_remove_set(const SetName &);
-            virtual void world_remove_packages(const std::tr1::shared_ptr<const SetSpecTree> &);
+            virtual void world_remove_packages(const std::shared_ptr<const SetSpecTree> &);
 
             ///\}
 

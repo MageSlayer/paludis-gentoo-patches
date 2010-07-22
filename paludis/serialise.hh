@@ -25,7 +25,7 @@
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/serialise-fwd.hh>
 #include <paludis/environment-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 #include <string>
 #include <ostream>
 
@@ -117,7 +117,7 @@ namespace paludis
 
             struct ConstIteratorTag;
             typedef WrappedForwardIterator<ConstIteratorTag,
-                    const std::tr1::shared_ptr<Deserialisation> > ConstIterator;
+                    const std::shared_ptr<Deserialisation> > ConstIterator;
             ConstIterator begin_children() const PALUDIS_ATTRIBUTE((warn_unused_result));
             ConstIterator end_children() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
@@ -136,13 +136,13 @@ namespace paludis
 
             template <typename T_> T_ member(const std::string & key_name);
 
-            const std::tr1::shared_ptr<Deserialisation> find_remove_member(
+            const std::shared_ptr<Deserialisation> find_remove_member(
                     const std::string &) PALUDIS_ATTRIBUTE((warn_unused_result));
 
     };
 
     template <typename T_>
-    std::tr1::shared_ptr<T_> deserialise(
+    std::shared_ptr<T_> deserialise(
             const Environment * const,
             const std::string &,
             const std::string &) PALUDIS_VISIBLE PALUDIS_ATTRIBUTE((warn_unused_result));

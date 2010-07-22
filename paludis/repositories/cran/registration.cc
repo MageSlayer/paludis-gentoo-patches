@@ -28,7 +28,7 @@ using namespace paludis;
 
 namespace
 {
-    int generic_importance(const Environment * const, const std::tr1::function<std::string (const std::string &)> & f)
+    int generic_importance(const Environment * const, const std::function<std::string (const std::string &)> & f)
     {
         if (! f("importance").empty())
             return destringify<int>(f("importance"));
@@ -47,7 +47,7 @@ namespace paludis
     template <>
     void register_repositories<repository_groups::cran>(const repository_groups::cran * const, RepositoryFactory * const factory)
     {
-        std::tr1::shared_ptr<Set<std::string> > cran_formats(new Set<std::string>);
+        std::shared_ptr<Set<std::string> > cran_formats(new Set<std::string>);
         cran_formats->insert("cran");
 
         factory->add_repository_format(
@@ -58,7 +58,7 @@ namespace paludis
                 &CRANRepository::repository_factory_dependencies
                 );
 
-        std::tr1::shared_ptr<Set<std::string> > installed_cran_formats(new Set<std::string>);
+        std::shared_ptr<Set<std::string> > installed_cran_formats(new Set<std::string>);
         installed_cran_formats->insert("installed_cran");
         installed_cran_formats->insert("installed-cran");
 

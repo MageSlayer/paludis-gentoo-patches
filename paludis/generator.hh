@@ -30,7 +30,7 @@
 #include <paludis/package_id-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/match_package-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 
 /** \file
  * Declarations for the Generator class.
@@ -58,7 +58,7 @@ namespace paludis
         private PrivateImplementationPattern<Generator>
     {
         protected:
-            Generator(const std::tr1::shared_ptr<const GeneratorHandler> &);
+            Generator(const std::shared_ptr<const GeneratorHandler> &);
 
         public:
             ///\name Basic operations
@@ -92,7 +92,7 @@ namespace paludis
              * Used by Selection subclasses to get a candidate set of
              * repositories for consideration.
              */
-            std::tr1::shared_ptr<const RepositoryNameSet> repositories(
+            std::shared_ptr<const RepositoryNameSet> repositories(
                     const Environment * const) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -100,29 +100,29 @@ namespace paludis
              * Used by Selection subclasses to get a candidate set of categories
              * for consideration.
              */
-            std::tr1::shared_ptr<const CategoryNamePartSet> categories(
+            std::shared_ptr<const CategoryNamePartSet> categories(
                     const Environment * const,
-                    const std::tr1::shared_ptr<const RepositoryNameSet> &) const
+                    const std::shared_ptr<const RepositoryNameSet> &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Used by Selection subclasses to get a candidate set of package
              * names for consideration.
              */
-            std::tr1::shared_ptr<const QualifiedPackageNameSet> packages(
+            std::shared_ptr<const QualifiedPackageNameSet> packages(
                     const Environment * const,
-                    const std::tr1::shared_ptr<const RepositoryNameSet> &,
-                    const std::tr1::shared_ptr<const CategoryNamePartSet> &) const
+                    const std::shared_ptr<const RepositoryNameSet> &,
+                    const std::shared_ptr<const CategoryNamePartSet> &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Used by Selection subclasses to get a candidate set of PackageID
              * instances for consideration.
              */
-            std::tr1::shared_ptr<const PackageIDSet> ids(
+            std::shared_ptr<const PackageIDSet> ids(
                     const Environment * const,
-                    const std::tr1::shared_ptr<const RepositoryNameSet> &,
-                    const std::tr1::shared_ptr<const QualifiedPackageNameSet> &) const
+                    const std::shared_ptr<const RepositoryNameSet> &,
+                    const std::shared_ptr<const QualifiedPackageNameSet> &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\}

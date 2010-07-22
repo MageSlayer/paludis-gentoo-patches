@@ -174,17 +174,17 @@ EInstalledRepository::is_unimportant() const
     return false;
 }
 
-std::tr1::shared_ptr<const CategoryNamePartSet>
+std::shared_ptr<const CategoryNamePartSet>
 EInstalledRepository::unimportant_category_names() const
 {
-    std::tr1::shared_ptr<CategoryNamePartSet> result(make_shared_ptr(new CategoryNamePartSet));
+    std::shared_ptr<CategoryNamePartSet> result(make_shared_ptr(new CategoryNamePartSet));
     result->insert(CategoryNamePart("virtual"));
     return result;
 }
 
 std::string
 EInstalledRepository::get_environment_variable(
-        const std::tr1::shared_ptr<const PackageID> & id,
+        const std::shared_ptr<const PackageID> & id,
         const std::string & var) const
 {
     Context context("When fetching environment variable '" + var + "' for '" +
@@ -220,7 +220,7 @@ EInstalledRepository::get_environment_variable(
 
 void
 EInstalledRepository::perform_config(
-        const std::tr1::shared_ptr<const ERepositoryID> & id,
+        const std::shared_ptr<const ERepositoryID> & id,
         const ConfigAction & a) const
 {
     Context context("When configuring '" + stringify(*id) + "':");
@@ -229,14 +229,14 @@ EInstalledRepository::perform_config(
         throw ActionFailedError("Couldn't configure '" + stringify(*id) +
                 "' because root ('" + stringify(_imp->params.root()) + "') is not a directory");
 
-    std::tr1::shared_ptr<OutputManager> output_manager(a.options.make_output_manager()(a));
+    std::shared_ptr<OutputManager> output_manager(a.options.make_output_manager()(a));
 
     FSEntry ver_dir(id->fs_location_key()->value());
 
-    std::tr1::shared_ptr<FSEntrySequence> eclassdirs(new FSEntrySequence);
+    std::shared_ptr<FSEntrySequence> eclassdirs(new FSEntrySequence);
     eclassdirs->push_back(ver_dir);
 
-    std::tr1::shared_ptr<FSEntry> load_env(new FSEntry(ver_dir / "environment.bz2"));
+    std::shared_ptr<FSEntry> load_env(new FSEntry(ver_dir / "environment.bz2"));
     EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_config());
 
     for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
@@ -275,7 +275,7 @@ EInstalledRepository::perform_config(
 
 void
 EInstalledRepository::perform_info(
-        const std::tr1::shared_ptr<const ERepositoryID> & id,
+        const std::shared_ptr<const ERepositoryID> & id,
         const InfoAction & a) const
 {
     Context context("When infoing '" + stringify(*id) + "':");
@@ -284,14 +284,14 @@ EInstalledRepository::perform_info(
         throw ActionFailedError("Couldn't info '" + stringify(*id) +
                 "' because root ('" + stringify(_imp->params.root()) + "') is not a directory");
 
-    std::tr1::shared_ptr<OutputManager> output_manager(a.options.make_output_manager()(a));
+    std::shared_ptr<OutputManager> output_manager(a.options.make_output_manager()(a));
 
     FSEntry ver_dir(id->fs_location_key()->value());
 
-    std::tr1::shared_ptr<FSEntrySequence> eclassdirs(new FSEntrySequence);
+    std::shared_ptr<FSEntrySequence> eclassdirs(new FSEntrySequence);
     eclassdirs->push_back(ver_dir);
 
-    std::tr1::shared_ptr<FSEntry> load_env(new FSEntry(ver_dir / "environment.bz2"));
+    std::shared_ptr<FSEntry> load_env(new FSEntry(ver_dir / "environment.bz2"));
 
     EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_info());
 
@@ -302,7 +302,7 @@ EInstalledRepository::perform_info(
             continue;
 
         /* try to find an info_vars file from the original repo */
-        std::tr1::shared_ptr<const Set<std::string> > i;
+        std::shared_ptr<const Set<std::string> > i;
         if (id->from_repositories_key())
         {
             for (Set<std::string>::ConstIterator o(id->from_repositories_key()->value()->begin()),
@@ -312,7 +312,7 @@ EInstalledRepository::perform_info(
                 RepositoryName rn(*o);
                 if (_imp->params.environment()->package_database()->has_repository_named(rn))
                 {
-                    const std::tr1::shared_ptr<const Repository> r(
+                    const std::shared_ptr<const Repository> r(
                             _imp->params.environment()->package_database()->fetch_repository(rn));
                     Repository::MetadataConstIterator m(r->find_metadata("info_vars"));
                     if (r->end_metadata() != m)
@@ -397,7 +397,7 @@ EInstalledRepository::populate_sets() const
 }
 
 bool
-EInstalledRepository::sync(const std::tr1::shared_ptr<OutputManager> &) const
+EInstalledRepository::sync(const std::shared_ptr<OutputManager> &) const
 {
     return false;
 }

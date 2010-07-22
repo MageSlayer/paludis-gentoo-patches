@@ -35,7 +35,7 @@ namespace paludis
     struct Implementation<FormatMessagesOutputManager>
     {
         DiscardOutputStream stream;
-        const std::tr1::shared_ptr<OutputManager> child;
+        const std::shared_ptr<OutputManager> child;
         const std::string format_debug;
         const std::string format_info;
         const std::string format_warn;
@@ -45,7 +45,7 @@ namespace paludis
         const FormatMessagesOutputManagerFormatFunction format_func;
 
         Implementation(
-                const std::tr1::shared_ptr<OutputManager> & c,
+                const std::shared_ptr<OutputManager> & c,
                 const std::string & d,
                 const std::string & i,
                 const std::string & w,
@@ -66,7 +66,7 @@ namespace paludis
 }
 
 FormatMessagesOutputManager::FormatMessagesOutputManager(
-        const std::tr1::shared_ptr<OutputManager> & child,
+        const std::shared_ptr<OutputManager> & child,
         const std::string & format_debug,
         const std::string & format_info,
         const std::string & format_warn,
@@ -151,10 +151,10 @@ FormatMessagesOutputManager::nothing_more_to_come()
     _imp->child->nothing_more_to_come();
 }
 
-const std::tr1::shared_ptr<const Set<std::string> >
+const std::shared_ptr<const Set<std::string> >
 FormatMessagesOutputManager::factory_managers()
 {
-    std::tr1::shared_ptr<Set<std::string> > result(new Set<std::string>);
+    std::shared_ptr<Set<std::string> > result(new Set<std::string>);
     result->insert("format_messages");
     return result;
 }
@@ -166,13 +166,13 @@ namespace
             const std::string & f,
             const std::string & s)
     {
-        std::tr1::shared_ptr<Map<std::string, std::string> > m(new Map<std::string, std::string>);
+        std::shared_ptr<Map<std::string, std::string> > m(new Map<std::string, std::string>);
         m->insert("message", s);
         return r(f, m);
     }
 }
 
-const std::tr1::shared_ptr<OutputManager>
+const std::shared_ptr<OutputManager>
 FormatMessagesOutputManager::factory_create(
         const OutputManagerFactory::KeyFunction & key_func,
         const OutputManagerFactory::CreateChildFunction & create_child_function,
@@ -185,10 +185,10 @@ FormatMessagesOutputManager::factory_create(
         format_error_s(key_func("format_error")),
         format_log_s(key_func("format_log"));
 
-    std::tr1::shared_ptr<OutputManager> child(create_child_function(child_s));
+    std::shared_ptr<OutputManager> child(create_child_function(child_s));
 
-    FormatMessagesOutputManagerFormatFunction format_func(std::tr1::bind(
-                &format_message, replace_vars_func, std::tr1::placeholders::_1, std::tr1::placeholders::_2));
+    FormatMessagesOutputManagerFormatFunction format_func(std::bind(
+                &format_message, replace_vars_func, std::placeholders::_1, std::placeholders::_2));
 
     return make_shared_ptr(new FormatMessagesOutputManager(
                 child, format_debug_s, format_info_s, format_warn_s, format_error_s, format_log_s, format_func));

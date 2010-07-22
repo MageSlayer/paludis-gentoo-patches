@@ -30,8 +30,8 @@
 #include <paludis/environment-fwd.hh>
 #include <paludis/repository-fwd.hh>
 #include <paludis/name-fwd.hh>
-#include <tr1/functional>
-#include <tr1/memory>
+#include <functional>
+#include <memory>
 
 namespace paludis
 {
@@ -46,24 +46,24 @@ namespace paludis
             ~RepositoryFactory();
 
         public:
-            typedef std::tr1::function<std::string (const std::string &)> KeyFunction;
+            typedef std::function<std::string (const std::string &)> KeyFunction;
 
-            typedef std::tr1::function<const std::tr1::shared_ptr<Repository>(
+            typedef std::function<const std::shared_ptr<Repository>(
                     Environment * const,
                     const KeyFunction &
                     )> CreateFunction;
 
-            typedef std::tr1::function<const std::tr1::shared_ptr<const RepositoryNameSet> (
+            typedef std::function<const std::shared_ptr<const RepositoryNameSet> (
                     const Environment * const,
                     const KeyFunction &
                     )> DependenciesFunction;
 
-            typedef std::tr1::function<const RepositoryName (
+            typedef std::function<const RepositoryName (
                     const Environment * const,
                     const KeyFunction &
                     )> NameFunction;
 
-            typedef std::tr1::function<int (
+            typedef std::function<int (
                     const Environment * const,
                     const KeyFunction &
                     )> ImportanceFunction;
@@ -86,7 +86,7 @@ namespace paludis
              * repository defined, but typically include things like 'location'
              * and 'sync'.
              */
-            const std::tr1::shared_ptr<Repository> create(
+            const std::shared_ptr<Repository> create(
                     Environment * const env,
                     const KeyFunction & key_function
                     ) const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -119,7 +119,7 @@ namespace paludis
              *
              * \see RepositoryFactory::create for parameter documentation.
              */
-            const std::tr1::shared_ptr<const RepositoryNameSet> dependencies(
+            const std::shared_ptr<const RepositoryNameSet> dependencies(
                     const Environment * const env,
                     const KeyFunction & key_function
                     ) const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -140,7 +140,7 @@ namespace paludis
              * RepositoryFactory::dependencies.
              */
             void add_repository_format(
-                    const std::tr1::shared_ptr<const Set<std::string> > & formats,
+                    const std::shared_ptr<const Set<std::string> > & formats,
                     const NameFunction & name_function,
                     const ImportanceFunction & importance_function,
                     const CreateFunction & create_function,

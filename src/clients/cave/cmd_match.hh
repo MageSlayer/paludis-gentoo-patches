@@ -24,7 +24,7 @@
 #include "cmd_search_cmdline.hh"
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/util/set-fwd.hh>
-#include <tr1/functional>
+#include <functional>
 
 namespace paludis
 {
@@ -35,17 +35,17 @@ namespace paludis
         {
             public:
                 int run(
-                        const std::tr1::shared_ptr<Environment> &,
-                        const std::tr1::shared_ptr<const Sequence<std::string > > & args
+                        const std::shared_ptr<Environment> &,
+                        const std::shared_ptr<const Sequence<std::string > > & args
                         );
 
                 bool run_hosted(
-                        const std::tr1::shared_ptr<Environment> &,
+                        const std::shared_ptr<Environment> &,
                         const SearchCommandLineMatchOptions &,
-                        const std::tr1::shared_ptr<const Set<std::string> > &,
+                        const std::shared_ptr<const Set<std::string> > &,
                         const PackageDepSpec &);
 
-                std::tr1::shared_ptr<args::ArgsHandler> make_doc_cmdline();
+                std::shared_ptr<args::ArgsHandler> make_doc_cmdline();
         };
     }
 }

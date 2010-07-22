@@ -30,7 +30,7 @@
 #include <paludis/name-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/serialise-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 
 namespace paludis
 {
@@ -46,7 +46,7 @@ namespace paludis
 
                 virtual void serialise(Serialiser &) const = 0;
 
-                static const std::tr1::shared_ptr<Reason> deserialise(
+                static const std::shared_ptr<Reason> deserialise(
                         Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
@@ -71,14 +71,14 @@ namespace paludis
         {
             public:
                 DependencyReason(
-                        const std::tr1::shared_ptr<const PackageID> & id,
+                        const std::shared_ptr<const PackageID> & id,
                         const Resolvent &,
                         const SanitisedDependency & s,
                         const bool already_met);
 
                 ~DependencyReason();
 
-                const std::tr1::shared_ptr<const PackageID> from_id() const;
+                const std::shared_ptr<const PackageID> from_id() const;
                 const Resolvent from_resolvent() const;
                 const SanitisedDependency & sanitised_dependency() const;
                 bool already_met() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -106,10 +106,10 @@ namespace paludis
             public ImplementAcceptMethods<Reason, WasUsedByReason>
         {
             public:
-                WasUsedByReason(const std::tr1::shared_ptr<const ChangeByResolventSequence> & ids);
+                WasUsedByReason(const std::shared_ptr<const ChangeByResolventSequence> & ids);
                 ~WasUsedByReason();
 
-                const std::tr1::shared_ptr<const ChangeByResolventSequence> ids_and_resolvents_being_removed() const;
+                const std::shared_ptr<const ChangeByResolventSequence> ids_and_resolvents_being_removed() const;
 
                 virtual void serialise(Serialiser &) const;
         };
@@ -122,10 +122,10 @@ namespace paludis
             public:
                 PresetReason(
                         const std::string &,
-                        const std::tr1::shared_ptr<const Reason> &);
+                        const std::shared_ptr<const Reason> &);
                 ~PresetReason();
 
-                const std::tr1::shared_ptr<const Reason> maybe_reason_for_preset() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::shared_ptr<const Reason> maybe_reason_for_preset() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 const std::string maybe_explanation() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -138,11 +138,11 @@ namespace paludis
             public ImplementAcceptMethods<Reason, SetReason>
         {
             public:
-                SetReason(const SetName &, const std::tr1::shared_ptr<const Reason> &);
+                SetReason(const SetName &, const std::shared_ptr<const Reason> &);
                 ~SetReason();
 
                 const SetName set_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                const std::tr1::shared_ptr<const Reason> reason_for_set() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::shared_ptr<const Reason> reason_for_set() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual void serialise(Serialiser &) const;
         };
@@ -153,11 +153,11 @@ namespace paludis
             public ImplementAcceptMethods<Reason, LikeOtherDestinationTypeReason>
         {
             public:
-                LikeOtherDestinationTypeReason(const Resolvent &, const std::tr1::shared_ptr<const Reason> &);
+                LikeOtherDestinationTypeReason(const Resolvent &, const std::shared_ptr<const Reason> &);
                 ~LikeOtherDestinationTypeReason();
 
                 const Resolvent other_resolvent() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                const std::tr1::shared_ptr<const Reason> reason_for_other() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::shared_ptr<const Reason> reason_for_other() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual void serialise(Serialiser &) const;
         };

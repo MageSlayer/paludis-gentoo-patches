@@ -63,7 +63,7 @@ namespace test_cases
             std::string s("one");
             TEST_CHECK_EQUAL(s, "one");
             {
-                RunOnDestruction save_s(std::tr1::bind(&std::string::clear, &s));
+                RunOnDestruction save_s(std::bind(&std::string::clear, &s));
                 TEST_CHECK_EQUAL(s, "one");
             }
             TEST_CHECK_EQUAL(s, "");

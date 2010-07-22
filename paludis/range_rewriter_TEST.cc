@@ -42,7 +42,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<DependencySpecTree> a(new DependencySpecTree(make_shared_ptr(new AllDepSpec)));
+            std::shared_ptr<DependencySpecTree> a(new DependencySpecTree(make_shared_ptr(new AllDepSpec)));
             a->root()->append(make_shared_ptr(new PackageDepSpec(parse_user_package_dep_spec("=a/b-1",
                                 &env, UserPackageDepSpecOptions()))));
             a->root()->append(make_shared_ptr(new PackageDepSpec(parse_user_package_dep_spec("=a/b-2",

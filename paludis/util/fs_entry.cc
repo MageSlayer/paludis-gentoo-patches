@@ -79,7 +79,7 @@ namespace paludis
         std::string path;
 
         mutable Mutex mutex;
-        mutable std::tr1::shared_ptr<struct ::stat> stat_info;
+        mutable std::shared_ptr<struct ::stat> stat_info;
         mutable bool exists;
         mutable CheckedInfo checked;
 

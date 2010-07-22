@@ -25,7 +25,7 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/exception.hh>
 #include <string>
-#include <tr1/memory>
+#include <memory>
 #include "command.hh"
 
 namespace paludis
@@ -50,7 +50,7 @@ namespace paludis
                 ~CommandFactory();
 
             public:
-                const std::tr1::shared_ptr<Command> create(const std::string &)
+                const std::shared_ptr<Command> create(const std::string &)
                     const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 struct ConstIteratorTag;

@@ -28,7 +28,7 @@ using namespace paludis::unwritten_repository;
 
 namespace
 {
-    int generic_importance(const Environment * const, const std::tr1::function<std::string (const std::string &)> & f)
+    int generic_importance(const Environment * const, const std::function<std::string (const std::string &)> & f)
     {
         if (! f("importance").empty())
             return destringify<int>(f("importance"));
@@ -48,7 +48,7 @@ namespace paludis
     void register_repositories<repository_groups::unwritten>(const repository_groups::unwritten * const,
             RepositoryFactory * const factory)
     {
-        std::tr1::shared_ptr<Set<std::string> > unwritten_formats(new Set<std::string>);
+        std::shared_ptr<Set<std::string> > unwritten_formats(new Set<std::string>);
         unwritten_formats->insert("unwritten");
 
         factory->add_repository_format(unwritten_formats,

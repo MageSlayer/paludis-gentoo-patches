@@ -23,7 +23,7 @@
 #include <paludis/util/wrapped_value-fwd.hh>
 #include <paludis/util/no_type.hh>
 #include <paludis/util/operators.hh>
-#include <tr1/memory>
+#include <memory>
 
 namespace paludis
 {
@@ -44,7 +44,7 @@ namespace paludis
         public relational_operators::HasRelationalOperators
     {
         private:
-            std::tr1::shared_ptr<const typename WrappedValueTraits<Tag_>::UnderlyingType> _value;
+            std::shared_ptr<const typename WrappedValueTraits<Tag_>::UnderlyingType> _value;
 
         public:
             explicit WrappedValue(

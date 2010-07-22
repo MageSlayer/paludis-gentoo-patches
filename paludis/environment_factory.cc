@@ -30,13 +30,13 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/distribution.hh>
 #include <paludis/about.hh>
-#include <tr1/unordered_map>
+#include <unordered_map>
 #include <list>
 #include "config.h"
 
 using namespace paludis;
 
-typedef std::tr1::unordered_map<std::string, EnvironmentFactory::CreateFunction> Keys;
+typedef std::unordered_map<std::string, EnvironmentFactory::CreateFunction> Keys;
 
 namespace paludis
 {
@@ -85,7 +85,7 @@ EnvironmentFactory::~EnvironmentFactory()
 {
 }
 
-const std::tr1::shared_ptr<Environment>
+const std::shared_ptr<Environment>
 EnvironmentFactory::create(const std::string & s) const
 {
     Context context("When making environment from specification '" + s + "':");
@@ -132,7 +132,7 @@ EnvironmentFactory::create(const std::string & s) const
 
 void
 EnvironmentFactory::add_environment_format(
-        const std::tr1::shared_ptr<const Set<std::string> > & formats,
+        const std::shared_ptr<const Set<std::string> > & formats,
         const CreateFunction & create_function
         )
 {

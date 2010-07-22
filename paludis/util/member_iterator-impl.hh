@@ -26,27 +26,27 @@
 namespace paludis
 {
     template <typename Value_, typename Iterator_,
-             Value_ std::tr1::remove_reference<typename std::iterator_traits<Iterator_>::value_type>::type::* member_>
+             Value_ std::remove_reference<typename std::iterator_traits<Iterator_>::value_type>::type::* member_>
     MemberIterator<Value_, Iterator_, member_>::MemberIterator()
     {
     }
 
     template <typename Value_, typename Iterator_,
-             Value_ std::tr1::remove_reference<typename std::iterator_traits<Iterator_>::value_type>::type::* member_>
+             Value_ std::remove_reference<typename std::iterator_traits<Iterator_>::value_type>::type::* member_>
     MemberIterator<Value_, Iterator_, member_>::MemberIterator(const MemberIterator & other) :
         _iter(other._iter)
     {
     }
 
     template <typename Value_, typename Iterator_,
-             Value_ std::tr1::remove_reference<typename std::iterator_traits<Iterator_>::value_type>::type::* member_>
+             Value_ std::remove_reference<typename std::iterator_traits<Iterator_>::value_type>::type::* member_>
     MemberIterator<Value_, Iterator_, member_>::MemberIterator(const Iterator_ & iter) :
         _iter(iter)
     {
     }
 
     template <typename Value_, typename Iterator_,
-             Value_ std::tr1::remove_reference<typename std::iterator_traits<Iterator_>::value_type>::type::* member_>
+             Value_ std::remove_reference<typename std::iterator_traits<Iterator_>::value_type>::type::* member_>
     MemberIterator<Value_, Iterator_, member_> &
     MemberIterator<Value_, Iterator_, member_>::operator= (const MemberIterator & other)
     {
@@ -55,7 +55,7 @@ namespace paludis
     }
 
     template <typename Value_, typename Iterator_,
-             Value_ std::tr1::remove_reference<typename std::iterator_traits<Iterator_>::value_type>::type::* member_>
+             Value_ std::remove_reference<typename std::iterator_traits<Iterator_>::value_type>::type::* member_>
     MemberIterator<Value_, Iterator_, member_> &
     MemberIterator<Value_, Iterator_, member_>::operator++ ()
     {
@@ -64,7 +64,7 @@ namespace paludis
     }
 
     template <typename Value_, typename Iterator_,
-             Value_ std::tr1::remove_reference<typename std::iterator_traits<Iterator_>::value_type>::type::* member_>
+             Value_ std::remove_reference<typename std::iterator_traits<Iterator_>::value_type>::type::* member_>
     MemberIterator<Value_, Iterator_, member_>
     MemberIterator<Value_, Iterator_, member_>::operator++ (int)
     {
@@ -74,7 +74,7 @@ namespace paludis
     }
 
     template <typename Value_, typename Iterator_,
-             Value_ std::tr1::remove_reference<typename std::iterator_traits<Iterator_>::value_type>::type::* member_>
+             Value_ std::remove_reference<typename std::iterator_traits<Iterator_>::value_type>::type::* member_>
     typename MemberIterator<Value_, Iterator_, member_>::pointer
     MemberIterator<Value_, Iterator_, member_>::operator-> () const
     {
@@ -82,7 +82,7 @@ namespace paludis
     }
 
     template <typename Value_, typename Iterator_,
-             Value_ std::tr1::remove_reference<typename std::iterator_traits<Iterator_>::value_type>::type::* member_>
+             Value_ std::remove_reference<typename std::iterator_traits<Iterator_>::value_type>::type::* member_>
     typename MemberIterator<Value_, Iterator_, member_>::reference
     MemberIterator<Value_, Iterator_, member_>::operator* () const
     {
@@ -90,7 +90,7 @@ namespace paludis
     }
 
     template <typename Value_, typename Iterator_,
-             Value_ std::tr1::remove_reference<typename std::iterator_traits<Iterator_>::value_type>::type::* member_>
+             Value_ std::remove_reference<typename std::iterator_traits<Iterator_>::value_type>::type::* member_>
     bool
     MemberIterator<Value_, Iterator_, member_>::operator== (const MemberIterator & other) const
     {

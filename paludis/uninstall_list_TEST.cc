@@ -54,9 +54,9 @@ namespace paludis
     }
 
     template <typename T_>
-    std::tr1::function<T_ ()> make_k(T_ t)
+    std::function<T_ ()> make_k(T_ t)
     {
-        return std::tr1::bind(&make_k_result<T_>, t);
+        return std::bind(&make_k_result<T_>, t);
     }
 }
 
@@ -84,11 +84,11 @@ namespace test_cases
     {
         protected:
             TestEnvironment env;
-            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo;
+            std::shared_ptr<FakeInstalledRepository> installed_repo;
 #ifdef ENABLE_VIRTUALS_REPOSITORY
-            std::tr1::shared_ptr<Repository> virtuals_repo;
+            std::shared_ptr<Repository> virtuals_repo;
 #endif
-            std::tr1::shared_ptr<PackageIDSequence> targets;
+            std::shared_ptr<PackageIDSequence> targets;
             std::list<std::string> expected;
             bool done_populate;
             bool unused_target;
@@ -389,9 +389,9 @@ namespace test_cases
         UninstallListWithUnusedDepsWorldTest() :
             UninstallListTestCaseBase("with unused deps world")
         {
-            std::tr1::shared_ptr<SetSpecTree> world(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
+            std::shared_ptr<SetSpecTree> world(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
             world->root()->append(make_shared_ptr(new PackageDepSpec(parse_user_package_dep_spec("foo/moo", &env, UserPackageDepSpecOptions()))));
-            env.add_set(SetName("world"), SetName("world"), make_k<std::tr1::shared_ptr<const SetSpecTree> >(world), false);
+            env.add_set(SetName("world"), SetName("world"), make_k<std::shared_ptr<const SetSpecTree> >(world), false);
         }
 
         void populate_targets()
@@ -428,7 +428,7 @@ namespace test_cases
         UninstallListWithUnusedDepsWorldTargetTest() :
             UninstallListTestCaseBase("with unused deps world target")
         {
-            std::tr1::shared_ptr<SetSpecTree> world(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
+            std::shared_ptr<SetSpecTree> world(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
             world->root()->append(make_shared_ptr(new PackageDepSpec(parse_user_package_dep_spec("foo/moo", &env, UserPackageDepSpecOptions()))));
             world->root()->append(make_shared_ptr(new PackageDepSpec(parse_user_package_dep_spec("foo/bar", &env, UserPackageDepSpecOptions()))));
             env.add_set(SetName("world"), SetName("world"), make_k(world), false);
@@ -468,7 +468,7 @@ namespace test_cases
         UninstallListWithSlotsTest() :
             UninstallListTestCaseBase("with slots")
         {
-            std::tr1::shared_ptr<SetSpecTree> world(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
+            std::shared_ptr<SetSpecTree> world(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
             world->root()->append(make_shared_ptr(new PackageDepSpec(parse_user_package_dep_spec("cat/needs-a", &env, UserPackageDepSpecOptions()))));
             world->root()->append(make_shared_ptr(new PackageDepSpec(parse_user_package_dep_spec("cat/needs-b", &env, UserPackageDepSpecOptions()))));
             world->root()->append(make_shared_ptr(new PackageDepSpec(parse_user_package_dep_spec("cat/needs-c", &env, UserPackageDepSpecOptions()))));

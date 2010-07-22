@@ -24,8 +24,8 @@
 #include <paludis/output_manager.hh>
 #include <paludis/output_manager_factory.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <tr1/memory>
-#include <tr1/functional>
+#include <memory>
+#include <functional>
 
 namespace paludis
 {
@@ -35,7 +35,7 @@ namespace paludis
     {
         public:
             BufferOutputManager(
-                    const std::tr1::shared_ptr<OutputManager> &
+                    const std::shared_ptr<OutputManager> &
                     );
             ~BufferOutputManager();
 
@@ -48,10 +48,10 @@ namespace paludis
             virtual void nothing_more_to_come();
             virtual void message(const MessageType, const std::string &);
 
-            static const std::tr1::shared_ptr<const Set<std::string> > factory_managers()
+            static const std::shared_ptr<const Set<std::string> > factory_managers()
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            static const std::tr1::shared_ptr<OutputManager> factory_create(
+            static const std::shared_ptr<OutputManager> factory_create(
                     const OutputManagerFactory::KeyFunction &,
                     const OutputManagerFactory::CreateChildFunction &,
                     const OutputManagerFactory::ReplaceVarsFunc &)

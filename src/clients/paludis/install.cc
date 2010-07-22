@@ -58,11 +58,11 @@ namespace
         public ConsoleInstallTask
     {
         private:
-            std::tr1::shared_ptr<Environment> _env;
+            std::shared_ptr<Environment> _env;
 
         public:
-            OurInstallTask(std::tr1::shared_ptr<Environment> env, const DepListOptions & options,
-                    std::tr1::shared_ptr<const DestinationsSet> destinations) :
+            OurInstallTask(std::shared_ptr<Environment> env, const DepListOptions & options,
+                    std::shared_ptr<const DestinationsSet> destinations) :
                 ConsoleInstallTask(env.get(), options, destinations),
                 _env(env)
             {
@@ -153,7 +153,7 @@ namespace
 }
 
 int
-do_install(const std::tr1::shared_ptr<Environment> & env)
+do_install(const std::shared_ptr<Environment> & env)
 {
     Context context("When performing install action from command line:");
 
@@ -166,7 +166,7 @@ do_install(const std::tr1::shared_ptr<Environment> & env)
     CommandLine::get_instance()->dl_args.populate_install_task(env.get(), task);
 
     cout << "Building target list... " << std::flush;
-    std::tr1::shared_ptr<Sequence<std::string> > specs(new Sequence<std::string>);
+    std::shared_ptr<Sequence<std::string> > specs(new Sequence<std::string>);
     std::copy(CommandLine::get_instance()->begin_parameters(), CommandLine::get_instance()->end_parameters(),
             specs->back_inserter());
     if (CommandLine::get_instance()->a_serialised.specified())

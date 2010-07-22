@@ -36,7 +36,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<const DependencySpecTree> spec(
+            std::shared_ptr<const DependencySpecTree> spec(
                     CommaSeparatedDepParser::parse(&env, "cat/one  , cat/two, cat/three\n"));
             StringifyFormatter f;
             CommaSeparatedDepPrinter p(&env, f, true);

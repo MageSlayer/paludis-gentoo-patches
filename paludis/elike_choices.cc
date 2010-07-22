@@ -38,8 +38,8 @@ ELikeStripChoiceValue::canonical_name_with_prefix()
     return ChoiceNameWithPrefix(stringify(canonical_build_options_prefix()) + ":" + stringify(canonical_unprefixed_name()));
 }
 
-ELikeStripChoiceValue::ELikeStripChoiceValue(const std::tr1::shared_ptr<const PackageID> & id,
-        const Environment * const env, const std::tr1::shared_ptr<const Choice> & choice) :
+ELikeStripChoiceValue::ELikeStripChoiceValue(const std::shared_ptr<const PackageID> & id,
+        const Environment * const env, const std::shared_ptr<const Choice> & choice) :
     _enabled(! env->want_choice_enabled(id, choice, canonical_unprefixed_name()).is_false())
 {
 }
@@ -104,8 +104,8 @@ ELikeSplitChoiceValue::canonical_name_with_prefix()
     return ChoiceNameWithPrefix(stringify(canonical_build_options_prefix()) + ":" + stringify(canonical_unprefixed_name()));
 }
 
-ELikeSplitChoiceValue::ELikeSplitChoiceValue(const std::tr1::shared_ptr<const PackageID> & id,
-        const Environment * const env, const std::tr1::shared_ptr<const Choice> & choice) :
+ELikeSplitChoiceValue::ELikeSplitChoiceValue(const std::shared_ptr<const PackageID> & id,
+        const Environment * const env, const std::shared_ptr<const Choice> & choice) :
     _enabled(! env->want_choice_enabled(id, choice, canonical_unprefixed_name()).is_false())
 {
 }
@@ -170,8 +170,8 @@ ELikeOptionalTestsChoiceValue::canonical_name_with_prefix()
     return ChoiceNameWithPrefix(stringify(canonical_build_options_prefix()) + ":" + stringify(canonical_unprefixed_name()));
 }
 
-ELikeOptionalTestsChoiceValue::ELikeOptionalTestsChoiceValue(const std::tr1::shared_ptr<const PackageID> & id,
-        const Environment * const env, const std::tr1::shared_ptr<const Choice> & choice) :
+ELikeOptionalTestsChoiceValue::ELikeOptionalTestsChoiceValue(const std::shared_ptr<const PackageID> & id,
+        const Environment * const env, const std::shared_ptr<const Choice> & choice) :
     _enabled(env->want_choice_enabled(id, choice, canonical_unprefixed_name()).is_true())
 {
 }
@@ -236,8 +236,8 @@ ELikeRecommendedTestsChoiceValue::canonical_name_with_prefix()
     return ChoiceNameWithPrefix(stringify(canonical_build_options_prefix()) + ":" + stringify(canonical_unprefixed_name()));
 }
 
-ELikeRecommendedTestsChoiceValue::ELikeRecommendedTestsChoiceValue(const std::tr1::shared_ptr<const PackageID> & id,
-        const Environment * const env, const std::tr1::shared_ptr<const Choice> & choice) :
+ELikeRecommendedTestsChoiceValue::ELikeRecommendedTestsChoiceValue(const std::shared_ptr<const PackageID> & id,
+        const Environment * const env, const std::shared_ptr<const Choice> & choice) :
     _enabled(! env->want_choice_enabled(id, choice, canonical_unprefixed_name()).is_false())
 {
 }
@@ -320,8 +320,8 @@ ELikeExpensiveTestsChoiceValue::canonical_name_with_prefix()
     return ChoiceNameWithPrefix(stringify(canonical_build_options_prefix()) + ":" + stringify(canonical_unprefixed_name()));
 }
 
-ELikeExpensiveTestsChoiceValue::ELikeExpensiveTestsChoiceValue(const std::tr1::shared_ptr<const PackageID> & id,
-        const Environment * const env, const std::tr1::shared_ptr<const Choice> & choice) :
+ELikeExpensiveTestsChoiceValue::ELikeExpensiveTestsChoiceValue(const std::shared_ptr<const PackageID> & id,
+        const Environment * const env, const std::shared_ptr<const Choice> & choice) :
     _enabled(env->want_choice_enabled(id, choice, canonical_unprefixed_name()).is_true())
 {
 }
@@ -388,7 +388,7 @@ ELikeJobsChoiceValue::canonical_name_with_prefix()
 
 namespace
 {
-    std::string get_jobs(const std::tr1::shared_ptr<const PackageID> & id,
+    std::string get_jobs(const std::shared_ptr<const PackageID> & id,
             const std::string & env_value)
     {
         if (env_value.empty())
@@ -408,8 +408,8 @@ namespace
     }
 }
 
-ELikeJobsChoiceValue::ELikeJobsChoiceValue(const std::tr1::shared_ptr<const PackageID> & id,
-        const Environment * const env, const std::tr1::shared_ptr<const Choice> & choice) :
+ELikeJobsChoiceValue::ELikeJobsChoiceValue(const std::shared_ptr<const PackageID> & id,
+        const Environment * const env, const std::shared_ptr<const Choice> & choice) :
     _enabled(env->want_choice_enabled(id, choice, canonical_unprefixed_name()).is_true()),
     _parameter(get_jobs(id, env->value_for_choice_parameter(id, choice, canonical_unprefixed_name())))
 {
@@ -477,8 +477,8 @@ ELikeTraceChoiceValue::canonical_name_with_prefix()
             stringify(canonical_unprefixed_name()));
 }
 
-ELikeTraceChoiceValue::ELikeTraceChoiceValue(const std::tr1::shared_ptr<const PackageID> & id,
-        const Environment * const env, const std::tr1::shared_ptr<const Choice> & choice) :
+ELikeTraceChoiceValue::ELikeTraceChoiceValue(const std::shared_ptr<const PackageID> & id,
+        const Environment * const env, const std::shared_ptr<const Choice> & choice) :
     _enabled(env->want_choice_enabled(id, choice, canonical_unprefixed_name()).is_true())
 {
 }
@@ -544,8 +544,8 @@ ELikePreserveWorkChoiceValue::canonical_name_with_prefix()
             stringify(canonical_unprefixed_name()));
 }
 
-ELikePreserveWorkChoiceValue::ELikePreserveWorkChoiceValue(const std::tr1::shared_ptr<const PackageID> & id,
-        const Environment * const env, const std::tr1::shared_ptr<const Choice> & choice,
+ELikePreserveWorkChoiceValue::ELikePreserveWorkChoiceValue(const std::shared_ptr<const PackageID> & id,
+        const Environment * const env, const std::shared_ptr<const Choice> & choice,
         const bool by_default) :
     _enabled(by_default ?
             ! env->want_choice_enabled(id, choice, canonical_unprefixed_name()).is_false() :

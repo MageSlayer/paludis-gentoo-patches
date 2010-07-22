@@ -41,10 +41,10 @@ namespace paludis
         std::ostringstream s;
 
         const Environment * const env;
-        const std::tr1::shared_ptr<const PackageID> id;
+        const std::shared_ptr<const PackageID> id;
         const bool want_description;
 
-        Implementation(const Environment * const e, const std::tr1::shared_ptr<const PackageID> & i,
+        Implementation(const Environment * const e, const std::shared_ptr<const PackageID> & i,
                 const bool w) :
             env(e),
             id(i),
@@ -60,7 +60,7 @@ namespace
     {
         std::ostringstream s;
 
-        void visit(const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > & k)
+        void visit(const MetadataValueKey<std::shared_ptr<const PackageID> > & k)
         {
             s << *k.value();
         }
@@ -111,11 +111,11 @@ namespace
             s << pretty_print_time(k.value().seconds());
         }
 
-        void visit(const MetadataValueKey<std::tr1::shared_ptr<const Contents> > &)
+        void visit(const MetadataValueKey<std::shared_ptr<const Contents> > &)
         {
         }
 
-        void visit(const MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> > & k)
+        void visit(const MetadataValueKey<std::shared_ptr<const RepositoryMaskInfo> > & k)
         {
             s << (*k.value()).mask_file() << ": " <<
                 join((*k.value()).comment()->begin(), (*k.value()).comment()->end(), " ");
@@ -192,14 +192,14 @@ namespace
             s << k.pretty_print_flat(formatter);
         }
 
-        void visit(const MetadataValueKey<std::tr1::shared_ptr<const Choices> > & k)
+        void visit(const MetadataValueKey<std::shared_ptr<const Choices> > & k)
         {
             s << k.human_name();
         }
     };
 }
 
-MaskDisplayer::MaskDisplayer(const Environment * const e, const std::tr1::shared_ptr<const PackageID> & id,
+MaskDisplayer::MaskDisplayer(const Environment * const e, const std::shared_ptr<const PackageID> & id,
         const bool want_description) :
     PrivateImplementationPattern<MaskDisplayer>(new Implementation<MaskDisplayer>(e, id, want_description))
 {

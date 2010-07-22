@@ -24,7 +24,7 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/graph-fwd.hh>
 #include <paludis/util/sequence-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 #include <string>
 
 /** \file
@@ -67,7 +67,7 @@ namespace paludis
             virtual HookResult run(const Hook &) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
             virtual const FSEntry file_name() const = 0;
             virtual void add_dependencies(const Hook &, DirectedGraph<std::string, int> &) = 0;
-            virtual const std::tr1::shared_ptr<const Sequence<std::string> > auto_hook_names() const = 0;
+            virtual const std::shared_ptr<const Sequence<std::string> > auto_hook_names() const = 0;
     };
 
     /**
@@ -80,7 +80,7 @@ namespace paludis
         private PrivateImplementationPattern<Hooker>
     {
         private:
-            std::tr1::shared_ptr<Sequence<std::tr1::shared_ptr<HookFile> > > _find_hooks(const Hook &) const;
+            std::shared_ptr<Sequence<std::shared_ptr<HookFile> > > _find_hooks(const Hook &) const;
 
         public:
             ///\name Basic operations

@@ -49,12 +49,12 @@ namespace
     class VulnerableChecker
     {
         private:
-            std::multimap<std::tr1::shared_ptr<const PackageID>, std::tr1::shared_ptr<const DepTag>, PackageIDSetComparator> _found;
+            std::multimap<std::shared_ptr<const PackageID>, std::shared_ptr<const DepTag>, PackageIDSetComparator> _found;
             const Environment & _env;
             std::set<SetName> _recursing_sets;
 
         public:
-            typedef std::multimap<std::tr1::shared_ptr<const PackageID>, std::tr1::shared_ptr<const DepTag>,
+            typedef std::multimap<std::shared_ptr<const PackageID>, std::shared_ptr<const DepTag>,
                     PackageIDSetComparator>::const_iterator ConstIterator;
 
             VulnerableChecker(const Environment & e) :
@@ -73,7 +73,7 @@ namespace
             {
                 Context context("When expanding named set '" + stringify(*node.spec()) + "':");
 
-                std::tr1::shared_ptr<const SetSpecTree> set(_env.set(node.spec()->name()));
+                std::shared_ptr<const SetSpecTree> set(_env.set(node.spec()->name()));
                 if (! set)
                 {
                     Log::get_instance()->message("report_task.unknown_set", ll_warning, lc_context)
@@ -93,7 +93,7 @@ namespace
                 _recursing_sets.erase(node.spec()->name());
             }
 
-            std::pair<ConstIterator, ConstIterator> insecure_tags(const std::tr1::shared_ptr<const PackageID> & id) const
+            std::pair<ConstIterator, ConstIterator> insecure_tags(const std::shared_ptr<const PackageID> & id) const
             {
                 return _found.equal_range(id);
             }
@@ -102,7 +102,7 @@ namespace
     void
     VulnerableChecker::visit(const SetSpecTree::NodeType<PackageDepSpec>::Type & node)
     {
-        std::tr1::shared_ptr<const PackageIDSequence> insecure(_env[selection::AllVersionsSorted(
+        std::shared_ptr<const PackageIDSequence> insecure(_env[selection::AllVersionsSorted(
                     generator::Matches(*node.spec(), MatchPackageOptions()))]);
         for (PackageIDSequence::ConstIterator i(insecure->begin()),
                 i_end(insecure->end()) ; i != i_end ; ++i)
@@ -149,7 +149,7 @@ ReportTask::execute()
     VulnerableChecker vuln(*e);
     try
     {
-        std::tr1::shared_ptr<const SetSpecTree> insecure(_imp->env->set(SetName("insecurity")));
+        std::shared_ptr<const SetSpecTree> insecure(_imp->env->set(SetName("insecurity")));
         if (insecure)
             insecure->root()->accept(vuln);
     }
@@ -169,7 +169,7 @@ ReportTask::execute()
                 n::with_unused_dependencies() = false
                 ));
     unused_list.add_unused();
-    std::set<std::tr1::shared_ptr<const PackageID>, PackageIDSetComparator> unused;
+    std::set<std::shared_ptr<const PackageID>, PackageIDSetComparator> unused;
     for (UninstallList::ConstIterator i(unused_list.begin()), i_end(unused_list.end());
             i != i_end ; ++i)
         if (i->kind() != ulk_virtual)
@@ -178,26 +178,26 @@ ReportTask::execute()
     for (PackageDatabase::RepositoryConstIterator r(e->package_database()->begin_repositories()),
             r_end(e->package_database()->end_repositories()) ; r != r_end ; ++r)
     {
-        std::tr1::shared_ptr<const Repository> rr(e->package_database()->fetch_repository((*r)->name()));
+        std::shared_ptr<const Repository> rr(e->package_database()->fetch_repository((*r)->name()));
         if (! rr->installed_root_key())
             continue;
 
-        std::tr1::shared_ptr<const CategoryNamePartSet> cat_names(rr->category_names());
+        std::shared_ptr<const CategoryNamePartSet> cat_names(rr->category_names());
         for (CategoryNamePartSet::ConstIterator c(cat_names->begin()), c_end(cat_names->end()) ;
                     c != c_end ; ++c)
         {
-            std::tr1::shared_ptr<const QualifiedPackageNameSet> packages(rr->package_names(*c));
+            std::shared_ptr<const QualifiedPackageNameSet> packages(rr->package_names(*c));
             for (QualifiedPackageNameSet::ConstIterator p(packages->begin()), p_end(packages->end()) ;
                     p != p_end ; ++p)
             {
                 on_report_check_package_pre(*p);
 
-                std::tr1::shared_ptr<const PackageIDSequence> ids(rr->package_ids(*p));
+                std::shared_ptr<const PackageIDSequence> ids(rr->package_ids(*p));
                 for (PackageIDSequence::ConstIterator v(ids->begin()), v_end(ids->end()) ;
                         v != v_end ; ++v)
                 {
                     bool is_missing(false);
-                    std::tr1::shared_ptr<PackageIDSequence> origins;
+                    std::shared_ptr<PackageIDSequence> origins;
 
                     if ((*v)->from_repositories_key())
                     {
@@ -208,7 +208,7 @@ ReportTask::execute()
                                 o_end((*v)->from_repositories_key()->value()->end()) ;
                                 o != o_end ; ++o)
                         {
-                            std::tr1::shared_ptr<const PackageIDSequence> installable(
+                            std::shared_ptr<const PackageIDSequence> installable(
                                     (*e)[selection::BestVersionOnly((
                                             (generator::InRepository(RepositoryName(*o)) &
                                              generator::Matches(make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
@@ -230,8 +230,8 @@ ReportTask::execute()
                     }
 
                     bool is_masked(origins && origins->end() != std::find_if(origins->begin(),
-                                origins->end(), std::tr1::bind(std::tr1::mem_fn(&PackageID::masked),
-                                    std::tr1::placeholders::_1)));
+                                origins->end(), std::bind(std::mem_fn(&PackageID::masked),
+                                    std::placeholders::_1)));
                     bool is_vulnerable(false);
                     bool is_unused(false);
 

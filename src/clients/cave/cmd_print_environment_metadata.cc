@@ -82,7 +82,7 @@ namespace
     };
 
     void do_one_key(
-            const std::tr1::shared_ptr<const MetadataKey> & k,
+            const std::shared_ptr<const MetadataKey> & k,
             const PrintEnvironmentMetadataCommandLine & cmdline,
             const std::string & name_prefix
             )
@@ -114,8 +114,8 @@ namespace
 
 int
 PrintEnvironmentMetadataCommand::run(
-        const std::tr1::shared_ptr<Environment> & env,
-        const std::tr1::shared_ptr<const Sequence<std::string > > & args
+        const std::shared_ptr<Environment> & env,
+        const std::shared_ptr<const Sequence<std::string > > & args
         )
 {
     PrintEnvironmentMetadataCommandLine cmdline;
@@ -137,7 +137,7 @@ PrintEnvironmentMetadataCommand::run(
     return EXIT_SUCCESS;
 }
 
-std::tr1::shared_ptr<args::ArgsHandler>
+std::shared_ptr<args::ArgsHandler>
 PrintEnvironmentMetadataCommand::make_doc_cmdline()
 {
     return make_shared_ptr(new PrintEnvironmentMetadataCommandLine);

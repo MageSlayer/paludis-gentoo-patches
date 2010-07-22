@@ -27,7 +27,7 @@ namespace paludis
 
             public:
                 InfoPkgsMetadataKey(const Environment * const e,
-                        const std::tr1::shared_ptr<const FSEntrySequence> & f,
+                        const std::shared_ptr<const FSEntrySequence> & f,
                         const ERepository * const);
                 ~InfoPkgsMetadataKey();
 
@@ -41,10 +41,10 @@ namespace paludis
             private PrivateImplementationPattern<InfoVarsMetadataKey>
         {
             public:
-                InfoVarsMetadataKey(const std::tr1::shared_ptr<const FSEntrySequence> &);
+                InfoVarsMetadataKey(const std::shared_ptr<const FSEntrySequence> &);
                 ~InfoVarsMetadataKey();
 
-                const std::tr1::shared_ptr<const Set<std::string> > value() const;
+                const std::shared_ptr<const Set<std::string> > value() const;
 
                 std::string pretty_print_flat(const Formatter<std::string> &) const;
 

@@ -86,8 +86,8 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<DependencySpecTree> d(fakerepository::parse_depend(
-                        "( ( a/a b/b ) )", &env, std::tr1::shared_ptr<const PackageID>()));
+            std::shared_ptr<DependencySpecTree> d(fakerepository::parse_depend(
+                        "( ( a/a b/b ) )", &env, std::shared_ptr<const PackageID>()));
 
             QuickPrinter p;
             d->root()->accept(p);

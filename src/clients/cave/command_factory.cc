@@ -30,7 +30,7 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/system.hh>
-#include <tr1/functional>
+#include <functional>
 #include <vector>
 #include <map>
 
@@ -78,7 +78,7 @@
 using namespace paludis;
 using namespace cave;
 
-typedef std::map<std::string, std::tr1::function<const std::tr1::shared_ptr<cave::Command> ()> > Handlers;
+typedef std::map<std::string, std::function<const std::shared_ptr<cave::Command> ()> > Handlers;
 
 namespace paludis
 {
@@ -98,12 +98,12 @@ namespace paludis
 namespace
 {
     template <typename T_>
-    const std::tr1::shared_ptr<T_> make_command()
+    const std::shared_ptr<T_> make_command()
     {
         return make_shared_ptr(new T_);
     }
 
-    const std::tr1::shared_ptr<ScriptCommand> make_script_command(const std::string & s, const FSEntry & f)
+    const std::shared_ptr<ScriptCommand> make_script_command(const std::string & s, const FSEntry & f)
     {
         return make_shared_ptr(new ScriptCommand(s, f));
     }
@@ -133,58 +133,58 @@ CommandFactory::CommandFactory() :
                     command_name.erase(p);
 
                 _imp->handlers.erase(command_name);
-                _imp->handlers.insert(std::make_pair(command_name, std::tr1::bind(&make_script_command, command_name, *s)));
+                _imp->handlers.insert(std::make_pair(command_name, std::bind(&make_script_command, command_name, *s)));
             }
         }
     }
 
-    _imp->handlers.insert(std::make_pair("config", std::tr1::bind(&make_command<ConfigCommand>)));
-    _imp->handlers.insert(std::make_pair("contents", std::tr1::bind(&make_command<ContentsCommand>)));
-    _imp->handlers.insert(std::make_pair("display-resolution", std::tr1::bind(&make_command<DisplayResolutionCommand>)));
-    _imp->handlers.insert(std::make_pair("executables", std::tr1::bind(&make_command<ExecutablesCommand>)));
-    _imp->handlers.insert(std::make_pair("execute-resolution", std::tr1::bind(&make_command<ExecuteResolutionCommand>)));
-    _imp->handlers.insert(std::make_pair("find-candidates", std::tr1::bind(&make_command<FindCandidatesCommand>)));
-    _imp->handlers.insert(std::make_pair("fix-cache", std::tr1::bind(&make_command<FixCacheCommand>)));
-    _imp->handlers.insert(std::make_pair("fix-linkage", std::tr1::bind(&make_command<FixLinkageCommand>)));
-    _imp->handlers.insert(std::make_pair("help", std::tr1::bind(&make_command<HelpCommand>)));
-    _imp->handlers.insert(std::make_pair("import", std::tr1::bind(&make_command<ImportCommand>)));
-    _imp->handlers.insert(std::make_pair("info", std::tr1::bind(&make_command<InfoCommand>)));
-    _imp->handlers.insert(std::make_pair("match", std::tr1::bind(&make_command<MatchCommand>)));
-    _imp->handlers.insert(std::make_pair("owner", std::tr1::bind(&make_command<OwnerCommand>)));
-    _imp->handlers.insert(std::make_pair("perform", std::tr1::bind(&make_command<PerformCommand>)));
-    _imp->handlers.insert(std::make_pair("purge", std::tr1::bind(&make_command<PurgeCommand>)));
-    _imp->handlers.insert(std::make_pair("print-categories", std::tr1::bind(&make_command<PrintCategoriesCommand>)));
-    _imp->handlers.insert(std::make_pair("print-commands", std::tr1::bind(&make_command<PrintCommandsCommand>)));
-    _imp->handlers.insert(std::make_pair("print-environment-metadata", std::tr1::bind(&make_command<PrintEnvironmentMetadataCommand>)));
-    _imp->handlers.insert(std::make_pair("print-id-actions", std::tr1::bind(&make_command<PrintIDActionsCommand>)));
-    _imp->handlers.insert(std::make_pair("print-id-contents", std::tr1::bind(&make_command<PrintIDContentsCommand>)));
-    _imp->handlers.insert(std::make_pair("print-id-executables", std::tr1::bind(&make_command<PrintIDExecutablesCommand>)));
-    _imp->handlers.insert(std::make_pair("print-id-masks", std::tr1::bind(&make_command<PrintIDMasksCommand>)));
-    _imp->handlers.insert(std::make_pair("print-id-metadata", std::tr1::bind(&make_command<PrintIDMetadataCommand>)));
-    _imp->handlers.insert(std::make_pair("print-ids", std::tr1::bind(&make_command<PrintIDsCommand>)));
-    _imp->handlers.insert(std::make_pair("print-owners", std::tr1::bind(&make_command<PrintOwnersCommand>)));
-    _imp->handlers.insert(std::make_pair("print-packages", std::tr1::bind(&make_command<PrintPackagesCommand>)));
-    _imp->handlers.insert(std::make_pair("print-repositories", std::tr1::bind(&make_command<PrintRepositoriesCommand>)));
-    _imp->handlers.insert(std::make_pair("print-repository-formats", std::tr1::bind(&make_command<PrintRepositoryFormatsCommand>)));
-    _imp->handlers.insert(std::make_pair("print-repository-metadata", std::tr1::bind(&make_command<PrintRepositoryMetadataCommand>)));
-    _imp->handlers.insert(std::make_pair("print-set", std::tr1::bind(&make_command<PrintSetCommand>)));
-    _imp->handlers.insert(std::make_pair("print-sets", std::tr1::bind(&make_command<PrintSetsCommand>)));
-    _imp->handlers.insert(std::make_pair("print-sync-protocols", std::tr1::bind(&make_command<PrintSyncProtocolsCommand>)));
-    _imp->handlers.insert(std::make_pair("resolve", std::tr1::bind(&make_command<ResolveCommand>)));
-    _imp->handlers.insert(std::make_pair("resume", std::tr1::bind(&make_command<ResumeCommand>)));
-    _imp->handlers.insert(std::make_pair("search", std::tr1::bind(&make_command<SearchCommand>)));
-    _imp->handlers.insert(std::make_pair("show", std::tr1::bind(&make_command<ShowCommand>)));
-    _imp->handlers.insert(std::make_pair("sync", std::tr1::bind(&make_command<SyncCommand>)));
-    _imp->handlers.insert(std::make_pair("uninstall", std::tr1::bind(&make_command<UninstallCommand>)));
-    _imp->handlers.insert(std::make_pair("update-world", std::tr1::bind(&make_command<UpdateWorldCommand>)));
-    _imp->handlers.insert(std::make_pair("verify", std::tr1::bind(&make_command<VerifyCommand>)));
+    _imp->handlers.insert(std::make_pair("config", std::bind(&make_command<ConfigCommand>)));
+    _imp->handlers.insert(std::make_pair("contents", std::bind(&make_command<ContentsCommand>)));
+    _imp->handlers.insert(std::make_pair("display-resolution", std::bind(&make_command<DisplayResolutionCommand>)));
+    _imp->handlers.insert(std::make_pair("executables", std::bind(&make_command<ExecutablesCommand>)));
+    _imp->handlers.insert(std::make_pair("execute-resolution", std::bind(&make_command<ExecuteResolutionCommand>)));
+    _imp->handlers.insert(std::make_pair("find-candidates", std::bind(&make_command<FindCandidatesCommand>)));
+    _imp->handlers.insert(std::make_pair("fix-cache", std::bind(&make_command<FixCacheCommand>)));
+    _imp->handlers.insert(std::make_pair("fix-linkage", std::bind(&make_command<FixLinkageCommand>)));
+    _imp->handlers.insert(std::make_pair("help", std::bind(&make_command<HelpCommand>)));
+    _imp->handlers.insert(std::make_pair("import", std::bind(&make_command<ImportCommand>)));
+    _imp->handlers.insert(std::make_pair("info", std::bind(&make_command<InfoCommand>)));
+    _imp->handlers.insert(std::make_pair("match", std::bind(&make_command<MatchCommand>)));
+    _imp->handlers.insert(std::make_pair("owner", std::bind(&make_command<OwnerCommand>)));
+    _imp->handlers.insert(std::make_pair("perform", std::bind(&make_command<PerformCommand>)));
+    _imp->handlers.insert(std::make_pair("purge", std::bind(&make_command<PurgeCommand>)));
+    _imp->handlers.insert(std::make_pair("print-categories", std::bind(&make_command<PrintCategoriesCommand>)));
+    _imp->handlers.insert(std::make_pair("print-commands", std::bind(&make_command<PrintCommandsCommand>)));
+    _imp->handlers.insert(std::make_pair("print-environment-metadata", std::bind(&make_command<PrintEnvironmentMetadataCommand>)));
+    _imp->handlers.insert(std::make_pair("print-id-actions", std::bind(&make_command<PrintIDActionsCommand>)));
+    _imp->handlers.insert(std::make_pair("print-id-contents", std::bind(&make_command<PrintIDContentsCommand>)));
+    _imp->handlers.insert(std::make_pair("print-id-executables", std::bind(&make_command<PrintIDExecutablesCommand>)));
+    _imp->handlers.insert(std::make_pair("print-id-masks", std::bind(&make_command<PrintIDMasksCommand>)));
+    _imp->handlers.insert(std::make_pair("print-id-metadata", std::bind(&make_command<PrintIDMetadataCommand>)));
+    _imp->handlers.insert(std::make_pair("print-ids", std::bind(&make_command<PrintIDsCommand>)));
+    _imp->handlers.insert(std::make_pair("print-owners", std::bind(&make_command<PrintOwnersCommand>)));
+    _imp->handlers.insert(std::make_pair("print-packages", std::bind(&make_command<PrintPackagesCommand>)));
+    _imp->handlers.insert(std::make_pair("print-repositories", std::bind(&make_command<PrintRepositoriesCommand>)));
+    _imp->handlers.insert(std::make_pair("print-repository-formats", std::bind(&make_command<PrintRepositoryFormatsCommand>)));
+    _imp->handlers.insert(std::make_pair("print-repository-metadata", std::bind(&make_command<PrintRepositoryMetadataCommand>)));
+    _imp->handlers.insert(std::make_pair("print-set", std::bind(&make_command<PrintSetCommand>)));
+    _imp->handlers.insert(std::make_pair("print-sets", std::bind(&make_command<PrintSetsCommand>)));
+    _imp->handlers.insert(std::make_pair("print-sync-protocols", std::bind(&make_command<PrintSyncProtocolsCommand>)));
+    _imp->handlers.insert(std::make_pair("resolve", std::bind(&make_command<ResolveCommand>)));
+    _imp->handlers.insert(std::make_pair("resume", std::bind(&make_command<ResumeCommand>)));
+    _imp->handlers.insert(std::make_pair("search", std::bind(&make_command<SearchCommand>)));
+    _imp->handlers.insert(std::make_pair("show", std::bind(&make_command<ShowCommand>)));
+    _imp->handlers.insert(std::make_pair("sync", std::bind(&make_command<SyncCommand>)));
+    _imp->handlers.insert(std::make_pair("uninstall", std::bind(&make_command<UninstallCommand>)));
+    _imp->handlers.insert(std::make_pair("update-world", std::bind(&make_command<UpdateWorldCommand>)));
+    _imp->handlers.insert(std::make_pair("verify", std::bind(&make_command<VerifyCommand>)));
 }
 
 CommandFactory::~CommandFactory()
 {
 }
 
-const std::tr1::shared_ptr<cave::Command>
+const std::shared_ptr<cave::Command>
 CommandFactory::create(const std::string & s) const
 {
     Handlers::const_iterator i(_imp->handlers.find(s));

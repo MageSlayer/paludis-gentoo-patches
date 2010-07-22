@@ -72,11 +72,11 @@ namespace paludis
             /**
              * Add a virtual package.
              */
-            void add_virtual_package(const QualifiedPackageName &, const std::tr1::shared_ptr<const PackageDepSpec> &);
+            void add_virtual_package(const QualifiedPackageName &, const std::shared_ptr<const PackageDepSpec> &);
 
             /* RepositoryVirtualsInterface */
 
-            virtual std::tr1::shared_ptr<const VirtualsSequence> virtual_packages() const
+            virtual std::shared_ptr<const VirtualsSequence> virtual_packages() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual bool some_ids_might_support_action(const SupportsActionTestBase &) const;
@@ -87,11 +87,11 @@ namespace paludis
 
             /* Keys */
 
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > location_key() const;
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const;
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > accept_keywords_key() const;
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > sync_host_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > location_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<std::string> > accept_keywords_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<std::string> > sync_host_key() const;
     };
 }
 

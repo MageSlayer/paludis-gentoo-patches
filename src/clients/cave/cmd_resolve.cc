@@ -81,8 +81,8 @@ ResolveCommand::important() const
 
 int
 ResolveCommand::run(
-        const std::tr1::shared_ptr<Environment> & env,
-        const std::tr1::shared_ptr<const Sequence<std::string > > & args
+        const std::shared_ptr<Environment> & env,
+        const std::shared_ptr<const Sequence<std::string > > & args
         )
 {
     ResolveCommandLine cmdline;
@@ -97,7 +97,7 @@ ResolveCommand::run(
     cmdline.resolution_options.apply_shortcuts();
     cmdline.resolution_options.verify(env);
 
-    std::tr1::shared_ptr<Sequence<std::pair<std::string, std::string> > > targets(new Sequence<std::pair<std::string, std::string> >);
+    std::shared_ptr<Sequence<std::pair<std::string, std::string> > > targets(new Sequence<std::pair<std::string, std::string> >);
     for (ResolveCommandLine::ParametersConstIterator p(cmdline.begin_parameters()), p_end(cmdline.end_parameters()) ;
             p != p_end ; ++p)
         targets->push_back(std::make_pair(*p, ""));
@@ -106,7 +106,7 @@ ResolveCommand::run(
             cmdline.program_options, make_null_shared_ptr(), targets, make_null_shared_ptr(), false);
 }
 
-std::tr1::shared_ptr<args::ArgsHandler>
+std::shared_ptr<args::ArgsHandler>
 ResolveCommand::make_doc_cmdline()
 {
     return make_shared_ptr(new ResolveCommandLine);

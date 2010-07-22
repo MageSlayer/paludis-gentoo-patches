@@ -47,15 +47,15 @@ namespace paludis
             public ImplementAcceptMethods<BasicNode<Tree_>, LeafNode<Tree_, Item_> >
         {
             private:
-                const std::tr1::shared_ptr<const Item_> _spec;
+                const std::shared_ptr<const Item_> _spec;
 
             public:
-                explicit LeafNode(const std::tr1::shared_ptr<const Item_> & i);
+                explicit LeafNode(const std::shared_ptr<const Item_> & i);
 
                 template <typename OtherTree_>
                 operator LeafNode<OtherTree_, Item_> () const;
 
-                const std::tr1::shared_ptr<const Item_> spec() const;
+                const std::shared_ptr<const Item_> spec() const;
         };
 
         template <typename Tree_, typename Item_>
@@ -66,29 +66,29 @@ namespace paludis
             public BasicNode<Tree_>
         {
             private:
-                typedef Sequence<std::tr1::shared_ptr<const BasicNode<Tree_> > > ChildList;
-                std::tr1::shared_ptr<ChildList> _child_list;
+                typedef Sequence<std::shared_ptr<const BasicNode<Tree_> > > ChildList;
+                std::shared_ptr<ChildList> _child_list;
 
             public:
                 BasicInnerNode();
 
                 typedef BasicInnerNodeConstIteratorTag<Tree_> ConstIteratorTag;
                 typedef WrappedForwardIterator<ConstIteratorTag,
-                        const std::tr1::shared_ptr<const BasicNode<Tree_> > > ConstIterator;
+                        const std::shared_ptr<const BasicNode<Tree_> > > ConstIterator;
 
                 ConstIterator begin() const;
 
                 ConstIterator end() const;
 
-                void append_node(const std::tr1::shared_ptr<const BasicNode<Tree_> > & t);
+                void append_node(const std::shared_ptr<const BasicNode<Tree_> > & t);
 
                 template <typename T_>
-                const std::tr1::shared_ptr<typename Tree_::template NodeType<T_>::Type>
-                append(const std::tr1::shared_ptr<const T_> & t);
+                const std::shared_ptr<typename Tree_::template NodeType<T_>::Type>
+                append(const std::shared_ptr<const T_> & t);
 
                 template <typename T_>
-                const std::tr1::shared_ptr<typename Tree_::template NodeType<T_>::Type>
-                append(const std::tr1::shared_ptr<T_> & t);
+                const std::shared_ptr<typename Tree_::template NodeType<T_>::Type>
+                append(const std::shared_ptr<T_> & t);
         };
 
         template <typename Tree_, typename Item_>
@@ -97,15 +97,15 @@ namespace paludis
             public ImplementAcceptMethods<BasicNode<Tree_>, InnerNode<Tree_, Item_> >
         {
             private:
-                const std::tr1::shared_ptr<const Item_> _spec;
+                const std::shared_ptr<const Item_> _spec;
 
             public:
-                explicit InnerNode(const std::tr1::shared_ptr<const Item_> & i);
+                explicit InnerNode(const std::shared_ptr<const Item_> & i);
 
                 template <typename OtherTree_>
                 operator InnerNode<OtherTree_, Item_> () const;
 
-                const std::tr1::shared_ptr<const Item_> spec() const;
+                const std::shared_ptr<const Item_> spec() const;
         };
 
         template <typename Tree_>
@@ -170,13 +170,13 @@ namespace paludis
                     >::Type Type;
             };
 
-            explicit SpecTree(const std::tr1::shared_ptr<RootNode_> & spec);
+            explicit SpecTree(const std::shared_ptr<RootNode_> & spec);
 
-            explicit SpecTree(const std::tr1::shared_ptr<const RootNode_> & spec);
+            explicit SpecTree(const std::shared_ptr<const RootNode_> & spec);
 
-            const std::tr1::shared_ptr<typename InnerNodeType<RootNode_>::Type> root();
+            const std::shared_ptr<typename InnerNodeType<RootNode_>::Type> root();
 
-            const std::tr1::shared_ptr<const typename InnerNodeType<RootNode_>::Type> root() const;
+            const std::shared_ptr<const typename InnerNodeType<RootNode_>::Type> root() const;
 
             typedef Formatter<
                 typename Select<TypeListContains<VisitableTypeList, typename NodeType<PackageDepSpec>::Type>::value,
@@ -204,25 +204,25 @@ namespace paludis
                 > ItemFormatter;
 
         private:
-            const std::tr1::shared_ptr<typename InnerNodeType<RootNode_>::Type> _root;
+            const std::shared_ptr<typename InnerNodeType<RootNode_>::Type> _root;
     };
 
     extern template class WrappedForwardIterator<spec_tree_internals::BasicInnerNode<GenericSpecTree>::ConstIteratorTag,
-           const std::tr1::shared_ptr<const spec_tree_internals::BasicNode<GenericSpecTree> > >;
+           const std::shared_ptr<const spec_tree_internals::BasicNode<GenericSpecTree> > >;
     extern template class WrappedForwardIterator<spec_tree_internals::BasicInnerNode<DependencySpecTree>::ConstIteratorTag,
-           const std::tr1::shared_ptr<const spec_tree_internals::BasicNode<DependencySpecTree> > >;
+           const std::shared_ptr<const spec_tree_internals::BasicNode<DependencySpecTree> > >;
     extern template class WrappedForwardIterator<spec_tree_internals::BasicInnerNode<SetSpecTree>::ConstIteratorTag,
-             const std::tr1::shared_ptr<const spec_tree_internals::BasicNode<SetSpecTree> > >;
+             const std::shared_ptr<const spec_tree_internals::BasicNode<SetSpecTree> > >;
     extern template class WrappedForwardIterator<spec_tree_internals::BasicInnerNode<PlainTextSpecTree>::ConstIteratorTag,
-             const std::tr1::shared_ptr<const spec_tree_internals::BasicNode<PlainTextSpecTree> > >;
+             const std::shared_ptr<const spec_tree_internals::BasicNode<PlainTextSpecTree> > >;
     extern template class WrappedForwardIterator<spec_tree_internals::BasicInnerNode<ProvideSpecTree>::ConstIteratorTag,
-             const std::tr1::shared_ptr<const spec_tree_internals::BasicNode<ProvideSpecTree> > >;
+             const std::shared_ptr<const spec_tree_internals::BasicNode<ProvideSpecTree> > >;
     extern template class WrappedForwardIterator<spec_tree_internals::BasicInnerNode<SimpleURISpecTree>::ConstIteratorTag,
-             const std::tr1::shared_ptr<const spec_tree_internals::BasicNode<SimpleURISpecTree> > >;
+             const std::shared_ptr<const spec_tree_internals::BasicNode<SimpleURISpecTree> > >;
     extern template class WrappedForwardIterator<spec_tree_internals::BasicInnerNode<FetchableURISpecTree>::ConstIteratorTag,
-             const std::tr1::shared_ptr<const spec_tree_internals::BasicNode<FetchableURISpecTree> > >;
+             const std::shared_ptr<const spec_tree_internals::BasicNode<FetchableURISpecTree> > >;
     extern template class WrappedForwardIterator<spec_tree_internals::BasicInnerNode<LicenseSpecTree>::ConstIteratorTag,
-             const std::tr1::shared_ptr<const spec_tree_internals::BasicNode<LicenseSpecTree> > >;
+             const std::shared_ptr<const spec_tree_internals::BasicNode<LicenseSpecTree> > >;
 
 }
 

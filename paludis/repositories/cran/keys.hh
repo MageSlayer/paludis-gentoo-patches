@@ -36,7 +36,7 @@ namespace paludis
         {
             private:
                 const Environment * const _env;
-                const std::tr1::shared_ptr<PackageIDSequence> _v;
+                const std::shared_ptr<PackageIDSequence> _v;
 
                 const std::string _r;
                 const std::string _h;
@@ -46,10 +46,10 @@ namespace paludis
                 PackageIDSequenceKey(const Environment * const,
                         const std::string &, const std::string &, const MetadataKeyType);
 
-                virtual const std::tr1::shared_ptr<const PackageIDSequence> value() const
+                virtual const std::shared_ptr<const PackageIDSequence> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                void push_back(const std::tr1::shared_ptr<const PackageID> &);
+                void push_back(const std::shared_ptr<const PackageID> &);
 
                 virtual std::string pretty_print_flat(const Formatter<PackageID> &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -60,7 +60,7 @@ namespace paludis
         };
 
         class PackageIDKey :
-            public MetadataValueKey<std::tr1::shared_ptr<const PackageID> >
+            public MetadataValueKey<std::shared_ptr<const PackageID> >
         {
             private:
                 const CRANPackageID * const _v;
@@ -72,7 +72,7 @@ namespace paludis
             public:
                 PackageIDKey(const std::string &, const std::string &, const CRANPackageID * const, const MetadataKeyType);
 
-                virtual const std::tr1::shared_ptr<const PackageID> value() const
+                virtual const std::shared_ptr<const PackageID> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual std::string pretty_print(const Formatter<PackageID> &) const
@@ -93,11 +93,11 @@ namespace paludis
             public:
                 DepKey(const Environment * const,
                         const std::string &, const std::string &, const std::string &,
-                        const std::tr1::shared_ptr<const DependenciesLabelSequence> &, const MetadataKeyType);
+                        const std::shared_ptr<const DependenciesLabelSequence> &, const MetadataKeyType);
 
                 ~DepKey();
 
-                virtual const std::tr1::shared_ptr<const DependencySpecTree> value() const
+                virtual const std::shared_ptr<const DependencySpecTree> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual std::string pretty_print(const DependencySpecTree::ItemFormatter &) const
@@ -106,7 +106,7 @@ namespace paludis
                 virtual std::string pretty_print_flat(const DependencySpecTree::ItemFormatter &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual const std::tr1::shared_ptr<const DependenciesLabelSequence> initial_labels() const
+                virtual const std::shared_ptr<const DependenciesLabelSequence> initial_labels() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));

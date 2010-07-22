@@ -38,7 +38,7 @@ namespace test_cases
 
         void run()
         {
-            std::tr1::shared_ptr<FSEntry> w(new FSEntry(FSEntry::cwd() / "world_TEST_dir" / "world"));
+            std::shared_ptr<FSEntry> w(new FSEntry(FSEntry::cwd() / "world_TEST_dir" / "world"));
 
             {
                 TestEnvironment env;

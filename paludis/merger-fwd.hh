@@ -25,7 +25,7 @@
 #include <paludis/util/options-fwd.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/environment-fwd.hh>
-#include <tr1/functional>
+#include <functional>
 
 /** \file
  * Forward declarations for paludis/merger.hh .

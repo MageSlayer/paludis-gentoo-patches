@@ -22,7 +22,7 @@
 
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <tr1/functional>
+#include <functional>
 
 /** \file
  * Declarations for the ThreadPool class.
@@ -57,7 +57,7 @@ namespace paludis
             /**
              * Create a new thread in our pool.
              */
-            void create_thread(const std::tr1::function<void () throw ()> &);
+            void create_thread(const std::function<void () throw ()> &);
 
             /**
              * How many threads does our pool contain?

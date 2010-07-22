@@ -25,32 +25,32 @@ FilterHandler::~FilterHandler()
 {
 }
 
-std::tr1::shared_ptr<const RepositoryNameSet>
+std::shared_ptr<const RepositoryNameSet>
 AllFilterHandlerBase::repositories(const Environment * const,
-        const std::tr1::shared_ptr<const RepositoryNameSet> & s) const
+        const std::shared_ptr<const RepositoryNameSet> & s) const
 {
     return s;
 }
 
-std::tr1::shared_ptr<const CategoryNamePartSet>
+std::shared_ptr<const CategoryNamePartSet>
 AllFilterHandlerBase::categories(const Environment * const,
-        const std::tr1::shared_ptr<const RepositoryNameSet> &,
-        const std::tr1::shared_ptr<const CategoryNamePartSet> & s) const
+        const std::shared_ptr<const RepositoryNameSet> &,
+        const std::shared_ptr<const CategoryNamePartSet> & s) const
 {
     return s;
 }
 
-std::tr1::shared_ptr<const QualifiedPackageNameSet>
+std::shared_ptr<const QualifiedPackageNameSet>
 AllFilterHandlerBase::packages(const Environment * const,
-        const std::tr1::shared_ptr<const RepositoryNameSet> &,
-        const std::tr1::shared_ptr<const QualifiedPackageNameSet> & s) const
+        const std::shared_ptr<const RepositoryNameSet> &,
+        const std::shared_ptr<const QualifiedPackageNameSet> & s) const
 {
     return s;
 }
 
-std::tr1::shared_ptr<const PackageIDSet>
+std::shared_ptr<const PackageIDSet>
 AllFilterHandlerBase::ids(const Environment * const,
-        const std::tr1::shared_ptr<const PackageIDSet> & s) const
+        const std::shared_ptr<const PackageIDSet> & s) const
 {
     return s;
 }

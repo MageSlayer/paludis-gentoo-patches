@@ -58,47 +58,47 @@ namespace
     struct URILabelToValue
     {
         VALUE value;
-        std::tr1::shared_ptr<const URILabel> mm;
+        std::shared_ptr<const URILabel> mm;
 
-        URILabelToValue(const std::tr1::shared_ptr<const URILabel> & _m) :
+        URILabelToValue(const std::shared_ptr<const URILabel> & _m) :
             mm(_m)
         {
         }
 
         void visit(const URIMirrorsThenListedLabel &)
         {
-            value = Data_Wrap_Struct(c_uri_mirrors_then_listed_label, 0, &Common<std::tr1::shared_ptr<const URILabel> >::free,
-                    new std::tr1::shared_ptr<const URILabel>(mm));
+            value = Data_Wrap_Struct(c_uri_mirrors_then_listed_label, 0, &Common<std::shared_ptr<const URILabel> >::free,
+                    new std::shared_ptr<const URILabel>(mm));
         }
 
         void visit(const URIMirrorsOnlyLabel &)
         {
-            value = Data_Wrap_Struct(c_uri_mirrors_only_label, 0, &Common<std::tr1::shared_ptr<const URILabel> >::free,
-                    new std::tr1::shared_ptr<const URILabel>(mm));
+            value = Data_Wrap_Struct(c_uri_mirrors_only_label, 0, &Common<std::shared_ptr<const URILabel> >::free,
+                    new std::shared_ptr<const URILabel>(mm));
         }
 
         void visit(const URIListedOnlyLabel &)
         {
-            value = Data_Wrap_Struct(c_uri_listed_only_label, 0, &Common<std::tr1::shared_ptr<const URILabel> >::free,
-                    new std::tr1::shared_ptr<const URILabel>(mm));
+            value = Data_Wrap_Struct(c_uri_listed_only_label, 0, &Common<std::shared_ptr<const URILabel> >::free,
+                    new std::shared_ptr<const URILabel>(mm));
         }
 
         void visit(const URIListedThenMirrorsLabel &)
         {
-            value = Data_Wrap_Struct(c_uri_listed_then_mirrors_label, 0, &Common<std::tr1::shared_ptr<const URILabel> >::free,
-                    new std::tr1::shared_ptr<const URILabel>(mm));
+            value = Data_Wrap_Struct(c_uri_listed_then_mirrors_label, 0, &Common<std::shared_ptr<const URILabel> >::free,
+                    new std::shared_ptr<const URILabel>(mm));
         }
 
         void visit(const URILocalMirrorsOnlyLabel &)
         {
-            value = Data_Wrap_Struct(c_uri_local_mirrors_only_label, 0, &Common<std::tr1::shared_ptr<const URILabel> >::free,
-                    new std::tr1::shared_ptr<const URILabel>(mm));
+            value = Data_Wrap_Struct(c_uri_local_mirrors_only_label, 0, &Common<std::shared_ptr<const URILabel> >::free,
+                    new std::shared_ptr<const URILabel>(mm));
         }
 
         void visit(const URIManualOnlyLabel &)
         {
-            value = Data_Wrap_Struct(c_uri_manual_only_label, 0, &Common<std::tr1::shared_ptr<const URILabel> >::free,
-                    new std::tr1::shared_ptr<const URILabel>(mm));
+            value = Data_Wrap_Struct(c_uri_manual_only_label, 0, &Common<std::shared_ptr<const URILabel> >::free,
+                    new std::shared_ptr<const URILabel>(mm));
         }
     };
 
@@ -121,73 +121,73 @@ namespace
     VALUE
     uri_label_text(VALUE self)
     {
-        std::tr1::shared_ptr<const URILabel> * ptr;
-        Data_Get_Struct(self, std::tr1::shared_ptr<const URILabel>, ptr);
+        std::shared_ptr<const URILabel> * ptr;
+        Data_Get_Struct(self, std::shared_ptr<const URILabel>, ptr);
         return rb_str_new2((*ptr)->text().c_str());
     }
 
     struct DependenciesLabelToValue
     {
         VALUE value;
-        std::tr1::shared_ptr<const DependenciesLabel> mm;
+        std::shared_ptr<const DependenciesLabel> mm;
 
-        DependenciesLabelToValue(const std::tr1::shared_ptr<const DependenciesLabel> & _m) :
+        DependenciesLabelToValue(const std::shared_ptr<const DependenciesLabel> & _m) :
             mm(_m)
         {
         }
 
         void visit(const DependenciesBuildLabel &)
         {
-            value = Data_Wrap_Struct(c_dependencies_build_label, 0, &Common<std::tr1::shared_ptr<const DependenciesLabel> >::free,
-                    new std::tr1::shared_ptr<const DependenciesLabel>(mm));
+            value = Data_Wrap_Struct(c_dependencies_build_label, 0, &Common<std::shared_ptr<const DependenciesLabel> >::free,
+                    new std::shared_ptr<const DependenciesLabel>(mm));
         }
 
         void visit(const DependenciesTestLabel &)
         {
-            value = Data_Wrap_Struct(c_dependencies_test_label, 0, &Common<std::tr1::shared_ptr<const DependenciesLabel> >::free,
-                    new std::tr1::shared_ptr<const DependenciesLabel>(mm));
+            value = Data_Wrap_Struct(c_dependencies_test_label, 0, &Common<std::shared_ptr<const DependenciesLabel> >::free,
+                    new std::shared_ptr<const DependenciesLabel>(mm));
         }
 
         void visit(const DependenciesRunLabel &)
         {
-            value = Data_Wrap_Struct(c_dependencies_run_label, 0, &Common<std::tr1::shared_ptr<const DependenciesLabel> >::free,
-                    new std::tr1::shared_ptr<const DependenciesLabel>(mm));
+            value = Data_Wrap_Struct(c_dependencies_run_label, 0, &Common<std::shared_ptr<const DependenciesLabel> >::free,
+                    new std::shared_ptr<const DependenciesLabel>(mm));
         }
 
         void visit(const DependenciesPostLabel &)
         {
-            value = Data_Wrap_Struct(c_dependencies_post_label, 0, &Common<std::tr1::shared_ptr<const DependenciesLabel> >::free,
-                    new std::tr1::shared_ptr<const DependenciesLabel>(mm));
+            value = Data_Wrap_Struct(c_dependencies_post_label, 0, &Common<std::shared_ptr<const DependenciesLabel> >::free,
+                    new std::shared_ptr<const DependenciesLabel>(mm));
         }
 
         void visit(const DependenciesInstallLabel &)
         {
-            value = Data_Wrap_Struct(c_dependencies_install_label, 0, &Common<std::tr1::shared_ptr<const DependenciesLabel> >::free,
-                    new std::tr1::shared_ptr<const DependenciesLabel>(mm));
+            value = Data_Wrap_Struct(c_dependencies_install_label, 0, &Common<std::shared_ptr<const DependenciesLabel> >::free,
+                    new std::shared_ptr<const DependenciesLabel>(mm));
         }
 
         void visit(const DependenciesFetchLabel &)
         {
-            value = Data_Wrap_Struct(c_dependencies_fetch_label, 0, &Common<std::tr1::shared_ptr<const DependenciesLabel> >::free,
-                    new std::tr1::shared_ptr<const DependenciesLabel>(mm));
+            value = Data_Wrap_Struct(c_dependencies_fetch_label, 0, &Common<std::shared_ptr<const DependenciesLabel> >::free,
+                    new std::shared_ptr<const DependenciesLabel>(mm));
         }
 
         void visit(const DependenciesSuggestionLabel &)
         {
-            value = Data_Wrap_Struct(c_dependencies_suggestion_label, 0, &Common<std::tr1::shared_ptr<const DependenciesLabel> >::free,
-                    new std::tr1::shared_ptr<const DependenciesLabel>(mm));
+            value = Data_Wrap_Struct(c_dependencies_suggestion_label, 0, &Common<std::shared_ptr<const DependenciesLabel> >::free,
+                    new std::shared_ptr<const DependenciesLabel>(mm));
         }
 
         void visit(const DependenciesRecommendationLabel &)
         {
-            value = Data_Wrap_Struct(c_dependencies_recommendation_label, 0, &Common<std::tr1::shared_ptr<const DependenciesLabel> >::free,
-                    new std::tr1::shared_ptr<const DependenciesLabel>(mm));
+            value = Data_Wrap_Struct(c_dependencies_recommendation_label, 0, &Common<std::shared_ptr<const DependenciesLabel> >::free,
+                    new std::shared_ptr<const DependenciesLabel>(mm));
         }
 
         void visit(const DependenciesCompileAgainstLabel &)
         {
-            value = Data_Wrap_Struct(c_dependencies_compile_against_label, 0, &Common<std::tr1::shared_ptr<const DependenciesLabel> >::free,
-                    new std::tr1::shared_ptr<const DependenciesLabel>(mm));
+            value = Data_Wrap_Struct(c_dependencies_compile_against_label, 0, &Common<std::shared_ptr<const DependenciesLabel> >::free,
+                    new std::shared_ptr<const DependenciesLabel>(mm));
         }
     };
 
@@ -210,8 +210,8 @@ namespace
     VALUE
     dependencies_label_text(VALUE self)
     {
-        std::tr1::shared_ptr<const DependenciesLabel> * ptr;
-        Data_Get_Struct(self, std::tr1::shared_ptr<const DependenciesLabel>, ptr);
+        std::shared_ptr<const DependenciesLabel> * ptr;
+        Data_Get_Struct(self, std::shared_ptr<const DependenciesLabel>, ptr);
         return rb_str_new2((*ptr)->text().c_str());
     }
 
@@ -264,7 +264,7 @@ namespace
 }
 
 VALUE
-paludis::ruby::uri_label_to_value(const std::tr1::shared_ptr<const URILabel> & m)
+paludis::ruby::uri_label_to_value(const std::shared_ptr<const URILabel> & m)
 {
     try
     {
@@ -279,7 +279,7 @@ paludis::ruby::uri_label_to_value(const std::tr1::shared_ptr<const URILabel> & m
 }
 
 VALUE
-paludis::ruby::dependencies_label_to_value(const std::tr1::shared_ptr<const DependenciesLabel> & m)
+paludis::ruby::dependencies_label_to_value(const std::shared_ptr<const DependenciesLabel> & m)
 {
     try
     {
@@ -293,15 +293,15 @@ paludis::ruby::dependencies_label_to_value(const std::tr1::shared_ptr<const Depe
     }
 }
 
-std::tr1::shared_ptr<const DependenciesLabel>
+std::shared_ptr<const DependenciesLabel>
 paludis::ruby::value_to_dependencies_label(VALUE v)
 {
     try
     {
         if (rb_obj_is_kind_of(v, c_dependencies_label))
         {
-            std::tr1::shared_ptr<const DependenciesLabel> * ptr;
-            Data_Get_Struct(v, std::tr1::shared_ptr<const DependenciesLabel>, ptr);
+            std::shared_ptr<const DependenciesLabel> * ptr;
+            Data_Get_Struct(v, std::shared_ptr<const DependenciesLabel>, ptr);
             return *ptr;
         }
         else

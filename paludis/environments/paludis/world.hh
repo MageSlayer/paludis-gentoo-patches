@@ -25,7 +25,7 @@
 #include <paludis/name-fwd.hh>
 #include <paludis/spec_tree.hh>
 #include <paludis/environment-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 #include <string>
 
 namespace paludis
@@ -40,10 +40,10 @@ namespace paludis
                 bool _remove_string_from_world(const std::string &) const;
 
             public:
-                World(const Environment * const, const std::tr1::shared_ptr<const FSEntry> &);
+                World(const Environment * const, const std::shared_ptr<const FSEntry> &);
                 ~World();
 
-                const std::tr1::shared_ptr<const SetSpecTree> world_set() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::shared_ptr<const SetSpecTree> world_set() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 bool add_to_world(const SetName &) const;
                 bool add_to_world(const QualifiedPackageName &) const;
@@ -51,7 +51,7 @@ namespace paludis
                 bool remove_from_world(const SetName &) const;
                 bool remove_from_world(const QualifiedPackageName &) const;
 
-                std::tr1::shared_ptr<const FSEntry> location_if_set() const;
+                std::shared_ptr<const FSEntry> location_if_set() const;
 
                 void update_config_files_for_package_move(
                         const PackageDepSpec &, const QualifiedPackageName &) const;

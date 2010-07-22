@@ -64,7 +64,7 @@ DefaultSyncer::DefaultSyncer(const SyncerParams & params) :
     Log::get_instance()->message("syncer.protocol", ll_debug, lc_context) << "looking for syncer protocol '"
         + stringify(format) << "'";
 
-    std::tr1::shared_ptr<const FSEntrySequence> syncer_dirs(_environment->syncers_dirs());
+    std::shared_ptr<const FSEntrySequence> syncer_dirs(_environment->syncers_dirs());
     FSEntry syncer("/var/empty");
     bool ok(false);
     for (FSEntrySequence::ConstIterator d(syncer_dirs->begin()), d_end(syncer_dirs->end()) ;
@@ -87,9 +87,9 @@ DefaultSyncer::DefaultSyncer(const SyncerParams & params) :
 void
 DefaultSyncer::sync(const SyncOptions & opts) const
 {
-    std::tr1::shared_ptr<const FSEntrySequence> bashrc_files(_environment->bashrc_files());
-    std::tr1::shared_ptr<const FSEntrySequence> fetchers_dirs(_environment->fetchers_dirs());
-    std::tr1::shared_ptr<const FSEntrySequence> syncers_dirs(_environment->syncers_dirs());
+    std::shared_ptr<const FSEntrySequence> bashrc_files(_environment->bashrc_files());
+    std::shared_ptr<const FSEntrySequence> fetchers_dirs(_environment->fetchers_dirs());
+    std::shared_ptr<const FSEntrySequence> syncers_dirs(_environment->syncers_dirs());
 
     Command cmd(Command(stringify(_syncer) + " " + opts.options() + " '" + _local + "' '" + _remote + "'")
             .with_setenv("PALUDIS_ACTION", "sync")

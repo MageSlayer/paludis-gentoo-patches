@@ -99,7 +99,7 @@ namespace
     };
 
     void do_one_key(
-            const std::tr1::shared_ptr<const MetadataKey> & k,
+            const std::shared_ptr<const MetadataKey> & k,
             const PrintIDMetadataCommandLine & cmdline,
             const std::string & name_prefix
             )
@@ -131,8 +131,8 @@ namespace
 
 int
 PrintIDMetadataCommand::run(
-        const std::tr1::shared_ptr<Environment> & env,
-        const std::tr1::shared_ptr<const Sequence<std::string > > & args
+        const std::shared_ptr<Environment> & env,
+        const std::shared_ptr<const Sequence<std::string > > & args
         )
 {
     PrintIDMetadataCommandLine cmdline;
@@ -149,7 +149,7 @@ PrintIDMetadataCommand::run(
 
     PackageDepSpec spec(parse_user_package_dep_spec(*cmdline.begin_parameters(), env.get(), UserPackageDepSpecOptions()));
 
-    std::tr1::shared_ptr<const PackageIDSequence> entries(
+    std::shared_ptr<const PackageIDSequence> entries(
             (*env)[selection::AllVersionsSorted(generator::Matches(spec, MatchPackageOptions()))]);
 
     if (entries->empty())
@@ -165,7 +165,7 @@ PrintIDMetadataCommand::run(
     return EXIT_SUCCESS;
 }
 
-std::tr1::shared_ptr<args::ArgsHandler>
+std::shared_ptr<args::ArgsHandler>
 PrintIDMetadataCommand::make_doc_cmdline()
 {
     return make_shared_ptr(new PrintIDMetadataCommandLine);

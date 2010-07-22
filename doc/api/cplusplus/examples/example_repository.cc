@@ -35,7 +35,7 @@ int main(int argc, char * argv[])
                 "example_environment", "EXAMPLE_ENVIRONMENT_OPTIONS", "EXAMPLE_ENVIRONMENT_CMDLINE");
 
         /* We start with an Environment, respecting the user's '--environment' choice. */
-        std::tr1::shared_ptr<Environment> env(EnvironmentFactory::get_instance()->create(
+        std::shared_ptr<Environment> env(EnvironmentFactory::get_instance()->create(
                     CommandLine::get_instance()->a_environment.argument()));
 
         /* For each repository... */
@@ -61,9 +61,9 @@ int main(int argc, char * argv[])
              * packages, IDs and so on. These methods are used by
              * PackageDatabase::query, but are also sometimes of direct use to
              * clients. */
-            std::tr1::shared_ptr<const CategoryNamePartSet> cats((*r)->category_names());
+            std::shared_ptr<const CategoryNamePartSet> cats((*r)->category_names());
             cout << left << setw(30) << "    Number of categories:" << " " << cats->size() << endl;
-            std::tr1::shared_ptr<const PackageIDSequence> ids((*r)->package_ids(QualifiedPackageName("sys-apps/paludis")));
+            std::shared_ptr<const PackageIDSequence> ids((*r)->package_ids(QualifiedPackageName("sys-apps/paludis")));
             cout << left << setw(30) << "    IDs for sys-apps/paludis:" << " " <<
                 join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), " ") << endl;
 

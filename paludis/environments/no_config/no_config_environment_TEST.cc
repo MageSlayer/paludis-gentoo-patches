@@ -40,7 +40,7 @@ namespace test_cases
                         n::accept_unstable() = false,
                         n::disable_metadata_cache() = false,
                         n::extra_accept_keywords() = "",
-                        n::extra_params() = std::tr1::shared_ptr<Map<std::string, std::string> >(),
+                        n::extra_params() = std::shared_ptr<Map<std::string, std::string> >(),
                         n::extra_repository_dirs() = make_shared_ptr(new FSEntrySequence),
                         n::master_repository_name() = "",
                         n::profiles_if_not_auto() = "",

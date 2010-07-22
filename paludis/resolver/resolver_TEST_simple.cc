@@ -43,7 +43,7 @@
 #include <test/test_framework.hh>
 
 #include <list>
-#include <tr1/functional>
+#include <functional>
 #include <algorithm>
 #include <map>
 
@@ -71,7 +71,7 @@ namespace test_cases
 
         void run()
         {
-            std::tr1::shared_ptr<const Resolved> resolved(get_resolved("no-deps/target"));
+            std::shared_ptr<const Resolved> resolved(get_resolved("no-deps/target"));
             check_resolved(resolved,
                     n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                         .change(QualifiedPackageName("no-deps/target"))
@@ -96,7 +96,7 @@ namespace test_cases
 
         void run()
         {
-            std::tr1::shared_ptr<const Resolved> resolved(get_resolved("build-deps/target"));
+            std::shared_ptr<const Resolved> resolved(get_resolved("build-deps/target"));
 
             check_resolved(resolved,
                     n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
@@ -125,7 +125,7 @@ namespace test_cases
 
         void run()
         {
-            std::tr1::shared_ptr<const Resolved> resolved(get_resolved("run-deps/target"));
+            std::shared_ptr<const Resolved> resolved(get_resolved("run-deps/target"));
 
             check_resolved(resolved,
                     n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
@@ -154,7 +154,7 @@ namespace test_cases
 
         void run()
         {
-            std::tr1::shared_ptr<const Resolved> resolved(get_resolved("post-deps/target"));
+            std::shared_ptr<const Resolved> resolved(get_resolved("post-deps/target"));
 
             check_resolved(resolved,
                     n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()

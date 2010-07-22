@@ -34,7 +34,7 @@
 
 #include <iostream>
 #include <cstdlib>
-#include <tr1/functional>
+#include <functional>
 
 using namespace paludis;
 using namespace cave;
@@ -78,7 +78,7 @@ namespace
         }
     };
 
-    void format_id(const std::tr1::shared_ptr<const PackageID> & id)
+    void format_id(const std::shared_ptr<const PackageID> & id)
     {
         cout << format_general_s(f::owner_id(), stringify(*id));
     }
@@ -86,8 +86,8 @@ namespace
 
 int
 OwnerCommand::run(
-        const std::tr1::shared_ptr<Environment> & env,
-        const std::tr1::shared_ptr<const Sequence<std::string > > & args
+        const std::shared_ptr<Environment> & env,
+        const std::shared_ptr<const Sequence<std::string > > & args
         )
 {
     OwnerCommandLine cmdline;
@@ -105,7 +105,7 @@ OwnerCommand::run(
     return owner_common(env, cmdline.a_match.argument(), *cmdline.begin_parameters(), &format_id);
 }
 
-std::tr1::shared_ptr<args::ArgsHandler>
+std::shared_ptr<args::ArgsHandler>
 OwnerCommand::make_doc_cmdline()
 {
     return make_shared_ptr(new OwnerCommandLine);

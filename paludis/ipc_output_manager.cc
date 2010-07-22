@@ -41,7 +41,7 @@
 #include <paludis/create_output_manager_info.hh>
 #include <paludis/serialise.hh>
 #include <paludis/environment.hh>
-#include <tr1/functional>
+#include <functional>
 #include <vector>
 #include <cstdlib>
 #include <cstring>
@@ -56,11 +56,11 @@ namespace paludis
     template <>
     struct Implementation<IPCOutputManager>
     {
-        std::tr1::shared_ptr<SafeOFStream> stdout_stream;
-        std::tr1::shared_ptr<SafeOFStream> stderr_stream;
+        std::shared_ptr<SafeOFStream> stdout_stream;
+        std::shared_ptr<SafeOFStream> stderr_stream;
 
-        std::tr1::shared_ptr<SafeIFStream> pipe_command_read_stream;
-        std::tr1::shared_ptr<SafeOFStream> pipe_command_write_stream;
+        std::shared_ptr<SafeIFStream> pipe_command_read_stream;
+        std::shared_ptr<SafeOFStream> pipe_command_write_stream;
 
         Implementation(int r, int w) :
             pipe_command_write_stream(new SafeOFStream(w))
@@ -181,17 +181,17 @@ namespace paludis
     struct Implementation<IPCInputManager>
     {
         const Environment * const env;
-        const std::tr1::function<void (const std::tr1::shared_ptr<OutputManager> &)> on_create;
+        const std::function<void (const std::shared_ptr<OutputManager> &)> on_create;
 
         mutable Mutex mutex;
-        std::tr1::shared_ptr<OutputManager> output_manager;
+        std::shared_ptr<OutputManager> output_manager;
 
         Pipe stdout_pipe, stderr_pipe, finished_pipe;
 
-        std::tr1::shared_ptr<Thread> copy_thread;
+        std::shared_ptr<Thread> copy_thread;
 
         Implementation(const Environment * const e,
-                const std::tr1::function<void (const std::tr1::shared_ptr<OutputManager> &)> & c) :
+                const std::function<void (const std::shared_ptr<OutputManager> &)> & c) :
             env(e),
             on_create(c)
         {
@@ -208,7 +208,7 @@ namespace paludis
 }
 
 IPCInputManager::IPCInputManager(const Environment * const e,
-        const std::tr1::function<void (const std::tr1::shared_ptr<OutputManager> &)> & c) :
+        const std::function<void (const std::shared_ptr<OutputManager> &)> & c) :
     PrivateImplementationPattern<IPCInputManager>(new Implementation<IPCInputManager>(e, c))
 {
 }
@@ -220,10 +220,10 @@ IPCInputManager::~IPCInputManager()
         throw InternalError(PALUDIS_HERE, "write failed");
 }
 
-const std::tr1::function<std::string (const std::string &)>
+const std::function<std::string (const std::string &)>
 IPCInputManager::pipe_command_handler()
 {
-    return std::tr1::bind(&IPCInputManager::_pipe_command_handler, this, std::tr1::placeholders::_1);
+    return std::bind(&IPCInputManager::_pipe_command_handler, this, std::placeholders::_1);
 }
 
 std::string
@@ -249,7 +249,7 @@ IPCInputManager::_pipe_command_handler(const std::string & s)
         std::stringstream stream(tokens[2]);
         Deserialiser deserialiser(_imp->env, stream);
         Deserialisation deserialisation("CreateOutputManagerInfo", deserialiser);
-        const std::tr1::shared_ptr<CreateOutputManagerInfo> i(CreateOutputManagerInfo::deserialise(deserialisation));
+        const std::shared_ptr<CreateOutputManagerInfo> i(CreateOutputManagerInfo::deserialise(deserialisation));
 
         {
             Lock lock(_imp->mutex);
@@ -261,7 +261,7 @@ IPCInputManager::_pipe_command_handler(const std::string & s)
                 _imp->on_create(_imp->output_manager);
         }
 
-        _imp->copy_thread.reset(new Thread(std::tr1::bind(&IPCInputManager::_copy_thread, this)));
+        _imp->copy_thread.reset(new Thread(std::bind(&IPCInputManager::_copy_thread, this)));
 
         return "O 1 " + stringify(_imp->stdout_pipe.write_fd()) + " " + stringify(_imp->stderr_pipe.write_fd());
     }
@@ -361,7 +361,7 @@ IPCInputManager::_copy_thread()
     }
 }
 
-const std::tr1::shared_ptr<OutputManager>
+const std::shared_ptr<OutputManager>
 IPCInputManager::underlying_output_manager_if_constructed() const
 {
     Lock lock(_imp->mutex);
@@ -374,15 +374,15 @@ namespace paludis
     struct Implementation<OutputManagerFromIPC>
     {
         const Environment * const env;
-        const std::tr1::shared_ptr<const PackageID> id;
+        const std::shared_ptr<const PackageID> id;
         const OutputExclusivity exclusivity;
         const ClientOutputFeatures client_output_features;
 
         int read_fd, write_fd;
 
-        std::tr1::shared_ptr<OutputManager> result;
+        std::shared_ptr<OutputManager> result;
 
-        Implementation(const Environment * const e, const std::tr1::shared_ptr<const PackageID> & i,
+        Implementation(const Environment * const e, const std::shared_ptr<const PackageID> & i,
                 const OutputExclusivity x, const ClientOutputFeatures & c) :
             env(e),
             id(i),
@@ -405,7 +405,7 @@ namespace paludis
 }
 
 OutputManagerFromIPC::OutputManagerFromIPC(const Environment * const e,
-        const std::tr1::shared_ptr<const PackageID> & i,
+        const std::shared_ptr<const PackageID> & i,
         const OutputExclusivity x,
         const ClientOutputFeatures & c) :
     PrivateImplementationPattern<OutputManagerFromIPC>(new Implementation<OutputManagerFromIPC>(e, i, x, c))
@@ -416,7 +416,7 @@ OutputManagerFromIPC::~OutputManagerFromIPC()
 {
 }
 
-const std::tr1::shared_ptr<OutputManager>
+const std::shared_ptr<OutputManager>
 OutputManagerFromIPC::operator() (const Action & a)
 {
     if (! _imp->result)
@@ -427,7 +427,7 @@ OutputManagerFromIPC::operator() (const Action & a)
     return _imp->result;
 }
 
-const std::tr1::shared_ptr<OutputManager>
+const std::shared_ptr<OutputManager>
 OutputManagerFromIPC::output_manager_if_constructed()
 {
     return _imp->result;

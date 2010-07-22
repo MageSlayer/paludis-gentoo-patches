@@ -36,7 +36,7 @@ using namespace paludis::resolver;
 
 Decision::~Decision() = default;
 
-const std::tr1::shared_ptr<Decision>
+const std::shared_ptr<Decision>
 Decision::deserialise(Deserialisation & d)
 {
     if (d.class_name() == "NothingNoChangeDecision")
@@ -52,7 +52,7 @@ Decision::deserialise(Deserialisation & d)
         Deserialisator v(d, "ExistingNoChangeDecision");
         return make_shared_ptr(new ExistingNoChangeDecision(
                     v.member<Resolvent>("resolvent"),
-                    v.member<std::tr1::shared_ptr<const PackageID> >("existing_id"),
+                    v.member<std::shared_ptr<const PackageID> >("existing_id"),
                     v.member<bool>("is_same"),
                     v.member<bool>("is_same_version"),
                     v.member<bool>("is_transient"),
@@ -79,7 +79,7 @@ Decision::deserialise(Deserialisation & d)
         throw InternalError(PALUDIS_HERE, "unknown class '" + stringify(d.class_name()) + "'");
 }
 
-const std::tr1::shared_ptr<ConfirmableDecision>
+const std::shared_ptr<ConfirmableDecision>
 ConfirmableDecision::deserialise(Deserialisation & d)
 {
     if (d.class_name() == "ChangesToMakeDecision")
@@ -98,7 +98,7 @@ ConfirmableDecision::deserialise(Deserialisation & d)
         throw InternalError(PALUDIS_HERE, "unknown class '" + stringify(d.class_name()) + "'");
 }
 
-const std::tr1::shared_ptr<ChangeOrRemoveDecision>
+const std::shared_ptr<ChangeOrRemoveDecision>
 ChangeOrRemoveDecision::deserialise(Deserialisation & d)
 {
     if (d.class_name() == "ChangesToMakeDecision")
@@ -113,32 +113,32 @@ ChangeOrRemoveDecision::deserialise(Deserialisation & d)
         throw InternalError(PALUDIS_HERE, "unknown class '" + stringify(d.class_name()) + "'");
 }
 
-const std::tr1::shared_ptr<ChangesToMakeDecision>
+const std::shared_ptr<ChangesToMakeDecision>
 ChangesToMakeDecision::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "ChangesToMakeDecision");
-    std::tr1::shared_ptr<ChangesToMakeDecision> result(new ChangesToMakeDecision(
+    std::shared_ptr<ChangesToMakeDecision> result(new ChangesToMakeDecision(
                 v.member<Resolvent>("resolvent"),
-                v.member<std::tr1::shared_ptr<const PackageID> >("origin_id"),
+                v.member<std::shared_ptr<const PackageID> >("origin_id"),
                 v.member<bool>("best"),
                 destringify<ChangeType>(v.member<std::string>("change_type")),
                 v.member<bool>("taken"),
-                v.member<std::tr1::shared_ptr<const Destination> >("destination"),
-                std::tr1::function<void (const ChangesToMakeDecision &)>()
+                v.member<std::shared_ptr<const Destination> >("destination"),
+                std::function<void (const ChangesToMakeDecision &)>()
                 ));
 
     {
-        const std::tr1::shared_ptr<Deserialisation> dn(v.find_remove_member("required_confirmations_if_any"));
+        const std::shared_ptr<Deserialisation> dn(v.find_remove_member("required_confirmations_if_any"));
         if (! dn->null())
         {
             Deserialisator vv(*dn, "c");
             for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
-                result->add_required_confirmation(vv.member<std::tr1::shared_ptr<RequiredConfirmation> >(stringify(n)));
+                result->add_required_confirmation(vv.member<std::shared_ptr<RequiredConfirmation> >(stringify(n)));
         }
     }
 
     {
-        const std::tr1::shared_ptr<Deserialisation> dn(v.find_remove_member("if_via_new_binary_in"));
+        const std::shared_ptr<Deserialisation> dn(v.find_remove_member("if_via_new_binary_in"));
         if (! dn->null())
             result->set_via_new_binary_in(RepositoryName(dn->string_value()));
     }
@@ -146,12 +146,12 @@ ChangesToMakeDecision::deserialise(Deserialisation & d)
     return result;
 }
 
-const std::tr1::shared_ptr<UnableToMakeDecision>
+const std::shared_ptr<UnableToMakeDecision>
 UnableToMakeDecision::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "UnableToMakeDecision");
 
-    std::tr1::shared_ptr<UnsuitableCandidates> unsuitable_candidates(new UnsuitableCandidates);
+    std::shared_ptr<UnsuitableCandidates> unsuitable_candidates(new UnsuitableCandidates);
     Deserialisator vv(*v.find_remove_member("unsuitable_candidates"), "c");
     for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
         unsuitable_candidates->push_back(vv.member<UnsuitableCandidate>(stringify(n)));
@@ -163,31 +163,31 @@ UnableToMakeDecision::deserialise(Deserialisation & d)
                 ));
 }
 
-const std::tr1::shared_ptr<RemoveDecision>
+const std::shared_ptr<RemoveDecision>
 RemoveDecision::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "RemoveDecision");
 
-    std::tr1::shared_ptr<PackageIDSequence> ids(new PackageIDSequence);
+    std::shared_ptr<PackageIDSequence> ids(new PackageIDSequence);
     {
         Deserialisator vv(*v.find_remove_member("ids"), "c");
         for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
-            ids->push_back(vv.member<std::tr1::shared_ptr<const PackageID> >(stringify(n)));
+            ids->push_back(vv.member<std::shared_ptr<const PackageID> >(stringify(n)));
     }
 
-    const std::tr1::shared_ptr<RemoveDecision> result(new RemoveDecision(
+    const std::shared_ptr<RemoveDecision> result(new RemoveDecision(
                 v.member<Resolvent>("resolvent"),
                 ids,
                 v.member<bool>("taken")
                 ));
 
     {
-        const std::tr1::shared_ptr<Deserialisation> dn(v.find_remove_member("required_confirmations_if_any"));
+        const std::shared_ptr<Deserialisation> dn(v.find_remove_member("required_confirmations_if_any"));
         if (! dn->null())
         {
             Deserialisator vv(*dn, "c");
             for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
-                result->add_required_confirmation(vv.member<std::tr1::shared_ptr<RequiredConfirmation> >(stringify(n)));
+                result->add_required_confirmation(vv.member<std::shared_ptr<RequiredConfirmation> >(stringify(n)));
         }
     }
 
@@ -244,14 +244,14 @@ namespace paludis
     struct Implementation<ExistingNoChangeDecision>
     {
         const Resolvent resolvent;
-        const std::tr1::shared_ptr<const PackageID> existing_id;
+        const std::shared_ptr<const PackageID> existing_id;
         const bool is_same;
         const bool is_same_version;
         const bool is_transient;
         const bool taken;
 
         Implementation(const Resolvent & l,
-                const std::tr1::shared_ptr<const PackageID> & e,
+                const std::shared_ptr<const PackageID> & e,
                 const bool s, const bool v, const bool r, const bool t) :
             resolvent(l),
             existing_id(e),
@@ -264,7 +264,7 @@ namespace paludis
     };
 }
 
-ExistingNoChangeDecision::ExistingNoChangeDecision(const Resolvent & l, const std::tr1::shared_ptr<const PackageID> & e,
+ExistingNoChangeDecision::ExistingNoChangeDecision(const Resolvent & l, const std::shared_ptr<const PackageID> & e,
         const bool s, const bool v, const bool r, const bool t) :
     PrivateImplementationPattern<ExistingNoChangeDecision>(new Implementation<ExistingNoChangeDecision>(
                 l, e, s, v, r, t))
@@ -273,7 +273,7 @@ ExistingNoChangeDecision::ExistingNoChangeDecision(const Resolvent & l, const st
 
 ExistingNoChangeDecision::~ExistingNoChangeDecision() = default;
 
-const std::tr1::shared_ptr<const PackageID>
+const std::shared_ptr<const PackageID>
 ExistingNoChangeDecision::existing_id() const
 {
     return _imp->existing_id;
@@ -328,21 +328,21 @@ namespace paludis
     struct Implementation<ChangesToMakeDecision>
     {
         const Resolvent resolvent;
-        const std::tr1::shared_ptr<const PackageID> origin_id;
+        const std::shared_ptr<const PackageID> origin_id;
         const bool best;
         ChangeType change_type;
         const bool taken;
-        std::tr1::shared_ptr<const Destination> destination;
-        std::tr1::shared_ptr<RequiredConfirmations> required_confirmations;
-        std::tr1::shared_ptr<RepositoryName> if_via_new_binary_in;
+        std::shared_ptr<const Destination> destination;
+        std::shared_ptr<RequiredConfirmations> required_confirmations;
+        std::shared_ptr<RepositoryName> if_via_new_binary_in;
 
         Implementation(
                 const Resolvent & l,
-                const std::tr1::shared_ptr<const PackageID> & o,
+                const std::shared_ptr<const PackageID> & o,
                 const bool b,
                 const ChangeType c,
                 const bool t,
-                const std::tr1::shared_ptr<const Destination> & d) :
+                const std::shared_ptr<const Destination> & d) :
             resolvent(l),
             origin_id(o),
             best(b),
@@ -356,12 +356,12 @@ namespace paludis
 
 ChangesToMakeDecision::ChangesToMakeDecision(
         const Resolvent & r,
-        const std::tr1::shared_ptr<const PackageID> & o,
+        const std::shared_ptr<const PackageID> & o,
         const bool b,
         const ChangeType c,
         const bool t,
-        const std::tr1::shared_ptr<const Destination> & d,
-        const std::tr1::function<void (ChangesToMakeDecision &)> & f) :
+        const std::shared_ptr<const Destination> & d,
+        const std::function<void (ChangesToMakeDecision &)> & f) :
     PrivateImplementationPattern<ChangesToMakeDecision>(new Implementation<ChangesToMakeDecision>(r, o, b, c, t, d))
 {
     if (f)
@@ -370,33 +370,33 @@ ChangesToMakeDecision::ChangesToMakeDecision(
 
 ChangesToMakeDecision::~ChangesToMakeDecision() = default;
 
-const std::tr1::shared_ptr<const Destination>
+const std::shared_ptr<const Destination>
 ChangesToMakeDecision::destination() const
 {
     return _imp->destination;
 }
 
 void
-ChangesToMakeDecision::set_destination(const std::tr1::shared_ptr<const Destination> & d)
+ChangesToMakeDecision::set_destination(const std::shared_ptr<const Destination> & d)
 {
     _imp->destination = d;
 }
 
-const std::tr1::shared_ptr<const RequiredConfirmations>
+const std::shared_ptr<const RequiredConfirmations>
 ChangesToMakeDecision::required_confirmations_if_any() const
 {
     return _imp->required_confirmations;
 }
 
 void
-ChangesToMakeDecision::add_required_confirmation(const std::tr1::shared_ptr<const RequiredConfirmation> & r)
+ChangesToMakeDecision::add_required_confirmation(const std::shared_ptr<const RequiredConfirmation> & r)
 {
     if (! _imp->required_confirmations)
         _imp->required_confirmations.reset(new RequiredConfirmations);
     _imp->required_confirmations->push_back(r);
 }
 
-const std::tr1::shared_ptr<const PackageID>
+const std::shared_ptr<const PackageID>
 ChangesToMakeDecision::origin_id() const
 {
     return _imp->origin_id;
@@ -432,7 +432,7 @@ ChangesToMakeDecision::taken() const
     return _imp->taken;
 }
 
-const std::tr1::shared_ptr<const RepositoryName>
+const std::shared_ptr<const RepositoryName>
 ChangesToMakeDecision::if_via_new_binary_in() const
 {
     return _imp->if_via_new_binary_in;
@@ -466,11 +466,11 @@ namespace paludis
     struct Implementation<UnableToMakeDecision>
     {
         const Resolvent resolvent;
-        const std::tr1::shared_ptr<const UnsuitableCandidates> unsuitable_candidates;
+        const std::shared_ptr<const UnsuitableCandidates> unsuitable_candidates;
         const bool taken;
 
         Implementation(const Resolvent & l,
-                const std::tr1::shared_ptr<const UnsuitableCandidates> & u, const bool t) :
+                const std::shared_ptr<const UnsuitableCandidates> & u, const bool t) :
             resolvent(l),
             unsuitable_candidates(u),
             taken(t)
@@ -481,7 +481,7 @@ namespace paludis
 
 UnableToMakeDecision::UnableToMakeDecision(
         const Resolvent & l,
-        const std::tr1::shared_ptr<const UnsuitableCandidates> & u,
+        const std::shared_ptr<const UnsuitableCandidates> & u,
         const bool t) :
     PrivateImplementationPattern<UnableToMakeDecision>(new Implementation<UnableToMakeDecision>(l, u, t))
 {
@@ -489,7 +489,7 @@ UnableToMakeDecision::UnableToMakeDecision(
 
 UnableToMakeDecision::~UnableToMakeDecision() = default;
 
-const std::tr1::shared_ptr<const UnsuitableCandidates>
+const std::shared_ptr<const UnsuitableCandidates>
 UnableToMakeDecision::unsuitable_candidates() const
 {
     return _imp->unsuitable_candidates;
@@ -523,11 +523,11 @@ namespace paludis
     struct Implementation<RemoveDecision>
     {
         const Resolvent resolvent;
-        const std::tr1::shared_ptr<const PackageIDSequence> ids;
+        const std::shared_ptr<const PackageIDSequence> ids;
         const bool taken;
-        std::tr1::shared_ptr<RequiredConfirmations> required_confirmations;
+        std::shared_ptr<RequiredConfirmations> required_confirmations;
 
-        Implementation(const Resolvent & l, const std::tr1::shared_ptr<const PackageIDSequence> & i, const bool t) :
+        Implementation(const Resolvent & l, const std::shared_ptr<const PackageIDSequence> & i, const bool t) :
             resolvent(l),
             ids(i),
             taken(t)
@@ -536,7 +536,7 @@ namespace paludis
     };
 }
 
-RemoveDecision::RemoveDecision(const Resolvent & l, const std::tr1::shared_ptr<const PackageIDSequence> & i, const bool t) :
+RemoveDecision::RemoveDecision(const Resolvent & l, const std::shared_ptr<const PackageIDSequence> & i, const bool t) :
     PrivateImplementationPattern<RemoveDecision>(new Implementation<RemoveDecision>(l, i, t))
 {
 }
@@ -555,20 +555,20 @@ RemoveDecision::taken() const
     return _imp->taken;
 }
 
-const std::tr1::shared_ptr<const PackageIDSequence>
+const std::shared_ptr<const PackageIDSequence>
 RemoveDecision::ids() const
 {
     return _imp->ids;
 }
 
-const std::tr1::shared_ptr<const RequiredConfirmations>
+const std::shared_ptr<const RequiredConfirmations>
 RemoveDecision::required_confirmations_if_any() const
 {
     return _imp->required_confirmations;
 }
 
 void
-RemoveDecision::add_required_confirmation(const std::tr1::shared_ptr<const RequiredConfirmation> & r)
+RemoveDecision::add_required_confirmation(const std::shared_ptr<const RequiredConfirmation> & r)
 {
     if (! _imp->required_confirmations)
         _imp->required_confirmations.reset(new RequiredConfirmations);
@@ -592,12 +592,12 @@ namespace paludis
     struct Implementation<BreakDecision>
     {
         const Resolvent resolvent;
-        const std::tr1::shared_ptr<const PackageID> existing_id;
+        const std::shared_ptr<const PackageID> existing_id;
         const bool taken;
-        std::tr1::shared_ptr<RequiredConfirmations> required_confirmations;
+        std::shared_ptr<RequiredConfirmations> required_confirmations;
 
         Implementation(const Resolvent & l,
-                const std::tr1::shared_ptr<const PackageID> & e,
+                const std::shared_ptr<const PackageID> & e,
                 const bool t) :
             resolvent(l),
             existing_id(e),
@@ -607,7 +607,7 @@ namespace paludis
     };
 }
 
-BreakDecision::BreakDecision(const Resolvent & l, const std::tr1::shared_ptr<const PackageID> & e, const bool t) :
+BreakDecision::BreakDecision(const Resolvent & l, const std::shared_ptr<const PackageID> & e, const bool t) :
     PrivateImplementationPattern<BreakDecision>(new Implementation<BreakDecision>(
                 l, e, t))
 {
@@ -615,7 +615,7 @@ BreakDecision::BreakDecision(const Resolvent & l, const std::tr1::shared_ptr<con
 
 BreakDecision::~BreakDecision() = default;
 
-const std::tr1::shared_ptr<const PackageID>
+const std::shared_ptr<const PackageID>
 BreakDecision::existing_id() const
 {
     return _imp->existing_id;
@@ -633,14 +633,14 @@ BreakDecision::taken() const
     return _imp->taken;
 }
 
-const std::tr1::shared_ptr<const RequiredConfirmations>
+const std::shared_ptr<const RequiredConfirmations>
 BreakDecision::required_confirmations_if_any() const
 {
     return _imp->required_confirmations;
 }
 
 void
-BreakDecision::add_required_confirmation(const std::tr1::shared_ptr<const RequiredConfirmation> & r)
+BreakDecision::add_required_confirmation(const std::shared_ptr<const RequiredConfirmation> & r)
 {
     if (! _imp->required_confirmations)
         _imp->required_confirmations.reset(new RequiredConfirmations);
@@ -657,23 +657,23 @@ BreakDecision::serialise(Serialiser & s) const
         ;
 }
 
-const std::tr1::shared_ptr<BreakDecision>
+const std::shared_ptr<BreakDecision>
 BreakDecision::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "BreakDecision");
-    std::tr1::shared_ptr<BreakDecision> result(new BreakDecision(
+    std::shared_ptr<BreakDecision> result(new BreakDecision(
                 v.member<Resolvent>("resolvent"),
-                v.member<std::tr1::shared_ptr<const PackageID> >("existing_id"),
+                v.member<std::shared_ptr<const PackageID> >("existing_id"),
                 v.member<bool>("taken")
                 ));
 
     {
-        const std::tr1::shared_ptr<Deserialisation> dn(v.find_remove_member("required_confirmations_if_any"));
+        const std::shared_ptr<Deserialisation> dn(v.find_remove_member("required_confirmations_if_any"));
         if (! dn->null())
         {
             Deserialisator vv(*dn, "c");
             for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
-                result->add_required_confirmation(vv.member<std::tr1::shared_ptr<RequiredConfirmation> >(stringify(n)));
+                result->add_required_confirmation(vv.member<std::shared_ptr<RequiredConfirmation> >(stringify(n)));
         }
     }
 

@@ -35,7 +35,7 @@ using namespace paludis;
 
 namespace
 {
-    std::string from_keys(const std::tr1::shared_ptr<const Map<std::string, std::string> > & m,
+    std::string from_keys(const std::shared_ptr<const Map<std::string, std::string> > & m,
             const std::string & k)
     {
         Map<std::string, std::string>::ConstIterator mm(m->find(k));
@@ -55,13 +55,13 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "cran");
             keys->insert("library", "cran_repository_TEST_dir/library");
             keys->insert("location", "cran_repository_TEST_dir/repo1");
             keys->insert("builddir", "cran_repository_TEST_dir/tmp");
-            std::tr1::shared_ptr<Repository> repo(CRANRepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(CRANRepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             TEST_CHECK(repo->has_category_named(CategoryNamePart("cran")));
             TEST_CHECK(repo->has_package_named(QualifiedPackageName("cran/testpackage1")));
             TEST_CHECK(repo->has_package_named(QualifiedPackageName("cran/testpackage2")));
@@ -75,13 +75,13 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format",   "cran");
             keys->insert("library", "cran_repository_TEST_dir/library");
             keys->insert("location", "cran_repository_TEST_dir/repo2");
             keys->insert("builddir", "cran_repository_TEST_dir/tmp");
-            std::tr1::shared_ptr<Repository> repo(CRANRepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(CRANRepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             TEST_CHECK(repo->has_package_named(QualifiedPackageName("cran/testbundle")));
             TEST_CHECK(repo->has_package_named(QualifiedPackageName("cran/bundlepkg1")));
             TEST_CHECK(repo->has_package_named(QualifiedPackageName("cran/bundlepkg2")));

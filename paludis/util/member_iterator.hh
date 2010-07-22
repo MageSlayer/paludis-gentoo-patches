@@ -23,7 +23,7 @@
 
 #include <paludis/util/member_iterator-fwd.hh>
 #include <paludis/util/operators.hh>
-#include <tr1/type_traits>
+#include <type_traits>
 
 namespace paludis
 {
@@ -31,9 +31,9 @@ namespace paludis
     struct FirstIteratorTypes
     {
         typedef MemberIterator<
-            typename std::tr1::remove_reference<typename std::iterator_traits<Iterator_>::value_type>::type::first_type,
+            typename std::remove_reference<typename std::iterator_traits<Iterator_>::value_type>::type::first_type,
             Iterator_,
-            &std::tr1::remove_reference<typename std::iterator_traits<Iterator_>::value_type>::type::first>
+            &std::remove_reference<typename std::iterator_traits<Iterator_>::value_type>::type::first>
                 Type;
     };
 
@@ -41,9 +41,9 @@ namespace paludis
     struct SecondIteratorTypes
     {
         typedef MemberIterator<
-            typename std::tr1::remove_reference<typename std::iterator_traits<Iterator_>::value_type>::type::second_type,
+            typename std::remove_reference<typename std::iterator_traits<Iterator_>::value_type>::type::second_type,
             Iterator_,
-            &std::tr1::remove_reference<typename std::iterator_traits<Iterator_>::value_type>::type::second>
+            &std::remove_reference<typename std::iterator_traits<Iterator_>::value_type>::type::second>
                 Type;
     };
 
@@ -55,7 +55,7 @@ namespace paludis
      * \since 0.26
      */
     template <typename Value_, typename Iterator_,
-             Value_ std::tr1::remove_reference<typename std::iterator_traits<Iterator_>::value_type>::type::* member_>
+             Value_ std::remove_reference<typename std::iterator_traits<Iterator_>::value_type>::type::* member_>
     class MemberIterator :
         public equality_operators::HasEqualityOperators
     {
@@ -77,9 +77,9 @@ namespace paludis
             ///\name Standard library typedefs
             ///\{
 
-            typedef typename std::tr1::remove_const<typename std::tr1::remove_reference<Value_>::type>::type value_type;
-            typedef const typename std::tr1::remove_reference<Value_>::type & reference;
-            typedef const typename std::tr1::remove_reference<Value_>::type * pointer;
+            typedef typename std::remove_const<typename std::remove_reference<Value_>::type>::type value_type;
+            typedef const typename std::remove_reference<Value_>::type & reference;
+            typedef const typename std::remove_reference<Value_>::type * pointer;
             typedef std::ptrdiff_t difference_type;
             typedef std::forward_iterator_tag iterator_category;
 

@@ -364,7 +364,7 @@ namespace paludis
         }
 
         template <typename T_>
-        static const T_ & depointer(const std::tr1::shared_ptr<T_> & t)
+        static const T_ & depointer(const std::shared_ptr<T_> & t)
         {
             return *t;
         }
@@ -380,7 +380,7 @@ namespace paludis
 
             if (done.size() < c)
             {
-                std::tr1::shared_ptr<NoGraphTopologicalOrderExistsError::RemainingNodes> r(
+                std::shared_ptr<NoGraphTopologicalOrderExistsError::RemainingNodes> r(
                         new NoGraphTopologicalOrderExistsError::RemainingNodes);
                 for (typename DirectedGraph<Node_, Edge_, Comparator_>::NodeConstIterator n(g.begin_nodes()), n_end(g.end_nodes()) ; n != n_end ; ++n)
                     if (done.end() == done.find(*n))

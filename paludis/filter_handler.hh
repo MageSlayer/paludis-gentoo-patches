@@ -26,7 +26,7 @@
 #include <paludis/environment-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/util/attributes.hh>
-#include <tr1/memory>
+#include <memory>
 
 namespace paludis
 {
@@ -37,46 +37,46 @@ namespace paludis
 
             virtual std::string as_string() const = 0;
 
-            virtual std::tr1::shared_ptr<const RepositoryNameSet> repositories(
+            virtual std::shared_ptr<const RepositoryNameSet> repositories(
                     const Environment * const,
-                    const std::tr1::shared_ptr<const RepositoryNameSet> &) const = 0;
+                    const std::shared_ptr<const RepositoryNameSet> &) const = 0;
 
-            virtual std::tr1::shared_ptr<const CategoryNamePartSet> categories(
+            virtual std::shared_ptr<const CategoryNamePartSet> categories(
                     const Environment * const,
-                    const std::tr1::shared_ptr<const RepositoryNameSet> &,
-                    const std::tr1::shared_ptr<const CategoryNamePartSet> &) const = 0;
+                    const std::shared_ptr<const RepositoryNameSet> &,
+                    const std::shared_ptr<const CategoryNamePartSet> &) const = 0;
 
-            virtual std::tr1::shared_ptr<const QualifiedPackageNameSet> packages(
+            virtual std::shared_ptr<const QualifiedPackageNameSet> packages(
                     const Environment * const,
-                    const std::tr1::shared_ptr<const RepositoryNameSet> &,
-                    const std::tr1::shared_ptr<const QualifiedPackageNameSet> &) const = 0;
+                    const std::shared_ptr<const RepositoryNameSet> &,
+                    const std::shared_ptr<const QualifiedPackageNameSet> &) const = 0;
 
-            virtual std::tr1::shared_ptr<const PackageIDSet> ids(
+            virtual std::shared_ptr<const PackageIDSet> ids(
                     const Environment * const,
-                    const std::tr1::shared_ptr<const PackageIDSet> &) const = 0;
+                    const std::shared_ptr<const PackageIDSet> &) const = 0;
     };
 
     class PALUDIS_VISIBLE AllFilterHandlerBase :
         public FilterHandler
     {
         public:
-            virtual std::tr1::shared_ptr<const RepositoryNameSet> repositories(
+            virtual std::shared_ptr<const RepositoryNameSet> repositories(
                     const Environment * const,
-                    const std::tr1::shared_ptr<const RepositoryNameSet> &) const;
+                    const std::shared_ptr<const RepositoryNameSet> &) const;
 
-            virtual std::tr1::shared_ptr<const CategoryNamePartSet> categories(
+            virtual std::shared_ptr<const CategoryNamePartSet> categories(
                     const Environment * const,
-                    const std::tr1::shared_ptr<const RepositoryNameSet> &,
-                    const std::tr1::shared_ptr<const CategoryNamePartSet> &) const;
+                    const std::shared_ptr<const RepositoryNameSet> &,
+                    const std::shared_ptr<const CategoryNamePartSet> &) const;
 
-            virtual std::tr1::shared_ptr<const QualifiedPackageNameSet> packages(
+            virtual std::shared_ptr<const QualifiedPackageNameSet> packages(
                     const Environment * const,
-                    const std::tr1::shared_ptr<const RepositoryNameSet> &,
-                    const std::tr1::shared_ptr<const QualifiedPackageNameSet> &) const;
+                    const std::shared_ptr<const RepositoryNameSet> &,
+                    const std::shared_ptr<const QualifiedPackageNameSet> &) const;
 
-            virtual std::tr1::shared_ptr<const PackageIDSet> ids(
+            virtual std::shared_ptr<const PackageIDSet> ids(
                     const Environment * const,
-                    const std::tr1::shared_ptr<const PackageIDSet> &) const;
+                    const std::shared_ptr<const PackageIDSet> &) const;
     };
 }
 

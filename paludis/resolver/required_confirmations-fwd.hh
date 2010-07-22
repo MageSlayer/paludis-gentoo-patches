@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_RESOLVER_REQUIRED_CONFIRMATIONS_FWD_HH 1
 
 #include <paludis/util/sequence-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 
 namespace paludis
 {
@@ -33,7 +33,7 @@ namespace paludis
         struct BreakConfirmation;
         struct RemoveSystemPackageConfirmation;
 
-        typedef Sequence<std::tr1::shared_ptr<const RequiredConfirmation> > RequiredConfirmations;
+        typedef Sequence<std::shared_ptr<const RequiredConfirmation> > RequiredConfirmations;
     }
 }
 

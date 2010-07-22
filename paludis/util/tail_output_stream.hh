@@ -24,7 +24,7 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/sequence.hh>
-#include <tr1/memory>
+#include <memory>
 #include <ostream>
 
 namespace paludis
@@ -47,7 +47,7 @@ namespace paludis
             TailOutputStreamBuf(const unsigned n);
             ~TailOutputStreamBuf();
 
-            const std::tr1::shared_ptr<const Sequence<std::string> > tail(const bool clear);
+            const std::shared_ptr<const Sequence<std::string> > tail(const bool clear);
     };
 
     class PALUDIS_VISIBLE TailOutputStreamBase
@@ -76,7 +76,7 @@ namespace paludis
             {
             }
 
-            const std::tr1::shared_ptr<const Sequence<std::string> > tail(const bool clear_after)
+            const std::shared_ptr<const Sequence<std::string> > tail(const bool clear_after)
             {
                 return buf.tail(clear_after);
             }

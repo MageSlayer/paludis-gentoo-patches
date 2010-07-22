@@ -64,8 +64,8 @@ namespace
 
 int
 PrintSyncProtocolsCommand::run(
-        const std::tr1::shared_ptr<Environment> & env,
-        const std::tr1::shared_ptr<const Sequence<std::string > > & args
+        const std::shared_ptr<Environment> & env,
+        const std::shared_ptr<const Sequence<std::string > > & args
         )
 {
     PrintSyncProtocolsCommandLine cmdline;
@@ -82,7 +82,7 @@ PrintSyncProtocolsCommand::run(
 
     std::set<std::string> syncers;
 
-    std::tr1::shared_ptr<const FSEntrySequence> fes(env->syncers_dirs());
+    std::shared_ptr<const FSEntrySequence> fes(env->syncers_dirs());
 
     for (FSEntrySequence::ConstIterator s(fes->begin()), s_end(fes->end());
             s != s_end; ++s)
@@ -110,7 +110,7 @@ PrintSyncProtocolsCommand::run(
     return EXIT_SUCCESS;
 }
 
-std::tr1::shared_ptr<args::ArgsHandler>
+std::shared_ptr<args::ArgsHandler>
 PrintSyncProtocolsCommand::make_doc_cmdline()
 {
     return make_shared_ptr(new PrintSyncProtocolsCommandLine);

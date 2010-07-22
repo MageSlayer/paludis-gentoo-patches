@@ -174,7 +174,7 @@ ERepositoryNews::update_news() const
                                 generator::Matches(PackageDepSpec(parse_elike_package_dep_spec(*i,
                                             eapi.supported()->package_dep_spec_parse_options(),
                                             eapi.supported()->version_spec_options(),
-                                            std::tr1::shared_ptr<const PackageID>())), MatchPackageOptions()) |
+                                            std::shared_ptr<const PackageID>())), MatchPackageOptions()) |
                                 filter::InstalledAtRoot(_imp->environment->root()))]->empty())
                         local_show = true;
                 show &= local_show;
@@ -197,7 +197,7 @@ ERepositoryNews::update_news() const
                 Context header_context("When checking Display-If-Profile headers:");
 
                 bool local_show(false);
-                std::tr1::shared_ptr<const FSEntrySequence> c(_imp->params.profiles());
+                std::shared_ptr<const FSEntrySequence> c(_imp->params.profiles());
                 for (FSEntrySequence::ConstIterator p(c->begin()), p_end(c->end()) ; p != p_end ; ++p)
                 {
                     std::string profile(strip_leading_string(strip_trailing_string(

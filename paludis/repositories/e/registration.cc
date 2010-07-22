@@ -31,7 +31,7 @@ using namespace paludis;
 
 namespace
 {
-    int generic_importance(const Environment * const, const std::tr1::function<std::string (const std::string &)> & f)
+    int generic_importance(const Environment * const, const std::function<std::string (const std::string &)> & f)
     {
         if (! f("importance").empty())
             return destringify<int>(f("importance"));
@@ -53,7 +53,7 @@ namespace paludis
     void register_repositories<repository_groups::e>(const repository_groups::e * const,
             RepositoryFactory * const factory)
     {
-        std::tr1::shared_ptr<Set<std::string> > ebuild_formats(new Set<std::string>);
+        std::shared_ptr<Set<std::string> > ebuild_formats(new Set<std::string>);
         ebuild_formats->insert("e");
         ebuild_formats->insert("ebuild");
         ebuild_formats->insert("exheres");
@@ -66,7 +66,7 @@ namespace paludis
                 &ERepository::repository_factory_dependencies
                 );
 
-        std::tr1::shared_ptr<Set<std::string> > vdb_formats(new Set<std::string>);
+        std::shared_ptr<Set<std::string> > vdb_formats(new Set<std::string>);
         vdb_formats->insert("vdb");
 
         factory->add_repository_format(
@@ -77,7 +77,7 @@ namespace paludis
                 &VDBRepository::repository_factory_dependencies
                 );
 
-        std::tr1::shared_ptr<Set<std::string> > exndbam_formats(new Set<std::string>);
+        std::shared_ptr<Set<std::string> > exndbam_formats(new Set<std::string>);
         exndbam_formats->insert("exndbam");
 
         factory->add_repository_format(

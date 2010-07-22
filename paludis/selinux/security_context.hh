@@ -85,17 +85,17 @@ namespace paludis
             friend std::ostream& paludis::operator<<(std::ostream&, const SecurityContext &);
             friend class paludis::FSCreateCon;
             friend class paludis::MatchPathCon;
-            friend int paludis::setfilecon(const paludis::FSEntry &, const std::tr1::shared_ptr<const SecurityContext> &);
+            friend int paludis::setfilecon(const paludis::FSEntry &, const std::shared_ptr<const SecurityContext> &);
 
             /**
              * Returns a SecurityContext referring to the current process's context
              */
-            static std::tr1::shared_ptr<const SecurityContext> current_context();
+            static std::shared_ptr<const SecurityContext> current_context();
 
             /**
              * Returns a SecurityContext referring to the current filesystem creation context
              */
-            static std::tr1::shared_ptr<const SecurityContext> fs_create_context();
+            static std::shared_ptr<const SecurityContext> fs_create_context();
     };
 
     /**
@@ -120,14 +120,14 @@ namespace paludis
     class PALUDIS_VISIBLE FSCreateCon
     {
         private:
-            std::tr1::shared_ptr<const SecurityContext> _context;
-            std::tr1::shared_ptr<const SecurityContext> _prev_context;
+            std::shared_ptr<const SecurityContext> _context;
+            std::shared_ptr<const SecurityContext> _prev_context;
 
         public:
             /**
              * Constructor
              */
-            FSCreateCon(const std::tr1::shared_ptr<const SecurityContext> &);
+            FSCreateCon(const std::shared_ptr<const SecurityContext> &);
 
             /**
              * Destructor
@@ -160,7 +160,7 @@ namespace paludis
             /**
              * Retrieve the default context for a given pathname
              */
-            std::tr1::shared_ptr<const SecurityContext> match(const std::string &, mode_t = 0) const;
+            std::shared_ptr<const SecurityContext> match(const std::string &, mode_t = 0) const;
 
             /**
              * Did the initialisation succeed?
@@ -173,7 +173,7 @@ namespace paludis
      *
      * \ingroup grplibpaludisselinux
      */
-    int setfilecon(const FSEntry & file, const std::tr1::shared_ptr<const SecurityContext> & con) PALUDIS_VISIBLE;
+    int setfilecon(const FSEntry & file, const std::shared_ptr<const SecurityContext> & con) PALUDIS_VISIBLE;
 
     /**
      * Whether SELinux is enabled. Ideally, you are not using this function.

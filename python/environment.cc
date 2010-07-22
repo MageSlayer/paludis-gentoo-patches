@@ -46,7 +46,7 @@ class EnvironmentImplementationWrapper :
     public bp::wrapper<EnvironmentImplementation>
 {
     private:
-        std::tr1::shared_ptr<PackageDatabase> _db;
+        std::shared_ptr<PackageDatabase> _db;
 
     public:
         EnvironmentImplementationWrapper() :
@@ -75,7 +75,7 @@ class EnvironmentImplementationWrapper :
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "accept_license");
         }
 
-        virtual bool accept_keywords(const std::tr1::shared_ptr<const KeywordNameSet> & k, const PackageID & p) const
+        virtual bool accept_keywords(const std::shared_ptr<const KeywordNameSet> & k, const PackageID & p) const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             Lock l(get_mutex());
@@ -86,7 +86,7 @@ class EnvironmentImplementationWrapper :
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "accept_keywords");
         }
 
-        virtual const std::tr1::shared_ptr<const Mask> mask_for_breakage(const PackageID & p) const
+        virtual const std::shared_ptr<const Mask> mask_for_breakage(const PackageID & p) const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             Lock l(get_mutex());
@@ -97,7 +97,7 @@ class EnvironmentImplementationWrapper :
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "mask_for_breakage");
         }
 
-        virtual const std::tr1::shared_ptr<const Mask> mask_for_user(const PackageID & p, const bool b) const
+        virtual const std::shared_ptr<const Mask> mask_for_user(const PackageID & p, const bool b) const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             Lock l(get_mutex());
@@ -119,19 +119,19 @@ class EnvironmentImplementationWrapper :
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "unmasked_by_user");
         }
 
-        virtual std::tr1::shared_ptr<PackageDatabase> package_database()
+        virtual std::shared_ptr<PackageDatabase> package_database()
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             return _db;
         }
 
-        virtual std::tr1::shared_ptr<const PackageDatabase> package_database() const
+        virtual std::shared_ptr<const PackageDatabase> package_database() const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             return _db;
         }
 
-        virtual std::tr1::shared_ptr<const FSEntrySequence> bashrc_files() const
+        virtual std::shared_ptr<const FSEntrySequence> bashrc_files() const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             Lock l(get_mutex());
@@ -141,13 +141,13 @@ class EnvironmentImplementationWrapper :
             return EnvironmentImplementation::bashrc_files();
         }
 
-        std::tr1::shared_ptr<const FSEntrySequence> default_bashrc_files() const
+        std::shared_ptr<const FSEntrySequence> default_bashrc_files() const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             return EnvironmentImplementation::bashrc_files();
         }
 
-        virtual std::tr1::shared_ptr<const FSEntrySequence> syncers_dirs() const
+        virtual std::shared_ptr<const FSEntrySequence> syncers_dirs() const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             Lock l(get_mutex());
@@ -157,13 +157,13 @@ class EnvironmentImplementationWrapper :
             return EnvironmentImplementation::syncers_dirs();
         }
 
-        std::tr1::shared_ptr<const FSEntrySequence> default_syncers_dirs() const
+        std::shared_ptr<const FSEntrySequence> default_syncers_dirs() const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             return EnvironmentImplementation::syncers_dirs();
         }
 
-        virtual std::tr1::shared_ptr<const FSEntrySequence> fetchers_dirs() const
+        virtual std::shared_ptr<const FSEntrySequence> fetchers_dirs() const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             Lock l(get_mutex());
@@ -173,13 +173,13 @@ class EnvironmentImplementationWrapper :
             return EnvironmentImplementation::fetchers_dirs();
         }
 
-        std::tr1::shared_ptr<const FSEntrySequence> default_fetchers_dirs() const
+        std::shared_ptr<const FSEntrySequence> default_fetchers_dirs() const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             return EnvironmentImplementation::fetchers_dirs();
         }
 
-        virtual std::tr1::shared_ptr<const FSEntrySequence> hook_dirs() const
+        virtual std::shared_ptr<const FSEntrySequence> hook_dirs() const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             Lock l(get_mutex());
@@ -242,7 +242,7 @@ class EnvironmentImplementationWrapper :
         }
 
 
-        virtual std::tr1::shared_ptr<const MirrorsSequence> mirrors(const std::string & s) const
+        virtual std::shared_ptr<const MirrorsSequence> mirrors(const std::string & s) const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             Lock l(get_mutex());
@@ -253,7 +253,7 @@ class EnvironmentImplementationWrapper :
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "mirrors");
         }
 
-        virtual std::tr1::shared_ptr<const SetNameSet> set_names() const
+        virtual std::shared_ptr<const SetNameSet> set_names() const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             Lock l(get_mutex());
@@ -263,13 +263,13 @@ class EnvironmentImplementationWrapper :
             return EnvironmentImplementation::set_names();
         }
 
-        std::tr1::shared_ptr<const SetNameSet> default_set_names() const
+        std::shared_ptr<const SetNameSet> default_set_names() const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             return EnvironmentImplementation::set_names();
         }
 
-        virtual const std::tr1::shared_ptr<const SetSpecTree> set(const SetName & s) const
+        virtual const std::shared_ptr<const SetSpecTree> set(const SetName & s) const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             Lock l(get_mutex());
@@ -279,13 +279,13 @@ class EnvironmentImplementationWrapper :
             return EnvironmentImplementation::set(s);
         }
 
-        const std::tr1::shared_ptr<const SetSpecTree> default_set(const SetName & s) const
+        const std::shared_ptr<const SetSpecTree> default_set(const SetName & s) const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             return EnvironmentImplementation::set(s);
         }
 
-        virtual std::tr1::shared_ptr<const DestinationsSet> default_destinations() const
+        virtual std::shared_ptr<const DestinationsSet> default_destinations() const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             Lock l(get_mutex());
@@ -295,7 +295,7 @@ class EnvironmentImplementationWrapper :
             return EnvironmentImplementation::default_destinations();
         }
 
-        std::tr1::shared_ptr<const DestinationsSet> default_default_destinations() const
+        std::shared_ptr<const DestinationsSet> default_default_destinations() const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             return EnvironmentImplementation::default_destinations();
@@ -360,7 +360,7 @@ class EnvironmentImplementationWrapper :
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "remove_from_world");
         }
 
-        virtual std::tr1::shared_ptr<PackageIDSequence> operator[] (const Selection & fg) const
+        virtual std::shared_ptr<PackageIDSequence> operator[] (const Selection & fg) const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             Lock l(get_mutex());
@@ -370,7 +370,7 @@ class EnvironmentImplementationWrapper :
             return EnvironmentImplementation::operator[] (fg);
         }
 
-        virtual std::tr1::shared_ptr<PackageIDSequence> default_operator_square_brackets(const Selection & fg) const
+        virtual std::shared_ptr<PackageIDSequence> default_operator_square_brackets(const Selection & fg) const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             return EnvironmentImplementation::operator[] (fg);
@@ -386,7 +386,7 @@ class EnvironmentImplementationWrapper :
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "need_keys_added");
         }
 
-        virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key() const
+        virtual const std::shared_ptr<const MetadataValueKey<std::string> > format_key() const
         {
             Lock l(get_mutex());
 
@@ -396,7 +396,7 @@ class EnvironmentImplementationWrapper :
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "format_key");
         }
 
-        virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > config_location_key() const
+        virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > config_location_key() const
         {
             Lock l(get_mutex());
 
@@ -407,8 +407,8 @@ class EnvironmentImplementationWrapper :
         }
 
         virtual const Tribool want_choice_enabled(
-                const std::tr1::shared_ptr<const PackageID> &,
-                const std::tr1::shared_ptr<const Choice> &,
+                const std::shared_ptr<const PackageID> &,
+                const std::shared_ptr<const Choice> &,
                 const UnprefixedChoiceName &
                 ) const
         {
@@ -416,29 +416,29 @@ class EnvironmentImplementationWrapper :
         }
 
         virtual const std::string value_for_choice_parameter(
-                const std::tr1::shared_ptr<const PackageID> &,
-                const std::tr1::shared_ptr<const Choice> &,
+                const std::shared_ptr<const PackageID> &,
+                const std::shared_ptr<const Choice> &,
                 const UnprefixedChoiceName &
                 ) const
         {
             throw PythonMethodNotImplemented("EnvironmentImplementation", "value_for_choice_parameter");
         }
 
-        virtual std::tr1::shared_ptr<const Set<UnprefixedChoiceName> > known_choice_value_names(
-                const std::tr1::shared_ptr<const PackageID> &,
-                const std::tr1::shared_ptr<const Choice> &
+        virtual std::shared_ptr<const Set<UnprefixedChoiceName> > known_choice_value_names(
+                const std::shared_ptr<const PackageID> &,
+                const std::shared_ptr<const Choice> &
                 ) const
         {
             throw PythonMethodNotImplemented("EnvironmentImplementation", "known_choice_value_names");
         }
 
-        virtual const std::tr1::shared_ptr<OutputManager> create_output_manager(
+        virtual const std::shared_ptr<OutputManager> create_output_manager(
                 const CreateOutputManagerInfo &) const
         {
             return make_shared_ptr(new StandardOutputManager);
         }
 
-        virtual const std::tr1::shared_ptr<Repository> repository_from_new_config_file(
+        virtual const std::shared_ptr<Repository> repository_from_new_config_file(
                 const FSEntry &)
         {
             throw PythonMethodNotImplemented("EnvironmentImplementation", "repository_from_new_config_file");
@@ -455,7 +455,7 @@ struct NoConfigEnvironmentWrapper :
     NoConfigEnvironment
 {
     NoConfigEnvironmentWrapper(const FSEntry & env_dir, const FSEntry & cache_dir,
-            const std::string & master_repo_name, const std::tr1::shared_ptr<const FSEntrySequence> & extra_repository_dirs
+            const std::string & master_repo_name, const std::shared_ptr<const FSEntrySequence> & extra_repository_dirs
             ) :
         NoConfigEnvironment(make_named_values<no_config_environment::Params>(
                     n::accept_unstable() = false,
@@ -518,9 +518,9 @@ void expose_environment()
     /**
      * Environment
      */
-    std::tr1::shared_ptr<PackageDatabase> (Environment::* package_database)() =
+    std::shared_ptr<PackageDatabase> (Environment::* package_database)() =
         &Environment::package_database;
-    bp::class_<Environment, std::tr1::shared_ptr<Environment>, boost::noncopyable>
+    bp::class_<Environment, std::shared_ptr<Environment>, boost::noncopyable>
         (
          "Environment",
          "Represents a working environment, which contains an available packages database\n"
@@ -564,7 +564,7 @@ void expose_environment()
      */
     typedef EnvironmentImplementation EnvImp;
     typedef EnvironmentImplementationWrapper EnvImpW;
-    bp::class_<EnvironmentImplementationWrapper, std::tr1::shared_ptr<EnvironmentImplementationWrapper>,
+    bp::class_<EnvironmentImplementationWrapper, std::shared_ptr<EnvironmentImplementationWrapper>,
             bp::bases<Environment>, boost::noncopyable>
         (
          "EnvironmentImplementation",
@@ -701,15 +701,15 @@ void expose_environment()
     /**
      * NoConfigEnvironment
      */
-    std::tr1::shared_ptr<Repository> (NoConfigEnvironment::*main_repository)()
+    std::shared_ptr<Repository> (NoConfigEnvironment::*main_repository)()
         = &NoConfigEnvironment::main_repository;
-    std::tr1::shared_ptr<Repository> (NoConfigEnvironment::*master_repository)()
+    std::shared_ptr<Repository> (NoConfigEnvironment::*master_repository)()
         = &NoConfigEnvironment::master_repository;
     bp::class_<NoConfigEnvironmentWrapper, bp::bases<Environment>, boost::noncopyable>
         (
          "NoConfigEnvironment",
          "An environment that uses a single repository, with no user configuration.",
-         bp::init<const FSEntry &, const FSEntry &, const std::string &, const std::tr1::shared_ptr<const FSEntrySequence> &>(
+         bp::init<const FSEntry &, const FSEntry &, const std::string &, const std::shared_ptr<const FSEntrySequence> &>(
              (bp::arg("environment_dir"), bp::arg("write_cache_dir")="/var/empty",
               bp::arg("master_repository_name")="",
               bp::arg("extra_repository_dirs") = make_shared_ptr(new FSEntrySequence)),

@@ -78,8 +78,8 @@ namespace
 
 int
 ConfigCommand::run(
-        const std::tr1::shared_ptr<Environment> & env,
-        const std::tr1::shared_ptr<const Sequence<std::string > > & args
+        const std::shared_ptr<Environment> & env,
+        const std::shared_ptr<const Sequence<std::string > > & args
         )
 {
     ConfigCommandLine cmdline;
@@ -96,24 +96,24 @@ ConfigCommand::run(
 
     PackageDepSpec spec(parse_user_package_dep_spec(*cmdline.begin_parameters(), env.get(),
                 UserPackageDepSpecOptions()));
-    const std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsUnsorted(
+    const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsUnsorted(
                 generator::Matches(spec, MatchPackageOptions()) | filter::SupportsAction<ConfigAction>())]);
     if (ids->empty())
         throw NothingMatching(spec);
     else if (1 != std::distance(ids->begin(), ids->end()))
         throw BeMoreSpecific(spec, ids);
-    const std::tr1::shared_ptr<const PackageID> id(*ids->begin());
+    const std::shared_ptr<const PackageID> id(*ids->begin());
 
     OutputManagerFromEnvironment output_manager_holder(env.get(), id, oe_exclusive, ClientOutputFeatures());
     ConfigAction action(make_named_values<ConfigActionOptions>(
-                n::make_output_manager() = std::tr1::ref(output_manager_holder)
+                n::make_output_manager() = std::ref(output_manager_holder)
                 ));
     id->perform_action(action);
 
     return EXIT_SUCCESS;
 }
 
-std::tr1::shared_ptr<args::ArgsHandler>
+std::shared_ptr<args::ArgsHandler>
 ConfigCommand::make_doc_cmdline()
 {
     return make_shared_ptr(new ConfigCommandLine);

@@ -33,7 +33,7 @@
 #include <paludis/package_database.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
-#include <tr1/memory>
+#include <memory>
 
 using namespace paludis;
 using namespace paludis::unavailable_repository;
@@ -48,7 +48,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<UnavailableRepository> repo(new UnavailableRepository(
+            std::shared_ptr<UnavailableRepository> repo(new UnavailableRepository(
                         make_named_values<UnavailableRepositoryParams>(
                             n::environment() = &env,
                             n::location() = FSEntry::cwd() / "unavailable_repository_TEST_dir" / "repo1",
@@ -68,7 +68,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<UnavailableRepository> repo(new UnavailableRepository(
+            std::shared_ptr<UnavailableRepository> repo(new UnavailableRepository(
                         make_named_values<UnavailableRepositoryParams>(
                             n::environment() = &env,
                             n::location() = FSEntry::cwd() / "unavailable_repository_TEST_dir" / "repo2",
@@ -79,7 +79,7 @@ namespace test_cases
             env.package_database()->add_repository(1, repo);
             TEST_CHECK_STRINGIFY_EQUAL(repo->name(), "unavailable");
 
-            std::tr1::shared_ptr<const PackageIDSequence> contents(
+            std::shared_ptr<const PackageIDSequence> contents(
                     env[selection::AllVersionsSorted(generator::All())]);
             TEST_CHECK(contents);
 
@@ -98,14 +98,14 @@ namespace test_cases
                     "repository/foo-0::unavailable"
                     );
 
-            const std::tr1::shared_ptr<FakeRepository> hide_bar(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            const std::shared_ptr<FakeRepository> hide_bar(new FakeRepository(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("bar")
                             )));
             env.package_database()->add_repository(2, hide_bar);
             repo->invalidate();
 
-            std::tr1::shared_ptr<const PackageIDSequence> contents_without_bar(
+            std::shared_ptr<const PackageIDSequence> contents_without_bar(
                     env[selection::AllVersionsSorted(generator::All())]);
             TEST_CHECK(contents);
 

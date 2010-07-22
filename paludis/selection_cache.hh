@@ -25,7 +25,7 @@
 #include <paludis/environment-fwd.hh>
 #include <paludis/selection-fwd.hh>
 #include <paludis/package_id-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 
 namespace paludis
 {
@@ -36,7 +36,7 @@ namespace paludis
             SelectionCache();
             ~SelectionCache();
 
-            const std::tr1::shared_ptr<PackageIDSequence> perform_select(
+            const std::shared_ptr<PackageIDSequence> perform_select(
                     const Environment * const,
                     const Selection &) const PALUDIS_ATTRIBUTE((warn_unused_result));
     };

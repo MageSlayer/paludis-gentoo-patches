@@ -26,7 +26,7 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/mask-fwd.hh>
-#include <tr1/type_traits>
+#include <type_traits>
 
 namespace paludis
 {
@@ -57,8 +57,8 @@ namespace paludis
 
                 struct ConstIteratorTag;
                 typedef WrappedForwardIterator<ConstIteratorTag, const std::pair<
-                    std::tr1::shared_ptr<const erepository::EAPI>,
-                          const typename std::tr1::remove_reference<
+                    std::shared_ptr<const erepository::EAPI>,
+                          const typename std::remove_reference<
                               typename F_::ConstIterator::value_type>::type> > ConstIterator;
                 ConstIterator begin() const;
                 ConstIterator end() const;

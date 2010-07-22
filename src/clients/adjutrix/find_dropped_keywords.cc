@@ -55,7 +55,7 @@ namespace paludis
 
 namespace
 {
-    std::string slot_as_string(const std::tr1::shared_ptr<const PackageID> & id)
+    std::string slot_as_string(const std::shared_ptr<const PackageID> & id)
     {
         if (id->slot_key())
             return stringify(id->slot_key()->value());
@@ -141,7 +141,7 @@ namespace
         typedef std::map<std::string, VersionsEntry> VersionsInSlots;
         VersionsInSlots versions_in_slots;
 
-        std::tr1::shared_ptr<const PackageIDSequence> versions(repo.package_ids(package));
+        std::shared_ptr<const PackageIDSequence> versions(repo.package_ids(package));
         for (PackageIDSequence::ConstIterator v(versions->begin()), v_end(versions->end()) ;
                 v != v_end ; ++v)
         {
@@ -205,7 +205,7 @@ void do_find_dropped_keywords(const NoConfigEnvironment & env)
 
         write_repository_header(keyword, r->name());
 
-        std::tr1::shared_ptr<const CategoryNamePartSet> cat_names(r->category_names());
+        std::shared_ptr<const CategoryNamePartSet> cat_names(r->category_names());
         for (CategoryNamePartSet::ConstIterator c(cat_names->begin()), c_end(cat_names->end()) ;
                 c != c_end ; ++c)
         {
@@ -216,7 +216,7 @@ void do_find_dropped_keywords(const NoConfigEnvironment & env)
                             stringify(*c)))
                     continue;
 
-            std::tr1::shared_ptr<const QualifiedPackageNameSet> pkg_names(r->package_names(*c));
+            std::shared_ptr<const QualifiedPackageNameSet> pkg_names(r->package_names(*c));
             for (QualifiedPackageNameSet::ConstIterator p(pkg_names->begin()), p_end(pkg_names->end()) ;
                     p != p_end ; ++p)
             {

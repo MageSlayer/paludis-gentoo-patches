@@ -158,64 +158,64 @@ namespace
 SimpleParserExpression
 paludis::simple_parser::operator& (const SimpleParserExpression & e1, const SimpleParserExpression & e2)
 {
-    using namespace std::tr1::placeholders;
-    return SimpleParserExpression(std::tr1::bind(m_and, e1, e2, _1, _2));
+    using namespace std::placeholders;
+    return SimpleParserExpression(std::bind(m_and, e1, e2, _1, _2));
 }
 
 SimpleParserExpression
 paludis::simple_parser::operator>> (const SimpleParserExpression & e1, std::string & var)
 {
-    using namespace std::tr1::placeholders;
-    return SimpleParserExpression(std::tr1::bind(m_capture, e1, std::tr1::ref(var), _1, _2));
+    using namespace std::placeholders;
+    return SimpleParserExpression(std::bind(m_capture, e1, std::ref(var), _1, _2));
 }
 
 SimpleParserExpression
 paludis::simple_parser::operator* (const SimpleParserExpression & e1)
 {
-    using namespace std::tr1::placeholders;
-    return SimpleParserExpression(std::tr1::bind(m_star, e1, _1, _2));
+    using namespace std::placeholders;
+    return SimpleParserExpression(std::bind(m_star, e1, _1, _2));
 }
 
 SimpleParserExpression
 paludis::simple_parser::operator+ (const SimpleParserExpression & e1)
 {
-    using namespace std::tr1::placeholders;
-    return SimpleParserExpression(std::tr1::bind(m_plus, e1, _1, _2));
+    using namespace std::placeholders;
+    return SimpleParserExpression(std::bind(m_plus, e1, _1, _2));
 }
 
 SimpleParserExpression
 paludis::simple_parser::operator- (const SimpleParserExpression & e1)
 {
-    using namespace std::tr1::placeholders;
-    return SimpleParserExpression(std::tr1::bind(m_minus, e1, _1, _2));
+    using namespace std::placeholders;
+    return SimpleParserExpression(std::bind(m_minus, e1, _1, _2));
 }
 
 SimpleParserExpression
 paludis::simple_parser::exact(const std::string & s)
 {
-    using namespace std::tr1::placeholders;
-    return SimpleParserExpression(std::tr1::bind(m_exact, s, _1, _2, false));
+    using namespace std::placeholders;
+    return SimpleParserExpression(std::bind(m_exact, s, _1, _2, false));
 }
 
 SimpleParserExpression
 paludis::simple_parser::exact_ignoring_case(const std::string & s)
 {
-    using namespace std::tr1::placeholders;
-    return SimpleParserExpression(std::tr1::bind(m_exact, s, _1, _2, true));
+    using namespace std::placeholders;
+    return SimpleParserExpression(std::bind(m_exact, s, _1, _2, true));
 }
 
 SimpleParserExpression
 paludis::simple_parser::any_of(const std::string & s)
 {
-    using namespace std::tr1::placeholders;
-    return SimpleParserExpression(std::tr1::bind(m_any_of, s, _1, _2));
+    using namespace std::placeholders;
+    return SimpleParserExpression(std::bind(m_any_of, s, _1, _2));
 }
 
 SimpleParserExpression
 paludis::simple_parser::any_except(const std::string & s)
 {
-    using namespace std::tr1::placeholders;
-    return SimpleParserExpression(std::tr1::bind(m_any_except, s, _1, _2));
+    using namespace std::placeholders;
+    return SimpleParserExpression(std::bind(m_any_except, s, _1, _2));
 }
 
 namespace paludis

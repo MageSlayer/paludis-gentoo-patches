@@ -35,8 +35,8 @@ UnsuitableCandidate::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "UnsuitableCandidate");
     return make_named_values<UnsuitableCandidate>(
-            n::package_id() = v.member<std::tr1::shared_ptr<const PackageID> >("package_id"),
-            n::unmet_constraints() = v.member<std::tr1::shared_ptr<Constraints> >("unmet_constraints")
+            n::package_id() = v.member<std::shared_ptr<const PackageID> >("package_id"),
+            n::unmet_constraints() = v.member<std::shared_ptr<Constraints> >("unmet_constraints")
             );
 }
 

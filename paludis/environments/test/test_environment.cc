@@ -35,23 +35,23 @@
 #include <paludis/hook.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/choice.hh>
-#include <tr1/functional>
-#include <tr1/unordered_map>
+#include <functional>
+#include <unordered_map>
 #include <string>
 #include <list>
 
 using namespace paludis;
 
-typedef std::tr1::unordered_map<SetName, std::tr1::shared_ptr<const SetSpecTree>, Hash<SetName> > Sets;
+typedef std::unordered_map<SetName, std::shared_ptr<const SetSpecTree>, Hash<SetName> > Sets;
 
 namespace paludis
 {
     template<>
     struct Implementation<TestEnvironment>
     {
-        std::tr1::shared_ptr<PackageDatabase> package_database;
+        std::shared_ptr<PackageDatabase> package_database;
         std::string paludis_command;
-        std::tr1::unordered_map<std::string, Tribool> override_want_choice_enabled;
+        std::unordered_map<std::string, Tribool> override_want_choice_enabled;
         FSEntry root;
         Sets sets;
 
@@ -81,7 +81,7 @@ TestEnvironment::~TestEnvironment()
 }
 
 bool
-TestEnvironment::accept_keywords(const std::tr1::shared_ptr<const KeywordNameSet> & k, const PackageID &) const
+TestEnvironment::accept_keywords(const std::shared_ptr<const KeywordNameSet> & k, const PackageID &) const
 {
     return k->end() != k->find(KeywordName("test")) || k->end() != k->find(KeywordName("*"));
 }
@@ -92,13 +92,13 @@ TestEnvironment::accept_license(const std::string &, const PackageID &) const
     return true;
 }
 
-std::tr1::shared_ptr<PackageDatabase>
+std::shared_ptr<PackageDatabase>
 TestEnvironment::package_database()
 {
     return _imp->package_database;
 }
 
-std::tr1::shared_ptr<const PackageDatabase>
+std::shared_ptr<const PackageDatabase>
 TestEnvironment::package_database() const
 {
     return _imp->package_database;
@@ -116,13 +116,13 @@ TestEnvironment::set_paludis_command(const std::string & s)
     _imp->paludis_command = s;
 }
 
-const std::tr1::shared_ptr<const PackageID>
+const std::shared_ptr<const PackageID>
 TestEnvironment::fetch_package_id(const QualifiedPackageName & q,
         const VersionSpec & v, const RepositoryName & r) const
 {
-    using namespace std::tr1::placeholders;
+    using namespace std::placeholders;
 
-    std::tr1::shared_ptr<const PackageIDSequence> ids(package_database()->fetch_repository(r)->package_ids(q));
+    std::shared_ptr<const PackageIDSequence> ids(package_database()->fetch_repository(r)->package_ids(q));
     for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
             i != i_end ; ++i)
         if (v == (*i)->version())
@@ -148,10 +148,10 @@ TestEnvironment::root() const
     return _imp->root;
 }
 
-std::tr1::shared_ptr<const MirrorsSequence>
+std::shared_ptr<const MirrorsSequence>
 TestEnvironment::mirrors(const std::string & s) const
 {
-    std::tr1::shared_ptr<MirrorsSequence> result(new MirrorsSequence);
+    std::shared_ptr<MirrorsSequence> result(new MirrorsSequence);
 
     if (s == "example")
     {
@@ -168,22 +168,22 @@ TestEnvironment::perform_hook(const Hook &) const
     return make_named_values<HookResult>(n::max_exit_status() = 0, n::output() = "");
 }
 
-std::tr1::shared_ptr<const FSEntrySequence>
+std::shared_ptr<const FSEntrySequence>
 TestEnvironment::hook_dirs() const
 {
     return make_shared_ptr(new FSEntrySequence);
 }
 
-const std::tr1::shared_ptr<const Mask>
+const std::shared_ptr<const Mask>
 TestEnvironment::mask_for_breakage(const PackageID &) const
 {
-    return std::tr1::shared_ptr<const Mask>();
+    return std::shared_ptr<const Mask>();
 }
 
-const std::tr1::shared_ptr<const Mask>
+const std::shared_ptr<const Mask>
 TestEnvironment::mask_for_user(const PackageID &, const bool) const
 {
-    return std::tr1::shared_ptr<const Mask>();
+    return std::shared_ptr<const Mask>();
 }
 
 bool
@@ -221,22 +221,22 @@ TestEnvironment::need_keys_added() const
 {
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataValueKey<std::string> >
 TestEnvironment::format_key() const
 {
-    return std::tr1::shared_ptr<const MetadataValueKey<std::string> >();
+    return std::shared_ptr<const MetadataValueKey<std::string> >();
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSEntry> >
 TestEnvironment::config_location_key() const
 {
-    return std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >();
+    return std::shared_ptr<const MetadataValueKey<FSEntry> >();
 }
 
 const Tribool
 TestEnvironment::want_choice_enabled(
-        const std::tr1::shared_ptr<const PackageID> & id,
-        const std::tr1::shared_ptr<const Choice> & c,
+        const std::shared_ptr<const PackageID> & id,
+        const std::shared_ptr<const Choice> & c,
         const UnprefixedChoiceName & v
         ) const
 {
@@ -264,24 +264,24 @@ TestEnvironment::want_choice_enabled(
 
 const std::string
 TestEnvironment::value_for_choice_parameter(
-        const std::tr1::shared_ptr<const PackageID> &,
-        const std::tr1::shared_ptr<const Choice> &,
+        const std::shared_ptr<const PackageID> &,
+        const std::shared_ptr<const Choice> &,
         const UnprefixedChoiceName &
         ) const
 {
     return "";
 }
 
-std::tr1::shared_ptr<const Set<UnprefixedChoiceName> >
+std::shared_ptr<const Set<UnprefixedChoiceName> >
 TestEnvironment::known_choice_value_names(
-        const std::tr1::shared_ptr<const PackageID> &,
-        const std::tr1::shared_ptr<const Choice> &
+        const std::shared_ptr<const PackageID> &,
+        const std::shared_ptr<const Choice> &
         ) const
 {
     return make_shared_ptr(new Set<UnprefixedChoiceName>);
 }
 
-const std::tr1::shared_ptr<OutputManager>
+const std::shared_ptr<OutputManager>
 TestEnvironment::create_output_manager(const CreateOutputManagerInfo &) const
 {
     return make_shared_ptr(new StandardOutputManager);
@@ -298,7 +298,7 @@ TestEnvironment::populate_sets() const
 {
 }
 
-const std::tr1::shared_ptr<Repository>
+const std::shared_ptr<Repository>
 TestEnvironment::repository_from_new_config_file(const FSEntry &)
 {
     throw InternalError(PALUDIS_HERE, "can't create repositories on the fly for TestEnvironment");

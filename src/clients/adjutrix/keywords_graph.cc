@@ -36,7 +36,7 @@
 #include <paludis/filtered_generator.hh>
 #include <paludis/selection.hh>
 #include <paludis/choice.hh>
-#include <tr1/functional>
+#include <functional>
 #include <set>
 #include <map>
 #include <iostream>
@@ -73,7 +73,7 @@ namespace
     write_keywords_graph(const Environment & e, const Repository & repo,
             const QualifiedPackageName & package)
     {
-        using namespace std::tr1::placeholders;
+        using namespace std::placeholders;
 
         Context context("When writing keyword graph for '" + stringify(package) + "' in '"
                 + stringify(repo.name()) + "':");
@@ -82,10 +82,10 @@ namespace
         cout << endl;
 
         FindUnusedPackagesTask task(&e, &repo);
-        std::tr1::shared_ptr<const PackageIDSequence> packages(e[selection::AllVersionsGroupedBySlot(
+        std::shared_ptr<const PackageIDSequence> packages(e[selection::AllVersionsGroupedBySlot(
                 generator::InRepository(repo.name()) &
                 generator::Matches(make_package_dep_spec(PartiallyMadePackageDepSpecOptions()).package(package), MatchPackageOptions()))]);
-        std::tr1::shared_ptr<const PackageIDSequence> unused(task.execute(package));
+        std::shared_ptr<const PackageIDSequence> unused(task.execute(package));
 
         if (packages->empty())
             return;
@@ -118,13 +118,13 @@ namespace
         std::set<std::string> slots;
         std::transform(indirect_iterator(packages->begin()), indirect_iterator(packages->end()),
                 std::inserter(slots, slots.begin()),
-                std::tr1::bind(&slot_as_string, std::tr1::placeholders::_1));
+                std::bind(&slot_as_string, std::placeholders::_1));
 
         unsigned version_specs_columns_width(std::max_element(indirect_iterator(packages->begin()),
                     indirect_iterator(packages->end()),
-                    std::tr1::bind(CompareByStringLength<std::string>(),
-                        std::tr1::bind(std::tr1::mem_fn(&PackageID::canonical_form), _1, idcf_version),
-                        std::tr1::bind(std::tr1::mem_fn(&PackageID::canonical_form), _2, idcf_version))
+                    std::bind(CompareByStringLength<std::string>(),
+                        std::bind(std::mem_fn(&PackageID::canonical_form), _1, idcf_version),
+                        std::bind(std::mem_fn(&PackageID::canonical_form), _2, idcf_version))
                     )->canonical_form(idcf_version).length() + 1);
 
         unsigned tallest_arch_name(std::max(stringify(*std::max_element(arch_flags.begin(),
@@ -176,7 +176,7 @@ namespace
 
             cout << std::left << std::setw(version_specs_columns_width) << p->canonical_form(idcf_version) << "| ";
 
-            std::tr1::shared_ptr<const KeywordNameSet> keywords(p->keywords_key()->value());
+            std::shared_ptr<const KeywordNameSet> keywords(p->keywords_key()->value());
 
             for (std::set<std::string>::const_iterator a(arch_flags.begin()), a_end(arch_flags.end()) ;
                     a != a_end ; ++a)
@@ -222,7 +222,7 @@ void do_keywords_graph(const NoConfigEnvironment & env)
         if (env.master_repository() && r->name() == env.master_repository()->name())
             continue;
 
-        std::tr1::shared_ptr<const CategoryNamePartSet> cat_names(r->category_names());
+        std::shared_ptr<const CategoryNamePartSet> cat_names(r->category_names());
         for (CategoryNamePartSet::ConstIterator c(cat_names->begin()), c_end(cat_names->end()) ;
                 c != c_end ; ++c)
         {
@@ -233,7 +233,7 @@ void do_keywords_graph(const NoConfigEnvironment & env)
                             stringify(*c)))
                     continue;
 
-            std::tr1::shared_ptr<const QualifiedPackageNameSet> pkg_names(r->package_names(*c));
+            std::shared_ptr<const QualifiedPackageNameSet> pkg_names(r->package_names(*c));
             for (QualifiedPackageNameSet::ConstIterator p(pkg_names->begin()), p_end(pkg_names->end()) ;
                     p != p_end ; ++p)
             {

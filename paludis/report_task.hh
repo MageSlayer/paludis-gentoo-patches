@@ -71,16 +71,16 @@ namespace paludis
 
             virtual void on_report_all_pre() = 0;
             virtual void on_report_check_package_pre(const QualifiedPackageName & p) = 0;
-            virtual void on_report_package_success(const std::tr1::shared_ptr<const PackageID> & id) = 0;
-            virtual void on_report_package_failure_pre(const std::tr1::shared_ptr<const PackageID> & id) = 0;
-            virtual void on_report_package_is_masked(const std::tr1::shared_ptr<const PackageID> & id,
-                    const std::tr1::shared_ptr<const PackageIDSequence> & origins) = 0;
-            virtual void on_report_package_is_vulnerable_pre(const std::tr1::shared_ptr<const PackageID> & id) = 0;
-            virtual void on_report_package_is_vulnerable(const std::tr1::shared_ptr<const PackageID> & id, const GLSADepTag & glsa_tag) = 0;
-            virtual void on_report_package_is_vulnerable_post(const std::tr1::shared_ptr<const PackageID> & id) = 0;
-            virtual void on_report_package_is_missing(const std::tr1::shared_ptr<const PackageID> & id) = 0;
-            virtual void on_report_package_is_unused(const std::tr1::shared_ptr<const PackageID> & id) = 0;
-            virtual void on_report_package_failure_post(const std::tr1::shared_ptr<const PackageID> & id) = 0;
+            virtual void on_report_package_success(const std::shared_ptr<const PackageID> & id) = 0;
+            virtual void on_report_package_failure_pre(const std::shared_ptr<const PackageID> & id) = 0;
+            virtual void on_report_package_is_masked(const std::shared_ptr<const PackageID> & id,
+                    const std::shared_ptr<const PackageIDSequence> & origins) = 0;
+            virtual void on_report_package_is_vulnerable_pre(const std::shared_ptr<const PackageID> & id) = 0;
+            virtual void on_report_package_is_vulnerable(const std::shared_ptr<const PackageID> & id, const GLSADepTag & glsa_tag) = 0;
+            virtual void on_report_package_is_vulnerable_post(const std::shared_ptr<const PackageID> & id) = 0;
+            virtual void on_report_package_is_missing(const std::shared_ptr<const PackageID> & id) = 0;
+            virtual void on_report_package_is_unused(const std::shared_ptr<const PackageID> & id) = 0;
+            virtual void on_report_package_failure_post(const std::shared_ptr<const PackageID> & id) = 0;
             virtual void on_report_check_package_post(const QualifiedPackageName & p) = 0;
             virtual void on_report_all_post() = 0;
 

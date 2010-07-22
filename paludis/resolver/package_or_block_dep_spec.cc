@@ -59,7 +59,7 @@ PackageOrBlockDepSpec::serialise(Serialiser & s) const
 {
     SerialiserObjectWriter w(s.object("PackageOrBlockDepSpec"));
 
-    std::tr1::shared_ptr<DepSpec> spec;
+    std::shared_ptr<DepSpec> spec;
     if (if_block())
     {
         spec = if_block();
@@ -107,7 +107,7 @@ PackageOrBlockDepSpec::serialise(Serialiser & s) const
 }
 
 PackageOrBlockDepSpec
-PackageOrBlockDepSpec::deserialise(Deserialisation & d, const std::tr1::shared_ptr<const PackageID> & for_id)
+PackageOrBlockDepSpec::deserialise(Deserialisation & d, const std::shared_ptr<const PackageID> & for_id)
 {
     Context context("When deserialising:");
 
@@ -124,9 +124,9 @@ PackageOrBlockDepSpec::deserialise(Deserialisation & d, const std::tr1::shared_p
                 vso_letters_anywhere + vso_dotted_suffixes,
                 for_id));
 
-    std::tr1::shared_ptr<MetadataSectionKey> annotations;
+    std::shared_ptr<MetadataSectionKey> annotations;
 
-    std::tr1::shared_ptr<Map<std::string, std::string> > m(new Map<std::string, std::string>);
+    std::shared_ptr<Map<std::string, std::string> > m(new Map<std::string, std::string>);
     for (int a(0), a_end(v.member<int>("annotations_count")) ;
             a != a_end ; ++a)
     {

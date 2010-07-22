@@ -41,8 +41,8 @@ namespace
     struct RangeRewrittenPackageDepSpecData :
         PackageDepSpecData
     {
-        std::tr1::shared_ptr<QualifiedPackageName> package;
-        std::tr1::shared_ptr<VersionRequirements> version_requirements;
+        std::shared_ptr<QualifiedPackageName> package;
+        std::shared_ptr<VersionRequirements> version_requirements;
         VersionRequirementsMode version_requirements_mode_v;
         std::list<std::string> strings;
 
@@ -97,22 +97,22 @@ namespace
             return s.str() + " (rewritten from { " + join(strings.begin(), strings.end(), ", ") + " })";
         }
 
-        virtual std::tr1::shared_ptr<const QualifiedPackageName> package_ptr() const
+        virtual std::shared_ptr<const QualifiedPackageName> package_ptr() const
         {
             return package;
         }
 
-        virtual std::tr1::shared_ptr<const PackageNamePart> package_name_part_ptr() const
+        virtual std::shared_ptr<const PackageNamePart> package_name_part_ptr() const
         {
-            return std::tr1::shared_ptr<const PackageNamePart>();
+            return std::shared_ptr<const PackageNamePart>();
         }
 
-        virtual std::tr1::shared_ptr<const CategoryNamePart> category_name_part_ptr() const
+        virtual std::shared_ptr<const CategoryNamePart> category_name_part_ptr() const
         {
-            return std::tr1::shared_ptr<const CategoryNamePart>();
+            return std::shared_ptr<const CategoryNamePart>();
         }
 
-        virtual std::tr1::shared_ptr<const VersionRequirements> version_requirements_ptr() const
+        virtual std::shared_ptr<const VersionRequirements> version_requirements_ptr() const
         {
             return version_requirements;
         }
@@ -122,19 +122,19 @@ namespace
             return version_requirements_mode_v;
         }
 
-        virtual std::tr1::shared_ptr<const SlotRequirement> slot_requirement_ptr() const
+        virtual std::shared_ptr<const SlotRequirement> slot_requirement_ptr() const
         {
-            return std::tr1::shared_ptr<const SlotRequirement>();
+            return std::shared_ptr<const SlotRequirement>();
         }
 
-        virtual std::tr1::shared_ptr<const MetadataSectionKey> annotations_key() const
+        virtual std::shared_ptr<const MetadataSectionKey> annotations_key() const
         {
-            return std::tr1::shared_ptr<const MetadataSectionKey>();
+            return std::shared_ptr<const MetadataSectionKey>();
         }
 
-        virtual std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements_ptr() const
+        virtual std::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements_ptr() const
         {
-            return std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirements>();
+            return std::shared_ptr<const AdditionalPackageDepSpecRequirements>();
         }
 
         void add_spec(const PackageDepSpec & spec)
@@ -154,32 +154,32 @@ namespace
                     version_requirements->back_inserter());
         }
 
-        std::tr1::shared_ptr<const PackageDepSpecData> without_slot_requirements() const
+        std::shared_ptr<const PackageDepSpecData> without_slot_requirements() const
         {
             return make_shared_ptr(new RangeRewrittenPackageDepSpecData(*this));
         }
 
-        virtual std::tr1::shared_ptr<const RepositoryName> in_repository_ptr() const
+        virtual std::shared_ptr<const RepositoryName> in_repository_ptr() const
         {
             return make_null_shared_ptr();
         }
 
-        virtual std::tr1::shared_ptr<const InstallableToRepository> installable_to_repository_ptr() const
+        virtual std::shared_ptr<const InstallableToRepository> installable_to_repository_ptr() const
         {
             return make_null_shared_ptr();
         }
 
-        virtual std::tr1::shared_ptr<const RepositoryName> from_repository_ptr() const
+        virtual std::shared_ptr<const RepositoryName> from_repository_ptr() const
         {
             return make_null_shared_ptr();
         }
 
-        virtual std::tr1::shared_ptr<const FSEntry> installed_at_path_ptr() const
+        virtual std::shared_ptr<const FSEntry> installed_at_path_ptr() const
         {
             return make_null_shared_ptr();
         }
 
-        virtual std::tr1::shared_ptr<const InstallableToPath> installable_to_path_ptr() const
+        virtual std::shared_ptr<const InstallableToPath> installable_to_path_ptr() const
         {
             return make_null_shared_ptr();
         }
@@ -197,7 +197,7 @@ namespace paludis
     struct Implementation<RangeRewriter>
     {
         bool invalid;
-        std::tr1::shared_ptr<RangeRewrittenPackageDepSpecData> spec_data;
+        std::shared_ptr<RangeRewrittenPackageDepSpecData> spec_data;
 
         Implementation() :
             invalid(false)
@@ -302,12 +302,12 @@ RangeRewriter::visit(const DependencySpecTree::NodeType<NamedSetDepSpec>::Type &
     _imp->invalid = true;
 }
 
-std::tr1::shared_ptr<PackageDepSpec>
+std::shared_ptr<PackageDepSpec>
 RangeRewriter::spec() const
 {
     if (_imp->invalid || ! _imp->spec_data)
-        return std::tr1::shared_ptr<PackageDepSpec>();
+        return std::shared_ptr<PackageDepSpec>();
 
-    return std::tr1::shared_ptr<PackageDepSpec>(new PackageDepSpec(_imp->spec_data));
+    return std::shared_ptr<PackageDepSpec>(new PackageDepSpec(_imp->spec_data));
 }
 

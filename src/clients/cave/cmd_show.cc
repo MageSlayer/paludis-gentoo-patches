@@ -128,7 +128,7 @@ namespace
         }
     };
 
-    std::string slot_as_string(const std::tr1::shared_ptr<const PackageID> & id)
+    std::string slot_as_string(const std::shared_ptr<const PackageID> & id)
     {
         if (id->slot_key())
             return stringify(id->slot_key()->value());
@@ -138,11 +138,11 @@ namespace
 
     struct SetDisplayer
     {
-        const std::tr1::shared_ptr<const Environment> env;
+        const std::shared_ptr<const Environment> env;
         int indent;
         std::set<SetName> recursing_sets;
 
-        SetDisplayer(const std::tr1::shared_ptr<const Environment> & e, const int i) :
+        SetDisplayer(const std::shared_ptr<const Environment> & e, const int i) :
             env(e),
             indent(i)
         {
@@ -161,7 +161,7 @@ namespace
         {
             cout << format_general_si(f::show_set_set(), stringify(*node.spec()), indent);
 
-            const std::tr1::shared_ptr<const SetSpecTree> set(env->set(node.spec()->name()));
+            const std::shared_ptr<const SetSpecTree> set(env->set(node.spec()->name()));
             if (! set)
                 throw NoSuchSetError(stringify(node.spec()->name()));
 
@@ -181,11 +181,11 @@ namespace
         }
     };
 
-    void do_one_set(const std::tr1::shared_ptr<Environment> & env, const SetName & s)
+    void do_one_set(const std::shared_ptr<Environment> & env, const SetName & s)
     {
         cout << format_general_s(f::show_set_heading(), stringify(s));
 
-        const std::tr1::shared_ptr<const SetSpecTree> set(env->set(s));
+        const std::shared_ptr<const SetSpecTree> set(env->set(s));
         if (! set)
             throw NoSuchSetError(stringify(s));
 
@@ -195,11 +195,11 @@ namespace
         cout << endl;
     }
 
-    void do_one_wildcard(const std::tr1::shared_ptr<Environment> & env, const PackageDepSpec & s)
+    void do_one_wildcard(const std::shared_ptr<Environment> & env, const PackageDepSpec & s)
     {
         cout << format_general_s(f::show_wildcard_heading(), stringify(s));
 
-        const std::tr1::shared_ptr<const PackageIDSequence> names((*env)[selection::BestVersionOnly(generator::Matches(s, MatchPackageOptions()))]);
+        const std::shared_ptr<const PackageIDSequence> names((*env)[selection::BestVersionOnly(generator::Matches(s, MatchPackageOptions()))]);
         if (names->empty())
             throw NothingMatching(s);
 
@@ -220,7 +220,7 @@ namespace
 
     struct MetadataKeyComparator
     {
-        bool operator() (const std::tr1::shared_ptr<const MetadataKey> & a, const std::tr1::shared_ptr<const MetadataKey> & b) const
+        bool operator() (const std::shared_ptr<const MetadataKey> & a, const std::shared_ptr<const MetadataKey> & b) const
         {
             bool a_is_section(simple_visitor_cast<const MetadataSectionKey>(*a));
             bool b_is_section(simple_visitor_cast<const MetadataSectionKey>(*b));
@@ -269,7 +269,7 @@ namespace
 
     bool want_key(
             const ShowCommandLine & cmdline,
-            const std::tr1::shared_ptr<const MetadataKey> & key)
+            const std::shared_ptr<const MetadataKey> & key)
     {
         if (cmdline.a_key.end_args() != std::find(cmdline.a_key.begin_args(), cmdline.a_key.end_args(), key->raw_name()))
             return true;
@@ -284,12 +284,12 @@ namespace
     }
 
     std::string added_or_changed_string(
-            const std::tr1::shared_ptr<const Choice> & choice,
-            const std::tr1::shared_ptr<const ChoiceValue> & value,
-            const std::tr1::shared_ptr<const PackageID> & maybe_old_id,
+            const std::shared_ptr<const Choice> & choice,
+            const std::shared_ptr<const ChoiceValue> & value,
+            const std::shared_ptr<const PackageID> & maybe_old_id,
             const bool old_id_is_installed)
     {
-        std::tr1::shared_ptr<const ChoiceValue> maybe_old_value;
+        std::shared_ptr<const ChoiceValue> maybe_old_value;
         if (maybe_old_id && maybe_old_id->choices_key())
             maybe_old_value = maybe_old_id->choices_key()->value()->find_by_name_with_prefix(value->name_with_prefix());
 
@@ -314,11 +314,11 @@ namespace
         const ShowCommandLine & cmdline;
         const int indent;
         const bool important;
-        const std::tr1::shared_ptr<const PackageID> maybe_old_id;
+        const std::shared_ptr<const PackageID> maybe_old_id;
         const bool old_id_is_installed;
 
         InfoDisplayer(const ShowCommandLine & c, const int i, const bool m,
-                const std::tr1::shared_ptr<const PackageID> & o, const bool b) :
+                const std::shared_ptr<const PackageID> & o, const bool b) :
             cmdline(c),
             indent(i),
             important(m),
@@ -333,8 +333,8 @@ namespace
                     (cmdline.a_raw_names.specified() ? f::show_metadata_subsection_raw() : f::show_metadata_subsection_human()),
                     k.raw_name(), k.human_name(), "",
                     indent, important);
-            std::set<std::tr1::shared_ptr<const MetadataKey>, MetadataKeyComparator> keys(k.begin_metadata(), k.end_metadata());
-            for (std::set<std::tr1::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
+            std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator> keys(k.begin_metadata(), k.end_metadata());
+            for (std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
                     s(keys.begin()), s_end(keys.end()) ; s != s_end ; ++s)
             {
                 InfoDisplayer i(cmdline, indent + 1, ((*s)->type() == mkt_significant), maybe_old_id, old_id_is_installed);
@@ -523,7 +523,7 @@ namespace
                     stringify(k.value()), indent, important);
         }
 
-        void visit(const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > & k)
+        void visit(const MetadataValueKey<std::shared_ptr<const PackageID> > & k)
         {
             cout << format_general_rhvib(
                     (cmdline.a_raw_names.specified() ? f::show_metadata_key_value_raw() : f::show_metadata_key_value_human()),
@@ -531,7 +531,7 @@ namespace
                     stringify(*k.value()), indent, important);
         }
 
-        void visit(const MetadataValueKey<std::tr1::shared_ptr<const Contents> > & k)
+        void visit(const MetadataValueKey<std::shared_ptr<const Contents> > & k)
         {
             if (cmdline.a_complex_keys.specified() || important)
             {
@@ -559,7 +559,7 @@ namespace
             }
         }
 
-        void visit(const MetadataValueKey<std::tr1::shared_ptr<const Choices> > & k)
+        void visit(const MetadataValueKey<std::shared_ptr<const Choices> > & k)
         {
             if (cmdline.a_flat.specified())
             {
@@ -718,7 +718,7 @@ namespace
             }
         }
 
-        void visit(const MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> > & k)
+        void visit(const MetadataValueKey<std::shared_ptr<const RepositoryMaskInfo> > & k)
         {
             if (k.value())
             {
@@ -812,14 +812,14 @@ namespace
 
     void do_one_repository(
             const ShowCommandLine & cmdline,
-            const std::tr1::shared_ptr<Environment> & env,
+            const std::shared_ptr<Environment> & env,
             const RepositoryName & s)
     {
         cout << format_general_s(f::show_repository_heading(), stringify(s));
 
-        const std::tr1::shared_ptr<const Repository> repo(env->package_database()->fetch_repository(s));
-        std::set<std::tr1::shared_ptr<const MetadataKey>, MetadataKeyComparator> keys(repo->begin_metadata(), repo->end_metadata());
-        for (std::set<std::tr1::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
+        const std::shared_ptr<const Repository> repo(env->package_database()->fetch_repository(s));
+        std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator> keys(repo->begin_metadata(), repo->end_metadata());
+        for (std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
                 k(keys.begin()), k_end(keys.end()) ; k != k_end ; ++k)
         {
             InfoDisplayer i(cmdline, 0, ((*k)->type() == mkt_significant), make_null_shared_ptr(), false);
@@ -831,14 +831,14 @@ namespace
 
     void do_one_package_id(
             const ShowCommandLine & cmdline,
-            const std::tr1::shared_ptr<Environment> &,
-            const std::tr1::shared_ptr<const PackageID> & best,
-            const std::tr1::shared_ptr<const PackageID> & maybe_old_id,
+            const std::shared_ptr<Environment> &,
+            const std::shared_ptr<const PackageID> & best,
+            const std::shared_ptr<const PackageID> & maybe_old_id,
             const bool old_id_is_installed)
     {
         cout << format_general_s(f::show_package_id_heading(), stringify(*best));
-        std::set<std::tr1::shared_ptr<const MetadataKey>, MetadataKeyComparator> keys(best->begin_metadata(), best->end_metadata());
-        for (std::set<std::tr1::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
+        std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator> keys(best->begin_metadata(), best->end_metadata());
+        for (std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
                 k(keys.begin()), k_end(keys.end()) ; k != k_end ; ++k)
         {
             InfoDisplayer i(cmdline, 1, ((*k)->type() == mkt_significant), maybe_old_id, old_id_is_installed);
@@ -893,18 +893,18 @@ namespace
 
     void do_one_package(
             const ShowCommandLine & cmdline,
-            const std::tr1::shared_ptr<Environment> & env,
+            const std::shared_ptr<Environment> & env,
             const PackageDepSpec & s)
     {
         cout << format_general_s(f::show_package_heading(), stringify(s));
 
-        const std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsGroupedBySlot(
+        const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsGroupedBySlot(
                     generator::Matches(s, MatchPackageOptions()))]);
         if (ids->empty())
             throw NothingMatching(s);
 
-        std::tr1::shared_ptr<const PackageID> best_installable, best_weak_masked_installable, best_masked_installable, best_not_installed;
-        std::tr1::shared_ptr<PackageIDSequence> all_installed(new PackageIDSequence);
+        std::shared_ptr<const PackageID> best_installable, best_weak_masked_installable, best_masked_installable, best_not_installed;
+        std::shared_ptr<PackageIDSequence> all_installed(new PackageIDSequence);
         std::set<RepositoryName> repos;
         for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                 i != i_end ; ++i)
@@ -1025,10 +1025,10 @@ namespace
 
     void do_all_packages(
             const ShowCommandLine & cmdline,
-            const std::tr1::shared_ptr<Environment> & env,
+            const std::shared_ptr<Environment> & env,
             const PackageDepSpec & s)
     {
-        const std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::BestVersionOnly(generator::Matches(s,
+        const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::BestVersionOnly(generator::Matches(s,
                         MatchPackageOptions()))]);
         if (ids->empty())
             throw NothingMatching(s);
@@ -1047,8 +1047,8 @@ ShowCommand::important() const
 
 int
 ShowCommand::run(
-        const std::tr1::shared_ptr<Environment> & env,
-        const std::tr1::shared_ptr<const Sequence<std::string > > & args
+        const std::shared_ptr<Environment> & env,
+        const std::shared_ptr<const Sequence<std::string > > & args
         )
 {
     ShowCommandLine cmdline;
@@ -1118,7 +1118,7 @@ ShowCommand::run(
     return EXIT_SUCCESS;
 }
 
-std::tr1::shared_ptr<args::ArgsHandler>
+std::shared_ptr<args::ArgsHandler>
 ShowCommand::make_doc_cmdline()
 {
     return make_shared_ptr(new ShowCommandLine);

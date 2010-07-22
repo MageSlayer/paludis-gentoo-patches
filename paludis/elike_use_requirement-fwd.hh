@@ -26,7 +26,7 @@
 #include <paludis/dep_spec-fwd.hh>
 #include <iosfwd>
 #include <string>
-#include <tr1/functional>
+#include <functional>
 
 namespace paludis
 {
@@ -36,8 +36,8 @@ namespace paludis
 
     typedef Options<ELikeUseRequirementOption> ELikeUseRequirementOptions;
 
-    std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> parse_elike_use_requirement(
-            const std::string &, const std::tr1::shared_ptr<const PackageID> &, const ELikeUseRequirementOptions &)
+    std::shared_ptr<const AdditionalPackageDepSpecRequirement> parse_elike_use_requirement(
+            const std::string &, const std::shared_ptr<const PackageID> &, const ELikeUseRequirementOptions &)
         PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
 }
 

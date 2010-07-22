@@ -39,8 +39,8 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/environment.hh>
 #include <paludis/literal_metadata_key.hh>
-#include <tr1/functional>
-#include <tr1/unordered_map>
+#include <functional>
+#include <unordered_map>
 #include <algorithm>
 #include <set>
 #include <sys/types.h>
@@ -50,12 +50,12 @@
 using namespace paludis;
 using namespace paludis::accounts_repository;
 
-typedef std::tr1::unordered_map<CategoryNamePart,
-        std::tr1::shared_ptr<QualifiedPackageNameSet>,
+typedef std::unordered_map<CategoryNamePart,
+        std::shared_ptr<QualifiedPackageNameSet>,
         Hash<CategoryNamePart> > PackageNames;
 
-typedef std::tr1::unordered_map<QualifiedPackageName,
-        std::tr1::shared_ptr<PackageIDSequence>,
+typedef std::unordered_map<QualifiedPackageName,
+        std::shared_ptr<PackageIDSequence>,
         Hash<QualifiedPackageName> > IDs;
 
 namespace paludis
@@ -67,7 +67,7 @@ namespace paludis
         const AccountsRepository * const repo;
         const bool installed;
 
-        std::tr1::shared_ptr<CategoryNamePartSet> categories;
+        std::shared_ptr<CategoryNamePartSet> categories;
         mutable PackageNames package_names;
         mutable IDs ids;
 
@@ -98,7 +98,7 @@ AccountsRepositoryStore::~AccountsRepositoryStore()
 }
 
 void
-AccountsRepositoryStore::_load(const std::tr1::shared_ptr<const Repository> & repo)
+AccountsRepositoryStore::_load(const std::shared_ptr<const Repository> & repo)
 {
     Context context("When loading data for AccountsRepository:");
 
@@ -132,17 +132,17 @@ AccountsRepositoryStore::_load(const std::tr1::shared_ptr<const Repository> & re
             continue;
         }
 
-        std::tr1::shared_ptr<Set<std::string> > r_set(new Set<std::string>);
+        std::shared_ptr<Set<std::string> > r_set(new Set<std::string>);
         r_set->insert(stringify((*r)->name()));
-        std::tr1::shared_ptr<LiteralMetadataStringSetKey> r_key(new LiteralMetadataStringSetKey("defined_by", "Defined by repository", mkt_internal, r_set));
+        std::shared_ptr<LiteralMetadataStringSetKey> r_key(new LiteralMetadataStringSetKey("defined_by", "Defined by repository", mkt_internal, r_set));
         _load_one(repo, r_key, dir);
     }
 }
 
 void
 AccountsRepositoryStore::_load_one(
-        const std::tr1::shared_ptr<const Repository> & repo,
-        const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & from_repo,
+        const std::shared_ptr<const Repository> & repo,
+        const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & from_repo,
         const FSEntry & dir)
 {
     Context context("When loading accounts from directory '" + stringify(dir) + "':");
@@ -163,8 +163,8 @@ AccountsRepositoryStore::_load_one(
 
 void
 AccountsRepositoryStore::_load_one_users(
-        const std::tr1::shared_ptr<const Repository> & repo,
-        const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & from_repo,
+        const std::shared_ptr<const Repository> & repo,
+        const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & from_repo,
         const FSEntry & dir)
 {
     for (DirIterator d(dir, DirIteratorOptions()), d_end ; d != d_end ; ++d)
@@ -177,8 +177,8 @@ AccountsRepositoryStore::_load_one_users(
 
 void
 AccountsRepositoryStore::_load_one_user(
-        const std::tr1::shared_ptr<const Repository> & repo,
-        const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & from_repo,
+        const std::shared_ptr<const Repository> & repo,
+        const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & from_repo,
         const FSEntry & filename)
 {
     CategoryNamePart cat("user");
@@ -219,8 +219,8 @@ AccountsRepositoryStore::_load_one_user(
 
 void
 AccountsRepositoryStore::_load_one_groups(
-        const std::tr1::shared_ptr<const Repository> & repo,
-        const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & from_repo,
+        const std::shared_ptr<const Repository> & repo,
+        const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & from_repo,
         const FSEntry & dir)
 {
     for (DirIterator d(dir, DirIteratorOptions()), d_end ; d != d_end ; ++d)
@@ -233,8 +233,8 @@ AccountsRepositoryStore::_load_one_groups(
 
 void
 AccountsRepositoryStore::_load_one_group(
-        const std::tr1::shared_ptr<const Repository> & repo,
-        const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & from_repo,
+        const std::shared_ptr<const Repository> & repo,
+        const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & from_repo,
         const FSEntry & filename)
 {
     CategoryNamePart cat("group");
@@ -285,19 +285,19 @@ AccountsRepositoryStore::has_package_named(const QualifiedPackageName & q) const
     return _imp->ids.end() != _imp->ids.find(q);
 }
 
-std::tr1::shared_ptr<const CategoryNamePartSet>
+std::shared_ptr<const CategoryNamePartSet>
 AccountsRepositoryStore::category_names() const
 {
     return _imp->categories;
 }
 
-std::tr1::shared_ptr<const CategoryNamePartSet>
+std::shared_ptr<const CategoryNamePartSet>
 AccountsRepositoryStore::unimportant_category_names() const
 {
     return _imp->categories;
 }
 
-std::tr1::shared_ptr<const QualifiedPackageNameSet>
+std::shared_ptr<const QualifiedPackageNameSet>
 AccountsRepositoryStore::package_names(const CategoryNamePart & c) const
 {
     PackageNames::iterator p(_imp->package_names.find(c));
@@ -307,7 +307,7 @@ AccountsRepositoryStore::package_names(const CategoryNamePart & c) const
         return p->second;
 }
 
-std::tr1::shared_ptr<const PackageIDSequence>
+std::shared_ptr<const PackageIDSequence>
 AccountsRepositoryStore::package_ids(const QualifiedPackageName & p) const
 {
     IDs::iterator i(_imp->ids.find(p));

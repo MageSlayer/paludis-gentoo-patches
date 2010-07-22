@@ -41,9 +41,9 @@ using namespace test;
 
 namespace
 {
-    bool get_use(const std::string & f, const std::tr1::shared_ptr<const PackageID> & id)
+    bool get_use(const std::string & f, const std::shared_ptr<const PackageID> & id)
     {
-        const std::tr1::shared_ptr<const ChoiceValue> v(id->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix(f)));
+        const std::shared_ptr<const ChoiceValue> v(id->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix(f)));
         if (! v)
             return false;
         return v->enabled();
@@ -61,11 +61,11 @@ namespace test_cases
             setenv("PALUDIS_HOME", stringify(FSEntry::cwd() / "paludis_environment_TEST_dir" / "home1").c_str(), 1);
             unsetenv("PALUDIS_SKIP_CONFIG");
 
-            std::tr1::shared_ptr<Environment> env(new PaludisEnvironment(""));
-            const std::tr1::shared_ptr<const PackageID> one(*(*env)[selection::RequireExactlyOne(
+            std::shared_ptr<Environment> env(new PaludisEnvironment(""));
+            const std::shared_ptr<const PackageID> one(*(*env)[selection::RequireExactlyOne(
                         generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
                                     env.get(), UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
-            const std::tr1::shared_ptr<const PackageID> three(*(*env)[selection::RequireExactlyOne(
+            const std::shared_ptr<const PackageID> three(*(*env)[selection::RequireExactlyOne(
                         generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-two-3",
                                     env.get(), UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
@@ -94,19 +94,19 @@ namespace test_cases
             setenv("PALUDIS_HOME", stringify(FSEntry::cwd() / "paludis_environment_TEST_dir" / "home5").c_str(), 1);
             unsetenv("PALUDIS_SKIP_CONFIG");
 
-            std::tr1::shared_ptr<Environment> env(new PaludisEnvironment(""));
+            std::shared_ptr<Environment> env(new PaludisEnvironment(""));
 
-            const std::tr1::shared_ptr<const PackageID> id1(*(*env)[selection::RequireExactlyOne(generator::Matches(
+            const std::shared_ptr<const PackageID> id1(*(*env)[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
                                     env.get(), UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
-            std::tr1::shared_ptr<const Choice> foo_cards;
+            std::shared_ptr<const Choice> foo_cards;
             for (Choices::ConstIterator c(id1->choices_key()->value()->begin()), c_end(id1->choices_key()->value()->end()) ;
                     c != c_end ; ++c)
                 if ((*c)->raw_name() == "FOO_CARDS")
                     foo_cards = *c;
             if (! foo_cards)
                 throw InternalError(PALUDIS_HERE, "oops");
-            std::tr1::shared_ptr<const Set<UnprefixedChoiceName> > k1(env->known_choice_value_names(id1, foo_cards));
+            std::shared_ptr<const Set<UnprefixedChoiceName> > k1(env->known_choice_value_names(id1, foo_cards));
             TEST_CHECK_EQUAL(join(k1->begin(), k1->end(), " "), "one three two");
         }
     } paludis_environment_use_test_known;
@@ -120,12 +120,12 @@ namespace test_cases
             setenv("PALUDIS_HOME", stringify(FSEntry::cwd() / "paludis_environment_TEST_dir" / "home2").c_str(), 1);
             unsetenv("PALUDIS_SKIP_CONFIG");
 
-            std::tr1::shared_ptr<Environment> env(new PaludisEnvironment(""));
+            std::shared_ptr<Environment> env(new PaludisEnvironment(""));
 
-            const std::tr1::shared_ptr<const PackageID> one(*(*env)[selection::RequireExactlyOne(
+            const std::shared_ptr<const PackageID> one(*(*env)[selection::RequireExactlyOne(
                         generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
                                     env.get(), UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
-            const std::tr1::shared_ptr<const PackageID> three(*(*env)[selection::RequireExactlyOne(
+            const std::shared_ptr<const PackageID> three(*(*env)[selection::RequireExactlyOne(
                         generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-two-3",
                                     env.get(), UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
@@ -153,12 +153,12 @@ namespace test_cases
             setenv("PALUDIS_HOME", stringify(FSEntry::cwd() / "paludis_environment_TEST_dir" / "home3").c_str(), 1);
             unsetenv("PALUDIS_SKIP_CONFIG");
 
-            std::tr1::shared_ptr<Environment> env(new PaludisEnvironment(""));
+            std::shared_ptr<Environment> env(new PaludisEnvironment(""));
 
-            const std::tr1::shared_ptr<const PackageID> one(*(*env)[selection::RequireExactlyOne(
+            const std::shared_ptr<const PackageID> one(*(*env)[selection::RequireExactlyOne(
                         generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
                                     env.get(), UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
-            const std::tr1::shared_ptr<const PackageID> three(*(*env)[selection::RequireExactlyOne(
+            const std::shared_ptr<const PackageID> three(*(*env)[selection::RequireExactlyOne(
                         generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-two-3",
                                     env.get(), UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
@@ -186,7 +186,7 @@ namespace test_cases
             setenv("PALUDIS_HOME", stringify(FSEntry::cwd() / "paludis_environment_TEST_dir" / "home4").c_str(), 1);
             unsetenv("PALUDIS_SKIP_CONFIG");
 
-            std::tr1::shared_ptr<Environment> env(new PaludisEnvironment(""));
+            std::shared_ptr<Environment> env(new PaludisEnvironment(""));
 
             TEST_CHECK(env->package_database()->fetch_repository(RepositoryName("first")));
             TEST_CHECK(env->package_database()->fetch_repository(RepositoryName("second")));

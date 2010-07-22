@@ -40,8 +40,8 @@ namespace paludis
     template<>
     struct Implementation<FakeRepository>
     {
-        std::tr1::shared_ptr<FakeRepository::VirtualsSequence> virtual_packages;
-        std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key;
+        std::shared_ptr<FakeRepository::VirtualsSequence> virtual_packages;
+        std::shared_ptr<const MetadataValueKey<std::string> > format_key;
 
         Implementation() :
             virtual_packages(new FakeRepository::VirtualsSequence),
@@ -72,14 +72,14 @@ FakeRepository::~FakeRepository()
 {
 }
 
-std::tr1::shared_ptr<const FakeRepository::VirtualsSequence>
+std::shared_ptr<const FakeRepository::VirtualsSequence>
 FakeRepository::virtual_packages() const
 {
     return _imp->virtual_packages;
 }
 
 void
-FakeRepository::add_virtual_package(const QualifiedPackageName & q, const std::tr1::shared_ptr<const PackageDepSpec> & p)
+FakeRepository::add_virtual_package(const QualifiedPackageName & q, const std::shared_ptr<const PackageDepSpec> & p)
 {
     _imp->virtual_packages->push_back(make_named_values<RepositoryVirtualsEntry>(
                 n::provided_by_spec() = p,
@@ -152,31 +152,31 @@ FakeRepository::is_unimportant() const
     return false;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataValueKey<std::string> >
 FakeRepository::format_key() const
 {
     return _imp->format_key;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSEntry> >
 FakeRepository::location_key() const
 {
-    return std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >();
+    return std::shared_ptr<const MetadataValueKey<FSEntry> >();
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSEntry> >
 FakeRepository::installed_root_key() const
 {
-    return std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >();
+    return std::shared_ptr<const MetadataValueKey<FSEntry> >();
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataValueKey<std::string> >
 FakeRepository::accept_keywords_key() const
 {
     return make_null_shared_ptr();
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataValueKey<std::string> >
 FakeRepository::sync_host_key() const
 {
     return make_null_shared_ptr();

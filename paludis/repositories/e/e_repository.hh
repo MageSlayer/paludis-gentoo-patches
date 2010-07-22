@@ -29,7 +29,7 @@
 #include <paludis/repositories/e/e_repository_id.hh>
 #include <paludis/repositories/e/profile.hh>
 #include <paludis/repositories/e/layout.hh>
-#include <tr1/memory>
+#include <memory>
 #include <string>
 
 /** \file
@@ -55,7 +55,7 @@ namespace paludis
         public RepositoryVirtualsInterface,
         public RepositoryDestinationInterface,
         public RepositoryManifestInterface,
-        public std::tr1::enable_shared_from_this<ERepository>,
+        public std::enable_shared_from_this<ERepository>,
         private PrivateImplementationPattern<ERepository>
     {
         private:
@@ -88,7 +88,7 @@ namespace paludis
 
             /* RepositoryVirtualsInterface */
 
-            virtual std::tr1::shared_ptr<const VirtualsSequence> virtual_packages() const
+            virtual std::shared_ptr<const VirtualsSequence> virtual_packages() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /* RepositoryDestinationInterface */
@@ -109,29 +109,29 @@ namespace paludis
 
             /* RepositorySyncableInterface */
 
-            virtual bool sync(const std::tr1::shared_ptr<OutputManager> &) const;
+            virtual bool sync(const std::shared_ptr<OutputManager> &) const;
 
             /* RepositoryEnvironmentVariableInterface */
 
             virtual std::string get_environment_variable(
-                    const std::tr1::shared_ptr<const PackageID> & for_package,
+                    const std::shared_ptr<const PackageID> & for_package,
                     const std::string & var) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /* Repository */
 
-            virtual std::tr1::shared_ptr<const PackageIDSequence> package_ids(
+            virtual std::shared_ptr<const PackageIDSequence> package_ids(
                     const QualifiedPackageName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::tr1::shared_ptr<const QualifiedPackageNameSet> package_names(
+            virtual std::shared_ptr<const QualifiedPackageNameSet> package_names(
                     const CategoryNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::tr1::shared_ptr<const CategoryNamePartSet> category_names() const
+            virtual std::shared_ptr<const CategoryNamePartSet> category_names() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::tr1::shared_ptr<const CategoryNamePartSet> category_names_containing_package(
+            virtual std::shared_ptr<const CategoryNamePartSet> category_names_containing_package(
                     const PackageNamePart &) const;
 
             virtual bool has_package_named(const QualifiedPackageName &) const
@@ -152,7 +152,7 @@ namespace paludis
             HookResult perform_hook(const Hook &)
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::tr1::shared_ptr<const CategoryNamePartSet> unimportant_category_names() const;
+            virtual std::shared_ptr<const CategoryNamePartSet> unimportant_category_names() const;
             virtual const bool is_unimportant() const;
 
             /**
@@ -160,41 +160,41 @@ namespace paludis
              */
             void update_news() const;
 
-            const std::tr1::shared_ptr<const erepository::Layout> layout() const;
-            const std::tr1::shared_ptr<const erepository::Profile> profile() const;
+            const std::shared_ptr<const erepository::Layout> layout() const;
+            const std::shared_ptr<const erepository::Profile> profile() const;
 
-            std::tr1::shared_ptr<const RepositoryMaskInfo> repository_masked(const PackageID &) const;
+            std::shared_ptr<const RepositoryMaskInfo> repository_masked(const PackageID &) const;
 
             void regenerate_cache() const;
 
             /* Keys */
 
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > location_key() const;
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const;
-            virtual const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > info_vars_key() const;
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > accept_keywords_key() const;
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > sync_host_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > location_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const;
+            virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > info_vars_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<std::string> > accept_keywords_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<std::string> > sync_host_key() const;
 
             ///\name RepositoryFactory functions
             ///\{
 
             static RepositoryName repository_factory_name(
                     const Environment * const env,
-                    const std::tr1::function<std::string (const std::string &)> &);
+                    const std::function<std::string (const std::string &)> &);
 
-            static std::tr1::shared_ptr<Repository> repository_factory_create(
+            static std::shared_ptr<Repository> repository_factory_create(
                     Environment * const env,
-                    const std::tr1::function<std::string (const std::string &)> &);
+                    const std::function<std::string (const std::string &)> &);
 
-            static std::tr1::shared_ptr<const RepositoryNameSet> repository_factory_dependencies(
+            static std::shared_ptr<const RepositoryNameSet> repository_factory_dependencies(
                     const Environment * const env,
-                    const std::tr1::function<std::string (const std::string &)> &);
+                    const std::function<std::string (const std::string &)> &);
 
             ///\}
 
-            const std::tr1::shared_ptr<const Set<UnprefixedChoiceName> > arch_flags() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            const std::tr1::shared_ptr<const UseDesc> use_desc() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::shared_ptr<const Set<UnprefixedChoiceName> > arch_flags() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::shared_ptr<const UseDesc> use_desc() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             const std::string eapi_for_file(const FSEntry &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -214,23 +214,23 @@ namespace paludis
             VersionSpec extract_package_file_version(const QualifiedPackageName &, const FSEntry &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            const std::tr1::shared_ptr<const erepository::ERepositoryID> make_id(
+            const std::shared_ptr<const erepository::ERepositoryID> make_id(
                     const QualifiedPackageName &, const FSEntry &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            void fetch(const std::tr1::shared_ptr<const erepository::ERepositoryID> &,
+            void fetch(const std::shared_ptr<const erepository::ERepositoryID> &,
                     const FetchAction &) const;
 
-            void pretend_fetch(const std::tr1::shared_ptr<const erepository::ERepositoryID> &,
+            void pretend_fetch(const std::shared_ptr<const erepository::ERepositoryID> &,
                     PretendFetchAction &) const;
 
-            void install(const std::tr1::shared_ptr<const erepository::ERepositoryID> &,
+            void install(const std::shared_ptr<const erepository::ERepositoryID> &,
                     const InstallAction &) const;
 
-            bool pretend(const std::tr1::shared_ptr<const erepository::ERepositoryID> &,
+            bool pretend(const std::shared_ptr<const erepository::ERepositoryID> &,
                     const PretendAction &) const;
 
-            void info(const std::tr1::shared_ptr<const erepository::ERepositoryID> &,
+            void info(const std::shared_ptr<const erepository::ERepositoryID> &,
                     const InfoAction &) const;
 
             const std::string get_package_file_manifest_key(const FSEntry &, const QualifiedPackageName &) const;

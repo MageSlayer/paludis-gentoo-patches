@@ -24,7 +24,7 @@
 #include <paludis/package_id-fwd.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/output_manager-fwd.hh>
-#include <tr1/functional>
+#include <functional>
 
 namespace paludis
 {
@@ -52,13 +52,13 @@ namespace paludis
         NamedValue<n::contents_file, FSEntry> contents_file;
         NamedValue<n::environment, Environment *> environment;
         NamedValue<n::fix_mtimes_before, Timestamp> fix_mtimes_before;
-        NamedValue<n::get_new_ids_or_minus_one, std::tr1::function<std::pair<uid_t, gid_t> (const FSEntry &)> > get_new_ids_or_minus_one;
+        NamedValue<n::get_new_ids_or_minus_one, std::function<std::pair<uid_t, gid_t> (const FSEntry &)> > get_new_ids_or_minus_one;
         NamedValue<n::image, FSEntry> image;
         NamedValue<n::install_under, FSEntry> install_under;
-        NamedValue<n::merged_entries, std::tr1::shared_ptr<FSEntrySet> > merged_entries;
+        NamedValue<n::merged_entries, std::shared_ptr<FSEntrySet> > merged_entries;
         NamedValue<n::options, MergerOptions> options;
-        NamedValue<n::output_manager, std::tr1::shared_ptr<OutputManager> > output_manager;
-        NamedValue<n::package_id, std::tr1::shared_ptr<const PackageID> > package_id;
+        NamedValue<n::output_manager, std::shared_ptr<OutputManager> > output_manager;
+        NamedValue<n::package_id, std::shared_ptr<const PackageID> > package_id;
         NamedValue<n::root, FSEntry> root;
     };
 

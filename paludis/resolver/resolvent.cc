@@ -127,7 +127,7 @@ Resolvent::Resolvent(
 }
 
 Resolvent::Resolvent(
-        const std::tr1::shared_ptr<const PackageID> & id,
+        const std::shared_ptr<const PackageID> & id,
         const DestinationType t) :
     destination_type(n::destination_type() = t),
     package(id->name()),

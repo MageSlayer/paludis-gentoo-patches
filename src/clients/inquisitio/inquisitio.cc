@@ -105,7 +105,7 @@ main(int argc, char *argv[])
         if (CommandLine::get_instance()->a_force_color.specified())
             paludis_command.append(" --" + CommandLine::get_instance()->a_force_color.long_name());
 
-        std::tr1::shared_ptr<Environment> env(EnvironmentFactory::get_instance()->create(env_spec));
+        std::shared_ptr<Environment> env(EnvironmentFactory::get_instance()->create(env_spec));
         env->set_paludis_command(paludis_command);
 
         if (CommandLine::get_instance()->begin_parameters() == CommandLine::get_instance()->end_parameters())

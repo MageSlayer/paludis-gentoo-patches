@@ -52,11 +52,11 @@ namespace test_cases
             TestEnvironment e;
             PackageDatabase & p(*e.package_database());
 
-            const std::tr1::shared_ptr<FakeRepository> r1(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            const std::shared_ptr<FakeRepository> r1(new FakeRepository(make_named_values<FakeRepositoryParams>(
                             n::environment() = &e,
                             n::name() = RepositoryName("repo1")
                             )));
-            const std::tr1::shared_ptr<FakeRepository> r2(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            const std::shared_ptr<FakeRepository> r2(new FakeRepository(make_named_values<FakeRepositoryParams>(
                             n::environment() = &e,
                             n::name() = RepositoryName("repo2")
                             )));
@@ -112,9 +112,9 @@ namespace test_cases
             {
             }
 
-            std::tr1::shared_ptr<const CategoryNamePartSet> unimportant_category_names() const
+            std::shared_ptr<const CategoryNamePartSet> unimportant_category_names() const
             {
-                std::tr1::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
+                std::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
                 result->insert(CategoryNamePart("bad-cat1"));
                 result->insert(CategoryNamePart("bad-cat2"));
                 return result;
@@ -126,7 +126,7 @@ namespace test_cases
             TestEnvironment e;
             PackageDatabase & p(*e.package_database());
 
-            std::tr1::shared_ptr<FakeRepository> r1(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            std::shared_ptr<FakeRepository> r1(new FakeRepository(make_named_values<FakeRepositoryParams>(
                             n::environment() = &e,
                             n::name() = RepositoryName("repo1"))));
             r1->add_version(CategoryNamePart("cat-one") + PackageNamePart("pkg-one"), VersionSpec("0", VersionSpecOptions()));
@@ -136,7 +136,7 @@ namespace test_cases
             p.add_repository(10, r1);
             TEST_CHECK(true);
 
-            std::tr1::shared_ptr<FakeRepository> r2(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            std::shared_ptr<FakeRepository> r2(new FakeRepository(make_named_values<FakeRepositoryParams>(
                             n::environment() = &e,
                             n::name() = RepositoryName("repo2"))));
             r2->add_version(CategoryNamePart("cat-three") + PackageNamePart("pkg-three"), VersionSpec("0", VersionSpecOptions()));
@@ -144,7 +144,7 @@ namespace test_cases
             p.add_repository(10, r2);
             TEST_CHECK(true);
 
-            std::tr1::shared_ptr<FakeRepository> r3(new CoolFakeRepository(&e, RepositoryName("repo3")));
+            std::shared_ptr<FakeRepository> r3(new CoolFakeRepository(&e, RepositoryName("repo3")));
             r3->add_version(CategoryNamePart("bad-cat1") + PackageNamePart("pkg-important"), VersionSpec("0", VersionSpecOptions()));
             r3->add_version(CategoryNamePart("good-cat1") + PackageNamePart("pkg-important"), VersionSpec("0", VersionSpecOptions()));
 
@@ -167,7 +167,7 @@ namespace test_cases
             p.add_repository(10, r3);
             TEST_CHECK(true);
 
-            std::tr1::shared_ptr<FakeInstalledRepository> r4(new FakeInstalledRepository(
+            std::shared_ptr<FakeInstalledRepository> r4(new FakeInstalledRepository(
                         make_named_values<FakeInstalledRepositoryParams>(
                             n::environment() = &e,
                             n::name() = RepositoryName("repo4"),

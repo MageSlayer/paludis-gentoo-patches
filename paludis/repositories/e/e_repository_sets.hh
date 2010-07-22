@@ -60,17 +60,17 @@ namespace paludis
             /**
              * Fetch a package set other than system.
              */
-            const std::tr1::shared_ptr<const SetSpecTree> package_set(const SetName & s) const;
+            const std::shared_ptr<const SetSpecTree> package_set(const SetName & s) const;
 
             /**
              * Fetch the security or insecurity set.
              */
-            const std::tr1::shared_ptr<const SetSpecTree> security_set(bool insecure) const;
+            const std::shared_ptr<const SetSpecTree> security_set(bool insecure) const;
 
             /**
              * Give a list of all the sets in this repo.
              */
-            std::tr1::shared_ptr<const SetNameSet> sets_list() const;
+            std::shared_ptr<const SetNameSet> sets_list() const;
     };
 }
 

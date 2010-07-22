@@ -130,7 +130,7 @@ main(int argc, char *argv[])
         if (! CommandLine::get_instance()->a_write_cache_dir.specified())
             CommandLine::get_instance()->a_write_cache_dir.set_argument("/var/empty");
 
-        std::tr1::shared_ptr<FSEntrySequence> extra_repository_dirs(new FSEntrySequence);
+        std::shared_ptr<FSEntrySequence> extra_repository_dirs(new FSEntrySequence);
         for (args::StringSequenceArg::ConstIterator d(CommandLine::get_instance()->a_extra_repository_dir.begin_args()),
                 d_end(CommandLine::get_instance()->a_extra_repository_dir.end_args()) ;
                 d != d_end ; ++d)
@@ -140,7 +140,7 @@ main(int argc, char *argv[])
                     n::accept_unstable() = CommandLine::get_instance()->a_unstable.specified(),
                     n::disable_metadata_cache() = false,
                     n::extra_accept_keywords() = "",
-                    n::extra_params() = std::tr1::shared_ptr<Map<std::string, std::string> >(),
+                    n::extra_params() = std::shared_ptr<Map<std::string, std::string> >(),
                     n::extra_repository_dirs() = extra_repository_dirs,
                     n::master_repository_name() = CommandLine::get_instance()->a_master_repository_name.argument(),
                     n::profiles_if_not_auto() = CommandLine::get_instance()->a_profile.argument(),

@@ -25,7 +25,7 @@
 #include <paludis/package_id-fwd.hh>
 #include <paludis/environment-fwd.hh>
 #include <string>
-#include <tr1/functional>
+#include <functional>
 
 namespace paludis
 {
@@ -45,32 +45,32 @@ namespace paludis
         /**
          * Parse a dependency heirarchy.
          */
-        std::tr1::shared_ptr<DependencySpecTree> parse_depend(const std::string & s,
-                const Environment * const, const std::tr1::shared_ptr<const PackageID> &) PALUDIS_VISIBLE;
+        std::shared_ptr<DependencySpecTree> parse_depend(const std::string & s,
+                const Environment * const, const std::shared_ptr<const PackageID> &) PALUDIS_VISIBLE;
 
         /**
          * Parse a provide heirarchy.
          */
-        std::tr1::shared_ptr<ProvideSpecTree> parse_provide(const std::string & s,
-                const Environment * const, const std::tr1::shared_ptr<const PackageID> &) PALUDIS_VISIBLE;
+        std::shared_ptr<ProvideSpecTree> parse_provide(const std::string & s,
+                const Environment * const, const std::shared_ptr<const PackageID> &) PALUDIS_VISIBLE;
 
         /**
          * Parse a fetchable uri heirarchy.
          */
-        std::tr1::shared_ptr<FetchableURISpecTree> parse_fetchable_uri(const std::string & s,
-                const Environment * const, const std::tr1::shared_ptr<const PackageID> &) PALUDIS_VISIBLE;
+        std::shared_ptr<FetchableURISpecTree> parse_fetchable_uri(const std::string & s,
+                const Environment * const, const std::shared_ptr<const PackageID> &) PALUDIS_VISIBLE;
 
         /**
          * Parse a simple uri heirarchy.
          */
-        std::tr1::shared_ptr<SimpleURISpecTree> parse_simple_uri(const std::string & s,
-                const Environment * const, const std::tr1::shared_ptr<const PackageID> &) PALUDIS_VISIBLE;
+        std::shared_ptr<SimpleURISpecTree> parse_simple_uri(const std::string & s,
+                const Environment * const, const std::shared_ptr<const PackageID> &) PALUDIS_VISIBLE;
 
         /**
          * Parse a license heirarchy.
          */
-        std::tr1::shared_ptr<LicenseSpecTree> parse_license(const std::string & s,
-                const Environment * const, const std::tr1::shared_ptr<const PackageID> &) PALUDIS_VISIBLE;
+        std::shared_ptr<LicenseSpecTree> parse_license(const std::string & s,
+                const Environment * const, const std::shared_ptr<const PackageID> &) PALUDIS_VISIBLE;
     }
 }
 

@@ -36,7 +36,7 @@ namespace paludis
     {
         Mutex mutex;
         ConditionVariable condition;
-        std::deque<std::tr1::function<void () throw ()> > queue;
+        std::deque<std::function<void () throw ()> > queue;
         ThreadPool threads;
         bool limit_size;
         bool should_finish;
@@ -52,7 +52,7 @@ namespace paludis
         {
             while (true)
             {
-                std::tr1::function<void () throw ()> func;
+                std::function<void () throw ()> func;
                 {
                     Lock l(mutex);
                     if (queue.empty())
@@ -80,10 +80,10 @@ namespace paludis
         {
             for (unsigned x(0) ; x < n_threads ; ++x)
                 if (nice)
-                    threads.create_thread(std::tr1::bind(&Thread::idle_adapter,
-                                std::tr1::function<void () throw ()>(std::tr1::bind(std::tr1::mem_fn(&Implementation::thread_func), this))));
+                    threads.create_thread(std::bind(&Thread::idle_adapter,
+                                std::function<void () throw ()>(std::bind(std::mem_fn(&Implementation::thread_func), this))));
                 else
-                    threads.create_thread(std::tr1::bind(std::tr1::mem_fn(&Implementation::thread_func), this));
+                    threads.create_thread(std::bind(std::mem_fn(&Implementation::thread_func), this));
         }
     };
 }
@@ -95,11 +95,11 @@ ActionQueue::ActionQueue(const unsigned n_threads, const bool nice, const bool l
 
 ActionQueue::~ActionQueue()
 {
-    enqueue(std::tr1::bind(std::tr1::mem_fn(&Implementation<ActionQueue>::finish), _imp.get()));
+    enqueue(std::bind(std::mem_fn(&Implementation<ActionQueue>::finish), _imp.get()));
 }
 
 void
-ActionQueue::enqueue(const std::tr1::function<void () throw ()> & f)
+ActionQueue::enqueue(const std::function<void () throw ()> & f)
 {
     Lock l(_imp->mutex);
     if ((! _imp->limit_size) || (_imp->queue.size() < 1000))
@@ -118,7 +118,7 @@ ActionQueue::complete_pending()
     Mutex m;
     Lock l(m);
 
-    enqueue(std::tr1::bind(std::tr1::mem_fn(&ConditionVariable::acquire_then_signal), &c, std::tr1::ref(m)));
+    enqueue(std::bind(std::mem_fn(&ConditionVariable::acquire_then_signal), &c, std::ref(m)));
     c.wait(m);
 }
 

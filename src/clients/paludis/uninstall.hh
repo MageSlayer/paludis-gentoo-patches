@@ -32,10 +32,10 @@ namespace paludis
 }
 
 /// Handle --uninstall.
-int do_uninstall(const std::tr1::shared_ptr<paludis::Environment> &);
+int do_uninstall(const std::shared_ptr<paludis::Environment> &);
 
 /// Handle --uninstall-unused.
-int do_uninstall_unused(const std::tr1::shared_ptr<paludis::Environment> &);
+int do_uninstall_unused(const std::shared_ptr<paludis::Environment> &);
 
 #endif
 

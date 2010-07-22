@@ -21,17 +21,16 @@
 #include <paludis/util/config_file.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/dir_iterator.hh>
+#include <paludis/util/hashes.hh>
 #include <paludis/util/is_file_with_extension.hh>
-#include <paludis/util/system.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_shared_ptr.hh>
-#include <paludis/util/strip.hh>
+#include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/hashes.hh>
-#include <paludis/util/make_named_values.hh>
-#include <paludis/util/singleton-impl.hh>
-#include <tr1/unordered_map>
+#include <paludis/util/strip.hh>
+#include <paludis/util/system.hh>
+#include <unordered_map>
 
 using namespace paludis;
 
@@ -42,7 +41,7 @@ DistributionConfigurationError::DistributionConfigurationError(const std::string
 {
 }
 
-typedef std::tr1::unordered_map<std::string, std::tr1::shared_ptr<const Distribution>, Hash<std::string> > DistributionHash;
+typedef std::unordered_map<std::string, std::shared_ptr<const Distribution>, Hash<std::string> > DistributionHash;
 
 namespace paludis
 {
@@ -91,7 +90,7 @@ DistributionData::~DistributionData()
 {
 }
 
-std::tr1::shared_ptr<const Distribution>
+std::shared_ptr<const Distribution>
 DistributionData::distribution_from_string(const std::string & s) const
 {
     DistributionHash::const_iterator i(_imp->values.find(s));

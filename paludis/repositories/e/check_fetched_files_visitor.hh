@@ -30,7 +30,7 @@
 #include <paludis/package_id-fwd.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/action-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 
 namespace paludis
 {
@@ -45,13 +45,13 @@ namespace paludis
             public:
                 CheckFetchedFilesVisitor(
                         const Environment * const,
-                        const std::tr1::shared_ptr<const PackageID> &,
+                        const std::shared_ptr<const PackageID> &,
                         const FSEntry & distdir,
                         const bool check_unneeded,
                         const bool fetch_restrict,
                         const FSEntry & m2,
                         const UseManifest um,
-                        const std::tr1::shared_ptr<OutputManager> & output_manager,
+                        const std::shared_ptr<OutputManager> & output_manager,
                         const bool exclude_unmirrorable,
                         const bool ignore_unfetched,
                         const bool ignore_not_in_manifest);
@@ -63,7 +63,7 @@ namespace paludis
                 void visit(const FetchableURISpecTree::NodeType<URILabelsDepSpec>::Type & node);
                 void visit(const FetchableURISpecTree::NodeType<FetchableURIDepSpec>::Type & node);
 
-                const std::tr1::shared_ptr<const Sequence<FetchActionFailure> > failures() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::shared_ptr<const Sequence<FetchActionFailure> > failures() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 bool need_nofetch() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };

@@ -85,7 +85,7 @@ namespace
     };
 
     void do_one_key(
-            const std::tr1::shared_ptr<const MetadataKey> & k,
+            const std::shared_ptr<const MetadataKey> & k,
             const PrintRepositoryMetadataCommandLine & cmdline,
             const std::string & name_prefix
             )
@@ -117,8 +117,8 @@ namespace
 
 int
 PrintRepositoryMetadataCommand::run(
-        const std::tr1::shared_ptr<Environment> & env,
-        const std::tr1::shared_ptr<const Sequence<std::string > > & args
+        const std::shared_ptr<Environment> & env,
+        const std::shared_ptr<const Sequence<std::string > > & args
         )
 {
     PrintRepositoryMetadataCommandLine cmdline;
@@ -134,7 +134,7 @@ PrintRepositoryMetadataCommand::run(
         throw args::DoHelp("print-repository-metadata takes exactly one parameter");
 
     RepositoryName name(*cmdline.begin_parameters());
-    const std::tr1::shared_ptr<const Repository> repo(env->package_database()->fetch_repository(name));
+    const std::shared_ptr<const Repository> repo(env->package_database()->fetch_repository(name));
 
     for (Repository::MetadataConstIterator m(repo->begin_metadata()), m_end(repo->end_metadata()) ;
             m != m_end ; ++m)
@@ -143,7 +143,7 @@ PrintRepositoryMetadataCommand::run(
     return EXIT_SUCCESS;
 }
 
-std::tr1::shared_ptr<args::ArgsHandler>
+std::shared_ptr<args::ArgsHandler>
 PrintRepositoryMetadataCommand::make_doc_cmdline()
 {
     return make_shared_ptr(new PrintRepositoryMetadataCommandLine);

@@ -30,15 +30,15 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/hashes.hh>
-#include <tr1/functional>
-#include <tr1/unordered_map>
+#include <functional>
+#include <unordered_map>
 #include <algorithm>
 #include <vector>
 
 using namespace paludis;
 using namespace paludis::paludis_environment;
 
-typedef std::tr1::unordered_multimap<std::string, std::string, Hash<std::string> > Mirrors;
+typedef std::unordered_multimap<std::string, std::string, Hash<std::string> > Mirrors;
 
 namespace paludis
 {
@@ -69,7 +69,7 @@ MirrorsConf::add(const FSEntry & filename)
 {
     Context context("When adding source '" + stringify(filename) + "' as a mirrors file:");
 
-    std::tr1::shared_ptr<LineConfigFile> f(make_bashable_conf(filename, LineConfigFileOptions()));
+    std::shared_ptr<LineConfigFile> f(make_bashable_conf(filename, LineConfigFileOptions()));
     if (! f)
         return;
 
@@ -88,13 +88,13 @@ MirrorsConf::add(const FSEntry & filename)
     }
 }
 
-std::tr1::shared_ptr<const MirrorsSequence>
+std::shared_ptr<const MirrorsSequence>
 MirrorsConf::query(const std::string & m) const
 {
-    std::tr1::shared_ptr<MirrorsSequence> result(new MirrorsSequence);
+    std::shared_ptr<MirrorsSequence> result(new MirrorsSequence);
     std::pair<Mirrors::const_iterator, Mirrors::const_iterator> p(_imp->mirrors.equal_range(m));
     std::transform(p.first, p.second, result->back_inserter(),
-            std::tr1::mem_fn(&std::pair<const std::string, std::string>::second));
+            std::mem_fn(&std::pair<const std::string, std::string>::second));
     return result;
 }
 

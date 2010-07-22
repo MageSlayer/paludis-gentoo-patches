@@ -70,16 +70,16 @@ namespace paludis
 
             ///\}
 
-            virtual std::tr1::shared_ptr<const FSEntrySequence> bashrc_files() const
+            virtual std::shared_ptr<const FSEntrySequence> bashrc_files() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::tr1::shared_ptr<const FSEntrySequence> syncers_dirs() const
+            virtual std::shared_ptr<const FSEntrySequence> syncers_dirs() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::tr1::shared_ptr<const FSEntrySequence> fetchers_dirs() const
+            virtual std::shared_ptr<const FSEntrySequence> fetchers_dirs() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::tr1::shared_ptr<const DestinationsSet> default_destinations() const
+            virtual std::shared_ptr<const DestinationsSet> default_destinations() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual std::string distribution() const
@@ -88,7 +88,7 @@ namespace paludis
             virtual bool is_paludis_package(const QualifiedPackageName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::tr1::shared_ptr<PackageIDSequence> operator[] (const Selection &) const
+            virtual std::shared_ptr<PackageIDSequence> operator[] (const Selection &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual NotifierCallbackID add_notifier_callback(const NotifierCallbackFunction &);
@@ -100,20 +100,20 @@ namespace paludis
             virtual void add_set(
                     const SetName &,
                     const SetName &,
-                    const std::tr1::function<std::tr1::shared_ptr<const SetSpecTree> ()> &,
+                    const std::function<std::shared_ptr<const SetSpecTree> ()> &,
                     const bool combine) const;
 
-            virtual std::tr1::shared_ptr<const SetNameSet> set_names() const
+            virtual std::shared_ptr<const SetNameSet> set_names() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const std::tr1::shared_ptr<const SetSpecTree> set(const SetName &) const
+            virtual const std::shared_ptr<const SetSpecTree> set(const SetName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual void add_selection_cache(
-                    const std::tr1::shared_ptr<const SelectionCache> &);
+                    const std::shared_ptr<const SelectionCache> &);
 
             virtual void remove_selection_cache(
-                    const std::tr1::shared_ptr<const SelectionCache> &);
+                    const std::shared_ptr<const SelectionCache> &);
     };
 
     class PALUDIS_VISIBLE DuplicateSetError :

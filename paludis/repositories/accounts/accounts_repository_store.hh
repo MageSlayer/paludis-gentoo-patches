@@ -27,7 +27,7 @@
 #include <paludis/environment-fwd.hh>
 #include <paludis/repository-fwd.hh>
 #include <paludis/metadata_key-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 
 namespace paludis
 {
@@ -39,31 +39,31 @@ namespace paludis
             private PrivateImplementationPattern<AccountsRepositoryStore>
         {
             private:
-                void _load(const std::tr1::shared_ptr<const Repository> & repo);
+                void _load(const std::shared_ptr<const Repository> & repo);
 
                 void _load_one(
-                        const std::tr1::shared_ptr<const Repository> & repo,
-                        const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & from_repo,
+                        const std::shared_ptr<const Repository> & repo,
+                        const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & from_repo,
                         const FSEntry & dir);
 
                 void _load_one_users(
-                        const std::tr1::shared_ptr<const Repository> & repo,
-                        const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & from_repo,
+                        const std::shared_ptr<const Repository> & repo,
+                        const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & from_repo,
                         const FSEntry & dir);
 
                 void _load_one_user(
-                        const std::tr1::shared_ptr<const Repository> & repo,
-                        const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & from_repo,
+                        const std::shared_ptr<const Repository> & repo,
+                        const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & from_repo,
                         const FSEntry & file);
 
                 void _load_one_groups(
-                        const std::tr1::shared_ptr<const Repository> & repo,
-                        const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & from_repo,
+                        const std::shared_ptr<const Repository> & repo,
+                        const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & from_repo,
                         const FSEntry & dir);
 
                 void _load_one_group(
-                        const std::tr1::shared_ptr<const Repository> & repo,
-                        const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & from_repo,
+                        const std::shared_ptr<const Repository> & repo,
+                        const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & from_repo,
                         const FSEntry & file);
 
             public:
@@ -80,16 +80,16 @@ namespace paludis
                 bool has_package_named(const QualifiedPackageName & q) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                std::tr1::shared_ptr<const CategoryNamePartSet> category_names() const
+                std::shared_ptr<const CategoryNamePartSet> category_names() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                std::tr1::shared_ptr<const CategoryNamePartSet> unimportant_category_names() const
+                std::shared_ptr<const CategoryNamePartSet> unimportant_category_names() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                std::tr1::shared_ptr<const QualifiedPackageNameSet> package_names(
+                std::shared_ptr<const QualifiedPackageNameSet> package_names(
                         const CategoryNamePart & c) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                std::tr1::shared_ptr<const PackageIDSequence> package_ids(
+                std::shared_ptr<const PackageIDSequence> package_ids(
                         const QualifiedPackageName & p) const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }

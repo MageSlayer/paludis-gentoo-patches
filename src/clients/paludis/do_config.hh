@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_SRC_CONFIG_HH
 #define PALUDIS_GUARD_SRC_CONFIG_HH 1
 
-#include <tr1/memory>
+#include <memory>
 
 /** \file
  * Declaration for the do_config function.
@@ -32,7 +32,7 @@ namespace paludis
 }
 
 /// Handle --config.
-int do_config(const std::tr1::shared_ptr<paludis::Environment> &);
+int do_config(const std::shared_ptr<paludis::Environment> &);
 
 #endif
 

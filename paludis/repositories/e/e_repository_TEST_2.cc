@@ -47,7 +47,7 @@
 #include <paludis/choice.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
-#include <tr1/functional>
+#include <functional>
 #include <set>
 #include <string>
 
@@ -58,18 +58,18 @@ using namespace paludis;
 
 namespace
 {
-    void cannot_uninstall(const std::tr1::shared_ptr<const PackageID> & id, const UninstallActionOptions &)
+    void cannot_uninstall(const std::shared_ptr<const PackageID> & id, const UninstallActionOptions &)
     {
         if (id)
             throw InternalError(PALUDIS_HERE, "cannot uninstall");
     }
 
-    std::tr1::shared_ptr<OutputManager> make_standard_output_manager(const Action &)
+    std::shared_ptr<OutputManager> make_standard_output_manager(const Action &)
     {
         return make_shared_ptr(new StandardOutputManager);
     }
 
-    std::string from_keys(const std::tr1::shared_ptr<const Map<std::string, std::string> > & m,
+    std::string from_keys(const std::shared_ptr<const Map<std::string, std::string> > & m,
             const std::string & k)
     {
         Map<std::string, std::string>::ConstIterator mm(m->find(k));
@@ -105,7 +105,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_2_dir" / "repo"));
@@ -116,11 +116,11 @@ namespace test_cases
             keys->insert("profile_eapi", "0");
             keys->insert("distdir", stringify(FSEntry::cwd() / "e_repository_TEST_2_dir" / "distdir"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "e_repository_TEST_2_dir" / "build"));
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
+            std::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
                         make_named_values<FakeInstalledRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("installed"),
@@ -139,7 +139,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("econf source 2", true);
-                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/econf-source-2",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
@@ -149,7 +149,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("doman 2", true);
-                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/doman-2",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
@@ -159,7 +159,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("src_prepare 2", true);
-                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/src_prepare-2",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
@@ -169,7 +169,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("src_configure 2", true);
-                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/src_configure-2",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
@@ -179,7 +179,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("default src_configure 2", true);
-                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/default-src_configure-2",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
@@ -189,7 +189,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("default src_compile 2", true);
-                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/default-src_compile-2",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
@@ -199,7 +199,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("default_src_compile 2", true);
-                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/default_src_compile-2",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);
@@ -209,7 +209,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("src_compile via default function 2", true);
-                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/src_compile-via-default-func-2",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
                 TEST_CHECK(id);

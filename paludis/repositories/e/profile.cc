@@ -36,7 +36,7 @@ Profile::~Profile()
 namespace
 {
     template <typename T_>
-    std::tr1::shared_ptr<Profile>
+    std::shared_ptr<Profile>
     make_profile(
         const Environment * const env,
         const ERepository * const repo,
@@ -45,7 +45,7 @@ namespace
         const std::string & a,
         const bool x)
     {
-        return std::tr1::shared_ptr<Profile>(new T_(env, repo, name, locations, a, x));
+        return std::shared_ptr<Profile>(new T_(env, repo, name, locations, a, x));
     }
 }
 
@@ -53,7 +53,7 @@ ProfileFactory::ProfileFactory()
 {
 }
 
-const std::tr1::shared_ptr<Profile>
+const std::shared_ptr<Profile>
 ProfileFactory::create(
         const std::string & s,
         const Environment * const env,

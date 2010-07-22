@@ -42,14 +42,14 @@ Resolution::serialise(Serialiser & s) const
         ;
 }
 
-const std::tr1::shared_ptr<Resolution>
+const std::shared_ptr<Resolution>
 Resolution::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "Resolution");
 
     return make_shared_ptr(new Resolution(make_named_values<Resolution>(
-                    n::constraints() = v.member<std::tr1::shared_ptr<Constraints> >("constraints"),
-                    n::decision() = v.member<std::tr1::shared_ptr<Decision> >("decision"),
+                    n::constraints() = v.member<std::shared_ptr<Constraints> >("constraints"),
+                    n::decision() = v.member<std::shared_ptr<Decision> >("decision"),
                     n::resolvent() = v.member<Resolvent>("resolvent")
                     )));
 }

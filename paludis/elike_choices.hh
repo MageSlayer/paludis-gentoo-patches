@@ -35,8 +35,8 @@ namespace paludis
             const bool _enabled;
 
         public:
-            ELikeStripChoiceValue(const std::tr1::shared_ptr<const PackageID> &,
-                    const Environment * const env, const std::tr1::shared_ptr<const Choice> &);
+            ELikeStripChoiceValue(const std::shared_ptr<const PackageID> &,
+                    const Environment * const env, const std::shared_ptr<const Choice> &);
 
             virtual const UnprefixedChoiceName unprefixed_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const ChoiceNameWithPrefix name_with_prefix() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -58,8 +58,8 @@ namespace paludis
             const bool _enabled;
 
         public:
-            ELikeSplitChoiceValue(const std::tr1::shared_ptr<const PackageID> &,
-                    const Environment * const env, const std::tr1::shared_ptr<const Choice> &);
+            ELikeSplitChoiceValue(const std::shared_ptr<const PackageID> &,
+                    const Environment * const env, const std::shared_ptr<const Choice> &);
 
             virtual const UnprefixedChoiceName unprefixed_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const ChoiceNameWithPrefix name_with_prefix() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -81,8 +81,8 @@ namespace paludis
             const bool _enabled;
 
         public:
-            ELikeOptionalTestsChoiceValue(const std::tr1::shared_ptr<const PackageID> &,
-                    const Environment * const env, const std::tr1::shared_ptr<const Choice> &);
+            ELikeOptionalTestsChoiceValue(const std::shared_ptr<const PackageID> &,
+                    const Environment * const env, const std::shared_ptr<const Choice> &);
 
             virtual const UnprefixedChoiceName unprefixed_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const ChoiceNameWithPrefix name_with_prefix() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -104,8 +104,8 @@ namespace paludis
             const bool _enabled;
 
         public:
-            ELikeRecommendedTestsChoiceValue(const std::tr1::shared_ptr<const PackageID> &,
-                    const Environment * const env, const std::tr1::shared_ptr<const Choice> &);
+            ELikeRecommendedTestsChoiceValue(const std::shared_ptr<const PackageID> &,
+                    const Environment * const env, const std::shared_ptr<const Choice> &);
 
             virtual const UnprefixedChoiceName unprefixed_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const ChoiceNameWithPrefix name_with_prefix() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -127,8 +127,8 @@ namespace paludis
             const bool _enabled;
 
         public:
-            ELikeExpensiveTestsChoiceValue(const std::tr1::shared_ptr<const PackageID> &,
-                    const Environment * const env, const std::tr1::shared_ptr<const Choice> &);
+            ELikeExpensiveTestsChoiceValue(const std::shared_ptr<const PackageID> &,
+                    const Environment * const env, const std::shared_ptr<const Choice> &);
 
             virtual const UnprefixedChoiceName unprefixed_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const ChoiceNameWithPrefix name_with_prefix() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -151,8 +151,8 @@ namespace paludis
             const std::string _parameter;
 
         public:
-            ELikeJobsChoiceValue(const std::tr1::shared_ptr<const PackageID> &,
-                    const Environment * const env, const std::tr1::shared_ptr<const Choice> &);
+            ELikeJobsChoiceValue(const std::shared_ptr<const PackageID> &,
+                    const Environment * const env, const std::shared_ptr<const Choice> &);
 
             virtual const UnprefixedChoiceName unprefixed_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const ChoiceNameWithPrefix name_with_prefix() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -174,8 +174,8 @@ namespace paludis
             const bool _enabled;
 
         public:
-            ELikeTraceChoiceValue(const std::tr1::shared_ptr<const PackageID> &,
-                    const Environment * const env, const std::tr1::shared_ptr<const Choice> &);
+            ELikeTraceChoiceValue(const std::shared_ptr<const PackageID> &,
+                    const Environment * const env, const std::shared_ptr<const Choice> &);
 
             virtual const UnprefixedChoiceName unprefixed_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const ChoiceNameWithPrefix name_with_prefix() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -201,9 +201,9 @@ namespace paludis
              * \since 0.48.1
              */
             ELikePreserveWorkChoiceValue(
-                    const std::tr1::shared_ptr<const PackageID> &,
+                    const std::shared_ptr<const PackageID> &,
                     const Environment * const env,
-                    const std::tr1::shared_ptr<const Choice> &,
+                    const std::shared_ptr<const Choice> &,
                     const bool enabled_by_default);
 
             virtual const UnprefixedChoiceName unprefixed_name() const PALUDIS_ATTRIBUTE((warn_unused_result));

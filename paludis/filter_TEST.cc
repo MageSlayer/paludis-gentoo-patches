@@ -47,9 +47,9 @@ namespace test_cases
     {
         Filter filter;
         TestEnvironment env;
-        std::tr1::shared_ptr<FakeRepository> repo1;
-        std::tr1::shared_ptr<FakeRepository> repo2;
-        std::tr1::shared_ptr<FakeInstalledRepository> inst_repo1;
+        std::shared_ptr<FakeRepository> repo1;
+        std::shared_ptr<FakeRepository> repo2;
+        std::shared_ptr<FakeInstalledRepository> inst_repo1;
 
         FilterTestCaseBase(const std::string & s, const Filter & f) :
             TestCase("filter " + s + " with " + stringify(f)),
@@ -89,12 +89,12 @@ namespace test_cases
         void run()
         {
             const std::string expected(get_expected());
-            std::tr1::shared_ptr<const PackageIDSequence> got(env[selection::AllVersionsSorted(generator::All() | filter)]);
+            std::shared_ptr<const PackageIDSequence> got(env[selection::AllVersionsSorted(generator::All() | filter)]);
 
             TEST_CHECK(got);
             TEST_CHECK_EQUAL(join(indirect_iterator(got->begin()), indirect_iterator(got->end()), ", "), expected);
 
-            std::tr1::shared_ptr<const PackageIDSequence> got_none(env[selection::AllVersionsSorted(
+            std::shared_ptr<const PackageIDSequence> got_none(env[selection::AllVersionsSorted(
                         generator::Matches(parse_user_package_dep_spec("not/exist", &env,
                                 UserPackageDepSpecOptions()), MatchPackageOptions()) | filter)]);
             TEST_CHECK(got_none);

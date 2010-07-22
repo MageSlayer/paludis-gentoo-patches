@@ -314,10 +314,10 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            std::shared_ptr<FakeRepository> fake(new FakeRepository(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("fake"))));
-            std::tr1::shared_ptr<FakeInstalledRepository> fake_inst(new FakeInstalledRepository(
+            std::shared_ptr<FakeInstalledRepository> fake_inst(new FakeInstalledRepository(
                         make_named_values<FakeInstalledRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("fake_inst"),
@@ -377,7 +377,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            std::shared_ptr<FakeRepository> fake(new FakeRepository(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("fake"))));
             env.package_database()->add_repository(1, fake);
@@ -410,16 +410,16 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<FakeRepository> fake(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            std::shared_ptr<FakeRepository> fake(new FakeRepository(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("fake"))));
             env.package_database()->add_repository(1, fake);
 
-            std::tr1::shared_ptr<FakePackageID> pkg1(fake->add_version("cat", "pkg1", "1"));
+            std::shared_ptr<FakePackageID> pkg1(fake->add_version("cat", "pkg1", "1"));
             pkg1->keywords_key()->set_from_string("~a ~b");
-            std::tr1::shared_ptr<FakePackageID> pkg2(fake->add_version("cat", "pkg1", "2"));
+            std::shared_ptr<FakePackageID> pkg2(fake->add_version("cat", "pkg1", "2"));
             pkg2->keywords_key()->set_from_string("~a ~c");
-            std::tr1::shared_ptr<FakePackageID> pkg3(fake->add_version("cat", "pkg1", "3"));
+            std::shared_ptr<FakePackageID> pkg3(fake->add_version("cat", "pkg1", "3"));
             pkg3->keywords_key()->set_from_string("~d");
 
             PackageDepSpec a(parse_user_package_dep_spec("cat/pkg1[.KEYWORDS<~a]", &env, UserPackageDepSpecOptions()));

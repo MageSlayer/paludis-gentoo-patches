@@ -30,15 +30,15 @@ namespace paludis
     template <>
     struct Implementation<JobActiveState>
     {
-        std::tr1::shared_ptr<OutputManager> output_manager;
+        std::shared_ptr<OutputManager> output_manager;
     };
 
     template <>
     struct Implementation<JobSucceededState>
     {
-        const std::tr1::shared_ptr<OutputManager> output_manager;
+        const std::shared_ptr<OutputManager> output_manager;
 
-        Implementation(const std::tr1::shared_ptr<OutputManager> & m) :
+        Implementation(const std::shared_ptr<OutputManager> & m) :
             output_manager(m)
         {
         }
@@ -47,9 +47,9 @@ namespace paludis
     template <>
     struct Implementation<JobFailedState>
     {
-        const std::tr1::shared_ptr<OutputManager> output_manager;
+        const std::shared_ptr<OutputManager> output_manager;
 
-        Implementation(const std::tr1::shared_ptr<OutputManager> & m) :
+        Implementation(const std::shared_ptr<OutputManager> & m) :
             output_manager(m)
         {
         }
@@ -60,7 +60,7 @@ JobState::~JobState()
 {
 }
 
-const std::tr1::shared_ptr<JobState>
+const std::shared_ptr<JobState>
 JobState::deserialise(Deserialisation & d)
 {
     if (d.class_name() == "JobPendingState")
@@ -77,7 +77,7 @@ JobState::deserialise(Deserialisation & d)
         throw InternalError(PALUDIS_HERE, "unknown class '" + stringify(d.class_name()) + "'");
 }
 
-const std::tr1::shared_ptr<JobPendingState>
+const std::shared_ptr<JobPendingState>
 JobPendingState::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "JobPendingState");
@@ -91,7 +91,7 @@ JobPendingState::serialise(Serialiser & s) const
         ;
 }
 
-const std::tr1::shared_ptr<JobSkippedState>
+const std::shared_ptr<JobSkippedState>
 JobSkippedState::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "JobSkippedState");
@@ -115,30 +115,30 @@ JobActiveState::~JobActiveState()
 }
 
 void
-JobActiveState::set_output_manager(const std::tr1::shared_ptr<OutputManager> & m)
+JobActiveState::set_output_manager(const std::shared_ptr<OutputManager> & m)
 {
     _imp->output_manager = m;
 }
 
-const std::tr1::shared_ptr<OutputManager>
+const std::shared_ptr<OutputManager>
 JobActiveState::output_manager() const
 {
     return _imp->output_manager;
 }
 
-const std::tr1::shared_ptr<JobSucceededState>
+const std::shared_ptr<JobSucceededState>
 JobActiveState::succeeded() const
 {
     return make_shared_ptr(new JobSucceededState(_imp->output_manager));
 }
 
-const std::tr1::shared_ptr<JobFailedState>
+const std::shared_ptr<JobFailedState>
 JobActiveState::failed() const
 {
     return make_shared_ptr(new JobFailedState(_imp->output_manager));
 }
 
-const std::tr1::shared_ptr<JobActiveState>
+const std::shared_ptr<JobActiveState>
 JobActiveState::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "JobActiveState");
@@ -152,7 +152,7 @@ JobActiveState::serialise(Serialiser & s) const
         ;
 }
 
-JobSucceededState::JobSucceededState(const std::tr1::shared_ptr<OutputManager> & m) :
+JobSucceededState::JobSucceededState(const std::shared_ptr<OutputManager> & m) :
     PrivateImplementationPattern<JobSucceededState>(new Implementation<JobSucceededState>(m))
 {
 }
@@ -161,13 +161,13 @@ JobSucceededState::~JobSucceededState()
 {
 }
 
-const std::tr1::shared_ptr<OutputManager>
+const std::shared_ptr<OutputManager>
 JobSucceededState::output_manager() const
 {
     return _imp->output_manager;
 }
 
-const std::tr1::shared_ptr<JobSucceededState>
+const std::shared_ptr<JobSucceededState>
 JobSucceededState::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "JobSucceededState");
@@ -181,7 +181,7 @@ JobSucceededState::serialise(Serialiser & s) const
         ;
 }
 
-JobFailedState::JobFailedState(const std::tr1::shared_ptr<OutputManager> & m) :
+JobFailedState::JobFailedState(const std::shared_ptr<OutputManager> & m) :
     PrivateImplementationPattern<JobFailedState>(new Implementation<JobFailedState>(m))
 {
 }
@@ -190,13 +190,13 @@ JobFailedState::~JobFailedState()
 {
 }
 
-const std::tr1::shared_ptr<OutputManager>
+const std::shared_ptr<OutputManager>
 JobFailedState::output_manager() const
 {
     return _imp->output_manager;
 }
 
-const std::tr1::shared_ptr<JobFailedState>
+const std::shared_ptr<JobFailedState>
 JobFailedState::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "JobFailedState");

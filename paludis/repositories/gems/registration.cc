@@ -34,7 +34,7 @@ using namespace paludis;
 
 namespace
 {
-    int generic_importance(const Environment * const, const std::tr1::function<std::string (const std::string &)> & f)
+    int generic_importance(const Environment * const, const std::function<std::string (const std::string &)> & f)
     {
         if (! f("importance").empty())
             return destringify<int>(f("importance"));
@@ -54,7 +54,7 @@ namespace paludis
     void register_repositories<repository_groups::gems>(const repository_groups::gems * const,
             RepositoryFactory * const factory)
     {
-        std::tr1::shared_ptr<Set<std::string> > gems_formats(new Set<std::string>);
+        std::shared_ptr<Set<std::string> > gems_formats(new Set<std::string>);
         gems_formats->insert("gems");
 
         factory->add_repository_format(
@@ -65,7 +65,7 @@ namespace paludis
                 GemsRepository::repository_factory_dependencies
                 );
 
-        std::tr1::shared_ptr<Set<std::string> > installed_gems_formats(new Set<std::string>);
+        std::shared_ptr<Set<std::string> > installed_gems_formats(new Set<std::string>);
         installed_gems_formats->insert("installed_gems");
         installed_gems_formats->insert("installed-gems");
 

@@ -69,7 +69,7 @@ namespace paludis
             /**
              * Run the task.
              */
-            std::tr1::shared_ptr<const PackageIDSequence> execute(const QualifiedPackageName &);
+            std::shared_ptr<const PackageIDSequence> execute(const QualifiedPackageName &);
     };
 }
 

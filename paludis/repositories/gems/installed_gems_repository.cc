@@ -47,35 +47,35 @@
 #include <paludis/selection.hh>
 #include <paludis/hook.hh>
 #include <paludis/common_sets.hh>
-#include <tr1/unordered_map>
+#include <unordered_map>
 
 using namespace paludis;
 
-typedef std::tr1::unordered_map<QualifiedPackageName, std::tr1::shared_ptr<PackageIDSequence>, Hash<QualifiedPackageName> > IDMap;
+typedef std::unordered_map<QualifiedPackageName, std::shared_ptr<PackageIDSequence>, Hash<QualifiedPackageName> > IDMap;
 
 namespace paludis
 {
     template <>
     struct Implementation<InstalledGemsRepository>
     {
-        const std::tr1::shared_ptr<Mutex> big_nasty_mutex;
+        const std::shared_ptr<Mutex> big_nasty_mutex;
 
         const gems::InstalledRepositoryParams params;
 
-        mutable std::tr1::shared_ptr<const CategoryNamePartSet> category_names;
-        mutable std::tr1::unordered_map<CategoryNamePart, std::tr1::shared_ptr<const QualifiedPackageNameSet>, Hash<CategoryNamePart> > package_names;
+        mutable std::shared_ptr<const CategoryNamePartSet> category_names;
+        mutable std::unordered_map<CategoryNamePart, std::shared_ptr<const QualifiedPackageNameSet>, Hash<CategoryNamePart> > package_names;
         mutable IDMap ids;
 
         mutable bool has_category_names;
         mutable bool has_ids;
 
-        std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > install_dir_key;
-        std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > builddir_key;
-        std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > root_key;
-        std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key;
+        std::shared_ptr<const MetadataValueKey<FSEntry> > install_dir_key;
+        std::shared_ptr<const MetadataValueKey<FSEntry> > builddir_key;
+        std::shared_ptr<const MetadataValueKey<FSEntry> > root_key;
+        std::shared_ptr<const MetadataValueKey<std::string> > format_key;
 
         Implementation(const gems::InstalledRepositoryParams p,
-                       std::tr1::shared_ptr<Mutex> m = make_shared_ptr(new Mutex)) :
+                       std::shared_ptr<Mutex> m = make_shared_ptr(new Mutex)) :
             big_nasty_mutex(m),
             params(p),
             has_category_names(false),
@@ -158,7 +158,7 @@ InstalledGemsRepository::has_package_named(const QualifiedPackageName & q) const
     return _imp->package_names.find(q.category())->second->end() != _imp->package_names.find(q.category())->second->find(q);
 }
 
-std::tr1::shared_ptr<const CategoryNamePartSet>
+std::shared_ptr<const CategoryNamePartSet>
 InstalledGemsRepository::category_names() const
 {
     Lock l(*_imp->big_nasty_mutex);
@@ -167,7 +167,7 @@ InstalledGemsRepository::category_names() const
     return _imp->category_names;
 }
 
-std::tr1::shared_ptr<const QualifiedPackageNameSet>
+std::shared_ptr<const QualifiedPackageNameSet>
 InstalledGemsRepository::package_names(const CategoryNamePart & c) const
 {
     Lock l(*_imp->big_nasty_mutex);
@@ -177,14 +177,14 @@ InstalledGemsRepository::package_names(const CategoryNamePart & c) const
 
     need_ids();
 
-    std::tr1::unordered_map<CategoryNamePart, std::tr1::shared_ptr<const QualifiedPackageNameSet>, Hash<CategoryNamePart> >::const_iterator i(
+    std::unordered_map<CategoryNamePart, std::shared_ptr<const QualifiedPackageNameSet>, Hash<CategoryNamePart> >::const_iterator i(
             _imp->package_names.find(c));
     if (i == _imp->package_names.end())
         return make_shared_ptr(new QualifiedPackageNameSet);
     return i->second;
 }
 
-std::tr1::shared_ptr<const PackageIDSequence>
+std::shared_ptr<const PackageIDSequence>
 InstalledGemsRepository::package_ids(const QualifiedPackageName & q) const
 {
     Lock l(*_imp->big_nasty_mutex);
@@ -209,7 +209,7 @@ InstalledGemsRepository::need_category_names() const
     if (_imp->has_category_names)
         return;
 
-    std::tr1::shared_ptr<CategoryNamePartSet> cat(new CategoryNamePartSet);
+    std::shared_ptr<CategoryNamePartSet> cat(new CategoryNamePartSet);
     _imp->category_names = cat;
 
     cat->insert(CategoryNamePart("gems"));
@@ -230,7 +230,7 @@ InstalledGemsRepository::need_ids() const
 
     need_category_names();
 
-    std::tr1::shared_ptr<QualifiedPackageNameSet> pkgs(new QualifiedPackageNameSet);
+    std::shared_ptr<QualifiedPackageNameSet> pkgs(new QualifiedPackageNameSet);
     _imp->package_names.insert(std::make_pair(gems, pkgs));
 
     for (DirIterator d(_imp->params.install_dir() / "specifications"), d_end ; d != d_end ; ++d)
@@ -287,7 +287,7 @@ InstalledGemsRepository::merge(const MergeParams &)
 
 #if 0
 void
-InstalledGemsRepository::do_uninstall(const std::tr1::shared_ptr<const PackageID> & id,
+InstalledGemsRepository::do_uninstall(const std::shared_ptr<const PackageID> & id,
         const UninstallOptions &) const
 {
     Command cmd(getenv_with_default("PALUDIS_GEMS_DIR", LIBEXECDIR "/paludis") +
@@ -365,19 +365,19 @@ InstalledGemsRepository::need_keys_added() const
 {
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataValueKey<std::string> >
 InstalledGemsRepository::format_key() const
 {
     return _imp->format_key;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSEntry> >
 InstalledGemsRepository::location_key() const
 {
     return _imp->install_dir_key;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSEntry> >
 InstalledGemsRepository::installed_root_key() const
 {
     return _imp->root_key;
@@ -386,23 +386,23 @@ InstalledGemsRepository::installed_root_key() const
 RepositoryName
 InstalledGemsRepository::repository_factory_name(
         const Environment * const,
-        const std::tr1::function<std::string (const std::string &)> &)
+        const std::function<std::string (const std::string &)> &)
 {
     return RepositoryName("installed-gems");
 }
 
-std::tr1::shared_ptr<const RepositoryNameSet>
+std::shared_ptr<const RepositoryNameSet>
 InstalledGemsRepository::repository_factory_dependencies(
         const Environment * const,
-        const std::tr1::function<std::string (const std::string &)> &)
+        const std::function<std::string (const std::string &)> &)
 {
     return make_shared_ptr(new RepositoryNameSet);
 }
 
-std::tr1::shared_ptr<Repository>
+std::shared_ptr<Repository>
 InstalledGemsRepository::repository_factory_create(
         Environment * const env,
-        const std::tr1::function<std::string (const std::string &)> & f)
+        const std::function<std::string (const std::string &)> & f)
 {
     std::string install_dir(f("install_dir"));
     if (install_dir.empty())
@@ -438,18 +438,18 @@ InstalledGemsRepository::perform_hook(const Hook &)
 }
 
 bool
-InstalledGemsRepository::sync(const std::tr1::shared_ptr<OutputManager> &) const
+InstalledGemsRepository::sync(const std::shared_ptr<OutputManager> &) const
 {
     return false;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataValueKey<std::string> >
 InstalledGemsRepository::accept_keywords_key() const
 {
     return make_null_shared_ptr();
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataValueKey<std::string> >
 InstalledGemsRepository::sync_host_key() const
 {
     return make_null_shared_ptr();

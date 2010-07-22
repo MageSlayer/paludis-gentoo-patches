@@ -33,7 +33,6 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
-#include <paludis/util/indirect_iterator-impl.hh>
 #include <iostream>
 #include <sstream>
 
@@ -57,7 +56,7 @@ namespace
         return s;
     }
 
-    std::string stringify_if_not_null(const std::tr1::shared_ptr<const Destination> & d)
+    std::string stringify_if_not_null(const std::shared_ptr<const Destination> & d)
     {
         if (d)
         {
@@ -244,8 +243,8 @@ namespace
     }
 
     void dump(
-            const std::tr1::shared_ptr<Environment> &,
-            const std::tr1::shared_ptr<Resolver> & resolver,
+            const std::shared_ptr<Environment> &,
+            const std::shared_ptr<Resolver> & resolver,
             const ResolveCommandLineResolutionOptions &)
     {
         std::cout << "Dumping resolutions by QPN:S:" << std::endl << std::endl;
@@ -264,8 +263,8 @@ namespace
 
 void
 paludis::cave::dump_if_requested(
-        const std::tr1::shared_ptr<Environment> & env,
-        const std::tr1::shared_ptr<Resolver> & resolver,
+        const std::shared_ptr<Environment> & env,
+        const std::shared_ptr<Resolver> & resolver,
         const ResolveCommandLineResolutionOptions & resolution_options)
 {
     Context context("When dumping the resolver:");

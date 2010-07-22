@@ -41,7 +41,7 @@ namespace paludis
     };
 
     template <typename T_>
-    std::tr1::function<T_ ()> return_literal_function(const T_ & v)
+    std::function<T_ ()> return_literal_function(const T_ & v)
     {
         return ReturnLiteralFunction<T_>(v);
     }

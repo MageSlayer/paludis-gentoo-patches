@@ -32,7 +32,7 @@
 #include <paludis/action-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/match_package-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 
 /** \file
  * Declarations for the Filter class.
@@ -57,7 +57,7 @@ namespace paludis
         private PrivateImplementationPattern<Filter>
     {
         protected:
-            Filter(const std::tr1::shared_ptr<const FilterHandler> &);
+            Filter(const std::shared_ptr<const FilterHandler> &);
 
         public:
             ///\name Basic operations
@@ -83,35 +83,35 @@ namespace paludis
             /**
              * Filter candidate repository names.
              */
-            std::tr1::shared_ptr<const RepositoryNameSet> repositories(
+            std::shared_ptr<const RepositoryNameSet> repositories(
                     const Environment * const,
-                    const std::tr1::shared_ptr<const RepositoryNameSet> &) const
+                    const std::shared_ptr<const RepositoryNameSet> &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Filter candidate category names.
              */
-            std::tr1::shared_ptr<const CategoryNamePartSet> categories(
+            std::shared_ptr<const CategoryNamePartSet> categories(
                     const Environment * const,
-                    const std::tr1::shared_ptr<const RepositoryNameSet> &,
-                    const std::tr1::shared_ptr<const CategoryNamePartSet> &) const
+                    const std::shared_ptr<const RepositoryNameSet> &,
+                    const std::shared_ptr<const CategoryNamePartSet> &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Filter candidate package names.
              */
-            std::tr1::shared_ptr<const QualifiedPackageNameSet> packages(
+            std::shared_ptr<const QualifiedPackageNameSet> packages(
                     const Environment * const,
-                    const std::tr1::shared_ptr<const RepositoryNameSet> &,
-                    const std::tr1::shared_ptr<const QualifiedPackageNameSet> &) const
+                    const std::shared_ptr<const RepositoryNameSet> &,
+                    const std::shared_ptr<const QualifiedPackageNameSet> &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Filter candidate PackageID instances.
              */
-            std::tr1::shared_ptr<const PackageIDSet> ids(
+            std::shared_ptr<const PackageIDSet> ids(
                     const Environment * const,
-                    const std::tr1::shared_ptr<const PackageIDSet> &) const
+                    const std::shared_ptr<const PackageIDSet> &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\}
@@ -196,7 +196,7 @@ namespace paludis
             public Filter
         {
             public:
-                SameSlot(const std::tr1::shared_ptr<const PackageID> &);
+                SameSlot(const std::shared_ptr<const PackageID> &);
         };
 
         /**

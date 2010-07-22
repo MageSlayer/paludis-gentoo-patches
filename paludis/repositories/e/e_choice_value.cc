@@ -24,7 +24,7 @@ using namespace paludis;
 using namespace paludis::erepository;
 
 EChoiceValue::EChoiceValue(const ChoicePrefixName & r, const UnprefixedChoiceName & v, const ChoiceNameWithPrefix & np, const QualifiedPackageName & p,
-        const std::tr1::shared_ptr<const UseDesc> & d,
+        const std::shared_ptr<const UseDesc> & d,
         bool b, bool def, bool l, bool x, const std::string & o,
         const std::string & pv) :
     _prefix(r),

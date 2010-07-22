@@ -24,7 +24,7 @@
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/attributes.hh>
 #include <string>
-#include <tr1/memory>
+#include <memory>
 
 namespace paludis
 {
@@ -47,7 +47,7 @@ namespace paludis
         private PrivateImplementationPattern<Executor>
     {
         private:
-            void _one(const std::tr1::shared_ptr<Executive>);
+            void _one(const std::shared_ptr<Executive>);
 
         public:
             explicit Executor(const int ms_update_interval = 1000);
@@ -57,7 +57,7 @@ namespace paludis
             int active() const;
             int done() const;
 
-            void add(const std::tr1::shared_ptr<Executive> & x);
+            void add(const std::shared_ptr<Executive> & x);
 
             void execute();
     };

@@ -45,7 +45,7 @@
 #include <test/test_framework.hh>
 
 #include <list>
-#include <tr1/functional>
+#include <functional>
 #include <algorithm>
 #include <map>
 
@@ -73,9 +73,9 @@ namespace test_cases
 
         void run()
         {
-            std::tr1::shared_ptr<const Resolved> resolved;
+            std::shared_ptr<const Resolved> resolved;
             {
-                std::tr1::shared_ptr<const Resolved> orig_resolved(get_resolved("serialisation/target"));
+                std::shared_ptr<const Resolved> orig_resolved(get_resolved("serialisation/target"));
                 StringListStream str;
                 Serialiser ser(str);
                 orig_resolved->serialise(ser);

@@ -70,8 +70,8 @@ namespace
 
 int
 PrintCommandsCommand::run(
-        const std::tr1::shared_ptr<Environment> &,
-        const std::tr1::shared_ptr<const Sequence<std::string > > & args
+        const std::shared_ptr<Environment> &,
+        const std::shared_ptr<const Sequence<std::string > > & args
         )
 {
     PrintCommandsCommandLine cmdline;
@@ -89,7 +89,7 @@ PrintCommandsCommand::run(
     for (CommandFactory::ConstIterator cmd(CommandFactory::get_instance()->begin()), cmd_end(CommandFactory::get_instance()->end()) ;
             cmd != cmd_end ; ++cmd)
     {
-        std::tr1::shared_ptr<Command> instance(CommandFactory::get_instance()->create(*cmd));
+        std::shared_ptr<Command> instance(CommandFactory::get_instance()->create(*cmd));
 
         if (! cmdline.a_all.specified() && ! instance->important())
             continue;
@@ -100,7 +100,7 @@ PrintCommandsCommand::run(
     return EXIT_SUCCESS;
 }
 
-std::tr1::shared_ptr<args::ArgsHandler>
+std::shared_ptr<args::ArgsHandler>
 PrintCommandsCommand::make_doc_cmdline()
 {
     return make_shared_ptr(new PrintCommandsCommandLine);

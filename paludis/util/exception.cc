@@ -20,7 +20,7 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/join.hh>
-#include <tr1/memory>
+#include <memory>
 #include <list>
 #include <cstdlib>
 #include <iostream>

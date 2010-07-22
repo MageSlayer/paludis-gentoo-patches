@@ -35,7 +35,7 @@ namespace paludis
     class PackageDatabase;
     class ERepository;
 
-    typedef Sequence<std::tr1::shared_ptr<const ERepository> > ERepositorySequence;
+    typedef Sequence<std::shared_ptr<const ERepository> > ERepositorySequence;
 
     namespace n
     {
@@ -89,18 +89,18 @@ namespace paludis
             NamedValue<n::distdir, FSEntry> distdir;
             NamedValue<n::eapi_when_unknown, std::string> eapi_when_unknown;
             NamedValue<n::eapi_when_unspecified, std::string> eapi_when_unspecified;
-            NamedValue<n::eclassdirs, std::tr1::shared_ptr<const FSEntrySequence> > eclassdirs;
+            NamedValue<n::eclassdirs, std::shared_ptr<const FSEntrySequence> > eclassdirs;
             NamedValue<n::entry_format, std::string> entry_format;
             NamedValue<n::environment, Environment *> environment;
             NamedValue<n::ignore_deprecated_profiles, bool> ignore_deprecated_profiles;
             NamedValue<n::layout, std::string> layout;
             NamedValue<n::location, FSEntry> location;
-            NamedValue<n::master_repositories, std::tr1::shared_ptr<const ERepositorySequence> > master_repositories;
+            NamedValue<n::master_repositories, std::shared_ptr<const ERepositorySequence> > master_repositories;
             NamedValue<n::names_cache, FSEntry> names_cache;
             NamedValue<n::newsdir, FSEntry> newsdir;
             NamedValue<n::profile_eapi_when_unspecified, std::string> profile_eapi_when_unspecified;
             NamedValue<n::profile_layout, std::string> profile_layout;
-            NamedValue<n::profiles, std::tr1::shared_ptr<const FSEntrySequence> > profiles;
+            NamedValue<n::profiles, std::shared_ptr<const FSEntrySequence> > profiles;
             NamedValue<n::profiles_explicitly_set, bool> profiles_explicitly_set;
             NamedValue<n::securitydir, FSEntry> securitydir;
             NamedValue<n::setsdir, FSEntry> setsdir;

@@ -49,7 +49,7 @@ namespace
             return false;
         }
 
-        const std::tr1::shared_ptr<const ChoiceValue> v(id.choices_key()->value()->find_by_name_with_prefix(f));
+        const std::shared_ptr<const ChoiceValue> v(id.choices_key()->value()->find_by_name_with_prefix(f));
         if (v)
             return v->enabled();
 
@@ -63,13 +63,13 @@ namespace
     {
         private:
             const std::string _flags;
-            const std::tr1::shared_ptr<const PackageID> _id;
+            const std::shared_ptr<const PackageID> _id;
             const ELikeUseRequirementOptions _options;
             const Tribool _default_value;
             const bool _ignore_if_no_such_group;
 
         public:
-            UseRequirement(const std::string & n, const std::tr1::shared_ptr<const PackageID> & i,
+            UseRequirement(const std::string & n, const std::shared_ptr<const PackageID> & i,
                     const ELikeUseRequirementOptions & o, Tribool d, const bool g) :
                 _flags(n),
                 _id(i),
@@ -116,7 +116,7 @@ namespace
                 return _flags;
             }
 
-            const std::tr1::shared_ptr<const PackageID> package_id() const PALUDIS_ATTRIBUTE((warn_unused_result))
+            const std::shared_ptr<const PackageID> package_id() const PALUDIS_ATTRIBUTE((warn_unused_result))
             {
                 return _id;
             }
@@ -193,7 +193,7 @@ namespace
     {
         public:
             EnabledUseRequirement(const std::string & n,
-                    const std::tr1::shared_ptr<const PackageID> & i,
+                    const std::shared_ptr<const PackageID> & i,
                     const ELikeUseRequirementOptions & o,
                     Tribool d, const bool b) :
                 UseRequirement(n, i, o, d, b)
@@ -217,7 +217,7 @@ namespace
     {
         public:
             DisabledUseRequirement(const std::string & n,
-                    const std::tr1::shared_ptr<const PackageID> & i,
+                    const std::shared_ptr<const PackageID> & i,
                     const ELikeUseRequirementOptions & o,
                     Tribool d, const bool b) :
                 UseRequirement(n, i, o, d, b)
@@ -241,7 +241,7 @@ namespace
     {
         public:
             ConditionalUseRequirement(const std::string & n,
-                    const std::tr1::shared_ptr<const PackageID> & i,
+                    const std::shared_ptr<const PackageID> & i,
                     const ELikeUseRequirementOptions & o,
                     Tribool d, const bool b) :
                 UseRequirement(n, i, o, d, b)
@@ -255,7 +255,7 @@ namespace
         public:
             IfMineThenUseRequirement(
                     const std::string & n,
-                    const std::tr1::shared_ptr<const PackageID> & i,
+                    const std::shared_ptr<const PackageID> & i,
                     const ELikeUseRequirementOptions & o,
                     Tribool d, const bool b) :
                 ConditionalUseRequirement(n, i, o, d, b)
@@ -280,7 +280,7 @@ namespace
     {
         public:
             IfNotMineThenUseRequirement(const std::string & n,
-                    const std::tr1::shared_ptr<const PackageID> & i,
+                    const std::shared_ptr<const PackageID> & i,
                     const ELikeUseRequirementOptions & o,
                     Tribool d, const bool b) :
                 ConditionalUseRequirement(n, i, o, d, b)
@@ -305,7 +305,7 @@ namespace
     {
         public:
             IfMineThenNotUseRequirement(const std::string & n,
-                    const std::tr1::shared_ptr<const PackageID> & i,
+                    const std::shared_ptr<const PackageID> & i,
                     const ELikeUseRequirementOptions & o,
                     Tribool d, const bool b) :
                 ConditionalUseRequirement(n, i, o, d, b)
@@ -330,7 +330,7 @@ namespace
     {
         public:
             IfNotMineThenNotUseRequirement(const std::string & n,
-                    const std::tr1::shared_ptr<const PackageID> & i,
+                    const std::shared_ptr<const PackageID> & i,
                     const ELikeUseRequirementOptions & o,
                     Tribool d, const bool b) :
                 ConditionalUseRequirement(n, i, o, d, b)
@@ -355,7 +355,7 @@ namespace
     {
         public:
             EqualUseRequirement(const std::string & n,
-                    const std::tr1::shared_ptr<const PackageID> & i,
+                    const std::shared_ptr<const PackageID> & i,
                     const ELikeUseRequirementOptions & o,
                     Tribool d, const bool b) :
                 ConditionalUseRequirement(n, i, o, d, b)
@@ -380,7 +380,7 @@ namespace
     {
         public:
             NotEqualUseRequirement(const std::string & n,
-                    const std::tr1::shared_ptr<const PackageID> & i,
+                    const std::shared_ptr<const PackageID> & i,
                     const ELikeUseRequirementOptions & o,
                     Tribool d, const bool b) :
                 ConditionalUseRequirement(n, i, o, d, b)
@@ -404,7 +404,7 @@ namespace
         public AdditionalPackageDepSpecRequirement
     {
         private:
-            typedef std::vector<std::tr1::shared_ptr<const UseRequirement> > Reqs;
+            typedef std::vector<std::shared_ptr<const UseRequirement> > Reqs;
 
             std::string _raw;
             Reqs _reqs;
@@ -417,7 +417,7 @@ namespace
 
             virtual const std::pair<bool, std::string> requirement_met(const Environment * const env, const PackageID & id) const
             {
-                using namespace std::tr1::placeholders;
+                using namespace std::placeholders;
 
                 std::pair<bool, std::string> result(true, "");
                 for (Reqs::const_iterator r(_reqs.begin()), r_end(_reqs.end()) ;
@@ -438,7 +438,7 @@ namespace
 
             virtual const std::string as_human_string() const
             {
-                return join(_reqs.begin(), _reqs.end(), "; ", std::tr1::mem_fn(&UseRequirement::as_human_string));
+                return join(_reqs.begin(), _reqs.end(), "; ", std::mem_fn(&UseRequirement::as_human_string));
             }
 
             virtual const std::string as_raw_string() const
@@ -446,30 +446,30 @@ namespace
                 return _raw;
             }
 
-            void add_requirement(const std::tr1::shared_ptr<const UseRequirement> & req)
+            void add_requirement(const std::shared_ptr<const UseRequirement> & req)
             {
                 _reqs.push_back(req);
             }
     };
 
     template <typename T_>
-    std::tr1::shared_ptr<const UseRequirement>
-    make_requirement(const std::string & n, const std::tr1::shared_ptr<const PackageID > & i,
+    std::shared_ptr<const UseRequirement>
+    make_requirement(const std::string & n, const std::shared_ptr<const PackageID > & i,
             const ELikeUseRequirementOptions & o, Tribool d, const bool b)
     {
         return make_shared_ptr(new T_(n, i, o, d, b));
     }
 
-    typedef std::tr1::shared_ptr<const UseRequirement> (* Factory)(
-            const std::string &, const std::tr1::shared_ptr<const PackageID> &,
+    typedef std::shared_ptr<const UseRequirement> (* Factory)(
+            const std::string &, const std::shared_ptr<const PackageID> &,
             const ELikeUseRequirementOptions &, Tribool, bool);
 
     void
     parse_flag(
-            const std::tr1::shared_ptr<UseRequirements> & result,
+            const std::shared_ptr<UseRequirements> & result,
             const Factory & factory,
             const std::string & c,
-            const std::tr1::shared_ptr<const PackageID> & id,
+            const std::shared_ptr<const PackageID> & id,
             Tribool d,
             const bool i,
             const ELikeUseRequirementOptions & options)
@@ -479,9 +479,9 @@ namespace
 
     void
     parse_one_use_requirement(
-            const std::tr1::shared_ptr<UseRequirements> & result,
+            const std::shared_ptr<UseRequirements> & result,
             const std::string & s, std::string & flag,
-            const std::tr1::shared_ptr<const PackageID> & id, const ELikeUseRequirementOptions & options)
+            const std::shared_ptr<const PackageID> & id, const ELikeUseRequirementOptions & options)
     {
         Factory factory;
 
@@ -687,13 +687,13 @@ ELikeUseRequirementError::ELikeUseRequirementError(const std::string & s, const 
 {
 }
 
-std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement>
+std::shared_ptr<const AdditionalPackageDepSpecRequirement>
 paludis::parse_elike_use_requirement(const std::string & s,
-        const std::tr1::shared_ptr<const PackageID> & id, const ELikeUseRequirementOptions & options)
+        const std::shared_ptr<const PackageID> & id, const ELikeUseRequirementOptions & options)
 {
     Context context("When parsing use requirement '" + s + "':");
 
-    std::tr1::shared_ptr<UseRequirements> result(new UseRequirements("[" + s + "]"));
+    std::shared_ptr<UseRequirements> result(new UseRequirements("[" + s + "]"));
     std::string::size_type pos(0);
     for (;;)
     {

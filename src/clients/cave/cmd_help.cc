@@ -72,8 +72,8 @@ namespace
         bool
         operator() (const std::string & left, const std::string & right)
         {
-            std::tr1::shared_ptr<Command> lhs(CommandFactory::get_instance()->create(left));
-            std::tr1::shared_ptr<Command> rhs(CommandFactory::get_instance()->create(right));
+            std::shared_ptr<Command> lhs(CommandFactory::get_instance()->create(left));
+            std::shared_ptr<Command> rhs(CommandFactory::get_instance()->create(right));
 
             if (lhs->important() && rhs->important())
                 return left.length() < right.length();
@@ -94,8 +94,8 @@ HelpCommand::important() const
 }
 
 int
-HelpCommand::run(const std::tr1::shared_ptr<Environment> & env,
-                 const std::tr1::shared_ptr< const Sequence<std::string> > & args)
+HelpCommand::run(const std::shared_ptr<Environment> & env,
+                 const std::shared_ptr< const Sequence<std::string> > & args)
 {
     HelpCommandLine cmdline;
     cmdline.run(args, "CAVE", "CAVE_HELP_OPTIONS", "CAVE_HELP_CMDLINE");
@@ -137,7 +137,7 @@ HelpCommand::run(const std::tr1::shared_ptr<Environment> & env,
         for (CommandFactory::ConstIterator cmd(CommandFactory::get_instance()->begin()), cmd_end(CommandFactory::get_instance()->end()) ;
                 cmd != cmd_end ; ++cmd)
         {
-            std::tr1::shared_ptr<Command> instance(CommandFactory::get_instance()->create(*cmd));
+            std::shared_ptr<Command> instance(CommandFactory::get_instance()->create(*cmd));
 
             if (instance->important())
                 cout << "    " << *cmd << std::string(length - cmd->length(), ' ') << "        "
@@ -148,7 +148,7 @@ HelpCommand::run(const std::tr1::shared_ptr<Environment> & env,
     }
     else
     {
-        std::tr1::shared_ptr< Sequence<std::string> > help(make_shared_ptr(new Sequence<std::string>));
+        std::shared_ptr< Sequence<std::string> > help(make_shared_ptr(new Sequence<std::string>));
         help->push_back("--help");
 
         return CommandFactory::get_instance()->create(*cmdline.begin_parameters())->run(env, help);
@@ -157,7 +157,7 @@ HelpCommand::run(const std::tr1::shared_ptr<Environment> & env,
     return EXIT_FAILURE;
 }
 
-std::tr1::shared_ptr<args::ArgsHandler>
+std::shared_ptr<args::ArgsHandler>
 HelpCommand::make_doc_cmdline()
 {
     return make_shared_ptr(new HelpCommandLine);

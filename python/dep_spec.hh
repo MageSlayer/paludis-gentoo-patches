@@ -22,7 +22,7 @@
 
 #include <paludis/dep_spec.hh>
 #include <paludis/spec_tree.hh>
-#include <tr1/functional>
+#include <functional>
 
 namespace paludis
 {
@@ -82,10 +82,10 @@ namespace paludis
             public:
                 ~PythonCompositeDepSpec();
 
-                void add_child(const std::tr1::shared_ptr<const PythonDepSpec>);
+                void add_child(const std::shared_ptr<const PythonDepSpec>);
 
                 struct ConstIteratorTag;
-                typedef WrappedForwardIterator<ConstIteratorTag, const std::tr1::shared_ptr<const PythonDepSpec> > ConstIterator;
+                typedef WrappedForwardIterator<ConstIteratorTag, const std::shared_ptr<const PythonDepSpec> > ConstIterator;
 
                 ConstIterator begin() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -116,7 +116,7 @@ namespace paludis
             public ImplementAcceptMethods<PythonDepSpec, PythonConditionalDepSpec>
         {
             private:
-                const std::tr1::shared_ptr<const ConditionalDepSpecData> _data;
+                const std::shared_ptr<const ConditionalDepSpecData> _data;
 
             public:
                 PythonConditionalDepSpec(const ConditionalDepSpec &);
@@ -124,7 +124,7 @@ namespace paludis
                 bool condition_met() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 bool condition_meetable() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                const std::tr1::shared_ptr<const ConditionalDepSpecData> data() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::shared_ptr<const ConditionalDepSpecData> data() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         class PALUDIS_VISIBLE PythonStringDepSpec :
@@ -155,20 +155,20 @@ namespace paludis
                 ~PythonPackageDepSpec();
 
                 operator PackageDepSpec() const;
-                operator std::tr1::shared_ptr<PackageDepSpec>() const;
+                operator std::shared_ptr<PackageDepSpec>() const;
 
-                std::tr1::shared_ptr<const QualifiedPackageName> package_ptr() const;
-                std::tr1::shared_ptr<const PackageNamePart> package_name_part_ptr() const;
-                std::tr1::shared_ptr<const CategoryNamePart> category_name_part_ptr() const;
-                std::tr1::shared_ptr<const VersionRequirements> version_requirements_ptr() const;
+                std::shared_ptr<const QualifiedPackageName> package_ptr() const;
+                std::shared_ptr<const PackageNamePart> package_name_part_ptr() const;
+                std::shared_ptr<const CategoryNamePart> category_name_part_ptr() const;
+                std::shared_ptr<const VersionRequirements> version_requirements_ptr() const;
                 VersionRequirementsMode version_requirements_mode() const;
                 void set_version_requirements_mode(const VersionRequirementsMode m);
-                std::tr1::shared_ptr<const SlotRequirement> slot_requirement_ptr() const;
-                std::tr1::shared_ptr<const RepositoryName> in_repository_ptr() const;
-                std::tr1::shared_ptr<const RepositoryName> from_repository_ptr() const;
-                std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements_ptr() const;
-                std::tr1::shared_ptr<const DepTag> tag() const;
-                void set_tag(const std::tr1::shared_ptr<const DepTag> & s);
+                std::shared_ptr<const SlotRequirement> slot_requirement_ptr() const;
+                std::shared_ptr<const RepositoryName> in_repository_ptr() const;
+                std::shared_ptr<const RepositoryName> from_repository_ptr() const;
+                std::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements_ptr() const;
+                std::shared_ptr<const DepTag> tag() const;
+                void set_tag(const std::shared_ptr<const DepTag> & s);
 
                 std::string py_str() const;
         };
@@ -232,14 +232,14 @@ namespace paludis
             public ImplementAcceptMethods<PythonDepSpec, PythonBlockDepSpec>
         {
             private:
-                std::tr1::shared_ptr<const PythonPackageDepSpec> _spec;
+                std::shared_ptr<const PythonPackageDepSpec> _spec;
                 bool _strong;
 
             public:
-                PythonBlockDepSpec(const std::string &, const std::tr1::shared_ptr<const PythonPackageDepSpec> &, const bool);
+                PythonBlockDepSpec(const std::string &, const std::shared_ptr<const PythonPackageDepSpec> &, const bool);
                 PythonBlockDepSpec(const BlockDepSpec &);
 
-                std::tr1::shared_ptr<const PythonPackageDepSpec> blocking() const;
+                std::shared_ptr<const PythonPackageDepSpec> blocking() const;
                 bool strong() const;
         };
 
@@ -276,7 +276,7 @@ namespace paludis
         class SpecTreeToPython
         {
             private:
-                std::tr1::shared_ptr<PythonCompositeDepSpec> _current_parent;
+                std::shared_ptr<PythonCompositeDepSpec> _current_parent;
 
             public:
                 SpecTreeToPython();
@@ -286,7 +286,7 @@ namespace paludis
                 SpecTreeToPython(const SpecTreeToPython &) = delete;
                 SpecTreeToPython & operator= (const SpecTreeToPython &) = delete;
 
-                const std::tr1::shared_ptr<const PythonDepSpec> result() const;
+                const std::shared_ptr<const PythonDepSpec> result() const;
 
                 void visit(const GenericSpecTree::NodeType<AllDepSpec>::Type &);
                 void visit(const GenericSpecTree::NodeType<AnyDepSpec>::Type &);
@@ -311,8 +311,8 @@ namespace paludis
         class SpecTreeFromPython
         {
             private:
-                std::tr1::shared_ptr<H_> _result;
-                std::tr1::shared_ptr<typename H_::BasicInnerNode> _add_to;
+                std::shared_ptr<H_> _result;
+                std::shared_ptr<typename H_::BasicInnerNode> _add_to;
 
             public:
                 SpecTreeFromPython();
@@ -322,7 +322,7 @@ namespace paludis
                 SpecTreeFromPython(const SpecTreeFromPython &) = delete;
                 SpecTreeFromPython & operator= (const SpecTreeFromPython &) = delete;
 
-                std::tr1::shared_ptr<H_> result() const;
+                std::shared_ptr<H_> result() const;
 
                 void visit(const PythonAllDepSpec &);
                 void visit(const PythonAnyDepSpec &);

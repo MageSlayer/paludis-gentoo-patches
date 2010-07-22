@@ -34,7 +34,7 @@ using namespace paludis;
 
 namespace paludis
 {
-    typedef std::multimap<std::string, std::pair<EntryType, std::tr1::shared_ptr<const ContentsEntry> > > UnmergeEntries;
+    typedef std::multimap<std::string, std::pair<EntryType, std::shared_ptr<const ContentsEntry> > > UnmergeEntries;
     typedef UnmergeEntries::reverse_iterator UnmergeEntriesIterator;
 
     template<>
@@ -66,7 +66,7 @@ Unmerger::~Unmerger()
 }
 
 void
-Unmerger::add_unmerge_entry(const EntryType et, const std::tr1::shared_ptr<const ContentsEntry> & e)
+Unmerger::add_unmerge_entry(const EntryType et, const std::shared_ptr<const ContentsEntry> & e)
 {
     _imp->unmerge_entries.insert(std::make_pair(stringify(e->location_key()->value()), std::make_pair(et, e)));
 }
@@ -117,7 +117,7 @@ Unmerger::unmerge()
 }
 
 void
-Unmerger::unmerge_file(const std::tr1::shared_ptr<const ContentsEntry> & e) const
+Unmerger::unmerge_file(const std::shared_ptr<const ContentsEntry> & e) const
 {
     FSEntry f_real(_imp->options.root() / e->location_key()->value());
 
@@ -145,7 +145,7 @@ Unmerger::unmerge_file(const std::tr1::shared_ptr<const ContentsEntry> & e) cons
 }
 
 void
-Unmerger::unmerge_sym(const std::tr1::shared_ptr<const ContentsEntry> & e) const
+Unmerger::unmerge_sym(const std::shared_ptr<const ContentsEntry> & e) const
 {
     FSEntry f_real(_imp->options.root() / e->location_key()->value());
 
@@ -173,7 +173,7 @@ Unmerger::unmerge_sym(const std::tr1::shared_ptr<const ContentsEntry> & e) const
 }
 
 void
-Unmerger::unmerge_dir(const std::tr1::shared_ptr<const ContentsEntry> & e) const
+Unmerger::unmerge_dir(const std::shared_ptr<const ContentsEntry> & e) const
 {
     FSEntry f_real(_imp->options.root() / e->location_key()->value());
 
@@ -196,7 +196,7 @@ Unmerger::unmerge_dir(const std::tr1::shared_ptr<const ContentsEntry> & e) const
 }
 
 void
-Unmerger::unmerge_misc(const std::tr1::shared_ptr<const ContentsEntry> & e) const
+Unmerger::unmerge_misc(const std::shared_ptr<const ContentsEntry> & e) const
 {
     FSEntry f_real(_imp->options.root() / e->location_key()->value());
 
@@ -224,7 +224,7 @@ Unmerger::unmerge_misc(const std::tr1::shared_ptr<const ContentsEntry> & e) cons
 }
 
 void
-Unmerger::unlink_file(FSEntry f, const std::tr1::shared_ptr<const ContentsEntry> & e) const
+Unmerger::unlink_file(FSEntry f, const std::shared_ptr<const ContentsEntry> & e) const
 {
     if (0 != _imp->options.environment()->perform_hook(extend_hook(
                          Hook("unmerger_unlink_file_pre")
@@ -250,7 +250,7 @@ Unmerger::unlink_file(FSEntry f, const std::tr1::shared_ptr<const ContentsEntry>
 }
 
 void
-Unmerger::unlink_sym(FSEntry f, const std::tr1::shared_ptr<const ContentsEntry> & e) const
+Unmerger::unlink_sym(FSEntry f, const std::shared_ptr<const ContentsEntry> & e) const
 {
     if (0 != _imp->options.environment()->perform_hook(extend_hook(
                          Hook("unmerger_unlink_sym_pre")
@@ -266,7 +266,7 @@ Unmerger::unlink_sym(FSEntry f, const std::tr1::shared_ptr<const ContentsEntry> 
 }
 
 void
-Unmerger::unlink_dir(FSEntry f, const std::tr1::shared_ptr<const ContentsEntry> & e) const
+Unmerger::unlink_dir(FSEntry f, const std::shared_ptr<const ContentsEntry> & e) const
 {
     if (0 != _imp->options.environment()->perform_hook(extend_hook(
                          Hook("unmerger_unlink_dir_pre")
@@ -282,7 +282,7 @@ Unmerger::unlink_dir(FSEntry f, const std::tr1::shared_ptr<const ContentsEntry> 
 }
 
 void
-Unmerger::unlink_misc(FSEntry f, const std::tr1::shared_ptr<const ContentsEntry> & e) const
+Unmerger::unlink_misc(FSEntry f, const std::shared_ptr<const ContentsEntry> & e) const
 {
     if (0 != _imp->options.environment()->perform_hook(extend_hook(
                          Hook("unmerger_unlink_misc_pre")
@@ -305,25 +305,25 @@ Unmerger::extend_hook(const Hook & h) const
 }
 
 bool
-Unmerger::check_file(const std::tr1::shared_ptr<const ContentsEntry> &) const
+Unmerger::check_file(const std::shared_ptr<const ContentsEntry> &) const
 {
     return true;
 }
 
 bool
-Unmerger::check_dir(const std::tr1::shared_ptr<const ContentsEntry> &) const
+Unmerger::check_dir(const std::shared_ptr<const ContentsEntry> &) const
 {
     return true;
 }
 
 bool
-Unmerger::check_sym(const std::tr1::shared_ptr<const ContentsEntry> &) const
+Unmerger::check_sym(const std::shared_ptr<const ContentsEntry> &) const
 {
     return true;
 }
 
 bool
-Unmerger::check_misc(const std::tr1::shared_ptr<const ContentsEntry> &) const
+Unmerger::check_misc(const std::shared_ptr<const ContentsEntry> &) const
 {
     return true;
 }

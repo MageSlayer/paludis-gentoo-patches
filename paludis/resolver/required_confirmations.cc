@@ -25,10 +25,10 @@
 using namespace paludis;
 using namespace paludis::resolver;
 
-const std::tr1::shared_ptr<RequiredConfirmation>
+const std::shared_ptr<RequiredConfirmation>
 RequiredConfirmation::deserialise(Deserialisation & d)
 {
-    std::tr1::shared_ptr<RequiredConfirmation> result;
+    std::shared_ptr<RequiredConfirmation> result;
 
     if (d.class_name() == "DowngradeConfirmation")
         return DowngradeConfirmation::deserialise(d);
@@ -44,7 +44,7 @@ RequiredConfirmation::deserialise(Deserialisation & d)
     return result;
 }
 
-const std::tr1::shared_ptr<DowngradeConfirmation>
+const std::shared_ptr<DowngradeConfirmation>
 DowngradeConfirmation::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "DowngradeConfirmation");
@@ -58,7 +58,7 @@ DowngradeConfirmation::serialise(Serialiser & s) const
         ;
 }
 
-const std::tr1::shared_ptr<NotBestConfirmation>
+const std::shared_ptr<NotBestConfirmation>
 NotBestConfirmation::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "NotBestConfirmation");
@@ -72,7 +72,7 @@ NotBestConfirmation::serialise(Serialiser & s) const
         ;
 }
 
-const std::tr1::shared_ptr<BreakConfirmation>
+const std::shared_ptr<BreakConfirmation>
 BreakConfirmation::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "BreakConfirmation");
@@ -86,7 +86,7 @@ BreakConfirmation::serialise(Serialiser & s) const
         ;
 }
 
-const std::tr1::shared_ptr<RemoveSystemPackageConfirmation>
+const std::shared_ptr<RemoveSystemPackageConfirmation>
 RemoveSystemPackageConfirmation::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "RemoveSystemPackageConfirmation");
@@ -100,6 +100,6 @@ RemoveSystemPackageConfirmation::serialise(Serialiser & s) const
         ;
 }
 
-template class Sequence<std::tr1::shared_ptr<const RequiredConfirmation> >;
-template class WrappedForwardIterator<RequiredConfirmations::ConstIteratorTag, const std::tr1::shared_ptr<const RequiredConfirmation> >;
+template class Sequence<std::shared_ptr<const RequiredConfirmation> >;
+template class WrappedForwardIterator<RequiredConfirmations::ConstIteratorTag, const std::shared_ptr<const RequiredConfirmation> >;
 

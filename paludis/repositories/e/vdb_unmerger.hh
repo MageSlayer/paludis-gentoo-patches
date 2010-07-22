@@ -53,9 +53,9 @@ namespace paludis
         NamedValue<n::config_protect, std::string> config_protect;
         NamedValue<n::config_protect_mask, std::string> config_protect_mask;
         NamedValue<n::environment, Environment *> environment;
-        NamedValue<n::ignore, const std::tr1::function<bool (const FSEntry &)> > ignore;
-        NamedValue<n::output_manager, std::tr1::shared_ptr<OutputManager> > output_manager;
-        NamedValue<n::package_id, std::tr1::shared_ptr<const PackageID> > package_id;
+        NamedValue<n::ignore, const std::function<bool (const FSEntry &)> > ignore;
+        NamedValue<n::output_manager, std::shared_ptr<OutputManager> > output_manager;
+        NamedValue<n::package_id, std::shared_ptr<const PackageID> > package_id;
         NamedValue<n::root, FSEntry> root;
     };
 
@@ -99,10 +99,10 @@ namespace paludis
 
             void display(const std::string &) const;
 
-            bool check_file(const std::tr1::shared_ptr<const ContentsEntry> &) const;
-            bool check_dir(const std::tr1::shared_ptr<const ContentsEntry> &) const;
-            bool check_sym(const std::tr1::shared_ptr<const ContentsEntry> &) const;
-            bool check_misc(const std::tr1::shared_ptr<const ContentsEntry> &) const;
+            bool check_file(const std::shared_ptr<const ContentsEntry> &) const;
+            bool check_dir(const std::shared_ptr<const ContentsEntry> &) const;
+            bool check_sym(const std::shared_ptr<const ContentsEntry> &) const;
+            bool check_misc(const std::shared_ptr<const ContentsEntry> &) const;
 
         public:
             ///\name Basic operations

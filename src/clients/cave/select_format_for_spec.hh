@@ -30,7 +30,7 @@ namespace paludis
     namespace cave
     {
         std::string select_format_for_spec(
-                const std::tr1::shared_ptr<const Environment> &,
+                const std::shared_ptr<const Environment> &,
                 const PackageDepSpec &,
                 const std::string & if_installed,
                 const std::string & if_installable,

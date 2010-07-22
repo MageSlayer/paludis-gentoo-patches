@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -27,7 +27,6 @@
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/sequence.hh>
-#include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/member_iterator-impl.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -46,12 +45,12 @@ using namespace paludis;
 
 namespace
 {
-    typedef std::tr1::function<void (const SetName &) > CombiningFunction;
+    typedef std::function<void (const SetName &) > CombiningFunction;
 
     struct CombineSets
     {
-        std::tr1::shared_ptr<AllDepSpec> root;
-        std::tr1::shared_ptr<SetSpecTree> tree;
+        std::shared_ptr<AllDepSpec> root;
+        std::shared_ptr<SetSpecTree> tree;
 
         void add(const SetName & s)
         {
@@ -70,19 +69,19 @@ namespace
         {
         }
 
-        std::tr1::shared_ptr<const SetSpecTree> result() const
+        std::shared_ptr<const SetSpecTree> result() const
         {
             return tree;
         }
     };
 
-    typedef std::map<SetName, std::pair<std::tr1::function<std::tr1::shared_ptr<const SetSpecTree> ()>, CombiningFunction> > SetsStore;
+    typedef std::map<SetName, std::pair<std::function<std::shared_ptr<const SetSpecTree> ()>, CombiningFunction> > SetsStore;
 
     template <typename F_>
     struct Cache
     {
         F_ func;
-        std::tr1::shared_ptr<typename std::tr1::remove_reference<typename F_::result_type>::type> result;
+        std::shared_ptr<typename std::remove_reference<typename F_::result_type>::type> result;
 
         Cache(const F_ & f) :
             func(f)
@@ -92,7 +91,7 @@ namespace
         typename F_::result_type operator() ()
         {
             if (! result)
-                result.reset(new typename std::tr1::remove_reference<typename F_::result_type>::type(func()));
+                result.reset(new typename std::remove_reference<typename F_::result_type>::type(func()));
             return *result;
         }
     };
@@ -110,11 +109,11 @@ namespace paludis
     struct Implementation<EnvironmentImplementation>
     {
         std::map<unsigned, NotifierCallbackFunction> notifier_callbacks;
-        std::list<std::tr1::shared_ptr<const SelectionCache> > selection_caches;
+        std::list<std::shared_ptr<const SelectionCache> > selection_caches;
 
         mutable Mutex sets_mutex;
         mutable bool loaded_sets;
-        std::tr1::shared_ptr<SetNameSet> set_names;
+        std::shared_ptr<SetNameSet> set_names;
         SetsStore sets;
 
         Implementation() :
@@ -135,25 +134,25 @@ EnvironmentImplementation::~EnvironmentImplementation()
 }
 
 
-std::tr1::shared_ptr<const FSEntrySequence>
+std::shared_ptr<const FSEntrySequence>
 EnvironmentImplementation::bashrc_files() const
 {
     return make_shared_ptr(new FSEntrySequence);
 }
 
-std::tr1::shared_ptr<const FSEntrySequence>
+std::shared_ptr<const FSEntrySequence>
 EnvironmentImplementation::syncers_dirs() const
 {
-    std::tr1::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
+    std::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
     result->push_back(FSEntry(DATADIR "/paludis/syncers"));
     result->push_back(FSEntry(LIBEXECDIR "/paludis/syncers"));
     return result;
 }
 
-std::tr1::shared_ptr<const FSEntrySequence>
+std::shared_ptr<const FSEntrySequence>
 EnvironmentImplementation::fetchers_dirs() const
 {
-    std::tr1::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
+    std::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
     std::string fetchers_dir(getenv_with_default("PALUDIS_FETCHERS_DIR", ""));
     if (fetchers_dir.empty())
     {
@@ -165,10 +164,10 @@ EnvironmentImplementation::fetchers_dirs() const
     return result;
 }
 
-std::tr1::shared_ptr<const DestinationsSet>
+std::shared_ptr<const DestinationsSet>
 EnvironmentImplementation::default_destinations() const
 {
-    std::tr1::shared_ptr<DestinationsSet> result(new DestinationsSet);
+    std::shared_ptr<DestinationsSet> result(new DestinationsSet);
 
     for (PackageDatabase::RepositoryConstIterator r(package_database()->begin_repositories()),
             r_end(package_database()->end_repositories()) ;
@@ -193,7 +192,7 @@ EnvironmentImplementation::is_paludis_package(const QualifiedPackageName & n) co
     return stringify(n) == (*DistributionData::get_instance()->distribution_from_string(distribution())).paludis_package();
 }
 
-std::tr1::shared_ptr<PackageIDSequence>
+std::shared_ptr<PackageIDSequence>
 EnvironmentImplementation::operator[] (const Selection & selection) const
 {
     if (_imp->selection_caches.empty())
@@ -229,13 +228,13 @@ EnvironmentImplementation::trigger_notifier_callback(const NotifierCallbackEvent
 }
 
 void
-EnvironmentImplementation::add_selection_cache(const std::tr1::shared_ptr<const SelectionCache> & c)
+EnvironmentImplementation::add_selection_cache(const std::shared_ptr<const SelectionCache> & c)
 {
     _imp->selection_caches.push_back(c);
 }
 
 void
-EnvironmentImplementation::remove_selection_cache(const std::tr1::shared_ptr<const SelectionCache> & c)
+EnvironmentImplementation::remove_selection_cache(const std::shared_ptr<const SelectionCache> & c)
 {
     _imp->selection_caches.remove(c);
 }
@@ -244,7 +243,7 @@ void
 EnvironmentImplementation::add_set(
         const SetName & name,
         const SetName & combined_name,
-        const std::tr1::function<std::tr1::shared_ptr<const SetSpecTree> ()> & func,
+        const std::function<std::shared_ptr<const SetSpecTree> ()> & func,
         const bool combine) const
 {
     Lock lock(_imp->sets_mutex);
@@ -255,10 +254,10 @@ EnvironmentImplementation::add_set(
         if (! _imp->sets.insert(std::make_pair(combined_name, std::make_pair(cache(func), CombiningFunction()))).second)
             throw DuplicateSetError(combined_name);
 
-        std::tr1::shared_ptr<CombineSets> c_s(new CombineSets);
+        std::shared_ptr<CombineSets> c_s(new CombineSets);
         CombiningFunction c_func(_imp->sets.insert(std::make_pair(name, std::make_pair(
-                            std::tr1::bind(&CombineSets::result, c_s),
-                            std::tr1::bind(&CombineSets::add, c_s, std::tr1::placeholders::_1)
+                            std::bind(&CombineSets::result, c_s),
+                            std::bind(&CombineSets::add, c_s, std::placeholders::_1)
                             ))).first->second.second);
         if (! c_func)
             throw DuplicateSetError(name);
@@ -271,7 +270,7 @@ EnvironmentImplementation::add_set(
     }
 }
 
-std::tr1::shared_ptr<const SetNameSet>
+std::shared_ptr<const SetNameSet>
 EnvironmentImplementation::set_names() const
 {
     Lock lock(_imp->sets_mutex);
@@ -280,7 +279,7 @@ EnvironmentImplementation::set_names() const
     return _imp->set_names;
 }
 
-const std::tr1::shared_ptr<const SetSpecTree>
+const std::shared_ptr<const SetSpecTree>
 EnvironmentImplementation::set(const SetName & s) const
 {
     Lock lock(_imp->sets_mutex);
@@ -315,12 +314,12 @@ EnvironmentImplementation::_need_sets() const
 
 namespace
 {
-    std::tr1::shared_ptr<const SetSpecTree> make_everything_set()
+    std::shared_ptr<const SetSpecTree> make_everything_set()
     {
         Log::get_instance()->message("environment_implementation.everything_deprecated", ll_warning, lc_context)
             << "The 'everything' set is deprecated. Use either 'installed-packages' or 'installed-slots' instead";
 
-        std::tr1::shared_ptr<SetSpecTree> result(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
+        std::shared_ptr<SetSpecTree> result(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
         result->root()->append(make_shared_ptr(new NamedSetDepSpec(SetName("installed-packages"))));
         return result;
     }
@@ -349,7 +348,7 @@ EnvironmentImplementation::populate_standard_sets() const
 
 namespace
 {
-    std::tr1::shared_ptr<const SetSpecTree> make_empty_set()
+    std::shared_ptr<const SetSpecTree> make_empty_set()
     {
         return make_shared_ptr(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
     }

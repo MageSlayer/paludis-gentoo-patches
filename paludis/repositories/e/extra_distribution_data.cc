@@ -30,9 +30,9 @@ using namespace paludis::erepository;
 
 namespace
 {
-    std::tr1::shared_ptr<const Set<std::string> > make_set(const std::string & s)
+    std::shared_ptr<const Set<std::string> > make_set(const std::string & s)
     {
-        std::tr1::shared_ptr<Set<std::string> > result(new Set<std::string>);
+        std::shared_ptr<Set<std::string> > result(new Set<std::string>);
         tokenise_whitespace(s, result->inserter());
         return result;
     }
@@ -48,7 +48,7 @@ namespace paludis
             return "e.conf";
         }
 
-        static std::tr1::shared_ptr<EDistribution> make_data(const std::tr1::shared_ptr<const KeyValueConfigFile> & k)
+        static std::shared_ptr<EDistribution> make_data(const std::shared_ptr<const KeyValueConfigFile> & k)
         {
             return make_shared_ptr(new EDistribution(make_named_values<EDistribution>(
                             n::default_buildroot() = k->get("default_buildroot"),

@@ -24,7 +24,7 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/mask.hh>
 #include <paludis/util/set.hh>
-#include <tr1/functional>
+#include <functional>
 
 namespace paludis
 {
@@ -69,7 +69,7 @@ namespace paludis
         public:
             ~FakeMetadataCollectionKey();
 
-            virtual const std::tr1::shared_ptr<const C_> value() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual const std::shared_ptr<const C_> value() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -99,10 +99,10 @@ namespace paludis
 
         public:
             FakeMetadataSpecTreeKey(const std::string &, const std::string &, const std::string &,
-                    const std::tr1::function<const std::tr1::shared_ptr<const C_> (const std::string &)> &, const MetadataKeyType);
+                    const std::function<const std::shared_ptr<const C_> (const std::string &)> &, const MetadataKeyType);
             ~FakeMetadataSpecTreeKey();
 
-            virtual const std::tr1::shared_ptr<const C_> value() const
+            virtual const std::shared_ptr<const C_> value() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             void set_from_string(const std::string &);
@@ -128,11 +128,11 @@ namespace paludis
 
         public:
             FakeMetadataSpecTreeKey(const std::string &, const std::string &, const std::string &,
-                    const std::tr1::function<const std::tr1::shared_ptr<const FetchableURISpecTree> (const std::string &)> &,
+                    const std::function<const std::shared_ptr<const FetchableURISpecTree> (const std::string &)> &,
                     const MetadataKeyType);
             ~FakeMetadataSpecTreeKey();
 
-            virtual const std::tr1::shared_ptr<const FetchableURISpecTree> value() const
+            virtual const std::shared_ptr<const FetchableURISpecTree> value() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             void set_from_string(const std::string &);
@@ -143,7 +143,7 @@ namespace paludis
             virtual std::string pretty_print_flat(const FetchableURISpecTree::ItemFormatter &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const std::tr1::shared_ptr<const URILabel> initial_label() const
+            virtual const std::shared_ptr<const URILabel> initial_label() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -161,12 +161,12 @@ namespace paludis
 
         public:
             FakeMetadataSpecTreeKey(const std::string &, const std::string &, const std::string &,
-                    const std::tr1::function<const std::tr1::shared_ptr<const DependencySpecTree> (const std::string &)> &,
-                    const std::tr1::shared_ptr<const DependenciesLabelSequence> &,
+                    const std::function<const std::shared_ptr<const DependencySpecTree> (const std::string &)> &,
+                    const std::shared_ptr<const DependenciesLabelSequence> &,
                     const MetadataKeyType);
             ~FakeMetadataSpecTreeKey();
 
-            virtual const std::tr1::shared_ptr<const DependencySpecTree> value() const
+            virtual const std::shared_ptr<const DependencySpecTree> value() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             void set_from_string(const std::string &);
@@ -177,7 +177,7 @@ namespace paludis
             virtual std::string pretty_print_flat(const DependencySpecTree::ItemFormatter &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const std::tr1::shared_ptr<const DependenciesLabelSequence> initial_labels() const
+            virtual const std::shared_ptr<const DependenciesLabelSequence> initial_labels() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -186,7 +186,7 @@ namespace paludis
     };
 
     class PALUDIS_VISIBLE FakeMetadataChoicesKey :
-        public MetadataValueKey<std::tr1::shared_ptr<const Choices> >,
+        public MetadataValueKey<std::shared_ptr<const Choices> >,
         private PrivateImplementationPattern<FakeMetadataChoicesKey>
     {
         private:
@@ -195,11 +195,11 @@ namespace paludis
         public:
             FakeMetadataChoicesKey(
                     const Environment * const,
-                    const std::tr1::shared_ptr<const PackageID> &);
+                    const std::shared_ptr<const PackageID> &);
             ~FakeMetadataChoicesKey();
 
             void add(const std::string &, const std::string &);
-            const std::tr1::shared_ptr<const Choices> value() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::shared_ptr<const Choices> value() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -211,12 +211,12 @@ namespace paludis
         private PrivateImplementationPattern<FakeUnacceptedMask>
     {
         public:
-            FakeUnacceptedMask(const char, const std::string &, const std::tr1::shared_ptr<const MetadataKey> &);
+            FakeUnacceptedMask(const char, const std::string &, const std::shared_ptr<const MetadataKey> &);
             ~FakeUnacceptedMask();
 
             char key() const;
             const std::string description() const;
-            const std::tr1::shared_ptr<const MetadataKey> unaccepted_key() const;
+            const std::shared_ptr<const MetadataKey> unaccepted_key() const;
     };
 
     class PALUDIS_VISIBLE FakeUnsupportedMask :
@@ -242,7 +242,7 @@ namespace paludis
     class PALUDIS_VISIBLE FakePackageID :
         public PackageID,
         private PrivateImplementationPattern<FakePackageID>,
-        public std::tr1::enable_shared_from_this<FakePackageID>
+        public std::enable_shared_from_this<FakePackageID>
     {
         private:
             PrivateImplementationPattern<FakePackageID>::ImpPtr & _imp;
@@ -256,7 +256,7 @@ namespace paludis
             ///\{
 
             FakePackageID(const Environment * const e,
-                    const std::tr1::shared_ptr<const FakeRepositoryBase> &,
+                    const std::shared_ptr<const FakeRepositoryBase> &,
                     const QualifiedPackageName &, const VersionSpec &);
             ~FakePackageID();
 
@@ -266,50 +266,50 @@ namespace paludis
 
             virtual const QualifiedPackageName name() const;
             virtual const VersionSpec version() const;
-            virtual const std::tr1::shared_ptr<const Repository> repository() const;
+            virtual const std::shared_ptr<const Repository> repository() const;
             virtual PackageDepSpec uniquely_identifying_spec() const;
 
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<SlotName> > slot_key() const;
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > > virtual_for_key() const;
-            virtual const std::tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> > keywords_key() const;
-            virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> > provide_key() const;
-            virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > dependencies_key() const;
-            virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_key() const;
-            virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies_key() const;
-            virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > post_dependencies_key() const;
-            virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > suggested_dependencies_key() const;
-            virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> > fetches_key() const;
-            virtual const std::tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > homepage_key() const;
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > short_description_key() const;
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > long_description_key() const;
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Contents> > > contents_key() const;
-            virtual const std::tr1::shared_ptr<const MetadataTimeKey> installed_time_key() const;
-            virtual const std::tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> > contains_key() const;
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > > contained_in_key() const;
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > fs_location_key() const;
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<long> > size_of_download_required_key() const;
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<long> > size_of_all_distfiles_key() const;
-            virtual const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > behaviours_key() const;
-            virtual const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > > from_repositories_key() const;
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > > choices_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<SlotName> > slot_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > > virtual_for_key() const;
+            virtual const std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> > keywords_key() const;
+            virtual const std::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> > provide_key() const;
+            virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > dependencies_key() const;
+            virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_key() const;
+            virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies_key() const;
+            virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > post_dependencies_key() const;
+            virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > suggested_dependencies_key() const;
+            virtual const std::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> > fetches_key() const;
+            virtual const std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > homepage_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<std::string> > short_description_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<std::string> > long_description_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Contents> > > contents_key() const;
+            virtual const std::shared_ptr<const MetadataTimeKey> installed_time_key() const;
+            virtual const std::shared_ptr<const MetadataCollectionKey<PackageIDSequence> > contains_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > > contained_in_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > fs_location_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<long> > size_of_download_required_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<long> > size_of_all_distfiles_key() const;
+            virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > behaviours_key() const;
+            virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > from_repositories_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Choices> > > choices_key() const;
 
-            const std::tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> > license_key() const;
+            const std::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> > license_key() const;
 
             ///\name Modifiable keys
             ///\{
 
-            const std::tr1::shared_ptr<FakeMetadataKeywordSetKey> keywords_key();
-            const std::tr1::shared_ptr<FakeMetadataSpecTreeKey<ProvideSpecTree> > provide_key();
-            const std::tr1::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > build_dependencies_key();
-            const std::tr1::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > run_dependencies_key();
-            const std::tr1::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > post_dependencies_key();
-            const std::tr1::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > suggested_dependencies_key();
-            const std::tr1::shared_ptr<FakeMetadataSpecTreeKey<FetchableURISpecTree> > fetches_key();
-            const std::tr1::shared_ptr<FakeMetadataSpecTreeKey<SimpleURISpecTree> > homepage_key();
-            const std::tr1::shared_ptr<FakeMetadataChoicesKey> choices_key();
-            const std::tr1::shared_ptr<FakeMetadataValueKey<long> > hitchhiker_key();
+            const std::shared_ptr<FakeMetadataKeywordSetKey> keywords_key();
+            const std::shared_ptr<FakeMetadataSpecTreeKey<ProvideSpecTree> > provide_key();
+            const std::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > build_dependencies_key();
+            const std::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > run_dependencies_key();
+            const std::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > post_dependencies_key();
+            const std::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > suggested_dependencies_key();
+            const std::shared_ptr<FakeMetadataSpecTreeKey<FetchableURISpecTree> > fetches_key();
+            const std::shared_ptr<FakeMetadataSpecTreeKey<SimpleURISpecTree> > homepage_key();
+            const std::shared_ptr<FakeMetadataChoicesKey> choices_key();
+            const std::shared_ptr<FakeMetadataValueKey<long> > hitchhiker_key();
 
-            const std::tr1::shared_ptr<Set<std::string> > behaviours_set();
+            const std::shared_ptr<Set<std::string> > behaviours_set();
 
             void set_slot(const SlotName &);
 
@@ -323,7 +323,7 @@ namespace paludis
             virtual bool supports_action(const SupportsActionTestBase &) const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual void perform_action(Action &) const;
 
-            virtual std::tr1::shared_ptr<const Set<std::string> > breaks_portage() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual std::shared_ptr<const Set<std::string> > breaks_portage() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual void invalidate_masks() const;
 

@@ -29,7 +29,7 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/sequence-fwd.hh>
 #include <paludis/util/named_value.hh>
-#include <tr1/memory>
+#include <memory>
 #include <string>
 
 /** \file
@@ -159,7 +159,7 @@ extern "C" paludis::HookResult PALUDIS_VISIBLE paludis_hook_run(
 extern "C" void PALUDIS_VISIBLE paludis_hook_add_dependencies(
     const paludis::Environment *, const paludis::Hook &, paludis::DirectedGraph<std::string, int> &);
 
-extern "C" const std::tr1::shared_ptr<const paludis::Sequence<std::string> > PALUDIS_VISIBLE paludis_hook_auto_phases(
+extern "C" const std::shared_ptr<const paludis::Sequence<std::string> > PALUDIS_VISIBLE paludis_hook_auto_phases(
     const paludis::Environment *);
 
 #endif

@@ -23,7 +23,7 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/choice.hh>
 #include <paludis/name.hh>
-#include <tr1/functional>
+#include <functional>
 #include <string>
 
 namespace paludis
@@ -40,7 +40,7 @@ namespace paludis
                 const UnprefixedChoiceName _unprefixed_name;
                 const ChoiceNameWithPrefix _name_with_prefix;
                 const QualifiedPackageName _package_name;
-                const std::tr1::shared_ptr<const UseDesc> _use_desc;
+                const std::shared_ptr<const UseDesc> _use_desc;
                 const bool _enabled;
                 const bool _enabled_by_default;
                 const bool _locked;
@@ -53,7 +53,7 @@ namespace paludis
                         const UnprefixedChoiceName & n,
                         const ChoiceNameWithPrefix & np,
                         const QualifiedPackageName & p,
-                        const std::tr1::shared_ptr<const UseDesc> & d,
+                        const std::shared_ptr<const UseDesc> & d,
                         bool b, bool def,
                         bool l, bool x,
                         const std::string & o,

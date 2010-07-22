@@ -37,7 +37,7 @@ namespace paludis
             return "paludis.conf";
         }
 
-        static std::tr1::shared_ptr<PaludisDistribution> make_data(const std::tr1::shared_ptr<const KeyValueConfigFile> & k)
+        static std::shared_ptr<PaludisDistribution> make_data(const std::shared_ptr<const KeyValueConfigFile> & k)
         {
             return make_shared_ptr(new PaludisDistribution(make_named_values<PaludisDistribution>(
                             n::bashrc_filename() = k->get("bashrc_filename"),

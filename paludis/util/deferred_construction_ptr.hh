@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_UTIL_DEFERRED_CONSTRUCTION_PTR_HH 1
 
 #include <paludis/util/deferred_construction_ptr-fwd.hh>
-#include <tr1/functional>
+#include <functional>
 
 namespace paludis
 {
@@ -30,11 +30,11 @@ namespace paludis
     {
         private:
             mutable T_ _ptr;
-            std::tr1::function<T_ ()> _f;
+            std::function<T_ ()> _f;
             mutable bool _done;
 
         public:
-            DeferredConstructionPtr(const std::tr1::function<T_ ()> & f) :
+            DeferredConstructionPtr(const std::function<T_ ()> & f) :
                 _ptr(),
                 _f(f),
                 _done(false)

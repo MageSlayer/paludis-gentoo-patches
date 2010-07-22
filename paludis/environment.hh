@@ -102,8 +102,8 @@ namespace paludis
              * have been created yet.
              */
             virtual const Tribool want_choice_enabled(
-                    const std::tr1::shared_ptr<const PackageID> &,
-                    const std::tr1::shared_ptr<const Choice> &,
+                    const std::shared_ptr<const PackageID> &,
+                    const std::shared_ptr<const Choice> &,
                     const UnprefixedChoiceName &
                     ) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
@@ -124,8 +124,8 @@ namespace paludis
              * \since 0.40
              */
             virtual const std::string value_for_choice_parameter(
-                    const std::tr1::shared_ptr<const PackageID> &,
-                    const std::tr1::shared_ptr<const Choice> &,
+                    const std::shared_ptr<const PackageID> &,
+                    const std::shared_ptr<const Choice> &,
                     const UnprefixedChoiceName &
                     ) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
@@ -140,9 +140,9 @@ namespace paludis
              * This is to deal with cases like USE_EXPAND values, where the
              * repository doesn't know all possible values.
              */
-            virtual std::tr1::shared_ptr<const Set<UnprefixedChoiceName> > known_choice_value_names(
-                    const std::tr1::shared_ptr<const PackageID> &,
-                    const std::tr1::shared_ptr<const Choice> &
+            virtual std::shared_ptr<const Set<UnprefixedChoiceName> > known_choice_value_names(
+                    const std::shared_ptr<const PackageID> &,
+                    const std::shared_ptr<const Choice> &
                     ) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
@@ -168,7 +168,7 @@ namespace paludis
              * Used by PackageID implementations. Generally PackageID's masks methods
              * should be used rather than calling this directly.
              */
-            virtual bool accept_keywords(const std::tr1::shared_ptr<const KeywordNameSet> &, const PackageID &) const
+            virtual bool accept_keywords(const std::shared_ptr<const KeywordNameSet> &, const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
@@ -179,7 +179,7 @@ namespace paludis
              * Used by PackageID implementations. Generally PackageID's masks methods
              * should be used rather than calling this directly.
              */
-            virtual const std::tr1::shared_ptr<const Mask> mask_for_breakage(const PackageID &) const
+            virtual const std::shared_ptr<const Mask> mask_for_breakage(const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
@@ -193,7 +193,7 @@ namespace paludis
              * Used by PackageID implementations. Generally PackageID's masks methods
              * should be used rather than calling this directly.
              */
-            virtual const std::tr1::shared_ptr<const Mask> mask_for_user(const PackageID &,
+            virtual const std::shared_ptr<const Mask> mask_for_user(const PackageID &,
                     const bool will_be_used_for_overridden) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
@@ -214,16 +214,16 @@ namespace paludis
             ///\name Database-related functions
             ///\{
 
-            virtual std::tr1::shared_ptr<PackageDatabase> package_database()
+            virtual std::shared_ptr<PackageDatabase> package_database()
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-            virtual std::tr1::shared_ptr<const PackageDatabase> package_database() const
+            virtual std::shared_ptr<const PackageDatabase> package_database() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
              * Select some packages.
              */
-            virtual std::tr1::shared_ptr<PackageIDSequence> operator[] (const Selection &) const
+            virtual std::shared_ptr<PackageIDSequence> operator[] (const Selection &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
@@ -234,7 +234,7 @@ namespace paludis
              * \since 0.42
              */
             virtual void add_selection_cache(
-                    const std::tr1::shared_ptr<const SelectionCache> &) = 0;
+                    const std::shared_ptr<const SelectionCache> &) = 0;
 
             /**
              * Remove a selection cache registered using add_selection_cache.
@@ -244,7 +244,7 @@ namespace paludis
              * \since 0.42
              */
             virtual void remove_selection_cache(
-                    const std::tr1::shared_ptr<const SelectionCache> &) = 0;
+                    const std::shared_ptr<const SelectionCache> &) = 0;
 
             /**
              * Create a repository from a particular file.
@@ -257,7 +257,7 @@ namespace paludis
              *
              * \since 0.48
              */
-            virtual const std::tr1::shared_ptr<Repository> repository_from_new_config_file(
+            virtual const std::shared_ptr<Repository> repository_from_new_config_file(
                     const FSEntry &) PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}
@@ -269,25 +269,25 @@ namespace paludis
              * Return a collection of bashrc files to be used by the various components
              * that are implemented in bash.
              */
-            virtual std::tr1::shared_ptr<const FSEntrySequence> bashrc_files() const
+            virtual std::shared_ptr<const FSEntrySequence> bashrc_files() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
              * Return directories to search for syncer scripts.
              */
-            virtual std::tr1::shared_ptr<const FSEntrySequence> syncers_dirs() const
+            virtual std::shared_ptr<const FSEntrySequence> syncers_dirs() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
              * Return directories to search for fetcher scripts.
              */
-            virtual std::tr1::shared_ptr<const FSEntrySequence> fetchers_dirs() const
+            virtual std::shared_ptr<const FSEntrySequence> fetchers_dirs() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
              * Return directories to search for hooks.
              */
-            virtual std::tr1::shared_ptr<const FSEntrySequence> hook_dirs() const
+            virtual std::shared_ptr<const FSEntrySequence> hook_dirs() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
@@ -333,7 +333,7 @@ namespace paludis
             /**
              * Return the mirror URI prefixes for a named mirror.
              */
-            virtual std::tr1::shared_ptr<const MirrorsSequence> mirrors(const std::string &) const
+            virtual std::shared_ptr<const MirrorsSequence> mirrors(const std::string &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}
@@ -362,13 +362,13 @@ namespace paludis
             virtual void add_set(
                     const SetName & base_name,
                     const SetName & combined_name,
-                    const std::tr1::function<std::tr1::shared_ptr<const SetSpecTree> ()> & func,
+                    const std::function<std::shared_ptr<const SetSpecTree> ()> & func,
                     const bool combine) const = 0;
 
             /**
              * Return all known named sets.
              */
-            virtual std::tr1::shared_ptr<const SetNameSet> set_names() const
+            virtual std::shared_ptr<const SetNameSet> set_names() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
@@ -376,7 +376,7 @@ namespace paludis
              *
              * If the named set is not known, returns a zero pointer.
              */
-            virtual const std::tr1::shared_ptr<const SetSpecTree> set(const SetName &) const
+            virtual const std::shared_ptr<const SetSpecTree> set(const SetName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}
@@ -387,7 +387,7 @@ namespace paludis
             /**
              * Default destination candidates for installing packages.
              */
-            virtual std::tr1::shared_ptr<const DestinationsSet> default_destinations() const
+            virtual std::shared_ptr<const DestinationsSet> default_destinations() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}
@@ -462,13 +462,13 @@ namespace paludis
              * implementations should not return zero here, but clients should still
              * check.
              */
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key() const = 0;
+            virtual const std::shared_ptr<const MetadataValueKey<std::string> > format_key() const = 0;
 
             /**
              * The config_location_key, if non-zero, specifies the location of the configuration file or directory,
              * the contents of which depends on the format returned by format_key.
              */
-            virtual const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > config_location_key() const = 0;
+            virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > config_location_key() const = 0;
 
             ///\}
 
@@ -480,7 +480,7 @@ namespace paludis
              *
              * \since 0.36
              */
-            virtual const std::tr1::shared_ptr<OutputManager> create_output_manager(
+            virtual const std::shared_ptr<OutputManager> create_output_manager(
                     const CreateOutputManagerInfo &) const = 0;
 
             /**

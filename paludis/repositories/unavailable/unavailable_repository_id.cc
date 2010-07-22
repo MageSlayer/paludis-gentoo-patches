@@ -49,12 +49,12 @@ namespace paludis
         const VersionSpec version;
         const UnavailableRepository * const repo;
 
-        const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > dependencies_key;
-        const std::tr1::shared_ptr<const MetadataValueKey<std::string> > description_key;
-        const std::tr1::shared_ptr<const MetadataValueKey<std::string> > homepage_key;
-        const std::tr1::shared_ptr<const MetadataValueKey<std::string> > sync_key;
-        const std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key;
-        const std::tr1::shared_ptr<const Mask> mask;
+        const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > dependencies_key;
+        const std::shared_ptr<const MetadataValueKey<std::string> > description_key;
+        const std::shared_ptr<const MetadataValueKey<std::string> > homepage_key;
+        const std::shared_ptr<const MetadataValueKey<std::string> > sync_key;
+        const std::shared_ptr<const MetadataValueKey<std::string> > format_key;
+        const std::shared_ptr<const Mask> mask;
 
         Implementation(
                 const UnavailableRepositoryIDParams & e) :
@@ -150,7 +150,7 @@ UnavailableRepositoryID::version() const
     return _imp->version;
 }
 
-const std::tr1::shared_ptr<const Repository>
+const std::shared_ptr<const Repository>
 UnavailableRepositoryID::repository() const
 {
     return _imp->repo->shared_from_this();
@@ -169,8 +169,8 @@ namespace
         s = v;
     }
 
-    std::tr1::shared_ptr<OutputManager> this_output_manager(
-            const std::tr1::shared_ptr<OutputManager> & o, const Action &)
+    std::shared_ptr<OutputManager> this_output_manager(
+            const std::shared_ptr<OutputManager> & o, const Action &)
     {
         return o;
     }
@@ -195,7 +195,7 @@ UnavailableRepositoryID::perform_action(Action & action) const
                 + "' to destination '" + stringify(install_action->options.destination()->name())
                 + "' because destination does not provide destination_interface");
 
-    std::tr1::shared_ptr<OutputManager> output_manager(install_action->options.make_output_manager()(*install_action));
+    std::shared_ptr<OutputManager> output_manager(install_action->options.make_output_manager()(*install_action));
     std::string used_config_protect;
 
     switch (install_action->options.want_phase()("merge"))
@@ -212,8 +212,8 @@ UnavailableRepositoryID::perform_action(Action & action) const
                             n::output_manager() = output_manager,
                             n::package_id() = shared_from_this(),
                             n::perform_uninstall() = install_action->options.perform_uninstall(),
-                            n::used_this_for_config_protect() = std::tr1::bind(
-                                    &used_this_for_config_protect, std::tr1::ref(used_config_protect), std::tr1::placeholders::_1)
+                            n::used_this_for_config_protect() = std::bind(
+                                    &used_this_for_config_protect, std::ref(used_config_protect), std::placeholders::_1)
                             ));
             }
             break;
@@ -239,8 +239,8 @@ UnavailableRepositoryID::perform_action(Action & action) const
                     n::if_for_install_id() = shared_from_this(),
                     n::ignore_for_unmerge() = &ignore_nothing,
                     n::is_overwrite() = false,
-                    n::make_output_manager() = std::tr1::bind(
-                            &this_output_manager, output_manager, std::tr1::placeholders::_1)
+                    n::make_output_manager() = std::bind(
+                            &this_output_manager, output_manager, std::placeholders::_1)
                     ));
         install_action->options.perform_uninstall()(*i, uo);
     }
@@ -248,7 +248,7 @@ UnavailableRepositoryID::perform_action(Action & action) const
     output_manager->succeeded();
 }
 
-std::tr1::shared_ptr<const Set<std::string> >
+std::shared_ptr<const Set<std::string> >
 UnavailableRepositoryID::breaks_portage() const
 {
     return make_shared_ptr(new Set<std::string>);
@@ -266,127 +266,127 @@ UnavailableRepositoryID::extra_hash_value() const
     return 0;
 }
 
-const std::tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >
+const std::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >
 UnavailableRepositoryID::contains_key() const
 {
-    return std::tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >();
+    return std::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >();
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >
+const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > >
 UnavailableRepositoryID::contained_in_key() const
 {
-    return std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >();
+    return std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > >();
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSEntry> >
 UnavailableRepositoryID::fs_location_key() const
 {
-    return std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >();
+    return std::shared_ptr<const MetadataValueKey<FSEntry> >();
 }
 
-const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 UnavailableRepositoryID::behaviours_key() const
 {
     return make_null_shared_ptr();
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >
+const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > >
 UnavailableRepositoryID::virtual_for_key() const
 {
-    return std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >();
+    return std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > >();
 }
 
-const std::tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
+const std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
 UnavailableRepositoryID::keywords_key() const
 {
-    return std::tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >();
+    return std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >();
 }
 
-const std::tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >
+const std::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >
 UnavailableRepositoryID::provide_key() const
 {
-    return std::tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >();
+    return std::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >();
 }
 
-const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 UnavailableRepositoryID::dependencies_key() const
 {
     return _imp->dependencies_key;
 }
 
-const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 UnavailableRepositoryID::build_dependencies_key() const
 {
     return _imp->dependencies_key;
 }
 
-const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 UnavailableRepositoryID::run_dependencies_key() const
 {
-    return std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+    return std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
 }
 
-const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 UnavailableRepositoryID::post_dependencies_key() const
 {
-    return std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+    return std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
 }
 
-const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 UnavailableRepositoryID::suggested_dependencies_key() const
 {
-    return std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+    return std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataValueKey<std::string> >
 UnavailableRepositoryID::short_description_key() const
 {
     return _imp->description_key;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataValueKey<std::string> >
 UnavailableRepositoryID::long_description_key() const
 {
-    return std::tr1::shared_ptr<const MetadataValueKey<std::string> >();
+    return std::shared_ptr<const MetadataValueKey<std::string> >();
 }
 
-const std::tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
+const std::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
 UnavailableRepositoryID::fetches_key() const
 {
-    return std::tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >();
+    return std::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >();
 }
 
-const std::tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
+const std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
 UnavailableRepositoryID::homepage_key() const
 {
-    return std::tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >();
+    return std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >();
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Contents> > >
+const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Contents> > >
 UnavailableRepositoryID::contents_key() const
 {
-    return std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Contents> > >();
+    return std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Contents> > >();
 }
 
-const std::tr1::shared_ptr<const MetadataTimeKey>
+const std::shared_ptr<const MetadataTimeKey>
 UnavailableRepositoryID::installed_time_key() const
 {
-    return std::tr1::shared_ptr<const MetadataTimeKey>();
+    return std::shared_ptr<const MetadataTimeKey>();
 }
 
-const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 UnavailableRepositoryID::from_repositories_key() const
 {
     return make_null_shared_ptr();
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > >
+const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Choices> > >
 UnavailableRepositoryID::choices_key() const
 {
     return make_null_shared_ptr();
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<SlotName> >
+const std::shared_ptr<const MetadataValueKey<SlotName> >
 UnavailableRepositoryID::slot_key() const
 {
     return make_null_shared_ptr();

@@ -52,7 +52,7 @@ namespace paludis
     {
         NDBAMMergerParams params;
         FSEntry realroot;
-        std::tr1::shared_ptr<SafeOFStream> contents_file;
+        std::shared_ptr<SafeOFStream> contents_file;
 
         std::list<std::string> config_protect;
         std::list<std::string> config_protect_mask;
@@ -91,7 +91,7 @@ NDBAMMerger::~NDBAMMerger()
 Hook
 NDBAMMerger::extend_hook(const Hook & h)
 {
-    std::tr1::shared_ptr<const FSEntrySequence> bashrc_files(_imp->params.environment()->bashrc_files());
+    std::shared_ptr<const FSEntrySequence> bashrc_files(_imp->params.environment()->bashrc_files());
 
     if (_imp->params.package_id())
     {

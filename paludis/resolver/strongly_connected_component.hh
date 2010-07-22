@@ -28,7 +28,7 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
-#include <tr1/memory>
+#include <memory>
 
 namespace paludis
 {
@@ -42,8 +42,8 @@ namespace paludis
     {
         struct StronglyConnectedComponent
         {
-            NamedValue<n::nodes, std::tr1::shared_ptr<Set<NAGIndex> > > nodes;
-            NamedValue<n::requirements, std::tr1::shared_ptr<Set<NAGIndex> > > requirements;
+            NamedValue<n::nodes, std::shared_ptr<Set<NAGIndex> > > nodes;
+            NamedValue<n::requirements, std::shared_ptr<Set<NAGIndex> > > requirements;
         };
     }
 

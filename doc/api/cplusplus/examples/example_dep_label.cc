@@ -148,11 +148,11 @@ int main(int argc, char * argv[])
                 "example_dep_label", "EXAMPLE_DEP_LABEL_OPTIONS", "EXAMPLE_DEP_LABEL_CMDLINE");
 
         /* We start with an Environment, respecting the user's '--environment' choice. */
-        std::tr1::shared_ptr<Environment> env(EnvironmentFactory::get_instance()->create(
+        std::shared_ptr<Environment> env(EnvironmentFactory::get_instance()->create(
                     CommandLine::get_instance()->a_environment.argument()));
 
         /* Fetch package IDs for all installed packages. */
-        std::tr1::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsUnsorted(
+        std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsUnsorted(
                     generator::All() |
                     filter::InstalledAtRoot(FSEntry("/")))]);
 

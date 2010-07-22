@@ -23,7 +23,7 @@
 #include <paludis/environment-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/output_manager-fwd.hh>
-#include <tr1/functional>
+#include <functional>
 #include <string>
 
 namespace paludis
@@ -31,9 +31,9 @@ namespace paludis
     namespace erepository
     {
         std::string pipe_command_handler(const Environment * const,
-                const std::tr1::shared_ptr<const PackageID> &,
+                const std::shared_ptr<const PackageID> &,
                 const std::string & s,
-                const std::tr1::shared_ptr<OutputManager> & maybe_output_manager);
+                const std::shared_ptr<OutputManager> & maybe_output_manager);
     }
 }
 

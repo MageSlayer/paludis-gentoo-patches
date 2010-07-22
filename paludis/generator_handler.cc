@@ -25,7 +25,7 @@
 #include <paludis/name.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
-#include <tr1/functional>
+#include <functional>
 #include <algorithm>
 
 using namespace paludis;
@@ -34,41 +34,41 @@ GeneratorHandler::~GeneratorHandler()
 {
 }
 
-std::tr1::shared_ptr<const RepositoryNameSet>
+std::shared_ptr<const RepositoryNameSet>
 AllGeneratorHandlerBase::repositories(
         const Environment * const env) const
 {
-    using namespace std::tr1::placeholders;
-    std::tr1::shared_ptr<RepositoryNameSet> result(new RepositoryNameSet);
+    using namespace std::placeholders;
+    std::shared_ptr<RepositoryNameSet> result(new RepositoryNameSet);
     std::transform(env->package_database()->begin_repositories(), env->package_database()->end_repositories(),
-            result->inserter(), std::tr1::bind(&Repository::name, _1));
+            result->inserter(), std::bind(&Repository::name, _1));
     return result;
 }
 
-std::tr1::shared_ptr<const CategoryNamePartSet>
+std::shared_ptr<const CategoryNamePartSet>
 AllGeneratorHandlerBase::categories(
         const Environment * const env,
-        const std::tr1::shared_ptr<const RepositoryNameSet> & repos) const
+        const std::shared_ptr<const RepositoryNameSet> & repos) const
 {
-    std::tr1::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
+    std::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
 
     for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
             r != r_end ; ++r)
     {
-        std::tr1::shared_ptr<const CategoryNamePartSet> cats(env->package_database()->fetch_repository(*r)->category_names());
+        std::shared_ptr<const CategoryNamePartSet> cats(env->package_database()->fetch_repository(*r)->category_names());
         std::copy(cats->begin(), cats->end(), result->inserter());
     }
 
     return result;
 }
 
-std::tr1::shared_ptr<const QualifiedPackageNameSet>
+std::shared_ptr<const QualifiedPackageNameSet>
 AllGeneratorHandlerBase::packages(
         const Environment * const env,
-        const std::tr1::shared_ptr<const RepositoryNameSet> & repos,
-        const std::tr1::shared_ptr<const CategoryNamePartSet> & cats) const
+        const std::shared_ptr<const RepositoryNameSet> & repos,
+        const std::shared_ptr<const CategoryNamePartSet> & cats) const
 {
-    std::tr1::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
+    std::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
 
     for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
             r != r_end ; ++r)
@@ -76,7 +76,7 @@ AllGeneratorHandlerBase::packages(
         for (CategoryNamePartSet::ConstIterator c(cats->begin()), c_end(cats->end()) ;
                 c != c_end ; ++c)
         {
-            std::tr1::shared_ptr<const QualifiedPackageNameSet> pkgs(
+            std::shared_ptr<const QualifiedPackageNameSet> pkgs(
                     env->package_database()->fetch_repository(*r)->package_names(*c));
             std::copy(pkgs->begin(), pkgs->end(), result->inserter());
         }
@@ -85,13 +85,13 @@ AllGeneratorHandlerBase::packages(
     return result;
 }
 
-std::tr1::shared_ptr<const PackageIDSet>
+std::shared_ptr<const PackageIDSet>
 AllGeneratorHandlerBase::ids(
         const Environment * const env,
-        const std::tr1::shared_ptr<const RepositoryNameSet> & repos,
-        const std::tr1::shared_ptr<const QualifiedPackageNameSet> & qpns) const
+        const std::shared_ptr<const RepositoryNameSet> & repos,
+        const std::shared_ptr<const QualifiedPackageNameSet> & qpns) const
 {
-    std::tr1::shared_ptr<PackageIDSet> result(new PackageIDSet);
+    std::shared_ptr<PackageIDSet> result(new PackageIDSet);
 
     for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
             r != r_end ; ++r)
@@ -99,7 +99,7 @@ AllGeneratorHandlerBase::ids(
         for (QualifiedPackageNameSet::ConstIterator q(qpns->begin()), q_end(qpns->end()) ;
                 q != q_end ; ++q)
         {
-            std::tr1::shared_ptr<const PackageIDSequence> i(
+            std::shared_ptr<const PackageIDSequence> i(
                     env->package_database()->fetch_repository(*r)->package_ids(*q));
             std::copy(i->begin(), i->end(), result->inserter());
         }

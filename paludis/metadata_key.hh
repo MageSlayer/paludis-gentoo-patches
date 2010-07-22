@@ -38,7 +38,7 @@
 #include <paludis/util/type_list.hh>
 #include <paludis/util/timestamp-fwd.hh>
 #include <paludis/util/set.hh>
-#include <tr1/type_traits>
+#include <type_traits>
 #include <string>
 
 /** \file
@@ -101,10 +101,10 @@ namespace paludis
                 MetadataValueKey<bool>,
                 MetadataValueKey<FSEntry>,
                 MetadataValueKey<SlotName>,
-                MetadataValueKey<std::tr1::shared_ptr<const PackageID> >,
-                MetadataValueKey<std::tr1::shared_ptr<const Contents> >,
-                MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> >,
-                MetadataValueKey<std::tr1::shared_ptr<const Choices> >,
+                MetadataValueKey<std::shared_ptr<const PackageID> >,
+                MetadataValueKey<std::shared_ptr<const Contents> >,
+                MetadataValueKey<std::shared_ptr<const RepositoryMaskInfo> >,
+                MetadataValueKey<std::shared_ptr<const Choices> >,
                 MetadataTimeKey,
                 MetadataSectionKey
                 >::Type>
@@ -215,7 +215,7 @@ namespace paludis
      * \since 0.26
      */
     template <>
-    class PALUDIS_VISIBLE ExtraMetadataValueKeyMethods<std::tr1::shared_ptr<const PackageID> >
+    class PALUDIS_VISIBLE ExtraMetadataValueKeyMethods<std::shared_ptr<const PackageID> >
     {
         public:
             virtual ~ExtraMetadataValueKeyMethods() = 0;
@@ -295,7 +295,7 @@ namespace paludis
             /**
              * Fetch our value.
              */
-            virtual const std::tr1::shared_ptr<const C_> value() const
+            virtual const std::shared_ptr<const C_> value() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
@@ -303,7 +303,7 @@ namespace paludis
              * supplied Formatter to format individual items.
              */
             virtual std::string pretty_print_flat(const Formatter<
-                    typename std::tr1::remove_const<typename RemoveSharedPtr<typename C_::value_type>::Type>::type> &) const
+                    typename std::remove_const<typename RemoveSharedPtr<typename C_::value_type>::Type>::type> &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 
@@ -326,7 +326,7 @@ namespace paludis
             /**
              * Fetch our value.
              */
-            virtual const std::tr1::shared_ptr<const C_> value() const
+            virtual const std::shared_ptr<const C_> value() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
@@ -366,7 +366,7 @@ namespace paludis
             /**
              * Fetch our value.
              */
-            virtual const std::tr1::shared_ptr<const FetchableURISpecTree> value() const
+            virtual const std::shared_ptr<const FetchableURISpecTree> value() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
@@ -387,7 +387,7 @@ namespace paludis
              * Return a URILabel that represents the initial label to use when
              * deciding the behaviour of individual items in the heirarchy.
              */
-            virtual const std::tr1::shared_ptr<const URILabel> initial_label() const
+            virtual const std::shared_ptr<const URILabel> initial_label() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 
@@ -413,7 +413,7 @@ namespace paludis
             /**
              * Fetch our value.
              */
-            virtual const std::tr1::shared_ptr<const DependencySpecTree> value() const
+            virtual const std::shared_ptr<const DependencySpecTree> value() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
@@ -434,7 +434,7 @@ namespace paludis
              * Return a DependenciesLabelSequence that represents the initial labels to use when
              * deciding the behaviour of individual items in the heirarchy.
              */
-            virtual const std::tr1::shared_ptr<const DependenciesLabelSequence> initial_labels() const
+            virtual const std::shared_ptr<const DependenciesLabelSequence> initial_labels() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 }

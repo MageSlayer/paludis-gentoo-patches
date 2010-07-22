@@ -31,7 +31,7 @@
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/about.hh>
-#include <tr1/unordered_map>
+#include <unordered_map>
 #include <list>
 
 #include <paludis/buffer_output_manager.hh>
@@ -58,7 +58,7 @@ namespace
         NamedValue<n::create_function, OutputManagerFactory::CreateFunction> create_function;
     };
 
-    typedef std::tr1::unordered_map<std::string, Funcs> Keys;
+    typedef std::unordered_map<std::string, Funcs> Keys;
 
     const Funcs & fetch(const Keys & keys, const std::string & key)
     {
@@ -106,7 +106,7 @@ OutputManagerFactory::~OutputManagerFactory()
 {
 }
 
-const std::tr1::shared_ptr<OutputManager>
+const std::shared_ptr<OutputManager>
 OutputManagerFactory::create(
         const KeyFunction & key_function,
         const CreateChildFunction & create_child_function,
@@ -131,7 +131,7 @@ OutputManagerFactory::end_keys() const
 
 void
 OutputManagerFactory::add_manager(
-        const std::tr1::shared_ptr<const Set<std::string> > & formats,
+        const std::shared_ptr<const Set<std::string> > & formats,
         const CreateFunction & create_function
         )
 {

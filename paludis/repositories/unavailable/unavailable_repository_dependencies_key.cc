@@ -27,7 +27,7 @@
 #include <paludis/dep_label.hh>
 #include <paludis/comma_separated_dep_parser.hh>
 #include <paludis/comma_separated_dep_printer.hh>
-#include <tr1/memory>
+#include <memory>
 
 using namespace paludis;
 using namespace paludis::unavailable_repository;
@@ -38,8 +38,8 @@ namespace paludis
     struct Implementation<UnavailableRepositoryDependenciesKey>
     {
         const Environment * const env;
-        const std::tr1::shared_ptr<const DependencySpecTree> value;
-        const std::tr1::shared_ptr<DependenciesLabelSequence> labels;
+        const std::shared_ptr<const DependencySpecTree> value;
+        const std::shared_ptr<DependenciesLabelSequence> labels;
 
         const std::string raw_name;
         const std::string human_name;
@@ -72,7 +72,7 @@ UnavailableRepositoryDependenciesKey::~UnavailableRepositoryDependenciesKey()
 {
 }
 
-const std::tr1::shared_ptr<const DependencySpecTree>
+const std::shared_ptr<const DependencySpecTree>
 UnavailableRepositoryDependenciesKey::value() const
 {
     return _imp->value;
@@ -112,7 +112,7 @@ UnavailableRepositoryDependenciesKey::pretty_print_flat(const DependencySpecTree
     return p.result();
 }
 
-const std::tr1::shared_ptr<const DependenciesLabelSequence>
+const std::shared_ptr<const DependenciesLabelSequence>
 UnavailableRepositoryDependenciesKey::initial_labels() const
 {
     return _imp->labels;

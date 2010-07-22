@@ -30,12 +30,12 @@
 
 using namespace paludis;
 
-std::tr1::shared_ptr<const DependencySpecTree>
+std::shared_ptr<const DependencySpecTree>
 CommaSeparatedDepParser::parse(const Environment * const env, const std::string & s)
 {
     Context context("When parsing '" + s + "':");
 
-    std::tr1::shared_ptr<DependencySpecTree> result(new DependencySpecTree(make_shared_ptr(new AllDepSpec)));
+    std::shared_ptr<DependencySpecTree> result(new DependencySpecTree(make_shared_ptr(new AllDepSpec)));
 
     std::list<std::string> tokens;
     tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(s, ",", "", std::back_inserter(tokens));
@@ -49,7 +49,7 @@ CommaSeparatedDepParser::parse(const Environment * const env, const std::string 
         if (a.empty())
             continue;
 
-        std::tr1::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(parse_user_package_dep_spec(a, env,
+        std::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(parse_user_package_dep_spec(a, env,
                         UserPackageDepSpecOptions() + updso_no_disambiguation)));
         result->root()->append(spec);
     }

@@ -48,13 +48,13 @@ namespace paludis
     template <typename ElfType_>
     struct Implementation<ElfObject<ElfType_> >
     {
-        std::vector<std::tr1::shared_ptr<Section<ElfType_> > > sections;
+        std::vector<std::shared_ptr<Section<ElfType_> > > sections;
     };
 
     template <typename ElfType_>
     struct WrappedForwardIteratorTraits<ElfObjectSectionIteratorTag<ElfType_> >
     {
-        typedef IndirectIterator<typename std::vector<std::tr1::shared_ptr<Section<ElfType_> > >::const_iterator> UnderlyingIterator;
+        typedef IndirectIterator<typename std::vector<std::shared_ptr<Section<ElfType_> > >::const_iterator> UnderlyingIterator;
     };
 }
 

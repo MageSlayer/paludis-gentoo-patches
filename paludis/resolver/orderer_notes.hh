@@ -24,7 +24,7 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/serialise-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 
 namespace paludis
 {
@@ -40,7 +40,7 @@ namespace paludis
             NamedValue<n::cycle_breaking, std::string> cycle_breaking;
 
             void serialise(Serialiser &) const;
-            static const std::tr1::shared_ptr<OrdererNotes> deserialise(
+            static const std::shared_ptr<OrdererNotes> deserialise(
                     Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }

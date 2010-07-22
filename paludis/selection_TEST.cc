@@ -49,7 +49,7 @@ namespace test_cases
         {
             TestEnvironment env;
 
-            std::tr1::shared_ptr<FakeRepository> r1(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            std::shared_ptr<FakeRepository> r1(new FakeRepository(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("repo1"))));
             r1->add_version("r1c1", "r1c1p1", "1");
@@ -60,7 +60,7 @@ namespace test_cases
             env.package_database()->add_repository(11, r1);
             TEST_CHECK(true);
 
-            std::tr1::shared_ptr<FakeRepository> r2(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            std::shared_ptr<FakeRepository> r2(new FakeRepository(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("repo2"))));
             r2->add_version("rac1", "rac1pa", "1");
@@ -69,41 +69,41 @@ namespace test_cases
             TEST_CHECK(true);
 
             PackageDepSpec d1(parse_user_package_dep_spec("r1c1/r1c1p1", &env, UserPackageDepSpecOptions()));
-            const std::tr1::shared_ptr<const PackageIDSequence> q1(env[selection::AllVersionsSorted(generator::Matches(d1, MatchPackageOptions()))]);
+            const std::shared_ptr<const PackageIDSequence> q1(env[selection::AllVersionsSorted(generator::Matches(d1, MatchPackageOptions()))]);
             TEST_CHECK_EQUAL(std::distance(q1->begin(), q1->end()), 1);
 
             PackageDepSpec d2(parse_user_package_dep_spec("r1c1/r1c1p2", &env, UserPackageDepSpecOptions()));
-            const std::tr1::shared_ptr<const PackageIDSequence> q2(env[selection::AllVersionsSorted(generator::Matches(d2, MatchPackageOptions()))]);
+            const std::shared_ptr<const PackageIDSequence> q2(env[selection::AllVersionsSorted(generator::Matches(d2, MatchPackageOptions()))]);
             TEST_CHECK_EQUAL(std::distance(q2->begin(), q2->end()), 2);
 
             PackageDepSpec d3(parse_user_package_dep_spec(">=r1c1/r1c1p2-1", &env, UserPackageDepSpecOptions()));
-            const std::tr1::shared_ptr<const PackageIDSequence> q3(env[selection::AllVersionsSorted(generator::Matches(d3, MatchPackageOptions()))]);
+            const std::shared_ptr<const PackageIDSequence> q3(env[selection::AllVersionsSorted(generator::Matches(d3, MatchPackageOptions()))]);
             TEST_CHECK_EQUAL(std::distance(q3->begin(), q3->end()), 2);
 
             PackageDepSpec d4(parse_user_package_dep_spec(">=r1c1/r1c1p2-2", &env, UserPackageDepSpecOptions()));
-            const std::tr1::shared_ptr<const PackageIDSequence> q4(env[selection::AllVersionsSorted(generator::Matches(d4, MatchPackageOptions()))]);
+            const std::shared_ptr<const PackageIDSequence> q4(env[selection::AllVersionsSorted(generator::Matches(d4, MatchPackageOptions()))]);
             TEST_CHECK_EQUAL(join(indirect_iterator(q4->begin()), indirect_iterator(q4->end()), " "),
                     "r1c1/r1c1p2-2:0::repo1");
             TEST_CHECK_EQUAL(std::distance(q4->begin(), q4->end()), 1);
 
             PackageDepSpec d5(parse_user_package_dep_spec(">=r1c1/r1c1p2-3", &env, UserPackageDepSpecOptions()));
-            const std::tr1::shared_ptr<const PackageIDSequence> q5(env[selection::AllVersionsSorted(generator::Matches(d5, MatchPackageOptions()))]);
+            const std::shared_ptr<const PackageIDSequence> q5(env[selection::AllVersionsSorted(generator::Matches(d5, MatchPackageOptions()))]);
             TEST_CHECK_EQUAL(std::distance(q5->begin(), q5->end()), 0);
 
             PackageDepSpec d6(parse_user_package_dep_spec("<r1c1/r1c1p2-3", &env, UserPackageDepSpecOptions()));
-            const std::tr1::shared_ptr<const PackageIDSequence> q6(env[selection::AllVersionsSorted(generator::Matches(d6, MatchPackageOptions()))]);
+            const std::shared_ptr<const PackageIDSequence> q6(env[selection::AllVersionsSorted(generator::Matches(d6, MatchPackageOptions()))]);
             TEST_CHECK_EQUAL(std::distance(q6->begin(), q6->end()), 2);
 
             PackageDepSpec d7(parse_user_package_dep_spec("rac1/rac1pa", &env, UserPackageDepSpecOptions()));
-            const std::tr1::shared_ptr<const PackageIDSequence> q7(env[selection::AllVersionsSorted(generator::Matches(d7, MatchPackageOptions()))]);
+            const std::shared_ptr<const PackageIDSequence> q7(env[selection::AllVersionsSorted(generator::Matches(d7, MatchPackageOptions()))]);
             TEST_CHECK_EQUAL(std::distance(q7->begin(), q7->end()), 4);
 
             PackageDepSpec d8(parse_user_package_dep_spec("foo/bar", &env, UserPackageDepSpecOptions()));
-            const std::tr1::shared_ptr<const PackageIDSequence> q8(env[selection::AllVersionsSorted(generator::Matches(d8, MatchPackageOptions()))]);
+            const std::shared_ptr<const PackageIDSequence> q8(env[selection::AllVersionsSorted(generator::Matches(d8, MatchPackageOptions()))]);
             TEST_CHECK_EQUAL(std::distance(q8->begin(), q8->end()), 0);
 
             PackageDepSpec d9(parse_user_package_dep_spec("r1c1/r1c1p1", &env, UserPackageDepSpecOptions()));
-            const std::tr1::shared_ptr<const PackageIDSequence> q9(env[selection::AllVersionsSorted(generator::Matches(d9, MatchPackageOptions())
+            const std::shared_ptr<const PackageIDSequence> q9(env[selection::AllVersionsSorted(generator::Matches(d9, MatchPackageOptions())
                         | filter::SupportsAction<InstallAction>())]);
             TEST_CHECK_EQUAL(std::distance(q9->begin(), q9->end()), 1);
         }
@@ -117,7 +117,7 @@ namespace test_cases
         {
             TestEnvironment env;
 
-            std::tr1::shared_ptr<FakeRepository> r1(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            std::shared_ptr<FakeRepository> r1(new FakeRepository(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("repo1"))));
             r1->add_version("cat", "pkg", "1")->set_slot(SlotName("a"));
@@ -127,7 +127,7 @@ namespace test_cases
             env.package_database()->add_repository(10, r1);
             TEST_CHECK(true);
 
-            std::tr1::shared_ptr<FakeRepository> r2(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            std::shared_ptr<FakeRepository> r2(new FakeRepository(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("repo2"))));
             r2->add_version("cat", "pkg", "1")->set_slot(SlotName("a"));
@@ -137,23 +137,23 @@ namespace test_cases
 
             PackageDepSpec d(parse_user_package_dep_spec("cat/pkg", &env, UserPackageDepSpecOptions()));
 
-            const std::tr1::shared_ptr<const PackageIDSequence> q1(env[selection::AllVersionsSorted(generator::Matches(d, MatchPackageOptions()))]);
+            const std::shared_ptr<const PackageIDSequence> q1(env[selection::AllVersionsSorted(generator::Matches(d, MatchPackageOptions()))]);
             TEST_CHECK_EQUAL(join(indirect_iterator(q1->begin()), indirect_iterator(q1->end()), " "),
                     "cat/pkg-1:a::repo2 cat/pkg-1:a::repo1 cat/pkg-2:c::repo1 cat/pkg-3:b::repo2 cat/pkg-3:c::repo1 cat/pkg-4:a::repo1");
 
-            const std::tr1::shared_ptr<const PackageIDSequence> q2(env[selection::AllVersionsGroupedBySlot(generator::Matches(d, MatchPackageOptions()))]);
+            const std::shared_ptr<const PackageIDSequence> q2(env[selection::AllVersionsGroupedBySlot(generator::Matches(d, MatchPackageOptions()))]);
             TEST_CHECK_EQUAL(join(indirect_iterator(q2->begin()), indirect_iterator(q2->end()), " "),
                     "cat/pkg-3:b::repo2 cat/pkg-2:c::repo1 cat/pkg-3:c::repo1 cat/pkg-1:a::repo2 cat/pkg-1:a::repo1 cat/pkg-4:a::repo1");
 
-            const std::tr1::shared_ptr<const PackageIDSequence> q3(env[selection::BestVersionOnly(generator::Matches(d, MatchPackageOptions()))]);
+            const std::shared_ptr<const PackageIDSequence> q3(env[selection::BestVersionOnly(generator::Matches(d, MatchPackageOptions()))]);
             TEST_CHECK_EQUAL(join(indirect_iterator(q3->begin()), indirect_iterator(q3->end()), " "),
                     "cat/pkg-4:a::repo1");
 
-            const std::tr1::shared_ptr<const PackageIDSequence> q4(env[selection::BestVersionInEachSlot(generator::Matches(d, MatchPackageOptions()))]);
+            const std::shared_ptr<const PackageIDSequence> q4(env[selection::BestVersionInEachSlot(generator::Matches(d, MatchPackageOptions()))]);
             TEST_CHECK_EQUAL(join(indirect_iterator(q4->begin()), indirect_iterator(q4->end()), " "),
                     "cat/pkg-3:b::repo2 cat/pkg-3:c::repo1 cat/pkg-4:a::repo1");
 
-            std::tr1::shared_ptr<FakeRepository> r3(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            std::shared_ptr<FakeRepository> r3(new FakeRepository(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("repo3"))));
             r3->add_version("cat", "other", "1")->set_slot(SlotName("a"));
@@ -162,31 +162,31 @@ namespace test_cases
 
             PackageDepSpec c(parse_user_package_dep_spec("cat/*", &env, UserPackageDepSpecOptions() + updso_allow_wildcards));
 
-            const std::tr1::shared_ptr<const PackageIDSequence> q5(env[selection::AllVersionsSorted(generator::Matches(c, MatchPackageOptions()))]);
+            const std::shared_ptr<const PackageIDSequence> q5(env[selection::AllVersionsSorted(generator::Matches(c, MatchPackageOptions()))]);
             TEST_CHECK_EQUAL(join(indirect_iterator(q5->begin()), indirect_iterator(q5->end()), " "),
                     "cat/other-1:a::repo3 cat/pkg-1:a::repo2 cat/pkg-1:a::repo1 cat/pkg-2:c::repo1 "
                     "cat/pkg-3:b::repo2 cat/pkg-3:c::repo1 cat/pkg-4:a::repo1");
 
-            const std::tr1::shared_ptr<const PackageIDSequence> q6(env[selection::AllVersionsGroupedBySlot(generator::Matches(c, MatchPackageOptions()))]);
+            const std::shared_ptr<const PackageIDSequence> q6(env[selection::AllVersionsGroupedBySlot(generator::Matches(c, MatchPackageOptions()))]);
             TEST_CHECK_EQUAL(join(indirect_iterator(q6->begin()), indirect_iterator(q6->end()), " "),
                     "cat/other-1:a::repo3 cat/pkg-3:b::repo2 cat/pkg-2:c::repo1 cat/pkg-3:c::repo1 "
                     "cat/pkg-1:a::repo2 cat/pkg-1:a::repo1 cat/pkg-4:a::repo1");
 
-            const std::tr1::shared_ptr<const PackageIDSequence> q7(env[selection::BestVersionOnly(generator::Matches(c, MatchPackageOptions()))]);
+            const std::shared_ptr<const PackageIDSequence> q7(env[selection::BestVersionOnly(generator::Matches(c, MatchPackageOptions()))]);
             TEST_CHECK_EQUAL(join(indirect_iterator(q7->begin()), indirect_iterator(q7->end()), " "),
                     "cat/other-1:a::repo3 cat/pkg-4:a::repo1");
 
-            const std::tr1::shared_ptr<const PackageIDSequence> q8(env[selection::BestVersionInEachSlot(generator::Matches(c, MatchPackageOptions()))]);
+            const std::shared_ptr<const PackageIDSequence> q8(env[selection::BestVersionInEachSlot(generator::Matches(c, MatchPackageOptions()))]);
             TEST_CHECK_EQUAL(join(indirect_iterator(q8->begin()), indirect_iterator(q8->end()), " "),
                     "cat/other-1:a::repo3 cat/pkg-3:b::repo2 cat/pkg-3:c::repo1 cat/pkg-4:a::repo1");
 
             PackageDepSpec b(parse_user_package_dep_spec("cat/pkg:a", &env, UserPackageDepSpecOptions()));
-            const std::tr1::shared_ptr<const PackageIDSequence> q9(env[selection::AllVersionsGroupedBySlot(generator::Matches(b, MatchPackageOptions()))]);
+            const std::shared_ptr<const PackageIDSequence> q9(env[selection::AllVersionsGroupedBySlot(generator::Matches(b, MatchPackageOptions()))]);
             TEST_CHECK_EQUAL(join(indirect_iterator(q9->begin()), indirect_iterator(q9->end()), " "),
                     "cat/pkg-1:a::repo2 cat/pkg-1:a::repo1 cat/pkg-4:a::repo1");
 
             PackageDepSpec a(parse_user_package_dep_spec("cat/pkg[=1|=3]", &env, UserPackageDepSpecOptions()));
-            const std::tr1::shared_ptr<const PackageIDSequence> q10(env[selection::AllVersionsGroupedBySlot(generator::Matches(a, MatchPackageOptions()))]);
+            const std::shared_ptr<const PackageIDSequence> q10(env[selection::AllVersionsGroupedBySlot(generator::Matches(a, MatchPackageOptions()))]);
             TEST_CHECK_EQUAL(join(indirect_iterator(q10->begin()), indirect_iterator(q10->end()), " "),
                     "cat/pkg-1:a::repo2 cat/pkg-1:a::repo1 cat/pkg-3:b::repo2 cat/pkg-3:c::repo1");
         }

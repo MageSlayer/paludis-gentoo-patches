@@ -38,7 +38,7 @@
 #include <paludis/stringify_formatter-impl.hh>
 #include <paludis/util/clone-impl.hh>
 #include <paludis/util/timestamp.hh>
-#include <tr1/memory>
+#include <memory>
 
 using namespace paludis;
 namespace bp = boost::python;
@@ -47,15 +47,15 @@ namespace environment
 {
     void test_env(Environment & e)
     {
-        std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+        std::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
                         n::environment() = &e,
                         n::name() = RepositoryName("fakerepo"))));
-        std::tr1::shared_ptr<PackageID> pid(repo->add_version("cat", "pkg", "1.0"));
+        std::shared_ptr<PackageID> pid(repo->add_version("cat", "pkg", "1.0"));
         e.package_database()->add_repository(0, repo);
 
         bool PALUDIS_ATTRIBUTE((unused)) b2(e.accept_license("l", *pid));
 
-        std::tr1::shared_ptr<KeywordNameSet> kns(new KeywordNameSet);
+        std::shared_ptr<KeywordNameSet> kns(new KeywordNameSet);
         kns->insert(KeywordName("keyword"));
         bool PALUDIS_ATTRIBUTE((unused)) b3(e.accept_keywords(kns, *pid));
 
@@ -148,7 +148,7 @@ namespace metadata_key
         MetadataKeyType foo(m.type());
     }
 
-    void test_metadata_package_id_key(const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > & m)
+    void test_metadata_package_id_key(const MetadataValueKey<std::shared_ptr<const PackageID> > & m)
     {
         test_metadata_key(m);
         m.value();
@@ -173,19 +173,19 @@ namespace metadata_key
         Timestamp PALUDIS_ATTRIBUTE((unused)) t(m.value());
     }
 
-    void test_metadata_contents_key(const MetadataValueKey<std::tr1::shared_ptr<const Contents> > & m)
+    void test_metadata_contents_key(const MetadataValueKey<std::shared_ptr<const Contents> > & m)
     {
         test_metadata_key(m);
         m.value();
     }
 
-    void test_metadata_choices_key(const MetadataValueKey<std::tr1::shared_ptr<const Choices> > & m)
+    void test_metadata_choices_key(const MetadataValueKey<std::shared_ptr<const Choices> > & m)
     {
         test_metadata_key(m);
         m.value();
     }
 
-    void test_metadata_repository_mask_info_key(const MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> > & m)
+    void test_metadata_repository_mask_info_key(const MetadataValueKey<std::shared_ptr<const RepositoryMaskInfo> > & m)
     {
         test_metadata_key(m);
         m.value();

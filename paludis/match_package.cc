@@ -33,11 +33,10 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/action.hh>
 #include <paludis/repository.hh>
-#include <paludis/metadata_key.hh>
 
 #include <paludis/util/indirect_iterator-impl.hh>
 
-#include <tr1/functional>
+#include <functional>
 #include <algorithm>
 #include <istream>
 #include <ostream>
@@ -152,7 +151,7 @@ paludis::match_package(
             if (entry.masked())
                 return false;
 
-        const std::tr1::shared_ptr<const Repository> dest(env.package_database()->fetch_repository(
+        const std::shared_ptr<const Repository> dest(env.package_database()->fetch_repository(
                     spec.installable_to_repository_ptr()->repository()));
         if (! dest->destination_interface())
             return false;
@@ -219,12 +218,12 @@ paludis::match_package_in_set(
         const PackageID & entry,
         const MatchPackageOptions & options)
 {
-    using namespace std::tr1::placeholders;
+    using namespace std::placeholders;
 
     DepSpecFlattener<SetSpecTree, PackageDepSpec> f(&env);
     target.root()->accept(f);
     return indirect_iterator(f.end()) != std::find_if(
             indirect_iterator(f.begin()), indirect_iterator(f.end()),
-            std::tr1::bind(&match_package, std::tr1::cref(env), _1, std::tr1::cref(entry), std::tr1::cref(options)));
+            std::bind(&match_package, std::cref(env), _1, std::cref(entry), std::cref(options)));
 }
 

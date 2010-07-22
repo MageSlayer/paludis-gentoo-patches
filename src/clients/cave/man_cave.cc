@@ -67,7 +67,7 @@ main(int argc, char * argv[])
     ManCommandLine cmdline;
     cmdline.run(argc, argv, "", "", "");
 
-    std::tr1::shared_ptr<paludis::args::DocWriter> w;
+    std::shared_ptr<paludis::args::DocWriter> w;
     if (cmdline.a_html.specified())
         w.reset(new paludis::args::HtmlWriter(cout));
     else

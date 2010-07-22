@@ -43,7 +43,7 @@ using namespace paludis::repository_repository;
 
 namespace
 {
-    std::tr1::shared_ptr<RepositoryRepositoryStore>
+    std::shared_ptr<RepositoryRepositoryStore>
     make_store(const RepositoryRepository * const repo, const RepositoryRepositoryParams & p)
     {
         return make_shared_ptr(new RepositoryRepositoryStore(p.environment(), repo));
@@ -57,13 +57,13 @@ namespace paludis
     {
         const RepositoryRepositoryParams params;
 
-        const std::tr1::shared_ptr<LiteralMetadataValueKey<std::string> > format_key;
-        const std::tr1::shared_ptr<LiteralMetadataValueKey<std::string> > config_filename_key;
-        const std::tr1::shared_ptr<LiteralMetadataValueKey<std::string> > config_template_key;
-        const std::tr1::shared_ptr<LiteralMetadataValueKey<FSEntry> > installed_root_key;
+        const std::shared_ptr<LiteralMetadataValueKey<std::string> > format_key;
+        const std::shared_ptr<LiteralMetadataValueKey<std::string> > config_filename_key;
+        const std::shared_ptr<LiteralMetadataValueKey<std::string> > config_template_key;
+        const std::shared_ptr<LiteralMetadataValueKey<FSEntry> > installed_root_key;
 
         const ActiveObjectPtr<DeferredConstructionPtr<
-            std::tr1::shared_ptr<RepositoryRepositoryStore> > > store;
+            std::shared_ptr<RepositoryRepositoryStore> > > store;
 
         Implementation(const RepositoryRepository * const repo, const RepositoryRepositoryParams & p) :
             params(p),
@@ -74,8 +74,8 @@ namespace paludis
             config_template_key(new LiteralMetadataValueKey<std::string> (
                         "config_template", "config_template", mkt_normal, params.config_template())),
             installed_root_key(new LiteralMetadataValueKey<FSEntry>("root", "root", mkt_normal, p.root())),
-            store(DeferredConstructionPtr<std::tr1::shared_ptr<RepositoryRepositoryStore> > (
-                        std::tr1::bind(&make_store, repo, std::tr1::cref(params))))
+            store(DeferredConstructionPtr<std::shared_ptr<RepositoryRepositoryStore> > (
+                        std::bind(&make_store, repo, std::cref(params))))
         {
         }
     };
@@ -135,19 +135,19 @@ RepositoryRepository::need_keys_added() const
 {
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataValueKey<std::string> >
 RepositoryRepository::format_key() const
 {
     return _imp->format_key;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSEntry> >
 RepositoryRepository::location_key() const
 {
     return make_null_shared_ptr();
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSEntry> >
 RepositoryRepository::installed_root_key() const
 {
     return _imp->installed_root_key;
@@ -177,31 +177,31 @@ RepositoryRepository::has_package_named(const QualifiedPackageName & q) const
     return _imp->store->has_package_named(q);
 }
 
-std::tr1::shared_ptr<const CategoryNamePartSet>
+std::shared_ptr<const CategoryNamePartSet>
 RepositoryRepository::category_names() const
 {
     return _imp->store->category_names();
 }
 
-std::tr1::shared_ptr<const CategoryNamePartSet>
+std::shared_ptr<const CategoryNamePartSet>
 RepositoryRepository::unimportant_category_names() const
 {
     return _imp->store->unimportant_category_names();
 }
 
-std::tr1::shared_ptr<const CategoryNamePartSet>
+std::shared_ptr<const CategoryNamePartSet>
 RepositoryRepository::category_names_containing_package(const PackageNamePart & p) const
 {
     return Repository::category_names_containing_package(p);
 }
 
-std::tr1::shared_ptr<const QualifiedPackageNameSet>
+std::shared_ptr<const QualifiedPackageNameSet>
 RepositoryRepository::package_names(const CategoryNamePart & c) const
 {
     return _imp->store->package_names(c);
 }
 
-std::tr1::shared_ptr<const PackageIDSequence>
+std::shared_ptr<const PackageIDSequence>
 RepositoryRepository::package_ids(const QualifiedPackageName & p) const
 {
     return _imp->store->package_ids(p);
@@ -262,15 +262,15 @@ RepositoryRepository::some_ids_might_not_be_masked() const
 }
 
 bool
-RepositoryRepository::sync(const std::tr1::shared_ptr<OutputManager> &) const
+RepositoryRepository::sync(const std::shared_ptr<OutputManager> &) const
 {
     return false;
 }
 
-std::tr1::shared_ptr<Repository>
+std::shared_ptr<Repository>
 RepositoryRepository::repository_factory_create(
         Environment * const env,
-        const std::tr1::function<std::string (const std::string &)> & f)
+        const std::function<std::string (const std::string &)> & f)
 {
     Context context("When making repository repository from repo_file '" + f("repo_file") + "':");
 
@@ -290,7 +290,7 @@ RepositoryRepository::repository_factory_create(
     if (root_str.empty())
         root_str = "/";
 
-    return std::tr1::shared_ptr<RepositoryRepository>(new RepositoryRepository(
+    return std::shared_ptr<RepositoryRepository>(new RepositoryRepository(
                 make_named_values<RepositoryRepositoryParams>(
                     n::config_filename() = config_filename,
                     n::config_template() = config_template,
@@ -303,7 +303,7 @@ RepositoryRepository::repository_factory_create(
 RepositoryName
 RepositoryRepository::repository_factory_name(
         const Environment * const,
-        const std::tr1::function<std::string (const std::string &)> & f)
+        const std::function<std::string (const std::string &)> & f)
 {
     if (f("name").empty())
         return RepositoryName("repository");
@@ -311,10 +311,10 @@ RepositoryRepository::repository_factory_name(
         return RepositoryName(f("name"));
 }
 
-std::tr1::shared_ptr<const RepositoryNameSet>
+std::shared_ptr<const RepositoryNameSet>
 RepositoryRepository::repository_factory_dependencies(
         const Environment * const,
-        const std::tr1::function<std::string (const std::string &)> &)
+        const std::function<std::string (const std::string &)> &)
 {
     return make_shared_ptr(new RepositoryNameSet);
 }
@@ -330,13 +330,13 @@ RepositoryRepository::perform_hook(const Hook &)
     return make_named_values<HookResult>(n::max_exit_status() = 0, n::output() = "");
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataValueKey<std::string> >
 RepositoryRepository::accept_keywords_key() const
 {
     return make_null_shared_ptr();
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataValueKey<std::string> >
 RepositoryRepository::sync_host_key() const
 {
     return make_null_shared_ptr();
@@ -363,7 +363,7 @@ RepositoryRepository::want_pre_post_phases() const
 
 namespace
 {
-    std::string get_string_key(const std::tr1::shared_ptr<const MetadataKeyHolder> & id, const std::string & k)
+    std::string get_string_key(const std::shared_ptr<const MetadataKeyHolder> & id, const std::string & k)
     {
         PackageID::MetadataConstIterator i(id->find_metadata(k));
         if (id->end_metadata() == i)
@@ -431,7 +431,7 @@ namespace
 void
 RepositoryRepository::merge(const MergeParams & m)
 {
-    using namespace std::tr1::placeholders;
+    using namespace std::placeholders;
 
     Context context("When merging '" + stringify(*m.package_id())
             + "' to RepositoryRepository repository '" + stringify(name()) + "':");
@@ -479,7 +479,7 @@ RepositoryRepository::merge(const MergeParams & m)
         _imp->params.environment()->repository_from_new_config_file(config_filename_file)->sync(m.output_manager());
 
         /* the repo we'd get before syncing is mostly unusable */
-        const std::tr1::shared_ptr<Repository> newly_created_repo(
+        const std::shared_ptr<Repository> newly_created_repo(
                 _imp->params.environment()->repository_from_new_config_file(config_filename_file));
 
         m.output_manager()->stdout_stream() << "Fixing cache..." << std::endl;

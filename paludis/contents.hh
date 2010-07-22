@@ -27,7 +27,7 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/metadata_key_holder.hh>
-#include <tr1/memory>
+#include <memory>
 #include <string>
 
 /** \file
@@ -91,7 +91,7 @@ namespace paludis
              *
              * \since 0.36
              */
-            const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > location_key() const;
+            const std::shared_ptr<const MetadataValueKey<FSEntry> > location_key() const;
 
             ///\}
 
@@ -187,7 +187,7 @@ namespace paludis
              *
              * \since 0.36
              */
-            const std::tr1::shared_ptr<const MetadataValueKey<std::string> > target_key() const;
+            const std::shared_ptr<const MetadataValueKey<std::string> > target_key() const;
 
             ///\}
     };
@@ -214,13 +214,13 @@ namespace paludis
             ///\}
 
             /// Add a new entry.
-            void add(const std::tr1::shared_ptr<const ContentsEntry> & c);
+            void add(const std::shared_ptr<const ContentsEntry> & c);
 
             ///\name Iterate over our entries
             ///\{
 
             struct ConstIteratorTag;
-            typedef WrappedForwardIterator<ConstIteratorTag, const std::tr1::shared_ptr<const ContentsEntry> > ConstIterator;
+            typedef WrappedForwardIterator<ConstIteratorTag, const std::shared_ptr<const ContentsEntry> > ConstIterator;
 
             ConstIterator begin() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -235,7 +235,7 @@ namespace paludis
     extern template class PrivateImplementationPattern<ContentsEntry>;
     extern template class PrivateImplementationPattern<ContentsSymEntry>;
 
-    extern template class WrappedForwardIterator<Contents::ConstIteratorTag, const std::tr1::shared_ptr<const ContentsEntry> >;
+    extern template class WrappedForwardIterator<Contents::ConstIteratorTag, const std::shared_ptr<const ContentsEntry> >;
 }
 
 #endif

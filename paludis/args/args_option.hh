@@ -27,7 +27,7 @@
 #include <paludis/util/named_value.hh>
 #include <paludis/util/simple_visitor.hh>
 #include <paludis/util/sequence-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 
 /** \file
  * Declarations for ArgsOption.
@@ -175,7 +175,7 @@ namespace paludis
                  *
                  * \since 0.46
                  */
-                virtual const std::tr1::shared_ptr<Sequence<std::string> > forwardable_args() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+                virtual const std::shared_ptr<Sequence<std::string> > forwardable_args() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
         };
 
         /**
@@ -205,7 +205,7 @@ namespace paludis
                 virtual bool can_be_negated() const;
 
                 virtual const std::string forwardable_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual const std::tr1::shared_ptr<Sequence<std::string> > forwardable_args() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual const std::shared_ptr<Sequence<std::string> > forwardable_args() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         /**
@@ -248,7 +248,7 @@ namespace paludis
                 virtual bool can_be_negated() const;
 
                 virtual const std::string forwardable_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual const std::tr1::shared_ptr<Sequence<std::string> > forwardable_args() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual const std::shared_ptr<Sequence<std::string> > forwardable_args() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         /**
@@ -353,7 +353,7 @@ namespace paludis
                 virtual bool can_be_negated() const;
 
                 virtual const std::string forwardable_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual const std::tr1::shared_ptr<Sequence<std::string> > forwardable_args() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual const std::shared_ptr<Sequence<std::string> > forwardable_args() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         /**
@@ -399,7 +399,7 @@ namespace paludis
                 virtual bool can_be_negated() const;
 
                 virtual const std::string forwardable_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual const std::tr1::shared_ptr<Sequence<std::string> > forwardable_args() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual const std::shared_ptr<Sequence<std::string> > forwardable_args() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
 
@@ -453,7 +453,7 @@ namespace paludis
                 virtual bool can_be_negated() const;
 
                 virtual const std::string forwardable_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual const std::tr1::shared_ptr<Sequence<std::string> > forwardable_args() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual const std::shared_ptr<Sequence<std::string> > forwardable_args() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         /**
@@ -487,7 +487,7 @@ namespace paludis
                 virtual bool can_be_negated() const;
 
                 virtual const std::string forwardable_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual const std::tr1::shared_ptr<Sequence<std::string> > forwardable_args() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual const std::shared_ptr<Sequence<std::string> > forwardable_args() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         /**
@@ -617,7 +617,7 @@ namespace paludis
                 virtual bool can_be_negated() const;
 
                 virtual const std::string forwardable_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual const std::tr1::shared_ptr<Sequence<std::string> > forwardable_args() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual const std::shared_ptr<Sequence<std::string> > forwardable_args() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 

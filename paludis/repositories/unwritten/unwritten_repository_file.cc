@@ -118,14 +118,14 @@ namespace
     struct UnwrittenHomepageKey :
         MetadataSpecTreeKey<SimpleURISpecTree>
     {
-        const std::tr1::shared_ptr<const SimpleURISpecTree> vv;
+        const std::shared_ptr<const SimpleURISpecTree> vv;
 
         const std::string _raw_name;
         const std::string _human_name;
         const MetadataKeyType _type;
 
         UnwrittenHomepageKey(const std::string & r, const std::string & h, const MetadataKeyType t,
-                const std::tr1::shared_ptr<const SimpleURISpecTree> & v) :
+                const std::shared_ptr<const SimpleURISpecTree> & v) :
             vv(v),
             _raw_name(r),
             _human_name(h),
@@ -133,7 +133,7 @@ namespace
         {
         }
 
-        const std::tr1::shared_ptr<const SimpleURISpecTree> value() const
+        const std::shared_ptr<const SimpleURISpecTree> value() const
         {
             return vv;
         }
@@ -207,9 +207,9 @@ UnwrittenRepositoryFile::_load(const FSEntry & f)
 
     CategoryNamePart category("x");
     PackageNamePart package("x");
-    std::tr1::shared_ptr<MetadataValueKey<SlotName> > slot;
+    std::shared_ptr<MetadataValueKey<SlotName> > slot;
     VersionSpec version("0", VersionSpecOptions());
-    std::tr1::shared_ptr<UnwrittenRepositoryFileEntry> entry;
+    std::shared_ptr<UnwrittenRepositoryFileEntry> entry;
     while (std::getline(file, line))
     {
         SimpleParser line_parser(line);
@@ -289,13 +289,13 @@ UnwrittenRepositoryFile::_load(const FSEntry & f)
 
             if (! entry)
                 entry.reset(new UnwrittenRepositoryFileEntry(make_named_values<UnwrittenRepositoryFileEntry>(
-                                n::added_by() = std::tr1::shared_ptr<const MetadataValueKey<std::string> >(),
-                                n::bug_ids() = std::tr1::shared_ptr<const MetadataCollectionKey<Sequence<std::string> > >(),
-                                n::comment() = std::tr1::shared_ptr<const MetadataValueKey<std::string> >(),
-                                n::description() = std::tr1::shared_ptr<const MetadataValueKey<std::string> >(),
-                                n::homepage() = std::tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >(),
+                                n::added_by() = std::shared_ptr<const MetadataValueKey<std::string> >(),
+                                n::bug_ids() = std::shared_ptr<const MetadataCollectionKey<Sequence<std::string> > >(),
+                                n::comment() = std::shared_ptr<const MetadataValueKey<std::string> >(),
+                                n::description() = std::shared_ptr<const MetadataValueKey<std::string> >(),
+                                n::homepage() = std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >(),
                                 n::name() = category + package,
-                                n::remote_ids() = std::tr1::shared_ptr<const MetadataCollectionKey<Sequence<std::string> > >(),
+                                n::remote_ids() = std::shared_ptr<const MetadataCollectionKey<Sequence<std::string> > >(),
                                 n::slot() = slot,
                                 n::version() = version
                                 )));
@@ -304,8 +304,8 @@ UnwrittenRepositoryFile::_load(const FSEntry & f)
                 entry->description().reset(new LiteralMetadataValueKey<std::string>("description", "Description", mkt_significant, token2));
             else if (token == "homepage")
             {
-                std::tr1::shared_ptr<AllDepSpec> all_spec(new AllDepSpec);
-                std::tr1::shared_ptr<SimpleURISpecTree> tree(new SimpleURISpecTree(all_spec));
+                std::shared_ptr<AllDepSpec> all_spec(new AllDepSpec);
+                std::shared_ptr<SimpleURISpecTree> tree(new SimpleURISpecTree(all_spec));
                 std::list<std::string> tokens;
                 tokenise_whitespace(token2, std::back_inserter(tokens));
                 for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
@@ -319,7 +319,7 @@ UnwrittenRepositoryFile::_load(const FSEntry & f)
                 entry->added_by().reset(new LiteralMetadataValueKey<std::string>("added-by", "Added by", mkt_author, token2));
             else if (token == "bug-ids")
             {
-                std::tr1::shared_ptr<Sequence<std::string> > seq(new Sequence<std::string>);
+                std::shared_ptr<Sequence<std::string> > seq(new Sequence<std::string>);
                 std::list<std::string> tokens;
                 tokenise_whitespace(token2, std::back_inserter(tokens));
                 for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
@@ -329,7 +329,7 @@ UnwrittenRepositoryFile::_load(const FSEntry & f)
             }
             else if (token == "remote-ids")
             {
-                std::tr1::shared_ptr<Sequence<std::string> > seq(new Sequence<std::string>);
+                std::shared_ptr<Sequence<std::string> > seq(new Sequence<std::string>);
                 std::list<std::string> tokens;
                 tokenise_whitespace(token2, std::back_inserter(tokens));
                 for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;

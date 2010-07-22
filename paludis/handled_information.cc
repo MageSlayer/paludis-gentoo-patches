@@ -61,16 +61,16 @@ namespace paludis
     template <>
     struct Implementation<DepListEntryHandledSkippedDependent>
     {
-        const std::tr1::shared_ptr<const PackageID> id;
+        const std::shared_ptr<const PackageID> id;
 
-        Implementation(const std::tr1::shared_ptr<const PackageID> & i) :
+        Implementation(const std::shared_ptr<const PackageID> & i) :
             id(i)
         {
         }
     };
 }
 
-DepListEntryHandledSkippedDependent::DepListEntryHandledSkippedDependent(const std::tr1::shared_ptr<const PackageID> & i) :
+DepListEntryHandledSkippedDependent::DepListEntryHandledSkippedDependent(const std::shared_ptr<const PackageID> & i) :
     PrivateImplementationPattern<DepListEntryHandledSkippedDependent>(new Implementation<DepListEntryHandledSkippedDependent>(i))
 {
 }
@@ -79,7 +79,7 @@ DepListEntryHandledSkippedDependent::~DepListEntryHandledSkippedDependent()
 {
 }
 
-const std::tr1::shared_ptr<const PackageID>
+const std::shared_ptr<const PackageID>
 DepListEntryHandledSkippedDependent::id() const
 {
     return _imp->id;

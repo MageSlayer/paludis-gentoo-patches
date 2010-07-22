@@ -43,9 +43,8 @@
 
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
-#include <tr1/functional>
-#include <algorithm>
 #include <functional>
+#include <algorithm>
 #include <iterator>
 #include <vector>
 
@@ -54,18 +53,18 @@ using namespace paludis;
 
 namespace
 {
-    void do_uninstall(const std::tr1::shared_ptr<const PackageID> & id, const UninstallActionOptions & u)
+    void do_uninstall(const std::shared_ptr<const PackageID> & id, const UninstallActionOptions & u)
     {
         UninstallAction a(u);
         id->perform_action(a);
     }
 
-    std::tr1::shared_ptr<OutputManager> make_standard_output_manager(const Action &)
+    std::shared_ptr<OutputManager> make_standard_output_manager(const Action &)
     {
         return make_shared_ptr(new StandardOutputManager);
     }
 
-    std::string from_keys(const std::tr1::shared_ptr<const Map<std::string, std::string> > & m,
+    std::string from_keys(const std::shared_ptr<const Map<std::string, std::string> > & m,
             const std::string & k)
     {
         Map<std::string, std::string>::ConstIterator mm(m->find(k));
@@ -96,14 +95,14 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
             keys->insert("provides_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "repo1"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
-            std::tr1::shared_ptr<Repository> repo(VDBRepository::VDBRepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(VDBRepository::VDBRepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             TEST_CHECK_STRINGIFY_EQUAL(repo->name(), "installed");
         }
     } test_vdb_repository_repo_name;
@@ -116,15 +115,15 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(
+            std::shared_ptr<Map<std::string, std::string> > keys(
                     new Map<std::string, std::string>);
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
             keys->insert("provides_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "repo1"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
-            std::tr1::shared_ptr<Repository> repo(VDBRepository::VDBRepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(VDBRepository::VDBRepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
 
             TEST_CHECK(repo->has_category_named(CategoryNamePart("cat-one")));
             TEST_CHECK(repo->has_category_named(CategoryNamePart("cat-two")));
@@ -140,18 +139,18 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(
+            std::shared_ptr<Map<std::string, std::string> > keys(
                     new Map<std::string, std::string>);
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
             keys->insert("provides_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "repo1"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
-            std::tr1::shared_ptr<Repository> repo(VDBRepository::VDBRepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(VDBRepository::VDBRepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            std::tr1::shared_ptr<const PackageID> e1(*env[selection::RequireExactlyOne(generator::Matches(
+            std::shared_ptr<const PackageID> e1(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
@@ -211,18 +210,18 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
             keys->insert("provides_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "repo1"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
             keys->insert("world", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "world-no-match-no-eol"));
-            std::tr1::shared_ptr<Repository> repo(VDBRepository::VDBRepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(VDBRepository::VDBRepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            std::tr1::shared_ptr<const PackageID> e1(*env[selection::RequireExactlyOne(generator::Matches(
+            std::shared_ptr<const PackageID> e1(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
             ContentsGatherer gatherer;
@@ -266,34 +265,34 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(
+            std::shared_ptr<Map<std::string, std::string> > keys(
                     new Map<std::string, std::string>);
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
             keys->insert("provides_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "repo2"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
-            std::tr1::shared_ptr<Repository> repo(VDBRepository::VDBRepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(VDBRepository::VDBRepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+            const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("category/package",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
             StringifyFormatter ff;
 
-            erepository::DepSpecPrettyPrinter pd(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
+            erepository::DepSpecPrettyPrinter pd(0, std::shared_ptr<const PackageID>(), ff, 0, false, false);
             TEST_CHECK(id->build_dependencies_key());
             id->build_dependencies_key()->value()->root()->accept(pd);
             TEST_CHECK_STRINGIFY_EQUAL(pd, "( cat/pkg1 build: cat/pkg2 build+run: cat/pkg3 suggestion: post: )");
 
-            erepository::DepSpecPrettyPrinter pr(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
+            erepository::DepSpecPrettyPrinter pr(0, std::shared_ptr<const PackageID>(), ff, 0, false, false);
             TEST_CHECK(id->run_dependencies_key());
             id->run_dependencies_key()->value()->root()->accept(pr);
             TEST_CHECK_STRINGIFY_EQUAL(pr, "( cat/pkg1 build: build+run: cat/pkg3 suggestion: post: )");
 
-            erepository::DepSpecPrettyPrinter pp(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
+            erepository::DepSpecPrettyPrinter pp(0, std::shared_ptr<const PackageID>(), ff, 0, false, false);
             TEST_CHECK(id->post_dependencies_key());
             id->post_dependencies_key()->value()->root()->accept(pp);
             TEST_CHECK_STRINGIFY_EQUAL(pp, "( build: build+run: suggestion: cat/pkg4 post: cat/pkg5 )");
@@ -324,7 +323,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "srcrepo"));
@@ -336,8 +335,8 @@ namespace test_cases
             keys->insert("distdir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "distdir"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
             keys->insert("root", stringify(FSEntry("vdb_repository_TEST_dir/root").realpath()));
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
             keys.reset(new Map<std::string, std::string>);
@@ -347,8 +346,8 @@ namespace test_cases
             keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "repo3"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
             keys->insert("root", stringify(FSEntry("vdb_repository_TEST_dir/root").realpath()));
-            std::tr1::shared_ptr<Repository> vdb_repo(VDBRepository::VDBRepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> vdb_repo(VDBRepository::VDBRepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(0, vdb_repo);
 
             InstallAction install_action(make_named_values<InstallActionOptions>(
@@ -380,7 +379,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("install", true);
-                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/target-" + eapi + "::srcrepo",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 TEST_CHECK(id);
@@ -391,7 +390,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("reinstall", true);
-                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/target-" + eapi + "::srcrepo",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 TEST_CHECK(id);
@@ -402,7 +401,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("info", true);
-                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/target-" + eapi + "::installed",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 TEST_CHECK(id);
@@ -411,7 +410,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("config", true);
-                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/target-" + eapi + "::installed",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 TEST_CHECK(id);
@@ -420,7 +419,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("uninstall", true);
-                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/target-" + eapi + "::installed",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 TEST_CHECK(id);
@@ -454,7 +453,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "srcrepo"));
@@ -466,8 +465,8 @@ namespace test_cases
             keys->insert("distdir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "distdir"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
             keys->insert("root", stringify(FSEntry("vdb_repository_TEST_dir/root").realpath()));
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
             keys.reset(new Map<std::string, std::string>);
@@ -477,8 +476,8 @@ namespace test_cases
             keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "repo3"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
             keys->insert("root", stringify(FSEntry("vdb_repository_TEST_dir/root").realpath()));
-            std::tr1::shared_ptr<Repository> vdb_repo(VDBRepository::VDBRepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> vdb_repo(VDBRepository::VDBRepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(0, vdb_repo);
 
             InstallAction install_action(make_named_values<InstallActionOptions>(
@@ -510,7 +509,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("vars", true);
-                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/target-" + eapi + "::srcrepo",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 TEST_CHECK(id);
@@ -521,7 +520,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("reinstall", true);
-                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/target-" + eapi + "::srcrepo",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 TEST_CHECK(id);
@@ -532,7 +531,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("info", true);
-                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/target-" + eapi + "::installed",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 TEST_CHECK(id);
@@ -541,7 +540,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("config", true);
-                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/target-" + eapi + "::installed",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 TEST_CHECK(id);
@@ -550,7 +549,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("uninstall", true);
-                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/target-" + eapi + "::installed",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 TEST_CHECK(id);
@@ -581,11 +580,11 @@ namespace test_cases
         }
 
         void install(const Environment & env,
-                const std::tr1::shared_ptr<Repository> & vdb_repo,
+                const std::shared_ptr<Repository> & vdb_repo,
                 const std::string & chosen_one,
                 const std::string & victim) const
         {
-            std::tr1::shared_ptr<PackageIDSequence> replacing(new PackageIDSequence);
+            std::shared_ptr<PackageIDSequence> replacing(new PackageIDSequence);
             if (! victim.empty())
                 replacing->push_back(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec(victim,
@@ -606,7 +605,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "namesincrtest_src"));
@@ -618,8 +617,8 @@ namespace test_cases
             keys->insert("distdir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "distdir"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
             keys->insert("root", stringify(FSEntry("vdb_repository_TEST_dir/root").realpath()));
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
             keys.reset(new Map<std::string, std::string>);
@@ -629,8 +628,8 @@ namespace test_cases
             keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "namesincrtest"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
             keys->insert("root", stringify(FSEntry("vdb_repository_TEST_dir/root").realpath()));
-            std::tr1::shared_ptr<Repository> vdb_repo(VDBRepository::VDBRepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> vdb_repo(VDBRepository::VDBRepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(0, vdb_repo);
 
             UninstallAction uninstall_action(make_named_values<UninstallActionOptions>(
@@ -709,7 +708,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("remove other slot", true);
-                const std::tr1::shared_ptr<const PackageID> inst_id(*env[selection::RequireExactlyOne(generator::Matches(
+                const std::shared_ptr<const PackageID> inst_id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg1-2::installed",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 inst_id->perform_action(uninstall_action);
@@ -738,7 +737,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("remove other package", true);
-                const std::tr1::shared_ptr<const PackageID> inst_id(*env[selection::RequireExactlyOne(generator::Matches(
+                const std::shared_ptr<const PackageID> inst_id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg2-1::installed",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 inst_id->perform_action(uninstall_action);
@@ -765,7 +764,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("remove other category", true);
-                const std::tr1::shared_ptr<const PackageID> inst_id(*env[selection::RequireExactlyOne(generator::Matches(
+                const std::shared_ptr<const PackageID> inst_id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat2/pkg1-1::installed",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 inst_id->perform_action(uninstall_action);
@@ -780,7 +779,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("uninstall", true);
-                const std::tr1::shared_ptr<const PackageID> inst_id(*env[selection::RequireExactlyOne(generator::Matches(
+                const std::shared_ptr<const PackageID> inst_id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg1-1::installed",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 inst_id->perform_action(uninstall_action);
@@ -818,12 +817,12 @@ namespace test_cases
 
         void read_cache(std::vector<FSEntry> & vec)
         {
-            using namespace std::tr1::placeholders;
+            using namespace std::placeholders;
             std::remove_copy_if(DirIterator(names_cache, DirIteratorOptions() + dio_include_dotfiles),
                                 DirIterator(), std::back_inserter(vec),
-                                std::tr1::bind(&std::equal_to<std::string>::operator(),
+                                std::bind(&std::equal_to<std::string>::operator(),
                                           std::equal_to<std::string>(),
-                                          "_VERSION_", std::tr1::bind(&FSEntry::basename, _1)));
+                                          "_VERSION_", std::bind(&FSEntry::basename, _1)));
         }
 
         std::string read_file(const FSEntry & f)
@@ -855,7 +854,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys.reset(new Map<std::string, std::string>);
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
@@ -863,14 +862,14 @@ namespace test_cases
             keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "providestest"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
             keys->insert("root", stringify(FSEntry("vdb_repository_TEST_dir/root").realpath()));
-            std::tr1::shared_ptr<Repository> vdb_repo(VDBRepository::VDBRepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> vdb_repo(VDBRepository::VDBRepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(0, vdb_repo);
 
             TEST_CHECK(! provides_cache.exists());
 
             {
-                std::tr1::shared_ptr<const RepositoryProvidesInterface::ProvidesSequence> seq(vdb_repo->provides_interface()->provided_packages());
+                std::shared_ptr<const RepositoryProvidesInterface::ProvidesSequence> seq(vdb_repo->provides_interface()->provided_packages());
 
                 for (RepositoryProvidesInterface::ProvidesSequence::ConstIterator s(seq->begin()), s_end(seq->end()) ;
                         s != s_end ; ++s)
@@ -896,7 +895,7 @@ namespace test_cases
             vdb_repo->invalidate();
 
             {
-                std::tr1::shared_ptr<const RepositoryProvidesInterface::ProvidesSequence> seq(vdb_repo->provides_interface()->provided_packages());
+                std::shared_ptr<const RepositoryProvidesInterface::ProvidesSequence> seq(vdb_repo->provides_interface()->provided_packages());
                 TEST_CHECK_EQUAL(std::distance(seq->begin(), seq->end()), 5);
 
                 RepositoryProvidesInterface::ProvidesSequence::ConstIterator it(seq->begin());
@@ -944,11 +943,11 @@ namespace test_cases
         }
 
         void install(const Environment & env,
-                const std::tr1::shared_ptr<Repository> & vdb_repo,
+                const std::shared_ptr<Repository> & vdb_repo,
                 const std::string & chosen_one,
                 const std::string & victim) const
         {
-            std::tr1::shared_ptr<PackageIDSequence> replacing(new PackageIDSequence);
+            std::shared_ptr<PackageIDSequence> replacing(new PackageIDSequence);
             if (! victim.empty())
                 replacing->push_back(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec(victim,
@@ -969,7 +968,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "providesincrtest_src1"));
@@ -981,8 +980,8 @@ namespace test_cases
             keys->insert("distdir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "distdir"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
             keys->insert("root", stringify(FSEntry("vdb_repository_TEST_dir/root").realpath()));
-            std::tr1::shared_ptr<Repository> repo1(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo1(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo1);
 
             keys.reset(new Map<std::string, std::string>);
@@ -997,8 +996,8 @@ namespace test_cases
             keys->insert("distdir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "distdir"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
             keys->insert("root", stringify(FSEntry("vdb_repository_TEST_dir/root").realpath()));
-            std::tr1::shared_ptr<Repository> repo2(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo2(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(2, repo2);
 
             keys.reset(new Map<std::string, std::string>);
@@ -1008,8 +1007,8 @@ namespace test_cases
             keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "providesincrtest"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
             keys->insert("root", stringify(FSEntry("vdb_repository_TEST_dir/root").realpath()));
-            std::tr1::shared_ptr<Repository> vdb_repo(VDBRepository::VDBRepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> vdb_repo(VDBRepository::VDBRepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(0, vdb_repo);
 
             UninstallAction uninstall_action(make_named_values<UninstallActionOptions>(
@@ -1080,7 +1079,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("remove other slot", true);
-                const std::tr1::shared_ptr<const PackageID> inst_id(*env[selection::RequireExactlyOne(generator::Matches(
+                const std::shared_ptr<const PackageID> inst_id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg1-2::installed",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 inst_id->perform_action(uninstall_action);
@@ -1099,7 +1098,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("remove other package", true);
-                const std::tr1::shared_ptr<const PackageID> inst_id(*env[selection::RequireExactlyOne(generator::Matches(
+                const std::shared_ptr<const PackageID> inst_id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg2-1::installed",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 inst_id->perform_action(uninstall_action);
@@ -1110,7 +1109,7 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("uninstall", true);
-                const std::tr1::shared_ptr<const PackageID> inst_id(*env[selection::RequireExactlyOne(generator::Matches(
+                const std::shared_ptr<const PackageID> inst_id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg1-1::installed",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 inst_id->perform_action(uninstall_action);
@@ -1164,7 +1163,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "reinstalltest_src1"));
@@ -1176,8 +1175,8 @@ namespace test_cases
             keys->insert("distdir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "distdir"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
             keys->insert("root", stringify(FSEntry("vdb_repository_TEST_dir/root").realpath()));
-            std::tr1::shared_ptr<Repository> repo1(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo1(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo1);
 
             keys.reset(new Map<std::string, std::string>);
@@ -1192,8 +1191,8 @@ namespace test_cases
             keys->insert("distdir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "distdir"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
             keys->insert("root", stringify(FSEntry("vdb_repository_TEST_dir/root").realpath()));
-            std::tr1::shared_ptr<Repository> repo2(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo2(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(2, repo2);
 
             keys.reset(new Map<std::string, std::string>);
@@ -1203,8 +1202,8 @@ namespace test_cases
             keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "reinstalltest"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
             keys->insert("root", stringify(FSEntry("vdb_repository_TEST_dir/root").realpath()));
-            std::tr1::shared_ptr<Repository> vdb_repo(VDBRepository::VDBRepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> vdb_repo(VDBRepository::VDBRepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(0, vdb_repo);
 
             InstallAction install_action(make_named_values<InstallActionOptions>(
@@ -1219,37 +1218,37 @@ namespace test_cases
 
             {
                 TestMessageSuffix suffix("install", true);
-                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-1::reinstalltest_src1",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 id->perform_action(install_action);
                 vdb_repo->invalidate();
 
-                std::tr1::shared_ptr<const PackageIDSequence> ids(vdb_repo->package_ids(QualifiedPackageName("cat/pkg")));
+                std::shared_ptr<const PackageIDSequence> ids(vdb_repo->package_ids(QualifiedPackageName("cat/pkg")));
                 TEST_CHECK_EQUAL(join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), " "), "cat/pkg-1::installed");
             }
 
             {
                 TestMessageSuffix suffix("reinstall", true);
-                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-1::reinstalltest_src1",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 id->perform_action(install_action);
                 vdb_repo->invalidate();
 
-                std::tr1::shared_ptr<const PackageIDSequence> ids(vdb_repo->package_ids(QualifiedPackageName("cat/pkg")));
+                std::shared_ptr<const PackageIDSequence> ids(vdb_repo->package_ids(QualifiedPackageName("cat/pkg")));
                 TEST_CHECK_EQUAL(join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), " "), "cat/pkg-1::installed");
             }
 
             {
                 TestMessageSuffix suffix("reinstall equivalent", true);
-                const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-1::reinstalltest_src2",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
                 id->perform_action(install_action);
                 vdb_repo->invalidate();
 
-                std::tr1::shared_ptr<const PackageIDSequence> ids(vdb_repo->package_ids(QualifiedPackageName("cat/pkg")));
+                std::shared_ptr<const PackageIDSequence> ids(vdb_repo->package_ids(QualifiedPackageName("cat/pkg")));
                 TEST_CHECK_EQUAL(join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), " "), "cat/pkg-1-r0::installed");
             }
         }
@@ -1270,11 +1269,11 @@ namespace test_cases
         }
 
         void install(const Environment & env,
-                const std::tr1::shared_ptr<Repository> & vdb_repo,
+                const std::shared_ptr<Repository> & vdb_repo,
                 const std::string & chosen_one,
                 const std::string & victim) const
         {
-            std::tr1::shared_ptr<PackageIDSequence> replacing(new PackageIDSequence);
+            std::shared_ptr<PackageIDSequence> replacing(new PackageIDSequence);
             if (! victim.empty())
                 replacing->push_back(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec(victim,
@@ -1295,7 +1294,7 @@ namespace test_cases
         {
             TestEnvironment env(FSEntry(stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "root")).realpath());
             env.set_paludis_command("/bin/false");
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "postinsttest_src1"));
@@ -1307,8 +1306,8 @@ namespace test_cases
             keys->insert("distdir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "distdir"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
             keys->insert("root", stringify(FSEntry("vdb_repository_TEST_dir/root").realpath()));
-            std::tr1::shared_ptr<Repository> repo1(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo1(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo1);
 
             keys.reset(new Map<std::string, std::string>);
@@ -1318,8 +1317,8 @@ namespace test_cases
             keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "postinsttest"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "build"));
             keys->insert("root", stringify(FSEntry("vdb_repository_TEST_dir/root").realpath()));
-            std::tr1::shared_ptr<Repository> vdb_repo(VDBRepository::VDBRepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> vdb_repo(VDBRepository::VDBRepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(0, vdb_repo);
 
             TEST_CHECK(vdb_repo->package_ids(QualifiedPackageName("cat/pkg"))->empty());
@@ -1331,7 +1330,7 @@ namespace test_cases
                 install(env, vdb_repo, "=cat/pkg-0::postinsttest", "");
                 vdb_repo->invalidate();
 
-                std::tr1::shared_ptr<const PackageIDSequence> ids(vdb_repo->package_ids(QualifiedPackageName("cat/pkg")));
+                std::shared_ptr<const PackageIDSequence> ids(vdb_repo->package_ids(QualifiedPackageName("cat/pkg")));
                 TEST_CHECK_EQUAL(join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), " "), "cat/pkg-0::installed");
             }
 
@@ -1342,7 +1341,7 @@ namespace test_cases
                 install(env, vdb_repo, "=cat/pkg-0::postinsttest", "");
                 vdb_repo->invalidate();
 
-                std::tr1::shared_ptr<const PackageIDSequence> ids(vdb_repo->package_ids(QualifiedPackageName("cat/pkg")));
+                std::shared_ptr<const PackageIDSequence> ids(vdb_repo->package_ids(QualifiedPackageName("cat/pkg")));
                 TEST_CHECK_EQUAL(join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), " "), "cat/pkg-0::installed");
             }
 
@@ -1353,7 +1352,7 @@ namespace test_cases
                 install(env, vdb_repo, "=cat/pkg-0.1::postinsttest", "=cat/pkg-0::installed");
                 vdb_repo->invalidate();
 
-                std::tr1::shared_ptr<const PackageIDSequence> ids2(vdb_repo->package_ids(QualifiedPackageName("cat/pkg")));
+                std::shared_ptr<const PackageIDSequence> ids2(vdb_repo->package_ids(QualifiedPackageName("cat/pkg")));
                 TEST_CHECK_EQUAL(join(indirect_iterator(ids2->begin()), indirect_iterator(ids2->end()), " "), "cat/pkg-0.1::installed");
             }
 
@@ -1364,7 +1363,7 @@ namespace test_cases
                 install(env, vdb_repo, "=cat/pkg-1::postinsttest", "=cat/pkg-0.1::installed");
                 vdb_repo->invalidate();
 
-                std::tr1::shared_ptr<const PackageIDSequence> ids(env[selection::AllVersionsSorted(generator::Package(
+                std::shared_ptr<const PackageIDSequence> ids(env[selection::AllVersionsSorted(generator::Package(
                                 QualifiedPackageName("cat/pkg")) & generator::InRepository(RepositoryName("installed")))]);
                 TEST_CHECK_EQUAL(join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), " "), "cat/pkg-1::installed");
             }
@@ -1376,7 +1375,7 @@ namespace test_cases
                 install(env, vdb_repo, "=cat/pkg-1::postinsttest", "");
                 vdb_repo->invalidate();
 
-                std::tr1::shared_ptr<const PackageIDSequence> ids(vdb_repo->package_ids(QualifiedPackageName("cat/pkg")));
+                std::shared_ptr<const PackageIDSequence> ids(vdb_repo->package_ids(QualifiedPackageName("cat/pkg")));
                 TEST_CHECK_EQUAL(join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), " "), "cat/pkg-1::installed");
             }
 
@@ -1387,7 +1386,7 @@ namespace test_cases
                 install(env, vdb_repo, "=cat/pkg-1.1::postinsttest", "=cat/pkg-1::installed");
                 vdb_repo->invalidate();
 
-                std::tr1::shared_ptr<const PackageIDSequence> ids(vdb_repo->package_ids(QualifiedPackageName("cat/pkg")));
+                std::shared_ptr<const PackageIDSequence> ids(vdb_repo->package_ids(QualifiedPackageName("cat/pkg")));
                 TEST_CHECK_EQUAL(join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), " "), "cat/pkg-1.1::installed");
             }
 
@@ -1398,7 +1397,7 @@ namespace test_cases
                 install(env, vdb_repo, "=cat/pkg-2::postinsttest", "");
                 vdb_repo->invalidate();
 
-                std::tr1::shared_ptr<const PackageIDSequence> ids(env[selection::AllVersionsSorted(generator::Package(
+                std::shared_ptr<const PackageIDSequence> ids(env[selection::AllVersionsSorted(generator::Package(
                                 QualifiedPackageName("cat/pkg")) & generator::InRepository(RepositoryName("installed")))]);
                 TEST_CHECK_EQUAL(join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), " "), "cat/pkg-1.1::installed cat/pkg-2::installed");
             }
@@ -1410,7 +1409,7 @@ namespace test_cases
                 install(env, vdb_repo, "=cat/pkg-0::postinsttest", "=cat/pkg-1.1::installed");
                 vdb_repo->invalidate();
 
-                std::tr1::shared_ptr<const PackageIDSequence> ids2(env[selection::AllVersionsSorted(generator::Package(
+                std::shared_ptr<const PackageIDSequence> ids2(env[selection::AllVersionsSorted(generator::Package(
                                 QualifiedPackageName("cat/pkg")) & generator::InRepository(RepositoryName("installed")))]);
                 TEST_CHECK_EQUAL(join(indirect_iterator(ids2->begin()), indirect_iterator(ids2->end()), " "), "cat/pkg-0::installed cat/pkg-2::installed");
             }

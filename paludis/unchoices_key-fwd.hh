@@ -23,11 +23,11 @@
 #include <paludis/metadata_key-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/choice-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 
 namespace paludis
 {
-    std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > > unchoices_key() PALUDIS_VISIBLE;
+    std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Choices> > > unchoices_key() PALUDIS_VISIBLE;
 }
 
 #endif

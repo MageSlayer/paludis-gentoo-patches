@@ -32,7 +32,7 @@
 #include <paludis/package_database.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
-#include <tr1/memory>
+#include <memory>
 
 using namespace paludis;
 using namespace paludis::unwritten_repository;
@@ -47,7 +47,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<UnwrittenRepository> repo(new UnwrittenRepository(
+            std::shared_ptr<UnwrittenRepository> repo(new UnwrittenRepository(
                         make_named_values<UnwrittenRepositoryParams>(
                             n::environment() = &env,
                             n::location() = FSEntry::cwd() / "unwritten_repository_TEST_dir" / "repo1",
@@ -67,7 +67,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<UnwrittenRepository> repo(new UnwrittenRepository(
+            std::shared_ptr<UnwrittenRepository> repo(new UnwrittenRepository(
                         make_named_values<UnwrittenRepositoryParams>(
                             n::environment() = &env,
                             n::location() = FSEntry::cwd() / "unwritten_repository_TEST_dir" / "repo2",
@@ -78,7 +78,7 @@ namespace test_cases
             env.package_database()->add_repository(1, repo);
             TEST_CHECK_STRINGIFY_EQUAL(repo->name(), "unwritten");
 
-            std::tr1::shared_ptr<const PackageIDSequence> contents(
+            std::shared_ptr<const PackageIDSequence> contents(
                     env[selection::AllVersionsSorted(generator::All())]);
             TEST_CHECK(contents);
 

@@ -29,7 +29,7 @@
 #include <paludis/hook.hh>
 #include <paludis/create_output_manager_info.hh>
 #include <paludis/output_manager.hh>
-#include <tr1/functional>
+#include <functional>
 #include <algorithm>
 #include <list>
 
@@ -118,9 +118,9 @@ namespace
                     task->on_sync_pre(r);
                 }
 
-                std::tr1::shared_ptr<const Repository> rr(env->package_database()->fetch_repository(r));
+                std::shared_ptr<const Repository> rr(env->package_database()->fetch_repository(r));
                 CreateOutputManagerForRepositorySyncInfo info(rr->name(), oe_exclusive, ClientOutputFeatures());
-                std::tr1::shared_ptr<OutputManager> output_manager(env->create_output_manager(info));
+                std::shared_ptr<OutputManager> output_manager(env->create_output_manager(info));
                 if (rr->sync(output_manager))
                 {
                     Lock l(mutex);
@@ -182,16 +182,16 @@ SyncTask::execute()
 
     ItemSyncer s(std::distance(_imp->targets.begin(), _imp->targets.end()), _imp->env, this);
 
-    using namespace std::tr1::placeholders;
+    using namespace std::placeholders;
     if (_imp->parallel)
     {
         ActionQueue actions(5);
         for (std::list<RepositoryName>::const_iterator t(_imp->targets.begin()), t_end(_imp->targets.end()) ;
                 t != t_end ; ++t)
-            actions.enqueue(std::tr1::bind(&ItemSyncer::sync, &s, *t));
+            actions.enqueue(std::bind(&ItemSyncer::sync, &s, *t));
     }
     else
-        std::for_each(_imp->targets.begin(), _imp->targets.end(), std::tr1::bind(&ItemSyncer::sync, &s, _1));
+        std::for_each(_imp->targets.begin(), _imp->targets.end(), std::bind(&ItemSyncer::sync, &s, _1));
 
     for (PackageDatabase::RepositoryConstIterator r(_imp->env->package_database()->begin_repositories()),
             r_end(_imp->env->package_database()->end_repositories()) ; r != r_end ; ++r)

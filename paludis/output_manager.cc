@@ -32,7 +32,7 @@ OutputManager::~OutputManager()
 {
 }
 
-template class Sequence<std::tr1::shared_ptr<OutputManager> >;
-template class WrappedForwardIterator<Sequence<std::tr1::shared_ptr<OutputManager> >::ConstIteratorTag,
-         const std::tr1::shared_ptr<OutputManager> >;
+template class Sequence<std::shared_ptr<OutputManager> >;
+template class WrappedForwardIterator<Sequence<std::shared_ptr<OutputManager> >::ConstIteratorTag,
+         const std::shared_ptr<OutputManager> >;
 

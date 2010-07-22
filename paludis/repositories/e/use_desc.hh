@@ -44,7 +44,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            UseDesc(const std::tr1::shared_ptr<const UseDescFileInfoSequence> &);
+            UseDesc(const std::shared_ptr<const UseDescFileInfoSequence> &);
             ~UseDesc();
 
             UseDesc(const UseDesc &) = delete;

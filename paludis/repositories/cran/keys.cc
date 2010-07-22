@@ -33,7 +33,7 @@
 #include <paludis/formatter.hh>
 #include <paludis/action.hh>
 #include <paludis/repository.hh>
-#include <tr1/functional>
+#include <functional>
 
 using namespace paludis;
 using namespace paludis::cranrepository;
@@ -48,7 +48,7 @@ PackageIDSequenceKey::PackageIDSequenceKey(const Environment * const e,
 {
 }
 
-const std::tr1::shared_ptr<const PackageIDSequence>
+const std::shared_ptr<const PackageIDSequence>
 PackageIDSequenceKey::value() const
 {
     return _v;
@@ -73,7 +73,7 @@ PackageIDSequenceKey::type() const
 }
 
 void
-PackageIDSequenceKey::push_back(const std::tr1::shared_ptr<const PackageID> & i)
+PackageIDSequenceKey::push_back(const std::shared_ptr<const PackageID> & i)
 {
     _v->push_back(i);
 }
@@ -81,11 +81,11 @@ PackageIDSequenceKey::push_back(const std::tr1::shared_ptr<const PackageID> & i)
 std::string
 PackageIDSequenceKey::pretty_print_flat(const Formatter<PackageID> & f) const
 {
-    using namespace std::tr1::placeholders;
+    using namespace std::placeholders;
     return join(indirect_iterator(value()->begin()), indirect_iterator(value()->end()), " ",
-            std::tr1::bind(static_cast<std::string (Formatter<PackageID>::*)(const PackageID &, const format::Plain &) const>(
+            std::bind(static_cast<std::string (Formatter<PackageID>::*)(const PackageID &, const format::Plain &) const>(
                     &Formatter<PackageID>::format),
-                std::tr1::cref(f), _1, format::Plain()));
+                std::cref(f), _1, format::Plain()));
 }
 
 PackageIDKey::PackageIDKey(const std::string & r, const std::string & h,
@@ -97,7 +97,7 @@ PackageIDKey::PackageIDKey(const std::string & r, const std::string & h,
 {
 }
 
-const std::tr1::shared_ptr<const PackageID>
+const std::shared_ptr<const PackageID>
 PackageIDKey::value() const
 {
     return _v->shared_from_this();
@@ -146,15 +146,15 @@ namespace paludis
         const std::string v;
 
         mutable Mutex mutex;
-        mutable std::tr1::shared_ptr<const DependencySpecTree> c;
-        const std::tr1::shared_ptr<const DependenciesLabelSequence> labels;
+        mutable std::shared_ptr<const DependencySpecTree> c;
+        const std::shared_ptr<const DependenciesLabelSequence> labels;
 
         const std::string raw_name;
         const std::string human_name;
         const MetadataKeyType type;
 
         Implementation(const Environment * const e, const std::string & vv,
-                const std::tr1::shared_ptr<const DependenciesLabelSequence> & s,
+                const std::shared_ptr<const DependenciesLabelSequence> & s,
                 const std::string & r, const std::string & h, const MetadataKeyType & t) :
             env(e),
             v(vv),
@@ -168,7 +168,7 @@ namespace paludis
 }
 
 DepKey::DepKey(const Environment * const e, const std::string & r, const std::string & h, const std::string & v,
-        const std::tr1::shared_ptr<const DependenciesLabelSequence> & s, const MetadataKeyType t) :
+        const std::shared_ptr<const DependenciesLabelSequence> & s, const MetadataKeyType t) :
     PrivateImplementationPattern<DepKey>(new Implementation<DepKey>(e, v, s, r, h, t)),
     _imp(PrivateImplementationPattern<DepKey>::_imp)
 {
@@ -196,7 +196,7 @@ DepKey::type() const
     return _imp->type;
 }
 
-const std::tr1::shared_ptr<const DependencySpecTree>
+const std::shared_ptr<const DependencySpecTree>
 DepKey::value() const
 {
     Lock l(_imp->mutex);
@@ -226,7 +226,7 @@ DepKey::pretty_print_flat(const DependencySpecTree::ItemFormatter & f) const
     return stringify(p);
 }
 
-const std::tr1::shared_ptr<const DependenciesLabelSequence>
+const std::shared_ptr<const DependenciesLabelSequence>
 DepKey::initial_labels() const
 {
     return _imp->labels;

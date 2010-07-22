@@ -73,7 +73,7 @@ namespace
     {
         private:
             const Environment & _env;
-            std::multimap<std::tr1::shared_ptr<const PackageID>, std::string, PackageIDSetComparator> _found;
+            std::multimap<std::shared_ptr<const PackageID>, std::string, PackageIDSetComparator> _found;
             std::set<SetName> recursing_sets;
 
         public:
@@ -84,7 +84,7 @@ namespace
 
             void visit(const SetSpecTree::NodeType<PackageDepSpec>::Type & node)
             {
-                std::tr1::shared_ptr<const PackageIDSequence> insecure(_env[selection::AllVersionsSorted(
+                std::shared_ptr<const PackageIDSequence> insecure(_env[selection::AllVersionsSorted(
                             generator::Matches(*node.spec(), MatchPackageOptions()))]);
                 for (PackageIDSequence::ConstIterator i(insecure->begin()),
                         i_end(insecure->end()) ; i != i_end ; ++i)
@@ -98,7 +98,7 @@ namespace
             {
                 Context context("When expanding named set '" + stringify(*node.spec()) + "':");
 
-                std::tr1::shared_ptr<const SetSpecTree> set(_env.set(node.spec()->name()));
+                std::shared_ptr<const SetSpecTree> set(_env.set(node.spec()->name()));
 
                 if (! set)
                 {
@@ -130,7 +130,7 @@ namespace
     std::ostream & operator<< (std::ostream & s, const ListInsecureVisitor & v)
     {
         QualifiedPackageName old_name("dormouse/teapot");
-        for (std::multimap<std::tr1::shared_ptr<const PackageID>, std::string, PackageIDSetComparator>::const_iterator
+        for (std::multimap<std::shared_ptr<const PackageID>, std::string, PackageIDSetComparator>::const_iterator
                 f(v._found.begin()), f_end(v._found.end()) ; f != f_end ; ++f)
         {
             if (f->first->name() != old_name)
@@ -165,7 +165,7 @@ void do_find_insecure_packages(const NoConfigEnvironment & env)
         if (env.master_repository() && r->name() == env.master_repository()->name())
             continue;
 
-        std::tr1::shared_ptr<const SetSpecTree> all_insecure(env.set(SetName("insecurity::"
+        std::shared_ptr<const SetSpecTree> all_insecure(env.set(SetName("insecurity::"
                         + stringify(r->name()))));
         if (! all_insecure)
             continue;

@@ -38,7 +38,7 @@ using namespace paludis;
 
 namespace
 {
-    std::string slot_as_string(const std::tr1::shared_ptr<const PackageID> & id)
+    std::string slot_as_string(const std::shared_ptr<const PackageID> & id)
     {
         if (id->slot_key())
             return stringify(id->slot_key()->value());
@@ -51,11 +51,11 @@ FindUnusedPackagesTask::~FindUnusedPackagesTask()
 {
 }
 
-std::tr1::shared_ptr<const PackageIDSequence>
+std::shared_ptr<const PackageIDSequence>
 FindUnusedPackagesTask::execute(const QualifiedPackageName & package)
 {
-    std::tr1::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
-    std::tr1::shared_ptr<const PackageIDSequence> packages((*_env)[selection::AllVersionsGroupedBySlot(
+    std::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
+    std::shared_ptr<const PackageIDSequence> packages((*_env)[selection::AllVersionsGroupedBySlot(
                 generator::InRepository(_repo->name()) &
                 generator::Package(package)
                 )]);
@@ -74,7 +74,7 @@ FindUnusedPackagesTask::execute(const QualifiedPackageName & package)
             old_slot = slot_as_string(*p);
         }
 
-        std::tr1::shared_ptr<const KeywordNameSet> current_keywords((*p)->keywords_key()->value());
+        std::shared_ptr<const KeywordNameSet> current_keywords((*p)->keywords_key()->value());
         bool used(false);
         for (KeywordNameSet::ConstIterator k(current_keywords->begin()), k_end(current_keywords->end()) ;
                 k != k_end ; ++k)

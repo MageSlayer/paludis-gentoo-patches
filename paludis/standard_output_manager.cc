@@ -70,15 +70,15 @@ StandardOutputManager::message(const MessageType, const std::string &)
 {
 }
 
-const std::tr1::shared_ptr<const Set<std::string> >
+const std::shared_ptr<const Set<std::string> >
 StandardOutputManager::factory_managers()
 {
-    std::tr1::shared_ptr<Set<std::string> > result(new Set<std::string>);
+    std::shared_ptr<Set<std::string> > result(new Set<std::string>);
     result->insert("standard");
     return result;
 }
 
-const std::tr1::shared_ptr<OutputManager>
+const std::shared_ptr<OutputManager>
 StandardOutputManager::factory_create(
         const OutputManagerFactory::KeyFunction &,
         const OutputManagerFactory::CreateChildFunction &,

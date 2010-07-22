@@ -41,7 +41,7 @@ ChangeByResolvent::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "ChangeByResolvent");
     return make_named_values<ChangeByResolvent>(
-            n::package_id() = v.member<std::tr1::shared_ptr<const PackageID> >("package_id"),
+            n::package_id() = v.member<std::shared_ptr<const PackageID> >("package_id"),
             n::resolvent() = v.member<Resolvent>("resolvent")
             );
 }

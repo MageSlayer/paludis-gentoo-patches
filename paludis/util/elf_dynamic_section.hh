@@ -28,7 +28,7 @@
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/util/simple_visitor.hh>
 #include <paludis/util/type_list.hh>
-#include <tr1/memory>
+#include <memory>
 #include <string>
 #include <iosfwd>
 
@@ -179,9 +179,9 @@ namespace paludis
         friend class Singleton<DynamicEntries>;
 
         public:
-            void register_type(typename ElfType_::DynamicTag, std::tr1::shared_ptr<DynamicEntry<ElfType_> >);
+            void register_type(typename ElfType_::DynamicTag, std::shared_ptr<DynamicEntry<ElfType_> >);
 
-            std::tr1::shared_ptr<DynamicEntry<ElfType_> > get_entry(typename ElfType_::DynamicTag) const;
+            std::shared_ptr<DynamicEntry<ElfType_> > get_entry(typename ElfType_::DynamicTag) const;
             bool has_entry(typename ElfType_::DynamicTag) const;
 
         private:

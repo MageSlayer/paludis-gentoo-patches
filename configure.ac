@@ -648,52 +648,53 @@ dnl }}}
 dnl {{{ check for hashes
 AC_MSG_CHECKING([for hashed associative containers])
 AC_COMPILE_IFELSE([
-#include <tr1/unordered_map>
+#include <unordered_map>
 int main(int, char **)
 {
-	std::tr1::unordered_map<int, int> m;
+	std::unordered_map<int, int> m;
 	m.insert(std::make_pair(1, 2));
 }
 ],
-	[AC_MSG_RESULT([std::tr1::unordered_map])],
+	[AC_MSG_RESULT([std::unordered_map])],
 	[AC_MSG_RESULT([no])
-	 AC_MSG_ERROR([Your compiler doesn't support tr1 unordered containers])])
+	 AC_MSG_ERROR([Your compiler doesn't support unordered containers])])
 dnl }}}
 
-dnl {{{ tr1 shared pointers
-AC_MSG_CHECKING([for std::tr1::shared_ptr<>])
+dnl {{{ shared pointers
+AC_MSG_CHECKING([for std::shared_ptr<>])
 AC_COMPILE_IFELSE([
-#include <tr1/memory>
+#include <memory>
 int main(int, char **)
 {
-	std::tr1::shared_ptr<int> x(new int(10));
+	std::shared_ptr<int> x(new int(10));
+	x = std::make_shared<int>(20);
 	return *x;
 }
 ],
 	[AC_MSG_RESULT([yes])],
 	[AC_MSG_RESULT([no])
-	 AC_MSG_ERROR([Your compiler doesn't support tr1 shared pointers])])
+	 AC_MSG_ERROR([Your compiler doesn't support shared pointers])])
 dnl }}}
 
-dnl {{{ tr1 type traits
-AC_MSG_CHECKING([for std::tr1::remove_pointer<>])
+dnl {{{ type traits
+AC_MSG_CHECKING([for std::remove_pointer<>])
 AC_COMPILE_IFELSE([
-#include <tr1/type_traits>
+#include <type_traits>
 int main(int, char **)
 {
-	std::tr1::remove_pointer<int *>::type x(10);
+	std::remove_pointer<int *>::type x(10);
 	return x;
 }
 ],
 	[AC_MSG_RESULT([yes])],
 	[AC_MSG_RESULT([no])
-	 AC_MSG_ERROR([Your compiler doesn't support tr1 type traits])])
+	 AC_MSG_ERROR([Your compiler doesn't support type traits])])
 dnl }}}
 
-dnl {{{ tr1 binders
-AC_MSG_CHECKING([for std::tr1::bind<>])
+dnl {{{ binders
+AC_MSG_CHECKING([for std::bind<>])
 AC_COMPILE_IFELSE([
-#include <tr1/functional>
+#include <functional>
 #include <functional>
 #include <algorithm>
 #include <list>
@@ -705,16 +706,16 @@ struct S
 };
 int main(int, char **)
 {
-	using namespace std::tr1::placeholders;
+	using namespace std::placeholders;
 	std::list<int> l;
 	S s;
 	std::for_each(l.begin(), l.end(),
-		std::tr1::bind(std::tr1::mem_fn(&S::x), &s, _1));
+		std::bind(std::mem_fn(&S::x), &s, _1));
 }
 ],
 	[AC_MSG_RESULT([yes])],
 	[AC_MSG_RESULT([no])
-	 AC_MSG_ERROR([Your compiler doesn't support tr1 functional])])
+	 AC_MSG_ERROR([Your compiler doesn't support functional])])
 dnl }}}
 
 dnl {{{ std::next

@@ -43,11 +43,11 @@ namespace paludis
     struct Implementation<PretendFetchVisitor>
     {
         const Environment * const env;
-        const std::tr1::shared_ptr<const PackageID> id;
+        const std::shared_ptr<const PackageID> id;
         const EAPI & eapi;
         const FSEntry distdir;
         const bool fetch_unneeded;
-        std::tr1::shared_ptr<const URILabel> default_label;
+        std::shared_ptr<const URILabel> default_label;
         PretendFetchAction & action;
 
         std::set<std::string> already_done;
@@ -56,11 +56,11 @@ namespace paludis
 
         Implementation(
                 const Environment * const e,
-                const std::tr1::shared_ptr<const PackageID> & i,
+                const std::shared_ptr<const PackageID> & i,
                 const EAPI & p,
                 const FSEntry & d,
                 const bool f,
-                const std::tr1::shared_ptr<const URILabel> & n,
+                const std::shared_ptr<const URILabel> & n,
                 PretendFetchAction & a) :
             env(e),
             id(i),
@@ -78,11 +78,11 @@ namespace paludis
 
 PretendFetchVisitor::PretendFetchVisitor(
         const Environment * const e,
-        const std::tr1::shared_ptr<const PackageID> & i,
+        const std::shared_ptr<const PackageID> & i,
         const EAPI & p,
         const FSEntry & d,
         const bool f,
-        const std::tr1::shared_ptr<const URILabel> & n,
+        const std::shared_ptr<const URILabel> & n,
         PretendFetchAction & a) :
     PrivateImplementationPattern<PretendFetchVisitor>(new Implementation<PretendFetchVisitor>(e, i, p, d, f, n, a))
 {

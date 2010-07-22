@@ -24,10 +24,10 @@
  * Declaration for the do_contents function.
  */
 
-#include <tr1/memory>
+#include <memory>
 #include <paludis/environment-fwd.hh>
 
 /// Handle --contents.
-int do_contents(const std::tr1::shared_ptr<paludis::Environment> &);
+int do_contents(const std::shared_ptr<paludis::Environment> &);
 
 #endif

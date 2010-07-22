@@ -55,7 +55,7 @@ namespace
     int
     build_one_list(NoConfigEnvironment & env, std::ostream & f)
     {
-        std::tr1::shared_ptr<const PackageIDSequence> matches(env[selection::AllVersionsGroupedBySlot(generator::All() | filter::NotMasked())]);
+        std::shared_ptr<const PackageIDSequence> matches(env[selection::AllVersionsGroupedBySlot(generator::All() | filter::NotMasked())]);
 
         QualifiedPackageName old_package("dummy/dummy");
         std::string old_slot("dummy");

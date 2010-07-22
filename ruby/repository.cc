@@ -35,7 +35,7 @@
 #include <paludis/util/make_named_values.hh>
 #include <ruby.h>
 #include <list>
-#include <tr1/functional>
+#include <functional>
 
 using namespace paludis;
 using namespace paludis::ruby;
@@ -47,14 +47,14 @@ namespace
     static VALUE c_fake_repository;
     static VALUE c_fake_installed_repository;
 
-    std::tr1::shared_ptr<FakeRepositoryBase>
+    std::shared_ptr<FakeRepositoryBase>
     value_to_fake_repository_base(VALUE v)
     {
         if (rb_obj_is_kind_of(v, c_fake_repository_base))
         {
-            std::tr1::shared_ptr<Repository> * v_ptr;
-            Data_Get_Struct(v, std::tr1::shared_ptr<Repository>, v_ptr);
-            return std::tr1::static_pointer_cast<FakeRepositoryBase>(*v_ptr);
+            std::shared_ptr<Repository> * v_ptr;
+            Data_Get_Struct(v, std::shared_ptr<Repository>, v_ptr);
+            return std::static_pointer_cast<FakeRepositoryBase>(*v_ptr);
         }
         else
         {
@@ -73,8 +73,8 @@ namespace
     {
         try
         {
-            std::tr1::shared_ptr<Repository> * self_ptr;
-            Data_Get_Struct(self, std::tr1::shared_ptr<Repository>, self_ptr);
+            std::shared_ptr<Repository> * self_ptr;
+            Data_Get_Struct(self, std::shared_ptr<Repository>, self_ptr);
             return rb_str_new2(stringify((*self_ptr)->name()).c_str());
         }
         catch (const std::exception & e)
@@ -94,8 +94,8 @@ namespace
     {
         try
         {
-            std::tr1::shared_ptr<Repository> * self_ptr;
-            Data_Get_Struct(self, std::tr1::shared_ptr<Repository>, self_ptr);
+            std::shared_ptr<Repository> * self_ptr;
+            Data_Get_Struct(self, std::shared_ptr<Repository>, self_ptr);
             return (*self_ptr)->has_category_named(CategoryNamePart(StringValuePtr(cat))) ? Qtrue : Qfalse;
         }
         catch (const std::exception & e)
@@ -119,8 +119,8 @@ namespace
     {
         try
         {
-            std::tr1::shared_ptr<Repository> * self_ptr;
-            Data_Get_Struct(self, std::tr1::shared_ptr<Repository>, self_ptr);
+            std::shared_ptr<Repository> * self_ptr;
+            Data_Get_Struct(self, std::shared_ptr<Repository>, self_ptr);
             return (*self_ptr)->has_package_named(value_to_qualified_package_name(name)) ? Qtrue : Qfalse;
         }
         catch (const std::exception & e)
@@ -141,17 +141,17 @@ namespace
     {
         try
         {
-            std::tr1::shared_ptr<Repository> * self_ptr;
-            Data_Get_Struct(self, std::tr1::shared_ptr<Repository>, self_ptr);
+            std::shared_ptr<Repository> * self_ptr;
+            Data_Get_Struct(self, std::shared_ptr<Repository>, self_ptr);
             if (rb_block_given_p())
             {
-                std::tr1::shared_ptr<const CategoryNamePartSet> c((*self_ptr)->category_names());
+                std::shared_ptr<const CategoryNamePartSet> c((*self_ptr)->category_names());
                 for (CategoryNamePartSet::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                     rb_yield(rb_str_new2(stringify(*i).c_str()));
                 return Qnil;
             }
             VALUE result(rb_ary_new());
-            std::tr1::shared_ptr<const CategoryNamePartSet> c((*self_ptr)->category_names());
+            std::shared_ptr<const CategoryNamePartSet> c((*self_ptr)->category_names());
             for (CategoryNamePartSet::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                 rb_ary_push(result, rb_str_new2(stringify(*i).c_str()));
             return result;
@@ -175,19 +175,19 @@ namespace
     {
         try
         {
-            std::tr1::shared_ptr<Repository> * self_ptr;
-            Data_Get_Struct(self, std::tr1::shared_ptr<Repository>, self_ptr);
+            std::shared_ptr<Repository> * self_ptr;
+            Data_Get_Struct(self, std::shared_ptr<Repository>, self_ptr);
             PackageNamePart package(StringValuePtr(pkg));
 
             if (rb_block_given_p())
             {
-                std::tr1::shared_ptr<const CategoryNamePartSet> c((*self_ptr)->category_names_containing_package(package));
+                std::shared_ptr<const CategoryNamePartSet> c((*self_ptr)->category_names_containing_package(package));
                 for (CategoryNamePartSet::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                     rb_yield(rb_str_new2(stringify(*i).c_str()));
                 return Qnil;
             }
             VALUE result(rb_ary_new());
-            std::tr1::shared_ptr<const CategoryNamePartSet> c((*self_ptr)->category_names_containing_package(package));
+            std::shared_ptr<const CategoryNamePartSet> c((*self_ptr)->category_names_containing_package(package));
             for (CategoryNamePartSet::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                 rb_ary_push(result, rb_str_new2(stringify(*i).c_str()));
             return result;
@@ -211,19 +211,19 @@ namespace
     {
         try
         {
-            std::tr1::shared_ptr<Repository> * self_ptr;
-            Data_Get_Struct(self, std::tr1::shared_ptr<Repository>, self_ptr);
+            std::shared_ptr<Repository> * self_ptr;
+            Data_Get_Struct(self, std::shared_ptr<Repository>, self_ptr);
             CategoryNamePart category(StringValuePtr(cat));
 
             if (rb_block_given_p())
             {
-                std::tr1::shared_ptr<const QualifiedPackageNameSet> c((*self_ptr)->package_names(category));
+                std::shared_ptr<const QualifiedPackageNameSet> c((*self_ptr)->package_names(category));
                 for (QualifiedPackageNameSet::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                     rb_yield(qualified_package_name_to_value(*i));
                 return Qnil;
             }
             VALUE result(rb_ary_new());
-            std::tr1::shared_ptr<const QualifiedPackageNameSet> c((*self_ptr)->package_names(category));
+            std::shared_ptr<const QualifiedPackageNameSet> c((*self_ptr)->package_names(category));
             for (QualifiedPackageNameSet::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                 rb_ary_push(result, qualified_package_name_to_value(*i));
             return result;
@@ -248,19 +248,19 @@ namespace
     {
         try
         {
-            std::tr1::shared_ptr<Repository> * self_ptr;
-            Data_Get_Struct(self, std::tr1::shared_ptr<Repository>, self_ptr);
+            std::shared_ptr<Repository> * self_ptr;
+            Data_Get_Struct(self, std::shared_ptr<Repository>, self_ptr);
             QualifiedPackageName q = value_to_qualified_package_name(qpn);
 
             if (rb_block_given_p())
             {
-                std::tr1::shared_ptr<const PackageIDSequence> c((*self_ptr)->package_ids(q));
+                std::shared_ptr<const PackageIDSequence> c((*self_ptr)->package_ids(q));
                 for (PackageIDSequence::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                     rb_yield(package_id_to_value(*i));
                 return Qnil;
             }
             VALUE result(rb_ary_new());
-            std::tr1::shared_ptr<const PackageIDSequence> c((*self_ptr)->package_ids(q));
+            std::shared_ptr<const PackageIDSequence> c((*self_ptr)->package_ids(q));
             for (PackageIDSequence::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                 rb_ary_push(result, package_id_to_value(*i));
             return result;
@@ -356,8 +356,8 @@ namespace
     {
         static VALUE fetch(VALUE self)
         {
-            std::tr1::shared_ptr<Repository> * self_ptr;
-            Data_Get_Struct(self, std::tr1::shared_ptr<Repository>, self_ptr);
+            std::shared_ptr<Repository> * self_ptr;
+            Data_Get_Struct(self, std::shared_ptr<Repository>, self_ptr);
             return ((**self_ptr).*f_)() ? self : Qnil;
         }
     };
@@ -371,9 +371,9 @@ namespace
     VALUE
     repository_some_ids_might_support_action(VALUE self, VALUE test)
     {
-        std::tr1::shared_ptr<Repository> * self_ptr;
-        std::tr1::shared_ptr<const SupportsActionTestBase> test_ptr(value_to_supports_action_test_base(test));
-        Data_Get_Struct(self, std::tr1::shared_ptr<Repository>, self_ptr);
+        std::shared_ptr<Repository> * self_ptr;
+        std::shared_ptr<const SupportsActionTestBase> test_ptr(value_to_supports_action_test_base(test));
+        Data_Get_Struct(self, std::shared_ptr<Repository>, self_ptr);
         return (*self_ptr)->some_ids_might_support_action(*test_ptr) ? Qtrue : Qfalse;
     }
 
@@ -388,7 +388,7 @@ namespace
     {
         try
         {
-            std::tr1::shared_ptr<FakeRepositoryBase> repo(value_to_fake_repository_base(self));
+            std::shared_ptr<FakeRepositoryBase> repo(value_to_fake_repository_base(self));
             std::string cat_str(StringValuePtr(category));
             repo->add_category(CategoryNamePart(cat_str));
             return Qnil;
@@ -410,7 +410,7 @@ namespace
     {
         try
         {
-            std::tr1::shared_ptr<FakeRepositoryBase> repo(value_to_fake_repository_base(self));
+            std::shared_ptr<FakeRepositoryBase> repo(value_to_fake_repository_base(self));
             QualifiedPackageName name(value_to_qualified_package_name(qpn));
             repo->add_package(name);
             return Qnil;
@@ -435,8 +435,8 @@ namespace
     {
         try
         {
-            std::tr1::shared_ptr<FakeRepositoryBase> repo(value_to_fake_repository_base(self));
-            std::tr1::shared_ptr<FakePackageID> pkg;
+            std::shared_ptr<FakeRepositoryBase> repo(value_to_fake_repository_base(self));
+            std::shared_ptr<FakePackageID> pkg;
 
             switch (argc)
             {
@@ -497,11 +497,11 @@ namespace
             if (2 != argc)
                 rb_raise(rb_eArgError, "FakeRepository.new expects two arguments, but got %d", argc);
 
-            std::tr1::shared_ptr<Repository> * r = new std::tr1::shared_ptr<Repository>(new FakeRepository(
+            std::shared_ptr<Repository> * r = new std::shared_ptr<Repository>(new FakeRepository(
                         make_named_values<FakeRepositoryParams>(
                             n::environment() = value_to_environment(argv[0]).get(),
                             n::name() = RepositoryName(StringValuePtr(argv[1])))));
-            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::tr1::shared_ptr<Repository> >::free, r));
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::shared_ptr<Repository> >::free, r));
             rb_obj_call_init(tdata, argc, argv);
             return tdata;
         }
@@ -525,14 +525,14 @@ namespace
             if (2 != argc)
                 rb_raise(rb_eArgError, "FakeInstalledRepository.new expects two arguments, but got %d", argc);
 
-            std::tr1::shared_ptr<Repository> * r = new std::tr1::shared_ptr<Repository>(new
+            std::shared_ptr<Repository> * r = new std::shared_ptr<Repository>(new
                     FakeInstalledRepository(make_named_values<FakeInstalledRepositoryParams>(
                             n::environment() = value_to_environment(argv[0]).get(),
                             n::name() = RepositoryName(StringValuePtr(argv[1])),
                             n::suitable_destination() = true,
                             n::supports_uninstall() = true
                         )));
-            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::tr1::shared_ptr<Repository> >::free, r));
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::shared_ptr<Repository> >::free, r));
             rb_obj_call_init(tdata, argc, argv);
             return tdata;
         }
@@ -551,8 +551,8 @@ namespace
     VALUE
     repository_subscript(VALUE self, VALUE raw_name)
     {
-        std::tr1::shared_ptr<const Repository> * self_ptr;
-        Data_Get_Struct(self, std::tr1::shared_ptr<const Repository>, self_ptr);
+        std::shared_ptr<const Repository> * self_ptr;
+        Data_Get_Struct(self, std::shared_ptr<const Repository>, self_ptr);
         Repository::MetadataConstIterator it((*self_ptr)->find_metadata(StringValuePtr(raw_name)));
         if ((*self_ptr)->end_metadata() == it)
             return Qnil;
@@ -568,8 +568,8 @@ namespace
     VALUE
     repository_each_metadata(VALUE self)
     {
-        std::tr1::shared_ptr<Repository> * self_ptr;
-        Data_Get_Struct(self, std::tr1::shared_ptr<Repository>, self_ptr);
+        std::shared_ptr<Repository> * self_ptr;
+        Data_Get_Struct(self, std::shared_ptr<Repository>, self_ptr);
         for (Repository::MetadataConstIterator it((*self_ptr)->begin_metadata()),
                 it_end((*self_ptr)->end_metadata()); it_end != it; ++it)
         {
@@ -580,14 +580,14 @@ namespace
             return Qnil;
     }
 
-    template <typename T_, const std::tr1::shared_ptr<const T_> (Repository::* m_) () const>
+    template <typename T_, const std::shared_ptr<const T_> (Repository::* m_) () const>
     struct RepositoryKey
     {
         static VALUE
         fetch(VALUE self)
         {
-            std::tr1::shared_ptr<Repository> * self_ptr;
-            Data_Get_Struct(self, std::tr1::shared_ptr<Repository>, self_ptr);
+            std::shared_ptr<Repository> * self_ptr;
+            Data_Get_Struct(self, std::shared_ptr<Repository>, self_ptr);
             return (((**self_ptr).*m_)()) ? metadata_key_to_value(((**self_ptr).*m_)()) : Qnil;
         }
     };
@@ -601,8 +601,8 @@ namespace
     VALUE
     repository_get_environment_variable(VALUE self, VALUE pid, VALUE ev)
     {
-        std::tr1::shared_ptr<Repository> * self_ptr;
-        Data_Get_Struct(self, std::tr1::shared_ptr<Repository>, self_ptr);
+        std::shared_ptr<Repository> * self_ptr;
+        Data_Get_Struct(self, std::shared_ptr<Repository>, self_ptr);
         if ((**self_ptr).environment_variable_interface())
             return rb_str_new2((**self_ptr).environment_variable_interface()->get_environment_variable(
                         value_to_package_id(pid),
@@ -699,21 +699,21 @@ VALUE repo_to_value(T_ m, VALUE * klass)
 }
 
 VALUE
-paludis::ruby::repository_to_value(std::tr1::shared_ptr<Repository> m)
+paludis::ruby::repository_to_value(std::shared_ptr<Repository> m)
 {
     if (0 == m)
         return Qnil;
     else
-        return repo_to_value<std::tr1::shared_ptr<Repository> >(m, &c_repository);
+        return repo_to_value<std::shared_ptr<Repository> >(m, &c_repository);
 }
 
-std::tr1::shared_ptr<Repository>
+std::shared_ptr<Repository>
 paludis::ruby::value_to_repository(VALUE v)
 {
     if (rb_obj_is_kind_of(v, c_repository))
     {
-        std::tr1::shared_ptr<Repository> * v_ptr;
-        Data_Get_Struct(v, std::tr1::shared_ptr<Repository>, v_ptr);
+        std::shared_ptr<Repository> * v_ptr;
+        Data_Get_Struct(v, std::shared_ptr<Repository>, v_ptr);
         return *v_ptr;
     }
     else

@@ -64,7 +64,7 @@ namespace paludis
         /**
          * \since 0.36
          */
-        NamedValue<n::output_manager, std::tr1::shared_ptr<OutputManager> > output_manager;
+        NamedValue<n::output_manager, std::shared_ptr<OutputManager> > output_manager;
     };
 
     /**

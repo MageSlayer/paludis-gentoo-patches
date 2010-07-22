@@ -90,19 +90,19 @@ InstallArgsGroup::populate_dep_list_options(const Environment *, DepListOptions 
     options.dependency_tags() = a_show_reasons.argument() == "summary" || a_show_reasons.argument() == "full";
 }
 
-std::tr1::shared_ptr<const DestinationsSet>
+std::shared_ptr<const DestinationsSet>
 InstallArgsGroup::destinations(Environment * env) const
 {
     if (a_destinations.specified())
     {
         Context local_context("When building destinations collection:");
 
-        std::tr1::shared_ptr<DestinationsSet> d(new DestinationsSet);
+        std::shared_ptr<DestinationsSet> d(new DestinationsSet);
         for (args::StringSetArg::ConstIterator i(a_destinations.begin_args()),
                 i_end(a_destinations.end_args()) ;
                 i != i_end ; ++i)
         {
-            std::tr1::shared_ptr<Repository> repo(env->package_database()->fetch_repository(
+            std::shared_ptr<Repository> repo(env->package_database()->fetch_repository(
                         RepositoryName(*i)));
             if ((*repo).destination_interface())
                 d->insert(repo);
@@ -149,15 +149,15 @@ InstallArgsGroup::populate_install_task(const Environment *, InstallTask & task)
     else
         throw args::DoHelp("bad value for --change-phases-for");
 
-    std::tr1::shared_ptr<Set<std::string> > skip_phases(new Set<std::string>);
+    std::shared_ptr<Set<std::string> > skip_phases(new Set<std::string>);
     std::copy(a_skip_phase.begin_args(), a_skip_phase.end_args(), skip_phases->inserter());
     task.set_skip_phases(skip_phases);
 
-    std::tr1::shared_ptr<Set<std::string> > abort_at_phases(new Set<std::string>);
+    std::shared_ptr<Set<std::string> > abort_at_phases(new Set<std::string>);
     std::copy(a_abort_at_phase.begin_args(), a_abort_at_phase.end_args(), abort_at_phases->inserter());
     task.set_abort_at_phases(abort_at_phases);
 
-    std::tr1::shared_ptr<Set<std::string> > skip_until_phases(new Set<std::string>);
+    std::shared_ptr<Set<std::string> > skip_until_phases(new Set<std::string>);
     std::copy(a_skip_until_phase.begin_args(), a_skip_until_phase.end_args(), skip_until_phases->inserter());
     task.set_skip_until_phases(skip_until_phases);
 }

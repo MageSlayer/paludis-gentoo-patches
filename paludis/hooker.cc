@@ -45,7 +45,7 @@
 
 using namespace paludis;
 
-template class Sequence<std::tr1::shared_ptr<HookFile> >;
+template class Sequence<std::shared_ptr<HookFile> >;
 
 HookFile::~HookFile()
 {
@@ -83,7 +83,7 @@ namespace
             {
             }
 
-            virtual const std::tr1::shared_ptr<const Sequence<std::string> > auto_hook_names() const
+            virtual const std::shared_ptr<const Sequence<std::string> > auto_hook_names() const
             {
                 return make_shared_ptr(new Sequence<std::string>);
             }
@@ -116,7 +116,7 @@ namespace
 
             virtual void add_dependencies(const Hook &, DirectedGraph<std::string, int> &);
 
-            virtual const std::tr1::shared_ptr<const Sequence<std::string> > auto_hook_names() const;
+            virtual const std::shared_ptr<const Sequence<std::string> > auto_hook_names() const;
     };
 
     class SoHookFile :
@@ -129,7 +129,7 @@ namespace
             void * _dl;
             HookResult (*_run)(const Environment *, const Hook &);
             void (*_add_dependencies)(const Environment *, const Hook &, DirectedGraph<std::string, int> &);
-            const std::tr1::shared_ptr<const Sequence<std::string > > (*_auto_hook_names)(const Environment *);
+            const std::shared_ptr<const Sequence<std::string > > (*_auto_hook_names)(const Environment *);
 
         public:
             SoHookFile(const FSEntry &, const bool, const Environment * const);
@@ -143,7 +143,7 @@ namespace
 
             virtual void add_dependencies(const Hook &, DirectedGraph<std::string, int> &);
 
-            virtual const std::tr1::shared_ptr<const Sequence<std::string> > auto_hook_names() const;
+            virtual const std::shared_ptr<const Sequence<std::string> > auto_hook_names() const;
     };
 }
 
@@ -252,7 +252,7 @@ FancyHookFile::run(const Hook & hook) const
             );
 }
 
-const std::tr1::shared_ptr<const Sequence<std::string > >
+const std::shared_ptr<const Sequence<std::string > >
 FancyHookFile::auto_hook_names() const
 {
     Context c("When querying auto hook names for fancy hook '" + stringify(file_name()) + "':");
@@ -283,7 +283,7 @@ FancyHookFile::auto_hook_names() const
 
     if (0 == exit_status)
     {
-        std::tr1::shared_ptr<Sequence<std::string> > result(new Sequence<std::string>);
+        std::shared_ptr<Sequence<std::string> > result(new Sequence<std::string>);
         tokenise_whitespace(output, result->back_inserter());
         Log::get_instance()->message("hook.fancy.success", ll_debug, lc_no_context) << "Hook '" << file_name()
             << "' returned success '" << exit_status << "' for auto hook names, result ("
@@ -393,7 +393,7 @@ SoHookFile::SoHookFile(const FSEntry & f, const bool, const Environment * const 
             const Environment *, const Hook &, DirectedGraph<std::string, int> &)>(
                 reinterpret_cast<uintptr_t>(dlsym(_dl, "paludis_hook_add_dependencies")));
 
-        _auto_hook_names = reinterpret_cast<const std::tr1::shared_ptr<const Sequence<std::string> > (*)(
+        _auto_hook_names = reinterpret_cast<const std::shared_ptr<const Sequence<std::string> > (*)(
             const Environment *)>(
                 reinterpret_cast<uintptr_t>(dlsym(_dl, "paludis_hook_auto_phases")));
     }
@@ -423,7 +423,7 @@ SoHookFile::add_dependencies(const Hook & hook, DirectedGraph<std::string, int> 
         _add_dependencies(_env, hook, g);
 }
 
-const std::tr1::shared_ptr<const Sequence<std::string > >
+const std::shared_ptr<const Sequence<std::string > >
 SoHookFile::auto_hook_names() const
 {
     Context c("When querying auto hook names for .so hook '" + stringify(file_name()) + "':");
@@ -443,8 +443,8 @@ namespace paludis
         std::list<std::pair<FSEntry, bool> > dirs;
 
         mutable Mutex hook_files_mutex;
-        mutable std::map<std::string, std::tr1::shared_ptr<Sequence<std::tr1::shared_ptr<HookFile> > > > hook_files;
-        mutable std::map<std::string, std::map<std::string, std::tr1::shared_ptr<HookFile> > > auto_hook_files;
+        mutable std::map<std::string, std::shared_ptr<Sequence<std::shared_ptr<HookFile> > > > hook_files;
+        mutable std::map<std::string, std::map<std::string, std::shared_ptr<HookFile> > > auto_hook_files;
         mutable bool has_auto_hook_files;
 
         Implementation(const Environment * const e) :
@@ -472,7 +472,7 @@ namespace paludis
 
                 for (DirIterator e(d_a), e_end ; e != e_end ; ++e)
                 {
-                    std::tr1::shared_ptr<HookFile> hook_file;
+                    std::shared_ptr<HookFile> hook_file;
                     std::string name;
 
                     if (is_file_with_extension(*e, ".hook", IsFileWithOptions()))
@@ -489,7 +489,7 @@ namespace paludis
                     if (! hook_file)
                         continue;
 
-                    const std::tr1::shared_ptr<const Sequence<std::string> > names(hook_file->auto_hook_names());
+                    const std::shared_ptr<const Sequence<std::string> > names(hook_file->auto_hook_names());
                     for (Sequence<std::string>::ConstIterator n(names->begin()), n_end(names->end()) ;
                             n != n_end ; ++n)
                     {
@@ -528,7 +528,7 @@ namespace
     {
         Mutex mutex;
         void * handle;
-        std::tr1::shared_ptr<HookFile> (* create_py_hook_file_handle)(const FSEntry &,
+        std::shared_ptr<HookFile> (* create_py_hook_file_handle)(const FSEntry &,
                 const bool, const Environment * const);
 
 
@@ -547,17 +547,17 @@ namespace
     } pyhookfilehandle;
 }
 
-std::tr1::shared_ptr<Sequence<std::tr1::shared_ptr<HookFile> > >
+std::shared_ptr<Sequence<std::shared_ptr<HookFile> > >
 Hooker::_find_hooks(const Hook & hook) const
 {
-    std::map<std::string, std::tr1::shared_ptr<HookFile> > hook_files;
+    std::map<std::string, std::shared_ptr<HookFile> > hook_files;
     std::set<std::string> ignore_hooks;
     tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(getenv_with_default("PALUDIS_IGNORE_HOOKS_NAMED", ""),
             ":", "", std::inserter(ignore_hooks, ignore_hooks.begin()));
 
     {
         _imp->need_auto_hook_files();
-        std::map<std::string, std::map<std::string, std::tr1::shared_ptr<HookFile> > >::const_iterator h(
+        std::map<std::string, std::map<std::string, std::shared_ptr<HookFile> > >::const_iterator h(
                 _imp->auto_hook_files.find(hook.name()));
         if (_imp->auto_hook_files.end() != h)
             hook_files = h->second;
@@ -577,21 +577,21 @@ Hooker::_find_hooks(const Hook & hook) const
 
             if (is_file_with_extension(*e, ".bash", IsFileWithOptions()))
                 if (! hook_files.insert(std::make_pair(strip_trailing_string(e->basename(), ".bash"),
-                                std::tr1::shared_ptr<HookFile>(new BashHookFile(*e, d->second, _imp->env)))).second)
+                                std::shared_ptr<HookFile>(new BashHookFile(*e, d->second, _imp->env)))).second)
                     Log::get_instance()->message("hook.discarding", ll_warning, lc_context) << "Discarding hook file '" << *e
                         << "' because of naming conflict with '" <<
                         hook_files.find(stringify(strip_trailing_string(e->basename(), ".bash")))->second->file_name() << "'";
 
             if (is_file_with_extension(*e, ".hook", IsFileWithOptions()))
                 if (! hook_files.insert(std::make_pair(strip_trailing_string(e->basename(), ".hook"),
-                                std::tr1::shared_ptr<HookFile>(new FancyHookFile(*e, d->second, _imp->env)))).second)
+                                std::shared_ptr<HookFile>(new FancyHookFile(*e, d->second, _imp->env)))).second)
                     Log::get_instance()->message("hook.discarding", ll_warning, lc_context) << "Discarding hook file '" << *e
                         << "' because of naming conflict with '" <<
                         hook_files.find(stringify(strip_trailing_string(e->basename(), ".hook")))->second->file_name() << "'";
 
             if (is_file_with_extension(*e, so_suffix, IsFileWithOptions()))
                  if (! hook_files.insert(std::make_pair(strip_trailing_string(e->basename(), so_suffix),
-                                 std::tr1::shared_ptr<HookFile>(new SoHookFile(*e, d->second, _imp->env)))).second)
+                                 std::shared_ptr<HookFile>(new SoHookFile(*e, d->second, _imp->env)))).second)
                      Log::get_instance()->message("hook.discarding", ll_warning, lc_context) << "Discarding hook file '" << *e
                          << "' because of naming conflict with '" <<
                          hook_files.find(stringify(strip_trailing_string(e->basename(), so_suffix)))->second->file_name() << "'";
@@ -614,7 +614,7 @@ Hooker::_find_hooks(const Hook & hook) const
                         if (pyhookfilehandle.handle)
                         {
                             pyhookfilehandle.create_py_hook_file_handle =
-                                reinterpret_cast<std::tr1::shared_ptr<HookFile> (*)(
+                                reinterpret_cast<std::shared_ptr<HookFile> (*)(
                                         const FSEntry &, const bool, const Environment * const)>(
                                             reinterpret_cast<uintptr_t>(dlsym(
                                                     pyhookfilehandle.handle, "create_py_hook_file")));
@@ -639,7 +639,7 @@ Hooker::_find_hooks(const Hook & hook) const
                 if (load_ok)
                 {
                     if (! hook_files.insert(std::make_pair(strip_trailing_string(e->basename(), ".py"),
-                                    std::tr1::shared_ptr<HookFile>(pyhookfilehandle.create_py_hook_file_handle(
+                                    std::shared_ptr<HookFile>(pyhookfilehandle.create_py_hook_file_handle(
                                              *e, d->second, _imp->env)))).second)
                         Log::get_instance()->message("hook.discarding", ll_warning, lc_context) <<
                             "Discarding hook file '" << *e
@@ -667,11 +667,11 @@ Hooker::_find_hooks(const Hook & hook) const
     DirectedGraph<std::string, int> hook_deps;
     {
         Context context_local("When determining hook dependencies for '" + hook.name() + "':");
-        for (std::map<std::string, std::tr1::shared_ptr<HookFile> >::const_iterator f(hook_files.begin()), f_end(hook_files.end()) ;
+        for (std::map<std::string, std::shared_ptr<HookFile> >::const_iterator f(hook_files.begin()), f_end(hook_files.end()) ;
                 f != f_end ; ++f)
             hook_deps.add_node(f->first);
 
-        for (std::map<std::string, std::tr1::shared_ptr<HookFile> >::const_iterator f(hook_files.begin()), f_end(hook_files.end()) ;
+        for (std::map<std::string, std::shared_ptr<HookFile> >::const_iterator f(hook_files.begin()), f_end(hook_files.end()) ;
                 f != f_end ; ++f)
             f->second->add_dependencies(hook, hook_deps);
     }
@@ -692,7 +692,7 @@ Hooker::_find_hooks(const Hook & hook) const
         }
     }
 
-    std::tr1::shared_ptr<Sequence<std::tr1::shared_ptr<HookFile> > > result(new Sequence<std::tr1::shared_ptr<HookFile> >);
+    std::shared_ptr<Sequence<std::shared_ptr<HookFile> > > result(new Sequence<std::shared_ptr<HookFile> >);
     for (std::list<std::string>::const_iterator o(ordered.begin()), o_end(ordered.end()) ;
             o != o_end ; ++o)
         result->push_back(hook_files.find(*o)->second);
@@ -752,7 +752,7 @@ Hooker::perform_hook(const Hook & hook) const
     /* file hooks, but only if necessary */
 
     Lock l(_imp->hook_files_mutex);
-    std::map<std::string, std::tr1::shared_ptr<Sequence<std::tr1::shared_ptr<HookFile> > > >::iterator h(_imp->hook_files.find(hook.name()));
+    std::map<std::string, std::shared_ptr<Sequence<std::shared_ptr<HookFile> > > >::iterator h(_imp->hook_files.find(hook.name()));
 
     if (h == _imp->hook_files.end())
         h = _imp->hook_files.insert(std::make_pair(hook.name(), _find_hooks(hook))).first;
@@ -764,7 +764,7 @@ Hooker::perform_hook(const Hook & hook) const
             switch (hook.output_dest)
             {
                 case hod_stdout:
-                    for (Sequence<std::tr1::shared_ptr<HookFile> >::ConstIterator f(h->second->begin()),
+                    for (Sequence<std::shared_ptr<HookFile> >::ConstIterator f(h->second->begin()),
                             f_end(h->second->end()) ; f != f_end ; ++f)
                         if ((*f)->file_name().is_regular_file_or_symlink_to_regular_file())
                             result.max_exit_status() = std::max(result.max_exit_status(), (*f)->run(hook).max_exit_status());
@@ -774,7 +774,7 @@ Hooker::perform_hook(const Hook & hook) const
                     continue;
 
                 case hod_grab:
-                    for (Sequence<std::tr1::shared_ptr<HookFile> >::ConstIterator f(h->second->begin()),
+                    for (Sequence<std::shared_ptr<HookFile> >::ConstIterator f(h->second->begin()),
                             f_end(h->second->end()) ; f != f_end ; ++f)
                     {
                         if (! (*f)->file_name().is_regular_file_or_symlink_to_regular_file())

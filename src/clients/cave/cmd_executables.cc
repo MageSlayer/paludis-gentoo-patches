@@ -36,7 +36,7 @@
 #include <algorithm>
 #include <set>
 #include <cstdlib>
-#include <tr1/memory>
+#include <memory>
 
 using namespace paludis;
 using namespace cave;
@@ -77,8 +77,8 @@ namespace
 
 int
 ExecutablesCommand::run(
-        const std::tr1::shared_ptr<Environment> & env,
-        const std::tr1::shared_ptr<const Sequence<std::string > > & args
+        const std::shared_ptr<Environment> & env,
+        const std::shared_ptr<const Sequence<std::string > > & args
         )
 {
     ExecutablesCommandLine cmdline;
@@ -96,7 +96,7 @@ ExecutablesCommand::run(
     return executables_common(env, *cmdline.begin_parameters(), &format_fsentry);
 }
 
-std::tr1::shared_ptr<args::ArgsHandler>
+std::shared_ptr<args::ArgsHandler>
 ExecutablesCommand::make_doc_cmdline()
 {
     return make_shared_ptr(new ExecutablesCommandLine);

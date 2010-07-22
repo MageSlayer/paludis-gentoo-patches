@@ -59,7 +59,7 @@ namespace test_cases
             TEST_CHECK(spec_doc.top());
 
             TestEnvironment env;
-            GemSpecification spec(&env, std::tr1::shared_ptr<Repository>(), *spec_doc.top());
+            GemSpecification spec(&env, std::shared_ptr<Repository>(), *spec_doc.top());
 
             TEST_CHECK(spec.short_description_key());
             TEST_CHECK_EQUAL(spec.short_description_key()->value(), "This is the summary");

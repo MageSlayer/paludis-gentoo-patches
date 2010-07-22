@@ -44,7 +44,7 @@
 #include <paludis/package_database.hh>
 #include <paludis/output_manager_from_environment.hh>
 #include <cstdlib>
-#include <tr1/functional>
+#include <functional>
 #include <iostream>
 #include <map>
 
@@ -107,13 +107,13 @@ main(int argc, char *argv[])
         }
         else
         {
-            std::tr1::shared_ptr<FSEntrySequence> extra_repository_dirs(new FSEntrySequence);
+            std::shared_ptr<FSEntrySequence> extra_repository_dirs(new FSEntrySequence);
             for (args::StringSequenceArg::ConstIterator d(CommandLine::get_instance()->a_extra_repository_dir.begin_args()),
                     d_end(CommandLine::get_instance()->a_extra_repository_dir.end_args()) ;
                     d != d_end ; ++d)
                 extra_repository_dirs->push_back(*d);
 
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("distdir", CommandLine::get_instance()->a_download_directory.argument());
             NoConfigEnvironment env(make_named_values<no_config_environment::Params>(
                     n::accept_unstable() = true,
@@ -128,9 +128,9 @@ main(int argc, char *argv[])
                     n::write_cache() = CommandLine::get_instance()->a_write_cache_dir.argument()
                     ));
 
-            std::tr1::shared_ptr<const PackageIDSequence> ids(env[selection::AllVersionsSorted(
+            std::shared_ptr<const PackageIDSequence> ids(env[selection::AllVersionsSorted(
                         generator::InRepository(env.main_repository()->name()))]);
-            std::multimap<std::tr1::shared_ptr<const PackageID>, std::string, PackageIDComparator> results(
+            std::multimap<std::shared_ptr<const PackageID>, std::string, PackageIDComparator> results(
                     PackageIDComparator(env.package_database().get()));
             unsigned success(0), total(0);
 
@@ -149,9 +149,9 @@ main(int argc, char *argv[])
                             n::fetch_parts() = FetchParts() + fp_regulars + fp_unneeded,
                             n::ignore_not_in_manifest() = false,
                             n::ignore_unfetched() = false,
-                            n::make_output_manager() = std::tr1::ref(output_manager_holder),
+                            n::make_output_manager() = std::ref(output_manager_holder),
                             n::safe_resume() = true,
-                            n::want_phase() = std::tr1::bind(return_literal_function(wp_yes))
+                            n::want_phase() = std::bind(return_literal_function(wp_yes))
                             ));
 
                 try
@@ -209,7 +209,7 @@ main(int argc, char *argv[])
 
             std::cout << std::endl;
 
-            std::tr1::shared_ptr<SafeOFStream> outf;
+            std::shared_ptr<SafeOFStream> outf;
             if (CommandLine::get_instance()->a_report_file.specified())
                 outf.reset(new SafeOFStream(FSEntry(CommandLine::get_instance()->a_report_file.argument())));
 
@@ -220,8 +220,8 @@ main(int argc, char *argv[])
                 << total << " IDs, " << success << " successes, " << (total - success) << " failures" << endl << endl;
 
             int exit_status(0);
-            std::tr1::shared_ptr<const PackageID> old_id;
-            for (std::multimap<std::tr1::shared_ptr<const PackageID>, std::string, std::tr1::reference_wrapper<const PackageIDComparator> >::const_iterator
+            std::shared_ptr<const PackageID> old_id;
+            for (std::multimap<std::shared_ptr<const PackageID>, std::string, std::reference_wrapper<const PackageIDComparator> >::const_iterator
                     r(results.begin()), r_end(results.end()) ; r != r_end ; ++r)
             {
                 exit_status |= 1;

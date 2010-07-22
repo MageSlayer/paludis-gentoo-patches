@@ -26,10 +26,10 @@ using namespace paludis;
 
 namespace
 {
-    std::tr1::shared_ptr<Environment>
+    std::shared_ptr<Environment>
     make_paludis_environment(const std::string & s)
     {
-        return std::tr1::shared_ptr<Environment>(new PaludisEnvironment(s));
+        return std::shared_ptr<Environment>(new PaludisEnvironment(s));
     }
 }
 
@@ -44,7 +44,7 @@ namespace paludis
     void register_environment<environment_groups::paludis>(const environment_groups::paludis * const,
             EnvironmentFactory * const factory)
     {
-        std::tr1::shared_ptr<Set<std::string> > paludis_formats(new Set<std::string>);
+        std::shared_ptr<Set<std::string> > paludis_formats(new Set<std::string>);
         paludis_formats->insert("paludis");
         factory->add_environment_format(paludis_formats, &make_paludis_environment);
     }

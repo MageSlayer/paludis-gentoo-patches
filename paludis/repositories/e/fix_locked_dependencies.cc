@@ -36,7 +36,7 @@
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/metadata_key.hh>
-#include <tr1/functional>
+#include <functional>
 #include <algorithm>
 #include <list>
 
@@ -45,23 +45,23 @@ using namespace paludis::erepository;
 
 namespace
 {
-    void cannot_add(const std::tr1::shared_ptr<const DependencySpecTree> &) PALUDIS_ATTRIBUTE((noreturn));
+    void cannot_add(const std::shared_ptr<const DependencySpecTree> &) PALUDIS_ATTRIBUTE((noreturn));
 
-    void cannot_add(const std::tr1::shared_ptr<const DependencySpecTree> &)
+    void cannot_add(const std::shared_ptr<const DependencySpecTree> &)
     {
         throw InternalError(PALUDIS_HERE, "Got weird tree");
     }
 
     struct Fixer
     {
-        std::list<std::tr1::shared_ptr<DependencySpecTree::BasicInnerNode> > stack;
-        std::tr1::shared_ptr<DependencySpecTree> result;
+        std::list<std::shared_ptr<DependencySpecTree::BasicInnerNode> > stack;
+        std::shared_ptr<DependencySpecTree> result;
 
         const Environment * const env;
         const EAPI & eapi;
-        const std::tr1::shared_ptr<const PackageID> id;
+        const std::shared_ptr<const PackageID> id;
 
-        Fixer(const Environment * const e, const EAPI & a, const std::tr1::shared_ptr<const PackageID> & i) :
+        Fixer(const Environment * const e, const EAPI & a, const std::shared_ptr<const PackageID> & i) :
             result(new DependencySpecTree(make_shared_ptr(new AllDepSpec))),
             env(e),
             eapi(a),
@@ -72,7 +72,7 @@ namespace
 
         void visit(const DependencySpecTree::NodeType<AllDepSpec>::Type & node)
         {
-            std::tr1::shared_ptr<AllDepSpec> spec(std::tr1::static_pointer_cast<AllDepSpec>(node.spec()->clone()));
+            std::shared_ptr<AllDepSpec> spec(std::static_pointer_cast<AllDepSpec>(node.spec()->clone()));
             stack.push_front((*stack.begin())->append(spec));
             std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
             stack.pop_front();
@@ -80,7 +80,7 @@ namespace
 
         void visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type & node)
         {
-            std::tr1::shared_ptr<AnyDepSpec> spec(std::tr1::static_pointer_cast<AnyDepSpec>(node.spec()->clone()));
+            std::shared_ptr<AnyDepSpec> spec(std::static_pointer_cast<AnyDepSpec>(node.spec()->clone()));
             stack.push_front((*stack.begin())->append(spec));
             std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
             stack.pop_front();
@@ -88,7 +88,7 @@ namespace
 
         void visit(const DependencySpecTree::NodeType<ConditionalDepSpec>::Type & node)
         {
-            std::tr1::shared_ptr<ConditionalDepSpec> spec(std::tr1::static_pointer_cast<ConditionalDepSpec>(node.spec()->clone()));
+            std::shared_ptr<ConditionalDepSpec> spec(std::static_pointer_cast<ConditionalDepSpec>(node.spec()->clone()));
             stack.push_front((*stack.begin())->append(spec));
             std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
             stack.pop_front();
@@ -96,7 +96,7 @@ namespace
 
         void visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & node)
         {
-            std::tr1::shared_ptr<const PackageDepSpec> c;
+            std::shared_ptr<const PackageDepSpec> c;
 
             do
             {
@@ -107,7 +107,7 @@ namespace
                 if (! r)
                     break;
 
-                std::tr1::shared_ptr<const PackageIDSequence> matches((*env)[selection::AllVersionsSorted(
+                std::shared_ptr<const PackageIDSequence> matches((*env)[selection::AllVersionsSorted(
                             generator::Matches(*node.spec(), MatchPackageOptions()) | filter::InstalledAtRoot(FSEntry("/")))]);
                 if (matches->empty())
                     break;
@@ -143,11 +143,11 @@ namespace
     };
 }
 
-const std::tr1::shared_ptr<const DependencySpecTree>
+const std::shared_ptr<const DependencySpecTree>
 paludis::erepository::fix_locked_dependencies(
         const Environment * const env,
-        const EAPI & e, const std::tr1::shared_ptr<const PackageID> & id,
-        const std::tr1::shared_ptr<const DependencySpecTree> & b)
+        const EAPI & e, const std::shared_ptr<const PackageID> & id,
+        const std::shared_ptr<const DependencySpecTree> & b)
 {
     Fixer f(env, e, id);
     b->root()->accept(f);

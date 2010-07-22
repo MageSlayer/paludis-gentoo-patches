@@ -30,15 +30,15 @@ namespace paludis
 }
 
 /// Handle --list-repositories.
-int do_list_repositories(const std::tr1::shared_ptr<paludis::Environment> &);
+int do_list_repositories(const std::shared_ptr<paludis::Environment> &);
 
 /// Handle --list-categories.
-int do_list_categories(const std::tr1::shared_ptr<paludis::Environment> &);
+int do_list_categories(const std::shared_ptr<paludis::Environment> &);
 
 /// Handle --list-packages.
-int do_list_packages(const std::tr1::shared_ptr<paludis::Environment> &);
+int do_list_packages(const std::shared_ptr<paludis::Environment> &);
 
 /// Handle --list-sets.
-int do_list_sets(const std::tr1::shared_ptr<paludis::Environment> &);
+int do_list_sets(const std::shared_ptr<paludis::Environment> &);
 
 #endif

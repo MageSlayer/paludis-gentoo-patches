@@ -83,8 +83,7 @@
 #include <paludis/util/create_iterator-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 
-#include <tr1/unordered_map>
-#include <tr1/functional>
+#include <unordered_map>
 #include <functional>
 #include <algorithm>
 #include <vector>
@@ -97,9 +96,9 @@
 using namespace paludis;
 using namespace paludis::erepository;
 
-typedef std::tr1::unordered_map<CategoryNamePart, std::tr1::shared_ptr<QualifiedPackageNameSet>, Hash<CategoryNamePart> > CategoryMap;
-typedef std::tr1::unordered_map<QualifiedPackageName, std::tr1::shared_ptr<PackageIDSequence>, Hash<QualifiedPackageName> > IDMap;
-typedef std::map<std::pair<QualifiedPackageName, VersionSpec>, std::tr1::shared_ptr<std::list<QualifiedPackageName> > > ProvidesMap;
+typedef std::unordered_map<CategoryNamePart, std::shared_ptr<QualifiedPackageNameSet>, Hash<CategoryNamePart> > CategoryMap;
+typedef std::unordered_map<QualifiedPackageName, std::shared_ptr<PackageIDSequence>, Hash<QualifiedPackageName> > IDMap;
+typedef std::map<std::pair<QualifiedPackageName, VersionSpec>, std::shared_ptr<std::list<QualifiedPackageName> > > ProvidesMap;
 
 namespace paludis
 {
@@ -108,31 +107,31 @@ namespace paludis
     {
         VDBRepositoryParams params;
 
-        const std::tr1::shared_ptr<Mutex> big_nasty_mutex;
+        const std::shared_ptr<Mutex> big_nasty_mutex;
 
         mutable CategoryMap categories;
         mutable bool has_category_names;
         mutable IDMap ids;
 
-        mutable std::tr1::shared_ptr<RepositoryProvidesInterface::ProvidesSequence> provides;
-        mutable std::tr1::shared_ptr<ProvidesMap> provides_map;
+        mutable std::shared_ptr<RepositoryProvidesInterface::ProvidesSequence> provides;
+        mutable std::shared_ptr<ProvidesMap> provides_map;
         mutable bool tried_provides_cache, used_provides_cache;
-        std::tr1::shared_ptr<RepositoryNameCache> names_cache;
+        std::shared_ptr<RepositoryNameCache> names_cache;
 
-        Implementation(const VDBRepository * const, const VDBRepositoryParams &, std::tr1::shared_ptr<Mutex> = make_shared_ptr(new Mutex));
+        Implementation(const VDBRepository * const, const VDBRepositoryParams &, std::shared_ptr<Mutex> = make_shared_ptr(new Mutex));
         ~Implementation();
 
-        std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > location_key;
-        std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > root_key;
-        std::tr1::shared_ptr<const MetadataValueKey<std::string> > format_key;
-        std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > provides_cache_key;
-        std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > names_cache_key;
-        std::tr1::shared_ptr<const MetadataValueKey<FSEntry> > builddir_key;
-        std::tr1::shared_ptr<const MetadataValueKey<std::string> > eapi_when_unknown_key;
+        std::shared_ptr<const MetadataValueKey<FSEntry> > location_key;
+        std::shared_ptr<const MetadataValueKey<FSEntry> > root_key;
+        std::shared_ptr<const MetadataValueKey<std::string> > format_key;
+        std::shared_ptr<const MetadataValueKey<FSEntry> > provides_cache_key;
+        std::shared_ptr<const MetadataValueKey<FSEntry> > names_cache_key;
+        std::shared_ptr<const MetadataValueKey<FSEntry> > builddir_key;
+        std::shared_ptr<const MetadataValueKey<std::string> > eapi_when_unknown_key;
     };
 
     Implementation<VDBRepository>::Implementation(const VDBRepository * const r,
-            const VDBRepositoryParams & p, std::tr1::shared_ptr<Mutex> m) :
+            const VDBRepositoryParams & p, std::shared_ptr<Mutex> m) :
         params(p),
         big_nasty_mutex(m),
         has_category_names(false),
@@ -237,7 +236,7 @@ VDBRepository::is_unimportant() const
     return false;
 }
 
-std::tr1::shared_ptr<const CategoryNamePartSet>
+std::shared_ptr<const CategoryNamePartSet>
 VDBRepository::category_names() const
 {
     Lock l(*_imp->big_nasty_mutex);
@@ -246,15 +245,15 @@ VDBRepository::category_names() const
 
     need_category_names();
 
-    std::tr1::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
+    std::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
 
     std::transform(_imp->categories.begin(), _imp->categories.end(), result->inserter(),
-            std::tr1::mem_fn(&std::pair<const CategoryNamePart, std::tr1::shared_ptr<QualifiedPackageNameSet> >::first));
+            std::mem_fn(&std::pair<const CategoryNamePart, std::shared_ptr<QualifiedPackageNameSet> >::first));
 
     return result;
 }
 
-std::tr1::shared_ptr<const QualifiedPackageNameSet>
+std::shared_ptr<const QualifiedPackageNameSet>
 VDBRepository::package_names(const CategoryNamePart & c) const
 {
     Lock l(*_imp->big_nasty_mutex);
@@ -262,7 +261,7 @@ VDBRepository::package_names(const CategoryNamePart & c) const
     Context context("When fetching package names in category '" + stringify(c)
             + "' in " + stringify(name()) + ":");
 
-    std::tr1::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
+    std::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
 
     need_category_names();
     if (! has_category_named(c))
@@ -273,7 +272,7 @@ VDBRepository::package_names(const CategoryNamePart & c) const
     return _imp->categories.find(c)->second;
 }
 
-std::tr1::shared_ptr<const PackageIDSequence>
+std::shared_ptr<const PackageIDSequence>
 VDBRepository::package_ids(const QualifiedPackageName & n) const
 {
     Lock l(*_imp->big_nasty_mutex);
@@ -293,10 +292,10 @@ VDBRepository::package_ids(const QualifiedPackageName & n) const
     return _imp->ids.find(n)->second;
 }
 
-std::tr1::shared_ptr<Repository>
+std::shared_ptr<Repository>
 VDBRepository::repository_factory_create(
         Environment * const env,
-        const std::tr1::function<std::string (const std::string &)> & f)
+        const std::function<std::string (const std::string &)> & f)
 {
     Context context("When making VDB repository from repo_file '" + f("repo_file") + "':");
 
@@ -351,7 +350,7 @@ VDBRepository::repository_factory_create(
                 *DistributionData::get_instance()->distribution_from_string(
                     env->distribution()))->default_eapi_when_unknown();
 
-    return std::tr1::shared_ptr<Repository>(new VDBRepository(make_named_values<VDBRepositoryParams>(
+    return std::shared_ptr<Repository>(new VDBRepository(make_named_values<VDBRepositoryParams>(
                 n::builddir() = builddir,
                 n::eapi_when_unknown() = eapi_when_unknown,
                 n::environment() = env,
@@ -366,7 +365,7 @@ VDBRepository::repository_factory_create(
 RepositoryName
 VDBRepository::repository_factory_name(
         const Environment * const,
-        const std::tr1::function<std::string (const std::string &)> & f)
+        const std::function<std::string (const std::string &)> & f)
 {
     std::string name(f("name"));
     if (name.empty())
@@ -375,10 +374,10 @@ VDBRepository::repository_factory_name(
         return RepositoryName(name);
 }
 
-std::tr1::shared_ptr<const RepositoryNameSet>
+std::shared_ptr<const RepositoryNameSet>
 VDBRepository::repository_factory_dependencies(
         const Environment * const,
-        const std::tr1::function<std::string (const std::string &)> &)
+        const std::function<std::string (const std::string &)> &)
 {
     return make_shared_ptr(new RepositoryNameSet);
 }
@@ -397,7 +396,7 @@ VDBRepositoryKeyReadError::VDBRepositoryKeyReadError(
 
 namespace
 {
-    bool ignore_merged(const std::tr1::shared_ptr<const FSEntrySet> & s,
+    bool ignore_merged(const std::shared_ptr<const FSEntrySet> & s,
             const FSEntry & f)
     {
         return s->end() != s->find(f);
@@ -406,7 +405,7 @@ namespace
 
 void
 VDBRepository::perform_uninstall(
-        const std::tr1::shared_ptr<const ERepositoryID> & id,
+        const std::shared_ptr<const ERepositoryID> & id,
         const UninstallAction & a) const
 {
     Context context("When uninstalling '" + stringify(*id) + (a.options.is_overwrite() ? "' for an overwrite:" : "':"));
@@ -415,18 +414,18 @@ VDBRepository::perform_uninstall(
         throw ActionFailedError("Couldn't uninstall '" + stringify(*id) +
                 "' because root ('" + stringify(_imp->params.root()) + "') is not a directory");
 
-    std::tr1::shared_ptr<OutputManager> output_manager(a.options.make_output_manager()(a));
+    std::shared_ptr<OutputManager> output_manager(a.options.make_output_manager()(a));
 
     std::string reinstalling_str(a.options.is_overwrite() ? "-reinstalling-" : "");
 
-    std::tr1::shared_ptr<FSEntrySequence> eclassdirs(new FSEntrySequence);
+    std::shared_ptr<FSEntrySequence> eclassdirs(new FSEntrySequence);
     eclassdirs->push_back(FSEntry(_imp->params.location() / stringify(id->name().category()) /
                 (reinstalling_str + stringify(id->name().package()) + "-" + stringify(id->version()))));
 
     FSEntry pkg_dir(_imp->params.location() / stringify(id->name().category()) / (reinstalling_str +
                 stringify(id->name().package()) + "-" + stringify(id->version())));
 
-    std::tr1::shared_ptr<FSEntry> load_env(new FSEntry(pkg_dir / "environment.bz2"));
+    std::shared_ptr<FSEntry> load_env(new FSEntry(pkg_dir / "environment.bz2"));
 
     EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_uninstall());
     for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
@@ -532,7 +531,7 @@ VDBRepository::perform_uninstall(
             IDMap::iterator it2(_imp->ids.find(id->name()));
             if (_imp->ids.end() != it2)
             {
-                std::tr1::shared_ptr<PackageIDSequence> ids(new PackageIDSequence);
+                std::shared_ptr<PackageIDSequence> ids(new PackageIDSequence);
                 std::remove_copy(it2->second->begin(), it2->second->end(), ids->back_inserter(), id);
                 it2->second = ids;
             }
@@ -541,11 +540,11 @@ VDBRepository::perform_uninstall(
 
     if (! a.options.is_overwrite())
     {
-        std::tr1::shared_ptr<const PackageIDSequence> ids(package_ids(id->name()));
+        std::shared_ptr<const PackageIDSequence> ids(package_ids(id->name()));
         bool only(true);
         for (PackageIDSequence::ConstIterator it(ids->begin()),
                  it_end(ids->end()); it_end != it; ++it)
-            if (*std::tr1::static_pointer_cast<const PackageID>(id) != **it)
+            if (*std::static_pointer_cast<const PackageID>(id) != **it)
             {
                 only = false;
                 break;
@@ -575,7 +574,7 @@ VDBRepository::invalidate_masks()
 {
 }
 
-std::tr1::shared_ptr<const RepositoryProvidesInterface::ProvidesSequence>
+std::shared_ptr<const RepositoryProvidesInterface::ProvidesSequence>
 VDBRepository::provided_packages() const
 {
     Lock l(*_imp->big_nasty_mutex);
@@ -595,7 +594,7 @@ VDBRepository::provided_packages() const
     for (ProvidesMap::const_iterator it(_imp->provides_map->begin()),
              it_end(_imp->provides_map->end()); it_end != it; ++it)
     {
-        std::tr1::shared_ptr<const ERepositoryID> id(package_id_if_exists(it->first.first, it->first.second));
+        std::shared_ptr<const ERepositoryID> id(package_id_if_exists(it->first.first, it->first.second));
         if (! id)
         {
             Log::get_instance()->message("e.vdb.provides.no_package", ll_warning, lc_context) <<
@@ -676,7 +675,7 @@ VDBRepository::load_provided_using_cache() const
             VersionSpec v(tokens.at(1), EAPIData::get_instance()->eapi_from_string(
                         _imp->params.eapi_when_unknown())->supported()->version_spec_options());
 
-            std::tr1::shared_ptr<std::list<QualifiedPackageName> > qpns(new std::list<QualifiedPackageName>);
+            std::shared_ptr<std::list<QualifiedPackageName> > qpns(new std::list<QualifiedPackageName>);
             std::copy(tokens.begin() + 2, tokens.end(), create_inserter<QualifiedPackageName>(
                         std::back_inserter(*qpns)));
 
@@ -711,11 +710,11 @@ VDBRepository::provides_from_package_id(const PackageID & id) const
         if (! id.provide_key())
             return;
 
-        std::tr1::shared_ptr<const ProvideSpecTree> provide(id.provide_key()->value());
+        std::shared_ptr<const ProvideSpecTree> provide(id.provide_key()->value());
         DepSpecFlattener<ProvideSpecTree, PackageDepSpec> f(_imp->params.environment());
         provide->root()->accept(f);
 
-        std::tr1::shared_ptr<std::list<QualifiedPackageName> > qpns(new std::list<QualifiedPackageName>);
+        std::shared_ptr<std::list<QualifiedPackageName> > qpns(new std::list<QualifiedPackageName>);
 
         for (DepSpecFlattener<ProvideSpecTree, PackageDepSpec>::ConstIterator
                  p(f.begin()), p_end(f.end()) ; p != p_end ; ++p)
@@ -759,7 +758,7 @@ VDBRepository::load_provided_the_slow_way() const
 {
     Lock l(*_imp->big_nasty_mutex);
 
-    using namespace std::tr1::placeholders;
+    using namespace std::placeholders;
 
     Context context("When loading VDB PROVIDEs map the slow way:");
 
@@ -768,9 +767,9 @@ VDBRepository::load_provided_the_slow_way() const
 
     need_category_names();
     std::for_each(_imp->categories.begin(), _imp->categories.end(),
-            std::tr1::bind(std::tr1::mem_fn(&VDBRepository::need_package_ids), this,
-                std::tr1::bind<CategoryNamePart>(std::tr1::mem_fn(
-                        &std::pair<const CategoryNamePart, std::tr1::shared_ptr<QualifiedPackageNameSet> >::first), _1)));
+            std::bind(std::mem_fn(&VDBRepository::need_package_ids), this,
+                std::bind<CategoryNamePart>(std::mem_fn(
+                        &std::pair<const CategoryNamePart, std::shared_ptr<QualifiedPackageNameSet> >::first), _1)));
 
 
     for (IDMap::const_iterator i(_imp->ids.begin()), i_end(_imp->ids.end()) ;
@@ -835,7 +834,7 @@ VDBRepository::regenerate_provides_cache() const
 {
     Lock l(*_imp->big_nasty_mutex);
 
-    using namespace std::tr1::placeholders;
+    using namespace std::placeholders;
 
     if (_imp->params.provides_cache() == FSEntry("/var/empty"))
         return;
@@ -849,7 +848,7 @@ VDBRepository::regenerate_provides_cache() const
     write_provides_cache();
 }
 
-std::tr1::shared_ptr<const CategoryNamePartSet>
+std::shared_ptr<const CategoryNamePartSet>
 VDBRepository::category_names_containing_package(const PackageNamePart & p) const
 {
     Lock l(*_imp->big_nasty_mutex);
@@ -857,7 +856,7 @@ VDBRepository::category_names_containing_package(const PackageNamePart & p) cons
     if (! _imp->names_cache->usable())
         return Repository::category_names_containing_package(p);
 
-    std::tr1::shared_ptr<const CategoryNamePartSet> result(
+    std::shared_ptr<const CategoryNamePartSet> result(
             _imp->names_cache->category_names_containing_package(p));
 
     return result ? result : Repository::category_names_containing_package(p);
@@ -865,8 +864,8 @@ VDBRepository::category_names_containing_package(const PackageNamePart & p) cons
 
 namespace
 {
-    bool slot_is_same(const std::tr1::shared_ptr<const PackageID> & a,
-            const std::tr1::shared_ptr<const PackageID> & b)
+    bool slot_is_same(const std::shared_ptr<const PackageID> & a,
+            const std::shared_ptr<const PackageID> & b)
     {
         if (a->slot_key())
             return b->slot_key() && a->slot_key()->value() == b->slot_key()->value();
@@ -874,7 +873,7 @@ namespace
             return ! b->slot_key();
     }
 
-    std::tr1::shared_ptr<OutputManager> this_output_manager(const std::tr1::shared_ptr<OutputManager> & o, const Action &)
+    std::shared_ptr<OutputManager> this_output_manager(const std::shared_ptr<OutputManager> & o, const Action &)
     {
         return o;
     }
@@ -889,7 +888,7 @@ VDBRepository::merge(const MergeParams & m)
     if (! is_suitable_destination_for(*m.package_id()))
         throw ActionFailedError("Not a suitable destination for '" + stringify(*m.package_id()) + "'");
 
-    std::tr1::shared_ptr<const ERepositoryID> is_replace(package_id_if_exists(m.package_id()->name(), m.package_id()->version()));
+    std::shared_ptr<const ERepositoryID> is_replace(package_id_if_exists(m.package_id()->name(), m.package_id()->version()));
 
     FSEntry tmp_vdb_dir(_imp->params.location());
     if (! tmp_vdb_dir.exists())
@@ -906,7 +905,7 @@ VDBRepository::merge(const MergeParams & m)
                 n::environment_file() = m.environment_file(),
                 n::maybe_output_manager() = m.output_manager(),
                 n::output_directory() = tmp_vdb_dir,
-                n::package_id() = std::tr1::static_pointer_cast<const ERepositoryID>(m.package_id())
+                n::package_id() = std::static_pointer_cast<const ERepositoryID>(m.package_id())
             ));
 
     write_vdb_entry_command();
@@ -935,7 +934,7 @@ VDBRepository::merge(const MergeParams & m)
     vdb_dir /= stringify(m.package_id()->name().category());
     vdb_dir /= (stringify(m.package_id()->name().package()) + "-" + stringify(m.package_id()->version()));
 
-    bool fix_mtimes(std::tr1::static_pointer_cast<const ERepositoryID>(
+    bool fix_mtimes(std::static_pointer_cast<const ERepositoryID>(
                 m.package_id())->eapi()->supported()->ebuild_options()->fix_mtimes());
 
     VDBMerger merger(
@@ -984,7 +983,7 @@ VDBRepository::merge(const MergeParams & m)
 
     tmp_vdb_dir.rename(vdb_dir);
 
-    std::tr1::shared_ptr<const PackageID> new_id;
+    std::shared_ptr<const PackageID> new_id;
     {
         CategoryMap::iterator it(_imp->categories.find(m.package_id()->name().category()));
         if (_imp->categories.end() != it && it->second)
@@ -993,7 +992,7 @@ VDBRepository::merge(const MergeParams & m)
             IDMap::iterator it2(_imp->ids.find(m.package_id()->name()));
             if (_imp->ids.end() == it2)
             {
-                std::tr1::shared_ptr<PackageIDSequence> ids(new PackageIDSequence);
+                std::shared_ptr<PackageIDSequence> ids(new PackageIDSequence);
                 it2 = _imp->ids.insert(std::make_pair(m.package_id()->name(), ids)).first;
             }
             it2->second->push_back(new_id = make_id(m.package_id()->name(), m.package_id()->version(), vdb_dir));
@@ -1007,31 +1006,31 @@ VDBRepository::merge(const MergeParams & m)
         UninstallActionOptions uo(make_named_values<UninstallActionOptions>(
                     n::config_protect() = config_protect,
                     n::if_for_install_id() = m.package_id(),
-                    n::ignore_for_unmerge() = std::tr1::bind(&ignore_merged, m.merged_entries(),
-                            std::tr1::placeholders::_1),
+                    n::ignore_for_unmerge() = std::bind(&ignore_merged, m.merged_entries(),
+                            std::placeholders::_1),
                     n::is_overwrite() = true,
-                    n::make_output_manager() = std::tr1::bind(&this_output_manager, m.output_manager(), std::tr1::placeholders::_1)
+                    n::make_output_manager() = std::bind(&this_output_manager, m.output_manager(), std::placeholders::_1)
                     ));
         m.perform_uninstall()(is_replace, uo);
     }
 
-    if (std::tr1::static_pointer_cast<const ERepositoryID>(m.package_id())
+    if (std::static_pointer_cast<const ERepositoryID>(m.package_id())
             ->eapi()->supported()->ebuild_phases()->ebuild_new_upgrade_phase_order())
     {
-        const std::tr1::shared_ptr<const PackageIDSequence> & replace_candidates(package_ids(m.package_id()->name()));
+        const std::shared_ptr<const PackageIDSequence> & replace_candidates(package_ids(m.package_id()->name()));
         for (PackageIDSequence::ConstIterator it(replace_candidates->begin()),
                  it_end(replace_candidates->end()); it_end != it; ++it)
         {
-            std::tr1::shared_ptr<const ERepositoryID> candidate(std::tr1::static_pointer_cast<const ERepositoryID>(*it));
+            std::shared_ptr<const ERepositoryID> candidate(std::static_pointer_cast<const ERepositoryID>(*it));
             if (candidate != is_replace && candidate != new_id && slot_is_same(candidate, m.package_id()))
             {
                 UninstallActionOptions uo(make_named_values<UninstallActionOptions>(
                             n::config_protect() = config_protect,
                             n::if_for_install_id() = m.package_id(),
-                            n::ignore_for_unmerge() = std::tr1::bind(&ignore_merged, m.merged_entries(),
-                                    std::tr1::placeholders::_1),
+                            n::ignore_for_unmerge() = std::bind(&ignore_merged, m.merged_entries(),
+                                    std::placeholders::_1),
                             n::is_overwrite() = false,
-                            n::make_output_manager() = std::tr1::bind(&this_output_manager, m.output_manager(), std::tr1::placeholders::_1)
+                            n::make_output_manager() = std::bind(&this_output_manager, m.output_manager(), std::placeholders::_1)
                             ));
                 m.perform_uninstall()(candidate, uo);
             }
@@ -1069,7 +1068,7 @@ VDBRepository::need_category_names() const
         {
             if (d->is_directory_or_symlink_to_directory())
                 _imp->categories.insert(std::make_pair(CategoryNamePart(d->basename()),
-                            std::tr1::shared_ptr<QualifiedPackageNameSet>()));
+                            std::shared_ptr<QualifiedPackageNameSet>()));
         }
         catch (const InternalError &)
         {
@@ -1095,7 +1094,7 @@ VDBRepository::need_package_ids(const CategoryNamePart & c) const
     Context context("When loading package names from '" + stringify(_imp->params.location()) +
             "' in category '" + stringify(c) + "':");
 
-    std::tr1::shared_ptr<QualifiedPackageNameSet> q(new QualifiedPackageNameSet);
+    std::shared_ptr<QualifiedPackageNameSet> q(new QualifiedPackageNameSet);
 
     for (DirIterator d(_imp->params.location() / stringify(c), DirIteratorOptions() + dio_inode_sort), d_end ; d != d_end ; ++d)
         try
@@ -1128,34 +1127,34 @@ VDBRepository::need_package_ids(const CategoryNamePart & c) const
     _imp->categories[c] = q;
 }
 
-const std::tr1::shared_ptr<const ERepositoryID>
+const std::shared_ptr<const ERepositoryID>
 VDBRepository::make_id(const QualifiedPackageName & q, const VersionSpec & v, const FSEntry & f) const
 {
     Lock l(*_imp->big_nasty_mutex);
 
     Context context("When creating ID for '" + stringify(q) + "-" + stringify(v) + "' from '" + stringify(f) + "':");
 
-    std::tr1::shared_ptr<VDBID> result(new VDBID(q, v, _imp->params.environment(), shared_from_this(), f));
+    std::shared_ptr<VDBID> result(new VDBID(q, v, _imp->params.environment(), shared_from_this(), f));
     return result;
 }
 
-const std::tr1::shared_ptr<const ERepositoryID>
+const std::shared_ptr<const ERepositoryID>
 VDBRepository::package_id_if_exists(const QualifiedPackageName & q, const VersionSpec & v) const
 {
     Lock l(*_imp->big_nasty_mutex);
 
     if (! has_package_named(q))
-        return std::tr1::shared_ptr<const ERepositoryID>();
+        return std::shared_ptr<const ERepositoryID>();
 
     need_package_ids(q.category());
 
-    using namespace std::tr1::placeholders;
+    using namespace std::placeholders;
 
     PackageIDSequence::ConstIterator i(_imp->ids[q]->begin()), i_end(_imp->ids[q]->end());
     for ( ; i != i_end ; ++i)
         if (v == (*i)->version())
-            return std::tr1::static_pointer_cast<const ERepositoryID>(*i);
-    return std::tr1::shared_ptr<const ERepositoryID>();
+            return std::static_pointer_cast<const ERepositoryID>(*i);
+    return std::shared_ptr<const ERepositoryID>();
 }
 
 void
@@ -1163,25 +1162,25 @@ VDBRepository::need_keys_added() const
 {
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataValueKey<std::string> >
 VDBRepository::format_key() const
 {
     return _imp->format_key;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSEntry> >
 VDBRepository::location_key() const
 {
     return _imp->location_key;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSEntry> >
 VDBRepository::installed_root_key() const
 {
     return _imp->root_key;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataValueKey<std::string> >
 VDBRepository::sync_host_key() const
 {
     return make_null_shared_ptr();
@@ -1286,7 +1285,7 @@ namespace
 
     bool rewrite_dependencies(
             const FSEntry & f,
-            const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > & key,
+            const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > & key,
             const DepRewrites & rewrites)
     {
         DepRewriter v(rewrites);
@@ -1309,10 +1308,10 @@ VDBRepository::perform_updates()
 
     DepRewrites dep_rewrites;
 
-    typedef std::list<std::pair<std::tr1::shared_ptr<const PackageID>, QualifiedPackageName> > Moves;
+    typedef std::list<std::pair<std::shared_ptr<const PackageID>, QualifiedPackageName> > Moves;
     Moves moves;
 
-    typedef std::list<std::pair<std::tr1::shared_ptr<const PackageID>, SlotName> > SlotMoves;
+    typedef std::list<std::pair<std::shared_ptr<const PackageID>, SlotName> > SlotMoves;
     SlotMoves slot_moves;
 
     std::map<FSEntry, std::time_t> cache_contents;
@@ -1429,7 +1428,7 @@ VDBRepository::perform_updates()
                              * moved. */
                             dep_rewrites.insert(std::make_pair(old_q, new_q)).first->second = new_q;
 
-                            const std::tr1::shared_ptr<const PackageIDSequence> ids((*_imp->params.environment())[selection::AllVersionsSorted(
+                            const std::shared_ptr<const PackageIDSequence> ids((*_imp->params.environment())[selection::AllVersionsSorted(
                                         generator::Package(old_q) & generator::InRepository(name())
                                         )]);
                             if (! ids->empty())
@@ -1451,7 +1450,7 @@ VDBRepository::perform_updates()
                                         UserPackageDepSpecOptions()));
                             SlotName old_slot(tokens.at(2)), new_slot(tokens.at(3));
 
-                            const std::tr1::shared_ptr<const PackageIDSequence> ids((*_imp->params.environment())[selection::AllVersionsSorted(
+                            const std::shared_ptr<const PackageIDSequence> ids((*_imp->params.environment())[selection::AllVersionsSorted(
                                         (generator::Matches(old_spec, MatchPackageOptions()) & generator::InRepository(name())) |
                                         filter::Slot(old_slot)
                                         )]);
@@ -1514,7 +1513,7 @@ VDBRepository::perform_updates()
 
                     from_dir.rename(to_dir);
 
-                    std::tr1::shared_ptr<const EAPI> eapi(std::tr1::static_pointer_cast<const VDBID>(m->first)->eapi());
+                    std::shared_ptr<const EAPI> eapi(std::static_pointer_cast<const VDBID>(m->first)->eapi());
                     if (eapi->supported())
                     {
                         SafeOFStream pf(to_dir / eapi->supported()->ebuild_environment_variables()->env_pf());
@@ -1578,7 +1577,7 @@ VDBRepository::perform_updates()
             std::cout << std::endl << "Updating installed package dependencies" << std::endl;
 
             bool rewrite_done(false);
-            const std::tr1::shared_ptr<const PackageIDSequence> ids((*_imp->params.environment())[selection::AllVersionsSorted(
+            const std::shared_ptr<const PackageIDSequence> ids((*_imp->params.environment())[selection::AllVersionsSorted(
                         generator::InRepository(name()))]);
             for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                     i != i_end ; ++i)
@@ -1624,7 +1623,7 @@ VDBRepository::perform_updates()
     }
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataValueKey<std::string> >
 VDBRepository::accept_keywords_key() const
 {
     return make_null_shared_ptr();

@@ -99,7 +99,7 @@ namespace paludis
     {
         private:
             PackageDepSpec _query;
-            const std::tr1::shared_ptr<const PackageID> _id;
+            const std::shared_ptr<const PackageID> _id;
 
         public:
             ///\name Basic operations
@@ -107,7 +107,7 @@ namespace paludis
 
             AdditionalRequirementsNotMetError(
                     const PackageDepSpec & query,
-                    const std::tr1::shared_ptr<const PackageID> & id) throw ();
+                    const std::shared_ptr<const PackageID> & id) throw ();
 
             virtual ~AdditionalRequirementsNotMetError() throw ();
 
@@ -126,7 +126,7 @@ namespace paludis
              *
              * \since 0.44
              */
-            const std::tr1::shared_ptr<const PackageID> package_id() const
+            const std::shared_ptr<const PackageID> package_id() const
             {
                 return _id;
             }
@@ -202,7 +202,7 @@ namespace paludis
             ///\{
 
             NoDestinationError(const PackageID &,
-                    const std::tr1::shared_ptr<const DestinationsSet> &) throw ();
+                    const std::shared_ptr<const DestinationsSet> &) throw ();
 
             ///\}
     };

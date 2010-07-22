@@ -29,8 +29,8 @@ namespace paludis
     namespace cave
     {
         void dump_if_requested(
-                const std::tr1::shared_ptr<Environment> &,
-                const std::tr1::shared_ptr<resolver::Resolver> & resolver,
+                const std::shared_ptr<Environment> &,
+                const std::shared_ptr<resolver::Resolver> & resolver,
                 const ResolveCommandLineResolutionOptions & resolution_options);
     }
 }

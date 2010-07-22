@@ -28,7 +28,7 @@ using namespace paludis::unavailable_repository;
 
 namespace
 {
-    int generic_importance(const Environment * const, const std::tr1::function<std::string (const std::string &)> & f)
+    int generic_importance(const Environment * const, const std::function<std::string (const std::string &)> & f)
     {
         if (! f("importance").empty())
             return destringify<int>(f("importance"));
@@ -48,7 +48,7 @@ namespace paludis
     void register_repositories<repository_groups::unavailable>(const repository_groups::unavailable * const,
             RepositoryFactory * const factory)
     {
-        std::tr1::shared_ptr<Set<std::string> > unavailable_formats(new Set<std::string>);
+        std::shared_ptr<Set<std::string> > unavailable_formats(new Set<std::string>);
         unavailable_formats->insert("unavailable");
 
         factory->add_repository_format(unavailable_formats,

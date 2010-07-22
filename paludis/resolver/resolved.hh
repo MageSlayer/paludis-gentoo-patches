@@ -28,7 +28,7 @@
 #include <paludis/resolver/nag-fwd.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/serialise-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 
 namespace paludis
 {
@@ -49,15 +49,15 @@ namespace paludis
     {
         struct Resolved
         {
-            NamedValue<n::job_lists, std::tr1::shared_ptr<JobLists> > job_lists;
-            NamedValue<n::nag, std::tr1::shared_ptr<NAG> > nag;
-            NamedValue<n::resolutions_by_resolvent, std::tr1::shared_ptr<ResolutionsByResolvent> > resolutions_by_resolvent;
-            NamedValue<n::taken_change_or_remove_decisions, std::tr1::shared_ptr<OrderedChangeOrRemoveDecisions> > taken_change_or_remove_decisions;
-            NamedValue<n::taken_unable_to_make_decisions, std::tr1::shared_ptr<Decisions<UnableToMakeDecision> > > taken_unable_to_make_decisions;
-            NamedValue<n::taken_unconfirmed_decisions, std::tr1::shared_ptr<Decisions<ConfirmableDecision> > > taken_unconfirmed_decisions;
-            NamedValue<n::taken_unorderable_decisions, std::tr1::shared_ptr<OrderedChangeOrRemoveDecisions> > taken_unorderable_decisions;
-            NamedValue<n::untaken_change_or_remove_decisions, std::tr1::shared_ptr<Decisions<ChangeOrRemoveDecision> > > untaken_change_or_remove_decisions;
-            NamedValue<n::untaken_unable_to_make_decisions, std::tr1::shared_ptr<Decisions<UnableToMakeDecision> > > untaken_unable_to_make_decisions;
+            NamedValue<n::job_lists, std::shared_ptr<JobLists> > job_lists;
+            NamedValue<n::nag, std::shared_ptr<NAG> > nag;
+            NamedValue<n::resolutions_by_resolvent, std::shared_ptr<ResolutionsByResolvent> > resolutions_by_resolvent;
+            NamedValue<n::taken_change_or_remove_decisions, std::shared_ptr<OrderedChangeOrRemoveDecisions> > taken_change_or_remove_decisions;
+            NamedValue<n::taken_unable_to_make_decisions, std::shared_ptr<Decisions<UnableToMakeDecision> > > taken_unable_to_make_decisions;
+            NamedValue<n::taken_unconfirmed_decisions, std::shared_ptr<Decisions<ConfirmableDecision> > > taken_unconfirmed_decisions;
+            NamedValue<n::taken_unorderable_decisions, std::shared_ptr<OrderedChangeOrRemoveDecisions> > taken_unorderable_decisions;
+            NamedValue<n::untaken_change_or_remove_decisions, std::shared_ptr<Decisions<ChangeOrRemoveDecision> > > untaken_change_or_remove_decisions;
+            NamedValue<n::untaken_unable_to_make_decisions, std::shared_ptr<Decisions<UnableToMakeDecision> > > untaken_unable_to_make_decisions;
 
             static const Resolved deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
             void serialise(Serialiser &) const;

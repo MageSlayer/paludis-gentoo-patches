@@ -35,7 +35,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::tr1::shared_ptr<const FakeInstalledRepository> r(new FakeInstalledRepository(
+            std::shared_ptr<const FakeInstalledRepository> r(new FakeInstalledRepository(
                         make_named_values<FakeInstalledRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("fake"),

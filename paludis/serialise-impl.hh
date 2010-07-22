@@ -28,8 +28,8 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
-#include <tr1/type_traits>
-#include <tr1/unordered_set>
+#include <type_traits>
+#include <unordered_set>
 #include <vector>
 #include <list>
 #include <ostream>
@@ -43,9 +43,9 @@ namespace paludis
     struct SerialiserFlagsInclude
     {
         static const bool value =
-            std::tr1::is_same<typename Flags_::Flag1, Flag_>::value ||
-            std::tr1::is_same<typename Flags_::Flag2, Flag_>::value ||
-            std::tr1::is_same<typename Flags_::Flag3, Flag_>::value;
+            std::is_same<typename Flags_::Flag1, Flag_>::value ||
+            std::is_same<typename Flags_::Flag2, Flag_>::value ||
+            std::is_same<typename Flags_::Flag3, Flag_>::value;
     };
 
     template <
@@ -155,9 +155,9 @@ namespace paludis
     };
 
     template <typename T_, typename H_>
-    struct SerialiserConstIteratorType<std::tr1::unordered_set<T_, H_> >
+    struct SerialiserConstIteratorType<std::unordered_set<T_, H_> >
     {
-        typedef typename std::tr1::unordered_set<T_, H_>::const_iterator Type;
+        typedef typename std::unordered_set<T_, H_>::const_iterator Type;
     };
 
     template <
@@ -173,12 +173,12 @@ namespace paludis
             {
                 typedef typename std::iterator_traits<
                     typename SerialiserConstIteratorType<T_>::Type>::value_type ItemValueType;
-                typedef typename std::tr1::remove_reference<ItemValueType>::type ItemType;
+                typedef typename std::remove_reference<ItemValueType>::type ItemType;
 
                 s.raw_stream() << ++n << "=";
                 SerialiserObjectWriterHandler<
                     false,
-                    ! std::tr1::is_same<ItemType, typename RemoveSharedPtr<ItemType>::Type>::value,
+                    ! std::is_same<ItemType, typename RemoveSharedPtr<ItemType>::Type>::value,
                     ItemType
                         >::write(s, *i);
             }
@@ -241,15 +241,15 @@ namespace paludis
     };
 
     template <>
-    struct PALUDIS_VISIBLE DeserialisatorHandler<std::tr1::shared_ptr<const PackageID> >
+    struct PALUDIS_VISIBLE DeserialisatorHandler<std::shared_ptr<const PackageID> >
     {
-        static std::tr1::shared_ptr<const PackageID> handle(Deserialisation & v);
+        static std::shared_ptr<const PackageID> handle(Deserialisation & v);
     };
 
     template <typename T_>
-    struct PALUDIS_VISIBLE DeserialisatorHandler<std::tr1::shared_ptr<T_> >
+    struct PALUDIS_VISIBLE DeserialisatorHandler<std::shared_ptr<T_> >
     {
-        static std::tr1::shared_ptr<T_> handle(Deserialisation & v)
+        static std::shared_ptr<T_> handle(Deserialisation & v)
         {
             if (v.null())
                 return make_null_shared_ptr();
@@ -293,7 +293,7 @@ namespace paludis
     }
 
     template <typename T_>
-    std::tr1::shared_ptr<T_> deserialise(
+    std::shared_ptr<T_> deserialise(
             const Environment * const env,
             const std::string & str,
             const std::string & class_name)

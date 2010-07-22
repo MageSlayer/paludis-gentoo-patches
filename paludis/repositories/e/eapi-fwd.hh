@@ -24,7 +24,7 @@
 #include <paludis/merger-fwd.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/elike_package_dep_spec-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 
 namespace paludis
 {

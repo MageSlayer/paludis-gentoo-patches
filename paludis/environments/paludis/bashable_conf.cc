@@ -26,13 +26,13 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
-#include <tr1/functional>
+#include <functional>
 
 using namespace paludis;
 using namespace paludis::paludis_environment;
 
 std::string defined_vars_to_kv_func(
-        const std::tr1::shared_ptr<const Map<std::string, std::string> > v,
+        const std::shared_ptr<const Map<std::string, std::string> > v,
         const KeyValueConfigFile &,
         const std::string & k)
 {
@@ -42,12 +42,12 @@ std::string defined_vars_to_kv_func(
     return "";
 }
 
-std::tr1::shared_ptr<LineConfigFile>
+std::shared_ptr<LineConfigFile>
 paludis::paludis_environment::make_bashable_conf(const FSEntry & f, const LineConfigFileOptions & o)
 {
     Context context("When making a config file out of '" + stringify(f) + "':");
 
-    std::tr1::shared_ptr<LineConfigFile> result;
+    std::shared_ptr<LineConfigFile> result;
 
     if (is_file_with_extension(f, ".bash", IsFileWithOptions()))
     {
@@ -73,14 +73,14 @@ paludis::paludis_environment::make_bashable_conf(const FSEntry & f, const LineCo
     return result;
 }
 
-std::tr1::shared_ptr<KeyValueConfigFile>
+std::shared_ptr<KeyValueConfigFile>
 paludis::paludis_environment::make_bashable_kv_conf(const FSEntry & f,
-        const std::tr1::shared_ptr<const Map<std::string, std::string> > & predefined_variables,
+        const std::shared_ptr<const Map<std::string, std::string> > & predefined_variables,
         const KeyValueConfigFileOptions & o)
 {
     Context context("When making a key=value config file out of '" + stringify(f) + "':");
 
-    std::tr1::shared_ptr<KeyValueConfigFile> result;
+    std::shared_ptr<KeyValueConfigFile> result;
 
     if (is_file_with_extension(f, ".bash", IsFileWithOptions()))
     {
@@ -107,11 +107,11 @@ paludis::paludis_environment::make_bashable_kv_conf(const FSEntry & f,
     else
     {
         result.reset(new KeyValueConfigFile(f, o,
-                    std::tr1::bind(
+                    std::bind(
                         &defined_vars_to_kv_func,
                         predefined_variables,
-                        std::tr1::placeholders::_1,
-                        std::tr1::placeholders::_2),
+                        std::placeholders::_1,
+                        std::placeholders::_2),
                     &KeyValueConfigFile::no_transformation));
     }
 

@@ -23,7 +23,7 @@
 #include <paludis/environment-fwd.hh>
 #include <paludis/util/sequence-fwd.hh>
 #include <paludis/util/map-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 #include "cmd_resolve_cmdline.hh"
 
 namespace paludis
@@ -31,14 +31,14 @@ namespace paludis
     namespace cave
     {
         int resolve_common(
-                const std::tr1::shared_ptr<Environment> & env,
+                const std::shared_ptr<Environment> & env,
                 const ResolveCommandLineResolutionOptions & resolution_options,
                 const ResolveCommandLineExecutionOptions & execution_options,
                 const ResolveCommandLineDisplayOptions & display_options,
                 const ResolveCommandLineProgramOptions & program_options,
-                const std::tr1::shared_ptr<const Map<std::string, std::string> > & keys_if_import,
-                const std::tr1::shared_ptr<const Sequence<std::pair<std::string, std::string> > > & targets_if_not_purge,
-                const std::tr1::shared_ptr<const Sequence<std::string> > & world_specs_if_not_auto,
+                const std::shared_ptr<const Map<std::string, std::string> > & keys_if_import,
+                const std::shared_ptr<const Sequence<std::pair<std::string, std::string> > > & targets_if_not_purge,
+                const std::shared_ptr<const Sequence<std::string> > & world_specs_if_not_auto,
                 const bool purge
                 ) PALUDIS_ATTRIBUTE((warn_unused_result));
     }

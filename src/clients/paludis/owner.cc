@@ -83,7 +83,7 @@ namespace
 
 int
 do_one_owner(
-        const std::tr1::shared_ptr<Environment> env,
+        const std::shared_ptr<Environment> env,
         const std::string & query)
 {
     bool found_owner=false;
@@ -95,21 +95,21 @@ do_one_owner(
         if (! (*r)->installed_root_key())
             continue;
 
-        std::tr1::shared_ptr<const CategoryNamePartSet> cats((*r)->category_names());
+        std::shared_ptr<const CategoryNamePartSet> cats((*r)->category_names());
         for (CategoryNamePartSet::ConstIterator c(cats->begin()),
                 c_end(cats->end()) ; c != c_end ; ++c)
         {
-            std::tr1::shared_ptr<const QualifiedPackageNameSet> pkgs((*r)->package_names(*c));
+            std::shared_ptr<const QualifiedPackageNameSet> pkgs((*r)->package_names(*c));
             for (QualifiedPackageNameSet::ConstIterator p(pkgs->begin()),
                     p_end(pkgs->end()) ; p != p_end ; ++p)
             {
-                std::tr1::shared_ptr<const PackageIDSequence> ids((*r)->package_ids(*p));
+                std::shared_ptr<const PackageIDSequence> ids((*r)->package_ids(*p));
                 for (PackageIDSequence::ConstIterator v(ids->begin()), v_end(ids->end()) ; v != v_end ; ++v)
                 {
                     if (! (*v)->contents_key())
                         continue;
 
-                    std::tr1::shared_ptr<const Contents> contents((*v)->contents_key()->value());
+                    std::shared_ptr<const Contents> contents((*v)->contents_key()->value());
                     ContentsFinder d(query, CommandLine::get_instance()->a_full_match.specified());
                     std::for_each(indirect_iterator(contents->begin()), indirect_iterator(contents->end()), accept_visitor(d));
                     if (! d.matches.empty())
@@ -136,7 +136,7 @@ do_one_owner(
 }
 
 int
-do_owner(const std::tr1::shared_ptr<Environment> & env)
+do_owner(const std::shared_ptr<Environment> & env)
 {
     int return_code(0);
     Context context("When performing owner action from command line:");

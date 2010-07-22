@@ -42,7 +42,7 @@ using namespace test;
 
 namespace
 {
-    std::string from_keys(const std::tr1::shared_ptr<const Map<std::string, std::string> > & m,
+    std::string from_keys(const std::shared_ptr<const Map<std::string, std::string> > & m,
             const std::string & k)
     {
         Map<std::string, std::string>::ConstIterator mm(m->find(k));
@@ -90,8 +90,8 @@ namespace
             FSEntry root_dir;
             std::string target;
             TestEnvironment env;
-            std::tr1::shared_ptr<Repository> repo;
-            std::tr1::shared_ptr<VDBUnmergerNoDisplay> unmerger;
+            std::shared_ptr<Repository> repo;
+            std::shared_ptr<VDBUnmergerNoDisplay> unmerger;
 
             bool repeatable() const
             {
@@ -113,13 +113,13 @@ namespace
             void run()
             {
                 env.set_paludis_command("/bin/false");
-                std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+                std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
                 keys->insert("format", "vdb");
                 keys->insert("names_cache", "/var/empty");
                 keys->insert("provides_cache", "/var/empty");
                 keys->insert("location", stringify(FSEntry::cwd() / "vdb_unmerger_TEST_dir" / "repo"));
                 keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_unmerger_TEST_dir" / "build"));
-                repo = VDBRepository::repository_factory_create(&env, std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1));
+                repo = VDBRepository::repository_factory_create(&env, std::bind(from_keys, keys, std::placeholders::_1));
                 env.package_database()->add_repository(0, repo);
 
                 unmerger.reset(new VDBUnmergerNoDisplay(make_named_values<VDBUnmergerOptions>(

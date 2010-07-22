@@ -34,7 +34,6 @@
 #include <paludis/stringify_formatter.hh>
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <tr1/functional>
 #include <set>
 #include <map>
 #include <list>
@@ -58,11 +57,11 @@ namespace paludis
         FSEntry & filename;
         const FSEntry & ebuild;
         std::time_t master_mtime;
-        std::tr1::shared_ptr<const EclassMtimes> eclass_mtimes;
+        std::shared_ptr<const EclassMtimes> eclass_mtimes;
         bool silent;
 
         Implementation(const Environment * const e, FSEntry & f, const FSEntry & eb,
-                std::time_t m, const std::tr1::shared_ptr<const EclassMtimes> em, bool s) :
+                std::time_t m, const std::shared_ptr<const EclassMtimes> em, bool s) :
             env(e),
             filename(f),
             ebuild(eb),
@@ -77,7 +76,7 @@ namespace paludis
 namespace
 {
     bool load_flat_list(
-        const std::tr1::shared_ptr<const EbuildID> & id, const std::vector<std::string> & lines, Implementation<EbuildFlatMetadataCache> * _imp)
+        const std::shared_ptr<const EbuildID> & id, const std::vector<std::string> & lines, Implementation<EbuildFlatMetadataCache> * _imp)
     {
         Context ctx("When loading flat_list format cache file:");
 
@@ -288,7 +287,7 @@ namespace
 }
 
 EbuildFlatMetadataCache::EbuildFlatMetadataCache(const Environment * const v, FSEntry & f,
-        const FSEntry & e, std::time_t t, const std::tr1::shared_ptr<const EclassMtimes> & m, bool s) :
+        const FSEntry & e, std::time_t t, const std::shared_ptr<const EclassMtimes> & m, bool s) :
     PrivateImplementationPattern<EbuildFlatMetadataCache>(new Implementation<EbuildFlatMetadataCache>(v, f, e, t, m, s))
 {
 }
@@ -298,9 +297,9 @@ EbuildFlatMetadataCache::~EbuildFlatMetadataCache()
 }
 
 bool
-EbuildFlatMetadataCache::load(const std::tr1::shared_ptr<const EbuildID> & id, const bool silent_on_stale)
+EbuildFlatMetadataCache::load(const std::shared_ptr<const EbuildID> & id, const bool silent_on_stale)
 {
-    using namespace std::tr1::placeholders;
+    using namespace std::placeholders;
 
     Context context("When loading version metadata from '" + stringify(_imp->filename) + "':");
 
@@ -644,7 +643,7 @@ namespace
     std::string flatten(const T_ & d)
     {
         StringifyFormatter ff;
-        DepSpecPrettyPrinter p(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
+        DepSpecPrettyPrinter p(0, std::shared_ptr<const PackageID>(), ff, 0, false, false);
         d->root()->accept(p);
         return stringify(p);
     }
@@ -659,7 +658,7 @@ namespace
 }
 
 void
-EbuildFlatMetadataCache::save(const std::tr1::shared_ptr<const EbuildID> & id)
+EbuildFlatMetadataCache::save(const std::shared_ptr<const EbuildID> & id)
 {
     Context context("When saving version metadata to '" + stringify(_imp->filename) + "':");
 

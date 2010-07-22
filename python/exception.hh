@@ -24,8 +24,8 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/singleton-impl.hh>
 #include <boost/python.hpp>
-#include <tr1/memory>
-#include <tr1/functional>
+#include <memory>
+#include <functional>
 
 namespace paludis
 {
@@ -71,7 +71,7 @@ namespace paludis
             PyObject * doc_string = PyString_FromString(doc.c_str());
             PyObject_SetAttrString(_e, "__doc__", doc_string);
             boost::python::register_exception_translator<Ex_>(
-                    std::tr1::bind(std::tr1::mem_fn(&RegisteredException<Ex_>::translator), this, std::tr1::placeholders::_1));
+                    std::bind(std::mem_fn(&RegisteredException<Ex_>::translator), this, std::placeholders::_1));
         }
 
         template <class Ex_>
@@ -97,7 +97,7 @@ namespace paludis
             private:
                 ExceptionRegister();
 
-                void add_map_item(const std::string & name, std::tr1::shared_ptr<RegisteredExceptionBase>);
+                void add_map_item(const std::string & name, std::shared_ptr<RegisteredExceptionBase>);
                 PyObject * get_py_exception(const std::string & name);
 
             public:
@@ -106,14 +106,14 @@ namespace paludis
                 template <typename Ex_>
                 void add_exception(const std::string & name, const std::string & doc)
                 {
-                    add_map_item(name, std::tr1::shared_ptr<RegisteredExceptionBase>(
+                    add_map_item(name, std::shared_ptr<RegisteredExceptionBase>(
                                 new RegisteredException<Ex_>(name, doc, 0)));
                 }
 
                 template <typename Ex_>
                 void add_exception(const std::string & name, const std::string & base, const std::string & doc)
                 {
-                    add_map_item(name, std::tr1::shared_ptr<RegisteredExceptionBase>(
+                    add_map_item(name, std::shared_ptr<RegisteredExceptionBase>(
                                 new RegisteredException<Ex_>(name, doc, get_py_exception(base))));
                 }
         };

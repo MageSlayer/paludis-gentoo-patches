@@ -37,7 +37,7 @@ using namespace paludis::unwritten_repository;
 
 namespace
 {
-    std::tr1::shared_ptr<UnwrittenRepositoryStore>
+    std::shared_ptr<UnwrittenRepositoryStore>
     make_store(const UnwrittenRepository * const repo, const UnwrittenRepositoryParams & p)
     {
         return make_shared_ptr(new UnwrittenRepositoryStore(p.environment(), repo, p.location()));
@@ -51,14 +51,14 @@ namespace paludis
     {
         const UnwrittenRepositoryParams params;
 
-        const std::tr1::shared_ptr<LiteralMetadataValueKey<std::string> > format_key;
-        const std::tr1::shared_ptr<LiteralMetadataValueKey<FSEntry> > location_key;
-        const std::tr1::shared_ptr<LiteralMetadataValueKey<std::string> > sync_key;
-        const std::tr1::shared_ptr<LiteralMetadataValueKey<std::string> > sync_options_key;
-        const std::tr1::shared_ptr<LiteralMetadataValueKey<std::string> > sync_host_key;
+        const std::shared_ptr<LiteralMetadataValueKey<std::string> > format_key;
+        const std::shared_ptr<LiteralMetadataValueKey<FSEntry> > location_key;
+        const std::shared_ptr<LiteralMetadataValueKey<std::string> > sync_key;
+        const std::shared_ptr<LiteralMetadataValueKey<std::string> > sync_options_key;
+        const std::shared_ptr<LiteralMetadataValueKey<std::string> > sync_host_key;
 
         const ActiveObjectPtr<DeferredConstructionPtr<
-            std::tr1::shared_ptr<UnwrittenRepositoryStore> > > store;
+            std::shared_ptr<UnwrittenRepositoryStore> > > store;
 
         Implementation(const UnwrittenRepository * const repo, const UnwrittenRepositoryParams & p) :
             params(p),
@@ -71,8 +71,8 @@ namespace paludis
             sync_options_key(new LiteralMetadataValueKey<std::string> (
                         "sync_options", "sync_options", mkt_normal, params.sync_options())),
             sync_host_key(new LiteralMetadataValueKey<std::string> ("sync_host", "sync_host", mkt_internal, extract_host_from_url(params.sync()))),
-            store(DeferredConstructionPtr<std::tr1::shared_ptr<UnwrittenRepositoryStore> > (
-                        std::tr1::bind(&make_store, repo, std::tr1::cref(params))))
+            store(DeferredConstructionPtr<std::shared_ptr<UnwrittenRepositoryStore> > (
+                        std::bind(&make_store, repo, std::cref(params))))
         {
         }
     };
@@ -133,22 +133,22 @@ UnwrittenRepository::need_keys_added() const
 {
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataValueKey<std::string> >
 UnwrittenRepository::format_key() const
 {
     return _imp->format_key;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSEntry> >
 UnwrittenRepository::location_key() const
 {
     return _imp->location_key;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSEntry> >
 UnwrittenRepository::installed_root_key() const
 {
-    return std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >();
+    return std::shared_ptr<const MetadataValueKey<FSEntry> >();
 }
 
 void
@@ -175,31 +175,31 @@ UnwrittenRepository::has_package_named(const QualifiedPackageName & q) const
     return _imp->store->has_package_named(q);
 }
 
-std::tr1::shared_ptr<const CategoryNamePartSet>
+std::shared_ptr<const CategoryNamePartSet>
 UnwrittenRepository::category_names() const
 {
     return _imp->store->category_names();
 }
 
-std::tr1::shared_ptr<const CategoryNamePartSet>
+std::shared_ptr<const CategoryNamePartSet>
 UnwrittenRepository::unimportant_category_names() const
 {
     return _imp->store->unimportant_category_names();
 }
 
-std::tr1::shared_ptr<const CategoryNamePartSet>
+std::shared_ptr<const CategoryNamePartSet>
 UnwrittenRepository::category_names_containing_package(const PackageNamePart & p) const
 {
     return Repository::category_names_containing_package(p);
 }
 
-std::tr1::shared_ptr<const QualifiedPackageNameSet>
+std::shared_ptr<const QualifiedPackageNameSet>
 UnwrittenRepository::package_names(const CategoryNamePart & c) const
 {
     return _imp->store->package_names(c);
 }
 
-std::tr1::shared_ptr<const PackageIDSequence>
+std::shared_ptr<const PackageIDSequence>
 UnwrittenRepository::package_ids(const QualifiedPackageName & p) const
 {
     return _imp->store->package_ids(p);
@@ -260,7 +260,7 @@ UnwrittenRepository::some_ids_might_not_be_masked() const
 }
 
 bool
-UnwrittenRepository::sync(const std::tr1::shared_ptr<OutputManager> & output_manager) const
+UnwrittenRepository::sync(const std::shared_ptr<OutputManager> & output_manager) const
 {
     Context context("When syncing repository '" + stringify(name()) + "':");
 
@@ -303,10 +303,10 @@ UnwrittenRepository::sync(const std::tr1::shared_ptr<OutputManager> & output_man
     return true;
 }
 
-std::tr1::shared_ptr<Repository>
+std::shared_ptr<Repository>
 UnwrittenRepository::repository_factory_create(
         Environment * const env,
-        const std::tr1::function<std::string (const std::string &)> & f)
+        const std::function<std::string (const std::string &)> & f)
 {
     Context context("When making unwritten repository from repo_file '" + f("repo_file") + "':");
 
@@ -322,7 +322,7 @@ UnwrittenRepository::repository_factory_create(
 
     std::string sync_options(f("sync_options"));
 
-    return std::tr1::shared_ptr<UnwrittenRepository>(new UnwrittenRepository(
+    return std::shared_ptr<UnwrittenRepository>(new UnwrittenRepository(
                 make_named_values<UnwrittenRepositoryParams>(
                     n::environment() = env,
                     n::location() = location,
@@ -335,7 +335,7 @@ UnwrittenRepository::repository_factory_create(
 RepositoryName
 UnwrittenRepository::repository_factory_name(
         const Environment * const,
-        const std::tr1::function<std::string (const std::string &)> & f)
+        const std::function<std::string (const std::string &)> & f)
 {
     if (f("name").empty())
         return RepositoryName("unwritten");
@@ -343,10 +343,10 @@ UnwrittenRepository::repository_factory_name(
         return RepositoryName(f("name"));
 }
 
-std::tr1::shared_ptr<const RepositoryNameSet>
+std::shared_ptr<const RepositoryNameSet>
 UnwrittenRepository::repository_factory_dependencies(
         const Environment * const,
-        const std::tr1::function<std::string (const std::string &)> &)
+        const std::function<std::string (const std::string &)> &)
 {
     return make_shared_ptr(new RepositoryNameSet);
 }
@@ -362,13 +362,13 @@ UnwrittenRepository::perform_hook(const Hook &)
     return make_named_values<HookResult>(n::max_exit_status() = 0, n::output() = "");
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataValueKey<std::string> >
 UnwrittenRepository::accept_keywords_key() const
 {
     return make_null_shared_ptr();
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataValueKey<std::string> >
 UnwrittenRepository::sync_host_key() const
 {
     return _imp->sync_host_key;

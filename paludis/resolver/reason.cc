@@ -74,12 +74,12 @@ namespace paludis
     template <>
     struct Implementation<DependencyReason>
     {
-        const std::tr1::shared_ptr<const PackageID> from_id;
+        const std::shared_ptr<const PackageID> from_id;
         const Resolvent from_resolvent;
         const SanitisedDependency dep;
         const bool already_met;
 
-        Implementation(const std::tr1::shared_ptr<const PackageID> & i,
+        Implementation(const std::shared_ptr<const PackageID> & i,
                 const Resolvent & r, const SanitisedDependency & d, const bool a) :
             from_id(i),
             from_resolvent(r),
@@ -90,7 +90,7 @@ namespace paludis
     };
 }
 
-DependencyReason::DependencyReason(const std::tr1::shared_ptr<const PackageID> & i,
+DependencyReason::DependencyReason(const std::shared_ptr<const PackageID> & i,
         const Resolvent & r,
         const SanitisedDependency & d,
         const bool a) :
@@ -102,7 +102,7 @@ DependencyReason::~DependencyReason()
 {
 }
 
-const std::tr1::shared_ptr<const PackageID>
+const std::shared_ptr<const PackageID>
 DependencyReason::from_id() const
 {
     return _imp->from_id;
@@ -179,16 +179,16 @@ namespace paludis
     template <>
     struct Implementation<WasUsedByReason>
     {
-        const std::tr1::shared_ptr<const ChangeByResolventSequence> ids_being_removed;
+        const std::shared_ptr<const ChangeByResolventSequence> ids_being_removed;
 
-        Implementation(const std::tr1::shared_ptr<const ChangeByResolventSequence> & i) :
+        Implementation(const std::shared_ptr<const ChangeByResolventSequence> & i) :
             ids_being_removed(i)
         {
         }
     };
 }
 
-WasUsedByReason::WasUsedByReason(const std::tr1::shared_ptr<const ChangeByResolventSequence> & i) :
+WasUsedByReason::WasUsedByReason(const std::shared_ptr<const ChangeByResolventSequence> & i) :
     PrivateImplementationPattern<WasUsedByReason>(new Implementation<WasUsedByReason>(i))
 {
 }
@@ -197,7 +197,7 @@ WasUsedByReason::~WasUsedByReason()
 {
 }
 
-const std::tr1::shared_ptr<const ChangeByResolventSequence>
+const std::shared_ptr<const ChangeByResolventSequence>
 WasUsedByReason::ids_and_resolvents_being_removed() const
 {
     return _imp->ids_being_removed;
@@ -217,9 +217,9 @@ namespace paludis
     struct Implementation<PresetReason>
     {
         const std::string explanation;
-        const std::tr1::shared_ptr<const Reason> reason_for_preset;
+        const std::shared_ptr<const Reason> reason_for_preset;
 
-        Implementation(const std::string & m, const std::tr1::shared_ptr<const Reason> & r) :
+        Implementation(const std::string & m, const std::shared_ptr<const Reason> & r) :
             explanation(m),
             reason_for_preset(r)
         {
@@ -227,7 +227,7 @@ namespace paludis
     };
 }
 
-PresetReason::PresetReason(const std::string & m, const std::tr1::shared_ptr<const Reason> & r) :
+PresetReason::PresetReason(const std::string & m, const std::shared_ptr<const Reason> & r) :
     PrivateImplementationPattern<PresetReason>(new Implementation<PresetReason>(m, r))
 {
 }
@@ -236,7 +236,7 @@ PresetReason::~PresetReason()
 {
 }
 
-const std::tr1::shared_ptr<const Reason>
+const std::shared_ptr<const Reason>
 PresetReason::maybe_reason_for_preset() const
 {
     return _imp->reason_for_preset;
@@ -263,9 +263,9 @@ namespace paludis
     struct Implementation<SetReason>
     {
         const SetName set_name;
-        const std::tr1::shared_ptr<const Reason> reason_for_set;
+        const std::shared_ptr<const Reason> reason_for_set;
 
-        Implementation(const SetName & s, const std::tr1::shared_ptr<const Reason> & r) :
+        Implementation(const SetName & s, const std::shared_ptr<const Reason> & r) :
             set_name(s),
             reason_for_set(r)
         {
@@ -273,7 +273,7 @@ namespace paludis
     };
 }
 
-SetReason::SetReason(const SetName & s, const std::tr1::shared_ptr<const Reason> & r) :
+SetReason::SetReason(const SetName & s, const std::shared_ptr<const Reason> & r) :
     PrivateImplementationPattern<SetReason>(new Implementation<SetReason>(s, r))
 {
 }
@@ -288,7 +288,7 @@ SetReason::set_name() const
     return _imp->set_name;
 }
 
-const std::tr1::shared_ptr<const Reason>
+const std::shared_ptr<const Reason>
 SetReason::reason_for_set() const
 {
     return _imp->reason_for_set;
@@ -309,9 +309,9 @@ namespace paludis
     struct Implementation<LikeOtherDestinationTypeReason>
     {
         const Resolvent other_resolvent;
-        const std::tr1::shared_ptr<const Reason> reason_for_other;
+        const std::shared_ptr<const Reason> reason_for_other;
 
-        Implementation(const Resolvent & s, const std::tr1::shared_ptr<const Reason> & r) :
+        Implementation(const Resolvent & s, const std::shared_ptr<const Reason> & r) :
             other_resolvent(s),
             reason_for_other(r)
         {
@@ -319,7 +319,7 @@ namespace paludis
     };
 }
 
-LikeOtherDestinationTypeReason::LikeOtherDestinationTypeReason(const Resolvent & s, const std::tr1::shared_ptr<const Reason> & r) :
+LikeOtherDestinationTypeReason::LikeOtherDestinationTypeReason(const Resolvent & s, const std::shared_ptr<const Reason> & r) :
     PrivateImplementationPattern<LikeOtherDestinationTypeReason>(new Implementation<LikeOtherDestinationTypeReason>(s, r))
 {
 }
@@ -334,7 +334,7 @@ LikeOtherDestinationTypeReason::other_resolvent() const
     return _imp->other_resolvent;
 }
 
-const std::tr1::shared_ptr<const Reason>
+const std::shared_ptr<const Reason>
 LikeOtherDestinationTypeReason::reason_for_other() const
 {
     return _imp->reason_for_other;
@@ -386,7 +386,7 @@ ViaBinaryReason::serialise(Serialiser & s) const
         ;
 }
 
-const std::tr1::shared_ptr<Reason>
+const std::shared_ptr<Reason>
 Reason::deserialise(Deserialisation & d)
 {
     if (d.class_name() == "TargetReason")
@@ -399,7 +399,7 @@ Reason::deserialise(Deserialisation & d)
         Deserialisator v(d, "PresetReason");
         return make_shared_ptr(new PresetReason(
                     v.member<std::string>("maybe_explanation"),
-                    v.member<std::tr1::shared_ptr<Reason> >("maybe_reason_for_preset")
+                    v.member<std::shared_ptr<Reason> >("maybe_reason_for_preset")
                     ));
     }
     else if (d.class_name() == "SetReason")
@@ -407,13 +407,13 @@ Reason::deserialise(Deserialisation & d)
         Deserialisator v(d, "SetReason");
         return make_shared_ptr(new SetReason(
                     SetName(v.member<std::string>("set_name")),
-                    v.member<std::tr1::shared_ptr<Reason> >("reason_for_set")
+                    v.member<std::shared_ptr<Reason> >("reason_for_set")
                     ));
     }
     else if (d.class_name() == "DependencyReason")
     {
         Deserialisator v(d, "DependencyReason");
-        const std::tr1::shared_ptr<const PackageID> from_id(v.member<std::tr1::shared_ptr<const PackageID> >("from_id"));
+        const std::shared_ptr<const PackageID> from_id(v.member<std::shared_ptr<const PackageID> >("from_id"));
         return make_shared_ptr(new DependencyReason(
                     from_id,
                     v.member<Resolvent>("from_resolvent"),
@@ -432,7 +432,7 @@ Reason::deserialise(Deserialisation & d)
     {
         Deserialisator v(d, "WasUsedByReason");
         Deserialisator vv(*v.find_remove_member("ids_and_resolvents_being_removed"), "c");
-        std::tr1::shared_ptr<ChangeByResolventSequence> ids_and_resolvents_being_removed(new ChangeByResolventSequence);
+        std::shared_ptr<ChangeByResolventSequence> ids_and_resolvents_being_removed(new ChangeByResolventSequence);
         for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
             ids_and_resolvents_being_removed->push_back(vv.member<ChangeByResolvent>(stringify(n)));
         return make_shared_ptr(new WasUsedByReason(ids_and_resolvents_being_removed));
@@ -442,7 +442,7 @@ Reason::deserialise(Deserialisation & d)
         Deserialisator v(d, "LikeOtherDestinationTypeReason");
         return make_shared_ptr(new LikeOtherDestinationTypeReason(
                     v.member<Resolvent>("other_resolvent"),
-                    v.member<std::tr1::shared_ptr<Reason> >("reason_for_other")
+                    v.member<std::shared_ptr<Reason> >("reason_for_other")
                     ));
     }
     else if (d.class_name() == "ViaBinaryReason")

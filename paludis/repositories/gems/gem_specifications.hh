@@ -29,7 +29,7 @@
 #include <paludis/name-fwd.hh>
 #include <paludis/version_spec-fwd.hh>
 #include <paludis/repository-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 #include <string>
 
 namespace paludis
@@ -50,7 +50,7 @@ namespace paludis
                 ///\name Basic operations
                 ///\{
 
-                GemSpecifications(const Environment * const, const std::tr1::shared_ptr<const Repository> &, const yaml::Node &);
+                GemSpecifications(const Environment * const, const std::shared_ptr<const Repository> &, const yaml::Node &);
                 ~GemSpecifications();
 
                 ///\}
@@ -60,7 +60,7 @@ namespace paludis
 
                 struct ConstIteratorTag;
                 typedef WrappedForwardIterator<ConstIteratorTag,
-                        const std::pair<const std::pair<QualifiedPackageName, VersionSpec>, std::tr1::shared_ptr<const GemSpecification> > >
+                        const std::pair<const std::pair<QualifiedPackageName, VersionSpec>, std::shared_ptr<const GemSpecification> > >
                             ConstIterator;
                 ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));

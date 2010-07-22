@@ -33,7 +33,7 @@
 
 using namespace paludis;
 
-Thread::Thread(const std::tr1::function<void () throw ()> & f) :
+Thread::Thread(const std::function<void () throw ()> & f) :
     _thread(new pthread_t),
     _func(f)
 {
@@ -71,7 +71,7 @@ Thread::~Thread()
 }
 
 void
-Thread::idle_adapter(const std::tr1::function<void () throw ()> & f)
+Thread::idle_adapter(const std::function<void () throw ()> & f)
 {
 #ifdef __linux__
     if (-1 == setpriority(PRIO_PROCESS, syscall(SYS_gettid), std::max(19, getpriority(PRIO_PROCESS, 0) + 10)))

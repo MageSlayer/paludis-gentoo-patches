@@ -129,7 +129,7 @@ namespace paludis
     template <typename C_>
     struct Implementation<FakeMetadataCollectionKey<C_> >
     {
-        std::tr1::shared_ptr<C_> collection;
+        std::shared_ptr<C_> collection;
         const PackageID * const id;
         const Environment * const env;
 
@@ -164,7 +164,7 @@ FakeMetadataCollectionKey<C_>::~FakeMetadataCollectionKey()
 }
 
 template <typename C_>
-const std::tr1::shared_ptr<const C_>
+const std::shared_ptr<const C_>
 FakeMetadataCollectionKey<C_>::value() const
 {
     return this->_imp->collection;
@@ -211,15 +211,15 @@ namespace paludis
     template <typename C_>
     struct Implementation<FakeMetadataSpecTreeKey<C_> >
     {
-        std::tr1::shared_ptr<const C_> value;
+        std::shared_ptr<const C_> value;
         std::string string_value;
-        const std::tr1::function<const std::tr1::shared_ptr<const C_> (const std::string &)> func;
+        const std::function<const std::shared_ptr<const C_> (const std::string &)> func;
 
         const std::string raw_name;
         const std::string human_name;
         const MetadataKeyType type;
 
-        Implementation(const std::tr1::function<const std::tr1::shared_ptr<const C_> (const std::string &)> & f,
+        Implementation(const std::function<const std::shared_ptr<const C_> (const std::string &)> & f,
                 const std::string & r, const std::string & h, const MetadataKeyType t) :
             func(f),
             raw_name(r),
@@ -232,16 +232,16 @@ namespace paludis
     template <>
     struct Implementation<FakeMetadataSpecTreeKey<FetchableURISpecTree> >
     {
-        std::tr1::shared_ptr<const FetchableURISpecTree> value;
+        std::shared_ptr<const FetchableURISpecTree> value;
         std::string string_value;
-        const std::tr1::function<const std::tr1::shared_ptr<const FetchableURISpecTree> (const std::string &)> func;
-        std::tr1::shared_ptr<const URILabel> initial_label;
+        const std::function<const std::shared_ptr<const FetchableURISpecTree> (const std::string &)> func;
+        std::shared_ptr<const URILabel> initial_label;
 
         const std::string raw_name;
         const std::string human_name;
         const MetadataKeyType type;
 
-        Implementation(const std::tr1::function<const std::tr1::shared_ptr<const FetchableURISpecTree> (const std::string &)> & f,
+        Implementation(const std::function<const std::shared_ptr<const FetchableURISpecTree> (const std::string &)> & f,
                 const std::string & r, const std::string & h, const MetadataKeyType t) :
             func(f),
             initial_label(new URIListedThenMirrorsLabel("listed-then-mirrors")),
@@ -255,17 +255,17 @@ namespace paludis
     template <>
     struct Implementation<FakeMetadataSpecTreeKey<DependencySpecTree> >
     {
-        std::tr1::shared_ptr<const DependencySpecTree> value;
+        std::shared_ptr<const DependencySpecTree> value;
         std::string string_value;
-        const std::tr1::function<const std::tr1::shared_ptr<const DependencySpecTree> (const std::string &)> func;
-        std::tr1::shared_ptr<const DependenciesLabelSequence> labels;
+        const std::function<const std::shared_ptr<const DependencySpecTree> (const std::string &)> func;
+        std::shared_ptr<const DependenciesLabelSequence> labels;
 
         const std::string raw_name;
         const std::string human_name;
         const MetadataKeyType type;
 
-        Implementation(const std::tr1::function<const std::tr1::shared_ptr<const DependencySpecTree> (const std::string &)> & f,
-                const std::tr1::shared_ptr<const DependenciesLabelSequence> & s,
+        Implementation(const std::function<const std::shared_ptr<const DependencySpecTree> (const std::string &)> & f,
+                const std::shared_ptr<const DependenciesLabelSequence> & s,
                 const std::string & r, const std::string & h, const MetadataKeyType t) :
             func(f),
             labels(s),
@@ -279,7 +279,7 @@ namespace paludis
 
 template <typename C_>
 FakeMetadataSpecTreeKey<C_>::FakeMetadataSpecTreeKey(const std::string & r, const std::string & h, const std::string & v,
-        const std::tr1::function<const std::tr1::shared_ptr<const C_> (const std::string &)> & f, const MetadataKeyType t) :
+        const std::function<const std::shared_ptr<const C_> (const std::string &)> & f, const MetadataKeyType t) :
     PrivateImplementationPattern<FakeMetadataSpecTreeKey<C_> >(new Implementation<FakeMetadataSpecTreeKey<C_> >(f, r, h, t)),
     _imp(PrivateImplementationPattern<FakeMetadataSpecTreeKey<C_> >::_imp)
 {
@@ -300,7 +300,7 @@ FakeMetadataSpecTreeKey<C_>::set_from_string(const std::string & s)
 }
 
 template <typename C_>
-const std::tr1::shared_ptr<const C_>
+const std::shared_ptr<const C_>
 FakeMetadataSpecTreeKey<C_>::value() const
 {
     return _imp->value;
@@ -342,7 +342,7 @@ FakeMetadataSpecTreeKey<C_>::pretty_print_flat(const typename C_::ItemFormatter 
 }
 
 FakeMetadataSpecTreeKey<FetchableURISpecTree>::FakeMetadataSpecTreeKey(const std::string & r, const std::string & h, const std::string & v,
-        const std::tr1::function<const std::tr1::shared_ptr<const FetchableURISpecTree> (const std::string &)> & f, const MetadataKeyType t) :
+        const std::function<const std::shared_ptr<const FetchableURISpecTree> (const std::string &)> & f, const MetadataKeyType t) :
     PrivateImplementationPattern<FakeMetadataSpecTreeKey<FetchableURISpecTree> >(
             new Implementation<FakeMetadataSpecTreeKey<FetchableURISpecTree> >(f, r, h, t)),
     _imp(PrivateImplementationPattern<FakeMetadataSpecTreeKey<FetchableURISpecTree> >::_imp)
@@ -379,7 +379,7 @@ FakeMetadataSpecTreeKey<FetchableURISpecTree>::type() const
     return _imp->type;
 }
 
-const std::tr1::shared_ptr<const FetchableURISpecTree>
+const std::shared_ptr<const FetchableURISpecTree>
 FakeMetadataSpecTreeKey<FetchableURISpecTree>::value() const
 {
     return _imp->value;
@@ -397,15 +397,15 @@ FakeMetadataSpecTreeKey<FetchableURISpecTree>::pretty_print_flat(const Fetchable
     return _imp->string_value;
 }
 
-const std::tr1::shared_ptr<const URILabel>
+const std::shared_ptr<const URILabel>
 FakeMetadataSpecTreeKey<FetchableURISpecTree>::initial_label() const
 {
     return _imp->initial_label;
 }
 
 FakeMetadataSpecTreeKey<DependencySpecTree>::FakeMetadataSpecTreeKey(const std::string & r, const std::string & h, const std::string & v,
-        const std::tr1::function<const std::tr1::shared_ptr<const DependencySpecTree> (const std::string &)> & f,
-        const std::tr1::shared_ptr<const DependenciesLabelSequence> & s, const MetadataKeyType t) :
+        const std::function<const std::shared_ptr<const DependencySpecTree> (const std::string &)> & f,
+        const std::shared_ptr<const DependenciesLabelSequence> & s, const MetadataKeyType t) :
     PrivateImplementationPattern<FakeMetadataSpecTreeKey<DependencySpecTree> >(
             new Implementation<FakeMetadataSpecTreeKey<DependencySpecTree> >(f, s, r, h, t)),
     _imp(PrivateImplementationPattern<FakeMetadataSpecTreeKey<DependencySpecTree> >::_imp)
@@ -424,7 +424,7 @@ FakeMetadataSpecTreeKey<DependencySpecTree>::set_from_string(const std::string &
     _imp->value = _imp->func(s);
 }
 
-const std::tr1::shared_ptr<const DependencySpecTree>
+const std::shared_ptr<const DependencySpecTree>
 FakeMetadataSpecTreeKey<DependencySpecTree>::value() const
 {
     return _imp->value;
@@ -442,7 +442,7 @@ FakeMetadataSpecTreeKey<DependencySpecTree>::pretty_print_flat(const DependencyS
     return _imp->string_value;
 }
 
-const std::tr1::shared_ptr<const DependenciesLabelSequence>
+const std::shared_ptr<const DependenciesLabelSequence>
 FakeMetadataSpecTreeKey<DependencySpecTree>::initial_labels() const
 {
     return _imp->labels;
@@ -472,11 +472,11 @@ namespace paludis
     struct Implementation<FakeMetadataChoicesKey>
     {
         const Environment * const env;
-        const std::tr1::shared_ptr<const PackageID> id;
-        std::tr1::shared_ptr<Choices> value;
-        std::map<std::string, std::tr1::shared_ptr<Choice> > choices;
+        const std::shared_ptr<const PackageID> id;
+        std::shared_ptr<Choices> value;
+        std::map<std::string, std::shared_ptr<Choice> > choices;
 
-        Implementation(const Environment * const e, const std::tr1::shared_ptr<const PackageID> & i) :
+        Implementation(const Environment * const e, const std::shared_ptr<const PackageID> & i) :
             env(e),
             id(i),
             value(new Choices)
@@ -491,14 +491,14 @@ namespace
         ChoiceValue
     {
         const Environment * const env;
-        const std::tr1::shared_ptr<const PackageID> id;
-        const std::tr1::shared_ptr<const Choice> choice;
+        const std::shared_ptr<const PackageID> id;
+        const std::shared_ptr<const Choice> choice;
         const UnprefixedChoiceName value_name;
 
         FakeChoiceValue(
                 const Environment * const e,
-                const std::tr1::shared_ptr<const PackageID> & i,
-                const std::tr1::shared_ptr<const Choice> & c,
+                const std::shared_ptr<const PackageID> & i,
+                const std::shared_ptr<const Choice> & c,
                 const UnprefixedChoiceName & n) :
             env(e),
             id(i),
@@ -550,7 +550,7 @@ namespace
 }
 
 FakeMetadataChoicesKey::FakeMetadataChoicesKey(const Environment * const e,
-        const std::tr1::shared_ptr<const PackageID> & i) :
+        const std::shared_ptr<const PackageID> & i) :
     PrivateImplementationPattern<FakeMetadataChoicesKey>(new Implementation<FakeMetadataChoicesKey>(e, i)),
     _imp(PrivateImplementationPattern<FakeMetadataChoicesKey>::_imp)
 {
@@ -565,7 +565,7 @@ FakeMetadataChoicesKey::add(const std::string & n, const std::string & v)
 {
     if (_imp->choices.end() == _imp->choices.find(n))
     {
-        std::tr1::shared_ptr<Choice> c(new Choice(make_named_values<ChoiceParams>(
+        std::shared_ptr<Choice> c(new Choice(make_named_values<ChoiceParams>(
                         n::consider_added_or_changed() = false,
                         n::contains_every_value() = false,
                         n::hidden() = false,
@@ -582,7 +582,7 @@ FakeMetadataChoicesKey::add(const std::string & n, const std::string & v)
                     _imp->choices.find(n)->second, UnprefixedChoiceName(v))));
 }
 
-const std::tr1::shared_ptr<const Choices>
+const std::shared_ptr<const Choices>
 FakeMetadataChoicesKey::value() const
 {
     return _imp->value;
@@ -613,9 +613,9 @@ namespace paludis
     {
         const char key;
         const std::string description;
-        const std::tr1::shared_ptr<const MetadataKey> unaccepted_key;
+        const std::shared_ptr<const MetadataKey> unaccepted_key;
 
-        Implementation(const char k, const std::string & d, const std::tr1::shared_ptr<const MetadataKey> & u) :
+        Implementation(const char k, const std::string & d, const std::shared_ptr<const MetadataKey> & u) :
             key(k),
             description(d),
             unaccepted_key(u)
@@ -624,7 +624,7 @@ namespace paludis
     };
 }
 
-FakeUnacceptedMask::FakeUnacceptedMask(const char c, const std::string & s, const std::tr1::shared_ptr<const MetadataKey> & k) :
+FakeUnacceptedMask::FakeUnacceptedMask(const char c, const std::string & s, const std::shared_ptr<const MetadataKey> & k) :
     PrivateImplementationPattern<FakeUnacceptedMask>(new Implementation<FakeUnacceptedMask>(c, s, k))
 {
 }
@@ -645,7 +645,7 @@ FakeUnacceptedMask::description() const
     return _imp->description;
 }
 
-const std::tr1::shared_ptr<const MetadataKey>
+const std::shared_ptr<const MetadataKey>
 FakeUnacceptedMask::unaccepted_key() const
 {
     return _imp->unaccepted_key;
@@ -679,7 +679,7 @@ FakeUnsupportedMask::explanation() const
 
 namespace paludis
 {
-    using namespace std::tr1::placeholders;
+    using namespace std::placeholders;
 
     template <>
     struct Implementation<FakePackageID>
@@ -687,38 +687,38 @@ namespace paludis
         mutable Mutex mutex;
 
         const Environment * const env;
-        const std::tr1::shared_ptr<const FakeRepositoryBase> repository;
+        const std::shared_ptr<const FakeRepositoryBase> repository;
         const QualifiedPackageName name;
         const VersionSpec version;
 
-        mutable std::tr1::shared_ptr<DependenciesLabelSequence> build_dependencies_labels;
-        mutable std::tr1::shared_ptr<DependenciesLabelSequence> run_dependencies_labels;
-        mutable std::tr1::shared_ptr<DependenciesLabelSequence> post_dependencies_labels;
-        mutable std::tr1::shared_ptr<DependenciesLabelSequence> suggested_dependencies_labels;
+        mutable std::shared_ptr<DependenciesLabelSequence> build_dependencies_labels;
+        mutable std::shared_ptr<DependenciesLabelSequence> run_dependencies_labels;
+        mutable std::shared_ptr<DependenciesLabelSequence> post_dependencies_labels;
+        mutable std::shared_ptr<DependenciesLabelSequence> suggested_dependencies_labels;
 
-        std::tr1::shared_ptr<LiteralMetadataValueKey<SlotName> > slot;
-        std::tr1::shared_ptr<LiteralMetadataValueKey<std::tr1::shared_ptr<const PackageID> > > package_id;
-        std::tr1::shared_ptr<LiteralMetadataValueKey<std::tr1::shared_ptr<const PackageID> > > virtual_for;
-        std::tr1::shared_ptr<FakeMetadataKeywordSetKey> keywords;
-        std::tr1::shared_ptr<FakeMetadataSpecTreeKey<LicenseSpecTree> > license;
-        std::tr1::shared_ptr<FakeMetadataSpecTreeKey<ProvideSpecTree> > provide;
-        std::tr1::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > build_dependencies;
-        std::tr1::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > run_dependencies;
-        std::tr1::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > post_dependencies;
-        std::tr1::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > suggested_dependencies;
-        std::tr1::shared_ptr<FakeMetadataSpecTreeKey<PlainTextSpecTree> > restrictions;
-        std::tr1::shared_ptr<FakeMetadataSpecTreeKey<FetchableURISpecTree> > src_uri;
-        std::tr1::shared_ptr<FakeMetadataSpecTreeKey<SimpleURISpecTree> > homepage;
-        std::tr1::shared_ptr<FakeMetadataChoicesKey> choices;
-        std::tr1::shared_ptr<FakeMetadataValueKey<long> > hitchhiker;
-        std::tr1::shared_ptr<LiteralMetadataStringSetKey> behaviours;
+        std::shared_ptr<LiteralMetadataValueKey<SlotName> > slot;
+        std::shared_ptr<LiteralMetadataValueKey<std::shared_ptr<const PackageID> > > package_id;
+        std::shared_ptr<LiteralMetadataValueKey<std::shared_ptr<const PackageID> > > virtual_for;
+        std::shared_ptr<FakeMetadataKeywordSetKey> keywords;
+        std::shared_ptr<FakeMetadataSpecTreeKey<LicenseSpecTree> > license;
+        std::shared_ptr<FakeMetadataSpecTreeKey<ProvideSpecTree> > provide;
+        std::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > build_dependencies;
+        std::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > run_dependencies;
+        std::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > post_dependencies;
+        std::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > suggested_dependencies;
+        std::shared_ptr<FakeMetadataSpecTreeKey<PlainTextSpecTree> > restrictions;
+        std::shared_ptr<FakeMetadataSpecTreeKey<FetchableURISpecTree> > src_uri;
+        std::shared_ptr<FakeMetadataSpecTreeKey<SimpleURISpecTree> > homepage;
+        std::shared_ptr<FakeMetadataChoicesKey> choices;
+        std::shared_ptr<FakeMetadataValueKey<long> > hitchhiker;
+        std::shared_ptr<LiteralMetadataStringSetKey> behaviours;
 
-        std::tr1::shared_ptr<Set<std::string> > behaviours_set;
+        std::shared_ptr<Set<std::string> > behaviours_set;
 
-        std::tr1::shared_ptr<Mask> unsupported_mask;
+        std::shared_ptr<Mask> unsupported_mask;
         mutable bool has_masks;
 
-        Implementation(const Environment * const e, const std::tr1::shared_ptr<const FakeRepositoryBase> & r,
+        Implementation(const Environment * const e, const std::shared_ptr<const FakeRepositoryBase> & r,
                 const QualifiedPackageName & q, const VersionSpec & v, const PackageID * const id) :
             env(e),
             repository(r),
@@ -745,7 +745,7 @@ namespace paludis
     };
 }
 
-FakePackageID::FakePackageID(const Environment * const e, const std::tr1::shared_ptr<const FakeRepositoryBase> & r,
+FakePackageID::FakePackageID(const Environment * const e, const std::shared_ptr<const FakeRepositoryBase> & r,
         const QualifiedPackageName & q, const VersionSpec & v) :
     PrivateImplementationPattern<FakePackageID>(new Implementation<FakePackageID>(e, r, q, v, this)),
     _imp(PrivateImplementationPattern<FakePackageID>::_imp)
@@ -803,177 +803,177 @@ FakePackageID::version() const
     return _imp->version;
 }
 
-const std::tr1::shared_ptr<const Repository>
+const std::shared_ptr<const Repository>
 FakePackageID::repository() const
 {
     return _imp->repository;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >
+const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > >
 FakePackageID::virtual_for_key() const
 {
     need_keys_added();
     return _imp->virtual_for;
 }
 
-const std::tr1::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
+const std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
 FakePackageID::keywords_key() const
 {
     need_keys_added();
     return _imp->keywords;
 }
 
-const std::tr1::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> >
+const std::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> >
 FakePackageID::license_key() const
 {
     need_keys_added();
     return _imp->license;
 }
 
-const std::tr1::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >
+const std::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >
 FakePackageID::provide_key() const
 {
     need_keys_added();
     return _imp->provide;
 }
 
-const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 FakePackageID::build_dependencies_key() const
 {
     need_keys_added();
     return _imp->build_dependencies;
 }
 
-const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 FakePackageID::run_dependencies_key() const
 {
     need_keys_added();
     return _imp->run_dependencies;
 }
 
-const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 FakePackageID::post_dependencies_key() const
 {
     need_keys_added();
     return _imp->post_dependencies;
 }
 
-const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 FakePackageID::suggested_dependencies_key() const
 {
     need_keys_added();
     return _imp->suggested_dependencies;
 }
 
-const std::tr1::shared_ptr<FakeMetadataKeywordSetKey>
+const std::shared_ptr<FakeMetadataKeywordSetKey>
 FakePackageID::keywords_key()
 {
     need_keys_added();
     return _imp->keywords;
 }
 
-const std::tr1::shared_ptr<FakeMetadataSpecTreeKey<ProvideSpecTree> >
+const std::shared_ptr<FakeMetadataSpecTreeKey<ProvideSpecTree> >
 FakePackageID::provide_key()
 {
     need_keys_added();
     return _imp->provide;
 }
 
-const std::tr1::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> >
+const std::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> >
 FakePackageID::build_dependencies_key()
 {
     need_keys_added();
     return _imp->build_dependencies;
 }
 
-const std::tr1::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> >
+const std::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> >
 FakePackageID::run_dependencies_key()
 {
     need_keys_added();
     return _imp->run_dependencies;
 }
 
-const std::tr1::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> >
+const std::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> >
 FakePackageID::post_dependencies_key()
 {
     need_keys_added();
     return _imp->post_dependencies;
 }
 
-const std::tr1::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> >
+const std::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> >
 FakePackageID::suggested_dependencies_key()
 {
     need_keys_added();
     return _imp->suggested_dependencies;
 }
 
-const std::tr1::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 FakePackageID::dependencies_key() const
 {
     return make_null_shared_ptr();
 }
 
-const std::tr1::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
+const std::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
 FakePackageID::fetches_key() const
 {
     need_keys_added();
     return _imp->src_uri;
 }
 
-const std::tr1::shared_ptr<FakeMetadataSpecTreeKey<FetchableURISpecTree> >
+const std::shared_ptr<FakeMetadataSpecTreeKey<FetchableURISpecTree> >
 FakePackageID::fetches_key()
 {
     need_keys_added();
     return _imp->src_uri;
 }
 
-const std::tr1::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
+const std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
 FakePackageID::homepage_key() const
 {
     need_keys_added();
     return _imp->homepage;
 }
 
-const std::tr1::shared_ptr<FakeMetadataSpecTreeKey<SimpleURISpecTree> >
+const std::shared_ptr<FakeMetadataSpecTreeKey<SimpleURISpecTree> >
 FakePackageID::homepage_key()
 {
     need_keys_added();
     return _imp->homepage;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataValueKey<std::string> >
 FakePackageID::short_description_key() const
 {
     need_keys_added();
-    return std::tr1::shared_ptr<const MetadataValueKey<std::string> >();
+    return std::shared_ptr<const MetadataValueKey<std::string> >();
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataValueKey<std::string> >
 FakePackageID::long_description_key() const
 {
     need_keys_added();
-    return std::tr1::shared_ptr<const MetadataValueKey<std::string> >();
+    return std::shared_ptr<const MetadataValueKey<std::string> >();
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Contents> > >
+const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Contents> > >
 FakePackageID::contents_key() const
 {
     need_keys_added();
-    return std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Contents> > >();
+    return std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Contents> > >();
 }
 
-const std::tr1::shared_ptr<const MetadataTimeKey>
+const std::shared_ptr<const MetadataTimeKey>
 FakePackageID::installed_time_key() const
 {
     need_keys_added();
-    return std::tr1::shared_ptr<const MetadataTimeKey>();
+    return std::shared_ptr<const MetadataTimeKey>();
 }
 
-const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 FakePackageID::from_repositories_key() const
 {
     need_keys_added();
-    return std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >();
+    return std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >();
 }
 
 void
@@ -995,42 +995,42 @@ FakePackageID::need_keys_added() const
 
     if (! _imp->build_dependencies)
     {
-        using namespace std::tr1::placeholders;
+        using namespace std::placeholders;
 
         _imp->build_dependencies.reset(new FakeMetadataSpecTreeKey<DependencySpecTree>("DEPEND", "Build dependencies",
-                    "", std::tr1::bind(&parse_depend, _1, _imp->env,
+                    "", std::bind(&parse_depend, _1, _imp->env,
                         shared_from_this()),
                     _imp->build_dependencies_labels, mkt_dependencies));
 
         _imp->run_dependencies.reset(new FakeMetadataSpecTreeKey<DependencySpecTree>("RDEPEND", "Run dependencies",
-                    "", std::tr1::bind(&parse_depend, _1, _imp->env,
+                    "", std::bind(&parse_depend, _1, _imp->env,
                         shared_from_this()),
                     _imp->run_dependencies_labels, mkt_dependencies)),
 
         _imp->post_dependencies.reset(new FakeMetadataSpecTreeKey<DependencySpecTree>("PDEPEND", "Post dependencies",
-                    "", std::tr1::bind(&parse_depend, _1, _imp->env,
+                    "", std::bind(&parse_depend, _1, _imp->env,
                         shared_from_this()),
                     _imp->post_dependencies_labels, mkt_dependencies)),
 
         _imp->suggested_dependencies.reset(new FakeMetadataSpecTreeKey<DependencySpecTree>("SDEPEND", "Suggested dependencies",
-                    "", std::tr1::bind(&parse_depend, _1, _imp->env,
+                    "", std::bind(&parse_depend, _1, _imp->env,
                         shared_from_this()),
                     _imp->suggested_dependencies_labels, mkt_dependencies)),
 
         _imp->src_uri.reset(new FakeMetadataSpecTreeKey<FetchableURISpecTree>("SRC_URI", "Source URI",
-                    "", std::tr1::bind(&parse_fetchable_uri, _1, _imp->env,
+                    "", std::bind(&parse_fetchable_uri, _1, _imp->env,
                         shared_from_this()), mkt_normal));
 
         _imp->homepage.reset(new FakeMetadataSpecTreeKey<SimpleURISpecTree>("HOMEPAGE", "Homepage",
-                    "", std::tr1::bind(&parse_simple_uri, _1, _imp->env,
+                    "", std::bind(&parse_simple_uri, _1, _imp->env,
                         shared_from_this()), mkt_normal));
 
         _imp->license.reset(new FakeMetadataSpecTreeKey<LicenseSpecTree>("LICENSE", "License",
-                    "", std::tr1::bind(&parse_license, _1, _imp->env,
+                    "", std::bind(&parse_license, _1, _imp->env,
                         shared_from_this()), mkt_normal));
 
         _imp->provide.reset(new FakeMetadataSpecTreeKey<ProvideSpecTree>("PROVIDE", "Provide",
-                    "", std::tr1::bind(&parse_provide, _1, _imp->env,
+                    "", std::bind(&parse_provide, _1, _imp->env,
                         shared_from_this()), mkt_normal));
 
         _imp->choices.reset(new FakeMetadataChoicesKey(_imp->env, shared_from_this()));
@@ -1152,13 +1152,13 @@ FakePackageID::need_masks_added() const
 
     if (! _imp->env->unmasked_by_user(*this))
     {
-        std::tr1::shared_ptr<const Mask> user_mask(_imp->env->mask_for_user(*this, false));
+        std::shared_ptr<const Mask> user_mask(_imp->env->mask_for_user(*this, false));
         if (user_mask)
             add_mask(user_mask);
     }
     else
     {
-        std::tr1::shared_ptr<const Mask> user_mask(_imp->env->mask_for_user(*this, true));
+        std::shared_ptr<const Mask> user_mask(_imp->env->mask_for_user(*this, true));
         if (user_mask)
             add_overridden_mask(make_shared_ptr(new OverriddenMask(
                             make_named_values<OverriddenMask>(
@@ -1167,7 +1167,7 @@ FakePackageID::need_masks_added() const
                                 ))));
     }
 
-    std::tr1::shared_ptr<const Mask> breaks_mask(_imp->env->mask_for_breakage(*this));
+    std::shared_ptr<const Mask> breaks_mask(_imp->env->mask_for_breakage(*this));
     if (breaks_mask)
         add_mask(breaks_mask);
 
@@ -1263,43 +1263,43 @@ FakePackageID::perform_action(Action & a) const
     a.accept(b);
 }
 
-std::tr1::shared_ptr<const Set<std::string> >
+std::shared_ptr<const Set<std::string> >
 FakePackageID::breaks_portage() const
 {
-    return std::tr1::shared_ptr<const Set<std::string> >();
+    return std::shared_ptr<const Set<std::string> >();
 }
 
-const std::tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >
+const std::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >
 FakePackageID::contains_key() const
 {
-    return std::tr1::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >();
+    return std::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >();
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >
+const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > >
 FakePackageID::contained_in_key() const
 {
-    return std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > >();
+    return std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > >();
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSEntry> >
 FakePackageID::fs_location_key() const
 {
-    return std::tr1::shared_ptr<const MetadataValueKey<FSEntry> >();
+    return std::shared_ptr<const MetadataValueKey<FSEntry> >();
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<long> >
+const std::shared_ptr<const MetadataValueKey<long> >
 FakePackageID::size_of_download_required_key() const
 {
-    return std::tr1::shared_ptr<const MetadataValueKey<long> >();
+    return std::shared_ptr<const MetadataValueKey<long> >();
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<long> >
+const std::shared_ptr<const MetadataValueKey<long> >
 FakePackageID::size_of_all_distfiles_key() const
 {
-    return std::tr1::shared_ptr<const MetadataValueKey<long> >();
+    return std::shared_ptr<const MetadataValueKey<long> >();
 }
 
-const std::tr1::shared_ptr<FakeMetadataValueKey<long> >
+const std::shared_ptr<FakeMetadataValueKey<long> >
 FakePackageID::hitchhiker_key()
 {
     need_keys_added();
@@ -1322,7 +1322,7 @@ FakeMetadataKeywordSetKey::pretty_print_flat(const Formatter<KeywordName> & f) c
         if (! result.empty())
             result.append(" ");
 
-        std::tr1::shared_ptr<KeywordNameSet> k(new KeywordNameSet);
+        std::shared_ptr<KeywordNameSet> k(new KeywordNameSet);
         k->insert(*i);
         if (_imp->env->accept_keywords(k, *_imp->id))
             result.append(f.format(*i, format::Accepted()));
@@ -1333,35 +1333,35 @@ FakeMetadataKeywordSetKey::pretty_print_flat(const Formatter<KeywordName> & f) c
     return result;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<std::tr1::shared_ptr<const Choices> > >
+const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Choices> > >
 FakePackageID::choices_key() const
 {
     need_keys_added();
     return _imp->choices;
 }
 
-const std::tr1::shared_ptr<FakeMetadataChoicesKey>
+const std::shared_ptr<FakeMetadataChoicesKey>
 FakePackageID::choices_key()
 {
     need_keys_added();
     return _imp->choices;
 }
 
-const std::tr1::shared_ptr<const MetadataValueKey<SlotName> >
+const std::shared_ptr<const MetadataValueKey<SlotName> >
 FakePackageID::slot_key() const
 {
     need_keys_added();
     return _imp->slot;
 }
 
-const std::tr1::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 FakePackageID::behaviours_key() const
 {
     need_keys_added();
     return _imp->behaviours;
 }
 
-const std::tr1::shared_ptr<Set<std::string> >
+const std::shared_ptr<Set<std::string> >
 FakePackageID::behaviours_set()
 {
     return _imp->behaviours_set;

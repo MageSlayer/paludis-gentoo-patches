@@ -53,7 +53,7 @@ namespace
             return false;
         }
 
-        const std::tr1::shared_ptr<const ChoiceValue> v(id.choices_key()->value()->find_by_name_with_prefix(f));
+        const std::shared_ptr<const ChoiceValue> v(id.choices_key()->value()->find_by_name_with_prefix(f));
         if (v)
             return v->enabled();
 
@@ -73,7 +73,7 @@ namespace
             return false;
         }
 
-        const std::tr1::shared_ptr<const ChoiceValue> v(id.choices_key()->value()->find_by_name_with_prefix(f));
+        const std::shared_ptr<const ChoiceValue> v(id.choices_key()->value()->find_by_name_with_prefix(f));
         if (v)
             return v->locked();
 
@@ -91,10 +91,10 @@ namespace
         ChoiceNameWithPrefix flag;
 
         const Environment * const env;
-        const std::tr1::shared_ptr<const PackageID> id;
+        const std::shared_ptr<const PackageID> id;
         bool no_warning_for_unlisted;
 
-        EConditionalDepSpecData(const std::string & s, const Environment * const e, const std::tr1::shared_ptr<const PackageID> & i,
+        EConditionalDepSpecData(const std::string & s, const Environment * const e, const std::shared_ptr<const PackageID> & i,
                 const bool n) :
             inverse(false),
             flag("x"),
@@ -147,7 +147,7 @@ namespace
 
 ConditionalDepSpec
 paludis::parse_elike_conditional_dep_spec(const std::string & s,
-        const Environment * const env, const std::tr1::shared_ptr<const PackageID> & id,
+        const Environment * const env, const std::shared_ptr<const PackageID> & id,
         const bool no_warning_for_unlisted)
 {
     return ConditionalDepSpec(make_shared_ptr(new EConditionalDepSpecData(s, env, id, no_warning_for_unlisted)));

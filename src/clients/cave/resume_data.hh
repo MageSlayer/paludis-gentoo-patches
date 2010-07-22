@@ -24,7 +24,7 @@
 #include <paludis/util/sequence-fwd.hh>
 #include <paludis/resolver/job_lists-fwd.hh>
 #include <paludis/serialise-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 
 namespace paludis
 {
@@ -41,14 +41,14 @@ namespace paludis
     {
         struct ResumeData
         {
-            NamedValue<n::job_lists, std::tr1::shared_ptr<resolver::JobLists> > job_lists;
+            NamedValue<n::job_lists, std::shared_ptr<resolver::JobLists> > job_lists;
             NamedValue<n::preserve_world, bool> preserve_world;
             NamedValue<n::target_set, bool> target_set;
-            NamedValue<n::targets, std::tr1::shared_ptr<Sequence<std::string> > > targets;
-            NamedValue<n::world_specs, std::tr1::shared_ptr<Sequence<std::string> > > world_specs;
+            NamedValue<n::targets, std::shared_ptr<Sequence<std::string> > > targets;
+            NamedValue<n::world_specs, std::shared_ptr<Sequence<std::string> > > world_specs;
 
             void serialise(Serialiser &) const;
-            static const std::tr1::shared_ptr<ResumeData> deserialise(
+            static const std::shared_ptr<ResumeData> deserialise(
                     Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }

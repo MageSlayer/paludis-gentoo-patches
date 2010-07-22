@@ -46,7 +46,7 @@
 #include <paludis/util/singleton.hh>
 
 #include <string>
-#include <tr1/memory>
+#include <memory>
 
 namespace paludis
 {
@@ -135,7 +135,7 @@ namespace paludis
             DepTagCategoryFactory();
 
         public:
-            const std::tr1::shared_ptr<DepTagCategory> create(const std::string &) const
+            const std::shared_ptr<DepTagCategory> create(const std::string &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
@@ -281,7 +281,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            DependencyDepTag(const std::tr1::shared_ptr<const PackageID> &, const PackageDepSpec &);
+            DependencyDepTag(const std::shared_ptr<const PackageID> &, const PackageDepSpec &);
 
             ~DependencyDepTag();
 
@@ -294,12 +294,12 @@ namespace paludis
             /**
              * The PackageID that contains our dependency.
              */
-            const std::tr1::shared_ptr<const PackageID> package_id() const;
+            const std::shared_ptr<const PackageID> package_id() const;
 
             /**
              * The PackageDepSpec that pulled us in.
              */
-            const std::tr1::shared_ptr<const PackageDepSpec> dependency() const;
+            const std::shared_ptr<const PackageDepSpec> dependency() const;
     };
 
     /**
@@ -338,7 +338,7 @@ namespace paludis
     struct DepTagEntry
     {
         NamedValue<n::generation, long> generation;
-        NamedValue<n::tag, std::tr1::shared_ptr<const DepTag> > tag;
+        NamedValue<n::tag, std::shared_ptr<const DepTag> > tag;
     };
 
     /**

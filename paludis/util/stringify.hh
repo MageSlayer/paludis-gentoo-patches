@@ -22,7 +22,7 @@
 
 #include <paludis/util/attributes.hh>
 #include <paludis/util/wrapped_value-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 #include <sstream>
 #include <string>
 
@@ -75,7 +75,7 @@ namespace paludis
          * \ingroup g_strings
          */
         template <typename T_>
-        struct CheckType<std::tr1::shared_ptr<T_> >
+        struct CheckType<std::shared_ptr<T_> >
         {
         };
 

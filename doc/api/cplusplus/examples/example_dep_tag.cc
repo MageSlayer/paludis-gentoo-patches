@@ -77,11 +77,11 @@ namespace
 
     /* Display information about a named set. */
     void display_set(
-            const std::tr1::shared_ptr<const Environment> & env,
+            const std::shared_ptr<const Environment> & env,
             const SetName & name,
             SeenCategories & seen_categories)
     {
-        std::tr1::shared_ptr<const SetSpecTree> set(env->set(name));
+        std::shared_ptr<const SetSpecTree> set(env->set(name));
 
         /* Environment::set can return a zero pointer, if a set is not known. */
         if (! set)
@@ -131,7 +131,7 @@ int main(int argc, char * argv[])
                 "example_dep_tag", "EXAMPLE_DEP_TAG_OPTIONS", "EXAMPLE_DEP_TAG_CMDLINE");
 
         /* We start with an Environment, respecting the user's '--environment' choice. */
-        std::tr1::shared_ptr<Environment> env(EnvironmentFactory::get_instance()->create(
+        std::shared_ptr<Environment> env(EnvironmentFactory::get_instance()->create(
                     CommandLine::get_instance()->a_environment.argument()));
 
         SeenCategories seen_categories;
@@ -150,7 +150,7 @@ int main(int argc, char * argv[])
             cout << "    " << *s << ":" << endl;
 
             /* Fetch the category. */
-            std::tr1::shared_ptr<const DepTagCategory> category(DepTagCategoryFactory::get_instance()->create(*s));
+            std::shared_ptr<const DepTagCategory> category(DepTagCategoryFactory::get_instance()->create(*s));
 
             cout << left << setw(20) << "        Visible:" << " " << boolalpha << category->visible() << endl;
             cout << left << setw(20) << "        ID:" << " " << category->id() << endl;

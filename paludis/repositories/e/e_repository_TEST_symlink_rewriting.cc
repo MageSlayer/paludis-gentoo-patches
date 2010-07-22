@@ -47,7 +47,7 @@
 #include <paludis/choice.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
-#include <tr1/functional>
+#include <functional>
 #include <set>
 #include <string>
 
@@ -58,18 +58,18 @@ using namespace paludis;
 
 namespace
 {
-    void cannot_uninstall(const std::tr1::shared_ptr<const PackageID> & id, const UninstallActionOptions &)
+    void cannot_uninstall(const std::shared_ptr<const PackageID> & id, const UninstallActionOptions &)
     {
         if (id)
             throw InternalError(PALUDIS_HERE, "cannot uninstall");
     }
 
-    std::tr1::shared_ptr<OutputManager> make_standard_output_manager(const Action &)
+    std::shared_ptr<OutputManager> make_standard_output_manager(const Action &)
     {
         return make_shared_ptr(new StandardOutputManager);
     }
 
-    std::string from_keys(const std::tr1::shared_ptr<const Map<std::string, std::string> > & m,
+    std::string from_keys(const std::shared_ptr<const Map<std::string, std::string> > & m,
             const std::string & k)
     {
         Map<std::string, std::string>::ConstIterator mm(m->find(k));
@@ -106,7 +106,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
 
-            std::tr1::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_symlink_rewriting_dir" / "repo"));
@@ -118,8 +118,8 @@ namespace test_cases
             keys->insert("distdir", stringify(FSEntry::cwd() / "e_repository_TEST_symlink_rewriting_dir" / "distdir"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "e_repository_TEST_symlink_rewriting_dir" / "symlinked_build"));
             keys->insert("root", stringify(FSEntry(stringify(FSEntry::cwd() / "e_repository_TEST_symlink_rewriting_dir" / "root")).realpath()));
-            std::tr1::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
             keys.reset(new Map<std::string, std::string>);
@@ -129,8 +129,8 @@ namespace test_cases
             keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_symlink_rewriting_dir" / "vdb"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "e_repository_TEST_symlink_rewriting_dir" / "build"));
             keys->insert("root", stringify(FSEntry(stringify(FSEntry::cwd() / "e_repository_TEST_symlink_rewriting_dir" / "root")).realpath()));
-            std::tr1::shared_ptr<Repository> installed_repo(VDBRepository::repository_factory_create(&env,
-                        std::tr1::bind(from_keys, keys, std::tr1::placeholders::_1)));
+            std::shared_ptr<Repository> installed_repo(VDBRepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, installed_repo);
 
             InstallAction action(make_named_values<InstallActionOptions>(
@@ -141,7 +141,7 @@ namespace test_cases
                         n::want_phase() = &want_all_phases
                     ));
 
-            const std::tr1::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+            const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("cat/pkg",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
             TEST_CHECK(id);

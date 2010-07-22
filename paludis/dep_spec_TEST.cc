@@ -66,14 +66,14 @@ namespace test_cases
             PackageDepSpec a(parse_user_package_dep_spec("cat/pkg:1::repo[=1|>3.2][foo]",
                         &env, UserPackageDepSpecOptions()));
 
-            std::tr1::shared_ptr<PackageDepSpec> b(std::tr1::static_pointer_cast<PackageDepSpec>(a.clone()));
+            std::shared_ptr<PackageDepSpec> b(std::static_pointer_cast<PackageDepSpec>(a.clone()));
             TEST_CHECK_STRINGIFY_EQUAL(a, *b);
 
-            std::tr1::shared_ptr<PackageDepSpec> c(std::tr1::static_pointer_cast<PackageDepSpec>(a.clone()));
+            std::shared_ptr<PackageDepSpec> c(std::static_pointer_cast<PackageDepSpec>(a.clone()));
             TEST_CHECK_STRINGIFY_EQUAL(a, *c);
 
             BlockDepSpec d("!" + stringify(*c), *c, false);
-            std::tr1::shared_ptr<BlockDepSpec> e(std::tr1::static_pointer_cast<BlockDepSpec>(d.clone()));
+            std::shared_ptr<BlockDepSpec> e(std::static_pointer_cast<BlockDepSpec>(d.clone()));
             TEST_CHECK_STRINGIFY_EQUAL(d.blocking(), e->blocking());
         }
     } test_dep_spec_clone;

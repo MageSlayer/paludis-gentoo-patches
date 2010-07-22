@@ -22,7 +22,7 @@
 
 #include <paludis/util/attributes.hh>
 #include <paludis/util/sequence-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 
 namespace paludis
 {
@@ -31,7 +31,7 @@ namespace paludis
         struct Constraint;
         struct Constraints;
 
-        typedef Sequence<std::tr1::shared_ptr<const Constraint> > ConstraintSequence;
+        typedef Sequence<std::shared_ptr<const Constraint> > ConstraintSequence;
     }
 }
 

@@ -40,7 +40,7 @@ namespace paludis
     {
         const Environment * const env;
 
-        std::list<std::tr1::shared_ptr<const Item_> > specs;
+        std::list<std::shared_ptr<const Item_> > specs;
         std::set<SetName> recursing_sets;
 
         Implementation(const Environment * const e) :
@@ -52,25 +52,25 @@ namespace paludis
     template <>
     struct WrappedForwardIteratorTraits<DepSpecFlattener<ProvideSpecTree, PackageDepSpec>::ConstIteratorTag>
     {
-        typedef std::list<std::tr1::shared_ptr<const PackageDepSpec> >::const_iterator UnderlyingIterator;
+        typedef std::list<std::shared_ptr<const PackageDepSpec> >::const_iterator UnderlyingIterator;
     };
 
     template <>
     struct WrappedForwardIteratorTraits<DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec>::ConstIteratorTag>
     {
-        typedef std::list<std::tr1::shared_ptr<const PlainTextDepSpec> >::const_iterator UnderlyingIterator;
+        typedef std::list<std::shared_ptr<const PlainTextDepSpec> >::const_iterator UnderlyingIterator;
     };
 
     template <>
     struct WrappedForwardIteratorTraits<DepSpecFlattener<SetSpecTree, PackageDepSpec>::ConstIteratorTag>
     {
-        typedef std::list<std::tr1::shared_ptr<const PackageDepSpec> >::const_iterator UnderlyingIterator;
+        typedef std::list<std::shared_ptr<const PackageDepSpec> >::const_iterator UnderlyingIterator;
     };
 
     template <>
     struct WrappedForwardIteratorTraits<DepSpecFlattener<SimpleURISpecTree, SimpleURIDepSpec>::ConstIteratorTag>
     {
-        typedef std::list<std::tr1::shared_ptr<const SimpleURIDepSpec> >::const_iterator UnderlyingIterator;
+        typedef std::list<std::shared_ptr<const SimpleURIDepSpec> >::const_iterator UnderlyingIterator;
     };
 }
 
@@ -252,7 +252,7 @@ DepSpecFlattener<Heirarchy_, Item_>::handle_named_set(const NamedSetDepSpec & sp
     if (! _imp->recursing_sets.insert(spec.name()).second)
         throw RecursivelyDefinedSetError(stringify(spec.name()));
 
-    std::tr1::shared_ptr<const SetSpecTree> set(_imp->env->set(spec.name()));
+    std::shared_ptr<const SetSpecTree> set(_imp->env->set(spec.name()));
     if (! set)
         throw NoSuchSetError(stringify(spec.name()));
 
@@ -265,7 +265,7 @@ template <typename Heirarchy_, typename Item_>
 void
 DepSpecFlattener<Heirarchy_, Item_>::handle_item(const Item_ & spec)
 {
-    _imp->specs.push_back(std::tr1::static_pointer_cast<const Item_>(spec.clone()));
+    _imp->specs.push_back(std::static_pointer_cast<const Item_>(spec.clone()));
 }
 
 template class DepSpecFlattener<ProvideSpecTree, PackageDepSpec>;
@@ -274,11 +274,11 @@ template class DepSpecFlattener<SetSpecTree, PackageDepSpec>;
 template class DepSpecFlattener<SimpleURISpecTree, SimpleURIDepSpec>;
 
 template class WrappedForwardIterator<DepSpecFlattener<ProvideSpecTree, PackageDepSpec>::ConstIteratorTag,
-         const std::tr1::shared_ptr<const PackageDepSpec> >;
+         const std::shared_ptr<const PackageDepSpec> >;
 template class WrappedForwardIterator<DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec>::ConstIteratorTag,
-         const std::tr1::shared_ptr<const PlainTextDepSpec> >;
+         const std::shared_ptr<const PlainTextDepSpec> >;
 template class WrappedForwardIterator<DepSpecFlattener<SetSpecTree, PackageDepSpec>::ConstIteratorTag,
-         const std::tr1::shared_ptr<const PackageDepSpec> >;
+         const std::shared_ptr<const PackageDepSpec> >;
 template class WrappedForwardIterator<DepSpecFlattener<SimpleURISpecTree, SimpleURIDepSpec>::ConstIteratorTag,
-         const std::tr1::shared_ptr<const SimpleURIDepSpec> >;
+         const std::shared_ptr<const SimpleURIDepSpec> >;
 

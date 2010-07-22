@@ -331,28 +331,28 @@ namespace paludis
         };
 
         /**
-         * A std::tr1::shared_ptr<T_> shouldn't be specified.
+         * A std::shared_ptr<T_> shouldn't be specified.
          *
          * \ingroup g_formatters
          * \since 0.26
          * \nosubgrouping
          */
         template <typename T_>
-        struct CategorySelector<std::tr1::shared_ptr<T_> >
+        struct CategorySelector<std::shared_ptr<T_> >
         {
             /// This role is wrong.
             typedef typename CategorySelector<T_>::ThisRoleIsWrong ThisRoleIsWrong;
         };
 
         /**
-         * A std::tr1::shared_ptr<const T_> shouldn't be specified.
+         * A std::shared_ptr<const T_> shouldn't be specified.
          *
          * \ingroup g_formatters
          * \since 0.26
          * \nosubgrouping
          */
         template <typename T_>
-        struct CategorySelector<std::tr1::shared_ptr<const T_> >
+        struct CategorySelector<std::shared_ptr<const T_> >
         {
             /// This role is wrong.
             typedef typename CategorySelector<T_>::ThisRoleIsWrong ThisRoleIsWrong;

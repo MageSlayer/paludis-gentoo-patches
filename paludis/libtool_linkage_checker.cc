@@ -158,7 +158,7 @@ LibtoolLinkageChecker::add_extra_lib_dir(const FSEntry &)
 
 void
 LibtoolLinkageChecker::need_breakage_added(
-    const std::tr1::function<void (const FSEntry &, const std::string &)> & callback)
+    const std::function<void (const FSEntry &, const std::string &)> & callback)
 {
     for (Breakage::const_iterator it(_imp->breakage.begin()), it_end(_imp->breakage.end()); it_end != it; ++it)
         callback(it->first, it->second);

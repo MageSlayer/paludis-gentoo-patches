@@ -74,8 +74,8 @@ namespace paludis
     struct UninstallListEntry
     {
         NamedValue<n::kind, UninstallListEntryKind> kind;
-        NamedValue<n::package_id, std::tr1::shared_ptr<const PackageID> > package_id;
-        NamedValue<n::tags, std::tr1::shared_ptr<Set<std::tr1::shared_ptr<DepTag> > > > tags;
+        NamedValue<n::package_id, std::shared_ptr<const PackageID> > package_id;
+        NamedValue<n::tags, std::shared_ptr<Set<std::shared_ptr<DepTag> > > > tags;
     };
 
     class Environment;
@@ -90,22 +90,22 @@ namespace paludis
         private PrivateImplementationPattern<UninstallList>
     {
         private:
-            void add_package(const std::tr1::shared_ptr<const PackageID> &, const std::tr1::shared_ptr<DepTag> &,
+            void add_package(const std::shared_ptr<const PackageID> &, const std::shared_ptr<DepTag> &,
                     const UninstallListEntryKind k);
-            void real_add(const std::tr1::shared_ptr<const PackageID> &,
-                    const std::tr1::shared_ptr<DepTag> &, const bool);
-            void move_package_to_end(const std::tr1::shared_ptr<const PackageID> &);
+            void real_add(const std::shared_ptr<const PackageID> &,
+                    const std::shared_ptr<DepTag> &, const bool);
+            void move_package_to_end(const std::shared_ptr<const PackageID> &);
             void add_unused_dependencies();
             void add_dependencies(const PackageID &, const bool);
 
-            std::tr1::shared_ptr<const PackageIDSet> collect_depped_upon(
-                    const std::tr1::shared_ptr<const PackageIDSet> targets) const;
+            std::shared_ptr<const PackageIDSet> collect_depped_upon(
+                    const std::shared_ptr<const PackageIDSet> targets) const;
 
-            std::tr1::shared_ptr<const PackageIDSet> collect_all_installed() const;
+            std::shared_ptr<const PackageIDSet> collect_all_installed() const;
 
-            std::tr1::shared_ptr<const PackageIDSet> collect_world() const;
+            std::shared_ptr<const PackageIDSet> collect_world() const;
 
-            std::tr1::shared_ptr<const PackageIDSet> collect_used() const;
+            std::shared_ptr<const PackageIDSet> collect_used() const;
 
         public:
             ///\name Basic operations
@@ -127,8 +127,8 @@ namespace paludis
             /**
              * Add a package, optionally with a reason.
              */
-            void add(const std::tr1::shared_ptr<const PackageID> &,
-                    const std::tr1::shared_ptr<DepTag> & = std::tr1::shared_ptr<DepTag>());
+            void add(const std::shared_ptr<const PackageID> &,
+                    const std::shared_ptr<DepTag> & = std::shared_ptr<DepTag>());
 
             /**
              * Add errors for any package on our uninstall list that is required by system.

@@ -86,7 +86,7 @@ VDBUnmerger::~VDBUnmerger()
 Hook
 VDBUnmerger::extend_hook(const Hook & h) const
 {
-    std::tr1::shared_ptr<const FSEntrySequence> bashrc_files(_imp->options.environment()->bashrc_files());
+    std::shared_ptr<const FSEntrySequence> bashrc_files(_imp->options.environment()->bashrc_files());
 
     Hook result(Unmerger::extend_hook(h)
         ("CONFIG_PROTECT", _imp->options.config_protect())
@@ -192,7 +192,7 @@ VDBUnmerger::populate_unmerge_set()
     if (! _imp->options.package_id()->contents_key()->value())
         throw VDBUnmergerError("Id '" + stringify(*_imp->options.package_id()) + "' has no contents key");
 
-    std::tr1::shared_ptr<const Contents> contents(_imp->options.package_id()->contents_key()->value());
+    std::shared_ptr<const Contents> contents(_imp->options.package_id()->contents_key()->value());
     for (Contents::ConstIterator c(contents->begin()), c_end(contents->end()) ;
             c != c_end ; ++c)
         add_unmerge_entry(get_et(**c), *c);
@@ -216,7 +216,7 @@ namespace
 }
 
 bool
-VDBUnmerger::check_file(const std::tr1::shared_ptr<const ContentsEntry> & e) const
+VDBUnmerger::check_file(const std::shared_ptr<const ContentsEntry> & e) const
 {
     const FSEntry f(e->location_key()->value());
     if (! (_imp->options.root() / f).exists())
@@ -249,7 +249,7 @@ VDBUnmerger::check_file(const std::tr1::shared_ptr<const ContentsEntry> & e) con
 }
 
 bool
-VDBUnmerger::check_sym(const std::tr1::shared_ptr<const ContentsEntry> & e) const
+VDBUnmerger::check_sym(const std::shared_ptr<const ContentsEntry> & e) const
 {
     const FSEntry f(e->location_key()->value());
 
@@ -268,7 +268,7 @@ VDBUnmerger::check_sym(const std::tr1::shared_ptr<const ContentsEntry> & e) cons
 }
 
 bool
-VDBUnmerger::check_misc(const std::tr1::shared_ptr<const ContentsEntry> & e) const
+VDBUnmerger::check_misc(const std::shared_ptr<const ContentsEntry> & e) const
 {
     const FSEntry f(e->location_key()->value());
 
@@ -278,7 +278,7 @@ VDBUnmerger::check_misc(const std::tr1::shared_ptr<const ContentsEntry> & e) con
 }
 
 bool
-VDBUnmerger::check_dir(const std::tr1::shared_ptr<const ContentsEntry> & e) const
+VDBUnmerger::check_dir(const std::shared_ptr<const ContentsEntry> & e) const
 {
     const FSEntry f(e->location_key()->value());
 

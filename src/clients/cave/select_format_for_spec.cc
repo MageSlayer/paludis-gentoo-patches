@@ -31,7 +31,7 @@ using namespace cave;
 
 std::string
 paludis::cave::select_format_for_spec(
-        const std::tr1::shared_ptr<const Environment> & env,
+        const std::shared_ptr<const Environment> & env,
         const PackageDepSpec & spec,
         const std::string & if_installed,
         const std::string & if_installable,

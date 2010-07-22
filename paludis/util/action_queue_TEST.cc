@@ -46,7 +46,7 @@ namespace test_cases
             {
                 ActionQueue q;
                 for (int x(0) ; x < 100 ; ++x)
-                    q.enqueue(std::tr1::bind(&push_back_to_list, &l, x));
+                    q.enqueue(std::bind(&push_back_to_list, &l, x));
             }
 
             std::list<int>::const_iterator i(l.begin());

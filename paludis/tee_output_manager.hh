@@ -26,8 +26,8 @@
 #include <paludis/util/set-fwd.hh>
 #include <paludis/util/sequence-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <tr1/memory>
-#include <tr1/functional>
+#include <memory>
+#include <functional>
 
 namespace paludis
 {
@@ -37,8 +37,8 @@ namespace paludis
     {
         public:
             TeeOutputManager(
-                    const std::tr1::shared_ptr<const OutputManagerSequence> &,
-                    const std::tr1::shared_ptr<const OutputManagerSequence> &);
+                    const std::shared_ptr<const OutputManagerSequence> &,
+                    const std::shared_ptr<const OutputManagerSequence> &);
             ~TeeOutputManager();
 
             virtual std::ostream & stdout_stream() PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -50,10 +50,10 @@ namespace paludis
             virtual void nothing_more_to_come();
             virtual void message(const MessageType, const std::string &);
 
-            static const std::tr1::shared_ptr<const Set<std::string> > factory_managers()
+            static const std::shared_ptr<const Set<std::string> > factory_managers()
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            static const std::tr1::shared_ptr<OutputManager> factory_create(
+            static const std::shared_ptr<OutputManager> factory_create(
                     const OutputManagerFactory::KeyFunction &,
                     const OutputManagerFactory::CreateChildFunction &,
                     const OutputManagerFactory::ReplaceVarsFunc &)

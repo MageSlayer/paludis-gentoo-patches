@@ -44,14 +44,14 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            const std::tr1::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            const std::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("repo")
                             )));
             env.package_database()->add_repository(1, repo);
-            std::tr1::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
+            std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
-            std::tr1::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
+            std::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
                         make_named_values<FakeInstalledRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("installed"),
@@ -61,28 +61,28 @@ namespace test_cases
             env.package_database()->add_repository(2, installed_repo);
             installed_repo->add_version("cat", "installed", "1")->set_slot(SlotName("monkey"));
 
-            std::tr1::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string("paludis-1"));
+            std::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string("paludis-1"));
 
-            std::tr1::shared_ptr<const DependencySpecTree> bb(parse_depend(
+            std::shared_ptr<const DependencySpecTree> bb(parse_depend(
                         "|| ( foo/bar ( bar/baz oink/squeak ) ) blah/blah", &env, id, *eapi)),
                 aa(fix_locked_dependencies(&env, *eapi, id, bb));
 
             StringifyFormatter ff;
             DepSpecPrettyPrinter
-                a(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false),
-                b(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
+                a(0, std::shared_ptr<const PackageID>(), ff, 0, false, false),
+                b(0, std::shared_ptr<const PackageID>(), ff, 0, false, false);
             aa->root()->accept(a);
             bb->root()->accept(b);
 
             TEST_CHECK_STRINGIFY_EQUAL(a, b);
 
-            std::tr1::shared_ptr<const DependencySpecTree> cc(parse_depend(
+            std::shared_ptr<const DependencySpecTree> cc(parse_depend(
                         "foo/bar:= cat/installed:= >=cat/installed-1.2:= <=cat/installed-1.2:=", &env, id, *eapi)),
                 dd(fix_locked_dependencies(&env, *eapi, id, cc));
 
             DepSpecPrettyPrinter
-                c(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false),
-                d(0, std::tr1::shared_ptr<const PackageID>(), ff, 0, false, false);
+                c(0, std::shared_ptr<const PackageID>(), ff, 0, false, false),
+                d(0, std::shared_ptr<const PackageID>(), ff, 0, false, false);
             cc->root()->accept(c);
             dd->root()->accept(d);
 

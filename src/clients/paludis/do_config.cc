@@ -33,9 +33,9 @@ namespace
     struct AmbiguousConfigTarget :
         public Exception
     {
-        std::tr1::shared_ptr<const PackageIDSequence> matches;
+        std::shared_ptr<const PackageIDSequence> matches;
 
-        AmbiguousConfigTarget(std::tr1::shared_ptr<const PackageIDSequence> & m) throw () :
+        AmbiguousConfigTarget(std::shared_ptr<const PackageIDSequence> & m) throw () :
             Exception("Ambiguous config target"),
             matches(m)
         {
@@ -47,13 +47,13 @@ namespace
     };
 
     int
-    do_one_config_entry(const Environment * const env, const std::tr1::shared_ptr<const PackageID> & p)
+    do_one_config_entry(const Environment * const env, const std::shared_ptr<const PackageID> & p)
     {
         int return_code(0);
 
         OutputManagerFromEnvironment output_manager_holder(env, p, oe_exclusive, ClientOutputFeatures());
         ConfigActionOptions options(make_named_values<ConfigActionOptions>(
-                    n::make_output_manager() = std::tr1::ref(output_manager_holder)
+                    n::make_output_manager() = std::ref(output_manager_holder)
                     ));
         ConfigAction a(options);
         try
@@ -72,15 +72,15 @@ namespace
     }
 
     int
-    do_one_config(std::tr1::shared_ptr<Environment> env, const std::string & target)
+    do_one_config(std::shared_ptr<Environment> env, const std::string & target)
     {
         Context local_context("When handling query '" + target + "':");
 
-        std::tr1::shared_ptr<PackageDepSpec> spec(
+        std::shared_ptr<PackageDepSpec> spec(
                 new PackageDepSpec(parse_user_package_dep_spec(target, env.get(), UserPackageDepSpecOptions(),
                         filter::InstalledAtRoot(env->root()))));
 
-        std::tr1::shared_ptr<const PackageIDSequence> entries(
+        std::shared_ptr<const PackageIDSequence> entries(
                 (*env)[selection::AllVersionsUnsorted(generator::Matches(*spec, MatchPackageOptions()) | filter::InstalledAtRoot(env->root()))]);
 
         if (entries->empty())
@@ -94,7 +94,7 @@ namespace
 }
 
 int
-do_config(const std::tr1::shared_ptr<Environment> & env)
+do_config(const std::shared_ptr<Environment> & env)
 {
     int ret_code(0);
 

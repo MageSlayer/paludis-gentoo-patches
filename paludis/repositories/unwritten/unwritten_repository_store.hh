@@ -25,7 +25,7 @@
 #include <paludis/name-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/environment-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 
 namespace paludis
 {
@@ -53,16 +53,16 @@ namespace paludis
                 bool has_package_named(const QualifiedPackageName & q) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                std::tr1::shared_ptr<const CategoryNamePartSet> category_names() const
+                std::shared_ptr<const CategoryNamePartSet> category_names() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                std::tr1::shared_ptr<const CategoryNamePartSet> unimportant_category_names() const
+                std::shared_ptr<const CategoryNamePartSet> unimportant_category_names() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                std::tr1::shared_ptr<const QualifiedPackageNameSet> package_names(
+                std::shared_ptr<const QualifiedPackageNameSet> package_names(
                         const CategoryNamePart & c) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                std::tr1::shared_ptr<const PackageIDSequence> package_ids(
+                std::shared_ptr<const PackageIDSequence> package_ids(
                         const QualifiedPackageName & p) const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }

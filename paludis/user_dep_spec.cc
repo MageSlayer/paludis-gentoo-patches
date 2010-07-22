@@ -187,15 +187,15 @@ namespace
 
             case '.':
                 {
-                    std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req(new UserKeyRequirement(flag.substr(1)));
+                    std::shared_ptr<const AdditionalPackageDepSpecRequirement> req(new UserKeyRequirement(flag.substr(1)));
                     result.additional_requirement(req);
                 }
                 break;
 
             default:
                 {
-                    std::tr1::shared_ptr<const AdditionalPackageDepSpecRequirement> req(parse_elike_use_requirement(flag,
-                                std::tr1::shared_ptr<const PackageID>(), ELikeUseRequirementOptions()));
+                    std::shared_ptr<const AdditionalPackageDepSpecRequirement> req(parse_elike_use_requirement(flag,
+                                std::shared_ptr<const PackageID>(), ELikeUseRequirementOptions()));
                     result.additional_requirement(req);
                 }
                 break;
@@ -298,7 +298,7 @@ PackageDepSpec
 paludis::parse_user_package_dep_spec(const std::string & ss, const Environment * const env,
         const UserPackageDepSpecOptions & options, const Filter & filter)
 {
-    using namespace std::tr1::placeholders;
+    using namespace std::placeholders;
 
     Context context("When parsing user package dep spec '" + ss + "':");
 
@@ -306,20 +306,20 @@ paludis::parse_user_package_dep_spec(const std::string & ss, const Environment *
     PartiallyMadePackageDepSpecOptions o;
 
     return partial_parse_generic_elike_package_dep_spec(ss, make_named_values<GenericELikePackageDepSpecParseFunctions>(
-            n::add_package_requirement() = std::tr1::bind(&user_add_package_requirement, _1, _2, env, options, filter),
-            n::add_version_requirement() = std::tr1::bind(&elike_add_version_requirement, _1, _2, _3),
-            n::check_sanity() = std::tr1::bind(&user_check_sanity, _1, options, env),
-            n::get_remove_trailing_version() = std::tr1::bind(&elike_get_remove_trailing_version, _1,
+            n::add_package_requirement() = std::bind(&user_add_package_requirement, _1, _2, env, options, filter),
+            n::add_version_requirement() = std::bind(&elike_add_version_requirement, _1, _2, _3),
+            n::check_sanity() = std::bind(&user_check_sanity, _1, options, env),
+            n::get_remove_trailing_version() = std::bind(&elike_get_remove_trailing_version, _1,
                     user_version_spec_options()),
-            n::get_remove_version_operator() = std::tr1::bind(&elike_get_remove_version_operator, _1,
+            n::get_remove_version_operator() = std::bind(&elike_get_remove_version_operator, _1,
                     ELikePackageDepSpecOptions() + epdso_allow_tilde_greater_deps + epdso_nice_equal_star),
-            n::has_version_operator() = std::tr1::bind(&elike_has_version_operator, _1,
-                    std::tr1::cref(had_bracket_version_requirements), ELikePackageDepSpecOptions()),
-            n::options_for_partially_made_package_dep_spec() = std::tr1::bind(&fixed_options_for_partially_made_package_dep_spec, o),
-            n::remove_trailing_repo_if_exists() = std::tr1::bind(&user_remove_trailing_repo_if_exists, _1, _2),
-            n::remove_trailing_slot_if_exists() = std::tr1::bind(&user_remove_trailing_slot_if_exists, _1, _2),
-            n::remove_trailing_square_bracket_if_exists() = std::tr1::bind(&user_remove_trailing_square_bracket_if_exists,
-                    _1, _2, std::tr1::ref(had_bracket_version_requirements))
+            n::has_version_operator() = std::bind(&elike_has_version_operator, _1,
+                    std::cref(had_bracket_version_requirements), ELikePackageDepSpecOptions()),
+            n::options_for_partially_made_package_dep_spec() = std::bind(&fixed_options_for_partially_made_package_dep_spec, o),
+            n::remove_trailing_repo_if_exists() = std::bind(&user_remove_trailing_repo_if_exists, _1, _2),
+            n::remove_trailing_slot_if_exists() = std::bind(&user_remove_trailing_slot_if_exists, _1, _2),
+            n::remove_trailing_square_bracket_if_exists() = std::bind(&user_remove_trailing_square_bracket_if_exists,
+                    _1, _2, std::ref(had_bracket_version_requirements))
             ));
 }
 
@@ -552,17 +552,17 @@ namespace
             return false;
         }
 
-        bool visit(const MetadataValueKey<std::tr1::shared_ptr<const Choices> > &) const
+        bool visit(const MetadataValueKey<std::shared_ptr<const Choices> > &) const
         {
             return false;
         }
 
-        bool visit(const MetadataValueKey<std::tr1::shared_ptr<const RepositoryMaskInfo> > &) const
+        bool visit(const MetadataValueKey<std::shared_ptr<const RepositoryMaskInfo> > &) const
         {
             return false;
         }
 
-        bool visit(const MetadataValueKey<std::tr1::shared_ptr<const Contents> > & s) const
+        bool visit(const MetadataValueKey<std::shared_ptr<const Contents> > & s) const
         {
             switch (op)
             {
@@ -579,7 +579,7 @@ namespace
             return false;
         }
 
-        bool visit(const MetadataValueKey<std::tr1::shared_ptr<const PackageID> > & k) const
+        bool visit(const MetadataValueKey<std::shared_ptr<const PackageID> > & k) const
         {
             return pattern == stringify(*k.value());
         }

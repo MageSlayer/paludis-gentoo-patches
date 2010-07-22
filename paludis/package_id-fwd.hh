@@ -24,7 +24,7 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/set-fwd.hh>
 #include <paludis/util/sequence-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 
 /** \file
  * Forward declarations for paludis/package_id.hh .
@@ -45,7 +45,7 @@ namespace paludis
      * \ingroup g_package_id
      * \since 0.26
      */
-    typedef Sequence<std::tr1::shared_ptr<const PackageID> > PackageIDSequence;
+    typedef Sequence<std::shared_ptr<const PackageID> > PackageIDSequence;
 
     /**
      * A PackageIDSet holds a collection of PackageID instances that have no
@@ -54,7 +54,7 @@ namespace paludis
      * \ingroup g_package_id
      * \since 0.26
      */
-    typedef Set<std::tr1::shared_ptr<const PackageID>, PackageIDSetComparator> PackageIDSet;
+    typedef Set<std::shared_ptr<const PackageID>, PackageIDSetComparator> PackageIDSet;
 
 #include <paludis/package_id-se.hh>
 

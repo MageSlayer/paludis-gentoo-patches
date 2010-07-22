@@ -28,7 +28,7 @@
 #include <paludis/environment-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 
-#include <tr1/memory>
+#include <memory>
 
 namespace paludis
 {
@@ -44,25 +44,25 @@ namespace paludis
 
             struct BrokenPackageConstIteratorTag;
             typedef paludis::WrappedForwardIterator<BrokenPackageConstIteratorTag,
-                    const std::tr1::shared_ptr<const paludis::PackageID>
+                    const std::shared_ptr<const paludis::PackageID>
                         > BrokenPackageConstIterator;
             BrokenPackageConstIterator begin_broken_packages() const PALUDIS_ATTRIBUTE((warn_unused_result));
             BrokenPackageConstIterator end_broken_packages() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             struct BrokenFileConstIteratorTag;
             typedef paludis::WrappedForwardIterator<BrokenFileConstIteratorTag, const paludis::FSEntry> BrokenFileConstIterator;
-            BrokenFileConstIterator begin_broken_files(const std::tr1::shared_ptr<const paludis::PackageID> &)
+            BrokenFileConstIterator begin_broken_files(const std::shared_ptr<const paludis::PackageID> &)
                 const PALUDIS_ATTRIBUTE((warn_unused_result));
-            BrokenFileConstIterator end_broken_files(const std::tr1::shared_ptr<const paludis::PackageID> &)
+            BrokenFileConstIterator end_broken_files(const std::shared_ptr<const paludis::PackageID> &)
                 const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             struct MissingRequirementConstIteratorTag;
             typedef paludis::WrappedForwardIterator<MissingRequirementConstIteratorTag, const std::string> MissingRequirementConstIterator;
             MissingRequirementConstIterator begin_missing_requirements(
-                const std::tr1::shared_ptr<const paludis::PackageID> &, const paludis::FSEntry &)
+                const std::shared_ptr<const paludis::PackageID> &, const paludis::FSEntry &)
                 const PALUDIS_ATTRIBUTE((warn_unused_result));
             MissingRequirementConstIterator end_missing_requirements(
-                const std::tr1::shared_ptr<const paludis::PackageID> &, const paludis::FSEntry &)
+                const std::shared_ptr<const paludis::PackageID> &, const paludis::FSEntry &)
                 const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }
