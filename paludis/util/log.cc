@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,7 +21,7 @@
 #include <exception>
 #include <paludis/util/log.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/instantiation_policy-impl.hh>
+#include <paludis/util/singleton-impl.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/action_queue.hh>
 #include "config.h"
@@ -37,7 +37,7 @@ using namespace paludis;
 
 #include <paludis/util/log-se.cc>
 
-template class InstantiationPolicy<Log, instantiation_method::SingletonTag>;
+template class Singleton<Log>;
 
 namespace paludis
 {

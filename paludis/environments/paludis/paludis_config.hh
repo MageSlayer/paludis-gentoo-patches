@@ -24,7 +24,6 @@
 #include <paludis/name.hh>
 #include <paludis/environment_factory.hh>
 #include <paludis/util/exception.hh>
-#include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/sequence-fwd.hh>
 #include <paludis/util/map-fwd.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>

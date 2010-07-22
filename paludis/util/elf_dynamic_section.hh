@@ -23,7 +23,7 @@
 
 #include <paludis/util/elf_sections.hh>
 #include <paludis/util/clone.hh>
-#include <paludis/util/instantiation_policy.hh>
+#include <paludis/util/singleton.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/util/simple_visitor.hh>
@@ -43,14 +43,14 @@ namespace paludis
 
     template <typename ElfType_>
     class DynamicEntry :
-        public virtual paludis::DeclareAbstractAcceptMethods<DynamicEntry<ElfType_>, typename paludis::MakeTypeList<
+        public virtual DeclareAbstractAcceptMethods<DynamicEntry<ElfType_>, typename MakeTypeList<
             DynamicEntryUnknown<ElfType_>,
             DynamicEntryValue<ElfType_>,
             DynamicEntryPointer<ElfType_>,
             DynamicEntryString<ElfType_>,
             DynamicEntryFlag<ElfType_>
         >::Type>,
-        public virtual paludis::Cloneable<DynamicEntry<ElfType_> >
+        public virtual Cloneable<DynamicEntry<ElfType_> >
     {
         private:
             std::string _tag_name;
@@ -72,8 +72,8 @@ namespace paludis
     template <typename ElfType_>
     class DynamicEntryUnknown :
         public virtual DynamicEntry<ElfType_>,
-        public paludis::ImplementAcceptMethods<DynamicEntry<ElfType_>, DynamicEntryUnknown<ElfType_> >,
-        public paludis::CloneUsingThis<DynamicEntry<ElfType_>, DynamicEntryUnknown<ElfType_> >
+        public ImplementAcceptMethods<DynamicEntry<ElfType_>, DynamicEntryUnknown<ElfType_> >,
+        public CloneUsingThis<DynamicEntry<ElfType_>, DynamicEntryUnknown<ElfType_> >
     {
         public:
             DynamicEntryUnknown();
@@ -83,8 +83,8 @@ namespace paludis
     template <typename ElfType_>
     class DynamicEntryFlag :
         public virtual DynamicEntry<ElfType_>,
-        public paludis::ImplementAcceptMethods<DynamicEntry<ElfType_>, DynamicEntryFlag<ElfType_> >,
-        public paludis::CloneUsingThis<DynamicEntry<ElfType_>, DynamicEntryFlag<ElfType_> >
+        public ImplementAcceptMethods<DynamicEntry<ElfType_>, DynamicEntryFlag<ElfType_> >,
+        public CloneUsingThis<DynamicEntry<ElfType_>, DynamicEntryFlag<ElfType_> >
     {
         public:
             DynamicEntryFlag(const std::string &);
@@ -94,8 +94,8 @@ namespace paludis
     template <typename ElfType_>
     class DynamicEntryValue :
         public virtual DynamicEntry<ElfType_>,
-        public paludis::ImplementAcceptMethods<DynamicEntry<ElfType_>, DynamicEntryValue<ElfType_> >,
-        public paludis::CloneUsingThis<DynamicEntry<ElfType_>, DynamicEntryValue<ElfType_> >
+        public ImplementAcceptMethods<DynamicEntry<ElfType_>, DynamicEntryValue<ElfType_> >,
+        public CloneUsingThis<DynamicEntry<ElfType_>, DynamicEntryValue<ElfType_> >
     {
         private:
             typename ElfType_::DynamicValue _value;
@@ -114,8 +114,8 @@ namespace paludis
     template <typename ElfType_>
     class DynamicEntryPointer :
         public virtual DynamicEntry<ElfType_>,
-        public paludis::ImplementAcceptMethods<DynamicEntry<ElfType_>, DynamicEntryPointer<ElfType_> >,
-        public paludis::CloneUsingThis<DynamicEntry<ElfType_>, DynamicEntryPointer<ElfType_> >
+        public ImplementAcceptMethods<DynamicEntry<ElfType_>, DynamicEntryPointer<ElfType_> >,
+        public CloneUsingThis<DynamicEntry<ElfType_>, DynamicEntryPointer<ElfType_> >
     {
         private:
             typename ElfType_::DynamicPointer _pointer;
@@ -139,8 +139,8 @@ namespace paludis
     template <typename ElfType_>
     class DynamicEntryString :
         public virtual DynamicEntry<ElfType_>,
-        public paludis::ImplementAcceptMethods<DynamicEntry<ElfType_>, DynamicEntryString<ElfType_> >,
-        public paludis::CloneUsingThis<DynamicEntry<ElfType_>, DynamicEntryString<ElfType_> >
+        public ImplementAcceptMethods<DynamicEntry<ElfType_>, DynamicEntryString<ElfType_> >,
+        public CloneUsingThis<DynamicEntry<ElfType_>, DynamicEntryString<ElfType_> >
     {
         friend class littlelf_internals::DynEntriesStringResolvingVisitor<ElfType_>;
 
@@ -172,11 +172,11 @@ namespace paludis
 
     template <typename ElfType_>
     class DynamicEntries :
-        public paludis::InstantiationPolicy<DynamicEntries<ElfType_>, paludis::instantiation_method::SingletonTag>,
-        private paludis::PrivateImplementationPattern<DynamicEntries<ElfType_> >
+        public Singleton<DynamicEntries<ElfType_> >,
+        private PrivateImplementationPattern<DynamicEntries<ElfType_> >
     {
-        using paludis::PrivateImplementationPattern<DynamicEntries>::_imp;
-        friend class paludis::InstantiationPolicy<DynamicEntries, paludis::instantiation_method::SingletonTag>;
+        using PrivateImplementationPattern<DynamicEntries>::_imp;
+        friend class Singleton<DynamicEntries>;
 
         public:
             void register_type(typename ElfType_::DynamicTag, std::tr1::shared_ptr<DynamicEntry<ElfType_> >);
@@ -195,10 +195,10 @@ namespace paludis
     template <typename ElfType_>
     class PALUDIS_VISIBLE DynamicSection :
         public Section<ElfType_>,
-        public paludis::ImplementAcceptMethods<Section<ElfType_>, DynamicSection<ElfType_> >,
-        private paludis::PrivateImplementationPattern<DynamicSection<ElfType_> >
+        public ImplementAcceptMethods<Section<ElfType_>, DynamicSection<ElfType_> >,
+        private PrivateImplementationPattern<DynamicSection<ElfType_> >
     {
-        using paludis::PrivateImplementationPattern<DynamicSection>::_imp;
+        using PrivateImplementationPattern<DynamicSection>::_imp;
 
         public:
             DynamicSection(typename ElfType_::Word, const typename ElfType_::SectionHeader &, std::istream &, bool);
@@ -209,7 +209,7 @@ namespace paludis
             void resolve_entry_names(Section<ElfType_> &);
 
             typedef DynamicSectionEntryIteratorTag<ElfType_> EntryIteratorTag;
-            typedef paludis::WrappedForwardIterator<EntryIteratorTag, DynamicEntry<ElfType_> > EntryIterator;
+            typedef WrappedForwardIterator<EntryIteratorTag, DynamicEntry<ElfType_> > EntryIterator;
             EntryIterator entry_begin() const;
             EntryIterator entry_end() const;
     };

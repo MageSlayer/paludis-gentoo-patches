@@ -23,7 +23,7 @@
 #include <paludis/repositories/gems/yaml-fwd.hh>
 #include <paludis/util/simple_visitor.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/instantiation_policy.hh>
+#include <paludis/util/singleton.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/type_list.hh>
@@ -189,9 +189,9 @@ namespace paludis
          */
         class PALUDIS_VISIBLE NodeManager :
             private PrivateImplementationPattern<NodeManager>,
-            public InstantiationPolicy<NodeManager, instantiation_method::SingletonTag>
+            public Singleton<NodeManager>
         {
-            friend class InstantiationPolicy<NodeManager, instantiation_method::SingletonTag>;
+            friend class Singleton<NodeManager>;
 
             private:
                 ///\name Basic operations

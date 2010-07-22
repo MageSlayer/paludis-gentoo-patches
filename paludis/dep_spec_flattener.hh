@@ -25,7 +25,6 @@
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/spec_tree.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/no_type.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -63,7 +62,6 @@ namespace paludis
      */
     template <typename Heirarchy_, typename Item_>
     class PALUDIS_VISIBLE DepSpecFlattener :
-        private InstantiationPolicy<DepSpecFlattener<Heirarchy_, Item_>, instantiation_method::NonCopyableTag>,
         private PrivateImplementationPattern<DepSpecFlattener<Heirarchy_, Item_> >
     {
         private:
@@ -98,6 +96,10 @@ namespace paludis
             DepSpecFlattener(const Environment * const);
 
             ~DepSpecFlattener();
+
+            DepSpecFlattener(const DepSpecFlattener &) = delete;
+
+            DepSpecFlattener & operator= (const DepSpecFlattener &) = delete;
 
             ///\}
 

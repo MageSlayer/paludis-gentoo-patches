@@ -20,16 +20,16 @@
 #ifndef PALUDIS_GUARD_PALUDIS_COMMA_SEPARATED_DEP_PARSER_HH
 #define PALUDIS_GUARD_PALUDIS_COMMA_SEPARATED_DEP_PARSER_HH 1
 
-#include <paludis/util/instantiation_policy.hh>
 #include <paludis/spec_tree-fwd.hh>
 #include <paludis/environment-fwd.hh>
 
 namespace paludis
 {
-    class PALUDIS_VISIBLE CommaSeparatedDepParser :
-        private InstantiationPolicy<CommaSeparatedDepParser, instantiation_method::NonInstantiableTag>
+    class PALUDIS_VISIBLE CommaSeparatedDepParser
     {
         public:
+            CommaSeparatedDepParser() = delete;
+
             static std::tr1::shared_ptr<const DependencySpecTree> parse(
                     const Environment * const env, const std::string &);
     };

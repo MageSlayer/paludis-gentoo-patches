@@ -21,7 +21,6 @@
 #define PALUDIS_GUARD_PALUDIS_ENVIRONMENTS_PALUDIS_OUTPUT_CONF_HH 1
 
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/output_manager-fwd.hh>
 #include <paludis/create_output_manager_info-fwd.hh>
@@ -34,8 +33,7 @@ namespace paludis
     namespace paludis_environment
     {
         class OutputConf :
-            private PrivateImplementationPattern<OutputConf>,
-            private InstantiationPolicy<OutputConf, instantiation_method::NonCopyableTag>
+            private PrivateImplementationPattern<OutputConf>
         {
             public:
                 ///\name Basic operations
@@ -43,6 +41,9 @@ namespace paludis
 
                 OutputConf(const PaludisEnvironment * const);
                 ~OutputConf();
+
+                OutputConf(const OutputConf &) = delete;
+                OutputConf & operator= (const OutputConf &) = delete;
 
                 ///\}
 

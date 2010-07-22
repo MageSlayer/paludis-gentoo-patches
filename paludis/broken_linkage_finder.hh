@@ -22,7 +22,6 @@
 
 #include <paludis/util/attributes.hh>
 #include <paludis/util/fs_entry-fwd.hh>
-#include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 
@@ -34,12 +33,14 @@
 namespace paludis
 {
     class PALUDIS_VISIBLE BrokenLinkageFinder :
-        private paludis::PrivateImplementationPattern<BrokenLinkageFinder>,
-        private paludis::InstantiationPolicy<BrokenLinkageFinder, paludis::instantiation_method::NonCopyableTag>
+        private paludis::PrivateImplementationPattern<BrokenLinkageFinder>
     {
         public:
             BrokenLinkageFinder(const paludis::Environment *, const std::string &);
             ~BrokenLinkageFinder();
+
+            BrokenLinkageFinder(const BrokenLinkageFinder &) = delete;
+            BrokenLinkageFinder & operator= (const BrokenLinkageFinder &) = delete;
 
             struct BrokenPackageConstIteratorTag;
             typedef paludis::WrappedForwardIterator<BrokenPackageConstIteratorTag,

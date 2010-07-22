@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -22,12 +22,12 @@
 #include "pcre_matcher.hh"
 #include "text_matcher.hh"
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/instantiation_policy-impl.hh>
+#include <paludis/util/singleton-impl.hh>
 
 using namespace inquisitio;
 using namespace paludis;
 
-template class paludis::InstantiationPolicy<MatcherFactory, paludis::instantiation_method::SingletonTag>;
+template class paludis::Singleton<MatcherFactory>;
 
 Matcher::Matcher()
 {

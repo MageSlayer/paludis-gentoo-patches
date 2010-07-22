@@ -28,7 +28,7 @@
 
 #include <paludis/util/byte_swap.hh>
 #include <paludis/util/clone-impl.hh>
-#include <paludis/util/instantiation_policy-impl.hh>
+#include <paludis/util/singleton-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>

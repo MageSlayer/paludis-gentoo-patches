@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -22,7 +22,7 @@
 #include <paludis/dep_label.hh>
 #include <paludis/spec_tree.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/instantiation_policy-impl.hh>
+#include <paludis/util/singleton-impl.hh>
 #include <paludis/util/set-impl.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
@@ -32,7 +32,7 @@
 
 using namespace paludis;
 
-template class InstantiationPolicy<DepTagCategoryFactory, instantiation_method::SingletonTag>;
+template class Singleton<DepTagCategoryFactory>;
 
 template class Set<DepTagEntry, DepTagEntryComparator>;
 template class WrappedForwardIterator<Set<DepTagEntry, DepTagEntryComparator>::ConstIteratorTag, const DepTagEntry>;

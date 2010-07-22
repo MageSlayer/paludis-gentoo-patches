@@ -26,13 +26,11 @@
 #include <paludis/environment-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/instantiation_policy.hh>
 #include <tr1/memory>
 
 namespace paludis
 {
-    class SelectionHandler :
-        private InstantiationPolicy<SelectionHandler, instantiation_method::NonCopyableTag>
+    class SelectionHandler
     {
         protected:
             const FilteredGenerator _fg;
@@ -45,13 +43,14 @@ namespace paludis
         public:
             virtual ~SelectionHandler() = 0;
 
+            SelectionHandler(const SelectionHandler &) = delete;
+            SelectionHandler & operator= (const SelectionHandler &) = delete;
+
             virtual std::string as_string() const = 0;
 
             virtual std::tr1::shared_ptr<PackageIDSequence> perform_select(const Environment * const) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
-
-    extern template class InstantiationPolicy<SelectionHandler, instantiation_method::NonCopyableTag>;
 }
 
 #endif

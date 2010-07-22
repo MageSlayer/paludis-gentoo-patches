@@ -22,7 +22,6 @@
 
 #include <paludis/util/attributes.hh>
 #include <paludis/util/fs_entry-fwd.hh>
-#include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 
@@ -31,21 +30,23 @@
 namespace paludis
 {
     class PALUDIS_VISIBLE BrokenLinkageConfiguration :
-        private paludis::PrivateImplementationPattern<BrokenLinkageConfiguration>,
-        private paludis::InstantiationPolicy<BrokenLinkageConfiguration, paludis::instantiation_method::NonCopyableTag>
+        private PrivateImplementationPattern<BrokenLinkageConfiguration>
     {
         public:
-            BrokenLinkageConfiguration(const paludis::FSEntry &);
+            BrokenLinkageConfiguration(const FSEntry &);
             ~BrokenLinkageConfiguration();
 
+            BrokenLinkageConfiguration(const BrokenLinkageConfiguration &) = delete;
+            BrokenLinkageConfiguration & operator= (const BrokenLinkageConfiguration &) = delete;
+
             struct DirsIteratorTag;
-            typedef paludis::WrappedForwardIterator<DirsIteratorTag, const paludis::FSEntry> DirsIterator;
+            typedef WrappedForwardIterator<DirsIteratorTag, const FSEntry> DirsIterator;
             DirsIterator begin_search_dirs() const PALUDIS_ATTRIBUTE((warn_unused_result));
             DirsIterator end_search_dirs() const PALUDIS_ATTRIBUTE((warn_unused_result));
             DirsIterator begin_ld_so_conf() const PALUDIS_ATTRIBUTE((warn_unused_result));
             DirsIterator end_ld_so_conf() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            bool dir_is_masked(const paludis::FSEntry &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool dir_is_masked(const FSEntry &) const PALUDIS_ATTRIBUTE((warn_unused_result));
             bool lib_is_masked(const std::string &) const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 

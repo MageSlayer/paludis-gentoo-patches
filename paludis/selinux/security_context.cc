@@ -19,7 +19,7 @@
 
 #include <paludis/util/log.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/instantiation_policy-impl.hh>
+#include <paludis/util/singleton-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/selinux/security_context.hh>
 
@@ -29,6 +29,10 @@
 
 // I think the name explains it. C++ is picky about casting to function pointers.
 #define STUPID_CAST(type, val) reinterpret_cast<type>(reinterpret_cast<uintptr_t>(val))
+
+using namespace paludis;
+
+template class Singleton<MatchPathCon>;
 
 namespace
 {
@@ -139,10 +143,6 @@ namespace
             }
     } libselinux;
 }
-
-using namespace paludis;
-
-template class InstantiationPolicy<MatchPathCon, instantiation_method::SingletonTag>;
 
 namespace paludis
 {

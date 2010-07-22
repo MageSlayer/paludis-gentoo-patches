@@ -21,7 +21,7 @@
 
 #include <paludis/util/mutex.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/instantiation_policy-impl.hh>
+#include <paludis/util/singleton-impl.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/rmd160.hh>
@@ -127,5 +127,5 @@ template const std::string MemoisedHashes::get<SHA256>(const FSEntry &, SafeIFSt
 template const std::string MemoisedHashes::get<MD5>(const FSEntry &, SafeIFStream &) const;
 
 template class PrivateImplementationPattern<MemoisedHashes>;
-template class InstantiationPolicy<MemoisedHashes, instantiation_method::SingletonTag>;
+template class Singleton<MemoisedHashes>;
 

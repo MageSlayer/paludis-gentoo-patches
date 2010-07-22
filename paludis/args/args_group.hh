@@ -21,7 +21,6 @@
 #define PALUDIS_GUARD_ARGS_ARGS_GROUP_HH 1
 
 #include <paludis/args/args_option.hh>
-#include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <string>
 
@@ -49,8 +48,7 @@ namespace paludis
          * \nosubgrouping
          */
         class PALUDIS_VISIBLE ArgsGroup :
-            private PrivateImplementationPattern<ArgsGroup>,
-            private InstantiationPolicy<ArgsGroup, instantiation_method::NonCopyableTag>
+            private PrivateImplementationPattern<ArgsGroup>
         {
             private:
                 const std::string _name;
@@ -103,6 +101,9 @@ namespace paludis
                         const std::string & description);
 
                 ~ArgsGroup();
+
+                ArgsGroup(const ArgsGroup &) = delete;
+                ArgsGroup & operator= (const ArgsGroup &) = delete;
 
                 ///\}
 

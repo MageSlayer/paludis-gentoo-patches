@@ -443,7 +443,6 @@ paludis-*.*.*.tar.bz2
 /paludis/util/fs_entry_TEST
 /paludis/util/graph_TEST
 /paludis/util/indirect_iterator_TEST
-/paludis/util/instantiation_policy_TEST
 /paludis/util/is_file_with_extension_TEST
 /paludis/util/iterator_funcs_TEST
 /paludis/util/join_TEST
@@ -466,6 +465,7 @@ paludis-*.*.*.tar.bz2
 /paludis/util/sha1_TEST
 /paludis/util/sha256_TEST
 /paludis/util/simple_parser_TEST
+/paludis/util/singleton_TEST
 /paludis/util/stringify_TEST
 /paludis/util/string_list_stream_TEST
 /paludis/util/strip_TEST

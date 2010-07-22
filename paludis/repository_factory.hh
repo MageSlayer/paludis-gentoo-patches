@@ -23,7 +23,7 @@
 #include <paludis/repository_factory-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/instantiation_policy.hh>
+#include <paludis/util/singleton.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/no_type.hh>
@@ -37,9 +37,9 @@ namespace paludis
 {
     class PALUDIS_VISIBLE RepositoryFactory :
         private PrivateImplementationPattern<RepositoryFactory>,
-        public InstantiationPolicy<RepositoryFactory, instantiation_method::SingletonTag>
+        public Singleton<RepositoryFactory>
     {
-        friend class InstantiationPolicy<RepositoryFactory, instantiation_method::SingletonTag>;
+        friend class Singleton<RepositoryFactory>;
 
         private:
             RepositoryFactory();
@@ -157,7 +157,7 @@ namespace paludis
     void register_repositories(const RepositoryClass_ * const, RepositoryFactory * const);
 
     extern template class PrivateImplementationPattern<RepositoryFactory>;
-    extern template class InstantiationPolicy<RepositoryFactory, instantiation_method::SingletonTag>;
+    extern template class Singleton<RepositoryFactory>;
     extern template class WrappedForwardIterator<RepositoryFactory::ConstIteratorTag, const std::string>;
 }
 

@@ -20,7 +20,6 @@
 #ifndef PALUDIS_GUARD_PALUDIS_EBUILD_HH
 #define PALUDIS_GUARD_PALUDIS_EBUILD_HH 1
 
-#include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/map-fwd.hh>
@@ -324,8 +323,7 @@ namespace paludis
          *
          * \ingroup grpebuildinterface
          */
-        class EbuildCommand :
-            private InstantiationPolicy<EbuildCommand, instantiation_method::NonCopyableTag>
+        class EbuildCommand
         {
             protected:
                 /**
@@ -389,6 +387,9 @@ namespace paludis
                  * Destructor.
                  */
                 virtual ~EbuildCommand();
+
+                EbuildCommand(const EbuildCommand &) = delete;
+                EbuildCommand & operator= (const EbuildCommand &) = delete;
 
                 /**
                  * Run the command.
@@ -648,8 +649,7 @@ namespace paludis
          *
          * \ingroup grpebuildinterface
          */
-        class WriteVDBEntryCommand :
-            private InstantiationPolicy<WriteVDBEntryCommand, instantiation_method::NonCopyableTag>
+        class WriteVDBEntryCommand
         {
             protected:
                 /**
@@ -663,6 +663,9 @@ namespace paludis
                  */
                 WriteVDBEntryCommand(const WriteVDBEntryParams &);
 
+                WriteVDBEntryCommand(const WriteVDBEntryCommand &) = delete;
+                WriteVDBEntryCommand & operator= (const WriteVDBEntryCommand &) = delete;
+
                 /**
                  * Run the command.
                  */
@@ -674,8 +677,7 @@ namespace paludis
          *
          * \ingroup grpebuildinterface
          */
-        class WriteBinaryEbuildCommand :
-            private InstantiationPolicy<WriteVDBEntryCommand, instantiation_method::NonCopyableTag>
+        class WriteBinaryEbuildCommand
         {
             protected:
                 /**
@@ -689,6 +691,9 @@ namespace paludis
                  */
                 WriteBinaryEbuildCommand(const WriteBinaryEbuildCommandParams &);
 
+                WriteBinaryEbuildCommand(const WriteBinaryEbuildCommand &) = delete;
+                WriteBinaryEbuildCommand & operator= (const WriteBinaryEbuildCommand) = delete;
+
                 /**
                  * Run the command.
                  */
@@ -700,8 +705,7 @@ namespace paludis
          *
          * \ingroup grpebuildinterface
          */
-        class VDBPostMergeUnmergeCommand :
-            private InstantiationPolicy<VDBPostMergeUnmergeCommand, instantiation_method::NonCopyableTag>
+        class VDBPostMergeUnmergeCommand
         {
             private:
                 const VDBPostMergeUnmergeCommandParams params;
@@ -711,6 +715,9 @@ namespace paludis
                 ///\{
 
                 VDBPostMergeUnmergeCommand(const VDBPostMergeUnmergeCommandParams &);
+
+                VDBPostMergeUnmergeCommand(const VDBPostMergeUnmergeCommand &) = delete;
+                VDBPostMergeUnmergeCommand & operator= (const VDBPostMergeUnmergeCommand &) = delete;
 
                 ///\}
 

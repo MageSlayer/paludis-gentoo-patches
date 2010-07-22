@@ -17,30 +17,24 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_UTIL_INSTANTIATION_POLICY_IMPL_HH
-#define PALUDIS_GUARD_PALUDIS_UTIL_INSTANTIATION_POLICY_IMPL_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_UTIL_SINGLETON_IMPL_HH
+#define PALUDIS_GUARD_PALUDIS_UTIL_SINGLETON_IMPL_HH 1
 
-#include <paludis/util/instantiation_policy.hh>
+#include <paludis/util/singleton.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/mutex.hh>
 
-/** \file
- * Implementation for paludis/util/instantiation_policy.hh .
- *
- * \ingroup g_oo
- */
-
 template <typename OurType_>
 void
-paludis::InstantiationPolicy<OurType_, paludis::instantiation_method::SingletonTag>::_delete(OurType_ * const p)
+paludis::Singleton<OurType_>::_delete(OurType_ * const p)
 {
     delete p;
 }
 
 template <typename OurType_>
-class paludis::InstantiationPolicy<OurType_, paludis::instantiation_method::SingletonTag>::DeleteOnDestruction
+class paludis::Singleton<OurType_>::DeleteOnDestruction
 {
     private:
         OurType_ * * const _ptr;
@@ -53,14 +47,14 @@ class paludis::InstantiationPolicy<OurType_, paludis::instantiation_method::Sing
 
         ~DeleteOnDestruction()
         {
-            paludis::InstantiationPolicy<OurType_, paludis::instantiation_method::SingletonTag>::_delete(* _ptr);
+            paludis::Singleton<OurType_>::_delete(* _ptr);
             * _ptr = 0;
         }
 };
 
 template<typename OurType_>
 OurType_ * *
-paludis::InstantiationPolicy<OurType_, paludis::instantiation_method::SingletonTag>::_get_instance_ptr()
+paludis::Singleton<OurType_>::_get_instance_ptr()
 {
     static OurType_ * instance(0);
     static DeleteOnDestruction delete_instance(&instance);
@@ -70,7 +64,7 @@ paludis::InstantiationPolicy<OurType_, paludis::instantiation_method::SingletonT
 
 template<typename OurType_>
 OurType_ *
-paludis::InstantiationPolicy<OurType_, paludis::instantiation_method::SingletonTag>::get_instance()
+paludis::Singleton<OurType_>::get_instance()
 {
     static Mutex m;
     Lock l(m);
@@ -92,7 +86,7 @@ paludis::InstantiationPolicy<OurType_, paludis::instantiation_method::SingletonT
 
 template<typename OurType_>
 void
-paludis::InstantiationPolicy<OurType_, paludis::instantiation_method::SingletonTag>::destroy_instance()
+paludis::Singleton<OurType_>::destroy_instance()
 {
     OurType_ * * i(_get_instance_ptr());
     delete *i;

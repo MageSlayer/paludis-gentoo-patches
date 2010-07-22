@@ -2,7 +2,7 @@
 
 /*
  * Copyright (c) 2009 Kim Højgaard-Hansen
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -22,15 +22,15 @@
 #define PALUDIS_GUARD_SRC_CLIENTS_APPAREO_COMMAND_LINE_HH 1
 
 #include <paludis/args/args.hh>
-#include <paludis/util/instantiation_policy.hh>
+#include <paludis/util/singleton.hh>
 #include <paludis/args/log_level_arg.hh>
 #include <paludis/args/deps_option_arg.hh>
 
 class CommandLine :
     public paludis::args::ArgsHandler,
-    public paludis::InstantiationPolicy<CommandLine, paludis::instantiation_method::SingletonTag>
+    public paludis::Singleton<CommandLine>
 {
-    friend class paludis::InstantiationPolicy<CommandLine, paludis::instantiation_method::SingletonTag>;
+    friend class paludis::Singleton<CommandLine>;
 
     private:
         CommandLine();

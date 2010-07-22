@@ -22,7 +22,6 @@
 
 #include <paludis/util/attributes.hh>
 #include <paludis/util/clone.hh>
-#include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/fs_entry.hh>
@@ -64,7 +63,6 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE DepSpec :
-        private InstantiationPolicy<DepSpec, instantiation_method::NonCopyableTag>,
         private PrivateImplementationPattern<DepSpec>,
         public MetadataKeyHolder,
         public virtual Cloneable<DepSpec>
@@ -80,6 +78,9 @@ namespace paludis
             ///\{
 
             virtual ~DepSpec();
+
+            DepSpec(const DepSpec &) = delete;
+            DepSpec & operator= (const DepSpec &) = delete;
 
             ///\}
 
@@ -277,11 +278,14 @@ namespace paludis
      * \since 0.26
      * \ingroup g_dep_spec
      */
-    class PALUDIS_VISIBLE AdditionalPackageDepSpecRequirement :
-        private InstantiationPolicy<AdditionalPackageDepSpecRequirement, instantiation_method::NonCopyableTag>
+    class PALUDIS_VISIBLE AdditionalPackageDepSpecRequirement
     {
         public:
+            AdditionalPackageDepSpecRequirement() = default;
             virtual ~AdditionalPackageDepSpecRequirement();
+
+            AdditionalPackageDepSpecRequirement(const AdditionalPackageDepSpecRequirement &) = delete;
+            AdditionalPackageDepSpecRequirement & operator= (const AdditionalPackageDepSpecRequirement &) = delete;
 
             /**
              * Is our requirement met for a given PackageID?

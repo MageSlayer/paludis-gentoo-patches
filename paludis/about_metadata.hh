@@ -23,7 +23,7 @@
 #include <paludis/about_metadata-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/instantiation_policy.hh>
+#include <paludis/util/singleton.hh>
 #include <paludis/metadata_key_holder.hh>
 
 /** \file
@@ -43,10 +43,10 @@ namespace paludis
      */
     class PALUDIS_VISIBLE AboutMetadata :
         private PrivateImplementationPattern<AboutMetadata>,
-        public InstantiationPolicy<AboutMetadata, instantiation_method::SingletonTag>,
+        public Singleton<AboutMetadata>,
         public MetadataKeyHolder
     {
-        friend class InstantiationPolicy<AboutMetadata, instantiation_method::SingletonTag>;
+        friend class Singleton<AboutMetadata>;
 
         private:
             PrivateImplementationPattern<AboutMetadata>::ImpPtr & _imp;
@@ -59,7 +59,7 @@ namespace paludis
     };
 
     extern template class PrivateImplementationPattern<AboutMetadata>;
-    extern template class InstantiationPolicy<AboutMetadata, instantiation_method::SingletonTag>;
+    extern template class Singleton<AboutMetadata>;
 }
 
 #endif

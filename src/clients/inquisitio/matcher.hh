@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,15 +20,14 @@
 #ifndef PALUDIS_GUARD_SRC_CLIENTS_INQUISITIO_MATCHER_HH
 #define PALUDIS_GUARD_SRC_CLIENTS_INQUISITIO_MATCHER_HH 1
 
-#include <paludis/util/instantiation_policy.hh>
+#include <paludis/util/singleton.hh>
 #include <paludis/util/exception.hh>
 #include <string>
 #include <tr1/memory>
 
 namespace inquisitio
 {
-    class Matcher :
-        private paludis::InstantiationPolicy<Matcher, paludis::instantiation_method::NonCopyableTag>
+    class Matcher
     {
         protected:
             Matcher();
@@ -49,9 +48,9 @@ namespace inquisitio
     };
 
     class MatcherFactory :
-        public paludis::InstantiationPolicy<MatcherFactory, paludis::instantiation_method::SingletonTag>
+        public paludis::Singleton<MatcherFactory>
     {
-        friend class paludis::InstantiationPolicy<MatcherFactory, paludis::instantiation_method::SingletonTag>;
+        friend class paludis::Singleton<MatcherFactory>;
 
         private:
             MatcherFactory();

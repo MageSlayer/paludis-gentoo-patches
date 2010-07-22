@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,7 +20,6 @@
 #ifndef PALUDIS_GUARD_PALUDIS_SYNC_TASK_HH
 #define PALUDIS_GUARD_PALUDIS_SYNC_TASK_HH 1
 
-#include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/dep_list.hh>
@@ -47,8 +46,7 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE SyncTask :
-        PrivateImplementationPattern<SyncTask>,
-        InstantiationPolicy<SyncTask, instantiation_method::NonCopyableTag>
+        private PrivateImplementationPattern<SyncTask>
     {
         protected:
             ///\name Basic operations
@@ -63,6 +61,9 @@ namespace paludis
             ///\{
 
             virtual ~SyncTask();
+
+            SyncTask(const SyncTask &) = delete;
+            SyncTask & operator= (const SyncTask &) = delete;
 
             ///\}
 

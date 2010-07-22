@@ -22,7 +22,6 @@
 
 #include <paludis/args/args_section.hh>
 #include <paludis/args/args_group.hh>
-#include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/sequence.hh>
@@ -57,7 +56,6 @@ namespace paludis
          * \nosubgrouping
          */
         class PALUDIS_VISIBLE ArgsHandler :
-            private InstantiationPolicy<ArgsHandler, instantiation_method::NonCopyableTag>,
             private PrivateImplementationPattern<ArgsHandler>
         {
             friend class ArgsSection;
@@ -118,6 +116,10 @@ namespace paludis
                 ArgsHandler();
 
                 virtual ~ArgsHandler();
+
+                ArgsHandler(const ArgsHandler &) = delete;
+
+                ArgsHandler & operator= (const ArgsHandler &) = delete;
 
                 ///\}
 

@@ -23,7 +23,6 @@
 #include <paludis/util/set-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/util/wrapped_output_iterator-fwd.hh>
 #include <string>
@@ -49,8 +48,7 @@ namespace paludis
      */
     template <typename T_, typename C_>
     class PALUDIS_VISIBLE Set :
-        private PrivateImplementationPattern<Set<T_, C_> >,
-        private InstantiationPolicy<Set<T_, C_>, instantiation_method::NonCopyableTag>
+        private PrivateImplementationPattern<Set<T_, C_> >
     {
         private:
             using PrivateImplementationPattern<Set<T_, C_> >::_imp;
@@ -72,6 +70,9 @@ namespace paludis
 
             Set();
             ~Set();
+
+            Set(const Set &) = delete;
+            Set & operator= (const Set &) = delete;
 
             ///\}
 

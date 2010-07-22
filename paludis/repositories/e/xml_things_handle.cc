@@ -22,7 +22,7 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/instantiation_policy-impl.hh>
+#include <paludis/util/singleton-impl.hh>
 #include <paludis/util/system.hh>
 #include "config.h"
 #include <dlfcn.h>
@@ -150,5 +150,5 @@ XMLThingsHandle::create_metadata_xml_from_xml_file() const
 }
 
 template class PrivateImplementationPattern<XMLThingsHandle>;
-template class InstantiationPolicy<XMLThingsHandle, instantiation_method::SingletonTag>;
+template class Singleton<XMLThingsHandle>;
 

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2010 Ciaran McCreesh
  * Copyright (c) 2006 Danny van Dyk
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -42,8 +42,7 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE ERepositorySets :
-        private PrivateImplementationPattern<ERepositorySets>,
-        private InstantiationPolicy<ERepositorySets, instantiation_method::NonCopyableTag>
+        private PrivateImplementationPattern<ERepositorySets>
     {
         public:
             ///\name Basic operations
@@ -52,6 +51,9 @@ namespace paludis
             ERepositorySets(const Environment * const env, const ERepository * const,
                     const erepository::ERepositoryParams &);
             ~ERepositorySets();
+
+            ERepositorySets(const ERepositorySets &) = delete;
+            ERepositorySets & operator= (const ERepositorySets &) = delete;
 
             ///\}
 

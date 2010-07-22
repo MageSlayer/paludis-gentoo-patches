@@ -23,7 +23,6 @@
 #include <paludis/dep_label-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/util/simple_visitor.hh>
-#include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/type_list.hh>
@@ -53,7 +52,6 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE URILabel :
-        private InstantiationPolicy<URILabel, instantiation_method::NonCopyableTag>,
         public virtual DeclareAbstractAcceptMethods<URILabel, MakeTypeList<
             URIMirrorsThenListedLabel, URIMirrorsOnlyLabel, URIListedOnlyLabel, URIListedThenMirrorsLabel,
             URILocalMirrorsOnlyLabel, URIManualOnlyLabel>::Type>
@@ -62,7 +60,11 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
+            URILabel() = default;
             virtual ~URILabel() = 0;
+
+            URILabel(const URILabel &) = delete;
+            URILabel & operator= (const URILabel &) = delete;
 
             ///\}
 
@@ -107,7 +109,6 @@ namespace paludis
      * \ingroup g_dep_spec
      */
     class PALUDIS_VISIBLE DependenciesLabel :
-        private InstantiationPolicy<DependenciesLabel, instantiation_method::NonCopyableTag>,
         public virtual DeclareAbstractAcceptMethods<DependenciesLabel, MakeTypeList<
             DependenciesBuildLabel, DependenciesRunLabel, DependenciesPostLabel, DependenciesCompileAgainstLabel,
             DependenciesFetchLabel, DependenciesInstallLabel, DependenciesSuggestionLabel,
@@ -117,7 +118,11 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
+            DependenciesLabel() = default;
             virtual ~DependenciesLabel() = 0;
+
+            DependenciesLabel(const DependenciesLabel &) = delete;
+            DependenciesLabel & operator= (const DependenciesLabel &) = delete;
 
             ///\}
 
@@ -158,9 +163,6 @@ namespace paludis
             /// Convenience typedef alias to obtain our tag.
             typedef T_ Tag;
     };
-
-    extern template class InstantiationPolicy<URILabel, instantiation_method::NonCopyableTag>;
-    extern template class InstantiationPolicy<DependenciesLabel, instantiation_method::NonCopyableTag>;
 
     extern template class ConcreteURILabel<URIMirrorsThenListedLabelTag>;
     extern template class ConcreteURILabel<URIMirrorsOnlyLabelTag>;

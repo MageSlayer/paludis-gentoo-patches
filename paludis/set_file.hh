@@ -20,7 +20,6 @@
 #ifndef PALUDIS_GUARD_PALUDIS_SET_FILE_HH
 #define PALUDIS_GUARD_PALUDIS_SET_FILE_HH 1
 
-#include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/fs_entry.hh>
@@ -113,7 +112,6 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE SetFile :
-        private InstantiationPolicy<SetFile, instantiation_method::NonCopyableTag>,
         private PrivateImplementationPattern<SetFile>
     {
         public:
@@ -122,6 +120,9 @@ namespace paludis
 
             SetFile(const SetFileParams &);
             ~SetFile();
+
+            SetFile(const SetFile &) = delete;
+            SetFile & operator= (const SetFile &) = delete;
 
             ///\}
 

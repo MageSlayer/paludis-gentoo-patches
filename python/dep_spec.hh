@@ -46,7 +46,6 @@ namespace paludis
         class PythonNamedSetDepSpec;
 
         class PALUDIS_VISIBLE PythonDepSpec :
-            private InstantiationPolicy<PythonDepSpec, instantiation_method::NonCopyableTag>,
             public virtual DeclareAbstractAcceptMethods<PythonDepSpec, MakeTypeList<
                     PythonAnyDepSpec,
                     PythonAllDepSpec,
@@ -68,6 +67,9 @@ namespace paludis
 
             public:
                 virtual ~PythonDepSpec();
+
+                PythonDepSpec(const PythonDepSpec &) = delete;
+                PythonDepSpec & operator= (const PythonDepSpec &) = delete;
         };
 
         class PALUDIS_VISIBLE PythonCompositeDepSpec :
@@ -271,8 +273,7 @@ namespace paludis
         /**
          * Used to convert one of the SpecTrees to PythonDepSpec.
          */
-        class SpecTreeToPython :
-            private InstantiationPolicy<SpecTreeToPython, instantiation_method::NonCopyableTag>
+        class SpecTreeToPython
         {
             private:
                 std::tr1::shared_ptr<PythonCompositeDepSpec> _current_parent;
@@ -281,6 +282,9 @@ namespace paludis
                 SpecTreeToPython();
 
                 virtual ~SpecTreeToPython();
+
+                SpecTreeToPython(const SpecTreeToPython &) = delete;
+                SpecTreeToPython & operator= (const SpecTreeToPython &) = delete;
 
                 const std::tr1::shared_ptr<const PythonDepSpec> result() const;
 
@@ -304,8 +308,7 @@ namespace paludis
          * Used to convert Python*DepSpec to one of the SpecTrees.
          */
         template <typename H_>
-        class SpecTreeFromPython :
-            private InstantiationPolicy<SpecTreeFromPython<H_>, instantiation_method::NonCopyableTag>
+        class SpecTreeFromPython
         {
             private:
                 std::tr1::shared_ptr<H_> _result;
@@ -315,6 +318,9 @@ namespace paludis
                 SpecTreeFromPython();
 
                 virtual ~SpecTreeFromPython();
+
+                SpecTreeFromPython(const SpecTreeFromPython &) = delete;
+                SpecTreeFromPython & operator= (const SpecTreeFromPython &) = delete;
 
                 std::tr1::shared_ptr<H_> result() const;
 

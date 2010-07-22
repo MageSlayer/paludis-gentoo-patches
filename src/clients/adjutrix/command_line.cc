@@ -19,9 +19,9 @@
 
 #include "command_line.hh"
 #include <paludis/name.hh>
-#include <paludis/util/instantiation_policy-impl.hh>
+#include <paludis/util/singleton-impl.hh>
 
-template class paludis::InstantiationPolicy<CommandLine, paludis::instantiation_method::SingletonTag>;
+template class paludis::Singleton<CommandLine>;
 
 CommandLine::CommandLine() :
     ArgsHandler(),

@@ -24,9 +24,9 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/util/fs_entry.hh>
+#include <paludis/util/singleton.hh>
 #include <tr1/memory>
 
 /** \file
@@ -114,9 +114,9 @@ namespace paludis
      */
     class PALUDIS_VISIBLE DistributionData :
         private PrivateImplementationPattern<DistributionData>,
-        public InstantiationPolicy<DistributionData, instantiation_method::SingletonTag>
+        public Singleton<DistributionData>
     {
-        friend class InstantiationPolicy<DistributionData, instantiation_method::SingletonTag>;
+        friend class Singleton<DistributionData>;
 
         private:
             DistributionData();
@@ -141,9 +141,9 @@ namespace paludis
     template <typename Data_>
     class PALUDIS_VISIBLE ExtraDistributionData :
         private PrivateImplementationPattern<ExtraDistributionData<Data_> >,
-        public InstantiationPolicy<ExtraDistributionData<Data_>, instantiation_method::SingletonTag>
+        public Singleton<ExtraDistributionData<Data_> >
     {
-        friend class InstantiationPolicy<ExtraDistributionData<Data_>, instantiation_method::SingletonTag>;
+        friend class Singleton<ExtraDistributionData<Data_> >;
 
         private:
             ExtraDistributionData();
@@ -157,6 +157,8 @@ namespace paludis
                     const Distribution &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
     };
+
+    extern template class Singleton<DistributionData>;
 }
 
 #endif

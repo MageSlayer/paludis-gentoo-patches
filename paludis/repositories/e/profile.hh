@@ -32,7 +32,7 @@
 #include <paludis/util/tribool.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/util/map-fwd.hh>
-#include <paludis/util/instantiation_policy.hh>
+#include <paludis/util/singleton.hh>
 #include <paludis/repositories/e/e_repository_id.hh>
 #include <string>
 
@@ -101,9 +101,9 @@ namespace paludis
         };
 
         class PALUDIS_VISIBLE ProfileFactory :
-            public InstantiationPolicy<ProfileFactory, instantiation_method::SingletonTag>
+            public Singleton<ProfileFactory>
         {
-            friend class InstantiationPolicy<ProfileFactory, instantiation_method::SingletonTag>;
+            friend class Singleton<ProfileFactory>;
 
             private:
                 ProfileFactory();

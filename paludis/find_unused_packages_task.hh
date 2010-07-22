@@ -20,7 +20,6 @@
 #ifndef PALUDIS_GUARD_PALUDIS_FIND_UNUSED_PACKAGES_TASK_HH
 #define PALUDIS_GUARD_PALUDIS_FIND_UNUSED_PACKAGES_TASK_HH 1
 
-#include <paludis/util/instantiation_policy.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/environment-fwd.hh>
@@ -44,8 +43,7 @@ namespace paludis
      * \ingroup g_tasks
      * \nosubgrouping
      */
-    class PALUDIS_VISIBLE FindUnusedPackagesTask :
-        InstantiationPolicy<FindUnusedPackagesTask, instantiation_method::NonCopyableTag>
+    class PALUDIS_VISIBLE FindUnusedPackagesTask
     {
         private:
             const Environment * const _env;
@@ -62,6 +60,9 @@ namespace paludis
             }
 
             virtual ~FindUnusedPackagesTask();
+
+            FindUnusedPackagesTask(const FindUnusedPackagesTask &) = delete;
+            FindUnusedPackagesTask & operator= (const FindUnusedPackagesTask &) = delete;
 
             ///\}
 

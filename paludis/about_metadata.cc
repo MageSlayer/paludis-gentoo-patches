@@ -18,7 +18,7 @@
  */
 
 #include <paludis/about_metadata.hh>
-#include <paludis/util/instantiation_policy-impl.hh>
+#include <paludis/util/singleton-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/about.hh>
@@ -83,5 +83,5 @@ AboutMetadata::need_keys_added() const
 }
 
 template class PrivateImplementationPattern<AboutMetadata>;
-template class InstantiationPolicy<AboutMetadata, instantiation_method::SingletonTag>;
+template class Singleton<AboutMetadata>;
 

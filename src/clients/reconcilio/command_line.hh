@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_RECONCILIO_COMMAND_LINE_HH
 #define PALUDIS_GUARD_RECONCILIO_COMMAND_LINE_HH
 
-#include <paludis/util/instantiation_policy.hh>
+#include <paludis/util/singleton.hh>
 
 #include <paludis/args/args.hh>
 #include <paludis/args/dep_list_args_group.hh>
@@ -29,9 +29,9 @@
 
 class CommandLine :
     public paludis::args::ArgsHandler,
-    public paludis::InstantiationPolicy<CommandLine, paludis::instantiation_method::SingletonTag>
+    public paludis::Singleton<CommandLine>
 {
-    friend class paludis::InstantiationPolicy<CommandLine, paludis::instantiation_method::SingletonTag>;
+    friend class paludis::Singleton<CommandLine>;
 
     private:
         CommandLine();

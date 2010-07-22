@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,7 +21,6 @@
 #define PALUDIS_GUARD_PALUDIS_PALUDIS_ENVIRONMENTS_PALUDIS_USE_CONF_HH 1
 
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/tribool-fwd.hh>
 #include <paludis/choice-fwd.hh>
@@ -41,8 +40,7 @@ namespace paludis
          * \nosubgrouping
          */
         class UseConf :
-            private PrivateImplementationPattern<UseConf>,
-            private InstantiationPolicy<UseConf, instantiation_method::NonCopyableTag>
+            private PrivateImplementationPattern<UseConf>
         {
             public:
                 ///\name Basic operations
@@ -50,6 +48,9 @@ namespace paludis
 
                 UseConf(const PaludisEnvironment * const);
                 ~UseConf();
+
+                UseConf(const UseConf &) = delete;
+                UseConf & operator= (const UseConf &) = delete;
 
                 ///\}
 

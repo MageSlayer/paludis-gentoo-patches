@@ -22,7 +22,7 @@
 
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/exception.hh>
-#include <paludis/util/instantiation_policy.hh>
+#include <paludis/util/singleton-impl.hh>
 #include <boost/python.hpp>
 #include <tr1/memory>
 #include <tr1/functional>
@@ -89,10 +89,10 @@ namespace paludis
         }
 
         class PALUDIS_VISIBLE ExceptionRegister :
-            public InstantiationPolicy<ExceptionRegister, instantiation_method::SingletonTag>,
+            public Singleton<ExceptionRegister>,
             private PrivateImplementationPattern<ExceptionRegister>
         {
-            friend class InstantiationPolicy<ExceptionRegister, instantiation_method::SingletonTag>;
+            friend class Singleton<ExceptionRegister>;
 
             private:
                 ExceptionRegister();

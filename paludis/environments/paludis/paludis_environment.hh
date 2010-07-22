@@ -46,7 +46,6 @@ namespace paludis
      */
     class PALUDIS_VISIBLE PaludisEnvironment :
         public EnvironmentImplementation,
-        public InstantiationPolicy<PaludisEnvironment, instantiation_method::SingletonTag>,
         private PrivateImplementationPattern<PaludisEnvironment>
     {
 

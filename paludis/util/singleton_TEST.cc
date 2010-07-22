@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/util/instantiation_policy.hh>
-#include <paludis/util/instantiation_policy-impl.hh>
+#include <paludis/util/singleton.hh>
+#include <paludis/util/singleton-impl.hh>
 #include <paludis/util/thread.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/make_shared_ptr.hh>
@@ -34,17 +34,12 @@
 using namespace test;
 using namespace paludis;
 
-/** \file
- * Test cases for instantiation_policy.hh .
- *
- */
-
 namespace
 {
     class MyClass :
-        public InstantiationPolicy<MyClass, instantiation_method::SingletonTag>
+        public Singleton<MyClass>
     {
-        friend class InstantiationPolicy<MyClass, instantiation_method::SingletonTag>;
+        friend class Singleton<MyClass>;
 
         private:
             MyClass()
@@ -61,9 +56,9 @@ namespace
     int MyClass::instances = 0;
 
     class MyClassTwo :
-        public InstantiationPolicy<MyClassTwo, instantiation_method::SingletonTag>
+        public Singleton<MyClassTwo>
     {
-        friend class InstantiationPolicy<MyClassTwo, instantiation_method::SingletonTag>;
+        friend class Singleton<MyClassTwo>;
 
         private:
             MyClassTwo()
@@ -85,9 +80,9 @@ namespace
     int MyClassTwo::instances = 0;
 
     class MyRecursiveClass :
-        public InstantiationPolicy<MyRecursiveClass, instantiation_method::SingletonTag>
+        public Singleton<MyRecursiveClass>
     {
-        friend class InstantiationPolicy<MyRecursiveClass, instantiation_method::SingletonTag>;
+        friend class Singleton<MyRecursiveClass>;
 
         public:
             std::string s;
@@ -100,9 +95,9 @@ namespace
     };
 
     class MyThreadedClass :
-        public InstantiationPolicy<MyThreadedClass, instantiation_method::SingletonTag>
+        public Singleton<MyThreadedClass>
     {
-        friend class InstantiationPolicy<MyThreadedClass, instantiation_method::SingletonTag>;
+        friend class Singleton<MyThreadedClass>;
 
         private:
             MyThreadedClass()

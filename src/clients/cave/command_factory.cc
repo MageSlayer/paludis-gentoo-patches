@@ -20,7 +20,7 @@
 #include "command_factory.hh"
 #include "script_command.hh"
 
-#include <paludis/util/instantiation_policy-impl.hh>
+#include <paludis/util/singleton-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
@@ -211,7 +211,7 @@ UnknownCommand::UnknownCommand(const std::string & s) throw () :
 {
 }
 
-template class InstantiationPolicy<CommandFactory, instantiation_method::SingletonTag>;
+template class Singleton<CommandFactory>;
 template class PrivateImplementationPattern<CommandFactory>;
 template class WrappedForwardIterator<CommandFactory::ConstIteratorTag, const std::string>;
 

@@ -31,7 +31,7 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/instantiation_policy-impl.hh>
+#include <paludis/util/singleton-impl.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/hashes.hh>
@@ -44,7 +44,7 @@
 using namespace paludis;
 using namespace paludis::erepository;
 
-template class InstantiationPolicy<EAPIData, instantiation_method::SingletonTag>;
+template class Singleton<EAPIData>;
 
 namespace
 {

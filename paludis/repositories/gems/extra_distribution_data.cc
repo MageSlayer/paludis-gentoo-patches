@@ -20,6 +20,7 @@
 #include <paludis/repositories/gems/extra_distribution_data.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/singleton-impl.hh>
 #include <paludis/distribution-impl.hh>
 
 using namespace paludis;
@@ -45,6 +46,5 @@ namespace paludis
 }
 
 template class ExtraDistributionData<GemsDistribution>;
-template class InstantiationPolicy<ExtraDistributionData<GemsDistribution>, instantiation_method::SingletonTag>;
-
+template class Singleton<ExtraDistributionData<GemsDistribution>>;
 

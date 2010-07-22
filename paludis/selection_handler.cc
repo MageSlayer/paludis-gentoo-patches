@@ -18,13 +18,10 @@
  */
 
 #include <paludis/selection_handler.hh>
-#include <paludis/util/instantiation_policy-impl.hh>
 
 using namespace paludis;
 
 SelectionHandler::~SelectionHandler()
 {
 }
-
-template class InstantiationPolicy<SelectionHandler, instantiation_method::NonCopyableTag>;
 

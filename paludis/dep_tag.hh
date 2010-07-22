@@ -37,13 +37,13 @@
 #include <paludis/name-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/spec_tree-fwd.hh>
-#include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/simple_visitor.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/operators.hh>
 #include <paludis/util/type_list.hh>
+#include <paludis/util/singleton.hh>
 
 #include <string>
 #include <tr1/memory>
@@ -68,8 +68,7 @@ namespace paludis
      * \ingroup g_dep_spec
      * \nosubgrouping
      */
-    class PALUDIS_VISIBLE DepTagCategory :
-        private InstantiationPolicy<DepTagCategory, instantiation_method::NonCopyableTag>
+    class PALUDIS_VISIBLE DepTagCategory
     {
         private:
             bool _visible;
@@ -88,6 +87,9 @@ namespace paludis
                     const std::string & t,
                     const std::string & pre,
                     const std::string & post);
+
+            DepTagCategory(const DepTagCategory &) = delete;
+            DepTagCategory & operator= (const DepTagCategory &) = delete;
 
             ///\}
 
@@ -125,9 +127,9 @@ namespace paludis
      * \since 0.30
      */
     class PALUDIS_VISIBLE DepTagCategoryFactory :
-        public InstantiationPolicy<DepTagCategoryFactory, instantiation_method::SingletonTag>
+        public Singleton<DepTagCategoryFactory>
     {
-        friend class InstantiationPolicy<DepTagCategoryFactory, instantiation_method::SingletonTag>;
+        friend class Singleton<DepTagCategoryFactory>;
 
         private:
             DepTagCategoryFactory();
@@ -148,7 +150,6 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE DepTag :
-        private InstantiationPolicy<DepTag, instantiation_method::NonCopyableTag>,
         public relational_operators::HasRelationalOperators,
         public virtual DeclareAbstractAcceptMethods<DepTag, MakeTypeList<
             GLSADepTag, GeneralSetDepTag, DependencyDepTag, TargetDepTag>::Type>
@@ -161,6 +162,9 @@ namespace paludis
 
         public:
             virtual ~DepTag();
+
+            DepTag(const DepTag &) = delete;
+            DepTag & operator= (const DepTag &) = delete;
 
             ///\}
 
@@ -349,7 +353,7 @@ namespace paludis
         bool operator() (const DepTagEntry &, const DepTagEntry &) const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
-    extern template class InstantiationPolicy<DepTagCategoryFactory, instantiation_method::SingletonTag>;
+    extern template class Singleton<DepTagCategoryFactory>;
     extern template class PrivateImplementationPattern<DependencyDepTag>;
     extern template class PrivateImplementationPattern<GeneralSetDepTag>;
 

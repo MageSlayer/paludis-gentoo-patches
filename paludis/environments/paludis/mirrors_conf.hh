@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,7 +21,6 @@
 #define PALUDIS_GUARD_PALUDIS_ENVIRONMENTS_PALUDIS_MIRRORS_CONF_HH 1
 
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/environment.hh>
 #include <paludis/name.hh>
@@ -39,8 +38,7 @@ namespace paludis
          * \nosubgrouping
          */
         class MirrorsConf :
-            private PrivateImplementationPattern<MirrorsConf>,
-            private InstantiationPolicy<MirrorsConf, instantiation_method::NonCopyableTag>
+            private PrivateImplementationPattern<MirrorsConf>
         {
             public:
                 ///\name Basic operations
@@ -48,6 +46,9 @@ namespace paludis
 
                 MirrorsConf(const PaludisEnvironment * const);
                 ~MirrorsConf();
+
+                MirrorsConf(const MirrorsConf &) = delete;
+                MirrorsConf & operator= (const MirrorsConf &) = delete;
 
                 ///\}
 

@@ -22,7 +22,6 @@
 
 #include <paludis/util/graph-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/exception.hh>
 #include <tr1/memory>
 

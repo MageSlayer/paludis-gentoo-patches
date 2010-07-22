@@ -44,8 +44,7 @@ using namespace paludis;
 namespace paludis
 {
     template<>
-    struct Implementation<FakeRepositoryBase> :
-        private InstantiationPolicy<Implementation<FakeRepositoryBase>, instantiation_method::NonCopyableTag>
+    struct Implementation<FakeRepositoryBase>
     {
         std::tr1::shared_ptr<CategoryNamePartSet> category_names;
         std::map<CategoryNamePart, std::tr1::shared_ptr<PackageNamePartSet> > package_names;

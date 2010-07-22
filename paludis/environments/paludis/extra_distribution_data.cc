@@ -21,6 +21,7 @@
 #include <paludis/util/destringify.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/singleton-impl.hh>
 #include <paludis/distribution-impl.hh>
 
 using namespace paludis;
@@ -58,6 +59,5 @@ namespace paludis
 }
 
 template class ExtraDistributionData<PaludisDistribution>;
-template class InstantiationPolicy<ExtraDistributionData<PaludisDistribution>, instantiation_method::SingletonTag>;
-
+template class Singleton<ExtraDistributionData<PaludisDistribution>>;
 

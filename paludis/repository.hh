@@ -33,7 +33,7 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/util/timestamp.hh>
-#include <paludis/util/instantiation_policy.hh>
+#include <paludis/util/singleton.hh>
 #include <paludis/output_manager-fwd.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/metadata_key-fwd.hh>
@@ -235,7 +235,6 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE Repository :
-        private InstantiationPolicy<Repository, instantiation_method::NonCopyableTag>,
         private PrivateImplementationPattern<Repository>,
         public RepositoryCapabilities,
         public MetadataKeyHolder
@@ -256,6 +255,9 @@ namespace paludis
             ///\{
 
             virtual ~Repository();
+
+            Repository(const Repository &) = delete;
+            Repository & operator= (const Repository &) = delete;
 
             ///\}
 

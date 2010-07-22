@@ -22,7 +22,7 @@
 
 #include <string>
 #include <paludis/util/exception.hh>
-#include <paludis/util/instantiation_policy.hh>
+#include <paludis/util/singleton.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/fs_entry.hh>
 
@@ -60,8 +60,7 @@ namespace paludis
      * \ingroup grplibpaludisselinux
      */
     class PALUDIS_VISIBLE SecurityContext :
-        private PrivateImplementationPattern<SecurityContext>,
-        private InstantiationPolicy<SecurityContext, instantiation_method::NonCopyableTag>
+        private PrivateImplementationPattern<SecurityContext>
     {
         public:
             /**
@@ -78,6 +77,10 @@ namespace paludis
              * Destructor
              */
             ~SecurityContext();
+
+            SecurityContext(const SecurityContext &) = delete;
+
+            SecurityContext & operator= (const SecurityContext &) = delete;
 
             friend std::ostream& paludis::operator<<(std::ostream&, const SecurityContext &);
             friend class paludis::FSCreateCon;
@@ -138,7 +141,7 @@ namespace paludis
      * \ingroup grplibpaludisselinux
      */
     class PALUDIS_VISIBLE MatchPathCon :
-        public InstantiationPolicy<MatchPathCon, instantiation_method::SingletonTag>
+        public Singleton<MatchPathCon>
     {
         private:
             bool _good;

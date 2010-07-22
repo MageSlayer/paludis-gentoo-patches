@@ -22,7 +22,6 @@
 
 #include <paludis/contents-fwd.hh>
 #include <paludis/util/simple_visitor.hh>
-#include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/type_list.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -200,7 +199,6 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE Contents :
-        private InstantiationPolicy<Contents, instantiation_method::NonCopyableTag>,
         private PrivateImplementationPattern<Contents>
     {
         public:
@@ -209,6 +207,9 @@ namespace paludis
 
             Contents();
             ~Contents();
+
+            Contents(const Contents &) = delete;
+            Contents & operator= (const Contents &) = delete;
 
             ///\}
 
@@ -230,7 +231,6 @@ namespace paludis
             ///\}
     };
 
-    extern template class InstantiationPolicy<Contents, instantiation_method::NonCopyableTag>;
     extern template class PrivateImplementationPattern<Contents>;
     extern template class PrivateImplementationPattern<ContentsEntry>;
     extern template class PrivateImplementationPattern<ContentsSymEntry>;

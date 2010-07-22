@@ -74,5 +74,5 @@ namespace paludis
 }
 
 template class ExtraDistributionData<EDistribution>;
-template class InstantiationPolicy<ExtraDistributionData<EDistribution>, instantiation_method::SingletonTag>;
+template class Singleton<ExtraDistributionData<EDistribution>>;
 

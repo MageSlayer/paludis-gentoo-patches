@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -97,9 +97,6 @@ ConcreteDependenciesLabel<T_>::enabled() const
 {
     return _enabled();
 }
-
-template class InstantiationPolicy<DependenciesLabel, instantiation_method::NonCopyableTag>;
-template class InstantiationPolicy<URILabel, instantiation_method::NonCopyableTag>;
 
 template class ConcreteURILabel<URIMirrorsThenListedLabelTag>;
 template class ConcreteURILabel<URIMirrorsOnlyLabelTag>;

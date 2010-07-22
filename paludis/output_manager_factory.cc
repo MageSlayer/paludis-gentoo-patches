@@ -19,7 +19,7 @@
 
 #include <paludis/output_manager_factory.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/instantiation_policy-impl.hh>
+#include <paludis/util/singleton-impl.hh>
 #include <paludis/util/member_iterator-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/join.hh>
@@ -146,6 +146,6 @@ OutputManagerFactory::add_manager(
 }
 
 template class PrivateImplementationPattern<OutputManagerFactory>;
-template class InstantiationPolicy<OutputManagerFactory, instantiation_method::SingletonTag>;
+template class Singleton<OutputManagerFactory>;
 template class WrappedForwardIterator<OutputManagerFactory::ConstIteratorTag, const std::string>;
 

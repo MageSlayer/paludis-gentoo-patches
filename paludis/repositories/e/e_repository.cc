@@ -71,7 +71,7 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
-#include <paludis/util/instantiation_policy-impl.hh>
+#include <paludis/util/singleton-impl.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/log.hh>
@@ -1676,7 +1676,7 @@ ERepository::sync_host_key() const
 namespace
 {
     struct Suffixes :
-        InstantiationPolicy<Suffixes, instantiation_method::SingletonTag>
+        Singleton<Suffixes>
     {
         KeyValueConfigFile file;
 
@@ -1725,8 +1725,7 @@ ERepository::make_id(const QualifiedPackageName & q, const FSEntry & f) const
 
 namespace
 {
-    class AFinder :
-        private InstantiationPolicy<AFinder, instantiation_method::NonCopyableTag>
+    class AFinder
     {
         private:
             std::list<std::pair<const FetchableURIDepSpec *, const URILabelsDepSpec *> > _specs;

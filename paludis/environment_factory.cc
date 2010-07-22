@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -18,7 +18,7 @@
  */
 
 #include <paludis/environment_factory.hh>
-#include <paludis/util/instantiation_policy-impl.hh>
+#include <paludis/util/singleton-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/member_iterator-impl.hh>
@@ -144,6 +144,6 @@ EnvironmentFactory::add_environment_format(
     }
 }
 
-template class InstantiationPolicy<EnvironmentFactory, instantiation_method::SingletonTag>;
+template class Singleton<EnvironmentFactory>;
 template class PrivateImplementationPattern<EnvironmentFactory>;
 

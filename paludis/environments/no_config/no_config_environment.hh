@@ -84,8 +84,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE NoConfigEnvironment :
         public EnvironmentImplementation,
-        private PrivateImplementationPattern<NoConfigEnvironment>,
-        private InstantiationPolicy<NoConfigEnvironment, instantiation_method::NonCopyableTag>
+        private PrivateImplementationPattern<NoConfigEnvironment>
     {
         private:
             PrivateImplementationPattern<NoConfigEnvironment>::ImpPtr & _imp;

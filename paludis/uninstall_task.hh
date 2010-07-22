@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -22,7 +22,6 @@
 
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/package_id.hh>
-#include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
@@ -89,8 +88,7 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE UninstallTask :
-        PrivateImplementationPattern<UninstallTask>,
-        InstantiationPolicy<UninstallTask, instantiation_method::NonCopyableTag>
+        private PrivateImplementationPattern<UninstallTask>
     {
         protected:
             ///\name Basic operations
@@ -105,6 +103,9 @@ namespace paludis
             ///\{
 
             virtual ~UninstallTask();
+
+            UninstallTask(const UninstallTask &) = delete;
+            UninstallTask & operator= (const UninstallTask &) = delete;
 
             ///\}
 

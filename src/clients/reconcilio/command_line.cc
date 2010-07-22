@@ -19,11 +19,11 @@
 
 #include "command_line.hh"
 
-#include <paludis/util/instantiation_policy-impl.hh>
+#include <paludis/util/singleton-impl.hh>
 
 using namespace paludis;
 
-template class InstantiationPolicy<CommandLine, instantiation_method::SingletonTag>;
+template class Singleton<CommandLine>;
 
 CommandLine::CommandLine() :
     ArgsHandler(),

@@ -16,7 +16,7 @@ using namespace examples;
 using std::cout;
 using std::endl;
 
-template class InstantiationPolicy<CommandLine, instantiation_method::SingletonTag>;
+template class Singleton<CommandLine>;
 
 CommandLine::CommandLine() :
     ArgsHandler(),

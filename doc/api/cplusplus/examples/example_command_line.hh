@@ -33,9 +33,9 @@ namespace examples
      */
     class CommandLine :
         public paludis::args::ArgsHandler,
-        public paludis::InstantiationPolicy<CommandLine, paludis::instantiation_method::SingletonTag>
+        public paludis::Singleton<CommandLine>
     {
-        friend class paludis::InstantiationPolicy<CommandLine, paludis::instantiation_method::SingletonTag>;
+        friend class paludis::Singleton<CommandLine>;
 
         private:
             CommandLine();

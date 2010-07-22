@@ -31,7 +31,7 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/iterator_funcs.hh>
-#include <paludis/util/instantiation_policy-impl.hh>
+#include <paludis/util/singleton-impl.hh>
 #include <paludis/generator.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/filter.hh>
@@ -64,7 +64,7 @@ using std::endl;
 namespace
 {
     struct ExtrasHandle :
-        InstantiationPolicy<ExtrasHandle, instantiation_method::SingletonTag>
+        Singleton<ExtrasHandle>
     {
         typedef bool (* MatchFunction)(const std::string &, const std::string &);
 

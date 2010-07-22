@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,15 +21,13 @@
 #define PALUDIS_GUARD_SRC_CLIENTS_INQUISITIO_EXTRACTOR_HH 1
 
 #include <string>
-#include <paludis/util/instantiation_policy.hh>
 #include <paludis/package_id-fwd.hh>
 
 namespace inquisitio
 {
     class Matcher;
 
-    class Extractor :
-        private paludis::InstantiationPolicy<Extractor, paludis::instantiation_method::NonCopyableTag>
+    class Extractor
     {
         protected:
             Extractor();

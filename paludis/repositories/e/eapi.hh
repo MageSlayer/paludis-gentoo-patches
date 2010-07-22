@@ -24,10 +24,10 @@
 #include <paludis/repositories/e/dep_parser-fwd.hh>
 #include <paludis/repositories/e/iuse.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/named_value.hh>
+#include <paludis/util/singleton.hh>
 #include <paludis/name.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/merger-fwd.hh>
@@ -229,9 +229,9 @@ namespace paludis
          */
         class PALUDIS_VISIBLE EAPIData :
             private PrivateImplementationPattern<EAPIData>,
-            public InstantiationPolicy<EAPIData, instantiation_method::SingletonTag>
+            public Singleton<EAPIData>
         {
-            friend class InstantiationPolicy<EAPIData, instantiation_method::SingletonTag>;
+            friend class Singleton<EAPIData>;
 
             private:
                 EAPIData();

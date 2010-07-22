@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,7 +21,6 @@
 #define PALUDIS_GUARD_PALUDIS_PALUDIS_ENVIRONMENTS_PALUDIS_LICENSES_CONF_HH 1
 
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/package_id-fwd.hh>
@@ -39,8 +38,7 @@ namespace paludis
          * \nosubgrouping
          */
         class LicensesConf :
-            private PrivateImplementationPattern<LicensesConf>,
-            private InstantiationPolicy<LicensesConf, instantiation_method::NonCopyableTag>
+            private PrivateImplementationPattern<LicensesConf>
         {
             public:
                 ///\name Basic operations
@@ -48,6 +46,9 @@ namespace paludis
 
                 LicensesConf(const PaludisEnvironment * const);
                 ~LicensesConf();
+
+                LicensesConf(const LicensesConf &) = delete;
+                LicensesConf & operator= (const LicensesConf &) = delete;
 
                 ///\}
 

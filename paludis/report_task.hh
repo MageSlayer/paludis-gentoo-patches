@@ -20,7 +20,6 @@
 #ifndef PALUDIS_GUARD_PALUDIS_REPORT_TASK_HH
 #define PALUDIS_GUARD_PALUDIS_REPORT_TASK_HH 1
 
-#include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/repository.hh>
 #include <paludis/dep_tag-fwd.hh>
@@ -46,8 +45,7 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE ReportTask :
-        PrivateImplementationPattern<ReportTask>,
-        InstantiationPolicy<ReportTask, instantiation_method::NonCopyableTag>
+        private PrivateImplementationPattern<ReportTask>
     {
         protected:
             ///\name Basic operations
@@ -62,6 +60,9 @@ namespace paludis
             ///\{
 
             virtual ~ReportTask();
+
+            ReportTask(const ReportTask &) = delete;
+            ReportTask & operator= (const ReportTask &) = delete;
 
             ///\}
 

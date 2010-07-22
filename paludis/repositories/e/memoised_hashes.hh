@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_MEMOISED_HASHES_HH 1
 
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/instantiation_policy.hh>
+#include <paludis/util/singleton.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/safe_ifstream-fwd.hh>
 
@@ -30,10 +30,10 @@ namespace paludis
     namespace erepository
     {
         class PALUDIS_VISIBLE MemoisedHashes :
-            public InstantiationPolicy<MemoisedHashes, instantiation_method::SingletonTag>,
+            public Singleton<MemoisedHashes>,
             private PrivateImplementationPattern<MemoisedHashes>
         {
-            friend class InstantiationPolicy<MemoisedHashes, instantiation_method::SingletonTag>;
+            friend class Singleton<MemoisedHashes>;
 
             public:
                 template <typename H_>
@@ -45,7 +45,7 @@ namespace paludis
         };
     }
     extern template class PrivateImplementationPattern<erepository::MemoisedHashes>;
-    extern template class InstantiationPolicy<erepository::MemoisedHashes, instantiation_method::SingletonTag>;
+    extern template class Singleton<erepository::MemoisedHashes>;
 }
 
 #endif

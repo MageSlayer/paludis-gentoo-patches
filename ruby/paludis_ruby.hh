@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  * Copyright (c) 2006, 2007, 2008 Richard Brown
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -23,11 +23,11 @@
 
 #include "config.h"
 
-#include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/fs_entry.hh>
+#include <paludis/util/singleton.hh>
 #include <paludis/environment.hh>
 #include <paludis/environments/no_config/no_config_environment.hh>
 #include <paludis/repository.hh>
@@ -150,10 +150,10 @@ namespace paludis
         /* registration */
 
         class RegisterRubyClass :
-            public InstantiationPolicy<RegisterRubyClass, instantiation_method::SingletonTag>,
+            public Singleton<RegisterRubyClass>,
             private PrivateImplementationPattern<RegisterRubyClass>
         {
-            friend class InstantiationPolicy<RegisterRubyClass, instantiation_method::SingletonTag>;
+            friend class Singleton<RegisterRubyClass>;
 
             private:
                 RegisterRubyClass();
@@ -166,8 +166,7 @@ namespace paludis
                 void execute() const;
         };
 
-        class RegisterRubyClass::Register :
-            public InstantiationPolicy<RegisterRubyClass, instantiation_method::NonCopyableTag>
+        class RegisterRubyClass::Register
         {
             public:
                 Register(void (* func)());

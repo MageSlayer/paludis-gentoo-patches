@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -19,7 +19,7 @@
 
 #include "yaml.hh"
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/instantiation_policy-impl.hh>
+#include <paludis/util/singleton-impl.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <tr1/functional>
@@ -397,7 +397,7 @@ ParseError::ParseError(const std::string & s) throw () :
 {
 }
 
-template class InstantiationPolicy<NodeManager, instantiation_method::SingletonTag>;
+template class Singleton<NodeManager>;
 
 template class WrappedForwardIterator<MapNode::ConstIteratorTag, const std::pair<const Node *, const Node *> >;
 template class WrappedForwardIterator<SequenceNode::ConstIteratorTag, const Node * const>;

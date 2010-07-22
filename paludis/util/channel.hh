@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2010 Ciaran McCreesh
  * Copyright (c) 2009 David Leverton
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -21,7 +21,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_UTIL_CHANNEL_HH
 #define PALUDIS_GUARD_PALUDIS_UTIL_CHANNEL_HH 1
 
-#include <paludis/util/instantiation_policy.hh>
+#include <paludis/util/singleton.hh>
 
 /** \file
  * Declaration for the Channel class.
@@ -41,8 +41,7 @@ namespace paludis
      * \ingroup g_system
      * \nosubgrouping
      */
-    class PALUDIS_VISIBLE Channel :
-        InstantiationPolicy<Channel, instantiation_method::NonCopyableTag>
+    class PALUDIS_VISIBLE Channel
     {
         protected:
             int _fds[2];
@@ -54,6 +53,9 @@ namespace paludis
             Channel();
 
             virtual ~Channel();
+
+            Channel(const Channel &) = delete;
+            Channel & operator= (const Channel &) = delete;
 
             ///\}
 

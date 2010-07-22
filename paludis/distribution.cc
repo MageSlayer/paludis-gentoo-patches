@@ -25,16 +25,17 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/strip.hh>
-#include <paludis/util/instantiation_policy-impl.hh>
+#include <paludis/util/singleton-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/singleton-impl.hh>
 #include <tr1/unordered_map>
 
 using namespace paludis;
 
-template class InstantiationPolicy<DistributionData, instantiation_method::SingletonTag>;
+template class Singleton<DistributionData>;
 
 DistributionConfigurationError::DistributionConfigurationError(const std::string & s) throw () :
     ConfigurationError("Distribution configuration error: " + s)

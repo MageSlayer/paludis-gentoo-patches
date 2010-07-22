@@ -22,11 +22,11 @@
 
 #include <paludis/environment_factory-fwd.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/set-fwd.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/no_type.hh>
+#include <paludis/util/singleton.hh>
 #include <paludis/environment-fwd.hh>
 #include <tr1/memory>
 #include <tr1/functional>
@@ -45,9 +45,9 @@ namespace paludis
      */
     class PALUDIS_VISIBLE EnvironmentFactory :
         private PrivateImplementationPattern<EnvironmentFactory>,
-        public InstantiationPolicy<EnvironmentFactory, instantiation_method::SingletonTag>
+        public Singleton<EnvironmentFactory>
     {
-        friend class InstantiationPolicy<EnvironmentFactory, instantiation_method::SingletonTag>;
+        friend class Singleton<EnvironmentFactory>;
 
         private:
             EnvironmentFactory();
@@ -91,7 +91,7 @@ namespace paludis
     void register_environment(const EnvironmentClass_ * const, EnvironmentFactory * const);
 
     extern template class PrivateImplementationPattern<EnvironmentFactory>;
-    extern template class InstantiationPolicy<EnvironmentFactory, instantiation_method::SingletonTag>;
+    extern template class Singleton<EnvironmentFactory>;
 }
 
 #endif

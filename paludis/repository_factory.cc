@@ -19,7 +19,7 @@
 
 #include <paludis/repository_factory.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/instantiation_policy-impl.hh>
+#include <paludis/util/singleton-impl.hh>
 #include <paludis/util/member_iterator-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/join.hh>
@@ -213,6 +213,6 @@ RepositoryFactory::add_repository_format(
 }
 
 template class PrivateImplementationPattern<RepositoryFactory>;
-template class InstantiationPolicy<RepositoryFactory, instantiation_method::SingletonTag>;
+template class Singleton<RepositoryFactory>;
 template class WrappedForwardIterator<RepositoryFactory::ConstIteratorTag, const std::string>;
 

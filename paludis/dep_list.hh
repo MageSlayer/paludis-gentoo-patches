@@ -29,7 +29,6 @@
 #include <paludis/name.hh>
 #include <paludis/environment.hh>
 #include <paludis/match_package.hh>
-#include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/options.hh>
 #include <paludis/version_spec.hh>
@@ -148,7 +147,6 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE DepList :
-        private InstantiationPolicy<DepList, instantiation_method::NonCopyableTag>,
         private PrivateImplementationPattern<DepList>
     {
         protected:
@@ -221,6 +219,9 @@ namespace paludis
             DepList(const Environment * const, const DepListOptions &);
 
             virtual ~DepList();
+
+            DepList(const DepList &) = delete;
+            DepList & operator= (const DepList &) = delete;
 
             ///\}
 

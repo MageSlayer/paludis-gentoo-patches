@@ -20,7 +20,7 @@
 #include <paludis/repositories/e/metadata_xml.hh>
 #include <paludis/repositories/e/xml_things_handle.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/instantiation_policy-impl.hh>
+#include <paludis/util/singleton-impl.hh>
 #include <paludis/util/map-impl.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/fs_entry.hh>
@@ -87,5 +87,5 @@ MetadataXMLPool::metadata_if_exists(const FSEntry & f) const
 
 template class Map<ChoiceNameWithPrefix, std::string>;
 template class PrivateImplementationPattern<MetadataXMLPool>;
-template class InstantiationPolicy<MetadataXMLPool, instantiation_method::SingletonTag>;
+template class Singleton<MetadataXMLPool>;
 

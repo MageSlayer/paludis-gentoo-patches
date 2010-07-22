@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,11 +20,11 @@
 #ifndef PALUDIS_GUARD_PALUDIS_LOG_HH
 #define PALUDIS_GUARD_PALUDIS_LOG_HH 1
 
+#include <paludis/util/stringify.hh>
+#include <paludis/util/singleton.hh>
+#include <paludis/util/private_implementation_pattern.hh>
 #include <iosfwd>
 #include <string>
-#include <paludis/util/stringify.hh>
-#include <paludis/util/instantiation_policy.hh>
-#include <paludis/util/private_implementation_pattern.hh>
 
 /** \file
  * Declarations for Log and related classes.
@@ -48,10 +48,10 @@ namespace paludis
      * \ingroup g_log
      */
     class PALUDIS_VISIBLE Log :
-        public InstantiationPolicy<Log, instantiation_method::SingletonTag>,
+        public Singleton<Log>,
         private PrivateImplementationPattern<Log>
     {
-        friend class InstantiationPolicy<Log, instantiation_method::SingletonTag>;
+        friend class Singleton<Log>;
         friend class LogMessageHandler;
 
         private:

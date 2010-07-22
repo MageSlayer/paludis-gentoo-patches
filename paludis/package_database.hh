@@ -27,7 +27,6 @@
 #include <paludis/selection-fwd.hh>
 #include <paludis/filter-fwd.hh>
 #include <paludis/util/exception.hh>
-#include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/stringify.hh>
@@ -219,8 +218,7 @@ namespace paludis
      * \ingroup g_package_database
      */
     class PALUDIS_VISIBLE PackageDatabase :
-        private PrivateImplementationPattern<PackageDatabase>,
-        private InstantiationPolicy<PackageDatabase, instantiation_method::NonCopyableTag>
+        private PrivateImplementationPattern<PackageDatabase>
     {
         private:
             static const Filter & all_filter() PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -232,6 +230,9 @@ namespace paludis
             explicit PackageDatabase(const Environment * const);
 
             ~PackageDatabase();
+
+            PackageDatabase(const PackageDatabase &) = delete;
+            PackageDatabase & operator= (const PackageDatabase &) = delete;
 
             ///\}
 

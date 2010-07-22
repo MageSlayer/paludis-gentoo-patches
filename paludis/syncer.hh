@@ -86,8 +86,7 @@ namespace paludis
      *
      * \ingroup g_repository
      */
-    class PALUDIS_VISIBLE Syncer :
-        private InstantiationPolicy<Syncer, instantiation_method::NonCopyableTag>
+    class PALUDIS_VISIBLE Syncer
     {
         protected:
             /**
@@ -100,6 +99,9 @@ namespace paludis
              * Destructor.
              */
             virtual ~Syncer();
+
+            Syncer(const Syncer &) = delete;
+            Syncer & operator= (const Syncer &) = delete;
 
             /**
              * Perform the sync.

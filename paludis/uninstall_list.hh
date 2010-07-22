@@ -20,7 +20,6 @@
 #ifndef PALUDIS_GUARD_PALUDIS_UNUSED_LIST_HH
 #define PALUDIS_GUARD_PALUDIS_UNUSED_LIST_HH 1
 
-#include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/named_value.hh>
@@ -88,8 +87,7 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE UninstallList :
-        private PrivateImplementationPattern<UninstallList>,
-        public InstantiationPolicy<UninstallList, instantiation_method::NonCopyableTag>
+        private PrivateImplementationPattern<UninstallList>
     {
         private:
             void add_package(const std::tr1::shared_ptr<const PackageID> &, const std::tr1::shared_ptr<DepTag> &,
@@ -115,6 +113,9 @@ namespace paludis
 
             UninstallList(const Environment * const, const UninstallListOptions &);
             virtual ~UninstallList();
+
+            UninstallList(const UninstallList &) = delete;
+            UninstallList & operator= (const UninstallList &) = delete;
 
             ///\}
 

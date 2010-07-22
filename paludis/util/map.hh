@@ -22,7 +22,6 @@
 
 #include <paludis/util/map-fwd.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/wrapped_output_iterator-fwd.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -51,8 +50,7 @@ namespace paludis
      */
     template <typename K_, typename V_, typename C_>
     class PALUDIS_VISIBLE Map :
-        private PrivateImplementationPattern<Map<K_, V_, C_> >,
-        private InstantiationPolicy<Map<K_, V_, C_>, instantiation_method::NonCopyableTag>
+        private PrivateImplementationPattern<Map<K_, V_, C_> >
     {
         private:
             using PrivateImplementationPattern<Map<K_, V_, C_> >::_imp;
@@ -63,6 +61,9 @@ namespace paludis
 
             Map();
             ~Map();
+
+            Map(const Map &) = delete;
+            Map & operator= (const Map &) = delete;
 
             ///\}
 

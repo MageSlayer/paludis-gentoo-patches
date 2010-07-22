@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_HOOKER_HH
 #define PALUDIS_GUARD_PALUDIS_HOOKER_HH 1
 
-#include <paludis/util/instantiation_policy.hh>
+#include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/graph-fwd.hh>
 #include <paludis/util/sequence-fwd.hh>
@@ -50,14 +50,17 @@ namespace paludis
      * \ingroup g_hooks
      * \nosubgrouping
      */
-    class PALUDIS_VISIBLE HookFile :
-        private InstantiationPolicy<HookFile, instantiation_method::NonCopyableTag>
+    class PALUDIS_VISIBLE HookFile
     {
         public:
             ///\name Basic operations
             ///\{
 
+            HookFile() = default;
             virtual ~HookFile();
+
+            HookFile(const HookFile &) = delete;
+            HookFile & operator= (const HookFile &) = delete;
 
             ///\}
 
@@ -74,8 +77,7 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE Hooker :
-        private PrivateImplementationPattern<Hooker>,
-        private InstantiationPolicy<Hooker, instantiation_method::NonCopyableTag>
+        private PrivateImplementationPattern<Hooker>
     {
         private:
             std::tr1::shared_ptr<Sequence<std::tr1::shared_ptr<HookFile> > > _find_hooks(const Hook &) const;
@@ -86,6 +88,9 @@ namespace paludis
 
             Hooker(const Environment * const) PALUDIS_ATTRIBUTE((nonnull(1)));
             ~Hooker();
+
+            Hooker(const Hooker &) = delete;
+            Hooker & operator= (const Hooker &) = delete;
 
             ///\}
 

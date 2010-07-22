@@ -25,7 +25,6 @@
 #include <paludis/util/hashes.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/options.hh>
-#include <paludis/util/instantiation_policy-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <tr1/unordered_map>
 

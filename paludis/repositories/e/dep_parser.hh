@@ -25,7 +25,6 @@
 #include <paludis/package_id-fwd.hh>
 #include <paludis/repositories/e/eapi-fwd.hh>
 #include <paludis/util/exception.hh>
-#include <paludis/util/instantiation_policy.hh>
 #include <paludis/environment-fwd.hh>
 #include <string>
 

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,9 +20,9 @@
 #ifndef PALUDIS_GUARD_PALUDIS_UTIL_SEQUENCE_HH
 #define PALUDIS_GUARD_PALUDIS_UTIL_SEQUENCE_HH 1
 
+#include <paludis/util/attributes.hh>
 #include <paludis/util/sequence-fwd.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/util/wrapped_output_iterator-fwd.hh>
 
@@ -48,8 +48,7 @@ namespace paludis
      */
     template <typename T_>
     class PALUDIS_VISIBLE Sequence :
-        private PrivateImplementationPattern<Sequence<T_> >,
-        private InstantiationPolicy<Sequence<T_>, instantiation_method::NonCopyableTag>
+        private PrivateImplementationPattern<Sequence<T_> >
     {
         private:
             using PrivateImplementationPattern<Sequence<T_> >::_imp;
@@ -69,6 +68,9 @@ namespace paludis
 
             Sequence();
             ~Sequence();
+
+            Sequence(const Sequence &) = delete;
+            Sequence & operator= (const Sequence &) = delete;
 
             ///\}
 

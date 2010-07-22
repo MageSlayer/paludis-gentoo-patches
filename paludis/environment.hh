@@ -21,7 +21,6 @@
 #define PALUDIS_GUARD_PALUDIS_ENVIRONMENT_HH 1
 
 #include <paludis/environment-fwd.hh>
-#include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/options-fwd.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/tribool-fwd.hh>
@@ -76,14 +75,17 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE Environment :
-        private InstantiationPolicy<Environment, instantiation_method::NonCopyableTag>,
         public MetadataKeyHolder
     {
         public:
             ///\name Basic operations
             ///\{
 
+            Environment() = default;
             virtual ~Environment() = 0;
+
+            Environment(const Environment &) = delete;
+            Environment & operator= (const Environment &) = delete;
 
             ///\}
 

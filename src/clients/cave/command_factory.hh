@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_SRC_CLIENTS_CAVE_COMMAND_FACTORY_HH
 #define PALUDIS_GUARD_SRC_CLIENTS_CAVE_COMMAND_FACTORY_HH 1
 
-#include <paludis/util/instantiation_policy.hh>
+#include <paludis/util/singleton.hh>
 #include <paludis/util/private_implementation_pattern.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/exception.hh>
@@ -41,9 +41,9 @@ namespace paludis
 
         class PALUDIS_VISIBLE CommandFactory :
             private PrivateImplementationPattern<CommandFactory>,
-            public InstantiationPolicy<CommandFactory, instantiation_method::SingletonTag>
+            public Singleton<CommandFactory>
         {
-            friend class InstantiationPolicy<CommandFactory, instantiation_method::SingletonTag>;
+            friend class Singleton<CommandFactory>;
 
             private:
                 CommandFactory();
@@ -60,7 +60,7 @@ namespace paludis
         };
     }
 
-    extern template class InstantiationPolicy<cave::CommandFactory, instantiation_method::SingletonTag>;
+    extern template class Singleton<cave::CommandFactory>;
     extern template class PrivateImplementationPattern<cave::CommandFactory>;
 }
 

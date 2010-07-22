@@ -23,7 +23,7 @@
 #include <paludis/repositories/e/glsa.hh>
 #include <paludis/repositories/e/metadata_xml.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/instantiation_policy.hh>
+#include <paludis/util/singleton.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 
 namespace paludis
@@ -32,9 +32,9 @@ namespace paludis
     {
         class PALUDIS_VISIBLE XMLThingsHandle :
             private PrivateImplementationPattern<XMLThingsHandle>,
-            public InstantiationPolicy<XMLThingsHandle, instantiation_method::SingletonTag>
+            public Singleton<XMLThingsHandle>
         {
-            friend class InstantiationPolicy<XMLThingsHandle, instantiation_method::SingletonTag>;
+            friend class Singleton<XMLThingsHandle>;
 
             private:
                 XMLThingsHandle();
@@ -52,7 +52,7 @@ namespace paludis
     }
 
     extern template class PrivateImplementationPattern<erepository::XMLThingsHandle>;
-    extern template class InstantiationPolicy<erepository::XMLThingsHandle, instantiation_method::SingletonTag>;
+    extern template class Singleton<erepository::XMLThingsHandle>;
 }
 
 #endif

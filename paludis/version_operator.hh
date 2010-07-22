@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,7 +20,6 @@
 #ifndef PALUDIS_GUARD_PALUDIS_VERSION_OPERATOR_HH
 #define PALUDIS_GUARD_PALUDIS_VERSION_OPERATOR_HH 1
 
-#include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/operators.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/version_operator-fwd.hh>

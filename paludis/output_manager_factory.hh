@@ -23,9 +23,10 @@
 #include <paludis/output_manager_factory-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/private_implementation_pattern.hh>
-#include <paludis/util/instantiation_policy.hh>
+#include <paludis/util/singleton.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/map-fwd.hh>
+#include <paludis/util/singleton.hh>
 #include <paludis/output_manager-fwd.hh>
 #include <paludis/util/set-fwd.hh>
 #include <tr1/functional>
@@ -35,9 +36,9 @@ namespace paludis
 {
     class PALUDIS_VISIBLE OutputManagerFactory :
         private PrivateImplementationPattern<OutputManagerFactory>,
-        public InstantiationPolicy<OutputManagerFactory, instantiation_method::SingletonTag>
+        public Singleton<OutputManagerFactory>
     {
-        friend class InstantiationPolicy<OutputManagerFactory, instantiation_method::SingletonTag>;
+        friend class Singleton<OutputManagerFactory>;
 
         private:
             OutputManagerFactory();
@@ -102,7 +103,7 @@ namespace paludis
     };
 
     extern template class PrivateImplementationPattern<OutputManagerFactory>;
-    extern template class InstantiationPolicy<OutputManagerFactory, instantiation_method::SingletonTag>;
+    extern template class Singleton<OutputManagerFactory>;
     extern template class WrappedForwardIterator<OutputManagerFactory::ConstIteratorTag, const std::string>;
 }
 

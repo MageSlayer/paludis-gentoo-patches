@@ -22,16 +22,18 @@
 
 #include <paludis/output_manager-fwd.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/instantiation_policy.hh>
 #include <iosfwd>
 
 namespace paludis
 {
-    class PALUDIS_VISIBLE OutputManager :
-        private InstantiationPolicy<OutputManager, instantiation_method::NonCopyableTag>
+    class PALUDIS_VISIBLE OutputManager
     {
         public:
+            OutputManager() = default;
             virtual ~OutputManager() = 0;
+
+            OutputManager(const OutputManager &) = delete;
+            OutputManager & operator= (const OutputManager &) = delete;
 
             virtual std::ostream & stdout_stream() PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
             virtual std::ostream & stderr_stream() PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;

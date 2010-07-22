@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  * Copyright (c) 2006, 2007, 2008 Richard Brown
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -20,7 +20,7 @@
 
 #include <paludis_ruby.hh>
 #include <paludis/util/config_file.hh>
-#include <paludis/util/instantiation_policy-impl.hh>
+#include <paludis/util/singleton-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/dep_list_exceptions.hh>
 #include <paludis/match_package.hh>
@@ -36,7 +36,7 @@
 using namespace paludis;
 using namespace paludis::ruby;
 
-template class InstantiationPolicy<RegisterRubyClass, instantiation_method::SingletonTag>;
+template class Singleton<RegisterRubyClass>;
 
 namespace paludis
 {

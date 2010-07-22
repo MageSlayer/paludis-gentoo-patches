@@ -22,7 +22,6 @@
 
 #include <paludis/broken_linkage_finder.hh>
 #include <paludis/util/fs_entry-fwd.hh>
-#include <paludis/util/instantiation_policy.hh>
 #include <paludis/util/set-fwd.hh>
 
 #include <paludis/package_id-fwd.hh>
@@ -32,12 +31,14 @@
 
 namespace paludis
 {
-    class LinkageChecker :
-        private paludis::InstantiationPolicy<LinkageChecker, paludis::instantiation_method::NonCopyableTag>
+    class LinkageChecker
     {
         public:
             LinkageChecker();
             virtual ~LinkageChecker();
+
+            LinkageChecker(const LinkageChecker &) = delete;
+            LinkageChecker & operator= (const LinkageChecker &) = delete;
 
             virtual bool check_file(const paludis::FSEntry &) PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
             virtual void note_symlink(const paludis::FSEntry &, const paludis::FSEntry &) = 0;
