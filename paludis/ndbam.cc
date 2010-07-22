@@ -224,7 +224,7 @@ NDBAM::has_category_named(const CategoryNamePart & c)
     Lock l(_imp->category_names_mutex);
     CategoryContentsMap::const_iterator it(_imp->category_contents_map.find(c));
     if (it != _imp->category_contents_map.end())
-        return it->second;
+        return bool(it->second);
 
     if (! _imp->category_names)
     {
@@ -255,7 +255,7 @@ NDBAM::has_package_named(const QualifiedPackageName & q)
 
     PackageContentsMap::const_iterator it(cc.package_contents_map.find(q));
     if (it != cc.package_contents_map.end())
-        return it->second;
+        return bool(it->second);
 
     if (! cc.package_names)
     {

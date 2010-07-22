@@ -72,7 +72,7 @@ namespace
                 TEST_CHECK(! spec.package_ptr());
             else
             {
-                TEST_CHECK(spec.package_ptr());
+                TEST_CHECK(bool(spec.package_ptr()));
                 TEST_CHECK_STRINGIFY_EQUAL(*spec.package_ptr(), package);
             }
 
@@ -80,7 +80,7 @@ namespace
                 TEST_CHECK(! spec.category_name_part_ptr());
             else
             {
-                TEST_CHECK(spec.category_name_part_ptr());
+                TEST_CHECK(bool(spec.category_name_part_ptr()));
                 TEST_CHECK_STRINGIFY_EQUAL(*spec.category_name_part_ptr(), category_name_part);
             }
 
@@ -88,7 +88,7 @@ namespace
                 TEST_CHECK(! spec.package_name_part_ptr());
             else
             {
-                TEST_CHECK(spec.package_name_part_ptr());
+                TEST_CHECK(bool(spec.package_name_part_ptr()));
                 TEST_CHECK_STRINGIFY_EQUAL(*spec.package_name_part_ptr(), package_name_part);
             }
 
@@ -99,7 +99,7 @@ namespace
                 TEST_CHECK((! spec.version_requirements_ptr()) || spec.version_requirements_ptr()->empty());
             else
             {
-                TEST_CHECK(spec.version_requirements_ptr());
+                TEST_CHECK(bool(spec.version_requirements_ptr()));
                 TEST_CHECK_STRINGIFY_EQUAL(join(spec.version_requirements_ptr()->begin(),
                             spec.version_requirements_ptr()->end(), ", ", &dump_version_requirement),
                         version_requirements);
@@ -109,7 +109,7 @@ namespace
                 TEST_CHECK(! spec.slot_requirement_ptr());
             else
             {
-                TEST_CHECK(spec.slot_requirement_ptr());
+                TEST_CHECK(bool(spec.slot_requirement_ptr()));
                 TEST_CHECK_STRINGIFY_EQUAL(*spec.slot_requirement_ptr(), slot_requirement);
             }
 
@@ -117,7 +117,7 @@ namespace
                 TEST_CHECK(! spec.from_repository_ptr());
             else
             {
-                TEST_CHECK(spec.from_repository_ptr());
+                TEST_CHECK(bool(spec.from_repository_ptr()));
                 TEST_CHECK_STRINGIFY_EQUAL(*spec.from_repository_ptr(), from_repository);
             }
 
@@ -125,7 +125,7 @@ namespace
                 TEST_CHECK(! spec.in_repository_ptr());
             else
             {
-                TEST_CHECK(spec.in_repository_ptr());
+                TEST_CHECK(bool(spec.in_repository_ptr()));
                 TEST_CHECK_STRINGIFY_EQUAL(*spec.in_repository_ptr(), in_repository);
             }
 
@@ -133,7 +133,7 @@ namespace
                 TEST_CHECK((! spec.additional_requirements_ptr()) || spec.additional_requirements_ptr()->empty());
             else
             {
-                TEST_CHECK(spec.additional_requirements_ptr());
+                TEST_CHECK(bool(spec.additional_requirements_ptr()));
                 TEST_CHECK_STRINGIFY_EQUAL(join(indirect_iterator(spec.additional_requirements_ptr()->begin()),
                             indirect_iterator(spec.additional_requirements_ptr()->end()), ", "),
                         additional_requirement);
@@ -143,7 +143,7 @@ namespace
                 TEST_CHECK(! spec.installed_at_path_ptr());
             else
             {
-                TEST_CHECK(spec.installed_at_path_ptr());
+                TEST_CHECK(bool(spec.installed_at_path_ptr()));
                 TEST_CHECK_STRINGIFY_EQUAL(*spec.installed_at_path_ptr(),
                         installed_at_path);
             }
@@ -152,7 +152,7 @@ namespace
                 TEST_CHECK(! spec.installable_to_path_ptr());
             else
             {
-                TEST_CHECK(spec.installable_to_path_ptr());
+                TEST_CHECK(bool(spec.installable_to_path_ptr()));
                 TEST_CHECK_STRINGIFY_EQUAL(spec.installable_to_path_ptr()->path(), installable_to_path_f);
                 TEST_CHECK_EQUAL(spec.installable_to_path_ptr()->include_masked(), installable_to_path_s);
             }

@@ -171,7 +171,7 @@ namespace
             const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("cat/" + test,
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
-            TEST_CHECK(id);
+            TEST_CHECK(bool(id));
             TEST_CHECK_EQUAL(!! id->choices_key()->value()->find_by_name_with_prefix(
                         ChoiceNameWithPrefix("build_options:expensive_tests")), expect_expensive_test);
 

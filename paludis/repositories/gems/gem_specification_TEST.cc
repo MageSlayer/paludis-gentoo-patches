@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -61,12 +61,12 @@ namespace test_cases
             TestEnvironment env;
             GemSpecification spec(&env, std::shared_ptr<Repository>(), *spec_doc.top());
 
-            TEST_CHECK(spec.short_description_key());
+            TEST_CHECK(bool(spec.short_description_key()));
             TEST_CHECK_EQUAL(spec.short_description_key()->value(), "This is the summary");
             TEST_CHECK_EQUAL(spec.name(), QualifiedPackageName("gems/demo"));
             TEST_CHECK_EQUAL(spec.version(), VersionSpec("1.2.3", VersionSpecOptions()));
             TEST_CHECK(spec.find_metadata("rubyforge_project") == spec.end_metadata());
-            TEST_CHECK(spec.long_description_key());
+            TEST_CHECK(bool(spec.long_description_key()));
             TEST_CHECK_EQUAL(spec.long_description_key()->value(), "A longer description");
 
             TEST_CHECK(spec.find_metadata("authors") != spec.end_metadata());

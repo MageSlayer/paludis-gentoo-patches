@@ -102,7 +102,7 @@ namespace test_cases
             env.package_database()->add_repository(1, repo);
 
             std::shared_ptr<const SetSpecTree> set1(env.set(SetName("set1::test-repo-1")));
-            TEST_CHECK(set1);
+            TEST_CHECK(bool(set1));
             StringifyFormatter ff;
             erepository::DepSpecPrettyPrinter pretty(0, std::shared_ptr<const PackageID>(), ff, 0, false, false);
             set1->root()->accept(pretty);

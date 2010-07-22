@@ -161,7 +161,7 @@ namespace
             const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("cat/" + test,
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
-            TEST_CHECK(id);
+            TEST_CHECK(bool(id));
             id->perform_action(action);
         }
     };

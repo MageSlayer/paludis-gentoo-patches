@@ -1988,7 +1988,7 @@ Decider::_already_met(const SanitisedDependency & dep) const
                     MatchPackageOptions()) |
                 filter::InstalledAtRoot(FSEntry("/")))]);
     if (installed_ids->empty())
-        return dep.spec().if_block();
+        return bool(dep.spec().if_block());
     else
     {
         if (dep.spec().if_block())

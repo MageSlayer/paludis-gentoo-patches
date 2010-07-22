@@ -390,7 +390,7 @@ namespace
 bool
 AccountsRepository::some_ids_might_support_action(const SupportsActionTestBase & a) const
 {
-    SupportsActionQuery q(_imp->params_if_installed);
+    SupportsActionQuery q(bool(_imp->params_if_installed));
     return a.accept_returning<bool>(q);
 }
 

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -188,11 +188,11 @@ namespace test_cases
 
             std::shared_ptr<Environment> env(new PaludisEnvironment(""));
 
-            TEST_CHECK(env->package_database()->fetch_repository(RepositoryName("first")));
-            TEST_CHECK(env->package_database()->fetch_repository(RepositoryName("second")));
-            TEST_CHECK(env->package_database()->fetch_repository(RepositoryName("third")));
-            TEST_CHECK(env->package_database()->fetch_repository(RepositoryName("fourth")));
-            TEST_CHECK(env->package_database()->fetch_repository(RepositoryName("fifth")));
+            TEST_CHECK(bool(env->package_database()->fetch_repository(RepositoryName("first"))));
+            TEST_CHECK(bool(env->package_database()->fetch_repository(RepositoryName("second"))));
+            TEST_CHECK(bool(env->package_database()->fetch_repository(RepositoryName("third"))));
+            TEST_CHECK(bool(env->package_database()->fetch_repository(RepositoryName("fourth"))));
+            TEST_CHECK(bool(env->package_database()->fetch_repository(RepositoryName("fifth"))));
 
             TEST_CHECK(env->package_database()->more_important_than(RepositoryName("first"), RepositoryName("second")));
             TEST_CHECK(env->package_database()->more_important_than(RepositoryName("second"), RepositoryName("third")));

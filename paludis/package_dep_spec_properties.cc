@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -41,17 +41,17 @@ paludis::package_dep_spec_has_properties(const PackageDepSpec & spec, const Pack
 {
     bool result(true);
 
-    result = result && check(spec.additional_requirements_ptr() && ! spec.additional_requirements_ptr()->empty(), properties.has_additional_requirements());
-    result = result && check(spec.category_name_part_ptr(), properties.has_category_name_part());
-    result = result && check(spec.from_repository_ptr(), properties.has_from_repository());
-    result = result && check(spec.in_repository_ptr(), properties.has_in_repository());
-    result = result && check(spec.installable_to_path_ptr(), properties.has_installable_to_path());
-    result = result && check(spec.installable_to_repository_ptr(), properties.has_installable_to_repository());
-    result = result && check(spec.installed_at_path_ptr(), properties.has_installed_at_path());
-    result = result && check(spec.package_ptr(), properties.has_package());
-    result = result && check(spec.package_name_part_ptr(), properties.has_package_name_part());
-    result = result && check(spec.slot_requirement_ptr(), properties.has_slot_requirement());
-    result = result && check(spec.tag(), properties.has_tag());
+    result = result && check(bool(spec.additional_requirements_ptr()) && ! spec.additional_requirements_ptr()->empty(), properties.has_additional_requirements());
+    result = result && check(bool(spec.category_name_part_ptr()), properties.has_category_name_part());
+    result = result && check(bool(spec.from_repository_ptr()), properties.has_from_repository());
+    result = result && check(bool(spec.in_repository_ptr()), properties.has_in_repository());
+    result = result && check(bool(spec.installable_to_path_ptr()), properties.has_installable_to_path());
+    result = result && check(bool(spec.installable_to_repository_ptr()), properties.has_installable_to_repository());
+    result = result && check(bool(spec.installed_at_path_ptr()), properties.has_installed_at_path());
+    result = result && check(bool(spec.package_ptr()), properties.has_package());
+    result = result && check(bool(spec.package_name_part_ptr()), properties.has_package_name_part());
+    result = result && check(bool(spec.slot_requirement_ptr()), properties.has_slot_requirement());
+    result = result && check(bool(spec.tag()), properties.has_tag());
     result = result && check(spec.version_requirements_ptr() && ! spec.version_requirements_ptr()->empty(), properties.has_version_requirements());
 
     return result;

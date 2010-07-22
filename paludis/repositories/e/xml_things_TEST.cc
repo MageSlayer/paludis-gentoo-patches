@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -35,7 +35,7 @@ namespace test_cases
         void run()
         {
             std::shared_ptr<GLSA> glsa(GLSA::create_from_xml_file("xml_things_TEST_dir/glsa-123456-78.xml"));
-            TEST_CHECK(glsa);
+            TEST_CHECK(bool(glsa));
 
             TEST_CHECK_EQUAL("123456-78", glsa->id());
             TEST_CHECK_EQUAL("Kittens: Too Adorable", glsa->title());
@@ -65,7 +65,7 @@ namespace test_cases
         void run()
         {
             std::shared_ptr<GLSA> glsa(GLSA::create_from_xml_file("xml_things_TEST_dir/glsa-987654-32.xml"));
-            TEST_CHECK(glsa);
+            TEST_CHECK(bool(glsa));
 
             TEST_CHECK_EQUAL("987654-32", glsa->id());
             TEST_CHECK_EQUAL("Python: Retarded", glsa->title());

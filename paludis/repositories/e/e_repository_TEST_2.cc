@@ -141,7 +141,7 @@ namespace test_cases
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/econf-source-2",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
-                TEST_CHECK(id);
+                TEST_CHECK(bool(id));
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "2");
                 id->perform_action(action);
             }
@@ -151,7 +151,7 @@ namespace test_cases
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/doman-2",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
-                TEST_CHECK(id);
+                TEST_CHECK(bool(id));
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "2");
                 id->perform_action(action);
             }
@@ -161,7 +161,7 @@ namespace test_cases
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/src_prepare-2",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
-                TEST_CHECK(id);
+                TEST_CHECK(bool(id));
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "2");
                 TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
@@ -171,7 +171,7 @@ namespace test_cases
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/src_configure-2",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
-                TEST_CHECK(id);
+                TEST_CHECK(bool(id));
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "2");
                 TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
@@ -181,7 +181,7 @@ namespace test_cases
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/default-src_configure-2",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
-                TEST_CHECK(id);
+                TEST_CHECK(bool(id));
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "2");
                 id->perform_action(action);
             }
@@ -191,7 +191,7 @@ namespace test_cases
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/default-src_compile-2",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
-                TEST_CHECK(id);
+                TEST_CHECK(bool(id));
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "2");
                 id->perform_action(action);
             }
@@ -201,7 +201,7 @@ namespace test_cases
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/default_src_compile-2",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
-                TEST_CHECK(id);
+                TEST_CHECK(bool(id));
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "2");
                 id->perform_action(action);
             }
@@ -211,7 +211,7 @@ namespace test_cases
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/src_compile-via-default-func-2",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
-                TEST_CHECK(id);
+                TEST_CHECK(bool(id));
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "2");
                 id->perform_action(action);
             }

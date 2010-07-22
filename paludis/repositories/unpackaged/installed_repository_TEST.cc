@@ -142,11 +142,11 @@ namespace test_cases
             TEST_CHECK_EQUAL(id1->slot_key()->value(), SlotName("0"));
             TEST_CHECK_EQUAL(id1->name(), QualifiedPackageName("cat-one/foo"));
             TEST_CHECK_EQUAL(id1->repository()->name(), RepositoryName("installed-unpackaged"));
-            TEST_CHECK(id1->fs_location_key());
+            TEST_CHECK(bool(id1->fs_location_key()));
             TEST_CHECK_EQUAL(id1->fs_location_key()->value(),
                     FSEntry::cwd() / "installed_repository_TEST_dir/repo1/data/giant-space-weasel/1:0:foo/");
 
-            TEST_CHECK(id1->contents_key());
+            TEST_CHECK(bool(id1->contents_key()));
             ContentsDumper d1;
             std::for_each(indirect_iterator(id1->contents_key()->value()->begin()),
                     indirect_iterator(id1->contents_key()->value()->end()), accept_visitor(d1));
@@ -160,11 +160,11 @@ namespace test_cases
             TEST_CHECK_EQUAL(id2->slot_key()->value(), SlotName("1"));
             TEST_CHECK_EQUAL(id2->name(), QualifiedPackageName("cat-one/foo"));
             TEST_CHECK_EQUAL(id2->repository()->name(), RepositoryName("installed-unpackaged"));
-            TEST_CHECK(id2->fs_location_key());
+            TEST_CHECK(bool(id2->fs_location_key()));
             TEST_CHECK_EQUAL(id2->fs_location_key()->value(),
                     FSEntry::cwd() / "installed_repository_TEST_dir/repo1/data/giant-space-weasel/2:1:bar/");
 
-            TEST_CHECK(id2->contents_key());
+            TEST_CHECK(bool(id2->contents_key()));
             ContentsDumper d2;
             std::for_each(indirect_iterator(id2->contents_key()->value()->begin()),
                     indirect_iterator(id2->contents_key()->value()->end()), accept_visitor(d2));

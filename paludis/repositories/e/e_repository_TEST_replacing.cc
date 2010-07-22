@@ -158,7 +158,7 @@ namespace
                             PackageDepSpec(parse_user_package_dep_spec("cat/" + test,
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()) |
                         filter::SupportsAction<InstallAction>())]->last());
-            TEST_CHECK(id);
+            TEST_CHECK(bool(id));
             id->perform_action(action);
         }
     };

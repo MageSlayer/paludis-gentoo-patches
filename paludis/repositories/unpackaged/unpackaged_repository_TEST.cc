@@ -125,7 +125,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(id->slot_key()->value(), SlotName("foo"));
             TEST_CHECK_EQUAL(id->name(), QualifiedPackageName("cat/pkg"));
             TEST_CHECK_EQUAL(id->repository()->name(), RepositoryName("unpackaged"));
-            TEST_CHECK(id->fs_location_key());
+            TEST_CHECK(bool(id->fs_location_key()));
             TEST_CHECK_EQUAL(id->fs_location_key()->value(), FSEntry("unpackaged_repository_TEST_dir/pkg"));
         }
     } test_metadata;

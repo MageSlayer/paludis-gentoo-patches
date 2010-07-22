@@ -51,9 +51,9 @@ namespace test_cases
             RangeRewriter r;
             TEST_CHECK(! r.spec());
             std::for_each(indirect_iterator(a->root()->begin()), indirect_iterator(a->root()->end()), accept_visitor(r));
-            TEST_CHECK(r.spec());
+            TEST_CHECK(bool(r.spec()));
 
-            TEST_CHECK(r.spec());
+            TEST_CHECK(bool(r.spec()));
             TEST_CHECK_STRINGIFY_EQUAL(*r.spec(), "a/b[=1|=2] (rewritten from { =a/b-1, =a/b-2 })");
         }
     } test_range_rewriter;

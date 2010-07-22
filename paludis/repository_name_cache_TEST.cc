@@ -150,12 +150,12 @@ namespace test_cases
 
             std::shared_ptr<const CategoryNamePartSet> foo(cache.category_names_containing_package(PackageNamePart("foo")));
             TEST_CHECK(cache.usable());
-            TEST_CHECK(foo);
+            TEST_CHECK(bool(foo));
             TEST_CHECK_EQUAL(join(foo->begin(), foo->end(), " "), "bar baz");
 
             std::shared_ptr<const CategoryNamePartSet> moo(cache.category_names_containing_package(PackageNamePart("moo")));
             TEST_CHECK(cache.usable());
-            TEST_CHECK(moo);
+            TEST_CHECK(bool(moo));
             TEST_CHECK(moo->empty());
         }
     } test_names_cache_good;
@@ -183,12 +183,12 @@ namespace test_cases
 
             std::shared_ptr<const CategoryNamePartSet> foo(cache.category_names_containing_package(PackageNamePart("foo")));
             TEST_CHECK(cache.usable());
-            TEST_CHECK(foo);
+            TEST_CHECK(bool(foo));
             TEST_CHECK_EQUAL(join(foo->begin(), foo->end(), " "), "bar baz");
 
             std::shared_ptr<const CategoryNamePartSet> moo(cache.category_names_containing_package(PackageNamePart("moo")));
             TEST_CHECK(cache.usable());
-            TEST_CHECK(moo);
+            TEST_CHECK(bool(moo));
             TEST_CHECK(moo->empty());
         }
     } test_names_cache_generate;

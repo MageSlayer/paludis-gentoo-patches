@@ -48,7 +48,7 @@ namespace test_cases
                         n::write_cache() = FSEntry("/var/empty")
                     ));
 
-            TEST_CHECK(e.package_database());
+            TEST_CHECK(bool(e.package_database()));
         }
     } test_no_config_environment;
 }

@@ -73,7 +73,7 @@ namespace test_cases
             repo->add_virtual_package(QualifiedPackageName("virtual/pkg"), std::make_shared<PackageDepSpec>(
                             parse_user_package_dep_spec(">=cat/pkg-2", &env, UserPackageDepSpecOptions())));
 
-            TEST_CHECK(repo->virtual_packages());
+            TEST_CHECK(bool(repo->virtual_packages()));
             TEST_CHECK_EQUAL(std::distance(repo->virtual_packages()->begin(), repo->virtual_packages()->end()), 1);
 
             TEST_CHECK(virtuals->has_category_named(CategoryNamePart("virtual")));

@@ -265,7 +265,7 @@ namespace
             const std::shared_ptr<const PackageID> & id)
     {
         std::shared_ptr<ConditionalDepSpec> spec(new ConditionalDepSpec(parse_elike_conditional_dep_spec(
-                        u, env, id, id->repository()->installed_root_key())));
+                        u, env, id, bool(id->repository()->installed_root_key()))));
         stack.push_front(make_named_values<typename ParseStackTypes<T_>::Item>(
                     n::item() = stack.begin()->item()->append(spec),
                     n::spec() = spec

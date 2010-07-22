@@ -500,15 +500,15 @@ namespace test_cases
                     TEST_CHECK(id1->end_metadata() != id1->find_metadata("EAPI"));
                     TEST_CHECK(simple_visitor_cast<const MetadataValueKey<std::string> >(**id1->find_metadata("EAPI")));
                     TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id1->find_metadata("EAPI"))->value(), "0");
-                    TEST_CHECK(id1->short_description_key());
+                    TEST_CHECK(bool(id1->short_description_key()));
                     TEST_CHECK_EQUAL(id1->short_description_key()->value(), "The Description");
                     StringifyFormatter ff;
                     erepository::DepSpecPrettyPrinter pd(0, std::shared_ptr<const PackageID>(), ff, 0, false, false);
-                    TEST_CHECK(id1->build_dependencies_key());
+                    TEST_CHECK(bool(id1->build_dependencies_key()));
                     id1->build_dependencies_key()->value()->root()->accept(pd);
                     TEST_CHECK_STRINGIFY_EQUAL(pd, "foo/bar");
                     erepository::DepSpecPrettyPrinter pr(0, std::shared_ptr<const PackageID>(), ff, 0, false, false);
-                    TEST_CHECK(id1->run_dependencies_key());
+                    TEST_CHECK(bool(id1->run_dependencies_key()));
                     id1->run_dependencies_key()->value()->root()->accept(pr);
                     TEST_CHECK_STRINGIFY_EQUAL(pr, "foo/bar");
 
@@ -517,14 +517,14 @@ namespace test_cases
                                             &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
                     TEST_CHECK(id2->end_metadata() != id2->find_metadata("EAPI"));
-                    TEST_CHECK(id2->short_description_key());
+                    TEST_CHECK(bool(id2->short_description_key()));
                     TEST_CHECK_EQUAL(id2->short_description_key()->value(), "dquote \" squote ' backslash \\ dollar $");
                     erepository::DepSpecPrettyPrinter pd2(0, std::shared_ptr<const PackageID>(), ff, 0, false, false);
-                    TEST_CHECK(id2->build_dependencies_key());
+                    TEST_CHECK(bool(id2->build_dependencies_key()));
                     id2->build_dependencies_key()->value()->root()->accept(pd2);
                     TEST_CHECK_STRINGIFY_EQUAL(pd2, "foo/bar bar/baz");
                     erepository::DepSpecPrettyPrinter pr2(0, std::shared_ptr<const PackageID>(), ff, 0, false, false);
-                    TEST_CHECK(id2->run_dependencies_key());
+                    TEST_CHECK(bool(id2->run_dependencies_key()));
                     id2->run_dependencies_key()->value()->root()->accept(pr2);
                     TEST_CHECK_STRINGIFY_EQUAL(pr2, "foo/bar");
 
@@ -533,9 +533,9 @@ namespace test_cases
                                             &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
                     TEST_CHECK(id3->end_metadata() != id3->find_metadata("EAPI"));
-                    TEST_CHECK(id3->short_description_key());
+                    TEST_CHECK(bool(id3->short_description_key()));
                     TEST_CHECK_EQUAL(id3->short_description_key()->value(), "This is the short description");
-                    TEST_CHECK(id3->long_description_key());
+                    TEST_CHECK(bool(id3->long_description_key()));
                     TEST_CHECK_EQUAL(id3->long_description_key()->value(), "This is the long description");
                 }
             }
@@ -594,7 +594,7 @@ namespace test_cases
         {
             TestMessageSuffix s(stringify(*p) + "[" + n + "]", true);
             std::shared_ptr<const ChoiceValue> choice(p->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix(n)));
-            TEST_CHECK(choice);
+            TEST_CHECK(bool(choice));
             TEST_CHECK_EQUAL(choice->unprefixed_name(), UnprefixedChoiceName(u.empty() ? n : u));
             TEST_CHECK_EQUAL(choice->enabled(), enabled);
             TEST_CHECK_EQUAL(choice->enabled_by_default(), enabled_by_default);
@@ -950,8 +950,8 @@ namespace test_cases
                 const std::shared_ptr<const PackageID> no_files_id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("cat/no-files",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
-                TEST_CHECK(no_files_id);
-                TEST_CHECK(no_files_id->short_description_key());
+                TEST_CHECK(bool(no_files_id));
+                TEST_CHECK(bool(no_files_id->short_description_key()));
                 TEST_CHECK_EQUAL(no_files_id->short_description_key()->value(), "The Short Description");
                 no_files_id->perform_action(action);
             }
@@ -961,7 +961,7 @@ namespace test_cases
                 const std::shared_ptr<const PackageID> fetched_files_id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("cat/fetched-files",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
-                TEST_CHECK(fetched_files_id);
+                TEST_CHECK(bool(fetched_files_id));
                 TEST_CHECK((FSEntry("e_repository_TEST_dir") / "distdir" / "already-fetched.txt").is_regular_file());
                 fetched_files_id->perform_action(action);
                 TEST_CHECK((FSEntry("e_repository_TEST_dir") / "distdir" / "already-fetched.txt").is_regular_file());
@@ -973,7 +973,7 @@ namespace test_cases
                 const std::shared_ptr<const PackageID> fetchable_files_id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("cat/fetchable-files",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
-                TEST_CHECK(fetchable_files_id);
+                TEST_CHECK(bool(fetchable_files_id));
                 fetchable_files_id->perform_action(action);
                 TEST_CHECK((FSEntry("e_repository_TEST_dir") / "distdir" / "fetchable-1.txt").is_regular_file());
             }
@@ -984,7 +984,7 @@ namespace test_cases
                 const std::shared_ptr<const PackageID> arrow_files_id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("cat/arrow-files",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
-                TEST_CHECK(arrow_files_id);
+                TEST_CHECK(bool(arrow_files_id));
                 arrow_files_id->perform_action(action);
                 TEST_CHECK((FSEntry("e_repository_TEST_dir") / "distdir" / "arrowed.txt").is_regular_file());
             }
@@ -994,7 +994,7 @@ namespace test_cases
                 const std::shared_ptr<const PackageID> unfetchable_files_id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("cat/unfetchable-files",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
-                TEST_CHECK(unfetchable_files_id);
+                TEST_CHECK(bool(unfetchable_files_id));
                 TEST_CHECK_THROWS(unfetchable_files_id->perform_action(action), ActionFailedError);
             }
 
@@ -1002,7 +1002,7 @@ namespace test_cases
                 const std::shared_ptr<const PackageID> no_files_restricted_id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("cat/no-files-restricted",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
-                TEST_CHECK(no_files_restricted_id);
+                TEST_CHECK(bool(no_files_restricted_id));
                 no_files_restricted_id->perform_action(action);
             }
 
@@ -1010,7 +1010,7 @@ namespace test_cases
                 const std::shared_ptr<const PackageID> fetched_files_restricted_id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("cat/fetched-files-restricted",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
-                TEST_CHECK(fetched_files_restricted_id);
+                TEST_CHECK(bool(fetched_files_restricted_id));
                 fetched_files_restricted_id->perform_action(action);
             }
 
@@ -1018,7 +1018,7 @@ namespace test_cases
                 const std::shared_ptr<const PackageID> fetchable_files_restricted_id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("cat/fetchable-files-restricted",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
-                TEST_CHECK(fetchable_files_restricted_id);
+                TEST_CHECK(bool(fetchable_files_restricted_id));
                 TEST_CHECK_THROWS(fetchable_files_restricted_id->perform_action(action), ActionFailedError);
             }
         }
@@ -1057,7 +1057,7 @@ namespace test_cases
             const std::shared_ptr<const PackageID> id(*env[selection::AllVersionsSorted(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("category/package",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
-            TEST_CHECK(id);
+            TEST_CHECK(bool(id));
             repo->make_manifest(id->name());
             id->perform_action(action);
         }

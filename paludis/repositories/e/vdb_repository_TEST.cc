@@ -155,9 +155,9 @@ namespace test_cases
                             PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
-            TEST_CHECK(e1->choices_key());
-            TEST_CHECK(e1->choices_key()->value());
-            TEST_CHECK(e1->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix("flag1")));
+            TEST_CHECK(bool(e1->choices_key()));
+            TEST_CHECK(bool(e1->choices_key()->value()));
+            TEST_CHECK(bool(e1->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix("flag1"))));
             TEST_CHECK(e1->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix("flag1"))->enabled());
             TEST_CHECK(e1->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix("flag2"))->enabled());
             TEST_CHECK(! e1->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix("flag3"))->enabled());
@@ -284,17 +284,17 @@ namespace test_cases
             StringifyFormatter ff;
 
             erepository::DepSpecPrettyPrinter pd(0, std::shared_ptr<const PackageID>(), ff, 0, false, false);
-            TEST_CHECK(id->build_dependencies_key());
+            TEST_CHECK(bool(id->build_dependencies_key()));
             id->build_dependencies_key()->value()->root()->accept(pd);
             TEST_CHECK_STRINGIFY_EQUAL(pd, "( cat/pkg1 build: cat/pkg2 build+run: cat/pkg3 suggestion: post: )");
 
             erepository::DepSpecPrettyPrinter pr(0, std::shared_ptr<const PackageID>(), ff, 0, false, false);
-            TEST_CHECK(id->run_dependencies_key());
+            TEST_CHECK(bool(id->run_dependencies_key()));
             id->run_dependencies_key()->value()->root()->accept(pr);
             TEST_CHECK_STRINGIFY_EQUAL(pr, "( cat/pkg1 build: build+run: cat/pkg3 suggestion: post: )");
 
             erepository::DepSpecPrettyPrinter pp(0, std::shared_ptr<const PackageID>(), ff, 0, false, false);
-            TEST_CHECK(id->post_dependencies_key());
+            TEST_CHECK(bool(id->post_dependencies_key()));
             id->post_dependencies_key()->value()->root()->accept(pp);
             TEST_CHECK_STRINGIFY_EQUAL(pp, "( build: build+run: suggestion: cat/pkg4 post: cat/pkg5 )");
         }
@@ -383,7 +383,7 @@ namespace test_cases
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/target-" + eapi + "::srcrepo",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
-                TEST_CHECK(id);
+                TEST_CHECK(bool(id));
                 id->perform_action(install_action);
             }
 
@@ -394,7 +394,7 @@ namespace test_cases
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/target-" + eapi + "::srcrepo",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
-                TEST_CHECK(id);
+                TEST_CHECK(bool(id));
                 id->perform_action(install_action);
             }
 
@@ -405,7 +405,7 @@ namespace test_cases
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/target-" + eapi + "::installed",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
-                TEST_CHECK(id);
+                TEST_CHECK(bool(id));
                 id->perform_action(info_action);
             }
 
@@ -414,7 +414,7 @@ namespace test_cases
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/target-" + eapi + "::installed",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
-                TEST_CHECK(id);
+                TEST_CHECK(bool(id));
                 id->perform_action(config_action);
             }
 
@@ -423,7 +423,7 @@ namespace test_cases
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/target-" + eapi + "::installed",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
-                TEST_CHECK(id);
+                TEST_CHECK(bool(id));
                 id->perform_action(uninstall_action);
             }
         }
@@ -513,7 +513,7 @@ namespace test_cases
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/target-" + eapi + "::srcrepo",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
-                TEST_CHECK(id);
+                TEST_CHECK(bool(id));
                 id->perform_action(install_action);
             }
 
@@ -524,7 +524,7 @@ namespace test_cases
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/target-" + eapi + "::srcrepo",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
-                TEST_CHECK(id);
+                TEST_CHECK(bool(id));
                 id->perform_action(install_action);
             }
 
@@ -535,7 +535,7 @@ namespace test_cases
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/target-" + eapi + "::installed",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
-                TEST_CHECK(id);
+                TEST_CHECK(bool(id));
                 id->perform_action(info_action);
             }
 
@@ -544,7 +544,7 @@ namespace test_cases
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/target-" + eapi + "::installed",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
-                TEST_CHECK(id);
+                TEST_CHECK(bool(id));
                 id->perform_action(config_action);
             }
 
@@ -553,7 +553,7 @@ namespace test_cases
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/target-" + eapi + "::installed",
                                         &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
-                TEST_CHECK(id);
+                TEST_CHECK(bool(id));
                 id->perform_action(uninstall_action);
             }
         }

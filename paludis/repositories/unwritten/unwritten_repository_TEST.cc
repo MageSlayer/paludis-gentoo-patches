@@ -80,7 +80,7 @@ namespace test_cases
 
             std::shared_ptr<const PackageIDSequence> contents(
                     env[selection::AllVersionsSorted(generator::All())]);
-            TEST_CHECK(contents);
+            TEST_CHECK(bool(contents));
 
             TEST_CHECK_EQUAL(
                     join(indirect_iterator(contents->begin()), indirect_iterator(contents->end()), " "),

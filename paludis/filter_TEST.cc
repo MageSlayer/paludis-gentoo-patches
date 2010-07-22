@@ -91,13 +91,13 @@ namespace test_cases
             const std::string expected(get_expected());
             std::shared_ptr<const PackageIDSequence> got(env[selection::AllVersionsSorted(generator::All() | filter)]);
 
-            TEST_CHECK(got);
+            TEST_CHECK(bool(got));
             TEST_CHECK_EQUAL(join(indirect_iterator(got->begin()), indirect_iterator(got->end()), ", "), expected);
 
             std::shared_ptr<const PackageIDSequence> got_none(env[selection::AllVersionsSorted(
                         generator::Matches(parse_user_package_dep_spec("not/exist", &env,
                                 UserPackageDepSpecOptions()), MatchPackageOptions()) | filter)]);
-            TEST_CHECK(got_none);
+            TEST_CHECK(bool(got_none));
             TEST_CHECK_EQUAL(join(indirect_iterator(got_none->begin()), indirect_iterator(got_none->end()), ", "), "");
         }
     };

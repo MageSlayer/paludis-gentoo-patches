@@ -112,17 +112,17 @@ namespace test_cases
             StringifyFormatter ff;
 
             erepository::DepSpecPrettyPrinter pd(0, std::shared_ptr<const PackageID>(), ff, 0, false, false);
-            TEST_CHECK(id->build_dependencies_key());
+            TEST_CHECK(bool(id->build_dependencies_key()));
             id->build_dependencies_key()->value()->root()->accept(pd);
             TEST_CHECK_STRINGIFY_EQUAL(pd, "( cat/pkg1 build: cat/pkg2 build+run: cat/pkg3 suggestion: post: )");
 
             erepository::DepSpecPrettyPrinter pr(0, std::shared_ptr<const PackageID>(), ff, 0, false, false);
-            TEST_CHECK(id->run_dependencies_key());
+            TEST_CHECK(bool(id->run_dependencies_key()));
             id->run_dependencies_key()->value()->root()->accept(pr);
             TEST_CHECK_STRINGIFY_EQUAL(pr, "( cat/pkg1 build: build+run: cat/pkg3 suggestion: post: )");
 
             erepository::DepSpecPrettyPrinter pp(0, std::shared_ptr<const PackageID>(), ff, 0, false, false);
-            TEST_CHECK(id->post_dependencies_key());
+            TEST_CHECK(bool(id->post_dependencies_key()));
             id->post_dependencies_key()->value()->root()->accept(pp);
             TEST_CHECK_STRINGIFY_EQUAL(pp, "( build: build+run: suggestion: cat/pkg4 post: cat/pkg5 )");
         }

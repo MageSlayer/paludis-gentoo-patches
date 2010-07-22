@@ -143,7 +143,7 @@ namespace test_cases
             const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("cat/pkg",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
-            TEST_CHECK(id);
+            TEST_CHECK(bool(id));
 
             id->perform_action(action);
             TEST_CHECK_EQUAL(FSEntry(stringify(FSEntry::cwd() / "e_repository_TEST_symlink_rewriting_dir" / "root/bar")).readlink(), "/foo");

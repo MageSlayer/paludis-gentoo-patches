@@ -701,7 +701,7 @@ VALUE repo_to_value(T_ m, VALUE * klass)
 VALUE
 paludis::ruby::repository_to_value(std::shared_ptr<Repository> m)
 {
-    if (0 == m)
+    if (! m)
         return Qnil;
     else
         return repo_to_value<std::shared_ptr<Repository> >(m, &c_repository);

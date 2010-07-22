@@ -65,7 +65,7 @@ namespace test_cases
             TEST_CHECK_THROWS(p.fetch_repository(RepositoryName("repo2")), NoSuchRepositoryError);
 
             p.add_repository(10, r1);
-            TEST_CHECK(p.fetch_repository(RepositoryName("repo1")));
+            TEST_CHECK(bool(p.fetch_repository(RepositoryName("repo1"))));
             TEST_CHECK_EQUAL(p.fetch_repository(RepositoryName("repo1"))->name(),
                     RepositoryName("repo1"));
             TEST_CHECK_THROWS(p.fetch_repository(RepositoryName("repo2")), NoSuchRepositoryError);
@@ -73,20 +73,20 @@ namespace test_cases
             TEST_CHECK_THROWS(p.add_repository(10, r1), DuplicateRepositoryError);
 
             p.add_repository(11, r2);
-            TEST_CHECK(p.fetch_repository(RepositoryName("repo1")));
+            TEST_CHECK(bool(p.fetch_repository(RepositoryName("repo1"))));
             TEST_CHECK_EQUAL(p.fetch_repository(RepositoryName("repo1"))->name(),
                     RepositoryName("repo1"));
-            TEST_CHECK(p.fetch_repository(RepositoryName("repo2")));
+            TEST_CHECK(bool(p.fetch_repository(RepositoryName("repo2"))));
             TEST_CHECK_EQUAL(p.fetch_repository(RepositoryName("repo2"))->name(),
                     RepositoryName("repo2"));
 
             TEST_CHECK_THROWS(p.add_repository(10, r1), DuplicateRepositoryError);
             TEST_CHECK_THROWS(p.add_repository(5, r2), DuplicateRepositoryError);
 
-            TEST_CHECK(p.fetch_repository(RepositoryName("repo1")));
+            TEST_CHECK(bool(p.fetch_repository(RepositoryName("repo1"))));
             TEST_CHECK_EQUAL(p.fetch_repository(RepositoryName("repo1"))->name(),
                     RepositoryName("repo1"));
-            TEST_CHECK(p.fetch_repository(RepositoryName("repo2")));
+            TEST_CHECK(bool(p.fetch_repository(RepositoryName("repo2"))));
             TEST_CHECK_EQUAL(p.fetch_repository(RepositoryName("repo2"))->name(),
                     RepositoryName("repo2"));
 

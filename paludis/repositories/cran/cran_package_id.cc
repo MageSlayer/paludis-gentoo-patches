@@ -480,17 +480,17 @@ namespace
 
         bool visit(const SupportsActionTest<FetchAction> &) const
         {
-            return cran_repository;
+            return bool(cran_repository);
         }
 
         bool visit(const SupportsActionTest<PretendFetchAction> &) const
         {
-            return cran_repository;
+            return bool(cran_repository);
         }
 
         bool visit(const SupportsActionTest<InstallAction> &) const
         {
-            return cran_repository;
+            return bool(cran_repository);
         }
 
         bool visit(const SupportsActionTest<ConfigAction> &) const

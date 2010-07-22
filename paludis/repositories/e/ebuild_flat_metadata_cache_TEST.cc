@@ -79,7 +79,7 @@ namespace test_cases
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_list-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
-            TEST_CHECK(id->short_description_key());
+            TEST_CHECK(bool(id->short_description_key()));
             TEST_CHECK_EQUAL(id->short_description_key()->value(), "the-description-flat_list");
         }
     } test_metadata_flat_list_cached;
@@ -107,7 +107,7 @@ namespace test_cases
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_list-stale-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
-            TEST_CHECK(id1->short_description_key());
+            TEST_CHECK(bool(id1->short_description_key()));
             TEST_CHECK_EQUAL(id1->short_description_key()->value(), "The Generated Description flat_list-stale");
         }
     } test_metadata_flat_list_stale;
@@ -136,7 +136,7 @@ namespace test_cases
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_list-guessed-eapi-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
-            TEST_CHECK(id1->short_description_key());
+            TEST_CHECK(bool(id1->short_description_key()));
             TEST_CHECK_EQUAL(id1->short_description_key()->value(), "The Generated Description flat_list-guessed-eapi");
         }
     } test_metadata_flat_list_guessed_eapi;
@@ -164,7 +164,7 @@ namespace test_cases
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_list-eclass-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
-            TEST_CHECK(id->short_description_key());
+            TEST_CHECK(bool(id->short_description_key()));
             TEST_CHECK_EQUAL(id->short_description_key()->value(), "the-description-flat_list-eclass");
             TEST_CHECK_EQUAL(join(
                 simple_visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**id->find_metadata("INHERITED"))->value()->begin(),
@@ -195,7 +195,7 @@ namespace test_cases
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_list-eclass-stale-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
-            TEST_CHECK(id1->short_description_key());
+            TEST_CHECK(bool(id1->short_description_key()));
             TEST_CHECK_EQUAL(id1->short_description_key()->value(), "The Generated Description flat_list-eclass-stale");
         }
     } test_metadata_flat_list_eclass_stale;
@@ -223,7 +223,7 @@ namespace test_cases
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_list-eclass-wrong-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
-            TEST_CHECK(id1->short_description_key());
+            TEST_CHECK(bool(id1->short_description_key()));
             TEST_CHECK_EQUAL(id1->short_description_key()->value(), "The Generated Description flat_list-eclass-wrong");
         }
     } test_metadata_flat_list_eclass_wrong;
@@ -251,7 +251,7 @@ namespace test_cases
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_list-eclass-gone-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
-            TEST_CHECK(id1->short_description_key());
+            TEST_CHECK(bool(id1->short_description_key()));
             TEST_CHECK_EQUAL(id1->short_description_key()->value(), "The Generated Description flat_list-eclass-gone");
         }
     } test_metadata_flat_list_eclass_gone;
@@ -279,7 +279,7 @@ namespace test_cases
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_list-detection-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
-            TEST_CHECK(id->short_description_key());
+            TEST_CHECK(bool(id->short_description_key()));
             TEST_CHECK_EQUAL(id->short_description_key()->value(), "the-description-flat_list-detection");
         }
     } test_metadata_flat_list_detection;
@@ -307,7 +307,7 @@ namespace test_cases
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
-            TEST_CHECK(id->short_description_key());
+            TEST_CHECK(bool(id->short_description_key()));
             TEST_CHECK_EQUAL(id->short_description_key()->value(), "the-description-flat_hash");
         }
     } test_metadata_flat_hash_cached;
@@ -336,7 +336,7 @@ namespace test_cases
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-guessed-eapi-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
-            TEST_CHECK(id1->short_description_key());
+            TEST_CHECK(bool(id1->short_description_key()));
             TEST_CHECK_EQUAL(id1->short_description_key()->value(), "The Generated Description flat_hash-guessed-eapi");
         }
     } test_metadata_flat_hash_guessed_eapi;
@@ -364,7 +364,7 @@ namespace test_cases
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-guessed-eapi-extension-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
-            TEST_CHECK(id1->short_description_key());
+            TEST_CHECK(bool(id1->short_description_key()));
             TEST_CHECK_EQUAL(id1->short_description_key()->value(), "The Generated Description flat_hash-guessed-eapi-extension");
         }
     } test_metadata_flat_hash_guessed_eapi_extension;
@@ -392,7 +392,7 @@ namespace test_cases
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-no-guessed-eapi-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
-            TEST_CHECK(id->short_description_key());
+            TEST_CHECK(bool(id->short_description_key()));
             TEST_CHECK_EQUAL(id->short_description_key()->value(), "the-description-flat_hash-no-guessed-eapi");
         }
     } test_metadata_flat_hash_cached_no_guessed_eapi;
@@ -420,7 +420,7 @@ namespace test_cases
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-empty-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
-            TEST_CHECK(id->short_description_key());
+            TEST_CHECK(bool(id->short_description_key()));
             TEST_CHECK_EQUAL(id->short_description_key()->value(), "");
             TEST_CHECK_STRINGIFY_EQUAL(id->slot_key()->value(), "the-slot");
         }
@@ -449,7 +449,7 @@ namespace test_cases
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-stale-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
-            TEST_CHECK(id1->short_description_key());
+            TEST_CHECK(bool(id1->short_description_key()));
             TEST_CHECK_EQUAL(id1->short_description_key()->value(), "The Generated Description flat_hash-stale");
         }
     } test_metadata_flat_hash_stale;
@@ -477,7 +477,7 @@ namespace test_cases
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-no-mtime-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
-            TEST_CHECK(id1->short_description_key());
+            TEST_CHECK(bool(id1->short_description_key()));
             TEST_CHECK_EQUAL(id1->short_description_key()->value(), "the-description-flat_hash-no-mtime");
         }
     } test_metadata_flat_hash_no_mtime;
@@ -505,7 +505,7 @@ namespace test_cases
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-no-mtime-stale-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
-            TEST_CHECK(id1->short_description_key());
+            TEST_CHECK(bool(id1->short_description_key()));
             TEST_CHECK_EQUAL(id1->short_description_key()->value(), "The Generated Description flat_hash-no-mtime-stale");
         }
     } test_metadata_flat_hash_no_mtime_stale;
@@ -533,7 +533,7 @@ namespace test_cases
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-bad-mtime-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
-            TEST_CHECK(id1->short_description_key());
+            TEST_CHECK(bool(id1->short_description_key()));
             TEST_CHECK_EQUAL(id1->short_description_key()->value(), "The Generated Description flat_hash-bad-mtime");
         }
     } test_metadata_flat_hash_bad_mtime;
@@ -561,7 +561,7 @@ namespace test_cases
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-no-eapi-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
-            TEST_CHECK(id1->short_description_key());
+            TEST_CHECK(bool(id1->short_description_key()));
             TEST_CHECK_EQUAL(id1->short_description_key()->value(), "The Generated Description flat_hash-no-eapi");
         }
     } test_metadata_flat_hash_no_eapi;
@@ -589,7 +589,7 @@ namespace test_cases
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-duplicate-key-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
-            TEST_CHECK(id1->short_description_key());
+            TEST_CHECK(bool(id1->short_description_key()));
             TEST_CHECK_EQUAL(id1->short_description_key()->value(), "The Generated Description flat_hash-duplicate-key");
         }
     } test_metadata_flat_hash_duplicate_key;
@@ -617,7 +617,7 @@ namespace test_cases
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-eclass-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
-            TEST_CHECK(id->short_description_key());
+            TEST_CHECK(bool(id->short_description_key()));
             TEST_CHECK_EQUAL(id->short_description_key()->value(), "the-description-flat_hash-eclass");
             TEST_CHECK_EQUAL(join(
                 simple_visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**id->find_metadata("INHERITED"))->value()->begin(),
@@ -648,7 +648,7 @@ namespace test_cases
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-eclass-stale-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
-            TEST_CHECK(id->short_description_key());
+            TEST_CHECK(bool(id->short_description_key()));
             TEST_CHECK_EQUAL(id->short_description_key()->value(), "The Generated Description flat_hash-eclass-stale");
         }
     } test_metadata_flat_hash_eclass_stale;
@@ -676,7 +676,7 @@ namespace test_cases
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-eclass-wrong-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
-            TEST_CHECK(id->short_description_key());
+            TEST_CHECK(bool(id->short_description_key()));
             TEST_CHECK_EQUAL(id->short_description_key()->value(), "The Generated Description flat_hash-eclass-wrong");
         }
     } test_metadata_flat_hash_eclass_wrong;
@@ -703,7 +703,7 @@ namespace test_cases
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-eclass-gone-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
-            TEST_CHECK(id->short_description_key());
+            TEST_CHECK(bool(id->short_description_key()));
             TEST_CHECK_EQUAL(id->short_description_key()->value(), "The Generated Description flat_hash-eclass-gone");
         }
     } test_metadata_flat_hash_eclass_gone;
@@ -731,7 +731,7 @@ namespace test_cases
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-full-eclass-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
-            TEST_CHECK(id->short_description_key());
+            TEST_CHECK(bool(id->short_description_key()));
             TEST_CHECK_EQUAL(id->short_description_key()->value(), "the-description-flat_hash-full-eclass");
             TEST_CHECK_EQUAL(join(
                 simple_visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**id->find_metadata("INHERITED"))->value()->begin(),
@@ -762,7 +762,7 @@ namespace test_cases
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-full-eclass-nonstandard-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
-            TEST_CHECK(id->short_description_key());
+            TEST_CHECK(bool(id->short_description_key()));
             TEST_CHECK_EQUAL(id->short_description_key()->value(), "the-description-flat_hash-full-eclass-nonstandard");
             TEST_CHECK_EQUAL(join(
                 simple_visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**id->find_metadata("INHERITED"))->value()->begin(),
@@ -793,7 +793,7 @@ namespace test_cases
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-full-eclass-stale-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
-            TEST_CHECK(id->short_description_key());
+            TEST_CHECK(bool(id->short_description_key()));
             TEST_CHECK_EQUAL(id->short_description_key()->value(), "The Generated Description flat_hash-full-eclass-stale");
         }
     } test_metadata_flat_hash_full_eclass_stale;
@@ -821,7 +821,7 @@ namespace test_cases
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-full-eclass-wrong-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
-            TEST_CHECK(id->short_description_key());
+            TEST_CHECK(bool(id->short_description_key()));
             TEST_CHECK_EQUAL(id->short_description_key()->value(), "The Generated Description flat_hash-full-eclass-wrong");
         }
     } test_metadata_flat_hash_full_eclass_wrong;
@@ -849,7 +849,7 @@ namespace test_cases
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-full-eclass-gone-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
-            TEST_CHECK(id->short_description_key());
+            TEST_CHECK(bool(id->short_description_key()));
             TEST_CHECK_EQUAL(id->short_description_key()->value(), "The Generated Description flat_hash-full-eclass-gone");
         }
     } test_metadata_flat_hash_full_eclass_gone;
@@ -877,14 +877,14 @@ namespace test_cases
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-eclasses-truncated-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
-            TEST_CHECK(id->short_description_key());
+            TEST_CHECK(bool(id->short_description_key()));
             TEST_CHECK_EQUAL(id->short_description_key()->value(), "The Generated Description flat_hash-eclasses-truncated");
 
             std::shared_ptr<const PackageID> id2(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-eclasses-truncated-2",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
-            TEST_CHECK(id2->short_description_key());
+            TEST_CHECK(bool(id2->short_description_key()));
             TEST_CHECK_EQUAL(id2->short_description_key()->value(), "The Generated Description flat_hash-eclasses-truncated-2");
         }
     } test_metadata_flat_hash_eclasses_truncated;
@@ -912,7 +912,7 @@ namespace test_cases
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-eclasses-bad-mtime-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
-            TEST_CHECK(id->short_description_key());
+            TEST_CHECK(bool(id->short_description_key()));
             TEST_CHECK_EQUAL(id->short_description_key()->value(), "The Generated Description flat_hash-eclasses-bad-mtime");
         }
     } test_metadata_flat_hash_eclasses_bad_mtime;
@@ -940,7 +940,7 @@ namespace test_cases
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-eclasses-spaces-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
-            TEST_CHECK(id->short_description_key());
+            TEST_CHECK(bool(id->short_description_key()));
             TEST_CHECK_EQUAL(id->short_description_key()->value(), "The Generated Description flat_hash-eclasses-spaces");
         }
     } test_metadata_flat_hash_eclasses_spaces;
@@ -969,7 +969,7 @@ namespace test_cases
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-exlib-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
-            TEST_CHECK(id->short_description_key());
+            TEST_CHECK(bool(id->short_description_key()));
             TEST_CHECK_EQUAL(id->short_description_key()->value(), "the-description-flat_hash-exlib");
             TEST_CHECK_EQUAL(join(
                 simple_visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**id->find_metadata("INHERITED"))->value()->begin(),
@@ -1001,7 +1001,7 @@ namespace test_cases
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-exlib-percat-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
-            TEST_CHECK(id->short_description_key());
+            TEST_CHECK(bool(id->short_description_key()));
             TEST_CHECK_EQUAL(id->short_description_key()->value(), "the-description-flat_hash-exlib-percat");
             TEST_CHECK_EQUAL(join(
                 simple_visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**id->find_metadata("INHERITED"))->value()->begin(),
@@ -1033,7 +1033,7 @@ namespace test_cases
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-exlib-stale-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
-            TEST_CHECK(id->short_description_key());
+            TEST_CHECK(bool(id->short_description_key()));
             TEST_CHECK_EQUAL(id->short_description_key()->value(), "The Generated Description flat_hash-exlib-stale");
         }
     } test_metadata_flat_hash_exlib_stale;
@@ -1062,7 +1062,7 @@ namespace test_cases
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-exlib-wrong-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
-            TEST_CHECK(id->short_description_key());
+            TEST_CHECK(bool(id->short_description_key()));
             TEST_CHECK_EQUAL(id->short_description_key()->value(), "The Generated Description flat_hash-exlib-wrong");
         }
     } test_metadata_flat_hash_exlib_wrong;
@@ -1091,7 +1091,7 @@ namespace test_cases
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-exlib-gone-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
-            TEST_CHECK(id->short_description_key());
+            TEST_CHECK(bool(id->short_description_key()));
             TEST_CHECK_EQUAL(id->short_description_key()->value(), "The Generated Description flat_hash-exlib-gone");
         }
     } test_metadata_flat_hash_exlib_gone;
@@ -1120,14 +1120,14 @@ namespace test_cases
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-exlibs-truncated-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
-            TEST_CHECK(id->short_description_key());
+            TEST_CHECK(bool(id->short_description_key()));
             TEST_CHECK_EQUAL(id->short_description_key()->value(), "The Generated Description flat_hash-exlibs-truncated");
 
             std::shared_ptr<const PackageID> id2(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-exlibs-truncated-2",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
-            TEST_CHECK(id2->short_description_key());
+            TEST_CHECK(bool(id2->short_description_key()));
             TEST_CHECK_EQUAL(id2->short_description_key()->value(), "The Generated Description flat_hash-exlibs-truncated-2");
         }
     } test_metadata_flat_hash_exlibs_truncated;
@@ -1156,7 +1156,7 @@ namespace test_cases
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-exlibs-bad-mtime-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
-            TEST_CHECK(id->short_description_key());
+            TEST_CHECK(bool(id->short_description_key()));
             TEST_CHECK_EQUAL(id->short_description_key()->value(), "The Generated Description flat_hash-exlibs-bad-mtime");
         }
     } test_metadata_flat_hash_exlibs_bad_mtime;
@@ -1185,7 +1185,7 @@ namespace test_cases
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-exlibs-spaces-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
-            TEST_CHECK(id->short_description_key());
+            TEST_CHECK(bool(id->short_description_key()));
             TEST_CHECK_EQUAL(id->short_description_key()->value(), "The Generated Description flat_hash-exlibs-spaces");
         }
     } test_metadata_flat_hash_exlibs_spaces;
@@ -1220,7 +1220,7 @@ namespace test_cases
                             PackageDepSpec(parse_user_package_dep_spec("=cat/write-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
-            TEST_CHECK(id->short_description_key());
+            TEST_CHECK(bool(id->short_description_key()));
             TEST_CHECK_EQUAL(contents("ebuild_flat_metadata_cache_TEST_dir/cache/test-repo/cat/write-1"), contents("ebuild_flat_metadata_cache_TEST_dir/cache/expected/cat/write-1"));
             TEST_CHECK_EQUAL(FSEntry("ebuild_flat_metadata_cache_TEST_dir/cache/test-repo/cat/write-1").mtim().seconds(), 60);
         }
@@ -1256,7 +1256,7 @@ namespace test_cases
                             PackageDepSpec(parse_user_package_dep_spec("=cat/write-eapi1-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
-            TEST_CHECK(id->short_description_key());
+            TEST_CHECK(bool(id->short_description_key()));
             TEST_CHECK_EQUAL(contents("ebuild_flat_metadata_cache_TEST_dir/cache/test-repo/cat/write-eapi1-1"), contents("ebuild_flat_metadata_cache_TEST_dir/cache/expected/cat/write-eapi1-1"));
             TEST_CHECK_EQUAL(FSEntry("ebuild_flat_metadata_cache_TEST_dir/cache/test-repo/cat/write-eapi1-1").mtim().seconds(), 60);
         }
@@ -1294,7 +1294,7 @@ namespace test_cases
                             PackageDepSpec(parse_user_package_dep_spec("=cat/write-eclasses-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
-            TEST_CHECK(id->short_description_key());
+            TEST_CHECK(bool(id->short_description_key()));
             TEST_CHECK_EQUAL(contents("ebuild_flat_metadata_cache_TEST_dir/cache/test-repo/cat/write-eclasses-1"), contents("ebuild_flat_metadata_cache_TEST_dir/cache/expected/cat/write-eclasses-1"));
             TEST_CHECK_EQUAL(FSEntry("ebuild_flat_metadata_cache_TEST_dir/cache/test-repo/cat/write-eclasses-1").mtim().seconds(), 60);
         }
@@ -1331,7 +1331,7 @@ namespace test_cases
                             PackageDepSpec(parse_user_package_dep_spec("=cat/write-exlibs-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
 
-            TEST_CHECK(id->short_description_key());
+            TEST_CHECK(bool(id->short_description_key()));
             TEST_CHECK_EQUAL(contents("ebuild_flat_metadata_cache_TEST_dir/cache/test-repo/cat/write-exlibs-1"), contents("ebuild_flat_metadata_cache_TEST_dir/cache/expected/cat/write-exlibs-1"));
             TEST_CHECK_EQUAL(FSEntry("ebuild_flat_metadata_cache_TEST_dir/cache/test-repo/cat/write-exlibs-1").mtim().seconds(), 60);
         }

@@ -715,7 +715,7 @@ namespace
         bool visit(const ExistingNoChangeDecision & decision) const
         {
             if (ignore_dep_from(env, resolution_options, no_blockers_from, no_dependencies_from,
-                        decision.existing_id(), dep.spec().if_block()))
+                        decision.existing_id(), bool(dep.spec().if_block())))
                 return false;
 
             if (! is_enabled_dep(dep))
@@ -770,7 +770,7 @@ namespace
         bool visit(const ChangesToMakeDecision & decision) const
         {
             if (ignore_dep_from(env, resolution_options, no_blockers_from,
-                        no_dependencies_from, decision.origin_id(), dep.spec().if_block()))
+                        no_dependencies_from, decision.origin_id(), bool(dep.spec().if_block())))
                 return false;
 
             if (is_enabled_dep(dep))

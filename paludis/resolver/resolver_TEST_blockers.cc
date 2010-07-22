@@ -389,9 +389,9 @@ namespace test_cases
                         .finished());
             }
 
-            TEST_CHECK(checks);
-            TEST_CHECK(u_checks);
-            TEST_CHECK(o_checks);
+            TEST_CHECK(bool(checks));
+            TEST_CHECK(bool(u_checks));
+            TEST_CHECK(bool(o_checks));
 
             check_resolved(resolved,
                     n::taken_change_or_remove_decisions() = checks,
