@@ -35,6 +35,7 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/standard_output_manager.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <algorithm>
@@ -53,7 +54,7 @@ namespace
 
     std::shared_ptr<OutputManager> make_standard_output_manager(const Action &)
     {
-        return make_shared_ptr(new StandardOutputManager);
+        return std::make_shared<StandardOutputManager>();
     }
 
     struct ContentsDumper
@@ -410,7 +411,7 @@ namespace test_cases
                             n::destination() = repo,
                             n::make_output_manager() = &make_standard_output_manager,
                             n::perform_uninstall() = &cannot_uninstall,
-                            n::replacing() = make_shared_ptr(new PackageIDSequence),
+                            n::replacing() = std::make_shared<PackageIDSequence>(),
                             n::want_phase() = &want_all_phases
                         ));
                 (*env[selection::RequireExactlyOne(generator::InRepository(RepositoryName("unpackaged")))]->begin())->perform_action(action);
@@ -467,7 +468,7 @@ namespace test_cases
                             n::destination() = repo,
                             n::make_output_manager() = &make_standard_output_manager,
                             n::perform_uninstall() = &cannot_uninstall,
-                            n::replacing() = make_shared_ptr(new PackageIDSequence),
+                            n::replacing() = std::make_shared<PackageIDSequence>(),
                             n::want_phase() = &want_all_phases
                         ));
                 (*env[selection::RequireExactlyOne(generator::InRepository(RepositoryName("unpackaged")))]->begin())->perform_action(action);
@@ -527,7 +528,7 @@ namespace test_cases
                             n::destination() = repo,
                             n::make_output_manager() = &make_standard_output_manager,
                             n::perform_uninstall() = &cannot_uninstall,
-                            n::replacing() = make_shared_ptr(new PackageIDSequence),
+                            n::replacing() = std::make_shared<PackageIDSequence>(),
                             n::want_phase() = &want_all_phases
                         ));
                 (*env[selection::RequireExactlyOne(generator::InRepository(RepositoryName("unpackaged")))]->begin())->perform_action(action);

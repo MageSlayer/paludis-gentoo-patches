@@ -22,9 +22,9 @@
 
 #include <paludis/action.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/return_literal_function.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/standard_output_manager.hh>
 #include <paludis/repository.hh>
 #include <memory>
@@ -60,7 +60,7 @@ namespace
 
     std::shared_ptr<OutputManager> make_standard_output_manager(const Action &)
     {
-        return make_shared_ptr(new StandardOutputManager);
+        return std::make_shared<StandardOutputManager>();
     }
 
     void cannot_perform_uninstall(const std::shared_ptr<const PackageID> & id, const UninstallActionOptions &)
@@ -80,7 +80,7 @@ namespace
                     n::destination() = r,
                     n::make_output_manager() = &make_standard_output_manager,
                     n::perform_uninstall() = &cannot_perform_uninstall,
-                    n::replacing() = make_shared_ptr(new PackageIDSequence),
+                    n::replacing() = std::make_shared<PackageIDSequence>(),
                     n::want_phase() = &want_all_phases
                     ));
     }
@@ -130,7 +130,7 @@ namespace
             parts += fp_unneeded;
 
         return new FetchActionOptions(make_named_values<FetchActionOptions>(
-                    n::errors() = make_shared_ptr(new Sequence<FetchActionFailure>),
+                    n::errors() = std::make_shared<Sequence<FetchActionFailure>>(),
                     n::exclude_unmirrorable() = exclude_unmirrorable,
                     n::fetch_parts() = parts,
                     n::ignore_not_in_manifest() = false,

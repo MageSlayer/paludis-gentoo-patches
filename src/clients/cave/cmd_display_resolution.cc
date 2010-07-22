@@ -25,7 +25,6 @@
 #include "colour_formatter.hh"
 #include "match_qpns.hh"
 #include <paludis/args/do_help.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/destringify.hh>
@@ -40,6 +39,7 @@
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/pretty_print.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/resolver/resolutions_by_resolvent.hh>
 #include <paludis/resolver/reason.hh>
 #include <paludis/resolver/sanitised_dependencies.hh>
@@ -608,8 +608,7 @@ namespace
                 if (show_description)
                     choices_to_explain.insert(std::make_pair((*k)->human_name(),
                                 ChoiceValuesToExplain())).first->second.insert(std::make_pair(
-                                (*i)->name_with_prefix(), make_shared_ptr(
-                                    new PackageIDSequence))).first->second->push_back(id);
+                                (*i)->name_with_prefix(), std::make_shared<PackageIDSequence>())).first->second->push_back(id);
             }
         }
 
@@ -1561,6 +1560,6 @@ DisplayResolutionCommand::run(
 std::shared_ptr<args::ArgsHandler>
 DisplayResolutionCommand::make_doc_cmdline()
 {
-    return make_shared_ptr(new DisplayResolutionCommandLine);
+    return std::make_shared<DisplayResolutionCommandLine>();
 }
 

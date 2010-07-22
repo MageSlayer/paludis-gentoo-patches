@@ -25,7 +25,6 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/set.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/timestamp.hh>
 #include <paludis/hook.hh>
 #include <test/test_framework.hh>
@@ -180,7 +179,7 @@ namespace
                             n::get_new_ids_or_minus_one() = &get_new_ids_or_minus_one,
                             n::image() = image_dir,
                             n::install_under() = FSEntry("/"),
-                            n::merged_entries() = make_shared_ptr(new FSEntrySet),
+                            n::merged_entries() = std::make_shared<FSEntrySet>(),
                             n::no_chown() = true,
                             n::options() = MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs,
                             n::root() = root_dir
@@ -201,7 +200,7 @@ namespace
                         n::get_new_ids_or_minus_one() = &get_new_ids_or_minus_one,
                         n::image() = image_dir,
                         n::install_under() = FSEntry("/"),
-                        n::merged_entries() = make_shared_ptr(new FSEntrySet),
+                        n::merged_entries() = std::make_shared<FSEntrySet>(),
                         n::no_chown() = true,
                         n::options() = o,
                         n::root() = root_dir

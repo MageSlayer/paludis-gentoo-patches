@@ -22,7 +22,6 @@
 #include "exceptions.hh"
 #include <paludis/args/args.hh>
 #include <paludis/args/do_help.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/iterator_funcs.hh>
@@ -146,6 +145,6 @@ PrintRepositoryMetadataCommand::run(
 std::shared_ptr<args::ArgsHandler>
 PrintRepositoryMetadataCommand::make_doc_cmdline()
 {
-    return make_shared_ptr(new PrintRepositoryMetadataCommandLine);
+    return std::make_shared<PrintRepositoryMetadataCommandLine>();
 }
 

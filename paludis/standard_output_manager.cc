@@ -19,7 +19,6 @@
 
 #include <paludis/standard_output_manager.hh>
 #include <paludis/util/set.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <iostream>
 
 using namespace paludis;
@@ -84,6 +83,6 @@ StandardOutputManager::factory_create(
         const OutputManagerFactory::CreateChildFunction &,
         const OutputManagerFactory::ReplaceVarsFunc &)
 {
-    return make_shared_ptr(new StandardOutputManager);
+    return std::make_shared<StandardOutputManager>();
 }
 

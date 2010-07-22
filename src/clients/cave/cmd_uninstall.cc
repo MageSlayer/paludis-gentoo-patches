@@ -22,10 +22,10 @@
 #include "resolve_common.hh"
 #include "exceptions.hh"
 
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/selection.hh>
 #include <paludis/generator.hh>
@@ -62,10 +62,10 @@ namespace
             g_target_options(main_options_section(), "Target options", "Target options"),
             a_all_versions(&g_target_options, "all-versions", 'a', "If a supplied spec matches multiple versions, "
                     "uninstall all versions rather than erroring", true),
-            resolution_options(for_docs ? make_null_shared_ptr() : make_shared_ptr(new ResolveCommandLineResolutionOptions(this))),
-            execution_options(for_docs ? make_null_shared_ptr() : make_shared_ptr(new ResolveCommandLineExecutionOptions(this))),
-            display_options(for_docs ? make_null_shared_ptr() : make_shared_ptr(new ResolveCommandLineDisplayOptions(this))),
-            program_options(for_docs ? make_null_shared_ptr() : make_shared_ptr(new ResolveCommandLineProgramOptions(this)))
+            resolution_options(for_docs ? make_null_shared_ptr() : std::make_shared<ResolveCommandLineResolutionOptions>(this)),
+            execution_options(for_docs ? make_null_shared_ptr() : std::make_shared<ResolveCommandLineExecutionOptions>(this)),
+            display_options(for_docs ? make_null_shared_ptr() : std::make_shared<ResolveCommandLineDisplayOptions>(this)),
+            program_options(for_docs ? make_null_shared_ptr() : std::make_shared<ResolveCommandLineProgramOptions>(this))
         {
             add_usage_line("[ -x|--execute ] [ --uninstalls-may-break */* ] [ --remove-if-dependent */* ] spec ...");
             add_note("All options available for 'cave resolve' are also permitted. See 'man cave-resolve' for details.");
@@ -192,6 +192,6 @@ UninstallCommand::run(
 std::shared_ptr<args::ArgsHandler>
 UninstallCommand::make_doc_cmdline()
 {
-    return make_shared_ptr(new UninstallCommandLine(true));
+    return std::make_shared<UninstallCommandLine>(true);
 }
 

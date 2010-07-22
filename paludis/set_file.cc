@@ -322,7 +322,7 @@ SimpleHandler::_create_contents() const
 {
     Context context("When parsing atoms in simple set file '" + stringify(_p.file_name()) + "':");
 
-    _contents.reset(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
+    _contents.reset(new SetSpecTree(std::make_shared<AllDepSpec>()));
     for (std::list<std::string>::const_iterator i(_lines.begin()), i_end(_lines.end()) ;
             i != i_end ; ++i)
     {
@@ -451,7 +451,7 @@ PaludisConfHandler::_create_contents() const
 {
     Context context("When parsing atoms in paludis conf set file '" + stringify(_p.file_name()) + "':");
 
-    _contents.reset(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
+    _contents.reset(new SetSpecTree(std::make_shared<AllDepSpec>()));
     for (std::list<std::string>::const_iterator i(_lines.begin()), i_end(_lines.end()) ;
             i != i_end ; ++i)
         do_one_conf_line(*i, _contents, _p);
@@ -532,7 +532,7 @@ PaludisBashHandler::PaludisBashHandler(const SetFileParams & p) :
     _p(p)
 {
     Context context("When loading paludis bash set file '" + stringify(_p.file_name()) + "':");
-    _contents.reset(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
+    _contents.reset(new SetSpecTree(std::make_shared<AllDepSpec>()));
 
     std::stringstream s;
     Command cmd(Command("bash '" + stringify(_p.file_name()) + "'")
@@ -556,7 +556,7 @@ PaludisBashHandler::PaludisBashHandler(const SetFileParams & p) :
         Log::get_instance()->message("set_file.script.failure", ll_warning, lc_context)
             << "Set file script '" << _p.file_name() << "' returned non-zero exit status '"
             << exit_status << "'";
-        _contents.reset(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
+        _contents.reset(new SetSpecTree(std::make_shared<AllDepSpec>()));
     }
 }
 

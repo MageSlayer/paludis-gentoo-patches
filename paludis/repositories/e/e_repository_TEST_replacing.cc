@@ -23,7 +23,6 @@
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/map.hh>
@@ -59,7 +58,7 @@ namespace
 
     std::shared_ptr<OutputManager> make_standard_output_manager(const Action &)
     {
-        return make_shared_ptr(new StandardOutputManager);
+        return std::make_shared<StandardOutputManager>();
     }
 
     std::string from_keys(const std::shared_ptr<const Map<std::string, std::string> > & m,

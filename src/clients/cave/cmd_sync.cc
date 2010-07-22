@@ -21,7 +21,6 @@
 #include "exceptions.hh"
 #include "formats.hh"
 #include "format_general.hh"
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/package_database.hh>
 #include <paludis/util/action_queue.hh>
 #include <paludis/util/mutex.hh>
@@ -412,6 +411,6 @@ SyncCommand::run(
 std::shared_ptr<args::ArgsHandler>
 SyncCommand::make_doc_cmdline()
 {
-    return make_shared_ptr(new SyncCommandLine);
+    return std::make_shared<SyncCommandLine>();
 }
 

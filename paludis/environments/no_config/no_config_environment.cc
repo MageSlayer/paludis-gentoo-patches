@@ -26,7 +26,6 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/create_iterator-impl.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/wrapped_output_iterator-impl.hh>
@@ -529,7 +528,7 @@ NoConfigEnvironment::reduced_gid() const
 std::shared_ptr<const MirrorsSequence>
 NoConfigEnvironment::mirrors(const std::string &) const
 {
-    return make_shared_ptr(new MirrorsSequence);
+    return std::make_shared<MirrorsSequence>();
 }
 
 bool
@@ -553,7 +552,7 @@ NoConfigEnvironment::perform_hook(const Hook &) const
 std::shared_ptr<const FSEntrySequence>
 NoConfigEnvironment::hook_dirs() const
 {
-    return make_shared_ptr(new FSEntrySequence);
+    return std::make_shared<FSEntrySequence>();
 }
 
 void
@@ -599,13 +598,13 @@ NoConfigEnvironment::known_choice_value_names(
         const std::shared_ptr<const Choice> &
         ) const
 {
-    return make_shared_ptr(new Set<UnprefixedChoiceName>);
+    return std::make_shared<Set<UnprefixedChoiceName>>();
 }
 
 const std::shared_ptr<OutputManager>
 NoConfigEnvironment::create_output_manager(const CreateOutputManagerInfo &) const
 {
-    return make_shared_ptr(new StandardOutputManager);
+    return std::make_shared<StandardOutputManager>();
 }
 
 void

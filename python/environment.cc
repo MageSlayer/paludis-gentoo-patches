@@ -33,8 +33,8 @@
 #include <paludis/spec_tree.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/tribool.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/standard_output_manager.hh>
 
 using namespace paludis;
@@ -435,7 +435,7 @@ class EnvironmentImplementationWrapper :
         virtual const std::shared_ptr<OutputManager> create_output_manager(
                 const CreateOutputManagerInfo &) const
         {
-            return make_shared_ptr(new StandardOutputManager);
+            return std::make_shared<StandardOutputManager>();
         }
 
         virtual const std::shared_ptr<Repository> repository_from_new_config_file(
@@ -712,7 +712,7 @@ void expose_environment()
          bp::init<const FSEntry &, const FSEntry &, const std::string &, const std::shared_ptr<const FSEntrySequence> &>(
              (bp::arg("environment_dir"), bp::arg("write_cache_dir")="/var/empty",
               bp::arg("master_repository_name")="",
-              bp::arg("extra_repository_dirs") = make_shared_ptr(new FSEntrySequence)),
+              bp::arg("extra_repository_dirs") = std::make_shared<FSEntrySequence>()),
              "__init__(environment_dir, write_cache_dir=\"/var/empty\", "
              "master_repository_name=\"\", extra_repository_dirs=[])"
              )

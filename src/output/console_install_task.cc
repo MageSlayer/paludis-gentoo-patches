@@ -26,7 +26,6 @@
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/pretty_print.hh>
 #include <paludis/util/safe_ofstream.hh>

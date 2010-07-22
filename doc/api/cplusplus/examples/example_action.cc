@@ -32,7 +32,7 @@ namespace
      * to use the user's preferences for logging etc. */
     std::shared_ptr<OutputManager> make_standard_output_manager(const Action &)
     {
-        return make_shared_ptr(new StandardOutputManager);
+        return std::make_shared<StandardOutputManager>();
     }
 }
 

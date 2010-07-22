@@ -23,7 +23,6 @@
 #include <paludis/args/args.hh>
 #include <paludis/args/do_help.hh>
 #include <paludis/util/iterator_funcs.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
@@ -289,6 +288,6 @@ ImportCommand::run(
 std::shared_ptr<args::ArgsHandler>
 ImportCommand::make_doc_cmdline()
 {
-    return make_shared_ptr(new ImportCommandLine);
+    return std::make_shared<ImportCommandLine>();
 }
 

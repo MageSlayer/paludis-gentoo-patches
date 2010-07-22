@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -44,7 +44,7 @@ namespace
         Context context("When making " + std::string(slots ? "installed-slots" : "installed-packages") +
                 " set from '" + stringify(repo->name()) + "':");
 
-        std::shared_ptr<SetSpecTree> result(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
+        std::shared_ptr<SetSpecTree> result(new SetSpecTree(std::make_shared<AllDepSpec>()));
 
         std::shared_ptr<const PackageIDSequence> ids;
         if (slots)
@@ -55,17 +55,17 @@ namespace
         for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                 i != i_end ; ++i)
             if (slots && (*i)->slot_key())
-                result->root()->append(make_shared_ptr(new PackageDepSpec(
+                result->root()->append(std::make_shared<PackageDepSpec>(
                                 make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
                                 .package((*i)->name())
-                                .slot_requirement(make_shared_ptr(new ELikeSlotExactRequirement(
-                                            (*i)->slot_key()->value(), false)))
-                                )));
+                                .slot_requirement(std::make_shared<ELikeSlotExactRequirement>(
+                                            (*i)->slot_key()->value(), false))
+                                ));
             else
-                result->root()->append(make_shared_ptr(new PackageDepSpec(
+                result->root()->append(std::make_shared<PackageDepSpec>(
                                 make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
                                 .package((*i)->name())
-                                )));
+                                ));
 
         return result;
     }

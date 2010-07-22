@@ -42,8 +42,8 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/elike_slot_requirement.hh>
 #include <paludis/selection.hh>
@@ -255,7 +255,7 @@ ERepositorySets::security_set(bool insecurity) const
 {
     Context context("When building security or insecurity package set:");
 
-    std::shared_ptr<SetSpecTree> security_packages(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
+    std::shared_ptr<SetSpecTree> security_packages(new SetSpecTree(std::make_shared<AllDepSpec>()));
 
     if (!_imp->params.securitydir().is_directory_or_symlink_to_directory())
         return security_packages;

@@ -23,13 +23,13 @@
 #include "format_string.hh"
 #include <paludis/args/args.hh>
 #include <paludis/args/do_help.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/environment.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/user_dep_spec.hh>
@@ -208,6 +208,6 @@ PrintIDMasksCommand::run(
 std::shared_ptr<args::ArgsHandler>
 PrintIDMasksCommand::make_doc_cmdline()
 {
-    return make_shared_ptr(new PrintIDMasksCommandLine);
+    return std::make_shared<PrintIDMasksCommandLine>();
 }
 

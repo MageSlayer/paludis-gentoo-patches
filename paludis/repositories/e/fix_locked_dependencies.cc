@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -22,7 +22,6 @@
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
@@ -62,7 +61,7 @@ namespace
         const std::shared_ptr<const PackageID> id;
 
         Fixer(const Environment * const e, const EAPI & a, const std::shared_ptr<const PackageID> & i) :
-            result(new DependencySpecTree(make_shared_ptr(new AllDepSpec))),
+            result(new DependencySpecTree(std::make_shared<AllDepSpec>())),
             env(e),
             eapi(a),
             id(i)
@@ -115,7 +114,7 @@ namespace
                 if ((*matches->last())->slot_key())
                 {
                     PackageDepSpec new_s(PartiallyMadePackageDepSpec(*node.spec()).slot_requirement(
-                                make_shared_ptr(new ELikeSlotExactRequirement((*matches->last())->slot_key()->value(), true))));
+                                std::make_shared<ELikeSlotExactRequirement>((*matches->last())->slot_key()->value(), true)));
                     c.reset(new PackageDepSpec(new_s));
                 }
             } while (false);

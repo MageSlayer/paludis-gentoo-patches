@@ -392,40 +392,40 @@ Reason::deserialise(Deserialisation & d)
     if (d.class_name() == "TargetReason")
     {
         Deserialisator v(d, "TargetReason");
-        return make_shared_ptr(new TargetReason(v.member<std::string>("extra_information")));
+        return std::make_shared<TargetReason>(v.member<std::string>("extra_information"));
     }
     else if (d.class_name() == "PresetReason")
     {
         Deserialisator v(d, "PresetReason");
-        return make_shared_ptr(new PresetReason(
+        return std::make_shared<PresetReason>(
                     v.member<std::string>("maybe_explanation"),
                     v.member<std::shared_ptr<Reason> >("maybe_reason_for_preset")
-                    ));
+                    );
     }
     else if (d.class_name() == "SetReason")
     {
         Deserialisator v(d, "SetReason");
-        return make_shared_ptr(new SetReason(
+        return std::make_shared<SetReason>(
                     SetName(v.member<std::string>("set_name")),
                     v.member<std::shared_ptr<Reason> >("reason_for_set")
-                    ));
+                    );
     }
     else if (d.class_name() == "DependencyReason")
     {
         Deserialisator v(d, "DependencyReason");
         const std::shared_ptr<const PackageID> from_id(v.member<std::shared_ptr<const PackageID> >("from_id"));
-        return make_shared_ptr(new DependencyReason(
+        return std::make_shared<DependencyReason>(
                     from_id,
                     v.member<Resolvent>("from_resolvent"),
                     SanitisedDependency::deserialise(*v.find_remove_member("sanitised_dependency"), from_id),
-                    v.member<bool>("already_met"))
+                    v.member<bool>("already_met")
                 );
     }
     else if (d.class_name() == "DependentReason")
     {
         Deserialisator v(d, "DependentReason");
-        return make_shared_ptr(new DependentReason(
-                    v.member<ChangeByResolvent>("id_and_resolvent_being_removed"))
+        return std::make_shared<DependentReason>(
+                    v.member<ChangeByResolvent>("id_and_resolvent_being_removed")
                 );
     }
     else if (d.class_name() == "WasUsedByReason")
@@ -435,22 +435,22 @@ Reason::deserialise(Deserialisation & d)
         std::shared_ptr<ChangeByResolventSequence> ids_and_resolvents_being_removed(new ChangeByResolventSequence);
         for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
             ids_and_resolvents_being_removed->push_back(vv.member<ChangeByResolvent>(stringify(n)));
-        return make_shared_ptr(new WasUsedByReason(ids_and_resolvents_being_removed));
+        return std::make_shared<WasUsedByReason>(ids_and_resolvents_being_removed);
     }
     else if (d.class_name() == "LikeOtherDestinationTypeReason")
     {
         Deserialisator v(d, "LikeOtherDestinationTypeReason");
-        return make_shared_ptr(new LikeOtherDestinationTypeReason(
+        return std::make_shared<LikeOtherDestinationTypeReason>(
                     v.member<Resolvent>("other_resolvent"),
                     v.member<std::shared_ptr<Reason> >("reason_for_other")
-                    ));
+                    );
     }
     else if (d.class_name() == "ViaBinaryReason")
     {
         Deserialisator v(d, "ViaBinaryReason");
-        return make_shared_ptr(new ViaBinaryReason(
+        return std::make_shared<ViaBinaryReason>(
                     v.member<Resolvent>("other_resolvent")
-                    ));
+                    );
     }
     else
         throw InternalError(PALUDIS_HERE, "unknown class '" + stringify(d.class_name()) + "'");

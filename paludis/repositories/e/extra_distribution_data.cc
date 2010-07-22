@@ -19,7 +19,6 @@
 
 #include <paludis/repositories/e/extra_distribution_data.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
@@ -50,7 +49,7 @@ namespace paludis
 
         static std::shared_ptr<EDistribution> make_data(const std::shared_ptr<const KeyValueConfigFile> & k)
         {
-            return make_shared_ptr(new EDistribution(make_named_values<EDistribution>(
+            return std::make_shared<EDistribution>(make_named_values<EDistribution>(
                             n::default_buildroot() = k->get("default_buildroot"),
                             n::default_distdir() = k->get("default_distdir"),
                             n::default_eapi_when_unknown() = k->get("default_eapi_when_unknown"),
@@ -68,7 +67,7 @@ namespace paludis
                             n::qa_package_id_checks() = make_set(k->get("qa_package_id_checks")),
                             n::qa_package_id_file_contents_checks() = make_set(k->get("qa_package_id_file_contents_checks")),
                             n::qa_tree_checks() = make_set(k->get("qa_tree_checks"))
-                            )));
+                            ));
         }
     };
 }

@@ -24,7 +24,6 @@
 #include <paludis/args/args.hh>
 #include <paludis/args/do_help.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
@@ -232,6 +231,6 @@ VerifyCommand::run(
 std::shared_ptr<args::ArgsHandler>
 VerifyCommand::make_doc_cmdline()
 {
-    return make_shared_ptr(new VerifyCommandLine);
+    return std::make_shared<VerifyCommandLine>();
 }
 

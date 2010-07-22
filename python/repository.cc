@@ -106,10 +106,10 @@ namespace
     std::shared_ptr<FakeRepository>
     make_fake_repository(const Environment * const env, const RepositoryName & n)
     {
-        return make_shared_ptr(new FakeRepository(make_named_values<FakeRepositoryParams>(
+        return std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
                         n::environment() = env,
                         n::name() = n
-                        )));
+                        ));
     }
 }
 

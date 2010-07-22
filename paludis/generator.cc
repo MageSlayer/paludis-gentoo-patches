@@ -25,7 +25,6 @@
 #include <paludis/action.hh>
 #include <paludis/match_package.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -677,14 +676,14 @@ namespace
         virtual std::shared_ptr<const RepositoryNameSet> repositories(
                 const Environment * const) const
         {
-            return make_shared_ptr(new RepositoryNameSet);
+            return std::make_shared<RepositoryNameSet>();
         }
 
         virtual std::shared_ptr<const CategoryNamePartSet> categories(
                 const Environment * const,
                 const std::shared_ptr<const RepositoryNameSet> &) const
         {
-            return make_shared_ptr(new CategoryNamePartSet);
+            return std::make_shared<CategoryNamePartSet>();
         }
 
         virtual std::shared_ptr<const QualifiedPackageNameSet> packages(
@@ -692,7 +691,7 @@ namespace
                 const std::shared_ptr<const RepositoryNameSet> &,
                 const std::shared_ptr<const CategoryNamePartSet> &) const
         {
-            return make_shared_ptr(new QualifiedPackageNameSet);
+            return std::make_shared<QualifiedPackageNameSet>();
         }
 
         virtual std::shared_ptr<const PackageIDSet> ids(
@@ -700,7 +699,7 @@ namespace
                 const std::shared_ptr<const RepositoryNameSet> &,
                 const std::shared_ptr<const QualifiedPackageNameSet> &) const
         {
-            return make_shared_ptr(new PackageIDSet);
+            return std::make_shared<PackageIDSet>();
         }
 
         virtual std::string as_string() const
@@ -711,53 +710,53 @@ namespace
 }
 
 generator::All::All() :
-    Generator(make_shared_ptr(new AllGeneratorHandler))
+    Generator(std::make_shared<AllGeneratorHandler>())
 {
 }
 
 generator::InRepository::InRepository(const RepositoryName & n) :
-    Generator(make_shared_ptr(new InRepositoryGeneratorHandler(n)))
+    Generator(std::make_shared<InRepositoryGeneratorHandler>(n))
 {
 }
 
 generator::FromRepository::FromRepository(const RepositoryName & n) :
-    Generator(make_shared_ptr(new FromRepositoryGeneratorHandler(n)))
+    Generator(std::make_shared<FromRepositoryGeneratorHandler>(n))
 {
 }
 
 generator::Category::Category(const CategoryNamePart & n) :
-    Generator(make_shared_ptr(new CategoryGeneratorHandler(n)))
+    Generator(std::make_shared<CategoryGeneratorHandler>(n))
 {
 }
 
 generator::Package::Package(const QualifiedPackageName & n) :
-    Generator(make_shared_ptr(new PackageGeneratorHandler(n)))
+    Generator(std::make_shared<PackageGeneratorHandler>(n))
 {
 }
 
 generator::Matches::Matches(const PackageDepSpec & spec, const MatchPackageOptions & o) :
-    Generator(make_shared_ptr(new MatchesGeneratorHandler(spec, o)))
+    Generator(std::make_shared<MatchesGeneratorHandler>(spec, o))
 {
 }
 
 generator::Intersection::Intersection(const Generator & g1, const Generator & g2) :
-    Generator(make_shared_ptr(new IntersectionGeneratorHandler(g1, g2)))
+    Generator(std::make_shared<IntersectionGeneratorHandler>(g1, g2))
 {
 }
 
 generator::Union::Union(const Generator & g1, const Generator & g2) :
-    Generator(make_shared_ptr(new UnionGeneratorHandler(g1, g2)))
+    Generator(std::make_shared<UnionGeneratorHandler>(g1, g2))
 {
 }
 
 generator::Nothing::Nothing() :
-    Generator(make_shared_ptr(new NothingGeneratorHandler))
+    Generator(std::make_shared<NothingGeneratorHandler>())
 {
 }
 
 template <typename A_>
 generator::SomeIDsMightSupportAction<A_>::SomeIDsMightSupportAction() :
-    Generator(make_shared_ptr(new SomeIDsMightSupportActionGeneratorHandler<A_>))
+    Generator(std::make_shared<SomeIDsMightSupportActionGeneratorHandler<A_>>())
 {
 }
 

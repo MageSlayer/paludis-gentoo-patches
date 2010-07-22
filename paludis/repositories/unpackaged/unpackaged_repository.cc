@@ -23,10 +23,10 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/destringify.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/action.hh>
@@ -130,13 +130,13 @@ UnpackagedRepository::_add_metadata_keys() const
 std::shared_ptr<const PackageIDSequence>
 UnpackagedRepository::package_ids(const QualifiedPackageName & n) const
 {
-    return n == _imp->id->name() ? _imp->ids : make_shared_ptr(new PackageIDSequence);
+    return n == _imp->id->name() ? _imp->ids : std::make_shared<PackageIDSequence>();
 }
 
 std::shared_ptr<const QualifiedPackageNameSet>
 UnpackagedRepository::package_names(const CategoryNamePart & c) const
 {
-    return c == _imp->id->name().category() ? _imp->package_names : make_shared_ptr(new QualifiedPackageNameSet);
+    return c == _imp->id->name().category() ? _imp->package_names : std::make_shared<QualifiedPackageNameSet>();
 }
 
 std::shared_ptr<const CategoryNamePartSet>
@@ -148,7 +148,7 @@ UnpackagedRepository::category_names() const
 std::shared_ptr<const CategoryNamePartSet>
 UnpackagedRepository::category_names_containing_package(const PackageNamePart & p) const
 {
-    return p == _imp->id->name().package() ? _imp->category_names : make_shared_ptr(new CategoryNamePartSet);
+    return p == _imp->id->name().package() ? _imp->category_names : std::make_shared<CategoryNamePartSet>();
 }
 
 bool
@@ -254,7 +254,7 @@ UnpackagedRepository::repository_factory_create(
         rewrite_ids_over_to_root = destringify<int>(f("rewrite_ids_over_to_root"));
     }
 
-    return make_shared_ptr(new UnpackagedRepository(RepositoryName("unpackaged"),
+    return std::make_shared<UnpackagedRepository>(RepositoryName("unpackaged"),
                 make_named_values<unpackaged_repositories::UnpackagedRepositoryParams>(
                     n::build_dependencies() = build_dependencies,
                     n::description() = description,
@@ -266,7 +266,7 @@ UnpackagedRepository::repository_factory_create(
                     n::run_dependencies() = run_dependencies,
                     n::slot() = SlotName(slot),
                     n::version() = VersionSpec(version, user_version_spec_options())
-                )));
+                ));
 }
 
 RepositoryName
@@ -282,7 +282,7 @@ UnpackagedRepository::repository_factory_dependencies(
         const Environment * const,
         const std::function<std::string (const std::string &)> &)
 {
-    return make_shared_ptr(new RepositoryNameSet);
+    return std::make_shared<RepositoryNameSet>();
 }
 
 void

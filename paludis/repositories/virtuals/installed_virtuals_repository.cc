@@ -25,7 +25,6 @@
 #include <paludis/package_database.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/action.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/sequence.hh>
@@ -36,6 +35,7 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 
 #include <functional>
 #include <unordered_map>
@@ -61,7 +61,7 @@ namespace paludis
         std::shared_ptr<const MetadataValueKey<FSEntry> > root_key;
         std::shared_ptr<const MetadataValueKey<std::string> > format_key;
 
-        Implementation(const Environment * const e, const FSEntry & r, std::shared_ptr<Mutex> m = make_shared_ptr(new Mutex)) :
+        Implementation(const Environment * const e, const FSEntry & r, std::shared_ptr<Mutex> m = std::make_shared<Mutex>()) :
             env(e),
             root(r),
             ids_mutex(m),
@@ -154,7 +154,7 @@ InstalledVirtualsRepository::need_ids() const
         {
             IDMap::iterator i(_imp->ids.find((*p).virtual_name()));
             if (i == _imp->ids.end())
-                i = _imp->ids.insert(std::make_pair((*p).virtual_name(), make_shared_ptr(new PackageIDSequence))).first;
+                i = _imp->ids.insert(std::make_pair((*p).virtual_name(), std::make_shared<PackageIDSequence>())).first;
 
             std::shared_ptr<const PackageID> id(new virtuals::VirtualsPackageID(
                         _imp->env, shared_from_this(), (*p).virtual_name(), (*p).provided_by(), false));
@@ -309,7 +309,7 @@ InstalledVirtualsRepository::some_ids_might_not_be_masked() const
 std::shared_ptr<const CategoryNamePartSet>
 InstalledVirtualsRepository::unimportant_category_names() const
 {
-    std::shared_ptr<CategoryNamePartSet> result(make_shared_ptr(new CategoryNamePartSet));
+    std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
     result->insert(CategoryNamePart("virtual"));
     return result;
 }
@@ -353,7 +353,7 @@ InstalledVirtualsRepository::repository_factory_create(
     if (f("root").empty())
         throw ConfigurationError("Key 'root' unspecified or empty");
 
-    return make_shared_ptr(new InstalledVirtualsRepository(env, f("root")));
+    return std::make_shared<InstalledVirtualsRepository>(env, f("root"));
 }
 
 std::shared_ptr<const RepositoryNameSet>
@@ -361,7 +361,7 @@ InstalledVirtualsRepository::repository_factory_dependencies(
         const Environment * const,
         const std::function<std::string (const std::string &)> &)
 {
-    return make_shared_ptr(new RepositoryNameSet);
+    return std::make_shared<RepositoryNameSet>();
 }
 
 bool

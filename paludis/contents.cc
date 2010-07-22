@@ -35,7 +35,7 @@ namespace paludis
         const std::shared_ptr<const MetadataValueKey<FSEntry> > location_key;
 
         Implementation(const FSEntry & n) :
-            location_key(make_shared_ptr(new LiteralMetadataValueKey<FSEntry>("location", "location", mkt_significant, n)))
+            location_key(std::make_shared<LiteralMetadataValueKey<FSEntry>>("location", "location", mkt_significant, n))
         {
         }
     };
@@ -86,7 +86,7 @@ namespace paludis
         const std::shared_ptr<const MetadataValueKey<std::string> > target_key;
 
         Implementation(const std::string & t) :
-            target_key(make_shared_ptr(new LiteralMetadataValueKey<std::string>("target", "target", mkt_normal, t)))
+            target_key(std::make_shared<LiteralMetadataValueKey<std::string>>("target", "target", mkt_normal, t))
         {
         }
     };

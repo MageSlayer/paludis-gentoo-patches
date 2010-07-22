@@ -25,7 +25,6 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/serialise-impl.hh>
 #include <sstream>
 
@@ -47,10 +46,10 @@ Resolution::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "Resolution");
 
-    return make_shared_ptr(new Resolution(make_named_values<Resolution>(
+    return std::make_shared<Resolution>(make_named_values<Resolution>(
                     n::constraints() = v.member<std::shared_ptr<Constraints> >("constraints"),
                     n::decision() = v.member<std::shared_ptr<Decision> >("decision"),
                     n::resolvent() = v.member<Resolvent>("resolvent")
-                    )));
+                    ));
 }
 

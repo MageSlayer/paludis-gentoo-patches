@@ -21,10 +21,10 @@
 #include <paludis/repositories/fake/fake_package_id.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/distribution.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_id.hh>

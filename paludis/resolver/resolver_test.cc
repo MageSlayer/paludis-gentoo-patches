@@ -31,7 +31,6 @@
 #include <paludis/resolver/change_by_resolvent.hh>
 #include <paludis/resolver/labels_classifier.hh>
 #include <paludis/util/map.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/fs_entry.hh>
@@ -80,7 +79,7 @@ paludis::resolver::resolver_test::initial_constraints_for_fn(
 {
     InitialConstraints::const_iterator i(initial_constraints.find(resolvent));
     if (i == initial_constraints.end())
-        return make_shared_ptr(new Constraints);
+        return std::make_shared<Constraints>();
     else
         return i->second;
 }
@@ -237,8 +236,8 @@ paludis::resolver::resolver_test::get_constraints_for_dependent_fn(
     PartiallyMadePackageDepSpec partial_spec((PartiallyMadePackageDepSpecOptions()));
     partial_spec.package(id->name());
     if (id->slot_key())
-        partial_spec.slot_requirement(make_shared_ptr(new ELikeSlotExactRequirement(
-                        id->slot_key()->value(), false)));
+        partial_spec.slot_requirement(std::make_shared<ELikeSlotExactRequirement>(
+                        id->slot_key()->value(), false));
     PackageDepSpec spec(partial_spec);
 
     for (ChangeByResolventSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
@@ -246,14 +245,14 @@ paludis::resolver::resolver_test::get_constraints_for_dependent_fn(
     {
         const std::shared_ptr<DependentReason> reason(new DependentReason(*i));
 
-        result->push_back(make_shared_ptr(new Constraint(make_named_values<Constraint>(
+        result->push_back(std::make_shared<Constraint>(make_named_values<Constraint>(
                             n::destination_type() = dt_install_to_slash,
                             n::nothing_is_fine_too() = true,
                             n::reason() = reason,
                             n::spec() = BlockDepSpec("!" + stringify(spec), spec, false),
                             n::untaken() = false,
                             n::use_existing() = ue_if_possible
-                            ))));
+                            )));
     }
 
     return result;
@@ -270,20 +269,20 @@ paludis::resolver::resolver_test::get_constraints_for_purge_fn(
     PartiallyMadePackageDepSpec partial_spec((PartiallyMadePackageDepSpecOptions()));
     partial_spec.package(id->name());
     if (id->slot_key())
-        partial_spec.slot_requirement(make_shared_ptr(new ELikeSlotExactRequirement(
-                        id->slot_key()->value(), false)));
+        partial_spec.slot_requirement(std::make_shared<ELikeSlotExactRequirement>(
+                        id->slot_key()->value(), false));
     PackageDepSpec spec(partial_spec);
 
     const std::shared_ptr<WasUsedByReason> reason(new WasUsedByReason(ids));
 
-    result->push_back(make_shared_ptr(new Constraint(make_named_values<Constraint>(
+    result->push_back(std::make_shared<Constraint>(make_named_values<Constraint>(
                         n::destination_type() = dt_install_to_slash,
                         n::nothing_is_fine_too() = true,
                         n::reason() = reason,
                         n::spec() = BlockDepSpec("!" + stringify(spec), spec, false),
                         n::untaken() = false,
                         n::use_existing() = ue_if_possible
-                        ))));
+                        )));
 
     return result;
 }
@@ -298,14 +297,14 @@ paludis::resolver::resolver_test::get_constraints_for_via_binary_fn(
     PackageDepSpec spec(partial_spec);
 
     std::shared_ptr<ConstraintSequence> result(new ConstraintSequence);
-    result->push_back(make_shared_ptr(new Constraint(make_named_values<Constraint>(
+    result->push_back(std::make_shared<Constraint>(make_named_values<Constraint>(
                         n::destination_type() = resolution->resolvent().destination_type(),
                         n::nothing_is_fine_too() = false,
-                        n::reason() = make_shared_ptr(new ViaBinaryReason(because_resolution->resolvent())),
+                        n::reason() = std::make_shared<ViaBinaryReason>(because_resolution->resolvent()),
                         n::spec() = spec,
                         n::untaken() = false,
                         n::use_existing() = ue_if_possible
-                        ))));
+                        )));
 
     return result;
 }
@@ -418,7 +417,7 @@ ResolverTestCase::get_resolved(const PackageOrBlockDepSpec & target)
         }
         catch (const SuggestRestart & e)
         {
-            initial_constraints.insert(std::make_pair(e.resolvent(), make_shared_ptr(new Constraints))).first->second->add(e.suggested_preset());
+            initial_constraints.insert(std::make_pair(e.resolvent(), std::make_shared<Constraints>())).first->second->add(e.suggested_preset());
         }
     }
 }

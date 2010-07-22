@@ -24,11 +24,11 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/join.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/options.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/dep_spec.hh>
 #include <list>
 #include <sstream>
@@ -156,7 +156,7 @@ namespace
 
         std::shared_ptr<const PackageDepSpecData> without_slot_requirements() const
         {
-            return make_shared_ptr(new RangeRewrittenPackageDepSpecData(*this));
+            return std::make_shared<RangeRewrittenPackageDepSpecData>(*this);
         }
 
         virtual std::shared_ptr<const RepositoryName> in_repository_ptr() const

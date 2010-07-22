@@ -27,7 +27,6 @@
 #include <paludis/util/elf_types.hh>
 
 #include <paludis/util/byte_swap.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/iterator_funcs.hh>
@@ -332,17 +331,17 @@ ElfObject<ElfType_>::ElfObject(std::istream & stream) :
         for (typename std::vector<typename ElfType_::SectionHeader>::iterator i = shdrs.begin(); i != shdrs.end(); ++i)
         {
             if (i->sh_type == SHT_STRTAB)
-                _imp->sections.push_back(make_shared_ptr(new StringSection<ElfType_>(_imp->sections.size(), *i, stream, need_byte_swap)));
+                _imp->sections.push_back(std::make_shared<StringSection<ElfType_> >(_imp->sections.size(), *i, stream, need_byte_swap));
             else if ( (i->sh_type == SHT_SYMTAB) || (i->sh_type == SHT_DYNSYM) )
-                _imp->sections.push_back(make_shared_ptr(new SymbolSection<ElfType_>(_imp->sections.size(), *i, stream, need_byte_swap)));
+                _imp->sections.push_back(std::make_shared<SymbolSection<ElfType_> >(_imp->sections.size(), *i, stream, need_byte_swap));
             else if (i->sh_type == SHT_DYNAMIC)
-                _imp->sections.push_back(make_shared_ptr(new DynamicSection<ElfType_>(_imp->sections.size(), *i, stream, need_byte_swap)));
+                _imp->sections.push_back(std::make_shared<DynamicSection<ElfType_> >(_imp->sections.size(), *i, stream, need_byte_swap));
             else if (i->sh_type == SHT_REL)
-                _imp->sections.push_back(make_shared_ptr(new RelocationSection<ElfType_, Relocation<ElfType_> >(_imp->sections.size(), *i, stream, need_byte_swap)));
+                _imp->sections.push_back(std::make_shared<RelocationSection<ElfType_, Relocation<ElfType_> > >(_imp->sections.size(), *i, stream, need_byte_swap));
             else if (i->sh_type == SHT_RELA)
-                _imp->sections.push_back(make_shared_ptr(new RelocationSection<ElfType_, RelocationA<ElfType_> >(_imp->sections.size(), *i, stream, need_byte_swap)));
+                _imp->sections.push_back(std::make_shared<RelocationSection<ElfType_, RelocationA<ElfType_> > >(_imp->sections.size(), *i, stream, need_byte_swap));
             else
-                _imp->sections.push_back(make_shared_ptr(new GenericSection<ElfType_>(_imp->sections.size(), *i)));
+                _imp->sections.push_back(std::make_shared<GenericSection<ElfType_> >(_imp->sections.size(), *i));
         }
 
         if (! _hdr.e_shstrndx)

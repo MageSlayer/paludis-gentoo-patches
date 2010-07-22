@@ -50,7 +50,7 @@ namespace
 
     std::shared_ptr<OutputManager> make_standard_output_manager(const Action &)
     {
-        return make_shared_ptr(new StandardOutputManager);
+        return std::make_shared<StandardOutputManager>();
     }
 
     void dummy_used_this_for_config_protect(const std::string &)
@@ -242,7 +242,7 @@ namespace test_cases
                         n::destination() = installed_repo,
                         n::make_output_manager() = &make_standard_output_manager,
                         n::perform_uninstall() = &cannot_uninstall,
-                        n::replacing() = make_shared_ptr(new PackageIDSequence),
+                        n::replacing() = std::make_shared<PackageIDSequence>(),
                         n::want_phase() = &want_all_phases
                     ));
             id->perform_action(action);
@@ -298,7 +298,7 @@ namespace test_cases
                         n::destination() = installed_repo,
                         n::make_output_manager() = &make_standard_output_manager,
                         n::perform_uninstall() = &cannot_uninstall,
-                        n::replacing() = make_shared_ptr(new PackageIDSequence),
+                        n::replacing() = std::make_shared<PackageIDSequence>(),
                         n::want_phase() = &want_all_phases
                     ));
             id->perform_action(action);

@@ -22,7 +22,6 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/mutex.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/choice.hh>
@@ -172,9 +171,9 @@ UnpackagedChoicesKey::value() const
                         n::raw_name() = canonical_build_options_raw_name(),
                         n::show_with_no_prefix() = false
                         )));
-        build_options->add(make_shared_ptr(new ELikeSplitChoiceValue(_imp->id->shared_from_this(), _imp->env, build_options)));
-        build_options->add(make_shared_ptr(new ELikeStripChoiceValue(_imp->id->shared_from_this(), _imp->env, build_options)));
-        build_options->add(make_shared_ptr(new ELikePreserveWorkChoiceValue(_imp->id->shared_from_this(), _imp->env, build_options, true)));
+        build_options->add(std::make_shared<ELikeSplitChoiceValue>(_imp->id->shared_from_this(), _imp->env, build_options));
+        build_options->add(std::make_shared<ELikeStripChoiceValue>(_imp->id->shared_from_this(), _imp->env, build_options));
+        build_options->add(std::make_shared<ELikePreserveWorkChoiceValue>(_imp->id->shared_from_this(), _imp->env, build_options, true));
         _imp->value->add(build_options);
     }
 

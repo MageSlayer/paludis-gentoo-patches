@@ -32,7 +32,6 @@
 #include <paludis/hook.hh>
 
 #include <paludis/util/log.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/operators.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/map.hh>
@@ -43,6 +42,7 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 
 #include <functional>
 #include <unordered_map>
@@ -71,7 +71,7 @@ namespace paludis
 
         std::shared_ptr<const MetadataValueKey<std::string> > format_key;
 
-        Implementation(const Environment * const e, std::shared_ptr<Mutex> m = make_shared_ptr(new Mutex)) :
+        Implementation(const Environment * const e, std::shared_ptr<Mutex> m = std::make_shared<Mutex>()) :
             env(e),
             big_nasty_mutex(m),
             has_names(false),
@@ -236,7 +236,7 @@ VirtualsRepository::need_ids() const
         {
             IDMap::iterator i(my_ids.find(v->first));
             if (my_ids.end() == i)
-                i = my_ids.insert(std::make_pair(v->first, make_shared_ptr(new PackageIDSequence))).first;
+                i = my_ids.insert(std::make_pair(v->first, std::make_shared<PackageIDSequence>())).first;
 
             std::shared_ptr<const PackageID> id(make_virtual_package_id(QualifiedPackageName(v->first), *m));
             if (stringify(id->name().category()) != "virtual")
@@ -337,7 +337,7 @@ VirtualsRepository::make_virtual_package_id(
         throw InternalError(PALUDIS_HERE, "tried to make a virtual package id using '" + stringify(virtual_name) + "', '"
                 + stringify(*provider) + "'");
 
-    return make_shared_ptr(new virtuals::VirtualsPackageID(_imp->env, shared_from_this(), virtual_name, provider, true));
+    return std::make_shared<virtuals::VirtualsPackageID>(_imp->env, shared_from_this(), virtual_name, provider, true);
 }
 
 bool
@@ -409,7 +409,7 @@ VirtualsRepository::some_ids_might_not_be_masked() const
 std::shared_ptr<const CategoryNamePartSet>
 VirtualsRepository::unimportant_category_names() const
 {
-    std::shared_ptr<CategoryNamePartSet> result(make_shared_ptr(new CategoryNamePartSet));
+    std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
     result->insert(CategoryNamePart("virtual"));
     return result;
 }
@@ -450,7 +450,7 @@ VirtualsRepository::repository_factory_create(
         const Environment * const env,
         const std::function<std::string (const std::string &)> &)
 {
-    return make_shared_ptr(new VirtualsRepository(env));
+    return std::make_shared<VirtualsRepository>(env);
 }
 
 std::shared_ptr<const RepositoryNameSet>
@@ -458,7 +458,7 @@ VirtualsRepository::repository_factory_dependencies(
         const Environment * const,
         const std::function<std::string (const std::string &)> &)
 {
-    return make_shared_ptr(new RepositoryNameSet);
+    return std::make_shared<RepositoryNameSet>();
 }
 
 void

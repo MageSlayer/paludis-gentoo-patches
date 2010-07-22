@@ -27,7 +27,6 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/iterator_funcs.hh>
@@ -427,6 +426,6 @@ MatchCommand::run_hosted(
 std::shared_ptr<args::ArgsHandler>
 MatchCommand::make_doc_cmdline()
 {
-    return make_shared_ptr(new MatchCommandLine);
+    return std::make_shared<MatchCommandLine>();
 }
 

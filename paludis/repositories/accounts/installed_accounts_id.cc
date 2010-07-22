@@ -20,7 +20,6 @@
 #include <paludis/repositories/accounts/installed_accounts_id.hh>
 #include <paludis/repositories/accounts/accounts_dep_key.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/stringify.hh>
@@ -30,6 +29,7 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/literal_metadata_key.hh>
@@ -356,7 +356,7 @@ InstalledAccountsID::slot_key() const
 std::shared_ptr<const Set<std::string> >
 InstalledAccountsID::breaks_portage() const
 {
-    return make_shared_ptr(new Set<std::string>);
+    return std::make_shared<Set<std::string> >();
 }
 
 bool

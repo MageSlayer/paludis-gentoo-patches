@@ -23,9 +23,9 @@
 #include <paludis/serialise.hh>
 #include <paludis/util/remove_shared_ptr.hh>
 #include <paludis/util/destringify.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <type_traits>

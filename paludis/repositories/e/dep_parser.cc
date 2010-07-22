@@ -20,7 +20,6 @@
 #include <paludis/repositories/e/dep_parser.hh>
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/make_named_values.hh>
@@ -323,7 +322,7 @@ paludis::erepository::parse_depend(const std::string & s,
     ParseStackTypes<DependencySpecTree>::Stack stack;
     std::shared_ptr<AllDepSpec> spec(new AllDepSpec);
     std::shared_ptr<DepSpec> thing_to_annotate(spec);
-    std::shared_ptr<DependencySpecTree> top(make_shared_ptr(new DependencySpecTree(spec)));
+    std::shared_ptr<DependencySpecTree> top(std::make_shared<DependencySpecTree>(spec));
     stack.push_front(make_named_values<ParseStackTypes<DependencySpecTree>::Item>(
                 n::item() = top->root(),
                 n::spec() = spec
@@ -366,7 +365,7 @@ paludis::erepository::parse_provide(const std::string & s,
     ParseStackTypes<ProvideSpecTree>::Stack stack;
     std::shared_ptr<AllDepSpec> spec(new AllDepSpec);
     std::shared_ptr<DepSpec> thing_to_annotate(spec);
-    std::shared_ptr<ProvideSpecTree> top(make_shared_ptr(new ProvideSpecTree(spec)));
+    std::shared_ptr<ProvideSpecTree> top(std::make_shared<ProvideSpecTree>(spec));
     stack.push_front(make_named_values<ParseStackTypes<ProvideSpecTree>::Item>(
                 n::item() = top->root(),
                 n::spec() = spec
@@ -405,7 +404,7 @@ paludis::erepository::parse_fetchable_uri(const std::string & s,
     ParseStackTypes<FetchableURISpecTree>::Stack stack;
     std::shared_ptr<AllDepSpec> spec(new AllDepSpec);
     std::shared_ptr<DepSpec> thing_to_annotate(spec);
-    std::shared_ptr<FetchableURISpecTree> top(make_shared_ptr(new FetchableURISpecTree(spec)));
+    std::shared_ptr<FetchableURISpecTree> top(std::make_shared<FetchableURISpecTree>(spec));
     stack.push_front(make_named_values<ParseStackTypes<FetchableURISpecTree>::Item>(
                 n::item() = top->root(),
                 n::spec() = spec
@@ -448,7 +447,7 @@ paludis::erepository::parse_simple_uri(const std::string & s,
     ParseStackTypes<SimpleURISpecTree>::Stack stack;
     std::shared_ptr<AllDepSpec> spec(new AllDepSpec);
     std::shared_ptr<DepSpec> thing_to_annotate(spec);
-    std::shared_ptr<SimpleURISpecTree> top(make_shared_ptr(new SimpleURISpecTree(spec)));
+    std::shared_ptr<SimpleURISpecTree> top(std::make_shared<SimpleURISpecTree>(spec));
     stack.push_front(make_named_values<ParseStackTypes<SimpleURISpecTree>::Item>(
                 n::item() = top->root(),
                 n::spec() = spec
@@ -487,7 +486,7 @@ paludis::erepository::parse_license(const std::string & s,
     ParseStackTypes<LicenseSpecTree>::Stack stack;
     std::shared_ptr<AllDepSpec> spec(new AllDepSpec);
     std::shared_ptr<DepSpec> thing_to_annotate(spec);
-    std::shared_ptr<LicenseSpecTree> top(make_shared_ptr(new LicenseSpecTree(spec)));
+    std::shared_ptr<LicenseSpecTree> top(std::make_shared<LicenseSpecTree>(spec));
     stack.push_front(make_named_values<ParseStackTypes<LicenseSpecTree>::Item>(
                 n::item() = top->root(),
                 n::spec() = spec
@@ -526,7 +525,7 @@ paludis::erepository::parse_plain_text(const std::string & s,
     ParseStackTypes<PlainTextSpecTree>::Stack stack;
     std::shared_ptr<AllDepSpec> spec(new AllDepSpec);
     std::shared_ptr<DepSpec> thing_to_annotate(spec);
-    std::shared_ptr<PlainTextSpecTree> top(make_shared_ptr(new PlainTextSpecTree(spec)));
+    std::shared_ptr<PlainTextSpecTree> top(std::make_shared<PlainTextSpecTree>(spec));
     stack.push_front(make_named_values<ParseStackTypes<PlainTextSpecTree>::Item>(
                 n::item() = top->root(),
                 n::spec() = spec
@@ -565,7 +564,7 @@ paludis::erepository::parse_myoptions(const std::string & s,
     ParseStackTypes<PlainTextSpecTree>::Stack stack;
     std::shared_ptr<AllDepSpec> spec(new AllDepSpec);
     std::shared_ptr<DepSpec> thing_to_annotate(spec);
-    std::shared_ptr<PlainTextSpecTree> top(make_shared_ptr(new PlainTextSpecTree(spec)));
+    std::shared_ptr<PlainTextSpecTree> top(std::make_shared<PlainTextSpecTree>(spec));
     stack.push_front(make_named_values<ParseStackTypes<PlainTextSpecTree>::Item>(
                 n::item() = top->root(),
                 n::spec() = spec
@@ -612,17 +611,17 @@ paludis::erepository::parse_uri_label(const std::string & s, const EAPI & e)
     std::shared_ptr<URILabelsDepSpec> l(new URILabelsDepSpec);
 
     if (c == "URIMirrorsThenListedLabel")
-        l->add_label(make_shared_ptr(new URIMirrorsThenListedLabel(s.substr(0, s.length() - 1))));
+        l->add_label(std::make_shared<URIMirrorsThenListedLabel>(s.substr(0, s.length() - 1)));
     else if (c == "URIMirrorsOnlyLabel")
-        l->add_label(make_shared_ptr(new URIMirrorsOnlyLabel(s.substr(0, s.length() - 1))));
+        l->add_label(std::make_shared<URIMirrorsOnlyLabel>(s.substr(0, s.length() - 1)));
     else if (c == "URIListedOnlyLabel")
-        l->add_label(make_shared_ptr(new URIListedOnlyLabel(s.substr(0, s.length() - 1))));
+        l->add_label(std::make_shared<URIListedOnlyLabel>(s.substr(0, s.length() - 1)));
     else if (c == "URIListedThenMirrorsLabel")
-        l->add_label(make_shared_ptr(new URIListedThenMirrorsLabel(s.substr(0, s.length() - 1))));
+        l->add_label(std::make_shared<URIListedThenMirrorsLabel>(s.substr(0, s.length() - 1)));
     else if (c == "URILocalMirrorsOnlyLabel")
-        l->add_label(make_shared_ptr(new URILocalMirrorsOnlyLabel(s.substr(0, s.length() - 1))));
+        l->add_label(std::make_shared<URILocalMirrorsOnlyLabel>(s.substr(0, s.length() - 1)));
     else if (c == "URIManualOnlyLabel")
-        l->add_label(make_shared_ptr(new URIManualOnlyLabel(s.substr(0, s.length() - 1))));
+        l->add_label(std::make_shared<URIManualOnlyLabel>(s.substr(0, s.length() - 1)));
     else
         throw EDepParseError(s, "Label '" + s + "' maps to unknown class '" + c + "'");
 
@@ -641,7 +640,7 @@ paludis::erepository::parse_plain_text_label(const std::string & s)
     if (c.empty())
         throw EDepParseError(s, "Unknown label");
 
-    return make_shared_ptr(new PlainTextLabelDepSpec(s));
+    return std::make_shared<PlainTextLabelDepSpec>(s);
 }
 
 namespace
@@ -697,7 +696,7 @@ paludis::erepository::parse_dependency_label(
         {
             Log::get_instance()->message("e.dep_parser.obsolete_label_syntax", ll_warning, lc_context)
                 << "Label '" << *it << "' uses commas, which are obsolete, so treating it as a build label instead";
-            l->add_label(make_shared_ptr(new DependenciesBuildLabel(*it, return_literal_function(true))));
+            l->add_label(std::make_shared<DependenciesBuildLabel>(*it, return_literal_function(true)));
             continue;
         }
 
@@ -713,34 +712,34 @@ paludis::erepository::parse_dependency_label(
         }
 
         if (c == "DependenciesBuildLabel")
-            l->add_label(make_shared_ptr(new DependenciesBuildLabel(*it, return_literal_function(true))));
+            l->add_label(std::make_shared<DependenciesBuildLabel>(*it, return_literal_function(true)));
         else if (c == "DependenciesRunLabel")
-            l->add_label(make_shared_ptr(new DependenciesRunLabel(*it, return_literal_function(true))));
+            l->add_label(std::make_shared<DependenciesRunLabel>(*it, return_literal_function(true)));
         else if (c == "DependenciesPostLabel")
-            l->add_label(make_shared_ptr(new DependenciesPostLabel(*it, return_literal_function(true))));
+            l->add_label(std::make_shared<DependenciesPostLabel>(*it, return_literal_function(true)));
         else if (c == "DependenciesInstallLabel")
-            l->add_label(make_shared_ptr(new DependenciesInstallLabel(*it, return_literal_function(true))));
+            l->add_label(std::make_shared<DependenciesInstallLabel>(*it, return_literal_function(true)));
         else if (c == "DependenciesCompileAgainstLabel")
-            l->add_label(make_shared_ptr(new DependenciesCompileAgainstLabel(*it, return_literal_function(true))));
+            l->add_label(std::make_shared<DependenciesCompileAgainstLabel>(*it, return_literal_function(true)));
         else if (c == "DependenciesFetchLabel")
-            l->add_label(make_shared_ptr(new DependenciesFetchLabel(*it, return_literal_function(true))));
+            l->add_label(std::make_shared<DependenciesFetchLabel>(*it, return_literal_function(true)));
         else if (c == "DependenciesSuggestionLabel")
-            l->add_label(make_shared_ptr(new DependenciesSuggestionLabel(*it, return_literal_function(true))));
+            l->add_label(std::make_shared<DependenciesSuggestionLabel>(*it, return_literal_function(true)));
         else if (c == "DependenciesRecommendationLabel")
-            l->add_label(make_shared_ptr(new DependenciesRecommendationLabel(*it, return_literal_function(true))));
+            l->add_label(std::make_shared<DependenciesRecommendationLabel>(*it, return_literal_function(true)));
         else if (c == "DependenciesTestLabel")
         {
             if (cc.empty())
-                l->add_label(make_shared_ptr(new DependenciesTestLabel(*it, return_literal_function(true))));
+                l->add_label(std::make_shared<DependenciesTestLabel>(*it, return_literal_function(true)));
             else
-                l->add_label(make_shared_ptr(new DependenciesTestLabel(*it, std::bind(
-                                    &enabled_if_option, id, *it, ChoiceNameWithPrefix(cc)))));
+                l->add_label(std::make_shared<DependenciesTestLabel>(*it, std::bind(
+                                    &enabled_if_option, id, *it, ChoiceNameWithPrefix(cc))));
         }
         else if (c == "WarnAndIgnore")
         {
             Log::get_instance()->message("e.dep_parser.obsolete_label", ll_warning, lc_context)
                 << "Label '" << *it << "' no longer exists, pretending it's a build label instead";
-            l->add_label(make_shared_ptr(new DependenciesBuildLabel(*it, return_literal_function(true))));
+            l->add_label(std::make_shared<DependenciesBuildLabel>(*it, return_literal_function(true)));
         }
         else
             throw EDepParseError(s, "Label '" + *it + "' maps to unknown class '" + c + "'");

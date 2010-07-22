@@ -32,7 +32,6 @@
 #include <paludis/repository.hh>
 #include <paludis/selection.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <algorithm>
 #include <functional>

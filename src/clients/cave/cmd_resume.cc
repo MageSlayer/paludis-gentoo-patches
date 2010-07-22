@@ -27,7 +27,6 @@
 #include "resume_data.hh"
 #include <paludis/args/do_help.hh>
 #include <paludis/args/escape.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/safe_ofstream.hh>
 #include <paludis/util/system.hh>
@@ -234,13 +233,13 @@ namespace
                 (*c)->state()->accept(s);
 
             if (s.is_active)
-                (*c)->set_state(make_shared_ptr(new JobPendingState));
+                (*c)->set_state(std::make_shared<JobPendingState>());
             else if (cmdline.a_retry_failed.specified() && s.is_failed)
-                (*c)->set_state(make_shared_ptr(new JobPendingState));
+                (*c)->set_state(std::make_shared<JobPendingState>());
             else if (cmdline.a_skip_failed.specified() && s.is_failed)
-                (*c)->set_state(make_shared_ptr(new JobSkippedState));
+                (*c)->set_state(std::make_shared<JobSkippedState>());
             else if (cmdline.a_retry_skipped.specified() && s.is_skipped)
-                (*c)->set_state(make_shared_ptr(new JobPendingState));
+                (*c)->set_state(std::make_shared<JobPendingState>());
         }
     }
 }
@@ -287,6 +286,6 @@ ResumeCommand::run(
 std::shared_ptr<args::ArgsHandler>
 ResumeCommand::make_doc_cmdline()
 {
-    return make_shared_ptr(new ResumeCommandLine);
+    return std::make_shared<ResumeCommandLine>();
 }
 

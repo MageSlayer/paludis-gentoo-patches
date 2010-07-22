@@ -32,7 +32,6 @@
 #include <paludis/util/mutex.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/simple_visitor_cast.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/tribool.hh>
 #include <paludis/util/member_iterator-impl.hh>
 #include <paludis/util/map-impl.hh>

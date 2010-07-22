@@ -34,7 +34,6 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/sequence-impl.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/about.hh>
@@ -85,7 +84,7 @@ namespace
 
             virtual const std::shared_ptr<const Sequence<std::string> > auto_hook_names() const
             {
-                return make_shared_ptr(new Sequence<std::string>);
+                return std::make_shared<Sequence<std::string>>();
             }
     };
 
@@ -294,7 +293,7 @@ FancyHookFile::auto_hook_names() const
     {
         Log::get_instance()->message("hook.fancy.failure", ll_warning, lc_no_context) << "Hook '" << file_name()
             << "' returned failure '" << exit_status << "' for auto hook names";
-        return make_shared_ptr(new Sequence<std::string>);
+        return std::make_shared<Sequence<std::string>>();
     }
 }
 
@@ -429,7 +428,7 @@ SoHookFile::auto_hook_names() const
     Context c("When querying auto hook names for .so hook '" + stringify(file_name()) + "':");
 
     if (! _auto_hook_names)
-        return make_shared_ptr(new Sequence<std::string>);
+        return std::make_shared<Sequence<std::string>>();
 
     return _auto_hook_names(_env);
 }

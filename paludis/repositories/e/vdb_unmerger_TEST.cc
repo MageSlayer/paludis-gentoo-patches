@@ -22,7 +22,6 @@
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/repositories/fake/fake_repository.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/sequence.hh>
@@ -127,7 +126,7 @@ namespace
                                 n::config_protect_mask() = "/protected_dir/unprotected_file /protected_dir/unprotected_dir",
                                 n::environment() = &env,
                                 n::ignore() = &ignore_nothing,
-                                n::output_manager() = make_shared_ptr(new StandardOutputManager),
+                                n::output_manager() = std::make_shared<StandardOutputManager>(),
                                 n::package_id() = *env[selection::RequireExactlyOne(generator::Matches(
                                             parse_user_package_dep_spec("cat/" + fix(what), &env, UserPackageDepSpecOptions()),
                                             MatchPackageOptions()))]->begin(),

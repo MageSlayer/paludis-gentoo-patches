@@ -20,9 +20,9 @@
 
 #include <paludis_ruby.hh>
 #include <paludis/action.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/return_literal_function.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/standard_output_manager.hh>
 #include <ruby.h>
 
@@ -178,19 +178,19 @@ namespace
         try
         {
             if (Qtrue == rb_funcall2(action_class, rb_intern("<="), 1, install_action_value_ptr()))
-                ptr = new std::shared_ptr<const SupportsActionTestBase>(make_shared_ptr(new SupportsActionTest<InstallAction>()));
+                ptr = new std::shared_ptr<const SupportsActionTestBase>(std::make_shared<SupportsActionTest<InstallAction>>());
             else if (Qtrue == rb_funcall2(action_class, rb_intern("<="), 1, uninstall_action_value_ptr()))
-                ptr = new std::shared_ptr<const SupportsActionTestBase>(make_shared_ptr(new SupportsActionTest<UninstallAction>()));
+                ptr = new std::shared_ptr<const SupportsActionTestBase>(std::make_shared<SupportsActionTest<UninstallAction>>());
             else if (Qtrue == rb_funcall2(action_class, rb_intern("<="), 1, pretend_action_value_ptr()))
-                ptr = new std::shared_ptr<const SupportsActionTestBase>(make_shared_ptr(new SupportsActionTest<PretendAction>()));
+                ptr = new std::shared_ptr<const SupportsActionTestBase>(std::make_shared<SupportsActionTest<PretendAction>>());
             else if (Qtrue == rb_funcall2(action_class, rb_intern("<="), 1, config_action_value_ptr()))
-                ptr = new std::shared_ptr<const SupportsActionTestBase>(make_shared_ptr(new SupportsActionTest<ConfigAction>()));
+                ptr = new std::shared_ptr<const SupportsActionTestBase>(std::make_shared<SupportsActionTest<ConfigAction>>());
             else if (Qtrue == rb_funcall2(action_class, rb_intern("<="), 1, fetch_action_value_ptr()))
-                ptr = new std::shared_ptr<const SupportsActionTestBase>(make_shared_ptr(new SupportsActionTest<FetchAction>()));
+                ptr = new std::shared_ptr<const SupportsActionTestBase>(std::make_shared<SupportsActionTest<FetchAction>>());
             else if (Qtrue == rb_funcall2(action_class, rb_intern("<="), 1, info_action_value_ptr()))
-                ptr = new std::shared_ptr<const SupportsActionTestBase>(make_shared_ptr(new SupportsActionTest<InfoAction>()));
+                ptr = new std::shared_ptr<const SupportsActionTestBase>(std::make_shared<SupportsActionTest<InfoAction>>());
             else if (Qtrue == rb_funcall2(action_class, rb_intern("<="), 1, pretend_fetch_action_value_ptr()))
-                ptr = new std::shared_ptr<const SupportsActionTestBase>(make_shared_ptr(new SupportsActionTest<PretendFetchAction>()));
+                ptr = new std::shared_ptr<const SupportsActionTestBase>(std::make_shared<SupportsActionTest<PretendFetchAction>>());
             else
                 rb_raise(rb_eTypeError, "Can't convert %s into an Action subclass", rb_obj_classname(action_class));
 
@@ -207,7 +207,7 @@ namespace
 
     std::shared_ptr<OutputManager> make_standard_output_manager(const Action &)
     {
-        return make_shared_ptr(new StandardOutputManager);
+        return std::make_shared<StandardOutputManager>();
     }
 
     /*
@@ -255,7 +255,7 @@ namespace
                 parts += fp_unneeded;
 
             ptr = new FetchActionOptions(make_named_values<FetchActionOptions>(
-                        n::errors() = make_shared_ptr(new Sequence<FetchActionFailure>),
+                        n::errors() = std::make_shared<Sequence<FetchActionFailure>>(),
                         n::exclude_unmirrorable() = v_exclude_unmirrorable,
                         n::fetch_parts() = parts,
                         n::ignore_not_in_manifest() = false,
@@ -531,7 +531,7 @@ namespace
                         n::destination() = v_destination,
                         n::make_output_manager() = &make_standard_output_manager,
                         n::perform_uninstall() = &cannot_perform_uninstall,
-                        n::replacing() = make_shared_ptr(new PackageIDSequence),
+                        n::replacing() = std::make_shared<PackageIDSequence>(),
                         n::want_phase() = &want_all_phases
                     ));
 

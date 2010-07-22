@@ -28,7 +28,6 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/map.hh>
@@ -83,7 +82,7 @@ namespace test_cases
 
                 Deserialiser deser(&env, str);
                 Deserialisation desern("ResolverLists", deser);
-                resolved = make_shared_ptr(new Resolved(Resolved::deserialise(desern)));
+                resolved = std::make_shared<Resolved>(Resolved::deserialise(desern));
             }
 
             check_resolved(resolved,

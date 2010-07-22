@@ -24,7 +24,6 @@
 #include <paludis/util/simple_parser.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/tokeniser.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -310,7 +309,7 @@ UnwrittenRepositoryFile::_load(const FSEntry & f)
                 tokenise_whitespace(token2, std::back_inserter(tokens));
                 for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
                         t != t_end ; ++t)
-                    tree->root()->append(make_shared_ptr(new SimpleURIDepSpec(*t)));
+                    tree->root()->append(std::make_shared<SimpleURIDepSpec>(*t));
                 entry->homepage().reset(new UnwrittenHomepageKey("homepage", "Homepage", mkt_normal, tree));
             }
             else if (token == "comment")

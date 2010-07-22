@@ -20,8 +20,7 @@
 #include "cmd_resolve.hh"
 #include "cmd_resolve_cmdline.hh"
 #include "resolve_common.hh"
-
-#include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 
 #include <iostream>
 #include <cstdlib>
@@ -109,6 +108,6 @@ ResolveCommand::run(
 std::shared_ptr<args::ArgsHandler>
 ResolveCommand::make_doc_cmdline()
 {
-    return make_shared_ptr(new ResolveCommandLine);
+    return std::make_shared<ResolveCommandLine>();
 }
 

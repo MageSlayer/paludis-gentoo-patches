@@ -25,7 +25,6 @@
 #include <paludis/util/strip.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/tokeniser.hh>
-#include <paludis/util/make_shared_ptr.hh>
 
 #include <string>
 #include <list>
@@ -37,7 +36,7 @@ cranrepository::parse_depends(const std::string & s)
 {
     Context context("When parsing CRAN 'Depends:' string: '" + s + "':");
 
-    std::shared_ptr<DependencySpecTree> result(new DependencySpecTree(make_shared_ptr(new AllDepSpec)));
+    std::shared_ptr<DependencySpecTree> result(new DependencySpecTree(std::make_shared<AllDepSpec>()));
 
     std::list<std::string> specs;
 

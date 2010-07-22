@@ -35,7 +35,6 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
@@ -44,6 +43,7 @@
 #include <paludis/util/tribool.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/environment.hh>
 #include <paludis/notifier_callback.hh>
 #include <paludis/repository.hh>
@@ -253,10 +253,10 @@ Decider::_resolve_dependents()
             _apply_resolution_constraint(resolution, *c);
 
         if ((! remove) && (! resolution->decision()))
-            resolution->decision() = make_shared_ptr(new BreakDecision(
+            resolution->decision() = std::make_shared<BreakDecision>(
                         resolvent,
                         *s,
-                        true));
+                        true);
     }
 
     return changed;
@@ -531,10 +531,10 @@ Decider::_make_destination_for(
         throw InternalError(PALUDIS_HERE, stringify(repo->name()) + " is not a suitable destination for "
                 + stringify(*decision.origin_id()));
 
-    return make_shared_ptr(new Destination(make_named_values<Destination>(
+    return std::make_shared<Destination>(make_named_values<Destination>(
                     n::replacing() = _find_replacing(decision.origin_id(), repo),
                     n::repository() = repo->name()
-                    )));
+                    ));
 }
 
 const ChangeType
@@ -649,11 +649,11 @@ Decider::_same_slot(const std::shared_ptr<const PackageID> & a,
 const std::shared_ptr<Resolution>
 Decider::_create_resolution_for_resolvent(const Resolvent & r) const
 {
-    return make_shared_ptr(new Resolution(make_named_values<Resolution>(
+    return std::make_shared<Resolution>(make_named_values<Resolution>(
                     n::constraints() = _initial_constraints_for(r),
                     n::decision() = make_null_shared_ptr(),
                     n::resolvent() = r
-                    )));
+                    ));
 }
 
 const std::shared_ptr<Resolution>
@@ -686,14 +686,14 @@ Decider::_make_constraints_from_target(
     if (spec.if_package())
     {
         const std::shared_ptr<ConstraintSequence> result(new ConstraintSequence);
-        result->push_back(make_shared_ptr(new Constraint(make_named_values<Constraint>(
+        result->push_back(std::make_shared<Constraint>(make_named_values<Constraint>(
                             n::destination_type() = resolution->resolvent().destination_type(),
                             n::nothing_is_fine_too() = false,
                             n::reason() = reason,
                             n::spec() = spec,
                             n::untaken() = false,
                             n::use_existing() = _imp->fns.get_use_existing_fn()(resolution, *spec.if_package(), reason)
-                            ))));
+                            )));
         return result;
     }
     else if (spec.if_block())
@@ -712,14 +712,14 @@ Decider::_make_constraints_from_dependency(
     if (dep.spec().if_package())
     {
         const std::shared_ptr<ConstraintSequence> result(new ConstraintSequence);
-        result->push_back(make_shared_ptr(new Constraint(make_named_values<Constraint>(
+        result->push_back(std::make_shared<Constraint>(make_named_values<Constraint>(
                             n::destination_type() = resolution->resolvent().destination_type(),
                             n::nothing_is_fine_too() = false,
                             n::reason() = reason,
                             n::spec() = *dep.spec().if_package(),
                             n::untaken() = si_untaken == interest,
                             n::use_existing() = _imp->fns.get_use_existing_fn()(resolution, *dep.spec().if_package(), reason)
-                            ))));
+                            )));
         return result;
     }
     else if (dep.spec().if_block())
@@ -739,14 +739,14 @@ Decider::_make_constraints_from_blocker(
     DestinationTypes destination_types(_get_destination_types_for_blocker(spec));
     for (EnumIterator<DestinationType> t, t_end(last_dt) ; t != t_end ; ++t)
         if (destination_types[*t])
-            result->push_back(make_shared_ptr(new Constraint(make_named_values<Constraint>(
+            result->push_back(std::make_shared<Constraint>(make_named_values<Constraint>(
                                 n::destination_type() = *t,
                                 n::nothing_is_fine_too() = true,
                                 n::reason() = reason,
                                 n::spec() = spec,
                                 n::untaken() = false,
                                 n::use_existing() = ue_if_possible
-                                ))));
+                                )));
 
     return result;
 }
@@ -967,7 +967,7 @@ Decider::_made_wrong_decision(
         const std::shared_ptr<const Constraint> & constraint)
 {
     /* can we find a resolution that works for all our constraints? */
-    std::shared_ptr<Resolution> adapted_resolution(make_shared_ptr(new Resolution(*resolution)));
+    std::shared_ptr<Resolution> adapted_resolution(std::make_shared<Resolution>(*resolution));
     adapted_resolution->constraints()->add(constraint);
 
     const std::shared_ptr<Decision> decision(_try_to_find_decision_for(adapted_resolution));
@@ -1004,15 +1004,15 @@ Decider::_make_constraint_for_preloading(
     if (result->spec().if_package())
     {
         PackageDepSpec s(_make_spec_for_preloading(*result->spec().if_package()));
-        result->spec().if_package() = make_shared_ptr(new PackageDepSpec(s));
+        result->spec().if_package() = std::make_shared<PackageDepSpec>(s);
     }
     else
     {
         PackageDepSpec s(_make_spec_for_preloading(result->spec().if_block()->blocking()));
-        result->spec().if_block() = make_shared_ptr(new BlockDepSpec(
+        result->spec().if_block() = std::make_shared<BlockDepSpec>(
                     "!" + stringify(s),
                     s,
-                    result->spec().if_block()->strong()));
+                    result->spec().if_block()->strong());
     }
 
     return result;
@@ -1374,7 +1374,7 @@ namespace
     {
         std::shared_ptr<SlotName> visit(const SlotExactRequirement & s)
         {
-            return make_shared_ptr(new SlotName(s.slot()));
+            return std::make_shared<SlotName>(s.slot());
         }
 
         std::shared_ptr<SlotName> visit(const SlotAnyUnlockedRequirement &)
@@ -1487,17 +1487,17 @@ Decider::_try_to_find_decision_for(
         if (existing_resolvent_ids->empty())
         {
             /* nothing existing, but nothing's ok */
-            return make_shared_ptr(new NothingNoChangeDecision(
+            return std::make_shared<NothingNoChangeDecision>(
                         resolution->resolvent(),
                         ! resolution->constraints()->all_untaken()
-                        ));
+                        );
         }
     }
 
     if (installable_id && ! existing_id)
     {
         /* there's nothing suitable existing. */
-        return make_shared_ptr(new ChangesToMakeDecision(
+        return std::make_shared<ChangesToMakeDecision>(
                     resolution->resolvent(),
                     installable_id,
                     best,
@@ -1505,7 +1505,7 @@ Decider::_try_to_find_decision_for(
                     ! resolution->constraints()->all_untaken(),
                     make_null_shared_ptr(),
                     std::bind(&Decider::_fixup_changes_to_make_decision, this, resolution, std::placeholders::_1)
-                    ));
+                    );
     }
     else if (existing_id && ! installable_id)
     {
@@ -1532,14 +1532,14 @@ Decider::_try_to_find_decision_for(
                 break;
         }
 
-        return make_shared_ptr(new ExistingNoChangeDecision(
+        return std::make_shared<ExistingNoChangeDecision>(
                     resolution->resolvent(),
                     existing_id,
                     true,
                     true,
                     is_transient,
                     ! resolution->constraints()->all_untaken()
-                    ));
+                    );
     }
     else if ((! existing_id) && (! installable_id))
     {
@@ -1547,11 +1547,11 @@ Decider::_try_to_find_decision_for(
          * fix it by installing things. this might be an error, or we might be
          * able to remove things. */
         if (resolution->constraints()->nothing_is_fine_too() && _installed_but_allowed_to_remove(resolution))
-            return make_shared_ptr(new RemoveDecision(
+            return std::make_shared<RemoveDecision>(
                         resolution->resolvent(),
                         _installed_ids(resolution),
                         ! resolution->constraints()->all_untaken()
-                        ));
+                        );
         else
             return make_null_shared_ptr();
     }
@@ -1676,11 +1676,11 @@ Decider::_cannot_decide_for(
             i != i_end ; ++i)
         unsuitable_candidates->push_back(_make_unsuitable_candidate(resolution, *i, false));
 
-    return make_shared_ptr(new UnableToMakeDecision(
+    return std::make_shared<UnableToMakeDecision>(
                 resolution->resolvent(),
                 unsuitable_candidates,
                 ! resolution->constraints()->all_untaken()
-                ));
+                );
 }
 
 UnsuitableCandidate
@@ -2247,7 +2247,7 @@ Decider::_collect_depped_upon(
         const std::shared_ptr<const PackageID> & id,
         const std::shared_ptr<const PackageIDSequence> & candidates) const
 {
-    DependentChecker<PackageIDSequence> c(_imp->env, candidates, make_shared_ptr(new PackageIDSequence));
+    DependentChecker<PackageIDSequence> c(_imp->env, candidates, std::make_shared<PackageIDSequence>());
     if (id->dependencies_key())
         id->dependencies_key()->value()->root()->accept(c);
     else
@@ -2329,10 +2329,10 @@ namespace
             result->push_back(make_shared_copy(make_named_values<Constraint>(
                             n::destination_type() = destination_type,
                             n::nothing_is_fine_too() = true,
-                            n::reason() = make_shared_ptr(new LikeOtherDestinationTypeReason(
+                            n::reason() = std::make_shared<LikeOtherDestinationTypeReason>(
                                     resolvent,
                                     from_constraint->reason()
-                                    )),
+                                    ),
                             n::spec() = from_constraint->spec(),
                             n::untaken() = from_constraint->untaken(),
                             n::use_existing() = ue_if_possible

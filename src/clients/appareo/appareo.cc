@@ -31,7 +31,6 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/return_literal_function.hh>
 #include <paludis/repositories/e/e_repository_exceptions.hh>
 #include <paludis/standard_output_manager.hh>
@@ -57,7 +56,7 @@ namespace
 {
     std::shared_ptr<OutputManager> make_standard_output_manager(const Action &)
     {
-        return make_shared_ptr(new StandardOutputManager);
+        return std::make_shared<StandardOutputManager>();
     }
 
     FSEntry get_location_and_add_filters()

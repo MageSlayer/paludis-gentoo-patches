@@ -33,7 +33,6 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/options.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/tribool.hh>
 #include <paludis/util/make_named_values.hh>
@@ -839,7 +838,7 @@ PortageEnvironment::mask_for_breakage(const PackageID & id) const
                     _imp->ignore_breaks_portage.begin(), _imp->ignore_breaks_portage.end(),
                     std::inserter(bad_breakages, bad_breakages.end()));
             if (! bad_breakages.empty())
-                return make_shared_ptr(new BreaksPortageMask(join(breakages->begin(), breakages->end(), " ")));
+                return std::make_shared<BreaksPortageMask>(join(breakages->begin(), breakages->end(), " "));
         }
     }
 
@@ -852,7 +851,7 @@ PortageEnvironment::mask_for_user(const PackageID & d, const bool o) const
     for (PackageMask::const_iterator i(_imp->package_mask.begin()), i_end(_imp->package_mask.end()) ;
             i != i_end ; ++i)
         if (match_package(*this, **i, d, MatchPackageOptions()))
-            return make_shared_ptr(new UserConfigMask(o));
+            return std::make_shared<UserConfigMask>(o);
 
     return std::shared_ptr<const Mask>();
 }
@@ -986,7 +985,7 @@ PortageEnvironment::config_location_key() const
 const std::shared_ptr<OutputManager>
 PortageEnvironment::create_output_manager(const CreateOutputManagerInfo &) const
 {
-    return make_shared_ptr(new StandardOutputManager);
+    return std::make_shared<StandardOutputManager>();
 }
 
 namespace
@@ -1001,7 +1000,7 @@ namespace
         {
             Log::get_instance()->message("portage_environment.world.does_not_exist", ll_warning, lc_no_context)
                 << "World file '" << f << "' doesn't exist";
-            return make_shared_ptr(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
+            return std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>());
         }
 
         const std::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(SetName("world::environment"), "Environment"));

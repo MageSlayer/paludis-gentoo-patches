@@ -21,7 +21,6 @@
 #include <paludis/repositories/accounts/accounts_dep_key.hh>
 #include <paludis/repositories/accounts/accounts_installed_mask.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/stringify.hh>
@@ -31,6 +30,7 @@
 #include <paludis/util/mutex.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
@@ -86,7 +86,7 @@ namespace paludis
             repository(r),
             fs_location_key(new LiteralMetadataValueKey<FSEntry>("location", "Location", mkt_internal, l)),
             from_repositories_key(f),
-            mask(m ? make_shared_ptr(new AccountsInstalledMask) : make_null_shared_ptr()),
+            mask(m ? std::make_shared<AccountsInstalledMask>() : make_null_shared_ptr()),
             is_user(u),
             has_file_keys(false),
             has_metadata_keys(false)
@@ -424,7 +424,7 @@ AccountsID::slot_key() const
 std::shared_ptr<const Set<std::string> >
 AccountsID::breaks_portage() const
 {
-    return make_shared_ptr(new Set<std::string>);
+    return std::make_shared<Set<std::string>>();
 }
 
 bool
@@ -491,7 +491,7 @@ AccountsID::perform_action(Action & action) const
                             n::build_start_time() = build_start_time,
                             n::environment_file() = FSEntry("/dev/null"),
                             n::image_dir() = fs_location_key()->value(),
-                            n::merged_entries() = make_shared_ptr(new FSEntrySet),
+                            n::merged_entries() = std::make_shared<FSEntrySet>(),
                             n::options() = MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs,
                             n::output_manager() = output_manager,
                             n::package_id() = shared_from_this(),

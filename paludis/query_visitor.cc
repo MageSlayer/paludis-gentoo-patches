@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -31,7 +31,6 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <functional>
 #include <algorithm>
 #include <set>
@@ -166,7 +165,7 @@ QueryVisitor::visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type & node)
 
     if (r.spec())
     {
-        DependencySpecTree tree(make_shared_ptr(new AllDepSpec));
+        DependencySpecTree tree(std::make_shared<AllDepSpec>());
         tree.root()->append(r.spec());
         tree.root()->accept(*this);
     }
@@ -186,7 +185,7 @@ QueryVisitor::visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type & node)
 void
 QueryVisitor::visit(const DependencySpecTree::NodeType<BlockDepSpec>::Type & node)
 {
-    DependencySpecTree tree(make_shared_ptr(new AllDepSpec));
+    DependencySpecTree tree(std::make_shared<AllDepSpec>());
     tree.root()->append(std::static_pointer_cast<const PackageDepSpec>(node.spec()->blocking().clone()));
     tree.root()->accept(*this);
     _imp->result = !_imp->result;

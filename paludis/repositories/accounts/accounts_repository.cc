@@ -24,12 +24,12 @@
 #include <paludis/repositories/accounts/passwd_accounts_handler.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/active_object_ptr.hh>
 #include <paludis/util/deferred_construction_ptr.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/dep_tag.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/action.hh>
@@ -49,9 +49,9 @@ namespace
     std::shared_ptr<AccountsHandler> make_handler(const std::string & handler)
     {
         if (handler == "dummy")
-            return make_shared_ptr(new DummyAccountsHandler);
+            return std::make_shared<DummyAccountsHandler>();
         else if (handler == "passwd")
-            return make_shared_ptr(new PasswdAccountsHandler);
+            return std::make_shared<PasswdAccountsHandler>();
         else
             throw AccountsRepositoryConfigurationError("Unknown accounts handler '" + handler + "'");
     }
@@ -59,13 +59,13 @@ namespace
     std::shared_ptr<AccountsRepositoryStore>
     make_store(const AccountsRepository * const repo, const AccountsRepositoryParams & p)
     {
-        return make_shared_ptr(new AccountsRepositoryStore(p.environment(), repo, false));
+        return std::make_shared<AccountsRepositoryStore>(p.environment(), repo, false);
     }
 
     std::shared_ptr<AccountsRepositoryStore>
     make_installed_store(const AccountsRepository * const repo, const InstalledAccountsRepositoryParams & p)
     {
-        return make_shared_ptr(new AccountsRepositoryStore(p.environment(), repo, true));
+        return std::make_shared<AccountsRepositoryStore>(p.environment(), repo, true);
     }
 }
 
@@ -236,7 +236,7 @@ AccountsRepository::repository_factory_dependencies(
         const Environment * const,
         const std::function<std::string (const std::string &)> &)
 {
-    return make_shared_ptr(new RepositoryNameSet);
+    return std::make_shared<RepositoryNameSet>();
 }
 
 std::shared_ptr<const RepositoryNameSet>
@@ -244,7 +244,7 @@ AccountsRepository::repository_factory_installed_dependencies(
         const Environment * const,
         const std::function<std::string (const std::string &)> &)
 {
-    return make_shared_ptr(new RepositoryNameSet);
+    return std::make_shared<RepositoryNameSet>();
 }
 
 const std::shared_ptr<const MetadataValueKey<std::string> >

@@ -31,9 +31,9 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/return_literal_function.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
@@ -86,8 +86,8 @@ namespace paludis
             suggests_labels(new DependenciesLabelSequence),
             depends_labels(new DependenciesLabelSequence)
         {
-            suggests_labels->push_back(make_shared_ptr(new DependenciesSuggestionLabel("Suggests", return_literal_function(true))));
-            depends_labels->push_back(make_shared_ptr(new DependenciesBuildLabel("Depends", return_literal_function(true))));
+            suggests_labels->push_back(std::make_shared<DependenciesSuggestionLabel>("Suggests", return_literal_function(true)));
+            depends_labels->push_back(std::make_shared<DependenciesBuildLabel>("Depends", return_literal_function(true)));
         }
 
         Implementation(const Environment * const e,
@@ -101,8 +101,8 @@ namespace paludis
             suggests_labels(new DependenciesLabelSequence),
             depends_labels(new DependenciesLabelSequence)
         {
-            suggests_labels->push_back(make_shared_ptr(new DependenciesSuggestionLabel("Suggests", return_literal_function(true))));
-            depends_labels->push_back(make_shared_ptr(new DependenciesBuildLabel("Depends", return_literal_function(true))));
+            suggests_labels->push_back(std::make_shared<DependenciesSuggestionLabel>("Suggests", return_literal_function(true)));
+            depends_labels->push_back(std::make_shared<DependenciesBuildLabel>("Depends", return_literal_function(true)));
         }
     };
 }
@@ -115,7 +115,7 @@ CRANPackageID::CRANPackageID(const Environment * const env, const std::shared_pt
 
     if (! f.is_regular_file())
     {
-        add_mask(make_shared_ptr(new BrokenMask('B', "Broken", "DESCRIPTION file not a file")));
+        add_mask(std::make_shared<BrokenMask>('B', "Broken", "DESCRIPTION file not a file"));
         Log::get_instance()->message("cran.id.not_a_file", ll_warning, lc_context) << "Unexpected irregular file: '" << stringify(f) << "'";
         return;
     }
@@ -144,7 +144,7 @@ CRANPackageID::CRANPackageID(const Environment * const env, const std::shared_pt
         else
         {
             Log::get_instance()->message("cran.id.broken", ll_warning, lc_context) << "No Package: or Bundle: key in '" << stringify(f) << "'";
-            add_mask(make_shared_ptr(new BrokenMask('B', "Broken", "No Package: or Bundle: key")));
+            add_mask(std::make_shared<BrokenMask>('B', "Broken", "No Package: or Bundle: key"));
             return;
         }
 
@@ -153,7 +153,7 @@ CRANPackageID::CRANPackageID(const Environment * const env, const std::shared_pt
             Context local_context("When handling Version: key:");
             Log::get_instance()->message("cran.id.broken", ll_warning, lc_context) << "No Version: key in '" << stringify(f) << "'";
             _imp->version = VersionSpec("0", VersionSpecOptions());
-            add_mask(make_shared_ptr(new BrokenMask('B', "Broken", "No Version: key")));
+            add_mask(std::make_shared<BrokenMask>('B', "Broken", "No Version: key"));
             return;
         }
         else
@@ -202,19 +202,19 @@ CRANPackageID::CRANPackageID(const Environment * const env, const std::shared_pt
         {
             Context local_context("When handling Date: key:");
             /* no guarantee on the format */
-            add_metadata_key(make_shared_ptr(new LiteralMetadataValueKey<std::string>("Date", "Date", mkt_normal, file.get("Date"))));
+            add_metadata_key(std::make_shared<LiteralMetadataValueKey<std::string>>("Date", "Date", mkt_normal, file.get("Date")));
         }
 
         if (! file.get("Author").empty())
         {
             Context local_context("When handling Author: key:");
-            add_metadata_key(make_shared_ptr(new LiteralMetadataValueKey<std::string>("Author", "Author", mkt_author, file.get("Author"))));
+            add_metadata_key(std::make_shared<LiteralMetadataValueKey<std::string>>("Author", "Author", mkt_author, file.get("Author")));
         }
 
         if (! file.get("Maintainer").empty())
         {
             Context local_context("When handling Maintainer: key:");
-            add_metadata_key(make_shared_ptr(new LiteralMetadataValueKey<std::string>("Maintainer", "Maintainer", mkt_author, file.get("Maintainer"))));
+            add_metadata_key(std::make_shared<LiteralMetadataValueKey<std::string>>("Maintainer", "Maintainer", mkt_author, file.get("Maintainer")));
         }
 
         if (! file.get("Contains").empty())
@@ -228,7 +228,7 @@ CRANPackageID::CRANPackageID(const Environment * const env, const std::shared_pt
                     t != t_end ; ++t)
             {
                 if (*t != stringify(name().package()))
-                    _imp->contains_key->push_back(make_shared_ptr(new CRANPackageID(_imp->env, _imp->cran_repository, this, *t)));
+                    _imp->contains_key->push_back(std::make_shared<CRANPackageID>(_imp->env, _imp->cran_repository, this, *t));
                 else
                 {
                     /* yay CRAN... */
@@ -249,8 +249,8 @@ CRANPackageID::CRANPackageID(const Environment * const env, const std::shared_pt
         if (! file.get("SystemRequirements").empty())
         {
             Context local_context("When handling SystemRequirements: key:");
-            add_metadata_key(make_shared_ptr(new LiteralMetadataValueKey<std::string>("SystemRequirements", "System Requirements", mkt_normal,
-                            file.get("SystemRequirements"))));
+            add_metadata_key(std::make_shared<LiteralMetadataValueKey<std::string>>("SystemRequirements", "System Requirements", mkt_normal,
+                            file.get("SystemRequirements")));
         }
 
         if (! file.get("Depends").empty())
@@ -271,7 +271,7 @@ CRANPackageID::CRANPackageID(const Environment * const env, const std::shared_pt
     {
         Log::get_instance()->message("cran.id.broken", ll_warning, lc_context) << "Broken CRAN description file '" << stringify(f) << "': '"
             << e.message() << "' (" << e.what() << ")";
-        add_mask(make_shared_ptr(new BrokenMask('B', "Broken", "Got exception '" + stringify(e.message()) + "' (" + e.what() + "')")));
+        add_mask(std::make_shared<BrokenMask>('B', "Broken", "Got exception '" + stringify(e.message()) + "' (" + e.what() + "')"));
     }
 }
 

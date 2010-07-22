@@ -21,7 +21,6 @@
 #include <paludis/repositories/e/vdb_repository.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/map.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/sequence.hh>
@@ -52,7 +51,7 @@ namespace
 
     std::shared_ptr<OutputManager> make_standard_output_manager(const Action &)
     {
-        return make_shared_ptr(new StandardOutputManager);
+        return std::make_shared<StandardOutputManager>();
     }
 
     std::string from_keys(const std::shared_ptr<const Map<std::string, std::string> > & m,
@@ -150,7 +149,7 @@ namespace
                         n::destination() = v_repo,
                         n::make_output_manager() = &make_standard_output_manager,
                         n::perform_uninstall() = &cannot_uninstall,
-                        n::replacing() = make_shared_ptr(new PackageIDSequence),
+                        n::replacing() = std::make_shared<PackageIDSequence>(),
                         n::want_phase() = &want_all_phases
                     ));
 

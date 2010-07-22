@@ -20,7 +20,6 @@
 #include <paludis/environments/paludis/extra_distribution_data.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/distribution-impl.hh>
 
@@ -39,7 +38,7 @@ namespace paludis
 
         static std::shared_ptr<PaludisDistribution> make_data(const std::shared_ptr<const KeyValueConfigFile> & k)
         {
-            return make_shared_ptr(new PaludisDistribution(make_named_values<PaludisDistribution>(
+            return std::make_shared<PaludisDistribution>(make_named_values<PaludisDistribution>(
                             n::bashrc_filename() = k->get("bashrc_filename"),
                             n::info_messages_are_spam() = destringify<bool>(k->get("info_messages_are_spam")),
                             n::keywords_filename_part() = k->get("keywords_filename_part"),
@@ -53,7 +52,7 @@ namespace paludis
                             n::repositories_directory() = k->get("repositories_directory"),
                             n::repository_defaults_filename_part() = k->get("repository_defaults_filename_part"),
                             n::use_filename_part() = k->get("use_filename_part")
-                            )));
+                            ));
         }
     };
 }

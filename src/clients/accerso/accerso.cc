@@ -30,7 +30,6 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/pretty_print.hh>
 #include <paludis/util/return_literal_function.hh>
 #include <paludis/standard_output_manager.hh>
@@ -144,7 +143,7 @@ main(int argc, char *argv[])
 
                 OutputManagerFromEnvironment output_manager_holder(&env, *i, oe_exclusive, ClientOutputFeatures());
                 FetchAction a(make_named_values<FetchActionOptions>(
-                            n::errors() = make_shared_ptr(new Sequence<FetchActionFailure>),
+                            n::errors() = std::make_shared<Sequence<FetchActionFailure>>(),
                             n::exclude_unmirrorable() = true,
                             n::fetch_parts() = FetchParts() + fp_regulars + fp_unneeded,
                             n::ignore_not_in_manifest() = false,

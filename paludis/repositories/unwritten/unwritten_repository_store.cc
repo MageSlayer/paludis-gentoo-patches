@@ -28,7 +28,6 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/hashes.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/make_named_values.hh>
@@ -118,7 +117,7 @@ UnwrittenRepositoryStore::_populate_one(const Environment * const env, const FSE
             PackageNames::iterator p(_imp->package_names.find((*i).name().category()));
             if (_imp->package_names.end() == p)
                 p = _imp->package_names.insert(std::make_pair((*i).name().category(),
-                            make_shared_ptr(new QualifiedPackageNameSet))).first;
+                            std::make_shared<QualifiedPackageNameSet>())).first;
             pkgs = p->second;
         }
 
@@ -128,12 +127,12 @@ UnwrittenRepositoryStore::_populate_one(const Environment * const env, const FSE
             IDs::iterator p(_imp->ids.find((*i).name()));
             if (_imp->ids.end() == p)
                 p = _imp->ids.insert(std::make_pair((*i).name(),
-                            make_shared_ptr(new PackageIDSequence))).first;
+                            std::make_shared<PackageIDSequence>())).first;
 
             ids = p->second;
         }
 
-        ids->push_back(make_shared_ptr(new UnwrittenID(make_named_values<UnwrittenIDParams>(
+        ids->push_back(std::make_shared<UnwrittenID>(make_named_values<UnwrittenIDParams>(
                             n::added_by() = (*i).added_by(),
                             n::bug_ids() = (*i).bug_ids(),
                             n::comment() = (*i).comment(),
@@ -146,7 +145,7 @@ UnwrittenRepositoryStore::_populate_one(const Environment * const env, const FSE
                             n::repository() = _imp->repo,
                             n::slot() = (*i).slot(),
                             n::version() = (*i).version()
-                        ))));
+                        )));
 
         old_name = (*i).name();
     }
@@ -173,7 +172,7 @@ UnwrittenRepositoryStore::category_names() const
 std::shared_ptr<const CategoryNamePartSet>
 UnwrittenRepositoryStore::unimportant_category_names() const
 {
-    std::shared_ptr<CategoryNamePartSet> result(make_shared_ptr(new CategoryNamePartSet));
+    std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
     result->insert(CategoryNamePart("virtual"));
     return result;
 }
@@ -183,7 +182,7 @@ UnwrittenRepositoryStore::package_names(const CategoryNamePart & c) const
 {
     PackageNames::iterator p(_imp->package_names.find(c));
     if (_imp->package_names.end() == p)
-        return make_shared_ptr(new QualifiedPackageNameSet);
+        return std::make_shared<QualifiedPackageNameSet>();
     else
         return p->second;
 }
@@ -193,7 +192,7 @@ UnwrittenRepositoryStore::package_ids(const QualifiedPackageName & p) const
 {
     IDs::iterator i(_imp->ids.find(p));
     if (_imp->ids.end() == i)
-        return make_shared_ptr(new PackageIDSequence);
+        return std::make_shared<PackageIDSequence>();
     else
         return i->second;
 }

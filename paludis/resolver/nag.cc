@@ -25,7 +25,6 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/wrapped_output_iterator-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/sequence.hh>
@@ -214,8 +213,8 @@ namespace
         if (node_data->second.index() == node_data->second.lowlink())
         {
             StronglyConnectedComponent scc(make_named_values<StronglyConnectedComponent>(
-                        n::nodes() = make_shared_ptr(new Set<NAGIndex>),
-                        n::requirements() = make_shared_ptr(new Set<NAGIndex>)
+                        n::nodes() = std::make_shared<Set<NAGIndex>>(),
+                        n::requirements() = std::make_shared<Set<NAGIndex>>()
                         ));
 
             std::copy(stack.begin(), top_of_stack_before_node, scc.nodes()->inserter());

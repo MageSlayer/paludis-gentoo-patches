@@ -42,7 +42,6 @@
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/destringify.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/sequence-impl.hh>
@@ -153,7 +152,7 @@ namespace paludis
                 std::shared_ptr<const DestinationsSet> d) :
             env(e),
             dep_list(e, o),
-            targets(new SetSpecTree(make_shared_ptr(new AllDepSpec))),
+            targets(new SetSpecTree(std::make_shared<AllDepSpec>())),
             destinations(d),
             pretend(false),
             fetch_only(false),
@@ -194,7 +193,7 @@ InstallTask::~InstallTask()
 void
 InstallTask::clear()
 {
-    _imp->targets.reset(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
+    _imp->targets.reset(new SetSpecTree(std::make_shared<AllDepSpec>()));
     _imp->had_set_targets = false;
     _imp->had_package_targets = false;
     _imp->dep_list.clear();
@@ -231,42 +230,42 @@ namespace
             case 'S':
                 if (s.length() != 1)
                     throw InternalError(PALUDIS_HERE, "S takes no extra value");
-                return make_shared_ptr(new DepListEntryHandledSuccess);
+                return std::make_shared<DepListEntryHandledSuccess>();
 
             case 'E':
                 if (s.length() != 1)
                     throw InternalError(PALUDIS_HERE, "E takes no extra value");
-                return make_shared_ptr(new DepListEntryHandledFetchFailed);
+                return std::make_shared<DepListEntryHandledFetchFailed>();
 
             case 'T':
                 if (s.length() != 1)
                     throw InternalError(PALUDIS_HERE, "T takes no extra value");
-                return make_shared_ptr(new DepListEntryHandledFetchSuccess);
+                return std::make_shared<DepListEntryHandledFetchSuccess>();
 
             case 'U':
-                return make_shared_ptr(new DepListEntryHandledSkippedUnsatisfied(
-                            parse_user_package_dep_spec(s.substr(1), env, UserPackageDepSpecOptions())));
+                return std::make_shared<DepListEntryHandledSkippedUnsatisfied>(
+                            parse_user_package_dep_spec(s.substr(1), env, UserPackageDepSpecOptions()));
 
             case 'D':
-                return make_shared_ptr(new DepListEntryHandledSkippedDependent(
+                return std::make_shared<DepListEntryHandledSkippedDependent>(
                             *(*env)[selection::RequireExactlyOne(generator::Matches(
                                     parse_user_package_dep_spec(s.substr(1), env,
-                                        UserPackageDepSpecOptions()), MatchPackageOptions()))]->begin()));
+                                        UserPackageDepSpecOptions()), MatchPackageOptions()))]->begin());
 
             case 'F':
                 if (s.length() != 1)
                     throw InternalError(PALUDIS_HERE, "F takes no extra value");
-                return make_shared_ptr(new DepListEntryHandledFailed);
+                return std::make_shared<DepListEntryHandledFailed>();
 
             case 'P':
                 if (s.length() != 1)
                     throw InternalError(PALUDIS_HERE, "P takes no extra value");
-                return make_shared_ptr(new DepListEntryUnhandled);
+                return std::make_shared<DepListEntryUnhandled>();
 
             case 'N':
                 if (s.length() != 1)
                     throw InternalError(PALUDIS_HERE, "N takes no extra value");
-                return make_shared_ptr(new DepListEntryNoHandlingRequired);
+                return std::make_shared<DepListEntryNoHandlingRequired>();
 
             default:
                 throw InternalError(PALUDIS_HERE, "Unknown value '" + s + "'");
@@ -329,7 +328,7 @@ InstallTask::set_targets_from_serialisation(const std::string & format,
                 n::kind() = kind,
                 n::package_id() = package_id,
                 n::state() = state,
-                n::tags() = make_shared_ptr(new DepListEntryTags)
+                n::tags() = std::make_shared<DepListEntryTags>()
                 ));
     }
 }
@@ -533,7 +532,7 @@ InstallTask::_add_target(const std::string & target)
             throw HadBothPackageAndSetTargets();
         _imp->had_set_targets = true;
 
-        _imp->targets->root()->append(make_shared_ptr(new NamedSetDepSpec(SetName(target))));
+        _imp->targets->root()->append(std::make_shared<NamedSetDepSpec>(SetName(target)));
         if (! _imp->override_target_type)
             _imp->dep_list.options()->target_type() = dl_target_set;
 
@@ -564,7 +563,7 @@ InstallTask::_add_package_id(const std::shared_ptr<const PackageID> & target)
                 n::version_spec() = target->version()));
 
     if (target->slot_key())
-        part_spec.slot_requirement(make_shared_ptr(new UserSlotExactRequirement(target->slot_key()->value())));
+        part_spec.slot_requirement(std::make_shared<UserSlotExactRequirement>(target->slot_key()->value()));
 
     std::shared_ptr<PackageDepSpec> spec(make_shared_copy(PackageDepSpec(part_spec)));
     spec->set_tag(std::shared_ptr<const DepTag>(new TargetDepTag));
@@ -761,7 +760,7 @@ InstallTask::_pretend()
             if (dep->package_id()->supports_action(fetch_action_query))
             {
                 FetchActionOptions options(make_named_values<FetchActionOptions>(
-                            n::errors() = make_shared_ptr(new Sequence<FetchActionFailure>),
+                            n::errors() = std::make_shared<Sequence<FetchActionFailure>>(),
                             n::exclude_unmirrorable() = false,
                             n::fetch_parts() = FetchParts() + fp_regulars + fp_extras,
                             n::ignore_not_in_manifest() = false,
@@ -783,7 +782,7 @@ InstallTask::_pretend()
                         on_fetch_action_error(output_manager_holder.output_manager_if_constructed(), e,
                                 options.errors());
                     else
-                        on_fetch_action_error(make_shared_ptr(new StandardOutputManager), e,
+                        on_fetch_action_error(std::make_shared<StandardOutputManager>(), e,
                                 options.errors());
                 }
             }
@@ -1106,7 +1105,7 @@ InstallTask::_main_actions_all(const int y, const DepList::Iterator dep_last_pac
             if (output_manager_holder && output_manager_holder->output_manager_if_constructed())
                 on_non_fetch_action_error(output_manager_holder->output_manager_if_constructed(), e);
             else
-                on_non_fetch_action_error(make_shared_ptr(new StandardOutputManager), e);
+                on_non_fetch_action_error(std::make_shared<StandardOutputManager>(), e);
             ++f;
         }
 
@@ -1166,7 +1165,7 @@ InstallTask::_do_world_updates()
                                 "() \t\r\n"));
                 }
 
-                std::shared_ptr<SetSpecTree> all(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
+                std::shared_ptr<SetSpecTree> all(new SetSpecTree(std::make_shared<AllDepSpec>()));
                 std::list<std::string> tokens;
                 tokenise_whitespace(*_imp->add_to_world_spec, std::back_inserter(tokens));
                 if ((! tokens.empty()) && ("(" == *tokens.begin()) && (")" == *previous(tokens.end())))
@@ -1179,10 +1178,10 @@ InstallTask::_do_world_updates()
                         t != t_end ; ++t)
                 {
                     if (s_had_package_targets)
-                        all->root()->append(make_shared_ptr(new PackageDepSpec(parse_user_package_dep_spec(*t, _imp->env,
-                                            UserPackageDepSpecOptions()))));
+                        all->root()->append(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec(*t, _imp->env,
+                                            UserPackageDepSpecOptions())));
                     else
-                        all->root()->append(make_shared_ptr(new NamedSetDepSpec(SetName(*t))));
+                        all->root()->append(std::make_shared<NamedSetDepSpec>(SetName(*t)));
                 }
 
                 if (s_had_package_targets)
@@ -1930,7 +1929,7 @@ FetchActionOptions
 InstallTask::make_fetch_action_options(const DepListEntry &, OutputManagerFromEnvironment & o) const
 {
     return make_named_values<FetchActionOptions>(
-            n::errors() = make_shared_ptr(new Sequence<FetchActionFailure>),
+            n::errors() = std::make_shared<Sequence<FetchActionFailure>>(),
             n::exclude_unmirrorable() = false,
             n::fetch_parts() = FetchParts() + fp_regulars + fp_extras,
             n::ignore_not_in_manifest() = false,

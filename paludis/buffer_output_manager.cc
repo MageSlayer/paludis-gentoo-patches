@@ -21,7 +21,6 @@
 #include <paludis/util/buffer_output_stream.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/exception.hh>
 
@@ -117,7 +116,7 @@ BufferOutputManager::factory_create(
         throw ConfigurationError("No child specified for BufferOutputManager");
     const std::shared_ptr<OutputManager> child(create_child(child_str));
 
-    return make_shared_ptr(new BufferOutputManager(child));
+    return std::make_shared<BufferOutputManager>(child);
 }
 
 template class PrivateImplementationPattern<BufferOutputManager>;

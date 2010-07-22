@@ -29,6 +29,7 @@
 #include <paludis/util/simple_parser.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/safe_ofstream.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/action.hh>
 #include <paludis/syncer.hh>
@@ -46,7 +47,7 @@ namespace
     std::shared_ptr<RepositoryRepositoryStore>
     make_store(const RepositoryRepository * const repo, const RepositoryRepositoryParams & p)
     {
-        return make_shared_ptr(new RepositoryRepositoryStore(p.environment(), repo));
+        return std::make_shared<RepositoryRepositoryStore>(p.environment(), repo);
     }
 }
 
@@ -316,7 +317,7 @@ RepositoryRepository::repository_factory_dependencies(
         const Environment * const,
         const std::function<std::string (const std::string &)> &)
 {
-    return make_shared_ptr(new RepositoryNameSet);
+    return std::make_shared<RepositoryNameSet>();
 }
 
 void

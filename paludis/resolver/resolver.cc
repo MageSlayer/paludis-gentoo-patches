@@ -30,7 +30,6 @@
 #include <paludis/resolver/job_lists.hh>
 #include <paludis/resolver/nag.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/make_named_values.hh>
@@ -65,17 +64,17 @@ namespace paludis
             fns(f),
             resolved(new Resolved(make_named_values<Resolved>(
                             n::job_lists() = make_shared_copy(make_named_values<JobLists>(
-                                    n::execute_job_list() = make_shared_ptr(new JobList<ExecuteJob>),
-                                    n::pretend_job_list() = make_shared_ptr(new JobList<PretendJob>)
+                                    n::execute_job_list() = std::make_shared<JobList<ExecuteJob>>(),
+                                    n::pretend_job_list() = std::make_shared<JobList<PretendJob>>()
                                     )),
-                            n::nag() = make_shared_ptr(new NAG),
-                            n::resolutions_by_resolvent() = make_shared_ptr(new ResolutionsByResolvent),
-                            n::taken_change_or_remove_decisions() = make_shared_ptr(new OrderedChangeOrRemoveDecisions),
-                            n::taken_unable_to_make_decisions() = make_shared_ptr(new Decisions<UnableToMakeDecision>),
-                            n::taken_unconfirmed_decisions() = make_shared_ptr(new Decisions<ConfirmableDecision>),
-                            n::taken_unorderable_decisions() = make_shared_ptr(new OrderedChangeOrRemoveDecisions),
-                            n::untaken_change_or_remove_decisions() = make_shared_ptr(new Decisions<ChangeOrRemoveDecision>),
-                            n::untaken_unable_to_make_decisions() = make_shared_ptr(new Decisions<UnableToMakeDecision>)
+                            n::nag() = std::make_shared<NAG>(),
+                            n::resolutions_by_resolvent() = std::make_shared<ResolutionsByResolvent>(),
+                            n::taken_change_or_remove_decisions() = std::make_shared<OrderedChangeOrRemoveDecisions>(),
+                            n::taken_unable_to_make_decisions() = std::make_shared<Decisions<UnableToMakeDecision>>(),
+                            n::taken_unconfirmed_decisions() = std::make_shared<Decisions<ConfirmableDecision>>(),
+                            n::taken_unorderable_decisions() = std::make_shared<OrderedChangeOrRemoveDecisions>(),
+                            n::untaken_change_or_remove_decisions() = std::make_shared<Decisions<ChangeOrRemoveDecision>>(),
+                            n::untaken_unable_to_make_decisions() = std::make_shared<Decisions<UnableToMakeDecision>>()
                             ))),
             decider(new Decider(e, f, resolved->resolutions_by_resolvent())),
             orderer(new Orderer(e, f, resolved))
@@ -96,7 +95,7 @@ Resolver::~Resolver()
 void
 Resolver::add_target(const PackageOrBlockDepSpec & spec, const std::string & extra_information)
 {
-    _imp->decider->add_target_with_reason(spec, make_shared_ptr(new TargetReason(extra_information)));
+    _imp->decider->add_target_with_reason(spec, std::make_shared<TargetReason>(extra_information));
 }
 
 namespace
@@ -131,7 +130,7 @@ namespace
                 throw NoSuchSetError(stringify(n.spec()->name()));
 
             set->root()->accept(SetExpander(env, decider,
-                        make_shared_ptr(new SetReason(n.spec()->name(), reason)), recurse));
+                        std::make_shared<SetReason>(n.spec()->name(), reason), recurse));
 
             recurse.erase(n.spec()->name());
         }
@@ -159,7 +158,7 @@ Resolver::add_target(const SetName & set_name, const std::string & extra_informa
         throw NoSuchSetError(stringify(set_name));
 
     RecursingNames recurse;
-    set->root()->accept(SetExpander(_imp->env, _imp->decider, make_shared_ptr(new TargetReason(extra_information)), recurse));
+    set->root()->accept(SetExpander(_imp->env, _imp->decider, std::make_shared<TargetReason>(extra_information), recurse));
 }
 
 void

@@ -46,7 +46,6 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/tribool.hh>
@@ -54,6 +53,7 @@
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/return_literal_function.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 
 #include <set>
 #include <iterator>
@@ -138,17 +138,17 @@ namespace paludis
             run_dependencies_labels(new DependenciesLabelSequence),
             post_dependencies_labels(new DependenciesLabelSequence)
         {
-            raw_dependencies_labels->push_back(make_shared_ptr(new DependenciesBuildLabel("build",
-                            return_literal_function(true))));
-            raw_dependencies_labels->push_back(make_shared_ptr(new DependenciesRunLabel("run",
-                            return_literal_function(true))));
+            raw_dependencies_labels->push_back(std::make_shared<DependenciesBuildLabel>("build",
+                            return_literal_function(true)));
+            raw_dependencies_labels->push_back(std::make_shared<DependenciesRunLabel>("run",
+                            return_literal_function(true)));
 
-            build_dependencies_labels->push_back(make_shared_ptr(new DependenciesBuildLabel("DEPEND",
-                            return_literal_function(true))));
-            run_dependencies_labels->push_back(make_shared_ptr(new DependenciesRunLabel("RDEPEND",
-                            return_literal_function(true))));
-            post_dependencies_labels->push_back(make_shared_ptr(new DependenciesPostLabel("PDEPEND",
-                            return_literal_function(true))));
+            build_dependencies_labels->push_back(std::make_shared<DependenciesBuildLabel>("DEPEND",
+                            return_literal_function(true)));
+            run_dependencies_labels->push_back(std::make_shared<DependenciesRunLabel>("RDEPEND",
+                            return_literal_function(true)));
+            post_dependencies_labels->push_back(std::make_shared<DependenciesPostLabel>("PDEPEND",
+                            return_literal_function(true)));
         }
     };
 }
@@ -296,40 +296,40 @@ EbuildID::need_keys_added() const
         }
     }
 
-    add_metadata_key(make_shared_ptr(new LiteralMetadataValueKey<std::string>("EAPI", "EAPI", mkt_internal, _imp->eapi->name())));
+    add_metadata_key(std::make_shared<LiteralMetadataValueKey<std::string>>("EAPI", "EAPI", mkt_internal, _imp->eapi->name()));
 
-    _imp->repository_mask = make_shared_ptr(new EMutableRepositoryMaskInfoKey(shared_from_this(), "repository_mask", "Repository masked",
-        std::static_pointer_cast<const ERepository>(repository())->repository_masked(*this), mkt_internal));
+    _imp->repository_mask = std::make_shared<EMutableRepositoryMaskInfoKey>(shared_from_this(), "repository_mask", "Repository masked",
+        std::static_pointer_cast<const ERepository>(repository())->repository_masked(*this), mkt_internal);
     add_metadata_key(_imp->repository_mask);
-    _imp->profile_mask = make_shared_ptr(new EMutableRepositoryMaskInfoKey(shared_from_this(), "profile_mask", "Profile masked",
-        std::static_pointer_cast<const ERepository>(repository())->profile()->profile_masked(*this), mkt_internal));
+    _imp->profile_mask = std::make_shared<EMutableRepositoryMaskInfoKey>(shared_from_this(), "profile_mask", "Profile masked",
+        std::static_pointer_cast<const ERepository>(repository())->profile()->profile_masked(*this), mkt_internal);
     add_metadata_key(_imp->profile_mask);
 
     std::shared_ptr<const Map<ChoiceNameWithPrefix, std::string> > maybe_use_descriptions;
     if (_imp->eapi->supported())
     {
-        _imp->raw_use_expand = make_shared_ptr(new LiteralMetadataStringSetKey(
+        _imp->raw_use_expand = std::make_shared<LiteralMetadataStringSetKey>(
                     _imp->eapi->supported()->ebuild_metadata_variables()->use_expand()->name(),
                     _imp->eapi->supported()->ebuild_metadata_variables()->use_expand()->description(),
                     mkt_internal,
-                    e_repository()->profile()->use_expand()));
-        _imp->raw_use_expand_hidden = make_shared_ptr(new LiteralMetadataStringSetKey(
+                    e_repository()->profile()->use_expand());
+        _imp->raw_use_expand_hidden = std::make_shared<LiteralMetadataStringSetKey>(
                     _imp->eapi->supported()->ebuild_metadata_variables()->use_expand_hidden()->name(),
                     _imp->eapi->supported()->ebuild_metadata_variables()->use_expand_hidden()->description(),
                     mkt_internal,
-                    e_repository()->profile()->use_expand_hidden()));
+                    e_repository()->profile()->use_expand_hidden());
 
         std::shared_ptr<const MetadataXML> m(MetadataXMLPool::get_instance()->metadata_if_exists(
                     _imp->fs_location->value().dirname() / "metadata.xml"));
         if (m)
         {
             if (! m->long_description().empty())
-                add_metadata_key(_imp->long_description = make_shared_ptr(new LiteralMetadataValueKey<std::string>("long_description",
-                                "Long Description", mkt_normal, m->long_description())));
+                add_metadata_key(_imp->long_description = std::make_shared<LiteralMetadataValueKey<std::string>>("long_description",
+                                "Long Description", mkt_normal, m->long_description()));
             if (! m->herds()->empty())
-                add_metadata_key(make_shared_ptr(new LiteralMetadataStringSequenceKey("herds", "Herds", mkt_normal, m->herds())));
+                add_metadata_key(std::make_shared<LiteralMetadataStringSequenceKey>("herds", "Herds", mkt_normal, m->herds()));
             if (! m->maintainers()->empty())
-                add_metadata_key(make_shared_ptr(new LiteralMetadataStringSequenceKey("maintainers", "Maintainers", mkt_normal, m->maintainers())));
+                add_metadata_key(std::make_shared<LiteralMetadataStringSequenceKey>("maintainers", "Maintainers", mkt_normal, m->maintainers()));
             maybe_use_descriptions = m->uses();
         }
 
@@ -469,7 +469,7 @@ EbuildID::need_masks_added() const
 
     if (! eapi()->supported())
     {
-        add_mask(make_shared_ptr(new EUnsupportedMask('E', "eapi", eapi()->name())));
+        add_mask(std::make_shared<EUnsupportedMask>('E', "eapi", eapi()->name()));
         return;
     }
 
@@ -477,20 +477,20 @@ EbuildID::need_masks_added() const
     {
         if (! _imp->environment->accept_keywords(keywords_key()->value(), *this))
         {
-            add_mask(make_shared_ptr(new EUnacceptedMask('K',
+            add_mask(std::make_shared<EUnacceptedMask>('K',
                             DistributionData::get_instance()->distribution_from_string(
-                                _imp->environment->distribution())->concept_keyword(), keywords_key())));
+                                _imp->environment->distribution())->concept_keyword(), keywords_key()));
         }
         else if (keywords_key()->value()->end() == std::find_if(keywords_key()->value()->begin(),
                     keywords_key()->value()->end(), &is_stable_keyword))
         {
-            add_overridden_mask(make_shared_ptr(new OverriddenMask(
+            add_overridden_mask(std::make_shared<OverriddenMask>(
                             make_named_values<OverriddenMask>(
-                                n::mask() = make_shared_ptr(new EUnacceptedMask('~',
+                                n::mask() = std::make_shared<EUnacceptedMask>('~',
                                             DistributionData::get_instance()->distribution_from_string(
-                                                _imp->environment->distribution())->concept_keyword() + " (unstable accepted)", keywords_key())),
+                                                _imp->environment->distribution())->concept_keyword() + " (unstable accepted)", keywords_key()),
                                 n::override_reason() = mro_accepted_unstable
-                                ))));
+                                )));
         }
     }
 
@@ -499,20 +499,20 @@ EbuildID::need_masks_added() const
         LicenceChecker c(_imp->environment, &Environment::accept_license, this);
         license_key()->value()->root()->accept(c);
         if (! c.ok)
-            add_mask(make_shared_ptr(new EUnacceptedMask('L',
+            add_mask(std::make_shared<EUnacceptedMask>('L',
                             DistributionData::get_instance()->distribution_from_string(
-                                _imp->environment->distribution())->concept_license(), license_key())));
+                                _imp->environment->distribution())->concept_license(), license_key()));
     }
 
     if (! _imp->environment->unmasked_by_user(*this))
     {
         /* repo unless user */
         if (_imp->repository_mask->value())
-            add_mask(make_shared_ptr(new ERepositoryMask('R', "repository", _imp->repository_mask)));
+            add_mask(std::make_shared<ERepositoryMask>('R', "repository", _imp->repository_mask));
 
         /* profile unless user */
         if (_imp->profile_mask->value())
-            add_mask(make_shared_ptr(new ERepositoryMask('P', "profile", _imp->profile_mask)));
+            add_mask(std::make_shared<ERepositoryMask>('P', "profile", _imp->profile_mask));
 
         /* user */
         std::shared_ptr<const Mask> user_mask(_imp->environment->mask_for_user(*this, false));
@@ -523,28 +523,28 @@ EbuildID::need_masks_added() const
     {
         /* repo overridden by user */
         if (_imp->repository_mask->value())
-            add_overridden_mask(make_shared_ptr(new OverriddenMask(
+            add_overridden_mask(std::make_shared<OverriddenMask>(
                             make_named_values<OverriddenMask>(
-                                n::mask() = make_shared_ptr(new ERepositoryMask('r', "repository (overridden)", _imp->repository_mask)),
+                                n::mask() = std::make_shared<ERepositoryMask>('r', "repository (overridden)", _imp->repository_mask),
                                 n::override_reason() = mro_overridden_by_user
-                                ))));
+                                )));
 
         /* profile unless user */
         if (_imp->profile_mask->value())
-            add_overridden_mask(make_shared_ptr(new OverriddenMask(
+            add_overridden_mask(std::make_shared<OverriddenMask>(
                             make_named_values<OverriddenMask>(
-                                n::mask() = make_shared_ptr(new ERepositoryMask('p', "profile (overridden)", _imp->profile_mask)),
+                                n::mask() = std::make_shared<ERepositoryMask>('p', "profile (overridden)", _imp->profile_mask),
                                 n::override_reason() = mro_overridden_by_user
-                                ))));
+                                )));
 
         /* user */
         std::shared_ptr<const Mask> user_mask(_imp->environment->mask_for_user(*this, true));
         if (user_mask)
-            add_overridden_mask(make_shared_ptr(new OverriddenMask(
+            add_overridden_mask(std::make_shared<OverriddenMask>(
                             make_named_values<OverriddenMask>(
                                 n::mask() = user_mask,
                                 n::override_reason() = mro_overridden_by_user
-                                ))));
+                                )));
 
     }
 
@@ -1346,9 +1346,9 @@ EbuildID::make_choice_value(
         }
     }
 
-    return make_shared_ptr(new EChoiceValue(choice->prefix(), value_name, ChoiceNameWithPrefix(name_with_prefix), name(),
+    return std::make_shared<EChoiceValue>(choice->prefix(), value_name, ChoiceNameWithPrefix(name_with_prefix), name(),
                 _imp->repository->use_desc(),
-                enabled, enabled_by_default, force_locked || locked, explicitly_listed, override_description, ""));
+                enabled, enabled_by_default, force_locked || locked, explicitly_listed, override_description, "");
 }
 
 namespace
@@ -1409,12 +1409,12 @@ EbuildID::add_build_options(const std::shared_ptr<Choices> & choices) const
         /* optional_tests */
         if (eapi()->supported()->choices_options()->has_optional_tests())
             if (may_be_unrestricted_test)
-                build_options->add(make_shared_ptr(new ELikeOptionalTestsChoiceValue(shared_from_this(), _imp->environment, build_options)));
+                build_options->add(std::make_shared<ELikeOptionalTestsChoiceValue>(shared_from_this(), _imp->environment, build_options));
 
         /* recommended_tests */
         if (eapi()->supported()->choices_options()->has_recommended_tests())
             if (may_be_unrestricted_test)
-                build_options->add(make_shared_ptr(new ELikeRecommendedTestsChoiceValue(shared_from_this(), _imp->environment, build_options)));
+                build_options->add(std::make_shared<ELikeRecommendedTestsChoiceValue>(shared_from_this(), _imp->environment, build_options));
 
         /* expensive_tests */
         if (eapi()->supported()->choices_options()->has_expensive_tests())
@@ -1438,23 +1438,23 @@ EbuildID::add_build_options(const std::shared_ptr<Choices> & choices) const
             }
 
             if (has_expensive_test_phase)
-                build_options->add(make_shared_ptr(new ELikeExpensiveTestsChoiceValue(shared_from_this(), _imp->environment, build_options)));
+                build_options->add(std::make_shared<ELikeExpensiveTestsChoiceValue>(shared_from_this(), _imp->environment, build_options));
         }
 
         /* split, strip */
         if (may_be_unrestricted_strip)
         {
-            build_options->add(make_shared_ptr(new ELikeSplitChoiceValue(shared_from_this(), _imp->environment, build_options)));
-            build_options->add(make_shared_ptr(new ELikeStripChoiceValue(shared_from_this(), _imp->environment, build_options)));
+            build_options->add(std::make_shared<ELikeSplitChoiceValue>(shared_from_this(), _imp->environment, build_options));
+            build_options->add(std::make_shared<ELikeStripChoiceValue>(shared_from_this(), _imp->environment, build_options));
         }
 
         /* trace */
-        build_options->add(make_shared_ptr(new ELikeTraceChoiceValue(
-                        shared_from_this(), _imp->environment, build_options)));
+        build_options->add(std::make_shared<ELikeTraceChoiceValue>(
+                        shared_from_this(), _imp->environment, build_options));
 
         /* preserve_work */
-        build_options->add(make_shared_ptr(new ELikePreserveWorkChoiceValue(
-                        shared_from_this(), _imp->environment, build_options, false)));
+        build_options->add(std::make_shared<ELikePreserveWorkChoiceValue>(
+                        shared_from_this(), _imp->environment, build_options, false));
 
         /* jobs */
         if (! eapi()->supported()->ebuild_environment_variables()->env_jobs().empty())
@@ -1462,8 +1462,8 @@ EbuildID::add_build_options(const std::shared_ptr<Choices> & choices) const
             if (! _imp->defined_phases)
                 throw InternalError(PALUDIS_HERE, "bug! no defined_phases yet");
 
-            build_options->add(make_shared_ptr(new ELikeJobsChoiceValue(
-                            shared_from_this(), _imp->environment, build_options)));
+            build_options->add(std::make_shared<ELikeJobsChoiceValue>(
+                            shared_from_this(), _imp->environment, build_options));
         }
     }
 }

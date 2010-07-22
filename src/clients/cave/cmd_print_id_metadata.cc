@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -22,7 +22,6 @@
 #include "exceptions.hh"
 #include <paludis/args/args.hh>
 #include <paludis/args/do_help.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/iterator_funcs.hh>
@@ -168,6 +167,6 @@ PrintIDMetadataCommand::run(
 std::shared_ptr<args::ArgsHandler>
 PrintIDMetadataCommand::make_doc_cmdline()
 {
-    return make_shared_ptr(new PrintIDMetadataCommandLine);
+    return std::make_shared<PrintIDMetadataCommandLine>();
 }
 

@@ -31,7 +31,6 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/action_names.hh>
 
@@ -428,48 +427,48 @@ namespace
 }
 
 filter::All::All() :
-    Filter(make_shared_ptr(new AllFilterHandler))
+    Filter(std::make_shared<AllFilterHandler>())
 {
 }
 
 template <typename A_>
 filter::SupportsAction<A_>::SupportsAction() :
-    Filter(make_shared_ptr(new SupportsActionFilterHandler<A_>))
+    Filter(std::make_shared<SupportsActionFilterHandler<A_>>())
 {
 }
 
 filter::NotMasked::NotMasked() :
-    Filter(make_shared_ptr(new NotMaskedFilterHandler()))
+    Filter(std::make_shared<NotMaskedFilterHandler>())
 {
 }
 
 filter::InstalledAtRoot::InstalledAtRoot(const FSEntry & r) :
-    Filter(make_shared_ptr(new InstalledAtRootFilterHandler(r)))
+    Filter(std::make_shared<InstalledAtRootFilterHandler>(r))
 {
 }
 
 filter::And::And(const Filter & f1, const Filter & f2) :
-    Filter(make_shared_ptr(new AndFilterHandler(f1, f2)))
+    Filter(std::make_shared<AndFilterHandler>(f1, f2))
 {
 }
 
 filter::SameSlot::SameSlot(const std::shared_ptr<const PackageID> & i) :
-    Filter(make_shared_ptr(new SameSlotHandler(i)))
+    Filter(std::make_shared<SameSlotHandler>(i))
 {
 }
 
 filter::Slot::Slot(const SlotName & s) :
-    Filter(make_shared_ptr(new SlotHandler(s)))
+    Filter(std::make_shared<SlotHandler>(s))
 {
 }
 
 filter::NoSlot::NoSlot() :
-    Filter(make_shared_ptr(new NoSlotHandler))
+    Filter(std::make_shared<NoSlotHandler>())
 {
 }
 
 filter::Matches::Matches(const PackageDepSpec & spec, const MatchPackageOptions & o) :
-    Filter(make_shared_ptr(new MatchesHandler(spec, o)))
+    Filter(std::make_shared<MatchesHandler>(spec, o))
 {
 }
 

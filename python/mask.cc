@@ -22,7 +22,6 @@
 
 #include <paludis/mask.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/make_shared_ptr.hh>
 
 using namespace paludis;
 using namespace paludis::python;
@@ -33,10 +32,10 @@ namespace
     std::shared_ptr<RepositoryMaskInfo>  make_repository_mask_info(
             const std::shared_ptr<const Sequence<std::string> > & s, const FSEntry & f)
     {
-        return make_shared_ptr(new RepositoryMaskInfo(make_named_values<RepositoryMaskInfo>(
+        return std::make_shared<RepositoryMaskInfo>(make_named_values<RepositoryMaskInfo>(
                         n::comment() = s,
                         n::mask_file() = f
-                        )));
+                        ));
     }
 }
 

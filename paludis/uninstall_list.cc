@@ -26,7 +26,6 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/set-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/wrapped_output_iterator-impl.hh>
@@ -164,7 +163,7 @@ UninstallList::add_errors_for_system()
         return;
 
     std::shared_ptr<Set<std::shared_ptr<DepTag> > > tags(new Set<std::shared_ptr<DepTag> >);
-    tags->insert(make_shared_ptr(new GeneralSetDepTag(SetName("system"), "")));
+    tags->insert(std::make_shared<GeneralSetDepTag>(SetName("system"), ""));
 
     for (std::list<UninstallListEntry>::iterator l(_imp->uninstall_list.begin()), l_end(_imp->uninstall_list.end()) ;
             l != l_end ; ++l)
@@ -254,7 +253,7 @@ UninstallList::add_package(const std::shared_ptr<const PackageID> & e, const std
                 _imp->uninstall_list.end(), make_named_values<UninstallListEntry>(
                     n::kind() = k,
                     n::package_id() = e,
-                    n::tags() = make_shared_ptr(new Set<std::shared_ptr<DepTag> >)
+                    n::tags() = std::make_shared<Set<std::shared_ptr<DepTag> >>()
                     )));
 
     if (t)

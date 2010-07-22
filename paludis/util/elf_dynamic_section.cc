@@ -28,7 +28,6 @@
 #include <paludis/util/byte_swap.hh>
 #include <paludis/util/clone-impl.hh>
 #include <paludis/util/singleton-impl.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
@@ -256,14 +255,14 @@ template <typename ElfType_>
 DynamicEntries<ElfType_>::DynamicEntries() :
     PrivateImplementationPattern<DynamicEntries>(new Implementation<DynamicEntries>)
 {
-    register_type(DT_NEEDED,  make_shared_ptr(new DynamicEntryString<ElfType_>("NEEDED")));
-    register_type(DT_RPATH,   make_shared_ptr(new DynamicEntryString<ElfType_>("RPATH")));
-    register_type(DT_RUNPATH, make_shared_ptr(new DynamicEntryString<ElfType_>("RUNPATH")));
-    register_type(DT_SONAME,  make_shared_ptr(new DynamicEntryString<ElfType_>("SONAME")));
-    register_type(DT_TEXTREL, make_shared_ptr(new DynamicEntryFlag<ElfType_>("TEXTREL")));
-    register_type(DT_NULL,    make_shared_ptr(new DynamicEntryFlag<ElfType_>("NULL")));
-    register_type(DT_SYMTAB,  make_shared_ptr(new DynamicEntryPointer<ElfType_>("SYMTAB")));
-    register_type(DT_STRTAB,  make_shared_ptr(new DynamicEntryPointer<ElfType_>("STRTAB")));
+    register_type(DT_NEEDED,  std::make_shared<DynamicEntryString<ElfType_> >("NEEDED"));
+    register_type(DT_RPATH,   std::make_shared<DynamicEntryString<ElfType_> >("RPATH"));
+    register_type(DT_RUNPATH, std::make_shared<DynamicEntryString<ElfType_> >("RUNPATH"));
+    register_type(DT_SONAME,  std::make_shared<DynamicEntryString<ElfType_> >("SONAME"));
+    register_type(DT_TEXTREL, std::make_shared<DynamicEntryFlag<ElfType_> >("TEXTREL"));
+    register_type(DT_NULL,    std::make_shared<DynamicEntryFlag<ElfType_> >("NULL"));
+    register_type(DT_SYMTAB,  std::make_shared<DynamicEntryPointer<ElfType_> >("SYMTAB"));
+    register_type(DT_STRTAB,  std::make_shared<DynamicEntryPointer<ElfType_> >("STRTAB"));
 }
 
 template <typename ElfType_>
@@ -285,7 +284,7 @@ DynamicEntries<ElfType_>::get_entry(typename ElfType_::DynamicTag tag) const
     typename std::map<typename ElfType_::DynamicTag, std::shared_ptr<DynamicEntry<ElfType_> > >::const_iterator i;
     if (( i = _imp->available_types.find(tag)) != _imp->available_types.end())
         return i->second->clone();
-    return make_shared_ptr(new DynamicEntryUnknown<ElfType_>());
+    return std::make_shared<DynamicEntryUnknown<ElfType_> >();
 }
 
 template <typename ElfType_>

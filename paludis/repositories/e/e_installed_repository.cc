@@ -30,7 +30,6 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/set.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/map.hh>
@@ -177,7 +176,7 @@ EInstalledRepository::is_unimportant() const
 std::shared_ptr<const CategoryNamePartSet>
 EInstalledRepository::unimportant_category_names() const
 {
-    std::shared_ptr<CategoryNamePartSet> result(make_shared_ptr(new CategoryNamePartSet));
+    std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
     result->insert(CategoryNamePart("virtual"));
     return result;
 }
@@ -251,7 +250,7 @@ EInstalledRepository::perform_config(
                     n::ebuild_file() = ver_dir / (stringify(id->name().package()) + "-" + stringify(id->version()) + ".ebuild"),
                     n::eclassdirs() = eclassdirs,
                     n::environment() = _imp->params.environment(),
-                    n::exlibsdirs() = make_shared_ptr(new FSEntrySequence),
+                    n::exlibsdirs() = std::make_shared<FSEntrySequence>(),
                     n::files_dir() = ver_dir,
                     n::maybe_output_manager() = output_manager,
                     n::package_builddir() = _imp->params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-config"),
@@ -360,7 +359,7 @@ EInstalledRepository::perform_info(
                     n::ebuild_file() = ver_dir / (stringify(id->name().package()) + "-" + stringify(id->version()) + ".ebuild"),
                     n::eclassdirs() = eclassdirs,
                     n::environment() = _imp->params.environment(),
-                    n::exlibsdirs() = make_shared_ptr(new FSEntrySequence),
+                    n::exlibsdirs() = std::make_shared<FSEntrySequence>(),
                     n::files_dir() = ver_dir,
                     n::maybe_output_manager() = output_manager,
                     n::package_builddir() = _imp->params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-info"),
@@ -373,11 +372,11 @@ EInstalledRepository::perform_info(
                 ),
 
                 make_named_values<EbuildInfoCommandParams>(
-                    n::expand_vars() = make_shared_ptr(new Map<std::string, std::string>),
-                    n::info_vars() = i ? i : make_shared_ptr(new const Set<std::string>),
+                    n::expand_vars() = std::make_shared<Map<std::string, std::string> >(),
+                    n::info_vars() = i ? i : std::make_shared<const Set<std::string> >(),
                     n::load_environment() = load_env.get(),
-                    n::profiles() = make_shared_ptr(new FSEntrySequence),
-                    n::profiles_with_parents() = make_shared_ptr(new FSEntrySequence),
+                    n::profiles() = std::make_shared<FSEntrySequence>(),
+                    n::profiles_with_parents() = std::make_shared<FSEntrySequence>(),
                     n::use() = "",
                     n::use_ebuild_file() = false,
                     n::use_expand() = "",

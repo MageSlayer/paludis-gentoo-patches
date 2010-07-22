@@ -18,12 +18,12 @@
  */
 
 #include <paludis/resolver/package_or_block_dep_spec.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/serialise-impl.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/elike_package_dep_spec.hh>
@@ -43,14 +43,14 @@ paludis::resolver::operator<< (std::ostream & s, const PackageOrBlockDepSpec & d
 }
 
 PackageOrBlockDepSpec::PackageOrBlockDepSpec(const BlockDepSpec & s) :
-    if_block(n::if_block() = make_shared_ptr(new BlockDepSpec(s))),
+    if_block(n::if_block() = std::make_shared<BlockDepSpec>(s)),
     if_package(n::if_package() = make_null_shared_ptr())
 {
 }
 
 PackageOrBlockDepSpec::PackageOrBlockDepSpec(const PackageDepSpec & s) :
     if_block(n::if_block() = make_null_shared_ptr()),
-    if_package(n::if_package() = make_shared_ptr(new PackageDepSpec(s)))
+    if_package(n::if_package() = std::make_shared<PackageDepSpec>(s))
 {
 }
 

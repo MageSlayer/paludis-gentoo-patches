@@ -25,7 +25,6 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_named_values.hh>
@@ -162,7 +161,7 @@ NDBAM::category_names()
                 _imp->category_names->insert(c);
                 /* Inserting into category_contents_map might return false if
                  * we're partially populated. That's ok. */
-                _imp->category_contents_map.insert(std::make_pair(c, make_shared_ptr(new CategoryContents)));
+                _imp->category_contents_map.insert(std::make_pair(c, std::make_shared<CategoryContents>()));
             }
             catch (const NameError & e)
             {
@@ -179,7 +178,7 @@ std::shared_ptr<const QualifiedPackageNameSet>
 NDBAM::package_names(const CategoryNamePart & c)
 {
     if (! has_category_named(c))
-        return make_shared_ptr(new QualifiedPackageNameSet);
+        return std::make_shared<QualifiedPackageNameSet>();
 
     Lock l(_imp->category_names_mutex);
     CategoryContentsMap::iterator cc_i(_imp->category_contents_map.find(c));
@@ -207,7 +206,7 @@ NDBAM::package_names(const CategoryNamePart & c)
                 cc.package_names->insert(q);
                 /* Inserting into package_contents_map might return false if
                  * we're partially populated. That's ok. */
-                cc.package_contents_map.insert(std::make_pair(q, make_shared_ptr(new PackageContents)));
+                cc.package_contents_map.insert(std::make_pair(q, std::make_shared<PackageContents>()));
             }
             catch (const NameError & e)
             {
@@ -286,7 +285,7 @@ std::shared_ptr<NDBAMEntrySequence>
 NDBAM::entries(const QualifiedPackageName & q)
 {
     if (! has_package_named(q))
-        return make_shared_ptr(new NDBAMEntrySequence);
+        return std::make_shared<NDBAMEntrySequence>();
 
     Lock l(_imp->category_names_mutex);
     CategoryContentsMap::iterator cc_i(_imp->category_contents_map.find(q.category()));
@@ -328,15 +327,15 @@ NDBAM::entries(const QualifiedPackageName & q)
                 VersionSpec v(tokens[0], _imp->version_options);
                 SlotName s(tokens[1]);
                 std::string m(tokens[2]);
-                pc.entries->push_back(make_shared_ptr(new NDBAMEntry(NDBAMEntry(make_named_values<NDBAMEntry>(
+                pc.entries->push_back(std::make_shared<NDBAMEntry>(NDBAMEntry(make_named_values<NDBAMEntry>(
                                         n::fs_location() = d->realpath(),
                                         n::magic() = m,
-                                        n::mutex() = make_shared_ptr(new Mutex),
+                                        n::mutex() = std::make_shared<Mutex>(),
                                         n::name() = q,
                                         n::package_id() = std::shared_ptr<PackageID>(),
                                         n::slot() = s,
                                         n::version() = v
-                                )))));
+                                ))));
             }
             catch (const InternalError &)
             {
@@ -380,15 +379,15 @@ NDBAM::add_entry(const QualifiedPackageName & q, const FSEntry & d)
         VersionSpec v(tokens[0], _imp->version_options);
         SlotName s(tokens[1]);
         std::string m(tokens[2]);
-        pc.entries->push_back(make_shared_ptr(new NDBAMEntry(NDBAMEntry(make_named_values<NDBAMEntry>(
+        pc.entries->push_back(std::make_shared<NDBAMEntry>(NDBAMEntry(make_named_values<NDBAMEntry>(
                                 n::fs_location() = d.realpath(),
                                 n::magic() = m,
-                                n::mutex() = make_shared_ptr(new Mutex),
+                                n::mutex() = std::make_shared<Mutex>(),
                                 n::name() = q,
                                 n::package_id() = std::shared_ptr<PackageID>(),
                                 n::slot() = s,
                                 n::version() = v
-                        )))));
+                        ))));
     }
 }
 
@@ -554,14 +553,14 @@ NDBAM::parse_contents(const PackageID & id,
             }
             time_t mtime(destringify<time_t>(tokens.find("mtime")->second));
 
-            std::shared_ptr<ContentsFileEntry> entry(make_shared_ptr(new ContentsFileEntry(path)));
-            entry->add_metadata_key(make_shared_ptr(new LiteralMetadataValueKey<std::string>("md5", "md5", mkt_normal, md5)));
-            entry->add_metadata_key(make_shared_ptr(new LiteralMetadataTimeKey("mtime", "mtime", mkt_normal, Timestamp(mtime, 0))));
+            std::shared_ptr<ContentsFileEntry> entry(std::make_shared<ContentsFileEntry>(path));
+            entry->add_metadata_key(std::make_shared<LiteralMetadataValueKey<std::string>>("md5", "md5", mkt_normal, md5));
+            entry->add_metadata_key(std::make_shared<LiteralMetadataTimeKey>("mtime", "mtime", mkt_normal, Timestamp(mtime, 0)));
             on_file(entry);
         }
         else if ("dir" == type)
         {
-            std::shared_ptr<ContentsDirEntry> entry(make_shared_ptr(new ContentsDirEntry(path)));
+            std::shared_ptr<ContentsDirEntry> entry(std::make_shared<ContentsDirEntry>(path));
             on_dir(entry);
         }
         else if ("sym" == type)
@@ -582,8 +581,8 @@ NDBAM::parse_contents(const PackageID & id,
             }
             time_t mtime(destringify<time_t>(tokens.find("mtime")->second));
 
-            std::shared_ptr<ContentsSymEntry> entry(make_shared_ptr(new ContentsSymEntry(path, target)));
-            entry->add_metadata_key(make_shared_ptr(new LiteralMetadataTimeKey("mtime", "mtime", mkt_normal, Timestamp(mtime, 0))));
+            std::shared_ptr<ContentsSymEntry> entry(std::make_shared<ContentsSymEntry>(path, target));
+            entry->add_metadata_key(std::make_shared<LiteralMetadataTimeKey>("mtime", "mtime", mkt_normal, Timestamp(mtime, 0)));
             on_sym(entry);
         }
         else

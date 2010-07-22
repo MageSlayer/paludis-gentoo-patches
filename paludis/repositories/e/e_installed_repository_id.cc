@@ -39,11 +39,11 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/mutex.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/return_literal_function.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/user_dep_spec.hh>
@@ -144,17 +144,17 @@ namespace paludis
             run_dependencies_labels(new DependenciesLabelSequence),
             post_dependencies_labels(new DependenciesLabelSequence)
         {
-            raw_dependencies_labels->push_back(make_shared_ptr(new DependenciesBuildLabel("build",
-                            return_literal_function(true))));
-            raw_dependencies_labels->push_back(make_shared_ptr(new DependenciesRunLabel("run",
-                            return_literal_function(true))));
+            raw_dependencies_labels->push_back(std::make_shared<DependenciesBuildLabel>("build",
+                            return_literal_function(true)));
+            raw_dependencies_labels->push_back(std::make_shared<DependenciesRunLabel>("run",
+                            return_literal_function(true)));
 
-            build_dependencies_labels->push_back(make_shared_ptr(new DependenciesBuildLabel("DEPEND",
-                            return_literal_function(true))));
-            run_dependencies_labels->push_back(make_shared_ptr(new DependenciesRunLabel("RDEPEND",
-                            return_literal_function(true))));
-            post_dependencies_labels->push_back(make_shared_ptr(new DependenciesPostLabel("PDEPEND",
-                            return_literal_function(true))));
+            build_dependencies_labels->push_back(std::make_shared<DependenciesBuildLabel>("DEPEND",
+                            return_literal_function(true)));
+            run_dependencies_labels->push_back(std::make_shared<DependenciesRunLabel>("RDEPEND",
+                            return_literal_function(true)));
+            post_dependencies_labels->push_back(std::make_shared<DependenciesPostLabel>("PDEPEND",
+                            return_literal_function(true)));
         }
     };
 }
@@ -192,7 +192,7 @@ EInstalledRepositoryID::need_keys_added() const
 
     Context context("When loading ID keys from '" + stringify(_imp->dir) + "':");
 
-    add_metadata_key(make_shared_ptr(new LiteralMetadataValueKey<std::string>("EAPI", "EAPI", mkt_internal, eapi()->name())));
+    add_metadata_key(std::make_shared<LiteralMetadataValueKey<std::string>>("EAPI", "EAPI", mkt_internal, eapi()->name()));
 
     if (! eapi()->supported())
     {
@@ -1028,8 +1028,8 @@ EInstalledRepositoryID::make_choice_value(const std::shared_ptr<const Choice> & 
     if (raw_use_key())
         enabled = (raw_use_key()->value()->end() != raw_use_key()->value()->find(name_with_prefix));
 
-    return make_shared_ptr(new EChoiceValue(c->prefix(), v, ChoiceNameWithPrefix(name_with_prefix), name(), std::shared_ptr<const UseDesc>(),
-                enabled, enabled, true, explicitly_listed, override_description, ""));
+    return std::make_shared<EChoiceValue>(c->prefix(), v, ChoiceNameWithPrefix(name_with_prefix), name(), std::shared_ptr<const UseDesc>(),
+                enabled, enabled, true, explicitly_listed, override_description, "");
 }
 
 void
@@ -1049,8 +1049,8 @@ EInstalledRepositoryID::add_build_options(const std::shared_ptr<Choices> & choic
         choices->add(build_options);
 
         /* trace */
-        build_options->add(make_shared_ptr(new ELikeTraceChoiceValue(
-                        shared_from_this(), _imp->environment, build_options)));
+        build_options->add(std::make_shared<ELikeTraceChoiceValue>(
+                        shared_from_this(), _imp->environment, build_options));
     }
 }
 

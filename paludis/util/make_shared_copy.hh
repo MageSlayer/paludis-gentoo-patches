@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_UTIL_MAKE_SHARED_COPY_HH 1
 
 #include <paludis/util/make_shared_copy-fwd.hh>
-#include <paludis/util/make_shared_ptr.hh>
+#include <memory>
 
 /** \file
  * Declarations for the make_shared_copy function.
@@ -39,7 +39,7 @@ namespace paludis
     std::shared_ptr<T_>
     make_shared_copy(const T_ & t)
     {
-        return make_shared_ptr(new T_(t));
+        return std::make_shared<T_>(t);
     }
 }
 

@@ -20,7 +20,6 @@
 #include "yaml.hh"
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/singleton-impl.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <functional>
 #include <syck.h>
@@ -389,7 +388,7 @@ NodeManager::manage_node(const void * const d, const Node * const n)
     std::map<const void *, std::list<std::shared_ptr<const Node> > >::iterator i(_imp->store.find(d));
     if (i == _imp->store.end())
         throw InternalError(PALUDIS_HERE, "no such document");
-    i->second.push_back(make_shared_ptr(n));
+    i->second.push_back(std::shared_ptr<const Node>(n));
 }
 
 ParseError::ParseError(const std::string & s) throw () :

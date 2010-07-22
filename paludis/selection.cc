@@ -24,7 +24,6 @@
 #include <paludis/util/set-impl.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
@@ -315,7 +314,7 @@ namespace
                     SlotMap::iterator m(by_slot.find(std::make_pair((*i)->name(), slot_as_string(*i))));
                     if (m == by_slot.end())
                         m = by_slot.insert(std::make_pair(std::make_pair((*i)->name(), slot_as_string(*i)),
-                                    make_shared_ptr(new PackageIDSequence))).first;
+                                    std::make_shared<PackageIDSequence>())).first;
                     m->second->push_back(*i);
                 }
 
@@ -381,7 +380,7 @@ namespace
                     SlotMap::iterator m(by_slot.find(std::make_pair((*i)->name(), slot_as_string(*i))));
                     if (m == by_slot.end())
                         m = by_slot.insert(std::make_pair(std::make_pair((*i)->name(), slot_as_string(*i)),
-                                    make_shared_ptr(new PackageIDSequence))).first;
+                                    std::make_shared<PackageIDSequence>())).first;
                     m->second->push_back(*i);
                 }
 
@@ -427,15 +426,15 @@ namespace
 
                 std::shared_ptr<const RepositoryNameSet> r(_fg.filter().repositories(env, _fg.generator().repositories(env)));
                 if (r->empty())
-                    throw DidNotGetExactlyOneError(as_string(), make_shared_ptr(new PackageIDSet));
+                    throw DidNotGetExactlyOneError(as_string(), std::make_shared<PackageIDSet>());
 
                 std::shared_ptr<const CategoryNamePartSet> c(_fg.filter().categories(env, r, _fg.generator().categories(env, r)));
                 if (c->empty())
-                    throw DidNotGetExactlyOneError(as_string(), make_shared_ptr(new PackageIDSet));
+                    throw DidNotGetExactlyOneError(as_string(), std::make_shared<PackageIDSet>());
 
                 std::shared_ptr<const QualifiedPackageNameSet> p(_fg.filter().packages(env, r, _fg.generator().packages(env, r, c)));
                 if (p->empty())
-                    throw DidNotGetExactlyOneError(as_string(), make_shared_ptr(new PackageIDSet));
+                    throw DidNotGetExactlyOneError(as_string(), std::make_shared<PackageIDSet>());
 
                 std::shared_ptr<const PackageIDSet> i(_fg.filter().ids(env, _fg.generator().ids(env, r, p)));
 
@@ -455,37 +454,37 @@ namespace
 }
 
 selection::SomeArbitraryVersion::SomeArbitraryVersion(const FilteredGenerator & f) :
-    Selection(make_shared_ptr(new SomeArbitraryVersionSelectionHandler(f)))
+    Selection(std::make_shared<SomeArbitraryVersionSelectionHandler>(f))
 {
 }
 
 selection::BestVersionOnly::BestVersionOnly(const FilteredGenerator & f) :
-    Selection(make_shared_ptr(new BestVersionOnlySelectionHandler(f)))
+    Selection(std::make_shared<BestVersionOnlySelectionHandler>(f))
 {
 }
 
 selection::AllVersionsSorted::AllVersionsSorted(const FilteredGenerator & f) :
-    Selection(make_shared_ptr(new AllVersionsSortedSelectionHandler(f)))
+    Selection(std::make_shared<AllVersionsSortedSelectionHandler>(f))
 {
 }
 
 selection::AllVersionsUnsorted::AllVersionsUnsorted(const FilteredGenerator & f) :
-    Selection(make_shared_ptr(new AllVersionsUnsortedSelectionHandler(f)))
+    Selection(std::make_shared<AllVersionsUnsortedSelectionHandler>(f))
 {
 }
 
 selection::AllVersionsGroupedBySlot::AllVersionsGroupedBySlot(const FilteredGenerator & f) :
-    Selection(make_shared_ptr(new AllVersionsGroupedBySlotSelectioHandler(f)))
+    Selection(std::make_shared<AllVersionsGroupedBySlotSelectioHandler>(f))
 {
 }
 
 selection::BestVersionInEachSlot::BestVersionInEachSlot(const FilteredGenerator & f) :
-    Selection(make_shared_ptr(new BestVersionInEachSlotSelectionHandler(f)))
+    Selection(std::make_shared<BestVersionInEachSlotSelectionHandler>(f))
 {
 }
 
 selection::RequireExactlyOne::RequireExactlyOne(const FilteredGenerator & f) :
-    Selection(make_shared_ptr(new RequireExactlyOneSelectionHandler(f)))
+    Selection(std::make_shared<RequireExactlyOneSelectionHandler>(f))
 {
 }
 

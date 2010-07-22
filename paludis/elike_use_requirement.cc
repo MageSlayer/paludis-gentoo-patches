@@ -19,7 +19,6 @@
 
 #include <paludis/elike_use_requirement.hh>
 #include <paludis/util/options.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/tokeniser.hh>
@@ -457,7 +456,7 @@ namespace
     make_requirement(const std::string & n, const std::shared_ptr<const PackageID > & i,
             const ELikeUseRequirementOptions & o, Tribool d, const bool b)
     {
-        return make_shared_ptr(new T_(n, i, o, d, b));
+        return std::make_shared<T_>(n, i, o, d, b);
     }
 
     typedef std::shared_ptr<const UseRequirement> (* Factory)(

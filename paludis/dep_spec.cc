@@ -34,7 +34,6 @@
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/options.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/metadata_key.hh>
 #include <functional>

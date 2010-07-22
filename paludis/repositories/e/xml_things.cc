@@ -20,7 +20,6 @@
 #include <paludis/repositories/e/xml_things.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/tokeniser.hh>
@@ -286,10 +285,10 @@ paludis_xml_things_create_metadata_xml_from_xml_file(const FSEntry & filename)
 {
     std::shared_ptr<erepository::MetadataXML> result(new erepository::MetadataXML(
                 make_named_values<erepository::MetadataXML>(
-                    n::herds() = make_shared_ptr(new Sequence<std::string>),
+                    n::herds() = std::make_shared<Sequence<std::string>>(),
                     n::long_description() = "",
-                    n::maintainers() = make_shared_ptr(new Sequence<std::string>),
-                    n::uses() = make_shared_ptr(new Map<ChoiceNameWithPrefix, std::string>)
+                    n::maintainers() = std::make_shared<Sequence<std::string>>(),
+                    n::uses() = std::make_shared<Map<ChoiceNameWithPrefix, std::string>>()
                     )));
 
     std::shared_ptr<xmlDoc> doc(manage_libxml_ptr(xmlParseFile(stringify(filename).c_str()), &xmlFreeDoc));

@@ -28,7 +28,6 @@
 #include <paludis/args/do_help.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/tokeniser.hh>
 
@@ -99,6 +98,6 @@ ExecutablesCommand::run(
 std::shared_ptr<args::ArgsHandler>
 ExecutablesCommand::make_doc_cmdline()
 {
-    return make_shared_ptr(new ExecutablesCommandLine);
+    return std::make_shared<ExecutablesCommandLine>();
 }
 

@@ -22,7 +22,6 @@
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/damerau_levenshtein.hh>
 #include <paludis/util/options.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/package_database.hh>
 #include <paludis/environment.hh>
 #include <paludis/repository.hh>
@@ -110,7 +109,7 @@ namespace
     {
         public:
             FuzzyPackageName(const std::string & p) :
-                Filter(make_shared_ptr(new FuzzyPackageNameFilterHandler(p)))
+                Filter(std::make_shared<FuzzyPackageNameFilterHandler>(p))
             {
             }
     };

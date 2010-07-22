@@ -31,7 +31,6 @@
 #include <paludis/user_dep_spec.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/tokeniser.hh>
 

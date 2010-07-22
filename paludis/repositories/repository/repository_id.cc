@@ -23,9 +23,9 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/set.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/metadata_key.hh>
@@ -161,7 +161,7 @@ RepositoryID::perform_action(Action & a) const
 std::shared_ptr<const Set<std::string> >
 RepositoryID::breaks_portage() const
 {
-    return make_shared_ptr(new Set<std::string>);
+    return std::make_shared<Set<std::string>>();
 }
 
 bool

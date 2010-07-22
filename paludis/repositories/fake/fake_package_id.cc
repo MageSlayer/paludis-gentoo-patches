@@ -40,6 +40,7 @@
 #include <paludis/util/tribool.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/return_literal_function.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <map>
@@ -578,8 +579,8 @@ FakeMetadataChoicesKey::add(const std::string & n, const std::string & v)
         _imp->choices.insert(std::make_pair(n, c));
     }
 
-    _imp->choices.find(n)->second->add(make_shared_ptr(new FakeChoiceValue(_imp->env, _imp->id,
-                    _imp->choices.find(n)->second, UnprefixedChoiceName(v))));
+    _imp->choices.find(n)->second->add(std::make_shared<FakeChoiceValue>(_imp->env, _imp->id,
+                    _imp->choices.find(n)->second, UnprefixedChoiceName(v)));
 }
 
 const std::shared_ptr<const Choices>
@@ -733,14 +734,14 @@ namespace paludis
             behaviours_set(new Set<std::string>),
             has_masks(false)
         {
-            build_dependencies_labels->push_back(make_shared_ptr(new DependenciesBuildLabel("DEPEND",
-                            return_literal_function(true))));
-            run_dependencies_labels->push_back(make_shared_ptr(new DependenciesRunLabel("RDEPEND",
-                            return_literal_function(true))));
-            post_dependencies_labels->push_back(make_shared_ptr(new DependenciesPostLabel("PDEPEND",
-                            return_literal_function(true))));
-            suggested_dependencies_labels->push_back(make_shared_ptr(new DependenciesSuggestionLabel("SDEPEND",
-                            return_literal_function(true))));
+            build_dependencies_labels->push_back(std::make_shared<DependenciesBuildLabel>("DEPEND",
+                            return_literal_function(true)));
+            run_dependencies_labels->push_back(std::make_shared<DependenciesRunLabel>("RDEPEND",
+                            return_literal_function(true)));
+            post_dependencies_labels->push_back(std::make_shared<DependenciesPostLabel>("PDEPEND",
+                            return_literal_function(true)));
+            suggested_dependencies_labels->push_back(std::make_shared<DependenciesSuggestionLabel>("SDEPEND",
+                            return_literal_function(true)));
         }
     };
 }
@@ -1140,14 +1141,14 @@ FakePackageID::need_masks_added() const
 
     if (keywords_key())
         if (! _imp->env->accept_keywords(keywords_key()->value(), *this))
-            add_mask(make_shared_ptr(new FakeUnacceptedMask('K', "keywords", keywords_key())));
+            add_mask(std::make_shared<FakeUnacceptedMask>('K', "keywords", keywords_key()));
 
     if (license_key())
     {
         LicenceChecker c(_imp->env, &Environment::accept_license, this);
         license_key()->value()->root()->accept(c);
         if (! c.ok)
-            add_mask(make_shared_ptr(new FakeUnacceptedMask('L', "license", license_key())));
+            add_mask(std::make_shared<FakeUnacceptedMask>('L', "license", license_key()));
     }
 
     if (! _imp->env->unmasked_by_user(*this))
@@ -1160,11 +1161,11 @@ FakePackageID::need_masks_added() const
     {
         std::shared_ptr<const Mask> user_mask(_imp->env->mask_for_user(*this, true));
         if (user_mask)
-            add_overridden_mask(make_shared_ptr(new OverriddenMask(
+            add_overridden_mask(std::make_shared<OverriddenMask>(
                             make_named_values<OverriddenMask>(
                                 n::mask() = user_mask,
                                 n::override_reason() = mro_overridden_by_user
-                                ))));
+                                )));
     }
 
     std::shared_ptr<const Mask> breaks_mask(_imp->env->mask_for_breakage(*this));

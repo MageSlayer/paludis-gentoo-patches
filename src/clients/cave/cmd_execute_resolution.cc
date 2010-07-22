@@ -27,7 +27,6 @@
 #include "resume_data.hh"
 #include <paludis/args/do_help.hh>
 #include <paludis/args/escape.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/safe_ofstream.hh>
 #include <paludis/util/system.hh>
@@ -47,6 +46,7 @@
 #include <paludis/util/executor.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/timestamp.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/resolver/resolutions_by_resolvent.hh>
 #include <paludis/resolver/reason.hh>
 #include <paludis/resolver/sanitised_dependencies.hh>
@@ -1207,7 +1207,7 @@ namespace
             else if (! already_done)
             {
                 Lock lock(job_mutex);
-                job->set_state(make_shared_ptr(new JobSkippedState));
+                job->set_state(std::make_shared<JobSkippedState>());
             }
         }
 
@@ -1323,8 +1323,8 @@ namespace
         for (JobList<ExecuteJob>::ConstIterator c(lists->execute_job_list()->begin()),
                 c_end(lists->execute_job_list()->end()) ;
                 c != c_end ; ++c)
-            executor.add(make_shared_ptr(new ExecuteJobExecutive(env, cmdline, *c, lists, require_if, retcode_mutex,
-                            retcode, counts, old_heading)));
+            executor.add(std::make_shared<ExecuteJobExecutive>(env, cmdline, *c, lists, require_if, retcode_mutex,
+                            retcode, counts, old_heading));
 
         executor.execute();
 
@@ -1345,7 +1345,7 @@ namespace
                 c_end(lists->execute_job_list()->end()) ;
                 c != c_end ; ++c)
             if (! (*c)->state())
-                (*c)->set_state(make_shared_ptr(new JobPendingState));
+                (*c)->set_state(std::make_shared<JobPendingState>());
 
         int retcode(0);
 
@@ -1627,6 +1627,6 @@ ExecuteResolutionCommand::run(
 std::shared_ptr<args::ArgsHandler>
 ExecuteResolutionCommand::make_doc_cmdline()
 {
-    return make_shared_ptr(new ExecuteResolutionCommandLine);
+    return std::make_shared<ExecuteResolutionCommandLine>();
 }
 

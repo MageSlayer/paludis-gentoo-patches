@@ -21,7 +21,6 @@
 #include <paludis/repositories/gems/gems_repository.hh>
 #include <paludis/repositories/gems/params.hh>
 #include <paludis/package_database.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/make_named_values.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
@@ -38,7 +37,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            env.package_database()->add_repository(1, make_shared_ptr(new GemsRepository(
+            env.package_database()->add_repository(1, std::make_shared<GemsRepository>(
                             make_named_values<gems::RepositoryParams>(
                                 n::builddir() = FSEntry("gems_repository_TEST_dir/build"),
                                 n::environment() = &env,
@@ -46,7 +45,7 @@ namespace test_cases
                                 n::location() = FSEntry("gems_repository_TEST_dir/repo"),
                                 n::sync() = "",
                                 n::sync_options() = ""
-                            ))));
+                            )));
         }
     } test_creation;
 }

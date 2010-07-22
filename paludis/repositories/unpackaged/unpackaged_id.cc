@@ -24,11 +24,11 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/simple_visitor_cast.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/return_literal_function.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
@@ -89,10 +89,10 @@ namespace paludis
             description_key(new LiteralMetadataValueKey<std::string> ("description", "Description", mkt_significant, d)),
             choices_key(new UnpackagedChoicesKey(env, "choices", "Choices", mkt_normal, id))
         {
-            build_dependencies_labels->push_back(make_shared_ptr(new DependenciesBuildLabel("build_dependencies",
-                            return_literal_function(true))));
-            run_dependencies_labels->push_back(make_shared_ptr(new DependenciesRunLabel("run_dependencies",
-                            return_literal_function(true))));
+            build_dependencies_labels->push_back(std::make_shared<DependenciesBuildLabel>("build_dependencies",
+                            return_literal_function(true)));
+            run_dependencies_labels->push_back(std::make_shared<DependenciesRunLabel>("run_dependencies",
+                            return_literal_function(true)));
         }
     };
 }
@@ -411,7 +411,7 @@ UnpackagedID::perform_action(Action & action) const
                             n::build_start_time() = build_start_time,
                             n::environment_file() = FSEntry("/dev/null"),
                             n::image_dir() = fs_location_key()->value(),
-                            n::merged_entries() = make_shared_ptr(new FSEntrySet),
+                            n::merged_entries() = std::make_shared<FSEntrySet>(),
                             n::options() = (MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs)
                                 | extra_merger_options,
                             n::output_manager() = output_manager,

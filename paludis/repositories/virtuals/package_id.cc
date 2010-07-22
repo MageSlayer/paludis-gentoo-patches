@@ -21,12 +21,12 @@
 #include <paludis/repositories/virtuals/installed_virtuals_repository.hh>
 #include <paludis/repositories/virtuals/virtuals_repository.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/return_literal_function.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/name.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/version_spec.hh>
@@ -64,23 +64,23 @@ namespace paludis
                 const std::shared_ptr<const DependenciesLabelSequence> & l,
                 bool exact, const std::string & h, const std::string & r) :
             env(e),
-            value(new DependencySpecTree(make_shared_ptr(new AllDepSpec))),
+            value(new DependencySpecTree(std::make_shared<AllDepSpec>())),
             labels(l),
             spec(exact ?
-                    make_shared_ptr(new PackageDepSpec(
+                    std::make_shared<PackageDepSpec>(
                             make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
                             .package(v->name())
                             .version_requirement(make_named_values<VersionRequirement>(
                                     n::version_operator() = vo_equal,
                                     n::version_spec() = v->version()))
-                            .slot_requirement(make_shared_ptr(new UserSlotExactRequirement(
-                                        v->slot_key() ? v->slot_key()->value() : SlotName("UNKNOWN"))))
-                            .in_repository(v->repository()->name())))
+                            .slot_requirement(std::make_shared<UserSlotExactRequirement>(
+                                        v->slot_key() ? v->slot_key()->value() : SlotName("UNKNOWN")))
+                            .in_repository(v->repository()->name()))
                     :
-                    make_shared_ptr(new PackageDepSpec(
+                    std::make_shared<PackageDepSpec>(
                             make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
                             .package(v->name())
-                            ))
+                            )
                 ),
             raw_name(r),
             human_name(h)
@@ -191,10 +191,10 @@ namespace paludis
             rdep(new virtuals::VirtualsDepKey(e, "RDEPEND", "Run dependencies", p, rdep_labels, b)),
             has_masks(false)
         {
-            bdep_labels->push_back(make_shared_ptr(new DependenciesBuildLabel("DEPEND",
-                            return_literal_function(true))));
-            rdep_labels->push_back(make_shared_ptr(new DependenciesRunLabel("RDEPEND",
-                            return_literal_function(true))));
+            bdep_labels->push_back(std::make_shared<DependenciesBuildLabel>("DEPEND",
+                            return_literal_function(true)));
+            rdep_labels->push_back(std::make_shared<DependenciesRunLabel>("RDEPEND",
+                            return_literal_function(true)));
         }
     };
 }
@@ -498,7 +498,7 @@ VirtualsPackageID::need_masks_added() const
         return;
 
     if (_imp->virtual_for->value()->masked())
-        add_mask(make_shared_ptr(new VirtualsAssociationMask(_imp->virtual_for->value())));
+        add_mask(std::make_shared<VirtualsAssociationMask>(_imp->virtual_for->value()));
 
     _imp->has_masks = true;
 }

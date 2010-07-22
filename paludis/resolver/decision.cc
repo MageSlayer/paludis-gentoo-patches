@@ -28,6 +28,7 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/serialise-impl.hh>
 #include <sstream>
 
@@ -42,22 +43,22 @@ Decision::deserialise(Deserialisation & d)
     if (d.class_name() == "NothingNoChangeDecision")
     {
         Deserialisator v(d, "NothingNoChangeDecision");
-        return make_shared_ptr(new NothingNoChangeDecision(
+        return std::make_shared<NothingNoChangeDecision>(
                     v.member<Resolvent>("resolvent"),
                     v.member<bool>("taken")
-                    ));
+                    );
     }
     else if (d.class_name() == "ExistingNoChangeDecision")
     {
         Deserialisator v(d, "ExistingNoChangeDecision");
-        return make_shared_ptr(new ExistingNoChangeDecision(
+        return std::make_shared<ExistingNoChangeDecision>(
                     v.member<Resolvent>("resolvent"),
                     v.member<std::shared_ptr<const PackageID> >("existing_id"),
                     v.member<bool>("is_same"),
                     v.member<bool>("is_same_version"),
                     v.member<bool>("is_transient"),
                     v.member<bool>("taken")
-                    ));
+                    );
     }
     else if (d.class_name() == "ChangesToMakeDecision")
     {
@@ -156,11 +157,11 @@ UnableToMakeDecision::deserialise(Deserialisation & d)
     for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
         unsuitable_candidates->push_back(vv.member<UnsuitableCandidate>(stringify(n)));
 
-    return make_shared_ptr(new UnableToMakeDecision(
+    return std::make_shared<UnableToMakeDecision>(
                 v.member<Resolvent>("resolvent"),
                 unsuitable_candidates,
                 v.member<bool>("taken")
-                ));
+                );
 }
 
 const std::shared_ptr<RemoveDecision>

@@ -55,7 +55,6 @@
 #include <paludis/filtered_generator.hh>
 #include <paludis/filter.hh>
 
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/fast_unique_copy.hh>
 #include <paludis/util/mutex.hh>
@@ -71,6 +70,7 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/output_manager.hh>
@@ -118,7 +118,7 @@ namespace paludis
         mutable bool tried_provides_cache, used_provides_cache;
         std::shared_ptr<RepositoryNameCache> names_cache;
 
-        Implementation(const VDBRepository * const, const VDBRepositoryParams &, std::shared_ptr<Mutex> = make_shared_ptr(new Mutex));
+        Implementation(const VDBRepository * const, const VDBRepositoryParams &, std::shared_ptr<Mutex> = std::make_shared<Mutex>());
         ~Implementation();
 
         std::shared_ptr<const MetadataValueKey<FSEntry> > location_key;
@@ -265,7 +265,7 @@ VDBRepository::package_names(const CategoryNamePart & c) const
 
     need_category_names();
     if (! has_category_named(c))
-        return make_shared_ptr(new QualifiedPackageNameSet);
+        return std::make_shared<QualifiedPackageNameSet>();
 
     need_package_ids(c);
 
@@ -283,11 +283,11 @@ VDBRepository::package_ids(const QualifiedPackageName & n) const
 
     need_category_names();
     if (! has_category_named(n.category()))
-        return make_shared_ptr(new PackageIDSequence);
+        return std::make_shared<PackageIDSequence>();
 
     need_package_ids(n.category());
     if (! has_package_named(n))
-        return make_shared_ptr(new PackageIDSequence);
+        return std::make_shared<PackageIDSequence>();
 
     return _imp->ids.find(n)->second;
 }
@@ -379,7 +379,7 @@ VDBRepository::repository_factory_dependencies(
         const Environment * const,
         const std::function<std::string (const std::string &)> &)
 {
-    return make_shared_ptr(new RepositoryNameSet);
+    return std::make_shared<RepositoryNameSet>();
 }
 
 VDBRepositoryConfigurationError::VDBRepositoryConfigurationError(
@@ -495,7 +495,7 @@ VDBRepository::perform_uninstall(
                     n::ebuild_file() = pkg_dir / (stringify(id->name().package()) + "-" + stringify(id->version()) + ".ebuild"),
                     n::eclassdirs() = eclassdirs,
                     n::environment() = _imp->params.environment(),
-                    n::exlibsdirs() = make_shared_ptr(new FSEntrySequence),
+                    n::exlibsdirs() = std::make_shared<FSEntrySequence>(),
                     n::files_dir() = pkg_dir,
                     n::maybe_output_manager() = output_manager,
                     n::package_builddir() = package_builddir,
@@ -1110,7 +1110,7 @@ VDBRepository::need_package_ids(const CategoryNamePart & c) const
                 q->insert(*p.package_ptr());
                 IDMap::iterator i(_imp->ids.find(*p.package_ptr()));
                 if (_imp->ids.end() == i)
-                    i = _imp->ids.insert(std::make_pair(*p.package_ptr(), make_shared_ptr(new PackageIDSequence))).first;
+                    i = _imp->ids.insert(std::make_pair(*p.package_ptr(), std::make_shared<PackageIDSequence>())).first;
                 i->second->push_back(make_id(*p.package_ptr(), p.version_requirements_ptr()->begin()->version_spec(), *d));
             }
         }

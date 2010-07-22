@@ -24,7 +24,6 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/set.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/mutex.hh>
@@ -32,6 +31,7 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/hook.hh>
 #include <paludis/distribution.hh>
 #include <paludis/selection.hh>
@@ -54,7 +54,7 @@ namespace
 
         void add(const SetName & s)
         {
-            tree->root()->append(make_shared_ptr(new NamedSetDepSpec(s)));
+            tree->root()->append(std::make_shared<NamedSetDepSpec>(s));
         }
 
         CombineSets() :
@@ -137,7 +137,7 @@ EnvironmentImplementation::~EnvironmentImplementation()
 std::shared_ptr<const FSEntrySequence>
 EnvironmentImplementation::bashrc_files() const
 {
-    return make_shared_ptr(new FSEntrySequence);
+    return std::make_shared<FSEntrySequence>();
 }
 
 std::shared_ptr<const FSEntrySequence>
@@ -319,8 +319,8 @@ namespace
         Log::get_instance()->message("environment_implementation.everything_deprecated", ll_warning, lc_context)
             << "The 'everything' set is deprecated. Use either 'installed-packages' or 'installed-slots' instead";
 
-        std::shared_ptr<SetSpecTree> result(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
-        result->root()->append(make_shared_ptr(new NamedSetDepSpec(SetName("installed-packages"))));
+        std::shared_ptr<SetSpecTree> result(new SetSpecTree(std::make_shared<AllDepSpec>()));
+        result->root()->append(std::make_shared<NamedSetDepSpec>(SetName("installed-packages")));
         return result;
     }
 }
@@ -350,7 +350,7 @@ namespace
 {
     std::shared_ptr<const SetSpecTree> make_empty_set()
     {
-        return make_shared_ptr(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
+        return std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>());
     }
 }
 

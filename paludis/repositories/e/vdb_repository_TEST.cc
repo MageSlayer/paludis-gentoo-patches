@@ -40,6 +40,7 @@
 #include <paludis/choice.hh>
 
 #include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
@@ -61,7 +62,7 @@ namespace
 
     std::shared_ptr<OutputManager> make_standard_output_manager(const Action &)
     {
-        return make_shared_ptr(new StandardOutputManager);
+        return std::make_shared<StandardOutputManager>();
     }
 
     std::string from_keys(const std::shared_ptr<const Map<std::string, std::string> > & m,
@@ -354,7 +355,7 @@ namespace test_cases
                         n::destination() = vdb_repo,
                         n::make_output_manager() = &make_standard_output_manager,
                         n::perform_uninstall() = &do_uninstall,
-                        n::replacing() = make_shared_ptr(new PackageIDSequence),
+                        n::replacing() = std::make_shared<PackageIDSequence>(),
                         n::want_phase() = &want_all_phases
                     ));
 
@@ -484,7 +485,7 @@ namespace test_cases
                         n::destination() = vdb_repo,
                         n::make_output_manager() = &make_standard_output_manager,
                         n::perform_uninstall() = &do_uninstall,
-                        n::replacing() = make_shared_ptr(new PackageIDSequence),
+                        n::replacing() = std::make_shared<PackageIDSequence>(),
                         n::want_phase() = &want_all_phases
                     ));
 
@@ -1210,7 +1211,7 @@ namespace test_cases
                         n::destination() = vdb_repo,
                         n::make_output_manager() = &make_standard_output_manager,
                         n::perform_uninstall() = &do_uninstall,
-                        n::replacing() = make_shared_ptr(new PackageIDSequence),
+                        n::replacing() = std::make_shared<PackageIDSequence>(),
                         n::want_phase() = &want_all_phases
                     ));
 

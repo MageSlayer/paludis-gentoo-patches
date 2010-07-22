@@ -23,7 +23,6 @@
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/options.hh>
@@ -154,6 +153,6 @@ UpdateWorldCommand::run(
 std::shared_ptr<args::ArgsHandler>
 UpdateWorldCommand::make_doc_cmdline()
 {
-    return make_shared_ptr(new UpdateWorldCommandLine);
+    return std::make_shared<UpdateWorldCommandLine>();
 }
 

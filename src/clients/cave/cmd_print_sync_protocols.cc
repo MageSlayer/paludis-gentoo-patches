@@ -26,7 +26,6 @@
 #include <paludis/repository.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/fs_entry.hh>
-#include <paludis/util/make_shared_ptr.hh>
 
 #include <cstdlib>
 #include <iostream>
@@ -113,5 +112,6 @@ PrintSyncProtocolsCommand::run(
 std::shared_ptr<args::ArgsHandler>
 PrintSyncProtocolsCommand::make_doc_cmdline()
 {
-    return make_shared_ptr(new PrintSyncProtocolsCommandLine);
+    return std::make_shared<PrintSyncProtocolsCommandLine>();
 }
+

@@ -75,7 +75,7 @@
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/mutex.hh>
@@ -216,7 +216,7 @@ namespace paludis
 
         mutable EAPIForFileMap eapi_for_file_map;
 
-        Implementation(ERepository * const, const ERepositoryParams &, std::shared_ptr<Mutexes> = make_shared_ptr(new Mutexes));
+        Implementation(ERepository * const, const ERepositoryParams &, std::shared_ptr<Mutexes> = std::make_shared<Mutexes>());
         ~Implementation();
 
         void need_profiles() const;
@@ -326,14 +326,14 @@ namespace paludis
                     layout->info_packages_files()->end(),
                     std::bind(std::mem_fn(&FSEntry::is_regular_file_or_symlink_to_regular_file),
                         std::placeholders::_1)) ?
-                make_shared_ptr(new InfoPkgsMetadataKey(params.environment(), layout->info_packages_files(), repo)) :
+                std::make_shared<InfoPkgsMetadataKey>(params.environment(), layout->info_packages_files(), repo) :
                 std::shared_ptr<InfoPkgsMetadataKey>()
                 ),
         info_vars_key(layout->info_variables_files()->end() != std::find_if(layout->info_variables_files()->begin(),
                     layout->info_variables_files()->end(),
                     std::bind(std::mem_fn(&FSEntry::is_regular_file_or_symlink_to_regular_file),
                         std::placeholders::_1)) ?
-                make_shared_ptr(new InfoVarsMetadataKey(layout->info_variables_files())) :
+                std::make_shared<InfoVarsMetadataKey>(layout->info_variables_files()) :
                 std::shared_ptr<InfoVarsMetadataKey>()
                 ),
 #ifdef ENABLE_PBINS
@@ -360,20 +360,20 @@ namespace paludis
             KeyValueConfigFile k(params.location() / "metadata" / "about.conf", KeyValueConfigFileOptions(),
                     &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
             if (! k.get("description").empty())
-                about_keys.push_back(make_shared_ptr(new LiteralMetadataValueKey<std::string>("description", "description",
-                                mkt_significant, k.get("description"))));
+                about_keys.push_back(std::make_shared<LiteralMetadataValueKey<std::string>>("description", "description",
+                                mkt_significant, k.get("description")));
             if (! k.get("summary").empty())
-                about_keys.push_back(make_shared_ptr(new LiteralMetadataValueKey<std::string>("summary", "summary",
-                                mkt_significant, k.get("summary"))));
+                about_keys.push_back(std::make_shared<LiteralMetadataValueKey<std::string>>("summary", "summary",
+                                mkt_significant, k.get("summary")));
             if (! k.get("status").empty())
-                about_keys.push_back(make_shared_ptr(new LiteralMetadataValueKey<std::string>("status", "status",
-                                mkt_significant, k.get("status"))));
+                about_keys.push_back(std::make_shared<LiteralMetadataValueKey<std::string>>("status", "status",
+                                mkt_significant, k.get("status")));
             if (! k.get("maintainer").empty())
-                about_keys.push_back(make_shared_ptr(new LiteralMetadataValueKey<std::string>("maintainer", "maintainer",
-                                mkt_significant, k.get("maintainer"))));
+                about_keys.push_back(std::make_shared<LiteralMetadataValueKey<std::string>>("maintainer", "maintainer",
+                                mkt_significant, k.get("maintainer")));
             if (! k.get("homepage").empty())
-                about_keys.push_back(make_shared_ptr(new LiteralMetadataValueKey<std::string>("homepage", "homepage",
-                                mkt_significant, k.get("homepage"))));
+                about_keys.push_back(std::make_shared<LiteralMetadataValueKey<std::string>>("homepage", "homepage",
+                                mkt_significant, k.get("homepage")));
         }
 
         FSEntry mtf(params.location() / "metadata" / "timestamp");
@@ -1000,7 +1000,7 @@ ERepository::perform_hook(const Hook & hook)
 std::shared_ptr<const CategoryNamePartSet>
 ERepository::unimportant_category_names() const
 {
-    std::shared_ptr<CategoryNamePartSet> result(make_shared_ptr(new CategoryNamePartSet));
+    std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
     result->insert(CategoryNamePart("virtual"));
     return result;
 }
@@ -1912,7 +1912,7 @@ namespace
     {
         MirrorMap::const_iterator i(map.find(m));
         if (i == map.end())
-            return make_shared_ptr(new MirrorsSequence);
+            return std::make_shared<MirrorsSequence>();
         else
             return i->second;
     }
@@ -2614,7 +2614,7 @@ ERepository::info(const std::shared_ptr<const ERepositoryID> & id,
                 make_named_values<EbuildInfoCommandParams>(
                 n::expand_vars() = expand_vars,
                 n::info_vars() = info_vars_key() ?
-                    info_vars_key()->value() : make_shared_ptr(new const Set<std::string>),
+                    info_vars_key()->value() : std::make_shared<const Set<std::string>>(),
                 n::load_environment() = static_cast<const FSEntry *>(0),
                 n::profiles() = _imp->params.profiles(),
                 n::profiles_with_parents() = profile()->profiles_with_parents(),

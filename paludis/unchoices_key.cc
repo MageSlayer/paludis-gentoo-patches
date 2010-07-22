@@ -20,7 +20,6 @@
 #include <paludis/unchoices_key.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/choice.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/make_named_values.hh>
@@ -39,7 +38,7 @@ namespace
             UnChoicesKey() :
                 _value(new Choices)
             {
-                _value->add(make_shared_ptr(new Choice(make_named_values<ChoiceParams>(
+                _value->add(std::make_shared<Choice>(make_named_values<ChoiceParams>(
                                     n::consider_added_or_changed() = false,
                                     n::contains_every_value() = true,
                                     n::hidden() = true,
@@ -47,7 +46,7 @@ namespace
                                     n::prefix() = ChoicePrefixName(""),
                                     n::raw_name() = "Choices",
                                     n::show_with_no_prefix() = true
-                                    ))));
+                                    )));
             }
 
             ~UnChoicesKey()

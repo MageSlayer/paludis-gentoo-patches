@@ -38,17 +38,17 @@ namespace
     {
         std::shared_ptr<Set<std::string> > visit(const InstallAction &) const
         {
-            return make_shared_ptr(new Set<std::string>);
+            return std::make_shared<Set<std::string>>();
         }
 
         std::shared_ptr<Set<std::string> > visit(const UninstallAction &) const
         {
-            return make_shared_ptr(new Set<std::string>);
+            return std::make_shared<Set<std::string>>();
         }
 
         std::shared_ptr<Set<std::string> > visit(const PretendAction &) const
         {
-            return make_shared_ptr(new Set<std::string>);
+            return std::make_shared<Set<std::string>>();
         }
 
         std::shared_ptr<Set<std::string> > visit(const FetchAction & a) const
@@ -61,17 +61,17 @@ namespace
 
         std::shared_ptr<Set<std::string> > visit(const PretendFetchAction &) const
         {
-            return make_shared_ptr(new Set<std::string>);
+            return std::make_shared<Set<std::string>>();
         }
 
         std::shared_ptr<Set<std::string> > visit(const ConfigAction &) const
         {
-            return make_shared_ptr(new Set<std::string>);
+            return std::make_shared<Set<std::string>>();
         }
 
         std::shared_ptr<Set<std::string> > visit(const InfoAction &) const
         {
-            return make_shared_ptr(new Set<std::string>);
+            return std::make_shared<Set<std::string>>();
         }
     };
 
@@ -211,13 +211,13 @@ CreateOutputManagerForPackageIDActionInfo::deserialise(Deserialisation & d)
     for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
         action_flags->insert(vv.member<std::string>(stringify(n)));
 
-    return make_shared_ptr(new CreateOutputManagerForPackageIDActionInfo(
+    return std::make_shared<CreateOutputManagerForPackageIDActionInfo>(
                 v.member<std::shared_ptr<const PackageID> >("package_id"),
                 v.member<std::string>("action_name"),
                 action_flags,
                 destringify<OutputExclusivity>(v.member<std::string>("output_exclusivity")),
                 v.member<ClientOutputFeatures>("client_output_features")
-                ));
+                );
 }
 
 CreateOutputManagerForRepositorySyncInfo::CreateOutputManagerForRepositorySyncInfo(
@@ -263,11 +263,11 @@ const std::shared_ptr<CreateOutputManagerForRepositorySyncInfo>
 CreateOutputManagerForRepositorySyncInfo::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "CreateOutputManagerForRepositorySyncInfo");
-    return make_shared_ptr(new CreateOutputManagerForRepositorySyncInfo(
+    return std::make_shared<CreateOutputManagerForRepositorySyncInfo>(
                 RepositoryName(v.member<std::string>("repo_name")),
                 destringify<OutputExclusivity>(v.member<std::string>("output_exclusivity")),
                 v.member<ClientOutputFeatures>("client_output_features")
-                ));
+                );
 }
 
 template class PrivateImplementationPattern<CreateOutputManagerForRepositorySyncInfo>;

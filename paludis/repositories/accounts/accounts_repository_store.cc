@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -24,7 +24,6 @@
 #include <paludis/repositories/accounts/accounts_exceptions.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/hashes.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/sequence.hh>
@@ -201,20 +200,20 @@ AccountsRepositoryStore::_load_one_user(
 
     PackageNames::iterator p(_imp->package_names.find(cat));
     if (p == _imp->package_names.end())
-        p = _imp->package_names.insert(std::make_pair(cat, make_shared_ptr(new QualifiedPackageNameSet))).first;
+        p = _imp->package_names.insert(std::make_pair(cat, std::make_shared<QualifiedPackageNameSet>())).first;
 
     p->second->insert(qpn);
 
     IDs::iterator q(_imp->ids.find(qpn));
     if (q == _imp->ids.end())
-        q = _imp->ids.insert(std::make_pair(qpn, make_shared_ptr(new PackageIDSequence))).first;
+        q = _imp->ids.insert(std::make_pair(qpn, std::make_shared<PackageIDSequence>())).first;
     else
         q->second.reset(new PackageIDSequence);
 
     if (_imp->installed)
-        q->second->push_back(make_shared_ptr(new InstalledAccountsID(_imp->env, qpn, repo, true)));
+        q->second->push_back(std::make_shared<InstalledAccountsID>(_imp->env, qpn, repo, true));
     else
-        q->second->push_back(make_shared_ptr(new AccountsID(_imp->env, qpn, repo, from_repo, filename, true, masked)));
+        q->second->push_back(std::make_shared<AccountsID>(_imp->env, qpn, repo, from_repo, filename, true, masked));
 }
 
 void
@@ -257,20 +256,20 @@ AccountsRepositoryStore::_load_one_group(
 
     PackageNames::iterator p(_imp->package_names.find(cat));
     if (p == _imp->package_names.end())
-        p = _imp->package_names.insert(std::make_pair(cat, make_shared_ptr(new QualifiedPackageNameSet))).first;
+        p = _imp->package_names.insert(std::make_pair(cat, std::make_shared<QualifiedPackageNameSet>())).first;
 
     p->second->insert(qpn);
 
     IDs::iterator q(_imp->ids.find(qpn));
     if (q == _imp->ids.end())
-        q = _imp->ids.insert(std::make_pair(qpn, make_shared_ptr(new PackageIDSequence))).first;
+        q = _imp->ids.insert(std::make_pair(qpn, std::make_shared<PackageIDSequence>())).first;
     else
         q->second.reset(new PackageIDSequence);
 
     if (_imp->installed)
-        q->second->push_back(make_shared_ptr(new InstalledAccountsID(_imp->env, qpn, repo, false)));
+        q->second->push_back(std::make_shared<InstalledAccountsID>(_imp->env, qpn, repo, false));
     else
-        q->second->push_back(make_shared_ptr(new AccountsID(_imp->env, qpn, repo, from_repo, filename, false, masked)));
+        q->second->push_back(std::make_shared<AccountsID>(_imp->env, qpn, repo, from_repo, filename, false, masked));
 }
 
 bool
@@ -302,7 +301,7 @@ AccountsRepositoryStore::package_names(const CategoryNamePart & c) const
 {
     PackageNames::iterator p(_imp->package_names.find(c));
     if (_imp->package_names.end() == p)
-        return make_shared_ptr(new QualifiedPackageNameSet);
+        return std::make_shared<QualifiedPackageNameSet>();
     else
         return p->second;
 }
@@ -312,7 +311,7 @@ AccountsRepositoryStore::package_ids(const QualifiedPackageName & p) const
 {
     IDs::iterator i(_imp->ids.find(p));
     if (_imp->ids.end() == i)
-        return make_shared_ptr(new PackageIDSequence);
+        return std::make_shared<PackageIDSequence>();
     else
         return i->second;
 }

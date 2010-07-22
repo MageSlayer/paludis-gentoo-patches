@@ -20,7 +20,6 @@
 #include <paludis/repositories/unavailable/unavailable_repository_dependencies_key.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/fs_entry.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/return_literal_function.hh>
@@ -55,7 +54,7 @@ namespace paludis
             human_name(h),
             type(t)
         {
-            labels->push_back(make_shared_ptr(new DependenciesBuildLabel("build", return_literal_function(true))));
+            labels->push_back(std::make_shared<DependenciesBuildLabel>("build", return_literal_function(true)));
         }
     };
 }

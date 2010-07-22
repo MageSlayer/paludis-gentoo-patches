@@ -201,7 +201,7 @@ Constraint::deserialise(Deserialisation & d)
     const std::shared_ptr<Reason> reason(v.member<std::shared_ptr<Reason> >("reason"));
     IDFinder id_finder;
 
-    return make_shared_ptr(new Constraint(make_named_values<Constraint>(
+    return std::make_shared<Constraint>(make_named_values<Constraint>(
                     n::destination_type() = destringify<DestinationType>(v.member<std::string>("destination_type")),
                     n::nothing_is_fine_too() = v.member<bool>("nothing_is_fine_too"),
                     n::reason() = reason,
@@ -209,7 +209,7 @@ Constraint::deserialise(Deserialisation & d)
                             reason->accept_returning<std::shared_ptr<const PackageID> >(id_finder)),
                     n::untaken() = v.member<bool>("untaken"),
                     n::use_existing() = destringify<UseExisting>(v.member<std::string>("use_existing"))
-            )));
+            ));
 }
 
 template class PrivateImplementationPattern<Constraints>;

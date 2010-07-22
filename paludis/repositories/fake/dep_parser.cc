@@ -18,7 +18,6 @@
  */
 
 #include <paludis/repositories/fake/dep_parser.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_named_values.hh>
@@ -58,7 +57,7 @@ namespace
                     + epdso_strict_parsing,
                     user_version_spec_options(),
                     id));
-        (*h.begin())->append(make_shared_ptr(new PackageDepSpec(p)));
+        (*h.begin())->append(std::make_shared<PackageDepSpec>(p));
     }
 
     template <typename T_>
@@ -67,14 +66,14 @@ namespace
     {
         if ((! s.empty()) && ('!' == s.at(0)))
         {
-            (*h.begin())->append(make_shared_ptr(new BlockDepSpec(s,
+            (*h.begin())->append(std::make_shared<BlockDepSpec>(s,
                             parse_elike_package_dep_spec(s.substr(1),
                                 ELikePackageDepSpecOptions() + epdso_allow_slot_deps
                                 + epdso_allow_slot_star_deps + epdso_allow_slot_equal_deps + epdso_allow_repository_deps
                                 + epdso_allow_use_deps + epdso_allow_ranged_deps + epdso_allow_tilde_greater_deps
                                 + epdso_strict_parsing,
                                 user_version_spec_options(),
-                                id), false)));
+                                id), false));
         }
         else
             package_dep_spec_string_handler<T_>(h, s, id);
@@ -83,19 +82,19 @@ namespace
     template <typename T_>
     void license_handler(const typename ParseStackTypes<T_>::Stack & h, const std::string & s)
     {
-        (*h.begin())->append(make_shared_ptr(new LicenseDepSpec(s)));
+        (*h.begin())->append(std::make_shared<LicenseDepSpec>(s));
     }
 
     template <typename T_>
     void simple_uri_handler(const typename ParseStackTypes<T_>::Stack & h, const std::string & s)
     {
-        (*h.begin())->append(make_shared_ptr(new SimpleURIDepSpec(s)));
+        (*h.begin())->append(std::make_shared<SimpleURIDepSpec>(s));
     }
 
     template <typename T_>
     void arrow_handler(const typename ParseStackTypes<T_>::Stack & h, const std::string & s, const std::string & t)
     {
-        (*h.begin())->append(make_shared_ptr(new FetchableURIDepSpec(t.empty() ? s : s + " -> " + t)));
+        (*h.begin())->append(std::make_shared<FetchableURIDepSpec>(t.empty() ? s : s + " -> " + t));
     }
 
     void any_not_allowed_handler(const std::string & s) PALUDIS_ATTRIBUTE((noreturn));
@@ -129,7 +128,7 @@ namespace
     template <typename T_, typename A_>
     void any_all_handler(typename ParseStackTypes<T_>::Stack & stack)
     {
-        stack.push_front((*stack.begin())->append(make_shared_ptr(new A_)));
+        stack.push_front((*stack.begin())->append(std::make_shared<A_>()));
     }
 
     template <typename T_>
@@ -137,7 +136,7 @@ namespace
             const Environment * const env, const std::shared_ptr<const PackageID> & id)
     {
         stack.push_front((*stack.begin())->append(
-                    make_shared_ptr(new ConditionalDepSpec(parse_elike_conditional_dep_spec(u, env, id, false)))));
+                    std::make_shared<ConditionalDepSpec>(parse_elike_conditional_dep_spec(u, env, id, false))));
     }
 
     template <typename T_>
@@ -171,7 +170,7 @@ paludis::fakerepository::parse_depend(const std::string & s,
     using namespace std::placeholders;
 
     ParseStackTypes<DependencySpecTree>::Stack stack;
-    std::shared_ptr<DependencySpecTree> top(make_shared_ptr(new DependencySpecTree(make_shared_ptr(new AllDepSpec))));
+    std::shared_ptr<DependencySpecTree> top(std::make_shared<DependencySpecTree>(std::make_shared<AllDepSpec>()));
     stack.push_front(top->root());
 
     ELikeDepParserCallbacks callbacks(
@@ -201,7 +200,7 @@ paludis::fakerepository::parse_provide(const std::string & s,
     using namespace std::placeholders;
 
     ParseStackTypes<ProvideSpecTree>::Stack stack;
-    std::shared_ptr<ProvideSpecTree> top(make_shared_ptr(new ProvideSpecTree(make_shared_ptr(new AllDepSpec))));
+    std::shared_ptr<ProvideSpecTree> top(std::make_shared<ProvideSpecTree>(std::make_shared<AllDepSpec>()));
     stack.push_front(top->root());
 
     ELikeDepParserCallbacks callbacks(
@@ -231,7 +230,7 @@ paludis::fakerepository::parse_fetchable_uri(const std::string & s,
     using namespace std::placeholders;
 
     ParseStackTypes<FetchableURISpecTree>::Stack stack;
-    std::shared_ptr<FetchableURISpecTree> top(make_shared_ptr(new FetchableURISpecTree(make_shared_ptr(new AllDepSpec))));
+    std::shared_ptr<FetchableURISpecTree> top(std::make_shared<FetchableURISpecTree>(std::make_shared<AllDepSpec>()));
     stack.push_front(top->root());
 
     ELikeDepParserCallbacks callbacks(
@@ -261,7 +260,7 @@ paludis::fakerepository::parse_simple_uri(const std::string & s,
     using namespace std::placeholders;
 
     ParseStackTypes<SimpleURISpecTree>::Stack stack;
-    std::shared_ptr<SimpleURISpecTree> top(make_shared_ptr(new SimpleURISpecTree(make_shared_ptr(new AllDepSpec))));
+    std::shared_ptr<SimpleURISpecTree> top(std::make_shared<SimpleURISpecTree>(std::make_shared<AllDepSpec>()));
     stack.push_front(top->root());
 
     ELikeDepParserCallbacks callbacks(
@@ -291,7 +290,7 @@ paludis::fakerepository::parse_license(const std::string & s,
     using namespace std::placeholders;
 
     ParseStackTypes<LicenseSpecTree>::Stack stack;
-    std::shared_ptr<LicenseSpecTree> top(make_shared_ptr(new LicenseSpecTree(make_shared_ptr(new AllDepSpec))));
+    std::shared_ptr<LicenseSpecTree> top(std::make_shared<LicenseSpecTree>(std::make_shared<AllDepSpec>()));
     stack.push_front(top->root());
 
     ELikeDepParserCallbacks callbacks(

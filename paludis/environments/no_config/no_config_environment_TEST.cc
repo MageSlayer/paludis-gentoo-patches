@@ -22,7 +22,6 @@
 #include <test/test_framework.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/fs_entry.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/make_named_values.hh>
 
 using namespace test;
@@ -41,7 +40,7 @@ namespace test_cases
                         n::disable_metadata_cache() = false,
                         n::extra_accept_keywords() = "",
                         n::extra_params() = std::shared_ptr<Map<std::string, std::string> >(),
-                        n::extra_repository_dirs() = make_shared_ptr(new FSEntrySequence),
+                        n::extra_repository_dirs() = std::make_shared<FSEntrySequence>(),
                         n::master_repository_name() = "",
                         n::profiles_if_not_auto() = "",
                         n::repository_dir() = FSEntry("no_config_environment_TEST_dir/repo"),

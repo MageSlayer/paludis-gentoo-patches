@@ -19,7 +19,6 @@
 
 #include <paludis/repositories/gems/extra_distribution_data.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/distribution-impl.hh>
 
@@ -38,9 +37,9 @@ namespace paludis
 
         static std::shared_ptr<GemsDistribution> make_data(const std::shared_ptr<const KeyValueConfigFile> & k)
         {
-            return make_shared_ptr(new GemsDistribution(make_named_values<GemsDistribution>(
+            return std::make_shared<GemsDistribution>(make_named_values<GemsDistribution>(
                             n::default_buildroot() = k->get("default_buildroot")
-                            )));
+                            ));
         }
     };
 }

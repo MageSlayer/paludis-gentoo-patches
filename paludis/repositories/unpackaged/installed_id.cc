@@ -26,7 +26,6 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/dir_iterator.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_named_values.hh>
@@ -34,6 +33,7 @@
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/return_literal_function.hh>
 #include <paludis/util/timestamp.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
@@ -94,17 +94,17 @@ namespace
 
     void create_file(Contents & c, const FSEntry & f)
     {
-        c.add(make_shared_ptr(new ContentsFileEntry(stringify(f))));
+        c.add(std::make_shared<ContentsFileEntry>(stringify(f)));
     }
 
     void create_dir(Contents & c, const FSEntry & f)
     {
-        c.add(make_shared_ptr(new ContentsDirEntry(stringify(f))));
+        c.add(std::make_shared<ContentsDirEntry>(stringify(f)));
     }
 
     void create_sym(Contents & c, const FSEntry & f, const FSEntry & t)
     {
-        c.add(make_shared_ptr(new ContentsSymEntry(stringify(f), stringify(t))));
+        c.add(std::make_shared<ContentsSymEntry>(stringify(f), stringify(t)));
     }
 
     class InstalledUnpackagedContentsKey :
@@ -430,10 +430,10 @@ namespace paludis
             fs_location_key(new InstalledUnpackagedFSEntryKey(l)),
             behaviours_key(new LiteralMetadataStringSetKey("behaviours", "behaviours", mkt_internal, behaviours_set))
         {
-            build_dependencies_labels->push_back(make_shared_ptr(new DependenciesBuildLabel("build_dependencies",
-                            return_literal_function(true))));
-            run_dependencies_labels->push_back(make_shared_ptr(new DependenciesRunLabel("run_dependencies",
-                            return_literal_function(true))));
+            build_dependencies_labels->push_back(std::make_shared<DependenciesBuildLabel>("build_dependencies",
+                            return_literal_function(true)));
+            run_dependencies_labels->push_back(std::make_shared<DependenciesRunLabel>("run_dependencies",
+                            return_literal_function(true)));
 
             if ((l / "contents").exists())
             {

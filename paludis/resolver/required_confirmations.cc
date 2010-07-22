@@ -48,7 +48,7 @@ const std::shared_ptr<DowngradeConfirmation>
 DowngradeConfirmation::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "DowngradeConfirmation");
-    return make_shared_ptr(new DowngradeConfirmation);
+    return std::make_shared<DowngradeConfirmation>();
 }
 
 void
@@ -62,7 +62,7 @@ const std::shared_ptr<NotBestConfirmation>
 NotBestConfirmation::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "NotBestConfirmation");
-    return make_shared_ptr(new NotBestConfirmation);
+    return std::make_shared<NotBestConfirmation>();
 }
 
 void
@@ -76,7 +76,7 @@ const std::shared_ptr<BreakConfirmation>
 BreakConfirmation::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "BreakConfirmation");
-    return make_shared_ptr(new BreakConfirmation);
+    return std::make_shared<BreakConfirmation>();
 }
 
 void
@@ -90,7 +90,7 @@ const std::shared_ptr<RemoveSystemPackageConfirmation>
 RemoveSystemPackageConfirmation::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "RemoveSystemPackageConfirmation");
-    return make_shared_ptr(new RemoveSystemPackageConfirmation);
+    return std::make_shared<RemoveSystemPackageConfirmation>();
 }
 
 void

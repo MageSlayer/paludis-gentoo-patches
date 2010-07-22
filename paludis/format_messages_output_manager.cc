@@ -23,7 +23,6 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/stringify.hh>
 
@@ -190,8 +189,8 @@ FormatMessagesOutputManager::factory_create(
     FormatMessagesOutputManagerFormatFunction format_func(std::bind(
                 &format_message, replace_vars_func, std::placeholders::_1, std::placeholders::_2));
 
-    return make_shared_ptr(new FormatMessagesOutputManager(
-                child, format_debug_s, format_info_s, format_warn_s, format_error_s, format_log_s, format_func));
+    return std::make_shared<FormatMessagesOutputManager>(
+                child, format_debug_s, format_info_s, format_warn_s, format_error_s, format_log_s, format_func);
 }
 
 template class PrivateImplementationPattern<FormatMessagesOutputManager>;

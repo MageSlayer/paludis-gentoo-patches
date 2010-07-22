@@ -27,7 +27,6 @@
 #include <paludis/contents.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/options.hh>
@@ -149,6 +148,6 @@ ContentsCommand::run(
 std::shared_ptr<args::ArgsHandler>
 ContentsCommand::make_doc_cmdline()
 {
-    return make_shared_ptr(new ContentsCommandLine);
+    return std::make_shared<ContentsCommandLine>();
 }
 

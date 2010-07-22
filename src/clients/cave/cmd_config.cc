@@ -22,7 +22,6 @@
 #include <paludis/args/args.hh>
 #include <paludis/args/do_help.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
@@ -116,6 +115,6 @@ ConfigCommand::run(
 std::shared_ptr<args::ArgsHandler>
 ConfigCommand::make_doc_cmdline()
 {
-    return make_shared_ptr(new ConfigCommandLine);
+    return std::make_shared<ConfigCommandLine>();
 }
 

@@ -23,10 +23,10 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/set.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/metadata_key.hh>
@@ -207,7 +207,7 @@ UnavailableRepositoryID::perform_action(Action & action) const
                             n::build_start_time() = build_start_time,
                             n::environment_file() = FSEntry("/dev/null"),
                             n::image_dir() = FSEntry("/dev/null"),
-                            n::merged_entries() = make_shared_ptr(new FSEntrySet),
+                            n::merged_entries() = std::make_shared<FSEntrySet>(),
                             n::options() = MergerOptions(),
                             n::output_manager() = output_manager,
                             n::package_id() = shared_from_this(),
@@ -251,7 +251,7 @@ UnavailableRepositoryID::perform_action(Action & action) const
 std::shared_ptr<const Set<std::string> >
 UnavailableRepositoryID::breaks_portage() const
 {
-    return make_shared_ptr(new Set<std::string>);
+    return std::make_shared<Set<std::string>>();
 }
 
 bool

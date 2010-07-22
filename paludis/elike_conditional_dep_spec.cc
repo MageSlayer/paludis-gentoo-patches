@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,7 +20,6 @@
 #include <paludis/elike_conditional_dep_spec.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/destringify.hh>
@@ -114,8 +113,8 @@ namespace
 
             flag = ChoiceNameWithPrefix(s.substr(inverse ? 1 : 0, s.length() - (inverse ? 2 : 1)));
 
-            add_metadata_key(make_shared_ptr(new LiteralMetadataValueKey<std::string> ("Flag", "Flag", mkt_normal, stringify(flag))));
-            add_metadata_key(make_shared_ptr(new LiteralMetadataValueKey<std::string> ("Inverse", "Inverse", mkt_normal, stringify(inverse))));
+            add_metadata_key(std::make_shared<LiteralMetadataValueKey<std::string> >("Flag", "Flag", mkt_normal, stringify(flag)));
+            add_metadata_key(std::make_shared<LiteralMetadataValueKey<std::string> >("Inverse", "Inverse", mkt_normal, stringify(inverse)));
         }
 
         virtual std::string as_string() const
@@ -150,7 +149,7 @@ paludis::parse_elike_conditional_dep_spec(const std::string & s,
         const Environment * const env, const std::shared_ptr<const PackageID> & id,
         const bool no_warning_for_unlisted)
 {
-    return ConditionalDepSpec(make_shared_ptr(new EConditionalDepSpecData(s, env, id, no_warning_for_unlisted)));
+    return ConditionalDepSpec(std::make_shared<EConditionalDepSpecData>(s, env, id, no_warning_for_unlisted));
 }
 
 ChoiceNameWithPrefix

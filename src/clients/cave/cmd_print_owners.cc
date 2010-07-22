@@ -23,7 +23,6 @@
 #include "owner_common.hh"
 #include <paludis/args/args.hh>
 #include <paludis/args/do_help.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <iostream>
 #include <cstdlib>
 
@@ -99,6 +98,6 @@ PrintOwnersCommand::run(
 std::shared_ptr<args::ArgsHandler>
 PrintOwnersCommand::make_doc_cmdline()
 {
-    return make_shared_ptr(new PrintOwnersCommandLine);
+    return std::make_shared<PrintOwnersCommandLine>();
 }
 

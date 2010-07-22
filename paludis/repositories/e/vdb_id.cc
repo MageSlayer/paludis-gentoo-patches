@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -19,7 +19,6 @@
 
 #include <paludis/repositories/e/vdb_id.hh>
 #include <paludis/repositories/e/e_key.hh>
-#include <paludis/util/make_shared_ptr.hh>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -53,7 +52,7 @@ VDBID::contents_filename() const
 std::shared_ptr<MetadataValueKey<std::shared_ptr<const Contents> > >
 VDBID::make_contents_key() const
 {
-    return make_shared_ptr(new EContentsKey(shared_from_this(), "CONTENTS", "Contents",
-                fs_location_key()->value() / "CONTENTS", mkt_internal));
+    return std::make_shared<EContentsKey>(shared_from_this(), "CONTENTS", "Contents",
+                fs_location_key()->value() / "CONTENTS", mkt_internal);
 }
 

@@ -44,7 +44,6 @@
 #include <paludis/util/mutex.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/graph-impl.hh>
@@ -523,10 +522,10 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
 
         if ((local_config_dir / (dist->repository_defaults_filename_part() + ".conf")).exists())
         {
-            _imp->predefined_conf_vars_func = std::bind(&from_kv, make_shared_ptr(new KeyValueConfigFile(
+            _imp->predefined_conf_vars_func = std::bind(&from_kv, std::make_shared<KeyValueConfigFile>(
                             local_config_dir / (dist->repository_defaults_filename_part() + ".conf"), KeyValueConfigFileOptions(),
                             std::bind(&to_kv_func, _imp->predefined_conf_vars_func, std::placeholders::_1, std::placeholders::_2),
-                            &KeyValueConfigFile::no_transformation)),
+                            &KeyValueConfigFile::no_transformation),
                     std::placeholders::_1);
         }
         else if ((local_config_dir / (dist->repository_defaults_filename_part() + ".bash")).exists())
@@ -538,10 +537,10 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
                     .with_stderr_prefix(dist->repository_defaults_filename_part() + ".bash> ")
                     .with_captured_stdout_stream(&s));
             int exit_status(run_command(cmd));
-            _imp->predefined_conf_vars_func = std::bind(&from_kv, make_shared_ptr(new KeyValueConfigFile(
+            _imp->predefined_conf_vars_func = std::bind(&from_kv, std::make_shared<KeyValueConfigFile>(
                             s, KeyValueConfigFileOptions(),
                             std::bind(&to_kv_func, _imp->predefined_conf_vars_func, std::placeholders::_1, std::placeholders::_2),
-                            &KeyValueConfigFile::no_transformation)),
+                            &KeyValueConfigFile::no_transformation),
                     std::placeholders::_1);
             if (exit_status != 0)
                 Log::get_instance()->message("paludis_environment.repository_defaults.failure", ll_warning, lc_context)

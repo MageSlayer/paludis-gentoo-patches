@@ -25,7 +25,6 @@
 #include <paludis/package_database.hh>
 #include <paludis/repository.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 
@@ -89,5 +88,5 @@ PrintSetsCommand::run(
 std::shared_ptr<args::ArgsHandler>
 PrintSetsCommand::make_doc_cmdline()
 {
-    return make_shared_ptr(new PrintSetsCommandLine);
+    return std::make_shared<PrintSetsCommandLine>();
 }

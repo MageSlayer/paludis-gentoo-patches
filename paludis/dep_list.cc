@@ -44,7 +44,6 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/member_iterator.hh>
@@ -56,6 +55,7 @@
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/timestamp.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/set-impl.hh>
@@ -139,7 +139,7 @@ namespace paludis
             current_top_level_target(0),
             throw_on_blocker(o.blocks() == dl_blocks_error)
         {
-            labels.push_front(make_shared_ptr(new DependenciesLabelSequence));
+            labels.push_front(std::make_shared<DependenciesLabelSequence>());
         }
     };
 
@@ -1114,8 +1114,8 @@ DepList::add(const SetSpecTree & spec, const std::shared_ptr<const DestinationsS
 void
 DepList::add(const PackageDepSpec & spec, const std::shared_ptr<const DestinationsSet> & destinations)
 {
-    SetSpecTree tree(make_shared_ptr(new AllDepSpec));
-    tree.root()->append(make_shared_ptr(new PackageDepSpec(spec)));
+    SetSpecTree tree(std::make_shared<AllDepSpec>());
+    tree.root()->append(std::make_shared<PackageDepSpec>(spec));
     add(tree, destinations);
 }
 
@@ -1203,7 +1203,7 @@ DepList::add_package(const std::shared_ptr<const PackageID> & p, const std::shar
                         n::associated_entry() = &*_imp->current_merge_list_entry,
                         n::destination() = std::shared_ptr<Repository>(),
                         n::generation() = _imp->merge_list_generation,
-                        n::handled() = make_shared_ptr(new DepListEntryNoHandlingRequired),
+                        n::handled() = std::make_shared<DepListEntryNoHandlingRequired>(),
                         n::kind() = dlk_provided,
                         n::package_id() = (*_imp->env->package_database()->fetch_repository(
                                     RepositoryName("virtuals"))).make_virtuals_interface()->make_virtual_package_id(
@@ -1290,7 +1290,7 @@ DepList::add_error_package(const std::shared_ptr<const PackageID> & p, const Dep
                     n::associated_entry() = &*_imp->current_merge_list_entry,
                     n::destination() = std::shared_ptr<Repository>(),
                     n::generation() = _imp->merge_list_generation,
-                    n::handled() = make_shared_ptr(new DepListEntryNoHandlingRequired),
+                    n::handled() = std::make_shared<DepListEntryNoHandlingRequired>(),
                     n::kind() = kind,
                     n::package_id() = p,
                     n::state() = dle_has_all_deps,
@@ -1327,7 +1327,7 @@ DepList::add_suggested_package(const std::shared_ptr<const PackageID> & p,
                     n::associated_entry() = &*_imp->current_merge_list_entry,
                     n::destination() = find_destination(*p, destinations),
                     n::generation() = _imp->merge_list_generation,
-                    n::handled() = make_shared_ptr(new DepListEntryNoHandlingRequired),
+                    n::handled() = std::make_shared<DepListEntryNoHandlingRequired>(),
                     n::kind() = dlk_suggested,
                     n::package_id() = p,
                     n::state() = dle_has_all_deps,
@@ -1412,7 +1412,7 @@ DepList::add_already_installed_package(const std::shared_ptr<const PackageID> & 
                     n::associated_entry() = static_cast<DepListEntry *>(0),
                     n::destination() = std::shared_ptr<Repository>(),
                     n::generation() = _imp->merge_list_generation,
-                    n::handled() = make_shared_ptr(new DepListEntryNoHandlingRequired),
+                    n::handled() = std::make_shared<DepListEntryNoHandlingRequired>(),
                     n::kind() = dlk_already_installed,
                     n::package_id() = p,
                     n::state() = dle_has_pre_deps,

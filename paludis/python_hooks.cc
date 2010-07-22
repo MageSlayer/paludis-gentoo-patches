@@ -13,7 +13,6 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/sequence.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/make_named_values.hh>
 
 #include <set>
@@ -75,7 +74,7 @@ namespace
 
             virtual const std::shared_ptr<const Sequence<std::string> > auto_hook_names() const
             {
-                return make_shared_ptr(new Sequence<std::string>);
+                return std::make_shared<Sequence<std::string>>();
             }
     };
 

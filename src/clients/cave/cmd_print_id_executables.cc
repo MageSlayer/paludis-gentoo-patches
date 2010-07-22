@@ -25,7 +25,6 @@
 #include <paludis/args/do_help.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/tokeniser.hh>
 
@@ -97,6 +96,6 @@ PrintIDExecutablesCommand::run(
 std::shared_ptr<args::ArgsHandler>
 PrintIDExecutablesCommand::make_doc_cmdline()
 {
-    return make_shared_ptr(new PrintIDExecutablesCommandLine);
+    return std::make_shared<PrintIDExecutablesCommandLine>();
 }
 

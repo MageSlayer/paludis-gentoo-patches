@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,7 +20,6 @@
 #include <paludis/repositories/e/exndbam_id.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/contents.hh>
@@ -117,7 +116,7 @@ ExndbamID::contents_filename() const
 std::shared_ptr<MetadataValueKey<std::shared_ptr<const Contents> > >
 ExndbamID::make_contents_key() const
 {
-    return make_shared_ptr(new ExndbamContentsKey(this, _ndbam));
+    return std::make_shared<ExndbamContentsKey>(this, _ndbam);
 }
 
 

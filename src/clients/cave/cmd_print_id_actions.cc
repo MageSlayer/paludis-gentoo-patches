@@ -21,7 +21,6 @@
 #include "exceptions.hh"
 #include <paludis/args/args.hh>
 #include <paludis/args/do_help.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/stringify.hh>
@@ -130,6 +129,6 @@ PrintIDActionsCommand::run(
 std::shared_ptr<args::ArgsHandler>
 PrintIDActionsCommand::make_doc_cmdline()
 {
-    return make_shared_ptr(new PrintIDActionsCommandLine);
+    return std::make_shared<PrintIDActionsCommandLine>();
 }
 

@@ -29,7 +29,6 @@
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/dep_label.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/make_named_values.hh>
@@ -212,7 +211,7 @@ namespace
         std::string::size_type slot_p(s.rfind(':'));
         if (std::string::npos != slot_p)
         {
-            result.slot_requirement(make_shared_ptr(new UserSlotExactRequirement(SlotName(s.substr(slot_p + 1)))));
+            result.slot_requirement(std::make_shared<UserSlotExactRequirement>(SlotName(s.substr(slot_p + 1))));
             s.erase(slot_p);
         }
     }

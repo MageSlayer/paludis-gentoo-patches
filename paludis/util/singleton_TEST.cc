@@ -21,7 +21,6 @@
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/util/thread.hh>
 #include <paludis/util/mutex.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <functional>
 #include <algorithm>
 #include <vector>
@@ -164,7 +163,7 @@ namespace test_cases
             {
                 std::vector<std::shared_ptr<Thread> > t(c);
                 for (int x(0) ; x < c ; ++x)
-                    t[x] = make_shared_ptr(new Thread(std::bind(&thread_func, &a[x])));
+                    t[x] = std::make_shared<Thread>(std::bind(&thread_func, &a[x]));
             }
             TEST_CHECK_EQUAL(MyThreadedClass::instances, 1);
             TEST_CHECK(0 == std::count(a.begin(), a.end(), static_cast<void *>(0)));

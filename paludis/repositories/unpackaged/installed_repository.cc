@@ -24,7 +24,6 @@
 #include <paludis/ndbam_merger.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/sequence.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/dir_iterator.hh>
@@ -35,6 +34,7 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/safe_ofstream.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/stringify_formatter.hh>
 #include <paludis/action.hh>
 #include <paludis/environment.hh>
@@ -364,7 +364,7 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
                         _imp->params.environment(), rewrite_ids_over_to_root, _1),
                 n::image() = m.image_dir(),
                 n::install_under() = install_under,
-                n::merged_entries() = make_shared_ptr(new FSEntrySet),
+                n::merged_entries() = std::make_shared<FSEntrySet>(),
                 n::options() = m.options(),
                 n::output_manager() = m.output_manager(),
                 n::package_id() = m.package_id(),
@@ -465,12 +465,12 @@ InstalledUnpackagedRepository::repository_factory_create(
     if (root.empty())
         throw unpackaged_repositories::RepositoryConfigurationError("Key 'root' not specified or empty");
 
-    return make_shared_ptr(new InstalledUnpackagedRepository(RepositoryName("installed-unpackaged"),
+    return std::make_shared<InstalledUnpackagedRepository>(RepositoryName("installed-unpackaged"),
                 make_named_values<unpackaged_repositories::InstalledUnpackagedRepositoryParams>(
                     n::environment() = env,
                     n::location() = location,
                     n::root() = root
-                )));
+                ));
 }
 
 RepositoryName
@@ -486,7 +486,7 @@ InstalledUnpackagedRepository::repository_factory_dependencies(
         const Environment * const,
         const std::function<std::string (const std::string &)> &)
 {
-    return make_shared_ptr(new RepositoryNameSet);
+    return std::make_shared<RepositoryNameSet>();
 }
 
 void

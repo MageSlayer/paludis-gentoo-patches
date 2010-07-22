@@ -24,7 +24,6 @@
 #include <paludis/repositories/fake/fake_package_id.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/sequence.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/standard_output_manager.hh>
 #include <paludis/util/safe_ifstream.hh>
@@ -80,8 +79,8 @@ namespace test_cases
                         generator::Matches(parse_user_package_dep_spec("=cat/pkg-1",
                                 &env, UserPackageDepSpecOptions()), MatchPackageOptions()))]->begin(),
                     *eapi, FSEntry("fetch_visitor_TEST_dir/out"),
-                    false, false, "test", make_shared_ptr(new URIListedThenMirrorsLabel("listed-then-mirrors")), false,
-                    make_shared_ptr(new StandardOutputManager), get_mirrors_fn);
+                    false, false, "test", std::make_shared<URIListedThenMirrorsLabel>("listed-then-mirrors"), false,
+                    std::make_shared<StandardOutputManager>(), get_mirrors_fn);
             parse_fetchable_uri("file:///" + stringify(FSEntry("fetch_visitor_TEST_dir/in/input1").realpath()), &env, id, *eapi)->root()->accept(v);
 
             TEST_CHECK(FSEntry("fetch_visitor_TEST_dir/out/input1").is_regular_file());

@@ -25,7 +25,6 @@
 #include <paludis/util/mutex.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/hashes.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/log.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/choice.hh>

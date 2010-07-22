@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -39,7 +39,6 @@
 #include <paludis/util/create_iterator-impl.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/hashes.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/map.hh>
 #include <paludis/choice.hh>
@@ -195,7 +194,7 @@ namespace paludis
                 env(e),
                 repository(p),
                 profiles_with_parents(new FSEntrySequence),
-                system_packages(new SetSpecTree(make_shared_ptr(new AllDepSpec))),
+                system_packages(new SetSpecTree(std::make_shared<AllDepSpec>())),
                 system_tag(new GeneralSetDepTag(SetName("system"), stringify(name))),
                 virtuals(new Map<QualifiedPackageName, PackageDepSpec>),
                 use_expand(new Set<std::string>),
@@ -787,7 +786,7 @@ Implementation<TraditionalProfile>::fish_out_use_expand_names()
     {
         std::string lower_x;
         std::transform(x->begin(), x->end(), std::back_inserter(lower_x), &::tolower);
-        known_choice_value_names.insert(std::make_pair(lower_x, make_shared_ptr(new Set<UnprefixedChoiceName>)));
+        known_choice_value_names.insert(std::make_pair(lower_x, std::make_shared<Set<UnprefixedChoiceName>>()));
     }
 
     for (std::set<std::pair<ChoicePrefixName, UnprefixedChoiceName> >::const_iterator u(use.begin()), u_end(use.end()) ;

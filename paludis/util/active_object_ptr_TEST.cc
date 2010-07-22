@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -31,7 +31,7 @@ namespace test_cases
     TESTCASE_SEMIREGULAR(ActiveIntPtr, ActiveIntPtr(new int(10)));
 
     typedef ActiveObjectPtr<std::shared_ptr<int> > ActiveSharedIntPtr;
-    TESTCASE_SEMIREGULAR(ActiveSharedIntPtr, ActiveSharedIntPtr(make_shared_ptr(new int(10))));
+    TESTCASE_SEMIREGULAR(ActiveSharedIntPtr, ActiveSharedIntPtr(std::make_shared<int>(10)));
 
     struct TestDereference : TestCase
     {
@@ -43,7 +43,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(p->length(), 6u);
 
             ActiveObjectPtr<std::shared_ptr<std::string> > q(
-                    make_shared_ptr(new std::string("chimp")));
+                    std::make_shared<std::string>("chimp"));
             TEST_CHECK_EQUAL(q->length(), 5u);
         }
     } test_dereference;
@@ -58,7 +58,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(p.value()->length(), 6u);
 
             ActiveObjectPtr<std::shared_ptr<std::string> > q(
-                    make_shared_ptr(new std::string("chimp")));
+                    std::make_shared<std::string>("chimp"));
             TEST_CHECK_EQUAL(q.value()->length(), 5u);
         }
     } test_value;

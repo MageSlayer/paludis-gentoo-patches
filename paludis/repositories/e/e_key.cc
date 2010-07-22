@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -35,7 +35,6 @@
 #include <paludis/util/mutex.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/create_iterator-impl.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/tribool.hh>
 #include <paludis/util/member_iterator-impl.hh>
 #include <paludis/util/sequence.hh>
@@ -1012,9 +1011,9 @@ EContentsKey::value() const
         if ("obj" == tokens.at(0))
         {
             std::shared_ptr<ContentsEntry> e(new ContentsFileEntry(tokens.at(1)));
-            e->add_metadata_key(make_shared_ptr(new LiteralMetadataTimeKey("mtime", "mtime", mkt_normal,
-                            Timestamp(destringify<time_t>(tokens.at(3)), 0))));
-            e->add_metadata_key(make_shared_ptr(new LiteralMetadataValueKey<std::string>("md5", "md5", mkt_normal, tokens.at(2))));
+            e->add_metadata_key(std::make_shared<LiteralMetadataTimeKey>("mtime", "mtime", mkt_normal,
+                            Timestamp(destringify<time_t>(tokens.at(3)), 0)));
+            e->add_metadata_key(std::make_shared<LiteralMetadataValueKey<std::string>>("md5", "md5", mkt_normal, tokens.at(2)));
             _imp->value->add(e);
         }
         else if ("dir" == tokens.at(0))
@@ -1025,8 +1024,8 @@ EContentsKey::value() const
         else if ("sym" == tokens.at(0))
         {
             std::shared_ptr<ContentsEntry> e(new ContentsSymEntry(tokens.at(1), tokens.at(2)));
-            e->add_metadata_key(make_shared_ptr(new LiteralMetadataTimeKey("mtime", "mtime", mkt_normal,
-                            Timestamp(destringify<time_t>(tokens.at(3)), 0))));
+            e->add_metadata_key(std::make_shared<LiteralMetadataTimeKey>("mtime", "mtime", mkt_normal,
+                            Timestamp(destringify<time_t>(tokens.at(3)), 0)));
             _imp->value->add(e);
         }
         else if ("misc" == tokens.at(0) || "fif" == tokens.at(0) || "dev" == tokens.at(0))

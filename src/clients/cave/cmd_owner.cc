@@ -28,7 +28,6 @@
 #include <paludis/args/args.hh>
 #include <paludis/args/do_help.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/stringify.hh>
 
@@ -108,6 +107,6 @@ OwnerCommand::run(
 std::shared_ptr<args::ArgsHandler>
 OwnerCommand::make_doc_cmdline()
 {
-    return make_shared_ptr(new OwnerCommandLine);
+    return std::make_shared<OwnerCommandLine>();
 }
 

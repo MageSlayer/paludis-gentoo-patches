@@ -26,6 +26,7 @@
 #include <paludis/util/mutex.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/spec_tree.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/environment.hh>
@@ -48,7 +49,7 @@ typedef std::map<QualifiedPackageName, std::set<QualifiedPackageName> > Rewrites
 const std::shared_ptr<const DependencySpecTree>
 RewrittenSpec::as_spec_tree() const
 {
-    const std::shared_ptr<DependencySpecTree> result(new DependencySpecTree(make_shared_ptr(new AllDepSpec)));
+    const std::shared_ptr<DependencySpecTree> result(new DependencySpecTree(std::make_shared<AllDepSpec>()));
 
     for (Sequence<PackageOrBlockDepSpec>::ConstIterator i(specs()->begin()), i_end(specs()->end()) ;
             i != i_end ; ++i)
@@ -100,7 +101,7 @@ SpecRewriter::rewrite_if_special(const PackageOrBlockDepSpec & s, const std::sha
             return make_null_shared_ptr();
 
         const std::shared_ptr<RewrittenSpec> result(new RewrittenSpec(make_named_values<RewrittenSpec>(
-                        n::specs() = make_shared_ptr(new Sequence<PackageOrBlockDepSpec>)
+                        n::specs() = std::make_shared<Sequence<PackageOrBlockDepSpec>>()
                         )));
 
         for (std::set<QualifiedPackageName>::const_iterator n(r->second.begin()), n_end(r->second.end()) ;
@@ -120,7 +121,7 @@ SpecRewriter::rewrite_if_special(const PackageOrBlockDepSpec & s, const std::sha
             return make_null_shared_ptr();
 
         const std::shared_ptr<RewrittenSpec> result(new RewrittenSpec(make_named_values<RewrittenSpec>(
-                        n::specs() = make_shared_ptr(new Sequence<PackageOrBlockDepSpec>)
+                        n::specs() = std::make_shared<Sequence<PackageOrBlockDepSpec>>()
                         )));
 
         for (std::set<QualifiedPackageName>::const_iterator n(r->second.begin()), n_end(r->second.end()) ;

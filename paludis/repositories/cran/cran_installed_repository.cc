@@ -37,7 +37,6 @@
 #include <paludis/repositories/cran/cran_dep_parser.hh>
 #include <paludis/repositories/cran/cran_installed_repository.hh>
 #include <paludis/repositories/cran/package_dep_spec.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/sequence.hh>
@@ -51,6 +50,7 @@
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <unordered_map>
 #include <functional>
 #include <algorithm>
@@ -413,7 +413,7 @@ CRANInstalledRepository::repository_factory_dependencies(
         const Environment * const,
         const std::function<std::string (const std::string &)> &)
 {
-    return make_shared_ptr(new RepositoryNameSet);
+    return std::make_shared<RepositoryNameSet>();
 }
 
 CRANInstalledRepositoryConfigurationError::CRANInstalledRepositoryConfigurationError(

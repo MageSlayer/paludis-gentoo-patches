@@ -39,10 +39,10 @@
 #include <paludis/ipc_output_manager.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/return_literal_function.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <cstdlib>
 #include <iostream>
 #include <algorithm>
@@ -460,7 +460,7 @@ PerformCommand::run(
 
         OutputManagerFromIPCOrEnvironment output_manager_holder(env.get(), cmdline, id);
         FetchActionOptions options(make_named_values<FetchActionOptions>(
-                    n::errors() = make_shared_ptr(new Sequence<FetchActionFailure>),
+                    n::errors() = std::make_shared<Sequence<FetchActionFailure>>(),
                     n::exclude_unmirrorable() = cmdline.a_exclude_unmirrorable.specified(),
                     n::fetch_parts() = parts,
                     n::ignore_not_in_manifest() = false,
@@ -575,7 +575,6 @@ PerformCommand::run(
 std::shared_ptr<args::ArgsHandler>
 PerformCommand::make_doc_cmdline()
 {
-    return make_shared_ptr(new PerformCommandLine);
+    return std::make_shared<PerformCommandLine>();
 }
-
 

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -48,7 +48,7 @@ namespace paludis
         Implementation(const Environment * const e, const std::shared_ptr<const Set<std::string> > & s) :
             env(e),
             specs(new std::list<std::shared_ptr<PackageDepSpec> >),
-            tree(new DependencySpecTree(make_shared_ptr(new AllDepSpec))),
+            tree(new DependencySpecTree(std::make_shared<AllDepSpec>())),
             initial_labels(new DependenciesLabelSequence)
         {
             for (Set<std::string>::ConstIterator i(s->begin()), i_end(s->end()) ;
@@ -60,8 +60,8 @@ namespace paludis
                 tree->root()->append(spec);
             }
 
-            initial_labels->push_back(make_shared_ptr(new DependenciesBuildLabel("build", return_literal_function(true))));
-            initial_labels->push_back(make_shared_ptr(new DependenciesRunLabel("run", return_literal_function(true))));
+            initial_labels->push_back(std::make_shared<DependenciesBuildLabel>("build", return_literal_function(true)));
+            initial_labels->push_back(std::make_shared<DependenciesRunLabel>("run", return_literal_function(true)));
         }
     };
 }

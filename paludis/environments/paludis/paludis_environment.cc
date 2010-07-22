@@ -45,7 +45,6 @@
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/is_file_with_extension.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/set.hh>
@@ -96,9 +95,8 @@ namespace paludis
             format_key(new LiteralMetadataValueKey<std::string>("format", "Format", mkt_significant, "paludis")),
             config_location_key(new LiteralMetadataValueKey<FSEntry>("conf_dir", "Config dir", mkt_normal,
                         config->config_dir())),
-            world_file_key(config->world()->location_if_set() ? make_shared_ptr(
-                        new LiteralMetadataValueKey<FSEntry>("world_file", "World file", mkt_normal,
-                            *config->world()->location_if_set()))
+            world_file_key(config->world()->location_if_set() ? std::make_shared<LiteralMetadataValueKey<FSEntry>>("world_file", "World file", mkt_normal,
+                            *config->world()->location_if_set())
                     : std::shared_ptr<LiteralMetadataValueKey<FSEntry> >())
         {
         }
@@ -419,7 +417,7 @@ PaludisEnvironment::mask_for_breakage(const PackageID & id) const
                      _imp->config->accept_breaks_portage().begin(), _imp->config->accept_breaks_portage().end(),
                      std::back_inserter(bad_breakages));
             if (! bad_breakages.empty())
-                return make_shared_ptr(new BreaksPortageMask(join(breakages->begin(), breakages->end(), " ")));
+                return std::make_shared<BreaksPortageMask>(join(breakages->begin(), breakages->end(), " "));
         }
     }
 
@@ -430,7 +428,7 @@ const std::shared_ptr<const Mask>
 PaludisEnvironment::mask_for_user(const PackageID & d, const bool o) const
 {
     if (_imp->config->package_mask_conf()->query(d))
-        return make_shared_ptr(new UserConfigMask(o));
+        return std::make_shared<UserConfigMask>(o);
 
     return std::shared_ptr<const Mask>();
 }

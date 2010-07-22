@@ -18,7 +18,6 @@
  */
 
 #include <paludis/resolver/destination.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_named_values.hh>
@@ -40,10 +39,10 @@ Destination::deserialise(Deserialisation & d)
         replacing->push_back(vv.member<std::shared_ptr<const PackageID> >(stringify(n)));
 
 
-    return make_shared_ptr(new Destination(make_named_values<Destination>(
+    return std::make_shared<Destination>(make_named_values<Destination>(
                     n::replacing() = replacing,
                     n::repository() = RepositoryName(v.member<std::string>("repository"))
-                    )));
+                    ));
 }
 
 void

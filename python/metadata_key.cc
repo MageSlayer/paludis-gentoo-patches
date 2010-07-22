@@ -27,7 +27,6 @@
 #include <paludis/environment.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/set.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/timestamp.hh>
 

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -35,7 +35,7 @@ namespace
 
     std::shared_ptr<int> make_ten_shared()
     {
-        return make_shared_ptr(new int(10));
+        return std::make_shared<int>(10);
     }
 
     std::string * make_monkey()
@@ -45,7 +45,7 @@ namespace
 
     std::shared_ptr<std::string> make_chimp_shared()
     {
-        return make_shared_ptr(new std::string("chimp"));
+        return std::make_shared<std::string>("chimp");
     }
 }
 
@@ -99,7 +99,7 @@ namespace test_cases
 
         static std::shared_ptr<Flag> make_flag()
         {
-            return make_shared_ptr(new Flag);
+            return std::make_shared<Flag>();
         }
 
         void run()
@@ -122,7 +122,7 @@ namespace test_cases
 
         static std::shared_ptr<Flag> make_flag()
         {
-            return make_shared_ptr(new Flag);
+            return std::make_shared<Flag>();
         }
 
         void run()

@@ -38,11 +38,11 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/pretty_print.hh>
 #include <paludis/util/timestamp.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/action.hh>
 #include <paludis/mask.hh>
 #include <paludis/choice.hh>
@@ -1121,6 +1121,6 @@ ShowCommand::run(
 std::shared_ptr<args::ArgsHandler>
 ShowCommand::make_doc_cmdline()
 {
-    return make_shared_ptr(new ShowCommandLine);
+    return std::make_shared<ShowCommandLine>();
 }
 

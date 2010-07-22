@@ -36,6 +36,7 @@
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/simple_parser.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/create_output_manager_info.hh>
 #include <paludis/package_id.hh>
@@ -330,7 +331,7 @@ OutputConf::add(const FSEntry & filename)
     Context context("When adding source '" + stringify(filename) + "' as an output file:");
 
     std::shared_ptr<KeyValueConfigFile> f(make_bashable_kv_conf(filename,
-                make_shared_ptr(new Map<std::string, std::string>),
+                std::make_shared<Map<std::string, std::string>>(),
                 KeyValueConfigFileOptions() + kvcfo_allow_sections));
     if (! f)
         return;
@@ -361,14 +362,14 @@ OutputConf::add(const FSEntry & filename)
         {
             local_rules.insert(
                     std::make_pair(section_name,
-                        make_shared_ptr(new Map<std::string, std::string>))).first->second->insert(
+                        std::make_shared<Map<std::string, std::string>>())).first->second->insert(
                     remainder, k->second);
         }
         else if (section_kind == "manager")
         {
             local_managers.insert(
                     std::make_pair(section_name,
-                        make_shared_ptr(new Map<std::string, std::string>))).first->second->insert(
+                        std::make_shared<Map<std::string, std::string>>())).first->second->insert(
                     remainder, k->second);
         }
         else

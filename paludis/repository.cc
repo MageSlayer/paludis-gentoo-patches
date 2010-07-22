@@ -22,7 +22,6 @@
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/sequence-impl.hh>
@@ -106,10 +105,10 @@ namespace paludis
 
         static std::shared_ptr<RepositoryDistribution> make_data(const std::shared_ptr<const KeyValueConfigFile> & k)
         {
-            return make_shared_ptr(new RepositoryDistribution(make_named_values<RepositoryDistribution>(
+            return std::make_shared<RepositoryDistribution>(make_named_values<RepositoryDistribution>(
                             n::repository_blacklist() = std::bind(std::mem_fn(&KeyValueConfigFile::get),
                                     k, std::placeholders::_1)
-                            )));
+                            ));
         }
     };
 }
@@ -214,7 +213,7 @@ Repository::can_be_favourite_repository() const
 std::shared_ptr<const CategoryNamePartSet>
 Repository::unimportant_category_names() const
 {
-    return make_shared_ptr(new CategoryNamePartSet);
+    return std::make_shared<CategoryNamePartSet>();
 }
 
 void

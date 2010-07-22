@@ -38,7 +38,7 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/hashes.hh>
-#include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/choice.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <unordered_map>
@@ -647,8 +647,8 @@ std::shared_ptr<MetadataValueKey<FSEntry> >
 ExheresLayout::accounts_repository_data_location_key() const
 {
     if ((_imp->tree_root / "metadata" / "accounts").exists())
-        return make_shared_ptr(new LiteralMetadataValueKey<FSEntry>("accounts_repository_data_location",
-                    "AccountsRepository data location", mkt_internal, _imp->tree_root / "metadata" / "accounts"));
+        return std::make_shared<LiteralMetadataValueKey<FSEntry>>("accounts_repository_data_location",
+                    "AccountsRepository data location", mkt_internal, _imp->tree_root / "metadata" / "accounts");
     else
         return make_null_shared_ptr();
 }

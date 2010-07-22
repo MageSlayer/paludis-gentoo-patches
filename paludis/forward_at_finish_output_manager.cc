@@ -22,7 +22,6 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/stringify.hh>
@@ -148,10 +147,10 @@ ForwardAtFinishOutputManager::factory_create(
 
     std::shared_ptr<OutputManager> child(create_child_function(child_s));
 
-    return make_shared_ptr(new ForwardAtFinishOutputManager(
+    return std::make_shared<ForwardAtFinishOutputManager>(
                 destringify<bool>(if_success_s),
                 destringify<bool>(if_failure_s),
-                child));
+                child);
 }
 
 template class PrivateImplementationPattern<ForwardAtFinishOutputManager>;

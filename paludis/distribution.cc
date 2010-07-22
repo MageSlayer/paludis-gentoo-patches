@@ -24,7 +24,6 @@
 #include <paludis/util/hashes.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/util/stringify.hh>
@@ -65,7 +64,7 @@ namespace paludis
                 KeyValueConfigFile k(*d, KeyValueConfigFileOptions(), &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
 
                 values.insert(std::make_pair(strip_trailing_string(d->basename(), ".conf"),
-                            make_shared_ptr(new Distribution(make_named_values<Distribution>(
+                            std::make_shared<Distribution>(make_named_values<Distribution>(
                                         n::concept_keyword() = k.get("concept_keyword"),
                                         n::concept_license() = k.get("concept_license"),
                                         n::concept_use() = k.get("concept_use"),
@@ -75,7 +74,7 @@ namespace paludis
                                         n::name() = strip_trailing_string(d->basename(), ".conf"),
                                         n::paludis_package() = k.get("paludis_package"),
                                         n::support_old_style_virtuals() = destringify<bool>(k.get("support_old_style_virtuals"))
-                                        )))));
+                                        ))));
             }
         }
     };

@@ -23,10 +23,10 @@
 #include "resolve_common.hh"
 
 #include <paludis/args/do_help.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/broken_linkage_finder.hh>
 #include <paludis/package_id.hh>
 #include <paludis/name.hh>
@@ -213,7 +213,7 @@ FixLinkageCommand::run(
         PartiallyMadePackageDepSpec part_spec((PartiallyMadePackageDepSpecOptions()));
         part_spec.package((*pkg_it)->name());
         if ((*pkg_it)->slot_key())
-            part_spec.slot_requirement(make_shared_ptr(new UserSlotExactRequirement((*pkg_it)->slot_key()->value())));
+            part_spec.slot_requirement(std::make_shared<UserSlotExactRequirement>((*pkg_it)->slot_key()->value()));
 
         if (cmdline.a_exact.specified())
             part_spec.version_requirement(make_named_values<VersionRequirement>(
@@ -254,6 +254,6 @@ FixLinkageCommand::run(
 std::shared_ptr<args::ArgsHandler>
 FixLinkageCommand::make_doc_cmdline()
 {
-    return make_shared_ptr(new FixLinkageCommandLine);
+    return std::make_shared<FixLinkageCommandLine>();
 }
 

@@ -32,10 +32,10 @@
 #include <paludis/util/cookie.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/dir_iterator.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/safe_ifstream.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/distribution.hh>
 #include <paludis/environment.hh>
@@ -189,7 +189,7 @@ ExndbamRepository::repository_factory_dependencies(
         const Environment * const,
         const std::function<std::string (const std::string &)> &)
 {
-    return make_shared_ptr(new RepositoryNameSet);
+    return std::make_shared<RepositoryNameSet>();
 }
 
 void
@@ -574,7 +574,7 @@ ExndbamRepository::perform_uninstall(
                         n::ebuild_file() = ver_dir / (stringify(id->name().package()) + "-" + stringify(id->version()) + ".ebuild"),
                         n::eclassdirs() = eclassdirs,
                         n::environment() = _imp->params.environment(),
-                        n::exlibsdirs() = make_shared_ptr(new FSEntrySequence),
+                        n::exlibsdirs() = std::make_shared<FSEntrySequence>(),
                         n::files_dir() = ver_dir,
                         n::maybe_output_manager() = output_manager,
                         n::package_builddir() = package_builddir,

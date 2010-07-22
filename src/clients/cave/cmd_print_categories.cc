@@ -26,7 +26,6 @@
 #include <paludis/repository.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <cstdlib>
 #include <iostream>
 #include <algorithm>
@@ -129,6 +128,6 @@ PrintCategoriesCommand::run(
 std::shared_ptr<args::ArgsHandler>
 PrintCategoriesCommand::make_doc_cmdline()
 {
-    return make_shared_ptr(new PrintCategoriesCommandLine);
+    return std::make_shared<PrintCategoriesCommandLine>();
 }
 

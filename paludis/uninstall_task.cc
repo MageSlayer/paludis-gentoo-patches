@@ -36,6 +36,7 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/package_database.hh>
 #include <paludis/hook.hh>
 #include <paludis/dep_tag.hh>
@@ -315,7 +316,7 @@ UninstallTask::execute()
     {
         on_update_world_pre();
 
-        std::shared_ptr<SetSpecTree> all(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
+        std::shared_ptr<SetSpecTree> all(new SetSpecTree(std::make_shared<AllDepSpec>()));
 
         std::map<QualifiedPackageName, std::set<VersionSpec> > being_removed;
         for (UninstallList::ConstIterator i(list.begin()), i_end(list.end()) ; i != i_end ; ++i)
@@ -336,8 +337,8 @@ UninstallTask::execute()
                     remove = false;
 
             if (remove)
-                all->root()->append(make_shared_ptr(new PackageDepSpec(make_package_dep_spec(
-                                    PartiallyMadePackageDepSpecOptions()).package(i->first))));
+                all->root()->append(std::make_shared<PackageDepSpec>(make_package_dep_spec(
+                                    PartiallyMadePackageDepSpecOptions()).package(i->first)));
         }
 
         world_remove_packages(all);

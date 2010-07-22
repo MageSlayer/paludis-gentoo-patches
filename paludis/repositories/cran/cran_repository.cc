@@ -34,7 +34,6 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/map.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
 #include <paludis/util/stringify.hh>
@@ -47,6 +46,7 @@
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/extract_host_from_url.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/syncer.hh>
 #include <paludis/hook.hh>
@@ -117,7 +117,7 @@ CRANRepository::CRANRepository(const CRANRepositoryParams & p) :
                 n::provides_interface() = static_cast<RepositoryProvidesInterface *>(0),
                 n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
                 )),
-    PrivateImplementationPattern<CRANRepository>(new Implementation<CRANRepository>(p, make_shared_ptr(new Mutex))),
+    PrivateImplementationPattern<CRANRepository>(new Implementation<CRANRepository>(p, std::make_shared<Mutex>())),
     _imp(PrivateImplementationPattern<CRANRepository>::_imp)
 {
     _add_metadata_keys();
@@ -446,7 +446,7 @@ CRANRepository::repository_factory_dependencies(
         const Environment * const,
         const std::function<std::string (const std::string &)> &)
 {
-    return make_shared_ptr(new RepositoryNameSet);
+    return std::make_shared<RepositoryNameSet>();
 }
 
 CRANRepositoryConfigurationError::CRANRepositoryConfigurationError(

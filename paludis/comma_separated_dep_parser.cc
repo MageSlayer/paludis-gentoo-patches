@@ -22,7 +22,6 @@
 #include <paludis/util/strip.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/options.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/spec_tree.hh>
@@ -35,7 +34,7 @@ CommaSeparatedDepParser::parse(const Environment * const env, const std::string 
 {
     Context context("When parsing '" + s + "':");
 
-    std::shared_ptr<DependencySpecTree> result(new DependencySpecTree(make_shared_ptr(new AllDepSpec)));
+    std::shared_ptr<DependencySpecTree> result(new DependencySpecTree(std::make_shared<AllDepSpec>()));
 
     std::list<std::string> tokens;
     tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(s, ",", "", std::back_inserter(tokens));

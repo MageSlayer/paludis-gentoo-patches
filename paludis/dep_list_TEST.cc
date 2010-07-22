@@ -2164,15 +2164,15 @@ namespace test_cases
 
             DepList d3(&env, DepListOptions());
             d3.options()->fall_back() = dl_fall_back_as_needed_except_targets;
-            std::shared_ptr<SetSpecTree> t3(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
-            t3->root()->append(make_shared_ptr(new PackageDepSpec(parse_user_package_dep_spec("cat/one", &env, UserPackageDepSpecOptions()))));
-            t3->root()->append(make_shared_ptr(new PackageDepSpec(parse_user_package_dep_spec("cat/two", &env, UserPackageDepSpecOptions()))));
+            std::shared_ptr<SetSpecTree> t3(new SetSpecTree(std::make_shared<AllDepSpec>()));
+            t3->root()->append(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec("cat/one", &env, UserPackageDepSpecOptions())));
+            t3->root()->append(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec("cat/two", &env, UserPackageDepSpecOptions())));
             TEST_CHECK_THROWS(d3.add(*t3, env.default_destinations()), DepListError);
 
             DepList d4(&env, DepListOptions());
-            std::shared_ptr<SetSpecTree> t4(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
-            t4->root()->append(make_shared_ptr(new PackageDepSpec(parse_user_package_dep_spec("cat/one", &env, UserPackageDepSpecOptions()))));
-            t4->root()->append(make_shared_ptr(new PackageDepSpec(parse_user_package_dep_spec("cat/three", &env, UserPackageDepSpecOptions()))));
+            std::shared_ptr<SetSpecTree> t4(new SetSpecTree(std::make_shared<AllDepSpec>()));
+            t4->root()->append(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec("cat/one", &env, UserPackageDepSpecOptions())));
+            t4->root()->append(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec("cat/three", &env, UserPackageDepSpecOptions())));
             TEST_CHECK_THROWS(d4.add(*t4, env.default_destinations()), DepListError);
         }
     } test_dep_list_fall_back_as_needed_not_targets;
@@ -2214,9 +2214,9 @@ namespace test_cases
             DepList d2(&env, DepListOptions());
             d2.options()->upgrade() = dl_upgrade_as_needed;
 
-            std::shared_ptr<SetSpecTree> t2(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
-            t2->root()->append(make_shared_ptr(new PackageDepSpec(parse_user_package_dep_spec("cat/one", &env, UserPackageDepSpecOptions()))));
-            t2->root()->append(make_shared_ptr(new PackageDepSpec(parse_user_package_dep_spec("cat/two", &env, UserPackageDepSpecOptions()))));
+            std::shared_ptr<SetSpecTree> t2(new SetSpecTree(std::make_shared<AllDepSpec>()));
+            t2->root()->append(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec("cat/one", &env, UserPackageDepSpecOptions())));
+            t2->root()->append(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec("cat/two", &env, UserPackageDepSpecOptions())));
             d2.add(*t2, env.default_destinations());
             TEST_CHECK_EQUAL(join(d2.begin(), d2.end(), " "), "cat/two-2:0::repo cat/one-1:0::repo");
         }

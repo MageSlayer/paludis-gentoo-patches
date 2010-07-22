@@ -24,7 +24,6 @@
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/action_queue.hh>
 #include <paludis/util/mutex.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/package_database.hh>
 #include <paludis/hook.hh>
 #include <paludis/create_output_manager_info.hh>

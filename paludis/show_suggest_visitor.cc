@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -30,7 +30,6 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/join.hh>
@@ -65,7 +64,7 @@ namespace paludis
             dependency_tags(t),
             only_if_suggested_label(l)
         {
-            labels.push_front(make_shared_ptr(new DependenciesLabelSequence));
+            labels.push_front(std::make_shared<DependenciesLabelSequence>());
         }
     };
 }

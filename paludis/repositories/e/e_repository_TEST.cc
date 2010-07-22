@@ -29,7 +29,6 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/map.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/return_literal_function.hh>
@@ -70,7 +69,7 @@ namespace
 
     std::shared_ptr<OutputManager> make_standard_output_manager(const Action &)
     {
-        return make_shared_ptr(new StandardOutputManager);
+        return std::make_shared<StandardOutputManager>();
     }
 
     std::string from_keys(const std::shared_ptr<const Map<std::string, std::string> > & m,
@@ -936,7 +935,7 @@ namespace test_cases
             env.package_database()->add_repository(1, repo);
 
             FetchAction action(make_named_values<FetchActionOptions>(
-                        n::errors() = make_shared_ptr(new Sequence<FetchActionFailure>),
+                        n::errors() = std::make_shared<Sequence<FetchActionFailure>>(),
                         n::exclude_unmirrorable() = false,
                         n::fetch_parts() = FetchParts() + fp_regulars + fp_extras,
                         n::ignore_not_in_manifest() = false,
@@ -1045,7 +1044,7 @@ namespace test_cases
             env.package_database()->add_repository(1, repo);
 
             FetchAction action(make_named_values<FetchActionOptions>(
-                        n::errors() = make_shared_ptr(new Sequence<FetchActionFailure>),
+                        n::errors() = std::make_shared<Sequence<FetchActionFailure>>(),
                         n::exclude_unmirrorable() = false,
                         n::fetch_parts() = FetchParts() + fp_regulars + fp_extras,
                         n::ignore_not_in_manifest() = false,

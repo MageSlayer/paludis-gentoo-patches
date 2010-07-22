@@ -18,7 +18,6 @@
  */
 
 #include <paludis/resolver/orderer_notes.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/serialise-impl.hh>
 
@@ -38,8 +37,8 @@ OrdererNotes::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "OrdererNotes");
 
-    return make_shared_ptr(new OrdererNotes(make_named_values<OrdererNotes>(
+    return std::make_shared<OrdererNotes>(make_named_values<OrdererNotes>(
                     n::cycle_breaking() = v.member<std::string>("cycle_breaking")
-                    )));
+                    ));
 }
 

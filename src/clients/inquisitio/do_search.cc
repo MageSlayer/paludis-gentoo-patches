@@ -33,7 +33,6 @@
 #include <paludis/notifier_callback.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/create_iterator-impl.hh>
 #include <paludis/util/forward_parallel_for_each.hh>
 #include <paludis/util/system.hh>
@@ -336,14 +335,14 @@ do_search(Environment & env)
 
     std::list<std::shared_ptr<Extractor> > extractors;
     if (CommandLine::get_instance()->a_keys.begin_args() == CommandLine::get_instance()->a_keys.end_args())
-        extractors.push_back(make_shared_ptr(new NameDescriptionExtractor));
+        extractors.push_back(std::make_shared<NameDescriptionExtractor>());
     else
         for (args::StringSetArg::ConstIterator i(CommandLine::get_instance()->a_keys.begin_args()),
                 i_end(CommandLine::get_instance()->a_keys.end_args()) ; i != i_end ; ++i)
-            extractors.push_back(make_shared_ptr(new KeyExtractor(*i,
+            extractors.push_back(std::make_shared<KeyExtractor>(*i,
                             CommandLine::get_instance()->a_flatten.specified(),
                             CommandLine::get_instance()->a_enabled_only.specified(),
-                            env)));
+                            env));
 
     std::list<std::shared_ptr<const Repository> > repos;
     for (PackageDatabase::RepositoryConstIterator r(env.package_database()->begin_repositories()),

@@ -767,6 +767,22 @@ void f(const T_ & ... a)
 	])
 dnl }}}
 
+dnl {{{ c++0x auto
+AC_MSG_CHECKING([for c++0x auto])
+AC_COMPILE_IFELSE([
+#include <string>
+std::string f(int);
+int main(int, char **)
+{
+	auto x = f(1);
+}
+],
+	[AC_MSG_RESULT([yes])],
+	[AC_MSG_RESULT([no])
+	 AC_MSG_ERROR([your compiler does not support c++0x auto])
+	])
+dnl }}}
+
 dnl {{{ c++0x rvalue references
 AC_MSG_CHECKING([for c++0x rvalue references])
 AC_COMPILE_IFELSE([

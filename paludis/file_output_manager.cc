@@ -23,7 +23,6 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/stringify.hh>
@@ -168,7 +167,7 @@ FileOutputManager::factory_create(
 
     if (filename_s.empty())
         throw ConfigurationError("Key 'filename' not specified when creating a file output manager");
-    filename_s = replace_vars_func(filename_s, make_shared_ptr(new Map<std::string, std::string>));
+    filename_s = replace_vars_func(filename_s, std::make_shared<Map<std::string, std::string>>());
 
     if (keep_on_success_s.empty())
         keep_on_success_s = "true";
@@ -180,11 +179,11 @@ FileOutputManager::factory_create(
     if (! summary_output_manager_s.empty())
         summary_output_manager = create_child_function(summary_output_manager_s);
 
-    summary_output_message_s = replace_vars_func(summary_output_message_s, make_shared_ptr(new Map<std::string, std::string>));
+    summary_output_message_s = replace_vars_func(summary_output_message_s, std::make_shared<Map<std::string, std::string>>());
 
-    return make_shared_ptr(new FileOutputManager(FSEntry(filename_s),
+    return std::make_shared<FileOutputManager>(FSEntry(filename_s),
                 destringify<bool>(keep_on_success_s), destringify<bool>(keep_on_empty_s),
-                summary_output_manager, summary_output_message_s));
+                summary_output_manager, summary_output_message_s);
 }
 
 template class PrivateImplementationPattern<FileOutputManager>;

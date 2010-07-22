@@ -31,13 +31,13 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/is_file_with_extension.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/distribution.hh>
 #include <paludis/action.hh>
@@ -75,7 +75,7 @@ namespace paludis
         std::shared_ptr<const MetadataValueKey<std::string> > format_key;
 
         Implementation(const gems::InstalledRepositoryParams p,
-                       std::shared_ptr<Mutex> m = make_shared_ptr(new Mutex)) :
+                       std::shared_ptr<Mutex> m = std::make_shared<Mutex>()) :
             big_nasty_mutex(m),
             params(p),
             has_category_names(false),
@@ -173,14 +173,14 @@ InstalledGemsRepository::package_names(const CategoryNamePart & c) const
     Lock l(*_imp->big_nasty_mutex);
 
     if (! has_category_named(c))
-        return make_shared_ptr(new QualifiedPackageNameSet);
+        return std::make_shared<QualifiedPackageNameSet>();
 
     need_ids();
 
     std::unordered_map<CategoryNamePart, std::shared_ptr<const QualifiedPackageNameSet>, Hash<CategoryNamePart> >::const_iterator i(
             _imp->package_names.find(c));
     if (i == _imp->package_names.end())
-        return make_shared_ptr(new QualifiedPackageNameSet);
+        return std::make_shared<QualifiedPackageNameSet>();
     return i->second;
 }
 
@@ -190,13 +190,13 @@ InstalledGemsRepository::package_ids(const QualifiedPackageName & q) const
     Lock l(*_imp->big_nasty_mutex);
 
     if (! has_package_named(q))
-        return make_shared_ptr(new PackageIDSequence);
+        return std::make_shared<PackageIDSequence>();
 
     need_ids();
 
     IDMap::const_iterator i(_imp->ids.find(q));
     if (i == _imp->ids.end())
-        return make_shared_ptr(new PackageIDSequence);
+        return std::make_shared<PackageIDSequence>();
 
     return i->second;
 }
@@ -252,9 +252,9 @@ InstalledGemsRepository::need_ids() const
         pkgs->insert(gems + p);
 
         if (_imp->ids.end() == _imp->ids.find(gems + p))
-            _imp->ids.insert(std::make_pair(gems + p, make_shared_ptr(new PackageIDSequence)));
-        _imp->ids.find(gems + p)->second->push_back(make_shared_ptr(new gems::GemSpecification(
-                        _imp->params.environment(), shared_from_this(), p, v, *d)));
+            _imp->ids.insert(std::make_pair(gems + p, std::make_shared<PackageIDSequence>()));
+        _imp->ids.find(gems + p)->second->push_back(std::make_shared<gems::GemSpecification>(
+                        _imp->params.environment(), shared_from_this(), p, v, *d));
     }
 }
 
@@ -396,7 +396,7 @@ InstalledGemsRepository::repository_factory_dependencies(
         const Environment * const,
         const std::function<std::string (const std::string &)> &)
 {
-    return make_shared_ptr(new RepositoryNameSet);
+    return std::make_shared<RepositoryNameSet>();
 }
 
 std::shared_ptr<Repository>
@@ -417,12 +417,12 @@ InstalledGemsRepository::repository_factory_create(
     if (root.empty())
         root = "/";
 
-    return make_shared_ptr(new InstalledGemsRepository(make_named_values<gems::InstalledRepositoryParams>(
+    return std::make_shared<InstalledGemsRepository>(make_named_values<gems::InstalledRepositoryParams>(
                 n::builddir() = builddir,
                 n::environment() = env,
                 n::install_dir() = install_dir,
                 n::root() = root
-                )));
+                ));
 }
 
 void

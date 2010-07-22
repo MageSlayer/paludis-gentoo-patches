@@ -25,7 +25,6 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/sequence.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/standard_output_manager.hh>
 #include <paludis/action.hh>
 #include <paludis/filtered_generator.hh>
@@ -48,7 +47,7 @@ namespace
 
     std::shared_ptr<OutputManager> make_standard_output_manager(const Action &)
     {
-        return make_shared_ptr(new StandardOutputManager);
+        return std::make_shared<StandardOutputManager>();
     }
 
     std::string from_keys(const std::shared_ptr<const Map<std::string, std::string> > & m,

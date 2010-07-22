@@ -23,7 +23,6 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/destringify.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/make_named_values.hh>
 #include <list>
@@ -39,7 +38,7 @@ namespace
         Context context("When making NoConfigEnvironment using spec '" + s + "':");
 
         std::shared_ptr<Map<std::string, std::string> > extra_params(
-                make_shared_ptr(new Map<std::string, std::string>));
+                std::make_shared<Map<std::string, std::string>>());
         FSEntry repository_dir(FSEntry::cwd());
         std::shared_ptr<FSEntrySequence> extra_repository_dirs(new FSEntrySequence);
         FSEntry write_cache("/var/empty");

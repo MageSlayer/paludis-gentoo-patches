@@ -197,7 +197,7 @@ World::world_set() const
                 << "World file '" << *_imp->maybe_world_file << "' doesn't exist";
     }
 
-    return make_shared_ptr(new SetSpecTree(make_shared_ptr(new AllDepSpec)));
+    return std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>());
 }
 
 std::shared_ptr<const FSEntry>

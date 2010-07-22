@@ -22,7 +22,6 @@
 
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/member_iterator-impl.hh>
 #include <paludis/util/tokeniser.hh>
@@ -100,12 +99,12 @@ namespace
     template <typename T_>
     const std::shared_ptr<T_> make_command()
     {
-        return make_shared_ptr(new T_);
+        return std::make_shared<T_>();
     }
 
     const std::shared_ptr<ScriptCommand> make_script_command(const std::string & s, const FSEntry & f)
     {
-        return make_shared_ptr(new ScriptCommand(s, f));
+        return std::make_shared<ScriptCommand>(s, f);
     }
 }
 

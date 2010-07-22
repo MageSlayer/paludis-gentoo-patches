@@ -41,7 +41,6 @@
 #include <paludis/util/hashes.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/tribool.hh>
@@ -796,8 +795,8 @@ namespace
                         if (fetch_job_n == fetch_job_numbers.end())
                             throw InternalError(PALUDIS_HERE, "haven't scheduled the fetch for " + stringify(index.resolvent()) + " yet");
 
-                        resolved->job_lists()->pretend_job_list()->append(make_shared_ptr(new PretendJob(
-                                        changes_to_make_decision.origin_id()->uniquely_identifying_spec())));
+                        resolved->job_lists()->pretend_job_list()->append(std::make_shared<PretendJob>(
+                                        changes_to_make_decision.origin_id()->uniquely_identifying_spec()));
 
                         const std::shared_ptr<JobRequirements> requirements(new JobRequirements);
                         requirements->push_back(make_named_values<JobRequirement>(
@@ -824,13 +823,13 @@ namespace
                                 i != i_end ; ++i)
                             replacing->push_back((*i)->uniquely_identifying_spec());
 
-                        JobNumber install_job_n(resolved->job_lists()->execute_job_list()->append(make_shared_ptr(new InstallJob(
+                        JobNumber install_job_n(resolved->job_lists()->execute_job_list()->append(std::make_shared<InstallJob>(
                                             requirements,
                                             make_origin_spec(changes_to_make_decision),
                                             changes_to_make_decision.destination()->repository(),
                                             changes_to_make_decision.resolvent().destination_type(),
                                             replacing
-                                            ))));
+                                            )));
 
                         change_or_remove_job_numbers.insert(std::make_pair(index, install_job_n));
                     }
@@ -852,9 +851,9 @@ namespace
                                 recursed
                                 );
 
-                        JobNumber fetch_job_n(resolved->job_lists()->execute_job_list()->append(make_shared_ptr(new FetchJob(
+                        JobNumber fetch_job_n(resolved->job_lists()->execute_job_list()->append(std::make_shared<FetchJob>(
                                             requirements,
-                                            make_origin_spec(changes_to_make_decision)))));
+                                            make_origin_spec(changes_to_make_decision))));
                         fetch_job_numbers.insert(std::make_pair(index.resolvent(), fetch_job_n));
                     }
                     return;
@@ -887,10 +886,10 @@ namespace
                     recursed
                     );
 
-            JobNumber uninstall_job_n(resolved->job_lists()->execute_job_list()->append(make_shared_ptr(new UninstallJob(
+            JobNumber uninstall_job_n(resolved->job_lists()->execute_job_list()->append(std::make_shared<UninstallJob>(
                                 requirements,
                                 removing
-                                ))));
+                                )));
 
             change_or_remove_job_numbers.insert(std::make_pair(index, uninstall_job_n));
         }

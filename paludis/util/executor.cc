@@ -22,7 +22,6 @@
 #include <paludis/util/mutex.hh>
 #include <paludis/util/condition_variable.hh>
 #include <paludis/util/thread.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
 #include <map>
@@ -130,8 +129,8 @@ Executor::execute()
             ++_imp->active;
             --_imp->pending;
             (*q->second.begin())->pre_execute_exclusive();
-            running.insert(std::make_pair(q->first, std::make_pair(make_shared_ptr(new Thread(
-                                std::bind(&Executor::_one, this, *q->second.begin()))), *q->second.begin())));
+            running.insert(std::make_pair(q->first, std::make_pair(std::make_shared<Thread>(
+                                std::bind(&Executor::_one, this, *q->second.begin())), *q->second.begin())));
             q->second.erase(q->second.begin());
             if (q->second.empty())
                 _imp->queues.erase(q++);

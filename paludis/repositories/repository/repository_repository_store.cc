@@ -25,7 +25,6 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/hashes.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/make_named_values.hh>
@@ -104,12 +103,12 @@ RepositoryRepositoryStore::_populate_one(const RepositoryName & repo_name)
     PackageNames::iterator p(_imp->package_names.find(id->name().category()));
     if (_imp->package_names.end() == p)
         p = _imp->package_names.insert(std::make_pair(id->name().category(),
-                    make_shared_ptr(new QualifiedPackageNameSet))).first;
+                    std::make_shared<QualifiedPackageNameSet>())).first;
     p->second->insert(id->name());
 
     IDs::iterator i(_imp->ids.find(id->name()));
     if (_imp->ids.end() == i)
-        i = _imp->ids.insert(std::make_pair(id->name(), make_shared_ptr(new PackageIDSequence))).first;
+        i = _imp->ids.insert(std::make_pair(id->name(), std::make_shared<PackageIDSequence>())).first;
     i->second->push_back(id);
 }
 
@@ -134,7 +133,7 @@ RepositoryRepositoryStore::category_names() const
 std::shared_ptr<const CategoryNamePartSet>
 RepositoryRepositoryStore::unimportant_category_names() const
 {
-    std::shared_ptr<CategoryNamePartSet> result(make_shared_ptr(new CategoryNamePartSet));
+    std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
     result->insert(CategoryNamePart("repository"));
     return result;
 }
@@ -144,7 +143,7 @@ RepositoryRepositoryStore::package_names(const CategoryNamePart & c) const
 {
     PackageNames::iterator p(_imp->package_names.find(c));
     if (_imp->package_names.end() == p)
-        return make_shared_ptr(new QualifiedPackageNameSet);
+        return std::make_shared<QualifiedPackageNameSet>();
     else
         return p->second;
 }
@@ -154,7 +153,7 @@ RepositoryRepositoryStore::package_ids(const QualifiedPackageName & p) const
 {
     IDs::iterator i(_imp->ids.find(p));
     if (_imp->ids.end() == i)
-        return make_shared_ptr(new PackageIDSequence);
+        return std::make_shared<PackageIDSequence>();
     else
         return i->second;
 }

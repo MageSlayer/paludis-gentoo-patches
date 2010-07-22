@@ -21,8 +21,8 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
@@ -237,12 +237,12 @@ FakeInstalledRepository::repository_factory_create(
     Context context("When creating FakeInstalledRepository:");
     RepositoryName name(f("name"));
 
-    return make_shared_ptr(new FakeInstalledRepository(make_named_values<FakeInstalledRepositoryParams>(
+    return std::make_shared<FakeInstalledRepository>(make_named_values<FakeInstalledRepositoryParams>(
                     n::environment() = env,
                     n::name() = name,
                     n::suitable_destination() = true,
                     n::supports_uninstall() = true
-                    )));
+                    ));
 }
 
 std::shared_ptr<const RepositoryNameSet>
@@ -250,7 +250,7 @@ FakeInstalledRepository::repository_factory_dependencies(
         const Environment * const,
         const std::function<std::string (const std::string&)> &)
 {
-    return make_shared_ptr(new RepositoryNameSet);
+    return std::make_shared<RepositoryNameSet>();
 }
 
 const std::shared_ptr<const MetadataValueKey<std::string> >

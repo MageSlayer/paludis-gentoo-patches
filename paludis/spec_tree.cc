@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -18,7 +18,6 @@
  */
 
 #include <paludis/spec_tree.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
@@ -79,7 +78,7 @@ const std::shared_ptr<typename Tree_::template NodeType<T_>::Type>
 BasicInnerNode<Tree_>::append(const std::shared_ptr<const T_> & t)
 {
     const std::shared_ptr<typename Tree_::template NodeType<T_>::Type> tt(
-            make_shared_ptr(new typename Tree_::template NodeType<T_>::Type(t)));
+            std::make_shared<typename Tree_::template NodeType<T_>::Type>(t));
     append_node(tt);
     return tt;
 }
@@ -107,13 +106,13 @@ InnerNode<Tree_, Item_>::spec() const
 
 template <typename NodeList_, typename RootNode_>
 SpecTree<NodeList_, RootNode_>::SpecTree(const std::shared_ptr<RootNode_> & spec) :
-    _root(make_shared_ptr(new typename InnerNodeType<RootNode_>::Type(spec)))
+    _root(std::make_shared<typename InnerNodeType<RootNode_>::Type>(spec))
 {
 }
 
 template <typename NodeList_, typename RootNode_>
 SpecTree<NodeList_, RootNode_>::SpecTree(const std::shared_ptr<const RootNode_> & spec) :
-    _root(make_shared_ptr(new typename InnerNodeType<RootNode_>::Type(spec)))
+    _root(std::make_shared<typename InnerNodeType<RootNode_>::Type>(spec))
 {
 }
 
@@ -152,7 +151,7 @@ namespace
         template <typename T_>
         void visit(const InnerNode<Tree_, T_> & n)
         {
-            result.append_node(make_shared_ptr(new InnerNode<OtherTree_, T_>(n)));
+            result.append_node(std::make_shared<InnerNode<OtherTree_, T_>>(n));
         }
     };
 }

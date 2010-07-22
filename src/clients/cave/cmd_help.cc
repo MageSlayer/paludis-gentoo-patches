@@ -25,7 +25,6 @@
 #include <paludis/args/args.hh>
 #include <paludis/args/do_help.hh>
 #include <paludis/util/sequence.hh>
-#include <paludis/util/make_shared_ptr.hh>
 
 #include "command_factory.hh"
 #include "command_command_line.hh"
@@ -148,7 +147,7 @@ HelpCommand::run(const std::shared_ptr<Environment> & env,
     }
     else
     {
-        std::shared_ptr< Sequence<std::string> > help(make_shared_ptr(new Sequence<std::string>));
+        std::shared_ptr< Sequence<std::string> > help(std::make_shared<Sequence<std::string>>());
         help->push_back("--help");
 
         return CommandFactory::get_instance()->create(*cmdline.begin_parameters())->run(env, help);
@@ -160,6 +159,6 @@ HelpCommand::run(const std::shared_ptr<Environment> & env,
 std::shared_ptr<args::ArgsHandler>
 HelpCommand::make_doc_cmdline()
 {
-    return make_shared_ptr(new HelpCommandLine);
+    return std::make_shared<HelpCommandLine>();
 }
 

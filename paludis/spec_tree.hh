@@ -28,7 +28,6 @@
 
 #include <paludis/util/sequence.hh>
 #include <paludis/util/accept_visitor.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <algorithm>
 
 namespace paludis

@@ -23,7 +23,6 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <vector>
@@ -167,7 +166,7 @@ TeeOutputManager::factory_create(
             c != c_end ; ++c)
         messages_children->push_back(create_child(*c));
 
-    return make_shared_ptr(new TeeOutputManager(children, messages_children));
+    return std::make_shared<TeeOutputManager>(children, messages_children);
 }
 
 template class PrivateImplementationPattern<TeeOutputManager>;

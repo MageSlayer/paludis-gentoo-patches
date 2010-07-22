@@ -19,7 +19,7 @@
 
 #include <paludis/resolver/job_state.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/make_shared_ptr.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/serialise-impl.hh>
 
 using namespace paludis;
@@ -81,7 +81,7 @@ const std::shared_ptr<JobPendingState>
 JobPendingState::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "JobPendingState");
-    return make_shared_ptr(new JobPendingState);
+    return std::make_shared<JobPendingState>();
 }
 
 void
@@ -95,7 +95,7 @@ const std::shared_ptr<JobSkippedState>
 JobSkippedState::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "JobSkippedState");
-    return make_shared_ptr(new JobSkippedState);
+    return std::make_shared<JobSkippedState>();
 }
 
 void
@@ -129,20 +129,20 @@ JobActiveState::output_manager() const
 const std::shared_ptr<JobSucceededState>
 JobActiveState::succeeded() const
 {
-    return make_shared_ptr(new JobSucceededState(_imp->output_manager));
+    return std::make_shared<JobSucceededState>(_imp->output_manager);
 }
 
 const std::shared_ptr<JobFailedState>
 JobActiveState::failed() const
 {
-    return make_shared_ptr(new JobFailedState(_imp->output_manager));
+    return std::make_shared<JobFailedState>(_imp->output_manager);
 }
 
 const std::shared_ptr<JobActiveState>
 JobActiveState::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "JobActiveState");
-    return make_shared_ptr(new JobActiveState());
+    return std::make_shared<JobActiveState>();
 }
 
 void
@@ -171,7 +171,7 @@ const std::shared_ptr<JobSucceededState>
 JobSucceededState::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "JobSucceededState");
-    return make_shared_ptr(new JobSucceededState(make_null_shared_ptr()));
+    return std::make_shared<JobSucceededState>(make_null_shared_ptr());
 }
 
 void
@@ -200,7 +200,7 @@ const std::shared_ptr<JobFailedState>
 JobFailedState::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "JobFailedState");
-    return make_shared_ptr(new JobFailedState(make_null_shared_ptr()));
+    return std::make_shared<JobFailedState>(make_null_shared_ptr());
 }
 
 void

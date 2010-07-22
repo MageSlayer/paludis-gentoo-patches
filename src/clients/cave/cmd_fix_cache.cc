@@ -26,7 +26,6 @@
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/repository.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 
 #include <iostream>
@@ -152,5 +151,5 @@ FixCacheCommand::run(
 std::shared_ptr<args::ArgsHandler>
 FixCacheCommand::make_doc_cmdline()
 {
-    return make_shared_ptr(new FixCacheCommandLine);
+    return std::make_shared<FixCacheCommandLine>();
 }

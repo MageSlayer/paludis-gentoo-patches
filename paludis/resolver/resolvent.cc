@@ -23,6 +23,7 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/hashes.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/filter.hh>
 #include <paludis/package_id.hh>
@@ -84,7 +85,7 @@ Resolvent::Resolvent(
     destination_type(n::destination_type() = t),
     package(n::package() = *spec.package_ptr()),
     slot(make_named_values<SlotNameOrNull>(
-                n::name_or_null() = make_shared_ptr(new SlotName(s)),
+                n::name_or_null() = std::make_shared<SlotName>(s),
                 n::null_means_unknown() = false
                 ))
 {
@@ -110,7 +111,7 @@ Resolvent::Resolvent(
     destination_type(n::destination_type() = t),
     package(n::package() = n),
     slot(make_named_values<SlotNameOrNull>(
-                n::name_or_null() = make_shared_ptr(new SlotName(s)),
+                n::name_or_null() = std::make_shared<SlotName>(s),
                 n::null_means_unknown() = false
                 ))
 {
@@ -133,7 +134,7 @@ Resolvent::Resolvent(
     package(id->name()),
     slot(make_named_values<SlotNameOrNull>(
                 n::name_or_null() = id->slot_key() ?
-                    make_shared_ptr(new SlotName(id->slot_key()->value())) :
+                    std::make_shared<SlotName>(id->slot_key()->value()) :
                     make_null_shared_ptr(),
                 n::null_means_unknown() = false
                 ))

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -126,8 +126,8 @@ void do_one_query(
 
     try
     {
-        do_one_package_query(env, masks_to_explain, make_shared_ptr(new PackageDepSpec(
-                        parse_user_package_dep_spec(q, env.get(), UserPackageDepSpecOptions() + updso_throw_if_set + updso_allow_wildcards))));
+        do_one_package_query(env, masks_to_explain, std::make_shared<PackageDepSpec>(
+                        parse_user_package_dep_spec(q, env.get(), UserPackageDepSpecOptions() + updso_throw_if_set + updso_allow_wildcards)));
     }
     catch (const GotASetNotAPackageDepSpec &)
     {

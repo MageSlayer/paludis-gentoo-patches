@@ -30,13 +30,13 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/config_file.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/system.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/choice.hh>
 #include <paludis/dep_tag.hh>
 #include <paludis/environment.hh>
@@ -57,7 +57,7 @@ namespace
             const FSEntry & f,
             const LineConfigFileOptions & o)
     {
-        return make_shared_ptr(new LineConfigFile(f, o));
+        return std::make_shared<LineConfigFile>(f, o);
     }
 
     typedef std::unordered_map<std::string, std::string, Hash<std::string> > EnvironmentVariablesMap;
@@ -112,7 +112,7 @@ namespace paludis
             use_expand_implicit(new Set<std::string>),
             iuse_implicit(new Set<std::string>),
             use_expand_values(new Set<std::string>),
-            system_packages(new SetSpecTree(make_shared_ptr(new AllDepSpec))),
+            system_packages(new SetSpecTree(std::make_shared<AllDepSpec>())),
             system_tag(new GeneralSetDepTag(SetName("system"), stringify(name)))
         {
             environment_variables["CONFIG_PROTECT"] = getenv_with_default("CONFIG_PROTECT", "/etc");
@@ -383,6 +383,6 @@ ExheresProfile::system_packages() const
 const std::shared_ptr<const Map<QualifiedPackageName, PackageDepSpec> >
 ExheresProfile::virtuals() const
 {
-    return make_shared_ptr(new Map<QualifiedPackageName, PackageDepSpec>);
+    return std::make_shared<Map<QualifiedPackageName, PackageDepSpec>>();
 }
 

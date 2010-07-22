@@ -25,11 +25,11 @@
 #include <paludis/version_operator.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/sequence.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/member_iterator-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <list>
 #include <ruby.h>
 
@@ -469,8 +469,8 @@ namespace
         try
         {
             std::shared_ptr<const PackageDepSpec> pkg(value_to_package_dep_spec(spec));
-            ptr = new std::shared_ptr<const WrappedSpecBase>(new WrappedSpec<BlockDepSpec>(make_shared_ptr(
-                            new BlockDepSpec(StringValuePtr(str), *pkg, value_to_bool(strong)))));
+            ptr = new std::shared_ptr<const WrappedSpecBase>(new WrappedSpec<BlockDepSpec>(
+                        std::make_shared<BlockDepSpec>(StringValuePtr(str), *pkg, value_to_bool(strong))));
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::shared_ptr<const WrappedSpecBase> >::free, ptr));
             rb_obj_call_init(tdata, 3, &str);
             return tdata;
@@ -493,8 +493,8 @@ namespace
     {
         std::shared_ptr<WrappedSpecBase> * p;
         Data_Get_Struct(self, std::shared_ptr<WrappedSpecBase>, p);
-        return package_dep_spec_to_value(make_shared_ptr(new PackageDepSpec(
-                        std::static_pointer_cast<const WrappedSpec<BlockDepSpec> >(*p)->spec()->blocking())));
+        return package_dep_spec_to_value(std::make_shared<PackageDepSpec>(
+                    std::static_pointer_cast<const WrappedSpec<BlockDepSpec> >(*p)->spec()->blocking()));
     }
 
     template <typename A_>
@@ -506,7 +506,7 @@ namespace
             std::shared_ptr<const WrappedSpecBase> * ptr(0);
             try
             {
-                ptr = new std::shared_ptr<const WrappedSpecBase>(new WrappedSpec<A_>(make_shared_ptr(new A_)));
+                ptr = new std::shared_ptr<const WrappedSpecBase>(new WrappedSpec<A_>(std::make_shared<A_>()));
                 VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::shared_ptr<const WrappedSpecBase> >::free, ptr));
                 rb_obj_call_init(tdata, 0, &self);
                 return tdata;
@@ -524,7 +524,7 @@ namespace
             std::shared_ptr<const WrappedSpecBase> * ptr(0);
             try
             {
-                ptr = new std::shared_ptr<const WrappedSpecBase>(new WrappedSpec<A_>(make_shared_ptr(new A_(StringValuePtr(s)))));
+                ptr = new std::shared_ptr<const WrappedSpecBase>(new WrappedSpec<A_>(std::make_shared<A_>(StringValuePtr(s))));
                 VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::shared_ptr<const WrappedSpecBase> >::free, ptr));
                 rb_obj_call_init(tdata, 1, &s);
                 return tdata;
@@ -1059,7 +1059,7 @@ namespace
                     );
 
             ptr = new std::shared_ptr<const WrappedSpecBase>(new WrappedSpec<PackageDepSpec>(
-                        make_shared_ptr(new PackageDepSpec(parse_user_package_dep_spec(s, e.get(), o, f)))));
+                        std::make_shared<PackageDepSpec>(parse_user_package_dep_spec(s, e.get(), o, f))));
             return Data_Wrap_Struct(c_package_dep_spec, 0,
                     &Common<std::shared_ptr<const WrappedSpecBase> >::free, ptr);
         }
@@ -1389,7 +1389,7 @@ paludis::ruby::value_to_dep_tree(VALUE v)
     }
     else if (rb_obj_is_kind_of(v, c_dep_spec))
     {
-        ValueToTree<H_> vtt(v, make_shared_ptr(new H_(make_shared_ptr(new AllDepSpec))));
+        ValueToTree<H_> vtt(v, std::make_shared<H_>(std::make_shared<AllDepSpec>()));
         return vtt.result;
     }
     else

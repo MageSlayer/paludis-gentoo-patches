@@ -26,6 +26,7 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/extract_host_from_url.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/action.hh>
 #include <paludis/syncer.hh>
@@ -40,7 +41,7 @@ namespace
     std::shared_ptr<UnavailableRepositoryStore>
     make_store(const UnavailableRepository * const repo, const UnavailableRepositoryParams & p)
     {
-        return make_shared_ptr(new UnavailableRepositoryStore(p.environment(), repo, p.location()));
+        return std::make_shared<UnavailableRepositoryStore>(p.environment(), repo, p.location());
     }
 }
 
@@ -348,7 +349,7 @@ UnavailableRepository::repository_factory_dependencies(
         const Environment * const,
         const std::function<std::string (const std::string &)> &)
 {
-    return make_shared_ptr(new RepositoryNameSet);
+    return std::make_shared<RepositoryNameSet>();
 }
 
 void

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -24,7 +24,6 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/iterator_funcs.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/safe_ofstream.hh>
@@ -117,7 +116,7 @@ namespace
                 PartiallyMadePackageDepSpec part_spec((PartiallyMadePackageDepSpecOptions()));
                 part_spec.package(b->first.first);
                 if ("(none)" != b->first.second)
-                    part_spec.slot_requirement(make_shared_ptr(new UserSlotExactRequirement(SlotName(b->first.second))));
+                    part_spec.slot_requirement(std::make_shared<UserSlotExactRequirement>(SlotName(b->first.second)));
                 if (! env[selection::SomeArbitraryVersion(generator::Matches(part_spec, MatchPackageOptions()))]->empty())
                 {
                     results.insert(std::make_pair(b->first, stringify(b->second) + " -> nothing on " + desc));

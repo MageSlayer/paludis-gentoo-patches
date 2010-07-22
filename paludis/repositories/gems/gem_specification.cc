@@ -23,6 +23,7 @@
 #include <paludis/util/mutex.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/repository.hh>
@@ -607,11 +608,11 @@ GemSpecification::need_masks_added() const
     {
         std::shared_ptr<const Mask> user_mask(_imp->environment->mask_for_user(*this, true));
         if (user_mask)
-            add_overridden_mask(make_shared_ptr(new OverriddenMask(
+            add_overridden_mask(std::make_shared<OverriddenMask>(
                             make_named_values<OverriddenMask>(
                                 n::mask() = user_mask,
                                 n::override_reason() = mro_overridden_by_user
-                                ))));
+                                )));
     }
 
     /* break portage */

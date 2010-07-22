@@ -26,7 +26,6 @@
 #include "command_command_line.hh"
 #include "match_qpns.hh"
 
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_named_values.hh>
@@ -42,6 +41,7 @@
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/args/do_help.hh>
 #include <paludis/args/escape.hh>
 #include <paludis/resolver/resolver.hh>
@@ -527,14 +527,14 @@ namespace
         if ((-1 != n) && installed_is_scm_older_than(env, resolution_options, all_binary_repos_generator, resolvent, n)
                 && ! use_existing_from_withish(env, resolvent.package(), without))
         {
-            result->add(make_shared_ptr(new Constraint(make_named_values<Constraint>(
+            result->add(std::make_shared<Constraint>(make_named_values<Constraint>(
                                 n::destination_type() = resolvent.destination_type(),
                                 n::nothing_is_fine_too() = true,
-                                n::reason() = make_shared_ptr(new PresetReason("is scm", make_null_shared_ptr())),
+                                n::reason() = std::make_shared<PresetReason>("is scm", make_null_shared_ptr()),
                                 n::spec() = make_package_dep_spec(PartiallyMadePackageDepSpecOptions()).package(resolvent.package()),
                                 n::untaken() = false,
                                 n::use_existing() = ue_only_if_transient
-                                ))));
+                                )));
         }
 
         return result;
@@ -1202,9 +1202,9 @@ namespace
             PartiallyMadePackageDepSpec partial_spec((PartiallyMadePackageDepSpecOptions()));
             partial_spec.package(id->name());
             if (id->slot_key())
-                partial_spec.slot_requirement(make_shared_ptr(new ELikeSlotExactRequirement(
-                                id->slot_key()->value(), false)));
-            spec = make_shared_ptr(new PackageDepSpec(partial_spec));
+                partial_spec.slot_requirement(std::make_shared<ELikeSlotExactRequirement>(
+                                id->slot_key()->value(), false));
+            spec = std::make_shared<PackageDepSpec>(partial_spec);
         }
 
         for (ChangeByResolventSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
@@ -1212,14 +1212,14 @@ namespace
         {
             const std::shared_ptr<DependentReason> reason(new DependentReason(*i));
 
-            result->push_back(make_shared_ptr(new Constraint(make_named_values<Constraint>(
+            result->push_back(std::make_shared<Constraint>(make_named_values<Constraint>(
                                 n::destination_type() = dt_install_to_slash,
                                 n::nothing_is_fine_too() = true,
                                 n::reason() = reason,
                                 n::spec() = BlockDepSpec("!" + stringify(*spec), *spec, false),
                                 n::untaken() = false,
                                 n::use_existing() = ue_if_possible
-                                ))));
+                                )));
         }
 
         return result;
@@ -1237,20 +1237,20 @@ namespace
         PartiallyMadePackageDepSpec partial_spec((PartiallyMadePackageDepSpecOptions()));
         partial_spec.package(id->name());
         if (id->slot_key())
-            partial_spec.slot_requirement(make_shared_ptr(new ELikeSlotExactRequirement(
-                            id->slot_key()->value(), false)));
+            partial_spec.slot_requirement(std::make_shared<ELikeSlotExactRequirement>(
+                            id->slot_key()->value(), false));
         PackageDepSpec spec(partial_spec);
 
         const std::shared_ptr<WasUsedByReason> reason(new WasUsedByReason(ids));
 
-        result->push_back(make_shared_ptr(new Constraint(make_named_values<Constraint>(
+        result->push_back(std::make_shared<Constraint>(make_named_values<Constraint>(
                             n::destination_type() = dt_install_to_slash,
                             n::nothing_is_fine_too() = true,
                             n::reason() = reason,
                             n::spec() = BlockDepSpec("!" + stringify(spec), spec, false),
                             n::untaken() = ! match_any(env, list, id),
                             n::use_existing() = ue_if_possible
-                            ))));
+                            )));
 
         return result;
     }
@@ -1268,14 +1268,14 @@ namespace
 
         const std::shared_ptr<ViaBinaryReason> reason(new ViaBinaryReason(other_resolution->resolvent()));
 
-        result->push_back(make_shared_ptr(new Constraint(make_named_values<Constraint>(
+        result->push_back(std::make_shared<Constraint>(make_named_values<Constraint>(
                             n::destination_type() = resolution->resolvent().destination_type(),
                             n::nothing_is_fine_too() = false,
                             n::reason() = reason,
                             n::spec() = spec,
                             n::untaken() = true,
                             n::use_existing() = ue_never
-                            ))));
+                            )));
 
         return result;
     }
@@ -1889,7 +1889,7 @@ paludis::cave::resolve_common(
                     initial_constraints.insert(std::make_pair(e.resolvent(), make_initial_constraints_for(
                                     env.get(), resolution_options, all_binary_repos_generator, without, e.resolvent()))).first->second->add(
                             e.suggested_preset());
-                    resolver = make_shared_ptr(new Resolver(env.get(), resolver_functions));
+                    resolver = std::make_shared<Resolver>(env.get(), resolver_functions);
 
                     if (restarts.size() > 9000)
                         throw InternalError(PALUDIS_HERE, "Restarted over nine thousand times. Something's "
@@ -1906,7 +1906,7 @@ paludis::cave::resolve_common(
 
         retcode |= display_resolution(env, resolver->resolved(), resolution_options,
                 display_options, program_options, keys_if_import,
-                purge ? make_shared_ptr(new const Sequence<std::pair<std::string, std::string> >) : targets_if_not_purge);
+                purge ? std::make_shared<const Sequence<std::pair<std::string, std::string> > >() : targets_if_not_purge);
 
         if (! resolver->resolved()->taken_unable_to_make_decisions()->empty())
             retcode |= 1;
@@ -1920,7 +1920,7 @@ paludis::cave::resolve_common(
         if (0 == retcode)
             return perform_resolution(env, resolver->resolved(), resolution_options,
                     execution_options, program_options, keys_if_import,
-                    purge ? make_shared_ptr(new const Sequence<std::pair<std::string, std::string> >) : targets_if_not_purge,
+                    purge ? std::make_shared<const Sequence<std::pair<std::string, std::string> > >() : targets_if_not_purge,
                     world_specs_if_not_auto ? world_specs_if_not_auto : targets_cleaned_up,
                     is_set);
     }

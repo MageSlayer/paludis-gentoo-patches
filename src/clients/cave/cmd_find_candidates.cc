@@ -27,7 +27,6 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/simple_visitor_cast.hh>
@@ -218,7 +217,7 @@ FindCandidatesCommand::run_hosted(
             generator::Matches m(parse_user_package_dep_spec(*k, env.get(), UserPackageDepSpecOptions() + updso_allow_wildcards), MatchPackageOptions());
 
             if (match_generator)
-                match_generator = make_shared_ptr(new generator::Union(*match_generator, m));
+                match_generator = std::make_shared<generator::Union>(*match_generator, m);
             else
                 match_generator = make_shared_copy(m);
         }
@@ -241,6 +240,6 @@ FindCandidatesCommand::run_hosted(
 std::shared_ptr<args::ArgsHandler>
 FindCandidatesCommand::make_doc_cmdline()
 {
-    return make_shared_ptr(new FindCandidatesCommandLine);
+    return std::make_shared<FindCandidatesCommandLine>();
 }
 

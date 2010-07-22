@@ -21,7 +21,6 @@
 #include <paludis/resolver/job_requirements.hh>
 #include <paludis/resolver/job_state.hh>
 #include <paludis/util/private_implementation_pattern-impl.hh>
-#include <paludis/util/make_shared_ptr.hh>
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/serialise-impl.hh>
@@ -66,10 +65,10 @@ const std::shared_ptr<PretendJob>
 PretendJob::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "PretendJob");
-    return make_shared_ptr(new PretendJob(
+    return std::make_shared<PretendJob>(
                 parse_user_package_dep_spec(v.member<std::string>("origin_id_spec"),
                     d.deserialiser().environment(), UserPackageDepSpecOptions() + updso_no_disambiguation)
-                ));
+                );
 }
 
 void
