@@ -476,12 +476,12 @@ namespace paludis
 
                     if (is_file_with_extension(*e, ".hook", IsFileWithOptions()))
                     {
-                        hook_file.reset(new FancyHookFile(*e, d->second, env));
+                        hook_file = std::make_shared<FancyHookFile>(*e, d->second, env);
                         name = strip_trailing_string(e->basename(), ".hook");
                     }
                     else if (is_file_with_extension(*e, so_suffix, IsFileWithOptions()))
                     {
-                        hook_file.reset(new SoHookFile(*e, d->second, env));
+                        hook_file = std::make_shared<SoHookFile>(*e, d->second, env);
                         name = strip_trailing_string(e->basename(), so_suffix);
                     }
 

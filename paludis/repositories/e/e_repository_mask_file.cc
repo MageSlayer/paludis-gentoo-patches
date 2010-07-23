@@ -65,7 +65,7 @@ MaskFile::MaskFile(const FSEntry & f, const LineConfigFileOptions & opts) :
     {
         if (it->empty())
         {
-            comment.reset(new Sequence<std::string>);
+            comment = std::make_shared<Sequence<std::string>>();
             comment_used = false;
             continue;
         }

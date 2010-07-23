@@ -590,7 +590,7 @@ VDBRepository::provided_packages() const
             load_provided_the_slow_way();
     }
 
-    _imp->provides.reset(new RepositoryProvidesInterface::ProvidesSequence);
+    _imp->provides = std::make_shared<RepositoryProvidesInterface::ProvidesSequence>();
     for (ProvidesMap::const_iterator it(_imp->provides_map->begin()),
              it_end(_imp->provides_map->end()); it_end != it; ++it)
     {
@@ -655,7 +655,7 @@ VDBRepository::load_provided_using_cache() const
         return false;
     }
 
-    _imp->provides_map.reset(new ProvidesMap);
+    _imp->provides_map = std::make_shared<ProvidesMap>();
 
     std::string line;
     while (std::getline(provides_cache, line))
@@ -763,7 +763,7 @@ VDBRepository::load_provided_the_slow_way() const
     Context context("When loading VDB PROVIDEs map the slow way:");
 
     Log::get_instance()->message("e.vdb.provides.starting", ll_debug, lc_no_context) << "Starting VDB PROVIDEs map creation";
-    _imp->provides_map.reset(new ProvidesMap);
+    _imp->provides_map = std::make_shared<ProvidesMap>();
 
     need_category_names();
     std::for_each(_imp->categories.begin(), _imp->categories.end(),

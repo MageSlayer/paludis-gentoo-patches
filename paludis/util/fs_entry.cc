@@ -98,7 +98,7 @@ namespace paludis
 #ifdef HAVE_DIRENT_DTYPE
             if (DT_UNKNOWN != d_type)
             {
-                stat_info.reset(new struct ::stat);
+                stat_info = std::make_shared<struct ::stat>();
                 stat_info->st_mode = DTTOIF(d_type);
                 checked = ifse_type;
             }
@@ -399,7 +399,7 @@ FSEntry::_stat() const
 
     Context context("When calling stat() on '" + stringify(_imp->path) + "':");
 
-    _imp->stat_info.reset(new struct stat);
+    _imp->stat_info = std::make_shared<struct stat>();
     if (0 != lstat(_imp->path.c_str(), _imp->stat_info.get()))
     {
         if (errno != ENOENT && errno != ENOTDIR)

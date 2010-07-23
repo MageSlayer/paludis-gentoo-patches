@@ -178,7 +178,7 @@ LicensesConf::query(const std::string & t, const PackageID & e) const
                 {
                     Log::get_instance()->message("paludis_environment.licenses_conf.unknown_set", ll_warning, lc_no_context) << "Set name '"
                         << i->first << "' does not exist";
-                    i->second.first.reset(new SetSpecTree(std::make_shared<AllDepSpec>()));
+                    i->second.first = std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>());
                 }
             }
 

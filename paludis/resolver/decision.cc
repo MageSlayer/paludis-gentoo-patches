@@ -392,7 +392,7 @@ void
 ChangesToMakeDecision::add_required_confirmation(const std::shared_ptr<const RequiredConfirmation> & r)
 {
     if (! _imp->required_confirmations)
-        _imp->required_confirmations.reset(new RequiredConfirmations);
+        _imp->required_confirmations = std::make_shared<RequiredConfirmations>();
     _imp->required_confirmations->push_back(r);
 }
 
@@ -571,7 +571,7 @@ void
 RemoveDecision::add_required_confirmation(const std::shared_ptr<const RequiredConfirmation> & r)
 {
     if (! _imp->required_confirmations)
-        _imp->required_confirmations.reset(new RequiredConfirmations);
+        _imp->required_confirmations = std::make_shared<RequiredConfirmations>();
     _imp->required_confirmations->push_back(r);
 }
 
@@ -642,7 +642,7 @@ void
 BreakDecision::add_required_confirmation(const std::shared_ptr<const RequiredConfirmation> & r)
 {
     if (! _imp->required_confirmations)
-        _imp->required_confirmations.reset(new RequiredConfirmations);
+        _imp->required_confirmations = std::make_shared<RequiredConfirmations>();
     _imp->required_confirmations->push_back(r);
 }
 

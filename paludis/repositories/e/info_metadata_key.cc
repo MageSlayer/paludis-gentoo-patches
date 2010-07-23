@@ -100,7 +100,7 @@ InfoVarsMetadataKey::value() const
 
     if (_imp->value)
         return _imp->value;
-    _imp->value.reset(new Set<std::string>);
+    _imp->value = std::make_shared<Set<std::string>>();
 
     for (FSEntrySequence::ConstIterator location(_imp->locations->begin()), location_end(_imp->locations->end()) ;
             location != location_end ; ++location)
@@ -189,18 +189,18 @@ InfoPkgsMetadataKey::need_keys_added() const
                         filter::InstalledAtRoot(_imp->env->root()))]);
 
             if (q->empty())
-                key.reset(new LiteralMetadataValueKey<std::string>(i->first, i->first, mkt_normal, "(none)"));
+                key = std::make_shared<LiteralMetadataValueKey<std::string>>(i->first, i->first, mkt_normal, "(none)");
             else
             {
                 using namespace std::placeholders;
                 std::shared_ptr<Set<std::string> > s(new Set<std::string>);
                 std::transform(indirect_iterator(q->begin()), indirect_iterator(q->end()), s->inserter(),
                         std::bind(std::mem_fn(&PackageID::canonical_form), _1, idcf_version));
-                key.reset(new LiteralMetadataStringSetKey(i->first, i->first, mkt_normal, s));
+                key = std::make_shared<LiteralMetadataStringSetKey>(i->first, i->first, mkt_normal, s);
             }
         }
         else
-            key.reset(new LiteralMetadataValueKey<std::string>(i->first, i->first, mkt_normal, "(unknown EAPI)"));
+            key = std::make_shared<LiteralMetadataValueKey<std::string>>(i->first, i->first, mkt_normal, "(unknown EAPI)");
 
         add_metadata_key(key);
     }

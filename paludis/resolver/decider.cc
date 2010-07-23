@@ -1807,17 +1807,17 @@ Decider::_get_unmatching_constraints(
         {
             bool is_transient(id->behaviours_key() && id->behaviours_key()->value()->end() !=
                     id->behaviours_key()->value()->find("transient"));
-            decision.reset(new ExistingNoChangeDecision(
+            decision = std::make_shared<ExistingNoChangeDecision>(
                         resolution->resolvent(),
                         id,
                         true,
                         true,
                         is_transient,
                         ! (*c)->untaken()
-                        ));
+                        );
         }
         else
-            decision.reset(new ChangesToMakeDecision(
+            decision = std::make_shared<ChangesToMakeDecision>(
                         resolution->resolvent(),
                         id,
                         false,
@@ -1825,7 +1825,7 @@ Decider::_get_unmatching_constraints(
                         ! (*c)->untaken(),
                         make_null_shared_ptr(),
                         std::function<void (const ChangesToMakeDecision &)>()
-                        ));
+                        );
         if (! _check_constraint(*c, decision))
             result->add(*c);
     }

@@ -215,8 +215,8 @@ ExndbamRepository::package_ids(const QualifiedPackageName & q) const
     {
         Lock l(*(*e).mutex());
         if (! (*e).package_id())
-            (*e).package_id().reset(new ExndbamID((*e).name(), (*e).version(), _imp->params.environment(),
-                        shared_from_this(), (*e).fs_location(), &_imp->ndbam));
+            (*e).package_id() = std::make_shared<ExndbamID>((*e).name(), (*e).version(), _imp->params.environment(),
+                        shared_from_this(), (*e).fs_location(), &_imp->ndbam);
         result->push_back((*e).package_id());
     }
 

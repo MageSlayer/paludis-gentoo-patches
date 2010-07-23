@@ -345,7 +345,7 @@ ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s,
             std::bind(from_keys, keys, std::placeholders::_1));
     env.package_database()->add_repository(1, repo);
 
-    keys.reset(new Map<std::string, std::string>);
+    keys = std::make_shared<Map<std::string, std::string>>();
     keys->insert("format", "vdb");
     keys->insert("names_cache", "/var/empty");
     keys->insert("provides_cache", "/var/empty");
@@ -355,13 +355,13 @@ ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s,
             std::bind(from_keys, keys, std::placeholders::_1));
     env.package_database()->add_repository(1, inst_repo);
 
-    fake_inst_repo.reset(new FakeInstalledRepository(
+    fake_inst_repo = std::make_shared<FakeInstalledRepository>(
                 make_named_values<FakeInstalledRepositoryParams>(
                     n::environment() = &env,
                     n::name() = RepositoryName("fake-inst"),
                     n::suitable_destination() = true,
                     n::supports_uninstall() = true
-                    )));
+                    ));
     env.package_database()->add_repository(1, fake_inst_repo);
 
 #ifdef ENABLE_VIRTUALS_REPOSITORY

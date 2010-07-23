@@ -207,7 +207,7 @@ AccountsRepositoryStore::_load_one_user(
     if (q == _imp->ids.end())
         q = _imp->ids.insert(std::make_pair(qpn, std::make_shared<PackageIDSequence>())).first;
     else
-        q->second.reset(new PackageIDSequence);
+        q->second = std::make_shared<PackageIDSequence>();
 
     if (_imp->installed)
         q->second->push_back(std::make_shared<InstalledAccountsID>(_imp->env, qpn, repo, true));
@@ -263,7 +263,7 @@ AccountsRepositoryStore::_load_one_group(
     if (q == _imp->ids.end())
         q = _imp->ids.insert(std::make_pair(qpn, std::make_shared<PackageIDSequence>())).first;
     else
-        q->second.reset(new PackageIDSequence);
+        q->second = std::make_shared<PackageIDSequence>();
 
     if (_imp->installed)
         q->second->push_back(std::make_shared<InstalledAccountsID>(_imp->env, qpn, repo, false));

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  * Copyright (c) 2007 David Leverton
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -231,7 +231,7 @@ DepListArgsGroup::populate_dep_list_options(const Environment * env, DepListOpti
         throw args::DoHelp("bad value for --dl-blocks");
 
     if (! options.override_masks())
-        options.override_masks().reset(new DepListOverrideMasksFunctions);
+        options.override_masks() = std::make_shared<DepListOverrideMasksFunctions>();
     options.override_masks()->push_back(std::bind(&override_tilde_keywords, env, _1, _2));
     options.override_masks()->push_back(std::bind(&override_license, _2));
 
@@ -240,7 +240,7 @@ DepListArgsGroup::populate_dep_list_options(const Environment * env, DepListOpti
         for (args::StringSetArg::ConstIterator a(dl_override_masks.begin_args()),
                 a_end(dl_override_masks.end_args()) ; a != a_end ; ++a)
             if (*a == "none")
-                options.override_masks().reset(new DepListOverrideMasksFunctions);
+                options.override_masks() = std::make_shared<DepListOverrideMasksFunctions>();
 
         for (args::StringSetArg::ConstIterator a(dl_override_masks.begin_args()),
                 a_end(dl_override_masks.end_args()) ; a != a_end ; ++a)

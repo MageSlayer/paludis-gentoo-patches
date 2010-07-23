@@ -120,7 +120,7 @@ PackageMaskConf::query(const PackageID & e) const
                 {
                     Log::get_instance()->message("paludis_environment.package_mask.unknown_set", ll_warning, lc_no_context) << "Set name '"
                         << it->first << "' does not exist";
-                    it->second.reset(new SetSpecTree(std::make_shared<AllDepSpec>()));
+                    it->second = std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>());
                 }
             }
 

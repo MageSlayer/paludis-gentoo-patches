@@ -179,14 +179,14 @@ EInstalledRepositoryID::need_keys_added() const
 
     if (_imp->keys)
         return;
-    _imp->keys.reset(new EInstalledRepositoryIDKeys);
+    _imp->keys = std::make_shared<EInstalledRepositoryIDKeys>();
 
     // fs_location key could have been loaded by the ::fs_location_key() already. keep this
     // at the top, other keys use it.
     if (! _imp->fs_location)
     {
-        _imp->fs_location.reset(new LiteralMetadataValueKey<FSEntry> (fs_location_raw_name(), fs_location_human_name(),
-                    mkt_internal, _imp->dir));
+        _imp->fs_location = std::make_shared<LiteralMetadataValueKey<FSEntry> >(fs_location_raw_name(), fs_location_human_name(),
+                    mkt_internal, _imp->dir);
         add_metadata_key(_imp->fs_location);
     }
 
@@ -208,24 +208,24 @@ EInstalledRepositoryID::need_keys_added() const
     if (! env->env_use().empty())
         if ((_imp->dir / env->env_use()).exists())
         {
-            _imp->keys->raw_use.reset(new EStringSetKey(shared_from_this(), env->env_use(), env->description_use(),
-                        file_contents(_imp->dir / env->env_use()), mkt_internal));
+            _imp->keys->raw_use = std::make_shared<EStringSetKey>(shared_from_this(), env->env_use(), env->description_use(),
+                        file_contents(_imp->dir / env->env_use()), mkt_internal);
             add_metadata_key(_imp->keys->raw_use);
         }
 
     if (! vars->slot()->name().empty())
         if ((_imp->dir / vars->slot()->name()).exists())
         {
-            _imp->keys->slot.reset(new LiteralMetadataValueKey<SlotName>(vars->slot()->name(), vars->slot()->description(),
-                        mkt_internal, SlotName(file_contents(_imp->dir / vars->slot()->name()))));
+            _imp->keys->slot = std::make_shared<LiteralMetadataValueKey<SlotName>>(vars->slot()->name(), vars->slot()->description(),
+                        mkt_internal, SlotName(file_contents(_imp->dir / vars->slot()->name())));
             add_metadata_key(_imp->keys->slot);
         }
 
     if (! vars->inherited()->name().empty())
         if ((_imp->dir / vars->inherited()->name()).exists())
         {
-            _imp->keys->inherited.reset(new EStringSetKey(shared_from_this(), vars->inherited()->name(), vars->inherited()->description(),
-                        file_contents(_imp->dir / vars->inherited()->name()), mkt_internal));
+            _imp->keys->inherited = std::make_shared<EStringSetKey>(shared_from_this(), vars->inherited()->name(), vars->inherited()->description(),
+                        file_contents(_imp->dir / vars->inherited()->name()), mkt_internal);
             add_metadata_key(_imp->keys->inherited);
         }
 
@@ -235,8 +235,8 @@ EInstalledRepositoryID::need_keys_added() const
             std::string d(file_contents(_imp->dir / vars->defined_phases()->name()));
             if (! d.empty())
             {
-                _imp->keys->defined_phases.reset(new EStringSetKey(shared_from_this(), vars->defined_phases()->name(), vars->defined_phases()->description(),
-                            d, mkt_internal));
+                _imp->keys->defined_phases = std::make_shared<EStringSetKey>(shared_from_this(), vars->defined_phases()->name(), vars->defined_phases()->description(),
+                            d, mkt_internal);
                 add_metadata_key(_imp->keys->defined_phases);
             }
         }
@@ -244,14 +244,14 @@ EInstalledRepositoryID::need_keys_added() const
     if (! vars->iuse()->name().empty())
     {
         if ((_imp->dir / vars->iuse()->name()).exists())
-            _imp->keys->raw_iuse.reset(new EStringSetKey(shared_from_this(), vars->iuse()->name(), vars->iuse()->description(),
-                        file_contents(_imp->dir / vars->iuse()->name()), mkt_internal));
+            _imp->keys->raw_iuse = std::make_shared<EStringSetKey>(shared_from_this(), vars->iuse()->name(), vars->iuse()->description(),
+                        file_contents(_imp->dir / vars->iuse()->name()), mkt_internal);
         else
         {
             /* hack: if IUSE doesn't exist, we still need an iuse_key to make the choices
              * code behave sanely. */
-            _imp->keys->raw_iuse.reset(new EStringSetKey(shared_from_this(), vars->iuse()->name(), vars->iuse()->description(),
-                        "", mkt_internal));
+            _imp->keys->raw_iuse = std::make_shared<EStringSetKey>(shared_from_this(), vars->iuse()->name(), vars->iuse()->description(),
+                        "", mkt_internal);
         }
         add_metadata_key(_imp->keys->raw_iuse);
     }
@@ -260,9 +260,9 @@ EInstalledRepositoryID::need_keys_added() const
     {
         if ((_imp->dir / vars->iuse_effective()->name()).exists())
         {
-            _imp->keys->raw_iuse_effective.reset(new EStringSetKey(
+            _imp->keys->raw_iuse_effective = std::make_shared<EStringSetKey>(
                         shared_from_this(), vars->iuse_effective()->name(), vars->iuse_effective()->description(),
-                        file_contents(_imp->dir / vars->iuse_effective()->name()), mkt_internal));
+                        file_contents(_imp->dir / vars->iuse_effective()->name()), mkt_internal);
             add_metadata_key(_imp->keys->raw_iuse_effective);
         }
     }
@@ -270,40 +270,40 @@ EInstalledRepositoryID::need_keys_added() const
     if (! vars->myoptions()->name().empty())
         if ((_imp->dir / vars->myoptions()->name()).exists())
         {
-            _imp->keys->raw_myoptions.reset(new EMyOptionsKey(_imp->environment, shared_from_this(), vars->myoptions()->name(),
-                        vars->myoptions()->description(), file_contents(_imp->dir / vars->myoptions()->name()), mkt_internal));
+            _imp->keys->raw_myoptions = std::make_shared<EMyOptionsKey>(_imp->environment, shared_from_this(), vars->myoptions()->name(),
+                        vars->myoptions()->description(), file_contents(_imp->dir / vars->myoptions()->name()), mkt_internal);
             add_metadata_key(_imp->keys->raw_myoptions);
         }
 
     if (! vars->use_expand()->name().empty())
         if ((_imp->dir / vars->use_expand()->name()).exists())
         {
-            _imp->keys->raw_use_expand.reset(new EStringSetKey(shared_from_this(), vars->use_expand()->name(), vars->use_expand()->description(),
-                        file_contents(_imp->dir / vars->use_expand()->name()), mkt_internal));
+            _imp->keys->raw_use_expand = std::make_shared<EStringSetKey>(shared_from_this(), vars->use_expand()->name(), vars->use_expand()->description(),
+                        file_contents(_imp->dir / vars->use_expand()->name()), mkt_internal);
             add_metadata_key(_imp->keys->raw_use_expand);
         }
 
     if (! vars->use_expand_hidden()->name().empty())
         if ((_imp->dir / vars->use_expand_hidden()->name()).exists())
         {
-            _imp->keys->raw_use_expand_hidden.reset(new EStringSetKey(shared_from_this(), vars->use_expand_hidden()->name(), vars->use_expand_hidden()->description(),
-                        file_contents(_imp->dir / vars->use_expand_hidden()->name()), mkt_internal));
+            _imp->keys->raw_use_expand_hidden = std::make_shared<EStringSetKey>(shared_from_this(), vars->use_expand_hidden()->name(), vars->use_expand_hidden()->description(),
+                        file_contents(_imp->dir / vars->use_expand_hidden()->name()), mkt_internal);
             add_metadata_key(_imp->keys->raw_use_expand_hidden);
         }
 
     if (! vars->license()->name().empty())
         if ((_imp->dir / vars->license()->name()).exists())
         {
-            _imp->keys->license.reset(new ELicenseKey(_imp->environment, shared_from_this(), vars->license(),
-                        file_contents(_imp->dir / vars->license()->name()),  mkt_normal));
+            _imp->keys->license = std::make_shared<ELicenseKey>(_imp->environment, shared_from_this(), vars->license(),
+                        file_contents(_imp->dir / vars->license()->name()),  mkt_normal);
             add_metadata_key(_imp->keys->license);
         }
 
     if (! vars->provide()->name().empty())
         if ((_imp->dir / vars->provide()->name()).exists())
         {
-            _imp->keys->provide.reset(new EProvideKey(_imp->environment, shared_from_this(), vars->provide()->name(), vars->provide()->description(),
-                        file_contents(_imp->dir / vars->provide()->name()), mkt_internal));
+            _imp->keys->provide = std::make_shared<EProvideKey>(_imp->environment, shared_from_this(), vars->provide()->name(), vars->provide()->description(),
+                        file_contents(_imp->dir / vars->provide()->name()), mkt_internal);
             add_metadata_key(_imp->keys->provide);
         }
 
@@ -317,20 +317,20 @@ EInstalledRepositoryID::need_keys_added() const
                     _imp->environment, shared_from_this(), *eapi()));
             raw_deps->root()->accept(rewriter);
 
-            _imp->keys->raw_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->dependencies()->name(),
-                        vars->dependencies()->description(), raw_deps_str, _imp->build_dependencies_labels, mkt_dependencies));
+            _imp->keys->raw_dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), vars->dependencies()->name(),
+                        vars->dependencies()->description(), raw_deps_str, _imp->build_dependencies_labels, mkt_dependencies);
             add_metadata_key(_imp->keys->raw_dependencies);
 
-            _imp->keys->build_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->dependencies()->name() + ".DEPEND",
-                        vars->dependencies()->description() + " (build)", rewriter.depend(), _imp->build_dependencies_labels, mkt_internal));
+            _imp->keys->build_dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), vars->dependencies()->name() + ".DEPEND",
+                        vars->dependencies()->description() + " (build)", rewriter.depend(), _imp->build_dependencies_labels, mkt_internal);
             add_metadata_key(_imp->keys->build_dependencies);
 
-            _imp->keys->run_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->dependencies()->name() + ".RDEPEND",
-                        vars->dependencies()->description() + " (run)", rewriter.rdepend(), _imp->build_dependencies_labels, mkt_internal));
+            _imp->keys->run_dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), vars->dependencies()->name() + ".RDEPEND",
+                        vars->dependencies()->description() + " (run)", rewriter.rdepend(), _imp->build_dependencies_labels, mkt_internal);
             add_metadata_key(_imp->keys->run_dependencies);
 
-            _imp->keys->post_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->dependencies()->name() + ".PDEPEND",
-                        vars->dependencies()->description() + " (post)", rewriter.pdepend(), _imp->build_dependencies_labels, mkt_internal));
+            _imp->keys->post_dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), vars->dependencies()->name() + ".PDEPEND",
+                        vars->dependencies()->description() + " (post)", rewriter.pdepend(), _imp->build_dependencies_labels, mkt_internal);
             add_metadata_key(_imp->keys->post_dependencies);
         }
     }
@@ -339,27 +339,27 @@ EInstalledRepositoryID::need_keys_added() const
         if (! vars->build_depend()->name().empty())
             if ((_imp->dir / vars->build_depend()->name()).exists())
             {
-                _imp->keys->build_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->build_depend()->name(),
+                _imp->keys->build_dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), vars->build_depend()->name(),
                             vars->build_depend()->description(), file_contents(_imp->dir / vars->build_depend()->name()),
-                            _imp->build_dependencies_labels, mkt_dependencies));
+                            _imp->build_dependencies_labels, mkt_dependencies);
                 add_metadata_key(_imp->keys->build_dependencies);
             }
 
         if (! vars->run_depend()->name().empty())
             if ((_imp->dir / vars->run_depend()->name()).exists())
             {
-                _imp->keys->run_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->run_depend()->name(),
+                _imp->keys->run_dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), vars->run_depend()->name(),
                             vars->run_depend()->description(), file_contents(_imp->dir / vars->run_depend()->name()),
-                            _imp->run_dependencies_labels, mkt_dependencies));
+                            _imp->run_dependencies_labels, mkt_dependencies);
                 add_metadata_key(_imp->keys->run_dependencies);
             }
 
         if (! vars->pdepend()->name().empty())
             if ((_imp->dir / vars->pdepend()->name()).exists())
             {
-                _imp->keys->post_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), vars->pdepend()->name(),
+                _imp->keys->post_dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), vars->pdepend()->name(),
                             vars->pdepend()->description(), file_contents(_imp->dir / vars->pdepend()->name()),
-                            _imp->post_dependencies_labels, mkt_dependencies));
+                            _imp->post_dependencies_labels, mkt_dependencies);
                 add_metadata_key(_imp->keys->post_dependencies);
             }
     }
@@ -367,32 +367,32 @@ EInstalledRepositoryID::need_keys_added() const
     if (! vars->restrictions()->name().empty())
         if ((_imp->dir / vars->restrictions()->name()).exists())
         {
-            _imp->keys->restrictions.reset(new EPlainTextSpecKey(_imp->environment, shared_from_this(), vars->restrictions(),
-                        file_contents(_imp->dir / vars->restrictions()->name()), mkt_internal));
+            _imp->keys->restrictions = std::make_shared<EPlainTextSpecKey>(_imp->environment, shared_from_this(), vars->restrictions(),
+                        file_contents(_imp->dir / vars->restrictions()->name()), mkt_internal);
             add_metadata_key(_imp->keys->restrictions);
         }
 
     if (! vars->properties()->name().empty())
         if ((_imp->dir / vars->properties()->name()).exists())
         {
-            _imp->keys->properties.reset(new EPlainTextSpecKey(_imp->environment, shared_from_this(), vars->properties(),
-                        file_contents(_imp->dir / vars->properties()->name()), mkt_internal));
+            _imp->keys->properties = std::make_shared<EPlainTextSpecKey>(_imp->environment, shared_from_this(), vars->properties(),
+                        file_contents(_imp->dir / vars->properties()->name()), mkt_internal);
             add_metadata_key(_imp->keys->properties);
         }
 
     if (! vars->src_uri()->name().empty())
         if ((_imp->dir / vars->src_uri()->name()).exists())
         {
-            _imp->keys->src_uri.reset(new EFetchableURIKey(_imp->environment, shared_from_this(), vars->src_uri(),
-                        file_contents(_imp->dir / vars->src_uri()->name()), mkt_dependencies));
+            _imp->keys->src_uri = std::make_shared<EFetchableURIKey>(_imp->environment, shared_from_this(), vars->src_uri(),
+                        file_contents(_imp->dir / vars->src_uri()->name()), mkt_dependencies);
             add_metadata_key(_imp->keys->src_uri);
         }
 
     if (! vars->short_description()->name().empty())
         if ((_imp->dir / vars->short_description()->name()).exists())
         {
-            _imp->keys->short_description.reset(new LiteralMetadataValueKey<std::string> (vars->short_description()->name(),
-                        vars->short_description()->description(), mkt_significant, file_contents(_imp->dir / vars->short_description()->name())));
+            _imp->keys->short_description = std::make_shared<LiteralMetadataValueKey<std::string> >(vars->short_description()->name(),
+                        vars->short_description()->description(), mkt_significant, file_contents(_imp->dir / vars->short_description()->name()));
             add_metadata_key(_imp->keys->short_description);
         }
 
@@ -402,8 +402,8 @@ EInstalledRepositoryID::need_keys_added() const
             std::string value(file_contents(_imp->dir / vars->long_description()->name()));
             if (! value.empty())
             {
-                _imp->keys->long_description.reset(new LiteralMetadataValueKey<std::string> (vars->long_description()->name(),
-                            vars->long_description()->description(), mkt_significant, value));
+                _imp->keys->long_description = std::make_shared<LiteralMetadataValueKey<std::string> >(vars->long_description()->name(),
+                            vars->long_description()->description(), mkt_significant, value);
                 add_metadata_key(_imp->keys->long_description);
             }
         }
@@ -414,9 +414,9 @@ EInstalledRepositoryID::need_keys_added() const
             std::string value(file_contents(_imp->dir / vars->upstream_changelog()->name()));
             if (! value.empty())
             {
-                _imp->keys->upstream_changelog.reset(new ESimpleURIKey(_imp->environment, shared_from_this(),
+                _imp->keys->upstream_changelog = std::make_shared<ESimpleURIKey>(_imp->environment, shared_from_this(),
                             vars->upstream_changelog()->name(),
-                            vars->upstream_changelog()->description(), value, mkt_normal));
+                            vars->upstream_changelog()->description(), value, mkt_normal);
                 add_metadata_key(_imp->keys->upstream_changelog);
             }
         }
@@ -427,9 +427,9 @@ EInstalledRepositoryID::need_keys_added() const
             std::string value(file_contents(_imp->dir / vars->upstream_release_notes()->name()));
             if (! value.empty())
             {
-                _imp->keys->upstream_release_notes.reset(new ESimpleURIKey(_imp->environment, shared_from_this(),
+                _imp->keys->upstream_release_notes = std::make_shared<ESimpleURIKey>(_imp->environment, shared_from_this(),
                             vars->upstream_release_notes()->name(),
-                            vars->upstream_release_notes()->description(), value, mkt_normal));
+                            vars->upstream_release_notes()->description(), value, mkt_normal);
                 add_metadata_key(_imp->keys->upstream_release_notes);
             }
         }
@@ -440,9 +440,9 @@ EInstalledRepositoryID::need_keys_added() const
             std::string value(file_contents(_imp->dir / vars->upstream_documentation()->name()));
             if (! value.empty())
             {
-                _imp->keys->upstream_documentation.reset(new ESimpleURIKey(_imp->environment, shared_from_this(),
+                _imp->keys->upstream_documentation = std::make_shared<ESimpleURIKey>(_imp->environment, shared_from_this(),
                             vars->upstream_documentation()->name(),
-                            vars->upstream_documentation()->description(), value, mkt_normal));
+                            vars->upstream_documentation()->description(), value, mkt_normal);
                 add_metadata_key(_imp->keys->upstream_documentation);
             }
         }
@@ -453,8 +453,8 @@ EInstalledRepositoryID::need_keys_added() const
             std::string value(file_contents(_imp->dir / vars->bugs_to()->name()));
             if (! value.empty())
             {
-                _imp->keys->bugs_to.reset(new EPlainTextSpecKey(_imp->environment, shared_from_this(),
-                            vars->bugs_to(), value, mkt_normal));
+                _imp->keys->bugs_to = std::make_shared<EPlainTextSpecKey>(_imp->environment, shared_from_this(),
+                            vars->bugs_to(), value, mkt_normal);
                 add_metadata_key(_imp->keys->bugs_to);
             }
         }
@@ -465,8 +465,8 @@ EInstalledRepositoryID::need_keys_added() const
             std::string value(file_contents(_imp->dir / vars->remote_ids()->name()));
             if (! value.empty())
             {
-                _imp->keys->remote_ids.reset(new EPlainTextSpecKey(_imp->environment, shared_from_this(),
-                            vars->remote_ids(), value, mkt_internal));
+                _imp->keys->remote_ids = std::make_shared<EPlainTextSpecKey>(_imp->environment, shared_from_this(),
+                            vars->remote_ids(), value, mkt_internal);
                 add_metadata_key(_imp->keys->remote_ids);
             }
         }
@@ -474,26 +474,26 @@ EInstalledRepositoryID::need_keys_added() const
     if (! vars->homepage()->name().empty())
         if ((_imp->dir / vars->homepage()->name()).exists())
         {
-            _imp->keys->homepage.reset(new ESimpleURIKey(_imp->environment, shared_from_this(), vars->homepage()->name(),
+            _imp->keys->homepage = std::make_shared<ESimpleURIKey>(_imp->environment, shared_from_this(), vars->homepage()->name(),
                         vars->homepage()->description(),
-                        file_contents(_imp->dir / vars->homepage()->name()), mkt_significant));
+                        file_contents(_imp->dir / vars->homepage()->name()), mkt_significant);
             add_metadata_key(_imp->keys->homepage);
         }
 
     _imp->keys->contents = make_contents_key();
     add_metadata_key(_imp->keys->contents);
 
-    _imp->keys->installed_time.reset(new EMTimeKey(shared_from_this(), "INSTALLED_TIME", "Installed time",
-                _imp->dir / contents_filename(), mkt_normal));
+    _imp->keys->installed_time = std::make_shared<EMTimeKey>(shared_from_this(), "INSTALLED_TIME", "Installed time",
+                _imp->dir / contents_filename(), mkt_normal);
     add_metadata_key(_imp->keys->installed_time);
 
     if (_imp->eapi->supported())
-        _imp->keys->choices.reset(new EChoicesKey(_imp->environment, shared_from_this(), "PALUDIS_CHOICES",
+        _imp->keys->choices = std::make_shared<EChoicesKey>(_imp->environment, shared_from_this(), "PALUDIS_CHOICES",
                     _imp->eapi->supported()->ebuild_environment_variables()->description_choices(),
-                    mkt_normal, make_null_shared_ptr(), make_null_shared_ptr()));
+                    mkt_normal, make_null_shared_ptr(), make_null_shared_ptr());
     else
-        _imp->keys->choices.reset(new EChoicesKey(_imp->environment, shared_from_this(), "PALUDIS_CHOICES", "Choices", mkt_normal,
-                    make_null_shared_ptr(), make_null_shared_ptr()));
+        _imp->keys->choices = std::make_shared<EChoicesKey>(_imp->environment, shared_from_this(), "PALUDIS_CHOICES", "Choices", mkt_normal,
+                    make_null_shared_ptr(), make_null_shared_ptr());
 
     add_metadata_key(_imp->keys->choices);
 
@@ -506,64 +506,64 @@ EInstalledRepositoryID::need_keys_added() const
         from_repositories_value->insert(file_contents(_imp->dir / "BINARY_REPOSITORY"));
     if (! from_repositories_value->empty())
     {
-        _imp->keys->from_repositories.reset(new LiteralMetadataStringSetKey("REPOSITORIES",
-                    "From repositories", mkt_normal, from_repositories_value));
+        _imp->keys->from_repositories = std::make_shared<LiteralMetadataStringSetKey>("REPOSITORIES",
+                    "From repositories", mkt_normal, from_repositories_value);
         add_metadata_key(_imp->keys->from_repositories);
     }
 
     if ((_imp->dir / "ASFLAGS").exists())
     {
-        _imp->keys->asflags.reset(new LiteralMetadataValueKey<std::string> ("ASFLAGS", "ASFLAGS",
-                    mkt_internal, file_contents(_imp->dir / "ASFLAGS")));
+        _imp->keys->asflags = std::make_shared<LiteralMetadataValueKey<std::string> >("ASFLAGS", "ASFLAGS",
+                    mkt_internal, file_contents(_imp->dir / "ASFLAGS"));
         add_metadata_key(_imp->keys->asflags);
     }
 
     if ((_imp->dir / "CBUILD").exists())
     {
-        _imp->keys->cbuild.reset(new LiteralMetadataValueKey<std::string> ("CBUILD", "CBUILD",
-                    mkt_internal, file_contents(_imp->dir / "CBUILD")));
+        _imp->keys->cbuild = std::make_shared<LiteralMetadataValueKey<std::string> >("CBUILD", "CBUILD",
+                    mkt_internal, file_contents(_imp->dir / "CBUILD"));
         add_metadata_key(_imp->keys->cbuild);
     }
 
     if ((_imp->dir / "CFLAGS").exists())
     {
-        _imp->keys->cflags.reset(new LiteralMetadataValueKey<std::string> ("CFLAGS", "CFLAGS",
-                    mkt_internal, file_contents(_imp->dir / "CFLAGS")));
+        _imp->keys->cflags = std::make_shared<LiteralMetadataValueKey<std::string> >("CFLAGS", "CFLAGS",
+                    mkt_internal, file_contents(_imp->dir / "CFLAGS"));
         add_metadata_key(_imp->keys->cflags);
     }
 
     if ((_imp->dir / "CHOST").exists())
     {
-        _imp->keys->chost.reset(new LiteralMetadataValueKey<std::string> ("CHOST", "CHOST",
-                    mkt_internal, file_contents(_imp->dir / "CHOST")));
+        _imp->keys->chost = std::make_shared<LiteralMetadataValueKey<std::string> >("CHOST", "CHOST",
+                    mkt_internal, file_contents(_imp->dir / "CHOST"));
         add_metadata_key(_imp->keys->chost);
     }
 
     if ((_imp->dir / "CXXFLAGS").exists())
     {
-        _imp->keys->cxxflags.reset(new LiteralMetadataValueKey<std::string> ("CXXFLAGS", "CXXFLAGS",
-                    mkt_internal, file_contents(_imp->dir / "CXXFLAGS")));
+        _imp->keys->cxxflags = std::make_shared<LiteralMetadataValueKey<std::string> >("CXXFLAGS", "CXXFLAGS",
+                    mkt_internal, file_contents(_imp->dir / "CXXFLAGS"));
         add_metadata_key(_imp->keys->cxxflags);
     }
 
     if ((_imp->dir / "LDFLAGS").exists())
     {
-        _imp->keys->ldflags.reset(new LiteralMetadataValueKey<std::string> ("LDFLAGS", "LDFLAGS",
-                    mkt_internal, file_contents(_imp->dir / "LDFLAGS")));
+        _imp->keys->ldflags = std::make_shared<LiteralMetadataValueKey<std::string> >("LDFLAGS", "LDFLAGS",
+                    mkt_internal, file_contents(_imp->dir / "LDFLAGS"));
         add_metadata_key(_imp->keys->ldflags);
     }
 
     if ((_imp->dir / "PKGMANAGER").exists())
     {
-        _imp->keys->pkgmanager.reset(new LiteralMetadataValueKey<std::string> ("PKGMANAGER", "Installed using",
-                    mkt_normal, file_contents(_imp->dir / "PKGMANAGER")));
+        _imp->keys->pkgmanager = std::make_shared<LiteralMetadataValueKey<std::string> >("PKGMANAGER", "Installed using",
+                    mkt_normal, file_contents(_imp->dir / "PKGMANAGER"));
         add_metadata_key(_imp->keys->pkgmanager);
     }
 
     if ((_imp->dir / "VDB_FORMAT").exists())
     {
-        _imp->keys->vdb_format.reset(new LiteralMetadataValueKey<std::string> ("VDB_FORMAT", "VDB Format",
-                    mkt_internal, file_contents(_imp->dir / "VDB_FORMAT")));
+        _imp->keys->vdb_format = std::make_shared<LiteralMetadataValueKey<std::string> >("VDB_FORMAT", "VDB Format",
+                    mkt_internal, file_contents(_imp->dir / "VDB_FORMAT"));
         add_metadata_key(_imp->keys->vdb_format);
     }
 }
@@ -859,8 +859,8 @@ EInstalledRepositoryID::fs_location_key() const
     {
         Lock l(_imp->mutex);
 
-        _imp->fs_location.reset(new LiteralMetadataValueKey<FSEntry> (fs_location_raw_name(),
-                    fs_location_human_name(), mkt_internal, _imp->dir));
+        _imp->fs_location = std::make_shared<LiteralMetadataValueKey<FSEntry> >(fs_location_raw_name(),
+                    fs_location_human_name(), mkt_internal, _imp->dir);
         add_metadata_key(_imp->fs_location);
     }
 

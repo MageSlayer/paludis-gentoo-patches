@@ -1756,23 +1756,23 @@ paludis::cave::resolve_common(
             if ((*r)->destination_interface())
             {
                 if (all_binary_repos_generator)
-                    all_binary_repos_generator.reset(new generator::Union(*all_binary_repos_generator,
-                                generator::InRepository((*r)->name())));
+                    all_binary_repos_generator = std::make_shared<generator::Union>(*all_binary_repos_generator,
+                                generator::InRepository((*r)->name()));
                 else
-                    all_binary_repos_generator.reset(new generator::InRepository((*r)->name()));
+                    all_binary_repos_generator = std::make_shared<generator::InRepository>((*r)->name());
             }
             else
             {
                 if (not_binary_repos_generator)
-                    not_binary_repos_generator.reset(new generator::Union(*not_binary_repos_generator,
-                                generator::InRepository((*r)->name())));
+                    not_binary_repos_generator = std::make_shared<generator::Union>(*not_binary_repos_generator,
+                                generator::InRepository((*r)->name()));
                 else
-                    not_binary_repos_generator.reset(new generator::InRepository((*r)->name()));
+                    not_binary_repos_generator = std::make_shared<generator::InRepository>((*r)->name());
             }
         }
 
     if (! all_binary_repos_generator)
-        all_binary_repos_generator.reset(new generator::Nothing());
+        all_binary_repos_generator = std::make_shared<generator::Nothing>();
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_preset.begin_args()),
             i_end(resolution_options.a_preset.end_args()) ;
@@ -1876,7 +1876,7 @@ paludis::cave::resolve_common(
                     if (purge)
                     {
                         resolver->purge();
-                        targets_cleaned_up.reset(new Sequence<std::string>);
+                        targets_cleaned_up = std::make_shared<Sequence<std::string>>();
                     } else
                         targets_cleaned_up = add_resolver_targets(env, resolver, resolution_options, targets_if_not_purge, is_set);
                     resolver->resolve();

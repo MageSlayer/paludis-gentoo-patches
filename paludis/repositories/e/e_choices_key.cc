@@ -276,7 +276,7 @@ EChoicesKey::value() const
 
     Context context("When making Choices key for '" + stringify(*_imp->id) + "':");
 
-    _imp->value.reset(new Choices);
+    _imp->value = std::make_shared<Choices>();
     if (! _imp->id->eapi()->supported())
         return _imp->value;
 

@@ -146,7 +146,7 @@ NDBAM::category_names()
     if (! _imp->category_names)
     {
         Context context("When loading category names for NDBAM at '" + stringify(_imp->location) + "':");
-        _imp->category_names.reset(new CategoryNamePartSet);
+        _imp->category_names = std::make_shared<CategoryNamePartSet>();
         for (DirIterator d(_imp->location / "indices" / "categories"), d_end ;
                 d != d_end ; ++d)
         {
@@ -191,7 +191,7 @@ NDBAM::package_names(const CategoryNamePart & c)
     if (! cc.package_names)
     {
         Context context("When loading package names in '" + stringify(c) + "' for NDBAM at '" + stringify(_imp->location) + "':");
-        cc.package_names.reset(new QualifiedPackageNameSet);
+        cc.package_names = std::make_shared<QualifiedPackageNameSet>();
         for (DirIterator d(_imp->location / "indices" / "categories" / stringify(c)), d_end ;
                 d != d_end ; ++d)
         {
@@ -302,9 +302,9 @@ NDBAM::entries(const QualifiedPackageName & q)
 
     if (! pc.entries)
     {
-        pc.entries.reset(new NDBAMEntrySequence);
+        pc.entries = std::make_shared<NDBAMEntrySequence>();
         Context context("When loading versions in '" + stringify(q) + "' for NDBAM at '" + stringify(_imp->location) + "':");
-        pc.entries.reset(new NDBAMEntrySequence);
+        pc.entries = std::make_shared<NDBAMEntrySequence>();
         for (DirIterator d(_imp->location / "indices" / "categories" / stringify(q.category()) / stringify(q.package())), d_end ;
                 d != d_end ; ++d)
         {
@@ -606,7 +606,7 @@ NDBAM::category_names_containing_package(const PackageNamePart & p) const
         Context c("When finding category names containing package '" + stringify(p) +
                 "' in NDBAM at '" + stringify(_imp->location) + "':");
 
-        cncp.category_names_containing_package.reset(new CategoryNamePartSet);
+        cncp.category_names_containing_package = std::make_shared<CategoryNamePartSet>();
         FSEntry dd(_imp->location / "indices" / "packages" / stringify(p));
         if (dd.is_directory_or_symlink_to_directory())
         {

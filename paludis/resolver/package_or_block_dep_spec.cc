@@ -136,7 +136,7 @@ PackageOrBlockDepSpec::deserialise(Deserialisation & d, const std::shared_ptr<co
     }
 
     if (! m->empty())
-        annotations.reset(new ELikeAnnotations(m));
+        annotations = std::make_shared<ELikeAnnotations>(m);
 
     if (block)
     {

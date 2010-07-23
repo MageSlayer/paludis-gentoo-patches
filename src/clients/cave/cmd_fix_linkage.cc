@@ -171,7 +171,7 @@ FixLinkageCommand::run(
         DisplayCallback display_callback("Searching: ");
         ScopedNotifierCallback display_callback_holder(env.get(),
                 NotifierCallbackFunction(std::cref(display_callback)));
-        finder.reset(new BrokenLinkageFinder(env.get(), cmdline.a_library.argument()));
+        finder = std::make_shared<BrokenLinkageFinder>(env.get(), cmdline.a_library.argument());
     }
 
     if (finder->begin_broken_packages() == finder->end_broken_packages())

@@ -187,61 +187,61 @@ namespace
 
         void visit(const GenericSpecTree::NodeType<PackageDepSpec>::Type & node)
         {
-            wrapped.reset(new WrappedSpec<PackageDepSpec>(std::static_pointer_cast<PackageDepSpec>(node.spec()->clone())));
+            wrapped = std::make_shared<WrappedSpec<PackageDepSpec>>(std::static_pointer_cast<PackageDepSpec>(node.spec()->clone()));
             klass = c_package_dep_spec;
         }
 
         void visit(const GenericSpecTree::NodeType<BlockDepSpec>::Type & node)
         {
-            wrapped.reset(new WrappedSpec<BlockDepSpec>(std::static_pointer_cast<BlockDepSpec>(node.spec()->clone())));
+            wrapped = std::make_shared<WrappedSpec<BlockDepSpec>>(std::static_pointer_cast<BlockDepSpec>(node.spec()->clone()));
             klass = c_block_dep_spec;
         }
 
         void visit(const GenericSpecTree::NodeType<PlainTextDepSpec>::Type & node)
         {
-            wrapped.reset(new WrappedSpec<PlainTextDepSpec>(std::static_pointer_cast<PlainTextDepSpec>(node.spec()->clone())));
+            wrapped = std::make_shared<WrappedSpec<PlainTextDepSpec>>(std::static_pointer_cast<PlainTextDepSpec>(node.spec()->clone()));
             klass = c_plain_text_dep_spec;
         }
 
         void visit(const GenericSpecTree::NodeType<SimpleURIDepSpec>::Type & node)
         {
-            wrapped.reset(new WrappedSpec<SimpleURIDepSpec>(std::static_pointer_cast<SimpleURIDepSpec>(node.spec()->clone())));
+            wrapped = std::make_shared<WrappedSpec<SimpleURIDepSpec>>(std::static_pointer_cast<SimpleURIDepSpec>(node.spec()->clone()));
             klass = c_simple_uri_dep_spec;
         }
 
         void visit(const GenericSpecTree::NodeType<FetchableURIDepSpec>::Type & node)
         {
-            wrapped.reset(new WrappedSpec<FetchableURIDepSpec>(std::static_pointer_cast<FetchableURIDepSpec>(node.spec()->clone())));
+            wrapped = std::make_shared<WrappedSpec<FetchableURIDepSpec>>(std::static_pointer_cast<FetchableURIDepSpec>(node.spec()->clone()));
             klass = c_fetchable_uri_dep_spec;
         }
 
         void visit(const GenericSpecTree::NodeType<URILabelsDepSpec>::Type & node)
         {
-            wrapped.reset(new WrappedSpec<URILabelsDepSpec>(std::static_pointer_cast<URILabelsDepSpec>(node.spec()->clone())));
+            wrapped = std::make_shared<WrappedSpec<URILabelsDepSpec>>(std::static_pointer_cast<URILabelsDepSpec>(node.spec()->clone()));
             klass = c_uri_labels_dep_spec;
         }
 
         void visit(const GenericSpecTree::NodeType<PlainTextLabelDepSpec>::Type & node)
         {
-            wrapped.reset(new WrappedSpec<PlainTextLabelDepSpec>(std::static_pointer_cast<PlainTextLabelDepSpec>(node.spec()->clone())));
+            wrapped = std::make_shared<WrappedSpec<PlainTextLabelDepSpec>>(std::static_pointer_cast<PlainTextLabelDepSpec>(node.spec()->clone()));
             klass = c_plain_text_label_dep_spec;
         }
 
         void visit(const GenericSpecTree::NodeType<DependenciesLabelsDepSpec>::Type & node)
         {
-            wrapped.reset(new WrappedSpec<DependenciesLabelsDepSpec>(std::static_pointer_cast<DependenciesLabelsDepSpec>(node.spec()->clone())));
+            wrapped = std::make_shared<WrappedSpec<DependenciesLabelsDepSpec>>(std::static_pointer_cast<DependenciesLabelsDepSpec>(node.spec()->clone()));
             klass = c_dependencies_labels_dep_spec;
         }
 
         void visit(const GenericSpecTree::NodeType<NamedSetDepSpec>::Type & node)
         {
-            wrapped.reset(new WrappedSpec<NamedSetDepSpec>(std::static_pointer_cast<NamedSetDepSpec>(node.spec()->clone())));
+            wrapped = std::make_shared<WrappedSpec<NamedSetDepSpec>>(std::static_pointer_cast<NamedSetDepSpec>(node.spec()->clone()));
             klass = c_named_set_dep_spec;
         }
 
         void visit(const GenericSpecTree::NodeType<LicenseDepSpec>::Type & node)
         {
-            wrapped.reset(new WrappedSpec<LicenseDepSpec>(std::static_pointer_cast<LicenseDepSpec>(node.spec()->clone())));
+            wrapped = std::make_shared<WrappedSpec<LicenseDepSpec>>(std::static_pointer_cast<LicenseDepSpec>(node.spec()->clone()));
             klass = c_license_dep_spec;
         }
 
@@ -354,7 +354,7 @@ namespace
     {
         static void handle(ValueToTree<H_> * const t, const WrappedSpec<AllDepSpec> & spec)
         {
-            t->result.reset(new H_(spec.spec()));
+            t->result = std::make_shared<H_>(spec.spec());
             t->add_to = t->result->root();
         }
     };

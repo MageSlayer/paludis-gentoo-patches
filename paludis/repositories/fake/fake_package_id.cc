@@ -203,7 +203,7 @@ FakeMetadataKeywordSetKey::FakeMetadataKeywordSetKey(const std::string & r,
 void
 FakeMetadataKeywordSetKey::set_from_string(const std::string & s)
 {
-    _imp->collection.reset(new KeywordNameSet);
+    _imp->collection = std::make_shared<KeywordNameSet>();
     tokenise_whitespace(s, create_inserter<KeywordName>(_imp->collection->inserter()));
 }
 
@@ -996,49 +996,49 @@ FakePackageID::need_keys_added() const
     {
         using namespace std::placeholders;
 
-        _imp->build_dependencies.reset(new FakeMetadataSpecTreeKey<DependencySpecTree>("DEPEND", "Build dependencies",
+        _imp->build_dependencies = std::make_shared<FakeMetadataSpecTreeKey<DependencySpecTree>>("DEPEND", "Build dependencies",
                     "", std::bind(&parse_depend, _1, _imp->env,
                         shared_from_this()),
-                    _imp->build_dependencies_labels, mkt_dependencies));
+                    _imp->build_dependencies_labels, mkt_dependencies);
 
-        _imp->run_dependencies.reset(new FakeMetadataSpecTreeKey<DependencySpecTree>("RDEPEND", "Run dependencies",
+        _imp->run_dependencies = std::make_shared<FakeMetadataSpecTreeKey<DependencySpecTree>>("RDEPEND", "Run dependencies",
                     "", std::bind(&parse_depend, _1, _imp->env,
                         shared_from_this()),
-                    _imp->run_dependencies_labels, mkt_dependencies)),
+                    _imp->run_dependencies_labels, mkt_dependencies);
 
-        _imp->post_dependencies.reset(new FakeMetadataSpecTreeKey<DependencySpecTree>("PDEPEND", "Post dependencies",
+        _imp->post_dependencies = std::make_shared<FakeMetadataSpecTreeKey<DependencySpecTree>>("PDEPEND", "Post dependencies",
                     "", std::bind(&parse_depend, _1, _imp->env,
                         shared_from_this()),
-                    _imp->post_dependencies_labels, mkt_dependencies)),
+                    _imp->post_dependencies_labels, mkt_dependencies);
 
-        _imp->suggested_dependencies.reset(new FakeMetadataSpecTreeKey<DependencySpecTree>("SDEPEND", "Suggested dependencies",
+        _imp->suggested_dependencies = std::make_shared<FakeMetadataSpecTreeKey<DependencySpecTree>>("SDEPEND", "Suggested dependencies",
                     "", std::bind(&parse_depend, _1, _imp->env,
                         shared_from_this()),
-                    _imp->suggested_dependencies_labels, mkt_dependencies)),
+                    _imp->suggested_dependencies_labels, mkt_dependencies);
 
-        _imp->src_uri.reset(new FakeMetadataSpecTreeKey<FetchableURISpecTree>("SRC_URI", "Source URI",
+        _imp->src_uri = std::make_shared<FakeMetadataSpecTreeKey<FetchableURISpecTree>>("SRC_URI", "Source URI",
                     "", std::bind(&parse_fetchable_uri, _1, _imp->env,
-                        shared_from_this()), mkt_normal));
+                        shared_from_this()), mkt_normal);
 
-        _imp->homepage.reset(new FakeMetadataSpecTreeKey<SimpleURISpecTree>("HOMEPAGE", "Homepage",
+        _imp->homepage = std::make_shared<FakeMetadataSpecTreeKey<SimpleURISpecTree>>("HOMEPAGE", "Homepage",
                     "", std::bind(&parse_simple_uri, _1, _imp->env,
-                        shared_from_this()), mkt_normal));
+                        shared_from_this()), mkt_normal);
 
-        _imp->license.reset(new FakeMetadataSpecTreeKey<LicenseSpecTree>("LICENSE", "License",
+        _imp->license = std::make_shared<FakeMetadataSpecTreeKey<LicenseSpecTree>>("LICENSE", "License",
                     "", std::bind(&parse_license, _1, _imp->env,
-                        shared_from_this()), mkt_normal));
+                        shared_from_this()), mkt_normal);
 
-        _imp->provide.reset(new FakeMetadataSpecTreeKey<ProvideSpecTree>("PROVIDE", "Provide",
+        _imp->provide = std::make_shared<FakeMetadataSpecTreeKey<ProvideSpecTree>>("PROVIDE", "Provide",
                     "", std::bind(&parse_provide, _1, _imp->env,
-                        shared_from_this()), mkt_normal));
+                        shared_from_this()), mkt_normal);
 
-        _imp->choices.reset(new FakeMetadataChoicesKey(_imp->env, shared_from_this()));
+        _imp->choices = std::make_shared<FakeMetadataChoicesKey>(_imp->env, shared_from_this());
 
-        _imp->behaviours.reset(new LiteralMetadataStringSetKey("BEHAVIOURS", "Behaviours",
-                    mkt_internal, _imp->behaviours_set));
+        _imp->behaviours = std::make_shared<LiteralMetadataStringSetKey>("BEHAVIOURS", "Behaviours",
+                    mkt_internal, _imp->behaviours_set);
 
-        _imp->hitchhiker.reset(new FakeMetadataValueKey<long>("HITCHHIKER", "Hitchhiker",
-                    mkt_internal, 42));
+        _imp->hitchhiker = std::make_shared<FakeMetadataValueKey<long>>("HITCHHIKER", "Hitchhiker",
+                    mkt_internal, 42);
 
         add_metadata_key(_imp->slot);
         add_metadata_key(_imp->build_dependencies);
@@ -1190,7 +1190,7 @@ void
 FakePackageID::make_unsupported()
 {
     invalidate_masks();
-    _imp->unsupported_mask.reset(new FakeUnsupportedMask);
+    _imp->unsupported_mask = std::make_shared<FakeUnsupportedMask>();
 }
 
 namespace

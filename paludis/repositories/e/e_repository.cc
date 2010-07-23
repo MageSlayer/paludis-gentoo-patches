@@ -141,7 +141,7 @@ namespace
 
         if (r)
         {
-            result.reset(new FSEntrySequence);
+            result = std::make_shared<FSEntrySequence>();
             for (ERepositorySequence::ConstIterator e(r->begin()), e_end(r->end()) ;
                     e != e_end ; ++e)
                 result->push_back((*e)->location_key()->value());
@@ -157,7 +157,7 @@ namespace
 
         if (r)
         {
-            result.reset(new Sequence<std::string>);
+            result = std::make_shared<Sequence<std::string>>();
             for (ERepositorySequence::ConstIterator e(r->begin()), e_end(r->end()) ;
                     e != e_end ; ++e)
                 result->push_back(stringify((*e)->name()));
@@ -409,7 +409,7 @@ namespace paludis
             if (profiles_desc == FSEntry("/dev/null"))
             {
                 auto_profiles->push_back(FSEntry("/var/empty"));
-                main_profile_path.reset(new FSEntry("/var/empty"));
+                main_profile_path = std::make_shared<FSEntry>("/var/empty");
             }
             else
             {
@@ -425,16 +425,16 @@ namespace paludis
 
                     FSEntry p(profiles_desc.dirname().realpath().dirname() / "profiles" / tokens.at(1));
                     auto_profiles->push_back(p);
-                    main_profile_path.reset(new FSEntry(p));
+                    main_profile_path = std::make_shared<FSEntry>(p);
                     break;
                 }
             }
             profiles = auto_profiles;
         }
         else if (params.profiles()->empty())
-            main_profile_path.reset(new FSEntry("/var/empty"));
+            main_profile_path = std::make_shared<FSEntry>("/var/empty");
         else
-            main_profile_path.reset(new FSEntry(*params.profiles()->begin()));
+            main_profile_path = std::make_shared<FSEntry>(*params.profiles()->begin());
 
         profile_ptr = ProfileFactory::get_instance()->create(
                 params.profile_layout(),
@@ -661,7 +661,7 @@ ERepository::arch_flags() const
     if (! _imp->arch_flags)
     {
         Context context("When loading arch list:");
-        _imp->arch_flags.reset(new Set<UnprefixedChoiceName>);
+        _imp->arch_flags = std::make_shared<Set<UnprefixedChoiceName>>();
 
         bool found_one(false);
         std::shared_ptr<const FSEntrySequence> arch_list_files(_imp->layout->arch_list_files());
@@ -874,7 +874,7 @@ ERepository::update_news() const
     Lock l(_imp->mutexes->news_ptr_mutex);
 
     if (! _imp->news_ptr)
-        _imp->news_ptr.reset(new ERepositoryNews(_imp->params.environment(), this, _imp->params));
+        _imp->news_ptr = std::make_shared<ERepositoryNews>(_imp->params.environment(), this, _imp->params);
 
     _imp->news_ptr->update_news();
 }
@@ -1171,8 +1171,8 @@ ERepository::need_keys_added() const
                 k = _imp->profile_ptr->environment_variable(v);
         }
 
-        _imp->accept_keywords_key.reset(new LiteralMetadataValueKey<std::string>(v,
-                    "Default accepted keywords", mkt_internal, k));
+        _imp->accept_keywords_key = std::make_shared<LiteralMetadataValueKey<std::string>>(v,
+                    "Default accepted keywords", mkt_internal, k);
         add_metadata_key(_imp->accept_keywords_key);
     }
 
@@ -1258,7 +1258,7 @@ ERepository::repository_factory_create(
             throw ERepositoryConfigurationError("Master repository format is '" + stringify(format) + "', not 'ebuild'");
 
         std::shared_ptr<ERepository> master_repository(std::static_pointer_cast<ERepository>(master_repository_uncasted));
-        master_repositories.reset(new ERepositorySequence);
+        master_repositories = std::make_shared<ERepositorySequence>();
         master_repositories->push_back(master_repository);
     }
     else if (layout_conf)
@@ -1285,7 +1285,7 @@ ERepository::repository_factory_create(
 
                 std::shared_ptr<ERepository> master_repository(std::static_pointer_cast<ERepository>(master_repository_uncasted));
                 if (! master_repositories)
-                    master_repositories.reset(new ERepositorySequence);
+                    master_repositories = std::make_shared<ERepositorySequence>();
                 master_repositories->push_back(master_repository);
             }
             catch (const NoSuchRepositoryError &)
@@ -1574,7 +1574,7 @@ ERepository::use_desc() const
     Lock l(_imp->mutexes->use_desc_mutex);
     if (! _imp->use_desc)
     {
-        _imp->use_desc.reset(new UseDesc(_imp->layout->use_desc_files()));
+        _imp->use_desc = std::make_shared<UseDesc>(_imp->layout->use_desc_files());
     }
 
     return _imp->use_desc;

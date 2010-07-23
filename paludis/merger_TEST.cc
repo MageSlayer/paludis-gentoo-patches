@@ -87,7 +87,7 @@ namespace paludis
     {
         if (! hooker)
         {
-            hooker.reset(new Hooker(this));
+            hooker = std::make_shared<Hooker>(this);
             for (std::list<std::pair<FSEntry, bool> >::const_iterator h(hook_dirs.begin()),
                     h_end(hook_dirs.end()) ; h != h_end ; ++h)
                 hooker->add_dir(h->first, h->second);

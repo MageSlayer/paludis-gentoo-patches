@@ -54,7 +54,7 @@ namespace
                     return _v;
 
                 using namespace std::placeholders;
-                _v.reset(new Contents);
+                _v = std::make_shared<Contents>();
                 _db->parse_contents(*_id,
                         std::bind(&Contents::add, _v.get(), std::placeholders::_1),
                         std::bind(&Contents::add, _v.get(), std::placeholders::_1),

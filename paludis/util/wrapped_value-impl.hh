@@ -48,7 +48,7 @@ namespace paludis
             const typename WrappedValueDevoid<typename WrappedValueTraits<Tag_>::ValidationParamsType>::Type & p)
     {
         if (WrappedValueValidate<Tag_, typename WrappedValueTraits<Tag_>::ValidationParamsType>::Type::validate(v, p))
-            _value.reset(new typename WrappedValueTraits<Tag_>::UnderlyingType(v));
+            _value = std::make_shared<typename WrappedValueTraits<Tag_>::UnderlyingType>(v);
         else
             throw typename WrappedValueTraits<Tag_>::ExceptionType(v);
     }

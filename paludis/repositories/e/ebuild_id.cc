@@ -182,8 +182,8 @@ EbuildID::need_keys_added() const
     // fs_location key could have been loaded by the ::fs_location_key() already.
     if (! _imp->fs_location)
     {
-        _imp->fs_location.reset(new LiteralMetadataValueKey<FSEntry> ("EBUILD", "Ebuild Location",
-                    mkt_internal, _imp->ebuild));
+        _imp->fs_location = std::make_shared<LiteralMetadataValueKey<FSEntry> >("EBUILD", "Ebuild Location",
+                    mkt_internal, _imp->ebuild);
         add_metadata_key(_imp->fs_location);
     }
 
@@ -372,22 +372,22 @@ EbuildID::need_keys_added() const
                 }
             }
 
-            _imp->raw_iuse_effective.reset(new LiteralMetadataStringSetKey(
+            _imp->raw_iuse_effective = std::make_shared<LiteralMetadataStringSetKey>(
                     _imp->eapi->supported()->ebuild_metadata_variables()->iuse_effective()->name(),
                     _imp->eapi->supported()->ebuild_metadata_variables()->iuse_effective()->description(),
                     mkt_internal,
-                    iuse_effective));
+                    iuse_effective);
             add_metadata_key(_imp->raw_iuse_effective);
         }
 
-        _imp->choices.reset(new EChoicesKey(_imp->environment, shared_from_this(), "PALUDIS_CHOICES",
+        _imp->choices = std::make_shared<EChoicesKey>(_imp->environment, shared_from_this(), "PALUDIS_CHOICES",
                     _imp->eapi->supported()->ebuild_environment_variables()->description_choices(),
                     mkt_normal, e_repository(),
-                    maybe_use_descriptions));
+                    maybe_use_descriptions);
     }
     else
-        _imp->choices.reset(new EChoicesKey(_imp->environment, shared_from_this(), "PALUDIS_CHOICES", "Choices", mkt_normal,
-                    e_repository(), maybe_use_descriptions));
+        _imp->choices = std::make_shared<EChoicesKey>(_imp->environment, shared_from_this(), "PALUDIS_CHOICES", "Choices", mkt_normal,
+                    e_repository(), maybe_use_descriptions);
     add_metadata_key(_imp->choices);
 }
 
@@ -833,7 +833,7 @@ EbuildID::fs_location_key() const
     // Avoid loading whole metadata
     if (! _imp->fs_location)
     {
-        _imp->fs_location.reset(new LiteralMetadataValueKey<FSEntry> ("EBUILD", "Ebuild Location", mkt_internal, _imp->ebuild));
+        _imp->fs_location = std::make_shared<LiteralMetadataValueKey<FSEntry> >("EBUILD", "Ebuild Location", mkt_internal, _imp->ebuild);
         add_metadata_key(_imp->fs_location);
     }
 
@@ -875,7 +875,7 @@ void
 EbuildID::load_captured_stderr(const std::string & r, const std::string & h, const MetadataKeyType t, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->captured_stderr_key.reset(new LiteralMetadataValueKey<std::string> (r, h, t, v));
+    _imp->captured_stderr_key = std::make_shared<LiteralMetadataValueKey<std::string> >(r, h, t, v);
     add_metadata_key(_imp->captured_stderr_key);
 }
 
@@ -883,7 +883,7 @@ void
 EbuildID::load_captured_stdout(const std::string & r, const std::string & h, const MetadataKeyType t, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->captured_stdout_key.reset(new LiteralMetadataValueKey<std::string> (r, h, t, v));
+    _imp->captured_stdout_key = std::make_shared<LiteralMetadataValueKey<std::string> >(r, h, t, v);
     add_metadata_key(_imp->captured_stdout_key);
 }
 
@@ -891,7 +891,7 @@ void
 EbuildID::load_short_description(const std::string & r, const std::string & h, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->short_description.reset(new LiteralMetadataValueKey<std::string> (r, h, mkt_significant, v));
+    _imp->short_description = std::make_shared<LiteralMetadataValueKey<std::string> >(r, h, mkt_significant, v);
     add_metadata_key(_imp->short_description);
 }
 
@@ -899,7 +899,7 @@ void
 EbuildID::load_long_description(const std::string & r, const std::string & h, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->long_description.reset(new LiteralMetadataValueKey<std::string> (r, h, mkt_normal, v));
+    _imp->long_description = std::make_shared<LiteralMetadataValueKey<std::string> >(r, h, mkt_normal, v);
     add_metadata_key(_imp->long_description);
 }
 
@@ -907,8 +907,8 @@ void
 EbuildID::load_raw_depend(const std::string & r, const std::string & h, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->raw_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), r, h, v,
-                _imp->raw_dependencies_labels, mkt_dependencies));
+    _imp->raw_dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), r, h, v,
+                _imp->raw_dependencies_labels, mkt_dependencies);
     add_metadata_key(_imp->raw_dependencies);
 }
 
@@ -917,8 +917,8 @@ EbuildID::load_build_depend(const std::string & r, const std::string & h, const 
         bool rewritten) const
 {
     Lock l(_imp->mutex);
-    _imp->build_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), r, h, v,
-                _imp->build_dependencies_labels, rewritten ? mkt_internal : mkt_dependencies));
+    _imp->build_dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), r, h, v,
+                _imp->build_dependencies_labels, rewritten ? mkt_internal : mkt_dependencies);
     add_metadata_key(_imp->build_dependencies);
 }
 
@@ -927,8 +927,8 @@ EbuildID::load_run_depend(const std::string & r, const std::string & h, const st
         bool rewritten) const
 {
     Lock l(_imp->mutex);
-    _imp->run_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), r, h, v,
-                _imp->run_dependencies_labels, rewritten ? mkt_internal : mkt_dependencies));
+    _imp->run_dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), r, h, v,
+                _imp->run_dependencies_labels, rewritten ? mkt_internal : mkt_dependencies);
     add_metadata_key(_imp->run_dependencies);
 }
 
@@ -937,8 +937,8 @@ EbuildID::load_post_depend(const std::string & r, const std::string & h, const s
         bool rewritten) const
 {
     Lock l(_imp->mutex);
-    _imp->post_dependencies.reset(new EDependenciesKey(_imp->environment, shared_from_this(), r, h, v,
-                _imp->post_dependencies_labels, rewritten ? mkt_internal : mkt_dependencies));
+    _imp->post_dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), r, h, v,
+                _imp->post_dependencies_labels, rewritten ? mkt_internal : mkt_dependencies);
     add_metadata_key(_imp->post_dependencies);
 }
 
@@ -946,7 +946,7 @@ void
 EbuildID::load_src_uri(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->src_uri.reset(new EFetchableURIKey(_imp->environment, shared_from_this(), m, v, mkt_dependencies));
+    _imp->src_uri = std::make_shared<EFetchableURIKey>(_imp->environment, shared_from_this(), m, v, mkt_dependencies);
     add_metadata_key(_imp->src_uri);
 }
 
@@ -954,7 +954,7 @@ void
 EbuildID::load_homepage(const std::string & r, const std::string & h, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->homepage.reset(new ESimpleURIKey(_imp->environment, shared_from_this(), r, h, v, mkt_significant));
+    _imp->homepage = std::make_shared<ESimpleURIKey>(_imp->environment, shared_from_this(), r, h, v, mkt_significant);
     add_metadata_key(_imp->homepage);
 }
 
@@ -962,7 +962,7 @@ void
 EbuildID::load_license(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->license.reset(new ELicenseKey(_imp->environment, shared_from_this(), m, v, mkt_internal));
+    _imp->license = std::make_shared<ELicenseKey>(_imp->environment, shared_from_this(), m, v, mkt_internal);
     add_metadata_key(_imp->license);
 }
 
@@ -970,7 +970,7 @@ void
 EbuildID::load_restrict(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->restrictions.reset(new EPlainTextSpecKey(_imp->environment, shared_from_this(), m, v, mkt_internal));
+    _imp->restrictions = std::make_shared<EPlainTextSpecKey>(_imp->environment, shared_from_this(), m, v, mkt_internal);
     add_metadata_key(_imp->restrictions);
 }
 
@@ -978,7 +978,7 @@ void
 EbuildID::load_properties(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->properties.reset(new EPlainTextSpecKey(_imp->environment, shared_from_this(), m, v, mkt_internal));
+    _imp->properties = std::make_shared<EPlainTextSpecKey>(_imp->environment, shared_from_this(), m, v, mkt_internal);
     add_metadata_key(_imp->properties);
 }
 
@@ -986,7 +986,7 @@ void
 EbuildID::load_provide(const std::string & r, const std::string & h, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->provide.reset(new EProvideKey(_imp->environment, shared_from_this(), r, h, v, mkt_dependencies));
+    _imp->provide = std::make_shared<EProvideKey>(_imp->environment, shared_from_this(), r, h, v, mkt_dependencies);
     add_metadata_key(_imp->provide);
 }
 
@@ -994,7 +994,7 @@ void
 EbuildID::load_iuse(const std::string & r, const std::string & h, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->raw_iuse.reset(new EStringSetKey(shared_from_this(), r, h, v, mkt_internal));
+    _imp->raw_iuse = std::make_shared<EStringSetKey>(shared_from_this(), r, h, v, mkt_internal);
     add_metadata_key(_imp->raw_iuse);
 }
 
@@ -1002,7 +1002,7 @@ void
 EbuildID::load_myoptions(const std::string & r, const std::string & h, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->raw_myoptions.reset(new EMyOptionsKey(_imp->environment, shared_from_this(), r, h, v, mkt_internal));
+    _imp->raw_myoptions = std::make_shared<EMyOptionsKey>(_imp->environment, shared_from_this(), r, h, v, mkt_internal);
     add_metadata_key(_imp->raw_myoptions);
 }
 
@@ -1010,7 +1010,7 @@ void
 EbuildID::load_use(const std::string & r, const std::string & h, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->raw_use.reset(new EStringSetKey(shared_from_this(), r, h, v, mkt_internal));
+    _imp->raw_use = std::make_shared<EStringSetKey>(shared_from_this(), r, h, v, mkt_internal);
     add_metadata_key(_imp->raw_use);
 }
 
@@ -1018,7 +1018,7 @@ void
 EbuildID::load_keywords(const std::string & r, const std::string & h, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->keywords.reset(new EKeywordsKey(_imp->environment, shared_from_this(), r, h, v, mkt_internal));
+    _imp->keywords = std::make_shared<EKeywordsKey>(_imp->environment, shared_from_this(), r, h, v, mkt_internal);
     add_metadata_key(_imp->keywords);
 }
 
@@ -1026,7 +1026,7 @@ void
 EbuildID::load_inherited(const std::string & r, const std::string & h, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->inherited.reset(new EStringSetKey(shared_from_this(), r, h, v, mkt_internal));
+    _imp->inherited = std::make_shared<EStringSetKey>(shared_from_this(), r, h, v, mkt_internal);
     add_metadata_key(_imp->inherited);
 }
 
@@ -1037,7 +1037,7 @@ EbuildID::load_defined_phases(const std::string & r, const std::string & h, cons
         throw InternalError(PALUDIS_HERE, "v should not be empty");
 
     Lock l(_imp->mutex);
-    _imp->defined_phases.reset(new EStringSetKey(shared_from_this(), r, h, v, mkt_internal));
+    _imp->defined_phases = std::make_shared<EStringSetKey>(shared_from_this(), r, h, v, mkt_internal);
     add_metadata_key(_imp->defined_phases);
 }
 
@@ -1045,7 +1045,7 @@ void
 EbuildID::load_upstream_changelog(const std::string & r, const std::string & h, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->upstream_changelog.reset(new ESimpleURIKey(_imp->environment, shared_from_this(), r, h, v, mkt_normal));
+    _imp->upstream_changelog = std::make_shared<ESimpleURIKey>(_imp->environment, shared_from_this(), r, h, v, mkt_normal);
     add_metadata_key(_imp->upstream_changelog);
 }
 
@@ -1053,7 +1053,7 @@ void
 EbuildID::load_upstream_documentation(const std::string & r, const std::string & h, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->upstream_documentation.reset(new ESimpleURIKey(_imp->environment, shared_from_this(), r, h, v, mkt_normal));
+    _imp->upstream_documentation = std::make_shared<ESimpleURIKey>(_imp->environment, shared_from_this(), r, h, v, mkt_normal);
     add_metadata_key(_imp->upstream_documentation);
 }
 
@@ -1061,7 +1061,7 @@ void
 EbuildID::load_upstream_release_notes(const std::string & r, const std::string & h, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->upstream_release_notes.reset(new ESimpleURIKey(_imp->environment, shared_from_this(), r, h, v, mkt_normal));
+    _imp->upstream_release_notes = std::make_shared<ESimpleURIKey>(_imp->environment, shared_from_this(), r, h, v, mkt_normal);
     add_metadata_key(_imp->upstream_release_notes);
 }
 
@@ -1069,7 +1069,7 @@ void
 EbuildID::load_bugs_to(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->bugs_to.reset(new EPlainTextSpecKey(_imp->environment, shared_from_this(), m, v, mkt_normal));
+    _imp->bugs_to = std::make_shared<EPlainTextSpecKey>(_imp->environment, shared_from_this(), m, v, mkt_normal);
     add_metadata_key(_imp->bugs_to);
 }
 
@@ -1077,7 +1077,7 @@ void
 EbuildID::load_remote_ids(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->remote_ids.reset(new EPlainTextSpecKey(_imp->environment, shared_from_this(), m, v, mkt_internal));
+    _imp->remote_ids = std::make_shared<EPlainTextSpecKey>(_imp->environment, shared_from_this(), m, v, mkt_internal);
     add_metadata_key(_imp->remote_ids);
 }
 
@@ -1085,7 +1085,7 @@ void
 EbuildID::load_slot(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->slot.reset(new ESlotKey(m, v, mkt_internal));
+    _imp->slot = std::make_shared<ESlotKey>(m, v, mkt_internal);
     add_metadata_key(_imp->slot);
 }
 

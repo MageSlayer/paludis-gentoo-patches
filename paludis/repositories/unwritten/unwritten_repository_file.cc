@@ -253,7 +253,7 @@ UnwrittenRepositoryFile::_load(const FSEntry & f)
                     (+simple_parser::any_of(" \t"))
                     ))
         {
-            slot.reset(new LiteralMetadataValueKey<SlotName>("SLOT", "Slot", mkt_internal, SlotName(token)));
+            slot = std::make_shared<LiteralMetadataValueKey<SlotName>>("SLOT", "Slot", mkt_internal, SlotName(token));
 
             if (line_parser.consume(
                         (+simple_parser::any_except(" \t") >> token)
@@ -287,7 +287,7 @@ UnwrittenRepositoryFile::_load(const FSEntry & f)
                         "Cannot parse body key = value line '" + line + " in '" + stringify(f) + "'");
 
             if (! entry)
-                entry.reset(new UnwrittenRepositoryFileEntry(make_named_values<UnwrittenRepositoryFileEntry>(
+                entry = std::make_shared<UnwrittenRepositoryFileEntry>(make_named_values<UnwrittenRepositoryFileEntry>(
                                 n::added_by() = std::shared_ptr<const MetadataValueKey<std::string> >(),
                                 n::bug_ids() = std::shared_ptr<const MetadataCollectionKey<Sequence<std::string> > >(),
                                 n::comment() = std::shared_ptr<const MetadataValueKey<std::string> >(),
@@ -297,10 +297,10 @@ UnwrittenRepositoryFile::_load(const FSEntry & f)
                                 n::remote_ids() = std::shared_ptr<const MetadataCollectionKey<Sequence<std::string> > >(),
                                 n::slot() = slot,
                                 n::version() = version
-                                )));
+                                ));
 
             if (token == "description")
-                entry->description().reset(new LiteralMetadataValueKey<std::string>("description", "Description", mkt_significant, token2));
+                entry->description() = std::make_shared<LiteralMetadataValueKey<std::string>>("description", "Description", mkt_significant, token2);
             else if (token == "homepage")
             {
                 std::shared_ptr<AllDepSpec> all_spec(new AllDepSpec);
@@ -310,12 +310,12 @@ UnwrittenRepositoryFile::_load(const FSEntry & f)
                 for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
                         t != t_end ; ++t)
                     tree->root()->append(std::make_shared<SimpleURIDepSpec>(*t));
-                entry->homepage().reset(new UnwrittenHomepageKey("homepage", "Homepage", mkt_normal, tree));
+                entry->homepage() = std::make_shared<UnwrittenHomepageKey>("homepage", "Homepage", mkt_normal, tree);
             }
             else if (token == "comment")
-                entry->comment().reset(new LiteralMetadataValueKey<std::string>("comment", "Comment", mkt_normal, token2));
+                entry->comment() = std::make_shared<LiteralMetadataValueKey<std::string>>("comment", "Comment", mkt_normal, token2);
             else if (token == "added-by")
-                entry->added_by().reset(new LiteralMetadataValueKey<std::string>("added-by", "Added by", mkt_author, token2));
+                entry->added_by() = std::make_shared<LiteralMetadataValueKey<std::string>>("added-by", "Added by", mkt_author, token2);
             else if (token == "bug-ids")
             {
                 std::shared_ptr<Sequence<std::string> > seq(new Sequence<std::string>);
@@ -324,7 +324,7 @@ UnwrittenRepositoryFile::_load(const FSEntry & f)
                 for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
                         t != t_end ; ++t)
                     seq->push_back(*t);
-                entry->bug_ids().reset(new LiteralMetadataStringSequenceKey("bug-ids", "Bug IDs", mkt_normal, seq));
+                entry->bug_ids() = std::make_shared<LiteralMetadataStringSequenceKey>("bug-ids", "Bug IDs", mkt_normal, seq);
             }
             else if (token == "remote-ids")
             {
@@ -334,7 +334,7 @@ UnwrittenRepositoryFile::_load(const FSEntry & f)
                 for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
                         t != t_end ; ++t)
                     seq->push_back(*t);
-                entry->remote_ids().reset(new LiteralMetadataStringSequenceKey("remote-ids", "Remote IDs", mkt_internal, seq));
+                entry->remote_ids() = std::make_shared<LiteralMetadataStringSequenceKey>("remote-ids", "Remote IDs", mkt_internal, seq);
             }
             else
                 Log::get_instance()->message("unwritten_repository.file.unknown_key", ll_warning, lc_context)

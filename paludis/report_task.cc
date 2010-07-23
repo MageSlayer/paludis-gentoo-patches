@@ -223,7 +223,7 @@ ReportTask::execute()
                             {
                                 is_missing = false;
                                 if (! origins)
-                                    origins.reset(new PackageIDSequence);
+                                    origins = std::make_shared<PackageIDSequence>();
                                 origins->push_back(*installable->last());
                             }
                         }

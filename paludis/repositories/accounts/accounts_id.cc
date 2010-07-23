@@ -161,24 +161,24 @@ AccountsID::_need_file_keys() const
 
     if (_imp->is_user)
     {
-        _imp->username_key.reset(new LiteralMetadataValueKey<std::string>("username", "Username",
-                    mkt_significant, stringify(name().package())));
+        _imp->username_key = std::make_shared<LiteralMetadataValueKey<std::string>>("username", "Username",
+                    mkt_significant, stringify(name().package()));
 
         if (! k.get("gecos").empty())
-            _imp->gecos_key.reset(new LiteralMetadataValueKey<std::string>("gecos", "Description",
-                        mkt_significant, k.get("gecos")));
+            _imp->gecos_key = std::make_shared<LiteralMetadataValueKey<std::string>>("gecos", "Description",
+                        mkt_significant, k.get("gecos"));
 
         if (! k.get("preferred_uid").empty())
-            _imp->preferred_uid_key.reset(new LiteralMetadataValueKey<std::string>("preferred_uid", "Preferred UID",
-                        mkt_normal, k.get("preferred_uid")));
+            _imp->preferred_uid_key = std::make_shared<LiteralMetadataValueKey<std::string>>("preferred_uid", "Preferred UID",
+                        mkt_normal, k.get("preferred_uid"));
 
         if (! k.get("shell").empty())
-            _imp->shell_key.reset(new LiteralMetadataValueKey<std::string>("shell", "Shell",
-                        mkt_normal, k.get("shell")));
+            _imp->shell_key = std::make_shared<LiteralMetadataValueKey<std::string>>("shell", "Shell",
+                        mkt_normal, k.get("shell"));
 
         if (! k.get("home").empty())
-            _imp->home_key.reset(new LiteralMetadataValueKey<std::string>("home", "Home Directory",
-                        mkt_normal, k.get("home")));
+            _imp->home_key = std::make_shared<LiteralMetadataValueKey<std::string>>("home", "Home Directory",
+                        mkt_normal, k.get("home"));
 
         std::shared_ptr<Set<std::string> > all_groups_s(new Set<std::string>);
 
@@ -187,28 +187,28 @@ AccountsID::_need_file_keys() const
             std::shared_ptr<Set<std::string> > groups_s(new Set<std::string>);
             tokenise_whitespace(k.get("extra_groups"), groups_s->inserter());
             std::copy(groups_s->begin(), groups_s->end(), all_groups_s->inserter());
-            _imp->extra_groups_key.reset(new LiteralMetadataStringSetKey("extra_groups", "Extra Groups",
-                        mkt_normal, groups_s));
+            _imp->extra_groups_key = std::make_shared<LiteralMetadataStringSetKey>("extra_groups", "Extra Groups",
+                        mkt_normal, groups_s);
         }
 
         if (! k.get("primary_group").empty())
         {
-            _imp->primary_group_key.reset(new LiteralMetadataValueKey<std::string>("primary_group", "Default Group",
-                        mkt_normal, k.get("primary_group")));
+            _imp->primary_group_key = std::make_shared<LiteralMetadataValueKey<std::string>>("primary_group", "Default Group",
+                        mkt_normal, k.get("primary_group"));
             all_groups_s->insert(k.get("primary_group"));
         }
 
         if (! all_groups_s->empty())
-            _imp->dependencies_key.reset(new AccountsDepKey(_imp->env, all_groups_s));
+            _imp->dependencies_key = std::make_shared<AccountsDepKey>(_imp->env, all_groups_s);
     }
     else
     {
-        _imp->groupname_key.reset(new LiteralMetadataValueKey<std::string>("groupname", "Groupname",
-                    mkt_significant, stringify(name().package())));
+        _imp->groupname_key = std::make_shared<LiteralMetadataValueKey<std::string>>("groupname", "Groupname",
+                    mkt_significant, stringify(name().package()));
 
         if (! k.get("preferred_gid").empty())
-            _imp->preferred_gid_key.reset(new LiteralMetadataValueKey<std::string>("preferred_gid", "Preferred GID",
-                        mkt_normal, k.get("preferred_gid")));
+            _imp->preferred_gid_key = std::make_shared<LiteralMetadataValueKey<std::string>>("preferred_gid", "Preferred GID",
+                        mkt_normal, k.get("preferred_gid"));
     }
 
     _imp->has_file_keys = true;

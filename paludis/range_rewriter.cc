@@ -280,7 +280,7 @@ RangeRewriter::visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & 
     }
     else
     {
-        _imp->spec_data.reset(new RangeRewrittenPackageDepSpecData(a));
+        _imp->spec_data = std::make_shared<RangeRewrittenPackageDepSpecData>(a);
     }
 }
 

@@ -198,11 +198,11 @@ namespace
                 const std::shared_ptr<const PackageID> & id)
         {
             if (cmdline.a_managed_output.specified())
-                manager_if_ipc.reset(new OutputManagerFromIPC(e, id, get_output_exclusivity(cmdline),
-                            ClientOutputFeatures() + cof_summary_at_end));
+                manager_if_ipc = std::make_shared<OutputManagerFromIPC>(e, id, get_output_exclusivity(cmdline),
+                            ClientOutputFeatures() + cof_summary_at_end);
             else
-                manager_if_env.reset(new OutputManagerFromEnvironment(e, id, get_output_exclusivity(cmdline),
-                            ClientOutputFeatures() + cof_summary_at_end));
+                manager_if_env = std::make_shared<OutputManagerFromEnvironment>(e, id, get_output_exclusivity(cmdline),
+                            ClientOutputFeatures() + cof_summary_at_end);
         }
 
         const std::shared_ptr<OutputManager> operator() (const Action & a)

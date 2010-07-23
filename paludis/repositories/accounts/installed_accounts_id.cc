@@ -161,7 +161,7 @@ InstalledAccountsID::need_keys_added() const
             /* first person who gets annoyed by this not existing gets to implement it. */
         }
 
-        _imp->dependencies_key.reset(new AccountsDepKey(_imp->env, groups));
+        _imp->dependencies_key = std::make_shared<AccountsDepKey>(_imp->env, groups);
         add_metadata_key(_imp->dependencies_key);
     }
 }

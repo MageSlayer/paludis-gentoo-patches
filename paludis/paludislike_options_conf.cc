@@ -140,7 +140,7 @@ namespace
         {
             Log::get_instance()->message("paludislike_options_conf.bad_set", ll_warning, lc_context)
                 << "Set '" << name << "' in '" << from << "' does not exist";
-            result.reset(new SetSpecTree(std::make_shared<AllDepSpec>()));
+            result = std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>());
         }
 
         return result;

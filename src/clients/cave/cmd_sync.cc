@@ -150,7 +150,7 @@ namespace
             {
                 cout << format_general_spad(f::sync_repo_starting(), stringify(name), executor->pending(),
                         executor->active(), executor->done());
-                output_manager.reset(new StandardOutputManager);
+                output_manager = std::make_shared<StandardOutputManager>();
 
                 if (0 != env->perform_hook(Hook("sync_pre")
                             ("TARGET", stringify(name))

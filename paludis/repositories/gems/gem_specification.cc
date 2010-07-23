@@ -206,20 +206,20 @@ namespace
         {
             std::string summary(required_text_only_key(n, "summary"));
             if (! summary.empty())
-                _imp->summary_key.reset(new LiteralMetadataValueKey<std::string> ("summary", "Summary", mkt_significant, summary));
+                _imp->summary_key = std::make_shared<LiteralMetadataValueKey<std::string> >("summary", "Summary", mkt_significant, summary);
 
             std::string description(optional_text_only_key(n, "description"));
             if (! description.empty())
-                _imp->description_key.reset(new LiteralMetadataValueKey<std::string> ("description", "Description", mkt_normal, description));
+                _imp->description_key = std::make_shared<LiteralMetadataValueKey<std::string> >("description", "Description", mkt_normal, description);
 
             std::string authors(optional_text_sequence_key(n, "authors"));
             if (! authors.empty())
-                _imp->authors_key.reset(new LiteralMetadataValueKey<std::string> ("authors", "Authors", mkt_normal, authors));
+                _imp->authors_key = std::make_shared<LiteralMetadataValueKey<std::string> >("authors", "Authors", mkt_normal, authors);
 
             std::string rubyforge_project(optional_text_sequence_key(n, "rubyforge_project"));
             if (! rubyforge_project.empty())
-                _imp->rubyforge_project_key.reset(new LiteralMetadataValueKey<std::string> ("rubyforge_project", "Rubyforge Project",
-                            mkt_normal, rubyforge_project));
+                _imp->rubyforge_project_key = std::make_shared<LiteralMetadataValueKey<std::string> >("rubyforge_project", "Rubyforge Project",
+                            mkt_normal, rubyforge_project);
 
             _imp->date = required_text_only_key(n, "date");
             _imp->platform = required_text_only_key(n, "platform");
@@ -272,10 +272,10 @@ GemSpecification::GemSpecification(const Environment * const e, const std::share
 {
     _imp->name_part = stringify(q);
     _imp->version = stringify(v);
-    _imp->load_from_file.reset(new FSEntry(f));
-    _imp->fs_location_key.reset(new LiteralMetadataValueKey<FSEntry> ("GEM", "Gem Location", mkt_internal, f));
+    _imp->load_from_file = std::make_shared<FSEntry>(f);
+    _imp->fs_location_key = std::make_shared<LiteralMetadataValueKey<FSEntry> >("GEM", "Gem Location", mkt_internal, f);
     add_metadata_key(_imp->fs_location_key);
-    _imp->slot_key.reset(new LiteralMetadataValueKey<SlotName>("SLOT", "Slot", mkt_internal, SlotName(stringify(v))));
+    _imp->slot_key = std::make_shared<LiteralMetadataValueKey<SlotName>>("SLOT", "Slot", mkt_internal, SlotName(stringify(v)));
     add_metadata_key(_imp->slot_key);
 }
 

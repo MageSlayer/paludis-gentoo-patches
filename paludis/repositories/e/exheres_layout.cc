@@ -325,7 +325,7 @@ ExheresLayout::need_category_names_collection() const
 
     need_category_names();
 
-    _imp->category_names_collection.reset(new CategoryNamePartSet);
+    _imp->category_names_collection = std::make_shared<CategoryNamePartSet>();
     std::transform(_imp->category_names.begin(), _imp->category_names.end(),
             _imp->category_names_collection->inserter(),
             std::mem_fn(&std::pair<const CategoryNamePart, bool>::first));

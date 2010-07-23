@@ -193,7 +193,7 @@ InstallTask::~InstallTask()
 void
 InstallTask::clear()
 {
-    _imp->targets.reset(new SetSpecTree(std::make_shared<AllDepSpec>()));
+    _imp->targets = std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>());
     _imp->had_set_targets = false;
     _imp->had_package_targets = false;
     _imp->dep_list.clear();
@@ -753,7 +753,7 @@ InstallTask::_pretend()
                 {
                     pretend_failed = true;
                     success = false;
-                    dep->handled().reset(new DepListEntryHandledFailed);
+                    dep->handled() = std::make_shared<DepListEntryHandledFailed>();
                 }
             }
 
@@ -887,21 +887,21 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
         SupportsActionTest<FetchAction> test_fetch;
         if (dep->package_id()->supports_action(test_fetch))
         {
-            output_manager_holder.reset(new OutputManagerFromEnvironment(_imp->env, dep->package_id(), oe_exclusive,
-                        ClientOutputFeatures()));
+            output_manager_holder = std::make_shared<OutputManagerFromEnvironment>(_imp->env, dep->package_id(), oe_exclusive,
+                        ClientOutputFeatures());
             FetchActionOptions fetch_options(make_fetch_action_options(*dep, *output_manager_holder));
             FetchAction fetch_action(fetch_options);
             dep->package_id()->perform_action(fetch_action);
             if (output_manager_holder->output_manager_if_constructed())
                 output_manager_holder->output_manager_if_constructed()->succeeded();
             output_manager_holder.reset();
-            dep->handled().reset(new DepListEntryHandledFetchSuccess);
+            dep->handled() = std::make_shared<DepListEntryHandledFetchSuccess>();
         }
 
         if (! _imp->fetch_only)
         {
-            output_manager_holder.reset(new OutputManagerFromEnvironment(_imp->env, dep->package_id(),
-                        oe_exclusive, ClientOutputFeatures()));
+            output_manager_holder = std::make_shared<OutputManagerFromEnvironment>(_imp->env, dep->package_id(),
+                        oe_exclusive, ClientOutputFeatures());
 
             std::shared_ptr<PackageIDSequence> replacing;
 
@@ -913,7 +913,7 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
                         filter::SupportsAction<UninstallAction>() |
                         filter::SameSlot(dep->package_id()))];
             else
-                replacing.reset(new PackageIDSequence);
+                replacing = std::make_shared<PackageIDSequence>();
 
             InstallActionOptions install_options(make_named_values<InstallActionOptions>(
                         n::destination() = dep->destination(),
@@ -987,7 +987,7 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
             r_end(_imp->env->package_database()->end_repositories()) ; r != r_end ; ++r)
         (*r)->invalidate();
 
-    dep->handled().reset(new DepListEntryHandledSuccess);
+    dep->handled() = std::make_shared<DepListEntryHandledSuccess>();
 
     /* if we installed paludis and a re-exec is available, use it. */
     if (_imp->env->is_paludis_package(dep->package_id()->name()))
@@ -1069,7 +1069,7 @@ InstallTask::_main_actions_all(const int y, const DepList::Iterator dep_last_pac
                         std::shared_ptr<const PackageDepSpec> d(_unsatisfied(*dep));
                         if (! d)
                             break;
-                        dep->handled().reset(new DepListEntryHandledSkippedUnsatisfied(*d));
+                        dep->handled() = std::make_shared<DepListEntryHandledSkippedUnsatisfied>(*d);
                         on_skip_unsatisfied(*dep, *d, x, y, s, f);
                         ++s;
                         continue;
@@ -1080,7 +1080,7 @@ InstallTask::_main_actions_all(const int y, const DepList::Iterator dep_last_pac
                         std::shared_ptr<const PackageID> d(_dependent(*dep));
                         if (! d)
                             break;
-                        dep->handled().reset(new DepListEntryHandledSkippedDependent(d));
+                        dep->handled() = std::make_shared<DepListEntryHandledSkippedDependent>(d);
                         on_skip_dependent(*dep, d, x, y, s, f);
                         ++s;
                         continue;
@@ -1101,7 +1101,7 @@ InstallTask::_main_actions_all(const int y, const DepList::Iterator dep_last_pac
         }
         catch (const ActionFailedError & e)
         {
-            dep->handled().reset(new DepListEntryHandledFailed);
+            dep->handled() = std::make_shared<DepListEntryHandledFailed>();
             if (output_manager_holder && output_manager_holder->output_manager_if_constructed())
                 on_non_fetch_action_error(output_manager_holder->output_manager_if_constructed(), e);
             else
@@ -1341,7 +1341,7 @@ InstallTask::set_preserve_world(const bool value)
 void
 InstallTask::set_add_to_world_spec(const std::string & value)
 {
-    _imp->add_to_world_spec.reset(new std::string(value));
+    _imp->add_to_world_spec = std::make_shared<std::string>(value);
 }
 
 InstallTask::TargetsConstIterator

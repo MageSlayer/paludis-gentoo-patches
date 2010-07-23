@@ -141,7 +141,7 @@ namespace test_cases
                         std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo1);
 
-            keys.reset(new Map<std::string, std::string>);
+            keys = std::make_shared<Map<std::string, std::string>>();
             keys->insert("format", "exndbam");
             keys->insert("location", stringify(FSEntry::cwd() / "exndbam_repository_TEST_dir" / "postinsttest"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "exndbam_repository_TEST_dir" / "build"));

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -58,7 +58,7 @@ paludis::paludis_environment::make_bashable_conf(const FSEntry & f, const LineCo
                 .with_stderr_prefix(f.basename() + "> ")
                 .with_captured_stdout_stream(&s));
         int exit_status(run_command(cmd));
-        result.reset(new LineConfigFile(s, o));
+        result = std::make_shared<LineConfigFile>(s, o);
 
         if (exit_status != 0)
         {
@@ -68,7 +68,7 @@ paludis::paludis_environment::make_bashable_conf(const FSEntry & f, const LineCo
         }
     }
     else
-        result.reset(new LineConfigFile(f, o));
+        result = std::make_shared<LineConfigFile>(f, o);
 
     return result;
 }
@@ -94,8 +94,7 @@ paludis::paludis_environment::make_bashable_kv_conf(const FSEntry & f,
                 end(predefined_variables->end()); i != end; ++i)
             cmd.with_setenv(i->first, i->second);
         int exit_status(run_command(cmd));
-        result.reset(new KeyValueConfigFile(s, o, &KeyValueConfigFile::no_defaults,
-                    &KeyValueConfigFile::no_transformation));
+        result = std::make_shared<KeyValueConfigFile>(s, o, &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
 
         if (exit_status != 0)
         {
@@ -106,13 +105,9 @@ paludis::paludis_environment::make_bashable_kv_conf(const FSEntry & f,
     }
     else
     {
-        result.reset(new KeyValueConfigFile(f, o,
-                    std::bind(
-                        &defined_vars_to_kv_func,
-                        predefined_variables,
-                        std::placeholders::_1,
-                        std::placeholders::_2),
-                    &KeyValueConfigFile::no_transformation));
+        result = std::make_shared<KeyValueConfigFile>(f, o,
+                std::bind(&defined_vars_to_kv_func, predefined_variables, std::placeholders::_1, std::placeholders::_2),
+                &KeyValueConfigFile::no_transformation);
     }
 
     return result;

@@ -121,7 +121,7 @@ namespace
         CRANPackageDepSpecData & version_requirement(const VersionRequirement & v)
         {
             if (! version_requirements_v)
-                version_requirements_v.reset(new VersionRequirements);
+                version_requirements_v = std::make_shared<VersionRequirements>();
             version_requirements_v->push_back(v);
             return *this;
         }
@@ -130,9 +130,9 @@ namespace
         {
             unnormalised_package_name = s;
             if ("R" == s)
-                package_v.reset(new QualifiedPackageName("dev-lang/R"));
+                package_v = std::make_shared<QualifiedPackageName>("dev-lang/R");
             else
-                package_v.reset(new QualifiedPackageName(CategoryNamePart("cran") + PackageNamePart(cran_name_to_internal(s))));
+                package_v = std::make_shared<QualifiedPackageName>(CategoryNamePart("cran") + PackageNamePart(cran_name_to_internal(s)));
 
             return *this;
         }

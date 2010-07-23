@@ -1350,7 +1350,7 @@ namespace test_cases
         void set_options(DepListOptions & opts)
         {
             using namespace std::placeholders;
-            opts.override_masks().reset(new DepListOverrideMasksFunctions);
+            opts.override_masks() = std::make_shared<DepListOverrideMasksFunctions>();
             opts.override_masks()->push_back(std::bind(&override_tilde_keywords, &env, _1, _2));
         }
 
@@ -1422,7 +1422,7 @@ namespace test_cases
         void set_options(DepListOptions & opts)
         {
             using namespace std::placeholders;
-            opts.override_masks().reset(new DepListOverrideMasksFunctions);
+            opts.override_masks() = std::make_shared<DepListOverrideMasksFunctions>();
             opts.override_masks()->push_back(std::bind(&override_tilde_keywords, &env, _1, _2));
         }
 

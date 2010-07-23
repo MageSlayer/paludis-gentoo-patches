@@ -161,7 +161,7 @@ UnpackagedChoicesKey::value() const
     Lock lock(_imp->mutex);
     if (! _imp->value)
     {
-        _imp->value.reset(new Choices);
+        _imp->value = std::make_shared<Choices>();
         std::shared_ptr<Choice> build_options(new Choice(make_named_values<ChoiceParams>(
                         n::consider_added_or_changed() = false,
                         n::contains_every_value() = false,

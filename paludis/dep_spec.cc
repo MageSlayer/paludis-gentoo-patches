@@ -1109,7 +1109,7 @@ PartiallyMadePackageDepSpec::~PartiallyMadePackageDepSpec()
 PartiallyMadePackageDepSpec &
 PartiallyMadePackageDepSpec::package(const QualifiedPackageName & name)
 {
-    _imp->data->package.reset(new QualifiedPackageName(name));
+    _imp->data->package = std::make_shared<QualifiedPackageName>(name);
     return *this;
 }
 
@@ -1123,49 +1123,49 @@ PartiallyMadePackageDepSpec::slot_requirement(const std::shared_ptr<const SlotRe
 PartiallyMadePackageDepSpec &
 PartiallyMadePackageDepSpec::in_repository(const RepositoryName & s)
 {
-    _imp->data->in_repository.reset(new RepositoryName(s));
+    _imp->data->in_repository = std::make_shared<RepositoryName>(s);
     return *this;
 }
 
 PartiallyMadePackageDepSpec &
 PartiallyMadePackageDepSpec::from_repository(const RepositoryName & s)
 {
-    _imp->data->from_repository.reset(new RepositoryName(s));
+    _imp->data->from_repository = std::make_shared<RepositoryName>(s);
     return *this;
 }
 
 PartiallyMadePackageDepSpec &
 PartiallyMadePackageDepSpec::installable_to_repository(const InstallableToRepository & s)
 {
-    _imp->data->installable_to_repository.reset(new InstallableToRepository(s));
+    _imp->data->installable_to_repository = std::make_shared<InstallableToRepository>(s);
     return *this;
 }
 
 PartiallyMadePackageDepSpec &
 PartiallyMadePackageDepSpec::installed_at_path(const FSEntry & s)
 {
-    _imp->data->installed_at_path.reset(new FSEntry(s));
+    _imp->data->installed_at_path = std::make_shared<FSEntry>(s);
     return *this;
 }
 
 PartiallyMadePackageDepSpec &
 PartiallyMadePackageDepSpec::installable_to_path(const InstallableToPath & s)
 {
-    _imp->data->installable_to_path.reset(new InstallableToPath(s));
+    _imp->data->installable_to_path = std::make_shared<InstallableToPath>(s);
     return *this;
 }
 
 PartiallyMadePackageDepSpec &
 PartiallyMadePackageDepSpec::package_name_part(const PackageNamePart & part)
 {
-    _imp->data->package_name_part.reset(new PackageNamePart(part));
+    _imp->data->package_name_part = std::make_shared<PackageNamePart>(part);
     return *this;
 }
 
 PartiallyMadePackageDepSpec &
 PartiallyMadePackageDepSpec::category_name_part(const CategoryNamePart & part)
 {
-    _imp->data->category_name_part.reset(new CategoryNamePart(part));
+    _imp->data->category_name_part = std::make_shared<CategoryNamePart>(part);
     return *this;
 }
 
@@ -1173,7 +1173,7 @@ PartiallyMadePackageDepSpec &
 PartiallyMadePackageDepSpec::version_requirement(const VersionRequirement & req)
 {
     if (! _imp->data->version_requirements)
-        _imp->data->version_requirements.reset(new VersionRequirements);
+        _imp->data->version_requirements = std::make_shared<VersionRequirements>();
     _imp->data->version_requirements->push_back(req);
     return *this;
 }
@@ -1189,7 +1189,7 @@ PartiallyMadePackageDepSpec &
 PartiallyMadePackageDepSpec::additional_requirement(const std::shared_ptr<const AdditionalPackageDepSpecRequirement> & req)
 {
     if (! _imp->data->additional_requirements)
-        _imp->data->additional_requirements.reset(new AdditionalPackageDepSpecRequirements);
+        _imp->data->additional_requirements = std::make_shared<AdditionalPackageDepSpecRequirements>();
     _imp->data->additional_requirements->push_back(req);
     return *this;
 }

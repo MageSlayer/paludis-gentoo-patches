@@ -121,7 +121,7 @@ namespace test_cases
                         std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            keys.reset(new Map<std::string, std::string>);
+            keys = std::make_shared<Map<std::string, std::string>>();
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
             keys->insert("provides_cache", "/var/empty");

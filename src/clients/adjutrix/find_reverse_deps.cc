@@ -260,8 +260,8 @@ int do_find_reverse_deps(NoConfigEnvironment & env)
     std::shared_ptr<PackageDepSpec> spec;
     try
     {
-        spec.reset(new PackageDepSpec(parse_user_package_dep_spec(*CommandLine::get_instance()->begin_parameters(),
-                        &env, UserPackageDepSpecOptions())));
+        spec = std::make_shared<PackageDepSpec>(parse_user_package_dep_spec(*CommandLine::get_instance()->begin_parameters(),
+                        &env, UserPackageDepSpecOptions()));
     }
     catch (const AmbiguousPackageNameError & e)
     {

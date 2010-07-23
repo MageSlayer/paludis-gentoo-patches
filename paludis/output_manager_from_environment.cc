@@ -88,7 +88,7 @@ OutputManagerFromEnvironment::construct_standard_if_unconstructed()
     {
         Log::get_instance()->message("output_manager_from_environment.constructed_standard", ll_warning, lc_context)
             << "No output manager available, creating a standard output manager. This is probably a bug.";
-        _imp->result.reset(new StandardOutputManager);
+        _imp->result = std::make_shared<StandardOutputManager>();
     }
 }
 

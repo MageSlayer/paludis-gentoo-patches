@@ -247,11 +247,11 @@ namespace paludis
 
         if ((FSEntry(config_dir) / "general.conf").exists())
         {
-            kv.reset(new KeyValueConfigFile(
-                FSEntry(config_dir) / "general.conf",
-                KeyValueConfigFileOptions(),
-                def_predefined,
-                &KeyValueConfigFile::no_transformation));
+            kv = std::make_shared<KeyValueConfigFile>(
+                    FSEntry(config_dir) / "general.conf",
+                    KeyValueConfigFileOptions(),
+                    def_predefined,
+                    &KeyValueConfigFile::no_transformation);
         }
         else if ((FSEntry(config_dir) / "general.bash").exists())
         {
@@ -262,11 +262,11 @@ namespace paludis
                     .with_stderr_prefix("general.bash> ")
                     .with_captured_stdout_stream(&s));
             int exit_status(run_command(cmd));
-            kv.reset(new KeyValueConfigFile(
+            kv = std::make_shared<KeyValueConfigFile>(
                 s,
                 KeyValueConfigFileOptions(),
                 def_predefined,
-                &KeyValueConfigFile::no_transformation));
+                &KeyValueConfigFile::no_transformation);
 
             if (exit_status != 0)
             {
@@ -282,11 +282,11 @@ namespace paludis
                 << "The file '" << (FSEntry(config_dir) / "environment.conf") << "' should be renamed to '"
                 << (FSEntry(config_dir) / "general.conf") << "'.";
 
-            kv.reset(new KeyValueConfigFile(
+            kv = std::make_shared<KeyValueConfigFile>(
                 FSEntry(config_dir) / "environment.conf",
                 KeyValueConfigFileOptions(),
                 def_predefined,
-                &KeyValueConfigFile::no_transformation));
+                &KeyValueConfigFile::no_transformation);
         }
         else if ((FSEntry(config_dir) / "general.bash").exists())
         {
@@ -301,11 +301,11 @@ namespace paludis
                     .with_stderr_prefix("general.bash> ")
                     .with_captured_stdout_stream(&s));
             int exit_status(run_command(cmd));
-            kv.reset(new KeyValueConfigFile(
+            kv = std::make_shared<KeyValueConfigFile>(
                 s,
                 KeyValueConfigFileOptions(),
                 def_predefined,
-                &KeyValueConfigFile::no_transformation));
+                &KeyValueConfigFile::no_transformation);
 
             if (exit_status != 0)
             {
@@ -320,11 +320,11 @@ namespace paludis
             Log::get_instance()->message("paludis_environment.no_general_conf", ll_debug, lc_context)
                 << "No general.conf or general.bash in '" << config_dir << "'";
             std::stringstream str;
-            kv.reset(new KeyValueConfigFile(
+            kv = std::make_shared<KeyValueConfigFile>(
                 str,
                 KeyValueConfigFileOptions(),
                 def_predefined,
-                &KeyValueConfigFile::no_transformation));
+                &KeyValueConfigFile::no_transformation);
         }
 
         if (! kv->get("PALUDIS_NO_WRITE_CACHE_CLEAN").empty())
@@ -353,14 +353,14 @@ namespace paludis
         distribution = kv->get("distribution");
 
         if (! kv->get("world").empty())
-            world_file.reset(new FSEntry(kv->get("world")));
+            world_file = std::make_shared<FSEntry>(kv->get("world"));
 
         if (! world_file)
             Log::get_instance()->message("paludis_environment.world.no_world", ll_warning, lc_context)
                 << "No world file specified. You should specify 'world = /path/to/world/file' in "
                 << (FSEntry(config_dir) / "general.conf")
                 << ". Any attempted updates to world will not be saved.";
-        world.reset(new World(env, world_file));
+        world = std::make_shared<World>(env, world_file);
 
         has_general_conf = true;
     }
@@ -440,20 +440,20 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
 
     if ((local_config_dir / "specpath.conf").exists())
     {
-        specpath.reset(new KeyValueConfigFile(
+        specpath = std::make_shared<KeyValueConfigFile>(
             local_config_dir / "specpath.conf",
             KeyValueConfigFileOptions(),
             def_predefined,
-            &KeyValueConfigFile::no_transformation));
+            &KeyValueConfigFile::no_transformation);
     }
     else if (_imp->commandline_environment->end() != _imp->commandline_environment->find("root"))
     {
         std::istringstream strm;
-        specpath.reset(new KeyValueConfigFile(
+        specpath = std::make_shared<KeyValueConfigFile>(
             strm,
             KeyValueConfigFileOptions(),
             def_predefined,
-            &KeyValueConfigFile::no_transformation));
+            &KeyValueConfigFile::no_transformation);
     }
 
     if (specpath)
@@ -491,8 +491,8 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
                 << "Cannot access configuration directory '" << local_config_dir
                 << "' using userpriv, so userpriv will be disabled. Generally Paludis "
                 "configuration directories and files should be world readable.";
-            _imp->reduced_uid.reset(new uid_t(getuid()));
-            _imp->reduced_gid.reset(new gid_t(getgid()));
+            _imp->reduced_uid = std::make_shared<uid_t>(getuid());
+            _imp->reduced_gid = std::make_shared<gid_t>(getgid());
         }
 
         if (dist->mandatory_userpriv() && ((0 == *_imp->reduced_uid || 0 == *_imp->reduced_gid)))
@@ -859,9 +859,9 @@ PaludisConfig::repo_func_from_file(const FSEntry & repo_file)
                 .with_stderr_prefix(repo_file.basename() + "> ")
                 .with_captured_stdout_stream(&s));
         int exit_status(run_command(cmd));
-        kv.reset(new KeyValueConfigFile(s, KeyValueConfigFileOptions(),
+        kv = std::make_shared<KeyValueConfigFile>(s, KeyValueConfigFileOptions(),
                     std::bind(&to_kv_func, _imp->predefined_conf_vars_func, std::placeholders::_1, std::placeholders::_2),
-                    &KeyValueConfigFile::no_transformation));
+                    &KeyValueConfigFile::no_transformation);
 
         if (exit_status != 0)
         {
@@ -871,9 +871,9 @@ PaludisConfig::repo_func_from_file(const FSEntry & repo_file)
         }
     }
     else
-        kv.reset(new KeyValueConfigFile(repo_file, KeyValueConfigFileOptions(),
-                    std::bind(&to_kv_func, _imp->predefined_conf_vars_func, std::placeholders::_1, std::placeholders::_2),
-                    &KeyValueConfigFile::no_transformation));
+        kv = std::make_shared<KeyValueConfigFile>(repo_file, KeyValueConfigFileOptions(),
+                std::bind(&to_kv_func, _imp->predefined_conf_vars_func, std::placeholders::_1, std::placeholders::_2),
+                &KeyValueConfigFile::no_transformation);
 
     std::function<std::string (const std::string &)> repo_func(
             std::bind(&from_kv, kv, std::placeholders::_1));
@@ -925,7 +925,7 @@ PaludisConfig::reduced_uid() const
         Context context("When determining reduced UID:");
 
         if (0 != getuid())
-            _imp->reduced_uid.reset(new uid_t(getuid()));
+            _imp->reduced_uid = std::make_shared<uid_t>(getuid());
         else
         {
             struct passwd * p(getpwnam(reduced_username().c_str()));
@@ -933,10 +933,10 @@ PaludisConfig::reduced_uid() const
             {
                 Log::get_instance()->message("paludis_environment.reduced_uid.unknown", ll_warning, lc_no_context)
                     << "Couldn't determine uid for user '" << reduced_username() << "'";
-                _imp->reduced_uid.reset(new uid_t(getuid()));
+                _imp->reduced_uid = std::make_shared<uid_t>(getuid());
             }
             else
-                _imp->reduced_uid.reset(new uid_t(p->pw_uid));
+                _imp->reduced_uid = std::make_shared<uid_t>(p->pw_uid);
         }
 
         Log::get_instance()->message("paludis_environment.reduced_uid.value", ll_debug, lc_context)
@@ -954,7 +954,7 @@ PaludisConfig::reduced_gid() const
     if (! _imp->reduced_gid)
     {
         if (0 != getuid())
-            _imp->reduced_gid.reset(new gid_t(getgid()));
+            _imp->reduced_gid = std::make_shared<gid_t>(getgid());
         else
         {
             struct passwd * p(getpwnam(reduced_username().c_str()));
@@ -962,10 +962,10 @@ PaludisConfig::reduced_gid() const
             {
                 Log::get_instance()->message("paludis_environment.reduced_gid.unknown", ll_warning, lc_no_context)
                     << "Couldn't determine gid for user '" << reduced_username() << "'";
-                _imp->reduced_gid.reset(new gid_t(getgid()));
+                _imp->reduced_gid = std::make_shared<gid_t>(getgid());
             }
             else
-                _imp->reduced_gid.reset(new gid_t(p->pw_gid));
+                _imp->reduced_gid = std::make_shared<gid_t>(p->pw_gid);
         }
     }
 

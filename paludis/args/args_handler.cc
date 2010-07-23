@@ -443,7 +443,7 @@ ArgsSection *
 ArgsHandler::main_options_section()
 {
     if (! _imp->main_options_section)
-        _imp->main_options_section.reset(new ArgsSection(this, "Options"));
+        _imp->main_options_section = std::make_shared<ArgsSection>(this, "Options");
     return _imp->main_options_section.get();
 }
 

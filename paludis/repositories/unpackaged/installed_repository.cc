@@ -128,8 +128,8 @@ InstalledUnpackagedRepository::package_ids(const QualifiedPackageName & q) const
     {
         Lock l(*(*e).mutex());
         if (! (*e).package_id())
-            (*e).package_id().reset(new InstalledUnpackagedID(_imp->params.environment(), (*e).name(), (*e).version(),
-                        (*e).slot(), name(), (*e).fs_location(), (*e).magic(), installed_root_key()->value(), &_imp->ndbam));
+            (*e).package_id() = std::make_shared<InstalledUnpackagedID>(_imp->params.environment(), (*e).name(), (*e).version(),
+                        (*e).slot(), name(), (*e).fs_location(), (*e).magic(), installed_root_key()->value(), &_imp->ndbam);
         result->push_back((*e).package_id());
     }
 

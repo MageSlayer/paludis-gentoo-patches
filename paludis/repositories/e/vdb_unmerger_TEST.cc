@@ -121,7 +121,7 @@ namespace
                 repo = VDBRepository::repository_factory_create(&env, std::bind(from_keys, keys, std::placeholders::_1));
                 env.package_database()->add_repository(0, repo);
 
-                unmerger.reset(new VDBUnmergerNoDisplay(make_named_values<VDBUnmergerOptions>(
+                unmerger = std::make_shared<VDBUnmergerNoDisplay>(make_named_values<VDBUnmergerOptions>(
                                 n::config_protect() = "/protected_file /protected_dir",
                                 n::config_protect_mask() = "/protected_dir/unprotected_file /protected_dir/unprotected_dir",
                                 n::environment() = &env,
@@ -131,7 +131,7 @@ namespace
                                             parse_user_package_dep_spec("cat/" + fix(what), &env, UserPackageDepSpecOptions()),
                                             MatchPackageOptions()))]->begin(),
                                 n::root() = root_dir
-                                )));
+                                ));
 
                 main_run();
             }

@@ -301,10 +301,10 @@ ConsoleInstallTask::on_build_deplist_pre()
     output_activity_start_message("Building dependency list: ");
     output_xterm_title("Building dependency list");
 
-    _callback_displayer.reset(new CallbackDisplayer(output_stream()));
-    _notifier_callback.reset(new NotifierCallbackID(environment()->add_notifier_callback(
+    _callback_displayer = std::make_shared<CallbackDisplayer>(output_stream());
+    _notifier_callback = std::make_shared<NotifierCallbackID>(environment()->add_notifier_callback(
                     std::bind(std::mem_fn(&ConsoleInstallTask::_notifier_callback_fn),
-                        this, std::placeholders::_1))));
+                        this, std::placeholders::_1)));
 }
 
 void
@@ -507,7 +507,7 @@ ConsoleInstallTask::on_display_merge_list_entry(const DepListEntry & d)
 
     std::shared_ptr<RepositoryName> repo;
     if (d.destination())
-        repo.reset(new RepositoryName(d.destination()->name()));
+        repo = std::make_shared<RepositoryName>(d.destination()->name());
 
     std::shared_ptr<const PackageIDSequence> existing_repo((*environment())[selection::AllVersionsSorted(repo ?
                 generator::Matches(make_package_dep_spec(PartiallyMadePackageDepSpecOptions())

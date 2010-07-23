@@ -340,7 +340,7 @@ namespace test_cases
                         std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            keys.reset(new Map<std::string, std::string>);
+            keys = std::make_shared<Map<std::string, std::string>>();
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
             keys->insert("provides_cache", "/var/empty");
@@ -470,7 +470,7 @@ namespace test_cases
                         std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            keys.reset(new Map<std::string, std::string>);
+            keys = std::make_shared<Map<std::string, std::string>>();
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
             keys->insert("provides_cache", "/var/empty");
@@ -622,7 +622,7 @@ namespace test_cases
                         std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            keys.reset(new Map<std::string, std::string>);
+            keys = std::make_shared<Map<std::string, std::string>>();
             keys->insert("format", "vdb");
             keys->insert("names_cache", stringify(names_cache.dirname()));
             keys->insert("provides_cache", "/var/empty");
@@ -856,7 +856,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
             std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
-            keys.reset(new Map<std::string, std::string>);
+            keys = std::make_shared<Map<std::string, std::string>>();
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
             keys->insert("provides_cache", stringify(provides_cache));
@@ -985,7 +985,7 @@ namespace test_cases
                         std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo1);
 
-            keys.reset(new Map<std::string, std::string>);
+            keys = std::make_shared<Map<std::string, std::string>>();
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "providesincrtest_src2"));
@@ -1001,7 +1001,7 @@ namespace test_cases
                         std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(2, repo2);
 
-            keys.reset(new Map<std::string, std::string>);
+            keys = std::make_shared<Map<std::string, std::string>>();
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
             keys->insert("provides_cache", stringify(provides_cache));
@@ -1180,7 +1180,7 @@ namespace test_cases
                         std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo1);
 
-            keys.reset(new Map<std::string, std::string>);
+            keys = std::make_shared<Map<std::string, std::string>>();
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "reinstalltest_src2"));
@@ -1196,7 +1196,7 @@ namespace test_cases
                         std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(2, repo2);
 
-            keys.reset(new Map<std::string, std::string>);
+            keys = std::make_shared<Map<std::string, std::string>>();
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
             keys->insert("provides_cache", "/var/empty");
@@ -1311,7 +1311,7 @@ namespace test_cases
                         std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo1);
 
-            keys.reset(new Map<std::string, std::string>);
+            keys = std::make_shared<Map<std::string, std::string>>();
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
             keys->insert("provides_cache", "/var/empty");

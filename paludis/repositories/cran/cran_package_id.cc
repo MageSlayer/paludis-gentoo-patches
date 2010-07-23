@@ -120,8 +120,8 @@ CRANPackageID::CRANPackageID(const Environment * const env, const std::shared_pt
         return;
     }
 
-    _imp->fs_location_key.reset(new LiteralMetadataValueKey<FSEntry> ("DescriptionFileLocation", "Description File Location",
-                mkt_internal, f));
+    _imp->fs_location_key = std::make_shared<LiteralMetadataValueKey<FSEntry> >("DescriptionFileLocation", "Description File Location",
+                mkt_internal, f);
     add_metadata_key(_imp->fs_location_key);
 
     try
@@ -166,7 +166,7 @@ CRANPackageID::CRANPackageID(const Environment * const env, const std::shared_pt
         {
             /* License often isn't in the format the spec requires, so we can't parse it. */
             Context local_context("When handling License: key:");
-            _imp->license_key.reset(new LiteralMetadataValueKey<std::string>("License", "License", mkt_dependencies, file.get("License")));
+            _imp->license_key = std::make_shared<LiteralMetadataValueKey<std::string>>("License", "License", mkt_dependencies, file.get("License"));
             add_metadata_key(_imp->license_key);
         }
 
@@ -174,28 +174,28 @@ CRANPackageID::CRANPackageID(const Environment * const env, const std::shared_pt
         {
             /* URL is also in stupid formats */
             Context local_context("When handling URL: key:");
-            _imp->url_key.reset(new LiteralMetadataValueKey<std::string>("URL", "URL", mkt_significant, file.get("URL")));
+            _imp->url_key = std::make_shared<LiteralMetadataValueKey<std::string>>("URL", "URL", mkt_significant, file.get("URL"));
             add_metadata_key(_imp->url_key);
         }
 
         if (! file.get("Title").empty())
         {
             Context local_context("When handling Title: key:");
-            _imp->short_description_key.reset(new LiteralMetadataValueKey<std::string>("Title", "Title", mkt_significant, file.get("Title")));
+            _imp->short_description_key = std::make_shared<LiteralMetadataValueKey<std::string>>("Title", "Title", mkt_significant, file.get("Title"));
             add_metadata_key(_imp->short_description_key);
         }
 
         if (! file.get("Description").empty())
         {
             Context local_context("When handling Description: key:");
-            _imp->long_description_key.reset(new LiteralMetadataValueKey<std::string>("Description", "Description", mkt_normal, file.get("Description")));
+            _imp->long_description_key = std::make_shared<LiteralMetadataValueKey<std::string>>("Description", "Description", mkt_normal, file.get("Description"));
             add_metadata_key(_imp->long_description_key);
         }
         else if (! file.get("BundleDescription").empty())
         {
             Context local_context("When handling BundleDescription: key:");
-            _imp->long_description_key.reset(new LiteralMetadataValueKey<std::string>("BundleDescription", "Bundle Description",
-                        mkt_normal, file.get("BundleDescription")));
+            _imp->long_description_key = std::make_shared<LiteralMetadataValueKey<std::string>>("BundleDescription", "Bundle Description",
+                        mkt_normal, file.get("BundleDescription"));
         }
 
         if (! file.get("Date").empty())
@@ -222,7 +222,7 @@ CRANPackageID::CRANPackageID(const Environment * const env, const std::shared_pt
             Context local_context("When handling Contains: key:");
             std::list<std::string> tokens;
             tokenise_whitespace(file.get("Contains"), std::back_inserter(tokens));
-            _imp->contains_key.reset(new PackageIDSequenceKey(_imp->env, "Contains", "Contains", mkt_normal));
+            _imp->contains_key = std::make_shared<PackageIDSequenceKey>(_imp->env, "Contains", "Contains", mkt_normal);
             add_metadata_key(_imp->contains_key);
             for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
                     t != t_end ; ++t)
@@ -241,8 +241,8 @@ CRANPackageID::CRANPackageID(const Environment * const env, const std::shared_pt
         if (! file.get("Suggests").empty())
         {
             Context local_context("When handling Suggests: key:");
-            _imp->suggests_key.reset(new DepKey(_imp->env, "Suggests", "Suggests", file.get("Suggests"),
-                        _imp->suggests_labels, mkt_dependencies));
+            _imp->suggests_key = std::make_shared<DepKey>(_imp->env, "Suggests", "Suggests", file.get("Suggests"),
+                        _imp->suggests_labels, mkt_dependencies);
             add_metadata_key(_imp->suggests_key);
         }
 
@@ -256,11 +256,11 @@ CRANPackageID::CRANPackageID(const Environment * const env, const std::shared_pt
         if (! file.get("Depends").empty())
         {
             Context local_context("When handling Depends: key:");
-            _imp->depends_key.reset(new DepKey(_imp->env, "Depends", "Depends", file.get("Depends") + ", R",
-                        _imp->depends_labels, mkt_dependencies));
+            _imp->depends_key = std::make_shared<DepKey>(_imp->env, "Depends", "Depends", file.get("Depends") + ", R",
+                        _imp->depends_labels, mkt_dependencies);
         }
         else
-            _imp->depends_key.reset(new DepKey(_imp->env, "Depends", "Depends", "R", _imp->depends_labels, mkt_dependencies));
+            _imp->depends_key = std::make_shared<DepKey>(_imp->env, "Depends", "Depends", "R", _imp->depends_labels, mkt_dependencies);
         add_metadata_key(_imp->depends_key);
     }
     catch (const InternalError &)

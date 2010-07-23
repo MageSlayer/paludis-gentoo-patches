@@ -311,8 +311,8 @@ Command::with_clearenv()
 Command &
 Command::with_uid_gid(const uid_t u, const gid_t g)
 {
-    _imp->uid.reset(new uid_t(u));
-    _imp->gid.reset(new gid_t(g));
+    _imp->uid = std::make_shared<uid_t>(u);
+    _imp->gid = std::make_shared<gid_t>(g);
     return *this;
 }
 
@@ -567,18 +567,18 @@ paludis::run_command(const Command & cmd)
     std::shared_ptr<Channel> captured_stdout, captured_stderr;
     if (cmd.pipe_command_handler())
     {
-        pipe_command_reader.reset(new Pipe);
-        pipe_command_response.reset(new Pipe);
+        pipe_command_reader = std::make_shared<Pipe>();
+        pipe_command_response = std::make_shared<Pipe>();
     }
     if (cmd.captured_stdout_stream())
         captured_stdout.reset(cmd.ptys() ? static_cast<Channel *>(new Pty) : new Pipe);
     if (cmd.captured_stderr_stream())
         captured_stderr.reset(cmd.ptys() ? static_cast<Channel *>(new Pty) : new Pipe);
     if (cmd.output_stream())
-        output_stream.reset(new Pipe);
+        output_stream = std::make_shared<Pipe>();
     if (cmd.input_stream())
     {
-        input_stream.reset(new Pipe);
+        input_stream = std::make_shared<Pipe>();
         int arg(fcntl(input_stream->write_fd(), F_GETFL, NULL));
         if (-1 == arg)
             throw RunCommandError("fcntl F_GETFL failed: " + stringify(strerror(errno)));
@@ -1131,7 +1131,7 @@ paludis::become_command(const Command & cmd)
     std::shared_ptr<Pipe> input_stream;
     if (cmd.input_stream())
     {
-        input_stream.reset(new Pipe);
+        input_stream = std::make_shared<Pipe>();
 
         int cmd_input_fd;
 

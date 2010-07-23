@@ -130,7 +130,7 @@ namespace
                     return _v;
 
                 using namespace std::placeholders;
-                _v.reset(new Contents);
+                _v = std::make_shared<Contents>();
                 _db->parse_contents(*_id,
                         std::bind(&Contents::add, _v.get(), std::placeholders::_1),
                         std::bind(&Contents::add, _v.get(), std::placeholders::_1),
@@ -217,8 +217,8 @@ namespace
 
                 Context context("When reading '" + stringify(_f) + "' as an InstalledUnpackagedStringKey:");
                 SafeIFStream f(_f);
-                _v.reset(new std::string(
-                            strip_trailing(std::string((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>()), "\n")));
+                _v = std::make_shared<std::string>(
+                            strip_trailing(std::string((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>()), "\n"));
                 return *_v;
             }
 
@@ -269,7 +269,7 @@ namespace
                 if (_v)
                     return _v;
 
-                _v.reset(new Set<std::string>());
+                _v = std::make_shared<Set<std::string>>();
                 for (FSEntrySequence::ConstIterator a(_f.begin()), a_end(_f.end()) ;
                         a != a_end ; ++a)
                 {
@@ -437,29 +437,29 @@ namespace paludis
 
             if ((l / "contents").exists())
             {
-                contents_key.reset(new InstalledUnpackagedContentsKey(id, d));
-                installed_time_key.reset(new InstalledUnpackagedTimeKey(l / "contents"));
+                contents_key = std::make_shared<InstalledUnpackagedContentsKey>(id, d);
+                installed_time_key = std::make_shared<InstalledUnpackagedTimeKey>(l / "contents");
             }
 
-            from_repositories_key.reset(new InstalledUnpackagedStringSetKey("source_repository",
-                        "Source repository", mkt_normal));
+            from_repositories_key = std::make_shared<InstalledUnpackagedStringSetKey>("source_repository",
+                        "Source repository", mkt_normal);
             if ((l / "source_repository").exists())
                 from_repositories_key->add_source(l / "source_repository");
             if ((l / "binary_repository").exists())
                 from_repositories_key->add_source(l / "binary_repository");
 
             if ((l / "description").exists())
-                description_key.reset(new InstalledUnpackagedStringKey("description", "Description", l / "description", mkt_significant));
+                description_key = std::make_shared<InstalledUnpackagedStringKey>("description", "Description", l / "description", mkt_significant);
 
             if ((l / "build_dependencies").exists())
-                build_dependencies_key.reset(new InstalledUnpackagedDependencyKey(env,
+                build_dependencies_key = std::make_shared<InstalledUnpackagedDependencyKey>(env,
                             "build_dependencies", "Build dependencies", l / "build_dependencies",
-                            build_dependencies_labels, mkt_dependencies));
+                            build_dependencies_labels, mkt_dependencies);
 
             if ((l / "run_dependencies").exists())
-                run_dependencies_key.reset(new InstalledUnpackagedDependencyKey(env,
+                run_dependencies_key = std::make_shared<InstalledUnpackagedDependencyKey>(env,
                             "run_dependencies", "Run dependencies", l / "run_dependencies",
-                            run_dependencies_labels, mkt_dependencies));
+                            run_dependencies_labels, mkt_dependencies);
         }
     };
 }

@@ -66,7 +66,7 @@ namespace paludis
         {
             *pipe_command_write_stream << "PING 1 GOAT" << '\0' << std::flush;
 
-            pipe_command_read_stream.reset(new SafeIFStream(r));
+            pipe_command_read_stream = std::make_shared<SafeIFStream>(r);
             std::string response;
             if (! std::getline(*pipe_command_read_stream, response, '\0'))
                 throw InternalError(PALUDIS_HERE, "couldn't get a pipe command response");
@@ -95,8 +95,8 @@ IPCOutputManager::IPCOutputManager(const int r, const int w, const CreateOutputM
         throw InternalError(PALUDIS_HERE, "got response '" + response + "'");
 
     int stdout_fd(destringify<int>(tokens[2])), stderr_fd(destringify<int>(tokens[3]));
-    _imp->stdout_stream.reset(new SafeOFStream(stdout_fd));
-    _imp->stderr_stream.reset(new SafeOFStream(stderr_fd));
+    _imp->stdout_stream = std::make_shared<SafeOFStream>(stdout_fd);
+    _imp->stderr_stream = std::make_shared<SafeOFStream>(stderr_fd);
 
     if (0 != ::fcntl(stdout_fd, F_SETFD, FD_CLOEXEC))
         throw InternalError(PALUDIS_HERE, "fcntl failed");
@@ -260,7 +260,7 @@ IPCInputManager::_pipe_command_handler(const std::string & s)
                 _imp->on_create(_imp->output_manager);
         }
 
-        _imp->copy_thread.reset(new Thread(std::bind(&IPCInputManager::_copy_thread, this)));
+        _imp->copy_thread = std::make_shared<Thread>(std::bind(&IPCInputManager::_copy_thread, this));
 
         return "O 1 " + stringify(_imp->stdout_pipe.write_fd()) + " " + stringify(_imp->stderr_pipe.write_fd());
     }
@@ -421,7 +421,7 @@ OutputManagerFromIPC::operator() (const Action & a)
     if (! _imp->result)
     {
         CreateOutputManagerForPackageIDActionInfo info(_imp->id, a, _imp->exclusivity, _imp->client_output_features);
-        _imp->result.reset(new IPCOutputManager(_imp->read_fd, _imp->write_fd, info));
+        _imp->result = std::make_shared<IPCOutputManager>(_imp->read_fd, _imp->write_fd, info);
     }
     return _imp->result;
 }
@@ -439,7 +439,7 @@ OutputManagerFromIPC::construct_standard_if_unconstructed()
     {
         Log::get_instance()->message("output_manager_from_ipc.constructed_standard", ll_warning, lc_context)
             << "No output manager available, creating a standard output manager. This is probably a bug.";
-        _imp->result.reset(new StandardOutputManager);
+        _imp->result = std::make_shared<StandardOutputManager>();
     }
 }
 

@@ -125,17 +125,17 @@ UnavailableRepositoryStore::_populate_one(const Environment * const env, const F
     std::shared_ptr<MetadataValueKey<std::string> > repository_homepage, repository_description,
         repository_format, repository_sync;
     if (! file.homepage().empty())
-        repository_homepage.reset(new LiteralMetadataValueKey<std::string>(
-                "REPOSITORY_HOMEPAGE", "Repository homepage", mkt_normal, file.homepage()));
+        repository_homepage = std::make_shared<LiteralMetadataValueKey<std::string>>(
+                "REPOSITORY_HOMEPAGE", "Repository homepage", mkt_normal, file.homepage());
     if (! file.description().empty())
-        repository_description.reset(new LiteralMetadataValueKey<std::string>(
-                "REPOSITORY_DESCRIPTION", "Repository description", mkt_normal, file.description()));
+        repository_description = std::make_shared<LiteralMetadataValueKey<std::string>>(
+                "REPOSITORY_DESCRIPTION", "Repository description", mkt_normal, file.description());
     if (! file.repo_format().empty())
-        repository_format.reset(new LiteralMetadataValueKey<std::string>(
-                "REPOSITORY_FORMAT", "Repository format", mkt_normal, file.repo_format()));
+        repository_format = std::make_shared<LiteralMetadataValueKey<std::string>>(
+                "REPOSITORY_FORMAT", "Repository format", mkt_normal, file.repo_format());
     if (! file.sync().empty())
-        repository_sync.reset(new LiteralMetadataValueKey<std::string>(
-                "REPOSITORY_SYNC", "Repository sync", mkt_normal, file.sync()));
+        repository_sync = std::make_shared<LiteralMetadataValueKey<std::string>>(
+                "REPOSITORY_SYNC", "Repository sync", mkt_normal, file.sync());
 
     {
         std::shared_ptr<Mask> mask(new UnavailableMask);
@@ -194,8 +194,8 @@ UnavailableRepositoryStore::_populate_one(const Environment * const env, const F
         const std::shared_ptr<NoConfigurationInformationMask> no_configuration_mask(new NoConfigurationInformationMask);
         std::shared_ptr<UnavailableRepositoryDependenciesKey> deps;
         if (! file.dependencies().empty())
-            deps.reset(new UnavailableRepositoryDependenciesKey(env, "dependencies", "Dependencies", mkt_dependencies,
-                        file.dependencies()));
+            deps = std::make_shared<UnavailableRepositoryDependenciesKey>(env, "dependencies", "Dependencies", mkt_dependencies,
+                        file.dependencies());
 
         const std::shared_ptr<UnavailableRepositoryID> id(new UnavailableRepositoryID(
                     make_named_values<UnavailableRepositoryIDParams>(

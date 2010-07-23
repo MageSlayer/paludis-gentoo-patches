@@ -91,7 +91,7 @@ namespace
         typename F_::result_type operator() ()
         {
             if (! result)
-                result.reset(new typename std::remove_reference<typename F_::result_type>::type(func()));
+                result = std::make_shared<typename std::remove_reference<typename F_::result_type>::type>(func());
             return *result;
         }
     };
@@ -306,7 +306,7 @@ EnvironmentImplementation::_need_sets() const
     populate_sets();
     populate_standard_sets();
 
-    _imp->set_names.reset(new SetNameSet);
+    _imp->set_names = std::make_shared<SetNameSet>();
     std::copy(first_iterator(_imp->sets.begin()), first_iterator(_imp->sets.end()), _imp->set_names->inserter());
 
     _imp->loaded_sets = true;

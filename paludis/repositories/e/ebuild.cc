@@ -409,7 +409,7 @@ bool
 EbuildMetadataCommand::do_run_command(const Command & cmd)
 {
     bool ok(false);
-    keys.reset(new Map<std::string, std::string>);
+    keys = std::make_shared<Map<std::string, std::string>>();
 
     try
     {
@@ -453,7 +453,7 @@ EbuildMetadataCommand::do_run_command(const Command & cmd)
     {
         Log::get_instance()->message("e.ebuild.cache_failure", ll_warning, lc_context) << "Could not generate cache for '"
             << *params.package_id() << "', stdout says '" << captured_stdout << "' and stderr says '" << captured_stderr << "'";
-        keys.reset(new Map<std::string, std::string>);
+        keys = std::make_shared<Map<std::string, std::string>>();
         keys->insert("EAPI", EAPIData::get_instance()->unknown_eapi()->name());
 
         return false;

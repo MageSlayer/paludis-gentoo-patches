@@ -234,20 +234,20 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
         "functionality. Full support for Portage configuration formats is not "
         "guaranteed; issues should be reported via trac.";
 
-    _imp->vars.reset(new KeyValueConfigFile(FSEntry("/dev/null"), KeyValueConfigFileOptions(),
-                &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation));
+    _imp->vars = std::make_shared<KeyValueConfigFile>(FSEntry("/dev/null"), KeyValueConfigFileOptions(),
+                &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
     _load_profile((_imp->conf_dir / "make.profile").realpath());
 
     if ((_imp->conf_dir / "make.globals").exists())
-        _imp->vars.reset(new KeyValueConfigFile(_imp->conf_dir / "make.globals", KeyValueConfigFileOptions() +
+        _imp->vars = std::make_shared<KeyValueConfigFile>(_imp->conf_dir / "make.globals", KeyValueConfigFileOptions() +
                     kvcfo_disallow_space_inside_unquoted_values + kvcfo_allow_inline_comments + kvcfo_allow_multiple_assigns_per_line,
                     std::bind(&predefined, _imp->vars, std::placeholders::_1, std::placeholders::_2),
-                    &do_incremental));
+                    &do_incremental);
     if ((_imp->conf_dir / "make.conf").exists())
-        _imp->vars.reset(new KeyValueConfigFile(_imp->conf_dir / "make.conf", KeyValueConfigFileOptions() +
+        _imp->vars = std::make_shared<KeyValueConfigFile>(_imp->conf_dir / "make.conf", KeyValueConfigFileOptions() +
                     kvcfo_disallow_space_inside_unquoted_values + kvcfo_allow_inline_comments + kvcfo_allow_multiple_assigns_per_line,
                     std::bind(&predefined, _imp->vars, std::placeholders::_1, std::placeholders::_2),
-                    &do_incremental));
+                    &do_incremental);
 
     /* TODO: load USE etc from env? */
 
@@ -440,10 +440,10 @@ PortageEnvironment::_load_profile(const FSEntry & d)
     }
 
     if ((d / "make.defaults").exists())
-        _imp->vars.reset(new KeyValueConfigFile(d / "make.defaults", KeyValueConfigFileOptions()
+        _imp->vars = std::make_shared<KeyValueConfigFile>(d / "make.defaults", KeyValueConfigFileOptions()
                     + kvcfo_disallow_source + kvcfo_disallow_space_inside_unquoted_values + kvcfo_allow_inline_comments + kvcfo_allow_multiple_assigns_per_line,
                     std::bind(&predefined, _imp->vars, std::placeholders::_1, std::placeholders::_2),
-                    &do_incremental));
+                    &do_incremental);
 
 }
 
@@ -711,7 +711,7 @@ PortageEnvironment::perform_hook(const Hook & hook) const
     if (! _imp->hooker)
     {
         _imp->need_hook_dirs();
-        _imp->hooker.reset(new Hooker(this));
+        _imp->hooker = std::make_shared<Hooker>(this);
         std::for_each(_imp->hook_dirs.begin(), _imp->hook_dirs.end(),
                 std::bind(std::mem_fn(&Hooker::add_dir), _imp->hooker.get(), _1, false));
     }

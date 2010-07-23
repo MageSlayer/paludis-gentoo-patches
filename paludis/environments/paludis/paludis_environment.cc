@@ -214,7 +214,7 @@ PaludisEnvironment::perform_hook(const Hook & hook) const
     if (! _imp->hooker)
     {
         _imp->need_hook_dirs(_imp->config->config_dir());
-        _imp->hooker.reset(new Hooker(this));
+        _imp->hooker = std::make_shared<Hooker>(this);
         for (std::list<std::pair<FSEntry, bool> >::const_iterator h(_imp->hook_dirs.begin()),
                 h_end(_imp->hook_dirs.end()) ; h != h_end ; ++h)
             _imp->hooker->add_dir(h->first, h->second);

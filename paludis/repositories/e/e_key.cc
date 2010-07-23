@@ -808,7 +808,7 @@ EKeywordsKey::value() const
     if (_imp->value)
         return _imp->value;
 
-    _imp->value.reset(new KeywordNameSet);
+    _imp->value = std::make_shared<KeywordNameSet>();
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
     tokenise_whitespace(_imp->string_value, create_inserter<KeywordName>(_imp->value->inserter()));
     return _imp->value;
@@ -897,7 +897,7 @@ EStringSetKey::value() const
     if (_imp->value)
         return _imp->value;
 
-    _imp->value.reset(new Set<std::string>);
+    _imp->value = std::make_shared<Set<std::string>>();
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
     tokenise_whitespace(_imp->string_value, _imp->value->inserter());
     return _imp->value;
@@ -982,7 +982,7 @@ EContentsKey::value() const
 
     Context context("When creating contents for VDB key '" + stringify(*_imp->id) + "' from '" + stringify(_imp->filename) + "':");
 
-    _imp->value.reset(new Contents);
+    _imp->value = std::make_shared<Contents>();
 
     FSEntry f(_imp->filename);
     if (! f.is_regular_file_or_symlink_to_regular_file())
@@ -1100,7 +1100,7 @@ EMTimeKey::value() const
     if (_imp->value)
         return *_imp->value;
 
-    _imp->value.reset(new Timestamp(Timestamp::now()));
+    _imp->value = std::make_shared<Timestamp>(Timestamp::now());
 
     try
     {
