@@ -59,14 +59,9 @@ namespace paludis
         std::string text;
         Parts parts;
 
-        mutable Mutex hash_mutex;
-        mutable bool has_hash;
-        mutable std::size_t hash;
-
         const VersionSpecOptions options;
 
         Imp(const VersionSpecOptions & o) :
-            has_hash(false),
             options(o)
         {
         }
@@ -343,8 +338,6 @@ VersionSpec::operator= (const VersionSpec & other)
     {
         _imp->text = other._imp->text;
         _imp->parts = other._imp->parts;
-        _imp->has_hash = other._imp->has_hash;
-        _imp->hash = other._imp->hash;
     }
     return *this;
 }
@@ -523,11 +516,6 @@ VersionSpec::stupid_equal_star_compare(const VersionSpec & other) const
 std::size_t
 VersionSpec::hash() const
 {
-    Lock l(_imp->hash_mutex);
-
-    if (_imp->has_hash)
-        return _imp->hash;
-
     size_t result(0);
 
     const std::size_t h_shift = std::numeric_limits<std::size_t>::digits - 5;
@@ -571,8 +559,6 @@ VersionSpec::hash() const
         }
     } while (false);
 
-    _imp->has_hash = true;
-    _imp->hash = result;
     return result;
 }
 
