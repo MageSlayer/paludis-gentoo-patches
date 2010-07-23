@@ -22,6 +22,8 @@
 
 #include <paludis/util/named_value-fwd.hh>
 #include <paludis/util/tribool-fwd.hh>
+#include <utility>
+#include <type_traits>
 #include <string>
 
 namespace paludis
@@ -47,6 +49,8 @@ namespace paludis
     template <typename K_, typename V_>
     class NamedValue
     {
+        static_assert(! std::is_reference<V_>::value, "Tried to make a NamedValue hold a reference");
+
         private:
             V_ _value;
 
@@ -60,13 +64,29 @@ namespace paludis
             {
             }
 
+            template <typename T_>
+            NamedValue(NamedValue<K_, T_> && v) :
+                _value(std::move(v()))
+            {
+            }
+
             explicit NamedValue(const V_ & v) :
+                _value(v)
+            {
+            }
+
+            explicit NamedValue(V_ && v) :
                 _value(v)
             {
             }
 
             NamedValue(const NamedValue & v) :
                 _value(v._value)
+            {
+            }
+
+            NamedValue(NamedValue && v) :
+                _value(std::move(v._value))
             {
             }
 
@@ -94,6 +114,12 @@ namespace paludis
             NamedValue<Name<T_>, V_> operator= (const V_ & v) const
             {
                 return NamedValue<Name<T_>, V_>(v);
+            }
+
+            template <typename V_>
+            NamedValue<Name<T_>, typename std::remove_reference<V_>::type> operator= (V_ && v) const
+            {
+                return NamedValue<Name<T_>, typename std::remove_reference<V_>::type>(v);
             }
 
             NamedValue<Name<T_>, std::string> operator= (const char * const v) const
