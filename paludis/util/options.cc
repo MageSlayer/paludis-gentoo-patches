@@ -18,48 +18,25 @@
  */
 
 #include "options.hh"
-#include <paludis/util/pimp-impl.hh>
-#include <vector>
-#include <algorithm>
-#include <functional>
-#include <stdint.h>
+#include <paludis/util/stringify.hh>
+#include <paludis/util/exception.hh>
 
 using namespace paludis;
 
-namespace paludis
-{
-    template<>
-    struct Imp<OptionsStore>
-    {
-        std::vector<uint8_t> pool;
-
-        Imp()
-        {
-        }
-
-        Imp(const Imp & i) :
-            pool(i.pool)
-        {
-        }
-    };
-}
-
 OptionsStore::OptionsStore() :
-    Pimp<OptionsStore>()
+    _bits(0)
 {
 }
 
 OptionsStore::OptionsStore(const OptionsStore & s) :
-    Pimp<OptionsStore>(*s._imp.get())
+    _bits(s._bits)
 {
 }
 
 const OptionsStore &
 OptionsStore::operator= (const OptionsStore & s)
 {
-    if (this != &s)
-        _imp.reset(new Imp<OptionsStore>(*s._imp.get()));
-
+    _bits = s._bits;
     return *this;
 }
 
@@ -70,60 +47,51 @@ OptionsStore::~OptionsStore()
 void
 OptionsStore::add(const unsigned e)
 {
-    if (_imp->pool.size() < e / 8 + 1)
-        _imp->pool.resize(e / 8 + 1, 0);
+    if (e > (8 * sizeof(unsigned long)))
+        throw InternalError(PALUDIS_HERE, "options oversized");
 
-    _imp->pool.at(e / 8) |= (1 << (e % 8));
+    _bits |= (1ul << e);
 }
 
 void
 OptionsStore::remove(const unsigned e)
 {
-    if (_imp->pool.size() < e / 8 + 1)
-        _imp->pool.resize(e / 8 + 1, 0);
+    if (e > (8 * sizeof(unsigned long)))
+        throw InternalError(PALUDIS_HERE, "options oversized");
 
-    _imp->pool.at(e / 8) &= ~(1 << (e % 8));
+    _bits &= ~(1ul << e);
 }
 
 void
 OptionsStore::combine(const OptionsStore & e)
 {
-    if (_imp->pool.size() < e._imp->pool.size())
-        _imp->pool.resize(e._imp->pool.size(), 0);
-
-    for (unsigned s(0), s_end(e._imp->pool.size()) ; s != s_end ; ++s)
-        _imp->pool.at(s) |= e._imp->pool.at(s);
+    _bits |= e._bits;
 }
 
 void
 OptionsStore::subtract(const OptionsStore & e)
 {
-    if (_imp->pool.size() < e._imp->pool.size())
-        _imp->pool.resize(e._imp->pool.size(), 0);
-
-    for (unsigned s(0), s_end(e._imp->pool.size()) ; s != s_end ; ++s)
-        _imp->pool.at(s) &= ~e._imp->pool.at(s);
+    _bits &= ~e._bits;
 }
 
 bool
 OptionsStore::test(const unsigned e) const
 {
-    if (_imp->pool.size() < e / 8 + 1)
-        return false;
+    if (e > (8 * sizeof(unsigned long)))
+        throw InternalError(PALUDIS_HERE, "options oversized");
 
-    return _imp->pool.at(e / 8) & (1 << (e % 8));
+    return 0 != (_bits & (1ul << e));
 }
 
 bool
 OptionsStore::any() const
 {
-    return _imp->pool.end() != std::find_if(_imp->pool.begin(), _imp->pool.end(),
-            std::bind2nd(std::not_equal_to<uint8_t>(), 0));
+    return 0 != _bits;
 }
 
 unsigned
 OptionsStore::highest_bit() const
 {
-    return _imp->pool.size() * 8;
+    return sizeof(unsigned long) * 8;
 }
 
