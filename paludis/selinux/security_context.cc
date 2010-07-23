@@ -20,7 +20,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/singleton-impl.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/selinux/security_context.hh>
 
 #include "config.h"
@@ -147,15 +147,15 @@ namespace
 namespace paludis
 {
     template<>
-    struct Implementation<SecurityContext>
+    struct Imp<SecurityContext>
     {
         security_context_t _context;
 
-        Implementation(security_context_t con)
+        Imp(security_context_t con)
             : _context(con)
         { }
 
-        ~Implementation()
+        ~Imp()
         {
             if (0 != _context)
                 libselinux.freecon(_context);
@@ -172,7 +172,7 @@ namespace paludis
 }
 
 SecurityContext::SecurityContext() :
-    PrivateImplementationPattern<SecurityContext>(security_context_t(0))
+    Pimp<SecurityContext>(security_context_t(0))
 {
 }
 

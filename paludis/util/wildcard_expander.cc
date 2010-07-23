@@ -21,7 +21,7 @@
 
 #include <paludis/util/exception.hh>
 #include <paludis/util/fs_entry.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <memory>
 #include <vector>
@@ -35,17 +35,17 @@ using namespace paludis;
 namespace paludis
 {
     template <>
-    struct Implementation<WildcardExpander>
+    struct Imp<WildcardExpander>
     {
         std::shared_ptr<std::vector<FSEntry> > files;
         std::vector<FSEntry>::const_iterator it;
 
-        Implementation() :
+        Imp() :
             files(new std::vector<FSEntry>)
         {
         }
 
-        Implementation(const std::shared_ptr<std::vector<FSEntry> > & the_files,
+        Imp(const std::shared_ptr<std::vector<FSEntry> > & the_files,
                        std::vector<FSEntry>::const_iterator the_it) :
             files(the_files),
             it(the_it)
@@ -108,7 +108,7 @@ namespace
 }
 
 WildcardExpander::WildcardExpander(const std::string & pattern, const paludis::FSEntry & root) :
-    PrivateImplementationPattern<WildcardExpander>()
+    Pimp<WildcardExpander>()
 {
     // GLOB_NOCHECK seems to be buggy in glibc 2.5: fails
     //        TEST_CHECK_EQUAL(expand("/foo\\*"), "/foo*");
@@ -125,13 +125,13 @@ WildcardExpander::WildcardExpander(const std::string & pattern, const paludis::F
 }
 
 WildcardExpander::WildcardExpander() :
-    PrivateImplementationPattern<WildcardExpander>()
+    Pimp<WildcardExpander>()
 {
     _imp->it = _imp->files->end();
 }
 
 WildcardExpander::WildcardExpander(const WildcardExpander & other) :
-    PrivateImplementationPattern<WildcardExpander>(other._imp->files, other._imp->it)
+    Pimp<WildcardExpander>(other._imp->files, other._imp->it)
 {
 }
 

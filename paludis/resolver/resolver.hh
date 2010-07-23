@@ -27,7 +27,7 @@
 #include <paludis/resolver/resolved-fwd.hh>
 #include <paludis/resolver/sanitised_dependencies-fwd.hh>
 #include <paludis/resolver/package_or_block_dep_spec-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/name.hh>
@@ -43,7 +43,7 @@ namespace paludis
     namespace resolver
     {
         class PALUDIS_VISIBLE Resolver :
-            private PrivateImplementationPattern<Resolver>
+            private Pimp<Resolver>
         {
             public:
                 Resolver(

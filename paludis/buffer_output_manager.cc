@@ -19,7 +19,7 @@
 
 #include <paludis/buffer_output_manager.hh>
 #include <paludis/util/buffer_output_stream.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/exception.hh>
@@ -29,13 +29,13 @@ using namespace paludis;
 namespace paludis
 {
     template <>
-    struct Implementation<BufferOutputManager>
+    struct Imp<BufferOutputManager>
     {
         const std::shared_ptr<OutputManager> child;
         BufferOutputStream stdout_stream;
         BufferOutputStream stderr_stream;
 
-        Implementation(
+        Imp(
                 const std::shared_ptr<OutputManager> & c) :
             child(c)
         {
@@ -45,7 +45,7 @@ namespace paludis
 
 BufferOutputManager::BufferOutputManager(
         const std::shared_ptr<OutputManager> & c) :
-    PrivateImplementationPattern<BufferOutputManager>(c)
+    Pimp<BufferOutputManager>(c)
 {
 }
 
@@ -119,5 +119,5 @@ BufferOutputManager::factory_create(
     return std::make_shared<BufferOutputManager>(child);
 }
 
-template class PrivateImplementationPattern<BufferOutputManager>;
+template class Pimp<BufferOutputManager>;
 

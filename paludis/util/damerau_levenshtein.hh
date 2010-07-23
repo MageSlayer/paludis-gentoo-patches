@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_DAMERAU_LEVENSHTEIN_HH
 #define PALUDIS_GUARD_PALUDIS_DAMERAU_LEVENSHTEIN_HH 1
 
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/attributes.hh>
 #include <string>
 
@@ -38,7 +38,7 @@ namespace paludis
      * \ingroup g_utils
      */
     class PALUDIS_VISIBLE DamerauLevenshtein :
-        private PrivateImplementationPattern<DamerauLevenshtein>
+        private Pimp<DamerauLevenshtein>
     {
         public:
             ///\name Basic Operations
@@ -55,7 +55,7 @@ namespace paludis
             ///\}
     };
 
-    extern template class PrivateImplementationPattern<DamerauLevenshtein>;
+    extern template class Pimp<DamerauLevenshtein>;
 }
 
 #endif

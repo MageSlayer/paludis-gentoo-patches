@@ -28,7 +28,7 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/system.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/graph-impl.hh>
 #include <paludis/util/tokeniser.hh>
@@ -436,7 +436,7 @@ SoHookFile::auto_hook_names() const
 namespace paludis
 {
     template<>
-    struct Implementation<Hooker>
+    struct Imp<Hooker>
     {
         const Environment * const env;
         std::list<std::pair<FSEntry, bool> > dirs;
@@ -446,7 +446,7 @@ namespace paludis
         mutable std::map<std::string, std::map<std::string, std::shared_ptr<HookFile> > > auto_hook_files;
         mutable bool has_auto_hook_files;
 
-        Implementation(const Environment * const e) :
+        Imp(const Environment * const e) :
             env(e),
             has_auto_hook_files(false)
         {
@@ -504,7 +504,7 @@ namespace paludis
 }
 
 Hooker::Hooker(const Environment * const e) :
-    PrivateImplementationPattern<Hooker>(e)
+    Pimp<Hooker>(e)
 {
 }
 

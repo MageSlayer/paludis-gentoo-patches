@@ -21,7 +21,7 @@
 #include <paludis/repositories/unwritten/unwritten_repository_file.hh>
 #include <paludis/repositories/unwritten/unwritten_id.hh>
 #include <paludis/repositories/unwritten/unwritten_mask.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/dir_iterator.hh>
@@ -55,14 +55,14 @@ typedef std::unordered_map<QualifiedPackageName,
 namespace paludis
 {
     template <>
-    struct Implementation<UnwrittenRepositoryStore>
+    struct Imp<UnwrittenRepositoryStore>
     {
         const UnwrittenRepository * const repo;
         mutable std::shared_ptr<CategoryNamePartSet> categories;
         mutable PackageNames package_names;
         mutable IDs ids;
 
-        Implementation(const UnwrittenRepository * const r) :
+        Imp(const UnwrittenRepository * const r) :
             repo(r),
             categories(new CategoryNamePartSet)
         {
@@ -74,7 +74,7 @@ UnwrittenRepositoryStore::UnwrittenRepositoryStore(
         const Environment * const env,
         const UnwrittenRepository * const repo,
         const FSEntry & f) :
-    PrivateImplementationPattern<UnwrittenRepositoryStore>(repo)
+    Pimp<UnwrittenRepositoryStore>(repo)
 {
     _populate(env, f);
 }
@@ -197,5 +197,5 @@ UnwrittenRepositoryStore::package_ids(const QualifiedPackageName & p) const
         return i->second;
 }
 
-template class PrivateImplementationPattern<unwritten_repository::UnwrittenRepositoryStore>;
+template class Pimp<unwritten_repository::UnwrittenRepositoryStore>;
 

@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_GENTOO_EAPI_PHASE_HH
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_GENTOO_EAPI_PHASE_HH 1
 
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <string>
 
@@ -36,7 +36,7 @@ namespace paludis
          * \ingroup grpeapi
          */
         class EAPIPhase :
-            private PrivateImplementationPattern<EAPIPhase>
+            private Pimp<EAPIPhase>
         {
             public:
                 ///\name Basic operations
@@ -69,7 +69,7 @@ namespace paludis
          * \ingroup grpeapi
          */
         class EAPIPhases :
-            private PrivateImplementationPattern<EAPIPhases>
+            private Pimp<EAPIPhases>
         {
             public:
                 ///\name Basic operations

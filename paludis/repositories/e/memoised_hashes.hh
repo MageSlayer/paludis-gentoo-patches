@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_MEMOISED_HASHES_HH
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_MEMOISED_HASHES_HH 1
 
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/singleton.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/safe_ifstream-fwd.hh>
@@ -31,7 +31,7 @@ namespace paludis
     {
         class PALUDIS_VISIBLE MemoisedHashes :
             public Singleton<MemoisedHashes>,
-            private PrivateImplementationPattern<MemoisedHashes>
+            private Pimp<MemoisedHashes>
         {
             friend class Singleton<MemoisedHashes>;
 
@@ -44,7 +44,7 @@ namespace paludis
                 ~MemoisedHashes();
         };
     }
-    extern template class PrivateImplementationPattern<erepository::MemoisedHashes>;
+    extern template class Pimp<erepository::MemoisedHashes>;
     extern template class Singleton<erepository::MemoisedHashes>;
 }
 

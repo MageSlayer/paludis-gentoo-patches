@@ -27,7 +27,7 @@
 
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/sequence-impl.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 
 #include <list>
 
@@ -39,7 +39,7 @@ typedef std::list<std::pair<std::string, std::string> > Items;
 namespace paludis
 {
     template <>
-    struct Implementation<SourceURIFinder>
+    struct Imp<SourceURIFinder>
     {
         const Environment * const env;
         const Repository * const repo;
@@ -50,7 +50,7 @@ namespace paludis
 
         Items items;
 
-        Implementation(const Environment * const e, const Repository * const r, const std::string & u, const std::string & f,
+        Imp(const Environment * const e, const Repository * const r, const std::string & u, const std::string & f,
                 const std::string & m, const GetMirrorsFunction & g) :
             env(e),
             repo(r),
@@ -71,7 +71,7 @@ namespace paludis
 
 SourceURIFinder::SourceURIFinder(const Environment * const e, const Repository * const repo,
         const std::string & u, const std::string & f, const std::string & m, const GetMirrorsFunction & g) :
-    PrivateImplementationPattern<SourceURIFinder>(e, repo, u, f, m, g)
+    Pimp<SourceURIFinder>(e, repo, u, f, m, g)
 {
 }
 

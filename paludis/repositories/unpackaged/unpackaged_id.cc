@@ -20,7 +20,7 @@
 #include <paludis/repositories/unpackaged/unpackaged_id.hh>
 #include <paludis/repositories/unpackaged/unpackaged_key.hh>
 #include <paludis/repositories/unpackaged/unpackaged_stripper.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/simple_visitor_cast.hh>
@@ -47,7 +47,7 @@ using namespace paludis::unpackaged_repositories;
 namespace paludis
 {
     template <>
-    struct Implementation<UnpackagedID>
+    struct Imp<UnpackagedID>
     {
         const Environment * const env;
         const QualifiedPackageName name;
@@ -64,7 +64,7 @@ namespace paludis
         const std::shared_ptr<const MetadataValueKey<std::string> > description_key;
         const std::shared_ptr<const UnpackagedChoicesKey> choices_key;
 
-        Implementation(const Environment * const e,
+        Imp(const Environment * const e,
                 const QualifiedPackageName & q,
                 const VersionSpec & v,
                 const SlotName & s,
@@ -100,8 +100,8 @@ namespace paludis
 UnpackagedID::UnpackagedID(const Environment * const e, const QualifiedPackageName & q,
         const VersionSpec & v, const SlotName & s, const RepositoryName & n, const FSEntry & l,
         const std::string & b, const std::string & r, const std::string & d) :
-    PrivateImplementationPattern<UnpackagedID>(e, q, v, s, n, l, b, r, d, this),
-    _imp(PrivateImplementationPattern<UnpackagedID>::_imp)
+    Pimp<UnpackagedID>(e, q, v, s, n, l, b, r, d, this),
+    _imp(Pimp<UnpackagedID>::_imp)
 {
     add_metadata_key(_imp->slot_key);
     add_metadata_key(_imp->fs_location_key);

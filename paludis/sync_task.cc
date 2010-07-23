@@ -20,7 +20,7 @@
 #include "sync_task.hh"
 #include <paludis/environment.hh>
 #include <paludis/syncer.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/action_queue.hh>
 #include <paludis/util/mutex.hh>
@@ -37,13 +37,13 @@ using namespace paludis;
 namespace paludis
 {
     template<>
-    struct Implementation<SyncTask>
+    struct Imp<SyncTask>
     {
         Environment * const env;
         std::list<RepositoryName> targets;
         const bool parallel;
 
-        Implementation(Environment * const e, const bool p) :
+        Imp(Environment * const e, const bool p) :
             env(e),
             parallel(p)
         {
@@ -58,7 +58,7 @@ namespace paludis
 }
 
 SyncTask::SyncTask(Environment * const env, const bool p) :
-    PrivateImplementationPattern<SyncTask>(env, p)
+    Pimp<SyncTask>(env, p)
 {
 }
 

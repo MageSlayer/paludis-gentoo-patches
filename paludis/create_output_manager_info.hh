@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_CREATE_OUTPUT_MANAGER_INFO_HH 1
 
 #include <paludis/create_output_manager_info-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/simple_visitor.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/type_list.hh>
@@ -62,7 +62,7 @@ namespace paludis
      * \see Environment::create_output_manager
      */
     class PALUDIS_VISIBLE CreateOutputManagerForPackageIDActionInfo :
-        private PrivateImplementationPattern<CreateOutputManagerForPackageIDActionInfo>,
+        private Pimp<CreateOutputManagerForPackageIDActionInfo>,
         public CreateOutputManagerInfo,
         public ImplementAcceptMethods<CreateOutputManagerInfo, CreateOutputManagerForPackageIDActionInfo>
     {
@@ -122,7 +122,7 @@ namespace paludis
      * \see Environment::create_output_manager
      */
     class PALUDIS_VISIBLE CreateOutputManagerForRepositorySyncInfo :
-        private PrivateImplementationPattern<CreateOutputManagerForRepositorySyncInfo>,
+        private Pimp<CreateOutputManagerForRepositorySyncInfo>,
         public CreateOutputManagerInfo,
         public ImplementAcceptMethods<CreateOutputManagerInfo, CreateOutputManagerForRepositorySyncInfo>
     {

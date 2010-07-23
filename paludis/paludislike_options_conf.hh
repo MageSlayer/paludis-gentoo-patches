@@ -22,7 +22,7 @@
 
 #include <paludis/paludislike_options_conf-fwd.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/util/tribool-fwd.hh>
 #include <paludis/util/set-fwd.hh>
@@ -78,7 +78,7 @@ namespace paludis
      * \since 0.44
      */
     class PALUDIS_VISIBLE PaludisLikeOptionsConf :
-        private PrivateImplementationPattern<PaludisLikeOptionsConf>
+        private Pimp<PaludisLikeOptionsConf>
     {
         public:
             PaludisLikeOptionsConf(const PaludisLikeOptionsConfParams &);
@@ -107,7 +107,7 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
-    extern template class PrivateImplementationPattern<PaludisLikeOptionsConf>;
+    extern template class Pimp<PaludisLikeOptionsConf>;
 
 }
 

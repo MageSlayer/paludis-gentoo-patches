@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_BROKEN_LINKAGE_FINDER_ELF_LINKAGE_CHECKER_HH
 
 #include <paludis/linkage_checker.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <functional>
 #include <iosfwd>
 
@@ -29,7 +29,7 @@ namespace paludis
 {
     class ElfLinkageChecker :
         public LinkageChecker,
-        private paludis::PrivateImplementationPattern<ElfLinkageChecker>
+        private paludis::Pimp<ElfLinkageChecker>
     {
         public:
             ElfLinkageChecker(const paludis::FSEntry &, const std::string &);

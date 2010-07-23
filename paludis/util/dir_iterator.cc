@@ -21,7 +21,7 @@
 #include <dirent.h>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/options.hh>
 #include <sys/types.h>
 #include <functional>
@@ -36,22 +36,22 @@ using namespace paludis;
 #include <paludis/util/dir_iterator-se.cc>
 
 typedef std::multiset<std::pair<ino_t, FSEntry>, std::function<bool (std::pair<ino_t, FSEntry>, std::pair<ino_t, FSEntry>)> > EntrySet;
-template class PrivateImplementationPattern<DirIterator>;
+template class Pimp<DirIterator>;
 
 namespace paludis
 {
     /**
-     * Implementation data for DirIterator.
+     * Imp data for DirIterator.
      *
      * \ingroup grpfilesystem
      */
     template<>
-    struct Implementation<DirIterator>
+    struct Imp<DirIterator>
     {
         std::shared_ptr<EntrySet> items;
         EntrySet::iterator iter;
 
-        Implementation(const std::shared_ptr<EntrySet> & ii) :
+        Imp(const std::shared_ptr<EntrySet> & ii) :
             items(ii)
         {
         }
@@ -74,7 +74,7 @@ DirOpenError::DirOpenError(const FSEntry & location, const int errno_value) thro
 }
 
 DirIterator::DirIterator(const FSEntry & base, const DirIteratorOptions & options) :
-    PrivateImplementationPattern<DirIterator>(std::shared_ptr<EntrySet>())
+    Pimp<DirIterator>(std::shared_ptr<EntrySet>())
 {
     using namespace std::placeholders;
 
@@ -122,13 +122,13 @@ DirIterator::DirIterator(const FSEntry & base, const DirIteratorOptions & option
 }
 
 DirIterator::DirIterator(const DirIterator & other) :
-    PrivateImplementationPattern<DirIterator>(other._imp->items)
+    Pimp<DirIterator>(other._imp->items)
 {
     _imp->iter = other._imp->iter;
 }
 
 DirIterator::DirIterator() :
-    PrivateImplementationPattern<DirIterator>(std::shared_ptr<EntrySet>(new EntrySet(&compare_name)))
+    Pimp<DirIterator>(std::shared_ptr<EntrySet>(new EntrySet(&compare_name)))
 {
     _imp->iter = _imp->items->end();
 }

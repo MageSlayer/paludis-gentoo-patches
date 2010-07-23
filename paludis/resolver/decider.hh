@@ -39,7 +39,7 @@
 #include <paludis/resolver/resolutions_by_resolvent-fwd.hh>
 #include <paludis/resolver/change_by_resolvent-fwd.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/tribool-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/package_id-fwd.hh>
@@ -52,7 +52,7 @@ namespace paludis
     namespace resolver
     {
         class PALUDIS_VISIBLE Decider :
-            private PrivateImplementationPattern<Decider>
+            private Pimp<Decider>
         {
             private:
                 const std::shared_ptr<Resolution> _create_resolution_for_resolvent(const Resolvent &) const;

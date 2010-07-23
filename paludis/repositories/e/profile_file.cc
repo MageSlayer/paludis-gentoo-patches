@@ -26,7 +26,7 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/options.hh>
 #include <paludis/mask.hh>
 #include <list>
@@ -81,7 +81,7 @@ namespace
 namespace paludis
 {
     template <typename F_>
-    struct Implementation<ProfileFile<F_> >
+    struct Imp<ProfileFile<F_> >
     {
         const ERepository * const repository;
 
@@ -91,7 +91,7 @@ namespace paludis
 
         std::set<std::string> removed;
 
-        Implementation(const ERepository * const r) :
+        Imp(const ERepository * const r) :
             repository(r)
         {
         }
@@ -133,7 +133,7 @@ ProfileFile<F_>::add_file(const FSEntry & f)
         const std::string key(FileEntryTraits<const typename std::remove_reference<typename F_::ConstIterator::value_type>::type>::extract_key(*line));
         if (0 == key.compare(0, 1, "-", 0, 1))
         {
-            typename Implementation<ProfileFile>::Lines::iterator i(
+            typename Imp<ProfileFile>::Lines::iterator i(
                 std::find_if(this->_imp->lines.begin(), this->_imp->lines.end(),
                              MatchesKey<std::string>(key.substr(1))));
             if (this->_imp->lines.end() == i)
@@ -164,7 +164,7 @@ ProfileFile<F_>::add_file(const FSEntry & f)
 
 template <typename F_>
 ProfileFile<F_>::ProfileFile(const ERepository * const r) :
-    PrivateImplementationPattern<ProfileFile>(r)
+    Pimp<ProfileFile>(r)
 {
 }
 

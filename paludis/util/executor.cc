@@ -18,7 +18,7 @@
  */
 
 #include <paludis/util/executor.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/condition_variable.hh>
 #include <paludis/util/thread.hh>
@@ -40,7 +40,7 @@ Executive::~Executive()
 namespace paludis
 {
     template <>
-    struct Implementation<Executor>
+    struct Imp<Executor>
     {
         int ms_update_interval;
         int pending;
@@ -52,7 +52,7 @@ namespace paludis
         Mutex mutex;
         ConditionVariable condition;
 
-        Implementation(int u) :
+        Imp(int u) :
             ms_update_interval(u),
             pending(0),
             active(0),
@@ -63,7 +63,7 @@ namespace paludis
 }
 
 Executor::Executor(int ms_update_interval) :
-    PrivateImplementationPattern<Executor>(ms_update_interval)
+    Pimp<Executor>(ms_update_interval)
 {
 }
 
@@ -165,5 +165,5 @@ Executor::execute()
     }
 }
 
-template class PrivateImplementationPattern<Executor>;
+template class Pimp<Executor>;
 

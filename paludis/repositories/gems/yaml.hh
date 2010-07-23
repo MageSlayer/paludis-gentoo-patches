@@ -24,7 +24,7 @@
 #include <paludis/util/simple_visitor.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/singleton.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/type_list.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -66,7 +66,7 @@ namespace paludis
         class PALUDIS_VISIBLE StringNode :
             public Node,
             public ImplementAcceptMethods<Node, StringNode>,
-            private PrivateImplementationPattern<StringNode>
+            private Pimp<StringNode>
         {
             public:
                 ///\name Basic operations
@@ -92,7 +92,7 @@ namespace paludis
         class PALUDIS_VISIBLE SequenceNode :
             public Node,
             public ImplementAcceptMethods<Node, SequenceNode>,
-            private PrivateImplementationPattern<SequenceNode>
+            private Pimp<SequenceNode>
         {
             public:
                 ///\name Basic operations
@@ -128,7 +128,7 @@ namespace paludis
         class PALUDIS_VISIBLE MapNode :
             public Node,
             public ImplementAcceptMethods<Node, MapNode>,
-            private PrivateImplementationPattern<MapNode>
+            private Pimp<MapNode>
         {
             public:
                 ///\name Basic operations
@@ -163,7 +163,7 @@ namespace paludis
          * \nosubgrouping
          */
         class PALUDIS_VISIBLE Document :
-            private PrivateImplementationPattern<Document>
+            private Pimp<Document>
         {
             public:
                 ///\name Basic operations
@@ -188,7 +188,7 @@ namespace paludis
          * \nosubgrouping
          */
         class PALUDIS_VISIBLE NodeManager :
-            private PrivateImplementationPattern<NodeManager>,
+            private Pimp<NodeManager>,
             public Singleton<NodeManager>
         {
             friend class Singleton<NodeManager>;

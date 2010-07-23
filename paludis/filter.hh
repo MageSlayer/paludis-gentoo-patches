@@ -23,7 +23,7 @@
 #include <paludis/filter-fwd.hh>
 #include <paludis/filter_handler-fwd.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/set-fwd.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/name-fwd.hh>
@@ -54,7 +54,7 @@ namespace paludis
      * \ingroup g_selections
      */
     class PALUDIS_VISIBLE Filter :
-        private PrivateImplementationPattern<Filter>
+        private Pimp<Filter>
     {
         protected:
             Filter(const std::shared_ptr<const FilterHandler> &);
@@ -239,7 +239,7 @@ namespace paludis
         };
     }
 
-    extern template class PrivateImplementationPattern<Filter>;
+    extern template class Pimp<Filter>;
     extern template class filter::SupportsAction<InstallAction>;
     extern template class filter::SupportsAction<UninstallAction>;
     extern template class filter::SupportsAction<PretendAction>;

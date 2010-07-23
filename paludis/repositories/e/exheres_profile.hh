@@ -29,7 +29,7 @@ namespace paludis
     namespace erepository
     {
         class PALUDIS_VISIBLE ExheresProfile :
-            private PrivateImplementationPattern<ExheresProfile>,
+            private Pimp<ExheresProfile>,
             public Profile
         {
             private:

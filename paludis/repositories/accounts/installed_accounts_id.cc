@@ -19,7 +19,7 @@
 
 #include <paludis/repositories/accounts/installed_accounts_id.hh>
 #include <paludis/repositories/accounts/accounts_dep_key.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/stringify.hh>
@@ -49,7 +49,7 @@ using namespace paludis::accounts_repository;
 namespace paludis
 {
     template <>
-    struct Implementation<InstalledAccountsID>
+    struct Imp<InstalledAccountsID>
     {
         const Environment * const env;
 
@@ -65,7 +65,7 @@ namespace paludis
 
         const bool is_user;
 
-        Implementation(const Environment * const e,
+        Imp(const Environment * const e,
                 const QualifiedPackageName & q, const std::shared_ptr<const Repository> & r,
                 const bool u) :
             env(e),
@@ -91,12 +91,12 @@ namespace
     }
 }
 
-const std::shared_ptr<Set<std::string> > Implementation<InstalledAccountsID>::behaviours_set = make_behaviours();
+const std::shared_ptr<Set<std::string> > Imp<InstalledAccountsID>::behaviours_set = make_behaviours();
 
 InstalledAccountsID::InstalledAccountsID(const Environment * const e,
         const QualifiedPackageName & q, const std::shared_ptr<const Repository> & r, const bool u) :
-    PrivateImplementationPattern<InstalledAccountsID>(e, q, r, u),
-    _imp(PrivateImplementationPattern<InstalledAccountsID>::_imp)
+    Pimp<InstalledAccountsID>(e, q, r, u),
+    _imp(Pimp<InstalledAccountsID>::_imp)
 {
     add_metadata_key(_imp->behaviours_key);
 }

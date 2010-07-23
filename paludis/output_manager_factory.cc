@@ -18,7 +18,7 @@
  */
 
 #include <paludis/output_manager_factory.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/util/member_iterator-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
@@ -77,7 +77,7 @@ namespace
 namespace paludis
 {
     template <>
-    struct Implementation<OutputManagerFactory>
+    struct Imp<OutputManagerFactory>
     {
         Keys keys;
         std::list<void *> dl_opened;
@@ -91,7 +91,7 @@ namespace paludis
 }
 
 OutputManagerFactory::OutputManagerFactory() :
-    PrivateImplementationPattern<OutputManagerFactory>()
+    Pimp<OutputManagerFactory>()
 {
     /* we might want to make this plugin loadable at some point */
     add_manager(BufferOutputManager::factory_managers(), BufferOutputManager::factory_create);
@@ -145,7 +145,7 @@ OutputManagerFactory::add_manager(
     }
 }
 
-template class PrivateImplementationPattern<OutputManagerFactory>;
+template class Pimp<OutputManagerFactory>;
 template class Singleton<OutputManagerFactory>;
 template class WrappedForwardIterator<OutputManagerFactory::ConstIteratorTag, const std::string>;
 

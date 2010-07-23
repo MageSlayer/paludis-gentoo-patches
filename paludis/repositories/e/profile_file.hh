@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_PROFILE_FILE_HH 1
 
 #include <paludis/repositories/e/eapi-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
@@ -36,7 +36,7 @@ namespace paludis
     {
         template <typename F_>
         class PALUDIS_VISIBLE ProfileFile :
-            private PrivateImplementationPattern<ProfileFile<F_> >
+            private Pimp<ProfileFile<F_> >
         {
             public:
                 ///\name Basic operations

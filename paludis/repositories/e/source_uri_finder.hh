@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_SOURCE_URI_FINDER_HH 1
 
 #include <paludis/util/attributes.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/dep_label.hh>
 #include <paludis/environment-fwd.hh>
@@ -35,7 +35,7 @@ namespace paludis
         typedef std::function<std::shared_ptr<const MirrorsSequence> (const std::string &)> GetMirrorsFunction;
 
         class PALUDIS_VISIBLE SourceURIFinder :
-            private PrivateImplementationPattern<SourceURIFinder>
+            private Pimp<SourceURIFinder>
         {
             private:
                 void add_local_mirrors();

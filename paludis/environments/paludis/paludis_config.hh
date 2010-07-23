@@ -97,7 +97,7 @@ namespace paludis
          * \nosubgrouping
          */
         class PaludisConfig :
-            private PrivateImplementationPattern<PaludisConfig>
+            private Pimp<PaludisConfig>
         {
             public:
                 ///\name Basic operations

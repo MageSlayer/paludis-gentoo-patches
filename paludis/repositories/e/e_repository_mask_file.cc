@@ -18,7 +18,7 @@
  */
 
 #include "e_repository_mask_file.hh"
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
@@ -39,7 +39,7 @@ typedef std::list<std::pair<const std::string, std::shared_ptr<const RepositoryM
 namespace paludis
 {
     template <>
-    struct Implementation<MaskFile>
+    struct Imp<MaskFile>
     {
         MaskFileLines lines;
     };
@@ -52,7 +52,7 @@ namespace paludis
 }
 
 MaskFile::MaskFile(const FSEntry & f, const LineConfigFileOptions & opts) :
-    PrivateImplementationPattern<MaskFile>()
+    Pimp<MaskFile>()
 {
     LineConfigFileOptions myopts(opts);
     myopts += lcfo_disallow_comments;

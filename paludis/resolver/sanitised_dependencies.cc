@@ -426,7 +426,7 @@ namespace
 namespace paludis
 {
     template <>
-    struct Implementation<SanitisedDependencies>
+    struct Imp<SanitisedDependencies>
     {
         std::list<SanitisedDependency> sanitised_dependencies;
     };
@@ -439,7 +439,7 @@ namespace paludis
 }
 
 SanitisedDependencies::SanitisedDependencies() :
-    PrivateImplementationPattern<SanitisedDependencies>()
+    Pimp<SanitisedDependencies>()
 {
 }
 

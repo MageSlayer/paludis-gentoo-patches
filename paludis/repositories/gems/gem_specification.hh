@@ -25,7 +25,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <string>
@@ -60,11 +60,11 @@ namespace paludis
          * \nosubgrouping
          */
         class PALUDIS_VISIBLE GemSpecification :
-            private PrivateImplementationPattern<GemSpecification>,
+            private Pimp<GemSpecification>,
             public PackageID
         {
             private:
-                PrivateImplementationPattern<GemSpecification>::ImpPtr & _imp;
+                Pimp<GemSpecification>::ImpPtr & _imp;
 
             protected:
                 void need_keys_added() const;

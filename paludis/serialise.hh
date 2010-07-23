@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_SERIALISE_HH 1
 
 #include <paludis/util/attributes.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/serialise-fwd.hh>
 #include <paludis/environment-fwd.hh>
@@ -85,7 +85,7 @@ namespace paludis
     };
 
     class PALUDIS_VISIBLE Deserialiser :
-        private PrivateImplementationPattern<Deserialiser>
+        private Pimp<Deserialiser>
     {
         public:
             Deserialiser(const Environment * const, std::istream &);
@@ -97,7 +97,7 @@ namespace paludis
     };
 
     class PALUDIS_VISIBLE Deserialisation :
-        private PrivateImplementationPattern<Deserialisation>
+        private Pimp<Deserialisation>
     {
         public:
             Deserialisation(
@@ -123,7 +123,7 @@ namespace paludis
     };
 
     class PALUDIS_VISIBLE Deserialisator :
-        private PrivateImplementationPattern<Deserialisator>
+        private Pimp<Deserialisator>
     {
         public:
             Deserialisator(
@@ -147,9 +147,9 @@ namespace paludis
             const std::string &,
             const std::string &) PALUDIS_VISIBLE PALUDIS_ATTRIBUTE((warn_unused_result));
 
-    extern template class PrivateImplementationPattern<Deserialiser>;
-    extern template class PrivateImplementationPattern<Deserialisation>;
-    extern template class PrivateImplementationPattern<Deserialisator>;
+    extern template class Pimp<Deserialiser>;
+    extern template class Pimp<Deserialisation>;
+    extern template class Pimp<Deserialisator>;
 }
 
 #endif

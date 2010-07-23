@@ -26,7 +26,7 @@
 
 #include <paludis/util/log.hh>
 #include <paludis/util/tokeniser.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/config_file.hh>
@@ -69,7 +69,7 @@ namespace
 namespace paludis
 {
     template<>
-    struct Implementation<ExheresProfile>
+    struct Imp<ExheresProfile>
     {
         const Environment * const env;
         const ERepository * const repository;
@@ -93,7 +93,7 @@ namespace paludis
         const std::shared_ptr<SetSpecTree> system_packages;
         const std::shared_ptr<GeneralSetDepTag> system_tag;
 
-        Implementation(const Environment * const e, const ERepository * const p,
+        Imp(const Environment * const e, const ERepository * const p,
                 const RepositoryName & name, const FSEntrySequence &,
                 const std::string &, const bool) :
             env(e),
@@ -125,7 +125,7 @@ ExheresProfile::ExheresProfile(
         const Environment * const env, const ERepository * const p, const RepositoryName & name,
         const FSEntrySequence & location,
         const std::string & arch_var_if_special, const bool x) :
-    PrivateImplementationPattern<ExheresProfile>(env, p, name, location, arch_var_if_special, x)
+    Pimp<ExheresProfile>(env, p, name, location, arch_var_if_special, x)
 {
     for (FSEntrySequence::ConstIterator l(location.begin()), l_end(location.end()) ;
             l != l_end ; ++l)

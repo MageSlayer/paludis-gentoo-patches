@@ -20,7 +20,7 @@
 #include "cmd_resolve_display_callback.hh"
 #include <paludis/notifier_callback.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <iostream>
 #include <map>
 #include <unistd.h>
@@ -31,7 +31,7 @@ using namespace cave;
 namespace paludis
 {
     template <>
-    struct Implementation<DisplayCallback>
+    struct Imp<DisplayCallback>
     {
         mutable Mutex mutex;
         mutable std::map<std::string, int> metadata, steps;
@@ -40,7 +40,7 @@ namespace paludis
 
         bool output;
 
-        Implementation(const std::string & s) :
+        Imp(const std::string & s) :
             stage(s),
             width(stage.length()),
             output(::isatty(1))
@@ -51,7 +51,7 @@ namespace paludis
 
 
 DisplayCallback::DisplayCallback(const std::string & s) :
-    PrivateImplementationPattern<DisplayCallback>(s)
+    Pimp<DisplayCallback>(s)
 {
     if (_imp->output)
         std::cout << _imp->stage << std::flush;

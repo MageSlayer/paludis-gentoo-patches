@@ -31,7 +31,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/return_literal_function.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/literal_metadata_key.hh>
@@ -52,7 +52,7 @@ using namespace paludis::cranrepository;
 namespace paludis
 {
     template <>
-    struct Implementation<CRANPackageID>
+    struct Imp<CRANPackageID>
     {
         const Environment * const env;
 
@@ -76,7 +76,7 @@ namespace paludis
         std::shared_ptr<DependenciesLabelSequence> suggests_labels;
         std::shared_ptr<DependenciesLabelSequence> depends_labels;
 
-        Implementation(const Environment * const e,
+        Imp(const Environment * const e,
                 const std::shared_ptr<const CRANRepository> & r, const FSEntry & f) :
             env(e),
             repository(r),
@@ -90,7 +90,7 @@ namespace paludis
             depends_labels->push_back(std::make_shared<DependenciesBuildLabel>("Depends", return_literal_function(true)));
         }
 
-        Implementation(const Environment * const e,
+        Imp(const Environment * const e,
                 const std::shared_ptr<const CRANRepository> & c, const CRANPackageID * const r, const std::string & t) :
             env(e),
             repository(c),
@@ -108,8 +108,8 @@ namespace paludis
 }
 
 CRANPackageID::CRANPackageID(const Environment * const env, const std::shared_ptr<const CRANRepository> & r, const FSEntry & f) :
-    PrivateImplementationPattern<CRANPackageID>(env, r, f),
-    _imp(PrivateImplementationPattern<CRANPackageID>::_imp)
+    Pimp<CRANPackageID>(env, r, f),
+    _imp(Pimp<CRANPackageID>::_imp)
 {
     Context context("When parsing file '" + stringify(f) + "' to create a CRAN Package ID:");
 
@@ -277,8 +277,8 @@ CRANPackageID::CRANPackageID(const Environment * const env, const std::shared_pt
 
 CRANPackageID::CRANPackageID(const Environment * const e,
         const std::shared_ptr<const CRANRepository> & c, const CRANPackageID * const r, const std::string & t) :
-    PrivateImplementationPattern<CRANPackageID>(e, c, r, t),
-    _imp(PrivateImplementationPattern<CRANPackageID>::_imp)
+    Pimp<CRANPackageID>(e, c, r, t),
+    _imp(Pimp<CRANPackageID>::_imp)
 {
     Context context("When creating contained ID '" + stringify(t) + "' in " + stringify(*r) + "':");
 

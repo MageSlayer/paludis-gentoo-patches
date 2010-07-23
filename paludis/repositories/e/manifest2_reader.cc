@@ -26,7 +26,7 @@
 #include <paludis/util/create_iterator-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/tokeniser.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/member_iterator-impl.hh>
 #include <paludis/util/make_named_values.hh>
 
@@ -41,12 +41,12 @@ typedef std::map<std::pair<std::string, std::string>, Manifest2Entry> Entries;
 namespace paludis
 {
     template <>
-    struct Implementation<Manifest2Reader>
+    struct Imp<Manifest2Reader>
     {
         FSEntry manifest;
         Entries entries;
 
-        Implementation(const FSEntry & f) :
+        Imp(const FSEntry & f) :
             manifest(f)
         {
         }
@@ -65,7 +65,7 @@ Manifest2Error::Manifest2Error(const std::string & msg) throw () :
 }
 
 Manifest2Reader::Manifest2Reader(const FSEntry & f) :
-    PrivateImplementationPattern<Manifest2Reader>(f)
+    Pimp<Manifest2Reader>(f)
 {
     if (! f.exists())
         return;

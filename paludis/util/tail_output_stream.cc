@@ -19,7 +19,7 @@
 
 #include <paludis/util/tail_output_stream.hh>
 #include <paludis/util/mutex.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <functional>
 #include <algorithm>
@@ -30,7 +30,7 @@ using namespace paludis;
 namespace paludis
 {
     template <>
-    struct Implementation<TailOutputStreamBuf>
+    struct Imp<TailOutputStreamBuf>
     {
         unsigned int n;
         const unsigned int size;
@@ -38,7 +38,7 @@ namespace paludis
 
         Mutex mutex;
 
-        Implementation(const unsigned int nn) :
+        Imp(const unsigned int nn) :
             n(1),
             size(nn)
         {
@@ -48,7 +48,7 @@ namespace paludis
 }
 
 TailOutputStreamBuf::TailOutputStreamBuf(const unsigned int n) :
-    PrivateImplementationPattern<TailOutputStreamBuf>(n)
+    Pimp<TailOutputStreamBuf>(n)
 {
 }
 
@@ -114,5 +114,5 @@ TailOutputStreamBuf::tail(const bool clear)
     return result;
 }
 
-template class PrivateImplementationPattern<TailOutputStreamBuf>;
+template class Pimp<TailOutputStreamBuf>;
 

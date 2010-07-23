@@ -21,7 +21,7 @@
 #include "script_command.hh"
 
 #include <paludis/util/singleton-impl.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/member_iterator-impl.hh>
 #include <paludis/util/tokeniser.hh>
@@ -82,7 +82,7 @@ typedef std::map<std::string, std::function<const std::shared_ptr<cave::Command>
 namespace paludis
 {
     template <>
-    struct Implementation<CommandFactory>
+    struct Imp<CommandFactory>
     {
         Handlers handlers;
     };
@@ -109,7 +109,7 @@ namespace
 }
 
 CommandFactory::CommandFactory() :
-    PrivateImplementationPattern<CommandFactory>()
+    Pimp<CommandFactory>()
 {
     std::vector<std::string> paths;
     tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(getenv_with_default("CAVE_COMMANDS_PATH", LIBEXECDIR "/cave/commands"),
@@ -211,6 +211,6 @@ UnknownCommand::UnknownCommand(const std::string & s) throw () :
 }
 
 template class Singleton<CommandFactory>;
-template class PrivateImplementationPattern<CommandFactory>;
+template class Pimp<CommandFactory>;
 template class WrappedForwardIterator<CommandFactory::ConstIteratorTag, const std::string>;
 

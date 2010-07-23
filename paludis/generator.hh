@@ -22,7 +22,7 @@
 
 #include <paludis/generator-fwd.hh>
 #include <paludis/generator_handler-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/options.hh>
 #include <paludis/filtered_generator-fwd.hh>
 #include <paludis/name-fwd.hh>
@@ -55,7 +55,7 @@ namespace paludis
      * \ingroup g_selections
      */
     class PALUDIS_VISIBLE Generator :
-        private PrivateImplementationPattern<Generator>
+        private Pimp<Generator>
     {
         protected:
             Generator(const std::shared_ptr<const GeneratorHandler> &);
@@ -269,7 +269,7 @@ namespace paludis
         };
     }
 
-    extern template class PrivateImplementationPattern<Generator>;
+    extern template class Pimp<Generator>;
 
 }
 

@@ -22,7 +22,7 @@
 #include <paludis/util/elf_types.hh>
 #include <paludis/util/elf.hh>
 #include <paludis/util/byte_swap.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <algorithm>
@@ -34,7 +34,7 @@ using namespace paludis;
 namespace paludis
 {
     template <typename ElfType_, typename Relocation_>
-    struct Implementation<RelocationSection<ElfType_, Relocation_> >
+    struct Imp<RelocationSection<ElfType_, Relocation_> >
     {
         std::vector<typename Relocation_::Entry> relocations;
     };
@@ -101,7 +101,7 @@ template <typename ElfType_, typename Relocation_>
 RelocationSection<ElfType_, Relocation_>::RelocationSection(
     typename ElfType_::Word index, const typename ElfType_::SectionHeader & shdr, std::istream & stream, bool need_byte_swap) :
     Section<ElfType_>(index, shdr),
-    PrivateImplementationPattern<RelocationSection>()
+    Pimp<RelocationSection>()
 {
     if (sizeof(typename Relocation_::Type) != shdr.sh_entsize)
         throw InvalidElfFileError(

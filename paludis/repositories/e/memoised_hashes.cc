@@ -20,7 +20,7 @@
 #include <paludis/repositories/e/memoised_hashes.hh>
 
 #include <paludis/util/mutex.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/fs_entry.hh>
@@ -40,19 +40,19 @@ namespace paludis
     typedef std::map<std::pair<std::string, int>, std::pair<Timestamp, std::string> > HashesMap;
 
     template <>
-    struct Implementation<MemoisedHashes>
+    struct Imp<MemoisedHashes>
     {
         mutable Mutex mutex;
         mutable HashesMap hashes;
 
-        Implementation()
+        Imp()
         {
         }
     };
 }
 
 MemoisedHashes::MemoisedHashes() :
-    PrivateImplementationPattern<MemoisedHashes>()
+    Pimp<MemoisedHashes>()
 {
 }
 
@@ -126,6 +126,6 @@ template const std::string MemoisedHashes::get<SHA1>(const FSEntry &, SafeIFStre
 template const std::string MemoisedHashes::get<SHA256>(const FSEntry &, SafeIFStream &) const;
 template const std::string MemoisedHashes::get<MD5>(const FSEntry &, SafeIFStream &) const;
 
-template class PrivateImplementationPattern<MemoisedHashes>;
+template class Pimp<MemoisedHashes>;
 template class Singleton<MemoisedHashes>;
 

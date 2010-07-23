@@ -18,7 +18,7 @@
  */
 
 #include <paludis/file_output_manager.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/safe_ofstream.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/map.hh>
@@ -32,7 +32,7 @@ using namespace paludis;
 namespace paludis
 {
     template <>
-    struct Implementation<FileOutputManager>
+    struct Imp<FileOutputManager>
     {
         FSEntry filename;
         std::shared_ptr<SafeOFStream> stream;
@@ -42,7 +42,7 @@ namespace paludis
 
         bool succeeded, unlinked, nothing_more_to_come;
 
-        Implementation(
+        Imp(
                 const FSEntry & o,
                 const bool k,
                 const bool l,
@@ -65,7 +65,7 @@ namespace paludis
 
 FileOutputManager::FileOutputManager(const FSEntry & o, const bool k, const bool l,
         const std::shared_ptr<OutputManager> & m, const std::string & s) :
-    PrivateImplementationPattern<FileOutputManager>(o, k, l, m, s)
+    Pimp<FileOutputManager>(o, k, l, m, s)
 {
 }
 
@@ -186,5 +186,5 @@ FileOutputManager::factory_create(
                 summary_output_manager, summary_output_message_s);
 }
 
-template class PrivateImplementationPattern<FileOutputManager>;
+template class Pimp<FileOutputManager>;
 

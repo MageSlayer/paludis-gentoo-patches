@@ -25,7 +25,7 @@
 #include <paludis/util/create_iterator-impl.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/save.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/strip.hh>
@@ -75,7 +75,7 @@ PortageEnvironmentConfigurationError::PortageEnvironmentConfigurationError(const
 namespace paludis
 {
     template<>
-    struct Implementation<PortageEnvironment>
+    struct Imp<PortageEnvironment>
     {
         const FSEntry conf_dir;
         std::string paludis_command;
@@ -111,7 +111,7 @@ namespace paludis
         std::shared_ptr<LiteralMetadataValueKey<FSEntry> > config_location_key;
         std::shared_ptr<LiteralMetadataValueKey<FSEntry> > world_file_key;
 
-        Implementation(Environment * const e, const std::string & s) :
+        Imp(Environment * const e, const std::string & s) :
             conf_dir(FSEntry(s.empty() ? "/" : s) / SYSCONFDIR),
             paludis_command("paludis"),
             ignore_all_breaks_portage(false),
@@ -222,8 +222,8 @@ namespace
 }
 
 PortageEnvironment::PortageEnvironment(const std::string & s) :
-    PrivateImplementationPattern<PortageEnvironment>(this, s),
-    _imp(PrivateImplementationPattern<PortageEnvironment>::_imp)
+    Pimp<PortageEnvironment>(this, s),
+    _imp(Pimp<PortageEnvironment>::_imp)
 {
     using namespace std::placeholders;
 

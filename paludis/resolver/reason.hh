@@ -24,7 +24,7 @@
 #include <paludis/resolver/resolvent-fwd.hh>
 #include <paludis/resolver/sanitised_dependencies-fwd.hh>
 #include <paludis/resolver/change_by_resolvent-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/simple_visitor.hh>
 #include <paludis/util/type_list.hh>
 #include <paludis/name-fwd.hh>
@@ -51,7 +51,7 @@ namespace paludis
         };
 
         class TargetReason :
-            private PrivateImplementationPattern<TargetReason>,
+            private Pimp<TargetReason>,
             public Reason,
             public ImplementAcceptMethods<Reason, TargetReason>
         {
@@ -65,7 +65,7 @@ namespace paludis
         };
 
         class DependencyReason :
-            private PrivateImplementationPattern<DependencyReason>,
+            private Pimp<DependencyReason>,
             public Reason,
             public ImplementAcceptMethods<Reason, DependencyReason>
         {
@@ -87,7 +87,7 @@ namespace paludis
         };
 
         class DependentReason :
-            private PrivateImplementationPattern<DependentReason>,
+            private Pimp<DependentReason>,
             public Reason,
             public ImplementAcceptMethods<Reason, DependentReason>
         {
@@ -101,7 +101,7 @@ namespace paludis
         };
 
         class WasUsedByReason :
-            private PrivateImplementationPattern<WasUsedByReason>,
+            private Pimp<WasUsedByReason>,
             public Reason,
             public ImplementAcceptMethods<Reason, WasUsedByReason>
         {
@@ -115,7 +115,7 @@ namespace paludis
         };
 
         class PresetReason :
-            private PrivateImplementationPattern<PresetReason>,
+            private Pimp<PresetReason>,
             public Reason,
             public ImplementAcceptMethods<Reason, PresetReason>
         {
@@ -134,7 +134,7 @@ namespace paludis
 
         class SetReason :
             public Reason,
-            private PrivateImplementationPattern<SetReason>,
+            private Pimp<SetReason>,
             public ImplementAcceptMethods<Reason, SetReason>
         {
             public:
@@ -149,7 +149,7 @@ namespace paludis
 
         class LikeOtherDestinationTypeReason :
             public Reason,
-            private PrivateImplementationPattern<LikeOtherDestinationTypeReason>,
+            private Pimp<LikeOtherDestinationTypeReason>,
             public ImplementAcceptMethods<Reason, LikeOtherDestinationTypeReason>
         {
             public:
@@ -164,7 +164,7 @@ namespace paludis
 
         class ViaBinaryReason :
             public Reason,
-            private PrivateImplementationPattern<ViaBinaryReason>,
+            private Pimp<ViaBinaryReason>,
             public ImplementAcceptMethods<Reason, ViaBinaryReason>
         {
             public:
@@ -177,12 +177,12 @@ namespace paludis
         };
     }
 
-    extern template class PrivateImplementationPattern<resolver::TargetReason>;
-    extern template class PrivateImplementationPattern<resolver::DependencyReason>;
-    extern template class PrivateImplementationPattern<resolver::DependentReason>;
-    extern template class PrivateImplementationPattern<resolver::WasUsedByReason>;
-    extern template class PrivateImplementationPattern<resolver::SetReason>;
-    extern template class PrivateImplementationPattern<resolver::ViaBinaryReason>;
+    extern template class Pimp<resolver::TargetReason>;
+    extern template class Pimp<resolver::DependencyReason>;
+    extern template class Pimp<resolver::DependentReason>;
+    extern template class Pimp<resolver::WasUsedByReason>;
+    extern template class Pimp<resolver::SetReason>;
+    extern template class Pimp<resolver::ViaBinaryReason>;
 
 }
 

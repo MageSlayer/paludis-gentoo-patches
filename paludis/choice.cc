@@ -18,7 +18,7 @@
  */
 
 #include <paludis/choice.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/wrapped_output_iterator-impl.hh>
 #include <paludis/util/stringify.hh>
@@ -151,14 +151,14 @@ WrappedValueTraits<UnprefixedChoiceNameTag>::validate(const std::string & s)
 namespace paludis
 {
     template <>
-    struct Implementation<Choices>
+    struct Imp<Choices>
     {
         ChoicesList choices;
     };
 }
 
 Choices::Choices() :
-    PrivateImplementationPattern<Choices>()
+    Pimp<Choices>()
 {
 }
 
@@ -231,12 +231,12 @@ Choices::has_matching_contains_every_value_prefix(const ChoiceNameWithPrefix & f
 namespace paludis
 {
     template <>
-    struct Implementation<Choice>
+    struct Imp<Choice>
     {
         ChoiceList values;
         const ChoiceParams params;
 
-        Implementation(const ChoiceParams & p) :
+        Imp(const ChoiceParams & p) :
             params(p)
         {
         }
@@ -244,7 +244,7 @@ namespace paludis
 }
 
 Choice::Choice(const ChoiceParams & p) :
-    PrivateImplementationPattern<Choice>(p)
+    Pimp<Choice>(p)
 {
 }
 
@@ -316,8 +316,8 @@ ChoiceValue::~ChoiceValue()
 {
 }
 
-template class PrivateImplementationPattern<Choices>;
-template class PrivateImplementationPattern<Choice>;
+template class Pimp<Choices>;
+template class Pimp<Choice>;
 
 template class WrappedForwardIterator<Choices::ConstIteratorTag, const std::shared_ptr<const Choice> >;
 template class WrappedForwardIterator<Choice::ConstIteratorTag, const std::shared_ptr<const ChoiceValue> >;

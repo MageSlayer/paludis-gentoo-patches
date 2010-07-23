@@ -23,7 +23,7 @@
 #include <string>
 #include <paludis/util/exception.hh>
 #include <paludis/util/singleton.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/fs_entry.hh>
 
 /** \file
@@ -60,7 +60,7 @@ namespace paludis
      * \ingroup grplibpaludisselinux
      */
     class PALUDIS_VISIBLE SecurityContext :
-        private PrivateImplementationPattern<SecurityContext>
+        private Pimp<SecurityContext>
     {
         public:
             /**

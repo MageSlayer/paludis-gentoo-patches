@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_PALUDIS_REPOSITORIES_CRAN_MASKS_HH 1
 
 #include <paludis/mask.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 
 namespace paludis
 {
@@ -29,7 +29,7 @@ namespace paludis
     {
         class BrokenMask :
             public UnsupportedMask,
-            private PrivateImplementationPattern<BrokenMask>
+            private Pimp<BrokenMask>
         {
             public:
                 BrokenMask(const char, const std::string &, const std::string &);

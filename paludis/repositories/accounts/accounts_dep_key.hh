@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_ACCOUNTS_ACCOUNTS_DEP_KEY_HH 1
 
 #include <paludis/metadata_key.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 
 namespace paludis
 {
@@ -29,7 +29,7 @@ namespace paludis
     {
         class AccountsDepKey :
             public MetadataSpecTreeKey<DependencySpecTree>,
-            private PrivateImplementationPattern<AccountsDepKey>
+            private Pimp<AccountsDepKey>
         {
             public:
                 AccountsDepKey(const Environment * const e,

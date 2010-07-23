@@ -22,7 +22,7 @@
 
 #include <paludis/repositories/e/eapi-fwd.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/output_manager-fwd.hh>
 #include <paludis/dep_spec.hh>
@@ -39,7 +39,7 @@ namespace paludis
         typedef std::function<std::shared_ptr<const MirrorsSequence> (const std::string &)> GetMirrorsFunction;
 
         class PALUDIS_VISIBLE FetchVisitor :
-            private PrivateImplementationPattern<FetchVisitor>
+            private Pimp<FetchVisitor>
         {
             public:
                 FetchVisitor(

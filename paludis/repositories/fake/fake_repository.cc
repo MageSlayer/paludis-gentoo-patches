@@ -20,7 +20,7 @@
 #include <paludis/repositories/fake/fake_repository.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -38,12 +38,12 @@ using namespace paludis;
 namespace paludis
 {
     template<>
-    struct Implementation<FakeRepository>
+    struct Imp<FakeRepository>
     {
         std::shared_ptr<FakeRepository::VirtualsSequence> virtual_packages;
         std::shared_ptr<const MetadataValueKey<std::string> > format_key;
 
-        Implementation() :
+        Imp() :
             virtual_packages(new FakeRepository::VirtualsSequence),
             format_key(new LiteralMetadataValueKey<std::string> (
                         "format", "format", mkt_significant, "fake"))
@@ -53,7 +53,7 @@ namespace paludis
 }
 
 FakeRepository::FakeRepository(const FakeRepositoryParams & params) :
-    PrivateImplementationPattern<FakeRepository>(),
+    Pimp<FakeRepository>(),
     FakeRepositoryBase(params.environment(), params.name(), make_named_values<RepositoryCapabilities>(
                 n::destination_interface() = static_cast<RepositoryDestinationInterface *>(0),
                 n::environment_variable_interface() = static_cast<RepositoryEnvironmentVariableInterface *>(0),
@@ -63,7 +63,7 @@ FakeRepository::FakeRepository(const FakeRepositoryParams & params) :
                 n::virtuals_interface() = (*DistributionData::get_instance()->distribution_from_string(
                             params.environment()->distribution())).support_old_style_virtuals() ? this : 0
                 )),
-            _imp(PrivateImplementationPattern<FakeRepository>::_imp)
+            _imp(Pimp<FakeRepository>::_imp)
 {
     add_metadata_key(_imp->format_key);
 }

@@ -25,7 +25,7 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/accept_visitor.hh>
 
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/wrapped_output_iterator-impl.hh>
 #include <paludis/util/create_iterator-impl.hh>
@@ -44,12 +44,12 @@ using namespace paludis::args;
 namespace paludis
 {
     /**
-     * Implementation data for ArgsHandler.
+     * Imp data for ArgsHandler.
      *
      * \ingroup grplibpaludisargs
      */
     template<>
-    struct Implementation<ArgsHandler>
+    struct Imp<ArgsHandler>
     {
         std::list<ArgsSection *> sections;
         std::list<std::string> parameters;
@@ -66,7 +66,7 @@ namespace paludis
 
         std::shared_ptr<ArgsSection> main_options_section;
 
-        Implementation() :
+        Imp() :
             separate_after_dashes_args(new Sequence<std::string>)
         {
         }
@@ -128,7 +128,7 @@ namespace paludis
 }
 
 ArgsHandler::ArgsHandler() :
-    PrivateImplementationPattern<ArgsHandler>()
+    Pimp<ArgsHandler>()
 {
 }
 

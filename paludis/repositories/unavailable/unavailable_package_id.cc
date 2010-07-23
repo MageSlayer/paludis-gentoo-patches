@@ -19,7 +19,7 @@
 
 #include <paludis/repositories/unavailable/unavailable_package_id.hh>
 #include <paludis/repositories/unavailable/unavailable_repository.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/set.hh>
@@ -40,7 +40,7 @@ using namespace paludis::unavailable_repository;
 namespace paludis
 {
     template <>
-    struct Implementation<UnavailablePackageID>
+    struct Imp<UnavailablePackageID>
     {
         const Environment * const env;
         const QualifiedPackageName name;
@@ -54,7 +54,7 @@ namespace paludis
         const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Choices> > > choices_key;
         const std::shared_ptr<const Mask> mask;
 
-        Implementation(
+        Imp(
                 const UnavailablePackageIDParams & e) :
             env(e.environment()),
             name(e.name()),
@@ -73,8 +73,8 @@ namespace paludis
 }
 
 UnavailablePackageID::UnavailablePackageID(const UnavailablePackageIDParams & entry) :
-    PrivateImplementationPattern<UnavailablePackageID>(entry),
-    _imp(PrivateImplementationPattern<UnavailablePackageID>::_imp)
+    Pimp<UnavailablePackageID>(entry),
+    _imp(Pimp<UnavailablePackageID>::_imp)
 {
     add_metadata_key(_imp->slot_key);
     add_metadata_key(_imp->description_key);
@@ -329,5 +329,5 @@ UnavailablePackageID::slot_key() const
     return _imp->slot_key;
 }
 
-template class PrivateImplementationPattern<UnavailablePackageID>;
+template class Pimp<UnavailablePackageID>;
 

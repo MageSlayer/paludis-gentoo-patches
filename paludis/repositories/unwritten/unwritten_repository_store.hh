@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_UNWRITTEN_UNWRITTEN_REPOSITORY_STORE_HH
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_UNWRITTEN_UNWRITTEN_REPOSITORY_STORE_HH 1
 
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/package_id-fwd.hh>
@@ -34,7 +34,7 @@ namespace paludis
         struct UnwrittenRepository;
 
         class PALUDIS_VISIBLE UnwrittenRepositoryStore :
-            private PrivateImplementationPattern<UnwrittenRepositoryStore>
+            private Pimp<UnwrittenRepositoryStore>
         {
             private:
                 void _populate_one(const Environment * const env, const FSEntry & f);
@@ -67,7 +67,7 @@ namespace paludis
         };
     }
 
-    extern template class PrivateImplementationPattern<unwritten_repository::UnwrittenRepositoryStore>;
+    extern template class Pimp<unwritten_repository::UnwrittenRepositoryStore>;
 }
 
 

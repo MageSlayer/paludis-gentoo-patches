@@ -19,7 +19,7 @@
 
 #include <paludis/repositories/repository/repository_repository_store.hh>
 #include <paludis/repositories/repository/repository_id.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/set.hh>
@@ -52,7 +52,7 @@ typedef std::unordered_map<QualifiedPackageName,
 namespace paludis
 {
     template <>
-    struct Implementation<RepositoryRepositoryStore>
+    struct Imp<RepositoryRepositoryStore>
     {
         const Environment * const env;
         const RepositoryRepository * const repo;
@@ -60,7 +60,7 @@ namespace paludis
         mutable PackageNames package_names;
         mutable IDs ids;
 
-        Implementation(const Environment * const e, const RepositoryRepository * const r) :
+        Imp(const Environment * const e, const RepositoryRepository * const r) :
             env(e),
             repo(r),
             categories(new CategoryNamePartSet)
@@ -72,7 +72,7 @@ namespace paludis
 RepositoryRepositoryStore::RepositoryRepositoryStore(
         const Environment * const env,
         const RepositoryRepository * const repo) :
-    PrivateImplementationPattern<RepositoryRepositoryStore>(env, repo)
+    Pimp<RepositoryRepositoryStore>(env, repo)
 {
     _populate();
 }
@@ -158,5 +158,5 @@ RepositoryRepositoryStore::package_ids(const QualifiedPackageName & p) const
         return i->second;
 }
 
-template class PrivateImplementationPattern<repository_repository::RepositoryRepositoryStore>;
+template class Pimp<repository_repository::RepositoryRepositoryStore>;
 

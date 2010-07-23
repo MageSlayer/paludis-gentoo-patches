@@ -20,7 +20,7 @@
 #include <paludis/resolver/job.hh>
 #include <paludis/resolver/job_requirements.hh>
 #include <paludis/resolver/job_state.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/serialise-impl.hh>
@@ -35,11 +35,11 @@ using namespace paludis::resolver;
 namespace paludis
 {
     template <>
-    struct Implementation<PretendJob>
+    struct Imp<PretendJob>
     {
         const PackageDepSpec origin_id_spec;
 
-        Implementation(const PackageDepSpec & o) :
+        Imp(const PackageDepSpec & o) :
             origin_id_spec(o)
         {
         }
@@ -47,7 +47,7 @@ namespace paludis
 }
 
 PretendJob::PretendJob(const PackageDepSpec & o) :
-    PrivateImplementationPattern<PretendJob>(o)
+    Pimp<PretendJob>(o)
 {
 }
 
@@ -99,13 +99,13 @@ ExecuteJob::deserialise(Deserialisation & d)
 namespace paludis
 {
     template <>
-    struct Implementation<FetchJob>
+    struct Imp<FetchJob>
     {
         const std::shared_ptr<const JobRequirements> requirements;
         const PackageDepSpec origin_id_spec;
         std::shared_ptr<JobState> state;
 
-        Implementation(
+        Imp(
                 const std::shared_ptr<const JobRequirements> & r,
                 const PackageDepSpec & o) :
             requirements(r),
@@ -118,7 +118,7 @@ namespace paludis
 FetchJob::FetchJob(
         const std::shared_ptr<const JobRequirements> & r,
         const PackageDepSpec & o) :
-    PrivateImplementationPattern<FetchJob>(r, o)
+    Pimp<FetchJob>(r, o)
 {
 }
 
@@ -184,7 +184,7 @@ FetchJob::serialise(Serialiser & s) const
 namespace paludis
 {
     template <>
-    struct Implementation<InstallJob>
+    struct Imp<InstallJob>
     {
         const std::shared_ptr<const JobRequirements> requirements;
         const PackageDepSpec origin_id_spec;
@@ -194,7 +194,7 @@ namespace paludis
 
         std::shared_ptr<JobState> state;
 
-        Implementation(
+        Imp(
                 const std::shared_ptr<const JobRequirements> & q,
                 const PackageDepSpec & o,
                 const RepositoryName & d,
@@ -218,7 +218,7 @@ InstallJob::InstallJob(
         const DestinationType t,
         const std::shared_ptr<const Sequence<PackageDepSpec> > & r
         ) :
-    PrivateImplementationPattern<InstallJob>(q, o, d, t, r)
+    Pimp<InstallJob>(q, o, d, t, r)
 {
 }
 
@@ -323,14 +323,14 @@ InstallJob::serialise(Serialiser & s) const
 namespace paludis
 {
     template <>
-    struct Implementation<UninstallJob>
+    struct Imp<UninstallJob>
     {
         const std::shared_ptr<const JobRequirements> requirements;
         const std::shared_ptr<const Sequence<PackageDepSpec> > ids_to_remove_specs;
 
         std::shared_ptr<JobState> state;
 
-        Implementation(
+        Imp(
                 const std::shared_ptr<const JobRequirements> & q,
                 const std::shared_ptr<const Sequence<PackageDepSpec> > & r
                 ) :
@@ -345,7 +345,7 @@ UninstallJob::UninstallJob(
         const std::shared_ptr<const JobRequirements> & q,
         const std::shared_ptr<const Sequence<PackageDepSpec> > & r
         ) :
-    PrivateImplementationPattern<UninstallJob>(q, r)
+    Pimp<UninstallJob>(q, r)
 {
 }
 

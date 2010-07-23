@@ -74,7 +74,7 @@ namespace paludis
 
         class PALUDIS_VISIBLE PythonCompositeDepSpec :
             public PythonDepSpec,
-            private PrivateImplementationPattern<PythonCompositeDepSpec>
+            private Pimp<PythonCompositeDepSpec>
         {
             protected:
                 PythonCompositeDepSpec();
@@ -146,7 +146,7 @@ namespace paludis
 
         class PALUDIS_VISIBLE PythonPackageDepSpec :
             public PythonStringDepSpec,
-            private PrivateImplementationPattern<PythonPackageDepSpec>,
+            private Pimp<PythonPackageDepSpec>,
             public ImplementAcceptMethods<PythonDepSpec, PythonPackageDepSpec>
         {
             public:

@@ -18,7 +18,7 @@
  */
 
 #include <paludis/util/simple_parser.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <strings.h>
 
 using namespace paludis;
@@ -221,12 +221,12 @@ paludis::simple_parser::any_except(const std::string & s)
 namespace paludis
 {
     template <>
-    struct Implementation<SimpleParser>
+    struct Imp<SimpleParser>
     {
         std::string text;
         std::string::size_type offset;
 
-        Implementation(const std::string & t) :
+        Imp(const std::string & t) :
             text(t),
             offset(0)
         {
@@ -235,7 +235,7 @@ namespace paludis
 }
 
 SimpleParser::SimpleParser(const std::string & s) :
-    PrivateImplementationPattern<SimpleParser>(s)
+    Pimp<SimpleParser>(s)
 {
 }
 
@@ -292,5 +292,5 @@ SimpleParser::current_line_number() const
     return line_number;
 }
 
-template struct PrivateImplementationPattern<SimpleParser>;
+template struct Pimp<SimpleParser>;
 

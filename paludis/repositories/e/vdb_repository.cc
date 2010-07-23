@@ -79,7 +79,7 @@
 #include <paludis/util/timestamp.hh>
 #include <paludis/util/destringify.hh>
 
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/create_iterator-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 
@@ -103,7 +103,7 @@ typedef std::map<std::pair<QualifiedPackageName, VersionSpec>, std::shared_ptr<s
 namespace paludis
 {
     template <>
-    struct Implementation<VDBRepository>
+    struct Imp<VDBRepository>
     {
         VDBRepositoryParams params;
 
@@ -118,8 +118,8 @@ namespace paludis
         mutable bool tried_provides_cache, used_provides_cache;
         std::shared_ptr<RepositoryNameCache> names_cache;
 
-        Implementation(const VDBRepository * const, const VDBRepositoryParams &, std::shared_ptr<Mutex> = std::make_shared<Mutex>());
-        ~Implementation();
+        Imp(const VDBRepository * const, const VDBRepositoryParams &, std::shared_ptr<Mutex> = std::make_shared<Mutex>());
+        ~Imp();
 
         std::shared_ptr<const MetadataValueKey<FSEntry> > location_key;
         std::shared_ptr<const MetadataValueKey<FSEntry> > root_key;
@@ -130,7 +130,7 @@ namespace paludis
         std::shared_ptr<const MetadataValueKey<std::string> > eapi_when_unknown_key;
     };
 
-    Implementation<VDBRepository>::Implementation(const VDBRepository * const r,
+    Imp<VDBRepository>::Imp(const VDBRepository * const r,
             const VDBRepositoryParams & p, std::shared_ptr<Mutex> m) :
         params(p),
         big_nasty_mutex(m),
@@ -155,7 +155,7 @@ namespace paludis
     {
     }
 
-    Implementation<VDBRepository>::~Implementation()
+    Imp<VDBRepository>::~Imp()
     {
     }
 }
@@ -176,8 +176,8 @@ VDBRepository::VDBRepository(const VDBRepositoryParams & p) :
                 n::provides_interface() = this,
                 n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
             )),
-    PrivateImplementationPattern<VDBRepository>(this, p),
-    _imp(PrivateImplementationPattern<VDBRepository>::_imp)
+    Pimp<VDBRepository>(this, p),
+    _imp(Pimp<VDBRepository>::_imp)
 {
     _add_metadata_keys();
 }
@@ -565,7 +565,7 @@ void
 VDBRepository::invalidate()
 {
     Lock l(*_imp->big_nasty_mutex);
-    _imp.reset(new Implementation<VDBRepository>(this, _imp->params, _imp->big_nasty_mutex));
+    _imp.reset(new Imp<VDBRepository>(this, _imp->params, _imp->big_nasty_mutex));
     _add_metadata_keys();
 }
 

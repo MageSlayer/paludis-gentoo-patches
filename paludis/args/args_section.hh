@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_ARGS_ARGS_SECTION_HH
 #define PALUDIS_GUARD_PALUDIS_ARGS_ARGS_SECTION_HH 1
 
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <string>
@@ -39,7 +39,7 @@ namespace paludis
          * \ingroup g_args
          */
         class PALUDIS_VISIBLE ArgsSection :
-            private PrivateImplementationPattern<ArgsSection>
+            private Pimp<ArgsSection>
         {
             public:
                 ArgsSection(ArgsHandler * const, const std::string &);
@@ -58,7 +58,7 @@ namespace paludis
         };
     }
 
-    extern template class PrivateImplementationPattern<args::ArgsSection>;
+    extern template class Pimp<args::ArgsSection>;
     extern template class WrappedForwardIterator<args::ArgsSection::GroupsConstIteratorTag, const args::ArgsGroup>;
 }
 

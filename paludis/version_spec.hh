@@ -22,7 +22,7 @@
 
 #include <paludis/version_spec-fwd.hh>
 #include <paludis/util/exception.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/operators.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
@@ -105,7 +105,7 @@ namespace paludis
      * \ingroup g_names
      */
     class PALUDIS_VISIBLE VersionSpec :
-        private PrivateImplementationPattern<VersionSpec>,
+        private Pimp<VersionSpec>,
         public relational_operators::HasRelationalOperators
     {
         friend std::ostream & operator<< (std::ostream &, const VersionSpec &);

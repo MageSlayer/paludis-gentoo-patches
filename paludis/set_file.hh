@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_SET_FILE_HH
 #define PALUDIS_GUARD_PALUDIS_SET_FILE_HH 1
 
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/options.hh>
@@ -112,7 +112,7 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE SetFile :
-        private PrivateImplementationPattern<SetFile>
+        private Pimp<SetFile>
     {
         public:
             ///\name Basic operations

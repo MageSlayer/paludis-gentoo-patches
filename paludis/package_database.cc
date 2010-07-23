@@ -27,7 +27,7 @@
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
@@ -152,7 +152,7 @@ AmbiguousPackageNameError::name() const
 namespace paludis
 {
     template<>
-    struct Implementation<PackageDatabase>
+    struct Imp<PackageDatabase>
     {
         std::list<std::shared_ptr<Repository> > repositories;
         std::multimap<int, std::list<std::shared_ptr<Repository> >::iterator> repository_importances;
@@ -161,7 +161,7 @@ namespace paludis
 }
 
 PackageDatabase::PackageDatabase(const Environment * const e) :
-    PrivateImplementationPattern<PackageDatabase>()
+    Pimp<PackageDatabase>()
 {
     _imp->environment = e;
 }

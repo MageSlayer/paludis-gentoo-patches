@@ -22,7 +22,7 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_GENTOO_TRADITIONAL_LAYOUT_HH 1
 
 #include <paludis/repositories/e/layout.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 
 namespace paludis
 {
@@ -36,7 +36,7 @@ namespace paludis
          */
         class PALUDIS_VISIBLE TraditionalLayout :
             public Layout,
-            private PrivateImplementationPattern<TraditionalLayout>
+            private Pimp<TraditionalLayout>
         {
             private:
                 void need_category_names() const;

@@ -139,7 +139,7 @@ PackageIDKey::pretty_print(const Formatter<PackageID> & f) const
 namespace paludis
 {
     template <>
-    struct Implementation<DepKey>
+    struct Imp<DepKey>
     {
         const Environment * const env;
         const std::string v;
@@ -152,7 +152,7 @@ namespace paludis
         const std::string human_name;
         const MetadataKeyType type;
 
-        Implementation(const Environment * const e, const std::string & vv,
+        Imp(const Environment * const e, const std::string & vv,
                 const std::shared_ptr<const DependenciesLabelSequence> & s,
                 const std::string & r, const std::string & h, const MetadataKeyType & t) :
             env(e),
@@ -168,8 +168,8 @@ namespace paludis
 
 DepKey::DepKey(const Environment * const e, const std::string & r, const std::string & h, const std::string & v,
         const std::shared_ptr<const DependenciesLabelSequence> & s, const MetadataKeyType t) :
-    PrivateImplementationPattern<DepKey>(e, v, s, r, h, t),
-    _imp(PrivateImplementationPattern<DepKey>::_imp)
+    Pimp<DepKey>(e, v, s, r, h, t),
+    _imp(Pimp<DepKey>::_imp)
 {
 }
 

@@ -28,7 +28,7 @@
 #include <paludis/filter-fwd.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/join.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/version_spec.hh>
@@ -218,7 +218,7 @@ namespace paludis
      * \ingroup g_package_database
      */
     class PALUDIS_VISIBLE PackageDatabase :
-        private PrivateImplementationPattern<PackageDatabase>
+        private Pimp<PackageDatabase>
     {
         private:
             static const Filter & all_filter() PALUDIS_ATTRIBUTE((warn_unused_result));

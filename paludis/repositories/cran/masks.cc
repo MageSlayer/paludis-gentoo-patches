@@ -18,7 +18,7 @@
  */
 
 #include "masks.hh"
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 
 using namespace paludis;
 using namespace paludis::cranrepository;
@@ -26,13 +26,13 @@ using namespace paludis::cranrepository;
 namespace paludis
 {
     template <>
-    struct Implementation<BrokenMask>
+    struct Imp<BrokenMask>
     {
         const char key;
         const std::string description;
         const std::string explanation;
 
-        Implementation(const char k, const std::string & d, const std::string & e) :
+        Imp(const char k, const std::string & d, const std::string & e) :
             key(k),
             description(d),
             explanation(e)
@@ -42,7 +42,7 @@ namespace paludis
 }
 
 BrokenMask::BrokenMask(const char c, const std::string & d, const std::string & e) :
-    PrivateImplementationPattern<BrokenMask>(c, d, e)
+    Pimp<BrokenMask>(c, d, e)
 {
 }
 

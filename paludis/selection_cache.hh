@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_SELECTION_CACHE_HH 1
 
 #include <paludis/selection_cache-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/selection-fwd.hh>
 #include <paludis/package_id-fwd.hh>
@@ -30,7 +30,7 @@
 namespace paludis
 {
     class PALUDIS_VISIBLE SelectionCache :
-        private PrivateImplementationPattern<SelectionCache>
+        private Pimp<SelectionCache>
     {
         public:
             SelectionCache();
@@ -42,15 +42,15 @@ namespace paludis
     };
 
     class PALUDIS_VISIBLE ScopedSelectionCache :
-        private PrivateImplementationPattern<ScopedSelectionCache>
+        private Pimp<ScopedSelectionCache>
     {
         public:
             ScopedSelectionCache(Environment * const);
             ~ScopedSelectionCache();
     };
 
-    extern template class PrivateImplementationPattern<SelectionCache>;
-    extern template class PrivateImplementationPattern<ScopedSelectionCache>;
+    extern template class Pimp<SelectionCache>;
+    extern template class Pimp<ScopedSelectionCache>;
 }
 
 #endif

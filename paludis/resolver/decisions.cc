@@ -20,7 +20,7 @@
 #include <paludis/resolver/decisions.hh>
 #include <paludis/resolver/decision.hh>
 #include <paludis/resolver/orderer_notes.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
@@ -98,7 +98,7 @@ namespace
 namespace paludis
 {
     template <typename Decision_, typename Notes_>
-    struct Implementation<Decisions<Decision_, Notes_> >
+    struct Imp<Decisions<Decision_, Notes_> >
     {
         typename ContainerTraits<Decision_, Notes_>::ContainerType values;
     };
@@ -112,7 +112,7 @@ namespace paludis
 
 template <typename Decision_, typename Notes_>
 Decisions<Decision_, Notes_>::Decisions() :
-    PrivateImplementationPattern<Decisions<Decision_, Notes_> >()
+    Pimp<Decisions<Decision_, Notes_> >()
 {
 }
 

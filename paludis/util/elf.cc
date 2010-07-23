@@ -27,7 +27,7 @@
 #include <paludis/util/elf_types.hh>
 
 #include <paludis/util/byte_swap.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/stringify.hh>
@@ -45,7 +45,7 @@ using namespace paludis;
 namespace paludis
 {
     template <typename ElfType_>
-    struct Implementation<ElfObject<ElfType_> >
+    struct Imp<ElfObject<ElfType_> >
     {
         std::vector<std::shared_ptr<Section<ElfType_> > > sections;
     };
@@ -265,7 +265,7 @@ ElfObject<ElfType_>::is_valid_elf(std::istream & stream)
 
 template <typename ElfType_>
 ElfObject<ElfType_>::ElfObject(std::istream & stream) :
-    PrivateImplementationPattern<ElfObject>()
+    Pimp<ElfObject>()
 {
     try
     {

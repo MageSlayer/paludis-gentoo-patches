@@ -22,7 +22,7 @@
 
 #include <paludis/util/attributes.hh>
 #include <paludis/util/sequence-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/util/wrapped_output_iterator-fwd.hh>
 
@@ -48,10 +48,10 @@ namespace paludis
      */
     template <typename T_>
     class PALUDIS_VISIBLE Sequence :
-        private PrivateImplementationPattern<Sequence<T_> >
+        private Pimp<Sequence<T_> >
     {
         private:
-            using PrivateImplementationPattern<Sequence<T_> >::_imp;
+            using Pimp<Sequence<T_> >::_imp;
 
         public:
             ///\name Standard library typedefs

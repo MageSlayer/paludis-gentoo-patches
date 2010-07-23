@@ -29,7 +29,7 @@ namespace paludis
     {
         class PALUDIS_VISIBLE DescriptionFile :
             public ConfigFile,
-            private PrivateImplementationPattern<DescriptionFile>
+            private Pimp<DescriptionFile>
         {
             private:
                 void _line(const std::string &);

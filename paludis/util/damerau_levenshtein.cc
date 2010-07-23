@@ -18,23 +18,23 @@
  */
 
 #include <paludis/util/damerau_levenshtein.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <memory>
 #include <vector>
 
 using namespace paludis;
 
-template class PrivateImplementationPattern<DamerauLevenshtein>;
+template class Pimp<DamerauLevenshtein>;
 
 namespace paludis
 {
     template <>
-    struct Implementation<DamerauLevenshtein>
+    struct Imp<DamerauLevenshtein>
     {
         std::string name;
         unsigned n;
 
-        Implementation(const std::string & myname) :
+        Imp(const std::string & myname) :
             name(myname), n(name.length() + 1)
         {
         }
@@ -42,7 +42,7 @@ namespace paludis
 }
 
 DamerauLevenshtein::DamerauLevenshtein(const std::string & name) :
-    PrivateImplementationPattern<DamerauLevenshtein>(name)
+    Pimp<DamerauLevenshtein>(name)
 {
 }
 

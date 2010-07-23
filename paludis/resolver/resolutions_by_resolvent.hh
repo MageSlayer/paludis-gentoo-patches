@@ -23,7 +23,7 @@
 #include <paludis/resolver/resolutions_by_resolvent-fwd.hh>
 #include <paludis/resolver/resolution-fwd.hh>
 #include <paludis/resolver/resolvent-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/serialise-fwd.hh>
 #include <memory>
@@ -33,7 +33,7 @@ namespace paludis
     namespace resolver
     {
         class PALUDIS_VISIBLE ResolutionsByResolvent :
-            private PrivateImplementationPattern<ResolutionsByResolvent>
+            private Pimp<ResolutionsByResolvent>
         {
             public:
                 ResolutionsByResolvent();

@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_UTIL_MAP_IMPL_HH 1
 
 #include <paludis/util/map.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/wrapped_output_iterator-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <map>
@@ -29,7 +29,7 @@
 #include <functional>
 
 /** \file
- * Implementation for paludis/util/map.hh .
+ * Imp for paludis/util/map.hh .
  *
  * \ingroup g_data_structures
  */
@@ -48,13 +48,13 @@ namespace paludis
     };
 
     /**
-     * Implementation data for a Map.
+     * Imp data for a Map.
      *
      * \ingroup g_data_structures
      * \nosubgrouping
      */
     template <typename K_, typename V_, typename C_>
-    struct Implementation<Map<K_, V_, C_> >
+    struct Imp<Map<K_, V_, C_> >
     {
         std::map<K_, V_, C_> map;
     };
@@ -74,7 +74,7 @@ namespace paludis
 
 template <typename K_, typename V_, typename C_>
 paludis::Map<K_, V_, C_>::Map() :
-    paludis::PrivateImplementationPattern<paludis::Map<K_, V_, C_> >()
+    paludis::Pimp<paludis::Map<K_, V_, C_> >()
 {
 }
 

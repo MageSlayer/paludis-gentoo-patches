@@ -18,7 +18,7 @@
  */
 
 #include <paludis/serialise-impl.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/sequence-impl.hh>
@@ -121,12 +121,12 @@ Serialiser::escape_write(const std::string & t)
 namespace paludis
 {
     template <>
-    struct Implementation<Deserialiser>
+    struct Imp<Deserialiser>
     {
         const Environment * const env;
         std::istream & stream;
 
-        Implementation(const Environment * const e, std::istream & s) :
+        Imp(const Environment * const e, std::istream & s) :
             env(e),
             stream(s)
         {
@@ -134,7 +134,7 @@ namespace paludis
     };
 
     template <>
-    struct Implementation<Deserialisation>
+    struct Imp<Deserialisation>
     {
         Deserialiser & deserialiser;
         const std::string item_name;
@@ -144,7 +144,7 @@ namespace paludis
         bool null;
         std::list<std::shared_ptr<Deserialisation> > children;
 
-        Implementation(Deserialiser & d, const std::string & i) :
+        Imp(Deserialiser & d, const std::string & i) :
             deserialiser(d),
             item_name(i),
             null(false)
@@ -153,12 +153,12 @@ namespace paludis
     };
 
     template <>
-    struct Implementation<Deserialisator>
+    struct Imp<Deserialisator>
     {
         const std::string class_name;
         std::map<std::string, std::shared_ptr<Deserialisation> > keys;
 
-        Implementation(const std::string & c) :
+        Imp(const std::string & c) :
             class_name(c)
         {
         }
@@ -172,7 +172,7 @@ namespace paludis
 }
 
 Deserialiser::Deserialiser(const Environment * const e, std::istream & s) :
-    PrivateImplementationPattern<Deserialiser>(e, s)
+    Pimp<Deserialiser>(e, s)
 {
 }
 
@@ -193,7 +193,7 @@ Deserialiser::environment() const
 }
 
 Deserialisation::Deserialisation(const std::string & i, Deserialiser & d) :
-    PrivateImplementationPattern<Deserialisation>(d, i)
+    Pimp<Deserialisation>(d, i)
 {
     char c;
     if (! d.stream().get(c))
@@ -328,7 +328,7 @@ Deserialisation::deserialiser() const
 }
 
 Deserialisator::Deserialisator(Deserialisation & d, const std::string & c) :
-    PrivateImplementationPattern<Deserialisator>(c)
+    Pimp<Deserialisator>(c)
 {
     if (c != d.class_name())
         throw InternalError(PALUDIS_HERE, "expected class name '" + stringify(c) + "' but got '"
@@ -381,8 +381,8 @@ DeserialisatorHandler<std::shared_ptr<const PackageID> >::handle(Deserialisation
                         make_null_shared_ptr()), MatchPackageOptions()))]->begin();
 }
 
-template class PrivateImplementationPattern<Deserialiser>;
-template class PrivateImplementationPattern<Deserialisation>;
-template class PrivateImplementationPattern<Deserialisator>;
+template class Pimp<Deserialiser>;
+template class Pimp<Deserialisation>;
+template class Pimp<Deserialisator>;
 template class WrappedForwardIterator<Deserialisation::ConstIteratorTag, const std::shared_ptr<Deserialisation> >;
 

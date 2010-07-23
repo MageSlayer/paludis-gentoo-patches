@@ -21,7 +21,7 @@
 #include <paludis_ruby.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/singleton-impl.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/dep_list_exceptions.hh>
 #include <paludis/match_package.hh>
 #include <paludis/version_spec.hh>
@@ -41,7 +41,7 @@ template class Singleton<RegisterRubyClass>;
 namespace paludis
 {
     template<>
-    struct Implementation<RegisterRubyClass>
+    struct Imp<RegisterRubyClass>
     {
         std::list<void (*)()> funcs;
     };
@@ -155,7 +155,7 @@ namespace
 }
 
 RegisterRubyClass::RegisterRubyClass() :
-    PrivateImplementationPattern<RegisterRubyClass>()
+    Pimp<RegisterRubyClass>()
 {
 }
 

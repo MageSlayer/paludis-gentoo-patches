@@ -22,7 +22,7 @@
 
 #include <paludis/util/map-fwd.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/wrapped_output_iterator-fwd.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <string>
@@ -50,10 +50,10 @@ namespace paludis
      */
     template <typename K_, typename V_, typename C_>
     class PALUDIS_VISIBLE Map :
-        private PrivateImplementationPattern<Map<K_, V_, C_> >
+        private Pimp<Map<K_, V_, C_> >
     {
         private:
-            using PrivateImplementationPattern<Map<K_, V_, C_> >::_imp;
+            using Pimp<Map<K_, V_, C_> >::_imp;
 
         public:
             ///\name Basic operations

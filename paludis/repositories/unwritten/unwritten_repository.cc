@@ -19,7 +19,7 @@
 
 #include <paludis/repositories/unwritten/unwritten_repository.hh>
 #include <paludis/repositories/unwritten/unwritten_repository_store.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/active_object_ptr.hh>
 #include <paludis/util/deferred_construction_ptr.hh>
 #include <paludis/util/stringify.hh>
@@ -48,7 +48,7 @@ namespace
 namespace paludis
 {
     template <>
-    struct Implementation<UnwrittenRepository>
+    struct Imp<UnwrittenRepository>
     {
         const UnwrittenRepositoryParams params;
 
@@ -61,7 +61,7 @@ namespace paludis
         const ActiveObjectPtr<DeferredConstructionPtr<
             std::shared_ptr<UnwrittenRepositoryStore> > > store;
 
-        Implementation(const UnwrittenRepository * const repo, const UnwrittenRepositoryParams & p) :
+        Imp(const UnwrittenRepository * const repo, const UnwrittenRepositoryParams & p) :
             params(p),
             format_key(new LiteralMetadataValueKey<std::string> ("format", "format",
                         mkt_significant, "unwritten")),
@@ -85,7 +85,7 @@ UnwrittenRepositoryConfigurationError::UnwrittenRepositoryConfigurationError(con
 }
 
 UnwrittenRepository::UnwrittenRepository(const UnwrittenRepositoryParams & p) :
-    PrivateImplementationPattern<UnwrittenRepository>(this, p),
+    Pimp<UnwrittenRepository>(this, p),
     Repository(
             p.environment(),
             p.name(),
@@ -97,7 +97,7 @@ UnwrittenRepository::UnwrittenRepository(const UnwrittenRepositoryParams & p) :
                 n::provides_interface() = static_cast<RepositoryProvidesInterface *>(0),
                 n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
                 )),
-    _imp(PrivateImplementationPattern<UnwrittenRepository>::_imp)
+    _imp(Pimp<UnwrittenRepository>::_imp)
 {
     _add_metadata_keys();
 }
@@ -155,7 +155,7 @@ UnwrittenRepository::installed_root_key() const
 void
 UnwrittenRepository::invalidate()
 {
-    _imp.reset(new Implementation<UnwrittenRepository>(this, _imp->params));
+    _imp.reset(new Imp<UnwrittenRepository>(this, _imp->params));
     _add_metadata_keys();
 }
 
@@ -375,5 +375,5 @@ UnwrittenRepository::sync_host_key() const
     return _imp->sync_host_key;
 }
 
-template class PrivateImplementationPattern<unwritten_repository::UnwrittenRepository>;
+template class Pimp<unwritten_repository::UnwrittenRepository>;
 

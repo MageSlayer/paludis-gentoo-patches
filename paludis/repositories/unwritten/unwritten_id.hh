@@ -65,10 +65,10 @@ namespace paludis
 
         class PALUDIS_VISIBLE UnwrittenID :
             public PackageID,
-            private PrivateImplementationPattern<UnwrittenID>
+            private Pimp<UnwrittenID>
         {
             private:
-                PrivateImplementationPattern<UnwrittenID>::ImpPtr & _imp;
+                Pimp<UnwrittenID>::ImpPtr & _imp;
 
             protected:
                 void need_keys_added() const;

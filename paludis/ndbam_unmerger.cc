@@ -30,7 +30,7 @@
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/strip.hh>
@@ -52,14 +52,14 @@ using namespace paludis;
 namespace paludis
 {
     template<>
-    struct Implementation<NDBAMUnmerger>
+    struct Imp<NDBAMUnmerger>
     {
         NDBAMUnmergerOptions options;
 
         std::list<std::string> config_protect;
         std::list<std::string> config_protect_mask;
 
-        Implementation(const NDBAMUnmergerOptions & o) :
+        Imp(const NDBAMUnmergerOptions & o) :
             options(o)
         {
             tokenise_whitespace(o.config_protect(), std::back_inserter(config_protect));
@@ -74,8 +74,8 @@ NDBAMUnmerger::NDBAMUnmerger(const NDBAMUnmergerOptions & o) :
             n::ignore() = o.ignore(),
             n::root() = o.root()
             )),
-    PrivateImplementationPattern<NDBAMUnmerger>(o),
-    _imp(PrivateImplementationPattern<NDBAMUnmerger>::_imp.get())
+    Pimp<NDBAMUnmerger>(o),
+    _imp(Pimp<NDBAMUnmerger>::_imp.get())
 {
 }
 

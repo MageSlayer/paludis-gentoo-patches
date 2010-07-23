@@ -21,13 +21,13 @@
 #define PALUDIS_GUARD_SRC_CLIENTS_INQUISITIO_KEY_EXTRACTOR_HH 1
 
 #include <src/clients/inquisitio/extractor.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/environment-fwd.hh>
 
 namespace inquisitio
 {
     class KeyExtractor :
-        private paludis::PrivateImplementationPattern<KeyExtractor>,
+        private paludis::Pimp<KeyExtractor>,
         public Extractor
     {
         public:

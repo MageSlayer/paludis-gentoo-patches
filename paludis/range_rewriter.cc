@@ -26,7 +26,7 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/dep_spec.hh>
@@ -194,12 +194,12 @@ namespace
 namespace paludis
 {
     template <>
-    struct Implementation<RangeRewriter>
+    struct Imp<RangeRewriter>
     {
         bool invalid;
         std::shared_ptr<RangeRewrittenPackageDepSpecData> spec_data;
 
-        Implementation() :
+        Imp() :
             invalid(false)
         {
         }
@@ -207,7 +207,7 @@ namespace paludis
 }
 
 RangeRewriter::RangeRewriter() :
-    PrivateImplementationPattern<RangeRewriter>()
+    Pimp<RangeRewriter>()
 {
 }
 

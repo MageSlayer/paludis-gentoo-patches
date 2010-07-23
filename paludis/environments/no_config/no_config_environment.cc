@@ -26,7 +26,7 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/create_iterator-impl.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/wrapped_output_iterator-impl.hh>
 #include <paludis/util/tribool.hh>
@@ -58,7 +58,7 @@ using namespace paludis::no_config_environment;
 namespace paludis
 {
     template<>
-    struct Implementation<NoConfigEnvironment>
+    struct Imp<NoConfigEnvironment>
     {
         const no_config_environment::Params params;
 
@@ -78,7 +78,7 @@ namespace paludis
         std::shared_ptr<LiteralMetadataValueKey<std::string> > format_key;
         std::shared_ptr<LiteralMetadataValueKey<FSEntry> > repository_dir_key;
 
-        Implementation(NoConfigEnvironment * const env, const no_config_environment::Params & params);
+        Imp(NoConfigEnvironment * const env, const no_config_environment::Params & params);
         void initialise(NoConfigEnvironment * const env);
     };
 
@@ -153,7 +153,7 @@ namespace
     }
 }
 
-Implementation<NoConfigEnvironment>::Implementation(
+Imp<NoConfigEnvironment>::Imp(
         NoConfigEnvironment * const env, const no_config_environment::Params & p) :
     params(p),
     top_level_dir(p.repository_dir()),
@@ -169,7 +169,7 @@ Implementation<NoConfigEnvironment>::Implementation(
 }
 
 void
-Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
+Imp<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
 {
     Context context("When initialising NoConfigEnvironment at '" + stringify(params.repository_dir()) + "':");
 
@@ -349,8 +349,8 @@ Implementation<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
 }
 
 NoConfigEnvironment::NoConfigEnvironment(const no_config_environment::Params & params) :
-    PrivateImplementationPattern<NoConfigEnvironment>(this, params),
-    _imp(PrivateImplementationPattern<NoConfigEnvironment>::_imp)
+    Pimp<NoConfigEnvironment>(this, params),
+    _imp(Pimp<NoConfigEnvironment>::_imp)
 {
     _imp->initialise(this);
 

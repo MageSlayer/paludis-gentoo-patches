@@ -21,13 +21,13 @@
 #define PALUDIS_GUARD_SRC_CLIENTS_INQUISITIO_PCRE_MATCHER_HH 1
 
 #include <src/clients/inquisitio/matcher.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 
 namespace inquisitio
 {
     class PCREMatcher :
         public Matcher,
-        private paludis::PrivateImplementationPattern<PCREMatcher>
+        private paludis::Pimp<PCREMatcher>
     {
         public:
             PCREMatcher(const std::string &);

@@ -29,7 +29,7 @@
 #include <paludis/resolver/resolvent-fwd.hh>
 #include <paludis/resolver/resolver_functions-fwd.hh>
 #include <paludis/resolver/resolution-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/tribool-fwd.hh>
 #include <paludis/environment-fwd.hh>
 #include <functional>
@@ -39,7 +39,7 @@ namespace paludis
     namespace resolver
     {
         class PALUDIS_VISIBLE Orderer :
-            private PrivateImplementationPattern<Orderer>
+            private Pimp<Orderer>
         {
             private:
                 void _check_self_deps_and_schedule(

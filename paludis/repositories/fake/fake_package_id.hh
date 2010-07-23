@@ -33,10 +33,10 @@ namespace paludis
     template <typename C_>
     class PALUDIS_VISIBLE FakeMetadataValueKey :
         public MetadataValueKey<C_>,
-        private PrivateImplementationPattern<FakeMetadataValueKey<C_> >
+        private Pimp<FakeMetadataValueKey<C_> >
     {
         protected:
-            typename PrivateImplementationPattern<FakeMetadataValueKey<C_> >::ImpPtr & _imp;
+            typename Pimp<FakeMetadataValueKey<C_> >::ImpPtr & _imp;
 
         public:
             FakeMetadataValueKey(const std::string &, const std::string &, const MetadataKeyType,
@@ -58,10 +58,10 @@ namespace paludis
     template <typename C_>
     class PALUDIS_VISIBLE FakeMetadataCollectionKey :
         public MetadataCollectionKey<C_>,
-        private PrivateImplementationPattern<FakeMetadataCollectionKey<C_> >
+        private Pimp<FakeMetadataCollectionKey<C_> >
     {
         protected:
-            typename PrivateImplementationPattern<FakeMetadataCollectionKey<C_> >::ImpPtr & _imp;
+            typename Pimp<FakeMetadataCollectionKey<C_> >::ImpPtr & _imp;
 
             FakeMetadataCollectionKey(const std::string &, const std::string &, const MetadataKeyType,
                     const PackageID * const, const Environment * const);
@@ -92,10 +92,10 @@ namespace paludis
     template <typename C_>
     class PALUDIS_VISIBLE FakeMetadataSpecTreeKey :
         public MetadataSpecTreeKey<C_>,
-        private PrivateImplementationPattern<FakeMetadataSpecTreeKey<C_> >
+        private Pimp<FakeMetadataSpecTreeKey<C_> >
     {
         private:
-            typename PrivateImplementationPattern<FakeMetadataSpecTreeKey<C_> >::ImpPtr & _imp;
+            typename Pimp<FakeMetadataSpecTreeKey<C_> >::ImpPtr & _imp;
 
         public:
             FakeMetadataSpecTreeKey(const std::string &, const std::string &, const std::string &,
@@ -121,10 +121,10 @@ namespace paludis
     template <>
     class PALUDIS_VISIBLE FakeMetadataSpecTreeKey<FetchableURISpecTree> :
         public MetadataSpecTreeKey<FetchableURISpecTree>,
-        private PrivateImplementationPattern<FakeMetadataSpecTreeKey<FetchableURISpecTree> >
+        private Pimp<FakeMetadataSpecTreeKey<FetchableURISpecTree> >
     {
         private:
-            PrivateImplementationPattern<FakeMetadataSpecTreeKey<FetchableURISpecTree> >::ImpPtr & _imp;
+            Pimp<FakeMetadataSpecTreeKey<FetchableURISpecTree> >::ImpPtr & _imp;
 
         public:
             FakeMetadataSpecTreeKey(const std::string &, const std::string &, const std::string &,
@@ -154,10 +154,10 @@ namespace paludis
     template <>
     class PALUDIS_VISIBLE FakeMetadataSpecTreeKey<DependencySpecTree> :
         public MetadataSpecTreeKey<DependencySpecTree>,
-        private PrivateImplementationPattern<FakeMetadataSpecTreeKey<DependencySpecTree> >
+        private Pimp<FakeMetadataSpecTreeKey<DependencySpecTree> >
     {
         private:
-            PrivateImplementationPattern<FakeMetadataSpecTreeKey<DependencySpecTree> >::ImpPtr & _imp;
+            Pimp<FakeMetadataSpecTreeKey<DependencySpecTree> >::ImpPtr & _imp;
 
         public:
             FakeMetadataSpecTreeKey(const std::string &, const std::string &, const std::string &,
@@ -187,10 +187,10 @@ namespace paludis
 
     class PALUDIS_VISIBLE FakeMetadataChoicesKey :
         public MetadataValueKey<std::shared_ptr<const Choices> >,
-        private PrivateImplementationPattern<FakeMetadataChoicesKey>
+        private Pimp<FakeMetadataChoicesKey>
     {
         private:
-            PrivateImplementationPattern<FakeMetadataChoicesKey>::ImpPtr & _imp;
+            Pimp<FakeMetadataChoicesKey>::ImpPtr & _imp;
 
         public:
             FakeMetadataChoicesKey(
@@ -208,7 +208,7 @@ namespace paludis
 
     class PALUDIS_VISIBLE FakeUnacceptedMask :
         public UnacceptedMask,
-        private PrivateImplementationPattern<FakeUnacceptedMask>
+        private Pimp<FakeUnacceptedMask>
     {
         public:
             FakeUnacceptedMask(const char, const std::string &, const std::shared_ptr<const MetadataKey> &);
@@ -241,11 +241,11 @@ namespace paludis
      */
     class PALUDIS_VISIBLE FakePackageID :
         public PackageID,
-        private PrivateImplementationPattern<FakePackageID>,
+        private Pimp<FakePackageID>,
         public std::enable_shared_from_this<FakePackageID>
     {
         private:
-            PrivateImplementationPattern<FakePackageID>::ImpPtr & _imp;
+            Pimp<FakePackageID>::ImpPtr & _imp;
 
         protected:
             virtual void need_keys_added() const;

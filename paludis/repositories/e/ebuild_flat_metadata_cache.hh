@@ -24,7 +24,7 @@
 #include <paludis/repositories/e/ebuild_id.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/repositories/e/eclass_mtimes.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 
 namespace paludis
 {
@@ -40,7 +40,7 @@ namespace paludis
          * \nosubgrouping
          */
         class EbuildFlatMetadataCache :
-            private PrivateImplementationPattern<EbuildFlatMetadataCache>
+            private Pimp<EbuildFlatMetadataCache>
         {
             public:
                 ///\name Basic operations
@@ -62,7 +62,7 @@ namespace paludis
         };
     }
 
-    extern template class PrivateImplementationPattern<erepository::EbuildFlatMetadataCache>;
+    extern template class Pimp<erepository::EbuildFlatMetadataCache>;
 }
 
 #endif

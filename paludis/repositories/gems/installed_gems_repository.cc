@@ -26,7 +26,7 @@
 #include <paludis/package_database.hh>
 #include <paludis/environment.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
@@ -56,7 +56,7 @@ typedef std::unordered_map<QualifiedPackageName, std::shared_ptr<PackageIDSequen
 namespace paludis
 {
     template <>
-    struct Implementation<InstalledGemsRepository>
+    struct Imp<InstalledGemsRepository>
     {
         const std::shared_ptr<Mutex> big_nasty_mutex;
 
@@ -74,7 +74,7 @@ namespace paludis
         std::shared_ptr<const MetadataValueKey<FSEntry> > root_key;
         std::shared_ptr<const MetadataValueKey<std::string> > format_key;
 
-        Implementation(const gems::InstalledRepositoryParams p,
+        Imp(const gems::InstalledRepositoryParams p,
                        std::shared_ptr<Mutex> m = std::make_shared<Mutex>()) :
             big_nasty_mutex(m),
             params(p),
@@ -104,8 +104,8 @@ InstalledGemsRepository::InstalledGemsRepository(const gems::InstalledRepository
                 n::provides_interface() = static_cast<RepositoryProvidesInterface *>(0),
                 n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
             )),
-    PrivateImplementationPattern<InstalledGemsRepository>(params),
-    _imp(PrivateImplementationPattern<InstalledGemsRepository>::_imp)
+    Pimp<InstalledGemsRepository>(params),
+    _imp(Pimp<InstalledGemsRepository>::_imp)
 {
     _add_metadata_keys();
 }
@@ -128,7 +128,7 @@ void
 InstalledGemsRepository::invalidate()
 {
     Lock l(*_imp->big_nasty_mutex);
-    _imp.reset(new Implementation<InstalledGemsRepository>(_imp->params, _imp->big_nasty_mutex));
+    _imp.reset(new Imp<InstalledGemsRepository>(_imp->params, _imp->big_nasty_mutex));
     _add_metadata_keys();
 }
 

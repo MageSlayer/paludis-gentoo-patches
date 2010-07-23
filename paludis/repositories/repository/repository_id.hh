@@ -45,10 +45,10 @@ namespace paludis
 
         class PALUDIS_VISIBLE RepositoryID :
             public PackageID,
-            private PrivateImplementationPattern<RepositoryID>
+            private Pimp<RepositoryID>
         {
             private:
-                PrivateImplementationPattern<RepositoryID>::ImpPtr & _imp;
+                Pimp<RepositoryID>::ImpPtr & _imp;
 
             protected:
                 void need_keys_added() const;

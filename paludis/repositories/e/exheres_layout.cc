@@ -25,7 +25,7 @@
 #include <paludis/package_database.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/fs_entry.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/map.hh>
@@ -56,7 +56,7 @@ typedef std::unordered_map<QualifiedPackageName, std::shared_ptr<PackageIDSequen
 namespace paludis
 {
     template<>
-    struct Implementation<ExheresLayout>
+    struct Imp<ExheresLayout>
     {
         const ERepository * const repository;
         const FSEntry tree_root;
@@ -78,7 +78,7 @@ namespace paludis
         std::shared_ptr<FSEntrySequence> info_packages_files;
         std::shared_ptr<UseDescFileInfoSequence> use_desc_files;
 
-        Implementation(const ERepository * const n, const FSEntry & t) :
+        Imp(const ERepository * const n, const FSEntry & t) :
             repository(n),
             tree_root(t),
             has_category_names(false),
@@ -97,7 +97,7 @@ namespace paludis
 ExheresLayout::ExheresLayout(const ERepository * const r, const FSEntry & tree_root,
         const std::shared_ptr<const FSEntrySequence> & f) :
     Layout(f),
-    PrivateImplementationPattern<ExheresLayout>(r, tree_root)
+    Pimp<ExheresLayout>(r, tree_root)
 {
     if (master_repositories_locations())
     {

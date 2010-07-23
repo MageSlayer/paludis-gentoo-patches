@@ -51,12 +51,12 @@ namespace paludis
      * \ingroup grpfakerepository
      */
     class PALUDIS_VISIBLE FakeRepository :
-        private PrivateImplementationPattern<FakeRepository>,
+        private Pimp<FakeRepository>,
         public FakeRepositoryBase,
         public RepositoryVirtualsInterface
     {
         private:
-            PrivateImplementationPattern<FakeRepository>::ImpPtr & _imp;
+            Pimp<FakeRepository>::ImpPtr & _imp;
 
         public:
             ///\name Basic operations

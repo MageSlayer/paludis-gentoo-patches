@@ -20,7 +20,7 @@
 #include <paludis/repositories/e/info_metadata_key.hh>
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/e_repository.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/config_file.hh>
@@ -50,21 +50,21 @@ using namespace paludis::erepository;
 namespace paludis
 {
     template <>
-    struct Implementation<InfoVarsMetadataKey>
+    struct Imp<InfoVarsMetadataKey>
     {
         const std::shared_ptr<const FSEntrySequence> locations;
 
         mutable Mutex mutex;
         mutable std::shared_ptr<Set<std::string> > value;
 
-        Implementation(const std::shared_ptr<const FSEntrySequence> & l) :
+        Imp(const std::shared_ptr<const FSEntrySequence> & l) :
             locations(l)
         {
         }
     };
 
     template <>
-    struct Implementation<InfoPkgsMetadataKey>
+    struct Imp<InfoPkgsMetadataKey>
     {
         const Environment * const env;
         const std::shared_ptr<const FSEntrySequence> locations;
@@ -73,7 +73,7 @@ namespace paludis
         mutable Mutex mutex;
         mutable bool added;
 
-        Implementation(const Environment * const e, const std::shared_ptr<const FSEntrySequence> & l,
+        Imp(const Environment * const e, const std::shared_ptr<const FSEntrySequence> & l,
                 const ERepository * const r) :
             env(e),
             locations(l),
@@ -85,7 +85,7 @@ namespace paludis
 }
 
 InfoVarsMetadataKey::InfoVarsMetadataKey(const std::shared_ptr<const FSEntrySequence> & f) :
-    PrivateImplementationPattern<InfoVarsMetadataKey>(f)
+    Pimp<InfoVarsMetadataKey>(f)
 {
 }
 
@@ -140,8 +140,8 @@ InfoVarsMetadataKey::type() const
 InfoPkgsMetadataKey::InfoPkgsMetadataKey(const Environment * const e,
         const std::shared_ptr<const FSEntrySequence> & f,
         const ERepository * const r) :
-    PrivateImplementationPattern<InfoPkgsMetadataKey>(e, f, r),
-    _imp(PrivateImplementationPattern<InfoPkgsMetadataKey>::_imp)
+    Pimp<InfoPkgsMetadataKey>(e, f, r),
+    _imp(Pimp<InfoPkgsMetadataKey>::_imp)
 {
 }
 
@@ -240,6 +240,6 @@ InfoPkgsMetadataKey::type() const
 }
 
 
-template class PrivateImplementationPattern<InfoPkgsMetadataKey>;
-template class PrivateImplementationPattern<InfoVarsMetadataKey>;
+template class Pimp<InfoPkgsMetadataKey>;
+template class Pimp<InfoVarsMetadataKey>;
 

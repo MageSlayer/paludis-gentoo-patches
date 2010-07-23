@@ -23,7 +23,7 @@
 #include <paludis/resolver/decisions-fwd.hh>
 #include <paludis/resolver/decision-fwd.hh>
 #include <paludis/resolver/orderer_notes-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/no_type.hh>
 #include <paludis/serialise-fwd.hh>
@@ -50,9 +50,9 @@ namespace paludis
 
         template <typename Decision_, typename Notes_>
         class PALUDIS_VISIBLE Decisions :
-            private PrivateImplementationPattern<Decisions<Decision_, Notes_> >
+            private Pimp<Decisions<Decision_, Notes_> >
         {
-            using PrivateImplementationPattern<Decisions<Decision_, Notes_> >::_imp;
+            using Pimp<Decisions<Decision_, Notes_> >::_imp;
 
             public:
                 Decisions();

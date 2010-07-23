@@ -21,7 +21,7 @@
 #include <paludis/repositories/unpackaged/installed_repository.hh>
 #include <paludis/ndbam.hh>
 #include <paludis/ndbam_unmerger.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/stringify.hh>
@@ -384,7 +384,7 @@ namespace
 namespace paludis
 {
     template <>
-    struct Implementation<InstalledUnpackagedID>
+    struct Imp<InstalledUnpackagedID>
     {
         const Environment * const env;
         const QualifiedPackageName name;
@@ -408,7 +408,7 @@ namespace paludis
 
         static const std::shared_ptr<Set<std::string> > behaviours_set;
 
-        Implementation(
+        Imp(
                 const Environment * const e,
                 const PackageID * const id,
                 const QualifiedPackageName & q,
@@ -474,13 +474,13 @@ namespace
     }
 }
 
-const std::shared_ptr<Set<std::string> > Implementation<InstalledUnpackagedID>::behaviours_set = make_behaviours();
+const std::shared_ptr<Set<std::string> > Imp<InstalledUnpackagedID>::behaviours_set = make_behaviours();
 
 InstalledUnpackagedID::InstalledUnpackagedID(const Environment * const e, const QualifiedPackageName & q,
         const VersionSpec & v, const SlotName & s, const RepositoryName & n, const FSEntry & l,
         const std::string &, const FSEntry & ro, const NDBAM * const d) :
-    PrivateImplementationPattern<InstalledUnpackagedID>(e, this, q, v, s, n, l, ro, d),
-    _imp(PrivateImplementationPattern<InstalledUnpackagedID>::_imp)
+    Pimp<InstalledUnpackagedID>(e, this, q, v, s, n, l, ro, d),
+    _imp(Pimp<InstalledUnpackagedID>::_imp)
 {
     add_metadata_key(_imp->fs_location_key);
     add_metadata_key(_imp->slot_key);

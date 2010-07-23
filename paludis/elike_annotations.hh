@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_ELIKE_ANNOTATIONS_HH 1
 
 #include <paludis/elike_annotations-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/map-fwd.hh>
 #include <paludis/metadata_key.hh>
 #include <memory>
@@ -29,7 +29,7 @@
 namespace paludis
 {
     class PALUDIS_VISIBLE ELikeAnnotations :
-        private PrivateImplementationPattern<ELikeAnnotations>,
+        private Pimp<ELikeAnnotations>,
         public MetadataSectionKey
     {
         public:
@@ -42,7 +42,7 @@ namespace paludis
             virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
-    extern template class PrivateImplementationPattern<ELikeAnnotations>;
+    extern template class Pimp<ELikeAnnotations>;
 }
 
 #endif

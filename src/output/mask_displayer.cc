@@ -20,7 +20,7 @@
 #include "mask_displayer.hh"
 #include "colour.hh"
 #include "colour_formatter.hh"
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
@@ -36,7 +36,7 @@ using namespace paludis;
 namespace paludis
 {
     template <>
-    struct Implementation<MaskDisplayer>
+    struct Imp<MaskDisplayer>
     {
         std::ostringstream s;
 
@@ -44,7 +44,7 @@ namespace paludis
         const std::shared_ptr<const PackageID> id;
         const bool want_description;
 
-        Implementation(const Environment * const e, const std::shared_ptr<const PackageID> & i,
+        Imp(const Environment * const e, const std::shared_ptr<const PackageID> & i,
                 const bool w) :
             env(e),
             id(i),
@@ -201,7 +201,7 @@ namespace
 
 MaskDisplayer::MaskDisplayer(const Environment * const e, const std::shared_ptr<const PackageID> & id,
         const bool want_description) :
-    PrivateImplementationPattern<MaskDisplayer>(e, id, want_description)
+    Pimp<MaskDisplayer>(e, id, want_description)
 {
 }
 

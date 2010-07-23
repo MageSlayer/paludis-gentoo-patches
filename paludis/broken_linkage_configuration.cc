@@ -25,7 +25,7 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/options.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/tokeniser.hh>
@@ -40,7 +40,7 @@ using namespace paludis;
 namespace paludis
 {
     template <>
-    struct Implementation<BrokenLinkageConfiguration>
+    struct Imp<BrokenLinkageConfiguration>
     {
         std::vector<std::string> ld_library_mask;
         std::vector<FSEntry> search_dirs;
@@ -136,7 +136,7 @@ namespace
 }
 
 BrokenLinkageConfiguration::BrokenLinkageConfiguration(const FSEntry & root) :
-    PrivateImplementationPattern<BrokenLinkageConfiguration>()
+    Pimp<BrokenLinkageConfiguration>()
 {
     Context ctx("When loading broken linkage checker configuration for '" + stringify(root) + "':");
 
@@ -164,7 +164,7 @@ BrokenLinkageConfiguration::~BrokenLinkageConfiguration()
 }
 
 void
-Implementation<BrokenLinkageConfiguration>::load_from_environment()
+Imp<BrokenLinkageConfiguration>::load_from_environment()
 {
     using namespace std::placeholders;
 
@@ -179,7 +179,7 @@ Implementation<BrokenLinkageConfiguration>::load_from_environment()
 }
 
 void
-Implementation<BrokenLinkageConfiguration>::load_from_etc_revdep_rebuild(const FSEntry & root)
+Imp<BrokenLinkageConfiguration>::load_from_etc_revdep_rebuild(const FSEntry & root)
 {
     using namespace std::placeholders;
 
@@ -227,7 +227,7 @@ Implementation<BrokenLinkageConfiguration>::load_from_etc_revdep_rebuild(const F
 }
 
 void
-Implementation<BrokenLinkageConfiguration>::load_from_etc_profile_env(const FSEntry & root)
+Imp<BrokenLinkageConfiguration>::load_from_etc_profile_env(const FSEntry & root)
 {
     using namespace std::placeholders;
 
@@ -256,7 +256,7 @@ Implementation<BrokenLinkageConfiguration>::load_from_etc_profile_env(const FSEn
 }
 
 void
-Implementation<BrokenLinkageConfiguration>::load_from_etc_ld_so_conf(const FSEntry & root)
+Imp<BrokenLinkageConfiguration>::load_from_etc_ld_so_conf(const FSEntry & root)
 {
     FSEntry etc_ld_so_conf(root / "etc" / "ld.so.conf");
     Context ctx("When reading '" + stringify(etc_ld_so_conf) + "':");
@@ -281,7 +281,7 @@ Implementation<BrokenLinkageConfiguration>::load_from_etc_ld_so_conf(const FSEnt
 }
 
 void
-Implementation<BrokenLinkageConfiguration>::add_defaults()
+Imp<BrokenLinkageConfiguration>::add_defaults()
 {
     Context ctx("When adding default settings:");
 

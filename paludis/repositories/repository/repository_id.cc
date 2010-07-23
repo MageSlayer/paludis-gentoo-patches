@@ -19,7 +19,7 @@
 
 #include <paludis/repositories/repository/repository_id.hh>
 #include <paludis/repositories/repository/repository_repository.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/set.hh>
@@ -40,7 +40,7 @@ using namespace paludis::repository_repository;
 namespace paludis
 {
     template <>
-    struct Implementation<RepositoryID>
+    struct Imp<RepositoryID>
     {
         const Environment * const env;
         const QualifiedPackageName name;
@@ -50,7 +50,7 @@ namespace paludis
         const std::shared_ptr<LiteralMetadataStringSetKey> behaviours_key;
         static const std::shared_ptr<Set<std::string> > behaviours_set;
 
-        Implementation(const RepositoryIDParams & e) :
+        Imp(const RepositoryIDParams & e) :
             env(e.environment()),
             name(e.name()),
             version("0", VersionSpecOptions()),
@@ -72,11 +72,11 @@ namespace
     }
 }
 
-const std::shared_ptr<Set<std::string> > Implementation<RepositoryID>::behaviours_set = make_behaviours();
+const std::shared_ptr<Set<std::string> > Imp<RepositoryID>::behaviours_set = make_behaviours();
 
 RepositoryID::RepositoryID(const RepositoryIDParams & entry) :
-    PrivateImplementationPattern<RepositoryID>(entry),
-    _imp(PrivateImplementationPattern<RepositoryID>::_imp)
+    Pimp<RepositoryID>(entry),
+    _imp(Pimp<RepositoryID>::_imp)
 {
     add_metadata_key(_imp->behaviours_key);
 }
@@ -302,5 +302,5 @@ RepositoryID::slot_key() const
     return make_null_shared_ptr();
 }
 
-template class PrivateImplementationPattern<RepositoryID>;
+template class Pimp<RepositoryID>;
 

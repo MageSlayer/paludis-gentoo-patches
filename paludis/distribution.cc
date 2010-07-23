@@ -24,7 +24,7 @@
 #include <paludis/util/hashes.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/strip.hh>
@@ -45,11 +45,11 @@ typedef std::unordered_map<std::string, std::shared_ptr<const Distribution>, Has
 namespace paludis
 {
     template <>
-    struct Implementation<DistributionData>
+    struct Imp<DistributionData>
     {
         DistributionHash values;
 
-        Implementation()
+        Imp()
         {
             Context c("When loading distribution data:");
 
@@ -81,7 +81,7 @@ namespace paludis
 }
 
 DistributionData::DistributionData() :
-    PrivateImplementationPattern<DistributionData>()
+    Pimp<DistributionData>()
 {
 }
 

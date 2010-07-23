@@ -20,7 +20,7 @@
 #include <paludis/repositories/e/eapi_phase.hh>
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/util/tokeniser.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
@@ -36,14 +36,14 @@ typedef std::list<std::shared_ptr<const EAPIPhase> > EAPIPhasesList;
 namespace paludis
 {
     template <>
-    struct Implementation<EAPIPhase>
+    struct Imp<EAPIPhase>
     {
         std::set<std::string> options;
         std::list<std::string> commands;
     };
 
     template <>
-    struct Implementation<EAPIPhases>
+    struct Imp<EAPIPhases>
     {
         EAPIPhasesList phases;
     };
@@ -62,7 +62,7 @@ namespace paludis
 }
 
 EAPIPhase::EAPIPhase(const std::string & s) :
-    PrivateImplementationPattern<EAPIPhase>()
+    Pimp<EAPIPhase>()
 {
     Context c("When parsing EAPI phase '" + s + "'");
 
@@ -111,7 +111,7 @@ EAPIPhase::end_commands() const
 }
 
 EAPIPhases::EAPIPhases(const std::string & s) :
-    PrivateImplementationPattern<EAPIPhases>()
+    Pimp<EAPIPhases>()
 {
     Context c("When parsing EAPI phases '" + s + "'");
 

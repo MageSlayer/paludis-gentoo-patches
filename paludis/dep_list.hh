@@ -29,7 +29,7 @@
 #include <paludis/name.hh>
 #include <paludis/environment.hh>
 #include <paludis/match_package.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/options.hh>
 #include <paludis/version_spec.hh>
 #include <functional>
@@ -147,7 +147,7 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE DepList :
-        private PrivateImplementationPattern<DepList>
+        private Pimp<DepList>
     {
         protected:
             class AddVisitor;
@@ -308,7 +308,7 @@ namespace paludis
                     const PackageDepSpec &, const std::shared_ptr<const DestinationsSet> & destinations);
     };
 
-    extern template class PrivateImplementationPattern<DepList>;
+    extern template class Pimp<DepList>;
     extern template class WrappedForwardIterator<DepList::IteratorTag, DepListEntry>;
     extern template class WrappedForwardIterator<DepList::ConstIteratorTag, const DepListEntry>;
     extern template WrappedForwardIterator<DepList::ConstIteratorTag, const DepListEntry>::WrappedForwardIterator(const DepList::Iterator &);

@@ -21,13 +21,13 @@
 #define PALUDIS_GUARD_SRC_CLIENTS_INQUISITIO_TEXT_MATCHER_HH 1
 
 #include <src/clients/inquisitio/matcher.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 
 namespace inquisitio
 {
     class TextMatcher :
         public Matcher,
-        private paludis::PrivateImplementationPattern<TextMatcher>
+        private paludis::Pimp<TextMatcher>
     {
         public:
             TextMatcher(const std::string &);

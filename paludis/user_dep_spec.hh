@@ -24,7 +24,7 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/slot_requirement.hh>
 #include <paludis/filter.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 
 namespace paludis
 {
@@ -66,7 +66,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE UserKeyRequirement :
         public AdditionalPackageDepSpecRequirement,
-        private PrivateImplementationPattern<UserKeyRequirement>
+        private Pimp<UserKeyRequirement>
     {
         public:
             ///\name Basic operations
@@ -83,7 +83,7 @@ namespace paludis
             virtual const std::string as_raw_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
-    extern template class PrivateImplementationPattern<UserKeyRequirement>;
+    extern template class Pimp<UserKeyRequirement>;
 }
 
 #endif

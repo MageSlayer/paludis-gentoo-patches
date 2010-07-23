@@ -20,7 +20,7 @@
 #include <paludis/resolver/nag.hh>
 #include <paludis/resolver/resolvent.hh>
 #include <paludis/resolver/strongly_connected_component.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
@@ -107,7 +107,7 @@ namespace paludis
     }
 
     template <>
-    struct Implementation<NAG>
+    struct Imp<NAG>
     {
         Nodes nodes;
         Edges edges;
@@ -128,7 +128,7 @@ namespace paludis
 }
 
 NAG::NAG() :
-    PrivateImplementationPattern<NAG>()
+    Pimp<NAG>()
 {
 }
 

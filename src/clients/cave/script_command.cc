@@ -22,7 +22,7 @@
 #include <paludis/args/args.hh>
 #include <paludis/args/do_help.hh>
 #include <paludis/args/escape.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/stringify.hh>
@@ -39,11 +39,11 @@ using std::endl;
 namespace paludis
 {
     template <>
-    struct Implementation<ScriptCommand>
+    struct Imp<ScriptCommand>
     {
         const FSEntry executable;
 
-        Implementation(const FSEntry & e) :
+        Imp(const FSEntry & e) :
             executable(e)
         {
         }
@@ -51,7 +51,7 @@ namespace paludis
 }
 
 ScriptCommand::ScriptCommand(const std::string &, const FSEntry & e) :
-    PrivateImplementationPattern<ScriptCommand>(e)
+    Pimp<ScriptCommand>(e)
 {
 }
 

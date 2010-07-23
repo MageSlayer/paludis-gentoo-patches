@@ -22,7 +22,7 @@
 
 #include <paludis/repositories/e/glsa.hh>
 #include <paludis/repositories/e/metadata_xml.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/singleton.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 
@@ -31,7 +31,7 @@ namespace paludis
     namespace erepository
     {
         class PALUDIS_VISIBLE XMLThingsHandle :
-            private PrivateImplementationPattern<XMLThingsHandle>,
+            private Pimp<XMLThingsHandle>,
             public Singleton<XMLThingsHandle>
         {
             friend class Singleton<XMLThingsHandle>;
@@ -51,7 +51,7 @@ namespace paludis
         };
     }
 
-    extern template class PrivateImplementationPattern<erepository::XMLThingsHandle>;
+    extern template class Pimp<erepository::XMLThingsHandle>;
     extern template class Singleton<erepository::XMLThingsHandle>;
 }
 

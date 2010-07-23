@@ -29,7 +29,7 @@ namespace paludis
     namespace erepository
     {
         class PALUDIS_VISIBLE TraditionalProfile :
-            private PrivateImplementationPattern<TraditionalProfile>,
+            private Pimp<TraditionalProfile>,
             public Profile
         {
             public:

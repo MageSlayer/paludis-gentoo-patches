@@ -18,7 +18,7 @@
  */
 
 #include <paludis/environments/test/test_environment.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/sequence.hh>
@@ -46,7 +46,7 @@ typedef std::unordered_map<SetName, std::shared_ptr<const SetSpecTree>, Hash<Set
 namespace paludis
 {
     template<>
-    struct Implementation<TestEnvironment>
+    struct Imp<TestEnvironment>
     {
         std::shared_ptr<PackageDatabase> package_database;
         std::string paludis_command;
@@ -54,7 +54,7 @@ namespace paludis
         FSEntry root;
         Sets sets;
 
-        Implementation(Environment * const e, const FSEntry & r) :
+        Imp(Environment * const e, const FSEntry & r) :
             package_database(new PackageDatabase(e)),
             paludis_command(""),
             root(r)
@@ -64,14 +64,14 @@ namespace paludis
 }
 
 TestEnvironment::TestEnvironment() :
-    PrivateImplementationPattern<TestEnvironment>(this, FSEntry("/")),
-    _imp(PrivateImplementationPattern<TestEnvironment>::_imp)
+    Pimp<TestEnvironment>(this, FSEntry("/")),
+    _imp(Pimp<TestEnvironment>::_imp)
 {
 }
 
 TestEnvironment::TestEnvironment(const FSEntry & r) :
-    PrivateImplementationPattern<TestEnvironment>(this, r),
-    _imp(PrivateImplementationPattern<TestEnvironment>::_imp)
+    Pimp<TestEnvironment>(this, r),
+    _imp(Pimp<TestEnvironment>::_imp)
 {
 }
 

@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_SRC_CLIENTS_CAVE_CMD_RESOLVE_DISPLAY_CALLBACK_HH 1
 
 #include <paludis/util/mutex.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/notifier_callback-fwd.hh>
 #include <string>
 
@@ -34,7 +34,7 @@ namespace paludis
         };
 
         class DisplayCallback :
-            private PrivateImplementationPattern<DisplayCallback>
+            private Pimp<DisplayCallback>
         {
             private:
                 void update() const;

@@ -35,7 +35,7 @@ namespace paludis
 
         class EChoicesKey :
             public MetadataValueKey<std::shared_ptr<const Choices> >,
-            private PrivateImplementationPattern<EChoicesKey>
+            private Pimp<EChoicesKey>
         {
             private:
                 void populate_iuse() const;

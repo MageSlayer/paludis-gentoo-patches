@@ -22,7 +22,7 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_GENTOO_VDB_UNMERGER_HH 1
 
 #include <paludis/repository.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/unmerger.hh>
 
@@ -86,10 +86,10 @@ namespace paludis
      */
     class PALUDIS_VISIBLE VDBUnmerger :
         public Unmerger,
-        private PrivateImplementationPattern<VDBUnmerger>
+        private Pimp<VDBUnmerger>
     {
         private:
-            Implementation<VDBUnmerger> * _imp;
+            Imp<VDBUnmerger> * _imp;
 
         protected:
             bool config_protected(const FSEntry &) const;

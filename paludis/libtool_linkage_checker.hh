@@ -21,13 +21,13 @@
 #define PALUDIS_GUARD_PALUDIS_BROKEN_LINKAGE_FINDER_LIBTOOL_LINKAGE_CHECKER_HH
 
 #include <paludis/linkage_checker.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 
 namespace paludis
 {
     class LibtoolLinkageChecker :
         public LinkageChecker,
-        private paludis::PrivateImplementationPattern<LibtoolLinkageChecker>
+        private paludis::Pimp<LibtoolLinkageChecker>
     {
         public:
             LibtoolLinkageChecker(const paludis::FSEntry &);

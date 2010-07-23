@@ -23,7 +23,7 @@
 #include <paludis/args/args_section.hh>
 #include <paludis/args/args_handler.hh>
 #include <paludis/args/escape.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/join.hh>
@@ -168,14 +168,14 @@ StringArg::forwardable_args() const
 namespace paludis
 {
     template<>
-    struct Implementation<StringSetArg>
+    struct Imp<StringSetArg>
     {
         std::set<std::string> args;
         std::vector<std::pair<std::string, std::string> > allowed_args;
     };
 
     template<>
-    struct Implementation<StringSetArg::StringSetArgOptions>
+    struct Imp<StringSetArg::StringSetArgOptions>
     {
         std::vector<std::pair<std::string, std::string> > options;
     };
@@ -197,7 +197,7 @@ StringSetArg::StringSetArg(ArgsGroup * const g, const std::string & our_long_nam
         const char our_short_name, const std::string & our_description,
         const StringSetArgOptions & opts) :
     ArgsOption(g, our_long_name, our_short_name, our_description),
-    PrivateImplementationPattern<StringSetArg>(),
+    Pimp<StringSetArg>(),
     _validator(0)
 {
     std::copy(opts._imp->options.begin(), opts._imp->options.end(),
@@ -208,7 +208,7 @@ StringSetArg::StringSetArg(ArgsGroup * const g, const std::string & our_long_nam
         const char our_short_name, const std::string & our_description,
         const StringSetArgOptions & opts, void (* v) (const std::string &)) :
     ArgsOption(g, our_long_name, our_short_name, our_description),
-    PrivateImplementationPattern<StringSetArg>(),
+    Pimp<StringSetArg>(),
     _validator(v)
 {
     std::copy(opts._imp->options.begin(), opts._imp->options.end(),
@@ -272,7 +272,7 @@ StringSetArg::forwardable_args() const
 namespace paludis
 {
     template<>
-    struct Implementation<StringSequenceArg>
+    struct Imp<StringSequenceArg>
     {
         std::list<std::string> args;
     };
@@ -287,7 +287,7 @@ namespace paludis
 StringSequenceArg::StringSequenceArg(ArgsGroup * const g, const std::string & our_long_name,
         const char our_short_name, const std::string & our_description) :
     ArgsOption(g, our_long_name, our_short_name, our_description),
-    PrivateImplementationPattern<StringSequenceArg>()
+    Pimp<StringSequenceArg>()
 {
 }
 
@@ -370,13 +370,13 @@ IntegerArg::forwardable_args() const
 namespace paludis
 {
     template<>
-    struct Implementation<EnumArg>
+    struct Imp<EnumArg>
     {
         std::vector<AllowedEnumArg> allowed_args;
     };
 
     template<>
-    struct Implementation<EnumArg::EnumArgOptions>
+    struct Imp<EnumArg::EnumArgOptions>
     {
         std::vector<AllowedEnumArg> options;
     };
@@ -389,7 +389,7 @@ namespace paludis
 }
 
 StringSetArg::StringSetArgOptions::StringSetArgOptions(const std::string & opt, const std::string & desc) :
-    PrivateImplementationPattern<StringSetArgOptions>()
+    Pimp<StringSetArgOptions>()
 {
     _imp->options.push_back(std::make_pair(opt, desc));
 }
@@ -402,7 +402,7 @@ StringSetArg::StringSetArgOptions::operator() (const std::string & opt, const st
 }
 
 StringSetArg::StringSetArgOptions::StringSetArgOptions(const StringSetArg::StringSetArgOptions & o) :
-    PrivateImplementationPattern<StringSetArgOptions>()
+    Pimp<StringSetArgOptions>()
 {
     std::copy(o._imp->options.begin(), o._imp->options.end(),
             std::back_inserter(_imp->options));
@@ -413,7 +413,7 @@ StringSetArg::StringSetArgOptions::~StringSetArgOptions()
 }
 
 StringSetArg::StringSetArgOptions::StringSetArgOptions() :
-    PrivateImplementationPattern<StringSetArgOptions>()
+    Pimp<StringSetArgOptions>()
 {
 }
 
@@ -446,7 +446,7 @@ EnumArg::~EnumArg()
 }
 
 EnumArg::EnumArgOptions::EnumArgOptions(const std::string & opt, const std::string & desc) :
-    PrivateImplementationPattern<EnumArgOptions>()
+    Pimp<EnumArgOptions>()
 {
     _imp->options.push_back(make_named_values<AllowedEnumArg>(
                 n::description() = desc,
@@ -456,7 +456,7 @@ EnumArg::EnumArgOptions::EnumArgOptions(const std::string & opt, const std::stri
 }
 
 EnumArg::EnumArgOptions::EnumArgOptions(const std::string & opt, const char s, const std::string & desc) :
-    PrivateImplementationPattern<EnumArgOptions>()
+    Pimp<EnumArgOptions>()
 {
     _imp->options.push_back(make_named_values<AllowedEnumArg>(
                 n::description() = desc,
@@ -495,7 +495,7 @@ EnumArg::EnumArg(ArgsGroup * const our_group, const std::string & our_long_name,
         const char our_short_name, const std::string & our_description,
         const EnumArgOptions & opts, const std::string & our_default_arg) :
     ArgsOption(our_group, our_long_name, our_short_name, our_description),
-    PrivateImplementationPattern<EnumArg>(),
+    Pimp<EnumArg>(),
     _argument(our_default_arg),
     _default_arg(our_default_arg)
 {

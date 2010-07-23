@@ -19,7 +19,7 @@
  */
 
 #include <paludis/hook.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
@@ -34,13 +34,13 @@ using namespace paludis;
 namespace paludis
 {
     template <>
-    struct Implementation<Hook>
+    struct Imp<Hook>
     {
         std::string name;
         std::map<std::string, std::string> extra_env;
         std::set<std::string> allowed_values;
 
-        Implementation(const std::string & n, const std::map<std::string, std::string> & e,
+        Imp(const std::string & n, const std::map<std::string, std::string> & e,
                 const std::set<std::string> & av) :
             name(n),
             extra_env(e),
@@ -50,7 +50,7 @@ namespace paludis
     };
 
     template <>
-    struct Implementation<Hook::AllowedOutputValues>
+    struct Imp<Hook::AllowedOutputValues>
     {
         std::set<std::string> allowed_values;
     };
@@ -63,12 +63,12 @@ namespace paludis
 }
 
 Hook::AllowedOutputValues::AllowedOutputValues() :
-    PrivateImplementationPattern<Hook::AllowedOutputValues>()
+    Pimp<Hook::AllowedOutputValues>()
 {
 }
 
 Hook::AllowedOutputValues::AllowedOutputValues(const AllowedOutputValues & other) :
-    PrivateImplementationPattern<Hook::AllowedOutputValues>()
+    Pimp<Hook::AllowedOutputValues>()
 {
     _imp->allowed_values = other._imp->allowed_values;
 }
@@ -86,13 +86,13 @@ Hook::AllowedOutputValues::operator() (const std::string & v) const
 }
 
 Hook::Hook(const std::string & n) :
-    PrivateImplementationPattern<Hook>(n, std::map<std::string, std::string>(), std::set<std::string>()),
+    Pimp<Hook>(n, std::map<std::string, std::string>(), std::set<std::string>()),
     output_dest(hod_stdout)
 {
 }
 
 Hook::Hook(const Hook & h) :
-    PrivateImplementationPattern<Hook>(h._imp->name, h._imp->extra_env, h._imp->allowed_values),
+    Pimp<Hook>(h._imp->name, h._imp->extra_env, h._imp->allowed_values),
     output_dest(h.output_dest)
 {
 }

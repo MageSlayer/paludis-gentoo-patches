@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_UTIL_ACTION_QUEUE_HH
 #define PALUDIS_GUARD_PALUDIS_UTIL_ACTION_QUEUE_HH 1
 
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/attributes.hh>
 #include <functional>
 
@@ -37,7 +37,7 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE ActionQueue :
-        private PrivateImplementationPattern<ActionQueue>
+        private Pimp<ActionQueue>
     {
         public:
             ///\name Basic operations
@@ -69,7 +69,7 @@ namespace paludis
             unsigned number_of_threads() const;
     };
 
-    extern template class PrivateImplementationPattern<ActionQueue>;
+    extern template class Pimp<ActionQueue>;
 
 }
 

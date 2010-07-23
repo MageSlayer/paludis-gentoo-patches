@@ -34,7 +34,7 @@ using namespace paludis;
 #include <paludis/util/join.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/strip.hh>
@@ -52,14 +52,14 @@ using namespace paludis;
 namespace paludis
 {
     template<>
-    struct Implementation<VDBUnmerger>
+    struct Imp<VDBUnmerger>
     {
         VDBUnmergerOptions options;
 
         std::list<std::string> config_protect;
         std::list<std::string> config_protect_mask;
 
-        Implementation(const VDBUnmergerOptions & o) :
+        Imp(const VDBUnmergerOptions & o) :
             options(o)
         {
             tokenise_whitespace(o.config_protect(), std::back_inserter(config_protect));
@@ -74,8 +74,8 @@ VDBUnmerger::VDBUnmerger(const VDBUnmergerOptions & o) :
                 n::ignore() = o.ignore(),
                 n::root() = o.root()
             )),
-    PrivateImplementationPattern<VDBUnmerger>(o),
-    _imp(PrivateImplementationPattern<VDBUnmerger>::_imp.get())
+    Pimp<VDBUnmerger>(o),
+    _imp(Pimp<VDBUnmerger>::_imp.get())
 {
 }
 

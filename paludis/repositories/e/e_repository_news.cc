@@ -28,7 +28,7 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/strip.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
@@ -55,12 +55,12 @@ typedef std::list<std::string> DisplayIfList;
 namespace paludis
 {
     /**
-     * Implementation data for ERepositoryNews.
+     * Imp data for ERepositoryNews.
      *
      * \ingroup grperepository
      */
     template<>
-    struct Implementation<ERepositoryNews>
+    struct Imp<ERepositoryNews>
     {
         const Environment * const environment;
         const ERepository * const e_repository;
@@ -70,7 +70,7 @@ namespace paludis
         const FSEntry skip_file;
         const FSEntry unread_file;
 
-        Implementation(const Environment * const e, const ERepository * const p,
+        Imp(const Environment * const e, const ERepository * const p,
                 const erepository::ERepositoryParams & k) :
             environment(e),
             e_repository(p),
@@ -107,7 +107,7 @@ namespace paludis
 
 ERepositoryNews::ERepositoryNews(const Environment * const e, const ERepository * const p,
         const erepository::ERepositoryParams & k) :
-    PrivateImplementationPattern<ERepositoryNews>(e, p, k)
+    Pimp<ERepositoryNews>(e, p, k)
 {
 }
 
@@ -253,12 +253,12 @@ ERepositoryNews::update_news() const
 namespace paludis
 {
     /**
-     * Implementation data for NewsFile.
+     * Imp data for NewsFile.
      *
      * \ingroup grpnewsconfigfile
      */
     template<>
-    struct Implementation<NewsFile>
+    struct Imp<NewsFile>
     {
         DisplayIfList display_if_installed;
         DisplayIfList display_if_keyword;
@@ -267,7 +267,7 @@ namespace paludis
 }
 
 NewsFile::NewsFile(const FSEntry & our_filename) :
-    PrivateImplementationPattern<NewsFile>()
+    Pimp<NewsFile>()
 {
     Context context("When parsing GLEP 42 news file '" + stringify(our_filename) + "':");
 

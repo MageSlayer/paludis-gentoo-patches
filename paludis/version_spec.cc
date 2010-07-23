@@ -23,7 +23,7 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/simple_parser.hh>
@@ -54,7 +54,7 @@ typedef std::vector<VersionSpecComponent> Parts;
 namespace paludis
 {
     template<>
-    struct Implementation<VersionSpec>
+    struct Imp<VersionSpec>
     {
         std::string text;
         Parts parts;
@@ -65,7 +65,7 @@ namespace paludis
 
         const VersionSpecOptions options;
 
-        Implementation(const VersionSpecOptions & o) :
+        Imp(const VersionSpecOptions & o) :
             has_hash(false),
             options(o)
         {
@@ -92,7 +92,7 @@ namespace paludis
 }
 
 VersionSpec::VersionSpec(const std::string & text, const VersionSpecOptions & options) :
-    PrivateImplementationPattern<VersionSpec>(options)
+    Pimp<VersionSpec>(options)
 {
     Context c("When parsing version spec '" + text + "':");
 
@@ -330,7 +330,7 @@ VersionSpec::VersionSpec(const std::string & text, const VersionSpecOptions & op
 }
 
 VersionSpec::VersionSpec(const VersionSpec & other) :
-    PrivateImplementationPattern<VersionSpec>(other._imp->options)
+    Pimp<VersionSpec>(other._imp->options)
 {
     _imp->text = other._imp->text;
     _imp->parts = other._imp->parts;

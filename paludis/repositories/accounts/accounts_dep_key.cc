@@ -28,7 +28,7 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/formatter.hh>
 #include <paludis/environment.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <sstream>
 #include <list>
 
@@ -38,14 +38,14 @@ using namespace paludis::accounts_repository;
 namespace paludis
 {
     template <>
-    struct Implementation<AccountsDepKey>
+    struct Imp<AccountsDepKey>
     {
         const Environment * const env;
         const std::shared_ptr<std::list<std::shared_ptr<PackageDepSpec> > > specs;
         const std::shared_ptr<DependencySpecTree> tree;
         const std::shared_ptr<DependenciesLabelSequence> initial_labels;
 
-        Implementation(const Environment * const e, const std::shared_ptr<const Set<std::string> > & s) :
+        Imp(const Environment * const e, const std::shared_ptr<const Set<std::string> > & s) :
             env(e),
             specs(new std::list<std::shared_ptr<PackageDepSpec> >),
             tree(new DependencySpecTree(std::make_shared<AllDepSpec>())),
@@ -68,7 +68,7 @@ namespace paludis
 
 AccountsDepKey::AccountsDepKey(const Environment * const e,
         const std::shared_ptr<const Set<std::string> > & s) :
-    PrivateImplementationPattern<AccountsDepKey>(e, s)
+    Pimp<AccountsDepKey>(e, s)
 {
 }
 

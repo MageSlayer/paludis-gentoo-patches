@@ -23,7 +23,7 @@
 #include <paludis/util/dir_iterator-fwd.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/options.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <iterator>
 
 /** \file
@@ -64,7 +64,7 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE DirIterator :
-        private PrivateImplementationPattern<DirIterator>
+        private Pimp<DirIterator>
     {
         public:
             ///\name Standard library typedefs
@@ -130,7 +130,7 @@ namespace paludis
             ///\}
     };
 
-    extern template class PrivateImplementationPattern<DirIterator>;
+    extern template class Pimp<DirIterator>;
 }
 
 #endif

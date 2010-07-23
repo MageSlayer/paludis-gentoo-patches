@@ -23,7 +23,7 @@
 #include <paludis/resolver/job_state-fwd.hh>
 #include <paludis/util/simple_visitor.hh>
 #include <paludis/util/type_list.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/output_manager-fwd.hh>
 #include <paludis/serialise-fwd.hh>
 #include <memory>
@@ -53,7 +53,7 @@ namespace paludis
         };
 
         class PALUDIS_VISIBLE JobActiveState :
-            private PrivateImplementationPattern<JobActiveState>,
+            private Pimp<JobActiveState>,
             public JobState,
             public ImplementAcceptMethods<JobState, JobActiveState>
         {
@@ -72,7 +72,7 @@ namespace paludis
         };
 
         class PALUDIS_VISIBLE JobSucceededState :
-            private PrivateImplementationPattern<JobSucceededState>,
+            private Pimp<JobSucceededState>,
             public JobState,
             public ImplementAcceptMethods<JobState, JobSucceededState>
         {
@@ -87,7 +87,7 @@ namespace paludis
         };
 
         class PALUDIS_VISIBLE JobFailedState :
-            private PrivateImplementationPattern<JobFailedState>,
+            private Pimp<JobFailedState>,
             public JobState,
             public ImplementAcceptMethods<JobState, JobFailedState>
         {

@@ -23,7 +23,7 @@
 #include <paludis/repositories/unavailable/unavailable_repository_id.hh>
 #include <paludis/repositories/unavailable/unavailable_repository_dependencies_key.hh>
 #include <paludis/repositories/unavailable/unavailable_mask.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/dir_iterator.hh>
@@ -58,7 +58,7 @@ typedef std::unordered_map<QualifiedPackageName,
 namespace paludis
 {
     template <>
-    struct Implementation<UnavailableRepositoryStore>
+    struct Imp<UnavailableRepositoryStore>
     {
         const UnavailableRepository * const repo;
         mutable std::shared_ptr<CategoryNamePartSet> categories;
@@ -67,7 +67,7 @@ namespace paludis
 
         std::set<std::string> seen_repo_names;
 
-        Implementation(const UnavailableRepository * const r) :
+        Imp(const UnavailableRepository * const r) :
             repo(r),
             categories(new CategoryNamePartSet)
         {
@@ -79,7 +79,7 @@ UnavailableRepositoryStore::UnavailableRepositoryStore(
         const Environment * const env,
         const UnavailableRepository * const repo,
         const FSEntry & f) :
-    PrivateImplementationPattern<UnavailableRepositoryStore>(repo)
+    Pimp<UnavailableRepositoryStore>(repo)
 {
     _populate(env, f);
 }
@@ -272,5 +272,5 @@ UnavailableRepositoryStore::package_ids(const QualifiedPackageName & p) const
         return i->second;
 }
 
-template class PrivateImplementationPattern<unavailable_repository::UnavailableRepositoryStore>;
+template class Pimp<unavailable_repository::UnavailableRepositoryStore>;
 

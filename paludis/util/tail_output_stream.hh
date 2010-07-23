@@ -22,7 +22,7 @@
 
 #include <paludis/util/tail_output_stream-fwd.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/sequence.hh>
 #include <memory>
 #include <ostream>
@@ -31,7 +31,7 @@ namespace paludis
 {
     class PALUDIS_VISIBLE TailOutputStreamBuf :
         public std::streambuf,
-        private PrivateImplementationPattern<TailOutputStreamBuf>
+        private Pimp<TailOutputStreamBuf>
     {
         private:
             void _append(const std::string &);
@@ -84,7 +84,7 @@ namespace paludis
             ///\}
     };
 
-    extern template class PrivateImplementationPattern<TailOutputStreamBuf>;
+    extern template class Pimp<TailOutputStreamBuf>;
 }
 
 #endif

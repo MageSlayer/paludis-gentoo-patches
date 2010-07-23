@@ -23,7 +23,7 @@
 #include <paludis/resolver/nag-fwd.hh>
 #include <paludis/resolver/resolvent.hh>
 #include <paludis/resolver/strongly_connected_component-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/serialise-fwd.hh>
@@ -69,7 +69,7 @@ namespace paludis
         };
 
         class NAG :
-            private PrivateImplementationPattern<NAG>
+            private Pimp<NAG>
         {
             public:
                 NAG();

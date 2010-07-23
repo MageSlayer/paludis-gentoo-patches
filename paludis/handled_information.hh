@@ -23,7 +23,7 @@
 #include <paludis/handled_information-fwd.hh>
 #include <paludis/util/simple_visitor.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/type_list.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/package_id-fwd.hh>
@@ -127,7 +127,7 @@ namespace paludis
     class PALUDIS_VISIBLE DepListEntryHandledSkippedUnsatisfied :
         public DepListEntryHandled,
         public ImplementAcceptMethods<DepListEntryHandled, DepListEntryHandledSkippedUnsatisfied>,
-        private PrivateImplementationPattern<DepListEntryHandledSkippedUnsatisfied>
+        private Pimp<DepListEntryHandledSkippedUnsatisfied>
     {
         public:
             ///\name Basic operations
@@ -156,7 +156,7 @@ namespace paludis
     class PALUDIS_VISIBLE DepListEntryHandledSkippedDependent :
         public DepListEntryHandled,
         public ImplementAcceptMethods<DepListEntryHandled, DepListEntryHandledSkippedDependent>,
-        private PrivateImplementationPattern<DepListEntryHandledSkippedDependent>
+        private Pimp<DepListEntryHandledSkippedDependent>
     {
         public:
             ///\name Basic operations

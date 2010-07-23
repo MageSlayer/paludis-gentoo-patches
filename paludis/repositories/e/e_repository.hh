@@ -24,7 +24,7 @@
 #include <paludis/package_database.hh>
 #include <paludis/mask-fwd.hh>
 #include <paludis/util/fs_entry.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/repositories/e/e_repository_params.hh>
 #include <paludis/repositories/e/e_repository_id.hh>
 #include <paludis/repositories/e/profile.hh>
@@ -56,10 +56,10 @@ namespace paludis
         public RepositoryDestinationInterface,
         public RepositoryManifestInterface,
         public std::enable_shared_from_this<ERepository>,
-        private PrivateImplementationPattern<ERepository>
+        private Pimp<ERepository>
     {
         private:
-            PrivateImplementationPattern<ERepository>::ImpPtr & _imp;
+            Pimp<ERepository>::ImpPtr & _imp;
             void _add_metadata_keys() const;
 
             void need_mirrors() const;

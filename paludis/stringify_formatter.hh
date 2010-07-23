@@ -24,7 +24,7 @@
 #include <paludis/formatter.hh>
 #include <paludis/name.hh>
 #include <paludis/dep_spec-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 
 /** \file
@@ -58,7 +58,7 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE StringifyFormatter :
-        private PrivateImplementationPattern<StringifyFormatter>,
+        private Pimp<StringifyFormatter>,
         public CanFormat<std::string>,
         public CanFormat<ChoiceValue>,
         public CanFormat<KeywordName>,

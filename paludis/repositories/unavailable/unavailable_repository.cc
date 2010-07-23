@@ -19,7 +19,7 @@
 
 #include <paludis/repositories/unavailable/unavailable_repository.hh>
 #include <paludis/repositories/unavailable/unavailable_repository_store.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/active_object_ptr.hh>
 #include <paludis/util/deferred_construction_ptr.hh>
 #include <paludis/util/stringify.hh>
@@ -48,7 +48,7 @@ namespace
 namespace paludis
 {
     template <>
-    struct Implementation<UnavailableRepository>
+    struct Imp<UnavailableRepository>
     {
         const UnavailableRepositoryParams params;
 
@@ -61,7 +61,7 @@ namespace paludis
         const ActiveObjectPtr<DeferredConstructionPtr<
             std::shared_ptr<UnavailableRepositoryStore> > > store;
 
-        Implementation(const UnavailableRepository * const repo, const UnavailableRepositoryParams & p) :
+        Imp(const UnavailableRepository * const repo, const UnavailableRepositoryParams & p) :
             params(p),
             format_key(new LiteralMetadataValueKey<std::string> ("format", "format",
                         mkt_significant, "unavailable")),
@@ -85,7 +85,7 @@ UnavailableRepositoryConfigurationError::UnavailableRepositoryConfigurationError
 }
 
 UnavailableRepository::UnavailableRepository(const UnavailableRepositoryParams & p) :
-    PrivateImplementationPattern<UnavailableRepository>(this, p),
+    Pimp<UnavailableRepository>(this, p),
     Repository(
             p.environment(),
             p.name(),
@@ -97,7 +97,7 @@ UnavailableRepository::UnavailableRepository(const UnavailableRepositoryParams &
                 n::provides_interface() = static_cast<RepositoryProvidesInterface *>(0),
                 n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
                 )),
-    _imp(PrivateImplementationPattern<UnavailableRepository>::_imp)
+    _imp(Pimp<UnavailableRepository>::_imp)
 {
     _add_metadata_keys();
 }
@@ -155,7 +155,7 @@ UnavailableRepository::installed_root_key() const
 void
 UnavailableRepository::invalidate()
 {
-    _imp.reset(new Implementation<UnavailableRepository>(this, _imp->params));
+    _imp.reset(new Imp<UnavailableRepository>(this, _imp->params));
     _add_metadata_keys();
 }
 
@@ -375,5 +375,5 @@ UnavailableRepository::sync_host_key() const
     return _imp->sync_host_key;
 }
 
-template class PrivateImplementationPattern<unavailable_repository::UnavailableRepository>;
+template class Pimp<unavailable_repository::UnavailableRepository>;
 

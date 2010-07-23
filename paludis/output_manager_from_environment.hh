@@ -22,7 +22,7 @@
 
 #include <paludis/output_manager_from_environment-fwd.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/output_manager-fwd.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/package_id-fwd.hh>
@@ -32,7 +32,7 @@
 namespace paludis
 {
     class PALUDIS_VISIBLE OutputManagerFromEnvironment :
-        private PrivateImplementationPattern<OutputManagerFromEnvironment>
+        private Pimp<OutputManagerFromEnvironment>
     {
         public:
             OutputManagerFromEnvironment(
@@ -50,7 +50,7 @@ namespace paludis
             void construct_standard_if_unconstructed();
     };
 
-    extern template class PrivateImplementationPattern<OutputManagerFromEnvironment>;
+    extern template class Pimp<OutputManagerFromEnvironment>;
 }
 
 #endif

@@ -25,14 +25,14 @@
 #include <paludis/output_manager_factory.hh>
 #include <paludis/util/set-fwd.hh>
 #include <paludis/util/sequence-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <memory>
 #include <functional>
 
 namespace paludis
 {
     class PALUDIS_VISIBLE TeeOutputManager :
-        private PrivateImplementationPattern<TeeOutputManager>,
+        private Pimp<TeeOutputManager>,
         public OutputManager
     {
         public:
@@ -60,7 +60,7 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
-    extern template class PrivateImplementationPattern<TeeOutputManager>;
+    extern template class Pimp<TeeOutputManager>;
 }
 
 #endif

@@ -25,7 +25,7 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/spec_tree.hh>
 #include <paludis/dep_spec.hh>
@@ -64,7 +64,7 @@ RewrittenSpec::as_spec_tree() const
 namespace paludis
 {
     template <>
-    struct Implementation<SpecRewriter>
+    struct Imp<SpecRewriter>
     {
         const Environment * const env;
 
@@ -72,7 +72,7 @@ namespace paludis
         mutable Rewrites rewrites;
         mutable bool has_rewrites;
 
-        Implementation(const Environment * const e) :
+        Imp(const Environment * const e) :
             env(e),
             has_rewrites(false)
         {
@@ -81,7 +81,7 @@ namespace paludis
 }
 
 SpecRewriter::SpecRewriter(const Environment * const e) :
-    PrivateImplementationPattern<SpecRewriter>(e)
+    Pimp<SpecRewriter>(e)
 {
 }
 
@@ -168,5 +168,5 @@ SpecRewriter::_need_rewrites() const
 #endif
 }
 
-template class PrivateImplementationPattern<resolver::SpecRewriter>;
+template class Pimp<resolver::SpecRewriter>;
 

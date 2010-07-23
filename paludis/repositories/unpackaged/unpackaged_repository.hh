@@ -22,7 +22,7 @@
 
 #include <paludis/repository.hh>
 #include <paludis/util/map.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 
 namespace paludis
 {
@@ -58,11 +58,11 @@ namespace paludis
     }
 
     class PALUDIS_VISIBLE UnpackagedRepository :
-        private PrivateImplementationPattern<UnpackagedRepository>,
+        private Pimp<UnpackagedRepository>,
         public Repository
     {
         private:
-            PrivateImplementationPattern<UnpackagedRepository>::ImpPtr & _imp;
+            Pimp<UnpackagedRepository>::ImpPtr & _imp;
             void _add_metadata_keys() const;
 
         protected:

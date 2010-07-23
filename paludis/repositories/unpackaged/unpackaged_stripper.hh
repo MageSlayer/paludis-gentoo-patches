@@ -51,10 +51,10 @@ namespace paludis
 
         class UnpackagedStripper :
             public Stripper,
-            private PrivateImplementationPattern<UnpackagedStripper>
+            private Pimp<UnpackagedStripper>
         {
             private:
-                PrivateImplementationPattern<UnpackagedStripper>::ImpPtr & _imp;
+                Pimp<UnpackagedStripper>::ImpPtr & _imp;
 
             protected:
                 virtual void on_strip(const FSEntry &);

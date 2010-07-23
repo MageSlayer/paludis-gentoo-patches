@@ -24,7 +24,7 @@
 #include <paludis/name-fwd.hh>
 #include <paludis/action-fwd.hh>
 #include <paludis/util/fs_entry-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/output_manager-fwd.hh>
 #include <paludis/ndbam-fwd.hh>
 #include <memory>
@@ -35,11 +35,11 @@ namespace paludis
     {
         class InstalledUnpackagedID :
             public PackageID,
-            private PrivateImplementationPattern<InstalledUnpackagedID>,
+            private Pimp<InstalledUnpackagedID>,
             public std::enable_shared_from_this<InstalledUnpackagedID>
         {
             private:
-                PrivateImplementationPattern<InstalledUnpackagedID>::ImpPtr & _imp;
+                Pimp<InstalledUnpackagedID>::ImpPtr & _imp;
 
             protected:
                 void need_keys_added() const;

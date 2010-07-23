@@ -18,7 +18,7 @@
  */
 
 #include <paludis/forward_at_finish_output_manager.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -31,7 +31,7 @@ using namespace paludis;
 namespace paludis
 {
     template <>
-    struct Implementation<ForwardAtFinishOutputManager>
+    struct Imp<ForwardAtFinishOutputManager>
     {
         std::stringstream stdout_stream;
         std::stringstream stderr_stream;
@@ -40,7 +40,7 @@ namespace paludis
         bool success;
         bool nothing_more_to_come;
 
-        Implementation(
+        Imp(
                 const bool s,
                 const bool f,
                 const std::shared_ptr<OutputManager> & m
@@ -59,7 +59,7 @@ ForwardAtFinishOutputManager::ForwardAtFinishOutputManager(
         const bool s,
         const bool f,
         const std::shared_ptr<OutputManager> & m) :
-    PrivateImplementationPattern<ForwardAtFinishOutputManager>(s, f, m)
+    Pimp<ForwardAtFinishOutputManager>(s, f, m)
 {
 }
 
@@ -152,5 +152,5 @@ ForwardAtFinishOutputManager::factory_create(
                 child);
 }
 
-template class PrivateImplementationPattern<ForwardAtFinishOutputManager>;
+template class Pimp<ForwardAtFinishOutputManager>;
 

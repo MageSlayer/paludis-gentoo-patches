@@ -36,7 +36,7 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -110,7 +110,7 @@ namespace
 namespace paludis
 {
     template <>
-    struct Implementation<EInstalledRepositoryID>
+    struct Imp<EInstalledRepositoryID>
     {
         mutable Mutex mutex;
 
@@ -131,7 +131,7 @@ namespace paludis
         std::shared_ptr<DependenciesLabelSequence> run_dependencies_labels;
         std::shared_ptr<DependenciesLabelSequence> post_dependencies_labels;
 
-        Implementation(const QualifiedPackageName & q, const VersionSpec & v,
+        Imp(const QualifiedPackageName & q, const VersionSpec & v,
                 const Environment * const e,
                 const std::shared_ptr<const Repository> r, const FSEntry & f) :
             name(q),
@@ -163,8 +163,8 @@ EInstalledRepositoryID::EInstalledRepositoryID(const QualifiedPackageName & q, c
         const Environment * const e,
         const std::shared_ptr<const Repository> & r,
         const FSEntry & f) :
-    PrivateImplementationPattern<EInstalledRepositoryID>(q, v, e, r, f),
-    _imp(PrivateImplementationPattern<EInstalledRepositoryID>::_imp)
+    Pimp<EInstalledRepositoryID>(q, v, e, r, f),
+    _imp(Pimp<EInstalledRepositoryID>::_imp)
 {
 }
 

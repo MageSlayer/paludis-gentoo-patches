@@ -32,7 +32,7 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/tokeniser.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/hashes.hh>
@@ -49,14 +49,14 @@ typedef std::list<std::pair<SetName, std::shared_ptr<const SetSpecTree> > > Sets
 namespace paludis
 {
     template<>
-    struct Implementation<PackageMaskConf>
+    struct Imp<PackageMaskConf>
     {
         const PaludisEnvironment * const env;
         std::list<std::shared_ptr<const PackageDepSpec> > masks;
         mutable Sets sets;
         mutable Mutex set_mutex;
 
-        Implementation(const PaludisEnvironment * const e) :
+        Imp(const PaludisEnvironment * const e) :
             env(e)
         {
         }
@@ -64,7 +64,7 @@ namespace paludis
 }
 
 PackageMaskConf::PackageMaskConf(const PaludisEnvironment * const e) :
-    PrivateImplementationPattern<PackageMaskConf>(e)
+    Pimp<PackageMaskConf>(e)
 {
 }
 

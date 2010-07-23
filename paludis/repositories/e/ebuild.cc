@@ -61,7 +61,7 @@
 #include "config.h"
 
 /** \file
- * Implementation for ebuild.hh things.
+ * Imp for ebuild.hh things.
  *
  * \ingroup grpebuildinterface
  */

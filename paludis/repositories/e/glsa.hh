@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_GLSA_HH
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_GLSA_HH 1
 
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/name.hh>
@@ -74,7 +74,7 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE GLSAPackage :
-        private PrivateImplementationPattern<GLSAPackage>
+        private Pimp<GLSAPackage>
     {
         public:
             ///\name Basic operations
@@ -135,7 +135,7 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE GLSA :
-        private PrivateImplementationPattern<GLSA>
+        private Pimp<GLSA>
     {
         public:
             ///\name Basic operations

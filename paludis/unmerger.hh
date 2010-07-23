@@ -23,7 +23,7 @@
 
 #include <paludis/util/exception.hh>
 #include <paludis/util/fs_entry.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/merger_entry_type.hh>
 #include <paludis/contents-fwd.hh>
@@ -92,7 +92,7 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE Unmerger :
-        private PrivateImplementationPattern<Unmerger>
+        private Pimp<Unmerger>
     {
         protected:
             ///\name Basic operations

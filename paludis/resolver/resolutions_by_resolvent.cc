@@ -20,7 +20,7 @@
 #include <paludis/resolver/resolutions_by_resolvent.hh>
 #include <paludis/resolver/resolvent.hh>
 #include <paludis/resolver/resolution.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/exception.hh>
@@ -40,7 +40,7 @@ typedef std::unordered_map<Resolvent, ResolutionList::const_iterator, Hash<Resol
 namespace paludis
 {
     template <>
-    struct Implementation<ResolutionsByResolvent>
+    struct Imp<ResolutionsByResolvent>
     {
         ResolutionList resolution_list;
         ResolutionListIndex resolution_list_index;
@@ -54,7 +54,7 @@ namespace paludis
 }
 
 ResolutionsByResolvent::ResolutionsByResolvent() :
-    PrivateImplementationPattern<ResolutionsByResolvent>()
+    Pimp<ResolutionsByResolvent>()
 {
 }
 

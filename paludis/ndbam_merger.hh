@@ -70,13 +70,13 @@ namespace paludis
      */
     class PALUDIS_VISIBLE NDBAMMerger :
         public Merger,
-        private PrivateImplementationPattern<NDBAMMerger>
+        private Pimp<NDBAMMerger>
     {
         private:
             void display_override(const std::string &) const;
             std::string make_arrows(const MergeStatusFlags &) const;
 
-            PrivateImplementationPattern<NDBAMMerger>::ImpPtr & _imp;
+            Pimp<NDBAMMerger>::ImpPtr & _imp;
 
         public:
             NDBAMMerger(const NDBAMMergerParams &);

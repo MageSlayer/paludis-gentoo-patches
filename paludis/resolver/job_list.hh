@@ -22,7 +22,7 @@
 
 #include <paludis/resolver/job_list-fwd.hh>
 #include <paludis/resolver/job-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/serialise-fwd.hh>
 #include <memory>
@@ -36,10 +36,10 @@ namespace paludis
 
         template <typename Job_>
         class PALUDIS_VISIBLE JobList :
-            private PrivateImplementationPattern<JobList<Job_> >
+            private Pimp<JobList<Job_> >
         {
             private:
-                using PrivateImplementationPattern<JobList<Job_> >::_imp;
+                using Pimp<JobList<Job_> >::_imp;
 
             public:
                 JobList();

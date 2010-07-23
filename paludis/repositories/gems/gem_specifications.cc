@@ -22,7 +22,7 @@
 #include <paludis/repositories/gems/yaml.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
@@ -38,7 +38,7 @@ typedef std::unordered_map<std::pair<QualifiedPackageName, VersionSpec>, std::sh
 namespace paludis
 {
     template <>
-    struct Implementation<GemSpecifications>
+    struct Imp<GemSpecifications>
     {
         Specs specs;
     };
@@ -103,12 +103,12 @@ namespace
 
     struct GemsVisitor
     {
-        Implementation<GemSpecifications> * const _imp;
+        Imp<GemSpecifications> * const _imp;
         const Environment * const environment;
         const std::shared_ptr<const Repository> repository;
 
         GemsVisitor(const Environment * const e,
-                const std::shared_ptr<const Repository> & r, Implementation<GemSpecifications> * const i) :
+                const std::shared_ptr<const Repository> & r, Imp<GemSpecifications> * const i) :
             _imp(i),
             environment(e),
             repository(r)
@@ -156,12 +156,12 @@ namespace
 
     struct TopVisitor
     {
-        Implementation<GemSpecifications> * const _imp;
+        Imp<GemSpecifications> * const _imp;
         const Environment * const environment;
         const std::shared_ptr<const Repository> repository;
 
         TopVisitor(const Environment * const e,
-                const std::shared_ptr<const Repository> & r, Implementation<GemSpecifications> * const i) :
+                const std::shared_ptr<const Repository> & r, Imp<GemSpecifications> * const i) :
             _imp(i),
             environment(e),
             repository(r)
@@ -196,7 +196,7 @@ namespace
 
 GemSpecifications::GemSpecifications(const Environment * const e,
         const std::shared_ptr<const Repository> & r, const yaml::Node & n) :
-    PrivateImplementationPattern<GemSpecifications>()
+    Pimp<GemSpecifications>()
 {
     TopVisitor v(e, r, _imp.get());
     n.accept(v);

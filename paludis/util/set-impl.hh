@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_UTIL_SET_IMPL_HH 1
 
 #include <paludis/util/set.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/wrapped_output_iterator-impl.hh>
 
@@ -30,7 +30,7 @@
 #include <iterator>
 
 /** \file
- * Implementation for paludis/util/set.hh .
+ * Imp for paludis/util/set.hh .
  *
  * \ingroup g_data_structures
  */
@@ -50,13 +50,13 @@ namespace paludis
     };
 
     /**
-     * Implementation data for a Set.
+     * Imp data for a Set.
      *
      * \ingroup g_data_structures
      * \nosubgrouping
      */
     template <typename T_, typename C_>
-    struct Implementation<Set<T_, C_> >
+    struct Imp<Set<T_, C_> >
     {
         std::set<T_, C_> set;
     };
@@ -76,7 +76,7 @@ namespace paludis
 
 template <typename T_, typename C_>
 paludis::Set<T_, C_>::Set() :
-    paludis::PrivateImplementationPattern<Set<T_, C_> >()
+    paludis::Pimp<Set<T_, C_> >()
 {
 }
 

@@ -26,7 +26,7 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 
 #include <algorithm>
 #include <sstream>
@@ -38,7 +38,7 @@ using namespace paludis::args;
 namespace paludis
 {
     template <>
-    struct Implementation<ArgsVisitor>
+    struct Imp<ArgsVisitor>
     {
         ArgsHandler::ArgsIterator * args_index;
         ArgsHandler::ArgsIterator args_end;
@@ -46,7 +46,7 @@ namespace paludis
         char & second_char_or_zero;
         bool no;
 
-        Implementation(
+        Imp(
                 ArgsHandler::ArgsIterator * i,
                 ArgsHandler::ArgsIterator e,
                 std::string p,
@@ -64,7 +64,7 @@ namespace paludis
 
 ArgsVisitor::ArgsVisitor(ArgsHandler::ArgsIterator * ai, ArgsHandler::ArgsIterator ae,
         const std::string & env_prefix, char & s, bool n) :
-    PrivateImplementationPattern<ArgsVisitor>(ai, ae, env_prefix, s, n)
+    Pimp<ArgsVisitor>(ai, ae, env_prefix, s, n)
 {
 }
 

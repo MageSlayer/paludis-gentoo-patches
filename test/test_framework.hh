@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_TEST_TEST_FRAMEWORK_HH 1
 
 #include <paludis/util/stringify.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <string>
 
 /** \file
@@ -38,7 +38,7 @@ namespace test
      * \ingroup grptestframework
      */
     class TestMessageSuffix :
-        paludis::PrivateImplementationPattern<TestMessageSuffix>
+        paludis::Pimp<TestMessageSuffix>
     {
         public:
             /**
@@ -63,7 +63,7 @@ namespace test
      * \ingroup grptestframework
      */
     class TestCase :
-        private paludis::PrivateImplementationPattern<TestCase>
+        private paludis::Pimp<TestCase>
     {
         protected:
             /**

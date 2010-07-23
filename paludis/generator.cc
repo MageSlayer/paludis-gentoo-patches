@@ -24,7 +24,7 @@
 #include <paludis/action_names.hh>
 #include <paludis/action.hh>
 #include <paludis/match_package.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -43,11 +43,11 @@ using namespace paludis;
 namespace paludis
 {
     template <>
-    struct Implementation<Generator>
+    struct Imp<Generator>
     {
         std::shared_ptr<const GeneratorHandler> handler;
 
-        Implementation(const std::shared_ptr<const GeneratorHandler> & h) :
+        Imp(const std::shared_ptr<const GeneratorHandler> & h) :
             handler(h)
         {
         }
@@ -55,12 +55,12 @@ namespace paludis
 }
 
 Generator::Generator(const std::shared_ptr<const GeneratorHandler> & h) :
-    PrivateImplementationPattern<Generator>(h)
+    Pimp<Generator>(h)
 {
 }
 
 Generator::Generator(const Generator & other) :
-    PrivateImplementationPattern<Generator>(other._imp->handler)
+    Pimp<Generator>(other._imp->handler)
 {
 }
 
@@ -779,7 +779,7 @@ paludis::operator<< (std::ostream & s, const Generator & g)
     return s;
 }
 
-template class PrivateImplementationPattern<Generator>;
+template class Pimp<Generator>;
 template class generator::SomeIDsMightSupportAction<InstallAction>;
 template class generator::SomeIDsMightSupportAction<UninstallAction>;
 template class generator::SomeIDsMightSupportAction<PretendAction>;

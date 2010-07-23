@@ -18,7 +18,7 @@
  */
 
 #include "exception.hh"
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/singleton-impl.hh>
 #include <python/paludis_python.hh>
 #include <map>
@@ -38,7 +38,7 @@ RegisteredExceptionBase::~RegisteredExceptionBase()
 namespace paludis
 {
     template<>
-    struct Implementation<ExceptionRegister>
+    struct Imp<ExceptionRegister>
     {
         std::map<std::string, std::shared_ptr<RegisteredExceptionBase> > exceptions;
     };
@@ -46,7 +46,7 @@ namespace paludis
 }
 
 ExceptionRegister::ExceptionRegister() :
-    PrivateImplementationPattern<ExceptionRegister>()
+    Pimp<ExceptionRegister>()
 {
 }
 

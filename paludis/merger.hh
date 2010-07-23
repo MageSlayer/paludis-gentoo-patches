@@ -123,7 +123,7 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE Merger :
-        private PrivateImplementationPattern<Merger>
+        private Pimp<Merger>
     {
         private:
             void track_renamed_dir_recursive(const FSEntry &);

@@ -18,7 +18,7 @@
  */
 
 #include <paludis/create_output_manager_info.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/set.hh>
@@ -84,7 +84,7 @@ namespace
 namespace paludis
 {
     template <>
-    struct Implementation<CreateOutputManagerForPackageIDActionInfo>
+    struct Imp<CreateOutputManagerForPackageIDActionInfo>
     {
         const std::shared_ptr<const PackageID> id;
         const std::string action_name;
@@ -92,7 +92,7 @@ namespace paludis
         const OutputExclusivity output_exclusivity;
         const ClientOutputFeatures client_output_features;
 
-        Implementation(const std::shared_ptr<const PackageID> & i,
+        Imp(const std::shared_ptr<const PackageID> & i,
                 const std::string & a,
                 const std::shared_ptr<const Set<std::string> > & f,
                 const OutputExclusivity e,
@@ -107,13 +107,13 @@ namespace paludis
     };
 
     template <>
-    struct Implementation<CreateOutputManagerForRepositorySyncInfo>
+    struct Imp<CreateOutputManagerForRepositorySyncInfo>
     {
         const RepositoryName repo_name;
         const OutputExclusivity output_exclusivity;
         const ClientOutputFeatures client_output_features;
 
-        Implementation(const RepositoryName & r, const OutputExclusivity e, const ClientOutputFeatures & c) :
+        Imp(const RepositoryName & r, const OutputExclusivity e, const ClientOutputFeatures & c) :
             repo_name(r),
             output_exclusivity(e),
             client_output_features(c)
@@ -138,7 +138,7 @@ CreateOutputManagerForPackageIDActionInfo::CreateOutputManagerForPackageIDAction
         const Action & a,
         const OutputExclusivity e,
         const ClientOutputFeatures & c) :
-    PrivateImplementationPattern<CreateOutputManagerForPackageIDActionInfo>(i, a.simple_name(), get_flags(a), e, c)
+    Pimp<CreateOutputManagerForPackageIDActionInfo>(i, a.simple_name(), get_flags(a), e, c)
 {
 }
 
@@ -148,7 +148,7 @@ CreateOutputManagerForPackageIDActionInfo::CreateOutputManagerForPackageIDAction
         const std::shared_ptr<const Set<std::string> > & f,
         const OutputExclusivity e,
         const ClientOutputFeatures & c) :
-    PrivateImplementationPattern<CreateOutputManagerForPackageIDActionInfo>(i, a, f, e, c)
+    Pimp<CreateOutputManagerForPackageIDActionInfo>(i, a, f, e, c)
 {
 }
 
@@ -219,7 +219,7 @@ CreateOutputManagerForPackageIDActionInfo::deserialise(Deserialisation & d)
 
 CreateOutputManagerForRepositorySyncInfo::CreateOutputManagerForRepositorySyncInfo(
         const RepositoryName & r, const OutputExclusivity e, const ClientOutputFeatures & c) :
-    PrivateImplementationPattern<CreateOutputManagerForRepositorySyncInfo>(r, e, c)
+    Pimp<CreateOutputManagerForRepositorySyncInfo>(r, e, c)
 {
 }
 
@@ -266,6 +266,6 @@ CreateOutputManagerForRepositorySyncInfo::deserialise(Deserialisation & d)
                 );
 }
 
-template class PrivateImplementationPattern<CreateOutputManagerForRepositorySyncInfo>;
-template class PrivateImplementationPattern<CreateOutputManagerForPackageIDActionInfo>;
+template class Pimp<CreateOutputManagerForRepositorySyncInfo>;
+template class Pimp<CreateOutputManagerForPackageIDActionInfo>;
 

@@ -25,7 +25,7 @@
 #include <paludis/environment-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/graph-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/sequence-fwd.hh>
 #include <paludis/util/named_value.hh>
@@ -71,7 +71,7 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE Hook :
-        private PrivateImplementationPattern<Hook>
+        private Pimp<Hook>
     {
         public:
             ///\name Basic operations
@@ -129,7 +129,7 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE Hook::AllowedOutputValues :
-        private PrivateImplementationPattern<Hook::AllowedOutputValues>
+        private Pimp<Hook::AllowedOutputValues>
     {
         friend class Hook;
 

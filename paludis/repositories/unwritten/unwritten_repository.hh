@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_UNWRITTEN_UNWRITTEN_REPOSITORY_HH 1
 
 #include <paludis/repository.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/attributes.hh>
 
 namespace paludis
@@ -54,12 +54,12 @@ namespace paludis
         };
 
         class PALUDIS_VISIBLE UnwrittenRepository :
-            private PrivateImplementationPattern<UnwrittenRepository>,
+            private Pimp<UnwrittenRepository>,
             public Repository,
             public std::enable_shared_from_this<UnwrittenRepository>
         {
             private:
-                PrivateImplementationPattern<UnwrittenRepository>::ImpPtr & _imp;
+                Pimp<UnwrittenRepository>::ImpPtr & _imp;
 
                 void _add_metadata_keys();
 
@@ -125,7 +125,7 @@ namespace paludis
         };
     }
 
-    extern template class PrivateImplementationPattern<unwritten_repository::UnwrittenRepository>;
+    extern template class Pimp<unwritten_repository::UnwrittenRepository>;
 }
 
 #endif

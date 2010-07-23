@@ -18,7 +18,7 @@
  */
 
 #include <paludis/repositories/e/e_mask.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -26,13 +26,13 @@ using namespace paludis::erepository;
 namespace paludis
 {
     template <>
-    struct Implementation<EUnacceptedMask>
+    struct Imp<EUnacceptedMask>
     {
         const char key;
         const std::string description;
         const std::shared_ptr<const MetadataKey> unaccepted_key;
 
-        Implementation(const char k, const std::string & d, const std::shared_ptr<const MetadataKey> & u) :
+        Imp(const char k, const std::string & d, const std::shared_ptr<const MetadataKey> & u) :
             key(k),
             description(d),
             unaccepted_key(u)
@@ -42,7 +42,7 @@ namespace paludis
 }
 
 EUnacceptedMask::EUnacceptedMask(const char k, const std::string & d, const std::shared_ptr<const MetadataKey> & u) :
-    PrivateImplementationPattern<EUnacceptedMask>(k, d, u)
+    Pimp<EUnacceptedMask>(k, d, u)
 {
 }
 
@@ -71,13 +71,13 @@ EUnacceptedMask::unaccepted_key() const
 namespace paludis
 {
     template <>
-    struct Implementation<EUnsupportedMask>
+    struct Imp<EUnsupportedMask>
     {
         const char key;
         const std::string description;
         const std::string eapi_name;
 
-        Implementation(const char k, const std::string & d, const std::string & n) :
+        Imp(const char k, const std::string & d, const std::string & n) :
             key(k),
             description(d),
             eapi_name(n)
@@ -87,7 +87,7 @@ namespace paludis
 }
 
 EUnsupportedMask::EUnsupportedMask(const char k, const std::string & d, const std::string & n) :
-    PrivateImplementationPattern<EUnsupportedMask>(k, d, n)
+    Pimp<EUnsupportedMask>(k, d, n)
 {
 }
 
@@ -118,13 +118,13 @@ EUnsupportedMask::explanation() const
 namespace paludis
 {
     template <>
-    struct Implementation<ERepositoryMask>
+    struct Imp<ERepositoryMask>
     {
         const char key;
         const std::string description;
         const std::shared_ptr<const MetadataKey> mask_key;
 
-        Implementation(const char k, const std::string & d, const std::shared_ptr<const MetadataKey> & m) :
+        Imp(const char k, const std::string & d, const std::shared_ptr<const MetadataKey> & m) :
             key(k),
             description(d),
             mask_key(m)
@@ -134,7 +134,7 @@ namespace paludis
 }
 
 ERepositoryMask::ERepositoryMask(const char k, const std::string & d, const std::shared_ptr<const MetadataKey> & m) :
-    PrivateImplementationPattern<ERepositoryMask>(k, d, m)
+    Pimp<ERepositoryMask>(k, d, m)
 {
 }
 

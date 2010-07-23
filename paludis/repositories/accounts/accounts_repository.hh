@@ -22,7 +22,7 @@
 
 #include <paludis/util/attributes.hh>
 #include <paludis/util/named_value.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/repository.hh>
 
 namespace paludis
@@ -53,13 +53,13 @@ namespace paludis
         };
 
         class PALUDIS_VISIBLE AccountsRepository :
-            private PrivateImplementationPattern<AccountsRepository>,
+            private Pimp<AccountsRepository>,
             public Repository,
             public RepositoryDestinationInterface,
             public std::enable_shared_from_this<AccountsRepository>
         {
             private:
-                PrivateImplementationPattern<AccountsRepository>::ImpPtr & _imp;
+                Pimp<AccountsRepository>::ImpPtr & _imp;
 
                 void _add_metadata_keys();
 

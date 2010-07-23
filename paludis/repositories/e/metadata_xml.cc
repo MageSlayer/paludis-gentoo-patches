@@ -19,7 +19,7 @@
 
 #include <paludis/repositories/e/metadata_xml.hh>
 #include <paludis/repositories/e/xml_things_handle.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/util/map-impl.hh>
 #include <paludis/util/mutex.hh>
@@ -38,7 +38,7 @@ typedef std::unordered_map<FSEntry, std::shared_ptr<MetadataXML>, Hash<FSEntry> 
 namespace paludis
 {
     template <>
-    struct Implementation<MetadataXMLPool>
+    struct Imp<MetadataXMLPool>
     {
         mutable Mutex mutex;
         mutable Store store;
@@ -46,7 +46,7 @@ namespace paludis
 }
 
 MetadataXMLPool::MetadataXMLPool() :
-    PrivateImplementationPattern<MetadataXMLPool>()
+    Pimp<MetadataXMLPool>()
 {
 }
 
@@ -85,6 +85,6 @@ MetadataXMLPool::metadata_if_exists(const FSEntry & f) const
 }
 
 template class Map<ChoiceNameWithPrefix, std::string>;
-template class PrivateImplementationPattern<MetadataXMLPool>;
+template class Pimp<MetadataXMLPool>;
 template class Singleton<MetadataXMLPool>;
 

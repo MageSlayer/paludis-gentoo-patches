@@ -22,7 +22,7 @@
 #define PALUDIS_GUARD_PALUDIS_UTIL_ELF_RELOCATION_SECTION_HH 1
 
 #include <paludis/util/elf_sections.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 
 #include <iosfwd>
@@ -99,9 +99,9 @@ namespace paludis
     class RelocationSection :
         public Section<ElfType_>,
         public paludis::ImplementAcceptMethods<Section<ElfType_>, RelocationSection<ElfType_, Relocation_> >,
-        private paludis::PrivateImplementationPattern<RelocationSection<ElfType_, Relocation_> >
+        private paludis::Pimp<RelocationSection<ElfType_, Relocation_> >
     {
-        using paludis::PrivateImplementationPattern<RelocationSection>::_imp;
+        using paludis::Pimp<RelocationSection>::_imp;
 
         public:
             RelocationSection(typename ElfType_::Word, const typename ElfType_::SectionHeader &, std::istream &, bool);

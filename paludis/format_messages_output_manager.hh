@@ -24,7 +24,7 @@
 #include <paludis/output_manager.hh>
 #include <paludis/output_manager_factory.hh>
 #include <paludis/util/set-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <memory>
 #include <functional>
 
@@ -35,7 +35,7 @@ namespace paludis
             const std::string &)> FormatMessagesOutputManagerFormatFunction;
 
     class PALUDIS_VISIBLE FormatMessagesOutputManager :
-        private PrivateImplementationPattern<FormatMessagesOutputManager>,
+        private Pimp<FormatMessagesOutputManager>,
         public OutputManager
     {
         public:
@@ -69,7 +69,7 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
-    extern template class PrivateImplementationPattern<FormatMessagesOutputManager>;
+    extern template class Pimp<FormatMessagesOutputManager>;
 }
 
 #endif

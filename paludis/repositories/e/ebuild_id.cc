@@ -45,7 +45,7 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/mutex.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/tribool.hh>
@@ -64,7 +64,7 @@ using namespace paludis::erepository;
 namespace paludis
 {
     template <>
-    struct Implementation<EbuildID>
+    struct Imp<EbuildID>
     {
         Mutex mutex;
 
@@ -119,7 +119,7 @@ namespace paludis
         std::shared_ptr<DependenciesLabelSequence> run_dependencies_labels;
         std::shared_ptr<DependenciesLabelSequence> post_dependencies_labels;
 
-        Implementation(const QualifiedPackageName & q, const VersionSpec & v,
+        Imp(const QualifiedPackageName & q, const VersionSpec & v,
                 const Environment * const e,
                 const std::shared_ptr<const ERepository> r, const FSEntry & f, const std::string & g,
                 const time_t t, const std::shared_ptr<const EclassMtimes> & m) :
@@ -160,8 +160,8 @@ EbuildID::EbuildID(const QualifiedPackageName & q, const VersionSpec & v,
         const std::string & g,
         const time_t t,
         const std::shared_ptr<const EclassMtimes> & m) :
-    PrivateImplementationPattern<EbuildID>(q, v, e, r, f, g.empty() ? r->params().eapi_when_unknown() : g, t, m),
-    _imp(PrivateImplementationPattern<EbuildID>::_imp)
+    Pimp<EbuildID>(q, v, e, r, f, g.empty() ? r->params().eapi_when_unknown() : g, t, m),
+    _imp(Pimp<EbuildID>::_imp)
 {
 }
 

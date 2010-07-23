@@ -30,7 +30,7 @@
 #include <paludis/about.hh>
 #include <paludis/action.hh>
 #include <paludis/util/system.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/join.hh>
@@ -57,7 +57,7 @@ using namespace paludis::erepository;
 namespace paludis
 {
     template <>
-    struct Implementation<CheckFetchedFilesVisitor>
+    struct Imp<CheckFetchedFilesVisitor>
     {
         const Environment * const env;
         const std::shared_ptr<const PackageID> id;
@@ -76,7 +76,7 @@ namespace paludis
         const UseManifest use_manifest;
         const std::shared_ptr<OutputManager> output_manager;
 
-        Implementation(
+        Imp(
                 const Environment * const e,
                 const std::shared_ptr<const PackageID> & i,
                 const FSEntry & d,
@@ -118,7 +118,7 @@ CheckFetchedFilesVisitor::CheckFetchedFilesVisitor(
         const bool x,
         const bool u,
         const bool nm) :
-    PrivateImplementationPattern<CheckFetchedFilesVisitor>(e, i, d, c, n, m2, um, md, x, u, nm)
+    Pimp<CheckFetchedFilesVisitor>(e, i, d, c, n, m2, um, md, x, u, nm)
 {
 }
 

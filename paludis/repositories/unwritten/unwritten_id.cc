@@ -19,7 +19,7 @@
 
 #include <paludis/repositories/unwritten/unwritten_id.hh>
 #include <paludis/repositories/unwritten/unwritten_repository.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/set.hh>
@@ -38,7 +38,7 @@ using namespace paludis::unwritten_repository;
 namespace paludis
 {
     template <>
-    struct Implementation<UnwrittenID>
+    struct Imp<UnwrittenID>
     {
         const Environment * const env;
         const QualifiedPackageName name;
@@ -55,7 +55,7 @@ namespace paludis
         const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Choices> > > choices_key;
         const std::shared_ptr<const Mask> mask;
 
-        Implementation(
+        Imp(
                 const UnwrittenIDParams & e) :
             env(e.environment()),
             name(e.name()),
@@ -76,8 +76,8 @@ namespace paludis
 }
 
 UnwrittenID::UnwrittenID(const UnwrittenIDParams & entry) :
-    PrivateImplementationPattern<UnwrittenID>(entry),
-    _imp(PrivateImplementationPattern<UnwrittenID>::_imp)
+    Pimp<UnwrittenID>(entry),
+    _imp(Pimp<UnwrittenID>::_imp)
 {
     if (_imp->slot_key)
         add_metadata_key(_imp->slot_key);
@@ -319,5 +319,5 @@ UnwrittenID::choices_key() const
     return _imp->choices_key;
 }
 
-template class PrivateImplementationPattern<UnwrittenID>;
+template class Pimp<UnwrittenID>;
 

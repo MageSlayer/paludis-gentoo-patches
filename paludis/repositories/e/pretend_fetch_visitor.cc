@@ -25,7 +25,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/action.hh>
 #include <paludis/metadata_key.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/stringify.hh>
@@ -39,7 +39,7 @@ using namespace paludis::erepository;
 namespace paludis
 {
     template <>
-    struct Implementation<PretendFetchVisitor>
+    struct Imp<PretendFetchVisitor>
     {
         const Environment * const env;
         const std::shared_ptr<const PackageID> id;
@@ -53,7 +53,7 @@ namespace paludis
         std::list<const URILabel *> labels;
         Manifest2Reader manifest;
 
-        Implementation(
+        Imp(
                 const Environment * const e,
                 const std::shared_ptr<const PackageID> & i,
                 const EAPI & p,
@@ -83,7 +83,7 @@ PretendFetchVisitor::PretendFetchVisitor(
         const bool f,
         const std::shared_ptr<const URILabel> & n,
         PretendFetchAction & a) :
-    PrivateImplementationPattern<PretendFetchVisitor>(e, i, p, d, f, n, a)
+    Pimp<PretendFetchVisitor>(e, i, p, d, f, n, a)
 {
 }
 

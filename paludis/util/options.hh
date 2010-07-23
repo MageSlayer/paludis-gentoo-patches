@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_UTIL_OPTIONS_HH 1
 
 #include <paludis/util/options-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/attributes.hh>
 
 /** \file
@@ -46,7 +46,7 @@ namespace paludis
      * \ingroup g_data_structures
      */
     class PALUDIS_VISIBLE OptionsStore :
-        private PrivateImplementationPattern<OptionsStore>
+        private Pimp<OptionsStore>
     {
         public:
             ///\name Basic operations

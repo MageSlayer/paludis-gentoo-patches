@@ -24,7 +24,7 @@
 
 #include <paludis/util/attributes.hh>
 #include <paludis/util/operators.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 
@@ -91,12 +91,12 @@ namespace paludis
      * \ingroup g_package_id
      */
     class PALUDIS_VISIBLE PackageID :
-        private PrivateImplementationPattern<PackageID>,
+        private Pimp<PackageID>,
         public equality_operators::HasEqualityOperators,
         public MetadataKeyHolder
     {
         private:
-            PrivateImplementationPattern<PackageID>::ImpPtr & _imp;
+            Pimp<PackageID>::ImpPtr & _imp;
 
         protected:
             /**
@@ -471,7 +471,7 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE PackageIDComparator :
-        private PrivateImplementationPattern<PackageIDComparator>
+        private Pimp<PackageIDComparator>
     {
         public:
             ///\name Standard library typedefs

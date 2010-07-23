@@ -18,7 +18,7 @@
  */
 
 #include <paludis/repositories/cran/dep_spec_pretty_printer.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/fs_entry.hh>
@@ -38,7 +38,7 @@ using namespace paludis::cranrepository;
 namespace paludis
 {
     template <>
-    struct Implementation<DepSpecPrettyPrinter>
+    struct Imp<DepSpecPrettyPrinter>
     {
         std::stringstream s;
         const Environment * const env;
@@ -47,7 +47,7 @@ namespace paludis
         const bool multiline;
         bool need_comma;
 
-        Implementation(
+        Imp(
                 const Environment * const e,
                 const GenericSpecTree::ItemFormatter & f,
                 const unsigned u,
@@ -64,7 +64,7 @@ namespace paludis
 
 DepSpecPrettyPrinter::DepSpecPrettyPrinter(const Environment * const e,
         const GenericSpecTree::ItemFormatter & f, const unsigned initial_indent, const bool multiline) :
-    PrivateImplementationPattern<DepSpecPrettyPrinter>(e, f, initial_indent, multiline)
+    Pimp<DepSpecPrettyPrinter>(e, f, initial_indent, multiline)
 {
 }
 

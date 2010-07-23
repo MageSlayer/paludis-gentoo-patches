@@ -26,7 +26,7 @@
 #include <paludis/package_database.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/match_package.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -39,11 +39,11 @@ using namespace paludis;
 namespace paludis
 {
     template <>
-    struct Implementation<Filter>
+    struct Imp<Filter>
     {
         std::shared_ptr<const FilterHandler> handler;
 
-        Implementation(const std::shared_ptr<const FilterHandler> & h) :
+        Imp(const std::shared_ptr<const FilterHandler> & h) :
             handler(h)
         {
         }
@@ -51,12 +51,12 @@ namespace paludis
 }
 
 Filter::Filter(const std::shared_ptr<const FilterHandler> & h) :
-    PrivateImplementationPattern<Filter>(h)
+    Pimp<Filter>(h)
 {
 }
 
 Filter::Filter(const Filter & other) :
-    PrivateImplementationPattern<Filter>(other._imp->handler)
+    Pimp<Filter>(other._imp->handler)
 {
 }
 
@@ -479,7 +479,7 @@ paludis::operator<< (std::ostream & s, const Filter & f)
     return s;
 }
 
-template class PrivateImplementationPattern<Filter>;
+template class Pimp<Filter>;
 template class filter::SupportsAction<InstallAction>;
 template class filter::SupportsAction<UninstallAction>;
 template class filter::SupportsAction<PretendAction>;

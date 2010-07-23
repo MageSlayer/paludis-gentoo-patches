@@ -31,7 +31,7 @@
 #include <paludis/user_dep_spec.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/mutex.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/create_iterator-impl.hh>
@@ -53,14 +53,14 @@ using namespace paludis::fakerepository;
 namespace paludis
 {
     template <typename C_>
-    struct Implementation<FakeMetadataValueKey<C_> >
+    struct Imp<FakeMetadataValueKey<C_> >
     {
         const std::string raw_name;
         const std::string human_name;
         const MetadataKeyType type;
         C_ value;
 
-        Implementation(const std::string & r, const std::string & h, const MetadataKeyType t, const C_ & c) :
+        Imp(const std::string & r, const std::string & h, const MetadataKeyType t, const C_ & c) :
             raw_name(r),
             human_name(h),
             type(t),
@@ -73,8 +73,8 @@ namespace paludis
 template <typename C_>
 FakeMetadataValueKey<C_>::FakeMetadataValueKey(
         const std::string & r, const std::string & h, const MetadataKeyType t, const C_ & c) :
-    PrivateImplementationPattern<FakeMetadataValueKey<C_> >(r, h, t, c),
-    _imp(PrivateImplementationPattern<FakeMetadataValueKey<C_> >::_imp)
+    Pimp<FakeMetadataValueKey<C_> >(r, h, t, c),
+    _imp(Pimp<FakeMetadataValueKey<C_> >::_imp)
 {
 }
 
@@ -128,7 +128,7 @@ FakeMetadataValueKey<C_>::set_value(const C_ & c)
 namespace paludis
 {
     template <typename C_>
-    struct Implementation<FakeMetadataCollectionKey<C_> >
+    struct Imp<FakeMetadataCollectionKey<C_> >
     {
         std::shared_ptr<C_> collection;
         const PackageID * const id;
@@ -138,7 +138,7 @@ namespace paludis
         const std::string human_name;
         const MetadataKeyType type;
 
-        Implementation(const PackageID * const i, const Environment * const e,
+        Imp(const PackageID * const i, const Environment * const e,
                 const std::string & r, const std::string & h, const MetadataKeyType t) :
             id(i),
             env(e),
@@ -154,8 +154,8 @@ template <typename C_>
 FakeMetadataCollectionKey<C_>::FakeMetadataCollectionKey(
         const std::string & r, const std::string & h, const MetadataKeyType t, const PackageID * const i,
         const Environment * const e) :
-    PrivateImplementationPattern<FakeMetadataCollectionKey<C_> >(i, e, r, h, t),
-    _imp(PrivateImplementationPattern<FakeMetadataCollectionKey<C_> >::_imp)
+    Pimp<FakeMetadataCollectionKey<C_> >(i, e, r, h, t),
+    _imp(Pimp<FakeMetadataCollectionKey<C_> >::_imp)
 {
 }
 
@@ -210,7 +210,7 @@ FakeMetadataKeywordSetKey::set_from_string(const std::string & s)
 namespace paludis
 {
     template <typename C_>
-    struct Implementation<FakeMetadataSpecTreeKey<C_> >
+    struct Imp<FakeMetadataSpecTreeKey<C_> >
     {
         std::shared_ptr<const C_> value;
         std::string string_value;
@@ -220,7 +220,7 @@ namespace paludis
         const std::string human_name;
         const MetadataKeyType type;
 
-        Implementation(const std::function<const std::shared_ptr<const C_> (const std::string &)> & f,
+        Imp(const std::function<const std::shared_ptr<const C_> (const std::string &)> & f,
                 const std::string & r, const std::string & h, const MetadataKeyType t) :
             func(f),
             raw_name(r),
@@ -231,7 +231,7 @@ namespace paludis
     };
 
     template <>
-    struct Implementation<FakeMetadataSpecTreeKey<FetchableURISpecTree> >
+    struct Imp<FakeMetadataSpecTreeKey<FetchableURISpecTree> >
     {
         std::shared_ptr<const FetchableURISpecTree> value;
         std::string string_value;
@@ -242,7 +242,7 @@ namespace paludis
         const std::string human_name;
         const MetadataKeyType type;
 
-        Implementation(const std::function<const std::shared_ptr<const FetchableURISpecTree> (const std::string &)> & f,
+        Imp(const std::function<const std::shared_ptr<const FetchableURISpecTree> (const std::string &)> & f,
                 const std::string & r, const std::string & h, const MetadataKeyType t) :
             func(f),
             initial_label(new URIListedThenMirrorsLabel("listed-then-mirrors")),
@@ -254,7 +254,7 @@ namespace paludis
     };
 
     template <>
-    struct Implementation<FakeMetadataSpecTreeKey<DependencySpecTree> >
+    struct Imp<FakeMetadataSpecTreeKey<DependencySpecTree> >
     {
         std::shared_ptr<const DependencySpecTree> value;
         std::string string_value;
@@ -265,7 +265,7 @@ namespace paludis
         const std::string human_name;
         const MetadataKeyType type;
 
-        Implementation(const std::function<const std::shared_ptr<const DependencySpecTree> (const std::string &)> & f,
+        Imp(const std::function<const std::shared_ptr<const DependencySpecTree> (const std::string &)> & f,
                 const std::shared_ptr<const DependenciesLabelSequence> & s,
                 const std::string & r, const std::string & h, const MetadataKeyType t) :
             func(f),
@@ -281,8 +281,8 @@ namespace paludis
 template <typename C_>
 FakeMetadataSpecTreeKey<C_>::FakeMetadataSpecTreeKey(const std::string & r, const std::string & h, const std::string & v,
         const std::function<const std::shared_ptr<const C_> (const std::string &)> & f, const MetadataKeyType t) :
-    PrivateImplementationPattern<FakeMetadataSpecTreeKey<C_> >(f, r, h, t),
-    _imp(PrivateImplementationPattern<FakeMetadataSpecTreeKey<C_> >::_imp)
+    Pimp<FakeMetadataSpecTreeKey<C_> >(f, r, h, t),
+    _imp(Pimp<FakeMetadataSpecTreeKey<C_> >::_imp)
 {
     set_from_string(v);
 }
@@ -344,8 +344,8 @@ FakeMetadataSpecTreeKey<C_>::pretty_print_flat(const typename C_::ItemFormatter 
 
 FakeMetadataSpecTreeKey<FetchableURISpecTree>::FakeMetadataSpecTreeKey(const std::string & r, const std::string & h, const std::string & v,
         const std::function<const std::shared_ptr<const FetchableURISpecTree> (const std::string &)> & f, const MetadataKeyType t) :
-    PrivateImplementationPattern<FakeMetadataSpecTreeKey<FetchableURISpecTree> >(f, r, h, t),
-    _imp(PrivateImplementationPattern<FakeMetadataSpecTreeKey<FetchableURISpecTree> >::_imp)
+    Pimp<FakeMetadataSpecTreeKey<FetchableURISpecTree> >(f, r, h, t),
+    _imp(Pimp<FakeMetadataSpecTreeKey<FetchableURISpecTree> >::_imp)
 {
     set_from_string(v);
 }
@@ -406,8 +406,8 @@ FakeMetadataSpecTreeKey<FetchableURISpecTree>::initial_label() const
 FakeMetadataSpecTreeKey<DependencySpecTree>::FakeMetadataSpecTreeKey(const std::string & r, const std::string & h, const std::string & v,
         const std::function<const std::shared_ptr<const DependencySpecTree> (const std::string &)> & f,
         const std::shared_ptr<const DependenciesLabelSequence> & s, const MetadataKeyType t) :
-    PrivateImplementationPattern<FakeMetadataSpecTreeKey<DependencySpecTree> >(f, s, r, h, t),
-    _imp(PrivateImplementationPattern<FakeMetadataSpecTreeKey<DependencySpecTree> >::_imp)
+    Pimp<FakeMetadataSpecTreeKey<DependencySpecTree> >(f, s, r, h, t),
+    _imp(Pimp<FakeMetadataSpecTreeKey<DependencySpecTree> >::_imp)
 {
     set_from_string(v);
 }
@@ -468,14 +468,14 @@ FakeMetadataSpecTreeKey<DependencySpecTree>::type() const
 namespace paludis
 {
     template <>
-    struct Implementation<FakeMetadataChoicesKey>
+    struct Imp<FakeMetadataChoicesKey>
     {
         const Environment * const env;
         const std::shared_ptr<const PackageID> id;
         std::shared_ptr<Choices> value;
         std::map<std::string, std::shared_ptr<Choice> > choices;
 
-        Implementation(const Environment * const e, const std::shared_ptr<const PackageID> & i) :
+        Imp(const Environment * const e, const std::shared_ptr<const PackageID> & i) :
             env(e),
             id(i),
             value(new Choices)
@@ -550,8 +550,8 @@ namespace
 
 FakeMetadataChoicesKey::FakeMetadataChoicesKey(const Environment * const e,
         const std::shared_ptr<const PackageID> & i) :
-    PrivateImplementationPattern<FakeMetadataChoicesKey>(e, i),
-    _imp(PrivateImplementationPattern<FakeMetadataChoicesKey>::_imp)
+    Pimp<FakeMetadataChoicesKey>(e, i),
+    _imp(Pimp<FakeMetadataChoicesKey>::_imp)
 {
 }
 
@@ -608,13 +608,13 @@ FakeMetadataChoicesKey::type() const
 namespace paludis
 {
     template <>
-    struct Implementation<FakeUnacceptedMask>
+    struct Imp<FakeUnacceptedMask>
     {
         const char key;
         const std::string description;
         const std::shared_ptr<const MetadataKey> unaccepted_key;
 
-        Implementation(const char k, const std::string & d, const std::shared_ptr<const MetadataKey> & u) :
+        Imp(const char k, const std::string & d, const std::shared_ptr<const MetadataKey> & u) :
             key(k),
             description(d),
             unaccepted_key(u)
@@ -624,7 +624,7 @@ namespace paludis
 }
 
 FakeUnacceptedMask::FakeUnacceptedMask(const char c, const std::string & s, const std::shared_ptr<const MetadataKey> & k) :
-    PrivateImplementationPattern<FakeUnacceptedMask>(c, s, k)
+    Pimp<FakeUnacceptedMask>(c, s, k)
 {
 }
 
@@ -681,7 +681,7 @@ namespace paludis
     using namespace std::placeholders;
 
     template <>
-    struct Implementation<FakePackageID>
+    struct Imp<FakePackageID>
     {
         mutable Mutex mutex;
 
@@ -717,7 +717,7 @@ namespace paludis
         std::shared_ptr<Mask> unsupported_mask;
         mutable bool has_masks;
 
-        Implementation(const Environment * const e, const std::shared_ptr<const FakeRepositoryBase> & r,
+        Imp(const Environment * const e, const std::shared_ptr<const FakeRepositoryBase> & r,
                 const QualifiedPackageName & q, const VersionSpec & v, const PackageID * const id) :
             env(e),
             repository(r),
@@ -746,8 +746,8 @@ namespace paludis
 
 FakePackageID::FakePackageID(const Environment * const e, const std::shared_ptr<const FakeRepositoryBase> & r,
         const QualifiedPackageName & q, const VersionSpec & v) :
-    PrivateImplementationPattern<FakePackageID>(e, r, q, v, this),
-    _imp(PrivateImplementationPattern<FakePackageID>::_imp)
+    Pimp<FakePackageID>(e, r, q, v, this),
+    _imp(Pimp<FakePackageID>::_imp)
 {
     add_metadata_key(_imp->keywords);
 }

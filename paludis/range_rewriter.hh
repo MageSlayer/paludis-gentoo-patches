@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_RANGE_REWRITER_HH 1
 
 #include <paludis/spec_tree.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 
 /** \file
  * Declarations for RangeRewriter, which is used internally by Deplist.
@@ -44,7 +44,7 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE RangeRewriter :
-        private PrivateImplementationPattern<RangeRewriter>
+        private Pimp<RangeRewriter>
     {
         public:
             ///\name Basic operations

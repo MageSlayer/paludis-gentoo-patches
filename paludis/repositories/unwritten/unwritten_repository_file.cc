@@ -36,7 +36,7 @@
 #include <paludis/user_dep_spec.hh>
 #include <paludis/spec_tree.hh>
 
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 
@@ -50,7 +50,7 @@ typedef std::list<UnwrittenRepositoryFileEntry> Entries;
 namespace paludis
 {
     template <>
-    struct Implementation<UnwrittenRepositoryFile>
+    struct Imp<UnwrittenRepositoryFile>
     {
         Entries entries;
     };
@@ -63,7 +63,7 @@ namespace paludis
 }
 
 UnwrittenRepositoryFile::UnwrittenRepositoryFile(const FSEntry & f) :
-    PrivateImplementationPattern<UnwrittenRepositoryFile>()
+    Pimp<UnwrittenRepositoryFile>()
 {
     _load(f);
 }
@@ -349,7 +349,7 @@ UnwrittenRepositoryFile::_load(const FSEntry & f)
         _imp->entries.push_back(*entry);
 }
 
-template class PrivateImplementationPattern<UnwrittenRepositoryFile>;
+template class Pimp<UnwrittenRepositoryFile>;
 template class WrappedForwardIterator<UnwrittenRepositoryFile::ConstIteratorTag,
          const UnwrittenRepositoryFileEntry>;
 

@@ -23,7 +23,7 @@
 #include <paludis/environments/paludis/paludis_environment.hh>
 #include <paludis/environments/paludis/bashable_conf.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/iterator_funcs.hh>
@@ -43,12 +43,12 @@ typedef std::unordered_multimap<std::string, std::string, Hash<std::string> > Mi
 namespace paludis
 {
     template<>
-    struct Implementation<MirrorsConf>
+    struct Imp<MirrorsConf>
     {
         const PaludisEnvironment * const env;
         Mirrors mirrors;
 
-        Implementation(const PaludisEnvironment * const e) :
+        Imp(const PaludisEnvironment * const e) :
             env(e)
         {
         }
@@ -56,7 +56,7 @@ namespace paludis
 }
 
 MirrorsConf::MirrorsConf(const PaludisEnvironment * const e) :
-    PrivateImplementationPattern<MirrorsConf>(e)
+    Pimp<MirrorsConf>(e)
 {
 }
 

@@ -20,7 +20,7 @@
 #include <paludis/dep_spec_flattener.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/environment.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
@@ -35,14 +35,14 @@ using namespace paludis;
 namespace paludis
 {
     template <typename Heirarchy_, typename Item_>
-    struct Implementation<DepSpecFlattener<Heirarchy_, Item_> >
+    struct Imp<DepSpecFlattener<Heirarchy_, Item_> >
     {
         const Environment * const env;
 
         std::list<std::shared_ptr<const Item_> > specs;
         std::set<SetName> recursing_sets;
 
-        Implementation(const Environment * const e) :
+        Imp(const Environment * const e) :
             env(e)
         {
         }
@@ -76,8 +76,8 @@ namespace paludis
 template <typename Heirarchy_, typename Item_>
 DepSpecFlattener<Heirarchy_, Item_>::DepSpecFlattener(
         const Environment * const env) :
-    PrivateImplementationPattern<DepSpecFlattener<Heirarchy_, Item_> >(env),
-    _imp(PrivateImplementationPattern<DepSpecFlattener<Heirarchy_, Item_> >::_imp)
+    Pimp<DepSpecFlattener<Heirarchy_, Item_> >(env),
+    _imp(Pimp<DepSpecFlattener<Heirarchy_, Item_> >::_imp)
 {
 }
 

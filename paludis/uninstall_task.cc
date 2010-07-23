@@ -28,7 +28,7 @@
 #include <paludis/generator.hh>
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/sequence-impl.hh>
@@ -84,7 +84,7 @@ AmbiguousUnmergeTargetError::target() const
 namespace paludis
 {
     template<>
-    struct Implementation<UninstallTask>
+    struct Imp<UninstallTask>
     {
         Environment * const env;
 
@@ -102,7 +102,7 @@ namespace paludis
         bool had_set_targets;
         bool had_package_targets;
 
-        Implementation<UninstallTask>(Environment * const e) :
+        Imp<UninstallTask>(Environment * const e) :
             env(e),
             pretend(false),
             preserve_world(false),
@@ -125,7 +125,7 @@ namespace paludis
 }
 
 UninstallTask::UninstallTask(Environment * const e) :
-    PrivateImplementationPattern<UninstallTask>(e)
+    Pimp<UninstallTask>(e)
 {
 }
 

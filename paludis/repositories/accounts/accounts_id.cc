@@ -20,7 +20,7 @@
 #include <paludis/repositories/accounts/accounts_id.hh>
 #include <paludis/repositories/accounts/accounts_dep_key.hh>
 #include <paludis/repositories/accounts/accounts_installed_mask.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/stringify.hh>
@@ -46,7 +46,7 @@ using namespace paludis::accounts_repository;
 namespace paludis
 {
     template <>
-    struct Implementation<AccountsID>
+    struct Imp<AccountsID>
     {
         const Environment * const env;
 
@@ -76,7 +76,7 @@ namespace paludis
         mutable std::shared_ptr<const LiteralMetadataValueKey<std::string> > groupname_key;
         mutable std::shared_ptr<const LiteralMetadataValueKey<std::string> > preferred_gid_key;
 
-        Implementation(const Environment * const e,
+        Imp(const Environment * const e,
                 const QualifiedPackageName & q, const std::shared_ptr<const Repository> & r,
                 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & f,
                 const FSEntry & l, const bool u, const bool m) :
@@ -99,8 +99,8 @@ AccountsID::AccountsID(const Environment * const e,
         const QualifiedPackageName & q, const std::shared_ptr<const Repository> & r,
         const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & f, const FSEntry & l,
         const bool u, const bool m) :
-    PrivateImplementationPattern<AccountsID>(e, q, r, f, l, u, m),
-    _imp(PrivateImplementationPattern<AccountsID>::_imp)
+    Pimp<AccountsID>(e, q, r, f, l, u, m),
+    _imp(Pimp<AccountsID>::_imp)
 {
     if (_imp->mask)
         add_mask(_imp->mask);

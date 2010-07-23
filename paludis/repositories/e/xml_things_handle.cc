@@ -21,7 +21,7 @@
 #include <paludis/about.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/util/system.hh>
 #include "config.h"
@@ -36,7 +36,7 @@ using namespace paludis::erepository;
 namespace paludis
 {
     template <>
-    struct Implementation<XMLThingsHandle>
+    struct Imp<XMLThingsHandle>
     {
         void * paludis_handle;
         void * handle;
@@ -49,7 +49,7 @@ namespace paludis
         InitPtr init;
         CleanupPtr cleanup;
 
-        Implementation() :
+        Imp() :
             paludis_handle(0),
             handle(0),
             create_glsa_from_xml_file(0),
@@ -123,7 +123,7 @@ namespace paludis
 }
 
 XMLThingsHandle::XMLThingsHandle() :
-    PrivateImplementationPattern<XMLThingsHandle>()
+    Pimp<XMLThingsHandle>()
 {
 }
 
@@ -149,6 +149,6 @@ XMLThingsHandle::create_metadata_xml_from_xml_file() const
     return _imp->create_metadata_xml_from_xml_file;
 }
 
-template class PrivateImplementationPattern<XMLThingsHandle>;
+template class Pimp<XMLThingsHandle>;
 template class Singleton<XMLThingsHandle>;
 

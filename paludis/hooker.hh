@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_HOOKER_HH 1
 
 #include <paludis/util/attributes.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/graph-fwd.hh>
 #include <paludis/util/sequence-fwd.hh>
 #include <memory>
@@ -77,7 +77,7 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE Hooker :
-        private PrivateImplementationPattern<Hooker>
+        private Pimp<Hooker>
     {
         private:
             std::shared_ptr<Sequence<std::shared_ptr<HookFile> > > _find_hooks(const Hook &) const;

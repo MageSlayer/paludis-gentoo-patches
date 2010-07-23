@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_PRIVATE_IMPLEMENTATION_PATTERN_HH 1
 
 /** \file
- * Declarations for the PrivateImplementationPattern pattern.
+ * Declarations for the Pimp pattern.
  *
  * \ingroup g_oo
  *
@@ -34,33 +34,33 @@ namespace paludis
 {
     /**
      * Private implementation data, to be specialised for any class that
-     * uses PrivateImplementationPattern.
+     * uses Pimp.
      *
      * \ingroup g_oo
      */
     template <typename C_>
-    struct Implementation;
+    struct Imp;
 
     /**
-     * A class descended from PrivateImplementationPattern has an associated
-     * Implementation instance.
+     * A class descended from Pimp has an associated
+     * Imp instance.
      *
      * \ingroup g_oo
      */
     template <typename C_>
-    class PrivateImplementationPattern
+    class Pimp
     {
         protected:
             /**
              * Smart pointer to our implementation.
              *
-             * \see PrivateImplementationPattern
+             * \see Pimp
              * \ingroup g_oo
              */
             class ImpPtr
             {
                 private:
-                    Implementation<C_> * _ptr;
+                    Imp<C_> * _ptr;
 
                 public:
                     ///\name Basic operations
@@ -81,19 +81,19 @@ namespace paludis
                     ///\name Dereference operators
                     //\{
 
-                    inline Implementation<C_> * operator-> ();
+                    inline Imp<C_> * operator-> ();
 
-                    inline const Implementation<C_> * operator-> () const;
+                    inline const Imp<C_> * operator-> () const;
 
-                    Implementation<C_> * get();
-                    const Implementation<C_> * get() const;
+                    Imp<C_> * get();
+                    const Imp<C_> * get() const;
 
                     ///\}
 
                     /**
-                     * Reset to a new Implementation.
+                     * Reset to a new Imp.
                      */
-                    void reset(Implementation<C_> * p);
+                    void reset(Imp<C_> * p);
             };
 
             /**
@@ -106,24 +106,24 @@ namespace paludis
              * Constructor.
              */
             template <typename... Args_>
-            explicit PrivateImplementationPattern(Args_ && ... args);
+            explicit Pimp(Args_ && ... args);
 
-            explicit PrivateImplementationPattern(Implementation<C_> *) = delete;
+            explicit Pimp(Imp<C_> *) = delete;
 
-            ~PrivateImplementationPattern();
+            ~Pimp();
     };
 }
 
 template <typename C_>
-paludis::Implementation<C_> *
-paludis::PrivateImplementationPattern<C_>::ImpPtr::operator-> ()
+paludis::Imp<C_> *
+paludis::Pimp<C_>::ImpPtr::operator-> ()
 {
     return _ptr;
 }
 
 template <typename C_>
-const paludis::Implementation<C_> *
-paludis::PrivateImplementationPattern<C_>::ImpPtr::operator-> () const
+const paludis::Imp<C_> *
+paludis::Pimp<C_>::ImpPtr::operator-> () const
 {
     return _ptr;
 }

@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_GENTOO_EXHERES_LAYOUT_HH 1
 
 #include <paludis/repositories/e/layout.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 
 namespace paludis
 {
@@ -35,7 +35,7 @@ namespace paludis
          */
         class PALUDIS_VISIBLE ExheresLayout :
             public Layout,
-            private PrivateImplementationPattern<ExheresLayout>
+            private Pimp<ExheresLayout>
         {
             private:
                 void need_category_names() const;

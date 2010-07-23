@@ -22,7 +22,7 @@
 
 #include <paludis/contents-fwd.hh>
 #include <paludis/util/simple_visitor.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/type_list.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/fs_entry-fwd.hh>
@@ -51,13 +51,13 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE ContentsEntry :
-        private PrivateImplementationPattern<ContentsEntry>,
+        private Pimp<ContentsEntry>,
         public MetadataKeyHolder,
         public virtual DeclareAbstractAcceptMethods<ContentsEntry, MakeTypeList<
             ContentsFileEntry, ContentsDirEntry, ContentsSymEntry, ContentsOtherEntry>::Type>
     {
         private:
-            PrivateImplementationPattern<ContentsEntry>::ImpPtr & _imp;
+            Pimp<ContentsEntry>::ImpPtr & _imp;
 
         protected:
             virtual void need_keys_added() const;
@@ -163,12 +163,12 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE ContentsSymEntry :
-        private PrivateImplementationPattern<ContentsSymEntry>,
+        private Pimp<ContentsSymEntry>,
         public ContentsEntry,
         public ImplementAcceptMethods<ContentsEntry, ContentsSymEntry>
     {
         private:
-            PrivateImplementationPattern<ContentsSymEntry>::ImpPtr & _imp;
+            Pimp<ContentsSymEntry>::ImpPtr & _imp;
 
         public:
             ///\name Basic operations
@@ -199,7 +199,7 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE Contents :
-        private PrivateImplementationPattern<Contents>
+        private Pimp<Contents>
     {
         public:
             ///\name Basic operations
@@ -231,9 +231,9 @@ namespace paludis
             ///\}
     };
 
-    extern template class PrivateImplementationPattern<Contents>;
-    extern template class PrivateImplementationPattern<ContentsEntry>;
-    extern template class PrivateImplementationPattern<ContentsSymEntry>;
+    extern template class Pimp<Contents>;
+    extern template class Pimp<ContentsEntry>;
+    extern template class Pimp<ContentsSymEntry>;
 
     extern template class WrappedForwardIterator<Contents::ConstIteratorTag, const std::shared_ptr<const ContentsEntry> >;
 }

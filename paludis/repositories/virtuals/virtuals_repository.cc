@@ -33,7 +33,7 @@
 
 #include <paludis/util/log.hh>
 #include <paludis/util/operators.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
@@ -57,7 +57,7 @@ typedef std::unordered_map<QualifiedPackageName, std::shared_ptr<PackageIDSequen
 namespace paludis
 {
     template<>
-    struct Implementation<VirtualsRepository>
+    struct Imp<VirtualsRepository>
     {
         const Environment * const env;
 
@@ -71,7 +71,7 @@ namespace paludis
 
         std::shared_ptr<const MetadataValueKey<std::string> > format_key;
 
-        Implementation(const Environment * const e, std::shared_ptr<Mutex> m = std::make_shared<Mutex>()) :
+        Imp(const Environment * const e, std::shared_ptr<Mutex> m = std::make_shared<Mutex>()) :
             env(e),
             big_nasty_mutex(m),
             has_names(false),
@@ -129,8 +129,8 @@ VirtualsRepository::VirtualsRepository(const Environment * const env) :
                 n::provides_interface() = static_cast<RepositoryProvidesInterface *>(0),
                 n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
             )),
-    PrivateImplementationPattern<VirtualsRepository>(env),
-    _imp(PrivateImplementationPattern<VirtualsRepository>::_imp)
+    Pimp<VirtualsRepository>(env),
+    _imp(Pimp<VirtualsRepository>::_imp)
 {
     add_metadata_key(_imp->format_key);
 }
@@ -314,7 +314,7 @@ void
 VirtualsRepository::invalidate()
 {
     Lock l(*_imp->big_nasty_mutex);
-    _imp.reset(new Implementation<VirtualsRepository>(_imp->env, _imp->big_nasty_mutex));
+    _imp.reset(new Imp<VirtualsRepository>(_imp->env, _imp->big_nasty_mutex));
 }
 
 void

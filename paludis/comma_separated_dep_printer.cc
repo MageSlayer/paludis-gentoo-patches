@@ -18,7 +18,7 @@
  */
 
 #include <paludis/comma_separated_dep_printer.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
@@ -35,7 +35,7 @@ using namespace paludis;
 namespace paludis
 {
     template <>
-    struct Implementation<CommaSeparatedDepPrinter>
+    struct Imp<CommaSeparatedDepPrinter>
     {
         std::stringstream s;
         const Environment * const env;
@@ -44,7 +44,7 @@ namespace paludis
         const bool flat;
         bool need_comma;
 
-        Implementation(
+        Imp(
                 const Environment * const e,
                 const DependencySpecTree::ItemFormatter & f,
                 const unsigned u,
@@ -61,7 +61,7 @@ namespace paludis
 
 CommaSeparatedDepPrinter::CommaSeparatedDepPrinter(const Environment * const e,
         const DependencySpecTree::ItemFormatter & f, const bool flat) :
-    PrivateImplementationPattern<CommaSeparatedDepPrinter>(e, f, 0, flat)
+    Pimp<CommaSeparatedDepPrinter>(e, f, 0, flat)
 {
 }
 

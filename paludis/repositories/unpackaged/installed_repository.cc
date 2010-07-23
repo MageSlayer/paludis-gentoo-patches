@@ -22,7 +22,7 @@
 #include <paludis/repositories/unpackaged/exceptions.hh>
 #include <paludis/ndbam.hh>
 #include <paludis/ndbam_merger.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/set.hh>
@@ -65,7 +65,7 @@ namespace
 namespace paludis
 {
     template <>
-    struct Implementation<InstalledUnpackagedRepository>
+    struct Imp<InstalledUnpackagedRepository>
     {
         const InstalledUnpackagedRepositoryParams params;
         mutable NDBAM ndbam;
@@ -74,7 +74,7 @@ namespace paludis
         std::shared_ptr<const MetadataValueKey<FSEntry> > root_key;
         std::shared_ptr<const MetadataValueKey<std::string> > format_key;
 
-        Implementation(const InstalledUnpackagedRepositoryParams & p) :
+        Imp(const InstalledUnpackagedRepositoryParams & p) :
             params(p),
             ndbam(p.location(), &supported_installed_unpackaged, "installed_unpackaged-1", user_version_spec_options()),
             location_key(new LiteralMetadataValueKey<FSEntry> ("location", "location",
@@ -90,7 +90,7 @@ namespace paludis
 
 InstalledUnpackagedRepository::InstalledUnpackagedRepository(
         const RepositoryName & n, const InstalledUnpackagedRepositoryParams & p) :
-    PrivateImplementationPattern<InstalledUnpackagedRepository>(p),
+    Pimp<InstalledUnpackagedRepository>(p),
     Repository(p.environment(), n, make_named_values<RepositoryCapabilities>(
                 n::destination_interface() = this,
                 n::environment_variable_interface() = static_cast<RepositoryEnvironmentVariableInterface *>(0),
@@ -99,7 +99,7 @@ InstalledUnpackagedRepository::InstalledUnpackagedRepository(
                 n::provides_interface() = static_cast<RepositoryProvidesInterface *>(0),
                 n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
             )),
-    _imp(PrivateImplementationPattern<InstalledUnpackagedRepository>::_imp)
+    _imp(Pimp<InstalledUnpackagedRepository>::_imp)
 {
     _add_metadata_keys();
 }
@@ -412,7 +412,7 @@ InstalledUnpackagedRepository::want_pre_post_phases() const
 void
 InstalledUnpackagedRepository::invalidate()
 {
-    _imp.reset(new Implementation<InstalledUnpackagedRepository>(_imp->params));
+    _imp.reset(new Imp<InstalledUnpackagedRepository>(_imp->params));
     _add_metadata_keys();
 }
 

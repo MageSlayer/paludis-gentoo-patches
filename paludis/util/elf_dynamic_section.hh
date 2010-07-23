@@ -24,7 +24,7 @@
 #include <paludis/util/elf_sections.hh>
 #include <paludis/util/clone.hh>
 #include <paludis/util/singleton.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/util/simple_visitor.hh>
 #include <paludis/util/type_list.hh>
@@ -173,9 +173,9 @@ namespace paludis
     template <typename ElfType_>
     class DynamicEntries :
         public Singleton<DynamicEntries<ElfType_> >,
-        private PrivateImplementationPattern<DynamicEntries<ElfType_> >
+        private Pimp<DynamicEntries<ElfType_> >
     {
-        using PrivateImplementationPattern<DynamicEntries>::_imp;
+        using Pimp<DynamicEntries>::_imp;
         friend class Singleton<DynamicEntries>;
 
         public:
@@ -196,9 +196,9 @@ namespace paludis
     class PALUDIS_VISIBLE DynamicSection :
         public Section<ElfType_>,
         public ImplementAcceptMethods<Section<ElfType_>, DynamicSection<ElfType_> >,
-        private PrivateImplementationPattern<DynamicSection<ElfType_> >
+        private Pimp<DynamicSection<ElfType_> >
     {
-        using PrivateImplementationPattern<DynamicSection>::_imp;
+        using Pimp<DynamicSection>::_imp;
 
         public:
             DynamicSection(typename ElfType_::Word, const typename ElfType_::SectionHeader &, std::istream &, bool);

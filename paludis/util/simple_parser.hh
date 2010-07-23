@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_UTIL_SIMPLE_PARSER_HH 1
 
 #include <paludis/util/attributes.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/simple_parser-fwd.hh>
 #include <functional>
 #include <string>
@@ -73,7 +73,7 @@ namespace paludis
     }
 
     class PALUDIS_VISIBLE SimpleParser :
-        private PrivateImplementationPattern<SimpleParser>
+        private Pimp<SimpleParser>
     {
         public:
             SimpleParser(const std::string &);
@@ -88,7 +88,7 @@ namespace paludis
             const std::string text() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
-    extern template struct PrivateImplementationPattern<SimpleParser>;
+    extern template struct Pimp<SimpleParser>;
 }
 
 #endif

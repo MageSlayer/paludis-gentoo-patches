@@ -7,7 +7,7 @@
 #include <paludis/environment-fwd.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/set.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 
 namespace paludis
 {
@@ -17,10 +17,10 @@ namespace paludis
     {
         class InfoPkgsMetadataKey :
             public MetadataSectionKey,
-            private PrivateImplementationPattern<InfoPkgsMetadataKey>
+            private Pimp<InfoPkgsMetadataKey>
         {
             private:
-                PrivateImplementationPattern<InfoPkgsMetadataKey>::ImpPtr & _imp;
+                Pimp<InfoPkgsMetadataKey>::ImpPtr & _imp;
 
             protected:
                 virtual void need_keys_added() const;
@@ -38,7 +38,7 @@ namespace paludis
 
         class InfoVarsMetadataKey :
             public MetadataCollectionKey<Set<std::string> >,
-            private PrivateImplementationPattern<InfoVarsMetadataKey>
+            private Pimp<InfoVarsMetadataKey>
         {
             public:
                 InfoVarsMetadataKey(const std::shared_ptr<const FSEntrySequence> &);
@@ -54,8 +54,8 @@ namespace paludis
         };
     }
 
-    extern template class PrivateImplementationPattern<erepository::InfoPkgsMetadataKey>;
-    extern template class PrivateImplementationPattern<erepository::InfoVarsMetadataKey>;
+    extern template class Pimp<erepository::InfoPkgsMetadataKey>;
+    extern template class Pimp<erepository::InfoVarsMetadataKey>;
 }
 
 #endif

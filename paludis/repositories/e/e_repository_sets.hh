@@ -42,7 +42,7 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE ERepositorySets :
-        private PrivateImplementationPattern<ERepositorySets>
+        private Pimp<ERepositorySets>
     {
         public:
             ///\name Basic operations

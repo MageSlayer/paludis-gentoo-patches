@@ -18,7 +18,7 @@
  */
 
 #include <paludis/output_manager_from_environment.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/options.hh>
 #include <paludis/environment.hh>
@@ -30,7 +30,7 @@ using namespace paludis;
 namespace paludis
 {
     template <>
-    struct Implementation<OutputManagerFromEnvironment>
+    struct Imp<OutputManagerFromEnvironment>
     {
         const Environment * const env;
         const std::shared_ptr<const PackageID> id;
@@ -39,7 +39,7 @@ namespace paludis
 
         std::shared_ptr<OutputManager> result;
 
-        Implementation(const Environment * const e, const std::shared_ptr<const PackageID> & i,
+        Imp(const Environment * const e, const std::shared_ptr<const PackageID> & i,
                 const OutputExclusivity x, const ClientOutputFeatures & c) :
             env(e),
             id(i),
@@ -55,7 +55,7 @@ OutputManagerFromEnvironment::OutputManagerFromEnvironment(
         const std::shared_ptr<const PackageID> & i,
         const OutputExclusivity x,
         const ClientOutputFeatures & c) :
-    PrivateImplementationPattern<OutputManagerFromEnvironment>(e, i, x, c)
+    Pimp<OutputManagerFromEnvironment>(e, i, x, c)
 {
 }
 
@@ -92,5 +92,5 @@ OutputManagerFromEnvironment::construct_standard_if_unconstructed()
     }
 }
 
-template class PrivateImplementationPattern<OutputManagerFromEnvironment>;
+template class Pimp<OutputManagerFromEnvironment>;
 

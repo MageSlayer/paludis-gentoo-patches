@@ -26,7 +26,7 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/simple_visitor.hh>
 #include <paludis/util/exception.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/sequence-fwd.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/util/fs_entry-fwd.hh>
@@ -275,7 +275,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE InstallAction :
         public Action,
-        private PrivateImplementationPattern<InstallAction>,
+        private Pimp<InstallAction>,
         public ImplementAcceptMethods<Action, InstallAction>
     {
         public:
@@ -305,7 +305,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE FetchAction :
         public Action,
-        private PrivateImplementationPattern<FetchAction>,
+        private Pimp<FetchAction>,
         public ImplementAcceptMethods<Action, FetchAction>
     {
         public:
@@ -335,7 +335,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE UninstallAction :
         public Action,
-        private PrivateImplementationPattern<UninstallAction>,
+        private Pimp<UninstallAction>,
         public ImplementAcceptMethods<Action, UninstallAction>
     {
         public:
@@ -384,7 +384,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE PretendAction :
         public Action,
-        private PrivateImplementationPattern<PretendAction>,
+        private Pimp<PretendAction>,
         public ImplementAcceptMethods<Action, PretendAction>
     {
         public:
@@ -425,7 +425,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE PretendFetchAction :
         public Action,
-        private PrivateImplementationPattern<PretendFetchAction>,
+        private Pimp<PretendFetchAction>,
         public ImplementAcceptMethods<Action, PretendFetchAction>
     {
         public:
@@ -478,7 +478,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE ConfigAction :
         public Action,
-        private PrivateImplementationPattern<ConfigAction>,
+        private Pimp<ConfigAction>,
         public ImplementAcceptMethods<Action, ConfigAction>
     {
         public:
@@ -537,7 +537,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE InfoAction:
         public Action,
-        private PrivateImplementationPattern<InfoAction>,
+        private Pimp<InfoAction>,
         public ImplementAcceptMethods<Action, InfoAction>
     {
         public:
@@ -641,13 +641,13 @@ namespace paludis
             ///\}
     };
 
-    extern template class PrivateImplementationPattern<FetchAction>;
-    extern template class PrivateImplementationPattern<InstallAction>;
-    extern template class PrivateImplementationPattern<PretendAction>;
-    extern template class PrivateImplementationPattern<PretendFetchAction>;
-    extern template class PrivateImplementationPattern<UninstallAction>;
-    extern template class PrivateImplementationPattern<InfoAction>;
-    extern template class PrivateImplementationPattern<ConfigAction>;
+    extern template class Pimp<FetchAction>;
+    extern template class Pimp<InstallAction>;
+    extern template class Pimp<PretendAction>;
+    extern template class Pimp<PretendFetchAction>;
+    extern template class Pimp<UninstallAction>;
+    extern template class Pimp<InfoAction>;
+    extern template class Pimp<ConfigAction>;
 }
 
 #endif

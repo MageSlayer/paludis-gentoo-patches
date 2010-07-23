@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_NOTIFIER_CALLBACK_HH 1
 
 #include <paludis/notifier_callback-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/simple_visitor.hh>
 #include <paludis/util/type_list.hh>
 #include <paludis/util/fs_entry.hh>
@@ -85,7 +85,7 @@ namespace paludis
     };
 
     class PALUDIS_VISIBLE ScopedNotifierCallback :
-        private PrivateImplementationPattern<ScopedNotifierCallback>
+        private Pimp<ScopedNotifierCallback>
     {
         public:
             ScopedNotifierCallback(Environment * const, const NotifierCallbackFunction &);
@@ -94,7 +94,7 @@ namespace paludis
             void remove_now();
     };
 
-    extern template class PrivateImplementationPattern<ScopedNotifierCallback>;
+    extern template class Pimp<ScopedNotifierCallback>;
 
 }
 

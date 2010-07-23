@@ -22,7 +22,7 @@
 #include <paludis/repositories/unpackaged/exceptions.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/destringify.hh>
@@ -40,7 +40,7 @@ using namespace paludis::unpackaged_repositories;
 namespace paludis
 {
     template <>
-    struct Implementation<UnpackagedRepository>
+    struct Imp<UnpackagedRepository>
     {
         const UnpackagedRepositoryParams params;
         std::shared_ptr<const PackageID> id;
@@ -58,7 +58,7 @@ namespace paludis
         std::shared_ptr<const MetadataValueKey<std::string> > run_dependencies_key;
         std::shared_ptr<const MetadataValueKey<std::string> > description_key;
 
-        Implementation(const RepositoryName & n,
+        Imp(const RepositoryName & n,
                 const UnpackagedRepositoryParams & p) :
             params(p),
             id(new UnpackagedID(params.environment(), params.name(), params.version(), params.slot(), n, params.location(),
@@ -94,7 +94,7 @@ namespace paludis
 
 UnpackagedRepository::UnpackagedRepository(const RepositoryName & n,
         const UnpackagedRepositoryParams & params) :
-    PrivateImplementationPattern<UnpackagedRepository>(n, params),
+    Pimp<UnpackagedRepository>(n, params),
     Repository(params.environment(), n, make_named_values<RepositoryCapabilities>(
                 n::destination_interface() = static_cast<RepositoryDestinationInterface *>(0),
                 n::environment_variable_interface() = static_cast<RepositoryEnvironmentVariableInterface *>(0),
@@ -103,7 +103,7 @@ UnpackagedRepository::UnpackagedRepository(const RepositoryName & n,
                 n::provides_interface() = static_cast<RepositoryProvidesInterface *>(0),
                 n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
             )),
-    _imp(PrivateImplementationPattern<UnpackagedRepository>::_imp)
+    _imp(Pimp<UnpackagedRepository>::_imp)
 {
     _add_metadata_keys();
 }
@@ -184,7 +184,7 @@ UnpackagedRepository::is_unimportant() const
 void
 UnpackagedRepository::invalidate()
 {
-    _imp.reset(new Implementation<UnpackagedRepository>(name(), _imp->params));
+    _imp.reset(new Imp<UnpackagedRepository>(name(), _imp->params));
     _add_metadata_keys();
 }
 

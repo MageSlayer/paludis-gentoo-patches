@@ -85,10 +85,10 @@ namespace paludis
 
         class DepKey :
             public MetadataSpecTreeKey<DependencySpecTree>,
-            private PrivateImplementationPattern<DepKey>
+            private Pimp<DepKey>
         {
             private:
-                PrivateImplementationPattern<DepKey>::ImpPtr & _imp;
+                Pimp<DepKey>::ImpPtr & _imp;
 
             public:
                 DepKey(const Environment * const,

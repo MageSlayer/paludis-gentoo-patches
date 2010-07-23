@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_PALUDIS_ENVIRONMENTS_PALUDIS_USE_CONF_HH
 #define PALUDIS_GUARD_PALUDIS_PALUDIS_ENVIRONMENTS_PALUDIS_USE_CONF_HH 1
 
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/tribool-fwd.hh>
 #include <paludis/choice-fwd.hh>
@@ -40,7 +40,7 @@ namespace paludis
          * \nosubgrouping
          */
         class UseConf :
-            private PrivateImplementationPattern<UseConf>
+            private Pimp<UseConf>
         {
             public:
                 ///\name Basic operations

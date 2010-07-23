@@ -23,7 +23,7 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/simple_parser.hh>
 #include <paludis/util/log.hh>
@@ -68,12 +68,12 @@ ConfigFileError::ConfigFileError(const std::string & m) throw () :
 namespace paludis
 {
     template <>
-    struct Implementation<ConfigFile::Source>
+    struct Imp<ConfigFile::Source>
     {
         std::string filename;
         std::shared_ptr<const std::string> text;
 
-        Implementation(const FSEntry & f) :
+        Imp(const FSEntry & f) :
             filename(stringify(f))
         {
             try
@@ -89,19 +89,19 @@ namespace paludis
             }
         }
 
-        Implementation(const std::string & s) :
+        Imp(const std::string & s) :
             text(new std::string(s))
         {
         }
 
-        Implementation(std::istream & ff)
+        Imp(std::istream & ff)
         {
             std::shared_ptr<std::string> t(new std::string);
             std::copy((std::istreambuf_iterator<char>(ff)), std::istreambuf_iterator<char>(), std::back_inserter(*t));
             text = t;
         }
 
-        Implementation(const std::string & f, const std::shared_ptr<const std::string> & t) :
+        Imp(const std::string & f, const std::shared_ptr<const std::string> & t) :
             filename(f),
             text(t)
         {
@@ -110,22 +110,22 @@ namespace paludis
 }
 
 ConfigFile::Source::Source(const FSEntry & f) :
-    PrivateImplementationPattern<ConfigFile::Source>(f)
+    Pimp<ConfigFile::Source>(f)
 {
 }
 
 ConfigFile::Source::Source(const std::string & f) :
-    PrivateImplementationPattern<ConfigFile::Source>(f)
+    Pimp<ConfigFile::Source>(f)
 {
 }
 
 ConfigFile::Source::Source(std::istream & f) :
-    PrivateImplementationPattern<ConfigFile::Source>(f)
+    Pimp<ConfigFile::Source>(f)
 {
 }
 
 ConfigFile::Source::Source(const ConfigFile::Source & f) :
-    PrivateImplementationPattern<ConfigFile::Source>(f._imp->filename, f._imp->text)
+    Pimp<ConfigFile::Source>(f._imp->filename, f._imp->text)
 {
 }
 
@@ -156,7 +156,7 @@ ConfigFile::Source::filename() const
     return _imp->filename;
 }
 
-template class PrivateImplementationPattern<ConfigFile::Source>;
+template class Pimp<ConfigFile::Source>;
 
 ConfigFile::~ConfigFile()
 {
@@ -165,12 +165,12 @@ ConfigFile::~ConfigFile()
 namespace paludis
 {
     template <>
-    struct Implementation<LineConfigFile>
+    struct Imp<LineConfigFile>
     {
         const LineConfigFileOptions options;
         LineConfigFileLines lines;
 
-        Implementation(const LineConfigFileOptions & o) :
+        Imp(const LineConfigFileOptions & o) :
             options(o)
         {
         }
@@ -190,7 +190,7 @@ namespace
 }
 
 LineConfigFile::LineConfigFile(const Source & sr, const LineConfigFileOptions & o) :
-    PrivateImplementationPattern<LineConfigFile>(o)
+    Pimp<LineConfigFile>(o)
 {
     Context context("When parsing line-based configuration file '" + (sr.filename().empty() ? "?" : sr.filename()) + "':");
 
@@ -321,12 +321,12 @@ LineConfigFile::end() const
     return ConstIterator(_imp->lines.end());
 }
 
-template class PrivateImplementationPattern<LineConfigFile>;
+template class Pimp<LineConfigFile>;
 
 namespace paludis
 {
     template <>
-    struct Implementation<KeyValueConfigFile>
+    struct Imp<KeyValueConfigFile>
     {
         const KeyValueConfigFileOptions options;
         const KeyValueConfigFile::DefaultFunction default_function;
@@ -336,7 +336,7 @@ namespace paludis
 
         std::string active_key_prefix;
 
-        Implementation(
+        Imp(
                 const KeyValueConfigFileOptions & o,
                 const KeyValueConfigFile::DefaultFunction & d,
                 const KeyValueConfigFile::TransformationFunction & i) :
@@ -537,7 +537,7 @@ KeyValueConfigFile::KeyValueConfigFile(
         const KeyValueConfigFileOptions & o,
         const KeyValueConfigFile::DefaultFunction & f,
         const KeyValueConfigFile::TransformationFunction & i) :
-    PrivateImplementationPattern<KeyValueConfigFile>(o, f, i)
+    Pimp<KeyValueConfigFile>(o, f, i)
 {
     Context context("When parsing key=value-based configuration file '" + (sr.filename().empty() ? "?" : sr.filename()) + "':");
 
@@ -821,7 +821,7 @@ KeyValueConfigFile::transformation_function() const
     return _imp->transformation_function;
 }
 
-template class PrivateImplementationPattern<KeyValueConfigFile>;
+template class Pimp<KeyValueConfigFile>;
 
 template class WrappedForwardIterator<LineConfigFile::ConstIteratorTag, const std::string>;
 template class WrappedForwardIterator<KeyValueConfigFile::ConstIteratorTag, const std::pair<const std::string, std::string> >;

@@ -35,7 +35,7 @@
 #include <paludis/resolver/orderer_notes.hh>
 #include <paludis/resolver/change_by_resolvent.hh>
 #include <paludis/resolver/labels_classifier.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/hashes.hh>
@@ -62,7 +62,7 @@ typedef std::unordered_map<Resolvent, JobNumber, Hash<Resolvent> > FetchJobNumbe
 namespace paludis
 {
     template <>
-    struct Implementation<Orderer>
+    struct Imp<Orderer>
     {
         const Environment * const env;
         const ResolverFunctions fns;
@@ -71,7 +71,7 @@ namespace paludis
         FetchJobNumbers fetch_job_numbers;
         ChangeOrRemoveJobNumbers change_or_remove_job_numbers;
 
-        Implementation(
+        Imp(
                 const Environment * const e,
                 const ResolverFunctions & f,
                 const std::shared_ptr<Resolved> & r) :
@@ -87,7 +87,7 @@ Orderer::Orderer(
         const Environment * const e,
         const ResolverFunctions & f,
         const std::shared_ptr<Resolved> & r) :
-    PrivateImplementationPattern<Orderer>(e, f, r)
+    Pimp<Orderer>(e, f, r)
 {
 }
 

@@ -18,7 +18,7 @@
  */
 
 #include <paludis/notifier_callback.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/environment.hh>
 
@@ -60,13 +60,13 @@ NotifierCallbackLinkageStepEvent::location() const
 namespace paludis
 {
     template <>
-    struct Implementation<ScopedNotifierCallback>
+    struct Imp<ScopedNotifierCallback>
     {
         Environment * const env;
         const NotifierCallbackID id;
         bool removed;
 
-        Implementation(Environment * const e, const NotifierCallbackFunction & f) :
+        Imp(Environment * const e, const NotifierCallbackFunction & f) :
             env(e),
             id(e->add_notifier_callback(f)),
             removed(false)
@@ -76,7 +76,7 @@ namespace paludis
 }
 
 ScopedNotifierCallback::ScopedNotifierCallback(Environment * const e, const NotifierCallbackFunction & f) :
-    PrivateImplementationPattern<ScopedNotifierCallback>(e, f)
+    Pimp<ScopedNotifierCallback>(e, f)
 {
 }
 
@@ -96,5 +96,5 @@ ScopedNotifierCallback::remove_now()
     _imp->removed = true;
 }
 
-template class PrivateImplementationPattern<ScopedNotifierCallback>;
+template class Pimp<ScopedNotifierCallback>;
 

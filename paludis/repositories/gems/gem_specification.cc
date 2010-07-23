@@ -19,7 +19,7 @@
 
 #include <paludis/repositories/gems/gem_specification.hh>
 #include <paludis/repositories/gems/yaml.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_named_values.hh>
@@ -41,7 +41,7 @@ using namespace paludis::gems;
 namespace paludis
 {
     template <>
-    struct Implementation<GemSpecification>
+    struct Imp<GemSpecification>
     {
         mutable Mutex mutex;
 
@@ -65,7 +65,7 @@ namespace paludis
 
         mutable bool has_masks;
 
-        Implementation(const Environment * const e, const std::shared_ptr<const Repository> & r) :
+        Imp(const Environment * const e, const std::shared_ptr<const Repository> & r) :
             environment(e),
             repository(r),
             has_masks(false)
@@ -195,9 +195,9 @@ namespace
 
     struct TopVisitor
     {
-        Implementation<GemSpecification> * const _imp;
+        Imp<GemSpecification> * const _imp;
 
-        TopVisitor(Implementation<GemSpecification> * const i) :
+        TopVisitor(Imp<GemSpecification> * const i) :
             _imp(i)
         {
         }
@@ -245,8 +245,8 @@ namespace
 
 GemSpecification::GemSpecification(const Environment * const e,
         const std::shared_ptr<const Repository> & r, const yaml::Node & node) :
-    PrivateImplementationPattern<GemSpecification>(e, r),
-    _imp(PrivateImplementationPattern<GemSpecification>::_imp)
+    Pimp<GemSpecification>(e, r),
+    _imp(Pimp<GemSpecification>::_imp)
 {
     TopVisitor v(_imp.get());
     node.accept(v);
@@ -267,8 +267,8 @@ GemSpecification::GemSpecification(const Environment * const e,
 
 GemSpecification::GemSpecification(const Environment * const e, const std::shared_ptr<const Repository> & r,
         const PackageNamePart & q, const VersionSpec & v, const FSEntry & f) :
-    PrivateImplementationPattern<GemSpecification>(e, r),
-    _imp(PrivateImplementationPattern<GemSpecification>::_imp)
+    Pimp<GemSpecification>(e, r),
+    _imp(Pimp<GemSpecification>::_imp)
 {
     _imp->name_part = stringify(q);
     _imp->version = stringify(v);

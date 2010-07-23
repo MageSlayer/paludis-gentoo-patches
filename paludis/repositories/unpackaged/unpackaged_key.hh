@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_UNPACKAGED_UNPACKAGED_KEY_HH 1
 
 #include <paludis/metadata_key.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 
 namespace paludis
 {
@@ -31,7 +31,7 @@ namespace paludis
 
         class UnpackagedDependencyKey :
             public MetadataSpecTreeKey<DependencySpecTree>,
-            private PrivateImplementationPattern<UnpackagedDependencyKey>
+            private Pimp<UnpackagedDependencyKey>
         {
             public:
                 UnpackagedDependencyKey(const Environment * const env,
@@ -56,7 +56,7 @@ namespace paludis
 
         class UnpackagedChoicesKey :
             public MetadataValueKey<std::shared_ptr<const Choices> >,
-            private PrivateImplementationPattern<UnpackagedChoicesKey>
+            private Pimp<UnpackagedChoicesKey>
         {
             public:
                 UnpackagedChoicesKey(const Environment * const env,

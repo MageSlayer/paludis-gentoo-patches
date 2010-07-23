@@ -19,7 +19,7 @@
 
 #include <paludis/repositories/unpackaged/unpackaged_stripper.hh>
 #include <paludis/util/fs_entry.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/output_manager.hh>
 #include <ostream>
@@ -30,11 +30,11 @@ using namespace paludis::unpackaged_repositories;
 namespace paludis
 {
     template <>
-    struct Implementation<UnpackagedStripper>
+    struct Imp<UnpackagedStripper>
     {
         UnpackagedStripperOptions options;
 
-        Implementation(const UnpackagedStripperOptions & o) :
+        Imp(const UnpackagedStripperOptions & o) :
             options(o)
         {
         }
@@ -48,8 +48,8 @@ UnpackagedStripper::UnpackagedStripper(const UnpackagedStripperOptions & options
                 n::split() = options.split(),
                 n::strip() = options.strip()
             )),
-    PrivateImplementationPattern<UnpackagedStripper>(options),
-    _imp(PrivateImplementationPattern<UnpackagedStripper>::_imp)
+    Pimp<UnpackagedStripper>(options),
+    _imp(Pimp<UnpackagedStripper>::_imp)
 {
 }
 

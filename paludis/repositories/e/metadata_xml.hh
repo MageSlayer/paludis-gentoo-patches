@@ -22,7 +22,7 @@
 
 #include <paludis/util/attributes.hh>
 #include <paludis/util/named_value.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/singleton.hh>
 #include <paludis/util/sequence-fwd.hh>
 #include <paludis/util/map-fwd.hh>
@@ -51,7 +51,7 @@ namespace paludis
         };
 
         class PALUDIS_VISIBLE MetadataXMLPool :
-            private PrivateImplementationPattern<MetadataXMLPool>,
+            private Pimp<MetadataXMLPool>,
             public Singleton<MetadataXMLPool>
         {
             friend class Singleton<MetadataXMLPool>;
@@ -65,7 +65,7 @@ namespace paludis
         };
     }
 
-    extern template class PrivateImplementationPattern<erepository::MetadataXMLPool>;
+    extern template class Pimp<erepository::MetadataXMLPool>;
     extern template class Singleton<erepository::MetadataXMLPool>;
 }
 

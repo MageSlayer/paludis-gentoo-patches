@@ -20,7 +20,7 @@
 #include <paludis/filtered_generator.hh>
 #include <paludis/filter.hh>
 #include <paludis/generator.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <ostream>
 
 using namespace paludis;
@@ -28,12 +28,12 @@ using namespace paludis;
 namespace paludis
 {
     template <>
-    struct Implementation<FilteredGenerator>
+    struct Imp<FilteredGenerator>
     {
         Generator generator;
         Filter filter;
 
-        Implementation(const Generator & g, const Filter & f) :
+        Imp(const Generator & g, const Filter & f) :
             generator(g),
             filter(f)
         {
@@ -42,17 +42,17 @@ namespace paludis
 }
 
 FilteredGenerator::FilteredGenerator(const FilteredGenerator & other) :
-    PrivateImplementationPattern<FilteredGenerator>(other._imp->generator, other._imp->filter)
+    Pimp<FilteredGenerator>(other._imp->generator, other._imp->filter)
 {
 }
 
 FilteredGenerator::FilteredGenerator(const Generator & g, const Filter & f) :
-    PrivateImplementationPattern<FilteredGenerator>(g, f)
+    Pimp<FilteredGenerator>(g, f)
 {
 }
 
 FilteredGenerator::FilteredGenerator(const FilteredGenerator & g, const Filter & f) :
-    PrivateImplementationPattern<FilteredGenerator>(g.generator(), filter::And(g.filter(), f))
+    Pimp<FilteredGenerator>(g.generator(), filter::And(g.filter(), f))
 {
 }
 
@@ -96,5 +96,5 @@ paludis::operator<< (std::ostream & s, const FilteredGenerator & fg)
     return s;
 }
 
-template class PrivateImplementationPattern<FilteredGenerator>;
+template class Pimp<FilteredGenerator>;
 

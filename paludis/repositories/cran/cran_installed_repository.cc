@@ -19,7 +19,7 @@
  */
 
 #include <paludis/environment.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/dep_tag.hh>
 #include <paludis/util/config_file.hh>
@@ -65,15 +65,15 @@ typedef std::unordered_map<
 namespace paludis
 {
     template <>
-    struct Implementation<CRANInstalledRepository>
+    struct Imp<CRANInstalledRepository>
     {
         CRANInstalledRepositoryParams params;
 
         mutable bool has_ids;
         mutable IDMap ids;
 
-        Implementation(const CRANInstalledRepositoryParams &);
-        ~Implementation();
+        Imp(const CRANInstalledRepositoryParams &);
+        ~Imp();
 
         std::shared_ptr<const MetadataValueKey<FSEntry> > location_key;
         std::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key;
@@ -81,7 +81,7 @@ namespace paludis
     };
 }
 
-Implementation<CRANInstalledRepository>::Implementation(const CRANInstalledRepositoryParams & p) :
+Imp<CRANInstalledRepository>::Imp(const CRANInstalledRepositoryParams & p) :
     params(p),
     has_ids(false),
     location_key(new LiteralMetadataValueKey<FSEntry> ("location", "location", mkt_significant, params.location())),
@@ -90,13 +90,13 @@ Implementation<CRANInstalledRepository>::Implementation(const CRANInstalledRepos
 {
 }
 
-Implementation<CRANInstalledRepository>::~Implementation()
+Imp<CRANInstalledRepository>::~Imp()
 {
 }
 
 #if 0
 void
-Implementation<CRANInstalledRepository>::need_ids() const
+Imp<CRANInstalledRepository>::need_ids() const
 {
     Context context("When loading CRANInstalledRepository IDs from '" + stringify(location) + "':");
 
@@ -170,8 +170,8 @@ CRANInstalledRepository::CRANInstalledRepository(const CRANInstalledRepositoryPa
                 n::provides_interface() = static_cast<RepositoryProvidesInterface *>(0),
                 n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
                 )),
-    PrivateImplementationPattern<CRANInstalledRepository>(p),
-    _imp(PrivateImplementationPattern<CRANInstalledRepository>::_imp)
+    Pimp<CRANInstalledRepository>(p),
+    _imp(Pimp<CRANInstalledRepository>::_imp)
 {
     _add_metadata_keys();
 }
@@ -452,7 +452,7 @@ CRANInstalledRepository::do_uninstall(const QualifiedPackageName & q, const Vers
 void
 CRANInstalledRepository::invalidate()
 {
-    _imp.reset(new Implementation<CRANInstalledRepository>(_imp->params));
+    _imp.reset(new Imp<CRANInstalledRepository>(_imp->params));
     _add_metadata_keys();
 }
 

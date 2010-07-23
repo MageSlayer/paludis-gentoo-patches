@@ -28,7 +28,7 @@
 #include <paludis/util/byte_swap.hh>
 #include <paludis/util/clone-impl.hh>
 #include <paludis/util/singleton-impl.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 
@@ -43,13 +43,13 @@ using namespace paludis;
 namespace paludis
 {
     template <typename ElfType_>
-    struct Implementation<DynamicEntries<ElfType_> >
+    struct Imp<DynamicEntries<ElfType_> >
     {
         std::map<typename ElfType_::DynamicTag, std::shared_ptr<DynamicEntry<ElfType_> > > available_types;
     };
 
     template <typename ElfType_>
-    struct Implementation<DynamicSection<ElfType_> >
+    struct Imp<DynamicSection<ElfType_> >
     {
         std::vector<std::shared_ptr<DynamicEntry<ElfType_> > > dynamic_entries;
     };
@@ -253,7 +253,7 @@ DynamicEntryString<ElfType_>::initialize(typename ElfType_::Word index, const ty
 
 template <typename ElfType_>
 DynamicEntries<ElfType_>::DynamicEntries() :
-    PrivateImplementationPattern<DynamicEntries>()
+    Pimp<DynamicEntries>()
 {
     register_type(DT_NEEDED,  std::make_shared<DynamicEntryString<ElfType_> >("NEEDED"));
     register_type(DT_RPATH,   std::make_shared<DynamicEntryString<ElfType_> >("RPATH"));
@@ -297,7 +297,7 @@ DynamicEntries<ElfType_>::has_entry(typename ElfType_::DynamicTag identifier) co
 template <typename ElfType_>
 DynamicSection<ElfType_>::DynamicSection(typename ElfType_::Word index, const typename ElfType_::SectionHeader & shdr, std::istream & stream, bool need_byte_swap) :
     Section<ElfType_>(index, shdr),
-    PrivateImplementationPattern<DynamicSection>()
+    Pimp<DynamicSection>()
 {
     if (sizeof(typename ElfType_::DynamicEntry) != shdr.sh_entsize)
         throw InvalidElfFileError(

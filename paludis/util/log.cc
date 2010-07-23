@@ -20,7 +20,7 @@
 #include <iostream>
 #include <exception>
 #include <paludis/util/log.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/action_queue.hh>
@@ -42,7 +42,7 @@ template class Singleton<Log>;
 namespace paludis
 {
     template<>
-    struct Implementation<Log>
+    struct Imp<Log>
     {
         LogLevel log_level;
         std::ostream * stream;
@@ -51,7 +51,7 @@ namespace paludis
 
         mutable ActionQueue action_queue;
 
-        Implementation() :
+        Imp() :
             log_level(ll_qa),
             stream(&std::cerr),
             program_name("paludis"),
@@ -127,7 +127,7 @@ namespace paludis
 }
 
 Log::Log() :
-    PrivateImplementationPattern<Log>()
+    Pimp<Log>()
 {
 }
 
@@ -138,14 +138,14 @@ Log::~Log()
 void
 Log::set_log_level(const LogLevel l)
 {
-    _imp->action_queue.enqueue(std::bind(std::mem_fn(&Implementation<Log>::set_log_level), _imp.get(), l));
+    _imp->action_queue.enqueue(std::bind(std::mem_fn(&Imp<Log>::set_log_level), _imp.get(), l));
 }
 
 LogLevel
 Log::log_level() const
 {
     LogLevel result(static_cast<LogLevel>(1337));
-    _imp->action_queue.enqueue(std::bind(std::mem_fn(&Implementation<Log>::get_log_level), _imp.get(), std::ref(result)));
+    _imp->action_queue.enqueue(std::bind(std::mem_fn(&Imp<Log>::get_log_level), _imp.get(), std::ref(result)));
     _imp->action_queue.complete_pending();
     return result;
 }
@@ -154,7 +154,7 @@ void
 Log::_message(const std::string & id, const LogLevel l, const LogContext c, const std::string & s)
 {
     if (lc_context == c)
-        _imp->action_queue.enqueue(std::bind(std::mem_fn(&Implementation<Log>::message), _imp.get(), id, l, c,
+        _imp->action_queue.enqueue(std::bind(std::mem_fn(&Imp<Log>::message), _imp.get(), id, l, c,
 #ifdef __linux__
                     "In thread ID '" + stringify(syscall(SYS_gettid)) + "':\n  ... " +
 #else
@@ -162,7 +162,7 @@ Log::_message(const std::string & id, const LogLevel l, const LogContext c, cons
 #endif
                     Context::backtrace("\n  ... "), s));
     else
-        _imp->action_queue.enqueue(std::bind(std::mem_fn(&Implementation<Log>::message), _imp.get(), id, l, c, "", s));
+        _imp->action_queue.enqueue(std::bind(std::mem_fn(&Imp<Log>::message), _imp.get(), id, l, c, "", s));
 }
 
 LogMessageHandler::LogMessageHandler(const LogMessageHandler & o) :
@@ -182,7 +182,7 @@ Log::message(const std::string & id, const LogLevel l, const LogContext c)
 void
 Log::set_log_stream(std::ostream * const s)
 {
-    _imp->action_queue.enqueue(std::bind(std::mem_fn(&Implementation<Log>::set_log_stream), _imp.get(), s));
+    _imp->action_queue.enqueue(std::bind(std::mem_fn(&Imp<Log>::set_log_stream), _imp.get(), s));
 }
 
 void
@@ -194,7 +194,7 @@ Log::complete_pending() const
 void
 Log::set_program_name(const std::string & s)
 {
-    _imp->action_queue.enqueue(std::bind(std::mem_fn(&Implementation<Log>::set_program_name), _imp.get(), s));
+    _imp->action_queue.enqueue(std::bind(std::mem_fn(&Imp<Log>::set_program_name), _imp.get(), s));
 }
 
 LogMessageHandler::LogMessageHandler(Log * const ll, const std::string & id, const LogLevel l, const LogContext c) :

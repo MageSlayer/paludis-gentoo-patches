@@ -43,7 +43,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/dir_iterator.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/strip.hh>
@@ -68,7 +68,7 @@ using namespace paludis::paludis_environment;
 namespace paludis
 {
     template<>
-    struct Implementation<PaludisEnvironment>
+    struct Imp<PaludisEnvironment>
     {
         mutable Mutex hook_mutex;
         mutable bool done_hooks;
@@ -87,7 +87,7 @@ namespace paludis
         std::shared_ptr<LiteralMetadataValueKey<FSEntry> > config_location_key;
         std::shared_ptr<LiteralMetadataValueKey<FSEntry> > world_file_key;
 
-        Implementation(PaludisEnvironment * const e, std::shared_ptr<PaludisConfig> c) :
+        Imp(PaludisEnvironment * const e, std::shared_ptr<PaludisConfig> c) :
             done_hooks(false),
             config(c),
             paludis_command("paludis"),
@@ -141,8 +141,8 @@ namespace paludis
 }
 
 PaludisEnvironment::PaludisEnvironment(const std::string & s) :
-    PrivateImplementationPattern<PaludisEnvironment>(this, std::shared_ptr<PaludisConfig>(new PaludisConfig(this, s))),
-    _imp(PrivateImplementationPattern<PaludisEnvironment>::_imp)
+    Pimp<PaludisEnvironment>(this, std::shared_ptr<PaludisConfig>(new PaludisConfig(this, s))),
+    _imp(Pimp<PaludisEnvironment>::_imp)
 {
     Context context("When loading paludis environment:");
 

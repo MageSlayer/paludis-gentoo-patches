@@ -18,7 +18,7 @@
  */
 
 #include "description_file.hh"
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/stringify.hh>
@@ -32,14 +32,14 @@ using namespace paludis::cranrepository;
 namespace paludis
 {
     template <>
-    struct Implementation<DescriptionFile>
+    struct Imp<DescriptionFile>
     {
         std::map<std::string, std::string> values;
     };
 }
 
 DescriptionFile::DescriptionFile(const Source & sr) :
-    PrivateImplementationPattern<DescriptionFile>()
+    Pimp<DescriptionFile>()
 {
     Context c("When parsing CRAN description file '" + sr.filename() + "':");
 

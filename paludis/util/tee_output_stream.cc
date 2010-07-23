@@ -18,7 +18,7 @@
  */
 
 #include <paludis/util/tee_output_stream.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <list>
 
 using namespace paludis;
@@ -26,14 +26,14 @@ using namespace paludis;
 namespace paludis
 {
     template <>
-    struct Implementation<TeeOutputStreamBuf>
+    struct Imp<TeeOutputStreamBuf>
     {
         std::list<std::ostream *> streams;
     };
 }
 
 TeeOutputStreamBuf::TeeOutputStreamBuf() :
-    PrivateImplementationPattern<TeeOutputStreamBuf>()
+    Pimp<TeeOutputStreamBuf>()
 {
 }
 
@@ -76,5 +76,5 @@ TeeOutputStream::add_stream(std::ostream * const s)
     buf.add_stream(s);
 }
 
-template class PrivateImplementationPattern<TeeOutputStreamBuf>;
+template class Pimp<TeeOutputStreamBuf>;
 

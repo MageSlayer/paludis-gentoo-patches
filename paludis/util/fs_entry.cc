@@ -50,7 +50,7 @@
 #include "config.h"
 
 /** \file
- * Implementation of paludis::FSEntry.
+ * Imp of paludis::FSEntry.
  *
  * \ingroup grpfilesystem
  */
@@ -74,7 +74,7 @@ namespace paludis
     };
 
     template <>
-    struct Implementation<FSEntry>
+    struct Imp<FSEntry>
     {
         std::string path;
 
@@ -83,14 +83,14 @@ namespace paludis
         mutable bool exists;
         mutable CheckedInfo checked;
 
-        Implementation(const std::string & p) :
+        Imp(const std::string & p) :
             path(p),
             exists(false),
             checked(ifse_none)
         {
         }
 
-        Implementation(const std::string & p, unsigned char d_type) :
+        Imp(const std::string & p, unsigned char d_type) :
             path(p),
             exists(true),
             checked(ifse_exists)
@@ -109,13 +109,13 @@ namespace paludis
 }
 
 FSEntry::FSEntry(const std::string & path) :
-    PrivateImplementationPattern<FSEntry>(path)
+    Pimp<FSEntry>(path)
 {
     _normalise();
 }
 
 FSEntry::FSEntry(const FSEntry & other) :
-    PrivateImplementationPattern<FSEntry>(other._imp->path)
+    Pimp<FSEntry>(other._imp->path)
 {
     Lock l(other._imp->mutex);
     _imp->stat_info = other._imp->stat_info;
@@ -124,7 +124,7 @@ FSEntry::FSEntry(const FSEntry & other) :
 }
 
 FSEntry::FSEntry(const std::string & path, unsigned char d_type) :
-    PrivateImplementationPattern<FSEntry>(path, d_type)
+    Pimp<FSEntry>(path, d_type)
 {
     _normalise();
 }

@@ -52,10 +52,10 @@ namespace paludis
 
         class EStripper :
             public Stripper,
-            private PrivateImplementationPattern<EStripper>
+            private Pimp<EStripper>
         {
             private:
-                PrivateImplementationPattern<EStripper>::ImpPtr & _imp;
+                Pimp<EStripper>::ImpPtr & _imp;
 
             protected:
                 virtual void on_strip(const FSEntry &);

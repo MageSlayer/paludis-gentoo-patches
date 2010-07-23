@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_UTIL_STRING_LIST_STREAM_HH 1
 
 #include <paludis/util/string_list_stream-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/attributes.hh>
 #include <istream>
 #include <ostream>
@@ -29,7 +29,7 @@
 namespace paludis
 {
     class PALUDIS_VISIBLE StringListStreamBuf :
-        private PrivateImplementationPattern<StringListStreamBuf>,
+        private Pimp<StringListStreamBuf>,
         public std::streambuf
     {
         protected:
@@ -67,7 +67,7 @@ namespace paludis
             void nothing_more_to_write();
     };
 
-    extern template class PrivateImplementationPattern<StringListStreamBuf>;
+    extern template class Pimp<StringListStreamBuf>;
 }
 
 #endif

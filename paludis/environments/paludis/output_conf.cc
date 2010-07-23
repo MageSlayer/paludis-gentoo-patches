@@ -23,7 +23,7 @@
 #include <paludis/environments/paludis/paludis_environment.hh>
 #include <paludis/environments/paludis/extra_distribution_data.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/util/make_named_values.hh>
@@ -97,14 +97,14 @@ namespace
 namespace paludis
 {
     template<>
-    struct Implementation<OutputConf>
+    struct Imp<OutputConf>
     {
         const PaludisEnvironment * const env;
         RuleList rules;
         Managers managers;
         std::map<std::string, std::string> misc_vars;
 
-        Implementation(const PaludisEnvironment * const e) :
+        Imp(const PaludisEnvironment * const e) :
             env(e)
         {
         }
@@ -112,7 +112,7 @@ namespace paludis
 }
 
 OutputConf::OutputConf(const PaludisEnvironment * const e) :
-    PrivateImplementationPattern<OutputConf>(e)
+    Pimp<OutputConf>(e)
 {
 }
 
@@ -475,5 +475,5 @@ OutputConf::create_named_output_manager(const std::string & s, const CreateOutpu
                 );
 }
 
-template class PrivateImplementationPattern<paludis_environment::OutputConf>;
+template class Pimp<paludis_environment::OutputConf>;
 

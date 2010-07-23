@@ -23,14 +23,14 @@
 #include <paludis/tee_output_manager-fwd.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/output_manager_factory.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <memory>
 #include <functional>
 
 namespace paludis
 {
     class PALUDIS_VISIBLE BufferOutputManager :
-        private PrivateImplementationPattern<BufferOutputManager>,
+        private Pimp<BufferOutputManager>,
         public OutputManager
     {
         public:
@@ -58,7 +58,7 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
-    extern template class PrivateImplementationPattern<BufferOutputManager>;
+    extern template class Pimp<BufferOutputManager>;
 }
 
 

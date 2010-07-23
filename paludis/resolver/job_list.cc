@@ -19,7 +19,7 @@
 
 #include <paludis/resolver/job_list.hh>
 #include <paludis/resolver/job.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/serialise-impl.hh>
 #include <vector>
@@ -30,7 +30,7 @@ using namespace paludis::resolver;
 namespace paludis
 {
     template <typename Job_>
-    struct Implementation<JobList<Job_> >
+    struct Imp<JobList<Job_> >
     {
         std::vector<std::shared_ptr<Job_> > list;
     };
@@ -44,7 +44,7 @@ namespace paludis
 
 template <typename Job_>
 JobList<Job_>::JobList() :
-    PrivateImplementationPattern<JobList<Job_> >()
+    Pimp<JobList<Job_> >()
 {
 }
 

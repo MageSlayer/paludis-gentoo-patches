@@ -23,7 +23,7 @@
 #include <paludis/util/config_file-fwd.hh>
 #include <paludis/util/map-fwd.hh>
 #include <paludis/util/exception.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/options-fwd.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/fs_entry-fwd.hh>
@@ -101,7 +101,7 @@ namespace paludis
              * \nosubgrouping
              */
             class PALUDIS_VISIBLE Source :
-                private PrivateImplementationPattern<Source>
+                private Pimp<Source>
             {
                 public:
                     ///\name Basic operations
@@ -152,7 +152,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE LineConfigFile :
         public ConfigFile,
-        private PrivateImplementationPattern<LineConfigFile>
+        private Pimp<LineConfigFile>
     {
         public:
             ///\name Basic operations
@@ -199,7 +199,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE KeyValueConfigFile :
         public ConfigFile,
-        private PrivateImplementationPattern<KeyValueConfigFile>
+        private Pimp<KeyValueConfigFile>
     {
         public:
             typedef std::function<std::string (const KeyValueConfigFile &, const std::string &)> DefaultFunction;
@@ -249,9 +249,9 @@ namespace paludis
             const TransformationFunction & transformation_function() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
-    extern template class PrivateImplementationPattern<ConfigFile::Source>;
-    extern template class PrivateImplementationPattern<LineConfigFile>;
-    extern template class PrivateImplementationPattern<KeyValueConfigFile>;
+    extern template class Pimp<ConfigFile::Source>;
+    extern template class Pimp<LineConfigFile>;
+    extern template class Pimp<KeyValueConfigFile>;
 
     extern template class WrappedForwardIterator<LineConfigFile::ConstIteratorTag, const std::string>;
     extern template class WrappedForwardIterator<KeyValueConfigFile::ConstIteratorTag, const std::pair<const std::string, std::string> >;

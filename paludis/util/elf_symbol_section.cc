@@ -26,7 +26,7 @@
 #include <paludis/util/elf.hh>
 
 #include <paludis/util/byte_swap.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/stringify.hh>
 
@@ -40,7 +40,7 @@ using namespace paludis;
 namespace paludis
 {
     template <typename ElfType_>
-    struct Implementation<SymbolSection<ElfType_> >
+    struct Imp<SymbolSection<ElfType_> >
     {
         std::vector<Symbol<ElfType_> > symbols;
     };
@@ -164,7 +164,7 @@ Symbol<ElfType_>::~Symbol()
 template <typename ElfType_>
 SymbolSection<ElfType_>::SymbolSection(typename ElfType_::Word index, const typename ElfType_::SectionHeader & shdr, std::istream & stream, bool need_byte_swap) :
     Section<ElfType_>(index, shdr),
-    PrivateImplementationPattern<SymbolSection>(),
+    Pimp<SymbolSection>(),
     _type("invalid")
 {
     if (shdr.sh_type == SHT_DYNSYM)

@@ -26,7 +26,7 @@
 #include <paludis/name-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/mask-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/map-fwd.hh>
 #include <src/output/console_task.hh>
 #include <memory>
@@ -34,7 +34,7 @@
 namespace paludis
 {
     class PALUDIS_VISIBLE ConsoleQueryTask :
-        private PrivateImplementationPattern<ConsoleQueryTask>,
+        private Pimp<ConsoleQueryTask>,
         public ConsoleTask
     {
         protected:

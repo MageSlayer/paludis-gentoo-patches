@@ -23,7 +23,7 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/operators.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 
 #include <iterator>
 
@@ -39,7 +39,7 @@ namespace paludis
     class PALUDIS_VISIBLE WildcardExpander :
         public std::iterator<std::forward_iterator_tag, const FSEntry>,
         public equality_operators::HasEqualityOperators,
-        private PrivateImplementationPattern<WildcardExpander>
+        private Pimp<WildcardExpander>
     {
         public:
             WildcardExpander(const std::string &, const FSEntry & = FSEntry("/"));

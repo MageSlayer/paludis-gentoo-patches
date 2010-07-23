@@ -18,7 +18,7 @@
  */
 
 #include <paludis/util/string_list_stream.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/condition_variable.hh>
 #include <list>
@@ -29,7 +29,7 @@ using namespace paludis;
 namespace paludis
 {
     template <>
-    struct Implementation<StringListStreamBuf>
+    struct Imp<StringListStreamBuf>
     {
         Mutex mutex;
         ConditionVariable condition;
@@ -39,7 +39,7 @@ namespace paludis
 
         bool nothing_more_to_write;
 
-        Implementation() :
+        Imp() :
             nothing_more_to_write(false)
         {
         }
@@ -47,7 +47,7 @@ namespace paludis
 }
 
 StringListStreamBuf::StringListStreamBuf() :
-    PrivateImplementationPattern<StringListStreamBuf>()
+    Pimp<StringListStreamBuf>()
 {
     setg(0, 0, 0);
 }
@@ -143,4 +143,4 @@ StringListStream::nothing_more_to_write()
     buf.nothing_more_to_write();
 }
 
-template class PrivateImplementationPattern<StringListStreamBuf>;
+template class Pimp<StringListStreamBuf>;

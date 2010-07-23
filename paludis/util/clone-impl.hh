@@ -23,7 +23,7 @@
 #include <paludis/util/clone.hh>
 
 /** \file
- * Implementation for paludis/clone.hh .
+ * Imp for paludis/clone.hh .
  *
  * \ingroup g_oo
  */

@@ -22,7 +22,7 @@
 
 #include <paludis/metadata_key.hh>
 #include <paludis/util/fs_entry.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
 
@@ -111,11 +111,11 @@ namespace paludis
     template <typename T_>
     class PALUDIS_VISIBLE LiteralMetadataValueKey :
         public MetadataValueKey<T_>,
-        private PrivateImplementationPattern<LiteralMetadataValueKey<T_> >,
+        private Pimp<LiteralMetadataValueKey<T_> >,
         public ExtraLiteralMetadataValueKeyMethods<T_>
     {
         private:
-            typename PrivateImplementationPattern<LiteralMetadataValueKey<T_> >::ImpPtr & _imp;
+            typename Pimp<LiteralMetadataValueKey<T_> >::ImpPtr & _imp;
 
         public:
             ///\name Basic operations
@@ -148,10 +148,10 @@ namespace paludis
      */
     class PALUDIS_VISIBLE LiteralMetadataFSEntrySequenceKey :
         public MetadataCollectionKey<FSEntrySequence>,
-        private PrivateImplementationPattern<LiteralMetadataFSEntrySequenceKey>
+        private Pimp<LiteralMetadataFSEntrySequenceKey>
     {
         private:
-            PrivateImplementationPattern<LiteralMetadataFSEntrySequenceKey>::ImpPtr & _imp;
+            Pimp<LiteralMetadataFSEntrySequenceKey>::ImpPtr & _imp;
 
         public:
             ///\name Basic operations
@@ -182,10 +182,10 @@ namespace paludis
      */
     class PALUDIS_VISIBLE LiteralMetadataStringSetKey :
         public MetadataCollectionKey<Set<std::string> >,
-        private PrivateImplementationPattern<LiteralMetadataStringSetKey>
+        private Pimp<LiteralMetadataStringSetKey>
     {
         private:
-            PrivateImplementationPattern<LiteralMetadataStringSetKey>::ImpPtr & _imp;
+            Pimp<LiteralMetadataStringSetKey>::ImpPtr & _imp;
 
         public:
             ///\name Basic operations
@@ -216,10 +216,10 @@ namespace paludis
      */
     class PALUDIS_VISIBLE LiteralMetadataStringSequenceKey :
         public MetadataCollectionKey<Sequence<std::string> >,
-        private PrivateImplementationPattern<LiteralMetadataStringSequenceKey>
+        private Pimp<LiteralMetadataStringSequenceKey>
     {
         private:
-            PrivateImplementationPattern<LiteralMetadataStringSequenceKey>::ImpPtr & _imp;
+            Pimp<LiteralMetadataStringSequenceKey>::ImpPtr & _imp;
 
         public:
             ///\name Basic operations
@@ -251,10 +251,10 @@ namespace paludis
      */
     class PALUDIS_VISIBLE LiteralMetadataTimeKey :
         public MetadataTimeKey,
-        private PrivateImplementationPattern<LiteralMetadataTimeKey>
+        private Pimp<LiteralMetadataTimeKey>
     {
         private:
-            PrivateImplementationPattern<LiteralMetadataTimeKey>::ImpPtr & _imp;
+            Pimp<LiteralMetadataTimeKey>::ImpPtr & _imp;
 
         public:
             ///\name Basic operations

@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_ACCOUNTS_INSTALLED_ACCOUNTS_ID_HH 1
 
 #include <paludis/package_id.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 
 namespace paludis
 {
@@ -31,11 +31,11 @@ namespace paludis
 
         class InstalledAccountsID :
             public PackageID,
-            private PrivateImplementationPattern<InstalledAccountsID>,
+            private Pimp<InstalledAccountsID>,
             public std::enable_shared_from_this<InstalledAccountsID>
         {
             private:
-                PrivateImplementationPattern<InstalledAccountsID>::ImpPtr & _imp;
+                Pimp<InstalledAccountsID>::ImpPtr & _imp;
 
                 void _add_metadata_keys() const;
 

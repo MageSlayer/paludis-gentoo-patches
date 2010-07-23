@@ -22,7 +22,7 @@
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/exception.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/metadata_key.hh>
 #include <functional>
 #include <list>
@@ -33,7 +33,7 @@ using namespace paludis;
 namespace paludis
 {
     template <>
-    struct Implementation<MetadataKeyHolder>
+    struct Imp<MetadataKeyHolder>
     {
         mutable std::list<std::shared_ptr<const MetadataKey> > keys;
     };
@@ -46,7 +46,7 @@ namespace paludis
 }
 
 MetadataKeyHolder::MetadataKeyHolder() :
-    PrivateImplementationPattern<MetadataKeyHolder>()
+    Pimp<MetadataKeyHolder>()
 {
 }
 

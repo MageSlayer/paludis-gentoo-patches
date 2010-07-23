@@ -32,7 +32,7 @@
 #include <paludis/util/stringify.hh>
 
 #include <paludis/util/clone-impl.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/wrapped_output_iterator-impl.hh>
 #include <paludis/util/sequence-impl.hh>
@@ -56,7 +56,7 @@ PythonDepSpec::~PythonDepSpec()
 namespace paludis
 {
     template<>
-    struct Implementation<PythonCompositeDepSpec>
+    struct Imp<PythonCompositeDepSpec>
     {
         std::list<std::shared_ptr<const PythonDepSpec> > children;
     };
@@ -68,7 +68,7 @@ namespace paludis
     };
 
     template<>
-    struct Implementation<PythonPackageDepSpec>
+    struct Imp<PythonPackageDepSpec>
     {
         std::shared_ptr<const QualifiedPackageName> package_ptr;
         std::shared_ptr<const CategoryNamePart> category_name_part_ptr;
@@ -82,7 +82,7 @@ namespace paludis
         std::shared_ptr<const DepTag> tag;
         const std::string str;
 
-        Implementation(
+        Imp(
                 const std::shared_ptr<const QualifiedPackageName> & q,
                 const std::shared_ptr<const CategoryNamePart> & c,
                 const std::shared_ptr<const PackageNamePart> & p,
@@ -111,7 +111,7 @@ namespace paludis
 }
 
 PythonCompositeDepSpec::PythonCompositeDepSpec() :
-    PrivateImplementationPattern<PythonCompositeDepSpec>()
+    Pimp<PythonCompositeDepSpec>()
 {
 }
 
@@ -214,7 +214,7 @@ deep_copy(const std::shared_ptr<const T_> & x)
 
 PythonPackageDepSpec::PythonPackageDepSpec(const PackageDepSpec & p) :
     PythonStringDepSpec(p.text()),
-    PrivateImplementationPattern<PythonPackageDepSpec>(
+    Pimp<PythonPackageDepSpec>(
             deep_copy(p.package_ptr()),
             deep_copy(p.category_name_part_ptr()),
             deep_copy(p.package_name_part_ptr()),
@@ -236,7 +236,7 @@ PythonPackageDepSpec::PythonPackageDepSpec(const PackageDepSpec & p) :
 
 PythonPackageDepSpec::PythonPackageDepSpec(const PythonPackageDepSpec & p) :
     PythonStringDepSpec(p.text()),
-    PrivateImplementationPattern<PythonPackageDepSpec>(
+    Pimp<PythonPackageDepSpec>(
             deep_copy(p.package_ptr()),
             deep_copy(p.category_name_part_ptr()),
             deep_copy(p.package_name_part_ptr()),

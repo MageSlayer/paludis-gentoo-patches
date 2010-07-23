@@ -22,7 +22,7 @@
 
 #include <paludis/args/args_section.hh>
 #include <paludis/args/args_group.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/sequence.hh>
 #include <memory>
@@ -56,7 +56,7 @@ namespace paludis
          * \nosubgrouping
          */
         class PALUDIS_VISIBLE ArgsHandler :
-            private PrivateImplementationPattern<ArgsHandler>
+            private Pimp<ArgsHandler>
         {
             friend class ArgsSection;
             friend std::ostream & operator<< (std::ostream &, const ArgsHandler &);

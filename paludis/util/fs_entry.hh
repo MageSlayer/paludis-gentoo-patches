@@ -24,7 +24,7 @@
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/operators.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/timestamp-fwd.hh>
 #include <string>
 #include <memory>
@@ -75,7 +75,7 @@ namespace paludis
     class PALUDIS_VISIBLE FSEntry :
         public relational_operators::HasRelationalOperators,
         public arithmetic_operators::HasArithmeticOperators,
-        private PrivateImplementationPattern<FSEntry>
+        private Pimp<FSEntry>
     {
         friend std::ostream & operator<< (std::ostream & s, const FSEntry & f);
         friend class DirIterator;

@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_SRC_CLIENTS_CAVE_SCRIPT_COMMAND_HH 1
 
 #include "command.hh"
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 
 namespace paludis
@@ -29,7 +29,7 @@ namespace paludis
     namespace cave
     {
         class PALUDIS_VISIBLE ScriptCommand :
-            private PrivateImplementationPattern<ScriptCommand>,
+            private Pimp<ScriptCommand>,
             public Command
         {
             public:

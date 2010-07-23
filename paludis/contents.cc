@@ -18,7 +18,7 @@
  */
 
 #include <paludis/contents.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <list>
@@ -30,11 +30,11 @@ typedef std::list<std::shared_ptr<const ContentsEntry> > Entries;
 namespace paludis
 {
     template <>
-    struct Implementation<ContentsEntry>
+    struct Imp<ContentsEntry>
     {
         const std::shared_ptr<const MetadataValueKey<FSEntry> > location_key;
 
-        Implementation(const FSEntry & n) :
+        Imp(const FSEntry & n) :
             location_key(std::make_shared<LiteralMetadataValueKey<FSEntry>>("location", "location", mkt_significant, n))
         {
         }
@@ -42,8 +42,8 @@ namespace paludis
 }
 
 ContentsEntry::ContentsEntry(const FSEntry & n) :
-    PrivateImplementationPattern<ContentsEntry>(n),
-    _imp(PrivateImplementationPattern<ContentsEntry>::_imp)
+    Pimp<ContentsEntry>(n),
+    _imp(Pimp<ContentsEntry>::_imp)
 {
     add_metadata_key(_imp->location_key);
 }
@@ -81,11 +81,11 @@ ContentsOtherEntry::ContentsOtherEntry(const FSEntry & our_name) :
 namespace paludis
 {
     template <>
-    struct Implementation<ContentsSymEntry>
+    struct Imp<ContentsSymEntry>
     {
         const std::shared_ptr<const MetadataValueKey<std::string> > target_key;
 
-        Implementation(const std::string & t) :
+        Imp(const std::string & t) :
             target_key(std::make_shared<LiteralMetadataValueKey<std::string>>("target", "target", mkt_normal, t))
         {
         }
@@ -93,9 +93,9 @@ namespace paludis
 }
 
 ContentsSymEntry::ContentsSymEntry(const FSEntry & our_name, const std::string & our_target) :
-    PrivateImplementationPattern<ContentsSymEntry>(our_target),
+    Pimp<ContentsSymEntry>(our_target),
     ContentsEntry(our_name),
-    _imp(PrivateImplementationPattern<ContentsSymEntry>::_imp)
+    _imp(Pimp<ContentsSymEntry>::_imp)
 {
     add_metadata_key(_imp->target_key);
 }
@@ -113,7 +113,7 @@ ContentsSymEntry::target_key() const
 namespace paludis
 {
     template<>
-    struct Implementation<Contents>
+    struct Imp<Contents>
     {
         Entries c;
     };
@@ -126,7 +126,7 @@ namespace paludis
 }
 
 Contents::Contents() :
-    PrivateImplementationPattern<Contents>()
+    Pimp<Contents>()
 {
 }
 
@@ -152,9 +152,9 @@ Contents::end() const
     return ConstIterator(_imp->c.end());
 }
 
-template class PrivateImplementationPattern<Contents>;
-template class PrivateImplementationPattern<ContentsEntry>;
-template class PrivateImplementationPattern<ContentsSymEntry>;
+template class Pimp<Contents>;
+template class Pimp<ContentsEntry>;
+template class Pimp<ContentsSymEntry>;
 
 template class WrappedForwardIterator<Contents::ConstIteratorTag, const std::shared_ptr<const ContentsEntry> >;
 

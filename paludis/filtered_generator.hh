@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_FILTERED_GENERATOR_HH 1
 
 #include <paludis/filtered_generator-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/filter-fwd.hh>
 #include <paludis/generator-fwd.hh>
 
@@ -46,7 +46,7 @@ namespace paludis
      * \ingroup g_selections
      */
     class PALUDIS_VISIBLE FilteredGenerator :
-        private PrivateImplementationPattern<FilteredGenerator>
+        private Pimp<FilteredGenerator>
     {
         public:
             ///\name Basic operations
@@ -71,7 +71,7 @@ namespace paludis
             const Filter & filter() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
-    extern template class PrivateImplementationPattern<FilteredGenerator>;
+    extern template class Pimp<FilteredGenerator>;
 }
 
 #endif

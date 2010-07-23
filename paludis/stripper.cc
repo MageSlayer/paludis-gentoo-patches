@@ -18,7 +18,7 @@
  */
 
 #include <paludis/stripper.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/strip.hh>
@@ -39,12 +39,12 @@ typedef std::set<std::pair<dev_t, ino_t> > StrippedSet;
 namespace paludis
 {
     template <>
-    struct Implementation<Stripper>
+    struct Imp<Stripper>
     {
         StripperOptions options;
         StrippedSet stripped_ids;
 
-        Implementation(const StripperOptions & o) :
+        Imp(const StripperOptions & o) :
             options(o)
         {
         }
@@ -52,7 +52,7 @@ namespace paludis
 }
 
 Stripper::Stripper(const StripperOptions & options) :
-    PrivateImplementationPattern<Stripper>(options)
+    Pimp<Stripper>(options)
 {
 }
 

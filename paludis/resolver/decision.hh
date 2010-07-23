@@ -26,7 +26,7 @@
 #include <paludis/resolver/change_type-fwd.hh>
 #include <paludis/resolver/resolvent-fwd.hh>
 #include <paludis/resolver/required_confirmations-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/simple_visitor.hh>
 #include <paludis/util/type_list.hh>
 #include <paludis/serialise-fwd.hh>
@@ -57,7 +57,7 @@ namespace paludis
         class PALUDIS_VISIBLE NothingNoChangeDecision :
             public Decision,
             public ImplementAcceptMethods<Decision, NothingNoChangeDecision>,
-            private PrivateImplementationPattern<NothingNoChangeDecision>
+            private Pimp<NothingNoChangeDecision>
         {
             public:
                 NothingNoChangeDecision(const Resolvent &, const bool);
@@ -72,7 +72,7 @@ namespace paludis
         class PALUDIS_VISIBLE ExistingNoChangeDecision :
             public Decision,
             public ImplementAcceptMethods<Decision, ExistingNoChangeDecision>,
-            private PrivateImplementationPattern<ExistingNoChangeDecision>
+            private Pimp<ExistingNoChangeDecision>
         {
             public:
                 ExistingNoChangeDecision(
@@ -144,7 +144,7 @@ namespace paludis
             public ImplementAcceptMethods<Decision, ChangesToMakeDecision>,
             public ImplementAcceptMethods<ConfirmableDecision, ChangesToMakeDecision>,
             public ImplementAcceptMethods<ChangeOrRemoveDecision, ChangesToMakeDecision>,
-            private PrivateImplementationPattern<ChangesToMakeDecision>
+            private Pimp<ChangesToMakeDecision>
         {
             public:
                 ChangesToMakeDecision(
@@ -195,7 +195,7 @@ namespace paludis
             public ImplementAcceptMethods<Decision, RemoveDecision>,
             public ImplementAcceptMethods<ConfirmableDecision, RemoveDecision>,
             public ImplementAcceptMethods<ChangeOrRemoveDecision, RemoveDecision>,
-            private PrivateImplementationPattern<RemoveDecision>
+            private Pimp<RemoveDecision>
         {
             public:
                 RemoveDecision(
@@ -222,7 +222,7 @@ namespace paludis
         class PALUDIS_VISIBLE UnableToMakeDecision :
             public Decision,
             public ImplementAcceptMethods<Decision, UnableToMakeDecision>,
-            private PrivateImplementationPattern<UnableToMakeDecision>
+            private Pimp<UnableToMakeDecision>
         {
             public:
                 UnableToMakeDecision(
@@ -246,7 +246,7 @@ namespace paludis
             public ConfirmableDecision,
             public ImplementAcceptMethods<Decision, BreakDecision>,
             public ImplementAcceptMethods<ConfirmableDecision, BreakDecision>,
-            private PrivateImplementationPattern<BreakDecision>
+            private Pimp<BreakDecision>
         {
             public:
                 BreakDecision(
@@ -270,12 +270,12 @@ namespace paludis
         };
     }
 
-    extern template class PrivateImplementationPattern<resolver::NothingNoChangeDecision>;
-    extern template class PrivateImplementationPattern<resolver::ExistingNoChangeDecision>;
-    extern template class PrivateImplementationPattern<resolver::ChangesToMakeDecision>;
-    extern template class PrivateImplementationPattern<resolver::UnableToMakeDecision>;
-    extern template class PrivateImplementationPattern<resolver::RemoveDecision>;
-    extern template class PrivateImplementationPattern<resolver::BreakDecision>;
+    extern template class Pimp<resolver::NothingNoChangeDecision>;
+    extern template class Pimp<resolver::ExistingNoChangeDecision>;
+    extern template class Pimp<resolver::ChangesToMakeDecision>;
+    extern template class Pimp<resolver::UnableToMakeDecision>;
+    extern template class Pimp<resolver::RemoveDecision>;
+    extern template class Pimp<resolver::BreakDecision>;
 
 }
 

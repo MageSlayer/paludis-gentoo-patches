@@ -21,13 +21,13 @@
 #define PALUDIS_GUARD_SRC_CLIENTS_INQUISITIO_EXACT_MATCHER_HH 1
 
 #include <src/clients/inquisitio/matcher.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 
 namespace inquisitio
 {
     class ExactMatcher :
         public Matcher,
-        private paludis::PrivateImplementationPattern<ExactMatcher>
+        private paludis::Pimp<ExactMatcher>
     {
         public:
             ExactMatcher(const std::string &);

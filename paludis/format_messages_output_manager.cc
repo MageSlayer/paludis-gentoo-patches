@@ -18,7 +18,7 @@
  */
 
 #include <paludis/format_messages_output_manager.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/discard_output_stream.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/map.hh>
@@ -31,7 +31,7 @@ using namespace paludis;
 namespace paludis
 {
     template <>
-    struct Implementation<FormatMessagesOutputManager>
+    struct Imp<FormatMessagesOutputManager>
     {
         DiscardOutputStream stream;
         const std::shared_ptr<OutputManager> child;
@@ -43,7 +43,7 @@ namespace paludis
 
         const FormatMessagesOutputManagerFormatFunction format_func;
 
-        Implementation(
+        Imp(
                 const std::shared_ptr<OutputManager> & c,
                 const std::string & d,
                 const std::string & i,
@@ -72,7 +72,7 @@ FormatMessagesOutputManager::FormatMessagesOutputManager(
         const std::string & format_error,
         const std::string & format_log,
         const FormatMessagesOutputManagerFormatFunction & f) :
-    PrivateImplementationPattern<FormatMessagesOutputManager>(child, format_debug, format_info, format_warn, format_error, format_log, f)
+    Pimp<FormatMessagesOutputManager>(child, format_debug, format_info, format_warn, format_error, format_log, f)
 {
 }
 
@@ -192,5 +192,5 @@ FormatMessagesOutputManager::factory_create(
                 child, format_debug_s, format_info_s, format_warn_s, format_error_s, format_log_s, format_func);
 }
 
-template class PrivateImplementationPattern<FormatMessagesOutputManager>;
+template class Pimp<FormatMessagesOutputManager>;
 

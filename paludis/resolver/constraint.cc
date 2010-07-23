@@ -20,7 +20,7 @@
 #include <paludis/resolver/constraint.hh>
 #include <paludis/resolver/reason.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/make_named_values.hh>
@@ -36,7 +36,7 @@ using namespace paludis::resolver;
 namespace paludis
 {
     template <>
-    struct Implementation<Constraints>
+    struct Imp<Constraints>
     {
         UseExisting strictest_use_existing;
         bool nothing_is_fine_too;
@@ -44,7 +44,7 @@ namespace paludis
 
         Sequence<std::shared_ptr<const Constraint> > constraints;
 
-        Implementation() :
+        Imp() :
             strictest_use_existing(static_cast<UseExisting>(last_ue - 1)),
             nothing_is_fine_too(true),
             all_untaken(true)
@@ -60,7 +60,7 @@ namespace paludis
 }
 
 Constraints::Constraints() :
-    PrivateImplementationPattern<Constraints>()
+    Pimp<Constraints>()
 {
 }
 
@@ -212,7 +212,7 @@ Constraint::deserialise(Deserialisation & d)
             ));
 }
 
-template class PrivateImplementationPattern<Constraints>;
+template class Pimp<Constraints>;
 template class WrappedForwardIterator<Constraints::ConstIteratorTag, const std::shared_ptr<const Constraint> >;
 
 template class Sequence<std::shared_ptr<const Constraint> >;

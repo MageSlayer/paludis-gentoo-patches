@@ -30,7 +30,7 @@
 #include <paludis/environments/paludis/paludis_environment.hh>
 #include <paludis/environments/paludis/bashable_conf.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -57,7 +57,7 @@ typedef std::unordered_map<SetName, SetNameEntry, Hash<SetName> > NamedSetMap;
 namespace paludis
 {
     template<>
-    struct Implementation<KeywordsConf>
+    struct Imp<KeywordsConf>
     {
         const PaludisEnvironment * const env;
 
@@ -66,7 +66,7 @@ namespace paludis
         mutable NamedSetMap set;
         mutable Mutex set_mutex;
 
-        Implementation(const PaludisEnvironment * const e) :
+        Imp(const PaludisEnvironment * const e) :
             env(e)
         {
         }
@@ -74,7 +74,7 @@ namespace paludis
 }
 
 KeywordsConf::KeywordsConf(const PaludisEnvironment * const e) :
-    PrivateImplementationPattern<KeywordsConf>(e)
+    Pimp<KeywordsConf>(e)
 {
 }
 

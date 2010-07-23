@@ -22,7 +22,7 @@
 
 #include <paludis/environment_factory-fwd.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/set-fwd.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/no_type.hh>
@@ -44,7 +44,7 @@ namespace paludis
      * \since 0.30
      */
     class PALUDIS_VISIBLE EnvironmentFactory :
-        private PrivateImplementationPattern<EnvironmentFactory>,
+        private Pimp<EnvironmentFactory>,
         public Singleton<EnvironmentFactory>
     {
         friend class Singleton<EnvironmentFactory>;
@@ -90,7 +90,7 @@ namespace paludis
     template <typename EnvironmentClass_>
     void register_environment(const EnvironmentClass_ * const, EnvironmentFactory * const);
 
-    extern template class PrivateImplementationPattern<EnvironmentFactory>;
+    extern template class Pimp<EnvironmentFactory>;
     extern template class Singleton<EnvironmentFactory>;
 }
 

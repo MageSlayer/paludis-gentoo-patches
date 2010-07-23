@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_INSTALL_TASK_HH
 #define PALUDIS_GUARD_PALUDIS_INSTALL_TASK_HH 1
 
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/dep_list.hh>
 #include <paludis/dep_list_exceptions.hh>
@@ -53,7 +53,7 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE InstallTask :
-        private PrivateImplementationPattern<InstallTask>
+        private Pimp<InstallTask>
     {
         private:
             void _execute();

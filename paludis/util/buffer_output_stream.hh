@@ -21,14 +21,14 @@
 #define PALUDIS_GUARD_PALUDIS_UTIL_BUFFER_OUTPUT_STREAM_HH 1
 
 #include <paludis/util/buffer_output_stream-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/attributes.hh>
 #include <ostream>
 
 namespace paludis
 {
     class PALUDIS_VISIBLE BufferOutputStreamBuf :
-        private PrivateImplementationPattern<BufferOutputStreamBuf>,
+        private Pimp<BufferOutputStreamBuf>,
         public std::streambuf
     {
         protected:
@@ -65,7 +65,7 @@ namespace paludis
             bool anything_to_unbuffer() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
-    extern template class PrivateImplementationPattern<BufferOutputStreamBuf>;
+    extern template class Pimp<BufferOutputStreamBuf>;
 }
 
 #endif

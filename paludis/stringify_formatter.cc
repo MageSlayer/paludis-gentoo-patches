@@ -20,7 +20,7 @@
 #include <paludis/stringify_formatter.hh>
 #include <paludis/stringify_formatter-impl.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/dep_label.hh>
 #include <paludis/choice.hh>
@@ -28,7 +28,7 @@
 using namespace paludis;
 
 StringifyFormatter::StringifyFormatter() :
-    PrivateImplementationPattern<StringifyFormatter>(
+    Pimp<StringifyFormatter>(
             static_cast<const CanFormat<std::string> *>(0),
             static_cast<const CanFormat<ChoiceValue> *>(0),
             static_cast<const CanFormat<KeywordName> *>(0),

@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_UNPACKAGED_NDBAM_HH 1
 
 #include <paludis/ndbam-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/sequence-fwd.hh>
@@ -67,7 +67,7 @@ namespace paludis
      * \since 0.26
      */
     class PALUDIS_VISIBLE NDBAM :
-        private PrivateImplementationPattern<NDBAM>
+        private Pimp<NDBAM>
     {
         public:
             ///\name Basic operations

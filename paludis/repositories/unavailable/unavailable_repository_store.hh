@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_UNAVAILABLE_UNAVAILABLE_REPOSITORY_STORE_HH 1
 
 #include <paludis/repositories/unavailable/unavailable_repository-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/package_id-fwd.hh>
@@ -33,7 +33,7 @@ namespace paludis
     namespace unavailable_repository
     {
         class PALUDIS_VISIBLE UnavailableRepositoryStore :
-            private PrivateImplementationPattern<UnavailableRepositoryStore>
+            private Pimp<UnavailableRepositoryStore>
         {
             private:
                 void _populate(const Environment * const env, const FSEntry & f);
@@ -66,7 +66,7 @@ namespace paludis
         };
     }
 
-    extern template class PrivateImplementationPattern<unavailable_repository::UnavailableRepositoryStore>;
+    extern template class Pimp<unavailable_repository::UnavailableRepositoryStore>;
 }
 
 #endif

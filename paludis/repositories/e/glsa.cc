@@ -20,7 +20,7 @@
 #include <paludis/repositories/e/glsa.hh>
 #include <paludis/repositories/e/xml_things_handle.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
@@ -39,21 +39,21 @@ typedef std::list<std::shared_ptr<const GLSAPackage> > Packages;
 namespace paludis
 {
     template<>
-    struct Implementation<GLSAPackage>
+    struct Imp<GLSAPackage>
     {
         QualifiedPackageName name;
         Archs archs;
         Ranges unaffected;
         Ranges vulnerable;
 
-        Implementation(const QualifiedPackageName & n) :
+        Imp(const QualifiedPackageName & n) :
             name(n)
         {
         }
     };
 
     template<>
-    struct Implementation<GLSA>
+    struct Imp<GLSA>
     {
         std::string id;
         std::string title;
@@ -80,7 +80,7 @@ namespace paludis
 }
 
 GLSAPackage::GLSAPackage(const QualifiedPackageName & n) :
-    PrivateImplementationPattern<GLSAPackage>(n)
+    Pimp<GLSAPackage>(n)
 {
 }
 
@@ -149,7 +149,7 @@ GLSAPackage::name() const
 }
 
 GLSA::GLSA() :
-    PrivateImplementationPattern<GLSA>()
+    Pimp<GLSA>()
 {
 }
 

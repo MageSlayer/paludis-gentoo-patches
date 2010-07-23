@@ -27,14 +27,14 @@
 #include <paludis/package_id-fwd.hh>
 #include <paludis/repositories/e/eapi-fwd.hh>
 #include <paludis/util/fs_entry-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 
 namespace paludis
 {
     namespace erepository
     {
         class PALUDIS_VISIBLE PretendFetchVisitor :
-            private PrivateImplementationPattern<PretendFetchVisitor>
+            private Pimp<PretendFetchVisitor>
         {
             public:
                 PretendFetchVisitor(

@@ -22,7 +22,7 @@
 
 #include <paludis/util/attributes.hh>
 #include <paludis/util/clone.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/named_value.hh>
@@ -63,12 +63,12 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE DepSpec :
-        private PrivateImplementationPattern<DepSpec>,
+        private Pimp<DepSpec>,
         public MetadataKeyHolder,
         public virtual Cloneable<DepSpec>
     {
         private:
-            PrivateImplementationPattern<DepSpec>::ImpPtr & _imp;
+            Pimp<DepSpec>::ImpPtr & _imp;
 
         protected:
             DepSpec();
@@ -158,13 +158,13 @@ namespace paludis
      */
     class PALUDIS_VISIBLE ConditionalDepSpec :
         public DepSpec,
-        private PrivateImplementationPattern<ConditionalDepSpec>,
+        private Pimp<ConditionalDepSpec>,
         public CloneUsingThis<DepSpec, ConditionalDepSpec>
     {
         friend std::ostream & operator<< (std::ostream &, const ConditionalDepSpec &);
 
         private:
-            PrivateImplementationPattern<ConditionalDepSpec>::ImpPtr & _imp;
+            Pimp<ConditionalDepSpec>::ImpPtr & _imp;
 
             std::string _as_string() const;
 
@@ -351,7 +351,7 @@ namespace paludis
      * \since 0.26
      */
     class PALUDIS_VISIBLE PartiallyMadePackageDepSpec :
-        private PrivateImplementationPattern<PartiallyMadePackageDepSpec>
+        private Pimp<PartiallyMadePackageDepSpec>
     {
         public:
             ///\name Basic operations
@@ -474,7 +474,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE PackageDepSpec :
         public StringDepSpec,
-        private PrivateImplementationPattern<PackageDepSpec>,
+        private Pimp<PackageDepSpec>,
         public CloneUsingThis<DepSpec, PackageDepSpec>
     {
         friend std::ostream & operator<< (std::ostream &, const PackageDepSpec &);
@@ -483,7 +483,7 @@ namespace paludis
             const PackageDepSpec & operator= (const PackageDepSpec &);
             std::string _as_string() const;
 
-            PrivateImplementationPattern<PackageDepSpec>::ImpPtr & _imp;
+            Pimp<PackageDepSpec>::ImpPtr & _imp;
 
         protected:
             virtual void need_keys_added() const;
@@ -920,10 +920,10 @@ namespace paludis
     template <typename Labels_>
     class PALUDIS_VISIBLE LabelsDepSpec :
         public DepSpec,
-        private PrivateImplementationPattern<LabelsDepSpec<Labels_> >
+        private Pimp<LabelsDepSpec<Labels_> >
     {
         private:
-            typename PrivateImplementationPattern<LabelsDepSpec>::ImpPtr & _imp;
+            typename Pimp<LabelsDepSpec>::ImpPtr & _imp;
 
         protected:
             virtual void need_keys_added() const;
@@ -975,14 +975,14 @@ namespace paludis
     };
 
     extern template class Cloneable<DepSpec>;
-    extern template class PrivateImplementationPattern<ConditionalDepSpec>;
+    extern template class Pimp<ConditionalDepSpec>;
     extern template class CloneUsingThis<DepSpec, ConditionalDepSpec>;
-    extern template class PrivateImplementationPattern<PartiallyMadePackageDepSpec>;
-    extern template class PrivateImplementationPattern<PackageDepSpec>;
+    extern template class Pimp<PartiallyMadePackageDepSpec>;
+    extern template class Pimp<PackageDepSpec>;
     extern template class CloneUsingThis<DepSpec, PackageDepSpec>;
-    extern template class PrivateImplementationPattern<DependenciesLabelsDepSpec>;
-    extern template class PrivateImplementationPattern<URILabelsDepSpec>;
-    extern template class PrivateImplementationPattern<PlainTextLabelDepSpec>;
+    extern template class Pimp<DependenciesLabelsDepSpec>;
+    extern template class Pimp<URILabelsDepSpec>;
+    extern template class Pimp<PlainTextLabelDepSpec>;
 
     extern template class WrappedForwardIterator<DependenciesLabelsDepSpec::ConstIteratorTag,
            const std::shared_ptr<const DependenciesLabel> >;

@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_FUZZY_FINDER_HH 1
 
 #include <paludis/environment-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/name.hh>
 #include <paludis/filter-fwd.hh>
@@ -41,7 +41,7 @@ namespace paludis
      * \ingroup g_package_database
      */
     class PALUDIS_VISIBLE FuzzyCandidatesFinder :
-        private PrivateImplementationPattern<FuzzyCandidatesFinder>
+        private Pimp<FuzzyCandidatesFinder>
     {
         public:
             ///\name Basic Operations
@@ -71,7 +71,7 @@ namespace paludis
      * \ingroup g_package_database
      */
     class PALUDIS_VISIBLE FuzzyRepositoriesFinder :
-        private PrivateImplementationPattern<FuzzyRepositoriesFinder>
+        private Pimp<FuzzyRepositoriesFinder>
     {
         public:
             ///\name Basic Operations

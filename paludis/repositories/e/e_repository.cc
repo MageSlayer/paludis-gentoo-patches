@@ -80,7 +80,7 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/options.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/random.hh>
 #include <paludis/util/rmd160.hh>
 #include <paludis/util/safe_ifstream.hh>
@@ -116,7 +116,7 @@
 #define STUPID_CAST(type, val) reinterpret_cast<type>(reinterpret_cast<uintptr_t>(val))
 
 /** \file
- * Implementation of ERepository.
+ * Imp of ERepository.
  *
  * \ingroup grperepository
  */
@@ -170,12 +170,12 @@ namespace
 namespace paludis
 {
     /**
-     * Implementation data for a ERepository.
+     * Imp data for a ERepository.
      *
      * \ingroup grperepository
      */
     template <>
-    struct Implementation<ERepository>
+    struct Imp<ERepository>
     {
         struct Mutexes
         {
@@ -216,8 +216,8 @@ namespace paludis
 
         mutable EAPIForFileMap eapi_for_file_map;
 
-        Implementation(ERepository * const, const ERepositoryParams &, std::shared_ptr<Mutexes> = std::make_shared<Mutexes>());
-        ~Implementation();
+        Imp(ERepository * const, const ERepositoryParams &, std::shared_ptr<Mutexes> = std::make_shared<Mutexes>());
+        ~Imp();
 
         void need_profiles() const;
 
@@ -261,7 +261,7 @@ namespace paludis
         time_t master_mtime;
     };
 
-    Implementation<ERepository>::Implementation(ERepository * const r,
+    Imp<ERepository>::Imp(ERepository * const r,
             const ERepositoryParams & p, std::shared_ptr<Mutexes> m) :
         repo(r),
         params(p),
@@ -381,12 +381,12 @@ namespace paludis
             master_mtime = mtf.mtim().seconds();
     }
 
-    Implementation<ERepository>::~Implementation()
+    Imp<ERepository>::~Imp()
     {
     }
 
     void
-    Implementation<ERepository>::need_profiles() const
+    Imp<ERepository>::need_profiles() const
     {
         Lock l(mutexes->profile_ptr_mutex);
 
@@ -505,8 +505,8 @@ ERepository::ERepository(const ERepositoryParams & p) :
                 n::provides_interface() = static_cast<RepositoryProvidesInterface *>(0),
                 n::virtuals_interface() = (*DistributionData::get_instance()->distribution_from_string(p.environment()->distribution())).support_old_style_virtuals() ? this : 0
                 )),
-    PrivateImplementationPattern<ERepository>(this, p),
-    _imp(PrivateImplementationPattern<ERepository>::_imp)
+    Pimp<ERepository>(this, p),
+    _imp(Pimp<ERepository>::_imp)
 {
     _add_metadata_keys();
 }
@@ -784,7 +784,7 @@ ERepository::sync(const std::shared_ptr<OutputManager> & output_manager) const
 void
 ERepository::invalidate()
 {
-    _imp.reset(new Implementation<ERepository>(this, _imp->params, _imp->mutexes));
+    _imp.reset(new Imp<ERepository>(this, _imp->params, _imp->mutexes));
     _add_metadata_keys();
 }
 

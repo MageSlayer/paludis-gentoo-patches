@@ -19,7 +19,7 @@
 
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/set.hh>
@@ -45,7 +45,7 @@ using namespace paludis;
 namespace paludis
 {
     template <>
-    struct Implementation<PackageID>
+    struct Imp<PackageID>
     {
         mutable std::list<std::shared_ptr<const Mask> > masks;
         mutable std::list<std::shared_ptr<const OverriddenMask> > overridden_masks;
@@ -65,8 +65,8 @@ namespace paludis
 }
 
 PackageID::PackageID() :
-    PrivateImplementationPattern<PackageID>(),
-    _imp(PrivateImplementationPattern<PackageID>::_imp)
+    Pimp<PackageID>(),
+    _imp(Pimp<PackageID>::_imp)
 {
 }
 
@@ -172,14 +172,14 @@ paludis::operator== (const PackageID & a, const PackageID & b)
 namespace paludis
 {
     template <>
-    struct Implementation<PackageIDComparator>
+    struct Imp<PackageIDComparator>
     {
         std::unordered_map<RepositoryName, unsigned, Hash<RepositoryName> > m;
     };
 }
 
 PackageIDComparator::PackageIDComparator(const PackageDatabase * const db) :
-    PrivateImplementationPattern<PackageIDComparator>()
+    Pimp<PackageIDComparator>()
 {
     unsigned c(0);
     for (PackageDatabase::RepositoryConstIterator r(db->begin_repositories()),
@@ -188,7 +188,7 @@ PackageIDComparator::PackageIDComparator(const PackageDatabase * const db) :
 }
 
 PackageIDComparator::PackageIDComparator(const PackageIDComparator & other) :
-    PrivateImplementationPattern<PackageIDComparator>()
+    Pimp<PackageIDComparator>()
 {
     _imp->m = other._imp->m;
 }

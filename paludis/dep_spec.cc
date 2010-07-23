@@ -25,7 +25,7 @@
 #include <paludis/util/clone-impl.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/join.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/sequence-impl.hh>
@@ -48,15 +48,15 @@ using namespace paludis;
 namespace paludis
 {
     template <>
-    struct Implementation<DepSpec>
+    struct Imp<DepSpec>
     {
         std::shared_ptr<const MetadataSectionKey> annotations_key;
 
-        Implementation()
+        Imp()
         {
         }
 
-        Implementation(const std::shared_ptr<const MetadataSectionKey> & k) :
+        Imp(const std::shared_ptr<const MetadataSectionKey> & k) :
             annotations_key(k)
         {
         }
@@ -64,8 +64,8 @@ namespace paludis
 }
 
 DepSpec::DepSpec() :
-    PrivateImplementationPattern<DepSpec>(),
-    _imp(PrivateImplementationPattern<DepSpec>::_imp)
+    Pimp<DepSpec>(),
+    _imp(Pimp<DepSpec>::_imp)
 {
 }
 
@@ -126,13 +126,13 @@ AllDepSpec::clone() const
 namespace paludis
 {
     template <>
-    struct Implementation<ConditionalDepSpec>
+    struct Imp<ConditionalDepSpec>
     {
         const std::shared_ptr<const ConditionalDepSpecData> data;
         Mutex mutex;
         bool added_keys;
 
-        Implementation(const std::shared_ptr<const ConditionalDepSpecData> & d) :
+        Imp(const std::shared_ptr<const ConditionalDepSpecData> & d) :
             data(d),
             added_keys(false)
         {
@@ -141,8 +141,8 @@ namespace paludis
 }
 
 ConditionalDepSpec::ConditionalDepSpec(const std::shared_ptr<const ConditionalDepSpecData> & d) :
-    PrivateImplementationPattern<ConditionalDepSpec>(d),
-    _imp(PrivateImplementationPattern<ConditionalDepSpec>::_imp)
+    Pimp<ConditionalDepSpec>(d),
+    _imp(Pimp<ConditionalDepSpec>::_imp)
 {
 }
 
@@ -159,9 +159,9 @@ namespace
 ConditionalDepSpec::ConditionalDepSpec(const ConditionalDepSpec & other) :
     Cloneable<DepSpec>(),
     DepSpec(),
-    PrivateImplementationPattern<ConditionalDepSpec>(other._imp->data),
+    Pimp<ConditionalDepSpec>(other._imp->data),
     CloneUsingThis<DepSpec, ConditionalDepSpec>(other),
-    _imp(PrivateImplementationPattern<ConditionalDepSpec>::_imp)
+    _imp(Pimp<ConditionalDepSpec>::_imp)
 {
     set_annotations_key(other.annotations_key());
 }
@@ -524,7 +524,7 @@ FetchableURIDepSpec::clone() const
 namespace paludis
 {
     template <typename T_>
-    struct Implementation<LabelsDepSpec<T_ > >
+    struct Imp<LabelsDepSpec<T_ > >
     {
         std::list<std::shared_ptr<const T_> > items;
     };
@@ -544,8 +544,8 @@ namespace paludis
 
 template <typename T_>
 LabelsDepSpec<T_>::LabelsDepSpec() :
-    PrivateImplementationPattern<LabelsDepSpec<T_> >(),
-    _imp(PrivateImplementationPattern<LabelsDepSpec<T_> >::_imp)
+    Pimp<LabelsDepSpec<T_> >(),
+    _imp(Pimp<LabelsDepSpec<T_> >::_imp)
 {
 }
 
@@ -599,12 +599,12 @@ PackageDepSpecData::~PackageDepSpecData()
 namespace paludis
 {
     template <>
-    struct Implementation<PackageDepSpec>
+    struct Imp<PackageDepSpec>
     {
         const std::shared_ptr<const PackageDepSpecData> data;
         std::shared_ptr<const DepTag> tag;
 
-        Implementation(const std::shared_ptr<const PackageDepSpecData> & d, const std::shared_ptr<const DepTag> & t) :
+        Imp(const std::shared_ptr<const PackageDepSpecData> & d, const std::shared_ptr<const DepTag> & t) :
             data(d),
             tag(t)
         {
@@ -615,8 +615,8 @@ namespace paludis
 PackageDepSpec::PackageDepSpec(const std::shared_ptr<const PackageDepSpecData> & d) :
     Cloneable<DepSpec>(),
     StringDepSpec(d->as_string()),
-    PrivateImplementationPattern<PackageDepSpec>(d, std::shared_ptr<const DepTag>()),
-    _imp(PrivateImplementationPattern<PackageDepSpec>::_imp)
+    Pimp<PackageDepSpec>(d, std::shared_ptr<const DepTag>()),
+    _imp(Pimp<PackageDepSpec>::_imp)
 {
     set_annotations_key(d->annotations_key());
 }
@@ -628,9 +628,9 @@ PackageDepSpec::~PackageDepSpec()
 PackageDepSpec::PackageDepSpec(const PackageDepSpec & d) :
     Cloneable<DepSpec>(d),
     StringDepSpec(d._imp->data->as_string()),
-    PrivateImplementationPattern<PackageDepSpec>(d._imp->data, d._imp->tag),
+    Pimp<PackageDepSpec>(d._imp->data, d._imp->tag),
     CloneUsingThis<DepSpec, PackageDepSpec>(d),
-    _imp(PrivateImplementationPattern<PackageDepSpec>::_imp)
+    _imp(Pimp<PackageDepSpec>::_imp)
 {
     set_annotations_key(d.annotations_key());
 }
@@ -1066,21 +1066,21 @@ namespace
 namespace paludis
 {
     template <>
-    struct Implementation<PartiallyMadePackageDepSpec>
+    struct Imp<PartiallyMadePackageDepSpec>
     {
         std::shared_ptr<PartiallyMadePackageDepSpecData> data;
 
-        Implementation(const PartiallyMadePackageDepSpecOptions & o) :
+        Imp(const PartiallyMadePackageDepSpecOptions & o) :
             data(new PartiallyMadePackageDepSpecData(o))
         {
         }
 
-        Implementation(const Implementation & other) :
+        Imp(const Imp & other) :
             data(new PartiallyMadePackageDepSpecData(*other.data))
         {
         }
 
-        Implementation(const PackageDepSpec & other) :
+        Imp(const PackageDepSpec & other) :
             data(new PartiallyMadePackageDepSpecData(*other.data()))
         {
         }
@@ -1088,17 +1088,17 @@ namespace paludis
 }
 
 PartiallyMadePackageDepSpec::PartiallyMadePackageDepSpec(const PartiallyMadePackageDepSpecOptions & o) :
-    PrivateImplementationPattern<PartiallyMadePackageDepSpec>(o)
+    Pimp<PartiallyMadePackageDepSpec>(o)
 {
 }
 
 PartiallyMadePackageDepSpec::PartiallyMadePackageDepSpec(const PartiallyMadePackageDepSpec & other) :
-    PrivateImplementationPattern<PartiallyMadePackageDepSpec>(*other._imp.get())
+    Pimp<PartiallyMadePackageDepSpec>(*other._imp.get())
 {
 }
 
 PartiallyMadePackageDepSpec::PartiallyMadePackageDepSpec(const PackageDepSpec & other) :
-    PrivateImplementationPattern<PartiallyMadePackageDepSpec>(other)
+    Pimp<PartiallyMadePackageDepSpec>(other)
 {
 }
 
@@ -1226,13 +1226,13 @@ template class Sequence<std::shared_ptr<const AdditionalPackageDepSpecRequiremen
 template class WrappedForwardIterator<AdditionalPackageDepSpecRequirements::ConstIteratorTag, const std::shared_ptr<const AdditionalPackageDepSpecRequirement> >;
 
 template class Cloneable<DepSpec>;
-template class PrivateImplementationPattern<ConditionalDepSpec>;
+template class Pimp<ConditionalDepSpec>;
 template class CloneUsingThis<DepSpec, ConditionalDepSpec>;
-template class PrivateImplementationPattern<PartiallyMadePackageDepSpec>;
-template class PrivateImplementationPattern<PackageDepSpec>;
+template class Pimp<PartiallyMadePackageDepSpec>;
+template class Pimp<PackageDepSpec>;
 template class CloneUsingThis<DepSpec, PackageDepSpec>;
-template class PrivateImplementationPattern<URILabelsDepSpec>;
-template class PrivateImplementationPattern<DependenciesLabelsDepSpec>;
+template class Pimp<URILabelsDepSpec>;
+template class Pimp<DependenciesLabelsDepSpec>;
 
 template class WrappedForwardIterator<DependenciesLabelsDepSpec::ConstIteratorTag,
          const std::shared_ptr<const DependenciesLabel> >;

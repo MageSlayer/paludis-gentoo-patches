@@ -22,7 +22,7 @@
 #include <paludis/repositories/accounts/accounts_repository_store.hh>
 #include <paludis/repositories/accounts/dummy_accounts_handler.hh>
 #include <paludis/repositories/accounts/passwd_accounts_handler.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/active_object_ptr.hh>
@@ -72,7 +72,7 @@ namespace
 namespace paludis
 {
     template <>
-    struct Implementation<AccountsRepository>
+    struct Imp<AccountsRepository>
     {
         const std::shared_ptr<const AccountsRepositoryParams> params_if_not_installed;
         const std::shared_ptr<const InstalledAccountsRepositoryParams> params_if_installed;
@@ -84,7 +84,7 @@ namespace paludis
 
         const ActiveObjectPtr<DeferredConstructionPtr<std::shared_ptr<AccountsRepositoryStore> > > store;
 
-        Implementation(AccountsRepository * const repo, const AccountsRepositoryParams & p) :
+        Imp(AccountsRepository * const repo, const AccountsRepositoryParams & p) :
             params_if_not_installed(new AccountsRepositoryParams(p)),
             format_key(new LiteralMetadataValueKey<std::string> ("format", "format", mkt_significant, "accounts")),
             store(DeferredConstructionPtr<std::shared_ptr<AccountsRepositoryStore> > (
@@ -92,7 +92,7 @@ namespace paludis
         {
         }
 
-        Implementation(AccountsRepository * const repo, const InstalledAccountsRepositoryParams & p) :
+        Imp(AccountsRepository * const repo, const InstalledAccountsRepositoryParams & p) :
             params_if_installed(new InstalledAccountsRepositoryParams(p)),
             handler_if_installed(make_handler(p.handler())),
             format_key(new LiteralMetadataValueKey<std::string> ("format", "format", mkt_significant, "installed-accounts")),
@@ -106,7 +106,7 @@ namespace paludis
 }
 
 AccountsRepository::AccountsRepository(const AccountsRepositoryParams & p) :
-    PrivateImplementationPattern<AccountsRepository>(this, p),
+    Pimp<AccountsRepository>(this, p),
     Repository(
             p.environment(),
             p.name(),
@@ -118,13 +118,13 @@ AccountsRepository::AccountsRepository(const AccountsRepositoryParams & p) :
                 n::provides_interface() = static_cast<RepositoryProvidesInterface *>(0),
                 n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
                 )),
-    _imp(PrivateImplementationPattern<AccountsRepository>::_imp)
+    _imp(Pimp<AccountsRepository>::_imp)
 {
     _add_metadata_keys();
 }
 
 AccountsRepository::AccountsRepository(const InstalledAccountsRepositoryParams & p) :
-    PrivateImplementationPattern<AccountsRepository>(this, p),
+    Pimp<AccountsRepository>(this, p),
     Repository(
             p.environment(),
             p.name(),
@@ -136,7 +136,7 @@ AccountsRepository::AccountsRepository(const InstalledAccountsRepositoryParams &
                 n::provides_interface() = static_cast<RepositoryProvidesInterface *>(0),
                 n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
                 )),
-    _imp(PrivateImplementationPattern<AccountsRepository>::_imp)
+    _imp(Pimp<AccountsRepository>::_imp)
 {
     _add_metadata_keys();
 }
@@ -275,9 +275,9 @@ void
 AccountsRepository::invalidate()
 {
     if (_imp->params_if_not_installed)
-        _imp.reset(new Implementation<AccountsRepository>(this, *_imp->params_if_not_installed));
+        _imp.reset(new Imp<AccountsRepository>(this, *_imp->params_if_not_installed));
     else
-        _imp.reset(new Implementation<AccountsRepository>(this, *_imp->params_if_installed));
+        _imp.reset(new Imp<AccountsRepository>(this, *_imp->params_if_installed));
     _add_metadata_keys();
 }
 
@@ -458,5 +458,5 @@ AccountsRepository::accept_keywords_key() const
     return make_null_shared_ptr();
 }
 
-template class PrivateImplementationPattern<AccountsRepository>;
+template class Pimp<AccountsRepository>;
 

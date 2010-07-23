@@ -22,7 +22,7 @@
 #include <paludis/repositories/accounts/accounts_id.hh>
 #include <paludis/repositories/accounts/installed_accounts_id.hh>
 #include <paludis/repositories/accounts/accounts_exceptions.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -60,7 +60,7 @@ typedef std::unordered_map<QualifiedPackageName,
 namespace paludis
 {
     template <>
-    struct Implementation<AccountsRepositoryStore>
+    struct Imp<AccountsRepositoryStore>
     {
         const Environment * const env;
         const AccountsRepository * const repo;
@@ -70,7 +70,7 @@ namespace paludis
         mutable PackageNames package_names;
         mutable IDs ids;
 
-        Implementation(const Environment * const e, const AccountsRepository * const r, const bool i) :
+        Imp(const Environment * const e, const AccountsRepository * const r, const bool i) :
             env(e),
             repo(r),
             installed(i),
@@ -86,7 +86,7 @@ AccountsRepositoryStore::AccountsRepositoryStore(
         const Environment * const env,
         const AccountsRepository * const repo,
         const bool installed) :
-    PrivateImplementationPattern<AccountsRepositoryStore>(env, repo, installed)
+    Pimp<AccountsRepositoryStore>(env, repo, installed)
 {
     _load(repo->shared_from_this());
 }
@@ -315,5 +315,5 @@ AccountsRepositoryStore::package_ids(const QualifiedPackageName & p) const
         return i->second;
 }
 
-template class PrivateImplementationPattern<accounts_repository::AccountsRepositoryStore>;
+template class Pimp<accounts_repository::AccountsRepositoryStore>;
 

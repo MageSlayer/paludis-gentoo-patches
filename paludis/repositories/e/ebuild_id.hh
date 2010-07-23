@@ -36,10 +36,10 @@ namespace paludis
         class EbuildID :
             public ERepositoryID,
             public std::enable_shared_from_this<EbuildID>,
-            private PrivateImplementationPattern<EbuildID>
+            private Pimp<EbuildID>
         {
             private:
-                PrivateImplementationPattern<EbuildID>::ImpPtr & _imp;
+                Pimp<EbuildID>::ImpPtr & _imp;
 
             protected:
                 virtual void need_keys_added() const;

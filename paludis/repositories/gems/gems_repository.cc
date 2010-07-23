@@ -25,7 +25,7 @@
 #include <paludis/repositories/gems/exceptions.hh>
 #include <paludis/repositories/gems/extra_distribution_data.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
@@ -47,7 +47,7 @@ using namespace paludis;
 namespace paludis
 {
     template <>
-    struct Implementation<GemsRepository>
+    struct Imp<GemsRepository>
     {
         const gems::RepositoryParams params;
 
@@ -67,7 +67,7 @@ namespace paludis
         std::shared_ptr<const MetadataValueKey<std::string> > sync_options_key;
         std::shared_ptr<const MetadataValueKey<std::string> > format_key;
 
-        Implementation(const gems::RepositoryParams p, std::shared_ptr<Mutex> m = std::make_shared<Mutex>()) :
+        Imp(const gems::RepositoryParams p, std::shared_ptr<Mutex> m = std::make_shared<Mutex>()) :
             params(p),
             big_nasty_mutex(m),
             has_category_names(false),
@@ -99,8 +99,8 @@ GemsRepository::GemsRepository(const gems::RepositoryParams & params) :
                 n::provides_interface() = static_cast<RepositoryProvidesInterface *>(0),
                 n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
             )),
-    PrivateImplementationPattern<GemsRepository>(params),
-    _imp(PrivateImplementationPattern<GemsRepository>::_imp)
+    Pimp<GemsRepository>(params),
+    _imp(Pimp<GemsRepository>::_imp)
 {
     _add_metadata_keys();
 }
@@ -126,7 +126,7 @@ GemsRepository::invalidate()
 {
     Lock l(*_imp->big_nasty_mutex);
 
-    _imp.reset(new Implementation<GemsRepository>(_imp->params, _imp->big_nasty_mutex));
+    _imp.reset(new Imp<GemsRepository>(_imp->params, _imp->big_nasty_mutex));
     _add_metadata_keys();
 }
 

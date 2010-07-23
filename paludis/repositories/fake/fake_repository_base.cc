@@ -20,7 +20,7 @@
 #include <paludis/repositories/fake/fake_repository_base.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
@@ -33,7 +33,7 @@
 #include <algorithm>
 
 /** \file
- * Implementation for FakeRepositoryBase.
+ * Imp for FakeRepositoryBase.
  *
  * \ingroup grpfakerepository
  */
@@ -43,7 +43,7 @@ using namespace paludis;
 namespace paludis
 {
     template<>
-    struct Implementation<FakeRepositoryBase>
+    struct Imp<FakeRepositoryBase>
     {
         std::shared_ptr<CategoryNamePartSet> category_names;
         std::map<CategoryNamePart, std::shared_ptr<PackageNamePartSet> > package_names;
@@ -51,10 +51,10 @@ namespace paludis
 
         const Environment * const env;
 
-        Implementation(const Environment * const);
+        Imp(const Environment * const);
     };
 
-    Implementation<FakeRepositoryBase>::Implementation(const Environment * const e) :
+    Imp<FakeRepositoryBase>::Imp(const Environment * const e) :
         category_names(new CategoryNamePartSet),
         env(e)
     {
@@ -64,8 +64,8 @@ namespace paludis
 FakeRepositoryBase::FakeRepositoryBase(const Environment * const e,
         const RepositoryName & our_name, const RepositoryCapabilities & caps) :
     Repository(e, our_name, caps),
-    PrivateImplementationPattern<FakeRepositoryBase>(e),
-    _imp(PrivateImplementationPattern<FakeRepositoryBase>::_imp)
+    Pimp<FakeRepositoryBase>(e),
+    _imp(Pimp<FakeRepositoryBase>::_imp)
 {
 }
 

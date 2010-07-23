@@ -19,7 +19,7 @@
 
 #include <paludis/repositories/unavailable/unavailable_repository_file.hh>
 #include <paludis/repositories/unavailable/unavailable_repository.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/simple_parser.hh>
@@ -40,13 +40,13 @@ typedef std::list<UnavailableRepositoryFileEntry> Entries;
 namespace paludis
 {
     template <>
-    struct Implementation<UnavailableRepositoryFile>
+    struct Imp<UnavailableRepositoryFile>
     {
         std::string repo_name, homepage, description, sync, repo_format, dependencies;
         bool autoconfigurable;
         Entries entries;
 
-        Implementation() :
+        Imp() :
             autoconfigurable(false)
         {
         }
@@ -60,7 +60,7 @@ namespace paludis
 }
 
 UnavailableRepositoryFile::UnavailableRepositoryFile(const FSEntry & f) :
-    PrivateImplementationPattern<UnavailableRepositoryFile>()
+    Pimp<UnavailableRepositoryFile>()
 {
     _load(f);
 }
@@ -269,7 +269,7 @@ UnavailableRepositoryFile::autoconfigurable() const
     return _imp->autoconfigurable;
 }
 
-template class PrivateImplementationPattern<UnavailableRepositoryFile>;
+template class Pimp<UnavailableRepositoryFile>;
 template class WrappedForwardIterator<UnavailableRepositoryFile::ConstIteratorTag,
          const UnavailableRepositoryFileEntry>;
 

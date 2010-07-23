@@ -22,7 +22,7 @@
 
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/package_id.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 
@@ -88,7 +88,7 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE UninstallTask :
-        private PrivateImplementationPattern<UninstallTask>
+        private Pimp<UninstallTask>
     {
         protected:
             ///\name Basic operations

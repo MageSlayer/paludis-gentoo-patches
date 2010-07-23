@@ -33,7 +33,7 @@
 #include <paludis/repositories/e/dependencies_rewriter.hh>
 #include <paludis/stringify_formatter.hh>
 #include <paludis/repositories/e/eapi.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <set>
 #include <map>
 #include <list>
@@ -51,7 +51,7 @@ using namespace paludis::erepository;
 namespace paludis
 {
     template <>
-    struct Implementation<EbuildFlatMetadataCache>
+    struct Imp<EbuildFlatMetadataCache>
     {
         const Environment * const env;
         FSEntry & filename;
@@ -60,7 +60,7 @@ namespace paludis
         std::shared_ptr<const EclassMtimes> eclass_mtimes;
         bool silent;
 
-        Implementation(const Environment * const e, FSEntry & f, const FSEntry & eb,
+        Imp(const Environment * const e, FSEntry & f, const FSEntry & eb,
                 std::time_t m, const std::shared_ptr<const EclassMtimes> em, bool s) :
             env(e),
             filename(f),
@@ -76,7 +76,7 @@ namespace paludis
 namespace
 {
     bool load_flat_list(
-        const std::shared_ptr<const EbuildID> & id, const std::vector<std::string> & lines, Implementation<EbuildFlatMetadataCache> * _imp)
+        const std::shared_ptr<const EbuildID> & id, const std::vector<std::string> & lines, Imp<EbuildFlatMetadataCache> * _imp)
     {
         Context ctx("When loading flat_list format cache file:");
 
@@ -288,7 +288,7 @@ namespace
 
 EbuildFlatMetadataCache::EbuildFlatMetadataCache(const Environment * const v, FSEntry & f,
         const FSEntry & e, std::time_t t, const std::shared_ptr<const EclassMtimes> & m, bool s) :
-    PrivateImplementationPattern<EbuildFlatMetadataCache>(v, f, e, t, m, s)
+    Pimp<EbuildFlatMetadataCache>(v, f, e, t, m, s)
 {
 }
 
@@ -849,5 +849,5 @@ EbuildFlatMetadataCache::save(const std::shared_ptr<const EbuildID> & id)
     }
 }
 
-template class PrivateImplementationPattern<EbuildFlatMetadataCache>;
+template class Pimp<EbuildFlatMetadataCache>;
 

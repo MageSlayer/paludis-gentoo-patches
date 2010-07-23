@@ -18,7 +18,7 @@
  */
 
 #include <paludis/repository_factory.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/util/member_iterator-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
@@ -78,7 +78,7 @@ namespace
 namespace paludis
 {
     template <>
-    struct Implementation<RepositoryFactory>
+    struct Imp<RepositoryFactory>
     {
         Keys keys;
     };
@@ -113,7 +113,7 @@ namespace
 }
 
 RepositoryFactory::RepositoryFactory() :
-    PrivateImplementationPattern<RepositoryFactory>()
+    Pimp<RepositoryFactory>()
 {
     using namespace repository_groups;
 
@@ -212,7 +212,7 @@ RepositoryFactory::add_repository_format(
     }
 }
 
-template class PrivateImplementationPattern<RepositoryFactory>;
+template class Pimp<RepositoryFactory>;
 template class Singleton<RepositoryFactory>;
 template class WrappedForwardIterator<RepositoryFactory::ConstIteratorTag, const std::string>;
 

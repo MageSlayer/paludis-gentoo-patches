@@ -45,10 +45,10 @@ namespace paludis
             public Repository,
             public RepositoryEnvironmentVariableInterface,
             public RepositoryDestinationInterface,
-            private PrivateImplementationPattern<EInstalledRepository>
+            private Pimp<EInstalledRepository>
         {
             private:
-                PrivateImplementationPattern<EInstalledRepository>::ImpPtr & _imp;
+                Pimp<EInstalledRepository>::ImpPtr & _imp;
 
             protected:
                 EInstalledRepository(const EInstalledRepositoryParams &, const RepositoryName &, const RepositoryCapabilities &);

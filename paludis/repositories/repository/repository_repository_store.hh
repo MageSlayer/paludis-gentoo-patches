@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_REPOSITORY_REPOSITORY_REPOSITORY_STORE_HH 1
 
 #include <paludis/repositories/repository/repository_repository-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/package_id-fwd.hh>
@@ -33,7 +33,7 @@ namespace paludis
     namespace repository_repository
     {
         class PALUDIS_VISIBLE RepositoryRepositoryStore :
-            private PrivateImplementationPattern<RepositoryRepositoryStore>
+            private Pimp<RepositoryRepositoryStore>
         {
             private:
                 void _populate();
@@ -65,7 +65,7 @@ namespace paludis
         };
     }
 
-    extern template class PrivateImplementationPattern<repository_repository::RepositoryRepositoryStore>;
+    extern template class Pimp<repository_repository::RepositoryRepositoryStore>;
 }
 
 #endif

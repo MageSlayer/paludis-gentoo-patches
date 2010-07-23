@@ -22,7 +22,7 @@
 
 #include <paludis/repository.hh>
 #include <paludis/action-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 
 /** \file
  * Declarations for the FakeRepositoryBase class.
@@ -44,11 +44,11 @@ namespace paludis
      */
     class PALUDIS_VISIBLE FakeRepositoryBase :
         public Repository,
-        private PrivateImplementationPattern<FakeRepositoryBase>,
+        private Pimp<FakeRepositoryBase>,
         public std::enable_shared_from_this<FakeRepositoryBase>
     {
         private:
-            PrivateImplementationPattern<FakeRepositoryBase>::ImpPtr & _imp;
+            Pimp<FakeRepositoryBase>::ImpPtr & _imp;
 
         protected:
             /**

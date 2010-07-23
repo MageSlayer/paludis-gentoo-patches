@@ -18,7 +18,7 @@
  */
 
 #include <paludis/metadata_key.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/set.hh>
@@ -36,13 +36,13 @@ using namespace paludis;
 namespace paludis
 {
     template <>
-    struct Implementation<MetadataKey>
+    struct Imp<MetadataKey>
     {
         const std::string raw_name;
         const std::string human_name;
         const MetadataKeyType type;
 
-        Implementation(const std::string & r, const std::string & h, const MetadataKeyType t) :
+        Imp(const std::string & r, const std::string & h, const MetadataKeyType t) :
             raw_name(r),
             human_name(h),
             type(t)

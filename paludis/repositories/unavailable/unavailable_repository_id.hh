@@ -58,11 +58,11 @@ namespace paludis
 
         class PALUDIS_VISIBLE UnavailableRepositoryID :
             public PackageID,
-            private PrivateImplementationPattern<UnavailableRepositoryID>,
+            private Pimp<UnavailableRepositoryID>,
             public std::enable_shared_from_this<UnavailableRepositoryID>
         {
             private:
-                PrivateImplementationPattern<UnavailableRepositoryID>::ImpPtr & _imp;
+                Pimp<UnavailableRepositoryID>::ImpPtr & _imp;
 
             protected:
                 void need_keys_added() const;

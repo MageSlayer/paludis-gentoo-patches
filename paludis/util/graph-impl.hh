@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_UTIL_GRAPH_IMPL_HH 1
 
 #include <paludis/util/graph.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/set-impl.hh>
 #include <map>
@@ -29,7 +29,7 @@
 #include <list>
 
 /** \file
- * Implementation for paludis/util/graph.hh .
+ * Imp for paludis/util/graph.hh .
  *
  * \ingroup g_data_structures
  */
@@ -84,14 +84,14 @@ namespace paludis
     };
 
     /**
-     * Implementation data for a DirectedGraph.
+     * Imp data for a DirectedGraph.
      *
      * \see DirectedGraph
      * \ingroup g_data_structures
      * \nosubgrouping
      */
     template <typename Node_, typename Edge_, typename Comparator_>
-    struct Implementation<DirectedGraph<Node_, Edge_, Comparator_> >
+    struct Imp<DirectedGraph<Node_, Edge_, Comparator_> >
     {
         /// Our data.
         std::map<Node_, std::map<Node_, Edge_, Comparator_>, Comparator_> store;
@@ -99,11 +99,11 @@ namespace paludis
         ///\name Basic operations
         ///\{
 
-        Implementation()
+        Imp()
         {
         }
 
-        Implementation(const std::map<Node_, std::map<Node_, Edge_, Comparator_>, Comparator_> s) :
+        Imp(const std::map<Node_, std::map<Node_, Edge_, Comparator_>, Comparator_> s) :
             store(s)
         {
         }
@@ -113,13 +113,13 @@ namespace paludis
 
     template <typename Node_, typename Edge_, typename Comparator_>
     DirectedGraph<Node_, Edge_, Comparator_>::DirectedGraph() :
-        PrivateImplementationPattern<DirectedGraph<Node_, Edge_, Comparator_> >()
+        Pimp<DirectedGraph<Node_, Edge_, Comparator_> >()
     {
     }
 
     template <typename Node_, typename Edge_, typename Comparator_>
     DirectedGraph<Node_, Edge_, Comparator_>::DirectedGraph(const DirectedGraph & g) :
-        PrivateImplementationPattern<DirectedGraph<Node_, Edge_, Comparator_> >(g._imp->store)
+        Pimp<DirectedGraph<Node_, Edge_, Comparator_> >(g._imp->store)
     {
     }
 

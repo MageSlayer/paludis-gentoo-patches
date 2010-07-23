@@ -22,7 +22,7 @@
 
 #include <paludis/about_metadata-fwd.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/singleton.hh>
 #include <paludis/metadata_key_holder.hh>
 
@@ -42,14 +42,14 @@ namespace paludis
      * \since 0.46
      */
     class PALUDIS_VISIBLE AboutMetadata :
-        private PrivateImplementationPattern<AboutMetadata>,
+        private Pimp<AboutMetadata>,
         public Singleton<AboutMetadata>,
         public MetadataKeyHolder
     {
         friend class Singleton<AboutMetadata>;
 
         private:
-            PrivateImplementationPattern<AboutMetadata>::ImpPtr & _imp;
+            Pimp<AboutMetadata>::ImpPtr & _imp;
 
             AboutMetadata();
             ~AboutMetadata();
@@ -58,7 +58,7 @@ namespace paludis
             void need_keys_added() const;
     };
 
-    extern template class PrivateImplementationPattern<AboutMetadata>;
+    extern template class Pimp<AboutMetadata>;
     extern template class Singleton<AboutMetadata>;
 }
 

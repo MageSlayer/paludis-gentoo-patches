@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_E_REPOSITORY_NEWS_HH
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_E_REPOSITORY_NEWS_HH 1
 
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 
@@ -43,7 +43,7 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE ERepositoryNews :
-        private PrivateImplementationPattern<ERepositoryNews>
+        private Pimp<ERepositoryNews>
     {
         public:
             ///\name Basic operations
@@ -75,7 +75,7 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE NewsFile :
-        private PrivateImplementationPattern<NewsFile>
+        private Pimp<NewsFile>
     {
         public:
             ///\name Basic operations

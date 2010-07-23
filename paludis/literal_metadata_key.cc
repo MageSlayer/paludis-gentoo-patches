@@ -18,7 +18,7 @@
  */
 
 #include <paludis/literal_metadata_key.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -36,14 +36,14 @@ using namespace paludis;
 namespace paludis
 {
     template <>
-    struct Implementation<LiteralMetadataFSEntrySequenceKey>
+    struct Imp<LiteralMetadataFSEntrySequenceKey>
     {
         const std::string raw_name;
         const std::string human_name;
         const MetadataKeyType type;
         const std::shared_ptr<const FSEntrySequence> value;
 
-        Implementation(const std::string & r, const std::string & h, const MetadataKeyType t,
+        Imp(const std::string & r, const std::string & h, const MetadataKeyType t,
                 const std::shared_ptr<const FSEntrySequence> & v) :
             raw_name(r),
             human_name(h),
@@ -54,14 +54,14 @@ namespace paludis
     };
 
     template <>
-    struct Implementation<LiteralMetadataStringSetKey>
+    struct Imp<LiteralMetadataStringSetKey>
     {
         const std::string raw_name;
         const std::string human_name;
         const MetadataKeyType type;
         const std::shared_ptr<const Set<std::string> > value;
 
-        Implementation(const std::string & r, const std::string & h, const MetadataKeyType t,
+        Imp(const std::string & r, const std::string & h, const MetadataKeyType t,
                 const std::shared_ptr<const Set<std::string> > & v) :
             raw_name(r),
             human_name(h),
@@ -72,14 +72,14 @@ namespace paludis
     };
 
     template <>
-    struct Implementation<LiteralMetadataStringSequenceKey>
+    struct Imp<LiteralMetadataStringSequenceKey>
     {
         const std::string raw_name;
         const std::string human_name;
         const MetadataKeyType type;
         const std::shared_ptr<const Sequence<std::string> > value;
 
-        Implementation(const std::string & r, const std::string & h, const MetadataKeyType t,
+        Imp(const std::string & r, const std::string & h, const MetadataKeyType t,
                 const std::shared_ptr<const Sequence<std::string> > & v) :
             raw_name(r),
             human_name(h),
@@ -90,14 +90,14 @@ namespace paludis
     };
 
     template <typename T_>
-    struct Implementation<LiteralMetadataValueKey<T_> >
+    struct Imp<LiteralMetadataValueKey<T_> >
     {
         const std::string raw_name;
         const std::string human_name;
         const MetadataKeyType type;
         T_ value;
 
-        Implementation(const std::string & r, const std::string & h, const MetadataKeyType t, const T_ & v) :
+        Imp(const std::string & r, const std::string & h, const MetadataKeyType t, const T_ & v) :
             raw_name(r),
             human_name(h),
             type(t),
@@ -109,8 +109,8 @@ namespace paludis
 
 LiteralMetadataFSEntrySequenceKey::LiteralMetadataFSEntrySequenceKey(const std::string & r, const std::string & h,
         const MetadataKeyType t, const std::shared_ptr<const FSEntrySequence> & v) :
-    PrivateImplementationPattern<LiteralMetadataFSEntrySequenceKey>(r, h, t, v),
-    _imp(PrivateImplementationPattern<LiteralMetadataFSEntrySequenceKey>::_imp)
+    Pimp<LiteralMetadataFSEntrySequenceKey>(r, h, t, v),
+    _imp(Pimp<LiteralMetadataFSEntrySequenceKey>::_imp)
 {
 }
 
@@ -159,8 +159,8 @@ LiteralMetadataFSEntrySequenceKey::type() const
 
 LiteralMetadataStringSetKey::LiteralMetadataStringSetKey(const std::string & r, const std::string & h,
         const MetadataKeyType t, const std::shared_ptr<const Set<std::string> > & v) :
-    PrivateImplementationPattern<LiteralMetadataStringSetKey>(r, h, t, v),
-    _imp(PrivateImplementationPattern<LiteralMetadataStringSetKey>::_imp)
+    Pimp<LiteralMetadataStringSetKey>(r, h, t, v),
+    _imp(Pimp<LiteralMetadataStringSetKey>::_imp)
 {
 }
 
@@ -176,8 +176,8 @@ LiteralMetadataStringSetKey::value() const
 
 LiteralMetadataStringSequenceKey::LiteralMetadataStringSequenceKey(const std::string & r, const std::string & h,
         const MetadataKeyType t, const std::shared_ptr<const Sequence<std::string> > & v) :
-    PrivateImplementationPattern<LiteralMetadataStringSequenceKey>(r, h, t, v),
-    _imp(PrivateImplementationPattern<LiteralMetadataStringSequenceKey>::_imp)
+    Pimp<LiteralMetadataStringSequenceKey>(r, h, t, v),
+    _imp(Pimp<LiteralMetadataStringSequenceKey>::_imp)
 {
 }
 
@@ -323,8 +323,8 @@ ExtraLiteralMetadataValueKeyMethods<std::shared_ptr<const PackageID> >::pretty_p
 template <typename T_>
 LiteralMetadataValueKey<T_>::LiteralMetadataValueKey(const std::string & r, const std::string & h,
         const MetadataKeyType t, const T_ & v) :
-    PrivateImplementationPattern<LiteralMetadataValueKey<T_> >(r, h, t, v),
-    _imp(PrivateImplementationPattern<LiteralMetadataValueKey<T_ > >::_imp)
+    Pimp<LiteralMetadataValueKey<T_> >(r, h, t, v),
+    _imp(Pimp<LiteralMetadataValueKey<T_ > >::_imp)
 {
 }
 
@@ -343,14 +343,14 @@ LiteralMetadataValueKey<T_>::value() const
 namespace paludis
 {
     template <>
-    struct Implementation<LiteralMetadataTimeKey>
+    struct Imp<LiteralMetadataTimeKey>
     {
         const std::string raw_name;
         const std::string human_name;
         const MetadataKeyType type;
         const Timestamp value;
 
-        Implementation(const std::string & r, const std::string & h, const MetadataKeyType t, const Timestamp v) :
+        Imp(const std::string & r, const std::string & h, const MetadataKeyType t, const Timestamp v) :
             raw_name(r),
             human_name(h),
             type(t),
@@ -362,8 +362,8 @@ namespace paludis
 
 LiteralMetadataTimeKey::LiteralMetadataTimeKey(
         const std::string & r, const std::string & h, const MetadataKeyType k, const Timestamp v) :
-    PrivateImplementationPattern<LiteralMetadataTimeKey>(r, h, k, v),
-    _imp(PrivateImplementationPattern<LiteralMetadataTimeKey>::_imp)
+    Pimp<LiteralMetadataTimeKey>(r, h, k, v),
+    _imp(Pimp<LiteralMetadataTimeKey>::_imp)
 {
 }
 

@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_UNWRITTEN_UNWRITTEN_REPOSITORY_FILE_HH
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_UNWRITTEN_UNWRITTEN_REPOSITORY_FILE_HH 1
 
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/named_value.hh>
@@ -62,7 +62,7 @@ namespace paludis
         };
 
         class PALUDIS_VISIBLE UnwrittenRepositoryFile :
-            private PrivateImplementationPattern<UnwrittenRepositoryFile>
+            private Pimp<UnwrittenRepositoryFile>
         {
             private:
                 void _load(const FSEntry &);
@@ -78,7 +78,7 @@ namespace paludis
         };
     }
 
-    extern template class PrivateImplementationPattern<unwritten_repository::UnwrittenRepositoryFile>;
+    extern template class Pimp<unwritten_repository::UnwrittenRepositoryFile>;
 }
 
 #endif

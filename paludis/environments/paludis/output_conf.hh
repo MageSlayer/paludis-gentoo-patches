@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_ENVIRONMENTS_PALUDIS_OUTPUT_CONF_HH
 #define PALUDIS_GUARD_PALUDIS_ENVIRONMENTS_PALUDIS_OUTPUT_CONF_HH 1
 
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/output_manager-fwd.hh>
 #include <paludis/create_output_manager_info-fwd.hh>
@@ -33,7 +33,7 @@ namespace paludis
     namespace paludis_environment
     {
         class OutputConf :
-            private PrivateImplementationPattern<OutputConf>
+            private Pimp<OutputConf>
         {
             public:
                 ///\name Basic operations
@@ -60,7 +60,7 @@ namespace paludis
         };
     }
 
-    extern template class PrivateImplementationPattern<paludis_environment::OutputConf>;
+    extern template class Pimp<paludis_environment::OutputConf>;
 }
 
 #endif

@@ -22,7 +22,7 @@
 
 #include <paludis/util/attributes.hh>
 #include <paludis/util/fs_entry-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 
 #include <paludis/environment-fwd.hh>
@@ -33,7 +33,7 @@
 namespace paludis
 {
     class PALUDIS_VISIBLE BrokenLinkageFinder :
-        private paludis::PrivateImplementationPattern<BrokenLinkageFinder>
+        private paludis::Pimp<BrokenLinkageFinder>
     {
         public:
             BrokenLinkageFinder(const paludis::Environment *, const std::string &);

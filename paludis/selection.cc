@@ -19,7 +19,7 @@
 
 #include <paludis/selection.hh>
 #include <paludis/selection_handler.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/set-impl.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -51,11 +51,11 @@ DidNotGetExactlyOneError::DidNotGetExactlyOneError(const std::string & s, const 
 namespace paludis
 {
     template <>
-    struct Implementation<Selection>
+    struct Imp<Selection>
     {
         std::shared_ptr<const SelectionHandler> handler;
 
-        Implementation(const std::shared_ptr<const SelectionHandler> & h) :
+        Imp(const std::shared_ptr<const SelectionHandler> & h) :
             handler(h)
         {
         }
@@ -63,12 +63,12 @@ namespace paludis
 }
 
 Selection::Selection(const std::shared_ptr<const SelectionHandler> & h) :
-    PrivateImplementationPattern<Selection>(h)
+    Pimp<Selection>(h)
 {
 }
 
 Selection::Selection(const Selection & other) :
-    PrivateImplementationPattern<Selection>(other._imp->handler)
+    Pimp<Selection>(other._imp->handler)
 {
 }
 
@@ -495,5 +495,5 @@ paludis::operator<< (std::ostream & s, const Selection & g)
     return s;
 }
 
-template class PrivateImplementationPattern<Selection>;
+template class Pimp<Selection>;
 

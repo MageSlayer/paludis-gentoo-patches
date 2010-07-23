@@ -18,7 +18,7 @@
  */
 
 #include <paludis/resolver/job_state.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/serialise-impl.hh>
 
@@ -28,28 +28,28 @@ using namespace paludis::resolver;
 namespace paludis
 {
     template <>
-    struct Implementation<JobActiveState>
+    struct Imp<JobActiveState>
     {
         std::shared_ptr<OutputManager> output_manager;
     };
 
     template <>
-    struct Implementation<JobSucceededState>
+    struct Imp<JobSucceededState>
     {
         const std::shared_ptr<OutputManager> output_manager;
 
-        Implementation(const std::shared_ptr<OutputManager> & m) :
+        Imp(const std::shared_ptr<OutputManager> & m) :
             output_manager(m)
         {
         }
     };
 
     template <>
-    struct Implementation<JobFailedState>
+    struct Imp<JobFailedState>
     {
         const std::shared_ptr<OutputManager> output_manager;
 
-        Implementation(const std::shared_ptr<OutputManager> & m) :
+        Imp(const std::shared_ptr<OutputManager> & m) :
             output_manager(m)
         {
         }
@@ -106,7 +106,7 @@ JobSkippedState::serialise(Serialiser & s) const
 }
 
 JobActiveState::JobActiveState() :
-    PrivateImplementationPattern<JobActiveState>()
+    Pimp<JobActiveState>()
 {
 }
 
@@ -153,7 +153,7 @@ JobActiveState::serialise(Serialiser & s) const
 }
 
 JobSucceededState::JobSucceededState(const std::shared_ptr<OutputManager> & m) :
-    PrivateImplementationPattern<JobSucceededState>(m)
+    Pimp<JobSucceededState>(m)
 {
 }
 
@@ -182,7 +182,7 @@ JobSucceededState::serialise(Serialiser & s) const
 }
 
 JobFailedState::JobFailedState(const std::shared_ptr<OutputManager> & m) :
-    PrivateImplementationPattern<JobFailedState>(m)
+    Pimp<JobFailedState>(m)
 {
 }
 

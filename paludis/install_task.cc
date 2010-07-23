@@ -23,7 +23,7 @@
 #include <paludis/action.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/util/exception.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/hook.hh>
 #include <paludis/repository.hh>
 #include <paludis/match_package.hh>
@@ -117,7 +117,7 @@ namespace
 namespace paludis
 {
     template<>
-    struct Implementation<InstallTask>
+    struct Imp<InstallTask>
     {
         Environment * const env;
         DepList dep_list;
@@ -148,7 +148,7 @@ namespace paludis
 
         bool had_resolution_failures;
 
-        Implementation<InstallTask>(Environment * const e, const DepListOptions & o,
+        Imp<InstallTask>(Environment * const e, const DepListOptions & o,
                 std::shared_ptr<const DestinationsSet> d) :
             env(e),
             dep_list(e, o),
@@ -182,7 +182,7 @@ namespace paludis
 
 InstallTask::InstallTask(Environment * const env, const DepListOptions & options,
         const std::shared_ptr<const DestinationsSet> & d) :
-    PrivateImplementationPattern<InstallTask>(env, options, d)
+    Pimp<InstallTask>(env, options, d)
 {
 }
 

@@ -22,7 +22,7 @@
 
 #include <paludis/ipc_output_manager-fwd.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/create_output_manager_info-fwd.hh>
@@ -35,7 +35,7 @@
 namespace paludis
 {
     class PALUDIS_VISIBLE IPCOutputManager :
-        private PrivateImplementationPattern<IPCOutputManager>,
+        private Pimp<IPCOutputManager>,
         public OutputManager
     {
         public:
@@ -56,7 +56,7 @@ namespace paludis
     };
 
     class PALUDIS_VISIBLE IPCInputManager :
-        private PrivateImplementationPattern<IPCInputManager>
+        private Pimp<IPCInputManager>
     {
         private:
             std::string _pipe_command_handler(const std::string &);
@@ -88,7 +88,7 @@ namespace paludis
     };
 
     class PALUDIS_VISIBLE OutputManagerFromIPC :
-        private PrivateImplementationPattern<OutputManagerFromIPC>
+        private Pimp<OutputManagerFromIPC>
     {
         public:
             OutputManagerFromIPC(
@@ -107,9 +107,9 @@ namespace paludis
             void construct_standard_if_unconstructed();
     };
 
-    extern template class PrivateImplementationPattern<IPCOutputManager>;
-    extern template class PrivateImplementationPattern<IPCInputManager>;
-    extern template class PrivateImplementationPattern<OutputManagerFromIPC>;
+    extern template class Pimp<IPCOutputManager>;
+    extern template class Pimp<IPCInputManager>;
+    extern template class Pimp<OutputManagerFromIPC>;
 
 }
 

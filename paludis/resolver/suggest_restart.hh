@@ -24,7 +24,7 @@
 #include <paludis/resolver/resolvent-fwd.hh>
 #include <paludis/resolver/constraint-fwd.hh>
 #include <paludis/resolver/decision-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/attributes.hh>
 
@@ -33,7 +33,7 @@ namespace paludis
     namespace resolver
     {
         class PALUDIS_VISIBLE SuggestRestart :
-            private PrivateImplementationPattern<SuggestRestart>,
+            private Pimp<SuggestRestart>,
             public Exception
         {
             public:
@@ -54,7 +54,7 @@ namespace paludis
         };
     }
 
-    extern template class PrivateImplementationPattern<resolver::SuggestRestart>;
+    extern template class Pimp<resolver::SuggestRestart>;
 }
 
 #endif

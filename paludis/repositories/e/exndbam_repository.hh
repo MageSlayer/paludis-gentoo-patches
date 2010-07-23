@@ -22,7 +22,7 @@
 
 #include <paludis/repositories/e/e_installed_repository.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/map.hh>
 #include <paludis/repository.hh>
 #include <memory>
@@ -55,10 +55,10 @@ namespace paludis
     class PALUDIS_VISIBLE ExndbamRepository :
         public erepository::EInstalledRepository,
         public std::enable_shared_from_this<ExndbamRepository>,
-        public PrivateImplementationPattern<ExndbamRepository>
+        public Pimp<ExndbamRepository>
     {
         private:
-            PrivateImplementationPattern<ExndbamRepository>::ImpPtr & _imp;
+            Pimp<ExndbamRepository>::ImpPtr & _imp;
             void _add_metadata_keys() const;
 
         protected:

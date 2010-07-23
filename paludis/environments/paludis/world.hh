@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_ENVIRONMENTS_PALUDIS_WORLD_HH
 #define PALUDIS_GUARD_PALUDIS_ENVIRONMENTS_PALUDIS_WORLD_HH 1
 
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/spec_tree.hh>
@@ -33,7 +33,7 @@ namespace paludis
     namespace paludis_environment
     {
         class PALUDIS_VISIBLE World :
-            private PrivateImplementationPattern<World>
+            private Pimp<World>
         {
             private:
                 bool _add_string_to_world(const std::string &) const;

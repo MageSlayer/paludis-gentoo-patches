@@ -32,7 +32,7 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
@@ -346,13 +346,13 @@ GotASetNotAPackageDepSpec::GotASetNotAPackageDepSpec(const std::string & s) thro
 namespace paludis
 {
     template <>
-    struct Implementation<UserKeyRequirement>
+    struct Imp<UserKeyRequirement>
     {
         std::string key;
         std::string value;
         char op;
 
-        Implementation(const std::string & s)
+        Imp(const std::string & s)
         {
             std::string::size_type p(s.find_first_of("=<>"));
             if (std::string::npos == p)
@@ -366,7 +366,7 @@ namespace paludis
 }
 
 UserKeyRequirement::UserKeyRequirement(const std::string & s) :
-    PrivateImplementationPattern<UserKeyRequirement>(s)
+    Pimp<UserKeyRequirement>(s)
 {
 }
 
@@ -790,5 +790,5 @@ paludis::user_version_spec_options()
         vso_ignore_case + vso_letters_anywhere + vso_dotted_suffixes;
 }
 
-template class PrivateImplementationPattern<UserKeyRequirement>;
+template class Pimp<UserKeyRequirement>;
 

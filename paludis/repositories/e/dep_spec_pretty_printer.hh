@@ -43,7 +43,7 @@ namespace paludis
          * \ingroup grperepository
          */
         class PALUDIS_VISIBLE DepSpecPrettyPrinter :
-            private PrivateImplementationPattern<DepSpecPrettyPrinter>
+            private Pimp<DepSpecPrettyPrinter>
         {
             friend std::ostream & operator<< (std::ostream &, const DepSpecPrettyPrinter &);
 

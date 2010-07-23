@@ -22,7 +22,7 @@
 
 #include <paludis/environment_implementation.hh>
 #include <paludis/version_spec-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 
 /** \file
  * Declarations for the TestEnvironment class.
@@ -40,11 +40,11 @@ namespace paludis
      * \ingroup grptestenvironment
      */
     class PALUDIS_VISIBLE TestEnvironment :
-        private PrivateImplementationPattern<TestEnvironment>,
+        private Pimp<TestEnvironment>,
         public EnvironmentImplementation
     {
         private:
-            PrivateImplementationPattern<TestEnvironment>::ImpPtr & _imp;
+            Pimp<TestEnvironment>::ImpPtr & _imp;
 
         protected:
             virtual void need_keys_added() const;

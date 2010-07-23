@@ -21,7 +21,7 @@
 #include <paludis/repositories/e/e_repository_id.hh>
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/myoption.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/tokeniser.hh>
@@ -42,7 +42,7 @@ typedef std::list<std::pair<ChoicePrefixName, std::string> > ChildrenList;
 namespace paludis
 {
     template <>
-    struct Implementation<MyOptionsRequirementsVerifier>
+    struct Imp<MyOptionsRequirementsVerifier>
     {
         const std::shared_ptr<const ERepositoryID> id;
 
@@ -51,7 +51,7 @@ namespace paludis
         std::list<ChildrenList> current_children_stack;
         std::list<int> number_enabled_stack;
 
-        Implementation(const std::shared_ptr<const ERepositoryID> & i) :
+        Imp(const std::shared_ptr<const ERepositoryID> & i) :
             id(i),
             unmet_requirements(new Sequence<std::string>)
         {
@@ -63,7 +63,7 @@ namespace paludis
 }
 
 MyOptionsRequirementsVerifier::MyOptionsRequirementsVerifier(const std::shared_ptr<const ERepositoryID> & id) :
-    PrivateImplementationPattern<MyOptionsRequirementsVerifier>(id)
+    Pimp<MyOptionsRequirementsVerifier>(id)
 {
 }
 
@@ -346,5 +346,5 @@ MyOptionsRequirementsVerifier::visit(const PlainTextSpecTree::NodeType<AllDepSpe
     _imp->current_prefix_stack.pop_front();
 }
 
-template class PrivateImplementationPattern<MyOptionsRequirementsVerifier>;
+template class Pimp<MyOptionsRequirementsVerifier>;
 

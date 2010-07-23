@@ -20,7 +20,7 @@
 #include <paludis/resolver/suggest_restart.hh>
 #include <paludis/resolver/resolvent.hh>
 #include <paludis/resolver/constraint.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/stringify.hh>
 
 using namespace paludis;
@@ -29,7 +29,7 @@ using namespace paludis::resolver;
 namespace paludis
 {
     template <>
-    struct Implementation<SuggestRestart>
+    struct Imp<SuggestRestart>
     {
         const Resolvent resolvent;
         const std::shared_ptr<const Decision> previous_decision;
@@ -37,7 +37,7 @@ namespace paludis
         const std::shared_ptr<const Decision> new_decision;
         const std::shared_ptr<const Constraint> suggested_preset;
 
-        Implementation(const Resolvent & q,
+        Imp(const Resolvent & q,
                 const std::shared_ptr<const Decision> & pd,
                 const std::shared_ptr<const Constraint> & pc,
                 const std::shared_ptr<const Decision> & nd,
@@ -59,13 +59,13 @@ SuggestRestart::SuggestRestart(const Resolvent & q,
         const std::shared_ptr<const Decision> & nd,
         const std::shared_ptr<const Constraint> & nc
         ) throw () :
-    PrivateImplementationPattern<SuggestRestart>(q, pd, pc, nd, nc),
+    Pimp<SuggestRestart>(q, pd, pc, nd, nc),
     Exception("Suggesting restart with " + stringify(nc->spec()) + " for " + stringify(q))
 {
 }
 
 SuggestRestart::SuggestRestart(const SuggestRestart & o) :
-    PrivateImplementationPattern<SuggestRestart>(o.resolvent(), o.previous_decision(), o.problematic_constraint(), o.new_decision(), o.suggested_preset()),
+    Pimp<SuggestRestart>(o.resolvent(), o.previous_decision(), o.problematic_constraint(), o.new_decision(), o.suggested_preset()),
     Exception(o)
 {
 }
@@ -104,5 +104,5 @@ SuggestRestart::suggested_preset() const
     return _imp->suggested_preset;
 }
 
-template class PrivateImplementationPattern<SuggestRestart>;
+template class Pimp<SuggestRestart>;
 

@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_SHOW_SUGGEST_VISITOR_HH
 #define PALUDIS_GUARD_PALUDIS_SHOW_SUGGEST_VISITOR_HH 1
 
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/dep_list-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
 
@@ -43,7 +43,7 @@ namespace paludis
      * \nosubgrouping
      */
     class ShowSuggestVisitor :
-        private PrivateImplementationPattern<ShowSuggestVisitor>
+        private Pimp<ShowSuggestVisitor>
     {
         public:
             ///\name Basic operations

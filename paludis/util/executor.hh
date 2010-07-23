@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_UTIL_EXECUTOR_HH 1
 
 #include <paludis/util/executor-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/attributes.hh>
 #include <string>
 #include <memory>
@@ -44,7 +44,7 @@ namespace paludis
     };
 
     class PALUDIS_VISIBLE Executor :
-        private PrivateImplementationPattern<Executor>
+        private Pimp<Executor>
     {
         private:
             void _one(const std::shared_ptr<Executive>);
@@ -62,7 +62,7 @@ namespace paludis
             void execute();
     };
 
-    extern template class PrivateImplementationPattern<Executor>;
+    extern template class Pimp<Executor>;
 }
 
 #endif

@@ -24,7 +24,7 @@
 #include <paludis/output_manager-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/map-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/set-fwd.hh>
 #include <paludis/util/singleton.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -34,7 +34,7 @@
 namespace paludis
 {
     class PALUDIS_VISIBLE OutputManagerFactory :
-        private PrivateImplementationPattern<OutputManagerFactory>,
+        private Pimp<OutputManagerFactory>,
         public Singleton<OutputManagerFactory>
     {
         friend class Singleton<OutputManagerFactory>;
@@ -101,7 +101,7 @@ namespace paludis
             ConstIterator end_keys() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
-    extern template class PrivateImplementationPattern<OutputManagerFactory>;
+    extern template class Pimp<OutputManagerFactory>;
     extern template class Singleton<OutputManagerFactory>;
     extern template class WrappedForwardIterator<OutputManagerFactory::ConstIteratorTag, const std::string>;
 }

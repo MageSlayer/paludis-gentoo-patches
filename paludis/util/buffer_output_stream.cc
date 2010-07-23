@@ -18,7 +18,7 @@
  */
 
 #include <paludis/util/buffer_output_stream.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/condition_variable.hh>
 #include <list>
@@ -29,21 +29,21 @@ using namespace paludis;
 namespace paludis
 {
     template <>
-    struct Implementation<BufferOutputStreamBuf>
+    struct Imp<BufferOutputStreamBuf>
     {
         mutable Mutex mutex;
 
         std::list<std::string> complete_strings;
         std::string active_string;
 
-        Implementation()
+        Imp()
         {
         }
     };
 }
 
 BufferOutputStreamBuf::BufferOutputStreamBuf() :
-    PrivateImplementationPattern<BufferOutputStreamBuf>()
+    Pimp<BufferOutputStreamBuf>()
 {
     setg(0, 0, 0);
 }
@@ -139,5 +139,5 @@ BufferOutputStream::anything_to_unbuffer() const
     return buf.anything_to_unbuffer();
 }
 
-template class PrivateImplementationPattern<BufferOutputStreamBuf>;
+template class Pimp<BufferOutputStreamBuf>;
 

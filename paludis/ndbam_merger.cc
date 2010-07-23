@@ -17,11 +17,11 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/tokeniser.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/strip.hh>
@@ -48,7 +48,7 @@ using namespace paludis;
 namespace paludis
 {
     template<>
-    struct Implementation<NDBAMMerger>
+    struct Imp<NDBAMMerger>
     {
         NDBAMMergerParams params;
         FSEntry realroot;
@@ -57,7 +57,7 @@ namespace paludis
         std::list<std::string> config_protect;
         std::list<std::string> config_protect_mask;
 
-        Implementation(const NDBAMMergerParams & p) :
+        Imp(const NDBAMMergerParams & p) :
             params(p),
             realroot(params.root().realpath())
         {
@@ -79,8 +79,8 @@ NDBAMMerger::NDBAMMerger(const NDBAMMergerParams & p) :
                 n::options() = p.options(),
                 n::root() = p.root()
                 )),
-    PrivateImplementationPattern<NDBAMMerger>(p),
-    _imp(PrivateImplementationPattern<NDBAMMerger>::_imp)
+    Pimp<NDBAMMerger>(p),
+    _imp(Pimp<NDBAMMerger>::_imp)
 {
 }
 

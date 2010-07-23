@@ -21,7 +21,7 @@
 #include "mask_displayer.hh"
 #include "colour_formatter.hh"
 #include <paludis/util/tokeniser.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/map-impl.hh>
@@ -52,12 +52,12 @@ using namespace paludis;
 namespace paludis
 {
     template<>
-    struct Implementation<ConsoleQueryTask>
+    struct Imp<ConsoleQueryTask>
     {
         const Environment * const env;
         mutable std::shared_ptr<Map<char, std::string> > masks_to_explain;
 
-        Implementation(const Environment * const e) :
+        Imp(const Environment * const e) :
             env(e),
             masks_to_explain(new Map<char, std::string>)
         {
@@ -77,7 +77,7 @@ namespace
 }
 
 ConsoleQueryTask::ConsoleQueryTask(const Environment * const e) :
-    PrivateImplementationPattern<ConsoleQueryTask>(e)
+    Pimp<ConsoleQueryTask>(e)
 {
 }
 

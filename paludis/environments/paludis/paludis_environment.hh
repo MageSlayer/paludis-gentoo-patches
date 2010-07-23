@@ -46,11 +46,11 @@ namespace paludis
      */
     class PALUDIS_VISIBLE PaludisEnvironment :
         public EnvironmentImplementation,
-        private PrivateImplementationPattern<PaludisEnvironment>
+        private Pimp<PaludisEnvironment>
     {
 
         private:
-            PrivateImplementationPattern<PaludisEnvironment>::ImpPtr & _imp;
+            Pimp<PaludisEnvironment>::ImpPtr & _imp;
 
         protected:
             virtual void need_keys_added() const;

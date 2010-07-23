@@ -26,7 +26,7 @@
 #include <paludis/repositories/e/e_repository.hh>
 #include <paludis/repositories/e/myoption.hh>
 
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/mutex.hh>
@@ -56,7 +56,7 @@ using namespace paludis::erepository;
 namespace paludis
 {
     template <>
-    struct Implementation<EChoicesKey>
+    struct Imp<EChoicesKey>
     {
         mutable Mutex mutex;
         mutable std::shared_ptr<Choices> value;
@@ -70,7 +70,7 @@ namespace paludis
         const std::string human_name;
         const MetadataKeyType type;
 
-        Implementation(const Environment * const e, const std::shared_ptr<const ERepositoryID> & i,
+        Imp(const Environment * const e, const std::shared_ptr<const ERepositoryID> & i,
                 const std::shared_ptr<const ERepository> & p,
                 const std::shared_ptr<const Map<ChoiceNameWithPrefix, std::string> > & d,
                 const std::string & r, const std::string & h, const MetadataKeyType t) :
@@ -92,7 +92,7 @@ EChoicesKey::EChoicesKey(
         const std::string & r, const std::string & h, const MetadataKeyType t,
         const std::shared_ptr<const ERepository> & p,
         const std::shared_ptr<const Map<ChoiceNameWithPrefix, std::string> > & d) :
-    PrivateImplementationPattern<EChoicesKey>(e, i, p, d, r, h, t)
+    Pimp<EChoicesKey>(e, i, p, d, r, h, t)
 {
 }
 

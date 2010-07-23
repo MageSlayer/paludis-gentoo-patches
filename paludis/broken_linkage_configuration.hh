@@ -22,7 +22,7 @@
 
 #include <paludis/util/attributes.hh>
 #include <paludis/util/fs_entry-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 
 #include <string>
@@ -30,7 +30,7 @@
 namespace paludis
 {
     class PALUDIS_VISIBLE BrokenLinkageConfiguration :
-        private PrivateImplementationPattern<BrokenLinkageConfiguration>
+        private Pimp<BrokenLinkageConfiguration>
     {
         public:
             BrokenLinkageConfiguration(const FSEntry &);

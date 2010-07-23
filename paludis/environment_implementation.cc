@@ -30,7 +30,7 @@
 #include <paludis/util/member_iterator-impl.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/hook.hh>
 #include <paludis/distribution.hh>
@@ -106,7 +106,7 @@ namespace
 namespace paludis
 {
     template <>
-    struct Implementation<EnvironmentImplementation>
+    struct Imp<EnvironmentImplementation>
     {
         std::map<unsigned, NotifierCallbackFunction> notifier_callbacks;
         std::list<std::shared_ptr<const SelectionCache> > selection_caches;
@@ -116,7 +116,7 @@ namespace paludis
         std::shared_ptr<SetNameSet> set_names;
         SetsStore sets;
 
-        Implementation() :
+        Imp() :
             loaded_sets(false)
         {
         }
@@ -124,8 +124,8 @@ namespace paludis
 }
 
 EnvironmentImplementation::EnvironmentImplementation() :
-    PrivateImplementationPattern<EnvironmentImplementation>(),
-    _imp(PrivateImplementationPattern<EnvironmentImplementation>::_imp)
+    Pimp<EnvironmentImplementation>(),
+    _imp(Pimp<EnvironmentImplementation>::_imp)
 {
 }
 

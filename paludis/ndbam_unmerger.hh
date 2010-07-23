@@ -21,7 +21,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_UNPACKAGED_NDBAM_UNMERGER_HH
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_UNPACKAGED_NDBAM_UNMERGER_HH 1
 
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/output_manager-fwd.hh>
 #include <paludis/unmerger.hh>
@@ -74,10 +74,10 @@ namespace paludis
      */
     class PALUDIS_VISIBLE NDBAMUnmerger :
         public Unmerger,
-        private PrivateImplementationPattern<NDBAMUnmerger>
+        private Pimp<NDBAMUnmerger>
     {
         private:
-            Implementation<NDBAMUnmerger> * _imp;
+            Imp<NDBAMUnmerger> * _imp;
 
             void _add_file(const std::shared_ptr<const ContentsEntry> &);
             void _add_dir(const std::shared_ptr<const ContentsEntry> &);

@@ -19,7 +19,7 @@
 
 #include <paludis/repository.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/options.hh>
@@ -116,11 +116,11 @@ namespace paludis
 namespace paludis
 {
     template <>
-    struct Implementation<Repository>
+    struct Imp<Repository>
     {
         const RepositoryName name;
 
-        Implementation(const RepositoryName & n) :
+        Imp(const RepositoryName & n) :
             name(n)
         {
         }
@@ -131,9 +131,9 @@ Repository::Repository(
         const Environment * const env,
         const RepositoryName & our_name,
         const RepositoryCapabilities & caps) :
-    PrivateImplementationPattern<Repository>(our_name),
+    Pimp<Repository>(our_name),
     RepositoryCapabilities(caps),
-    _imp(PrivateImplementationPattern<Repository>::_imp)
+    _imp(Pimp<Repository>::_imp)
 {
     std::string reason(RepositoryDistributionData::get_instance()->data_from_distribution(
                 *DistributionData::get_instance()->distribution_from_string(

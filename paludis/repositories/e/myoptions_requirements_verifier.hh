@@ -22,7 +22,7 @@
 
 #include <paludis/repositories/e/e_repository_id.hh>
 #include <paludis/util/sequence.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/spec_tree.hh>
@@ -33,7 +33,7 @@ namespace paludis
     namespace erepository
     {
         class PALUDIS_VISIBLE MyOptionsRequirementsVerifier :
-            private PrivateImplementationPattern<MyOptionsRequirementsVerifier>
+            private Pimp<MyOptionsRequirementsVerifier>
         {
             private:
                 void verify_one(const ChoicePrefixName &, const std::string &,
@@ -52,7 +52,7 @@ namespace paludis
         };
     }
 
-    extern template class PrivateImplementationPattern<erepository::MyOptionsRequirementsVerifier>;
+    extern template class Pimp<erepository::MyOptionsRequirementsVerifier>;
 }
 
 #endif

@@ -21,7 +21,7 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/tokeniser.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/mutex.hh>
@@ -587,12 +587,12 @@ PaludisBashHandler::rewrite() const
 namespace paludis
 {
     template<>
-    struct Implementation<SetFile>
+    struct Imp<SetFile>
     {
         const SetFileParams params;
         std::shared_ptr<SetFileHandler> handler;
 
-        Implementation(const SetFileParams & p) :
+        Imp(const SetFileParams & p) :
             params(p),
             handler(make_handler(p))
         {
@@ -601,7 +601,7 @@ namespace paludis
 }
 
 SetFile::SetFile(const SetFileParams & p) :
-    PrivateImplementationPattern<SetFile>(p)
+    Pimp<SetFile>(p)
 {
 }
 

@@ -19,7 +19,7 @@
 
 #include "pcre_matcher.hh"
 #include <pcrecpp.h>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 
 using namespace paludis;
 using namespace inquisitio;
@@ -27,11 +27,11 @@ using namespace inquisitio;
 namespace paludis
 {
     template<>
-    struct Implementation<PCREMatcher>
+    struct Imp<PCREMatcher>
     {
         const pcrecpp::RE pattern;
 
-        Implementation(const std::string & s) :
+        Imp(const std::string & s) :
             pattern(s, pcrecpp::RE_Options().set_caseless(true))
         {
             if (! pattern.error().empty())
@@ -41,7 +41,7 @@ namespace paludis
 }
 
 PCREMatcher::PCREMatcher(const std::string & s) :
-    PrivateImplementationPattern<PCREMatcher>(s)
+    Pimp<PCREMatcher>(s)
 {
 }
 

@@ -21,7 +21,7 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/dep_label.hh>
 #include <paludis/spec_tree.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/util/set-impl.hh>
 #include <paludis/util/mutex.hh>
@@ -38,8 +38,8 @@ template class Set<DepTagEntry, DepTagEntryComparator>;
 template class WrappedForwardIterator<Set<DepTagEntry, DepTagEntryComparator>::ConstIteratorTag, const DepTagEntry>;
 template class WrappedOutputIterator<Set<DepTagEntry, DepTagEntryComparator>::InserterTag, DepTagEntry>;
 
-template class PrivateImplementationPattern<GeneralSetDepTag>;
-template class PrivateImplementationPattern<DependencyDepTag>;
+template class Pimp<GeneralSetDepTag>;
+template class Pimp<DependencyDepTag>;
 
 namespace
 {
@@ -223,12 +223,12 @@ GLSADepTag::glsa_title() const
 namespace paludis
 {
     template <>
-    struct Implementation<GeneralSetDepTag>
+    struct Imp<GeneralSetDepTag>
     {
         const SetName id;
         const std::string source;
 
-        Implementation(const SetName & n, const std::string s) :
+        Imp(const SetName & n, const std::string s) :
             id(n),
             source(s)
         {
@@ -237,7 +237,7 @@ namespace paludis
 }
 
 GeneralSetDepTag::GeneralSetDepTag(const SetName & id, const std::string & r) :
-    PrivateImplementationPattern<GeneralSetDepTag>(id, r)
+    Pimp<GeneralSetDepTag>(id, r)
 {
 }
 
@@ -266,7 +266,7 @@ GeneralSetDepTag::source() const
 namespace paludis
 {
     template <>
-    struct Implementation<DependencyDepTag>
+    struct Imp<DependencyDepTag>
     {
         mutable Mutex mutex;
         mutable std::string str;
@@ -274,7 +274,7 @@ namespace paludis
         std::shared_ptr<const PackageID> id;
         const std::shared_ptr<PackageDepSpec> spec;
 
-        Implementation(const std::shared_ptr<const PackageID> & i, const PackageDepSpec & d) :
+        Imp(const std::shared_ptr<const PackageID> & i, const PackageDepSpec & d) :
             id(i),
             spec(std::static_pointer_cast<PackageDepSpec>(d.clone()))
         {
@@ -284,7 +284,7 @@ namespace paludis
 }
 
 DependencyDepTag::DependencyDepTag(const std::shared_ptr<const PackageID> & i, const PackageDepSpec & d) :
-    PrivateImplementationPattern<DependencyDepTag>(i, d)
+    Pimp<DependencyDepTag>(i, d)
 {
 }
 

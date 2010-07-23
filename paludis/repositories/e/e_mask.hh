@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_E_MASK_HH 1
 
 #include <paludis/mask.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 
 namespace paludis
 {
@@ -29,7 +29,7 @@ namespace paludis
     {
         class EUnacceptedMask :
             public UnacceptedMask,
-            private PrivateImplementationPattern<EUnacceptedMask>
+            private Pimp<EUnacceptedMask>
         {
             public:
                 EUnacceptedMask(const char, const std::string &, const std::shared_ptr<const MetadataKey> &);
@@ -42,7 +42,7 @@ namespace paludis
 
         class EUnsupportedMask :
             public UnsupportedMask,
-            private PrivateImplementationPattern<EUnsupportedMask>
+            private Pimp<EUnsupportedMask>
         {
             public:
                 EUnsupportedMask(const char, const std::string &, const std::string &);
@@ -55,7 +55,7 @@ namespace paludis
 
         class ERepositoryMask :
             public RepositoryMask,
-            private PrivateImplementationPattern<ERepositoryMask>
+            private Pimp<ERepositoryMask>
         {
             public:
                 ERepositoryMask(const char, const std::string &, const std::shared_ptr<const MetadataKey> &);

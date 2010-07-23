@@ -20,7 +20,7 @@
 #include <paludis/environments/paludis/use_conf.hh>
 #include <paludis/environments/paludis/paludis_environment.hh>
 #include <paludis/environments/paludis/bashable_conf.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/tribool.hh>
@@ -33,12 +33,12 @@ using namespace paludis::paludis_environment;
 namespace paludis
 {
     template<>
-    struct Implementation<UseConf>
+    struct Imp<UseConf>
     {
         const PaludisEnvironment * const env;
         const std::shared_ptr<PaludisLikeOptionsConf> handler;
 
-        Implementation(const PaludisEnvironment * const e) :
+        Imp(const PaludisEnvironment * const e) :
             env(e),
             handler(new PaludisLikeOptionsConf(make_named_values<PaludisLikeOptionsConfParams>(
                             n::allow_locking() = false,
@@ -51,7 +51,7 @@ namespace paludis
 }
 
 UseConf::UseConf(const PaludisEnvironment * const e) :
-    PrivateImplementationPattern<UseConf>(e)
+    Pimp<UseConf>(e)
 {
 }
 

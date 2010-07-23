@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_CRAN_DEP_SPEC_PRETTY_PRINTER_HH
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_CRAN_DEP_SPEC_PRETTY_PRINTER_HH 1
 
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/spec_tree.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/formatter.hh>
@@ -37,7 +37,7 @@ namespace paludis
          * \ingroup grpcranrepository
          */
         class PALUDIS_VISIBLE DepSpecPrettyPrinter :
-            private PrivateImplementationPattern<DepSpecPrettyPrinter>
+            private Pimp<DepSpecPrettyPrinter>
         {
             friend std::ostream & operator<< (std::ostream &, const DepSpecPrettyPrinter &);
 

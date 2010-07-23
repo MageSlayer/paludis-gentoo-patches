@@ -18,7 +18,7 @@
  */
 
 #include "options.hh"
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <vector>
 #include <algorithm>
 #include <functional>
@@ -29,15 +29,15 @@ using namespace paludis;
 namespace paludis
 {
     template<>
-    struct Implementation<OptionsStore>
+    struct Imp<OptionsStore>
     {
         std::vector<uint8_t> pool;
 
-        Implementation()
+        Imp()
         {
         }
 
-        Implementation(const Implementation & i) :
+        Imp(const Imp & i) :
             pool(i.pool)
         {
         }
@@ -45,12 +45,12 @@ namespace paludis
 }
 
 OptionsStore::OptionsStore() :
-    PrivateImplementationPattern<OptionsStore>()
+    Pimp<OptionsStore>()
 {
 }
 
 OptionsStore::OptionsStore(const OptionsStore & s) :
-    PrivateImplementationPattern<OptionsStore>(*s._imp.get())
+    Pimp<OptionsStore>(*s._imp.get())
 {
 }
 
@@ -58,7 +58,7 @@ const OptionsStore &
 OptionsStore::operator= (const OptionsStore & s)
 {
     if (this != &s)
-        _imp.reset(new Implementation<OptionsStore>(*s._imp.get()));
+        _imp.reset(new Imp<OptionsStore>(*s._imp.get()));
 
     return *this;
 }

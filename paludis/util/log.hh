@@ -22,7 +22,7 @@
 
 #include <paludis/util/stringify.hh>
 #include <paludis/util/singleton.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <iosfwd>
 #include <string>
 
@@ -49,7 +49,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE Log :
         public Singleton<Log>,
-        private PrivateImplementationPattern<Log>
+        private Pimp<Log>
     {
         friend class Singleton<Log>;
         friend class LogMessageHandler;

@@ -24,7 +24,7 @@
 #include <paludis/output_manager.hh>
 #include <paludis/output_manager_factory.hh>
 #include <paludis/util/set-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <memory>
 #include <functional>
@@ -32,7 +32,7 @@
 namespace paludis
 {
     class PALUDIS_VISIBLE FileOutputManager :
-        private PrivateImplementationPattern<FileOutputManager>,
+        private Pimp<FileOutputManager>,
         public OutputManager
     {
         public:
@@ -62,7 +62,7 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
-    extern template class PrivateImplementationPattern<FileOutputManager>;
+    extern template class Pimp<FileOutputManager>;
 }
 
 #endif

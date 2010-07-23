@@ -21,7 +21,7 @@
 #include "unmerger.hh"
 #include <paludis/environment.hh>
 #include <paludis/hook.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/contents.hh>
 #include <paludis/metadata_key.hh>
 #include <sys/types.h>
@@ -38,13 +38,13 @@ namespace paludis
     typedef UnmergeEntries::reverse_iterator UnmergeEntriesIterator;
 
     template<>
-    struct Implementation<Unmerger>
+    struct Imp<Unmerger>
     {
         UnmergerOptions options;
 
         UnmergeEntries unmerge_entries;
 
-        Implementation(const UnmergerOptions & o) :
+        Imp(const UnmergerOptions & o) :
             options(o)
         {
         }
@@ -57,7 +57,7 @@ UnmergerError::UnmergerError(const std::string & s) throw () :
 }
 
 Unmerger::Unmerger(const UnmergerOptions & o) :
-    PrivateImplementationPattern<Unmerger>(o)
+    Pimp<Unmerger>(o)
 {
 }
 

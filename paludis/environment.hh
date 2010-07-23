@@ -26,7 +26,7 @@
 #include <paludis/util/tribool-fwd.hh>
 #include <paludis/util/simple_visitor.hh>
 #include <paludis/output_manager-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/hook-fwd.hh>
 #include <paludis/repository-fwd.hh>
@@ -509,8 +509,8 @@ namespace paludis
             ///\}
     };
 
-    extern template class PrivateImplementationPattern<CreateOutputManagerForRepositorySyncInfo>;
-    extern template class PrivateImplementationPattern<CreateOutputManagerForPackageIDActionInfo>;
+    extern template class Pimp<CreateOutputManagerForRepositorySyncInfo>;
+    extern template class Pimp<CreateOutputManagerForPackageIDActionInfo>;
 
 }
 

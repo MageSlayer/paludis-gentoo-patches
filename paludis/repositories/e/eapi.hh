@@ -24,7 +24,7 @@
 #include <paludis/repositories/e/dep_parser-fwd.hh>
 #include <paludis/repositories/e/iuse.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/util/singleton.hh>
@@ -195,7 +195,7 @@ namespace paludis
     namespace erepository
     {
         class PALUDIS_VISIBLE EAPILabels :
-            private PrivateImplementationPattern<EAPILabels>
+            private Pimp<EAPILabels>
         {
             public:
                 EAPILabels(const std::string &);
@@ -228,7 +228,7 @@ namespace paludis
          * \nosubgrouping
          */
         class PALUDIS_VISIBLE EAPIData :
-            private PrivateImplementationPattern<EAPIData>,
+            private Pimp<EAPIData>,
             public Singleton<EAPIData>
         {
             friend class Singleton<EAPIData>;

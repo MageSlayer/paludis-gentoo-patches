@@ -34,11 +34,11 @@ namespace paludis
     class PALUDIS_VISIBLE VirtualsRepository :
         public Repository,
         public RepositoryMakeVirtualsInterface,
-        private PrivateImplementationPattern<VirtualsRepository>,
+        private Pimp<VirtualsRepository>,
         public std::enable_shared_from_this<VirtualsRepository>
     {
         private:
-            PrivateImplementationPattern<VirtualsRepository>::ImpPtr & _imp;
+            Pimp<VirtualsRepository>::ImpPtr & _imp;
 
             void need_names() const;
             void need_ids() const;

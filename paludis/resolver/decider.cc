@@ -61,7 +61,7 @@
 #include <paludis/elike_slot_requirement.hh>
 #include <paludis/dep_spec_flattener.hh>
 
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 
 #include <algorithm>
 #include <map>
@@ -73,7 +73,7 @@ using namespace paludis::resolver;
 namespace paludis
 {
     template <>
-    struct Implementation<Decider>
+    struct Imp<Decider>
     {
         const Environment * const env;
         const ResolverFunctions fns;
@@ -81,7 +81,7 @@ namespace paludis
 
         const std::shared_ptr<ResolutionsByResolvent> resolutions_by_resolvent;
 
-        Implementation(const Environment * const e, const ResolverFunctions & f,
+        Imp(const Environment * const e, const ResolverFunctions & f,
                 const std::shared_ptr<ResolutionsByResolvent> & l) :
             env(e),
             fns(f),
@@ -94,7 +94,7 @@ namespace paludis
 
 Decider::Decider(const Environment * const e, const ResolverFunctions & f,
         const std::shared_ptr<ResolutionsByResolvent> & l) :
-    PrivateImplementationPattern<Decider>(e, f, l)
+    Pimp<Decider>(e, f, l)
 {
 }
 

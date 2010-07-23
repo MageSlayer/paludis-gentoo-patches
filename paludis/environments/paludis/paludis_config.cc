@@ -40,7 +40,7 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/tokeniser.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
@@ -67,7 +67,7 @@
 #include "config.h"
 
 /** \file
- * Implementation of paludis_config.hh classes.
+ * Imp of paludis_config.hh classes.
  *
  * \ingroup grppaludisconfig
  */
@@ -156,12 +156,12 @@ namespace
 namespace paludis
 {
     /**
-     * Implementation data for PaludisConfig.
+     * Imp data for PaludisConfig.
      *
      * \ingroup grppaludisconfig
      */
     template<>
-    struct Implementation<PaludisConfig>
+    struct Imp<PaludisConfig>
     {
         PaludisEnvironment * const env;
 
@@ -197,12 +197,12 @@ namespace paludis
 
         std::shared_ptr<Map<std::string, std::string> > commandline_environment;
 
-        Implementation(PaludisEnvironment * const);
+        Imp(PaludisEnvironment * const);
 
         void need_general_conf() const;
     };
 
-    Implementation<PaludisConfig>::Implementation(PaludisEnvironment * e) :
+    Imp<PaludisConfig>::Imp(PaludisEnvironment * e) :
         env(e),
         paludis_command("paludis"),
         config_dir("(unset)"),
@@ -222,7 +222,7 @@ namespace paludis
     }
 
     void
-    Implementation<PaludisConfig>::need_general_conf() const
+    Imp<PaludisConfig>::need_general_conf() const
     {
         Lock lock(general_conf_mutex);
 
@@ -383,7 +383,7 @@ PaludisConfigNoDirectoryError::PaludisConfigNoDirectoryError(const std::string &
 }
 
 PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & suffix) :
-    PrivateImplementationPattern<PaludisConfig>(e)
+    Pimp<PaludisConfig>(e)
 {
     using namespace std::placeholders;
 

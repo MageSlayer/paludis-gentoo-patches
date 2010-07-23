@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_E_REPOSITORY_MASK_FILE_HH
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_E_REPOSITORY_MASK_FILE_HH 1
 
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/config_file.hh>
@@ -39,7 +39,7 @@ namespace paludis
          * \ingroup grperepository
          */
         class PALUDIS_VISIBLE MaskFile :
-            private PrivateImplementationPattern<MaskFile>
+            private Pimp<MaskFile>
         {
             public:
                 ///\name Basic operations

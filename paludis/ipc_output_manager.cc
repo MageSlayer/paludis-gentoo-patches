@@ -18,7 +18,7 @@
  */
 
 #include <paludis/ipc_output_manager.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/safe_ofstream.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/set.hh>
@@ -53,7 +53,7 @@ using namespace paludis;
 namespace paludis
 {
     template <>
-    struct Implementation<IPCOutputManager>
+    struct Imp<IPCOutputManager>
     {
         std::shared_ptr<SafeOFStream> stdout_stream;
         std::shared_ptr<SafeOFStream> stderr_stream;
@@ -61,7 +61,7 @@ namespace paludis
         std::shared_ptr<SafeIFStream> pipe_command_read_stream;
         std::shared_ptr<SafeOFStream> pipe_command_write_stream;
 
-        Implementation(int r, int w) :
+        Imp(int r, int w) :
             pipe_command_write_stream(new SafeOFStream(w))
         {
             *pipe_command_write_stream << "PING 1 GOAT" << '\0' << std::flush;
@@ -77,7 +77,7 @@ namespace paludis
 }
 
 IPCOutputManager::IPCOutputManager(const int r, const int w, const CreateOutputManagerInfo & i) :
-    PrivateImplementationPattern<IPCOutputManager>(r, w)
+    Pimp<IPCOutputManager>(r, w)
 {
     std::stringstream ser_stream;
     Serialiser ser(ser_stream);
@@ -177,7 +177,7 @@ IPCOutputManager::nothing_more_to_come()
 namespace paludis
 {
     template <>
-    struct Implementation<IPCInputManager>
+    struct Imp<IPCInputManager>
     {
         const Environment * const env;
         const std::function<void (const std::shared_ptr<OutputManager> &)> on_create;
@@ -189,7 +189,7 @@ namespace paludis
 
         std::shared_ptr<Thread> copy_thread;
 
-        Implementation(const Environment * const e,
+        Imp(const Environment * const e,
                 const std::function<void (const std::shared_ptr<OutputManager> &)> & c) :
             env(e),
             on_create(c)
@@ -208,7 +208,7 @@ namespace paludis
 
 IPCInputManager::IPCInputManager(const Environment * const e,
         const std::function<void (const std::shared_ptr<OutputManager> &)> & c) :
-    PrivateImplementationPattern<IPCInputManager>(e, c)
+    Pimp<IPCInputManager>(e, c)
 {
 }
 
@@ -370,7 +370,7 @@ IPCInputManager::underlying_output_manager_if_constructed() const
 namespace paludis
 {
     template <>
-    struct Implementation<OutputManagerFromIPC>
+    struct Imp<OutputManagerFromIPC>
     {
         const Environment * const env;
         const std::shared_ptr<const PackageID> id;
@@ -381,7 +381,7 @@ namespace paludis
 
         std::shared_ptr<OutputManager> result;
 
-        Implementation(const Environment * const e, const std::shared_ptr<const PackageID> & i,
+        Imp(const Environment * const e, const std::shared_ptr<const PackageID> & i,
                 const OutputExclusivity x, const ClientOutputFeatures & c) :
             env(e),
             id(i),
@@ -407,7 +407,7 @@ OutputManagerFromIPC::OutputManagerFromIPC(const Environment * const e,
         const std::shared_ptr<const PackageID> & i,
         const OutputExclusivity x,
         const ClientOutputFeatures & c) :
-    PrivateImplementationPattern<OutputManagerFromIPC>(e, i, x, c)
+    Pimp<OutputManagerFromIPC>(e, i, x, c)
 {
 }
 
@@ -443,7 +443,7 @@ OutputManagerFromIPC::construct_standard_if_unconstructed()
     }
 }
 
-template class PrivateImplementationPattern<IPCOutputManager>;
-template class PrivateImplementationPattern<IPCInputManager>;
-template class PrivateImplementationPattern<OutputManagerFromIPC>;
+template class Pimp<IPCOutputManager>;
+template class Pimp<IPCInputManager>;
+template class Pimp<OutputManagerFromIPC>;
 

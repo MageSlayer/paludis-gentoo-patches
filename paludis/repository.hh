@@ -235,12 +235,12 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE Repository :
-        private PrivateImplementationPattern<Repository>,
+        private Pimp<Repository>,
         public RepositoryCapabilities,
         public MetadataKeyHolder
     {
         private:
-            PrivateImplementationPattern<Repository>::ImpPtr & _imp;
+            Pimp<Repository>::ImpPtr & _imp;
 
         protected:
             ///\name Basic operations

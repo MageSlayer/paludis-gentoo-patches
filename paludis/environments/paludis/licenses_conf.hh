@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_PALUDIS_ENVIRONMENTS_PALUDIS_LICENSES_CONF_HH
 #define PALUDIS_GUARD_PALUDIS_PALUDIS_ENVIRONMENTS_PALUDIS_LICENSES_CONF_HH 1
 
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/package_id-fwd.hh>
@@ -38,7 +38,7 @@ namespace paludis
          * \nosubgrouping
          */
         class LicensesConf :
-            private PrivateImplementationPattern<LicensesConf>
+            private Pimp<LicensesConf>
         {
             public:
                 ///\name Basic operations

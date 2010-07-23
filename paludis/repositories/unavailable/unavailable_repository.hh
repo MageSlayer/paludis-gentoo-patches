@@ -22,7 +22,7 @@
 
 #include <paludis/repositories/unavailable/unavailable_repository-fwd.hh>
 #include <paludis/repository.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/attributes.hh>
 
 namespace paludis
@@ -55,12 +55,12 @@ namespace paludis
         };
 
         class PALUDIS_VISIBLE UnavailableRepository :
-            private PrivateImplementationPattern<UnavailableRepository>,
+            private Pimp<UnavailableRepository>,
             public Repository,
             public std::enable_shared_from_this<UnavailableRepository>
         {
             private:
-                PrivateImplementationPattern<UnavailableRepository>::ImpPtr & _imp;
+                Pimp<UnavailableRepository>::ImpPtr & _imp;
 
                 void _add_metadata_keys();
 
@@ -126,7 +126,7 @@ namespace paludis
             };
     }
 
-    extern template class PrivateImplementationPattern<unavailable_repository::UnavailableRepository>;
+    extern template class Pimp<unavailable_repository::UnavailableRepository>;
 }
 
 #endif

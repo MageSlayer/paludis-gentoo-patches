@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_VIRTUALS_PACKAGE_ID_HH
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_VIRTUALS_PACKAGE_ID_HH 1
 
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 
@@ -30,10 +30,10 @@ namespace paludis
     {
         class VirtualsDepKey :
             public MetadataSpecTreeKey<DependencySpecTree>,
-            private PrivateImplementationPattern<VirtualsDepKey>
+            private Pimp<VirtualsDepKey>
         {
             private:
-                PrivateImplementationPattern<VirtualsDepKey>::ImpPtr & _imp;
+                Pimp<VirtualsDepKey>::ImpPtr & _imp;
 
             public:
                 VirtualsDepKey(const Environment * const, const std::string &, const std::string &,
@@ -60,11 +60,11 @@ namespace paludis
         };
 
         class VirtualsPackageID :
-            private PrivateImplementationPattern<VirtualsPackageID>,
+            private Pimp<VirtualsPackageID>,
             public PackageID
         {
             private:
-                PrivateImplementationPattern<VirtualsPackageID>::ImpPtr & _imp;
+                Pimp<VirtualsPackageID>::ImpPtr & _imp;
 
             protected:
                 virtual void need_keys_added() const;

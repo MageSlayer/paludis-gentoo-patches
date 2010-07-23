@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_SRC_CLIENTS_CAVE_COMMAND_FACTORY_HH 1
 
 #include <paludis/util/singleton.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/exception.hh>
 #include <string>
@@ -40,7 +40,7 @@ namespace paludis
         };
 
         class PALUDIS_VISIBLE CommandFactory :
-            private PrivateImplementationPattern<CommandFactory>,
+            private Pimp<CommandFactory>,
             public Singleton<CommandFactory>
         {
             friend class Singleton<CommandFactory>;
@@ -61,7 +61,7 @@ namespace paludis
     }
 
     extern template class Singleton<cave::CommandFactory>;
-    extern template class PrivateImplementationPattern<cave::CommandFactory>;
+    extern template class Pimp<cave::CommandFactory>;
 }
 
 #endif

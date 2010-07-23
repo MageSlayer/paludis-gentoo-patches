@@ -22,7 +22,7 @@
 
 #include <paludis/environment_implementation.hh>
 #include <paludis/util/exception.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 
 namespace paludis
 {
@@ -56,10 +56,10 @@ namespace paludis
      */
     class PALUDIS_VISIBLE PortageEnvironment :
         public EnvironmentImplementation,
-        private PrivateImplementationPattern<PortageEnvironment>
+        private Pimp<PortageEnvironment>
     {
         private:
-            PrivateImplementationPattern<PortageEnvironment>::ImpPtr & _imp;
+            Pimp<PortageEnvironment>::ImpPtr & _imp;
 
             void _load_profile(const FSEntry &);
             void _add_virtuals_repository();

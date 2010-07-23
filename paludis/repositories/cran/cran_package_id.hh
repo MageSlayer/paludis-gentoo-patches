@@ -33,11 +33,11 @@ namespace paludis
     {
         class PALUDIS_VISIBLE CRANPackageID :
             public PackageID,
-            private PrivateImplementationPattern<CRANPackageID>,
+            private Pimp<CRANPackageID>,
             public std::enable_shared_from_this<CRANPackageID>
         {
             private:
-                PrivateImplementationPattern<CRANPackageID>::ImpPtr & _imp;
+                Pimp<CRANPackageID>::ImpPtr & _imp;
 
             protected:
                 virtual void need_keys_added() const;

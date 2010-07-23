@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_UNUSED_LIST_HH
 #define PALUDIS_GUARD_PALUDIS_UNUSED_LIST_HH 1
 
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/package_id-fwd.hh>
@@ -87,7 +87,7 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE UninstallList :
-        private PrivateImplementationPattern<UninstallList>
+        private Pimp<UninstallList>
     {
         private:
             void add_package(const std::shared_ptr<const PackageID> &, const std::shared_ptr<DepTag> &,

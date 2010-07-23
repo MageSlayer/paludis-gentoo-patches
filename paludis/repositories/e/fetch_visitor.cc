@@ -29,7 +29,7 @@
 #include <paludis/repository.hh>
 #include <paludis/about.hh>
 #include <paludis/util/system.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/join.hh>
@@ -44,7 +44,7 @@ using namespace paludis::erepository;
 namespace paludis
 {
     template <>
-    struct Implementation<FetchVisitor>
+    struct Imp<FetchVisitor>
     {
         const Environment * const env;
         const std::shared_ptr<const PackageID> id;
@@ -60,7 +60,7 @@ namespace paludis
 
         std::list<const URILabel *> labels;
 
-        Implementation(
+        Imp(
                 const Environment * const e,
                 const std::shared_ptr<const PackageID> & i,
                 const EAPI & p,
@@ -101,7 +101,7 @@ FetchVisitor::FetchVisitor(
         const bool sr,
         const std::shared_ptr<OutputManager> & md,
         const GetMirrorsFunction & g) :
-    PrivateImplementationPattern<FetchVisitor>(e, i, p, d, f, u, m, n, sr, md, g)
+    Pimp<FetchVisitor>(e, i, p, d, f, u, m, n, sr, md, g)
 {
 }
 

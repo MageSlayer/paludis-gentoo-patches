@@ -24,7 +24,7 @@
 #include <paludis/util/simple_visitor.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/args/args_handler.hh>
 #include <string>
 
@@ -57,7 +57,7 @@ namespace paludis
          * \ingroup g_args
          */
         class PALUDIS_VISIBLE ArgsVisitor :
-            private PrivateImplementationPattern<ArgsVisitor>
+            private Pimp<ArgsVisitor>
         {
             private:
                 const std::string & get_param(const ArgsOption &);

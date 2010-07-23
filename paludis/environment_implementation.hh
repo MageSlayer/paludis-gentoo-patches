@@ -47,11 +47,11 @@ namespace paludis
      * \see Environment
      */
     class PALUDIS_VISIBLE EnvironmentImplementation :
-        private PrivateImplementationPattern<EnvironmentImplementation>,
+        private Pimp<EnvironmentImplementation>,
         public Environment
     {
         private:
-            PrivateImplementationPattern<EnvironmentImplementation>::ImpPtr & _imp;
+            Pimp<EnvironmentImplementation>::ImpPtr & _imp;
 
             void _need_sets() const;
 

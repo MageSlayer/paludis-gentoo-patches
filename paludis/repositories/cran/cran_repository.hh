@@ -23,7 +23,7 @@
 
 #include <paludis/repository.hh>
 #include <paludis/util/fs_entry.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/environment-fwd.hh>
 #include <memory>
 #include <string>
@@ -75,11 +75,11 @@ namespace paludis
      */
     class PALUDIS_VISIBLE CRANRepository :
         public Repository,
-        private PrivateImplementationPattern<CRANRepository>,
+        private Pimp<CRANRepository>,
         public std::enable_shared_from_this<CRANRepository>
     {
         private:
-            PrivateImplementationPattern<CRANRepository>::ImpPtr & _imp;
+            Pimp<CRANRepository>::ImpPtr & _imp;
             void _add_metadata_keys() const;
 
             void need_ids() const;

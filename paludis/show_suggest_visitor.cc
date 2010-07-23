@@ -29,7 +29,7 @@
 #include <paludis/filtered_generator.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/save.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/join.hh>
@@ -44,7 +44,7 @@ typedef std::list<std::shared_ptr<DependenciesLabelSequence> > LabelsStack;
 namespace paludis
 {
     template <>
-    struct Implementation<ShowSuggestVisitor>
+    struct Imp<ShowSuggestVisitor>
     {
         DepList * const dep_list;
         std::shared_ptr<const DestinationsSet> destinations;
@@ -55,7 +55,7 @@ namespace paludis
         std::set<SetName> recursing_sets;
         LabelsStack labels;
 
-        Implementation(DepList * const d, std::shared_ptr<const DestinationsSet> dd,
+        Imp(DepList * const d, std::shared_ptr<const DestinationsSet> dd,
                 const Environment * const e, const std::shared_ptr<const PackageID> & p, bool t, bool l) :
             dep_list(d),
             destinations(dd),
@@ -71,7 +71,7 @@ namespace paludis
 
 ShowSuggestVisitor::ShowSuggestVisitor(DepList * const d, const std::shared_ptr<const DestinationsSet> & dd,
         const Environment * const e, const std::shared_ptr<const PackageID> & p, bool t, bool l) :
-    PrivateImplementationPattern<ShowSuggestVisitor>(d, dd, e, p, t, l)
+    Pimp<ShowSuggestVisitor>(d, dd, e, p, t, l)
 {
 }
 

@@ -23,7 +23,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/util/fs_entry-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <memory>
 
 namespace paludis
@@ -32,11 +32,11 @@ namespace paludis
     {
         class UnpackagedID :
             public PackageID,
-            private PrivateImplementationPattern<UnpackagedID>,
+            private Pimp<UnpackagedID>,
             public std::enable_shared_from_this<UnpackagedID>
         {
             private:
-                PrivateImplementationPattern<UnpackagedID>::ImpPtr & _imp;
+                Pimp<UnpackagedID>::ImpPtr & _imp;
 
             protected:
                 void need_keys_added() const;

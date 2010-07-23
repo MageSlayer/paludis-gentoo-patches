@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_ECLASS_MTIMES_HH 1
 
 #include <paludis/name-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <memory>
 
@@ -37,7 +37,7 @@ namespace paludis
      * \nosubgrouping
      */
     class EclassMtimes :
-        private PrivateImplementationPattern<EclassMtimes>
+        private Pimp<EclassMtimes>
     {
         public:
             ///\name Basic operations

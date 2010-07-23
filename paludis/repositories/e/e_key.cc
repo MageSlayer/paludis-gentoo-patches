@@ -27,7 +27,7 @@
 #include <paludis/repositories/e/myoption.hh>
 
 #include <paludis/util/pretty_print.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/fs_entry.hh>
@@ -104,7 +104,7 @@ EMutableRepositoryMaskInfoKey::type() const
 namespace paludis
 {
     template <>
-    struct Implementation<EDependenciesKey>
+    struct Imp<EDependenciesKey>
     {
         const Environment * const env;
         const std::shared_ptr<const ERepositoryID> id;
@@ -117,7 +117,7 @@ namespace paludis
         const std::string human_name;
         const MetadataKeyType type;
 
-        Implementation(
+        Imp(
                 const Environment * const e,
                 const std::shared_ptr<const ERepositoryID> & i, const std::string & v,
                 const std::shared_ptr<const DependenciesLabelSequence> & s,
@@ -139,7 +139,7 @@ EDependenciesKey::EDependenciesKey(
         const std::shared_ptr<const ERepositoryID> & id,
         const std::string & r, const std::string & h, const std::string & v,
         const std::shared_ptr<const DependenciesLabelSequence> & l, const MetadataKeyType t) :
-    PrivateImplementationPattern<EDependenciesKey>(e, id, v, l, r, h, t)
+    Pimp<EDependenciesKey>(e, id, v, l, r, h, t)
 {
 }
 
@@ -204,7 +204,7 @@ EDependenciesKey::type() const
 namespace paludis
 {
     template <>
-    struct Implementation<ELicenseKey>
+    struct Imp<ELicenseKey>
     {
         const Environment * const env;
         const std::shared_ptr<const ERepositoryID> id;
@@ -215,7 +215,7 @@ namespace paludis
         const std::shared_ptr<const EAPIMetadataVariable> variable;
         const MetadataKeyType type;
 
-        Implementation(const Environment * const e,
+        Imp(const Environment * const e,
                 const std::shared_ptr<const ERepositoryID> & i, const std::string & v,
                 const std::shared_ptr<const EAPIMetadataVariable> & m, const MetadataKeyType t) :
             env(e),
@@ -232,7 +232,7 @@ ELicenseKey::ELicenseKey(
         const Environment * const e,
         const std::shared_ptr<const ERepositoryID> & id,
         const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v, const MetadataKeyType t) :
-    PrivateImplementationPattern<ELicenseKey>(e, id, v, m, t)
+    Pimp<ELicenseKey>(e, id, v, m, t)
 {
 }
 
@@ -291,7 +291,7 @@ ELicenseKey::type() const
 namespace paludis
 {
     template <>
-    struct Implementation<EFetchableURIKey>
+    struct Imp<EFetchableURIKey>
     {
         const Environment * const env;
         const std::shared_ptr<const ERepositoryID> id;
@@ -303,7 +303,7 @@ namespace paludis
         mutable std::shared_ptr<const FetchableURISpecTree> value;
         mutable std::shared_ptr<const URILabel> initial_label;
 
-        Implementation(const Environment * const e, const std::shared_ptr<const ERepositoryID> & i,
+        Imp(const Environment * const e, const std::shared_ptr<const ERepositoryID> & i,
                 const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v,
                 const MetadataKeyType t) :
             env(e),
@@ -319,7 +319,7 @@ namespace paludis
 EFetchableURIKey::EFetchableURIKey(const Environment * const e,
         const std::shared_ptr<const ERepositoryID> & id,
         const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v, const MetadataKeyType t) :
-    PrivateImplementationPattern<EFetchableURIKey>(e, id, m, v, t)
+    Pimp<EFetchableURIKey>(e, id, m, v, t)
 {
 }
 
@@ -415,7 +415,7 @@ EFetchableURIKey::type() const
 namespace paludis
 {
     template <>
-    struct Implementation<ESimpleURIKey>
+    struct Imp<ESimpleURIKey>
     {
         const Environment * const env;
         const std::shared_ptr<const ERepositoryID> id;
@@ -427,7 +427,7 @@ namespace paludis
         const std::string human_name;
         const MetadataKeyType type;
 
-        Implementation(const Environment * const e, const std::shared_ptr<const ERepositoryID> & i,
+        Imp(const Environment * const e, const std::shared_ptr<const ERepositoryID> & i,
                 const std::string & v,
                 const std::string & r, const std::string & h, const MetadataKeyType t) :
             env(e),
@@ -444,7 +444,7 @@ namespace paludis
 ESimpleURIKey::ESimpleURIKey(const Environment * const e,
         const std::shared_ptr<const ERepositoryID> & id,
         const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
-    PrivateImplementationPattern<ESimpleURIKey>(e, id, v, r, h, t)
+    Pimp<ESimpleURIKey>(e, id, v, r, h, t)
 {
 }
 
@@ -504,7 +504,7 @@ ESimpleURIKey::type() const
 namespace paludis
 {
     template <>
-    struct Implementation<EPlainTextSpecKey>
+    struct Imp<EPlainTextSpecKey>
     {
         const Environment * const env;
         const std::shared_ptr<const ERepositoryID> id;
@@ -515,7 +515,7 @@ namespace paludis
         const std::shared_ptr<const EAPIMetadataVariable> variable;
         const MetadataKeyType type;
 
-        Implementation(const Environment * const e, const std::shared_ptr<const ERepositoryID> & i, const std::string & v,
+        Imp(const Environment * const e, const std::shared_ptr<const ERepositoryID> & i, const std::string & v,
                 const std::shared_ptr<const EAPIMetadataVariable> & m,
                 const MetadataKeyType t) :
             env(e),
@@ -531,7 +531,7 @@ namespace paludis
 EPlainTextSpecKey::EPlainTextSpecKey(const Environment * const e,
         const std::shared_ptr<const ERepositoryID> & id,
         const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v, const MetadataKeyType t) :
-    PrivateImplementationPattern<EPlainTextSpecKey>(e, id, v, m, t)
+    Pimp<EPlainTextSpecKey>(e, id, v, m, t)
 {
 }
 
@@ -591,7 +591,7 @@ EPlainTextSpecKey::type() const
 namespace paludis
 {
     template <>
-    struct Implementation<EMyOptionsKey>
+    struct Imp<EMyOptionsKey>
     {
         const Environment * const env;
         const std::shared_ptr<const ERepositoryID> id;
@@ -603,7 +603,7 @@ namespace paludis
         const std::string human_name;
         const MetadataKeyType type;
 
-        Implementation(const Environment * const e, const std::shared_ptr<const ERepositoryID> & i, const std::string & v,
+        Imp(const Environment * const e, const std::shared_ptr<const ERepositoryID> & i, const std::string & v,
                 const std::string & r, const std::string & h, const MetadataKeyType t) :
             env(e),
             id(i),
@@ -619,7 +619,7 @@ namespace paludis
 EMyOptionsKey::EMyOptionsKey(const Environment * const e,
         const std::shared_ptr<const ERepositoryID> & id,
         const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
-    PrivateImplementationPattern<EMyOptionsKey>(e, id, v, r, h, t)
+    Pimp<EMyOptionsKey>(e, id, v, r, h, t)
 {
 }
 
@@ -679,7 +679,7 @@ EMyOptionsKey::type() const
 namespace paludis
 {
     template <>
-    struct Implementation<EProvideKey>
+    struct Imp<EProvideKey>
     {
         const Environment * const env;
         const std::shared_ptr<const ERepositoryID> id;
@@ -691,7 +691,7 @@ namespace paludis
         const std::string human_name;
         const MetadataKeyType type;
 
-        Implementation(const Environment * const e, const std::shared_ptr<const ERepositoryID> & i, const std::string & v,
+        Imp(const Environment * const e, const std::shared_ptr<const ERepositoryID> & i, const std::string & v,
                 const std::string & r, const std::string & h, const MetadataKeyType t) :
             env(e),
             id(i),
@@ -706,7 +706,7 @@ namespace paludis
 
 EProvideKey::EProvideKey(const Environment * const e, const std::shared_ptr<const ERepositoryID> & id,
         const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
-    PrivateImplementationPattern<EProvideKey>(e, id, v, r, h, t)
+    Pimp<EProvideKey>(e, id, v, r, h, t)
 {
 }
 
@@ -766,7 +766,7 @@ EProvideKey::type() const
 namespace paludis
 {
     template <>
-    struct Implementation<EKeywordsKey>
+    struct Imp<EKeywordsKey>
     {
         const std::shared_ptr<const ERepositoryID> id;
         const Environment * const env;
@@ -778,7 +778,7 @@ namespace paludis
         const std::string human_name;
         const MetadataKeyType type;
 
-        Implementation(const std::shared_ptr<const ERepositoryID> & i, const Environment * const e, const std::string & v,
+        Imp(const std::shared_ptr<const ERepositoryID> & i, const Environment * const e, const std::string & v,
                 const std::string & r, const std::string & h, const MetadataKeyType t) :
             id(i),
             env(e),
@@ -793,7 +793,7 @@ namespace paludis
 
 EKeywordsKey::EKeywordsKey(const Environment * const e, const std::shared_ptr<const ERepositoryID> & id,
         const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
-    PrivateImplementationPattern<EKeywordsKey>(id, e, v, r, h, t)
+    Pimp<EKeywordsKey>(id, e, v, r, h, t)
 {
 }
 
@@ -856,7 +856,7 @@ EKeywordsKey::type() const
 namespace paludis
 {
     template <>
-    struct Implementation<EStringSetKey>
+    struct Imp<EStringSetKey>
     {
         const std::shared_ptr<const ERepositoryID> id;
         const std::string string_value;
@@ -867,7 +867,7 @@ namespace paludis
         const std::string human_name;
         const MetadataKeyType type;
 
-        Implementation(const std::shared_ptr<const ERepositoryID> & i, const std::string & v,
+        Imp(const std::shared_ptr<const ERepositoryID> & i, const std::string & v,
                 const std::string & r, const std::string & h, const MetadataKeyType t) :
             id(i),
             string_value(v),
@@ -881,7 +881,7 @@ namespace paludis
 
 EStringSetKey::EStringSetKey(const std::shared_ptr<const ERepositoryID> & id,
         const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
-    PrivateImplementationPattern<EStringSetKey>(id, v, r, h, t)
+    Pimp<EStringSetKey>(id, v, r, h, t)
 {
 }
 
@@ -939,7 +939,7 @@ EStringSetKey::pretty_print_flat(const Formatter<std::string> & f) const
 namespace paludis
 {
     template <>
-    struct Implementation<EContentsKey>
+    struct Imp<EContentsKey>
     {
         const std::shared_ptr<const ERepositoryID> id;
         const FSEntry filename;
@@ -950,7 +950,7 @@ namespace paludis
         const std::string human_name;
         const MetadataKeyType type;
 
-        Implementation(const std::shared_ptr<const ERepositoryID> & i, const FSEntry & v,
+        Imp(const std::shared_ptr<const ERepositoryID> & i, const FSEntry & v,
                 const std::string & r, const std::string & h, const MetadataKeyType & t) :
             id(i),
             filename(v),
@@ -964,7 +964,7 @@ namespace paludis
 
 EContentsKey::EContentsKey(const std::shared_ptr<const ERepositoryID> & id,
         const std::string & r, const std::string & h, const FSEntry & v, const MetadataKeyType t) :
-    PrivateImplementationPattern<EContentsKey>(id, v, r, h, t)
+    Pimp<EContentsKey>(id, v, r, h, t)
 {
 }
 
@@ -1059,7 +1059,7 @@ EContentsKey::type() const
 namespace paludis
 {
     template <>
-    struct Implementation<EMTimeKey>
+    struct Imp<EMTimeKey>
     {
         const std::shared_ptr<const ERepositoryID> id;
         const FSEntry filename;
@@ -1070,7 +1070,7 @@ namespace paludis
         const std::string human_name;
         const MetadataKeyType type;
 
-        Implementation(const std::shared_ptr<const ERepositoryID> & i, const FSEntry & v,
+        Imp(const std::shared_ptr<const ERepositoryID> & i, const FSEntry & v,
                 const std::string & r, const std::string & h, const MetadataKeyType t) :
             id(i),
             filename(v),
@@ -1084,7 +1084,7 @@ namespace paludis
 
 EMTimeKey::EMTimeKey(const std::shared_ptr<const ERepositoryID> & id,
         const std::string & r, const std::string & h, const FSEntry & v, const MetadataKeyType t) :
-    PrivateImplementationPattern<EMTimeKey>(id, v, r, h, t)
+    Pimp<EMTimeKey>(id, v, r, h, t)
 {
 }
 
@@ -1137,13 +1137,13 @@ EMTimeKey::type() const
 namespace paludis
 {
     template <>
-    struct Implementation<ESlotKey>
+    struct Imp<ESlotKey>
     {
         const SlotName value;
         const std::shared_ptr<const EAPIMetadataVariable> variable;
         const MetadataKeyType type;
 
-        Implementation(const SlotName & v, const std::shared_ptr<const EAPIMetadataVariable> & m, const MetadataKeyType t) :
+        Imp(const SlotName & v, const std::shared_ptr<const EAPIMetadataVariable> & m, const MetadataKeyType t) :
             value(v),
             variable(m),
             type(t)
@@ -1153,7 +1153,7 @@ namespace paludis
 }
 
 ESlotKey::ESlotKey(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v, const MetadataKeyType t) :
-    PrivateImplementationPattern<ESlotKey>(SlotName(v), m, t)
+    Pimp<ESlotKey>(SlotName(v), m, t)
 {
 }
 

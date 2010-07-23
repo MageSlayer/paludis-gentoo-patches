@@ -22,13 +22,13 @@
 #include <iostream>
 #include <list>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <unistd.h>
 #include <cstdlib>
 #include <sys/time.h>
 
 /** \file
- * Implementation for test framework classes.
+ * Imp for test framework classes.
  *
  * \ingroup grptestframework
  */
@@ -86,20 +86,20 @@ std::string (* test::get_exception_to_debug_string()) (const std::exception &)
 namespace paludis
 {
     template<>
-    struct Implementation<TestMessageSuffix>
+    struct Imp<TestMessageSuffix>
     {
         static std::list<std::string> suffixes;
     };
 
-    std::list<std::string> Implementation<TestMessageSuffix>::suffixes;
+    std::list<std::string> Imp<TestMessageSuffix>::suffixes;
 }
 
 std::string
 TestMessageSuffix::suffixes()
 {
     std::string result;
-    std::list<std::string>::const_iterator i(paludis::Implementation<TestMessageSuffix>::suffixes.begin()),
-        end(paludis::Implementation<TestMessageSuffix>::suffixes.end());
+    std::list<std::string>::const_iterator i(paludis::Imp<TestMessageSuffix>::suffixes.begin()),
+        end(paludis::Imp<TestMessageSuffix>::suffixes.end());
 
     while (i != end)
     {
@@ -111,29 +111,29 @@ TestMessageSuffix::suffixes()
 }
 
 TestMessageSuffix::TestMessageSuffix(const std::string & s, bool write) :
-    paludis::PrivateImplementationPattern<TestMessageSuffix>()
+    paludis::Pimp<TestMessageSuffix>()
 {
-    paludis::Implementation<TestMessageSuffix>::suffixes.push_back(s);
+    paludis::Imp<TestMessageSuffix>::suffixes.push_back(s);
     if (write)
         std::cout << "[" << s << "]" << std::flush;
 }
 
 TestMessageSuffix::~TestMessageSuffix()
 {
-    paludis::Implementation<TestMessageSuffix>::suffixes.pop_back();
+    paludis::Imp<TestMessageSuffix>::suffixes.pop_back();
 }
 
 namespace paludis
 {
     template<>
-    struct Implementation<TestCase>
+    struct Imp<TestCase>
     {
         const std::string name;
         mutable const char * reached_file;
         mutable const char * reached_function;
         mutable long reached_line;
 
-        Implementation(const std::string & the_name) :
+        Imp(const std::string & the_name) :
             name(the_name),
             reached_file(NULL),
             reached_function(NULL),
@@ -144,7 +144,7 @@ namespace paludis
 }
 
 TestCase::TestCase(const std::string & our_name) :
-    paludis::PrivateImplementationPattern<TestCase>(our_name)
+    paludis::Pimp<TestCase>(our_name)
 {
     TestCaseList::register_test_case(this);
 }

@@ -26,7 +26,7 @@
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/action.hh>
 #include <paludis/util/fs_entry.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/map.hh>
@@ -49,7 +49,7 @@ typedef std::unordered_map<QualifiedPackageName, std::shared_ptr<PackageIDSequen
 namespace paludis
 {
     template<>
-    struct Implementation<InstalledVirtualsRepository>
+    struct Imp<InstalledVirtualsRepository>
     {
         const Environment * const env;
         const FSEntry root;
@@ -61,7 +61,7 @@ namespace paludis
         std::shared_ptr<const MetadataValueKey<FSEntry> > root_key;
         std::shared_ptr<const MetadataValueKey<std::string> > format_key;
 
-        Implementation(const Environment * const e, const FSEntry & r, std::shared_ptr<Mutex> m = std::make_shared<Mutex>()) :
+        Imp(const Environment * const e, const FSEntry & r, std::shared_ptr<Mutex> m = std::make_shared<Mutex>()) :
             env(e),
             root(r),
             ids_mutex(m),
@@ -117,8 +117,8 @@ InstalledVirtualsRepository::InstalledVirtualsRepository(const Environment * con
                 n::provides_interface() = static_cast<RepositoryProvidesInterface *>(0),
                 n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
             )),
-    PrivateImplementationPattern<InstalledVirtualsRepository>(env, r),
-    _imp(PrivateImplementationPattern<InstalledVirtualsRepository>::_imp)
+    Pimp<InstalledVirtualsRepository>(env, r),
+    _imp(Pimp<InstalledVirtualsRepository>::_imp)
 {
     add_metadata_key(_imp->root_key);
     add_metadata_key(_imp->format_key);
@@ -222,7 +222,7 @@ InstalledVirtualsRepository::has_category_named(const CategoryNamePart & c) cons
 void
 InstalledVirtualsRepository::invalidate()
 {
-    _imp.reset(new Implementation<InstalledVirtualsRepository>(_imp->env, _imp->root, _imp->ids_mutex));
+    _imp.reset(new Imp<InstalledVirtualsRepository>(_imp->env, _imp->root, _imp->ids_mutex));
 }
 
 void

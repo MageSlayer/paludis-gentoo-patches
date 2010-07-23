@@ -22,14 +22,14 @@
 
 #include <paludis/util/tee_output_stream-fwd.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <ostream>
 
 namespace paludis
 {
     class PALUDIS_VISIBLE TeeOutputStreamBuf :
         public std::streambuf,
-        private PrivateImplementationPattern<TeeOutputStreamBuf>
+        private Pimp<TeeOutputStreamBuf>
     {
         protected:
             virtual int_type
@@ -66,7 +66,7 @@ namespace paludis
             void add_stream(std::ostream * const);
     };
 
-    extern template class PrivateImplementationPattern<TeeOutputStreamBuf>;
+    extern template class Pimp<TeeOutputStreamBuf>;
 }
 
 #endif

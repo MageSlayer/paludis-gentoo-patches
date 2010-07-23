@@ -52,10 +52,10 @@ namespace paludis
         public FakeRepositoryBase,
         public RepositoryDestinationInterface,
         public RepositoryProvidesInterface,
-        private PrivateImplementationPattern<FakeInstalledRepository>
+        private Pimp<FakeInstalledRepository>
     {
         private:
-            PrivateImplementationPattern<FakeInstalledRepository>::ImpPtr & _imp;
+            Pimp<FakeInstalledRepository>::ImpPtr & _imp;
 
         protected:
             /* RepositoryDestinationInterface */

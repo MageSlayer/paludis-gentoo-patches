@@ -39,11 +39,11 @@ Action::~Action()
 namespace paludis
 {
     template <>
-    struct Implementation<InstallAction>
+    struct Imp<InstallAction>
     {
         const InstallActionOptions options;
 
-        Implementation(const InstallActionOptions & o) :
+        Imp(const InstallActionOptions & o) :
             options(o)
         {
         }
@@ -51,7 +51,7 @@ namespace paludis
 }
 
 InstallAction::InstallAction(const InstallActionOptions & o) :
-    PrivateImplementationPattern<InstallAction>(o),
+    Pimp<InstallAction>(o),
     options(_imp->options)
 {
 }
@@ -63,11 +63,11 @@ InstallAction::~InstallAction()
 namespace paludis
 {
     template <>
-    struct Implementation<FetchAction>
+    struct Imp<FetchAction>
     {
         const FetchActionOptions options;
 
-        Implementation(const FetchActionOptions & o) :
+        Imp(const FetchActionOptions & o) :
             options(o)
         {
         }
@@ -75,7 +75,7 @@ namespace paludis
 }
 
 FetchAction::FetchAction(const FetchActionOptions & o) :
-    PrivateImplementationPattern<FetchAction>(o),
+    Pimp<FetchAction>(o),
     options(_imp->options)
 {
 }
@@ -87,11 +87,11 @@ FetchAction::~FetchAction()
 namespace paludis
 {
     template <>
-    struct Implementation<UninstallAction>
+    struct Imp<UninstallAction>
     {
         const UninstallActionOptions options;
 
-        Implementation(const UninstallActionOptions & o) :
+        Imp(const UninstallActionOptions & o) :
             options(o)
         {
         }
@@ -99,7 +99,7 @@ namespace paludis
 }
 
 UninstallAction::UninstallAction(const UninstallActionOptions & o) :
-    PrivateImplementationPattern<UninstallAction>(o),
+    Pimp<UninstallAction>(o),
     options(_imp->options)
 {
 }
@@ -111,12 +111,12 @@ UninstallAction::~UninstallAction()
 namespace paludis
 {
     template <>
-    struct Implementation<PretendAction>
+    struct Imp<PretendAction>
     {
         bool failed;
         const PretendActionOptions options;
 
-        Implementation(const PretendActionOptions & o) :
+        Imp(const PretendActionOptions & o) :
             failed(false),
             options(o)
         {
@@ -125,7 +125,7 @@ namespace paludis
 }
 
 PretendAction::PretendAction(const PretendActionOptions & o) :
-    PrivateImplementationPattern<PretendAction>(o),
+    Pimp<PretendAction>(o),
     options(_imp->options)
 {
 }
@@ -149,11 +149,11 @@ PretendAction::set_failed()
 namespace paludis
 {
     template <>
-    struct Implementation<PretendFetchAction>
+    struct Imp<PretendFetchAction>
     {
         const FetchActionOptions options;
 
-        Implementation(const FetchActionOptions & o) :
+        Imp(const FetchActionOptions & o) :
             options(o)
         {
         }
@@ -161,7 +161,7 @@ namespace paludis
 }
 
 PretendFetchAction::PretendFetchAction(const FetchActionOptions & o) :
-    PrivateImplementationPattern<PretendFetchAction>(o),
+    Pimp<PretendFetchAction>(o),
     options(_imp->options)
 {
 }
@@ -173,11 +173,11 @@ PretendFetchAction::~PretendFetchAction()
 namespace paludis
 {
     template <>
-    struct Implementation<InfoAction>
+    struct Imp<InfoAction>
     {
         const InfoActionOptions options;
 
-        Implementation(const InfoActionOptions & o) :
+        Imp(const InfoActionOptions & o) :
             options(o)
         {
         }
@@ -185,7 +185,7 @@ namespace paludis
 }
 
 InfoAction::InfoAction(const InfoActionOptions & o) :
-    PrivateImplementationPattern<InfoAction>(o),
+    Pimp<InfoAction>(o),
     options(_imp->options)
 {
 }
@@ -197,11 +197,11 @@ InfoAction::~InfoAction()
 namespace paludis
 {
     template <>
-    struct Implementation<ConfigAction>
+    struct Imp<ConfigAction>
     {
         const ConfigActionOptions options;
 
-        Implementation(const ConfigActionOptions & o) :
+        Imp(const ConfigActionOptions & o) :
             options(o)
         {
         }
@@ -209,7 +209,7 @@ namespace paludis
 }
 
 ConfigAction::ConfigAction(const ConfigActionOptions & o) :
-    PrivateImplementationPattern<ConfigAction>(o),
+    Pimp<ConfigAction>(o),
     options(_imp->options)
 {
 }
@@ -322,13 +322,13 @@ ConfigAction::class_simple_name()
     return "config";
 }
 
-template class PrivateImplementationPattern<FetchAction>;
-template class PrivateImplementationPattern<InstallAction>;
-template class PrivateImplementationPattern<PretendAction>;
-template class PrivateImplementationPattern<PretendFetchAction>;
-template class PrivateImplementationPattern<UninstallAction>;
-template class PrivateImplementationPattern<InfoAction>;
-template class PrivateImplementationPattern<ConfigAction>;
+template class Pimp<FetchAction>;
+template class Pimp<InstallAction>;
+template class Pimp<PretendAction>;
+template class Pimp<PretendFetchAction>;
+template class Pimp<UninstallAction>;
+template class Pimp<InfoAction>;
+template class Pimp<ConfigAction>;
 
 template class Sequence<FetchActionFailure>;
 template class WrappedForwardIterator<Sequence<FetchActionFailure>::ConstIteratorTag, const FetchActionFailure>;

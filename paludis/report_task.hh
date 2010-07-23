@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_REPORT_TASK_HH
 #define PALUDIS_GUARD_PALUDIS_REPORT_TASK_HH 1
 
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/repository.hh>
 #include <paludis/dep_tag-fwd.hh>
 
@@ -45,7 +45,7 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE ReportTask :
-        private PrivateImplementationPattern<ReportTask>
+        private Pimp<ReportTask>
     {
         protected:
             ///\name Basic operations

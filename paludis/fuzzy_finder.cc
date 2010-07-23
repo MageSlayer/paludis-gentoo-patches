@@ -18,7 +18,7 @@
  */
 
 #include <paludis/fuzzy_finder.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/damerau_levenshtein.hh>
 #include <paludis/util/options.hh>
@@ -118,7 +118,7 @@ namespace
 namespace paludis
 {
     template <>
-    struct Implementation<FuzzyCandidatesFinder>
+    struct Imp<FuzzyCandidatesFinder>
     {
         std::list<QualifiedPackageName> candidates;
     };
@@ -131,7 +131,7 @@ namespace paludis
 }
 
 FuzzyCandidatesFinder::FuzzyCandidatesFinder(const Environment & e, const std::string & name, const Filter & filter) :
-    PrivateImplementationPattern<FuzzyCandidatesFinder>()
+    Pimp<FuzzyCandidatesFinder>()
 {
     Generator g = generator::All();
     std::string package(name);
@@ -179,7 +179,7 @@ FuzzyCandidatesFinder::end() const
 namespace paludis
 {
     template <>
-    struct Implementation<FuzzyRepositoriesFinder>
+    struct Imp<FuzzyRepositoriesFinder>
     {
         std::list<RepositoryName> candidates;
     };
@@ -192,7 +192,7 @@ namespace paludis
 }
 
 FuzzyRepositoriesFinder::FuzzyRepositoriesFinder(const Environment & e, const std::string & name) :
-    PrivateImplementationPattern<FuzzyRepositoriesFinder>()
+    Pimp<FuzzyRepositoriesFinder>()
 {
     DamerauLevenshtein distance_calculator(tolower_0_cost(name));
 

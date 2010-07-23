@@ -23,7 +23,7 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/destringify.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/safe_ofstream.hh>
@@ -159,7 +159,7 @@ paludis::kernel_version()
 namespace paludis
 {
     template<>
-    struct Implementation<Command>
+    struct Imp<Command>
     {
         std::string command;
         bool clearenv;
@@ -184,7 +184,7 @@ namespace paludis
         std::string input_fd_env_var;
         bool ptys;
 
-        Implementation(const std::string & c, bool cl = false,
+        Imp(const std::string & c, bool cl = false,
                 const std::map<std::string, std::string> & s = make_me_a_frickin_map_because_gcc_sucks(),
                 const std::string & d = "", bool e = false,
                 std::shared_ptr<uid_t> u = std::shared_ptr<uid_t>(),
@@ -230,17 +230,17 @@ namespace paludis
 }
 
 Command::Command(const std::string & s) :
-    PrivateImplementationPattern<Command>(s)
+    Pimp<Command>(s)
 {
 }
 
 Command::Command(const char * const s) :
-    PrivateImplementationPattern<Command>(s)
+    Pimp<Command>(s)
 {
 }
 
 Command::Command(const Command & other) :
-    PrivateImplementationPattern<Command>(other._imp->command,
+    Pimp<Command>(other._imp->command,
             other._imp->clearenv, other._imp->setenv_values, other._imp->chdir, other._imp->echo_to_stderr,
             other._imp->uid, other._imp->gid, other._imp->stdout_prefix, other._imp->stderr_prefix,
             other._imp->prefix_discard_blank_output,
@@ -257,7 +257,7 @@ Command::operator= (const Command & other)
 {
     if (this != &other)
     {
-        _imp.reset(new Implementation<Command>(other._imp->command, other._imp->clearenv, other._imp->setenv_values,
+        _imp.reset(new Imp<Command>(other._imp->command, other._imp->clearenv, other._imp->setenv_values,
                     other._imp->chdir, other._imp->echo_to_stderr,
                     std::shared_ptr<uid_t>(),
                     std::shared_ptr<gid_t>(),

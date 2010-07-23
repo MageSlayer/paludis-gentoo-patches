@@ -21,11 +21,11 @@
 #define PALUDIS_GUARD_PALUDIS_STRINGIFY_FORMATTER_IMPL_HH 1
 
 #include <paludis/stringify_formatter.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <type_traits>
 
 /** \file
- * Implementation for paludis/stringify_formatter.hh .
+ * Imp for paludis/stringify_formatter.hh .
  *
  * \ingroup g_formatters
  */
@@ -33,14 +33,14 @@
 namespace paludis
 {
     /**
-     * Implementation data for StringifyFormatter.
+     * Imp data for StringifyFormatter.
      *
      * \ingroup g_formatters
      * \since 0.26
      * \nosubgrouping
      */
     template <>
-    struct Implementation<StringifyFormatter>
+    struct Imp<StringifyFormatter>
     {
         const CanFormat<std::string> * const f_str;
         const CanFormat<ChoiceValue> * const f_conf;
@@ -60,7 +60,7 @@ namespace paludis
         const CanFormat<PlainTextLabelDepSpec> * const f_plain_label;
         const CanSpace * const f_space;
 
-        Implementation(
+        Imp(
                 const CanFormat<std::string> * const f_str_v,
                 const CanFormat<ChoiceValue> * const f_conf_v,
                 const CanFormat<KeywordName> * const f_keyword_v,
@@ -182,7 +182,7 @@ namespace paludis
 
     template <typename T_>
     StringifyFormatter::StringifyFormatter(const T_ & t) :
-        PrivateImplementationPattern<StringifyFormatter>(
+        Pimp<StringifyFormatter>(
                 StringifyFormatterGetForwarder<std::is_convertible<T_ *, CanFormat<std::string> *>::value, std::string>::get(&t),
                 StringifyFormatterGetForwarder<std::is_convertible<T_ *, CanFormat<ChoiceValue> *>::value, ChoiceValue>::get(&t),
                 StringifyFormatterGetForwarder<std::is_convertible<T_ *, CanFormat<KeywordName> *>::value, KeywordName>::get(&t),

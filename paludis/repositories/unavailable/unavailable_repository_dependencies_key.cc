@@ -18,7 +18,7 @@
  */
 
 #include <paludis/repositories/unavailable/unavailable_repository_dependencies_key.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/make_named_values.hh>
@@ -34,7 +34,7 @@ using namespace paludis::unavailable_repository;
 namespace paludis
 {
     template <>
-    struct Implementation<UnavailableRepositoryDependenciesKey>
+    struct Imp<UnavailableRepositoryDependenciesKey>
     {
         const Environment * const env;
         const std::shared_ptr<const DependencySpecTree> value;
@@ -44,7 +44,7 @@ namespace paludis
         const std::string human_name;
         const MetadataKeyType type;
 
-        Implementation(const Environment * const e,
+        Imp(const Environment * const e,
                 const std::string & r, const std::string & h, const MetadataKeyType t,
                 const std::string & v) :
             env(e),
@@ -62,7 +62,7 @@ namespace paludis
 UnavailableRepositoryDependenciesKey::UnavailableRepositoryDependenciesKey(const Environment * const env,
         const std::string & r, const std::string & h, const MetadataKeyType t,
         const std::string & v) :
-    PrivateImplementationPattern<UnavailableRepositoryDependenciesKey>(env, r, h, t, v)
+    Pimp<UnavailableRepositoryDependenciesKey>(env, r, h, t, v)
 {
 }
 

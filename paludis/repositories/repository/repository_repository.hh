@@ -22,7 +22,7 @@
 
 #include <paludis/repositories/repository/repository_repository-fwd.hh>
 #include <paludis/repository.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/attributes.hh>
 
 namespace paludis
@@ -55,13 +55,13 @@ namespace paludis
         };
 
         class PALUDIS_VISIBLE RepositoryRepository :
-            private PrivateImplementationPattern<RepositoryRepository>,
+            private Pimp<RepositoryRepository>,
             public Repository,
             public RepositoryDestinationInterface,
             public std::enable_shared_from_this<RepositoryRepository>
         {
             private:
-                PrivateImplementationPattern<RepositoryRepository>::ImpPtr & _imp;
+                Pimp<RepositoryRepository>::ImpPtr & _imp;
 
                 void _add_metadata_keys();
 
@@ -138,7 +138,7 @@ namespace paludis
             };
     }
 
-    extern template class PrivateImplementationPattern<repository_repository::RepositoryRepository>;
+    extern template class Pimp<repository_repository::RepositoryRepository>;
 }
 
 #endif

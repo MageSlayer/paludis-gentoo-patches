@@ -24,7 +24,7 @@
 #include <paludis/repository.hh>
 #include <paludis/action-fwd.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/map.hh>
 #include <paludis/repositories/e/e_repository_id.hh>
@@ -77,10 +77,10 @@ namespace paludis
         public erepository::EInstalledRepository,
         public RepositoryProvidesInterface,
         public std::enable_shared_from_this<VDBRepository>,
-        public PrivateImplementationPattern<VDBRepository>
+        public Pimp<VDBRepository>
     {
         private:
-            PrivateImplementationPattern<VDBRepository>::ImpPtr & _imp;
+            Pimp<VDBRepository>::ImpPtr & _imp;
             void _add_metadata_keys() const;
 
             bool load_provided_using_cache() const;

@@ -22,7 +22,7 @@
 #include <paludis/repositories/e/e_repository.hh>
 #include <paludis/repositories/e/layout.hh>
 #include <paludis/name.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/mutex.hh>
@@ -67,14 +67,14 @@ namespace
 namespace paludis
 {
     template<>
-    struct Implementation<EclassMtimes>
+    struct Imp<EclassMtimes>
     {
         const ERepository * repo;
         mutable Cache eclasses;
         mutable std::unordered_map<QualifiedPackageName, Cache, Hash<QualifiedPackageName> > exlibs;
         mutable Mutex mutex;
 
-        Implementation(const ERepository * r, const std::shared_ptr<const FSEntrySequence> & d) :
+        Imp(const ERepository * r, const std::shared_ptr<const FSEntrySequence> & d) :
             repo(r),
             eclasses(d)
         {
@@ -83,7 +83,7 @@ namespace paludis
 }
 
 EclassMtimes::EclassMtimes(const ERepository * r, const std::shared_ptr<const FSEntrySequence> & d) :
-    PrivateImplementationPattern<EclassMtimes>(r, d)
+    Pimp<EclassMtimes>(r, d)
 {
 }
 

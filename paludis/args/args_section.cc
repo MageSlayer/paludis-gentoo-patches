@@ -19,7 +19,7 @@
 
 #include <paludis/args/args_section.hh>
 #include <paludis/args/args_handler.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <list>
@@ -30,13 +30,13 @@ using namespace paludis::args;
 namespace paludis
 {
     template <>
-    struct Implementation<ArgsSection>
+    struct Imp<ArgsSection>
     {
         ArgsHandler * const handler;
         const std::string name;
         std::list<ArgsGroup *> groups;
 
-        Implementation(ArgsHandler * const h, const std::string & s) :
+        Imp(ArgsHandler * const h, const std::string & s) :
             handler(h),
             name(s)
         {
@@ -51,7 +51,7 @@ namespace paludis
 }
 
 ArgsSection::ArgsSection(ArgsHandler * const h, const std::string & s) :
-    PrivateImplementationPattern<ArgsSection>(h, s)
+    Pimp<ArgsSection>(h, s)
 {
     h->add(this);
 }
@@ -96,6 +96,6 @@ ArgsSection::name() const
     return _imp->name;
 }
 
-template class PrivateImplementationPattern<ArgsSection>;
+template class Pimp<ArgsSection>;
 template class WrappedForwardIterator<args::ArgsSection::GroupsConstIteratorTag, const args::ArgsGroup>;
 

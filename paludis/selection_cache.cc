@@ -18,7 +18,7 @@
  */
 
 #include <paludis/selection_cache.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -35,19 +35,19 @@ typedef std::unordered_map<std::string, std::shared_ptr<const PackageIDSequence>
 namespace paludis
 {
     template <>
-    struct Implementation<SelectionCache>
+    struct Imp<SelectionCache>
     {
         mutable Mutex mutex;
         mutable Cache cache;
     };
 
     template <>
-    struct Implementation<ScopedSelectionCache>
+    struct Imp<ScopedSelectionCache>
     {
         Environment * const environment;
         const std::shared_ptr<SelectionCache> selection_cache;
 
-        Implementation(Environment * const e) :
+        Imp(Environment * const e) :
             environment(e),
             selection_cache(new SelectionCache)
         {
@@ -56,7 +56,7 @@ namespace paludis
 }
 
 SelectionCache::SelectionCache() :
-    PrivateImplementationPattern<SelectionCache>()
+    Pimp<SelectionCache>()
 {
 }
 
@@ -84,7 +84,7 @@ SelectionCache::perform_select(const Environment * const env, const Selection & 
 }
 
 ScopedSelectionCache::ScopedSelectionCache(Environment * const e) :
-    PrivateImplementationPattern<ScopedSelectionCache>(e)
+    Pimp<ScopedSelectionCache>(e)
 {
     _imp->environment->add_selection_cache(_imp->selection_cache);
 }
@@ -94,6 +94,6 @@ ScopedSelectionCache::~ScopedSelectionCache()
     _imp->environment->remove_selection_cache(_imp->selection_cache);
 }
 
-template class PrivateImplementationPattern<SelectionCache>;
-template class PrivateImplementationPattern<ScopedSelectionCache>;
+template class Pimp<SelectionCache>;
+template class Pimp<ScopedSelectionCache>;
 

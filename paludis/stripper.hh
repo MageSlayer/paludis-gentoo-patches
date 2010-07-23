@@ -23,7 +23,7 @@
 #include <paludis/stripper-fwd.hh>
 #include <paludis/action-fwd.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/named_value.hh>
 
@@ -46,7 +46,7 @@ namespace paludis
     };
 
     class PALUDIS_VISIBLE Stripper :
-        private PrivateImplementationPattern<Stripper>
+        private Pimp<Stripper>
     {
         protected:
             virtual void on_enter_dir(const FSEntry &) = 0;

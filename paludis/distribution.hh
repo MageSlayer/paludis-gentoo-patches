@@ -23,7 +23,7 @@
 #include <paludis/distribution-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/exception.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/singleton.hh>
@@ -113,7 +113,7 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE DistributionData :
-        private PrivateImplementationPattern<DistributionData>,
+        private Pimp<DistributionData>,
         public Singleton<DistributionData>
     {
         friend class Singleton<DistributionData>;
@@ -140,7 +140,7 @@ namespace paludis
      */
     template <typename Data_>
     class PALUDIS_VISIBLE ExtraDistributionData :
-        private PrivateImplementationPattern<ExtraDistributionData<Data_> >,
+        private Pimp<ExtraDistributionData<Data_> >,
         public Singleton<ExtraDistributionData<Data_> >
     {
         friend class Singleton<ExtraDistributionData<Data_> >;

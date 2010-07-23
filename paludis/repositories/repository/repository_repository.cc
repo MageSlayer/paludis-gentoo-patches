@@ -19,7 +19,7 @@
 
 #include <paludis/repositories/repository/repository_repository.hh>
 #include <paludis/repositories/repository/repository_repository_store.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/active_object_ptr.hh>
 #include <paludis/util/deferred_construction_ptr.hh>
 #include <paludis/util/stringify.hh>
@@ -54,7 +54,7 @@ namespace
 namespace paludis
 {
     template <>
-    struct Implementation<RepositoryRepository>
+    struct Imp<RepositoryRepository>
     {
         const RepositoryRepositoryParams params;
 
@@ -66,7 +66,7 @@ namespace paludis
         const ActiveObjectPtr<DeferredConstructionPtr<
             std::shared_ptr<RepositoryRepositoryStore> > > store;
 
-        Implementation(const RepositoryRepository * const repo, const RepositoryRepositoryParams & p) :
+        Imp(const RepositoryRepository * const repo, const RepositoryRepositoryParams & p) :
             params(p),
             format_key(new LiteralMetadataValueKey<std::string> ("format", "format",
                         mkt_significant, "repository")),
@@ -88,7 +88,7 @@ RepositoryRepositoryConfigurationError::RepositoryRepositoryConfigurationError(c
 }
 
 RepositoryRepository::RepositoryRepository(const RepositoryRepositoryParams & p) :
-    PrivateImplementationPattern<RepositoryRepository>(this, p),
+    Pimp<RepositoryRepository>(this, p),
     Repository(
             p.environment(),
             p.name(),
@@ -100,7 +100,7 @@ RepositoryRepository::RepositoryRepository(const RepositoryRepositoryParams & p)
                 n::provides_interface() = static_cast<RepositoryProvidesInterface *>(0),
                 n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
                 )),
-    _imp(PrivateImplementationPattern<RepositoryRepository>::_imp)
+    _imp(Pimp<RepositoryRepository>::_imp)
 {
     _add_metadata_keys();
 }
@@ -157,7 +157,7 @@ RepositoryRepository::installed_root_key() const
 void
 RepositoryRepository::invalidate()
 {
-    _imp.reset(new Implementation<RepositoryRepository>(this, _imp->params));
+    _imp.reset(new Imp<RepositoryRepository>(this, _imp->params));
     _add_metadata_keys();
 }
 
@@ -494,5 +494,5 @@ RepositoryRepository::merge(const MergeParams & m)
     }
 }
 
-template class PrivateImplementationPattern<repository_repository::RepositoryRepository>;
+template class Pimp<repository_repository::RepositoryRepository>;
 

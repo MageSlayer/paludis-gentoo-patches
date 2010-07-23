@@ -32,21 +32,21 @@
 #include <paludis/action.hh>
 #include <paludis/literal_metadata_key.hh>
 
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 
 using namespace paludis;
 
 namespace paludis
 {
     template <>
-    struct Implementation<FakeInstalledRepository>
+    struct Imp<FakeInstalledRepository>
     {
         std::shared_ptr<const MetadataValueKey<std::string> > format_key;
         std::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key;
         const bool supports_uninstall;
         const bool is_suitable_destination;
 
-        Implementation(const bool s, const bool b) :
+        Imp(const bool s, const bool b) :
             format_key(new LiteralMetadataValueKey<std::string> (
                         "format", "format", mkt_significant, "installed_fake")),
             installed_root_key(new LiteralMetadataValueKey<FSEntry> (
@@ -67,8 +67,8 @@ FakeInstalledRepository::FakeInstalledRepository(const FakeInstalledRepositoryPa
                 n::provides_interface() = this,
                 n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
                 )),
-    PrivateImplementationPattern<FakeInstalledRepository>(p.supports_uninstall(), p.suitable_destination()),
-    _imp(PrivateImplementationPattern<FakeInstalledRepository>::_imp)
+    Pimp<FakeInstalledRepository>(p.supports_uninstall(), p.suitable_destination()),
+    _imp(Pimp<FakeInstalledRepository>::_imp)
 {
     add_metadata_key(_imp->format_key);
     add_metadata_key(_imp->installed_root_key);

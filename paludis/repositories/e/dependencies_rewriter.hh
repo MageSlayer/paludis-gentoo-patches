@@ -22,14 +22,14 @@
 
 #include <paludis/dep_spec.hh>
 #include <paludis/spec_tree.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 
 namespace paludis
 {
     namespace erepository
     {
         class DependenciesRewriter :
-            private PrivateImplementationPattern<DependenciesRewriter>
+            private Pimp<DependenciesRewriter>
         {
             public:
                 DependenciesRewriter();

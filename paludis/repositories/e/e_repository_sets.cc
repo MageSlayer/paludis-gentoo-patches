@@ -38,7 +38,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/strip.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
@@ -66,18 +66,18 @@ using namespace paludis::erepository;
 namespace paludis
 {
     /**
-     * Implementation data for ERepositorySets.
+     * Imp data for ERepositorySets.
      *
      * \ingroup grperepository
      */
     template<>
-    struct Implementation<ERepositorySets>
+    struct Imp<ERepositorySets>
     {
         const Environment * const environment;
         const ERepository * const e_repository;
         const erepository::ERepositoryParams params;
 
-        Implementation(const Environment * const e, const ERepository * const p,
+        Imp(const Environment * const e, const ERepository * const p,
                 const erepository::ERepositoryParams & k) :
             environment(e),
             e_repository(p),
@@ -89,7 +89,7 @@ namespace paludis
 
 ERepositorySets::ERepositorySets(const Environment * const e, const ERepository * const p,
         const erepository::ERepositoryParams & k) :
-    PrivateImplementationPattern<ERepositorySets>(e, p, k)
+    Pimp<ERepositorySets>(e, p, k)
 {
 }
 

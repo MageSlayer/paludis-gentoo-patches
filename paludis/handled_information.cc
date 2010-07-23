@@ -18,7 +18,7 @@
  */
 
 #include <paludis/handled_information.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/dep_spec.hh>
 
 using namespace paludis;
@@ -30,11 +30,11 @@ DepListEntryHandled::~DepListEntryHandled()
 namespace paludis
 {
     template <>
-    struct Implementation<DepListEntryHandledSkippedUnsatisfied>
+    struct Imp<DepListEntryHandledSkippedUnsatisfied>
     {
         const PackageDepSpec spec;
 
-        Implementation(const PackageDepSpec & s) :
+        Imp(const PackageDepSpec & s) :
             spec(s)
         {
         }
@@ -42,7 +42,7 @@ namespace paludis
 }
 
 DepListEntryHandledSkippedUnsatisfied::DepListEntryHandledSkippedUnsatisfied(const PackageDepSpec & s) :
-    PrivateImplementationPattern<DepListEntryHandledSkippedUnsatisfied>(s)
+    Pimp<DepListEntryHandledSkippedUnsatisfied>(s)
 {
 }
 
@@ -59,11 +59,11 @@ DepListEntryHandledSkippedUnsatisfied::spec() const
 namespace paludis
 {
     template <>
-    struct Implementation<DepListEntryHandledSkippedDependent>
+    struct Imp<DepListEntryHandledSkippedDependent>
     {
         const std::shared_ptr<const PackageID> id;
 
-        Implementation(const std::shared_ptr<const PackageID> & i) :
+        Imp(const std::shared_ptr<const PackageID> & i) :
             id(i)
         {
         }
@@ -71,7 +71,7 @@ namespace paludis
 }
 
 DepListEntryHandledSkippedDependent::DepListEntryHandledSkippedDependent(const std::shared_ptr<const PackageID> & i) :
-    PrivateImplementationPattern<DepListEntryHandledSkippedDependent>(i)
+    Pimp<DepListEntryHandledSkippedDependent>(i)
 {
 }
 

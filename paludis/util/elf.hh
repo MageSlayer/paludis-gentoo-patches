@@ -23,7 +23,7 @@
 
 #include <paludis/util/elf_sections.hh>
 #include <paludis/util/exception.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <iosfwd>
 
@@ -44,9 +44,9 @@ namespace paludis
 
     template <typename ElfType_>
     class PALUDIS_VISIBLE ElfObject :
-        private paludis::PrivateImplementationPattern<ElfObject<ElfType_> >
+        private paludis::Pimp<ElfObject<ElfType_> >
     {
-        using paludis::PrivateImplementationPattern<ElfObject>::_imp;
+        using paludis::Pimp<ElfObject>::_imp;
 
         private:
             typename ElfType_::Header _hdr;

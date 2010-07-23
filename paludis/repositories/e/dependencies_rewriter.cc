@@ -18,7 +18,7 @@
  */
 
 #include <paludis/repositories/e/dependencies_rewriter.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/return_literal_function.hh>
 #include <paludis/util/save.hh>
@@ -62,7 +62,7 @@ namespace
 namespace paludis
 {
     template <>
-    struct Implementation<DependenciesRewriter>
+    struct Imp<DependenciesRewriter>
     {
         std::string depend;
         std::string rdepend;
@@ -71,7 +71,7 @@ namespace paludis
         std::shared_ptr<DependenciesLabelSequence> default_labels;
         LabelsStack labels;
 
-        Implementation() :
+        Imp() :
             default_labels(new DependenciesLabelSequence)
         {
             default_labels->push_back(std::make_shared<DependenciesBuildLabel>("build", return_literal_function(true)));
@@ -82,7 +82,7 @@ namespace paludis
 }
 
 DependenciesRewriter::DependenciesRewriter() :
-    PrivateImplementationPattern<DependenciesRewriter>()
+    Pimp<DependenciesRewriter>()
 {
 }
 

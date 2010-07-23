@@ -23,7 +23,7 @@
 #include <paludis/choice-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/util/wrapped_value.hh>
@@ -138,7 +138,7 @@ namespace paludis
      * \since 0.32
      */
     class PALUDIS_VISIBLE Choices :
-        private PrivateImplementationPattern<Choices>
+        private Pimp<Choices>
     {
         public:
             ///\name Basic operations
@@ -217,7 +217,7 @@ namespace paludis
      * \since 0.32
      */
     class PALUDIS_VISIBLE Choice :
-        private PrivateImplementationPattern<Choice>
+        private Pimp<Choice>
     {
         public:
             ///\name Basic operations
@@ -370,8 +370,8 @@ namespace paludis
             ///\}
     };
 
-    extern template class PrivateImplementationPattern<Choices>;
-    extern template class PrivateImplementationPattern<Choice>;
+    extern template class Pimp<Choices>;
+    extern template class Pimp<Choice>;
 
     extern template class WrappedForwardIterator<Choices::ConstIteratorTag, const std::shared_ptr<const Choice> >;
     extern template class WrappedForwardIterator<Choice::ConstIteratorTag, const std::shared_ptr<const ChoiceValue> >;

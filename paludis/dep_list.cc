@@ -43,7 +43,7 @@
 
 #include <paludis/util/join.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/member_iterator.hh>
@@ -105,7 +105,7 @@ namespace paludis
     typedef std::unordered_multimap<QualifiedPackageName, MergeList::iterator, Hash<QualifiedPackageName> > MergeListIndex;
 
     template<>
-    struct Implementation<DepList>
+    struct Imp<DepList>
     {
         const Environment * const env;
         std::shared_ptr<DepListOptions> opts;
@@ -130,7 +130,7 @@ namespace paludis
             return std::shared_ptr<const PackageID>();
         }
 
-        Implementation(const Environment * const e, const DepListOptions & o) :
+        Imp(const Environment * const e, const DepListOptions & o) :
             env(e),
             opts(new DepListOptions(o)),
             current_merge_list_entry(merge_list.end()),
@@ -1052,7 +1052,7 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<DependenciesLabels
 }
 
 DepList::DepList(const Environment * const e, const DepListOptions & o) :
-    PrivateImplementationPattern<DepList>(e, o)
+    Pimp<DepList>(e, o)
 {
 }
 
@@ -1076,7 +1076,7 @@ void
 DepList::clear()
 {
     DepListOptions o(*options());
-    _imp.reset(new Implementation<DepList>(_imp->env, o));
+    _imp.reset(new Imp<DepList>(_imp->env, o));
 }
 
 void
@@ -1754,5 +1754,5 @@ template class WrappedForwardIterator<DepList::ConstIteratorTag, const DepListEn
 
 template WrappedForwardIterator<DepList::ConstIteratorTag, const DepListEntry>::WrappedForwardIterator(const DepList::Iterator &);
 
-template class PrivateImplementationPattern<DepList>;
+template class Pimp<DepList>;
 

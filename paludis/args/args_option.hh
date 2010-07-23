@@ -21,7 +21,7 @@
 #ifndef PALUDIS_GUARD_ARGS_ARGS_OPTION_HH
 #define PALUDIS_GUARD_ARGS_ARGS_OPTION_HH 1
 
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/type_list.hh>
 #include <paludis/util/named_value.hh>
@@ -260,7 +260,7 @@ namespace paludis
         class PALUDIS_VISIBLE StringSetArg :
             public ArgsOption,
             public ImplementAcceptMethods<ArgsOption, StringSetArg>,
-            private PrivateImplementationPattern<StringSetArg>
+            private Pimp<StringSetArg>
         {
             private:
                 void (* _validator) (const std::string &);
@@ -273,7 +273,7 @@ namespace paludis
                  * \ingroup grplibpaludisargs
                  */
                 class PALUDIS_VISIBLE StringSetArgOptions :
-                    private PrivateImplementationPattern<StringSetArgOptions>
+                    private Pimp<StringSetArgOptions>
                 {
                     friend class StringSetArg;
 
@@ -366,7 +366,7 @@ namespace paludis
         class PALUDIS_VISIBLE StringSequenceArg :
             public ArgsOption,
             public ImplementAcceptMethods<ArgsOption, StringSequenceArg>,
-            private PrivateImplementationPattern<StringSequenceArg>
+            private Pimp<StringSequenceArg>
         {
             public:
                 ///\name Basic operations
@@ -514,7 +514,7 @@ namespace paludis
         class PALUDIS_VISIBLE EnumArg :
             public ArgsOption,
             public ImplementAcceptMethods<ArgsOption, EnumArg>,
-            private PrivateImplementationPattern<EnumArg>
+            private Pimp<EnumArg>
         {
             private:
                 std::string _argument;
@@ -528,7 +528,7 @@ namespace paludis
                  * \ingroup grplibpaludisargs
                  */
                 class PALUDIS_VISIBLE EnumArgOptions :
-                    private PrivateImplementationPattern<EnumArgOptions>
+                    private Pimp<EnumArgOptions>
                 {
                     friend class EnumArg;
 

@@ -19,7 +19,7 @@
 
 #include "key_extractor.hh"
 #include "matcher.hh"
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/set.hh>
@@ -42,14 +42,14 @@ using namespace inquisitio;
 namespace paludis
 {
     template <>
-    struct Implementation<KeyExtractor>
+    struct Imp<KeyExtractor>
     {
         const std::string key;
         const bool flatten;
         const bool visible_only;
         const Environment & env;
 
-        Implementation(const std::string & k, const bool f, const bool v, const Environment & e) :
+        Imp(const std::string & k, const bool f, const bool v, const Environment & e) :
             key(k),
             flatten(f),
             visible_only(v),
@@ -61,7 +61,7 @@ namespace paludis
 
 KeyExtractor::KeyExtractor(const std::string & k, const bool f, const bool v,
         const Environment & e) :
-    PrivateImplementationPattern<KeyExtractor>(k, f, v, e)
+    Pimp<KeyExtractor>(k, f, v, e)
 {
 }
 

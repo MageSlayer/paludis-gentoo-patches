@@ -25,7 +25,7 @@
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/spec_tree.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/no_type.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <memory>
@@ -62,10 +62,10 @@ namespace paludis
      */
     template <typename Heirarchy_, typename Item_>
     class PALUDIS_VISIBLE DepSpecFlattener :
-        private PrivateImplementationPattern<DepSpecFlattener<Heirarchy_, Item_> >
+        private Pimp<DepSpecFlattener<Heirarchy_, Item_> >
     {
         private:
-            typename PrivateImplementationPattern<DepSpecFlattener<Heirarchy_, Item_> >::ImpPtr & _imp;
+            typename Pimp<DepSpecFlattener<Heirarchy_, Item_> >::ImpPtr & _imp;
 
         public:
             ///\name Visit operations

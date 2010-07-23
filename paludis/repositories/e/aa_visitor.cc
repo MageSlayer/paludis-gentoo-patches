@@ -19,7 +19,7 @@
 
 #include <paludis/dep_spec.hh>
 #include <paludis/repositories/e/aa_visitor.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
@@ -27,7 +27,7 @@
 #include <algorithm>
 
 /** \file
- * Implementation of aa_visitor.hh
+ * Imp of aa_visitor.hh
  *
  * \ingroup grpaavisitor
  */
@@ -38,7 +38,7 @@ using namespace paludis::erepository;
 namespace paludis
 {
     template<>
-    struct Implementation<AAVisitor>
+    struct Imp<AAVisitor>
     {
         std::list<std::string> aa;
     };
@@ -51,7 +51,7 @@ namespace paludis
 }
 
 AAVisitor::AAVisitor() :
-    PrivateImplementationPattern<AAVisitor>()
+    Pimp<AAVisitor>()
 {
 }
 

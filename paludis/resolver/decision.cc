@@ -25,7 +25,7 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
@@ -198,12 +198,12 @@ RemoveDecision::deserialise(Deserialisation & d)
 namespace paludis
 {
     template <>
-    struct Implementation<NothingNoChangeDecision>
+    struct Imp<NothingNoChangeDecision>
     {
         const Resolvent resolvent;
         const bool taken;
 
-        Implementation(const Resolvent & r, const bool t) :
+        Imp(const Resolvent & r, const bool t) :
             resolvent(r),
             taken(t)
         {
@@ -212,7 +212,7 @@ namespace paludis
 }
 
 NothingNoChangeDecision::NothingNoChangeDecision(const Resolvent & r, const bool t) :
-    PrivateImplementationPattern<NothingNoChangeDecision>(r, t)
+    Pimp<NothingNoChangeDecision>(r, t)
 {
 }
 
@@ -242,7 +242,7 @@ NothingNoChangeDecision::serialise(Serialiser & s) const
 namespace paludis
 {
     template <>
-    struct Implementation<ExistingNoChangeDecision>
+    struct Imp<ExistingNoChangeDecision>
     {
         const Resolvent resolvent;
         const std::shared_ptr<const PackageID> existing_id;
@@ -251,7 +251,7 @@ namespace paludis
         const bool is_transient;
         const bool taken;
 
-        Implementation(const Resolvent & l,
+        Imp(const Resolvent & l,
                 const std::shared_ptr<const PackageID> & e,
                 const bool s, const bool v, const bool r, const bool t) :
             resolvent(l),
@@ -267,7 +267,7 @@ namespace paludis
 
 ExistingNoChangeDecision::ExistingNoChangeDecision(const Resolvent & l, const std::shared_ptr<const PackageID> & e,
         const bool s, const bool v, const bool r, const bool t) :
-    PrivateImplementationPattern<ExistingNoChangeDecision>(l, e, s, v, r, t)
+    Pimp<ExistingNoChangeDecision>(l, e, s, v, r, t)
 {
 }
 
@@ -325,7 +325,7 @@ ExistingNoChangeDecision::serialise(Serialiser & s) const
 namespace paludis
 {
     template <>
-    struct Implementation<ChangesToMakeDecision>
+    struct Imp<ChangesToMakeDecision>
     {
         const Resolvent resolvent;
         const std::shared_ptr<const PackageID> origin_id;
@@ -336,7 +336,7 @@ namespace paludis
         std::shared_ptr<RequiredConfirmations> required_confirmations;
         std::shared_ptr<RepositoryName> if_via_new_binary_in;
 
-        Implementation(
+        Imp(
                 const Resolvent & l,
                 const std::shared_ptr<const PackageID> & o,
                 const bool b,
@@ -362,7 +362,7 @@ ChangesToMakeDecision::ChangesToMakeDecision(
         const bool t,
         const std::shared_ptr<const Destination> & d,
         const std::function<void (ChangesToMakeDecision &)> & f) :
-    PrivateImplementationPattern<ChangesToMakeDecision>(r, o, b, c, t, d)
+    Pimp<ChangesToMakeDecision>(r, o, b, c, t, d)
 {
     if (f)
         f(*this);
@@ -463,13 +463,13 @@ ChangesToMakeDecision::serialise(Serialiser & s) const
 namespace paludis
 {
     template <>
-    struct Implementation<UnableToMakeDecision>
+    struct Imp<UnableToMakeDecision>
     {
         const Resolvent resolvent;
         const std::shared_ptr<const UnsuitableCandidates> unsuitable_candidates;
         const bool taken;
 
-        Implementation(const Resolvent & l,
+        Imp(const Resolvent & l,
                 const std::shared_ptr<const UnsuitableCandidates> & u, const bool t) :
             resolvent(l),
             unsuitable_candidates(u),
@@ -483,7 +483,7 @@ UnableToMakeDecision::UnableToMakeDecision(
         const Resolvent & l,
         const std::shared_ptr<const UnsuitableCandidates> & u,
         const bool t) :
-    PrivateImplementationPattern<UnableToMakeDecision>(l, u, t)
+    Pimp<UnableToMakeDecision>(l, u, t)
 {
 }
 
@@ -520,14 +520,14 @@ UnableToMakeDecision::serialise(Serialiser & s) const
 namespace paludis
 {
     template <>
-    struct Implementation<RemoveDecision>
+    struct Imp<RemoveDecision>
     {
         const Resolvent resolvent;
         const std::shared_ptr<const PackageIDSequence> ids;
         const bool taken;
         std::shared_ptr<RequiredConfirmations> required_confirmations;
 
-        Implementation(const Resolvent & l, const std::shared_ptr<const PackageIDSequence> & i, const bool t) :
+        Imp(const Resolvent & l, const std::shared_ptr<const PackageIDSequence> & i, const bool t) :
             resolvent(l),
             ids(i),
             taken(t)
@@ -537,7 +537,7 @@ namespace paludis
 }
 
 RemoveDecision::RemoveDecision(const Resolvent & l, const std::shared_ptr<const PackageIDSequence> & i, const bool t) :
-    PrivateImplementationPattern<RemoveDecision>(l, i, t)
+    Pimp<RemoveDecision>(l, i, t)
 {
 }
 
@@ -589,14 +589,14 @@ RemoveDecision::serialise(Serialiser & s) const
 namespace paludis
 {
     template <>
-    struct Implementation<BreakDecision>
+    struct Imp<BreakDecision>
     {
         const Resolvent resolvent;
         const std::shared_ptr<const PackageID> existing_id;
         const bool taken;
         std::shared_ptr<RequiredConfirmations> required_confirmations;
 
-        Implementation(const Resolvent & l,
+        Imp(const Resolvent & l,
                 const std::shared_ptr<const PackageID> & e,
                 const bool t) :
             resolvent(l),
@@ -608,7 +608,7 @@ namespace paludis
 }
 
 BreakDecision::BreakDecision(const Resolvent & l, const std::shared_ptr<const PackageID> & e, const bool t) :
-    PrivateImplementationPattern<BreakDecision>(l, e, t)
+    Pimp<BreakDecision>(l, e, t)
 {
 }
 
@@ -679,10 +679,10 @@ BreakDecision::deserialise(Deserialisation & d)
     return result;
 }
 
-template class PrivateImplementationPattern<NothingNoChangeDecision>;
-template class PrivateImplementationPattern<ExistingNoChangeDecision>;
-template class PrivateImplementationPattern<ChangesToMakeDecision>;
-template class PrivateImplementationPattern<UnableToMakeDecision>;
-template class PrivateImplementationPattern<RemoveDecision>;
-template class PrivateImplementationPattern<BreakDecision>;
+template class Pimp<NothingNoChangeDecision>;
+template class Pimp<ExistingNoChangeDecision>;
+template class Pimp<ChangesToMakeDecision>;
+template class Pimp<UnableToMakeDecision>;
+template class Pimp<RemoveDecision>;
+template class Pimp<BreakDecision>;
 

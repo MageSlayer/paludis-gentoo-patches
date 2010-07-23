@@ -40,7 +40,7 @@
 #include <paludis/spec_tree.hh>
 #include <paludis/repository.hh>
 
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <set>
 
 using namespace paludis;
@@ -49,7 +49,7 @@ using namespace paludis::resolver;
 namespace paludis
 {
     template <>
-    struct Implementation<Resolver>
+    struct Imp<Resolver>
     {
         const Environment * const env;
         const ResolverFunctions fns;
@@ -59,7 +59,7 @@ namespace paludis
         const std::shared_ptr<Decider> decider;
         const std::shared_ptr<Orderer> orderer;
 
-        Implementation(const Environment * const e, const ResolverFunctions & f) :
+        Imp(const Environment * const e, const ResolverFunctions & f) :
             env(e),
             fns(f),
             resolved(new Resolved(make_named_values<Resolved>(
@@ -84,7 +84,7 @@ namespace paludis
 }
 
 Resolver::Resolver(const Environment * const e, const ResolverFunctions & f) :
-    PrivateImplementationPattern<Resolver>(e, f)
+    Pimp<Resolver>(e, f)
 {
 }
 

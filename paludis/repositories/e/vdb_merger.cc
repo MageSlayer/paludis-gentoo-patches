@@ -23,7 +23,7 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/join.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/strip.hh>
@@ -48,7 +48,7 @@ using namespace paludis;
 namespace paludis
 {
     template<>
-    struct Implementation<VDBMerger>
+    struct Imp<VDBMerger>
     {
         VDBMergerParams params;
         FSEntry realroot;
@@ -57,7 +57,7 @@ namespace paludis
         std::list<std::string> config_protect;
         std::list<std::string> config_protect_mask;
 
-        Implementation(const VDBMergerParams & p) :
+        Imp(const VDBMergerParams & p) :
             params(p),
             realroot(params.root().realpath())
         {
@@ -91,8 +91,8 @@ VDBMerger::VDBMerger(const VDBMergerParams & p) :
                 n::options() = p.options(),
                 n::root() = p.root()
             )),
-    PrivateImplementationPattern<VDBMerger>(p),
-    _imp(PrivateImplementationPattern<VDBMerger>::_imp)
+    Pimp<VDBMerger>(p),
+    _imp(Pimp<VDBMerger>::_imp)
 {
 }
 

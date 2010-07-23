@@ -36,10 +36,10 @@ namespace paludis
         public Repository,
         public RepositoryDestinationInterface,
         public std::enable_shared_from_this<InstalledVirtualsRepository>,
-        private PrivateImplementationPattern<InstalledVirtualsRepository>
+        private Pimp<InstalledVirtualsRepository>
     {
         private:
-            PrivateImplementationPattern<InstalledVirtualsRepository>::ImpPtr & _imp;
+            Pimp<InstalledVirtualsRepository>::ImpPtr & _imp;
 
             void need_ids() const;
 

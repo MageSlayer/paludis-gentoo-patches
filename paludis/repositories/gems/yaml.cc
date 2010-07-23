@@ -18,7 +18,7 @@
  */
 
 #include "yaml.hh"
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <functional>
@@ -38,11 +38,11 @@ Node::~Node()
 namespace paludis
 {
     template <>
-    struct Implementation<StringNode>
+    struct Imp<StringNode>
     {
         const std::string text;
 
-        Implementation(const std::string & t) :
+        Imp(const std::string & t) :
             text(t)
         {
         }
@@ -62,7 +62,7 @@ namespace paludis
 }
 
 StringNode::StringNode(const std::string & t) :
-    PrivateImplementationPattern<StringNode>(t)
+    Pimp<StringNode>(t)
 {
 }
 
@@ -79,14 +79,14 @@ StringNode::text() const
 namespace paludis
 {
     template <>
-    struct Implementation<SequenceNode>
+    struct Imp<SequenceNode>
     {
         std::list<const Node *> nodes;
     };
 }
 
 SequenceNode::SequenceNode() :
-    PrivateImplementationPattern<SequenceNode>()
+    Pimp<SequenceNode>()
 {
 }
 
@@ -115,14 +115,14 @@ SequenceNode::end() const
 namespace paludis
 {
     template <>
-    struct Implementation<MapNode>
+    struct Imp<MapNode>
     {
         std::list<std::pair<const Node *, const Node *> > nodes;
     };
 }
 
 MapNode::MapNode() :
-    PrivateImplementationPattern<MapNode>()
+    Pimp<MapNode>()
 {
 }
 
@@ -278,13 +278,13 @@ namespace
 namespace paludis
 {
     template <>
-    struct Implementation<Document>
+    struct Imp<Document>
     {
         struct Register
         {
-            Implementation<Document> * _imp;
+            Imp<Document> * _imp;
 
-            Register(Implementation<Document> * imp) :
+            Register(Imp<Document> * imp) :
                 _imp(imp)
             {
                 NodeManager::get_instance()->register_document(_imp->parser.get());
@@ -303,7 +303,7 @@ namespace paludis
 
         Register reg;
 
-        Implementation(const std::string & s) :
+        Imp(const std::string & s) :
             top(0),
             parser(syck_new_parser(), call_unless_null(syck_free_parser)),
             data(strdup(s.c_str()), call_unless_null(std::free)),
@@ -315,7 +315,7 @@ namespace paludis
 }
 
 Document::Document(const std::string & s) :
-    PrivateImplementationPattern<Document>(s)
+    Pimp<Document>(s)
 {
     Context c("When parsing yaml document:");
 
@@ -353,14 +353,14 @@ Document::top() const
 namespace paludis
 {
     template <>
-    struct Implementation<NodeManager>
+    struct Imp<NodeManager>
     {
         std::map<const void *, std::list<std::shared_ptr<const Node> > > store;
     };
 }
 
 NodeManager::NodeManager() :
-    PrivateImplementationPattern<NodeManager>()
+    Pimp<NodeManager>()
 {
 }
 

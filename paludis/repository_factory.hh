@@ -22,7 +22,7 @@
 
 #include <paludis/repository_factory-fwd.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/singleton.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/fs_entry-fwd.hh>
@@ -36,7 +36,7 @@
 namespace paludis
 {
     class PALUDIS_VISIBLE RepositoryFactory :
-        private PrivateImplementationPattern<RepositoryFactory>,
+        private Pimp<RepositoryFactory>,
         public Singleton<RepositoryFactory>
     {
         friend class Singleton<RepositoryFactory>;
@@ -156,7 +156,7 @@ namespace paludis
     template <typename RepositoryClass_>
     void register_repositories(const RepositoryClass_ * const, RepositoryFactory * const);
 
-    extern template class PrivateImplementationPattern<RepositoryFactory>;
+    extern template class Pimp<RepositoryFactory>;
     extern template class Singleton<RepositoryFactory>;
     extern template class WrappedForwardIterator<RepositoryFactory::ConstIteratorTag, const std::string>;
 }

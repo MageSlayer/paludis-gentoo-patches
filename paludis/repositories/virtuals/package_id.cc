@@ -21,7 +21,7 @@
 #include <paludis/repositories/virtuals/installed_virtuals_repository.hh>
 #include <paludis/repositories/virtuals/virtuals_repository.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_named_values.hh>
@@ -50,7 +50,7 @@ using namespace paludis::virtuals;
 namespace paludis
 {
     template <>
-    struct Implementation<VirtualsDepKey>
+    struct Imp<VirtualsDepKey>
     {
         const Environment * const env;
         const std::shared_ptr<DependencySpecTree> value;
@@ -60,7 +60,7 @@ namespace paludis
         const std::string raw_name;
         const std::string human_name;
 
-        Implementation(const Environment * const e, const std::shared_ptr<const PackageID> & v,
+        Imp(const Environment * const e, const std::shared_ptr<const PackageID> & v,
                 const std::shared_ptr<const DependenciesLabelSequence> & l,
                 bool exact, const std::string & h, const std::string & r) :
             env(e),
@@ -94,8 +94,8 @@ VirtualsDepKey::VirtualsDepKey(const Environment * const e, const std::string & 
         const std::shared_ptr<const PackageID> & v,
         const std::shared_ptr<const DependenciesLabelSequence> & l,
         const bool exact) :
-    PrivateImplementationPattern<VirtualsDepKey>(e, v, l, exact, r, h),
-    _imp(PrivateImplementationPattern<VirtualsDepKey>::_imp)
+    Pimp<VirtualsDepKey>(e, v, l, exact, r, h),
+    _imp(Pimp<VirtualsDepKey>::_imp)
 {
 }
 
@@ -160,7 +160,7 @@ VirtualsDepKey::initial_labels() const
 namespace paludis
 {
     template <>
-    struct Implementation<VirtualsPackageID>
+    struct Imp<VirtualsPackageID>
     {
         const Environment * const env;
         const std::shared_ptr<const Repository> repository;
@@ -174,7 +174,7 @@ namespace paludis
         mutable bool has_masks;
         mutable Mutex mutex;
 
-        Implementation(
+        Imp(
                 const Environment * const e,
                 const std::shared_ptr<const Repository> & o,
                 const QualifiedPackageName & n,
@@ -205,8 +205,8 @@ VirtualsPackageID::VirtualsPackageID(
         const QualifiedPackageName & virtual_name,
         const std::shared_ptr<const PackageID> & virtual_for,
         const bool exact) :
-    PrivateImplementationPattern<VirtualsPackageID>(e, owner, virtual_name, virtual_for, exact),
-    _imp(PrivateImplementationPattern<VirtualsPackageID>::_imp)
+    Pimp<VirtualsPackageID>(e, owner, virtual_name, virtual_for, exact),
+    _imp(Pimp<VirtualsPackageID>::_imp)
 {
     add_metadata_key(_imp->virtual_for);
     add_metadata_key(_imp->bdep);

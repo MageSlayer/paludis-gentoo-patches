@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_UNPACKAGED_DEP_PRINTER_HH
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_UNPACKAGED_DEP_PRINTER_HH 1
 
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/spec_tree.hh>
 #include <paludis/formatter.hh>
 #include <paludis/environment-fwd.hh>
@@ -28,7 +28,7 @@
 namespace paludis
 {
     class PALUDIS_VISIBLE CommaSeparatedDepPrinter :
-        private PrivateImplementationPattern<CommaSeparatedDepPrinter>
+        private Pimp<CommaSeparatedDepPrinter>
     {
         public:
             CommaSeparatedDepPrinter(const Environment * const, const DependencySpecTree::ItemFormatter &, const bool);

@@ -24,7 +24,7 @@
 #include <paludis/resolver/job_state-fwd.hh>
 #include <paludis/resolver/job_requirements-fwd.hh>
 #include <paludis/resolver/destination_types-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/simple_visitor.hh>
 #include <paludis/util/type_list.hh>
 #include <paludis/dep_spec-fwd.hh>
@@ -37,7 +37,7 @@ namespace paludis
     namespace resolver
     {
         class PALUDIS_VISIBLE PretendJob :
-            private PrivateImplementationPattern<PretendJob>
+            private Pimp<PretendJob>
         {
             public:
                 PretendJob(
@@ -68,7 +68,7 @@ namespace paludis
         };
 
         class PALUDIS_VISIBLE FetchJob :
-            private PrivateImplementationPattern<FetchJob>,
+            private Pimp<FetchJob>,
             public ExecuteJob,
             public ImplementAcceptMethods<ExecuteJob, FetchJob>
         {
@@ -91,7 +91,7 @@ namespace paludis
         };
 
         class PALUDIS_VISIBLE InstallJob :
-            private PrivateImplementationPattern<InstallJob>,
+            private Pimp<InstallJob>,
             public ExecuteJob,
             public ImplementAcceptMethods<ExecuteJob, InstallJob>
         {
@@ -119,7 +119,7 @@ namespace paludis
         };
 
         class PALUDIS_VISIBLE UninstallJob :
-            private PrivateImplementationPattern<UninstallJob>,
+            private Pimp<UninstallJob>,
             public ExecuteJob,
             public ImplementAcceptMethods<ExecuteJob, UninstallJob>
         {

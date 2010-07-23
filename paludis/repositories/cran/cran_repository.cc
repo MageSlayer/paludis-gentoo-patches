@@ -35,7 +35,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/mutex.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/system.hh>
@@ -65,7 +65,7 @@ typedef std::unordered_map<
 namespace paludis
 {
     template <>
-    struct Implementation<CRANRepository>
+    struct Imp<CRANRepository>
     {
         CRANRepositoryParams params;
 
@@ -73,8 +73,8 @@ namespace paludis
         mutable bool has_ids;
         mutable IDMap ids;
 
-        Implementation(const CRANRepositoryParams &, const std::shared_ptr<Mutex> &);
-        ~Implementation();
+        Imp(const CRANRepositoryParams &, const std::shared_ptr<Mutex> &);
+        ~Imp();
 
         std::shared_ptr<const MetadataValueKey<FSEntry> > location_key;
         std::shared_ptr<const MetadataValueKey<FSEntry> > distdir_key;
@@ -86,7 +86,7 @@ namespace paludis
     };
 }
 
-Implementation<CRANRepository>::Implementation(const CRANRepositoryParams & p, const std::shared_ptr<Mutex> & m) :
+Imp<CRANRepository>::Imp(const CRANRepositoryParams & p, const std::shared_ptr<Mutex> & m) :
     params(p),
     big_nasty_mutex(m),
     has_ids(false),
@@ -100,7 +100,7 @@ Implementation<CRANRepository>::Implementation(const CRANRepositoryParams & p, c
 {
 }
 
-Implementation<CRANRepository>::~Implementation()
+Imp<CRANRepository>::~Imp()
 {
 }
 
@@ -117,8 +117,8 @@ CRANRepository::CRANRepository(const CRANRepositoryParams & p) :
                 n::provides_interface() = static_cast<RepositoryProvidesInterface *>(0),
                 n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
                 )),
-    PrivateImplementationPattern<CRANRepository>(p, std::make_shared<Mutex>()),
-    _imp(PrivateImplementationPattern<CRANRepository>::_imp)
+    Pimp<CRANRepository>(p, std::make_shared<Mutex>()),
+    _imp(Pimp<CRANRepository>::_imp)
 {
     _add_metadata_keys();
 }
@@ -459,7 +459,7 @@ CRANRepositoryConfigurationError::CRANRepositoryConfigurationError(
 void
 CRANRepository::invalidate()
 {
-    _imp.reset(new Implementation<CRANRepository>(_imp->params, _imp->big_nasty_mutex));
+    _imp.reset(new Imp<CRANRepository>(_imp->params, _imp->big_nasty_mutex));
     _add_metadata_keys();
 }
 

@@ -59,10 +59,10 @@ namespace paludis
 
         class PALUDIS_VISIBLE UnavailablePackageID :
             public PackageID,
-            private PrivateImplementationPattern<UnavailablePackageID>
+            private Pimp<UnavailablePackageID>
         {
             private:
-                PrivateImplementationPattern<UnavailablePackageID>::ImpPtr & _imp;
+                Pimp<UnavailablePackageID>::ImpPtr & _imp;
 
             protected:
                 void need_keys_added() const;

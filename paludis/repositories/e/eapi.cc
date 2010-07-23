@@ -29,7 +29,7 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
@@ -338,11 +338,11 @@ namespace
 namespace paludis
 {
     template<>
-    struct Implementation<EAPIData>
+    struct Imp<EAPIData>
     {
         std::unordered_map<std::string, std::shared_ptr<const EAPI>, Hash<std::string> > values;
 
-        Implementation()
+        Imp()
         {
             Context c("When loading EAPI data:");
 
@@ -381,7 +381,7 @@ EAPIConfigurationError::EAPIConfigurationError(const std::string & s) throw () :
 }
 
 EAPIData::EAPIData() :
-    PrivateImplementationPattern<EAPIData>()
+    Pimp<EAPIData>()
 {
 }
 
@@ -416,14 +416,14 @@ EAPIData::unknown_eapi() const
 namespace paludis
 {
     template <>
-    struct Implementation<EAPILabels>
+    struct Imp<EAPILabels>
     {
         std::map<std::string, std::string> v;
     };
 }
 
 EAPILabels::EAPILabels(const std::string & s) :
-    PrivateImplementationPattern<EAPILabels>()
+    Pimp<EAPILabels>()
 {
     std::vector<std::string> tokens;
 
@@ -444,7 +444,7 @@ EAPILabels::EAPILabels(const std::string & s) :
 }
 
 EAPILabels::EAPILabels(const EAPILabels & other) :
-    PrivateImplementationPattern<EAPILabels>(*other._imp.operator-> ())
+    Pimp<EAPILabels>(*other._imp.operator-> ())
 {
 }
 

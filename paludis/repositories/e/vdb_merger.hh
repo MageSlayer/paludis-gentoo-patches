@@ -22,7 +22,7 @@
 
 #include <paludis/merger.hh>
 #include <paludis/package_id-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/output_manager-fwd.hh>
 
 namespace paludis
@@ -75,13 +75,13 @@ namespace paludis
      */
     class PALUDIS_VISIBLE VDBMerger :
         public Merger,
-        private PrivateImplementationPattern<VDBMerger>
+        private Pimp<VDBMerger>
     {
         private:
             void display_override(const std::string &) const;
             std::string make_arrows(const MergeStatusFlags &) const;
 
-            PrivateImplementationPattern<VDBMerger>::ImpPtr & _imp;
+            Pimp<VDBMerger>::ImpPtr & _imp;
 
         public:
             ///\name Basic operations

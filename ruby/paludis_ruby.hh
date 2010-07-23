@@ -23,7 +23,7 @@
 
 #include "config.h"
 
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/fs_entry.hh>
@@ -151,7 +151,7 @@ namespace paludis
 
         class RegisterRubyClass :
             public Singleton<RegisterRubyClass>,
-            private PrivateImplementationPattern<RegisterRubyClass>
+            private Pimp<RegisterRubyClass>
         {
             friend class Singleton<RegisterRubyClass>;
 

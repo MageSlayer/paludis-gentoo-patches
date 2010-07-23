@@ -28,7 +28,7 @@
 #include <paludis/generator.hh>
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/make_named_values.hh>
@@ -116,11 +116,11 @@ namespace
 namespace paludis
 {
     template<>
-    struct Implementation<ReportTask>
+    struct Imp<ReportTask>
     {
         Environment * const env;
 
-        Implementation(Environment * const e) :
+        Imp(Environment * const e) :
             env(e)
         {
         }
@@ -128,7 +128,7 @@ namespace paludis
 }
 
 ReportTask::ReportTask(Environment * const env) :
-     PrivateImplementationPattern<ReportTask>(env)
+     Pimp<ReportTask>(env)
 {
 }
 

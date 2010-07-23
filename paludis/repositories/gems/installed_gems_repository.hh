@@ -22,7 +22,7 @@
 
 #include <paludis/repository.hh>
 #include <paludis/repositories/gems/params-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <memory>
 
 namespace paludis
@@ -37,10 +37,10 @@ namespace paludis
         public Repository,
         public RepositoryDestinationInterface,
         public std::enable_shared_from_this<InstalledGemsRepository>,
-        private PrivateImplementationPattern<InstalledGemsRepository>
+        private Pimp<InstalledGemsRepository>
     {
         private:
-            PrivateImplementationPattern<InstalledGemsRepository>::ImpPtr & _imp;
+            Pimp<InstalledGemsRepository>::ImpPtr & _imp;
             void _add_metadata_keys() const;
 
             void need_category_names() const;

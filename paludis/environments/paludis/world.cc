@@ -18,7 +18,7 @@
  */
 
 #include <paludis/environments/paludis/world.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/stringify.hh>
@@ -36,13 +36,13 @@ using namespace paludis::paludis_environment;
 namespace paludis
 {
     template <>
-    struct Implementation<World>
+    struct Imp<World>
     {
         const Environment * const env;
         const std::shared_ptr<const FSEntry> maybe_world_file;
         mutable Mutex mutex;
 
-        Implementation(const Environment * const e, const std::shared_ptr<const FSEntry> & m) :
+        Imp(const Environment * const e, const std::shared_ptr<const FSEntry> & m) :
             env(e),
             maybe_world_file(m)
         {
@@ -51,7 +51,7 @@ namespace paludis
 }
 
 World::World(const Environment * const e, const std::shared_ptr<const FSEntry> & f) :
-    PrivateImplementationPattern<World>(e, f)
+    Pimp<World>(e, f)
 {
 }
 

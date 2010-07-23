@@ -18,7 +18,7 @@
  */
 
 #include <paludis/tee_output_manager.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/tee_output_stream.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
@@ -33,7 +33,7 @@ using namespace paludis;
 namespace paludis
 {
     template <>
-    struct Implementation<TeeOutputManager>
+    struct Imp<TeeOutputManager>
     {
         const std::shared_ptr<const Sequence<std::shared_ptr<OutputManager> > > streams;
         const std::shared_ptr<const Sequence<std::shared_ptr<OutputManager> > > messages_streams;
@@ -41,7 +41,7 @@ namespace paludis
         TeeOutputStream stdout_stream;
         TeeOutputStream stderr_stream;
 
-        Implementation(
+        Imp(
                 const std::shared_ptr<const Sequence<std::shared_ptr<OutputManager> > > & s,
                 const std::shared_ptr<const Sequence<std::shared_ptr<OutputManager> > > & ss) :
             streams(s),
@@ -54,7 +54,7 @@ namespace paludis
 TeeOutputManager::TeeOutputManager(
         const std::shared_ptr<const OutputManagerSequence> & s,
         const std::shared_ptr<const OutputManagerSequence> & ss) :
-    PrivateImplementationPattern<TeeOutputManager>(s, ss)
+    Pimp<TeeOutputManager>(s, ss)
 {
     for (OutputManagerSequence::ConstIterator i(_imp->streams->begin()), i_end(_imp->streams->end()) ;
             i != i_end ; ++i)
@@ -169,5 +169,5 @@ TeeOutputManager::factory_create(
     return std::make_shared<TeeOutputManager>(children, messages_children);
 }
 
-template class PrivateImplementationPattern<TeeOutputManager>;
+template class Pimp<TeeOutputManager>;
 

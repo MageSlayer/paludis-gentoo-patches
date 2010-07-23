@@ -21,14 +21,14 @@
 #define PALUDIS_GUARD_PALUDIS_UTIL_SEQUENCE_IMPL_HH 1
 
 #include <paludis/util/sequence.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/wrapped_output_iterator-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <list>
 #include <iterator>
 
 /** \file
- * Implementation for paludis/util/sequence.hh .
+ * Imp for paludis/util/sequence.hh .
  *
  * \ingroup g_data_structures
  */
@@ -36,13 +36,13 @@
 namespace paludis
 {
     /**
-     * Implementation data for a Sequence.
+     * Imp data for a Sequence.
      *
      * \ingroup g_data_structures
      * \nosubgrouping
      */
     template <typename T_>
-    struct Implementation<Sequence<T_> >
+    struct Imp<Sequence<T_> >
     {
         std::list<T_> list;
     };
@@ -68,7 +68,7 @@ namespace paludis
 
 template <typename T_>
 paludis::Sequence<T_>::Sequence() :
-    paludis::PrivateImplementationPattern<paludis::Sequence<T_> >()
+    paludis::Pimp<paludis::Sequence<T_> >()
 {
 }
 

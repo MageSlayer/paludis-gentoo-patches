@@ -30,7 +30,7 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/mutex.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/member_iterator-impl.hh>
 #include <paludis/util/simple_visitor_cast.hh>
@@ -108,7 +108,7 @@ typedef std::map<ElfArchitecture, std::map<std::string, std::vector<FSEntry> > >
 namespace paludis
 {
     template <>
-    struct Implementation<ElfLinkageChecker>
+    struct Imp<ElfLinkageChecker>
     {
         FSEntry root;
         std::string library;
@@ -127,7 +127,7 @@ namespace paludis
         void handle_library(const FSEntry &, const ElfArchitecture &);
         template <typename> bool check_extra_elf(const FSEntry &, std::istream &, std::set<ElfArchitecture> &);
 
-        Implementation(const FSEntry & the_root, const std::string & the_library) :
+        Imp(const FSEntry & the_root, const std::string & the_library) :
             root(the_root),
             library(the_library)
         {
@@ -136,7 +136,7 @@ namespace paludis
 }
 
 ElfLinkageChecker::ElfLinkageChecker(const FSEntry & root, const std::string & library) :
-    PrivateImplementationPattern<ElfLinkageChecker>(root, library)
+    Pimp<ElfLinkageChecker>(root, library)
 {
 }
 
@@ -159,7 +159,7 @@ ElfLinkageChecker::check_file(const FSEntry & file)
 
 template <typename ElfType_>
 bool
-Implementation<ElfLinkageChecker>::check_elf(const FSEntry & file, std::istream & stream)
+Imp<ElfLinkageChecker>::check_elf(const FSEntry & file, std::istream & stream)
 {
     if (! ElfObject<ElfType_>::is_valid_elf(stream))
         return false;
@@ -218,7 +218,7 @@ Implementation<ElfLinkageChecker>::check_elf(const FSEntry & file, std::istream 
 }
 
 void
-Implementation<ElfLinkageChecker>::handle_library(const FSEntry & file, const ElfArchitecture & arch)
+Imp<ElfLinkageChecker>::handle_library(const FSEntry & file, const ElfArchitecture & arch)
 {
     seen.insert(std::make_pair(file, arch));
     std::pair<Symlinks::const_iterator, Symlinks::const_iterator> range(symlinks.equal_range(file));
@@ -337,7 +337,7 @@ ElfLinkageChecker::need_breakage_added(
 
 template <typename ElfType_>
 bool
-Implementation<ElfLinkageChecker>::check_extra_elf(const FSEntry & file, std::istream & stream, std::set<ElfArchitecture> & arches)
+Imp<ElfLinkageChecker>::check_extra_elf(const FSEntry & file, std::istream & stream, std::set<ElfArchitecture> & arches)
 {
     if (! ElfObject<ElfType_>::is_valid_elf(stream))
         return false;

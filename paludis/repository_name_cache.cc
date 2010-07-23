@@ -24,7 +24,7 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/dir_iterator.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
@@ -44,7 +44,7 @@ namespace paludis
     typedef std::unordered_map<PackageNamePart, std::set<CategoryNamePart>, Hash<PackageNamePart> > NameCacheMap;
 
     template<>
-    struct Implementation<RepositoryNameCache>
+    struct Imp<RepositoryNameCache>
     {
         mutable Mutex mutex;
 
@@ -55,7 +55,7 @@ namespace paludis
         mutable NameCacheMap name_cache_map;
         mutable bool checked_name_cache_map;
 
-        Implementation(const FSEntry & l, const Repository * const r) :
+        Imp(const FSEntry & l, const Repository * const r) :
             usable(l != FSEntry("/var/empty")),
             location(l == FSEntry("/var/empty") ? l : l / stringify(r->name())),
             repo(r),
@@ -69,7 +69,7 @@ namespace paludis
 }
 
 NameCacheMap::iterator
-Implementation<RepositoryNameCache>::find(const PackageNamePart & p) const
+Imp<RepositoryNameCache>::find(const PackageNamePart & p) const
 {
     NameCacheMap::iterator r(name_cache_map.find(p));
 
@@ -144,7 +144,7 @@ Implementation<RepositoryNameCache>::find(const PackageNamePart & p) const
 }
 
 void
-Implementation<RepositoryNameCache>::update(const PackageNamePart & p, NameCacheMap::iterator r)
+Imp<RepositoryNameCache>::update(const PackageNamePart & p, NameCacheMap::iterator r)
 {
     FSEntry ff(location / stringify(p));
     if (r->second.empty() && ff.exists())
@@ -180,7 +180,7 @@ Implementation<RepositoryNameCache>::update(const PackageNamePart & p, NameCache
 RepositoryNameCache::RepositoryNameCache(
         const FSEntry & location,
         const Repository * const repo) :
-    PrivateImplementationPattern<RepositoryNameCache>(location, repo)
+    Pimp<RepositoryNameCache>(location, repo)
 {
 }
 

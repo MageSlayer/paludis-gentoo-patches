@@ -62,7 +62,7 @@ namespace paludis
         };
 
         class SanitisedDependencies :
-            private PrivateImplementationPattern<SanitisedDependencies>
+            private Pimp<SanitisedDependencies>
         {
             private:
                 void _populate_one(

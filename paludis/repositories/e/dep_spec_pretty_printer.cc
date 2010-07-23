@@ -23,7 +23,7 @@
 #include <paludis/formatter.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/simple_visitor_cast.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/set.hh>
@@ -39,7 +39,7 @@
 #include <sstream>
 
 /** \file
- * Implementation of dep_spec_pretty_printer.hh.
+ * Imp of dep_spec_pretty_printer.hh.
  *
  * \ingroup grpdepspecprettyprinter
  */
@@ -50,7 +50,7 @@ using namespace paludis::erepository;
 namespace paludis
 {
     template<>
-    struct Implementation<DepSpecPrettyPrinter>
+    struct Imp<DepSpecPrettyPrinter>
     {
         std::stringstream s;
         const Environment * const env;
@@ -64,7 +64,7 @@ namespace paludis
         bool need_space;
         bool check_conditions;
 
-        Implementation(
+        Imp(
                 const Environment * const e,
                 const std::shared_ptr<const PackageID> & i,
                 const GenericSpecTree::ItemFormatter & f,
@@ -93,7 +93,7 @@ DepSpecPrettyPrinter::DepSpecPrettyPrinter(
         unsigned i,
         bool b,
         bool c) :
-    PrivateImplementationPattern<DepSpecPrettyPrinter>(e, id, f, i, b, c)
+    Pimp<DepSpecPrettyPrinter>(e, id, f, i, b, c)
 {
 }
 

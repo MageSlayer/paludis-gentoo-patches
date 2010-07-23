@@ -23,7 +23,7 @@
 
 #include <paludis/repository.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/map-fwd.hh>
 
@@ -65,10 +65,10 @@ namespace paludis
     class PALUDIS_VISIBLE CRANInstalledRepository :
         public Repository,
         public RepositoryDestinationInterface,
-        public PrivateImplementationPattern<CRANInstalledRepository>
+        public Pimp<CRANInstalledRepository>
     {
         private:
-            PrivateImplementationPattern<CRANInstalledRepository>::ImpPtr & _imp;
+            Pimp<CRANInstalledRepository>::ImpPtr & _imp;
             void _add_metadata_keys() const;
 
             void need_ids() const;

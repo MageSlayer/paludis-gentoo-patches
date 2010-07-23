@@ -25,7 +25,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/hashes.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/timestamp.hh>
 #include <paludis/selinux/security_context.hh>
@@ -56,7 +56,7 @@ typedef std::unordered_map<std::pair<dev_t, ino_t>, std::string, Hash<std::pair<
 namespace paludis
 {
     template <>
-    struct Implementation<Merger>
+    struct Imp<Merger>
     {
         std::set<FSEntry> fixed_entries;
         MergedMap merged_ids;
@@ -64,7 +64,7 @@ namespace paludis
         bool result;
         bool skip_dir;
 
-        Implementation(const MergerParams & p) :
+        Imp(const MergerParams & p) :
             params(p),
             result(true),
             skip_dir(false)
@@ -79,7 +79,7 @@ MergerError::MergerError(const std::string & s) throw () :
 }
 
 Merger::Merger(const MergerParams & p) :
-    PrivateImplementationPattern<Merger>(p)
+    Pimp<Merger>(p)
 {
 }
 

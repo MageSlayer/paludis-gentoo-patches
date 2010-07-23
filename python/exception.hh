@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PYTHON_EXCEPTION_HH
 #define PALUDIS_GUARD_PYTHON_EXCEPTION_HH 1
 
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/singleton-impl.hh>
 #include <boost/python.hpp>
@@ -90,7 +90,7 @@ namespace paludis
 
         class PALUDIS_VISIBLE ExceptionRegister :
             public Singleton<ExceptionRegister>,
-            private PrivateImplementationPattern<ExceptionRegister>
+            private Pimp<ExceptionRegister>
         {
             friend class Singleton<ExceptionRegister>;
 

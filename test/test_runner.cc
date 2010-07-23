@@ -38,7 +38,7 @@
 #endif
 
 /** \file
- * Implementation of the default test runner.
+ * Imp of the default test runner.
  *
  * \ingroup grptestframework
  */

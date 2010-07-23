@@ -18,7 +18,7 @@
  */
 
 #include <paludis/util/action_queue.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/condition_variable.hh>
 #include <paludis/util/thread_pool.hh>
@@ -27,12 +27,12 @@
 
 using namespace paludis;
 
-template class PrivateImplementationPattern<ActionQueue>;
+template class Pimp<ActionQueue>;
 
 namespace paludis
 {
     template <>
-    struct Implementation<ActionQueue>
+    struct Imp<ActionQueue>
     {
         Mutex mutex;
         ConditionVariable condition;
@@ -74,28 +74,28 @@ namespace paludis
             }
         }
 
-        Implementation(const unsigned n_threads, const bool nice, const bool do_limit_size) :
+        Imp(const unsigned n_threads, const bool nice, const bool do_limit_size) :
             limit_size(do_limit_size),
             should_finish(false)
         {
             for (unsigned x(0) ; x < n_threads ; ++x)
                 if (nice)
                     threads.create_thread(std::bind(&Thread::idle_adapter,
-                                std::function<void () throw ()>(std::bind(std::mem_fn(&Implementation::thread_func), this))));
+                                std::function<void () throw ()>(std::bind(std::mem_fn(&Imp::thread_func), this))));
                 else
-                    threads.create_thread(std::bind(std::mem_fn(&Implementation::thread_func), this));
+                    threads.create_thread(std::bind(std::mem_fn(&Imp::thread_func), this));
         }
     };
 }
 
 ActionQueue::ActionQueue(const unsigned n_threads, const bool nice, const bool limit_size) :
-    PrivateImplementationPattern<ActionQueue>(n_threads, nice, limit_size)
+    Pimp<ActionQueue>(n_threads, nice, limit_size)
 {
 }
 
 ActionQueue::~ActionQueue()
 {
-    enqueue(std::bind(std::mem_fn(&Implementation<ActionQueue>::finish), _imp.get()));
+    enqueue(std::bind(std::mem_fn(&Imp<ActionQueue>::finish), _imp.get()));
 }
 
 void

@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_ACCOUNTS_ACCOUNTS_REPOSITORY_STORE_HH
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_ACCOUNTS_ACCOUNTS_REPOSITORY_STORE_HH 1
 
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/package_id-fwd.hh>
@@ -36,7 +36,7 @@ namespace paludis
         struct AccountsRepository;
 
         class PALUDIS_VISIBLE AccountsRepositoryStore :
-            private PrivateImplementationPattern<AccountsRepositoryStore>
+            private Pimp<AccountsRepositoryStore>
         {
             private:
                 void _load(const std::shared_ptr<const Repository> & repo);
@@ -94,7 +94,7 @@ namespace paludis
         };
     }
 
-    extern template class PrivateImplementationPattern<accounts_repository::AccountsRepositoryStore>;
+    extern template class Pimp<accounts_repository::AccountsRepositoryStore>;
 }
 
 #endif

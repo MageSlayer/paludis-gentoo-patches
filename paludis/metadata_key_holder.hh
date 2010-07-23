@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_METADATA_KEY_HOLDER_HH 1
 
 #include <paludis/metadata_key_holder-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/metadata_key-fwd.hh>
 #include <memory>
@@ -36,7 +36,7 @@ namespace paludis
      * \ingroup g_metadata_key
      */
     class PALUDIS_VISIBLE MetadataKeyHolder :
-        private PrivateImplementationPattern<MetadataKeyHolder>
+        private Pimp<MetadataKeyHolder>
     {
         protected:
             /**

@@ -19,7 +19,7 @@
 
 #include <paludis/repositories/e/e_stripper.hh>
 #include <paludis/util/fs_entry.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/output_manager.hh>
 #include <ostream>
@@ -30,11 +30,11 @@ using namespace paludis::erepository;
 namespace paludis
 {
     template <>
-    struct Implementation<EStripper>
+    struct Imp<EStripper>
     {
         EStripperOptions options;
 
-        Implementation(const EStripperOptions & o) :
+        Imp(const EStripperOptions & o) :
             options(o)
         {
         }
@@ -48,8 +48,8 @@ EStripper::EStripper(const EStripperOptions & options) :
                 n::split() = options.split(),
                 n::strip() = options.strip()
                 )),
-    PrivateImplementationPattern<EStripper>(options),
-    _imp(PrivateImplementationPattern<EStripper>::_imp)
+    Pimp<EStripper>(options),
+    _imp(Pimp<EStripper>::_imp)
 {
 }
 

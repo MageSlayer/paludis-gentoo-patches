@@ -19,7 +19,7 @@
 
 #include <paludis/environment_factory.hh>
 #include <paludis/util/singleton-impl.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/member_iterator-impl.hh>
 #include <paludis/util/join.hh>
@@ -41,7 +41,7 @@ typedef std::unordered_map<std::string, EnvironmentFactory::CreateFunction> Keys
 namespace paludis
 {
     template <>
-    struct Implementation<EnvironmentFactory>
+    struct Imp<EnvironmentFactory>
     {
         Keys keys;
     };
@@ -70,7 +70,7 @@ namespace
 }
 
 EnvironmentFactory::EnvironmentFactory() :
-    PrivateImplementationPattern<EnvironmentFactory>()
+    Pimp<EnvironmentFactory>()
 {
     using namespace environment_groups;
 
@@ -145,5 +145,5 @@ EnvironmentFactory::add_environment_format(
 }
 
 template class Singleton<EnvironmentFactory>;
-template class PrivateImplementationPattern<EnvironmentFactory>;
+template class Pimp<EnvironmentFactory>;
 

@@ -25,7 +25,7 @@
 #include <paludis/repositories/e/ebuild.hh>
 #include <paludis/repositories/e/e_repository.hh>
 #include <paludis/util/simple_visitor_cast.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/log.hh>
@@ -58,12 +58,12 @@ using namespace paludis::erepository;
 namespace paludis
 {
     template <>
-    struct Implementation<EInstalledRepository>
+    struct Imp<EInstalledRepository>
     {
         EInstalledRepositoryParams params;
         Mutex world_mutex;
 
-        Implementation(const EInstalledRepositoryParams & p) :
+        Imp(const EInstalledRepositoryParams & p) :
             params(p)
         {
         }
@@ -73,8 +73,8 @@ namespace paludis
 EInstalledRepository::EInstalledRepository(const EInstalledRepositoryParams & p,
         const RepositoryName & n, const RepositoryCapabilities & c) :
     Repository(p.environment(), n, c),
-    PrivateImplementationPattern<EInstalledRepository>(p),
-    _imp(PrivateImplementationPattern<EInstalledRepository>::_imp)
+    Pimp<EInstalledRepository>(p),
+    _imp(Pimp<EInstalledRepository>::_imp)
 {
 }
 

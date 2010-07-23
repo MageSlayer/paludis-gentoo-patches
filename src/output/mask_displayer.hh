@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_SRC_OUTPUT_MASK_DISPLAYER_HH
 #define PALUDIS_GUARD_PALUDIS_SRC_OUTPUT_MASK_DISPLAYER_HH 1
 
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/mask.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/package_id-fwd.hh>
@@ -28,7 +28,7 @@
 namespace paludis
 {
     class MaskDisplayer :
-        private PrivateImplementationPattern<MaskDisplayer>
+        private Pimp<MaskDisplayer>
     {
         public:
             MaskDisplayer(const Environment * const, const std::shared_ptr<const PackageID> &,

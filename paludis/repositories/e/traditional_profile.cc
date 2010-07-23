@@ -26,7 +26,7 @@
 
 #include <paludis/util/log.hh>
 #include <paludis/util/tokeniser.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -96,13 +96,13 @@ namespace
 namespace paludis
 {
     /**
-     * Implementation for TraditionalProfile.
+     * Imp for TraditionalProfile.
      *
      * \ingroup grperepository
      * \see TraditionalProfile
      */
     template<>
-    class Implementation<TraditionalProfile>
+    class Imp<TraditionalProfile>
     {
         private:
             void load_environment();
@@ -185,7 +185,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            Implementation(const Environment * const e, const ERepository * const p,
+            Imp(const Environment * const e, const ERepository * const p,
                     const RepositoryName & name, const FSEntrySequence & dirs,
                     const std::string & arch_var_if_special, const bool profiles_explicitly_set) :
                 packages_file(p),
@@ -232,7 +232,7 @@ namespace paludis
                     handle_profile_arch_var(arch_var_if_special);
             }
 
-            ~Implementation()
+            ~Imp()
             {
             }
 
@@ -241,14 +241,14 @@ namespace paludis
 }
 
 void
-Implementation<TraditionalProfile>::load_environment()
+Imp<TraditionalProfile>::load_environment()
 {
     environment_variables["CONFIG_PROTECT"] = getenv_with_default("CONFIG_PROTECT", "/etc");
     environment_variables["CONFIG_PROTECT_MASK"] = getenv_with_default("CONFIG_PROTECT_MASK", "");
 }
 
 void
-Implementation<TraditionalProfile>::load_profile_directory_recursively(const FSEntry & dir)
+Imp<TraditionalProfile>::load_profile_directory_recursively(const FSEntry & dir)
 {
     Context context("When adding profile directory '" + stringify(dir) + ":");
 
@@ -286,7 +286,7 @@ Implementation<TraditionalProfile>::load_profile_directory_recursively(const FSE
 }
 
 void
-Implementation<TraditionalProfile>::load_profile_parent(const FSEntry & dir)
+Imp<TraditionalProfile>::load_profile_parent(const FSEntry & dir)
 {
     Context context("When handling parent file for profile directory '" + stringify(dir) + ":");
 
@@ -332,7 +332,7 @@ Implementation<TraditionalProfile>::load_profile_parent(const FSEntry & dir)
 }
 
 void
-Implementation<TraditionalProfile>::load_profile_make_defaults(const FSEntry & dir)
+Imp<TraditionalProfile>::load_profile_make_defaults(const FSEntry & dir)
 {
     Context context("When handling make.defaults file for profile directory '" + stringify(dir) + ":");
 
@@ -480,7 +480,7 @@ Implementation<TraditionalProfile>::load_profile_make_defaults(const FSEntry & d
 }
 
 void
-Implementation<TraditionalProfile>::load_special_make_defaults_vars(const FSEntry & dir)
+Imp<TraditionalProfile>::load_special_make_defaults_vars(const FSEntry & dir)
 {
     const std::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(
                 repository->eapi_for_file(dir / "make.defaults")));
@@ -548,7 +548,7 @@ Implementation<TraditionalProfile>::load_special_make_defaults_vars(const FSEntr
 }
 
 bool
-Implementation<TraditionalProfile>::is_incremental(const EAPI & e, const std::string & s) const
+Imp<TraditionalProfile>::is_incremental(const EAPI & e, const std::string & s) const
 {
     Context c("When checking whether '" + s + "' is incremental:");
 
@@ -564,7 +564,7 @@ Implementation<TraditionalProfile>::is_incremental(const EAPI & e, const std::st
 }
 
 void
-Implementation<TraditionalProfile>::make_vars_from_file_vars()
+Imp<TraditionalProfile>::make_vars_from_file_vars()
 {
     try
     {
@@ -661,7 +661,7 @@ Implementation<TraditionalProfile>::make_vars_from_file_vars()
 }
 
 void
-Implementation<TraditionalProfile>::load_basic_use_file(const FSEntry & file, FlagStatusMap & m)
+Imp<TraditionalProfile>::load_basic_use_file(const FSEntry & file, FlagStatusMap & m)
 {
     if (! file.exists())
         return;
@@ -700,7 +700,7 @@ Implementation<TraditionalProfile>::load_basic_use_file(const FSEntry & file, Fl
 }
 
 void
-Implementation<TraditionalProfile>::load_spec_use_file(const EAPI & eapi, const FSEntry & file, PackageFlagStatusMapList & m)
+Imp<TraditionalProfile>::load_spec_use_file(const EAPI & eapi, const FSEntry & file, PackageFlagStatusMapList & m)
 {
     if (! file.exists())
         return;
@@ -756,7 +756,7 @@ Implementation<TraditionalProfile>::load_spec_use_file(const EAPI & eapi, const 
 }
 
 void
-Implementation<TraditionalProfile>::add_use_expand_to_use()
+Imp<TraditionalProfile>::add_use_expand_to_use()
 {
     Context context("When adding USE_EXPAND to USE:");
 
@@ -777,7 +777,7 @@ Implementation<TraditionalProfile>::add_use_expand_to_use()
 }
 
 void
-Implementation<TraditionalProfile>::fish_out_use_expand_names()
+Imp<TraditionalProfile>::fish_out_use_expand_names()
 {
     Context context("When finding all known USE_EXPAND names:");
 
@@ -803,7 +803,7 @@ Implementation<TraditionalProfile>::fish_out_use_expand_names()
 }
 
 void
-Implementation<TraditionalProfile>::handle_profile_arch_var(const std::string & s)
+Imp<TraditionalProfile>::handle_profile_arch_var(const std::string & s)
 {
     Context context("When handling profile " + s + " variable:");
 
@@ -833,7 +833,7 @@ TraditionalProfile::TraditionalProfile(
         const Environment * const env, const ERepository * const p, const RepositoryName & name,
         const FSEntrySequence & location,
         const std::string & arch_var_if_special, const bool x) :
-    PrivateImplementationPattern<TraditionalProfile>(env, p, name, location, arch_var_if_special, x)
+    Pimp<TraditionalProfile>(env, p, name, location, arch_var_if_special, x)
 {
 }
 

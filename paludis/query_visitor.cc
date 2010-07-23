@@ -26,7 +26,7 @@
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/util/sequence.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
@@ -40,7 +40,7 @@ using namespace paludis;
 namespace paludis
 {
     template <>
-    struct Implementation<QueryVisitor>
+    struct Imp<QueryVisitor>
     {
         bool result;
         const DepList * const dep_list;
@@ -49,7 +49,7 @@ namespace paludis
         const std::shared_ptr<const PackageID> id;
         std::set<SetName> recursing_sets;
 
-        Implementation(const DepList * const d, std::shared_ptr<const DestinationsSet> dd,
+        Imp(const DepList * const d, std::shared_ptr<const DestinationsSet> dd,
                 const Environment * const e, const std::shared_ptr<const PackageID> & p) :
             result(true),
             dep_list(d),
@@ -63,7 +63,7 @@ namespace paludis
 
 QueryVisitor::QueryVisitor(const DepList * const d, const std::shared_ptr<const DestinationsSet> & dd,
         const Environment * const e, const std::shared_ptr<const PackageID> & id) :
-    PrivateImplementationPattern<QueryVisitor>(d, dd, e, id)
+    Pimp<QueryVisitor>(d, dd, e, id)
 {
 }
 

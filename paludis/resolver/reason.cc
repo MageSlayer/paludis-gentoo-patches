@@ -22,7 +22,7 @@
 #include <paludis/resolver/sanitised_dependencies.hh>
 #include <paludis/resolver/change_by_resolvent.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/serialise-impl.hh>
 
 using namespace paludis;
@@ -35,11 +35,11 @@ Reason::~Reason()
 namespace paludis
 {
     template <>
-    struct Implementation<TargetReason>
+    struct Imp<TargetReason>
     {
         const std::string extra_information;
 
-        Implementation(const std::string & x) :
+        Imp(const std::string & x) :
             extra_information(x)
         {
         }
@@ -47,7 +47,7 @@ namespace paludis
 }
 
 TargetReason::TargetReason(const std::string & x) :
-    PrivateImplementationPattern<TargetReason>(x)
+    Pimp<TargetReason>(x)
 {
 }
 
@@ -72,14 +72,14 @@ TargetReason::serialise(Serialiser & s) const
 namespace paludis
 {
     template <>
-    struct Implementation<DependencyReason>
+    struct Imp<DependencyReason>
     {
         const std::shared_ptr<const PackageID> from_id;
         const Resolvent from_resolvent;
         const SanitisedDependency dep;
         const bool already_met;
 
-        Implementation(const std::shared_ptr<const PackageID> & i,
+        Imp(const std::shared_ptr<const PackageID> & i,
                 const Resolvent & r, const SanitisedDependency & d, const bool a) :
             from_id(i),
             from_resolvent(r),
@@ -94,7 +94,7 @@ DependencyReason::DependencyReason(const std::shared_ptr<const PackageID> & i,
         const Resolvent & r,
         const SanitisedDependency & d,
         const bool a) :
-    PrivateImplementationPattern<DependencyReason>(i, r, d, a)
+    Pimp<DependencyReason>(i, r, d, a)
 {
 }
 
@@ -140,11 +140,11 @@ DependencyReason::serialise(Serialiser & s) const
 namespace paludis
 {
     template <>
-    struct Implementation<DependentReason>
+    struct Imp<DependentReason>
     {
         const ChangeByResolvent id_being_removed;
 
-        Implementation(const ChangeByResolvent & i) :
+        Imp(const ChangeByResolvent & i) :
             id_being_removed(i)
         {
         }
@@ -152,7 +152,7 @@ namespace paludis
 }
 
 DependentReason::DependentReason(const ChangeByResolvent & i) :
-    PrivateImplementationPattern<DependentReason>(i)
+    Pimp<DependentReason>(i)
 {
 }
 
@@ -177,11 +177,11 @@ DependentReason::serialise(Serialiser & s) const
 namespace paludis
 {
     template <>
-    struct Implementation<WasUsedByReason>
+    struct Imp<WasUsedByReason>
     {
         const std::shared_ptr<const ChangeByResolventSequence> ids_being_removed;
 
-        Implementation(const std::shared_ptr<const ChangeByResolventSequence> & i) :
+        Imp(const std::shared_ptr<const ChangeByResolventSequence> & i) :
             ids_being_removed(i)
         {
         }
@@ -189,7 +189,7 @@ namespace paludis
 }
 
 WasUsedByReason::WasUsedByReason(const std::shared_ptr<const ChangeByResolventSequence> & i) :
-    PrivateImplementationPattern<WasUsedByReason>(i)
+    Pimp<WasUsedByReason>(i)
 {
 }
 
@@ -214,12 +214,12 @@ WasUsedByReason::serialise(Serialiser & s) const
 namespace paludis
 {
     template <>
-    struct Implementation<PresetReason>
+    struct Imp<PresetReason>
     {
         const std::string explanation;
         const std::shared_ptr<const Reason> reason_for_preset;
 
-        Implementation(const std::string & m, const std::shared_ptr<const Reason> & r) :
+        Imp(const std::string & m, const std::shared_ptr<const Reason> & r) :
             explanation(m),
             reason_for_preset(r)
         {
@@ -228,7 +228,7 @@ namespace paludis
 }
 
 PresetReason::PresetReason(const std::string & m, const std::shared_ptr<const Reason> & r) :
-    PrivateImplementationPattern<PresetReason>(m, r)
+    Pimp<PresetReason>(m, r)
 {
 }
 
@@ -260,12 +260,12 @@ PresetReason::serialise(Serialiser & s) const
 namespace paludis
 {
     template <>
-    struct Implementation<SetReason>
+    struct Imp<SetReason>
     {
         const SetName set_name;
         const std::shared_ptr<const Reason> reason_for_set;
 
-        Implementation(const SetName & s, const std::shared_ptr<const Reason> & r) :
+        Imp(const SetName & s, const std::shared_ptr<const Reason> & r) :
             set_name(s),
             reason_for_set(r)
         {
@@ -274,7 +274,7 @@ namespace paludis
 }
 
 SetReason::SetReason(const SetName & s, const std::shared_ptr<const Reason> & r) :
-    PrivateImplementationPattern<SetReason>(s, r)
+    Pimp<SetReason>(s, r)
 {
 }
 
@@ -306,12 +306,12 @@ SetReason::serialise(Serialiser & s) const
 namespace paludis
 {
     template <>
-    struct Implementation<LikeOtherDestinationTypeReason>
+    struct Imp<LikeOtherDestinationTypeReason>
     {
         const Resolvent other_resolvent;
         const std::shared_ptr<const Reason> reason_for_other;
 
-        Implementation(const Resolvent & s, const std::shared_ptr<const Reason> & r) :
+        Imp(const Resolvent & s, const std::shared_ptr<const Reason> & r) :
             other_resolvent(s),
             reason_for_other(r)
         {
@@ -320,7 +320,7 @@ namespace paludis
 }
 
 LikeOtherDestinationTypeReason::LikeOtherDestinationTypeReason(const Resolvent & s, const std::shared_ptr<const Reason> & r) :
-    PrivateImplementationPattern<LikeOtherDestinationTypeReason>(s, r)
+    Pimp<LikeOtherDestinationTypeReason>(s, r)
 {
 }
 
@@ -352,11 +352,11 @@ LikeOtherDestinationTypeReason::serialise(Serialiser & s) const
 namespace paludis
 {
     template <>
-    struct Implementation<ViaBinaryReason>
+    struct Imp<ViaBinaryReason>
     {
         const Resolvent other_resolvent;
 
-        Implementation(const Resolvent & s) :
+        Imp(const Resolvent & s) :
             other_resolvent(s)
         {
         }
@@ -364,7 +364,7 @@ namespace paludis
 }
 
 ViaBinaryReason::ViaBinaryReason(const Resolvent & r) :
-    PrivateImplementationPattern<ViaBinaryReason>(r)
+    Pimp<ViaBinaryReason>(r)
 {
 }
 
@@ -456,12 +456,12 @@ Reason::deserialise(Deserialisation & d)
         throw InternalError(PALUDIS_HERE, "unknown class '" + stringify(d.class_name()) + "'");
 }
 
-template class PrivateImplementationPattern<TargetReason>;
-template class PrivateImplementationPattern<DependencyReason>;
-template class PrivateImplementationPattern<DependentReason>;
-template class PrivateImplementationPattern<SetReason>;
-template class PrivateImplementationPattern<PresetReason>;
-template class PrivateImplementationPattern<WasUsedByReason>;
-template class PrivateImplementationPattern<LikeOtherDestinationTypeReason>;
-template class PrivateImplementationPattern<ViaBinaryReason>;
+template class Pimp<TargetReason>;
+template class Pimp<DependencyReason>;
+template class Pimp<DependentReason>;
+template class Pimp<SetReason>;
+template class Pimp<PresetReason>;
+template class Pimp<WasUsedByReason>;
+template class Pimp<LikeOtherDestinationTypeReason>;
+template class Pimp<ViaBinaryReason>;
 

@@ -19,7 +19,7 @@
 
 #include <paludis/about_metadata.hh>
 #include <paludis/util/singleton-impl.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/about.hh>
 
@@ -28,7 +28,7 @@ using namespace paludis;
 namespace paludis
 {
     template <>
-    struct Implementation<AboutMetadata>
+    struct Imp<AboutMetadata>
     {
         std::shared_ptr<LiteralMetadataValueKey<std::string> > package_key;
         std::shared_ptr<LiteralMetadataValueKey<std::string> > version_key;
@@ -38,7 +38,7 @@ namespace paludis
         std::shared_ptr<LiteralMetadataValueKey<std::string> > build_cxx_key;
         std::shared_ptr<LiteralMetadataValueKey<std::string> > build_date_key;
 
-        Implementation() :
+        Imp() :
             package_key(new LiteralMetadataValueKey<std::string>("PALUDIS_PACKAGE", "Package Name", mkt_significant, PALUDIS_PACKAGE)),
             version_key(new LiteralMetadataValueKey<std::string>("PALUDIS_VERSION", "Package Version", mkt_significant,
                         stringify(PALUDIS_VERSION_MAJOR) + "." + stringify(PALUDIS_VERSION_MINOR) + "." +
@@ -62,8 +62,8 @@ namespace paludis
 }
 
 AboutMetadata::AboutMetadata() :
-    PrivateImplementationPattern<AboutMetadata>(),
-    _imp(PrivateImplementationPattern<AboutMetadata>::_imp)
+    Pimp<AboutMetadata>(),
+    _imp(Pimp<AboutMetadata>::_imp)
 {
     add_metadata_key(_imp->package_key);
     add_metadata_key(_imp->version_key);
@@ -82,6 +82,6 @@ AboutMetadata::need_keys_added() const
 {
 }
 
-template class PrivateImplementationPattern<AboutMetadata>;
+template class Pimp<AboutMetadata>;
 template class Singleton<AboutMetadata>;
 

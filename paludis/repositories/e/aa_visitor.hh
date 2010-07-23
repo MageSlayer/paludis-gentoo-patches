@@ -22,7 +22,7 @@
 
 #include <paludis/spec_tree.hh>
 #include <paludis/dep_spec-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 
 /** \file
@@ -42,7 +42,7 @@ namespace paludis
          * \ingroup grpaavisitor
          */
         class PALUDIS_VISIBLE AAVisitor :
-            private PrivateImplementationPattern<AAVisitor>
+            private Pimp<AAVisitor>
         {
             public:
                 ///\name Basic operations

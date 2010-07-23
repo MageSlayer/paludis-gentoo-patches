@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_QUERY_VISITOR_HH 1
 
 #include <paludis/dep_list-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/dep_spec-fwd.hh>
 
 /** \file
@@ -43,7 +43,7 @@ namespace paludis
      * \nosubgrouping
      */
     class QueryVisitor :
-        private PrivateImplementationPattern<QueryVisitor>
+        private Pimp<QueryVisitor>
     {
         public:
             ///\name Basic operations

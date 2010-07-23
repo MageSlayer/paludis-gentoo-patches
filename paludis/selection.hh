@@ -27,7 +27,7 @@
 #include <paludis/generator-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/util/fs_entry-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/package_id-fwd.hh>
@@ -69,7 +69,7 @@ namespace paludis
      * \ingroup g_selections
      */
     class PALUDIS_VISIBLE Selection :
-        private PrivateImplementationPattern<Selection>
+        private Pimp<Selection>
     {
         protected:
             Selection(const std::shared_ptr<const SelectionHandler> &);
@@ -234,7 +234,7 @@ namespace paludis
         };
     }
 
-    extern template class PrivateImplementationPattern<Selection>;
+    extern template class Pimp<Selection>;
 }
 
 #endif

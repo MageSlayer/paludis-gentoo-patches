@@ -21,7 +21,7 @@
 #include "exact_matcher.hh"
 #include "pcre_matcher.hh"
 #include "text_matcher.hh"
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/singleton-impl.hh>
 
 using namespace inquisitio;

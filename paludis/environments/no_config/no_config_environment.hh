@@ -22,7 +22,7 @@
 
 #include <paludis/environment_implementation.hh>
 #include <paludis/util/fs_entry.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/map-fwd.hh>
 
 namespace paludis
@@ -84,10 +84,10 @@ namespace paludis
      */
     class PALUDIS_VISIBLE NoConfigEnvironment :
         public EnvironmentImplementation,
-        private PrivateImplementationPattern<NoConfigEnvironment>
+        private Pimp<NoConfigEnvironment>
     {
         private:
-            PrivateImplementationPattern<NoConfigEnvironment>::ImpPtr & _imp;
+            Pimp<NoConfigEnvironment>::ImpPtr & _imp;
 
             virtual void need_keys_added() const;
 

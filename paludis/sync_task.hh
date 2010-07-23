@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_SYNC_TASK_HH
 #define PALUDIS_GUARD_PALUDIS_SYNC_TASK_HH 1
 
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/dep_list.hh>
 
@@ -46,7 +46,7 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE SyncTask :
-        private PrivateImplementationPattern<SyncTask>
+        private Pimp<SyncTask>
     {
         protected:
             ///\name Basic operations

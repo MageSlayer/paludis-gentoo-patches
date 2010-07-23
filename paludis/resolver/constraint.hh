@@ -61,7 +61,7 @@ namespace paludis
         };
 
         class PALUDIS_VISIBLE Constraints :
-            private PrivateImplementationPattern<Constraints>
+            private Pimp<Constraints>
         {
             public:
                 Constraints();
@@ -87,7 +87,7 @@ namespace paludis
         };
     }
 
-    extern template class PrivateImplementationPattern<resolver::Constraints>;
+    extern template class Pimp<resolver::Constraints>;
     extern template class WrappedForwardIterator<resolver::Constraints::ConstIteratorTag,
            const std::shared_ptr<const resolver::Constraint> >;
 }

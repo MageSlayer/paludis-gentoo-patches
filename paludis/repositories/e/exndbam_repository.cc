@@ -24,7 +24,7 @@
 #include <paludis/repositories/e/eapi_phase.hh>
 #include <paludis/repositories/e/extra_distribution_data.hh>
 #include <paludis/repositories/e/can_skip_phase.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
@@ -62,7 +62,7 @@ namespace
 namespace paludis
 {
     template <>
-    struct Implementation<ExndbamRepository>
+    struct Imp<ExndbamRepository>
     {
         ExndbamRepositoryParams params;
         mutable NDBAM ndbam;
@@ -73,7 +73,7 @@ namespace paludis
         std::shared_ptr<const MetadataValueKey<FSEntry> > builddir_key;
         std::shared_ptr<const MetadataValueKey<std::string> > eapi_when_unknown_key;
 
-        Implementation(const ExndbamRepositoryParams & p) :
+        Imp(const ExndbamRepositoryParams & p) :
             params(p),
             ndbam(params.location(), &supported_exndbam, "exndbam-1",
                     EAPIData::get_instance()->eapi_from_string(
@@ -109,8 +109,8 @@ ExndbamRepository::ExndbamRepository(const RepositoryName & n, const ExndbamRepo
                 n::provides_interface() = static_cast<RepositoryProvidesInterface *>(0),
                 n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
             )),
-    PrivateImplementationPattern<ExndbamRepository>(p),
-    _imp(PrivateImplementationPattern<ExndbamRepository>::_imp)
+    Pimp<ExndbamRepository>(p),
+    _imp(Pimp<ExndbamRepository>::_imp)
 {
     _add_metadata_keys();
 }
@@ -195,7 +195,7 @@ ExndbamRepository::repository_factory_dependencies(
 void
 ExndbamRepository::invalidate()
 {
-    _imp.reset(new Implementation<ExndbamRepository>(_imp->params));
+    _imp.reset(new Imp<ExndbamRepository>(_imp->params));
     _add_metadata_keys();
 }
 

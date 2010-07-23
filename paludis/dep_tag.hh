@@ -242,7 +242,7 @@ namespace paludis
     class PALUDIS_VISIBLE GeneralSetDepTag :
         public DepTag,
         public ImplementAcceptMethods<DepTag, GeneralSetDepTag>,
-        private PrivateImplementationPattern<GeneralSetDepTag>
+        private Pimp<GeneralSetDepTag>
     {
         public:
             ///\name Basic operations
@@ -272,7 +272,7 @@ namespace paludis
     class PALUDIS_VISIBLE DependencyDepTag :
         public DepTag,
         public ImplementAcceptMethods<DepTag, DependencyDepTag>,
-        private PrivateImplementationPattern<DependencyDepTag>
+        private Pimp<DependencyDepTag>
     {
         private:
             void _make_str() const;
@@ -354,8 +354,8 @@ namespace paludis
     };
 
     extern template class Singleton<DepTagCategoryFactory>;
-    extern template class PrivateImplementationPattern<DependencyDepTag>;
-    extern template class PrivateImplementationPattern<GeneralSetDepTag>;
+    extern template class Pimp<DependencyDepTag>;
+    extern template class Pimp<GeneralSetDepTag>;
 
 }
 

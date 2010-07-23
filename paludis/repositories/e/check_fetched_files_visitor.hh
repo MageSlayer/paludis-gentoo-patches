@@ -22,7 +22,7 @@
 
 #include <paludis/repositories/e/e_repository_params.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/output_manager-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
@@ -37,7 +37,7 @@ namespace paludis
     namespace erepository
     {
         class PALUDIS_VISIBLE CheckFetchedFilesVisitor :
-            private PrivateImplementationPattern<CheckFetchedFilesVisitor>
+            private Pimp<CheckFetchedFilesVisitor>
         {
             private:
                 bool check_distfile_manifest(const FSEntry & distfile);

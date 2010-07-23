@@ -27,7 +27,7 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/util/sequence-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/spec_tree-fwd.hh>
@@ -49,7 +49,7 @@ namespace paludis
         };
 
         class PALUDIS_VISIBLE SpecRewriter :
-            private PrivateImplementationPattern<SpecRewriter>
+            private Pimp<SpecRewriter>
         {
             private:
                 void _need_rewrites() const;
@@ -63,7 +63,7 @@ namespace paludis
         };
     }
 
-    extern template class PrivateImplementationPattern<resolver::SpecRewriter>;
+    extern template class Pimp<resolver::SpecRewriter>;
 
 }
 

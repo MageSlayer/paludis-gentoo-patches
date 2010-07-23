@@ -25,13 +25,13 @@
 #include <paludis/util/hashes.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/options.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <unordered_map>
 
 namespace paludis
 {
     template <typename Data_>
-    struct Implementation<ExtraDistributionData<Data_> >
+    struct Imp<ExtraDistributionData<Data_> >
     {
         mutable Mutex mutex;
         mutable std::unordered_map<std::string, std::shared_ptr<const Data_>, Hash<std::string> > values;
@@ -39,7 +39,7 @@ namespace paludis
 
     template <typename Data_>
     ExtraDistributionData<Data_>::ExtraDistributionData() :
-        PrivateImplementationPattern<ExtraDistributionData<Data_> >()
+        Pimp<ExtraDistributionData<Data_> >()
     {
     }
 

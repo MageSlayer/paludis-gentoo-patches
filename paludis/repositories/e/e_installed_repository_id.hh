@@ -33,10 +33,10 @@ namespace paludis
         class EInstalledRepositoryID :
             public ERepositoryID,
             public std::enable_shared_from_this<EInstalledRepositoryID>,
-            private PrivateImplementationPattern<EInstalledRepositoryID>
+            private Pimp<EInstalledRepositoryID>
         {
             private:
-                PrivateImplementationPattern<EInstalledRepositoryID>::ImpPtr & _imp;
+                Pimp<EInstalledRepositoryID>::ImpPtr & _imp;
 
             protected:
                 virtual void need_keys_added() const;

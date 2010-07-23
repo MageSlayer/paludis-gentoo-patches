@@ -18,7 +18,7 @@
  */
 
 #include <paludis/elike_annotations.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/literal_metadata_key.hh>
@@ -28,13 +28,13 @@ using namespace paludis;
 namespace paludis
 {
     template <>
-    struct Implementation<ELikeAnnotations>
+    struct Imp<ELikeAnnotations>
     {
     };
 }
 
 ELikeAnnotations::ELikeAnnotations(const std::shared_ptr<const Map<std::string, std::string> > & m) :
-    PrivateImplementationPattern<ELikeAnnotations>()
+    Pimp<ELikeAnnotations>()
 {
     for (Map<std::string, std::string>::ConstIterator k(m->begin()), k_end(m->end()) ;
             k != k_end ; ++k)
@@ -70,5 +70,5 @@ ELikeAnnotations::type() const
     return mkt_normal;
 }
 
-template class PrivateImplementationPattern<ELikeAnnotations>;
+template class Pimp<ELikeAnnotations>;
 

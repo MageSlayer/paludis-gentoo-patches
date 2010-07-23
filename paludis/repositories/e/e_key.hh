@@ -60,7 +60,7 @@ namespace paludis
 
         class EDependenciesKey :
             public MetadataSpecTreeKey<DependencySpecTree>,
-            private PrivateImplementationPattern<EDependenciesKey>
+            private Pimp<EDependenciesKey>
         {
             public:
                 EDependenciesKey(
@@ -90,7 +90,7 @@ namespace paludis
 
         class EFetchableURIKey :
             public MetadataSpecTreeKey<FetchableURISpecTree>,
-            private PrivateImplementationPattern<EFetchableURIKey>
+            private Pimp<EFetchableURIKey>
         {
             public:
                 EFetchableURIKey(const Environment * const,
@@ -119,7 +119,7 @@ namespace paludis
 
         class ESimpleURIKey :
             public MetadataSpecTreeKey<SimpleURISpecTree>,
-            private PrivateImplementationPattern<ESimpleURIKey>
+            private Pimp<ESimpleURIKey>
         {
             public:
                 ESimpleURIKey(const Environment * const,
@@ -143,7 +143,7 @@ namespace paludis
 
         class EPlainTextSpecKey :
             public MetadataSpecTreeKey<PlainTextSpecTree>,
-            private PrivateImplementationPattern<EPlainTextSpecKey>
+            private Pimp<EPlainTextSpecKey>
         {
             public:
                 EPlainTextSpecKey(const Environment * const,
@@ -168,7 +168,7 @@ namespace paludis
 
         class EMyOptionsKey :
             public MetadataSpecTreeKey<PlainTextSpecTree>,
-            private PrivateImplementationPattern<EMyOptionsKey>
+            private Pimp<EMyOptionsKey>
         {
             public:
                 EMyOptionsKey(const Environment * const,
@@ -192,7 +192,7 @@ namespace paludis
 
         class EProvideKey :
             public MetadataSpecTreeKey<ProvideSpecTree>,
-            private PrivateImplementationPattern<EProvideKey>
+            private Pimp<EProvideKey>
         {
             public:
                 EProvideKey(const Environment * const,
@@ -216,7 +216,7 @@ namespace paludis
 
         class ELicenseKey :
             public MetadataSpecTreeKey<LicenseSpecTree>,
-            private PrivateImplementationPattern<ELicenseKey>
+            private Pimp<ELicenseKey>
         {
             public:
                 ELicenseKey(
@@ -242,7 +242,7 @@ namespace paludis
 
         class EKeywordsKey :
             public MetadataCollectionKey<KeywordNameSet>,
-            private PrivateImplementationPattern<EKeywordsKey>
+            private Pimp<EKeywordsKey>
         {
             public:
                 EKeywordsKey(
@@ -264,7 +264,7 @@ namespace paludis
 
         class EStringSetKey :
             public MetadataCollectionKey<Set<std::string> >,
-            private PrivateImplementationPattern<EStringSetKey>
+            private Pimp<EStringSetKey>
         {
             public:
                 EStringSetKey(const std::shared_ptr<const ERepositoryID> &,
@@ -284,7 +284,7 @@ namespace paludis
 
         class EContentsKey :
             public MetadataValueKey<std::shared_ptr<const Contents> >,
-            private PrivateImplementationPattern<EContentsKey>
+            private Pimp<EContentsKey>
         {
             public:
                 EContentsKey(
@@ -302,7 +302,7 @@ namespace paludis
 
         class EMTimeKey :
             public MetadataTimeKey,
-            private PrivateImplementationPattern<EMTimeKey>
+            private Pimp<EMTimeKey>
         {
             public:
                 EMTimeKey(const std::shared_ptr<const ERepositoryID> &,
@@ -319,7 +319,7 @@ namespace paludis
 
         class ESlotKey :
             public MetadataValueKey<SlotName>,
-            private PrivateImplementationPattern<ESlotKey>
+            private Pimp<ESlotKey>
         {
             public:
                 ESlotKey(

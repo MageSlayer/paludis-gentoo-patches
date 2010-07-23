@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_ARGS_ARGS_GROUP_HH 1
 
 #include <paludis/args/args_option.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <string>
 
 /** \file
@@ -48,7 +48,7 @@ namespace paludis
          * \nosubgrouping
          */
         class PALUDIS_VISIBLE ArgsGroup :
-            private PrivateImplementationPattern<ArgsGroup>
+            private Pimp<ArgsGroup>
         {
             private:
                 const std::string _name;

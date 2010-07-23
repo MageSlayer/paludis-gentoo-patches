@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_UTIL_THREAD_POOL_HH 1
 
 #include <paludis/util/attributes.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <functional>
 
 /** \file
@@ -43,7 +43,7 @@ namespace paludis
      * \since 0.26
      */
     class PALUDIS_VISIBLE ThreadPool :
-        private PrivateImplementationPattern<ThreadPool>
+        private Pimp<ThreadPool>
     {
         public:
             ///\name Basic operations

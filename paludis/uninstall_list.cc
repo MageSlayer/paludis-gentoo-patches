@@ -25,7 +25,7 @@
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/set-impl.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/wrapped_output_iterator-impl.hh>
@@ -62,7 +62,7 @@ typedef std::unordered_map<
 namespace paludis
 {
     template<>
-    struct Implementation<UninstallList>
+    struct Imp<UninstallList>
     {
         const Environment * const env;
         UninstallListOptions options;
@@ -71,7 +71,7 @@ namespace paludis
         mutable Mutex dep_collector_cache_mutex;
         mutable DepCollectorCache dep_collector_cache;
 
-        Implementation(const Environment * const e, const UninstallListOptions & o) :
+        Imp(const Environment * const e, const UninstallListOptions & o) :
             env(e),
             options(o)
         {
@@ -104,7 +104,7 @@ namespace
 }
 
 UninstallList::UninstallList(const Environment * const env, const UninstallListOptions & o) :
-    PrivateImplementationPattern<UninstallList>(env, o),
+    Pimp<UninstallList>(env, o),
     options(_imp->options)
 {
 }

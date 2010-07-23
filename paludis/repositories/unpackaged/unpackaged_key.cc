@@ -19,7 +19,7 @@
 
 #include <paludis/repositories/unpackaged/unpackaged_key.hh>
 #include <paludis/repositories/unpackaged/unpackaged_id.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/set.hh>
@@ -36,7 +36,7 @@ using namespace paludis::unpackaged_repositories;
 namespace paludis
 {
     template <>
-    struct Implementation<UnpackagedDependencyKey>
+    struct Imp<UnpackagedDependencyKey>
     {
         const Environment * const env;
         const std::shared_ptr<const DependencySpecTree> value;
@@ -46,7 +46,7 @@ namespace paludis
         const std::string human_name;
         const MetadataKeyType type;
 
-        Implementation(const Environment * const e, const std::string & v,
+        Imp(const Environment * const e, const std::string & v,
                 const std::shared_ptr<const DependenciesLabelSequence> & l,
                 const std::string & r, const std::string & h, const MetadataKeyType t) :
             env(e),
@@ -64,7 +64,7 @@ UnpackagedDependencyKey::UnpackagedDependencyKey(const Environment * const env,
         const std::string & r, const std::string & h, const MetadataKeyType t,
         const std::shared_ptr<const DependenciesLabelSequence> & l,
         const std::string & v) :
-    PrivateImplementationPattern<UnpackagedDependencyKey>(env, v, l, r, h, t)
+    Pimp<UnpackagedDependencyKey>(env, v, l, r, h, t)
 {
 }
 
@@ -121,7 +121,7 @@ UnpackagedDependencyKey::initial_labels() const
 namespace paludis
 {
     template <>
-    struct Implementation<UnpackagedChoicesKey>
+    struct Imp<UnpackagedChoicesKey>
     {
         const Environment * const env;
         const UnpackagedID * const id;
@@ -133,7 +133,7 @@ namespace paludis
         const std::string human_name;
         const MetadataKeyType type;
 
-        Implementation(const Environment * const e, const UnpackagedID * const i,
+        Imp(const Environment * const e, const UnpackagedID * const i,
                 const std::string & r, const std::string & h, const MetadataKeyType t) :
             env(e),
             id(i),
@@ -147,7 +147,7 @@ namespace paludis
 
 UnpackagedChoicesKey::UnpackagedChoicesKey(const Environment * const env, const std::string & r, const std::string & h,
         const MetadataKeyType t, const UnpackagedID * const id) :
-    PrivateImplementationPattern<UnpackagedChoicesKey>(env, id, r, h, t)
+    Pimp<UnpackagedChoicesKey>(env, id, r, h, t)
 {
 }
 

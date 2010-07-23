@@ -19,7 +19,7 @@
 
 #include <paludis/args/args_group.hh>
 #include <paludis/args/args_section.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <list>
 
@@ -29,12 +29,12 @@ using namespace paludis::args;
 namespace paludis
 {
     /**
-     * Implementation data for ArgsGroup.
+     * Imp data for ArgsGroup.
      *
      * \ingroup grplibpaludisargs
      */
     template<>
-    struct Implementation<ArgsGroup>
+    struct Imp<ArgsGroup>
     {
         std::list<ArgsOption *> args_options;
     };
@@ -48,7 +48,7 @@ namespace paludis
 
 ArgsGroup::ArgsGroup(ArgsSection * s, const std::string & our_name,
         const std::string & our_description) :
-    PrivateImplementationPattern<ArgsGroup>(),
+    Pimp<ArgsGroup>(),
     _name(our_name),
     _description(our_description),
     _section(s)

@@ -23,7 +23,7 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/is_file_with_extension.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -42,7 +42,7 @@ typedef std::unordered_map<std::pair<ChoicePrefixName, UnprefixedChoiceName>, st
 namespace paludis
 {
     template<>
-    struct Implementation<UseDesc>
+    struct Imp<UseDesc>
     {
         std::unordered_map<QualifiedPackageName, UseDescs, Hash<QualifiedPackageName> > local_descs;
         UseDescs global_descs;
@@ -69,7 +69,7 @@ namespace paludis
             }
         }
 
-        Implementation(const std::shared_ptr<const UseDescFileInfoSequence> & f)
+        Imp(const std::shared_ptr<const UseDescFileInfoSequence> & f)
         {
             for (UseDescFileInfoSequence::ConstIterator ff(f->begin()), ff_end(f->end()) ;
                     ff != ff_end ; ++ff)
@@ -79,7 +79,7 @@ namespace paludis
 }
 
 UseDesc::UseDesc(const std::shared_ptr<const UseDescFileInfoSequence> & f) :
-    PrivateImplementationPattern<UseDesc>(f)
+    Pimp<UseDesc>(f)
 {
 }
 

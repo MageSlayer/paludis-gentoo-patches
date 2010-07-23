@@ -80,7 +80,7 @@ namespace
 namespace paludis
 {
     template <>
-    struct Implementation<NDBAM>
+    struct Imp<NDBAM>
     {
         const FSEntry location;
         const VersionSpecOptions version_options;
@@ -92,7 +92,7 @@ namespace paludis
         mutable Mutex category_names_containing_package_mutex;
         mutable CategoryNamesContainingPackage category_names_containing_package;
 
-        Implementation(const FSEntry & l, const VersionSpecOptions & o) :
+        Imp(const FSEntry & l, const VersionSpecOptions & o) :
             location(l),
             version_options(o)
         {
@@ -104,7 +104,7 @@ NDBAM::NDBAM(const FSEntry & l,
         const std::function<bool (const std::string &)> & check_format,
         const std::string & preferred_format,
         const VersionSpecOptions & version_options) :
-    PrivateImplementationPattern<NDBAM>(l, version_options)
+    Pimp<NDBAM>(l, version_options)
 {
     Context c("When checking NDBAM layout at '" + stringify(l) + "':");
     if ((l / "ndbam.conf").exists())

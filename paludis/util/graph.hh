@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_UTIL_GRAPH_HH 1
 
 #include <paludis/util/graph-fwd.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/exception.hh>
 #include <memory>
 
@@ -145,10 +145,10 @@ namespace paludis
      */
     template <typename Node_, typename Edge_, typename Comparator_>
     class PALUDIS_VISIBLE DirectedGraph :
-        private PrivateImplementationPattern<DirectedGraph<Node_, Edge_, Comparator_> >
+        private Pimp<DirectedGraph<Node_, Edge_, Comparator_> >
     {
         private:
-            using PrivateImplementationPattern<DirectedGraph<Node_, Edge_, Comparator_> >::_imp;
+            using Pimp<DirectedGraph<Node_, Edge_, Comparator_> >::_imp;
 
             void operator= (const DirectedGraph &);
 

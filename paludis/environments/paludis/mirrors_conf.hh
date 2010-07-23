@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_ENVIRONMENTS_PALUDIS_MIRRORS_CONF_HH
 #define PALUDIS_GUARD_PALUDIS_ENVIRONMENTS_PALUDIS_MIRRORS_CONF_HH 1
 
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/environment.hh>
 #include <paludis/name.hh>
@@ -38,7 +38,7 @@ namespace paludis
          * \nosubgrouping
          */
         class MirrorsConf :
-            private PrivateImplementationPattern<MirrorsConf>
+            private Pimp<MirrorsConf>
         {
             public:
                 ///\name Basic operations

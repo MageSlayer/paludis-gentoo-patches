@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_UTIL_SYSTEM_HH 1
 
 #include <paludis/util/exception.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <memory>
 #include <functional>
@@ -108,7 +108,7 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE Command :
-        private PrivateImplementationPattern<Command>
+        private Pimp<Command>
     {
         public:
             ///\name Basic operations

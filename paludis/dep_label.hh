@@ -23,7 +23,7 @@
 #include <paludis/dep_label-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/util/simple_visitor.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/type_list.hh>
 #include <paludis/util/sequence.hh>

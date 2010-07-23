@@ -23,7 +23,7 @@
 #include <paludis/repositories/gems/gem_specification-fwd.hh>
 #include <paludis/repositories/gems/yaml-fwd.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/name-fwd.hh>
@@ -44,7 +44,7 @@ namespace paludis
          * \nosubgrouping
          */
         class PALUDIS_VISIBLE GemSpecifications :
-            private PrivateImplementationPattern<GemSpecifications>
+            private Pimp<GemSpecifications>
         {
             public:
                 ///\name Basic operations

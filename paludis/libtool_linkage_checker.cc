@@ -25,7 +25,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/options.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/safe_ifstream.hh>
@@ -43,7 +43,7 @@ typedef std::vector<std::pair<FSEntry, std::string> > Breakage;
 namespace paludis
 {
     template <>
-    struct Implementation<LibtoolLinkageChecker>
+    struct Imp<LibtoolLinkageChecker>
     {
         FSEntry root;
 
@@ -51,7 +51,7 @@ namespace paludis
 
         Breakage breakage;
 
-        Implementation(const FSEntry & the_root) :
+        Imp(const FSEntry & the_root) :
             root(the_root)
         {
         }
@@ -70,7 +70,7 @@ namespace
 }
 
 LibtoolLinkageChecker::LibtoolLinkageChecker(const FSEntry & root) :
-    PrivateImplementationPattern<LibtoolLinkageChecker>(root)
+    Pimp<LibtoolLinkageChecker>(root)
 {
 }
 

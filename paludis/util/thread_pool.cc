@@ -19,7 +19,7 @@
 
 #include <paludis/util/thread_pool.hh>
 #include <paludis/util/thread.hh>
-#include <paludis/util/private_implementation_pattern-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <memory>
 #include <deque>
 
@@ -28,14 +28,14 @@ using namespace paludis;
 namespace paludis
 {
     template <>
-    struct Implementation<ThreadPool>
+    struct Imp<ThreadPool>
     {
         std::deque<std::shared_ptr<Thread> > threads;
     };
 }
 
 ThreadPool::ThreadPool() :
-    PrivateImplementationPattern<ThreadPool>()
+    Pimp<ThreadPool>()
 {
 }
 

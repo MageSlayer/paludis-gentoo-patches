@@ -20,52 +20,52 @@
 #ifndef PALUDIS_GUARD_PALUDIS_UTIL_PRIVATE_IMPLEMENTATION_PATTERN_IMPL_HH
 #define PALUDIS_GUARD_PALUDIS_UTIL_PRIVATE_IMPLEMENTATION_PATTERN_IMPL_HH 1
 
-#include <paludis/util/private_implementation_pattern.hh>
+#include <paludis/util/pimp.hh>
 #include <utility>
 
 /** \file
- * Implementation for paludis/util/private_implementation_pattern.hh .
+ * Imp for paludis/util/pimp.hh .
  *
  * \ingroup g_oo
  */
 
 template <typename C_>
 template <typename... Args_>
-paludis::PrivateImplementationPattern<C_>::ImpPtr::ImpPtr(Args_ && ... args) :
-    _ptr(new Implementation<C_>{std::forward<Args_>(args)...})
+paludis::Pimp<C_>::ImpPtr::ImpPtr(Args_ && ... args) :
+    _ptr(new Imp<C_>{std::forward<Args_>(args)...})
 {
 }
 
 template <typename C_>
-paludis::PrivateImplementationPattern<C_>::ImpPtr::ImpPtr(ImpPtr && other) :
+paludis::Pimp<C_>::ImpPtr::ImpPtr(ImpPtr && other) :
     _ptr(std::move(other._ptr))
 {
     other._ptr = 0;
 }
 
 template <typename C_>
-paludis::PrivateImplementationPattern<C_>::ImpPtr::~ImpPtr()
+paludis::Pimp<C_>::ImpPtr::~ImpPtr()
 {
     delete _ptr;
 }
 
 template <typename C_>
-paludis::Implementation<C_> *
-paludis::PrivateImplementationPattern<C_>::ImpPtr::get()
+paludis::Imp<C_> *
+paludis::Pimp<C_>::ImpPtr::get()
 {
     return _ptr;
 }
 
 template <typename C_>
-const paludis::Implementation<C_> *
-paludis::PrivateImplementationPattern<C_>::ImpPtr::get() const
+const paludis::Imp<C_> *
+paludis::Pimp<C_>::ImpPtr::get() const
 {
     return _ptr;
 }
 
 template <typename C_>
 void
-paludis::PrivateImplementationPattern<C_>::ImpPtr::reset(Implementation<C_> * p)
+paludis::Pimp<C_>::ImpPtr::reset(Imp<C_> * p)
 {
     delete _ptr;
     _ptr = p;
@@ -73,13 +73,13 @@ paludis::PrivateImplementationPattern<C_>::ImpPtr::reset(Implementation<C_> * p)
 
 template <typename C_>
 template <typename... Args_>
-paludis::PrivateImplementationPattern<C_>::PrivateImplementationPattern(Args_ && ... args) :
+paludis::Pimp<C_>::Pimp(Args_ && ... args) :
     _imp(std::forward<Args_>(args)...)
 {
 }
 
 template <typename C_>
-paludis::PrivateImplementationPattern<C_>::~PrivateImplementationPattern()
+paludis::Pimp<C_>::~Pimp()
 {
 }
 
