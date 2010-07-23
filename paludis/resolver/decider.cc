@@ -1926,7 +1926,19 @@ Decider::purge()
         if (resolution->decision())
             continue;
 
-        const std::shared_ptr<const ChangeByResolventSequence> used_to_use(new ChangeByResolventSequence);
+        auto used_to_use(std::make_shared<ChangeByResolventSequence>());
+        {
+            auto i_seq(std::make_shared<PackageIDSequence>());
+            i_seq->push_back(*i);
+            for (auto u(unused->begin()), u_end(unused->end()) ;
+                    u != u_end ; ++u)
+                if (! _collect_depped_upon(*u, i_seq)->empty())
+                    used_to_use->push_back(make_named_values<ChangeByResolvent>(
+                                n::package_id() = *u,
+                                n::resolvent() = Resolvent(*u, dt_install_to_slash)
+                                ));
+        }
+
         const std::shared_ptr<const ConstraintSequence> constraints(_make_constraints_for_purge(resolution, *i, used_to_use));
         for (ConstraintSequence::ConstIterator c(constraints->begin()), c_end(constraints->end()) ;
                 c != c_end ; ++c)
