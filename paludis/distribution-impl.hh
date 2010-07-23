@@ -61,7 +61,7 @@ namespace paludis
         if (this->_imp->values.end() != v)
             return v->second;
 
-        std::shared_ptr<KeyValueConfigFile> k(new KeyValueConfigFile(d.extra_data_dir() / ExtraDistributionDataData<Data_>::config_file_name(),
+        std::shared_ptr<KeyValueConfigFile> k(std::make_shared<KeyValueConfigFile>(d.extra_data_dir() / ExtraDistributionDataData<Data_>::config_file_name(),
                     KeyValueConfigFileOptions(), &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation));
         std::shared_ptr<const Data_> data(ExtraDistributionDataData<Data_>::make_data(k));
         this->_imp->values.insert(std::make_pair(d.name(), data));

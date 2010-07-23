@@ -293,7 +293,7 @@ EChoicesKey::populate_myoptions() const
 {
     Context local_context("When using raw_myoptions_key to populate choices:");
 
-    std::shared_ptr<Choice> options(new Choice(make_named_values<ChoiceParams>(
+    std::shared_ptr<Choice> options(std::make_shared<Choice>(make_named_values<ChoiceParams>(
                     n::consider_added_or_changed() = true,
                     n::contains_every_value() = false,
                     n::hidden() = false,
@@ -321,7 +321,7 @@ EChoicesKey::populate_myoptions() const
 
             std::string lower_u;
             std::transform(u->begin(), u->end(), std::back_inserter(lower_u), &::tolower);
-            std::shared_ptr<Choice> exp(new Choice(make_named_values<ChoiceParams>(
+            std::shared_ptr<Choice> exp(std::make_shared<Choice>(make_named_values<ChoiceParams>(
                             n::consider_added_or_changed() = true,
                             n::contains_every_value() = false,
                             n::hidden() = hidden ? hidden->end() != hidden->find(*u) : false,
@@ -367,7 +367,7 @@ EChoicesKey::populate_iuse() const
 {
     Context local_context("When using raw_iuse_key and raw_use_key to populate choices:");
 
-    std::shared_ptr<Choice> use(new Choice(make_named_values<ChoiceParams>(
+    std::shared_ptr<Choice> use(std::make_shared<Choice>(make_named_values<ChoiceParams>(
                     n::consider_added_or_changed() = true,
                     n::contains_every_value() = false,
                     n::hidden() = false,
@@ -475,7 +475,7 @@ EChoicesKey::populate_iuse() const
     std::string env_arch(_imp->id->eapi()->supported()->ebuild_environment_variables()->env_arch());
     if ((! env_arch.empty()) && _imp->maybe_e_repository && ! _imp->id->eapi()->supported()->ebuild_options()->require_use_expand_in_iuse())
     {
-        std::shared_ptr<Choice> arch(new Choice(make_named_values<ChoiceParams>(
+        std::shared_ptr<Choice> arch(std::make_shared<Choice>(make_named_values<ChoiceParams>(
                         n::consider_added_or_changed() = false,
                         n::contains_every_value() = false,
                         n::hidden() = true,
@@ -499,7 +499,7 @@ EChoicesKey::populate_iuse() const
         {
             std::string lower_u;
             std::transform(u->begin(), u->end(), std::back_inserter(lower_u), &::tolower);
-            std::shared_ptr<Choice> exp(new Choice(make_named_values<ChoiceParams>(
+            std::shared_ptr<Choice> exp(std::make_shared<Choice>(make_named_values<ChoiceParams>(
                             n::consider_added_or_changed() = true,
                             n::contains_every_value() = ! _imp->id->eapi()->supported()->ebuild_options()->require_use_expand_in_iuse(),
                             n::hidden() = hidden ? hidden->end() != hidden->find(*u) : false,

@@ -193,15 +193,15 @@ namespace paludis
                 package_mask_file(p),
                 env(e),
                 repository(p),
-                profiles_with_parents(new FSEntrySequence),
-                system_packages(new SetSpecTree(std::make_shared<AllDepSpec>())),
-                system_tag(new GeneralSetDepTag(SetName("system"), stringify(name))),
-                virtuals(new Map<QualifiedPackageName, PackageDepSpec>),
-                use_expand(new Set<std::string>),
-                use_expand_hidden(new Set<std::string>),
-                use_expand_unprefixed(new Set<std::string>),
-                use_expand_implicit(new Set<std::string>),
-                iuse_implicit(new Set<std::string>)
+                profiles_with_parents(std::make_shared<FSEntrySequence>()),
+                system_packages(std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>())),
+                system_tag(std::make_shared<GeneralSetDepTag>(SetName("system"), stringify(name))),
+                virtuals(std::make_shared<Map<QualifiedPackageName, PackageDepSpec>>()),
+                use_expand(std::make_shared<Set<std::string>>()),
+                use_expand_hidden(std::make_shared<Set<std::string>>()),
+                use_expand_unprefixed(std::make_shared<Set<std::string>>()),
+                use_expand_implicit(std::make_shared<Set<std::string>>()),
+                iuse_implicit(std::make_shared<Set<std::string>>())
             {
                 Context context("When loading profiles '" + join(dirs.begin(), dirs.end(), "' '") + "' for repository '" + stringify(name) + "':");
 
@@ -454,7 +454,7 @@ Imp<TraditionalProfile>::load_profile_make_defaults(const FSEntry & dir)
             for (Set<std::string>::ConstIterator x(use_expand->begin()), x_end(use_expand->end()) ;
                     x != x_end ; ++x)
             {
-                std::shared_ptr<Set<std::string> > v(new Set<std::string>);
+                std::shared_ptr<Set<std::string> > v(std::make_shared<Set<std::string>>());
                 tokenise_whitespace(environment_variables[use_expand_values_part_var + *x], v->inserter());
                 use_expand_values.insert(std::make_pair(*x, v));
             }
@@ -462,7 +462,7 @@ Imp<TraditionalProfile>::load_profile_make_defaults(const FSEntry & dir)
             for (Set<std::string>::ConstIterator x(use_expand_unprefixed->begin()), x_end(use_expand_unprefixed->end()) ;
                     x != x_end ; ++x)
             {
-                std::shared_ptr<Set<std::string> > v(new Set<std::string>);
+                std::shared_ptr<Set<std::string> > v(std::make_shared<Set<std::string>>());
                 tokenise_whitespace(environment_variables[use_expand_values_part_var + *x], v->inserter());
                 use_expand_values.insert(std::make_pair(*x, v));
             }
@@ -576,7 +576,7 @@ Imp<TraditionalProfile>::make_vars_from_file_vars()
                     continue;
 
                 Context context_spec("When parsing '" + i->second + "':");
-                std::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
+                std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(
                             parse_elike_package_dep_spec(i->second.substr(1),
                                 i->first->supported()->package_dep_spec_parse_options(),
                                 i->first->supported()->version_spec_options(),
@@ -634,7 +634,7 @@ Imp<TraditionalProfile>::make_vars_from_file_vars()
 
         try
         {
-            std::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(
+            std::shared_ptr<const PackageDepSpec> a(std::make_shared<PackageDepSpec>(
                         parse_elike_package_dep_spec(line->second.first,
                             line->first->supported()->package_dep_spec_parse_options(),
                             line->first->supported()->version_spec_options(),
@@ -718,7 +718,7 @@ Imp<TraditionalProfile>::load_spec_use_file(const EAPI & eapi, const FSEntry & f
 
         try
         {
-            std::shared_ptr<const PackageDepSpec> spec(new PackageDepSpec(
+            std::shared_ptr<const PackageDepSpec> spec(std::make_shared<PackageDepSpec>(
                         parse_elike_package_dep_spec(*tokens.begin(), eapi.supported()->package_dep_spec_parse_options(),
                             eapi.supported()->version_spec_options(),
                             std::shared_ptr<const PackageID>())));
@@ -988,7 +988,7 @@ TraditionalProfile::known_choice_value_names(
     KnownMap::const_iterator it2(it->second.find(lower_x));
     if (it->second.end() == it2)
     {
-        std::shared_ptr<Set<UnprefixedChoiceName> > result(new Set<UnprefixedChoiceName>);
+        std::shared_ptr<Set<UnprefixedChoiceName> > result(std::make_shared<Set<UnprefixedChoiceName>>());
         it2 = it->second.insert(std::make_pair(lower_x, result)).first;
 
         KnownMap::const_iterator i(_imp->known_choice_value_names.find(lower_x));

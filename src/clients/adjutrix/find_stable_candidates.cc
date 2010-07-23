@@ -143,7 +143,7 @@ namespace
         SlotsToVersions slots_to_versions;
 
         std::shared_ptr<const PackageIDSequence> versions(repo.package_ids(package));
-        std::shared_ptr<PackageIDSet> versions_sorted(new PackageIDSet);
+        std::shared_ptr<PackageIDSet> versions_sorted(std::make_shared<PackageIDSet>());
         std::copy(versions->begin(), versions->end(), versions_sorted->inserter());
         for (PackageIDSet::ConstIterator v(versions_sorted->begin()), v_end(versions_sorted->end()) ;
                 v != v_end ; ++v)

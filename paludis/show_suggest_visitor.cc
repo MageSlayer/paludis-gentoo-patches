@@ -226,7 +226,7 @@ ShowSuggestVisitor::visit(const DependencySpecTree::NodeType<PackageDepSpec>::Ty
 void
 ShowSuggestVisitor::visit(const DependencySpecTree::NodeType<DependenciesLabelsDepSpec>::Type & node)
 {
-    std::shared_ptr<DependenciesLabelSequence> labels(new DependenciesLabelSequence);
+    std::shared_ptr<DependenciesLabelSequence> labels(std::make_shared<DependenciesLabelSequence>());
     std::copy(node.spec()->begin(), node.spec()->end(), labels->back_inserter());
     *_imp->labels.begin() = labels;
 }

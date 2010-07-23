@@ -130,7 +130,7 @@ main(int argc, char *argv[])
         if (! CommandLine::get_instance()->a_write_cache_dir.specified())
             CommandLine::get_instance()->a_write_cache_dir.set_argument("/var/empty");
 
-        std::shared_ptr<FSEntrySequence> extra_repository_dirs(new FSEntrySequence);
+        std::shared_ptr<FSEntrySequence> extra_repository_dirs(std::make_shared<FSEntrySequence>());
         for (args::StringSequenceArg::ConstIterator d(CommandLine::get_instance()->a_extra_repository_dir.begin_args()),
                 d_end(CommandLine::get_instance()->a_extra_repository_dir.end_args()) ;
                 d != d_end ; ++d)

@@ -85,19 +85,19 @@ namespace paludis
         const ActiveObjectPtr<DeferredConstructionPtr<std::shared_ptr<AccountsRepositoryStore> > > store;
 
         Imp(AccountsRepository * const repo, const AccountsRepositoryParams & p) :
-            params_if_not_installed(new AccountsRepositoryParams(p)),
-            format_key(new LiteralMetadataValueKey<std::string> ("format", "format", mkt_significant, "accounts")),
+            params_if_not_installed(std::make_shared<AccountsRepositoryParams>(p)),
+            format_key(std::make_shared<LiteralMetadataValueKey<std::string> >("format", "format", mkt_significant, "accounts")),
             store(DeferredConstructionPtr<std::shared_ptr<AccountsRepositoryStore> > (
                         std::bind(&make_store, repo, std::cref(*params_if_not_installed))))
         {
         }
 
         Imp(AccountsRepository * const repo, const InstalledAccountsRepositoryParams & p) :
-            params_if_installed(new InstalledAccountsRepositoryParams(p)),
+            params_if_installed(std::make_shared<InstalledAccountsRepositoryParams>(p)),
             handler_if_installed(make_handler(p.handler())),
-            format_key(new LiteralMetadataValueKey<std::string> ("format", "format", mkt_significant, "installed-accounts")),
-            handler_key(new LiteralMetadataValueKey<std::string> ("handler", "handler", mkt_normal, p.handler())),
-            installed_root_key(new LiteralMetadataValueKey<FSEntry>("root", "root", mkt_normal, p.root())),
+            format_key(std::make_shared<LiteralMetadataValueKey<std::string> >("format", "format", mkt_significant, "installed-accounts")),
+            handler_key(std::make_shared<LiteralMetadataValueKey<std::string> >("handler", "handler", mkt_normal, p.handler())),
+            installed_root_key(std::make_shared<LiteralMetadataValueKey<FSEntry>>("root", "root", mkt_normal, p.root())),
             store(DeferredConstructionPtr<std::shared_ptr<AccountsRepositoryStore> > (
                         std::bind(&make_installed_store, repo, std::cref(*params_if_installed))))
         {
@@ -171,7 +171,7 @@ AccountsRepository::repository_factory_create(
     if (name_str.empty())
         name_str = "accounts";
 
-    return std::shared_ptr<AccountsRepository>(new AccountsRepository(
+    return std::shared_ptr<AccountsRepository>(std::make_shared<AccountsRepository>(
                 make_named_values<AccountsRepositoryParams>(
                     n::environment() = env,
                     n::name() = RepositoryName(name_str)
@@ -200,7 +200,7 @@ AccountsRepository::repository_factory_installed_create(
     if (root_str != "/")
         throw AccountsRepositoryConfigurationError("Values other than '/' for 'root' not yet supported");
 
-    return std::shared_ptr<AccountsRepository>(new AccountsRepository(
+    return std::shared_ptr<AccountsRepository>(std::make_shared<AccountsRepository>(
                 make_named_values<InstalledAccountsRepositoryParams>(
                     n::environment() = env,
                     n::handler() = handler,

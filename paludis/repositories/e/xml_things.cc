@@ -125,7 +125,7 @@ namespace
 
         public:
             GLSAHandler() :
-                _glsa(new GLSA)
+                _glsa(std::make_shared<GLSA>())
             {
             }
 
@@ -238,7 +238,7 @@ namespace
                         {
                             std::string m;
                             handle_package_name(doc, n->properties, m);
-                            std::shared_ptr<GLSAPackage> pkg(new GLSAPackage(QualifiedPackageName(m)));
+                            std::shared_ptr<GLSAPackage> pkg(std::make_shared<GLSAPackage>(QualifiedPackageName(m)));
                             handle_package_archs(doc, n->properties, pkg);
                             handle_package_children(doc, n->children, pkg);
                             _glsa->add_package(pkg);
@@ -283,7 +283,7 @@ paludis_xml_things_create_glsa_from_xml_file(const std::string & filename)
 std::shared_ptr<erepository::MetadataXML>
 paludis_xml_things_create_metadata_xml_from_xml_file(const FSEntry & filename)
 {
-    std::shared_ptr<erepository::MetadataXML> result(new erepository::MetadataXML(
+    std::shared_ptr<erepository::MetadataXML> result(std::make_shared<erepository::MetadataXML>(
                 make_named_values<erepository::MetadataXML>(
                     n::herds() = std::make_shared<Sequence<std::string>>(),
                     n::long_description() = "",

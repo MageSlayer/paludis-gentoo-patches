@@ -63,7 +63,7 @@ namespace paludis
         Imp(const Environment * const e, const RepositoryRepository * const r) :
             env(e),
             repo(r),
-            categories(new CategoryNamePartSet)
+            categories(std::make_shared<CategoryNamePartSet>())
         {
         }
     };
@@ -92,7 +92,7 @@ RepositoryRepositoryStore::_populate()
 void
 RepositoryRepositoryStore::_populate_one(const RepositoryName & repo_name)
 {
-    const std::shared_ptr<RepositoryID> id(new RepositoryID(make_named_values<RepositoryIDParams>(
+    const std::shared_ptr<RepositoryID> id(std::make_shared<RepositoryID>(make_named_values<RepositoryIDParams>(
                     n::environment() = _imp->env,
                     n::name() = CategoryNamePart("repository") + PackageNamePart(stringify(repo_name)),
                     n::repository() = _imp->repo

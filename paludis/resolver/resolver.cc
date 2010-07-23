@@ -62,7 +62,7 @@ namespace paludis
         Imp(const Environment * const e, const ResolverFunctions & f) :
             env(e),
             fns(f),
-            resolved(new Resolved(make_named_values<Resolved>(
+            resolved(std::make_shared<Resolved>(make_named_values<Resolved>(
                             n::job_lists() = make_shared_copy(make_named_values<JobLists>(
                                     n::execute_job_list() = std::make_shared<JobList<ExecuteJob>>(),
                                     n::pretend_job_list() = std::make_shared<JobList<PretendJob>>()
@@ -76,8 +76,8 @@ namespace paludis
                             n::untaken_change_or_remove_decisions() = std::make_shared<Decisions<ChangeOrRemoveDecision>>(),
                             n::untaken_unable_to_make_decisions() = std::make_shared<Decisions<UnableToMakeDecision>>()
                             ))),
-            decider(new Decider(e, f, resolved->resolutions_by_resolvent())),
-            orderer(new Orderer(e, f, resolved))
+            decider(std::make_shared<Decider>(e, f, resolved->resolutions_by_resolvent())),
+            orderer(std::make_shared<Orderer>(e, f, resolved))
         {
         }
     };

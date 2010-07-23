@@ -164,7 +164,7 @@ paludis::cranrepository::parse_cran_package_dep_spec(const std::string & ss)
 {
     Context context("When parsing CRAN package dep spec '" + ss + "':");
 
-    std::shared_ptr<CRANPackageDepSpecData> data(new CRANPackageDepSpecData);
+    std::shared_ptr<CRANPackageDepSpecData> data(std::make_shared<CRANPackageDepSpecData>());
     std::string s(ss);
 
     std::string::size_type p(s.find('('));

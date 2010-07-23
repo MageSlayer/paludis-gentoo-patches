@@ -118,7 +118,7 @@ namespace
 
             virtual std::shared_ptr<PackageIDSequence> perform_select(const Environment * const env) const
             {
-                std::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
+                std::shared_ptr<PackageIDSequence> result(std::make_shared<PackageIDSequence>());
 
                 std::shared_ptr<const RepositoryNameSet> r(_fg.filter().repositories(env, _fg.generator().repositories(env)));
                 if (r->empty())
@@ -134,7 +134,7 @@ namespace
 
                 for (QualifiedPackageNameSet::ConstIterator q(p->begin()), q_end(p->end()) ; q != q_end ; ++q)
                 {
-                    std::shared_ptr<QualifiedPackageNameSet> s(new QualifiedPackageNameSet);
+                    std::shared_ptr<QualifiedPackageNameSet> s(std::make_shared<QualifiedPackageNameSet>());
                     s->insert(*q);
                     std::shared_ptr<const PackageIDSet> i(_fg.filter().ids(env, _fg.generator().ids(env, r, s)));
                     if (! i->empty())
@@ -166,7 +166,7 @@ namespace
             {
                 using namespace std::placeholders;
 
-                std::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
+                std::shared_ptr<PackageIDSequence> result(std::make_shared<PackageIDSequence>());
 
                 std::shared_ptr<const RepositoryNameSet> r(_fg.filter().repositories(env, _fg.generator().repositories(env)));
                 if (r->empty())
@@ -182,7 +182,7 @@ namespace
 
                 for (QualifiedPackageNameSet::ConstIterator q(p->begin()), q_end(p->end()) ; q != q_end ; ++q)
                 {
-                    std::shared_ptr<QualifiedPackageNameSet> s(new QualifiedPackageNameSet);
+                    std::shared_ptr<QualifiedPackageNameSet> s(std::make_shared<QualifiedPackageNameSet>());
                     s->insert(*q);
                     std::shared_ptr<const PackageIDSet> i(_fg.filter().ids(env, _fg.generator().ids(env, r, s)));
                     if (! i->empty())
@@ -211,7 +211,7 @@ namespace
             {
                 using namespace std::placeholders;
 
-                std::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
+                std::shared_ptr<PackageIDSequence> result(std::make_shared<PackageIDSequence>());
 
                 std::shared_ptr<const RepositoryNameSet> r(_fg.filter().repositories(env, _fg.generator().repositories(env)));
                 if (r->empty())
@@ -251,7 +251,7 @@ namespace
             {
                 using namespace std::placeholders;
 
-                std::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
+                std::shared_ptr<PackageIDSequence> result(std::make_shared<PackageIDSequence>());
 
                 std::shared_ptr<const RepositoryNameSet> r(_fg.filter().repositories(env, _fg.generator().repositories(env)));
                 if (r->empty())
@@ -290,7 +290,7 @@ namespace
             {
                 using namespace std::placeholders;
 
-                std::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
+                std::shared_ptr<PackageIDSequence> result(std::make_shared<PackageIDSequence>());
 
                 std::shared_ptr<const RepositoryNameSet> r(_fg.filter().repositories(env, _fg.generator().repositories(env)));
                 if (r->empty())
@@ -356,7 +356,7 @@ namespace
             {
                 using namespace std::placeholders;
 
-                std::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
+                std::shared_ptr<PackageIDSequence> result(std::make_shared<PackageIDSequence>());
 
                 std::shared_ptr<const RepositoryNameSet> r(_fg.filter().repositories(env, _fg.generator().repositories(env)));
                 if (r->empty())
@@ -422,7 +422,7 @@ namespace
             {
                 using namespace std::placeholders;
 
-                std::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
+                std::shared_ptr<PackageIDSequence> result(std::make_shared<PackageIDSequence>());
 
                 std::shared_ptr<const RepositoryNameSet> r(_fg.filter().repositories(env, _fg.generator().repositories(env)));
                 if (r->empty())

@@ -485,7 +485,7 @@ InstalledGemsRepository::need_version_metadata(const QualifiedPackageName & q, c
 
     Context c("When loading version metadata for '" + stringify(PackageDatabaseEntry(q, v, name())) + "':");
 
-    std::shared_ptr<gems::InstalledGemMetadata> m(new gems::InstalledGemMetadata(v));
+    std::shared_ptr<gems::InstalledGemMetadata> m(std::make_shared<gems::InstalledGemMetadata>(v));
     _imp->metadata.insert(std::make_pair(std::make_pair(q, v), m));
 
     Command cmd(getenv_with_default("PALUDIS_GEMS_DIR", LIBEXECDIR "/paludis") +
@@ -636,7 +636,7 @@ GemSpecification::invalidate_masks() const
 std::shared_ptr<const Set<std::string> >
 GemSpecification::breaks_portage() const
 {
-    std::shared_ptr<Set<std::string> > why(new Set<std::string>);
+    std::shared_ptr<Set<std::string> > why(std::make_shared<Set<std::string>>());
     why->insert("format");
     return why;
 }

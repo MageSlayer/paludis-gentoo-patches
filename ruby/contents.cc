@@ -2,7 +2,7 @@
 
 /*
  * Copyright (c) 2006, 2007 Richard Brown
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -173,7 +173,7 @@ namespace
             {
                 if (1 == argc)
                 {
-                    ptr = new std::shared_ptr<const ContentsEntry>(new A_(
+                    ptr = new std::shared_ptr<const ContentsEntry>(std::make_shared<A_>(
                                 FSEntry(StringValuePtr(argv[0]))));
                 }
                 else
@@ -199,7 +199,7 @@ namespace
         {
             if (2 == argc)
             {
-                ptr = new std::shared_ptr<const ContentsEntry>(new ContentsSymEntry(
+                ptr = new std::shared_ptr<const ContentsEntry>(std::make_shared<ContentsSymEntry>(
                             FSEntry(StringValuePtr(argv[0])), StringValuePtr(argv[1])));
             }
             else

@@ -162,7 +162,7 @@ namespace
                 const Environment * const,
                 const std::shared_ptr<const PackageIDSet> & c) const
         {
-            std::shared_ptr<PackageIDSet> result(new PackageIDSet);
+            std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
             for (PackageIDSet::ConstIterator i(c->begin()), i_end(c->end()) ;
                     i != i_end ; ++i)
@@ -248,7 +248,7 @@ namespace
             const PrintIDsCommandLine & c,
             const std::shared_ptr<const PackageID> & i)
     {
-        std::shared_ptr<Map<char, std::string> > m(new Map<char, std::string>);
+        std::shared_ptr<Map<char, std::string> > m(std::make_shared<Map<char, std::string>>());
         m->insert('c', stringify(i->name().category()));
         m->insert('p', stringify(i->name().package()));
         m->insert('v', stringify(i->version()));

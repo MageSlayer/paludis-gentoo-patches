@@ -320,13 +320,13 @@ main(int argc, char *argv[])
         if (! CommandLine::get_instance()->a_output_directory.specified())
             CommandLine::get_instance()->a_output_directory.set_argument(stringify(FSEntry::cwd()));
 
-        std::shared_ptr<FSEntrySequence> extra_repository_dirs(new FSEntrySequence);
+        std::shared_ptr<FSEntrySequence> extra_repository_dirs(std::make_shared<FSEntrySequence>());
         for (args::StringSequenceArg::ConstIterator d(CommandLine::get_instance()->a_extra_repository_dir.begin_args()),
                 d_end(CommandLine::get_instance()->a_extra_repository_dir.end_args()) ;
                 d != d_end ; ++d)
             extra_repository_dirs->push_back(*d);
 
-        std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+        std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
         keys->insert("append_repository_name_to_write_cache", "false");
         NoConfigEnvironment env(make_named_values<no_config_environment::Params>(
                     n::accept_unstable() = true,

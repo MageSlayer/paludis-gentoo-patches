@@ -285,7 +285,7 @@ namespace
     {
         const FetchActionOptions opts_ptr(value_to_fetch_action_options(opts));
         std::shared_ptr<Action> * a(
-                new std::shared_ptr<Action>(new FetchAction(opts_ptr)));
+                new std::shared_ptr<Action>(std::make_shared<FetchAction>(opts_ptr)));
         VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::shared_ptr<Action> >::free, a));
         rb_obj_call_init(tdata, 1, &self);
         return tdata;
@@ -476,7 +476,7 @@ namespace
                         n::make_output_manager() = &make_standard_output_manager
                         ));
 
-            std::shared_ptr<Action> * a(new std::shared_ptr<Action>(new A_(options)));
+            std::shared_ptr<Action> * a(new std::shared_ptr<Action>(std::make_shared<A_>(options)));
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::shared_ptr<Action> >::free, a));
             rb_obj_call_init(tdata, 1, &self);
             return tdata;
@@ -573,7 +573,7 @@ namespace
     {
         const InstallActionOptions opts_ptr(value_to_install_action_options(opts));
         std::shared_ptr<Action> * a(
-                new std::shared_ptr<Action>(new InstallAction(opts_ptr)));
+                new std::shared_ptr<Action>(std::make_shared<InstallAction>(opts_ptr)));
         VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::shared_ptr<Action> >::free, a));
         rb_obj_call_init(tdata, 1, &self);
         return tdata;
@@ -648,8 +648,7 @@ namespace
     uninstall_action_new(VALUE self, VALUE opts)
     {
         const UninstallActionOptions opts_ptr(value_to_uninstall_action_options(opts));
-        std::shared_ptr<Action> * a(
-                new std::shared_ptr<Action>(new UninstallAction(opts_ptr)));
+        std::shared_ptr<Action> * a(new std::shared_ptr<Action>(std::make_shared<UninstallAction>(opts_ptr)));
         VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::shared_ptr<Action> >::free, a));
         rb_obj_call_init(tdata, 1, &self);
         return tdata;

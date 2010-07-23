@@ -40,7 +40,7 @@ namespace
         std::shared_ptr<Map<std::string, std::string> > extra_params(
                 std::make_shared<Map<std::string, std::string>>());
         FSEntry repository_dir(FSEntry::cwd());
-        std::shared_ptr<FSEntrySequence> extra_repository_dirs(new FSEntrySequence);
+        std::shared_ptr<FSEntrySequence> extra_repository_dirs(std::make_shared<FSEntrySequence>());
         FSEntry write_cache("/var/empty");
         std::string profile;
         std::string master_repository_name;
@@ -87,7 +87,7 @@ namespace
             }
         }
 
-        return std::shared_ptr<Environment>(new NoConfigEnvironment(
+        return std::shared_ptr<Environment>(std::make_shared<NoConfigEnvironment>(
                     make_named_values<no_config_environment::Params>(
                         n::accept_unstable() = accept_unstable,
                         n::disable_metadata_cache() = disable_metadata_cache,
@@ -114,7 +114,7 @@ namespace paludis
     void register_environment<environment_groups::no_config>(const environment_groups::no_config * const,
             EnvironmentFactory * const factory)
     {
-        std::shared_ptr<Set<std::string> > no_config_formats(new Set<std::string>);
+        std::shared_ptr<Set<std::string> > no_config_formats(std::make_shared<Set<std::string>>());
         no_config_formats->insert("no_config");
         no_config_formats->insert("no-config");
         factory->add_environment_format(no_config_formats, &make_no_config_environment);

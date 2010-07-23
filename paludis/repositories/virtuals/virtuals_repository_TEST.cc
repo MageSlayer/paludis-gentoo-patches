@@ -49,12 +49,12 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::shared_ptr<VirtualsRepository> virtuals(new VirtualsRepository(&env));
-            const std::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            std::shared_ptr<VirtualsRepository> virtuals(std::make_shared<VirtualsRepository>(&env));
+            const std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("repo")
                             )));
-            std::shared_ptr<FakeInstalledRepository> installed(new FakeInstalledRepository(
+            std::shared_ptr<FakeInstalledRepository> installed(std::make_shared<FakeInstalledRepository>(
                         make_named_values<FakeInstalledRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("installed"),
@@ -92,16 +92,16 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::shared_ptr<VirtualsRepository> virtuals(new VirtualsRepository(&env));
-            const std::shared_ptr<FakeRepository> repo1(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            std::shared_ptr<VirtualsRepository> virtuals(std::make_shared<VirtualsRepository>(&env));
+            const std::shared_ptr<FakeRepository> repo1(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("repo1")
                             )));
-            const std::shared_ptr<FakeRepository> repo2(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            const std::shared_ptr<FakeRepository> repo2(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("repo2")
                             )));
-            std::shared_ptr<FakeInstalledRepository> installed(new FakeInstalledRepository(
+            std::shared_ptr<FakeInstalledRepository> installed(std::make_shared<FakeInstalledRepository>(
                         make_named_values<FakeInstalledRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("installed"),
@@ -145,12 +145,12 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::shared_ptr<VirtualsRepository> virtuals(new VirtualsRepository(&env));
-            const std::shared_ptr<FakeRepository> repo1(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            std::shared_ptr<VirtualsRepository> virtuals(std::make_shared<VirtualsRepository>(&env));
+            const std::shared_ptr<FakeRepository> repo1(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("repo1")
                             )));
-            const std::shared_ptr<FakeRepository> repo2(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            const std::shared_ptr<FakeRepository> repo2(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("repo2")
                             )));

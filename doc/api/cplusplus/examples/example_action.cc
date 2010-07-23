@@ -58,7 +58,7 @@ int main(int argc, char * argv[])
                 i != i_end ; ++i)
         {
             /* Failures go here: */
-            const std::shared_ptr<Sequence<FetchActionFailure> > failures(new Sequence<FetchActionFailure>);
+            const std::shared_ptr<Sequence<FetchActionFailure> > failures(std::make_shared<Sequence<FetchActionFailure>>());
 
             /* Do we support a FetchAction? We find out by creating a
              * SupportsActionTest<FetchAction> object, and querying via the

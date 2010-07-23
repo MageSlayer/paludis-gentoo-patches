@@ -62,7 +62,7 @@ namespace paludis
         std::shared_ptr<SafeOFStream> pipe_command_write_stream;
 
         Imp(int r, int w) :
-            pipe_command_write_stream(new SafeOFStream(w))
+            pipe_command_write_stream(std::make_shared<SafeOFStream>(w))
         {
             *pipe_command_write_stream << "PING 1 GOAT" << '\0' << std::flush;
 

@@ -46,7 +46,7 @@ namespace
     std::shared_ptr<DepTagCategory>
     make_glsa_dep_tag()
     {
-        return std::shared_ptr<DepTagCategory>(new DepTagCategory(
+        return std::shared_ptr<DepTagCategory>(std::make_shared<DepTagCategory>(
                     true,
                     "glsa",
                     "Security advisories",
@@ -57,7 +57,7 @@ namespace
     std::shared_ptr<DepTagCategory>
     make_general_set_dep_tag()
     {
-        return std::shared_ptr<DepTagCategory>(new DepTagCategory(
+        return std::shared_ptr<DepTagCategory>(std::make_shared<DepTagCategory>(
                     true,
                     "general",
                     "General sets",
@@ -68,7 +68,7 @@ namespace
     std::shared_ptr<DepTagCategory>
     make_dependency_set_dep_tag()
     {
-        return std::shared_ptr<DepTagCategory>(new DepTagCategory(
+        return std::shared_ptr<DepTagCategory>(std::make_shared<DepTagCategory>(
                     false,
                     "dependency",
                     "Dependencies",
@@ -79,7 +79,7 @@ namespace
     std::shared_ptr<DepTagCategory>
     make_target_dep_tag()
     {
-        return std::shared_ptr<DepTagCategory>(new DepTagCategory(
+        return std::shared_ptr<DepTagCategory>(std::make_shared<DepTagCategory>(
                     false,
                     "target",
                     "Targets",

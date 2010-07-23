@@ -95,7 +95,7 @@ JobList<Job_>::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "JobList");
     Deserialisator vv(*v.find_remove_member("items"), "c");
-    std::shared_ptr<JobList> result(new JobList);
+    std::shared_ptr<JobList> result(std::make_shared<JobList>());
     for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
         result->append(vv.member<std::shared_ptr<Job_> >(stringify(n)));
     return result;

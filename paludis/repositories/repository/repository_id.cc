@@ -55,7 +55,7 @@ namespace paludis
             name(e.name()),
             version("0", VersionSpecOptions()),
             repo(e.repository()),
-            behaviours_key(new LiteralMetadataStringSetKey("behaviours", "behaviours", mkt_internal, behaviours_set))
+            behaviours_key(std::make_shared<LiteralMetadataStringSetKey>("behaviours", "behaviours", mkt_internal, behaviours_set))
         {
         }
     };
@@ -65,7 +65,7 @@ namespace
 {
     std::shared_ptr<Set<std::string> > make_behaviours()
     {
-        std::shared_ptr<Set<std::string> > result(new Set<std::string>);
+        std::shared_ptr<Set<std::string> > result(std::make_shared<Set<std::string>>());
         result->insert("transient");
         result->insert("used");
         return result;

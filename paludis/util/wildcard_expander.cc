@@ -41,7 +41,7 @@ namespace paludis
         std::vector<FSEntry>::const_iterator it;
 
         Imp() :
-            files(new std::vector<FSEntry>)
+            files(std::make_shared<std::vector<FSEntry>>())
         {
         }
 

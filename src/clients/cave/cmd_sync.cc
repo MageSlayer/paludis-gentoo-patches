@@ -303,7 +303,7 @@ namespace
             for (Repos::const_iterator r(repos.begin()), r_end(repos.end()) ;
                     r != r_end ; ++r)
             {
-                const std::shared_ptr<SyncExecutive> x(new SyncExecutive(env, cmdline, &executor, *r));
+                const std::shared_ptr<SyncExecutive> x(std::make_shared<SyncExecutive>(env, cmdline, &executor, *r));
                 executor.add(x);
                 executives.push_back(x);
             }

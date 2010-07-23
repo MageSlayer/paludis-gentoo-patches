@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -45,7 +45,7 @@ namespace
         const std::string & a,
         const bool x)
     {
-        return std::shared_ptr<Profile>(new T_(env, repo, name, locations, a, x));
+        return std::shared_ptr<Profile>(std::make_shared<T_>(env, repo, name, locations, a, x));
     }
 }
 

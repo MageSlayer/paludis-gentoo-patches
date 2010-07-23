@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2010 Ciaran McCreesh
  * Copyright (c) 2007 David Leverton
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -51,8 +51,8 @@ namespace test_cases
         void run()
         {
             std::vector<std::shared_ptr<int> > v;
-            v.push_back(std::shared_ptr<int>(new int(5)));
-            v.push_back(std::shared_ptr<int>(new int(10)));
+            v.push_back(std::shared_ptr<int>(std::make_shared<int>(5)));
+            v.push_back(std::shared_ptr<int>(std::make_shared<int>(10)));
             IndirectIterator<std::vector<std::shared_ptr<int> >::iterator, int> vi(v.begin()), vi_end(v.end());
             TEST_CHECK(vi != vi_end);
             TEST_CHECK(vi < vi_end);
@@ -77,8 +77,8 @@ namespace test_cases
         void run()
         {
             std::list<std::shared_ptr<int> > v;
-            v.push_back(std::shared_ptr<int>(new int(5)));
-            v.push_back(std::shared_ptr<int>(new int(10)));
+            v.push_back(std::shared_ptr<int>(std::make_shared<int>(5)));
+            v.push_back(std::shared_ptr<int>(std::make_shared<int>(10)));
             IndirectIterator<std::list<std::shared_ptr<int> >::iterator> vi(v.begin()), vi_end(v.end());
             TEST_CHECK(vi != vi_end);
             TEST_CHECK_EQUAL(*vi, 5);

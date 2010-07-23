@@ -238,7 +238,7 @@ ImportCommand::run(
                 cmdline.a_run_dependency.begin_args(),
                 cmdline.a_run_dependency.end_args(), ", ");
 
-    std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+    std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
     keys->insert("location", stringify(
                 cmdline.a_location.specified() ?
                 FSEntry(cmdline.a_location.argument()) :
@@ -271,10 +271,10 @@ ImportCommand::run(
     if (cmdline.a_execute.specified())
         resolve_cmdline.resolution_options.a_execute.set_specified(true);
 
-    std::shared_ptr<Sequence<std::pair<std::string, std::string> > > targets(new Sequence<std::pair<std::string, std::string> >);
+    std::shared_ptr<Sequence<std::pair<std::string, std::string> > > targets(std::make_shared<Sequence<std::pair<std::string, std::string> >>());
     targets->push_back(std::make_pair(stringify((*ids->begin())->name()), ""));
 
-    std::shared_ptr<Sequence<std::string> > world_specs(new Sequence<std::string>);
+    std::shared_ptr<Sequence<std::string> > world_specs(std::make_shared<Sequence<std::string>>());
     world_specs->push_back(stringify((*ids->begin())->name()));
 
     return resolve_common(env,

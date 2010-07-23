@@ -210,7 +210,7 @@ UnavailableRepositoryFile::_load(const FSEntry & f)
                         "Cannot parse body description line '" + line + "' in '" + stringify(f) + "'");
 
             std::shared_ptr<LiteralMetadataValueKey<std::string> > desc(
-                    new LiteralMetadataValueKey<std::string>("DESCRIPTION", "Description", mkt_significant,
+                    std::make_shared<LiteralMetadataValueKey<std::string>>("DESCRIPTION", "Description", mkt_significant,
                         token));
             for (std::list<VersionSpec>::const_iterator v(versions.begin()), v_end(versions.end()) ;
                     v != v_end ; ++v)

@@ -166,7 +166,7 @@ do_install(const std::shared_ptr<Environment> & env)
     CommandLine::get_instance()->dl_args.populate_install_task(env.get(), task);
 
     cout << "Building target list... " << std::flush;
-    std::shared_ptr<Sequence<std::string> > specs(new Sequence<std::string>);
+    std::shared_ptr<Sequence<std::string> > specs(std::make_shared<Sequence<std::string>>());
     std::copy(CommandLine::get_instance()->begin_parameters(), CommandLine::get_instance()->end_parameters(),
             specs->back_inserter());
     if (CommandLine::get_instance()->a_serialised.specified())

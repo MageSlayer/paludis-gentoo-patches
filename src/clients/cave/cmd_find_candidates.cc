@@ -123,7 +123,7 @@ FindCandidatesCommand::run(
     if (cmdline.begin_parameters() == cmdline.end_parameters())
         throw args::DoHelp("find-candidates requires at least one parameter");
 
-    const std::shared_ptr<Set<std::string> > patterns(new Set<std::string>);
+    const std::shared_ptr<Set<std::string> > patterns(std::make_shared<Set<std::string>>());
     std::copy(cmdline.begin_parameters(), cmdline.end_parameters(), patterns->inserter());
 
     run_hosted(env, cmdline.search_options, cmdline.match_options, patterns, &print_spec, &no_step);

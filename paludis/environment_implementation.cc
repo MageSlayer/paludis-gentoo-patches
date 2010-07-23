@@ -58,8 +58,8 @@ namespace
         }
 
         CombineSets() :
-            root(new AllDepSpec),
-            tree(new SetSpecTree(root))
+            root(std::make_shared<AllDepSpec>()),
+            tree(std::make_shared<SetSpecTree>(root))
         {
         }
 
@@ -143,7 +143,7 @@ EnvironmentImplementation::bashrc_files() const
 std::shared_ptr<const FSEntrySequence>
 EnvironmentImplementation::syncers_dirs() const
 {
-    std::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
+    std::shared_ptr<FSEntrySequence> result(std::make_shared<FSEntrySequence>());
     result->push_back(FSEntry(DATADIR "/paludis/syncers"));
     result->push_back(FSEntry(LIBEXECDIR "/paludis/syncers"));
     return result;
@@ -152,7 +152,7 @@ EnvironmentImplementation::syncers_dirs() const
 std::shared_ptr<const FSEntrySequence>
 EnvironmentImplementation::fetchers_dirs() const
 {
-    std::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
+    std::shared_ptr<FSEntrySequence> result(std::make_shared<FSEntrySequence>());
     std::string fetchers_dir(getenv_with_default("PALUDIS_FETCHERS_DIR", ""));
     if (fetchers_dir.empty())
     {
@@ -167,7 +167,7 @@ EnvironmentImplementation::fetchers_dirs() const
 std::shared_ptr<const DestinationsSet>
 EnvironmentImplementation::default_destinations() const
 {
-    std::shared_ptr<DestinationsSet> result(new DestinationsSet);
+    std::shared_ptr<DestinationsSet> result(std::make_shared<DestinationsSet>());
 
     for (PackageDatabase::RepositoryConstIterator r(package_database()->begin_repositories()),
             r_end(package_database()->end_repositories()) ;
@@ -254,7 +254,7 @@ EnvironmentImplementation::add_set(
         if (! _imp->sets.insert(std::make_pair(combined_name, std::make_pair(cache(func), CombiningFunction()))).second)
             throw DuplicateSetError(combined_name);
 
-        std::shared_ptr<CombineSets> c_s(new CombineSets);
+        std::shared_ptr<CombineSets> c_s(std::make_shared<CombineSets>());
         CombiningFunction c_func(_imp->sets.insert(std::make_pair(name, std::make_pair(
                             std::bind(&CombineSets::result, c_s),
                             std::bind(&CombineSets::add, c_s, std::placeholders::_1)
@@ -319,7 +319,7 @@ namespace
         Log::get_instance()->message("environment_implementation.everything_deprecated", ll_warning, lc_context)
             << "The 'everything' set is deprecated. Use either 'installed-packages' or 'installed-slots' instead";
 
-        std::shared_ptr<SetSpecTree> result(new SetSpecTree(std::make_shared<AllDepSpec>()));
+        std::shared_ptr<SetSpecTree> result(std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>()));
         result->root()->append(std::make_shared<NamedSetDepSpec>(SetName("installed-packages")));
         return result;
     }

@@ -497,7 +497,7 @@ namespace
             if (2 != argc)
                 rb_raise(rb_eArgError, "FakeRepository.new expects two arguments, but got %d", argc);
 
-            std::shared_ptr<Repository> * r = new std::shared_ptr<Repository>(new FakeRepository(
+            std::shared_ptr<Repository> * r = new std::shared_ptr<Repository>(std::make_shared<FakeRepository>(
                         make_named_values<FakeRepositoryParams>(
                             n::environment() = value_to_environment(argv[0]).get(),
                             n::name() = RepositoryName(StringValuePtr(argv[1])))));

@@ -107,7 +107,7 @@ namespace
 
             FSEntry root(FSEntry::cwd() / "depend_rdepend_TEST_dir" / "root");
 
-            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "depend_rdepend_TEST_dir" / "repo"));
@@ -123,7 +123,7 @@ namespace
                         std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            std::shared_ptr<Map<std::string, std::string> > v_keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > v_keys(std::make_shared<Map<std::string, std::string>>());
             v_keys->insert("format", "vdb");
             v_keys->insert("names_cache", "/var/empty");
             v_keys->insert("provides_cache", "/var/empty");
@@ -134,12 +134,12 @@ namespace
             env.package_database()->add_repository(1, v_repo);
 
 #ifdef ENABLE_VIRTUALS_REPOSITORY
-            std::shared_ptr<Map<std::string, std::string> > iv_keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > iv_keys(std::make_shared<Map<std::string, std::string>>());
             iv_keys->insert("root", "/");
             iv_keys->insert("format", "installed_virtuals");
             env.package_database()->add_repository(-2, RepositoryFactory::get_instance()->create(&env,
                         std::bind(from_keys, iv_keys, std::placeholders::_1)));
-            std::shared_ptr<Map<std::string, std::string> > v_keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > v_keys(std::make_shared<Map<std::string, std::string>>());
             v_keys->insert("format", "virtuals");
             env.package_database()->add_repository(-2, RepositoryFactory::get_instance()->create(&env,
                         std::bind(from_keys, v_keys, std::placeholders::_1)));

@@ -266,61 +266,61 @@ namespace paludis
         repo(r),
         params(p),
         mutexes(m),
-        names_cache(new RepositoryNameCache(p.names_cache(), r)),
+        names_cache(std::make_shared<RepositoryNameCache>(p.names_cache(), r)),
         has_repo_mask(false),
         has_mirrors(false),
-        sets_ptr(new ERepositorySets(params.environment(), r, p)),
+        sets_ptr(std::make_shared<ERepositorySets>(params.environment(), r, p)),
         layout(LayoutFactory::get_instance()->create(params.layout(), r, params.location(), get_master_locations(
                         params.master_repositories()))),
-        format_key(new LiteralMetadataValueKey<std::string> ("format", "format",
+        format_key(std::make_shared<LiteralMetadataValueKey<std::string> >("format", "format",
                     mkt_significant, params.entry_format())),
-        layout_key(new LiteralMetadataValueKey<std::string> ("layout", "layout",
+        layout_key(std::make_shared<LiteralMetadataValueKey<std::string> >("layout", "layout",
                     mkt_normal, params.layout())),
-        profile_layout_key(new LiteralMetadataValueKey<std::string> ("profile_layout", "profile_layout",
+        profile_layout_key(std::make_shared<LiteralMetadataValueKey<std::string> >("profile_layout", "profile_layout",
                     mkt_normal, params.profile_layout())),
-        location_key(new LiteralMetadataValueKey<FSEntry> ("location", "location",
+        location_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("location", "location",
                     mkt_significant, params.location())),
-        profiles_key(new LiteralMetadataFSEntrySequenceKey(
+        profiles_key(std::make_shared<LiteralMetadataFSEntrySequenceKey>(
                     "profiles", "profiles", mkt_normal, params.profiles())),
-        cache_key(new LiteralMetadataValueKey<FSEntry> ("cache", "cache",
+        cache_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("cache", "cache",
                     mkt_normal, params.cache())),
-        write_cache_key(new LiteralMetadataValueKey<FSEntry> ("write_cache", "write_cache",
+        write_cache_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("write_cache", "write_cache",
                     mkt_normal, params.write_cache())),
-        append_repository_name_to_write_cache_key(new LiteralMetadataValueKey<std::string> (
+        append_repository_name_to_write_cache_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
                     "append_repository_name_to_write_cache", "append_repository_name_to_write_cache",
                     mkt_internal, stringify(params.append_repository_name_to_write_cache()))),
-        ignore_deprecated_profiles(new LiteralMetadataValueKey<std::string> (
+        ignore_deprecated_profiles(std::make_shared<LiteralMetadataValueKey<std::string> >(
                     "ignore_deprecated_profiles", "ignore_deprecated_profiles",
                     mkt_internal, stringify(params.ignore_deprecated_profiles()))),
-        names_cache_key(new LiteralMetadataValueKey<FSEntry> (
+        names_cache_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >(
                     "names_cache", "names_cache", mkt_normal, params.names_cache())),
-        distdir_key(new LiteralMetadataValueKey<FSEntry> (
+        distdir_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >(
                     "distdir", "distdir", mkt_normal, params.distdir())),
-        eclassdirs_key(new LiteralMetadataFSEntrySequenceKey(
+        eclassdirs_key(std::make_shared<LiteralMetadataFSEntrySequenceKey>(
                     "eclassdirs", "eclassdirs", mkt_normal, params.eclassdirs())),
-        securitydir_key(new LiteralMetadataValueKey<FSEntry> (
+        securitydir_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >(
                     "securitydir", "securitydir", mkt_normal, params.securitydir())),
-        setsdir_key(new LiteralMetadataValueKey<FSEntry> (
+        setsdir_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >(
                     "setsdir", "setsdir", mkt_normal, params.setsdir())),
-        newsdir_key(new LiteralMetadataValueKey<FSEntry> (
+        newsdir_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >(
                     "newsdir", "newsdir", mkt_normal, params.newsdir())),
-        sync_key(new LiteralMetadataValueKey<std::string> (
+        sync_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
                     "sync", "sync", mkt_normal, params.sync())),
-        sync_options_key(new LiteralMetadataValueKey<std::string> (
+        sync_options_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
                     "sync_options", "sync_options", mkt_normal, params.sync_options())),
-        builddir_key(new LiteralMetadataValueKey<FSEntry> (
+        builddir_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >(
                     "builddir", "builddir", mkt_normal, params.builddir())),
         master_repositories_key(params.master_repositories() ?
-                std::shared_ptr<MetadataCollectionKey<Sequence<std::string> > >(new LiteralMetadataStringSequenceKey(
+                std::shared_ptr<MetadataCollectionKey<Sequence<std::string> > >(std::make_shared<LiteralMetadataStringSequenceKey>(
                         "master_repository", "master_repository", mkt_normal, get_master_names(params.master_repositories()))) :
                 std::shared_ptr<MetadataCollectionKey<Sequence<std::string> > >()),
-        eapi_when_unknown_key(new LiteralMetadataValueKey<std::string> (
+        eapi_when_unknown_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
                     "eapi_when_unknown", "eapi_when_unknown", mkt_normal, params.eapi_when_unknown())),
-        eapi_when_unspecified_key(new LiteralMetadataValueKey<std::string> (
+        eapi_when_unspecified_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
                     "eapi_when_unspecified", "eapi_when_unspecified", mkt_normal, params.eapi_when_unspecified())),
-        profile_eapi_when_unspecified_key(new LiteralMetadataValueKey<std::string> (
+        profile_eapi_when_unspecified_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
                     "profile_eapi_when_unspecified", "profile_eapi_when_unspecified", mkt_normal, params.profile_eapi_when_unspecified())),
-        use_manifest_key(new LiteralMetadataValueKey<std::string> (
+        use_manifest_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
                     "use_manifest", "use_manifest", mkt_normal, stringify(params.use_manifest()))),
         info_pkgs_key(layout->info_packages_files()->end() != std::find_if(layout->info_packages_files()->begin(),
                     layout->info_packages_files()->end(),
@@ -337,20 +337,20 @@ namespace paludis
                 std::shared_ptr<InfoVarsMetadataKey>()
                 ),
 #ifdef ENABLE_PBINS
-        binary_destination_key(new LiteralMetadataValueKey<std::string> (
+        binary_destination_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
                     "binary_destination", "binary_destination", params.binary_destination() ? mkt_normal : mkt_internal,
                     stringify(params.binary_destination()))),
-        binary_src_uri_prefix_key(new LiteralMetadataValueKey<std::string> (
+        binary_src_uri_prefix_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
                     "binary_uri_prefix", "binary_uri_prefix", params.binary_destination() ? mkt_normal : mkt_internal,
                     params.binary_uri_prefix())),
-        binary_keywords(new LiteralMetadataValueKey<std::string> (
+        binary_keywords(std::make_shared<LiteralMetadataValueKey<std::string> >(
                     "binary_keywords", "binary_keywords", params.binary_destination() ? mkt_normal : mkt_internal,
                     params.binary_keywords())),
 #endif
         accounts_repository_data_location_key(layout->accounts_repository_data_location_key()),
         e_updates_location_key(layout->e_updates_location_key()),
-        sync_host_key(new LiteralMetadataValueKey<std::string> ("sync_host", "sync_host", mkt_internal, extract_host_from_url(params.sync()))),
-        eclass_mtimes(new EclassMtimes(r, params.eclassdirs())),
+        sync_host_key(std::make_shared<LiteralMetadataValueKey<std::string> >("sync_host", "sync_host", mkt_internal, extract_host_from_url(params.sync()))),
+        eclass_mtimes(std::make_shared<EclassMtimes>(r, params.eclassdirs())),
 
         master_mtime(0)
     {
@@ -404,7 +404,7 @@ namespace paludis
                 if (f->is_regular_file_or_symlink_to_regular_file())
                     profiles_desc = *f;
 
-            std::shared_ptr<FSEntrySequence> auto_profiles(new FSEntrySequence);
+            std::shared_ptr<FSEntrySequence> auto_profiles(std::make_shared<FSEntrySequence>());
 
             if (profiles_desc == FSEntry("/dev/null"))
             {
@@ -616,7 +616,7 @@ ERepository::repository_masked(const PackageID & id) const
         {
             try
             {
-                std::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(parse_elike_package_dep_spec(
+                std::shared_ptr<const PackageDepSpec> a(std::make_shared<PackageDepSpec>(parse_elike_package_dep_spec(
                                 line->second.first, line->first->supported()->package_dep_spec_parse_options(),
                                 line->first->supported()->version_spec_options(),
                                 std::shared_ptr<const PackageID>())));
@@ -714,7 +714,7 @@ ERepository::need_mirrors() const
                         if (ee.size() > 6)
                             ee.resize(6);
 
-                        std::shared_ptr<MirrorsSequence> ms(new MirrorsSequence);
+                        std::shared_ptr<MirrorsSequence> ms(std::make_shared<MirrorsSequence>());
                         for (std::vector<std::string>::const_iterator e(next(ee.begin())),
                                 e_end(ee.end()) ; e != e_end ; ++e)
                             ms->push_back(*e);
@@ -806,7 +806,7 @@ ERepository::purge_invalid_cache() const
     const std::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(
                 _imp->params.eapi_when_unknown()));
 
-    std::shared_ptr<EclassMtimes> eclass_mtimes(new EclassMtimes(this, _imp->params.eclassdirs()));
+    std::shared_ptr<EclassMtimes> eclass_mtimes(std::make_shared<EclassMtimes>(this, _imp->params.eclassdirs()));
     time_t master_mtime(0);
     FSEntry master_mtime_file(_imp->params.location() / "metadata" / "timestamp");
     if (master_mtime_file.exists())
@@ -925,7 +925,7 @@ ERepository::virtual_packages() const
 
     _imp->need_profiles();
 
-    std::shared_ptr<VirtualsSequence> result(new VirtualsSequence);
+    std::shared_ptr<VirtualsSequence> result(std::make_shared<VirtualsSequence>());
 
     for (Map<QualifiedPackageName, PackageDepSpec>::ConstIterator i(_imp->profile_ptr->virtuals()->begin()),
             i_end(_imp->profile_ptr->virtuals()->end()) ; i != i_end ; ++i)
@@ -1297,7 +1297,7 @@ ERepository::repository_factory_create(
         }
     }
 
-    std::shared_ptr<FSEntrySequence> profiles(new FSEntrySequence);
+    std::shared_ptr<FSEntrySequence> profiles(std::make_shared<FSEntrySequence>());
     bool profiles_explicitly_set(false), auto_profiles(false);
     tokenise_whitespace(f("profiles"), create_inserter<FSEntry>(std::back_inserter(*profiles)));
     if (profiles->empty())
@@ -1318,7 +1318,7 @@ ERepository::repository_factory_create(
     else
         profiles_explicitly_set = true;
 
-    std::shared_ptr<FSEntrySequence> eclassdirs(new FSEntrySequence);
+    std::shared_ptr<FSEntrySequence> eclassdirs(std::make_shared<FSEntrySequence>());
     tokenise_whitespace(f("eclassdirs"), create_inserter<FSEntry>(std::back_inserter(*eclassdirs)));
     if (eclassdirs->empty())
     {
@@ -1501,7 +1501,7 @@ ERepository::repository_factory_create(
             throw ERepositoryConfigurationError("binary_destination = true, but binary_keywords is unset or empty");
     }
 
-    return std::shared_ptr<ERepository>(new ERepository(make_named_values<ERepositoryParams>(
+    return std::shared_ptr<ERepository>(std::make_shared<ERepository>(make_named_values<ERepositoryParams>(
                     n::append_repository_name_to_write_cache() = append_repository_name_to_write_cache,
                     n::auto_profiles() = auto_profiles,
                     n::binary_destination() = binary_destination,
@@ -1541,7 +1541,7 @@ ERepository::repository_factory_dependencies(
         const Environment * const,
         const std::function<std::string (const std::string &)> & f)
 {
-    std::shared_ptr<RepositoryNameSet> result(new RepositoryNameSet);
+    std::shared_ptr<RepositoryNameSet> result(std::make_shared<RepositoryNameSet>());
     if (! f("master_repository").empty())
         result->insert(RepositoryName(f("master_repository")));
     else
@@ -1714,7 +1714,7 @@ ERepository::make_id(const QualifiedPackageName & q, const FSEntry & f) const
 {
     Context context("When creating ID for '" + stringify(q) + "' from '" + stringify(f) + "':");
 
-    std::shared_ptr<EbuildID> result(new EbuildID(q, extract_package_file_version(q, f),
+    std::shared_ptr<EbuildID> result(std::make_shared<EbuildID>(q, extract_package_file_version(q, f),
                 _imp->params.environment(),
                 shared_from_this(), f, _guess_eapi(q, f),
                 _imp->master_mtime, _imp->eclass_mtimes));
@@ -1824,8 +1824,7 @@ namespace
             const ERepositoryID & e,
             std::shared_ptr<const Profile> profile)
     {
-        std::shared_ptr<Map<std::string, std::string> > expand_vars(
-            new Map<std::string, std::string>);
+        std::shared_ptr<Map<std::string, std::string> > expand_vars(std::make_shared<Map<std::string, std::string> >());
 
         if (! e.eapi()->supported())
         {
@@ -2335,7 +2334,7 @@ ERepository::install(const std::shared_ptr<const ERepositoryID> & id,
             stringify(id->name().package()) + "-" + stringify(id->version())));
 
     std::string used_config_protect;
-    std::shared_ptr<FSEntrySet> merged_entries(new FSEntrySet);
+    std::shared_ptr<FSEntrySet> merged_entries(std::make_shared<FSEntrySet>());
 
     std::shared_ptr<const ChoiceValue> preserve_work_choice(
             id->choices_key()->value()->find_by_name_with_prefix(

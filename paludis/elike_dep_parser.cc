@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -48,7 +48,7 @@ namespace
         if (! parser.consume(+simple_parser::any_of(" \t\r\n")))
             error(parser, callbacks, "Expected space after '[['");
 
-        std::shared_ptr<Map<std::string, std::string> > annotations(new Map<std::string, std::string>);
+        std::shared_ptr<Map<std::string, std::string> > annotations(std::make_shared<Map<std::string, std::string>>());
         while (true)
         {
             std::string word;

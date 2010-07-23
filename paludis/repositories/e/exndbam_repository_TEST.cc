@@ -75,7 +75,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "exndbam");
             keys->insert("location", stringify(FSEntry::cwd() / "exndbam_repository_TEST_dir" / "repo1"));
             keys->insert("builddir", stringify(FSEntry::cwd() / "exndbam_repository_TEST_dir" / "build"));
@@ -104,7 +104,7 @@ namespace test_cases
                 const std::string & chosen_one,
                 const std::string & victim) const
         {
-            std::shared_ptr<PackageIDSequence> replacing(new PackageIDSequence);
+            std::shared_ptr<PackageIDSequence> replacing(std::make_shared<PackageIDSequence>());
             if (! victim.empty())
                 replacing->push_back(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec(victim,
@@ -125,7 +125,7 @@ namespace test_cases
         {
             TestEnvironment env(FSEntry("exndbam_repository_TEST_dir/root").realpath());
             env.set_paludis_command("/bin/false");
-            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "exndbam_repository_TEST_dir" / "postinsttest_src1"));

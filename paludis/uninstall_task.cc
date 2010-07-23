@@ -158,7 +158,7 @@ UninstallTask::add_target(const std::string & target)
 
     try
     {
-        std::shared_ptr<PackageDepSpec> pds(new PackageDepSpec(parse_user_package_dep_spec(
+        std::shared_ptr<PackageDepSpec> pds(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec(
                         target, _imp->env, UserPackageDepSpecOptions() + updso_throw_if_set + updso_allow_wildcards,
                         filter::SupportsAction<UninstallAction>())));
 
@@ -169,7 +169,7 @@ UninstallTask::add_target(const std::string & target)
         if (pds->package_ptr())
         {
             /* don't need to dewildcard */
-            pds->set_tag(std::shared_ptr<const DepTag>(new TargetDepTag));
+            pds->set_tag(std::shared_ptr<const DepTag>(std::make_shared<TargetDepTag>()));
             _imp->targets.push_back(pds);
         }
         else
@@ -180,7 +180,7 @@ UninstallTask::add_target(const std::string & target)
             if (names->empty())
             {
                 /* no match. we'll get an error from this later anyway. */
-                pds->set_tag(std::shared_ptr<const DepTag>(new TargetDepTag));
+                pds->set_tag(std::shared_ptr<const DepTag>(std::make_shared<TargetDepTag>()));
                 _imp->targets.push_back(pds);
             }
             else
@@ -190,8 +190,8 @@ UninstallTask::add_target(const std::string & target)
                 {
                     PartiallyMadePackageDepSpec p(*pds);
                     p.package((*i)->name());
-                    std::shared_ptr<PackageDepSpec> pdsn(new PackageDepSpec(p));
-                    pdsn->set_tag(std::shared_ptr<const DepTag>(new TargetDepTag));
+                    std::shared_ptr<PackageDepSpec> pdsn(std::make_shared<PackageDepSpec>(p));
+                    pdsn->set_tag(std::shared_ptr<const DepTag>(std::make_shared<TargetDepTag>()));
                     _imp->targets.push_back(pdsn);
                 }
             }
@@ -316,7 +316,7 @@ UninstallTask::execute()
     {
         on_update_world_pre();
 
-        std::shared_ptr<SetSpecTree> all(new SetSpecTree(std::make_shared<AllDepSpec>()));
+        std::shared_ptr<SetSpecTree> all(std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>()));
 
         std::map<QualifiedPackageName, std::set<VersionSpec> > being_removed;
         for (UninstallList::ConstIterator i(list.begin()), i_end(list.end()) ; i != i_end ; ++i)

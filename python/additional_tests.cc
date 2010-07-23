@@ -47,7 +47,7 @@ namespace environment
 {
     void test_env(Environment & e)
     {
-        std::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+        std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
                         n::environment() = &e,
                         n::name() = RepositoryName("fakerepo"))));
         std::shared_ptr<PackageID> pid(repo->add_version("cat", "pkg", "1.0"));
@@ -55,7 +55,7 @@ namespace environment
 
         bool PALUDIS_ATTRIBUTE((unused)) b2(e.accept_license("l", *pid));
 
-        std::shared_ptr<KeywordNameSet> kns(new KeywordNameSet);
+        std::shared_ptr<KeywordNameSet> kns(std::make_shared<KeywordNameSet>());
         kns->insert(KeywordName("keyword"));
         bool PALUDIS_ATTRIBUTE((unused)) b3(e.accept_keywords(kns, *pid));
 

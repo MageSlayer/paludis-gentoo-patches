@@ -85,7 +85,7 @@ namespace
             const EAPI & eapi,
             const std::shared_ptr<const PackageID> & id)
     {
-        std::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
+        std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(
                     parse_elike_package_dep_spec(s, eapi.supported()->package_dep_spec_parse_options(),
                         eapi.supported()->version_spec_options(), id)));
         h.begin()->item()->append(spec);
@@ -117,7 +117,7 @@ namespace
                     strong = true;
             }
 
-            std::shared_ptr<BlockDepSpec> spec(new BlockDepSpec(
+            std::shared_ptr<BlockDepSpec> spec(std::make_shared<BlockDepSpec>(
                         s,
                         parse_elike_package_dep_spec(s.substr(specstart),
                             eapi.supported()->package_dep_spec_parse_options(),
@@ -137,7 +137,7 @@ namespace
             const typename ParseStackTypes<T_>::AnnotationsGoHere & annotations_go_here,
             const std::string & s)
     {
-        std::shared_ptr<LicenseDepSpec> spec(new LicenseDepSpec(s));
+        std::shared_ptr<LicenseDepSpec> spec(std::make_shared<LicenseDepSpec>(s));
         h.begin()->item()->append(spec);
         annotations_go_here(spec);
     }
@@ -148,7 +148,7 @@ namespace
             const typename ParseStackTypes<T_>::AnnotationsGoHere & annotations_go_here,
             const std::string & s)
     {
-        std::shared_ptr<PlainTextDepSpec> spec(new PlainTextDepSpec(s));
+        std::shared_ptr<PlainTextDepSpec> spec(std::make_shared<PlainTextDepSpec>(s));
         h.begin()->item()->append(spec);
         annotations_go_here(spec);
     }
@@ -159,7 +159,7 @@ namespace
             const typename ParseStackTypes<T_>::AnnotationsGoHere & annotations_go_here,
             const std::string & s)
     {
-        std::shared_ptr<SimpleURIDepSpec> spec(new SimpleURIDepSpec(s));
+        std::shared_ptr<SimpleURIDepSpec> spec(std::make_shared<SimpleURIDepSpec>(s));
         h.begin()->item()->append(spec);
         annotations_go_here(spec);
     }
@@ -175,7 +175,7 @@ namespace
     {
         if (t.empty() || eapi.supported()->dependency_spec_tree_parse_options()[dstpo_uri_supports_arrow])
         {
-            std::shared_ptr<FetchableURIDepSpec> spec(new FetchableURIDepSpec(t.empty() ? f : f + " -> " + t));
+            std::shared_ptr<FetchableURIDepSpec> spec(std::make_shared<FetchableURIDepSpec>(t.empty() ? f : f + " -> " + t));
             h.begin()->item()->append(spec);
             annotations_go_here(spec);
         }
@@ -250,7 +250,7 @@ namespace
     template <typename T_, typename A_>
     void any_all_handler(typename ParseStackTypes<T_>::Stack & stack)
     {
-        std::shared_ptr<A_> spec(new A_);
+        std::shared_ptr<A_> spec(std::make_shared<A_>());
         stack.push_front(make_named_values<typename ParseStackTypes<T_>::Item>(
                     n::item() = stack.begin()->item()->append(spec),
                     n::spec() = spec
@@ -264,7 +264,7 @@ namespace
             const Environment * const env,
             const std::shared_ptr<const PackageID> & id)
     {
-        std::shared_ptr<ConditionalDepSpec> spec(new ConditionalDepSpec(parse_elike_conditional_dep_spec(
+        std::shared_ptr<ConditionalDepSpec> spec(std::make_shared<ConditionalDepSpec>(parse_elike_conditional_dep_spec(
                         u, env, id, bool(id->repository()->installed_root_key()))));
         stack.push_front(make_named_values<typename ParseStackTypes<T_>::Item>(
                     n::item() = stack.begin()->item()->append(spec),
@@ -303,7 +303,7 @@ namespace
 
     void set_annotations(std::shared_ptr<DepSpec> & spec, const std::shared_ptr<const Map<std::string, std::string> > & m)
     {
-        std::shared_ptr<ELikeAnnotations> key(new ELikeAnnotations(m));
+        std::shared_ptr<ELikeAnnotations> key(std::make_shared<ELikeAnnotations>(m));
         spec->set_annotations_key(key);
     }
 
@@ -320,7 +320,7 @@ paludis::erepository::parse_depend(const std::string & s,
     using namespace std::placeholders;
 
     ParseStackTypes<DependencySpecTree>::Stack stack;
-    std::shared_ptr<AllDepSpec> spec(new AllDepSpec);
+    std::shared_ptr<AllDepSpec> spec(std::make_shared<AllDepSpec>());
     std::shared_ptr<DepSpec> thing_to_annotate(spec);
     std::shared_ptr<DependencySpecTree> top(std::make_shared<DependencySpecTree>(spec));
     stack.push_front(make_named_values<ParseStackTypes<DependencySpecTree>::Item>(
@@ -363,7 +363,7 @@ paludis::erepository::parse_provide(const std::string & s,
     using namespace std::placeholders;
 
     ParseStackTypes<ProvideSpecTree>::Stack stack;
-    std::shared_ptr<AllDepSpec> spec(new AllDepSpec);
+    std::shared_ptr<AllDepSpec> spec(std::make_shared<AllDepSpec>());
     std::shared_ptr<DepSpec> thing_to_annotate(spec);
     std::shared_ptr<ProvideSpecTree> top(std::make_shared<ProvideSpecTree>(spec));
     stack.push_front(make_named_values<ParseStackTypes<ProvideSpecTree>::Item>(
@@ -402,7 +402,7 @@ paludis::erepository::parse_fetchable_uri(const std::string & s,
     using namespace std::placeholders;
 
     ParseStackTypes<FetchableURISpecTree>::Stack stack;
-    std::shared_ptr<AllDepSpec> spec(new AllDepSpec);
+    std::shared_ptr<AllDepSpec> spec(std::make_shared<AllDepSpec>());
     std::shared_ptr<DepSpec> thing_to_annotate(spec);
     std::shared_ptr<FetchableURISpecTree> top(std::make_shared<FetchableURISpecTree>(spec));
     stack.push_front(make_named_values<ParseStackTypes<FetchableURISpecTree>::Item>(
@@ -445,7 +445,7 @@ paludis::erepository::parse_simple_uri(const std::string & s,
     using namespace std::placeholders;
 
     ParseStackTypes<SimpleURISpecTree>::Stack stack;
-    std::shared_ptr<AllDepSpec> spec(new AllDepSpec);
+    std::shared_ptr<AllDepSpec> spec(std::make_shared<AllDepSpec>());
     std::shared_ptr<DepSpec> thing_to_annotate(spec);
     std::shared_ptr<SimpleURISpecTree> top(std::make_shared<SimpleURISpecTree>(spec));
     stack.push_front(make_named_values<ParseStackTypes<SimpleURISpecTree>::Item>(
@@ -484,7 +484,7 @@ paludis::erepository::parse_license(const std::string & s,
     using namespace std::placeholders;
 
     ParseStackTypes<LicenseSpecTree>::Stack stack;
-    std::shared_ptr<AllDepSpec> spec(new AllDepSpec);
+    std::shared_ptr<AllDepSpec> spec(std::make_shared<AllDepSpec>());
     std::shared_ptr<DepSpec> thing_to_annotate(spec);
     std::shared_ptr<LicenseSpecTree> top(std::make_shared<LicenseSpecTree>(spec));
     stack.push_front(make_named_values<ParseStackTypes<LicenseSpecTree>::Item>(
@@ -523,7 +523,7 @@ paludis::erepository::parse_plain_text(const std::string & s,
     using namespace std::placeholders;
 
     ParseStackTypes<PlainTextSpecTree>::Stack stack;
-    std::shared_ptr<AllDepSpec> spec(new AllDepSpec);
+    std::shared_ptr<AllDepSpec> spec(std::make_shared<AllDepSpec>());
     std::shared_ptr<DepSpec> thing_to_annotate(spec);
     std::shared_ptr<PlainTextSpecTree> top(std::make_shared<PlainTextSpecTree>(spec));
     stack.push_front(make_named_values<ParseStackTypes<PlainTextSpecTree>::Item>(
@@ -562,7 +562,7 @@ paludis::erepository::parse_myoptions(const std::string & s,
     using namespace std::placeholders;
 
     ParseStackTypes<PlainTextSpecTree>::Stack stack;
-    std::shared_ptr<AllDepSpec> spec(new AllDepSpec);
+    std::shared_ptr<AllDepSpec> spec(std::make_shared<AllDepSpec>());
     std::shared_ptr<DepSpec> thing_to_annotate(spec);
     std::shared_ptr<PlainTextSpecTree> top(std::make_shared<PlainTextSpecTree>(spec));
     stack.push_front(make_named_values<ParseStackTypes<PlainTextSpecTree>::Item>(
@@ -608,7 +608,7 @@ paludis::erepository::parse_uri_label(const std::string & s, const EAPI & e)
     if (c.empty())
         throw EDepParseError(s, "Unknown label");
 
-    std::shared_ptr<URILabelsDepSpec> l(new URILabelsDepSpec);
+    std::shared_ptr<URILabelsDepSpec> l(std::make_shared<URILabelsDepSpec>());
 
     if (c == "URIMirrorsThenListedLabel")
         l->add_label(std::make_shared<URIMirrorsThenListedLabel>(s.substr(0, s.length() - 1)));
@@ -688,7 +688,7 @@ paludis::erepository::parse_dependency_label(
     std::string label(s.substr(0, s.length() - 1));
     tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(label, "+", "", std::inserter(labels, labels.end()));
 
-    std::shared_ptr<DependenciesLabelsDepSpec> l(new DependenciesLabelsDepSpec);
+    std::shared_ptr<DependenciesLabelsDepSpec> l(std::make_shared<DependenciesLabelsDepSpec>());
 
     for (std::set<std::string>::iterator it = labels.begin(), it_e = labels.end(); it != it_e; ++it)
     {

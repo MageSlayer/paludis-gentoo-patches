@@ -48,7 +48,7 @@ namespace paludis
     void register_repositories<repository_groups::fake>(const repository_groups::fake * const,
             RepositoryFactory * const factory)
     {
-        std::shared_ptr<Set<std::string> > fake_formats(new Set<std::string>);
+        std::shared_ptr<Set<std::string> > fake_formats(std::make_shared<Set<std::string>>());
         fake_formats->insert("fake_installed");
 
         factory->add_repository_format(

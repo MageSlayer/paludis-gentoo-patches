@@ -63,15 +63,15 @@ namespace paludis
 
         Imp(const UnwrittenRepository * const repo, const UnwrittenRepositoryParams & p) :
             params(p),
-            format_key(new LiteralMetadataValueKey<std::string> ("format", "format",
+            format_key(std::make_shared<LiteralMetadataValueKey<std::string> >("format", "format",
                         mkt_significant, "unwritten")),
-            location_key(new LiteralMetadataValueKey<FSEntry> ("location", "location",
+            location_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("location", "location",
                         mkt_significant, params.location())),
-            sync_key(new LiteralMetadataValueKey<std::string> (
+            sync_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
                         "sync", "sync", mkt_normal, params.sync())),
-            sync_options_key(new LiteralMetadataValueKey<std::string> (
+            sync_options_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
                         "sync_options", "sync_options", mkt_normal, params.sync_options())),
-            sync_host_key(new LiteralMetadataValueKey<std::string> ("sync_host", "sync_host", mkt_internal, extract_host_from_url(params.sync()))),
+            sync_host_key(std::make_shared<LiteralMetadataValueKey<std::string> >("sync_host", "sync_host", mkt_internal, extract_host_from_url(params.sync()))),
             store(DeferredConstructionPtr<std::shared_ptr<UnwrittenRepositoryStore> > (
                         std::bind(&make_store, repo, std::cref(params))))
         {
@@ -323,7 +323,7 @@ UnwrittenRepository::repository_factory_create(
 
     std::string sync_options(f("sync_options"));
 
-    return std::shared_ptr<UnwrittenRepository>(new UnwrittenRepository(
+    return std::shared_ptr<UnwrittenRepository>(std::make_shared<UnwrittenRepository>(
                 make_named_values<UnwrittenRepositoryParams>(
                     n::environment() = env,
                     n::location() = location,

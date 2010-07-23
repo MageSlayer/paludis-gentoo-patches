@@ -68,13 +68,13 @@ namespace paludis
 
         Imp(const RepositoryRepository * const repo, const RepositoryRepositoryParams & p) :
             params(p),
-            format_key(new LiteralMetadataValueKey<std::string> ("format", "format",
+            format_key(std::make_shared<LiteralMetadataValueKey<std::string> >("format", "format",
                         mkt_significant, "repository")),
-            config_filename_key(new LiteralMetadataValueKey<std::string> (
+            config_filename_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
                         "config_filename", "config_filename", mkt_normal, params.config_filename())),
-            config_template_key(new LiteralMetadataValueKey<std::string> (
+            config_template_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
                         "config_template", "config_template", mkt_normal, params.config_template())),
-            installed_root_key(new LiteralMetadataValueKey<FSEntry>("root", "root", mkt_normal, p.root())),
+            installed_root_key(std::make_shared<LiteralMetadataValueKey<FSEntry>>("root", "root", mkt_normal, p.root())),
             store(DeferredConstructionPtr<std::shared_ptr<RepositoryRepositoryStore> > (
                         std::bind(&make_store, repo, std::cref(params))))
         {
@@ -291,7 +291,7 @@ RepositoryRepository::repository_factory_create(
     if (root_str.empty())
         root_str = "/";
 
-    return std::shared_ptr<RepositoryRepository>(new RepositoryRepository(
+    return std::shared_ptr<RepositoryRepository>(std::make_shared<RepositoryRepository>(
                 make_named_values<RepositoryRepositoryParams>(
                     n::config_filename() = config_filename,
                     n::config_template() = config_template,

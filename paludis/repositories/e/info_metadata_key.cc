@@ -193,7 +193,7 @@ InfoPkgsMetadataKey::need_keys_added() const
             else
             {
                 using namespace std::placeholders;
-                std::shared_ptr<Set<std::string> > s(new Set<std::string>);
+                std::shared_ptr<Set<std::string> > s(std::make_shared<Set<std::string>>());
                 std::transform(indirect_iterator(q->begin()), indirect_iterator(q->end()), s->inserter(),
                         std::bind(std::mem_fn(&PackageID::canonical_form), _1, idcf_version));
                 key = std::make_shared<LiteralMetadataStringSetKey>(i->first, i->first, mkt_normal, s);

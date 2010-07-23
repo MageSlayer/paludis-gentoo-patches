@@ -93,7 +93,7 @@ namespace
             const std::shared_ptr<const RepositoryNameSet> &,
             const std::shared_ptr<const QualifiedPackageNameSet> & pkgs) const
     {
-        std::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
+        std::shared_ptr<QualifiedPackageNameSet> result(std::make_shared<QualifiedPackageNameSet>());
 
         for (QualifiedPackageNameSet::ConstIterator p(pkgs->begin()),
                     p_end(pkgs->end()); p_end != p; ++p)

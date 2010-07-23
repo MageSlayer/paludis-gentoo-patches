@@ -77,7 +77,7 @@ namespace
         Context local_context("When handling query '" + target + "':");
 
         std::shared_ptr<PackageDepSpec> spec(
-                new PackageDepSpec(parse_user_package_dep_spec(target, env.get(), UserPackageDepSpecOptions(),
+                std::make_shared<PackageDepSpec>(parse_user_package_dep_spec(target, env.get(), UserPackageDepSpecOptions(),
                         filter::InstalledAtRoot(env->root()))));
 
         std::shared_ptr<const PackageIDSequence> entries(

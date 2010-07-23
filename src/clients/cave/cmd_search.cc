@@ -270,20 +270,20 @@ SearchCommand::run(
     if (cmdline.begin_parameters() == cmdline.end_parameters())
         throw args::DoHelp("search requires at least one parameter");
 
-    const std::shared_ptr<Sequence<std::string> > show_args(new Sequence<std::string>);
+    const std::shared_ptr<Sequence<std::string> > show_args(std::make_shared<Sequence<std::string>>());
 
     {
         DisplayCallback display_callback;
         ScopedNotifierCallback display_callback_holder(env.get(),
                 NotifierCallbackFunction(std::cref(display_callback)));
 
-        const std::shared_ptr<Set<std::string> > patterns(new Set<std::string>);
+        const std::shared_ptr<Set<std::string> > patterns(std::make_shared<Set<std::string>>());
         std::copy(cmdline.begin_parameters(), cmdline.end_parameters(), patterns->inserter());
 
         FindCandidatesCommand find_candidates_command;
         MatchCommand match_command;
 
-        std::shared_ptr<Set<QualifiedPackageName> > matches(new Set<QualifiedPackageName>);
+        std::shared_ptr<Set<QualifiedPackageName> > matches(std::make_shared<Set<QualifiedPackageName>>());
         find_candidates_command.run_hosted(env, cmdline.search_options, cmdline.match_options,
                 patterns, std::bind(
                     &found_candidate, env, std::ref(match_command), std::cref(cmdline.match_options),

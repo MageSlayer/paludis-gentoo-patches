@@ -422,7 +422,7 @@ PerformCommand::run(
 
         OutputManagerFromIPCOrEnvironment output_manager_holder(env.get(), cmdline, id);
         WantInstallPhase want_phase(cmdline, output_manager_holder);
-        std::shared_ptr<Sequence<FetchActionFailure> > failures(new Sequence<FetchActionFailure>);
+        std::shared_ptr<Sequence<FetchActionFailure> > failures(std::make_shared<Sequence<FetchActionFailure>>());
         FetchActionOptions options(make_named_values<FetchActionOptions>(
                     n::errors() = failures,
                     n::exclude_unmirrorable() = cmdline.a_exclude_unmirrorable.specified(),
@@ -505,7 +505,7 @@ PerformCommand::run(
         const std::shared_ptr<Repository> destination(env->package_database()->fetch_repository(
                     RepositoryName(cmdline.a_destination.argument())));
 
-        const std::shared_ptr<PackageIDSequence> replacing(new PackageIDSequence);
+        const std::shared_ptr<PackageIDSequence> replacing(std::make_shared<PackageIDSequence>());
         for (args::StringSetArg::ConstIterator p(cmdline.a_replacing.begin_args()),
                 p_end(cmdline.a_replacing.end_args()) ;
                 p != p_end ; ++p)

@@ -49,7 +49,7 @@ namespace test_cases
         {
             TestEnvironment env;
 
-            std::shared_ptr<FakeRepository> r1(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            std::shared_ptr<FakeRepository> r1(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("repo1"))));
             r1->add_version("r1c1", "r1c1p1", "1");
@@ -60,7 +60,7 @@ namespace test_cases
             env.package_database()->add_repository(11, r1);
             TEST_CHECK(true);
 
-            std::shared_ptr<FakeRepository> r2(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            std::shared_ptr<FakeRepository> r2(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("repo2"))));
             r2->add_version("rac1", "rac1pa", "1");
@@ -117,7 +117,7 @@ namespace test_cases
         {
             TestEnvironment env;
 
-            std::shared_ptr<FakeRepository> r1(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            std::shared_ptr<FakeRepository> r1(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("repo1"))));
             r1->add_version("cat", "pkg", "1")->set_slot(SlotName("a"));
@@ -127,7 +127,7 @@ namespace test_cases
             env.package_database()->add_repository(10, r1);
             TEST_CHECK(true);
 
-            std::shared_ptr<FakeRepository> r2(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            std::shared_ptr<FakeRepository> r2(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("repo2"))));
             r2->add_version("cat", "pkg", "1")->set_slot(SlotName("a"));
@@ -153,7 +153,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(join(indirect_iterator(q4->begin()), indirect_iterator(q4->end()), " "),
                     "cat/pkg-3:b::repo2 cat/pkg-3:c::repo1 cat/pkg-4:a::repo1");
 
-            std::shared_ptr<FakeRepository> r3(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            std::shared_ptr<FakeRepository> r3(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("repo3"))));
             r3->add_version("cat", "other", "1")->set_slot(SlotName("a"));

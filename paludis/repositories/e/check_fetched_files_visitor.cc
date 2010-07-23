@@ -95,10 +95,10 @@ namespace paludis
             exclude_unmirrorable(x),
             ignore_unfetched(u),
             ignore_not_in_manifest(nm),
-            failures(new Sequence<FetchActionFailure>),
+            failures(std::make_shared<Sequence<FetchActionFailure>>()),
             need_nofetch(false),
             in_nofetch(n),
-            m2r(new Manifest2Reader(m2)),
+            m2r(std::make_shared<Manifest2Reader>(m2)),
             use_manifest(um),
             output_manager(md)
         {

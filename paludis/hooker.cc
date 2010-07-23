@@ -282,7 +282,7 @@ FancyHookFile::auto_hook_names() const
 
     if (0 == exit_status)
     {
-        std::shared_ptr<Sequence<std::string> > result(new Sequence<std::string>);
+        std::shared_ptr<Sequence<std::string> > result(std::make_shared<Sequence<std::string>>());
         tokenise_whitespace(output, result->back_inserter());
         Log::get_instance()->message("hook.fancy.success", ll_debug, lc_no_context) << "Hook '" << file_name()
             << "' returned success '" << exit_status << "' for auto hook names, result ("
@@ -576,21 +576,21 @@ Hooker::_find_hooks(const Hook & hook) const
 
             if (is_file_with_extension(*e, ".bash", IsFileWithOptions()))
                 if (! hook_files.insert(std::make_pair(strip_trailing_string(e->basename(), ".bash"),
-                                std::shared_ptr<HookFile>(new BashHookFile(*e, d->second, _imp->env)))).second)
+                                std::shared_ptr<HookFile>(std::make_shared<BashHookFile>(*e, d->second, _imp->env)))).second)
                     Log::get_instance()->message("hook.discarding", ll_warning, lc_context) << "Discarding hook file '" << *e
                         << "' because of naming conflict with '" <<
                         hook_files.find(stringify(strip_trailing_string(e->basename(), ".bash")))->second->file_name() << "'";
 
             if (is_file_with_extension(*e, ".hook", IsFileWithOptions()))
                 if (! hook_files.insert(std::make_pair(strip_trailing_string(e->basename(), ".hook"),
-                                std::shared_ptr<HookFile>(new FancyHookFile(*e, d->second, _imp->env)))).second)
+                                std::shared_ptr<HookFile>(std::make_shared<FancyHookFile>(*e, d->second, _imp->env)))).second)
                     Log::get_instance()->message("hook.discarding", ll_warning, lc_context) << "Discarding hook file '" << *e
                         << "' because of naming conflict with '" <<
                         hook_files.find(stringify(strip_trailing_string(e->basename(), ".hook")))->second->file_name() << "'";
 
             if (is_file_with_extension(*e, so_suffix, IsFileWithOptions()))
                  if (! hook_files.insert(std::make_pair(strip_trailing_string(e->basename(), so_suffix),
-                                 std::shared_ptr<HookFile>(new SoHookFile(*e, d->second, _imp->env)))).second)
+                                 std::shared_ptr<HookFile>(std::make_shared<SoHookFile>(*e, d->second, _imp->env)))).second)
                      Log::get_instance()->message("hook.discarding", ll_warning, lc_context) << "Discarding hook file '" << *e
                          << "' because of naming conflict with '" <<
                          hook_files.find(stringify(strip_trailing_string(e->basename(), so_suffix)))->second->file_name() << "'";
@@ -691,7 +691,7 @@ Hooker::_find_hooks(const Hook & hook) const
         }
     }
 
-    std::shared_ptr<Sequence<std::shared_ptr<HookFile> > > result(new Sequence<std::shared_ptr<HookFile> >);
+    std::shared_ptr<Sequence<std::shared_ptr<HookFile> > > result(std::make_shared<Sequence<std::shared_ptr<HookFile> >>());
     for (std::list<std::string>::const_iterator o(ordered.begin()), o_end(ordered.end()) ;
             o != o_end ; ++o)
         result->push_back(hook_files.find(*o)->second);

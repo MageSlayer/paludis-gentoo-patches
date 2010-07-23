@@ -53,7 +53,7 @@ namespace
 
         std::shared_ptr<Set<std::string> > visit(const FetchAction & a) const
         {
-            std::shared_ptr<Set<std::string> > result(new Set<std::string>);
+            std::shared_ptr<Set<std::string> > result(std::make_shared<Set<std::string>>());
             if (a.options.ignore_unfetched())
                 result->insert(FetchAction::ignore_unfetched_flag_name());
             return result;
@@ -203,7 +203,7 @@ CreateOutputManagerForPackageIDActionInfo::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "CreateOutputManagerForPackageIDActionInfo");
 
-    std::shared_ptr<Set<std::string> > action_flags(new Set<std::string>);
+    std::shared_ptr<Set<std::string> > action_flags(std::make_shared<Set<std::string>>());
     Deserialisator vv(*v.find_remove_member("action_flags"), "c");
     for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
         action_flags->insert(vv.member<std::string>(stringify(n)));

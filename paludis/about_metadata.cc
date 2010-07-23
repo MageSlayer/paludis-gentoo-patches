@@ -39,22 +39,22 @@ namespace paludis
         std::shared_ptr<LiteralMetadataValueKey<std::string> > build_date_key;
 
         Imp() :
-            package_key(new LiteralMetadataValueKey<std::string>("PALUDIS_PACKAGE", "Package Name", mkt_significant, PALUDIS_PACKAGE)),
-            version_key(new LiteralMetadataValueKey<std::string>("PALUDIS_VERSION", "Package Version", mkt_significant,
+            package_key(std::make_shared<LiteralMetadataValueKey<std::string>>("PALUDIS_PACKAGE", "Package Name", mkt_significant, PALUDIS_PACKAGE)),
+            version_key(std::make_shared<LiteralMetadataValueKey<std::string>>("PALUDIS_VERSION", "Package Version", mkt_significant,
                         stringify(PALUDIS_VERSION_MAJOR) + "." + stringify(PALUDIS_VERSION_MINOR) + "." +
                         stringify(PALUDIS_VERSION_MICRO) + PALUDIS_VERSION_SUFFIX + (std::string(PALUDIS_GIT_HEAD).empty() ? "" :
                             " " + stringify(PALUDIS_GIT_HEAD)))),
-            build_cxxflags_key(new LiteralMetadataValueKey<std::string>("PALUDIS_BUILD_CXXFLAGS", "Built with CXXFLAGS", mkt_normal,
+            build_cxxflags_key(std::make_shared<LiteralMetadataValueKey<std::string>>("PALUDIS_BUILD_CXXFLAGS", "Built with CXXFLAGS", mkt_normal,
                         PALUDIS_BUILD_CXXFLAGS)),
-            build_ldflags_key(new LiteralMetadataValueKey<std::string>("PALUDIS_BUILD_LDFLAGS", "Built with LDFLAGS", mkt_normal,
+            build_ldflags_key(std::make_shared<LiteralMetadataValueKey<std::string>>("PALUDIS_BUILD_LDFLAGS", "Built with LDFLAGS", mkt_normal,
                         PALUDIS_BUILD_LDFLAGS)),
-            build_cxx_key(new LiteralMetadataValueKey<std::string>("PALUDIS_BUILD_CXX", "Built with CXX", mkt_normal,
+            build_cxx_key(std::make_shared<LiteralMetadataValueKey<std::string>>("PALUDIS_BUILD_CXX", "Built with CXX", mkt_normal,
                         stringify(PALUDIS_BUILD_CXX)
 #ifdef __VERSION__
                         + " " + stringify(__VERSION__)
 #endif
                         )),
-            build_date_key(new LiteralMetadataValueKey<std::string>("PALUDIS_BUILD_DATE", "Build Date", mkt_normal,
+            build_date_key(std::make_shared<LiteralMetadataValueKey<std::string>>("PALUDIS_BUILD_DATE", "Build Date", mkt_normal,
                         PALUDIS_BUILD_DATE))
         {
         }

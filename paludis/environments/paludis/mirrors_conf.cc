@@ -91,7 +91,7 @@ MirrorsConf::add(const FSEntry & filename)
 std::shared_ptr<const MirrorsSequence>
 MirrorsConf::query(const std::string & m) const
 {
-    std::shared_ptr<MirrorsSequence> result(new MirrorsSequence);
+    std::shared_ptr<MirrorsSequence> result(std::make_shared<MirrorsSequence>());
     std::pair<Mirrors::const_iterator, Mirrors::const_iterator> p(_imp->mirrors.equal_range(m));
     std::transform(p.first, p.second, result->back_inserter(),
             std::mem_fn(&std::pair<const std::string, std::string>::second));

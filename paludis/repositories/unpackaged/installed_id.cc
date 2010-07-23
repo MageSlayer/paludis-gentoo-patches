@@ -424,11 +424,11 @@ namespace paludis
             repository_name(r),
             root(ro),
             ndbam(d),
-            build_dependencies_labels(new DependenciesLabelSequence),
-            run_dependencies_labels(new DependenciesLabelSequence),
-            slot_key(new LiteralMetadataValueKey<SlotName> ("slot", "Slot", mkt_internal, s)),
-            fs_location_key(new InstalledUnpackagedFSEntryKey(l)),
-            behaviours_key(new LiteralMetadataStringSetKey("behaviours", "behaviours", mkt_internal, behaviours_set))
+            build_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
+            run_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
+            slot_key(std::make_shared<LiteralMetadataValueKey<SlotName> >("slot", "Slot", mkt_internal, s)),
+            fs_location_key(std::make_shared<InstalledUnpackagedFSEntryKey>(l)),
+            behaviours_key(std::make_shared<LiteralMetadataStringSetKey>("behaviours", "behaviours", mkt_internal, behaviours_set))
         {
             build_dependencies_labels->push_back(std::make_shared<DependenciesBuildLabel>("build_dependencies",
                             return_literal_function(true)));
@@ -468,7 +468,7 @@ namespace
 {
     std::shared_ptr<Set<std::string> > make_behaviours()
     {
-        std::shared_ptr<Set<std::string> > result(new Set<std::string>);
+        std::shared_ptr<Set<std::string> > result(std::make_shared<Set<std::string>>());
         result->insert("transient");
         return result;
     }
@@ -824,7 +824,7 @@ InstalledUnpackagedID::invalidate_masks() const
 std::shared_ptr<const Set<std::string> >
 InstalledUnpackagedID::breaks_portage() const
 {
-    std::shared_ptr<Set<std::string> > why(new Set<std::string>);
+    std::shared_ptr<Set<std::string> > why(std::make_shared<Set<std::string>>());
     why->insert("format");
     return why;
 }

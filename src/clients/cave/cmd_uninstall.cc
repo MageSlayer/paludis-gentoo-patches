@@ -128,11 +128,11 @@ UninstallCommand::run(
     cmdline.resolution_options->apply_shortcuts();
     cmdline.resolution_options->verify(env);
 
-    std::shared_ptr<Sequence<std::pair<std::string, std::string> > > targets(new Sequence<std::pair<std::string, std::string> >);
-    std::shared_ptr<Sequence<std::string> > targets_cleaned_up(new Sequence<std::string>);
+    std::shared_ptr<Sequence<std::pair<std::string, std::string> > > targets(std::make_shared<Sequence<std::pair<std::string, std::string> >>());
+    std::shared_ptr<Sequence<std::string> > targets_cleaned_up(std::make_shared<Sequence<std::string>>());
 
     std::set<QualifiedPackageName> qpns_being_changed;
-    std::shared_ptr<PackageIDSequence> ids_going_away(new PackageIDSequence);
+    std::shared_ptr<PackageIDSequence> ids_going_away(std::make_shared<PackageIDSequence>());
 
     for (UninstallCommandLine::ParametersConstIterator p(cmdline.begin_parameters()), p_end(cmdline.end_parameters()) ;
             p != p_end ; ++p)

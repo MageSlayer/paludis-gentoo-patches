@@ -260,7 +260,7 @@ namespace
         if (targets->empty())
             throw args::DoHelp("Must specify at least one target");
 
-        const std::shared_ptr<Sequence<std::string> > result(new Sequence<std::string>);
+        const std::shared_ptr<Sequence<std::string> > result(std::make_shared<Sequence<std::string>>());
         bool seen_sets(false), seen_packages(false);
         for (Sequence<std::pair<std::string, std::string> >::ConstIterator p(targets->begin()), p_end(targets->end()) ;
                 p != p_end ; ++p)
@@ -521,7 +521,7 @@ namespace
             const PackageDepSpecList & without,
             const Resolvent & resolvent)
     {
-        const std::shared_ptr<Constraints> result(new Constraints);
+        const std::shared_ptr<Constraints> result(std::make_shared<Constraints>());
 
         int n(reinstall_scm_days(resolution_options));
         if ((-1 != n) && installed_is_scm_older_than(env, resolution_options, all_binary_repos_generator, resolvent, n)
@@ -612,7 +612,7 @@ namespace
             const std::shared_ptr<const Reason> & reason,
             const DestinationTypes & extra_dts)
     {
-        std::shared_ptr<PackageIDSequence> result_ids(new PackageIDSequence);
+        std::shared_ptr<PackageIDSequence> result_ids(std::make_shared<PackageIDSequence>());
         std::shared_ptr<const PackageID> best;
 
         const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::BestVersionOnly(
@@ -660,7 +660,7 @@ namespace
             throw args::DoHelp("Don't understand argument '" + arg.argument() + "' to '--"
                     + arg.long_name() + "'");
 
-        std::shared_ptr<Resolvents> result(new Resolvents);
+        std::shared_ptr<Resolvents> result(std::make_shared<Resolvents>());
         for (PackageIDSequence::ConstIterator i(result_ids->begin()), i_end(result_ids->end()) ;
                 i != i_end ; ++i)
         {
@@ -1192,7 +1192,7 @@ namespace
             const std::shared_ptr<const PackageID> & id,
             const std::shared_ptr<const ChangeByResolventSequence> & ids)
     {
-        const std::shared_ptr<ConstraintSequence> result(new ConstraintSequence);
+        const std::shared_ptr<ConstraintSequence> result(std::make_shared<ConstraintSequence>());
 
         std::shared_ptr<PackageDepSpec> spec;
         if (match_any(env, list, id))
@@ -1210,7 +1210,7 @@ namespace
         for (ChangeByResolventSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                 i != i_end ; ++i)
         {
-            const std::shared_ptr<DependentReason> reason(new DependentReason(*i));
+            const std::shared_ptr<DependentReason> reason(std::make_shared<DependentReason>(*i));
 
             result->push_back(std::make_shared<Constraint>(make_named_values<Constraint>(
                                 n::destination_type() = dt_install_to_slash,
@@ -1232,7 +1232,7 @@ namespace
             const std::shared_ptr<const PackageID> & id,
             const std::shared_ptr<const ChangeByResolventSequence> & ids)
     {
-        const std::shared_ptr<ConstraintSequence> result(new ConstraintSequence);
+        const std::shared_ptr<ConstraintSequence> result(std::make_shared<ConstraintSequence>());
 
         PartiallyMadePackageDepSpec partial_spec((PartiallyMadePackageDepSpecOptions()));
         partial_spec.package(id->name());
@@ -1241,7 +1241,7 @@ namespace
                             id->slot_key()->value(), false));
         PackageDepSpec spec(partial_spec);
 
-        const std::shared_ptr<WasUsedByReason> reason(new WasUsedByReason(ids));
+        const std::shared_ptr<WasUsedByReason> reason(std::make_shared<WasUsedByReason>(ids));
 
         result->push_back(std::make_shared<Constraint>(make_named_values<Constraint>(
                             n::destination_type() = dt_install_to_slash,
@@ -1260,13 +1260,13 @@ namespace
             const std::shared_ptr<const Resolution> & resolution,
             const std::shared_ptr<const Resolution> & other_resolution)
     {
-        const std::shared_ptr<ConstraintSequence> result(new ConstraintSequence);
+        const std::shared_ptr<ConstraintSequence> result(std::make_shared<ConstraintSequence>());
 
         PartiallyMadePackageDepSpec partial_spec((PartiallyMadePackageDepSpecOptions()));
         partial_spec.package(resolution->resolvent().package());
         PackageDepSpec spec(partial_spec);
 
-        const std::shared_ptr<ViaBinaryReason> reason(new ViaBinaryReason(other_resolution->resolvent()));
+        const std::shared_ptr<ViaBinaryReason> reason(std::make_shared<ViaBinaryReason>(other_resolution->resolvent()));
 
         result->push_back(std::make_shared<Constraint>(make_named_values<Constraint>(
                             n::destination_type() = resolution->resolvent().destination_type(),
@@ -1323,7 +1323,7 @@ namespace
                     std::ref(ser_stream),
                     std::cref(*resolved)));
 
-        std::shared_ptr<Sequence<std::string> > args(new Sequence<std::string>);
+        std::shared_ptr<Sequence<std::string> > args(std::make_shared<Sequence<std::string>>());
 
         for (args::ArgsSection::GroupsConstIterator g(display_options.begin()), g_end(display_options.end()) ;
                 g != g_end ; ++g)
@@ -1388,7 +1388,7 @@ namespace
     {
         Context context("When performing chosen resolution:");
 
-        std::shared_ptr<Sequence<std::string> > args(new Sequence<std::string>);
+        std::shared_ptr<Sequence<std::string> > args(std::make_shared<Sequence<std::string>>());
 
         if (is_set)
             args->push_back("--set");
@@ -1778,7 +1778,7 @@ paludis::cave::resolve_common(
             i_end(resolution_options.a_preset.end_args()) ;
             i != i_end ; ++i)
     {
-        const std::shared_ptr<const Reason> reason(new PresetReason("preset", make_null_shared_ptr()));
+        const std::shared_ptr<const Reason> reason(std::make_shared<PresetReason>("preset", make_null_shared_ptr()));
         PackageDepSpec spec(parse_user_package_dep_spec(*i, env.get(), UserPackageDepSpecOptions()));
         DestinationTypes all_dts;
         for (EnumIterator<DestinationType> t, t_end(last_dt) ; t != t_end ; ++t)
@@ -1793,7 +1793,7 @@ paludis::cave::resolve_common(
         for (Resolvents::ConstIterator r(resolvents->begin()), r_end(resolvents->end()) ;
                 r != r_end ; ++r)
         {
-            const std::shared_ptr<Constraint> constraint(new Constraint(make_named_values<Constraint>(
+            const std::shared_ptr<Constraint> constraint(std::make_shared<Constraint>(make_named_values<Constraint>(
                             n::destination_type() = r->destination_type(),
                             n::nothing_is_fine_too() = true,
                             n::reason() = reason,
@@ -1857,7 +1857,7 @@ paludis::cave::resolve_common(
                 ));
 
     ScopedSelectionCache selection_cache(env.get());
-    std::shared_ptr<Resolver> resolver(new Resolver(env.get(), resolver_functions));
+    std::shared_ptr<Resolver> resolver(std::make_shared<Resolver>(env.get(), resolver_functions));
     bool is_set(false);
     std::shared_ptr<const Sequence<std::string> > targets_cleaned_up;
     std::list<SuggestRestart> restarts;

@@ -47,9 +47,9 @@ namespace paludis
         const bool is_suitable_destination;
 
         Imp(const bool s, const bool b) :
-            format_key(new LiteralMetadataValueKey<std::string> (
+            format_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
                         "format", "format", mkt_significant, "installed_fake")),
-            installed_root_key(new LiteralMetadataValueKey<FSEntry> (
+            installed_root_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >(
                         "installed_root", "installed_root", mkt_normal, FSEntry("/"))),
             supports_uninstall(s),
             is_suitable_destination(b)
@@ -87,7 +87,7 @@ FakeInstalledRepository::is_suitable_destination_for(const PackageID &) const
 std::shared_ptr<const FakeInstalledRepository::ProvidesSequence>
 FakeInstalledRepository::provided_packages() const
 {
-    std::shared_ptr<ProvidesSequence> result(new ProvidesSequence);
+    std::shared_ptr<ProvidesSequence> result(std::make_shared<ProvidesSequence>());
 
     std::shared_ptr<const CategoryNamePartSet> cats(category_names());
     for (CategoryNamePartSet::ConstIterator c(cats->begin()), c_end(cats->end()) ;

@@ -195,7 +195,7 @@ PaludisLikeOptionsConf::add_file(const FSEntry & f)
         ValuesGroups * values_groups(0);
         try
         {
-            std::shared_ptr<PackageDepSpec> d(new PackageDepSpec(parse_user_package_dep_spec(
+            std::shared_ptr<PackageDepSpec> d(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec(
                             tokens.at(0), _imp->params.environment(),
                             UserPackageDepSpecOptions() + updso_allow_wildcards + updso_no_disambiguation + updso_throw_if_set)));
 
@@ -590,7 +590,7 @@ PaludisLikeOptionsConf::known_choice_value_names(
         const ChoicePrefixName & prefix
         ) const
 {
-    const std::shared_ptr<Set<UnprefixedChoiceName> > result(new Set<UnprefixedChoiceName>);
+    const std::shared_ptr<Set<UnprefixedChoiceName> > result(std::make_shared<Set<UnprefixedChoiceName>>());
 
     /* Any specific matches? */
     if (maybe_id)

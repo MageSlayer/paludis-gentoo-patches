@@ -95,7 +95,7 @@ AnyDepSpec::AnyDepSpec()
 std::shared_ptr<DepSpec>
 AnyDepSpec::clone() const
 {
-    std::shared_ptr<AnyDepSpec> result(new AnyDepSpec);
+    std::shared_ptr<AnyDepSpec> result(std::make_shared<AnyDepSpec>());
     result->set_annotations_key(annotations_key());
     return result;
 }
@@ -118,7 +118,7 @@ AllDepSpec::need_keys_added() const
 std::shared_ptr<DepSpec>
 AllDepSpec::clone() const
 {
-    std::shared_ptr<AllDepSpec> result(new AllDepSpec);
+    std::shared_ptr<AllDepSpec> result(std::make_shared<AllDepSpec>());
     result->set_annotations_key(annotations_key());
     return result;
 }
@@ -240,7 +240,7 @@ NamedSetDepSpec::name() const
 std::shared_ptr<DepSpec>
 NamedSetDepSpec::clone() const
 {
-    std::shared_ptr<NamedSetDepSpec> result(new NamedSetDepSpec(_name));
+    std::shared_ptr<NamedSetDepSpec> result(std::make_shared<NamedSetDepSpec>(_name));
     result->set_annotations_key(annotations_key());
     return result;
 }
@@ -368,7 +368,7 @@ PlainTextDepSpec::PlainTextDepSpec(const std::string & s) :
 std::shared_ptr<DepSpec>
 PlainTextDepSpec::clone() const
 {
-    std::shared_ptr<PlainTextDepSpec> result(new PlainTextDepSpec(text()));
+    std::shared_ptr<PlainTextDepSpec> result(std::make_shared<PlainTextDepSpec>(text()));
     result->set_annotations_key(annotations_key());
     return result;
 }
@@ -390,7 +390,7 @@ PlainTextLabelDepSpec::~PlainTextLabelDepSpec()
 std::shared_ptr<DepSpec>
 PlainTextLabelDepSpec::clone() const
 {
-    std::shared_ptr<PlainTextLabelDepSpec> result(new PlainTextLabelDepSpec(text()));
+    std::shared_ptr<PlainTextLabelDepSpec> result(std::make_shared<PlainTextLabelDepSpec>(text()));
     result->set_annotations_key(annotations_key());
     return result;
 }
@@ -414,7 +414,7 @@ LicenseDepSpec::LicenseDepSpec(const std::string & s) :
 std::shared_ptr<DepSpec>
 LicenseDepSpec::clone() const
 {
-    std::shared_ptr<LicenseDepSpec> result(new LicenseDepSpec(text()));
+    std::shared_ptr<LicenseDepSpec> result(std::make_shared<LicenseDepSpec>(text()));
     result->set_annotations_key(annotations_key());
     return result;
 }
@@ -432,7 +432,7 @@ SimpleURIDepSpec::SimpleURIDepSpec(const std::string & s) :
 std::shared_ptr<DepSpec>
 SimpleURIDepSpec::clone() const
 {
-    std::shared_ptr<SimpleURIDepSpec> result(new SimpleURIDepSpec(text()));
+    std::shared_ptr<SimpleURIDepSpec> result(std::make_shared<SimpleURIDepSpec>(text()));
     result->set_annotations_key(annotations_key());
     return result;
 }
@@ -457,7 +457,7 @@ BlockDepSpec::strong() const
 std::shared_ptr<DepSpec>
 BlockDepSpec::clone() const
 {
-    std::shared_ptr<BlockDepSpec> result(new BlockDepSpec(*this));
+    std::shared_ptr<BlockDepSpec> result(std::make_shared<BlockDepSpec>(*this));
     result->set_annotations_key(annotations_key());
     return result;
 }
@@ -516,7 +516,7 @@ FetchableURIDepSpec::filename() const
 std::shared_ptr<DepSpec>
 FetchableURIDepSpec::clone() const
 {
-    std::shared_ptr<FetchableURIDepSpec> result(new FetchableURIDepSpec(text()));
+    std::shared_ptr<FetchableURIDepSpec> result(std::make_shared<FetchableURIDepSpec>(text()));
     result->set_annotations_key(annotations_key());
     return result;
 }
@@ -559,7 +559,7 @@ std::shared_ptr<DepSpec>
 LabelsDepSpec<T_>::clone() const
 {
     using namespace std::placeholders;
-    std::shared_ptr<LabelsDepSpec<T_> > my_clone(new LabelsDepSpec<T_>);
+    std::shared_ptr<LabelsDepSpec<T_> > my_clone(std::make_shared<LabelsDepSpec<T_>>());
     my_clone->set_annotations_key(annotations_key());
     std::for_each(begin(), end(), std::bind(std::mem_fn(&LabelsDepSpec<T_>::add_label), my_clone.get(), _1));
     return my_clone;
@@ -1071,17 +1071,17 @@ namespace paludis
         std::shared_ptr<PartiallyMadePackageDepSpecData> data;
 
         Imp(const PartiallyMadePackageDepSpecOptions & o) :
-            data(new PartiallyMadePackageDepSpecData(o))
+            data(std::make_shared<PartiallyMadePackageDepSpecData>(o))
         {
         }
 
         Imp(const Imp & other) :
-            data(new PartiallyMadePackageDepSpecData(*other.data))
+            data(std::make_shared<PartiallyMadePackageDepSpecData>(*other.data))
         {
         }
 
         Imp(const PackageDepSpec & other) :
-            data(new PartiallyMadePackageDepSpecData(*other.data()))
+            data(std::make_shared<PartiallyMadePackageDepSpecData>(*other.data()))
         {
         }
     };

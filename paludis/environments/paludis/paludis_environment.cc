@@ -91,9 +91,9 @@ namespace paludis
             done_hooks(false),
             config(c),
             paludis_command("paludis"),
-            package_database(new PackageDatabase(e)),
-            format_key(new LiteralMetadataValueKey<std::string>("format", "Format", mkt_significant, "paludis")),
-            config_location_key(new LiteralMetadataValueKey<FSEntry>("conf_dir", "Config dir", mkt_normal,
+            package_database(std::make_shared<PackageDatabase>(e)),
+            format_key(std::make_shared<LiteralMetadataValueKey<std::string>>("format", "Format", mkt_significant, "paludis")),
+            config_location_key(std::make_shared<LiteralMetadataValueKey<FSEntry>>("conf_dir", "Config dir", mkt_normal,
                         config->config_dir())),
             world_file_key(config->world()->location_if_set() ? std::make_shared<LiteralMetadataValueKey<FSEntry>>("world_file", "World file", mkt_normal,
                             *config->world()->location_if_set())
@@ -141,7 +141,7 @@ namespace paludis
 }
 
 PaludisEnvironment::PaludisEnvironment(const std::string & s) :
-    Pimp<PaludisEnvironment>(this, std::shared_ptr<PaludisConfig>(new PaludisConfig(this, s))),
+    Pimp<PaludisEnvironment>(this, std::shared_ptr<PaludisConfig>(std::make_shared<PaludisConfig>(this, s))),
     _imp(Pimp<PaludisEnvironment>::_imp)
 {
     Context context("When loading paludis environment:");
@@ -230,7 +230,7 @@ PaludisEnvironment::hook_dirs() const
 
     _imp->need_hook_dirs(_imp->config->config_dir());
 
-    std::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
+    std::shared_ptr<FSEntrySequence> result(std::make_shared<FSEntrySequence>());
     std::transform(_imp->hook_dirs.begin(), _imp->hook_dirs.end(), result->back_inserter(),
             std::mem_fn(&std::pair<FSEntry, bool>::first));
 
@@ -240,7 +240,7 @@ PaludisEnvironment::hook_dirs() const
 std::shared_ptr<const FSEntrySequence>
 PaludisEnvironment::fetchers_dirs() const
 {
-    std::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
+    std::shared_ptr<FSEntrySequence> result(std::make_shared<FSEntrySequence>());
 
     result->push_back(FSEntry(_imp->config->config_dir()) / "fetchers");
 
@@ -256,7 +256,7 @@ PaludisEnvironment::fetchers_dirs() const
 std::shared_ptr<const FSEntrySequence>
 PaludisEnvironment::syncers_dirs() const
 {
-    std::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
+    std::shared_ptr<FSEntrySequence> result(std::make_shared<FSEntrySequence>());
 
     result->push_back(FSEntry(_imp->config->config_dir()) / "syncers");
 
@@ -500,7 +500,7 @@ namespace
     {
         Context context("When making set '" + stringify(f) + "':");
 
-        const std::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(n, stringify(f.basename())));
+        const std::shared_ptr<GeneralSetDepTag> tag(std::make_shared<GeneralSetDepTag>(n, stringify(f.basename())));
 
         SetFile s(make_named_values<SetFileParams>(
                     n::environment() = env,

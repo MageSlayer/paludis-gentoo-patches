@@ -155,14 +155,14 @@ FetchJob::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "FetchJob");
 
-    std::shared_ptr<JobRequirements> requirements(new JobRequirements);
+    std::shared_ptr<JobRequirements> requirements(std::make_shared<JobRequirements>());
     {
         Deserialisator vv(*v.find_remove_member("requirements"), "c");
         for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
             requirements->push_back(vv.member<JobRequirement>(stringify(n)));
     }
 
-    std::shared_ptr<FetchJob> result(new FetchJob(
+    std::shared_ptr<FetchJob> result(std::make_shared<FetchJob>(
                 requirements,
                 parse_user_package_dep_spec(v.member<std::string>("origin_id_spec"),
                     d.deserialiser().environment(), UserPackageDepSpecOptions() + updso_no_disambiguation)
@@ -273,7 +273,7 @@ InstallJob::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "InstallJob");
 
-    std::shared_ptr<Sequence<PackageDepSpec> > replacing_specs(new Sequence<PackageDepSpec>);
+    std::shared_ptr<Sequence<PackageDepSpec> > replacing_specs(std::make_shared<Sequence<PackageDepSpec>>());
     {
         Deserialisator vv(*v.find_remove_member("replacing_specs"), "c");
         for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
@@ -281,14 +281,14 @@ InstallJob::deserialise(Deserialisation & d)
                         d.deserialiser().environment(), UserPackageDepSpecOptions() + updso_no_disambiguation));
     }
 
-    std::shared_ptr<JobRequirements> requirements(new JobRequirements);
+    std::shared_ptr<JobRequirements> requirements(std::make_shared<JobRequirements>());
     {
         Deserialisator vv(*v.find_remove_member("requirements"), "c");
         for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
             requirements->push_back(vv.member<JobRequirement>(stringify(n)));
     }
 
-    std::shared_ptr<InstallJob> result(new InstallJob(
+    std::shared_ptr<InstallJob> result(std::make_shared<InstallJob>(
                 requirements,
                 parse_user_package_dep_spec(v.member<std::string>("origin_id_spec"),
                     d.deserialiser().environment(), UserPackageDepSpecOptions() + updso_no_disambiguation),
@@ -304,7 +304,7 @@ InstallJob::deserialise(Deserialisation & d)
 void
 InstallJob::serialise(Serialiser & s) const
 {
-    std::shared_ptr<Sequence<std::string> > replacing_specs_s(new Sequence<std::string>);
+    std::shared_ptr<Sequence<std::string> > replacing_specs_s(std::make_shared<Sequence<std::string>>());
     for (Sequence<PackageDepSpec>::ConstIterator r(replacing_specs()->begin()),
             r_end(replacing_specs()->end()) ;
             r != r_end ; ++r)
@@ -382,7 +382,7 @@ UninstallJob::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "UninstallJob");
 
-    std::shared_ptr<Sequence<PackageDepSpec> > ids_to_remove_specs(new Sequence<PackageDepSpec> );
+    std::shared_ptr<Sequence<PackageDepSpec> > ids_to_remove_specs(std::make_shared<Sequence<PackageDepSpec> >());
     {
         Deserialisator vv(*v.find_remove_member("ids_to_remove_specs"), "c");
         for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
@@ -390,14 +390,14 @@ UninstallJob::deserialise(Deserialisation & d)
                         d.deserialiser().environment(), UserPackageDepSpecOptions() + updso_no_disambiguation));
     }
 
-    std::shared_ptr<JobRequirements> requirements(new JobRequirements);
+    std::shared_ptr<JobRequirements> requirements(std::make_shared<JobRequirements>());
     {
         Deserialisator vv(*v.find_remove_member("requirements"), "c");
         for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
             requirements->push_back(vv.member<JobRequirement>(stringify(n)));
     }
 
-    std::shared_ptr<UninstallJob> result(new UninstallJob(
+    std::shared_ptr<UninstallJob> result(std::make_shared<UninstallJob>(
                 requirements,
                 ids_to_remove_specs
                 ));
@@ -409,7 +409,7 @@ UninstallJob::deserialise(Deserialisation & d)
 void
 UninstallJob::serialise(Serialiser & s) const
 {
-    std::shared_ptr<Sequence<std::string> > ids_to_remove_specs_s(new Sequence<std::string>);
+    std::shared_ptr<Sequence<std::string> > ids_to_remove_specs_s(std::make_shared<Sequence<std::string>>());
     for (Sequence<PackageDepSpec>::ConstIterator r(ids_to_remove_specs()->begin()),
             r_end(ids_to_remove_specs()->end()) ;
             r != r_end ; ++r)

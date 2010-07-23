@@ -79,7 +79,7 @@ namespace paludis
             try
             {
                 SafeIFStream ff(f);
-                std::shared_ptr<std::string> t(new std::string);
+                std::shared_ptr<std::string> t(std::make_shared<std::string>());
                 std::copy((std::istreambuf_iterator<char>(ff)), std::istreambuf_iterator<char>(), std::back_inserter(*t));
                 text = t;
             }
@@ -90,13 +90,13 @@ namespace paludis
         }
 
         Imp(const std::string & s) :
-            text(new std::string(s))
+            text(std::make_shared<std::string>(s))
         {
         }
 
         Imp(std::istream & ff)
         {
-            std::shared_ptr<std::string> t(new std::string);
+            std::shared_ptr<std::string> t(std::make_shared<std::string>());
             std::copy((std::istreambuf_iterator<char>(ff)), std::istreambuf_iterator<char>(), std::back_inserter(*t));
             text = t;
         }

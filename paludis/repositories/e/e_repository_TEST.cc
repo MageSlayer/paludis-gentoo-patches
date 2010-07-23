@@ -98,7 +98,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo1"));
@@ -118,7 +118,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo2"));
@@ -138,7 +138,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo3"));
@@ -158,7 +158,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo1"));
@@ -187,7 +187,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo1"));
@@ -218,7 +218,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo4"));
@@ -255,7 +255,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo4"));
@@ -296,7 +296,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo4"));
@@ -346,7 +346,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo5"));
@@ -379,8 +379,7 @@ namespace test_cases
 
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::shared_ptr<Map<std::string, std::string> > keys(
-                    new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo4"));
@@ -425,7 +424,7 @@ namespace test_cases
 
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo8"));
@@ -477,8 +476,7 @@ namespace test_cases
 
                 TestEnvironment env;
                 env.set_paludis_command("/bin/false");
-                std::shared_ptr<Map<std::string, std::string> > keys(
-                        new Map<std::string, std::string>);
+                std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
                 keys->insert("format", "e");
                 keys->insert("names_cache", "/var/empty");
                 keys->insert("write_cache", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo7/metadata/cache"));
@@ -560,8 +558,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::shared_ptr<Map<std::string, std::string> > keys(
-                    new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo7"));
@@ -605,8 +602,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::shared_ptr<Map<std::string, std::string> > keys(
-                    new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo9"));
@@ -687,8 +683,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
 
-            std::shared_ptr<Map<std::string, std::string> > keys18(
-                    new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys18(std::make_shared<Map<std::string, std::string>>());
             keys18->insert("format", "e");
             keys18->insert("names_cache", "/var/empty");
             keys18->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo18"));
@@ -698,8 +693,7 @@ namespace test_cases
                         std::bind(from_keys, keys18, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo18);
 
-            std::shared_ptr<Map<std::string, std::string> > keys19(
-                    new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys19(std::make_shared<Map<std::string, std::string>>());
             keys19->insert("format", "e");
             keys19->insert("names_cache", "/var/empty");
             keys19->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo19"));
@@ -745,8 +739,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::shared_ptr<Map<std::string, std::string> > keys(
-                    new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo10"));
@@ -781,8 +774,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::shared_ptr<Map<std::string, std::string> > keys(
-                    new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo15"));
@@ -824,8 +816,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::shared_ptr<Map<std::string, std::string> > keys(
-                    new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo15"));
@@ -873,8 +864,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::shared_ptr<Map<std::string, std::string> > keys(
-                    new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo11"));
@@ -919,7 +909,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "exheres");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo12"));
@@ -1032,8 +1022,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::shared_ptr<Map<std::string, std::string> > keys(
-                    new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo11"));

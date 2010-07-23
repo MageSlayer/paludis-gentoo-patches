@@ -196,7 +196,7 @@ paludis::elike_remove_trailing_square_bracket_if_exists(std::string & s, Partial
                         Log::get_instance()->message("e.package_dep_spec.key_not_allowed", ll_warning, lc_context)
                             << "Key requirements not safe for use here";
                 }
-                std::shared_ptr<const AdditionalPackageDepSpecRequirement> req(new UserKeyRequirement(flag.substr(1)));
+                std::shared_ptr<const AdditionalPackageDepSpecRequirement> req(std::make_shared<UserKeyRequirement>(flag.substr(1)));
                 result.additional_requirement(req);
             }
             break;

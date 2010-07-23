@@ -69,7 +69,7 @@ namespace paludis
 
         Imp(const UnavailableRepository * const r) :
             repo(r),
-            categories(new CategoryNamePartSet)
+            categories(std::make_shared<CategoryNamePartSet>())
         {
         }
     };
@@ -138,11 +138,11 @@ UnavailableRepositoryStore::_populate_one(const Environment * const env, const F
                 "REPOSITORY_SYNC", "Repository sync", mkt_normal, file.sync());
 
     {
-        std::shared_ptr<Mask> mask(new UnavailableMask);
-        std::shared_ptr<Set<std::string> > from_repositories_set(new Set<std::string>);
+        std::shared_ptr<Mask> mask(std::make_shared<UnavailableMask>());
+        std::shared_ptr<Set<std::string> > from_repositories_set(std::make_shared<Set<std::string>>());
         from_repositories_set->insert(file.repo_name());
         std::shared_ptr<MetadataCollectionKey<Set<std::string> > > from_repositories(
-                new LiteralMetadataStringSetKey("OWNING_REPOSITORY", "Owning repository",
+                std::make_shared<LiteralMetadataStringSetKey>("OWNING_REPOSITORY", "Owning repository",
                     mkt_significant, from_repositories_set));
 
         QualifiedPackageName old_name("x/x");
@@ -191,13 +191,13 @@ UnavailableRepositoryStore::_populate_one(const Environment * const env, const F
 
     if (file.autoconfigurable())
     {
-        const std::shared_ptr<NoConfigurationInformationMask> no_configuration_mask(new NoConfigurationInformationMask);
+        const std::shared_ptr<NoConfigurationInformationMask> no_configuration_mask(std::make_shared<NoConfigurationInformationMask>());
         std::shared_ptr<UnavailableRepositoryDependenciesKey> deps;
         if (! file.dependencies().empty())
             deps = std::make_shared<UnavailableRepositoryDependenciesKey>(env, "dependencies", "Dependencies", mkt_dependencies,
                         file.dependencies());
 
-        const std::shared_ptr<UnavailableRepositoryID> id(new UnavailableRepositoryID(
+        const std::shared_ptr<UnavailableRepositoryID> id(std::make_shared<UnavailableRepositoryID>(
                     make_named_values<UnavailableRepositoryIDParams>(
                         n::dependencies() = deps,
                         n::description() = repository_description,

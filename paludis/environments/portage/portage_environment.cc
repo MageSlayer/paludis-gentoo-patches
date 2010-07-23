@@ -117,12 +117,12 @@ namespace paludis
             ignore_all_breaks_portage(false),
             done_hooks(false),
             overlay_importance(10),
-            package_database(new PackageDatabase(e)),
+            package_database(std::make_shared<PackageDatabase>(e)),
             world_file(s + "/var/lib/portage/world"),
-            format_key(new LiteralMetadataValueKey<std::string>("format", "Format", mkt_significant, "portage")),
-            config_location_key(new LiteralMetadataValueKey<FSEntry>("conf_dir", "Config dir", mkt_normal,
+            format_key(std::make_shared<LiteralMetadataValueKey<std::string>>("format", "Format", mkt_significant, "portage")),
+            config_location_key(std::make_shared<LiteralMetadataValueKey<FSEntry>>("conf_dir", "Config dir", mkt_normal,
                         conf_dir)),
-            world_file_key(new LiteralMetadataValueKey<FSEntry>("world_file", "World file", mkt_normal,
+            world_file_key(std::make_shared<LiteralMetadataValueKey<FSEntry>>("world_file", "World file", mkt_normal,
                         world_file))
         {
         }
@@ -372,7 +372,7 @@ PortageEnvironment::_load_atom_file(const FSEntry & f, I_ i, const std::string &
             if (tokens.empty())
                 continue;
 
-            std::shared_ptr<PackageDepSpec> p(new PackageDepSpec(parse_user_package_dep_spec(
+            std::shared_ptr<PackageDepSpec> p(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec(
                             tokens.at(0), this, UserPackageDepSpecOptions() + updso_no_disambiguation)));
             if (reject_additional && p->additional_requirements_ptr())
             {
@@ -418,7 +418,7 @@ PortageEnvironment::_load_lined_file(const FSEntry & f, I_ i)
         LineConfigFile file(f, LineConfigFileOptions() + lcfo_disallow_continuations);
         for (LineConfigFile::ConstIterator line(file.begin()), line_end(file.end()) ;
                 line != line_end ; ++line)
-            *i++ = std::shared_ptr<PackageDepSpec>(new PackageDepSpec(
+            *i++ = std::shared_ptr<PackageDepSpec>(std::make_shared<PackageDepSpec>(
                         parse_user_package_dep_spec(strip_trailing(strip_leading(*line, " \t"), " \t"),
                             this, UserPackageDepSpecOptions() + updso_no_disambiguation)));
     }
@@ -451,7 +451,7 @@ void
 PortageEnvironment::_add_virtuals_repository()
 {
 #ifdef ENABLE_VIRTUALS_REPOSITORY
-    std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+    std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
     keys->insert("format", "virtuals");
     package_database()->add_repository(-2,
             RepositoryFactory::get_instance()->create(this, std::bind(from_keys, keys, std::placeholders::_1)));
@@ -462,7 +462,7 @@ void
 PortageEnvironment::_add_installed_virtuals_repository()
 {
 #ifdef ENABLE_VIRTUALS_REPOSITORY
-    std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+    std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
     keys->insert("root", stringify(root()));
     keys->insert("format", "installed_virtuals");
     package_database()->add_repository(-1,
@@ -481,7 +481,7 @@ void
 PortageEnvironment::_add_ebuild_repository(const FSEntry & portdir, const std::string & master,
         const std::string & sync, int importance)
 {
-    std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+    std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
     keys->insert("root", stringify(root()));
     keys->insert("location", stringify(portdir));
     keys->insert("profiles", stringify((_imp->conf_dir / "make.profile").realpath()) + " " +
@@ -513,7 +513,7 @@ PortageEnvironment::_add_vdb_repository()
 {
     Context context("When creating vdb repository:");
 
-    std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+    std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
     keys->insert("root", stringify(root()));
     keys->insert("location", stringify(root() / "/var/db/pkg"));
     keys->insert("format", "vdb");
@@ -679,7 +679,7 @@ PortageEnvironment::known_choice_value_names(const std::shared_ptr<const Package
 {
     Context context("When loading known use expand names for prefix '" + stringify(choice->prefix()) + ":");
 
-    std::shared_ptr<Set<UnprefixedChoiceName> > result(new Set<UnprefixedChoiceName>);
+    std::shared_ptr<Set<UnprefixedChoiceName> > result(std::make_shared<Set<UnprefixedChoiceName>>());
     std::string prefix_lower(stringify(choice->prefix()) + "_");
 
     std::pair<std::multimap<ChoicePrefixName, std::string>::const_iterator,
@@ -724,7 +724,7 @@ PortageEnvironment::hook_dirs() const
 {
     Lock l(_imp->hook_mutex);
     _imp->need_hook_dirs();
-    std::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
+    std::shared_ptr<FSEntrySequence> result(std::make_shared<FSEntrySequence>());
     std::copy(_imp->hook_dirs.begin(), _imp->hook_dirs.end(), result->back_inserter());
     return result;
 }
@@ -732,7 +732,7 @@ PortageEnvironment::hook_dirs() const
 std::shared_ptr<const FSEntrySequence>
 PortageEnvironment::bashrc_files() const
 {
-    std::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
+    std::shared_ptr<FSEntrySequence> result(std::make_shared<FSEntrySequence>());
     if (! getenv_with_default("PALUDIS_PORTAGE_BASHRC", "").empty())
         result->push_back(FSEntry(getenv_with_default("PALUDIS_PORTAGE_BASHRC", "")).realpath());
     else
@@ -759,7 +759,7 @@ PortageEnvironment::mirrors(const std::string & m) const
 {
     std::pair<std::multimap<std::string, std::string>::const_iterator, std::multimap<std::string, std::string>::const_iterator>
         p(_imp->mirrors.equal_range(m));
-    std::shared_ptr<MirrorsSequence> result(new MirrorsSequence);
+    std::shared_ptr<MirrorsSequence> result(std::make_shared<MirrorsSequence>());
     std::transform(p.first, p.second, result->back_inserter(),
             std::mem_fn(&std::pair<const std::string, std::string>::second));
     return result;
@@ -1003,7 +1003,7 @@ namespace
             return std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>());
         }
 
-        const std::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(SetName("world::environment"), "Environment"));
+        const std::shared_ptr<GeneralSetDepTag> tag(std::make_shared<GeneralSetDepTag>(SetName("world::environment"), "Environment"));
         SetFile world(make_named_values<SetFileParams>(
                     n::environment() = env,
                     n::file_name() = f,

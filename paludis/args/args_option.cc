@@ -104,7 +104,7 @@ SwitchArg::forwardable_string() const
 const std::shared_ptr<Sequence<std::string> >
 SwitchArg::forwardable_args() const
 {
-    std::shared_ptr<Sequence<std::string> > result(new Sequence<std::string>);
+    std::shared_ptr<Sequence<std::string> > result(std::make_shared<Sequence<std::string>>());
     if (specified())
         result->push_back("--" + long_name());
     return result;
@@ -125,7 +125,7 @@ AliasArg::forwardable_string() const
 const std::shared_ptr<Sequence<std::string> >
 AliasArg::forwardable_args() const
 {
-    std::shared_ptr<Sequence<std::string> > result(new Sequence<std::string>);
+    std::shared_ptr<Sequence<std::string> > result(std::make_shared<Sequence<std::string>>());
     return result;
 }
 
@@ -156,7 +156,7 @@ StringArg::forwardable_string() const
 const std::shared_ptr<Sequence<std::string> >
 StringArg::forwardable_args() const
 {
-    std::shared_ptr<Sequence<std::string> > result(new Sequence<std::string>);
+    std::shared_ptr<Sequence<std::string> > result(std::make_shared<Sequence<std::string>>());
     if (specified())
     {
         result->push_back("--" + long_name());
@@ -256,7 +256,7 @@ StringSetArg::forwardable_string() const
 const std::shared_ptr<Sequence<std::string> >
 StringSetArg::forwardable_args() const
 {
-    std::shared_ptr<Sequence<std::string> > result(new Sequence<std::string>);
+    std::shared_ptr<Sequence<std::string> > result(std::make_shared<Sequence<std::string>>());
     if (specified())
     {
         for (ConstIterator i(begin_args()), i_end(end_args()) ;
@@ -327,7 +327,7 @@ StringSequenceArg::forwardable_string() const
 const std::shared_ptr<Sequence<std::string> >
 StringSequenceArg::forwardable_args() const
 {
-    std::shared_ptr<Sequence<std::string> > result(new Sequence<std::string>);
+    std::shared_ptr<Sequence<std::string> > result(std::make_shared<Sequence<std::string>>());
     if (specified())
     {
         for (ConstIterator i(begin_args()), i_end(end_args()) ;
@@ -358,7 +358,7 @@ IntegerArg::forwardable_string() const
 const std::shared_ptr<Sequence<std::string> >
 IntegerArg::forwardable_args() const
 {
-    std::shared_ptr<Sequence<std::string> > result(new Sequence<std::string>);
+    std::shared_ptr<Sequence<std::string> > result(std::make_shared<Sequence<std::string>>());
     if (specified())
     {
         result->push_back("--" + long_name());
@@ -533,7 +533,7 @@ EnumArg::forwardable_string() const
 const std::shared_ptr<Sequence<std::string> >
 EnumArg::forwardable_args() const
 {
-    std::shared_ptr<Sequence<std::string> > result(new Sequence<std::string>);
+    std::shared_ptr<Sequence<std::string> > result(std::make_shared<Sequence<std::string>>());
     if (specified())
     {
         result->push_back("--" + long_name());

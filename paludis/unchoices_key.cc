@@ -36,7 +36,7 @@ namespace
 
         public:
             UnChoicesKey() :
-                _value(new Choices)
+                _value(std::make_shared<Choices>())
             {
                 _value->add(std::make_shared<Choice>(make_named_values<ChoiceParams>(
                                     n::consider_added_or_changed() = false,
@@ -78,7 +78,7 @@ namespace
 std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Choices> > >
 paludis::unchoices_key()
 {
-    static std::shared_ptr<const UnChoicesKey> result(new UnChoicesKey);
+    static std::shared_ptr<const UnChoicesKey> result(std::make_shared<UnChoicesKey>());
     return result;
 }
 

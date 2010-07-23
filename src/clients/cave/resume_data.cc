@@ -40,14 +40,14 @@ ResumeData::deserialise(Deserialisation & d)
 
     Deserialisator v(d, "ResumeData@" + stringify(PALUDIS_VERSION));
 
-    std::shared_ptr<Sequence<std::string> > targets(new Sequence<std::string>);
+    std::shared_ptr<Sequence<std::string> > targets(std::make_shared<Sequence<std::string>>());
     {
         Deserialisator vv(*v.find_remove_member("targets"), "c");
         for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
             targets->push_back(vv.member<std::string>(stringify(n)));
     }
 
-    std::shared_ptr<Sequence<std::string> > world_specs(new Sequence<std::string>);
+    std::shared_ptr<Sequence<std::string> > world_specs(std::make_shared<Sequence<std::string>>());
     {
         Deserialisator vv(*v.find_remove_member("world_specs"), "c");
         for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)

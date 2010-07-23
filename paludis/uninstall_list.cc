@@ -162,7 +162,7 @@ UninstallList::add_errors_for_system()
     if (! system)
         return;
 
-    std::shared_ptr<Set<std::shared_ptr<DepTag> > > tags(new Set<std::shared_ptr<DepTag> >);
+    std::shared_ptr<Set<std::shared_ptr<DepTag> > > tags(std::make_shared<Set<std::shared_ptr<DepTag> >>());
     tags->insert(std::make_shared<GeneralSetDepTag>(SetName("system"), ""));
 
     for (std::list<UninstallListEntry>::iterator l(_imp->uninstall_list.begin()), l_end(_imp->uninstall_list.end()) ;
@@ -209,8 +209,8 @@ UninstallList::add_unused()
         everything(collect_all_installed()), used(collect_used());
 
     std::shared_ptr<PackageIDSet>
-        world_plus_deps(new PackageIDSet),
-        unused(new PackageIDSet);
+        world_plus_deps(std::make_shared<PackageIDSet>()),
+        unused(std::make_shared<PackageIDSet>());
 
     std::copy(world->begin(), world->end(), world_plus_deps->inserter());
     std::copy(used->begin(), used->end(), world_plus_deps->inserter());
@@ -276,7 +276,7 @@ UninstallList::collect_all_installed() const
 {
     Context context("When collecting all installed packages:");
 
-    std::shared_ptr<PackageIDSet> result(new PackageIDSet);
+    std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
     for (PackageDatabase::RepositoryConstIterator i(_imp->env->package_database()->begin_repositories()),
             i_end(_imp->env->package_database()->end_repositories()) ; i != i_end ; ++i)
     {
@@ -312,7 +312,7 @@ namespace
         DepCollector(const Environment * const ee, const std::shared_ptr<const PackageID> & e) :
             env(ee),
             pkg(e),
-            matches(new DepListEntryTags)
+            matches(std::make_shared<DepListEntryTags>())
         {
         }
 
@@ -336,7 +336,7 @@ namespace
                  it_end != it; ++it)
                 matches->insert(make_named_values<DepTagEntry>(
                             n::generation() = 0,
-                            n::tag() = std::shared_ptr<const DepTag>(new DependencyDepTag(*it, *node.spec()))
+                            n::tag() = std::shared_ptr<const DepTag>(std::make_shared<DependencyDepTag>(*it, *node.spec()))
                             ));
         }
 
@@ -392,7 +392,7 @@ UninstallList::collect_depped_upon(std::shared_ptr<const PackageIDSet> targets) 
 {
     Context context("When collecting depended upon packages:");
 
-    std::shared_ptr<PackageIDSet> result(new PackageIDSet);
+    std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
     Lock l(_imp->dep_collector_cache_mutex);
     for (PackageIDSet::ConstIterator i(targets->begin()), i_end(targets->end()) ;
@@ -439,7 +439,7 @@ UninstallList::add_unused_dependencies()
 
         /* find packages that're depped upon by anything in our uninstall list, excluding error
          * packages */
-        std::shared_ptr<PackageIDSet> uninstall_list_targets(new PackageIDSet);
+        std::shared_ptr<PackageIDSet> uninstall_list_targets(std::make_shared<PackageIDSet>());
         for (std::list<UninstallListEntry>::const_iterator i(_imp->uninstall_list.begin()),
                 i_end(_imp->uninstall_list.end()) ; i != i_end ; ++i)
             if (i->kind() == ulk_package || i->kind() == ulk_virtual)
@@ -448,8 +448,7 @@ UninstallList::add_unused_dependencies()
         std::shared_ptr<const PackageIDSet> depped_upon_list(collect_depped_upon(uninstall_list_targets));
 
         /* find packages that're depped upon by anything not in our uninstall list */
-        std::shared_ptr<PackageIDSet> everything_except_uninstall_list_targets(
-                new PackageIDSet);
+        std::shared_ptr<PackageIDSet> everything_except_uninstall_list_targets(std::make_shared<PackageIDSet>());
         std::set_difference(everything->begin(), everything->end(),
                 uninstall_list_targets->begin(), uninstall_list_targets->end(),
                 everything_except_uninstall_list_targets->inserter(),
@@ -464,7 +463,7 @@ UninstallList::add_unused_dependencies()
                 collect_depped_upon(everything_except_uninstall_list_targets));
 
         /* find unused dependencies */
-        std::shared_ptr<PackageIDSet> unused_dependencies(new PackageIDSet);
+        std::shared_ptr<PackageIDSet> unused_dependencies(std::make_shared<PackageIDSet>());
         std::set_difference(depped_upon_list->begin(), depped_upon_list->end(),
                 depped_upon_not_list->begin(), depped_upon_not_list->end(), unused_dependencies->inserter(),
                 PackageIDSetComparator());
@@ -532,7 +531,7 @@ UninstallList::add_dependencies(const PackageID & e, const bool error)
                     logged = true;
                 }
                 real_add(*i, std::shared_ptr<DependencyDepTag>(
-                        new DependencyDepTag(tag->package_id(), *tag->dependency())), error);
+                        std::make_shared<DependencyDepTag>(tag->package_id(), *tag->dependency())), error);
             }
         }
 
@@ -544,7 +543,7 @@ UninstallList::collect_world() const
 {
     Context local_context("When collecting world packages:");
 
-    std::shared_ptr<PackageIDSet> result(new PackageIDSet);
+    std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
     std::shared_ptr<const PackageIDSet> everything(collect_all_installed());
 
     std::shared_ptr<const SetSpecTree> world(_imp->env->set(SetName("world")));
@@ -563,7 +562,7 @@ UninstallList::collect_used() const
 {
     Context local_context("When collecting used packages:");
 
-    std::shared_ptr<PackageIDSet> result(new PackageIDSet);
+    std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
     std::shared_ptr<const PackageIDSet> everything(collect_all_installed());
 
     for (PackageIDSet::ConstIterator i(everything->begin()),

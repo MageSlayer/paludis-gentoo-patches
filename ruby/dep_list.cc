@@ -133,7 +133,7 @@ namespace
         std::shared_ptr<DepListOverrideMasksFunctions> * ptr(0);
         try
         {
-            ptr = new std::shared_ptr<DepListOverrideMasksFunctions>(new DepListOverrideMasksFunctions);
+            ptr = new std::shared_ptr<DepListOverrideMasksFunctions>(std::make_shared<DepListOverrideMasksFunctions>());
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::shared_ptr<DepListOverrideMasksFunctions> >::free, ptr));
             rb_obj_call_init(tdata, argc, argv);
             return tdata;
@@ -194,7 +194,7 @@ namespace
         {
             try
             {
-                ptr = new std::shared_ptr<DepListOptions>(new DepListOptions);
+                ptr = new std::shared_ptr<DepListOptions>(std::make_shared<DepListOptions>());
                 VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::shared_ptr<DepListOptions> >::free, ptr));
                 rb_obj_call_init(tdata, argc, argv);
                 return tdata;
@@ -382,7 +382,7 @@ namespace
                 if (value_for_circular < 0 ||  value_for_blocks >= last_dl_blocks)
                     rb_raise(rb_eArgError, "blocks out of range");
 
-                ptr = new std::shared_ptr<DepListOptions>(new DepListOptions);
+                ptr = new std::shared_ptr<DepListOptions>(std::make_shared<DepListOptions>());
                 (*ptr)->blocks() = static_cast<DepListBlocksOption>(value_for_blocks);
                 (*ptr)->circular() = static_cast<DepListCircularOption>(value_for_circular);
                 (*ptr)->dependency_tags() = value_for_dependency_tags;
@@ -915,7 +915,7 @@ namespace
             Data_Get_Struct(self, DepList, p);
             if (!rb_obj_is_kind_of(d, rb_cArray))
                 rb_raise(rb_eTypeError, "Can't convert %s into Array", rb_obj_classname(d));
-            std::shared_ptr<DestinationsSet> destinations(new DestinationsSet);
+            std::shared_ptr<DestinationsSet> destinations(std::make_shared<DestinationsSet>());
 
             for (long i = 0 ; i < RARRAY_LEN(d) ; ++i)
                 destinations->insert(value_to_repository(rb_ary_entry(d, i)));
@@ -975,7 +975,7 @@ namespace
             Data_Get_Struct(self, DepList, p);
             if (!rb_obj_is_kind_of(d, rb_cArray))
                 rb_raise(rb_eTypeError, "Can't convert %s into Array", rb_obj_classname(d));
-            std::shared_ptr<DestinationsCollection> destinations(new DestinationsCollection::Concrete);
+            std::shared_ptr<DestinationsCollection> destinations(std::make_shared<DestinationsCollection::Concrete>());
 
             for (long i = 0 ; i < RARRAY_LEN(d) ; ++i)
                 destinations->insert(value_to_repository(rb_ary_entry(d, i)));

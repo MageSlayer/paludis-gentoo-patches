@@ -303,8 +303,8 @@ UnwrittenRepositoryFile::_load(const FSEntry & f)
                 entry->description() = std::make_shared<LiteralMetadataValueKey<std::string>>("description", "Description", mkt_significant, token2);
             else if (token == "homepage")
             {
-                std::shared_ptr<AllDepSpec> all_spec(new AllDepSpec);
-                std::shared_ptr<SimpleURISpecTree> tree(new SimpleURISpecTree(all_spec));
+                std::shared_ptr<AllDepSpec> all_spec(std::make_shared<AllDepSpec>());
+                std::shared_ptr<SimpleURISpecTree> tree(std::make_shared<SimpleURISpecTree>(all_spec));
                 std::list<std::string> tokens;
                 tokenise_whitespace(token2, std::back_inserter(tokens));
                 for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
@@ -318,7 +318,7 @@ UnwrittenRepositoryFile::_load(const FSEntry & f)
                 entry->added_by() = std::make_shared<LiteralMetadataValueKey<std::string>>("added-by", "Added by", mkt_author, token2);
             else if (token == "bug-ids")
             {
-                std::shared_ptr<Sequence<std::string> > seq(new Sequence<std::string>);
+                std::shared_ptr<Sequence<std::string> > seq(std::make_shared<Sequence<std::string>>());
                 std::list<std::string> tokens;
                 tokenise_whitespace(token2, std::back_inserter(tokens));
                 for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
@@ -328,7 +328,7 @@ UnwrittenRepositoryFile::_load(const FSEntry & f)
             }
             else if (token == "remote-ids")
             {
-                std::shared_ptr<Sequence<std::string> > seq(new Sequence<std::string>);
+                std::shared_ptr<Sequence<std::string> > seq(std::make_shared<Sequence<std::string>>());
                 std::list<std::string> tokens;
                 tokenise_whitespace(token2, std::back_inserter(tokens));
                 for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;

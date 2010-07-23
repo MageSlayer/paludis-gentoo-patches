@@ -66,9 +66,9 @@ namespace paludis
             root(r),
             ids_mutex(m),
             has_ids(false),
-            root_key(new LiteralMetadataValueKey<FSEntry> (
+            root_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >(
                         "root", "root", mkt_normal, root)),
-            format_key(new LiteralMetadataValueKey<std::string> (
+            format_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
                         "format", "format", mkt_significant, "installed_virtuals"))
         {
         }
@@ -155,7 +155,7 @@ InstalledVirtualsRepository::need_ids() const
             if (i == _imp->ids.end())
                 i = _imp->ids.insert(std::make_pair((*p).virtual_name(), std::make_shared<PackageIDSequence>())).first;
 
-            std::shared_ptr<const PackageID> id(new virtuals::VirtualsPackageID(
+            std::shared_ptr<const PackageID> id(std::make_shared<virtuals::VirtualsPackageID>(
                         _imp->env, shared_from_this(), (*p).virtual_name(), (*p).provided_by(), false));
             i->second->push_back(id);
         }
@@ -168,13 +168,13 @@ std::shared_ptr<const PackageIDSequence>
 InstalledVirtualsRepository::package_ids(const QualifiedPackageName & q) const
 {
     if (q.category().value() != "virtual")
-        return std::shared_ptr<PackageIDSequence>(new PackageIDSequence);
+        return std::shared_ptr<PackageIDSequence>(std::make_shared<PackageIDSequence>());
 
     need_ids();
 
     IDMap::const_iterator i(_imp->ids.find(q));
     if (i == _imp->ids.end())
-        return std::shared_ptr<PackageIDSequence>(new PackageIDSequence);
+        return std::shared_ptr<PackageIDSequence>(std::make_shared<PackageIDSequence>());
 
     return i->second;
 }
@@ -183,11 +183,11 @@ std::shared_ptr<const QualifiedPackageNameSet>
 InstalledVirtualsRepository::package_names(const CategoryNamePart & c) const
 {
     if (c.value() != "virtual")
-        return std::shared_ptr<QualifiedPackageNameSet>(new QualifiedPackageNameSet);
+        return std::shared_ptr<QualifiedPackageNameSet>(std::make_shared<QualifiedPackageNameSet>());
 
     need_ids();
 
-    std::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
+    std::shared_ptr<QualifiedPackageNameSet> result(std::make_shared<QualifiedPackageNameSet>());
     std::transform(_imp->ids.begin(), _imp->ids.end(), result->inserter(),
             std::mem_fn(&std::pair<const QualifiedPackageName, std::shared_ptr<PackageIDSequence> >::first));
 
@@ -197,7 +197,7 @@ InstalledVirtualsRepository::package_names(const CategoryNamePart & c) const
 std::shared_ptr<const CategoryNamePartSet>
 InstalledVirtualsRepository::category_names() const
 {
-    std::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
+    std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
     result->insert(CategoryNamePart("virtual"));
     return result;
 }

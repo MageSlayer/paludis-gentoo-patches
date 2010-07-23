@@ -137,20 +137,20 @@ namespace paludis
         has_category_names(false),
         tried_provides_cache(false),
         used_provides_cache(false),
-        names_cache(new RepositoryNameCache(p.names_cache(), r)),
-        location_key(new LiteralMetadataValueKey<FSEntry> ("location", "location",
+        names_cache(std::make_shared<RepositoryNameCache>(p.names_cache(), r)),
+        location_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("location", "location",
                     mkt_significant, params.location())),
-        root_key(new LiteralMetadataValueKey<FSEntry> ("root", "root",
+        root_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("root", "root",
                     mkt_normal, params.root())),
-        format_key(new LiteralMetadataValueKey<std::string> ("format", "format",
+        format_key(std::make_shared<LiteralMetadataValueKey<std::string> >("format", "format",
                     mkt_significant, "vdb")),
-        provides_cache_key(new LiteralMetadataValueKey<FSEntry> ("provides_cache", "provides_cache",
+        provides_cache_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("provides_cache", "provides_cache",
                     mkt_normal, params.provides_cache())),
-        names_cache_key(new LiteralMetadataValueKey<FSEntry> ("names_cache", "names_cache",
+        names_cache_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("names_cache", "names_cache",
                     mkt_normal, params.names_cache())),
-        builddir_key(new LiteralMetadataValueKey<FSEntry> ("builddir", "builddir",
+        builddir_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("builddir", "builddir",
                     mkt_normal, params.builddir())),
-        eapi_when_unknown_key(new LiteralMetadataValueKey<std::string> (
+        eapi_when_unknown_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
                     "eapi_when_unknown", "eapi_when_unknown", mkt_normal, params.eapi_when_unknown()))
     {
     }
@@ -245,7 +245,7 @@ VDBRepository::category_names() const
 
     need_category_names();
 
-    std::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
+    std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
 
     std::transform(_imp->categories.begin(), _imp->categories.end(), result->inserter(),
             std::mem_fn(&std::pair<const CategoryNamePart, std::shared_ptr<QualifiedPackageNameSet> >::first));
@@ -261,7 +261,7 @@ VDBRepository::package_names(const CategoryNamePart & c) const
     Context context("When fetching package names in category '" + stringify(c)
             + "' in " + stringify(name()) + ":");
 
-    std::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
+    std::shared_ptr<QualifiedPackageNameSet> result(std::make_shared<QualifiedPackageNameSet>());
 
     need_category_names();
     if (! has_category_named(c))
@@ -350,7 +350,7 @@ VDBRepository::repository_factory_create(
                 *DistributionData::get_instance()->distribution_from_string(
                     env->distribution()))->default_eapi_when_unknown();
 
-    return std::shared_ptr<Repository>(new VDBRepository(make_named_values<VDBRepositoryParams>(
+    return std::shared_ptr<Repository>(std::make_shared<VDBRepository>(make_named_values<VDBRepositoryParams>(
                 n::builddir() = builddir,
                 n::eapi_when_unknown() = eapi_when_unknown,
                 n::environment() = env,
@@ -418,14 +418,14 @@ VDBRepository::perform_uninstall(
 
     std::string reinstalling_str(a.options.is_overwrite() ? "-reinstalling-" : "");
 
-    std::shared_ptr<FSEntrySequence> eclassdirs(new FSEntrySequence);
+    std::shared_ptr<FSEntrySequence> eclassdirs(std::make_shared<FSEntrySequence>());
     eclassdirs->push_back(FSEntry(_imp->params.location() / stringify(id->name().category()) /
                 (reinstalling_str + stringify(id->name().package()) + "-" + stringify(id->version()))));
 
     FSEntry pkg_dir(_imp->params.location() / stringify(id->name().category()) / (reinstalling_str +
                 stringify(id->name().package()) + "-" + stringify(id->version())));
 
-    std::shared_ptr<FSEntry> load_env(new FSEntry(pkg_dir / "environment.bz2"));
+    std::shared_ptr<FSEntry> load_env(std::make_shared<FSEntry>(pkg_dir / "environment.bz2"));
 
     EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_uninstall());
     for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
@@ -531,7 +531,7 @@ VDBRepository::perform_uninstall(
             IDMap::iterator it2(_imp->ids.find(id->name()));
             if (_imp->ids.end() != it2)
             {
-                std::shared_ptr<PackageIDSequence> ids(new PackageIDSequence);
+                std::shared_ptr<PackageIDSequence> ids(std::make_shared<PackageIDSequence>());
                 std::remove_copy(it2->second->begin(), it2->second->end(), ids->back_inserter(), id);
                 it2->second = ids;
             }
@@ -675,7 +675,7 @@ VDBRepository::load_provided_using_cache() const
             VersionSpec v(tokens.at(1), EAPIData::get_instance()->eapi_from_string(
                         _imp->params.eapi_when_unknown())->supported()->version_spec_options());
 
-            std::shared_ptr<std::list<QualifiedPackageName> > qpns(new std::list<QualifiedPackageName>);
+            std::shared_ptr<std::list<QualifiedPackageName> > qpns(std::make_shared<std::list<QualifiedPackageName>>());
             std::copy(tokens.begin() + 2, tokens.end(), create_inserter<QualifiedPackageName>(
                         std::back_inserter(*qpns)));
 
@@ -714,7 +714,7 @@ VDBRepository::provides_from_package_id(const PackageID & id) const
         DepSpecFlattener<ProvideSpecTree, PackageDepSpec> f(_imp->params.environment());
         provide->root()->accept(f);
 
-        std::shared_ptr<std::list<QualifiedPackageName> > qpns(new std::list<QualifiedPackageName>);
+        std::shared_ptr<std::list<QualifiedPackageName> > qpns(std::make_shared<std::list<QualifiedPackageName>>());
 
         for (DepSpecFlattener<ProvideSpecTree, PackageDepSpec>::ConstIterator
                  p(f.begin()), p_end(f.end()) ; p != p_end ; ++p)
@@ -992,7 +992,7 @@ VDBRepository::merge(const MergeParams & m)
             IDMap::iterator it2(_imp->ids.find(m.package_id()->name()));
             if (_imp->ids.end() == it2)
             {
-                std::shared_ptr<PackageIDSequence> ids(new PackageIDSequence);
+                std::shared_ptr<PackageIDSequence> ids(std::make_shared<PackageIDSequence>());
                 it2 = _imp->ids.insert(std::make_pair(m.package_id()->name(), ids)).first;
             }
             it2->second->push_back(new_id = make_id(m.package_id()->name(), m.package_id()->version(), vdb_dir));
@@ -1094,7 +1094,7 @@ VDBRepository::need_package_ids(const CategoryNamePart & c) const
     Context context("When loading package names from '" + stringify(_imp->params.location()) +
             "' in category '" + stringify(c) + "':");
 
-    std::shared_ptr<QualifiedPackageNameSet> q(new QualifiedPackageNameSet);
+    std::shared_ptr<QualifiedPackageNameSet> q(std::make_shared<QualifiedPackageNameSet>());
 
     for (DirIterator d(_imp->params.location() / stringify(c), DirIteratorOptions() + dio_inode_sort), d_end ; d != d_end ; ++d)
         try
@@ -1134,7 +1134,7 @@ VDBRepository::make_id(const QualifiedPackageName & q, const VersionSpec & v, co
 
     Context context("When creating ID for '" + stringify(q) + "-" + stringify(v) + "' from '" + stringify(f) + "':");
 
-    std::shared_ptr<VDBID> result(new VDBID(q, v, _imp->params.environment(), shared_from_this(), f));
+    std::shared_ptr<VDBID> result(std::make_shared<VDBID>(q, v, _imp->params.environment(), shared_from_this(), f));
     return result;
 }
 

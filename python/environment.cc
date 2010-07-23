@@ -50,7 +50,7 @@ class EnvironmentImplementationWrapper :
 
     public:
         EnvironmentImplementationWrapper() :
-            _db(new PackageDatabase(this))
+            _db(std::make_shared<PackageDatabase>(this))
         {
         }
 

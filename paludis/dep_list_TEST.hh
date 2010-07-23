@@ -126,10 +126,10 @@ namespace test_cases
             DepListTestCaseBase(const std::string & s) :
                 TestCase(s),
                 env(),
-                repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+                repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
                                 n::environment() = &env,
                                 n::name() = RepositoryName("repo")))),
-                installed_repo(new FakeInstalledRepository(
+                installed_repo(std::make_shared<FakeInstalledRepository>(
                             make_named_values<FakeInstalledRepositoryParams>(
                                 n::environment() = &env,
                                 n::name() = RepositoryName("installed"),

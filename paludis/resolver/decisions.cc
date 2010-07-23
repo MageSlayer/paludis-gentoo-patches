@@ -170,7 +170,7 @@ const std::shared_ptr<Decisions<Decision_, Notes_> >
 Decisions<Decision_, Notes_>::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "Decisions");
-    std::shared_ptr<Decisions<Decision_, Notes_> > result(new Decisions<Decision_, Notes_>);
+    std::shared_ptr<Decisions<Decision_, Notes_> > result(std::make_shared<Decisions<Decision_, Notes_>>());
     for (int n(1), n_end(v.member<int>("count") + 1) ; n != n_end ; ++n)
         ContainerTraits<Decision_, Notes_>::do_extract(result, v, n);
     return result;

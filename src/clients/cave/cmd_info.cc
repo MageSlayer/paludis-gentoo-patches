@@ -343,7 +343,7 @@ namespace
 
         cout << format_general_s(f::info_id_heading(), stringify(*id));
 
-        std::shared_ptr<Sequence<std::string> > args(new Sequence<std::string>);
+        std::shared_ptr<Sequence<std::string> > args(std::make_shared<Sequence<std::string>>());
         args->push_back("info");
         args->push_back("--if-supported");
         args->push_back("--hooks");

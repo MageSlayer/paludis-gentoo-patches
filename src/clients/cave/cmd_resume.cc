@@ -110,7 +110,7 @@ namespace
     {
         Context context("When performing chosen resolution:");
 
-        std::shared_ptr<Sequence<std::string> > args(new Sequence<std::string>);
+        std::shared_ptr<Sequence<std::string> > args(std::make_shared<Sequence<std::string>>());
 
         for (args::ArgsSection::GroupsConstIterator g(program_options.begin()), g_end(program_options.end()) ;
                 g != g_end ; ++g)

@@ -100,7 +100,7 @@ BufferOutputManager::nothing_more_to_come()
 const std::shared_ptr<const Set<std::string> >
 BufferOutputManager::factory_managers()
 {
-    std::shared_ptr<Set<std::string> > result(new Set<std::string>);
+    std::shared_ptr<Set<std::string> > result(std::make_shared<Set<std::string>>());
     result->insert("buffer");
     return result;
 }

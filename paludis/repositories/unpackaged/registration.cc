@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -49,7 +49,7 @@ namespace paludis
     void register_repositories<repository_groups::unpackaged>(const repository_groups::unpackaged * const,
             RepositoryFactory * const factory)
     {
-        std::shared_ptr<Set<std::string> > unpackaged_formats(new Set<std::string>);
+        std::shared_ptr<Set<std::string> > unpackaged_formats(std::make_shared<Set<std::string>>());
         unpackaged_formats->insert("unpackaged");
 
         factory->add_repository_format(
@@ -60,7 +60,7 @@ namespace paludis
                 &UnpackagedRepository::repository_factory_dependencies
                 );
 
-        std::shared_ptr<Set<std::string> > installed_unpackaged_formats(new Set<std::string>);
+        std::shared_ptr<Set<std::string> > installed_unpackaged_formats(std::make_shared<Set<std::string>>());
         installed_unpackaged_formats->insert("installed_unpackaged");
         installed_unpackaged_formats->insert("installed-unpackaged");
 

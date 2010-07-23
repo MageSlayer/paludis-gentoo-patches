@@ -64,7 +64,7 @@ namespace paludis
                 const std::shared_ptr<const DependenciesLabelSequence> & l,
                 bool exact, const std::string & h, const std::string & r) :
             env(e),
-            value(new DependencySpecTree(std::make_shared<AllDepSpec>())),
+            value(std::make_shared<DependencySpecTree>(std::make_shared<AllDepSpec>())),
             labels(l),
             spec(exact ?
                     std::make_shared<PackageDepSpec>(
@@ -184,11 +184,11 @@ namespace paludis
             repository(o),
             name(n),
             version(p->version()),
-            bdep_labels(new DependenciesLabelSequence),
-            rdep_labels(new DependenciesLabelSequence),
-            virtual_for(new LiteralMetadataValueKey<std::shared_ptr<const PackageID> > ("VIRTUAL_FOR", "Virtual for", mkt_normal, p)),
-            bdep(new virtuals::VirtualsDepKey(e, "DEPEND", "Build dependencies", p, bdep_labels, b)),
-            rdep(new virtuals::VirtualsDepKey(e, "RDEPEND", "Run dependencies", p, rdep_labels, b)),
+            bdep_labels(std::make_shared<DependenciesLabelSequence>()),
+            rdep_labels(std::make_shared<DependenciesLabelSequence>()),
+            virtual_for(std::make_shared<LiteralMetadataValueKey<std::shared_ptr<const PackageID> > >("VIRTUAL_FOR", "Virtual for", mkt_normal, p)),
+            bdep(std::make_shared<virtuals::VirtualsDepKey>(e, "DEPEND", "Build dependencies", p, bdep_labels, b)),
+            rdep(std::make_shared<virtuals::VirtualsDepKey>(e, "RDEPEND", "Run dependencies", p, rdep_labels, b)),
             has_masks(false)
         {
             bdep_labels->push_back(std::make_shared<DependenciesBuildLabel>("DEPEND",

@@ -207,7 +207,7 @@ std::shared_ptr<T_>
 deep_copy(const std::shared_ptr<const T_> & x)
 {
     if (x)
-        return std::shared_ptr<T_>(new T_(*x));
+        return std::shared_ptr<T_>(std::make_shared<T_>(*x));
     else
         return std::shared_ptr<T_>();
 }
@@ -529,7 +529,7 @@ SpecTreeToPython::~SpecTreeToPython()
 void
 SpecTreeToPython::visit(const GenericSpecTree::NodeType<AllDepSpec>::Type & node)
 {
-    std::shared_ptr<PythonAllDepSpec> py_cds(new PythonAllDepSpec(*node.spec()));
+    std::shared_ptr<PythonAllDepSpec> py_cds(std::make_shared<PythonAllDepSpec>(*node.spec()));
     _current_parent->add_child(py_cds);
     Save<std::shared_ptr<PythonCompositeDepSpec> > old_parent(&_current_parent, py_cds);
     std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
@@ -538,7 +538,7 @@ SpecTreeToPython::visit(const GenericSpecTree::NodeType<AllDepSpec>::Type & node
 void
 SpecTreeToPython::visit(const GenericSpecTree::NodeType<AnyDepSpec>::Type & node)
 {
-    std::shared_ptr<PythonAnyDepSpec> py_cds(new PythonAnyDepSpec(*node.spec()));
+    std::shared_ptr<PythonAnyDepSpec> py_cds(std::make_shared<PythonAnyDepSpec>(*node.spec()));
     _current_parent->add_child(py_cds);
     Save<std::shared_ptr<PythonCompositeDepSpec> > old_parent(&_current_parent, py_cds);
     std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
@@ -547,7 +547,7 @@ SpecTreeToPython::visit(const GenericSpecTree::NodeType<AnyDepSpec>::Type & node
 void
 SpecTreeToPython::visit(const GenericSpecTree::NodeType<ConditionalDepSpec>::Type & node)
 {
-    std::shared_ptr<PythonConditionalDepSpec> py_cds(new PythonConditionalDepSpec(*node.spec()));
+    std::shared_ptr<PythonConditionalDepSpec> py_cds(std::make_shared<PythonConditionalDepSpec>(*node.spec()));
     _current_parent->add_child(py_cds);
     Save<std::shared_ptr<PythonCompositeDepSpec> > old_parent(&_current_parent, py_cds);
     std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
@@ -729,7 +729,7 @@ void dispatch(SpecTreeFromPython<H_> * const v, const PyD_ & d)
 
 template <typename H_>
 SpecTreeFromPython<H_>::SpecTreeFromPython() :
-    _result(new H_(std::make_shared<AllDepSpec>())),
+    _result(std::make_shared<H_>(std::make_shared<AllDepSpec>())),
     _add_to(_result->root())
 {
 }

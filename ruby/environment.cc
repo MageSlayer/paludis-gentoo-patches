@@ -143,7 +143,7 @@ namespace
         {
             try
             {
-                std::shared_ptr<KeywordNameSet> knc (new KeywordNameSet);
+                std::shared_ptr<KeywordNameSet> knc (std::make_shared<KeywordNameSet>());
                 long len = NUM2LONG(rb_funcall(keywords,rb_intern("length"),0));
                 for (long i = 0; i < len; i++)
                 {
@@ -276,7 +276,7 @@ namespace
             else if (0 != argc)
                 rb_raise(rb_eArgError, "PaludisEnvironment.new expects one or zero arguments, but got %d", argc);
 
-            std::shared_ptr<Environment> * e = new std::shared_ptr<Environment>(new PaludisEnvironment(config_suffix));
+            std::shared_ptr<Environment> * e = new std::shared_ptr<Environment>(std::make_shared<PaludisEnvironment>(config_suffix));
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::shared_ptr<Environment> >::free, e));
             rb_obj_call_init(tdata, argc, argv);
             return tdata;
@@ -298,7 +298,7 @@ namespace
     {
         try
         {
-            std::shared_ptr<Environment> * e = new std::shared_ptr<Environment>(new TestEnvironment);
+            std::shared_ptr<Environment> * e = new std::shared_ptr<Environment>(std::make_shared<TestEnvironment>());
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::shared_ptr<Environment> >::free, e));
             rb_obj_call_init(tdata, 0, &self);
             return tdata;
@@ -343,7 +343,7 @@ namespace
         try
         {
             std::string write_cache, master_repository_name;
-            std::shared_ptr<FSEntrySequence> extra_repository_dirs(new FSEntrySequence);
+            std::shared_ptr<FSEntrySequence> extra_repository_dirs(std::make_shared<FSEntrySequence>());
             if (1 == argc)
             {
                 write_cache = "/var/empty/";

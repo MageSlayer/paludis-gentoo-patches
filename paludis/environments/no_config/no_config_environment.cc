@@ -161,9 +161,9 @@ Imp<NoConfigEnvironment>::Imp(
     accept_unstable(p.accept_unstable()),
     is_vdb(is_vdb_repository(p.repository_dir(), p.repository_type())),
     paludis_command("false"),
-    package_database(new PackageDatabase(env)),
-    format_key(new LiteralMetadataValueKey<std::string>("format", "Format", mkt_significant, "no_config")),
-    repository_dir_key(new LiteralMetadataValueKey<FSEntry>("repository_dir", "Repository dir",
+    package_database(std::make_shared<PackageDatabase>(env)),
+    format_key(std::make_shared<LiteralMetadataValueKey<std::string>>("format", "Format", mkt_significant, "no_config")),
+    repository_dir_key(std::make_shared<LiteralMetadataValueKey<FSEntry>>("repository_dir", "Repository dir",
                 mkt_normal, p.repository_dir()))
 {
 }
@@ -203,7 +203,7 @@ Imp<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
         {
             Context local_context("When reading repository at location '" + stringify(r->first) + "':");
 
-            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
 
             if (params.extra_params())
                 std::copy(params.extra_params()->begin(), params.extra_params()->end(), keys->inserter());
@@ -312,7 +312,7 @@ Imp<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
             throw ConfigurationError("Can't find repository '" + params.master_repository_name() + "'");
 
 #ifdef ENABLE_VIRTUALS_REPOSITORY
-        std::shared_ptr<Map<std::string, std::string> > v_keys(new Map<std::string, std::string>);
+        std::shared_ptr<Map<std::string, std::string> > v_keys(std::make_shared<Map<std::string, std::string>>());
         v_keys->insert("format", "virtuals");
         if ((*DistributionData::get_instance()->distribution_from_string(env->distribution())).support_old_style_virtuals())
             package_database->add_repository(-2, RepositoryFactory::get_instance()->create(env,
@@ -323,7 +323,7 @@ Imp<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
     {
         Log::get_instance()->message("no_config_environment.vdb_detected", ll_debug, lc_context) << "VDB, using vdb_db";
 
-        std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+        std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
         if (params.extra_params())
             std::copy(params.extra_params()->begin(), params.extra_params()->end(), keys->inserter());
 
@@ -335,8 +335,7 @@ Imp<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
         package_database->add_repository(1, RepositoryFactory::get_instance()->create(env,
                     std::bind(from_keys, keys, std::placeholders::_1)));
 
-        std::shared_ptr<Map<std::string, std::string> > iv_keys(
-                new Map<std::string, std::string>);
+        std::shared_ptr<Map<std::string, std::string> > iv_keys(std::make_shared<Map<std::string, std::string>>());
         iv_keys->insert("root", "/");
         iv_keys->insert("format", "installed_virtuals");
 

@@ -53,7 +53,7 @@ namespace paludis
 
         Imp(const std::shared_ptr<const ERepositoryID> & i) :
             id(i),
-            unmet_requirements(new Sequence<std::string>)
+            unmet_requirements(std::make_shared<Sequence<std::string>>())
         {
             current_prefix_stack.push_front(ChoicePrefixName(""));
             current_children_stack.push_front(ChildrenList());

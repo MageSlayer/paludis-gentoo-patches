@@ -57,7 +57,7 @@ namespace paludis
         public:
             ActiveObjectPtr(const T_ & t) :
                 _ptr(t),
-                _mutex(new Mutex)
+                _mutex(std::make_shared<Mutex>())
             {
             }
 

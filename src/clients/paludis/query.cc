@@ -141,7 +141,7 @@ int do_query(const std::shared_ptr<Environment> & env)
 
     Context context("When performing query action from command line:");
 
-    std::shared_ptr<Map<char, std::string> > masks_to_explain(new Map<char, std::string>());
+    std::shared_ptr<Map<char, std::string> > masks_to_explain(std::make_shared<Map<char, std::string>>());
 
     CommandLine::ParametersConstIterator q(CommandLine::get_instance()->begin_parameters()),
         q_end(CommandLine::get_instance()->end_parameters());

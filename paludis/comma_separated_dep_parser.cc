@@ -34,7 +34,7 @@ CommaSeparatedDepParser::parse(const Environment * const env, const std::string 
 {
     Context context("When parsing '" + s + "':");
 
-    std::shared_ptr<DependencySpecTree> result(new DependencySpecTree(std::make_shared<AllDepSpec>()));
+    std::shared_ptr<DependencySpecTree> result(std::make_shared<DependencySpecTree>(std::make_shared<AllDepSpec>()));
 
     std::list<std::string> tokens;
     tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(s, ",", "", std::back_inserter(tokens));
@@ -48,7 +48,7 @@ CommaSeparatedDepParser::parse(const Environment * const env, const std::string 
         if (a.empty())
             continue;
 
-        std::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(parse_user_package_dep_spec(a, env,
+        std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec(a, env,
                         UserPackageDepSpecOptions() + updso_no_disambiguation)));
         result->root()->append(spec);
     }

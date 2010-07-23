@@ -136,7 +136,7 @@ namespace
                 const Environment * const env) const
         {
             using namespace std::placeholders;
-            std::shared_ptr<RepositoryNameSet> result(new RepositoryNameSet);
+            std::shared_ptr<RepositoryNameSet> result(std::make_shared<RepositoryNameSet>());
             if (env->package_database()->has_repository_named(name))
                 result->insert(name);
             return result;
@@ -163,7 +163,7 @@ namespace
                 const std::shared_ptr<const RepositoryNameSet> & repos,
                 const std::shared_ptr<const QualifiedPackageNameSet> & qpns) const
         {
-            std::shared_ptr<PackageIDSet> result(new PackageIDSet);
+            std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
             for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                     r != r_end ; ++r)
@@ -205,7 +205,7 @@ namespace
                 const std::shared_ptr<const RepositoryNameSet> & repos
                 ) const
         {
-            std::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
+            std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
 
             for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                     r != r_end ; ++r)
@@ -239,7 +239,7 @@ namespace
                 const std::shared_ptr<const RepositoryNameSet> & repos
                 ) const
         {
-            std::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
+            std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
 
             for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                     r != r_end ; ++r)
@@ -257,7 +257,7 @@ namespace
                 const std::shared_ptr<const RepositoryNameSet> & repos,
                 const std::shared_ptr<const CategoryNamePartSet> & cats) const
         {
-            std::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
+            std::shared_ptr<QualifiedPackageNameSet> result(std::make_shared<QualifiedPackageNameSet>());
             for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                     r != r_end ; ++r)
                 for (CategoryNamePartSet::ConstIterator c(cats->begin()), c_end(cats->end()) ;
@@ -305,7 +305,7 @@ namespace
                             )))
                 return AllGeneratorHandlerBase::repositories(env);
 
-            std::shared_ptr<RepositoryNameSet> result(new RepositoryNameSet);
+            std::shared_ptr<RepositoryNameSet> result(std::make_shared<RepositoryNameSet>());
 
             if (spec.in_repository_ptr())
             {
@@ -353,7 +353,7 @@ namespace
         {
             if (spec.category_name_part_ptr())
             {
-                std::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
+                std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
                 for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                         r != r_end ; ++r)
                     if (env->package_database()->fetch_repository(*r)->has_category_named(*spec.category_name_part_ptr()))
@@ -366,7 +366,7 @@ namespace
             }
             else if (spec.package_name_part_ptr())
             {
-                std::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
+                std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
                 for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                         r != r_end ; ++r)
                 {
@@ -380,7 +380,7 @@ namespace
             }
             else if (spec.package_ptr())
             {
-                std::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
+                std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
                 for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                         r != r_end ; ++r)
                     if (env->package_database()->fetch_repository(*r)->has_category_named(spec.package_ptr()->category()))
@@ -402,7 +402,7 @@ namespace
         {
             if (spec.package_name_part_ptr())
             {
-                std::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
+                std::shared_ptr<QualifiedPackageNameSet> result(std::make_shared<QualifiedPackageNameSet>());
                 for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                         r != r_end ; ++r)
                     for (CategoryNamePartSet::ConstIterator c(cats->begin()), c_end(cats->end()) ;
@@ -414,7 +414,7 @@ namespace
             }
             else if (spec.package_ptr())
             {
-                std::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
+                std::shared_ptr<QualifiedPackageNameSet> result(std::make_shared<QualifiedPackageNameSet>());
                 for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                         r != r_end ; ++r)
                     if (env->package_database()->fetch_repository(*r)->has_package_named(*spec.package_ptr()))
@@ -434,7 +434,7 @@ namespace
                 const std::shared_ptr<const RepositoryNameSet> & repos,
                 const std::shared_ptr<const QualifiedPackageNameSet> & qpns) const
         {
-            std::shared_ptr<PackageIDSet> result(new PackageIDSet);
+            std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
             for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                     r != r_end ; ++r)
@@ -486,7 +486,7 @@ namespace
             if (r2->empty())
                 return r2;
 
-            std::shared_ptr<RepositoryNameSet> result(new RepositoryNameSet);
+            std::shared_ptr<RepositoryNameSet> result(std::make_shared<RepositoryNameSet>());
             std::set_intersection(
                     r1->begin(), r1->end(),
                     r2->begin(), r2->end(),
@@ -506,7 +506,7 @@ namespace
             if (c2->empty())
                 return c2;
 
-            std::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
+            std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
             std::set_intersection(
                     c1->begin(), c1->end(),
                     c2->begin(), c2->end(),
@@ -527,7 +527,7 @@ namespace
             if (q2->empty())
                 return q2;
 
-            std::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
+            std::shared_ptr<QualifiedPackageNameSet> result(std::make_shared<QualifiedPackageNameSet>());
             std::set_intersection(
                     q1->begin(), q1->end(),
                     q2->begin(), q2->end(),
@@ -548,7 +548,7 @@ namespace
             if (i2->empty())
                 return i2;
 
-            std::shared_ptr<PackageIDSet> result(new PackageIDSet);
+            std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
             std::set_intersection(
                     i1->begin(), i1->end(),
                     i2->begin(), i2->end(),
@@ -580,7 +580,7 @@ namespace
         {
             std::shared_ptr<const RepositoryNameSet> r1(g1.repositories(env));
             std::shared_ptr<const RepositoryNameSet> r2(g2.repositories(env));
-            std::shared_ptr<RepositoryNameSet> result(new RepositoryNameSet);
+            std::shared_ptr<RepositoryNameSet> result(std::make_shared<RepositoryNameSet>());
             std::set_union(
                     r1->begin(), r1->end(),
                     r2->begin(), r2->end(),
@@ -594,7 +594,7 @@ namespace
         {
             std::shared_ptr<const CategoryNamePartSet> c1(g1.categories(env, repos));
             std::shared_ptr<const CategoryNamePartSet> c2(g2.categories(env, repos));
-            std::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
+            std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
             std::set_union(
                     c1->begin(), c1->end(),
                     c2->begin(), c2->end(),
@@ -609,7 +609,7 @@ namespace
         {
             std::shared_ptr<const QualifiedPackageNameSet> q1(g1.packages(env, repos, cats));
             std::shared_ptr<const QualifiedPackageNameSet> q2(g2.packages(env, repos, cats));
-            std::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
+            std::shared_ptr<QualifiedPackageNameSet> result(std::make_shared<QualifiedPackageNameSet>());
             std::set_union(
                     q1->begin(), q1->end(),
                     q2->begin(), q2->end(),
@@ -624,7 +624,7 @@ namespace
         {
             std::shared_ptr<const PackageIDSet> i1(g1.ids(env, repos, qpns));
             std::shared_ptr<const PackageIDSet> i2(g2.ids(env, repos, qpns));
-            std::shared_ptr<PackageIDSet> result(new PackageIDSet);
+            std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
             std::set_union(
                     i1->begin(), i1->end(),
                     i2->begin(), i2->end(),
@@ -655,7 +655,7 @@ namespace
         virtual std::shared_ptr<const RepositoryNameSet> repositories(
                 const Environment * const env) const
         {
-            std::shared_ptr<RepositoryNameSet> result(new RepositoryNameSet);
+            std::shared_ptr<RepositoryNameSet> result(std::make_shared<RepositoryNameSet>());
             for (PackageDatabase::RepositoryConstIterator i(env->package_database()->begin_repositories()),
                     i_end(env->package_database()->end_repositories()) ; i != i_end ; ++i)
                 if ((*i)->some_ids_might_support_action(SupportsActionTest<A_>()))

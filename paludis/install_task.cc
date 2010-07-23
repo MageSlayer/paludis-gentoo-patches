@@ -152,7 +152,7 @@ namespace paludis
                 std::shared_ptr<const DestinationsSet> d) :
             env(e),
             dep_list(e, o),
-            targets(new SetSpecTree(std::make_shared<AllDepSpec>())),
+            targets(std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>())),
             destinations(d),
             pretend(false),
             fetch_only(false),
@@ -162,9 +162,9 @@ namespace paludis
             had_package_targets(false),
             override_target_type(false),
             continue_on_failure(itcof_if_fetch_only),
-            abort_at_phases(new Set<std::string>),
-            skip_phases(new Set<std::string>),
-            skip_until_phases(new Set<std::string>),
+            abort_at_phases(std::make_shared<Set<std::string>>()),
+            skip_phases(std::make_shared<Set<std::string>>()),
+            skip_until_phases(std::make_shared<Set<std::string>>()),
             phase_options_apply_to_first(false),
             phase_options_apply_to_last(false),
             phase_options_apply_to_all(false),
@@ -466,7 +466,7 @@ InstallTask::_add_target(const std::string & target)
 
     try
     {
-        std::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(parse_user_package_dep_spec(target,
+        std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec(target,
                         _imp->env, UserPackageDepSpecOptions() + updso_throw_if_set + updso_allow_wildcards,
                         filter::SupportsAction<InstallAction>())));
 
@@ -496,7 +496,7 @@ InstallTask::_add_target(const std::string & target)
         if (spec->package_ptr())
         {
             /* no wildcards */
-            spec->set_tag(std::shared_ptr<const DepTag>(new TargetDepTag));
+            spec->set_tag(std::shared_ptr<const DepTag>(std::make_shared<TargetDepTag>()));
             _imp->targets->root()->append(spec);
         }
         else
@@ -507,7 +507,7 @@ InstallTask::_add_target(const std::string & target)
             if (names->empty())
             {
                 /* no match. we'll get an error from this later anyway. */
-                spec->set_tag(std::shared_ptr<const DepTag>(new TargetDepTag));
+                spec->set_tag(std::shared_ptr<const DepTag>(std::make_shared<TargetDepTag>()));
                 _imp->targets->root()->append(spec);
             }
             else
@@ -516,8 +516,8 @@ InstallTask::_add_target(const std::string & target)
                 {
                     PartiallyMadePackageDepSpec p(*spec);
                     p.package((*i)->name());
-                    std::shared_ptr<PackageDepSpec> specn(new PackageDepSpec(p));
-                    specn->set_tag(std::shared_ptr<const DepTag>(new TargetDepTag));
+                    std::shared_ptr<PackageDepSpec> specn(std::make_shared<PackageDepSpec>(p));
+                    specn->set_tag(std::shared_ptr<const DepTag>(std::make_shared<TargetDepTag>()));
                     _imp->targets->root()->append(specn);
                 }
         }
@@ -566,7 +566,7 @@ InstallTask::_add_package_id(const std::shared_ptr<const PackageID> & target)
         part_spec.slot_requirement(std::make_shared<UserSlotExactRequirement>(target->slot_key()->value()));
 
     std::shared_ptr<PackageDepSpec> spec(make_shared_copy(PackageDepSpec(part_spec)));
-    spec->set_tag(std::shared_ptr<const DepTag>(new TargetDepTag));
+    spec->set_tag(std::shared_ptr<const DepTag>(std::make_shared<TargetDepTag>()));
     _imp->targets->root()->append(spec);
 
     _imp->raw_targets.push_back(stringify(*spec));
@@ -1165,7 +1165,7 @@ InstallTask::_do_world_updates()
                                 "() \t\r\n"));
                 }
 
-                std::shared_ptr<SetSpecTree> all(new SetSpecTree(std::make_shared<AllDepSpec>()));
+                std::shared_ptr<SetSpecTree> all(std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>()));
                 std::list<std::string> tokens;
                 tokenise_whitespace(*_imp->add_to_world_spec, std::back_inserter(tokens));
                 if ((! tokens.empty()) && ("(" == *tokens.begin()) && (")" == *previous(tokens.end())))
@@ -1805,7 +1805,7 @@ InstallTask::_dependent(const DepListEntry & e) const
 {
     Context context("When checking whether dependencies for '" + stringify(*e.package_id()) + "' are independent of failed packages:");
 
-    std::shared_ptr<PackageIDSet> already_checked(new PackageIDSet);
+    std::shared_ptr<PackageIDSet> already_checked(std::make_shared<PackageIDSet>());
     CheckIndependentVisitor v(environment(), _imp->dep_list, e.package_id(), already_checked);
     already_checked->insert(e.package_id());
 

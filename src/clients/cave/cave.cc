@@ -95,7 +95,7 @@ int main(int argc, char * argv[])
                + " --" + cmdline.a_log_level.long_name() + " " + cmdline.a_log_level.argument()
                + " --" + cmdline.a_environment.long_name() + " " + (cmdline.a_environment.argument().empty() ? ":" : cmdline.a_environment.argument()));
 
-        std::shared_ptr<Sequence<std::string> > seq(new Sequence<std::string>);
+        std::shared_ptr<Sequence<std::string> > seq(std::make_shared<Sequence<std::string>>());
         std::copy(next(cmdline.begin_parameters()), cmdline.end_parameters(), seq->back_inserter());
 
         return cave::CommandFactory::get_instance()->create(*cmdline.begin_parameters())->run(env, seq);

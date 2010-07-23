@@ -162,7 +162,7 @@ namespace
     {
         std::shared_ptr<const PackageIDSequence> dep_entries((*_env)[selection::AllVersionsSorted(
                     generator::Matches(*node.spec(), MatchPackageOptions() + mpo_ignore_additional_requirements))]);
-        std::shared_ptr<PackageIDSequence> matches(new PackageIDSequence);
+        std::shared_ptr<PackageIDSequence> matches(std::make_shared<PackageIDSequence>());
 
         bool header_written = false;
 

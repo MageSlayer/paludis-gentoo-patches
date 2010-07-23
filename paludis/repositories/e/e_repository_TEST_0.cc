@@ -111,7 +111,7 @@ namespace test_cases
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
 
-            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_0_dir" / "repo"));
@@ -126,7 +126,7 @@ namespace test_cases
                         std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            std::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
+            std::shared_ptr<FakeInstalledRepository> installed_repo(std::make_shared<FakeInstalledRepository>(
                         make_named_values<FakeInstalledRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("installed"),
@@ -138,12 +138,12 @@ namespace test_cases
             env.package_database()->add_repository(2, installed_repo);
 
 #ifdef ENABLE_VIRTUALS_REPOSITORY
-            std::shared_ptr<Map<std::string, std::string> > iv_keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > iv_keys(std::make_shared<Map<std::string, std::string>>());
             iv_keys->insert("root", "/");
             iv_keys->insert("format", "installed_virtuals");
             env.package_database()->add_repository(-2, RepositoryFactory::get_instance()->create(&env,
                         std::bind(from_keys, iv_keys, std::placeholders::_1)));
-            std::shared_ptr<Map<std::string, std::string> > v_keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > v_keys(std::make_shared<Map<std::string, std::string>>());
             v_keys->insert("format", "virtuals");
             env.package_database()->add_repository(-2, RepositoryFactory::get_instance()->create(&env,
                         std::bind(from_keys, v_keys, std::placeholders::_1)));

@@ -46,7 +46,7 @@ namespace
     const std::shared_ptr<const MirrorsSequence>
     get_mirrors_fn(const std::string & m)
     {
-        const std::shared_ptr<MirrorsSequence> result(new MirrorsSequence);
+        const std::shared_ptr<MirrorsSequence> result(std::make_shared<MirrorsSequence>());
         if (m == "repo")
             result->push_back("http://fake-repo/fake-repo/");
         if (m == "example")
@@ -64,7 +64,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            const std::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            const std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("repo")
                             )));

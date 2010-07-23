@@ -48,7 +48,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::shared_ptr<UnavailableRepository> repo(new UnavailableRepository(
+            std::shared_ptr<UnavailableRepository> repo(std::make_shared<UnavailableRepository>(
                         make_named_values<UnavailableRepositoryParams>(
                             n::environment() = &env,
                             n::location() = FSEntry::cwd() / "unavailable_repository_TEST_dir" / "repo1",
@@ -68,7 +68,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::shared_ptr<UnavailableRepository> repo(new UnavailableRepository(
+            std::shared_ptr<UnavailableRepository> repo(std::make_shared<UnavailableRepository>(
                         make_named_values<UnavailableRepositoryParams>(
                             n::environment() = &env,
                             n::location() = FSEntry::cwd() / "unavailable_repository_TEST_dir" / "repo2",
@@ -98,7 +98,7 @@ namespace test_cases
                     "repository/foo-0::unavailable"
                     );
 
-            const std::shared_ptr<FakeRepository> hide_bar(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            const std::shared_ptr<FakeRepository> hide_bar(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("bar")
                             )));

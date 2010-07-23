@@ -227,7 +227,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(ff.get("z"), "foofoo\\$");
 
             std::stringstream t;
-            std::shared_ptr<Map<std::string, std::string> > t_defs(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > t_defs(std::make_shared<Map<std::string, std::string>>());
             t_defs->insert("a", "moo");
             t_defs->insert("d", "bar");
             t_defs->insert("e", "baz");
@@ -262,7 +262,7 @@ namespace test_cases
 
             std::stringstream d_s;
             d_s << "foo=oink" << std::endl;
-            std::shared_ptr<KeyValueConfigFile> d_ff(new KeyValueConfigFile(d_s, KeyValueConfigFileOptions(),
+            std::shared_ptr<KeyValueConfigFile> d_ff(std::make_shared<KeyValueConfigFile>(d_s, KeyValueConfigFileOptions(),
                         &predefined_from_env,
                         &KeyValueConfigFile::no_transformation));
 

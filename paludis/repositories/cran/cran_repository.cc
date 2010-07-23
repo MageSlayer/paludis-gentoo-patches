@@ -90,13 +90,13 @@ Imp<CRANRepository>::Imp(const CRANRepositoryParams & p, const std::shared_ptr<M
     params(p),
     big_nasty_mutex(m),
     has_ids(false),
-    location_key(new LiteralMetadataValueKey<FSEntry> ("location", "location", mkt_significant, params.location())),
-    distdir_key(new LiteralMetadataValueKey<FSEntry> ("distdir", "distdir", mkt_normal, params.distdir())),
-    format_key(new LiteralMetadataValueKey<std::string> ("format", "format", mkt_significant, "cran")),
-    builddir_key(new LiteralMetadataValueKey<FSEntry> ("builddir", "builddir", mkt_normal, params.builddir())),
-    library_key(new LiteralMetadataValueKey<FSEntry> ("library", "library", mkt_normal, params.library())),
-    sync_key(new LiteralMetadataValueKey<std::string> ("sync", "sync", mkt_normal, params.sync())),
-    sync_host_key(new LiteralMetadataValueKey<std::string> ("sync_host", "sync_host", mkt_internal, extract_host_from_url(params.sync())))
+    location_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("location", "location", mkt_significant, params.location())),
+    distdir_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("distdir", "distdir", mkt_normal, params.distdir())),
+    format_key(std::make_shared<LiteralMetadataValueKey<std::string> >("format", "format", mkt_significant, "cran")),
+    builddir_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("builddir", "builddir", mkt_normal, params.builddir())),
+    library_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("library", "library", mkt_normal, params.library())),
+    sync_key(std::make_shared<LiteralMetadataValueKey<std::string> >("sync", "sync", mkt_normal, params.sync())),
+    sync_host_key(std::make_shared<LiteralMetadataValueKey<std::string> >("sync_host", "sync_host", mkt_internal, extract_host_from_url(params.sync())))
 {
 }
 
@@ -165,7 +165,7 @@ CRANRepository::category_names() const
     Context context("When fetching category names in " + stringify(name()) + ":");
     Lock l(*_imp->big_nasty_mutex);
 
-    std::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
+    std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
     result->insert(CategoryNamePart("cran"));
 
     return result;
@@ -178,7 +178,7 @@ CRANRepository::package_names(const CategoryNamePart & c) const
             + "' in " + stringify(name()) + ":");
     Lock l(*_imp->big_nasty_mutex);
 
-    std::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
+    std::shared_ptr<QualifiedPackageNameSet> result(std::make_shared<QualifiedPackageNameSet>());
     if (! has_category_named(c))
         return result;
 
@@ -197,7 +197,7 @@ CRANRepository::package_ids(const QualifiedPackageName & n) const
             + stringify(name()) + ":");
     Lock l(*_imp->big_nasty_mutex);
 
-    std::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
+    std::shared_ptr<PackageIDSequence> result(std::make_shared<PackageIDSequence>());
     if (! has_package_named(n))
         return result;
 
@@ -222,7 +222,7 @@ CRANRepository::need_ids() const
     for (DirIterator d(_imp->params.location()), d_end ; d != d_end ; ++d)
         if (is_file_with_extension(*d, ".DESCRIPTION", IsFileWithOptions()))
         {
-            std::shared_ptr<cranrepository::CRANPackageID> id(new cranrepository::CRANPackageID(_imp->params.environment(),
+            std::shared_ptr<cranrepository::CRANPackageID> id(std::make_shared<cranrepository::CRANPackageID>(_imp->params.environment(),
                         shared_from_this(), *d));
             if (! _imp->ids.insert(std::make_pair(id->name(), id)).second)
                 Log::get_instance()->message("cran.id.duplicate", ll_warning, lc_context)
@@ -420,7 +420,7 @@ CRANRepository::repository_factory_create(
     if (builddir.empty())
         builddir = "/var/tmp/paludis";
 
-    return std::shared_ptr<Repository>(new CRANRepository(make_named_values<CRANRepositoryParams>(
+    return std::shared_ptr<Repository>(std::make_shared<CRANRepository>(make_named_values<CRANRepositoryParams>(
                     n::builddir() = builddir,
                     n::distdir() = distdir,
                     n::environment() = env,

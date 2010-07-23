@@ -82,13 +82,13 @@ namespace paludis
             repository(n),
             tree_root(t),
             has_category_names(false),
-            arch_list_files(new FSEntrySequence),
-            repository_mask_files(new FSEntrySequence),
-            profiles_desc_files(new FSEntrySequence),
-            mirror_files(new FSEntrySequence),
-            info_variables_files(new FSEntrySequence),
-            info_packages_files(new FSEntrySequence),
-            use_desc_files(new UseDescFileInfoSequence)
+            arch_list_files(std::make_shared<FSEntrySequence>()),
+            repository_mask_files(std::make_shared<FSEntrySequence>()),
+            profiles_desc_files(std::make_shared<FSEntrySequence>()),
+            mirror_files(std::make_shared<FSEntrySequence>()),
+            info_variables_files(std::make_shared<FSEntrySequence>()),
+            info_packages_files(std::make_shared<FSEntrySequence>()),
+            use_desc_files(std::make_shared<UseDescFileInfoSequence>())
         {
         }
     };
@@ -231,7 +231,7 @@ ExheresLayout::need_package_ids(const QualifiedPackageName & n) const
     Context context("When loading versions for '" + stringify(n) + "' in "
             + stringify(_imp->repository->name()) + ":");
 
-    std::shared_ptr<PackageIDSequence> v(new PackageIDSequence);
+    std::shared_ptr<PackageIDSequence> v(std::make_shared<PackageIDSequence>());
 
     FSEntry path(_imp->tree_root / "packages" / stringify(n.category()) / stringify(n.package()));
 
@@ -359,7 +359,7 @@ ExheresLayout::package_names(const CategoryNamePart & c) const
     need_category_names();
 
     if (_imp->category_names.end() == _imp->category_names.find(c))
-        return std::shared_ptr<QualifiedPackageNameSet>(new QualifiedPackageNameSet);
+        return std::shared_ptr<QualifiedPackageNameSet>(std::make_shared<QualifiedPackageNameSet>());
 
     if ((_imp->tree_root / "packages" / stringify(c)).is_directory_or_symlink_to_directory())
         for (DirIterator d(_imp->tree_root / "packages" / stringify(c)), d_end ; d != d_end ; ++d)
@@ -384,7 +384,7 @@ ExheresLayout::package_names(const CategoryNamePart & c) const
 
     _imp->category_names[c] = true;
 
-    std::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
+    std::shared_ptr<QualifiedPackageNameSet> result(std::make_shared<QualifiedPackageNameSet>());
 
     for (PackagesMap::const_iterator p(_imp->package_names.begin()), p_end(_imp->package_names.end()) ;
             p != p_end ; ++p)
@@ -407,7 +407,7 @@ ExheresLayout::package_ids(const QualifiedPackageName & n) const
         return _imp->ids.find(n)->second;
     }
     else
-        return std::shared_ptr<PackageIDSequence>(new PackageIDSequence);
+        return std::shared_ptr<PackageIDSequence>(std::make_shared<PackageIDSequence>());
 }
 
 const std::shared_ptr<const FSEntrySequence>
@@ -476,7 +476,7 @@ ExheresLayout::profiles_base_dir() const
 std::shared_ptr<const FSEntrySequence>
 ExheresLayout::exlibsdirs(const QualifiedPackageName & q) const
 {
-    std::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
+    std::shared_ptr<FSEntrySequence> result(std::make_shared<FSEntrySequence>());
 
     std::shared_ptr<const FSEntrySequence> global(exlibsdirs_global());
     std::copy(global->begin(), global->end(), result->back_inserter());
@@ -493,7 +493,7 @@ ExheresLayout::exlibsdirs(const QualifiedPackageName & q) const
 std::shared_ptr<const FSEntrySequence>
 ExheresLayout::exlibsdirs_global() const
 {
-    std::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
+    std::shared_ptr<FSEntrySequence> result(std::make_shared<FSEntrySequence>());
 
     if (_imp->repository->params().master_repositories())
     {
@@ -512,7 +512,7 @@ ExheresLayout::exlibsdirs_global() const
 std::shared_ptr<const FSEntrySequence>
 ExheresLayout::exlibsdirs_category(const CategoryNamePart & c) const
 {
-    std::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
+    std::shared_ptr<FSEntrySequence> result(std::make_shared<FSEntrySequence>());
 
     if (_imp->repository->params().master_repositories())
     {
@@ -531,7 +531,7 @@ ExheresLayout::exlibsdirs_category(const CategoryNamePart & c) const
 std::shared_ptr<const FSEntrySequence>
 ExheresLayout::exlibsdirs_package(const QualifiedPackageName & q) const
 {
-    std::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
+    std::shared_ptr<FSEntrySequence> result(std::make_shared<FSEntrySequence>());
 
     if (_imp->repository->params().master_repositories())
     {
@@ -550,7 +550,7 @@ ExheresLayout::exlibsdirs_package(const QualifiedPackageName & q) const
 std::shared_ptr<const FSEntrySequence>
 ExheresLayout::licenses_dirs() const
 {
-    std::shared_ptr<FSEntrySequence> result(new FSEntrySequence);
+    std::shared_ptr<FSEntrySequence> result(std::make_shared<FSEntrySequence>());
 
     if (_imp->repository->params().master_repositories())
     {
@@ -602,7 +602,7 @@ namespace
 std::shared_ptr<Map<FSEntry, std::string> >
 ExheresLayout::manifest_files(const QualifiedPackageName & qpn) const
 {
-    std::shared_ptr<Map<FSEntry, std::string> > result(new Map<FSEntry, std::string>);
+    std::shared_ptr<Map<FSEntry, std::string> > result(std::make_shared<Map<FSEntry, std::string>>());
     FSEntry package_dir = _imp->repository->layout()->package_directory(qpn);
 
     std::list<FSEntry> package_files((DirIterator(package_dir)),

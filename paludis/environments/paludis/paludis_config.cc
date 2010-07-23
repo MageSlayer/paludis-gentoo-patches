@@ -206,18 +206,18 @@ namespace paludis
         env(e),
         paludis_command("paludis"),
         config_dir("(unset)"),
-        bashrc_files(new FSEntrySequence),
-        keywords_conf(new KeywordsConf(e)),
-        use_conf(new UseConf(e)),
-        licenses_conf(new LicensesConf(e)),
-        package_mask_conf(new PackageMaskConf(e)),
-        package_unmask_conf(new PackageMaskConf(e)),
-        mirrors_conf(new MirrorsConf(e)),
-        output_conf(new OutputConf(e)),
+        bashrc_files(std::make_shared<FSEntrySequence>()),
+        keywords_conf(std::make_shared<KeywordsConf>(e)),
+        use_conf(std::make_shared<UseConf>(e)),
+        licenses_conf(std::make_shared<LicensesConf>(e)),
+        package_mask_conf(std::make_shared<PackageMaskConf>(e)),
+        package_unmask_conf(std::make_shared<PackageMaskConf>(e)),
+        mirrors_conf(std::make_shared<MirrorsConf>(e)),
+        output_conf(std::make_shared<OutputConf>(e)),
         has_general_conf(false),
         accept_all_breaks_portage(false),
         reduced_username(getenv_with_default("PALUDIS_REDUCED_USERNAME", "paludisbuild")),
-        commandline_environment(new Map<std::string, std::string>)
+        commandline_environment(std::make_shared<Map<std::string, std::string>>())
     {
     }
 
@@ -641,12 +641,12 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         /* add virtuals repositories */
         if ((*DistributionData::get_instance()->distribution_from_string(distribution())).support_old_style_virtuals())
         {
-            std::shared_ptr<Map<std::string, std::string> > iv_keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > iv_keys(std::make_shared<Map<std::string, std::string>>());
             iv_keys->insert("root", _imp->root_prefix.empty() ? "/" : _imp->root_prefix);
             iv_keys->insert("format", "installed_virtuals");
             _imp->repos.push_back(std::bind(&from_keys, iv_keys, std::placeholders::_1));
 
-            std::shared_ptr<Map<std::string, std::string> > v_keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > v_keys(std::make_shared<Map<std::string, std::string>>());
             v_keys->insert("format", "virtuals");
             _imp->repos.push_back(std::bind(&from_keys, v_keys, std::placeholders::_1));
         }

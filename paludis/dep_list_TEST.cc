@@ -1929,11 +1929,11 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("repo"))));
             env.package_database()->add_repository(1, repo);
-            std::shared_ptr<FakeInstalledRepository> destination_repo(new FakeInstalledRepository(
+            std::shared_ptr<FakeInstalledRepository> destination_repo(std::make_shared<FakeInstalledRepository>(
                         make_named_values<FakeInstalledRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("installed_repo"),
@@ -1976,11 +1976,11 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("repo"))));
             env.package_database()->add_repository(1, repo);
-            std::shared_ptr<FakeInstalledRepository> destination_repo(new FakeInstalledRepository(
+            std::shared_ptr<FakeInstalledRepository> destination_repo(std::make_shared<FakeInstalledRepository>(
                         make_named_values<FakeInstalledRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("installed_repo"),
@@ -2024,13 +2024,13 @@ namespace test_cases
         {
             TestEnvironment env;
 
-            std::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("repo"))));
             env.package_database()->add_repository(1, repo);
             repo->add_version("cat", "one", "1");
 
-            std::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
+            std::shared_ptr<FakeInstalledRepository> installed_repo(std::make_shared<FakeInstalledRepository>(
                         make_named_values<FakeInstalledRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("installed_repo"),
@@ -2058,13 +2058,13 @@ namespace test_cases
         {
             TestEnvironment env;
 
-            std::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("repo"))));
             env.package_database()->add_repository(1, repo);
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/two");
 
-            std::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
+            std::shared_ptr<FakeInstalledRepository> installed_repo(std::make_shared<FakeInstalledRepository>(
                         make_named_values<FakeInstalledRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("installed_repo"),
@@ -2093,13 +2093,13 @@ namespace test_cases
         {
             TestEnvironment env;
 
-            std::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("repo"))));
             env.package_database()->add_repository(1, repo);
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/two");
 
-            std::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
+            std::shared_ptr<FakeInstalledRepository> installed_repo(std::make_shared<FakeInstalledRepository>(
                         make_named_values<FakeInstalledRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("installed_repo"),
@@ -2130,13 +2130,13 @@ namespace test_cases
         {
             TestEnvironment env;
 
-            std::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("repo"))));
             env.package_database()->add_repository(1, repo);
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/two");
 
-            std::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
+            std::shared_ptr<FakeInstalledRepository> installed_repo(std::make_shared<FakeInstalledRepository>(
                         make_named_values<FakeInstalledRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("installed_repo"),
@@ -2164,13 +2164,13 @@ namespace test_cases
 
             DepList d3(&env, DepListOptions());
             d3.options()->fall_back() = dl_fall_back_as_needed_except_targets;
-            std::shared_ptr<SetSpecTree> t3(new SetSpecTree(std::make_shared<AllDepSpec>()));
+            std::shared_ptr<SetSpecTree> t3(std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>()));
             t3->root()->append(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec("cat/one", &env, UserPackageDepSpecOptions())));
             t3->root()->append(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec("cat/two", &env, UserPackageDepSpecOptions())));
             TEST_CHECK_THROWS(d3.add(*t3, env.default_destinations()), DepListError);
 
             DepList d4(&env, DepListOptions());
-            std::shared_ptr<SetSpecTree> t4(new SetSpecTree(std::make_shared<AllDepSpec>()));
+            std::shared_ptr<SetSpecTree> t4(std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>()));
             t4->root()->append(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec("cat/one", &env, UserPackageDepSpecOptions())));
             t4->root()->append(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec("cat/three", &env, UserPackageDepSpecOptions())));
             TEST_CHECK_THROWS(d4.add(*t4, env.default_destinations()), DepListError);
@@ -2188,14 +2188,14 @@ namespace test_cases
         {
             TestEnvironment env;
 
-            std::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("repo"))));
             env.package_database()->add_repository(1, repo);
             repo->add_version("cat", "one", "1")->build_dependencies_key()->set_from_string("cat/two");
             repo->add_version("cat", "two", "2");
 
-            std::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
+            std::shared_ptr<FakeInstalledRepository> installed_repo(std::make_shared<FakeInstalledRepository>(
                         make_named_values<FakeInstalledRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("installed_repo"),
@@ -2214,7 +2214,7 @@ namespace test_cases
             DepList d2(&env, DepListOptions());
             d2.options()->upgrade() = dl_upgrade_as_needed;
 
-            std::shared_ptr<SetSpecTree> t2(new SetSpecTree(std::make_shared<AllDepSpec>()));
+            std::shared_ptr<SetSpecTree> t2(std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>()));
             t2->root()->append(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec("cat/one", &env, UserPackageDepSpecOptions())));
             t2->root()->append(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec("cat/two", &env, UserPackageDepSpecOptions())));
             d2.add(*t2, env.default_destinations());
@@ -2233,7 +2233,7 @@ namespace test_cases
         {
             TestEnvironment env;
 
-            std::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("repo"))));
             env.package_database()->add_repository(1, repo);
@@ -2246,7 +2246,7 @@ namespace test_cases
             repo->add_version("cat", "five-svn", "0");
             repo->add_version("cat", "six-darcs", "0");
 
-            std::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
+            std::shared_ptr<FakeInstalledRepository> installed_repo(std::make_shared<FakeInstalledRepository>(
                         make_named_values<FakeInstalledRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("installed_repo"),
@@ -2282,7 +2282,7 @@ namespace test_cases
         {
             TestEnvironment env;
 
-            std::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("repo"))));
             env.package_database()->add_repository(1, repo);
@@ -2293,7 +2293,7 @@ namespace test_cases
             repo->add_version("cat", "three", "0.9");
             repo->add_version("cat", "four", "1");
 
-            std::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
+            std::shared_ptr<FakeInstalledRepository> installed_repo(std::make_shared<FakeInstalledRepository>(
                         make_named_values<FakeInstalledRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("installed_repo"),
@@ -2306,11 +2306,11 @@ namespace test_cases
             d1.options()->dependency_tags() = true;
             PackageDepSpec with_target_tag(parse_user_package_dep_spec("cat/one",
                         &env, UserPackageDepSpecOptions()));
-            with_target_tag.set_tag(std::shared_ptr<const DepTag>(new TargetDepTag));
+            with_target_tag.set_tag(std::shared_ptr<const DepTag>(std::make_shared<TargetDepTag>()));
             d1.add(with_target_tag, env.default_destinations());
             PackageDepSpec with_set_tag(parse_user_package_dep_spec("cat/two",
                         &env, UserPackageDepSpecOptions()));
-            with_set_tag.set_tag(std::shared_ptr<const DepTag>(new GeneralSetDepTag(SetName("set"), "test")));
+            with_set_tag.set_tag(std::shared_ptr<const DepTag>(std::make_shared<GeneralSetDepTag>(SetName("set"), "test")));
             d1.add(with_set_tag, env.default_destinations());
 
             TEST_CHECK_EQUAL(join(d1.begin(), d1.end(), " "), "cat/three-0.9:0::repo cat/one-1:0::repo "

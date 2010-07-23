@@ -139,10 +139,10 @@ namespace paludis
             environment(e),
             repository(r),
             dir(f),
-            raw_dependencies_labels(new DependenciesLabelSequence),
-            build_dependencies_labels(new DependenciesLabelSequence),
-            run_dependencies_labels(new DependenciesLabelSequence),
-            post_dependencies_labels(new DependenciesLabelSequence)
+            raw_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
+            build_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
+            run_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
+            post_dependencies_labels(std::make_shared<DependenciesLabelSequence>())
         {
             raw_dependencies_labels->push_back(std::make_shared<DependenciesBuildLabel>("build",
                             return_literal_function(true)));
@@ -497,7 +497,7 @@ EInstalledRepositoryID::need_keys_added() const
 
     add_metadata_key(_imp->keys->choices);
 
-    std::shared_ptr<Set<std::string> > from_repositories_value(new Set<std::string>);
+    std::shared_ptr<Set<std::string> > from_repositories_value(std::make_shared<Set<std::string>>());
     if ((_imp->dir / "REPOSITORY").exists())
         from_repositories_value->insert(file_contents(_imp->dir / "REPOSITORY"));
     if ((_imp->dir / "repository").exists())
@@ -1037,7 +1037,7 @@ EInstalledRepositoryID::add_build_options(const std::shared_ptr<Choices> & choic
 {
     if (eapi()->supported())
     {
-        std::shared_ptr<Choice> build_options(new Choice(make_named_values<ChoiceParams>(
+        std::shared_ptr<Choice> build_options(std::make_shared<Choice>(make_named_values<ChoiceParams>(
                         n::consider_added_or_changed() = false,
                         n::contains_every_value() = false,
                         n::hidden() = false,

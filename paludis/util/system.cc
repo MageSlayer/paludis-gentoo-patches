@@ -562,7 +562,7 @@ paludis::run_command(const Command & cmd)
     Log::get_instance()->message("util.system.execl", ll_debug, lc_no_context) << "execl /bin/sh -c " << command
         << " " << extras;
 
-    std::shared_ptr<Pipe> internal_command_reader(new Pipe), pipe_command_reader,
+    std::shared_ptr<Pipe> internal_command_reader(std::make_shared<Pipe>()), pipe_command_reader,
         pipe_command_response, input_stream, output_stream;
     std::shared_ptr<Channel> captured_stdout, captured_stderr;
     if (cmd.pipe_command_handler())

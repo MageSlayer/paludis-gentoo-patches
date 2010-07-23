@@ -129,13 +129,13 @@ namespace
         switch (p.type())
         {
             case sft_simple:
-                return std::shared_ptr<SetFileHandler>(new SimpleHandler(p));
+                return std::shared_ptr<SetFileHandler>(std::make_shared<SimpleHandler>(p));
 
             case sft_paludis_conf:
-                return std::shared_ptr<SetFileHandler>(new PaludisConfHandler(p));
+                return std::shared_ptr<SetFileHandler>(std::make_shared<PaludisConfHandler>(p));
 
             case sft_paludis_bash:
-                return std::shared_ptr<SetFileHandler>(new PaludisBashHandler(p));
+                return std::shared_ptr<SetFileHandler>(std::make_shared<PaludisBashHandler>(p));
 
             case last_sft:
                 break;
@@ -218,7 +218,7 @@ namespace
                 }
                 else
                 {
-                    std::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(params.parser()(tokens.at(1))));
+                    std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(params.parser()(tokens.at(1))));
                     if (params.tag())
                         spec->set_tag(params.tag());
                     result->root()->append(spec);
@@ -233,7 +233,7 @@ namespace
                     return;
                 }
 
-                std::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(params.parser()(tokens.at(1))));
+                std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(params.parser()(tokens.at(1))));
                 if (params.tag())
                     spec->set_tag(params.tag());
 
@@ -260,7 +260,7 @@ namespace
                     return;
                 }
 
-                std::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(params.parser()(tokens.at(1))));
+                std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(params.parser()(tokens.at(1))));
                 if (params.tag())
                     spec->set_tag(params.tag());
 
@@ -338,12 +338,12 @@ SimpleHandler::_create_contents() const
         {
             if (std::string::npos == i->find('/'))
             {
-                std::shared_ptr<NamedSetDepSpec> p(new NamedSetDepSpec(SetName(*i)));
+                std::shared_ptr<NamedSetDepSpec> p(std::make_shared<NamedSetDepSpec>(SetName(*i)));
                 _contents->root()->append(p);
             }
             else
             {
-                std::shared_ptr<PackageDepSpec> p(new PackageDepSpec(_p.parser()(stringify(*i))));
+                std::shared_ptr<PackageDepSpec> p(std::make_shared<PackageDepSpec>(_p.parser()(stringify(*i))));
                 if (_p.tag())
                     p->set_tag(_p.tag());
                 _contents->root()->append(p);

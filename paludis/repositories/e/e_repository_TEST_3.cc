@@ -104,7 +104,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_3_dir" / "repo"));
@@ -119,7 +119,7 @@ namespace test_cases
                         std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            std::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
+            std::shared_ptr<FakeInstalledRepository> installed_repo(std::make_shared<FakeInstalledRepository>(
                         make_named_values<FakeInstalledRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("installed"),

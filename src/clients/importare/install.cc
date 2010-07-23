@@ -146,7 +146,7 @@ do_install(const std::shared_ptr<Environment> & env, const std::shared_ptr<const
     CommandLine::get_instance()->install_args.populate_install_task(env.get(), task);
     CommandLine::get_instance()->dl_args.populate_install_task(env.get(), task);
 
-    std::shared_ptr<PackageIDSequence> targets(new PackageIDSequence);
+    std::shared_ptr<PackageIDSequence> targets(std::make_shared<PackageIDSequence>());
     targets->push_back(target);
     task.set_targets_from_exact_packages(targets);
     task.execute();

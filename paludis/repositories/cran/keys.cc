@@ -40,7 +40,7 @@ using namespace paludis::cranrepository;
 PackageIDSequenceKey::PackageIDSequenceKey(const Environment * const e,
         const std::string & r, const std::string & h, const MetadataKeyType t) :
     _env(e),
-    _v(new PackageIDSequence),
+    _v(std::make_shared<PackageIDSequence>()),
     _r(r),
     _h(h),
     _t(t)

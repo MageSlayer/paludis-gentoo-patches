@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -39,7 +39,7 @@ AllGeneratorHandlerBase::repositories(
         const Environment * const env) const
 {
     using namespace std::placeholders;
-    std::shared_ptr<RepositoryNameSet> result(new RepositoryNameSet);
+    std::shared_ptr<RepositoryNameSet> result(std::make_shared<RepositoryNameSet>());
     std::transform(env->package_database()->begin_repositories(), env->package_database()->end_repositories(),
             result->inserter(), std::bind(&Repository::name, _1));
     return result;
@@ -50,7 +50,7 @@ AllGeneratorHandlerBase::categories(
         const Environment * const env,
         const std::shared_ptr<const RepositoryNameSet> & repos) const
 {
-    std::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
+    std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
 
     for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
             r != r_end ; ++r)
@@ -68,7 +68,7 @@ AllGeneratorHandlerBase::packages(
         const std::shared_ptr<const RepositoryNameSet> & repos,
         const std::shared_ptr<const CategoryNamePartSet> & cats) const
 {
-    std::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
+    std::shared_ptr<QualifiedPackageNameSet> result(std::make_shared<QualifiedPackageNameSet>());
 
     for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
             r != r_end ; ++r)
@@ -91,7 +91,7 @@ AllGeneratorHandlerBase::ids(
         const std::shared_ptr<const RepositoryNameSet> & repos,
         const std::shared_ptr<const QualifiedPackageNameSet> & qpns) const
 {
-    std::shared_ptr<PackageIDSet> result(new PackageIDSet);
+    std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
     for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
             r != r_end ; ++r)

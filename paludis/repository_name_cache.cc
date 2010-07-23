@@ -198,7 +198,7 @@ RepositoryNameCache::category_names_containing_package(const PackageNamePart & p
 
     Context context("When using name cache at '" + stringify(_imp->location) + "':");
 
-    std::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
+    std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
     NameCacheMap::iterator r(_imp->find(p));
     if (_imp->name_cache_map.end() == r)
         return std::shared_ptr<const CategoryNamePartSet>();
@@ -282,7 +282,7 @@ RepositoryNameCache::add(const QualifiedPackageName & q)
 
     Context context("When adding '" + stringify(q) + "' to name cache at '" + stringify(_imp->location) + "':");
 
-    std::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
+    std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
     NameCacheMap::iterator r(_imp->find(q.package()));
     if (_imp->name_cache_map.end() == r)
         return;
@@ -301,7 +301,7 @@ RepositoryNameCache::remove(const QualifiedPackageName & q)
 
     Context context("When removing '" + stringify(q) + "' from name cache at '" + stringify(_imp->location) + "':");
 
-    std::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
+    std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
     NameCacheMap::iterator r(_imp->find(q.package()));
     if (_imp->name_cache_map.end() == r)
         return;

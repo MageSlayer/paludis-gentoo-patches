@@ -145,8 +145,8 @@ namespace
         }
 
         RangeRewrittenPackageDepSpecData(const PackageDepSpec & spec) :
-            package(new QualifiedPackageName(*spec.package_ptr())),
-            version_requirements(new VersionRequirements),
+            package(std::make_shared<QualifiedPackageName>(*spec.package_ptr())),
+            version_requirements(std::make_shared<VersionRequirements>()),
             version_requirements_mode_v(vr_or)
         {
             strings.push_back(stringify(spec));
@@ -308,6 +308,6 @@ RangeRewriter::spec() const
     if (_imp->invalid || ! _imp->spec_data)
         return std::shared_ptr<PackageDepSpec>();
 
-    return std::shared_ptr<PackageDepSpec>(new PackageDepSpec(_imp->spec_data));
+    return std::shared_ptr<PackageDepSpec>(std::make_shared<PackageDepSpec>(_imp->spec_data));
 }
 

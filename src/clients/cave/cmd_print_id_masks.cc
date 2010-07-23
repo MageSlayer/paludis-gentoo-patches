@@ -133,7 +133,7 @@ namespace
             const PrintIDMasksCommandLine & cmdline
             )
     {
-        std::shared_ptr<Map<char, std::string> > m(new Map<char, std::string>);
+        std::shared_ptr<Map<char, std::string> > m(std::make_shared<Map<char, std::string>>());
         m->insert('k', std::string(1, mask->key()));
         m->insert('d', mask->description());
 

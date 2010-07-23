@@ -152,7 +152,7 @@ FormatMessagesOutputManager::nothing_more_to_come()
 const std::shared_ptr<const Set<std::string> >
 FormatMessagesOutputManager::factory_managers()
 {
-    std::shared_ptr<Set<std::string> > result(new Set<std::string>);
+    std::shared_ptr<Set<std::string> > result(std::make_shared<Set<std::string>>());
     result->insert("format_messages");
     return result;
 }
@@ -164,7 +164,7 @@ namespace
             const std::string & f,
             const std::string & s)
     {
-        std::shared_ptr<Map<std::string, std::string> > m(new Map<std::string, std::string>);
+        std::shared_ptr<Map<std::string, std::string> > m(std::make_shared<Map<std::string, std::string>>());
         m->insert("message", s);
         return r(f, m);
     }

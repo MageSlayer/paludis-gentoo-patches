@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -48,7 +48,7 @@ namespace paludis
     void register_repositories<repository_groups::accounts>(const repository_groups::accounts * const,
             RepositoryFactory * const factory)
     {
-        std::shared_ptr<Set<std::string> > accounts_formats(new Set<std::string>);
+        std::shared_ptr<Set<std::string> > accounts_formats(std::make_shared<Set<std::string>>());
         accounts_formats->insert("accounts");
 
         factory->add_repository_format(accounts_formats,
@@ -58,7 +58,7 @@ namespace paludis
                 &AccountsRepository::repository_factory_dependencies
                 );
 
-        std::shared_ptr<Set<std::string> > installed_accounts_formats(new Set<std::string>);
+        std::shared_ptr<Set<std::string> > installed_accounts_formats(std::make_shared<Set<std::string>>());
         installed_accounts_formats->insert("installed_accounts");
         installed_accounts_formats->insert("installed-accounts");
 

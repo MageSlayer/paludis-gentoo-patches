@@ -84,9 +84,9 @@ namespace paludis
 Imp<CRANInstalledRepository>::Imp(const CRANInstalledRepositoryParams & p) :
     params(p),
     has_ids(false),
-    location_key(new LiteralMetadataValueKey<FSEntry> ("location", "location", mkt_significant, params.location())),
-    installed_root_key(new LiteralMetadataValueKey<FSEntry> ("root", "root", mkt_normal, params.root())),
-    format_key(new LiteralMetadataValueKey<std::string> ("format", "format", mkt_significant, "installed_cran"))
+    location_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("location", "location", mkt_significant, params.location())),
+    installed_root_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("root", "root", mkt_normal, params.root())),
+    format_key(std::make_shared<LiteralMetadataValueKey<std::string> >("format", "format", mkt_significant, "installed_cran"))
 {
 }
 
@@ -217,7 +217,7 @@ CRANInstalledRepository::has_package_named(const QualifiedPackageName & q) const
 std::shared_ptr<const CategoryNamePartSet>
 CRANInstalledRepository::category_names() const
 {
-    std::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
+    std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
     result->insert(CategoryNamePart("cran"));
     return result;
 }
@@ -228,7 +228,7 @@ CRANInstalledRepository::package_names(const CategoryNamePart & c) const
     Context context("When fetching package names in category '" + stringify(c)
             + "' in " + stringify(name()) + ":");
 
-    std::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
+    std::shared_ptr<QualifiedPackageNameSet> result(std::make_shared<QualifiedPackageNameSet>());
     if (! has_category_named(c))
         return result;
 
@@ -246,7 +246,7 @@ CRANInstalledRepository::package_ids(const QualifiedPackageName & n) const
     Context context("When fetching versions of '" + stringify(n) + "' in "
             + stringify(name()) + ":");
 
-    std::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
+    std::shared_ptr<PackageIDSequence> result(std::make_shared<PackageIDSequence>());
     if (! has_package_named(n))
         return result;
 
@@ -264,7 +264,7 @@ CRANInstalledRepository::do_contents(const Package ID & id) const
 {
     Context context("When fetching contents for " + stringify(id) + ":");
 
-    std::shared_ptr<Contents> result(new Contents);
+    std::shared_ptr<Contents> result(std::make_shared<Contents>());
 
     if (! _imp->entries_valid)
         _imp->load_entries();
@@ -308,11 +308,11 @@ CRANInstalledRepository::do_contents(const Package ID & id) const
         }
 
         if ("obj" == tokens.at(0))
-            result->add(std::shared_ptr<ContentsEntry>(new ContentsFileEntry(tokens.at(1))));
+            result->add(std::shared_ptr<ContentsEntry>(std::make_shared<ContentsFileEntry>(tokens.at(1))));
         else if ("dir" == tokens.at(0))
-            result->add(std::shared_ptr<ContentsEntry>(new ContentsDirEntry(tokens.at(1))));
+            result->add(std::shared_ptr<ContentsEntry>(std::make_shared<ContentsDirEntry>(tokens.at(1))));
         else if ("misc" == tokens.at(0))
-            result->add(std::shared_ptr<ContentsEntry>(new ContentsMiscEntry(tokens.at(1))));
+            result->add(std::shared_ptr<ContentsEntry>(std::make_shared<ContentsMiscEntry>(tokens.at(1))));
         else if ("sym" == tokens.at(0))
         {
             if (tokens.size() < 4)
@@ -324,7 +324,7 @@ CRANInstalledRepository::do_contents(const Package ID & id) const
                 continue;
             }
 
-            result->add(std::shared_ptr<ContentsEntry>(new ContentsSymEntry(
+            result->add(std::shared_ptr<ContentsEntry>(std::make_shared<ContentsSymEntry>(
                             tokens.at(1), tokens.at(3))));
         }
     }
@@ -393,7 +393,7 @@ CRANInstalledRepository::repository_factory_create(
     if (! f("world").empty())
         throw CRANInstalledRepositoryConfigurationError("Key 'world' is no longer supported.");
 
-    return std::shared_ptr<Repository>(new CRANInstalledRepository(make_named_values<CRANInstalledRepositoryParams>(
+    return std::shared_ptr<Repository>(std::make_shared<CRANInstalledRepository>(make_named_values<CRANInstalledRepositoryParams>(
                     n::environment() = env,
                     n::location() = location,
                     n::root() = root

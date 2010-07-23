@@ -49,7 +49,7 @@ namespace paludis
                 const std::string & v) :
             env(e),
             value(CommaSeparatedDepParser::parse(e, v)),
-            labels(new DependenciesLabelSequence),
+            labels(std::make_shared<DependenciesLabelSequence>()),
             raw_name(r),
             human_name(h),
             type(t)

@@ -64,7 +64,7 @@ namespace paludis
 
         Imp(const UnwrittenRepository * const r) :
             repo(r),
-            categories(new CategoryNamePartSet)
+            categories(std::make_shared<CategoryNamePartSet>())
         {
         }
     };
@@ -103,7 +103,7 @@ UnwrittenRepositoryStore::_populate_one(const Environment * const env, const FSE
 
     UnwrittenRepositoryFile file(f);
 
-    std::shared_ptr<Mask> mask(new UnwrittenMask);
+    std::shared_ptr<Mask> mask(std::make_shared<UnwrittenMask>());
 
     QualifiedPackageName old_name("x/x");
     std::shared_ptr<QualifiedPackageNameSet> pkgs;

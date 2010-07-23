@@ -798,7 +798,7 @@ namespace
                         resolved->job_lists()->pretend_job_list()->append(std::make_shared<PretendJob>(
                                         changes_to_make_decision.origin_id()->uniquely_identifying_spec()));
 
-                        const std::shared_ptr<JobRequirements> requirements(new JobRequirements);
+                        const std::shared_ptr<JobRequirements> requirements(std::make_shared<JobRequirements>());
                         requirements->push_back(make_named_values<JobRequirement>(
                                     n::job_number() = fetch_job_n->second,
                                     n::required_if() = JobRequirementIfs() + jri_require_for_satisfied + jri_require_for_independent
@@ -817,7 +817,7 @@ namespace
                                 recursed
                                 );
 
-                        const std::shared_ptr<Sequence<PackageDepSpec> > replacing(new Sequence<PackageDepSpec>);
+                        const std::shared_ptr<Sequence<PackageDepSpec> > replacing(std::make_shared<Sequence<PackageDepSpec>>());
                         for (PackageIDSequence::ConstIterator i(changes_to_make_decision.destination()->replacing()->begin()),
                                 i_end(changes_to_make_decision.destination()->replacing()->end()) ;
                                 i != i_end ; ++i)
@@ -837,7 +837,7 @@ namespace
 
                 case nir_fetched:
                     {
-                        const std::shared_ptr<JobRequirements> requirements(new JobRequirements);
+                        const std::shared_ptr<JobRequirements> requirements(std::make_shared<JobRequirements>());
 
                         RecursedRequirements recursed;
                         populate_requirements(
@@ -867,13 +867,13 @@ namespace
 
         void visit(const RemoveDecision & remove_decision) const
         {
-            const std::shared_ptr<Sequence<PackageDepSpec> > removing(new Sequence<PackageDepSpec>);
+            const std::shared_ptr<Sequence<PackageDepSpec> > removing(std::make_shared<Sequence<PackageDepSpec>>());
             for (PackageIDSequence::ConstIterator i(remove_decision.ids()->begin()),
                     i_end(remove_decision.ids()->end()) ;
                     i != i_end ; ++i)
                 removing->push_back((*i)->uniquely_identifying_spec());
 
-            const std::shared_ptr<JobRequirements> requirements(new JobRequirements);
+            const std::shared_ptr<JobRequirements> requirements(std::make_shared<JobRequirements>());
             RecursedRequirements recursed;
             populate_requirements(
                     resolved->nag(),

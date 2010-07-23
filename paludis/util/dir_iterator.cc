@@ -128,7 +128,7 @@ DirIterator::DirIterator(const DirIterator & other) :
 }
 
 DirIterator::DirIterator() :
-    Pimp<DirIterator>(std::shared_ptr<EntrySet>(new EntrySet(&compare_name)))
+    Pimp<DirIterator>(std::shared_ptr<EntrySet>(std::make_shared<EntrySet>(&compare_name)))
 {
     _imp->iter = _imp->items->end();
 }

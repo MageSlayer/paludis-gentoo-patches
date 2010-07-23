@@ -98,7 +98,7 @@ namespace paludis
                 const std::string &, const bool) :
             env(e),
             repository(p),
-            profiles_with_parents(new FSEntrySequence),
+            profiles_with_parents(std::make_shared<FSEntrySequence>()),
             options_conf(make_named_values<PaludisLikeOptionsConfParams>(
                         n::allow_locking() = true,
                         n::environment() = e,
@@ -106,14 +106,14 @@ namespace paludis
                         )),
             package_mask_file(p),
             packages_file(p),
-            use_expand(new Set<std::string>),
-            use_expand_hidden(new Set<std::string>),
-            use_expand_unprefixed(new Set<std::string>),
-            use_expand_implicit(new Set<std::string>),
-            iuse_implicit(new Set<std::string>),
-            use_expand_values(new Set<std::string>),
-            system_packages(new SetSpecTree(std::make_shared<AllDepSpec>())),
-            system_tag(new GeneralSetDepTag(SetName("system"), stringify(name)))
+            use_expand(std::make_shared<Set<std::string>>()),
+            use_expand_hidden(std::make_shared<Set<std::string>>()),
+            use_expand_unprefixed(std::make_shared<Set<std::string>>()),
+            use_expand_implicit(std::make_shared<Set<std::string>>()),
+            iuse_implicit(std::make_shared<Set<std::string>>()),
+            use_expand_values(std::make_shared<Set<std::string>>()),
+            system_packages(std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>())),
+            system_tag(std::make_shared<GeneralSetDepTag>(SetName("system"), stringify(name)))
         {
             environment_variables["CONFIG_PROTECT"] = getenv_with_default("CONFIG_PROTECT", "/etc");
             environment_variables["CONFIG_PROTECT_MASK"] = getenv_with_default("CONFIG_PROTECT_MASK", "");
@@ -155,7 +155,7 @@ ExheresProfile::ExheresProfile(
                 continue;
 
             Context context_spec("When parsing '" + i->second + "':");
-            std::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
+            std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(
                         parse_elike_package_dep_spec(i->second.substr(1),
                             i->first->supported()->package_dep_spec_parse_options(),
                             i->first->supported()->version_spec_options(),
@@ -173,7 +173,7 @@ ExheresProfile::ExheresProfile(
 
         try
         {
-            std::shared_ptr<const PackageDepSpec> a(new PackageDepSpec(
+            std::shared_ptr<const PackageDepSpec> a(std::make_shared<PackageDepSpec>(
                         parse_elike_package_dep_spec(line->second.first,
                             line->first->supported()->package_dep_spec_parse_options(),
                             line->first->supported()->version_spec_options(),

@@ -230,7 +230,7 @@ NDBAM::has_category_named(const CategoryNamePart & c)
     {
         if (FSEntry(_imp->location / "indices" / "categories" / stringify(c)).is_directory_or_symlink_to_directory())
         {
-            _imp->category_contents_map.insert(std::make_pair(c, new CategoryContents));
+            _imp->category_contents_map.insert(std::make_pair(c, std::make_shared<CategoryContents>()));
             return true;
         }
         _imp->category_contents_map.insert(std::make_pair(c, std::shared_ptr<CategoryContents>()));
@@ -427,7 +427,7 @@ NDBAM::remove_entry(const QualifiedPackageName & q, const FSEntry & d)
 
     if (pc.entries)
     {
-        std::shared_ptr<NDBAMEntrySequence> new_entries(new NDBAMEntrySequence);
+        std::shared_ptr<NDBAMEntrySequence> new_entries(std::make_shared<NDBAMEntrySequence>());
         std::remove_copy_if(pc.entries->begin(), pc.entries->end(), new_entries->back_inserter(), FSLocationIs(d));
         pc.entries = new_entries;
     }

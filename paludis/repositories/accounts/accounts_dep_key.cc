@@ -47,14 +47,14 @@ namespace paludis
 
         Imp(const Environment * const e, const std::shared_ptr<const Set<std::string> > & s) :
             env(e),
-            specs(new std::list<std::shared_ptr<PackageDepSpec> >),
-            tree(new DependencySpecTree(std::make_shared<AllDepSpec>())),
-            initial_labels(new DependenciesLabelSequence)
+            specs(std::make_shared<std::list<std::shared_ptr<PackageDepSpec> >>()),
+            tree(std::make_shared<DependencySpecTree>(std::make_shared<AllDepSpec>())),
+            initial_labels(std::make_shared<DependenciesLabelSequence>())
         {
             for (Set<std::string>::ConstIterator i(s->begin()), i_end(s->end()) ;
                     i != i_end ; ++i)
             {
-                std::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
+                std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
                                 .package(CategoryNamePart("group") + PackageNamePart(*i))));
                 specs->push_back(spec);
                 tree->root()->append(spec);

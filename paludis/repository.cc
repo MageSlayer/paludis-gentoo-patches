@@ -160,7 +160,7 @@ Repository::category_names_containing_package(const PackageNamePart & p) const
 {
     Context context("When finding category names containing package '" + stringify(p) + "':");
 
-    std::shared_ptr<CategoryNamePartSet> result(new CategoryNamePartSet);
+    std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
     std::shared_ptr<const CategoryNamePartSet> cats(category_names());
     for (CategoryNamePartSet::ConstIterator c(cats->begin()), c_end(cats->end()) ;
             c != c_end ; ++c)

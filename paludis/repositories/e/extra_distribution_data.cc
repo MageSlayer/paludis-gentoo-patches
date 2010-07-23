@@ -31,7 +31,7 @@ namespace
 {
     std::shared_ptr<const Set<std::string> > make_set(const std::string & s)
     {
-        std::shared_ptr<Set<std::string> > result(new Set<std::string>);
+        std::shared_ptr<Set<std::string> > result(std::make_shared<Set<std::string>>());
         tokenise_whitespace(s, result->inserter());
         return result;
     }

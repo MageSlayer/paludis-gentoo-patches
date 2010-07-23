@@ -100,7 +100,7 @@ int do_display_default_system_resolution(NoConfigEnvironment & env)
 
     if (env.default_destinations()->empty())
     {
-        std::shared_ptr<Repository> fake_destination(new FakeInstalledRepository(
+        std::shared_ptr<Repository> fake_destination(std::make_shared<FakeInstalledRepository>(
                     make_named_values<FakeInstalledRepositoryParams>(
                         n::environment() = &env,
                         n::name() = RepositoryName("fake_destination"),

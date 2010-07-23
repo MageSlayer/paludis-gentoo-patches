@@ -146,9 +146,9 @@ BrokenLinkageFinder::BrokenLinkageFinder(const Environment * env, const std::str
 
     Context ctx("When checking for broken linkage in '" + stringify(env->root()) + "':");
 
-    _imp->checkers.push_back(std::shared_ptr<LinkageChecker>(new ElfLinkageChecker(env->root(), library)));
+    _imp->checkers.push_back(std::shared_ptr<LinkageChecker>(std::make_shared<ElfLinkageChecker>(env->root(), library)));
     if (library.empty())
-        _imp->checkers.push_back(std::shared_ptr<LinkageChecker>(new LibtoolLinkageChecker(env->root())));
+        _imp->checkers.push_back(std::shared_ptr<LinkageChecker>(std::make_shared<LibtoolLinkageChecker>(env->root())));
 
     std::vector<FSEntry> search_dirs_nosyms, search_dirs_pruned;
     std::transform(_imp->config.begin_search_dirs(), _imp->config.end_search_dirs(),

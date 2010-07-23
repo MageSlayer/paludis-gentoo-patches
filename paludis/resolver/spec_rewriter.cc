@@ -49,7 +49,7 @@ typedef std::map<QualifiedPackageName, std::set<QualifiedPackageName> > Rewrites
 const std::shared_ptr<const DependencySpecTree>
 RewrittenSpec::as_spec_tree() const
 {
-    const std::shared_ptr<DependencySpecTree> result(new DependencySpecTree(std::make_shared<AllDepSpec>()));
+    const std::shared_ptr<DependencySpecTree> result(std::make_shared<DependencySpecTree>(std::make_shared<AllDepSpec>()));
 
     for (Sequence<PackageOrBlockDepSpec>::ConstIterator i(specs()->begin()), i_end(specs()->end()) ;
             i != i_end ; ++i)
@@ -100,7 +100,7 @@ SpecRewriter::rewrite_if_special(const PackageOrBlockDepSpec & s, const std::sha
         if (r == _imp->rewrites.end())
             return make_null_shared_ptr();
 
-        const std::shared_ptr<RewrittenSpec> result(new RewrittenSpec(make_named_values<RewrittenSpec>(
+        const std::shared_ptr<RewrittenSpec> result(std::make_shared<RewrittenSpec>(make_named_values<RewrittenSpec>(
                         n::specs() = std::make_shared<Sequence<PackageOrBlockDepSpec>>()
                         )));
 
@@ -120,7 +120,7 @@ SpecRewriter::rewrite_if_special(const PackageOrBlockDepSpec & s, const std::sha
         if (r == _imp->rewrites.end())
             return make_null_shared_ptr();
 
-        const std::shared_ptr<RewrittenSpec> result(new RewrittenSpec(make_named_values<RewrittenSpec>(
+        const std::shared_ptr<RewrittenSpec> result(std::make_shared<RewrittenSpec>(make_named_values<RewrittenSpec>(
                         n::specs() = std::make_shared<Sequence<PackageOrBlockDepSpec>>()
                         )));
 

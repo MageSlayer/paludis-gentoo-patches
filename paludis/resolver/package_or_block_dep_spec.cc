@@ -126,7 +126,7 @@ PackageOrBlockDepSpec::deserialise(Deserialisation & d, const std::shared_ptr<co
 
     std::shared_ptr<MetadataSectionKey> annotations;
 
-    std::shared_ptr<Map<std::string, std::string> > m(new Map<std::string, std::string>);
+    std::shared_ptr<Map<std::string, std::string> > m(std::make_shared<Map<std::string, std::string>>());
     for (int a(0), a_end(v.member<int>("annotations_count")) ;
             a != a_end ; ++a)
     {

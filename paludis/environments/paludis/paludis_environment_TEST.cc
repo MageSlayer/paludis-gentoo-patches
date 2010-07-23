@@ -61,7 +61,7 @@ namespace test_cases
             setenv("PALUDIS_HOME", stringify(FSEntry::cwd() / "paludis_environment_TEST_dir" / "home1").c_str(), 1);
             unsetenv("PALUDIS_SKIP_CONFIG");
 
-            std::shared_ptr<Environment> env(new PaludisEnvironment(""));
+            std::shared_ptr<Environment> env(std::make_shared<PaludisEnvironment>(""));
             const std::shared_ptr<const PackageID> one(*(*env)[selection::RequireExactlyOne(
                         generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
                                     env.get(), UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
@@ -94,7 +94,7 @@ namespace test_cases
             setenv("PALUDIS_HOME", stringify(FSEntry::cwd() / "paludis_environment_TEST_dir" / "home5").c_str(), 1);
             unsetenv("PALUDIS_SKIP_CONFIG");
 
-            std::shared_ptr<Environment> env(new PaludisEnvironment(""));
+            std::shared_ptr<Environment> env(std::make_shared<PaludisEnvironment>(""));
 
             const std::shared_ptr<const PackageID> id1(*(*env)[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
@@ -120,7 +120,7 @@ namespace test_cases
             setenv("PALUDIS_HOME", stringify(FSEntry::cwd() / "paludis_environment_TEST_dir" / "home2").c_str(), 1);
             unsetenv("PALUDIS_SKIP_CONFIG");
 
-            std::shared_ptr<Environment> env(new PaludisEnvironment(""));
+            std::shared_ptr<Environment> env(std::make_shared<PaludisEnvironment>(""));
 
             const std::shared_ptr<const PackageID> one(*(*env)[selection::RequireExactlyOne(
                         generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
@@ -153,7 +153,7 @@ namespace test_cases
             setenv("PALUDIS_HOME", stringify(FSEntry::cwd() / "paludis_environment_TEST_dir" / "home3").c_str(), 1);
             unsetenv("PALUDIS_SKIP_CONFIG");
 
-            std::shared_ptr<Environment> env(new PaludisEnvironment(""));
+            std::shared_ptr<Environment> env(std::make_shared<PaludisEnvironment>(""));
 
             const std::shared_ptr<const PackageID> one(*(*env)[selection::RequireExactlyOne(
                         generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
@@ -186,7 +186,7 @@ namespace test_cases
             setenv("PALUDIS_HOME", stringify(FSEntry::cwd() / "paludis_environment_TEST_dir" / "home4").c_str(), 1);
             unsetenv("PALUDIS_SKIP_CONFIG");
 
-            std::shared_ptr<Environment> env(new PaludisEnvironment(""));
+            std::shared_ptr<Environment> env(std::make_shared<PaludisEnvironment>(""));
 
             TEST_CHECK(bool(env->package_database()->fetch_repository(RepositoryName("first"))));
             TEST_CHECK(bool(env->package_database()->fetch_repository(RepositoryName("second"))));

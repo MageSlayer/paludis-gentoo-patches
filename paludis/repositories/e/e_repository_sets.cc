@@ -113,7 +113,7 @@ ERepositorySets::package_set(const SetName & ss) const
 
     if ((_imp->params.setsdir() / (stringify(s.first) + ".conf")).exists())
     {
-        std::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(ss, stringify(_imp->e_repository->name())));
+        std::shared_ptr<GeneralSetDepTag> tag(std::make_shared<GeneralSetDepTag>(ss, stringify(_imp->e_repository->name())));
 
         FSEntry ff(_imp->params.setsdir() / (stringify(s.first) + ".conf"));
         Context context("When loading package set '" + stringify(s.first) + "' from '" + stringify(ff) + "':");
@@ -138,7 +138,7 @@ ERepositorySets::sets_list() const
 {
     Context context("While generating the list of sets:");
 
-    std::shared_ptr<SetNameSet> result(new SetNameSet);
+    std::shared_ptr<SetNameSet> result(std::make_shared<SetNameSet>());
     result->insert(SetName("insecurity"));
     result->insert(SetName("security"));
     result->insert(SetName("system"));
@@ -255,7 +255,7 @@ ERepositorySets::security_set(bool insecurity) const
 {
     Context context("When building security or insecurity package set:");
 
-    std::shared_ptr<SetSpecTree> security_packages(new SetSpecTree(std::make_shared<AllDepSpec>()));
+    std::shared_ptr<SetSpecTree> security_packages(std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>()));
 
     if (!_imp->params.securitydir().is_directory_or_symlink_to_directory())
         return security_packages;
@@ -303,11 +303,11 @@ ERepositorySets::security_set(bool insecurity) const
 
                     if (glsa_tags.end() == glsa_tags.find(glsa->id()))
                         glsa_tags.insert(std::make_pair(glsa->id(), std::shared_ptr<GLSADepTag>(
-                                        new GLSADepTag(glsa->id(), glsa->title(), *f))));
+                                        std::make_shared<GLSADepTag>(glsa->id(), glsa->title(), *f))));
 
                     if (insecurity)
                     {
-                        std::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
+                        std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(
                                     make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
                                     .package((*c)->name())
                                     .version_requirement(make_named_values<VersionRequirement>(
@@ -341,7 +341,7 @@ ERepositorySets::security_set(bool insecurity) const
                                 continue;
                             }
 
-                            std::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
+                            std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
                                         .package((*r)->name())
                                         .version_requirement(make_named_values<VersionRequirement>(
                                                 n::version_operator() = vo_equal,

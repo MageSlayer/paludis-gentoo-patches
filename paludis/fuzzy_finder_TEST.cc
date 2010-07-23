@@ -42,7 +42,7 @@ namespace test_cases
         {
             TestEnvironment e;
 
-            const std::shared_ptr<FakeRepository> r1(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            const std::shared_ptr<FakeRepository> r1(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
                             n::environment() = &e,
                             n::name() = RepositoryName("r1")
                             )));
@@ -52,7 +52,7 @@ namespace test_cases
             r1->add_version("some-cat", "one-two-three", "1");
             e.package_database()->add_repository(1, r1);
 
-            const std::shared_ptr<FakeRepository> r2(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            const std::shared_ptr<FakeRepository> r2(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
                             n::environment() = &e,
                             n::name() = RepositoryName("r2")
                             )));
@@ -88,19 +88,19 @@ namespace test_cases
             TestEnvironment e;
             PackageDatabase & p(*e.package_database());
 
-            p.add_repository(1, std::shared_ptr<FakeRepository>(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            p.add_repository(1, std::shared_ptr<FakeRepository>(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
                                 n::environment() = &e,
                                 n::name() = RepositoryName("my-main-repository")))));
-            p.add_repository(1, std::shared_ptr<FakeRepository>(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            p.add_repository(1, std::shared_ptr<FakeRepository>(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
                                 n::environment() = &e,
                                 n::name() = RepositoryName("x-new-repository")))));
-            p.add_repository(1, std::shared_ptr<FakeRepository>(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            p.add_repository(1, std::shared_ptr<FakeRepository>(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
                                 n::environment() = &e,
                                 n::name() = RepositoryName("bar-overlay")))));
-            p.add_repository(1, std::shared_ptr<FakeRepository>(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            p.add_repository(1, std::shared_ptr<FakeRepository>(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
                                 n::environment() = &e,
                                 n::name() = RepositoryName("baz-overlay")))));
-            p.add_repository(1, std::shared_ptr<FakeRepository>(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            p.add_repository(1, std::shared_ptr<FakeRepository>(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
                                 n::environment() = &e,
                                 n::name() = RepositoryName("sunrise")))));
 

@@ -184,7 +184,7 @@ FixLinkageCommand::run(
         return EXIT_SUCCESS;
     }
 
-    std::shared_ptr<Sequence<std::pair<std::string, std::string> > > targets(new Sequence<std::pair<std::string, std::string> >);
+    std::shared_ptr<Sequence<std::pair<std::string, std::string> > > targets(std::make_shared<Sequence<std::pair<std::string, std::string> >>());
 
     for (BrokenLinkageFinder::BrokenPackageConstIterator pkg_it(finder->begin_broken_packages()),
              pkg_it_end(finder->end_broken_packages()); pkg_it_end != pkg_it; ++pkg_it)

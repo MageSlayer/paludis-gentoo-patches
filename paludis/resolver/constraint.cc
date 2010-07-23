@@ -126,7 +126,7 @@ Constraints::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "Constraints");
     Deserialisator vv(*v.find_remove_member("items"), "c");
-    std::shared_ptr<Constraints> result(new Constraints);
+    std::shared_ptr<Constraints> result(std::make_shared<Constraints>());
     for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
         result->add(vv.member<std::shared_ptr<Constraint> >(stringify(n)));
     return result;

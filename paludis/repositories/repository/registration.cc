@@ -48,7 +48,7 @@ namespace paludis
     void register_repositories<repository_groups::repository>(const repository_groups::repository * const,
             RepositoryFactory * const factory)
     {
-        std::shared_ptr<Set<std::string> > repository_formats(new Set<std::string>);
+        std::shared_ptr<Set<std::string> > repository_formats(std::make_shared<Set<std::string>>());
         repository_formats->insert("repository");
 
         factory->add_repository_format(repository_formats,

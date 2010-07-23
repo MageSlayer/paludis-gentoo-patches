@@ -138,7 +138,7 @@ TeeOutputManager::nothing_more_to_come()
 const std::shared_ptr<const Set<std::string> >
 TeeOutputManager::factory_managers()
 {
-    std::shared_ptr<Set<std::string> > result(new Set<std::string>);
+    std::shared_ptr<Set<std::string> > result(std::make_shared<Set<std::string>>());
     result->insert("tee");
     return result;
 }
@@ -149,8 +149,8 @@ TeeOutputManager::factory_create(
         const OutputManagerFactory::CreateChildFunction & create_child,
         const OutputManagerFactory::ReplaceVarsFunc &)
 {
-    std::shared_ptr<OutputManagerSequence> children(new OutputManagerSequence);
-    std::shared_ptr<OutputManagerSequence> messages_children(new OutputManagerSequence);
+    std::shared_ptr<OutputManagerSequence> children(std::make_shared<OutputManagerSequence>());
+    std::shared_ptr<OutputManagerSequence> messages_children(std::make_shared<OutputManagerSequence>());
 
     std::vector<std::string> children_keys;
     tokenise_whitespace(key_func("children"), std::back_inserter(children_keys));

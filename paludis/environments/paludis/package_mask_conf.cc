@@ -86,7 +86,7 @@ PackageMaskConf::add(const FSEntry & filename)
     {
         try
         {
-            _imp->masks.push_back(std::shared_ptr<PackageDepSpec>(new PackageDepSpec(parse_user_package_dep_spec(
+            _imp->masks.push_back(std::shared_ptr<PackageDepSpec>(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec(
                                 *line, _imp->env,
                                 UserPackageDepSpecOptions() + updso_allow_wildcards + updso_no_disambiguation + updso_throw_if_set))));
         }

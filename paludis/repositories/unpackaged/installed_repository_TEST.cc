@@ -102,7 +102,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::shared_ptr<Repository> repo(new InstalledUnpackagedRepository(
+            std::shared_ptr<Repository> repo(std::make_shared<InstalledUnpackagedRepository>(
                         RepositoryName("installed-unpackaged"),
                         make_named_values<unpackaged_repositories::InstalledUnpackagedRepositoryParams>(
                             n::environment() = &env,
@@ -125,7 +125,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::shared_ptr<Repository> repo(new InstalledUnpackagedRepository(
+            std::shared_ptr<Repository> repo(std::make_shared<InstalledUnpackagedRepository>(
                         RepositoryName("installed-unpackaged"),
                         make_named_values<unpackaged_repositories::InstalledUnpackagedRepositoryParams>(
                             n::environment() = &env,
@@ -179,7 +179,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::shared_ptr<Repository> repo(new InstalledUnpackagedRepository(
+            std::shared_ptr<Repository> repo(std::make_shared<InstalledUnpackagedRepository>(
                         RepositoryName("installed-unpackaged"),
                         make_named_values<unpackaged_repositories::InstalledUnpackagedRepositoryParams>(
                             n::environment() = &env,
@@ -209,7 +209,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::shared_ptr<Repository> repo(new InstalledUnpackagedRepository(
+            std::shared_ptr<Repository> repo(std::make_shared<InstalledUnpackagedRepository>(
                         RepositoryName("installed-unpackaged"),
                         make_named_values<unpackaged_repositories::InstalledUnpackagedRepositoryParams>(
                             n::environment() = &env,
@@ -244,7 +244,7 @@ namespace test_cases
         {
             TestEnvironment env;
 
-            std::shared_ptr<Repository> repo(new InstalledUnpackagedRepository(
+            std::shared_ptr<Repository> repo(std::make_shared<InstalledUnpackagedRepository>(
                         RepositoryName("installed-unpackaged"),
                         make_named_values<unpackaged_repositories::InstalledUnpackagedRepositoryParams>(
                             n::environment() = &env,
@@ -300,7 +300,7 @@ namespace test_cases
         {
             TestEnvironment env;
 
-            std::shared_ptr<Repository> repo(new InstalledUnpackagedRepository(
+            std::shared_ptr<Repository> repo(std::make_shared<InstalledUnpackagedRepository>(
                         RepositoryName("installed-unpackaged"),
                         make_named_values<unpackaged_repositories::InstalledUnpackagedRepositoryParams>(
                             n::environment() = &env,
@@ -355,7 +355,7 @@ namespace test_cases
                 TestMessageSuffix suffix("initial", true);
 
                 TestEnvironment env;
-                std::shared_ptr<Repository> repo(new InstalledUnpackagedRepository(
+                std::shared_ptr<Repository> repo(std::make_shared<InstalledUnpackagedRepository>(
                             RepositoryName("installed-unpackaged"),
                             make_named_values<unpackaged_repositories::InstalledUnpackagedRepositoryParams>(
                                 n::environment() = &env,
@@ -374,7 +374,7 @@ namespace test_cases
                 TestMessageSuffix suffix("install 4a", true);
 
                 TestEnvironment env;
-                std::shared_ptr<Repository> repo(new InstalledUnpackagedRepository(
+                std::shared_ptr<Repository> repo(std::make_shared<InstalledUnpackagedRepository>(
                             RepositoryName("installed-unpackaged"),
                             make_named_values<unpackaged_repositories::InstalledUnpackagedRepositoryParams>(
                                 n::environment() = &env,
@@ -383,7 +383,7 @@ namespace test_cases
                             )));
                 env.package_database()->add_repository(0, repo);
 
-                std::shared_ptr<Repository> source_repo(new UnpackagedRepository(
+                std::shared_ptr<Repository> source_repo(std::make_shared<UnpackagedRepository>(
                             RepositoryName("unpackaged"),
                             make_named_values<unpackaged_repositories::UnpackagedRepositoryParams>(
                                 n::build_dependencies() = "",
@@ -432,7 +432,7 @@ namespace test_cases
                 TestMessageSuffix suffix("install 4b1", true);
 
                 TestEnvironment env;
-                std::shared_ptr<Repository> repo(new InstalledUnpackagedRepository(
+                std::shared_ptr<Repository> repo(std::make_shared<InstalledUnpackagedRepository>(
                             RepositoryName("installed-unpackaged"),
                             make_named_values<unpackaged_repositories::InstalledUnpackagedRepositoryParams>(
                                 n::environment() = &env,
@@ -441,7 +441,7 @@ namespace test_cases
                             )));
                 env.package_database()->add_repository(0, repo);
 
-                std::shared_ptr<Repository> source_repo(new UnpackagedRepository(
+                std::shared_ptr<Repository> source_repo(std::make_shared<UnpackagedRepository>(
                             RepositoryName("unpackaged"),
                             make_named_values<unpackaged_repositories::UnpackagedRepositoryParams>(
                                 n::build_dependencies() = "",
@@ -492,7 +492,7 @@ namespace test_cases
                 TestMessageSuffix suffix("install 4b2", true);
 
                 TestEnvironment env;
-                std::shared_ptr<Repository> repo(new InstalledUnpackagedRepository(
+                std::shared_ptr<Repository> repo(std::make_shared<InstalledUnpackagedRepository>(
                             RepositoryName("installed-unpackaged"),
                             make_named_values<unpackaged_repositories::InstalledUnpackagedRepositoryParams>(
                                 n::environment() = &env,
@@ -501,7 +501,7 @@ namespace test_cases
                             )));
                 env.package_database()->add_repository(0, repo);
 
-                std::shared_ptr<Repository> source_repo(new UnpackagedRepository(
+                std::shared_ptr<Repository> source_repo(std::make_shared<UnpackagedRepository>(
                             RepositoryName("unpackaged"),
                             make_named_values<unpackaged_repositories::UnpackagedRepositoryParams>(
                                 n::build_dependencies() = "",
@@ -552,7 +552,7 @@ namespace test_cases
                 TestMessageSuffix suffix("uninstall 4a", true);
 
                 TestEnvironment env;
-                std::shared_ptr<Repository> repo(new InstalledUnpackagedRepository(
+                std::shared_ptr<Repository> repo(std::make_shared<InstalledUnpackagedRepository>(
                             RepositoryName("installed-unpackaged"),
                             make_named_values<unpackaged_repositories::InstalledUnpackagedRepositoryParams>(
                                 n::environment() = &env,
@@ -598,7 +598,7 @@ namespace test_cases
                 TestMessageSuffix suffix("uninstall 4b", true);
 
                 TestEnvironment env;
-                std::shared_ptr<Repository> repo(new InstalledUnpackagedRepository(
+                std::shared_ptr<Repository> repo(std::make_shared<InstalledUnpackagedRepository>(
                             RepositoryName("installed-unpackaged"),
                             make_named_values<unpackaged_repositories::InstalledUnpackagedRepositoryParams>(
                                 n::environment() = &env,

@@ -47,7 +47,7 @@ LeafNode<Tree_, Item_>::spec() const
 
 template <typename Tree_>
 BasicInnerNode<Tree_>::BasicInnerNode() :
-    _child_list(new ChildList)
+    _child_list(std::make_shared<ChildList>())
 {
 }
 

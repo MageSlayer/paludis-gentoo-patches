@@ -54,13 +54,13 @@ namespace test_cases
         GeneratorTestCaseBase(const std::string & s, const Generator & f) :
             TestCase("generator " + s + " with " + stringify(f)),
             generator(f),
-            repo1(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            repo1(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("repo1")))),
-            repo2(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            repo2(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("repo2")))),
-            inst_repo1(new FakeInstalledRepository(
+            inst_repo1(std::make_shared<FakeInstalledRepository>(
                         make_named_values<FakeInstalledRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("inst_repo1"),

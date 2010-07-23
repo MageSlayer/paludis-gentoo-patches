@@ -149,7 +149,7 @@ namespace
 
     std::shared_ptr<Set<std::string> > make_set(const std::string & s)
     {
-        std::shared_ptr<Set<std::string> > result(new Set<std::string>);
+        std::shared_ptr<Set<std::string> > result(std::make_shared<Set<std::string>>());
         tokenise_whitespace(s, result->inserter());
         return result;
     }
@@ -357,7 +357,7 @@ namespace paludis
                         std::bind(&predefined, stringify(d->dirname()), std::placeholders::_1, std::placeholders::_2),
                         &KeyValueConfigFile::no_transformation);
 
-                std::shared_ptr<EAPI> eapi(new EAPI(make_named_values<EAPI>(
+                std::shared_ptr<EAPI> eapi(std::make_shared<EAPI>(make_named_values<EAPI>(
                                 n::exported_name() = check_get(k, "exported_name"),
                                 n::name() = strip_trailing_string(d->basename(), ".conf"),
                                 n::supported() = make_supported_eapi(k)

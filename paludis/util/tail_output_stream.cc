@@ -94,7 +94,7 @@ TailOutputStreamBuf::_append(const std::string & s)
 const std::shared_ptr<const Sequence<std::string> >
 TailOutputStreamBuf::tail(const bool clear)
 {
-    std::shared_ptr<Sequence<std::string> > result(new Sequence<std::string>);
+    std::shared_ptr<Sequence<std::string> > result(std::make_shared<Sequence<std::string>>());
     Lock lock(_imp->mutex);
     for (std::list<std::string>::const_iterator i(_imp->tail.begin()), i_end(_imp->tail.end()), i_last(previous(_imp->tail.end())) ;
             i != i_end ; ++i)

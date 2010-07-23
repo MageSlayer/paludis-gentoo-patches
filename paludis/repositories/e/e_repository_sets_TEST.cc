@@ -56,7 +56,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "e_repository_sets_TEST_dir/repo1"));
@@ -83,14 +83,14 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "e_repository_sets_TEST_dir/repo1"));
             keys->insert("profiles", "e_repository_sets_TEST_dir/repo1/profiles/profile");
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            std::shared_ptr<FakeInstalledRepository> installed(new FakeInstalledRepository(
+            std::shared_ptr<FakeInstalledRepository> installed(std::make_shared<FakeInstalledRepository>(
                         make_named_values<FakeInstalledRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("installed"),
@@ -123,7 +123,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "e_repository_sets_TEST_dir/repo1"));
@@ -154,8 +154,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::shared_ptr<Map<std::string, std::string> > keys(
-                    new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string> >());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "e_repository_sets_TEST_dir/repo1"));
@@ -163,7 +162,7 @@ namespace test_cases
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
-            std::shared_ptr<FakeInstalledRepository> installed(new FakeInstalledRepository(
+            std::shared_ptr<FakeInstalledRepository> installed(std::make_shared<FakeInstalledRepository>(
                         make_named_values<FakeInstalledRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("installed"),

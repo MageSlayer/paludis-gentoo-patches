@@ -72,7 +72,7 @@ namespace paludis
         LabelsStack labels;
 
         Imp() :
-            default_labels(new DependenciesLabelSequence)
+            default_labels(std::make_shared<DependenciesLabelSequence>())
         {
             default_labels->push_back(std::make_shared<DependenciesBuildLabel>("build", return_literal_function(true)));
             default_labels->push_back(std::make_shared<DependenciesRunLabel>("run", return_literal_function(true)));
@@ -133,7 +133,7 @@ DependenciesRewriter::visit(const DependencySpecTree::NodeType<DependenciesLabel
     _imp->rdepend.append(" " + stringify(*node.spec()) + get_annotations(*node.spec()));
     _imp->pdepend.append(" " + stringify(*node.spec()) + get_annotations(*node.spec()));
 
-    std::shared_ptr<DependenciesLabelSequence> labels(new DependenciesLabelSequence);
+    std::shared_ptr<DependenciesLabelSequence> labels(std::make_shared<DependenciesLabelSequence>());
     std::copy(node.spec()->begin(), node.spec()->end(), labels->back_inserter());
     *_imp->labels.begin() = labels;
 }

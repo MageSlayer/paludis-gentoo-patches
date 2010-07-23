@@ -320,7 +320,7 @@ NAG::sorted_strongly_connected_components(
 
     /* topological sort with consistent ordering (mostly to make test cases
      * easier). we know there're no cycles. */
-    std::shared_ptr<SortedStronglyConnectedComponents> result(new SortedStronglyConnectedComponents);
+    std::shared_ptr<SortedStronglyConnectedComponents> result(std::make_shared<SortedStronglyConnectedComponents>());
 
     typedef std::set<std::pair<int, NAGIndex> > OrderableNow;
     OrderableNow orderable_now;
@@ -446,7 +446,7 @@ NAG::deserialise(Deserialisation & d)
     Context context("When deserialising NAG:");
 
     Deserialisator v(d, "NAG");
-    std::shared_ptr<NAG> result(new NAG);
+    std::shared_ptr<NAG> result(std::make_shared<NAG>());
 
     {
         Deserialisator vv(*v.find_remove_member("nodes"), "c");

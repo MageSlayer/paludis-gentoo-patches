@@ -61,7 +61,7 @@ namespace
         const std::shared_ptr<const PackageID> id;
 
         Fixer(const Environment * const e, const EAPI & a, const std::shared_ptr<const PackageID> & i) :
-            result(new DependencySpecTree(std::make_shared<AllDepSpec>())),
+            result(std::make_shared<DependencySpecTree>(std::make_shared<AllDepSpec>())),
             env(e),
             eapi(a),
             id(i)

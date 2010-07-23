@@ -824,7 +824,7 @@ EKeywordsKey::pretty_print_flat(const Formatter<KeywordName> & f) const
         if (! result.empty())
             result.append(" ");
 
-        std::shared_ptr<KeywordNameSet> k(new KeywordNameSet);
+        std::shared_ptr<KeywordNameSet> k(std::make_shared<KeywordNameSet>());
         k->insert(*i);
         if (_imp->env->accept_keywords(k, *_imp->id))
             result.append(f.format(*i, format::Accepted()));
@@ -1010,7 +1010,7 @@ EContentsKey::value() const
 
         if ("obj" == tokens.at(0))
         {
-            std::shared_ptr<ContentsEntry> e(new ContentsFileEntry(tokens.at(1)));
+            std::shared_ptr<ContentsEntry> e(std::make_shared<ContentsFileEntry>(tokens.at(1)));
             e->add_metadata_key(std::make_shared<LiteralMetadataTimeKey>("mtime", "mtime", mkt_normal,
                             Timestamp(destringify<time_t>(tokens.at(3)), 0)));
             e->add_metadata_key(std::make_shared<LiteralMetadataValueKey<std::string>>("md5", "md5", mkt_normal, tokens.at(2)));
@@ -1018,18 +1018,18 @@ EContentsKey::value() const
         }
         else if ("dir" == tokens.at(0))
         {
-            std::shared_ptr<ContentsEntry> e(new ContentsDirEntry(tokens.at(1)));
+            std::shared_ptr<ContentsEntry> e(std::make_shared<ContentsDirEntry>(tokens.at(1)));
             _imp->value->add(e);
         }
         else if ("sym" == tokens.at(0))
         {
-            std::shared_ptr<ContentsEntry> e(new ContentsSymEntry(tokens.at(1), tokens.at(2)));
+            std::shared_ptr<ContentsEntry> e(std::make_shared<ContentsSymEntry>(tokens.at(1), tokens.at(2)));
             e->add_metadata_key(std::make_shared<LiteralMetadataTimeKey>("mtime", "mtime", mkt_normal,
                             Timestamp(destringify<time_t>(tokens.at(3)), 0)));
             _imp->value->add(e);
         }
         else if ("misc" == tokens.at(0) || "fif" == tokens.at(0) || "dev" == tokens.at(0))
-            _imp->value->add(std::shared_ptr<ContentsEntry>(new ContentsOtherEntry(tokens.at(1))));
+            _imp->value->add(std::shared_ptr<ContentsEntry>(std::make_shared<ContentsOtherEntry>(tokens.at(1))));
         else
             Log::get_instance()->message("e.contents.unknown", ll_warning, lc_context) << "CONTENTS has unsupported entry type '" <<
                 tokens.at(0) << "', skipping";

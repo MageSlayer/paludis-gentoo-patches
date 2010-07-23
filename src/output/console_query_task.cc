@@ -59,7 +59,7 @@ namespace paludis
 
         Imp(const Environment * const e) :
             env(e),
-            masks_to_explain(new Map<char, std::string>)
+            masks_to_explain(std::make_shared<Map<char, std::string>>())
         {
         }
     };

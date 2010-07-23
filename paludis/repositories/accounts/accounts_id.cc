@@ -84,7 +84,7 @@ namespace paludis
             name(q),
             version("0", VersionSpecOptions()),
             repository(r),
-            fs_location_key(new LiteralMetadataValueKey<FSEntry>("location", "Location", mkt_internal, l)),
+            fs_location_key(std::make_shared<LiteralMetadataValueKey<FSEntry>>("location", "Location", mkt_internal, l)),
             from_repositories_key(f),
             mask(m ? std::make_shared<AccountsInstalledMask>() : make_null_shared_ptr()),
             is_user(u),
@@ -180,11 +180,11 @@ AccountsID::_need_file_keys() const
             _imp->home_key = std::make_shared<LiteralMetadataValueKey<std::string>>("home", "Home Directory",
                         mkt_normal, k.get("home"));
 
-        std::shared_ptr<Set<std::string> > all_groups_s(new Set<std::string>);
+        std::shared_ptr<Set<std::string> > all_groups_s(std::make_shared<Set<std::string>>());
 
         if (! k.get("extra_groups").empty())
         {
-            std::shared_ptr<Set<std::string> > groups_s(new Set<std::string>);
+            std::shared_ptr<Set<std::string> > groups_s(std::make_shared<Set<std::string>>());
             tokenise_whitespace(k.get("extra_groups"), groups_s->inserter());
             std::copy(groups_s->begin(), groups_s->end(), all_groups_s->inserter());
             _imp->extra_groups_key = std::make_shared<LiteralMetadataStringSetKey>("extra_groups", "Extra Groups",

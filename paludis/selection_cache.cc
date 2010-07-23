@@ -49,7 +49,7 @@ namespace paludis
 
         Imp(Environment * const e) :
             environment(e),
-            selection_cache(new SelectionCache)
+            selection_cache(std::make_shared<SelectionCache>())
         {
         }
     };
@@ -78,7 +78,7 @@ SelectionCache::perform_select(const Environment * const env, const Selection & 
             i = _imp->cache.insert(std::make_pair(ss, s.perform_select(env))).first;
     }
 
-    std::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
+    std::shared_ptr<PackageIDSequence> result(std::make_shared<PackageIDSequence>());
     std::copy(i->second->begin(), i->second->end(), result->back_inserter());
     return result;
 }

@@ -432,7 +432,7 @@ Reason::deserialise(Deserialisation & d)
     {
         Deserialisator v(d, "WasUsedByReason");
         Deserialisator vv(*v.find_remove_member("ids_and_resolvents_being_removed"), "c");
-        std::shared_ptr<ChangeByResolventSequence> ids_and_resolvents_being_removed(new ChangeByResolventSequence);
+        std::shared_ptr<ChangeByResolventSequence> ids_and_resolvents_being_removed(std::make_shared<ChangeByResolventSequence>());
         for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
             ids_and_resolvents_being_removed->push_back(vv.member<ChangeByResolvent>(stringify(n)));
         return std::make_shared<WasUsedByReason>(ids_and_resolvents_being_removed);

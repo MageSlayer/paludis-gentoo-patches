@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -187,7 +187,7 @@ main(int argc, char *argv[])
                     CommandLine::get_instance()->a_run_dependency.begin_args(),
                     CommandLine::get_instance()->a_run_dependency.end_args(), ", ");
 
-        std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+        std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
         keys->insert("location", stringify(
                     CommandLine::get_instance()->a_location.specified() ?
                     FSEntry(CommandLine::get_instance()->a_location.argument()) :

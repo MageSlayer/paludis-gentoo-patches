@@ -53,7 +53,7 @@ namespace paludis
     void register_repositories<repository_groups::e>(const repository_groups::e * const,
             RepositoryFactory * const factory)
     {
-        std::shared_ptr<Set<std::string> > ebuild_formats(new Set<std::string>);
+        std::shared_ptr<Set<std::string> > ebuild_formats(std::make_shared<Set<std::string>>());
         ebuild_formats->insert("e");
         ebuild_formats->insert("ebuild");
         ebuild_formats->insert("exheres");
@@ -66,7 +66,7 @@ namespace paludis
                 &ERepository::repository_factory_dependencies
                 );
 
-        std::shared_ptr<Set<std::string> > vdb_formats(new Set<std::string>);
+        std::shared_ptr<Set<std::string> > vdb_formats(std::make_shared<Set<std::string>>());
         vdb_formats->insert("vdb");
 
         factory->add_repository_format(
@@ -77,7 +77,7 @@ namespace paludis
                 &VDBRepository::repository_factory_dependencies
                 );
 
-        std::shared_ptr<Set<std::string> > exndbam_formats(new Set<std::string>);
+        std::shared_ptr<Set<std::string> > exndbam_formats(std::make_shared<Set<std::string>>());
         exndbam_formats->insert("exndbam");
 
         factory->add_repository_format(

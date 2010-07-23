@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -29,7 +29,7 @@ namespace
     std::shared_ptr<Environment>
     make_paludis_environment(const std::string & s)
     {
-        return std::shared_ptr<Environment>(new PaludisEnvironment(s));
+        return std::shared_ptr<Environment>(std::make_shared<PaludisEnvironment>(s));
     }
 }
 
@@ -44,7 +44,7 @@ namespace paludis
     void register_environment<environment_groups::paludis>(const environment_groups::paludis * const,
             EnvironmentFactory * const factory)
     {
-        std::shared_ptr<Set<std::string> > paludis_formats(new Set<std::string>);
+        std::shared_ptr<Set<std::string> > paludis_formats(std::make_shared<Set<std::string>>());
         paludis_formats->insert("paludis");
         factory->add_environment_format(paludis_formats, &make_paludis_environment);
     }

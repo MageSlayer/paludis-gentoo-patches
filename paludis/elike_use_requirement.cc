@@ -692,7 +692,7 @@ paludis::parse_elike_use_requirement(const std::string & s,
 {
     Context context("When parsing use requirement '" + s + "':");
 
-    std::shared_ptr<UseRequirements> result(new UseRequirements("[" + s + "]"));
+    std::shared_ptr<UseRequirements> result(std::make_shared<UseRequirements>("[" + s + "]"));
     std::string::size_type pos(0);
     for (;;)
     {

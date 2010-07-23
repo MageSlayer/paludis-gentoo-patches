@@ -153,7 +153,7 @@ namespace
             cout << std::string(stringify(prev_x).length() + stringify(y).length() + 4, '\010');
         cout << x << " of " << y << std::flush;
 
-        std::shared_ptr<Sequence<std::string> > args(new Sequence<std::string>);
+        std::shared_ptr<Sequence<std::string> > args(std::make_shared<Sequence<std::string>>());
 
         args->push_back("pretend");
         args->push_back("--hooks");
@@ -746,7 +746,7 @@ namespace
 
                 case x1_main:
                     {
-                        const std::shared_ptr<JobActiveState> active_state(new JobActiveState);
+                        const std::shared_ptr<JobActiveState> active_state(std::make_shared<JobActiveState>());
                         {
                             Lock lock(job_mutex);
                             install_item.set_state(active_state);
@@ -784,7 +784,7 @@ namespace
 
         int visit(UninstallJob & uninstall_item)
         {
-            const std::shared_ptr<PackageIDSequence> ids(new PackageIDSequence);
+            const std::shared_ptr<PackageIDSequence> ids(std::make_shared<PackageIDSequence>());
             for (Sequence<PackageDepSpec>::ConstIterator i(uninstall_item.ids_to_remove_specs()->begin()),
                     i_end(uninstall_item.ids_to_remove_specs()->end()) ;
                     i != i_end ; ++i)
@@ -805,7 +805,7 @@ namespace
 
                 case x1_main:
                     {
-                        const std::shared_ptr<JobActiveState> active_state(new JobActiveState);
+                        const std::shared_ptr<JobActiveState> active_state(std::make_shared<JobActiveState>());
                         {
                             Lock lock(job_mutex);
                             uninstall_item.set_state(active_state);
@@ -850,7 +850,7 @@ namespace
 
                 case x1_main:
                     {
-                        const std::shared_ptr<JobActiveState> active_state(new JobActiveState);
+                        const std::shared_ptr<JobActiveState> active_state(std::make_shared<JobActiveState>());
                         {
                             Lock lock(job_mutex);
                             fetch_item.set_state(active_state);
@@ -1564,10 +1564,10 @@ namespace
         }
         else
         {
-            std::shared_ptr<Sequence<std::string> > targets(new Sequence<std::string>);
+            std::shared_ptr<Sequence<std::string> > targets(std::make_shared<Sequence<std::string>>());
             std::copy(cmdline.begin_parameters(), cmdline.end_parameters(), targets->back_inserter());
 
-            std::shared_ptr<Sequence<std::string> > world_specs(new Sequence<std::string>);
+            std::shared_ptr<Sequence<std::string> > world_specs(std::make_shared<Sequence<std::string>>());
             std::copy(cmdline.a_world_specs.begin_args(), cmdline.a_world_specs.end_args(), world_specs->back_inserter());
 
             ResumeData resume_data(make_named_values<ResumeData>(

@@ -47,7 +47,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::shared_ptr<AccountsRepository> repo(new AccountsRepository(
+            std::shared_ptr<AccountsRepository> repo(std::make_shared<AccountsRepository>(
                         make_named_values<AccountsRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("accounts")

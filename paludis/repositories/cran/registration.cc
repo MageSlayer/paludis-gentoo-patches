@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -47,7 +47,7 @@ namespace paludis
     template <>
     void register_repositories<repository_groups::cran>(const repository_groups::cran * const, RepositoryFactory * const factory)
     {
-        std::shared_ptr<Set<std::string> > cran_formats(new Set<std::string>);
+        std::shared_ptr<Set<std::string> > cran_formats(std::make_shared<Set<std::string>>());
         cran_formats->insert("cran");
 
         factory->add_repository_format(
@@ -58,7 +58,7 @@ namespace paludis
                 &CRANRepository::repository_factory_dependencies
                 );
 
-        std::shared_ptr<Set<std::string> > installed_cran_formats(new Set<std::string>);
+        std::shared_ptr<Set<std::string> > installed_cran_formats(std::make_shared<Set<std::string>>());
         installed_cran_formats->insert("installed_cran");
         installed_cran_formats->insert("installed-cran");
 

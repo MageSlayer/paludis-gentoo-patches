@@ -71,7 +71,7 @@ do_fix_linkage(const std::shared_ptr<Environment> & env)
             std::cout << std::endl << colour(cl_heading, "Packages that depend on " +  library + ":") << std::endl;
     }
 
-    std::shared_ptr<Sequence<std::string> > targets(new Sequence<std::string>);
+    std::shared_ptr<Sequence<std::string> > targets(std::make_shared<Sequence<std::string>>());
     for (BrokenLinkageFinder::BrokenPackageConstIterator pkg_it(finder.begin_broken_packages()),
              pkg_it_end(finder.end_broken_packages()); pkg_it_end != pkg_it; ++pkg_it)
     {

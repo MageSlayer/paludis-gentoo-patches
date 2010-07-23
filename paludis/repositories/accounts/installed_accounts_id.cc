@@ -72,7 +72,7 @@ namespace paludis
             name(q),
             version("0", VersionSpecOptions()),
             repository(r),
-            behaviours_key(new LiteralMetadataStringSetKey("behaviours", "Behaviours", mkt_internal,
+            behaviours_key(std::make_shared<LiteralMetadataStringSetKey>("behaviours", "Behaviours", mkt_internal,
                         behaviours_set)),
             is_user(u)
         {
@@ -84,7 +84,7 @@ namespace
 {
     std::shared_ptr<Set<std::string> > make_behaviours()
     {
-        std::shared_ptr<Set<std::string> > result(new Set<std::string>);
+        std::shared_ptr<Set<std::string> > result(std::make_shared<Set<std::string>>());
         result->insert("transient");
         result->insert("used");
         return result;
@@ -112,7 +112,7 @@ InstalledAccountsID::need_keys_added() const
 
     if (_imp->is_user && ! _imp->dependencies_key)
     {
-        std::shared_ptr<Set<std::string> > groups(new Set<std::string>);
+        std::shared_ptr<Set<std::string> > groups(std::make_shared<Set<std::string>>());
 
         /* depend upon our primary group */
         {

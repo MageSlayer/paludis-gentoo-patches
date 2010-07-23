@@ -47,7 +47,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::shared_ptr<UnwrittenRepository> repo(new UnwrittenRepository(
+            std::shared_ptr<UnwrittenRepository> repo(std::make_shared<UnwrittenRepository>(
                         make_named_values<UnwrittenRepositoryParams>(
                             n::environment() = &env,
                             n::location() = FSEntry::cwd() / "unwritten_repository_TEST_dir" / "repo1",
@@ -67,7 +67,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::shared_ptr<UnwrittenRepository> repo(new UnwrittenRepository(
+            std::shared_ptr<UnwrittenRepository> repo(std::make_shared<UnwrittenRepository>(
                         make_named_values<UnwrittenRepositoryParams>(
                             n::environment() = &env,
                             n::location() = FSEntry::cwd() / "unwritten_repository_TEST_dir" / "repo2",

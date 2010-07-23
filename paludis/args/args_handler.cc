@@ -67,7 +67,7 @@ namespace paludis
         std::shared_ptr<ArgsSection> main_options_section;
 
         Imp() :
-            separate_after_dashes_args(new Sequence<std::string>)
+            separate_after_dashes_args(std::make_shared<Sequence<std::string>>())
         {
         }
     };
@@ -292,7 +292,7 @@ ArgsHandler::run(
         const std::string & env_prefix,
         const ArgsHandlerOptions & options)
 {
-    std::shared_ptr<Sequence<std::string> > s(new Sequence<std::string>);
+    std::shared_ptr<Sequence<std::string> > s(std::make_shared<Sequence<std::string>>());
     std::copy(&argv[1], &argv[argc], create_inserter<std::string>(s->back_inserter()));
     run(s, client, env_var, env_prefix, options);
 }

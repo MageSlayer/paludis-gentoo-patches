@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -48,7 +48,7 @@ namespace paludis
     void register_repositories<repository_groups::virtuals>(const repository_groups::virtuals * const,
             RepositoryFactory * const factory)
     {
-        std::shared_ptr<Set<std::string> > virtuals_formats(new Set<std::string>);
+        std::shared_ptr<Set<std::string> > virtuals_formats(std::make_shared<Set<std::string>>());
         virtuals_formats->insert("virtuals");
 
         factory->add_repository_format(
@@ -59,7 +59,7 @@ namespace paludis
                 &VirtualsRepository::repository_factory_dependencies
                 );
 
-        std::shared_ptr<Set<std::string> > installed_virtuals_formats(new Set<std::string>);
+        std::shared_ptr<Set<std::string> > installed_virtuals_formats(std::make_shared<Set<std::string>>());
         installed_virtuals_formats->insert("installed_virtuals");
         installed_virtuals_formats->insert("installed-virtuals");
 

@@ -109,7 +109,7 @@ ResolutionsByResolvent::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "ResolutionsByResolvent");
     Deserialisator vv(*v.find_remove_member("items"), "c");
-    std::shared_ptr<ResolutionsByResolvent> result(new ResolutionsByResolvent);
+    std::shared_ptr<ResolutionsByResolvent> result(std::make_shared<ResolutionsByResolvent>());
     for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
         result->insert_new(vv.member<std::shared_ptr<Resolution> >(stringify(n)));
     return result;

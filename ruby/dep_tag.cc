@@ -85,7 +85,7 @@ namespace
         try
         {
             ptr = new std::shared_ptr<const DepTag>(
-                    new DependencyDepTag(value_to_package_id(argv[0]),
+                    std::make_shared<DependencyDepTag>(value_to_package_id(argv[0]),
                         *value_to_package_dep_spec(argv[1])));
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::shared_ptr<const DepTag> >::free, ptr));
             rb_obj_call_init(tdata, argc, argv);
@@ -135,7 +135,7 @@ namespace
         std::shared_ptr<const DepTag> * ptr(0);
         try
         {
-            ptr = new std::shared_ptr<const DepTag>(new GLSADepTag(StringValuePtr(argv[0]), StringValuePtr(argv[1]),
+            ptr = new std::shared_ptr<const DepTag>(std::make_shared<GLSADepTag>(StringValuePtr(argv[0]), StringValuePtr(argv[1]),
                         FSEntry(StringValuePtr(argv[2]))));
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::shared_ptr<const DepTag> >::free, ptr));
             rb_obj_call_init(tdata, argc, argv);
@@ -157,7 +157,7 @@ namespace
         std::shared_ptr<const DepTag> * ptr(0);
         try
         {
-            ptr = new std::shared_ptr<const DepTag>(new GeneralSetDepTag(SetName(StringValuePtr(argv[0])), StringValuePtr(argv[1])));
+            ptr = new std::shared_ptr<const DepTag>(std::make_shared<GeneralSetDepTag>(SetName(StringValuePtr(argv[0])), StringValuePtr(argv[1])));
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::shared_ptr<const DepTag> >::free, ptr));
             rb_obj_call_init(tdata, argc, argv);
             return tdata;
@@ -175,7 +175,7 @@ namespace
         std::shared_ptr<const DepTag> * ptr(0);
         try
         {
-            ptr = new std::shared_ptr<const DepTag>(new TargetDepTag);
+            ptr = new std::shared_ptr<const DepTag>(std::make_shared<TargetDepTag>());
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::shared_ptr<const DepTag> >::free, ptr));
             rb_obj_call_init(tdata, 0, 0);
             return tdata;

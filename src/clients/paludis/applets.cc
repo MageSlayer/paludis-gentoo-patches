@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -185,7 +185,7 @@ int do_has_version(const std::shared_ptr<Environment> & env)
     Context context("When performing has-version action from command line:");
 
     std::string query(*CommandLine::get_instance()->begin_parameters());
-    std::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
+    std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(
                 parse_user_package_dep_spec(query, env.get(), UserPackageDepSpecOptions())));
     std::shared_ptr<const PackageIDSequence> entries((*env)[selection::SomeArbitraryVersion(
                 generator::Matches(*spec, MatchPackageOptions()) | filter::InstalledAtRoot(env->root()))]);
@@ -203,7 +203,7 @@ int do_best_version(const std::shared_ptr<Environment> & env)
     Context context("When performing best-version action from command line:");
 
     std::string query(*CommandLine::get_instance()->begin_parameters());
-    std::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
+    std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(
                 parse_user_package_dep_spec(query, env.get(), UserPackageDepSpecOptions())));
     std::shared_ptr<const PackageIDSequence> entries((*env)[selection::AllVersionsSorted(
                 generator::Matches(*spec, MatchPackageOptions()) | filter::InstalledAtRoot(env->root()))]);
@@ -218,7 +218,7 @@ int do_best_version(const std::shared_ptr<Environment> & env)
             "' resolves to '" << **entries->last() << "', which is a virtual for '"
             << *(*entries->last())->virtual_for_key()->value() << "'. This will break with "
             "new style virtuals.";
-        std::shared_ptr<PackageIDSequence> new_entries(new PackageIDSequence);
+        std::shared_ptr<PackageIDSequence> new_entries(std::make_shared<PackageIDSequence>());
         new_entries->push_back((*entries->last())->virtual_for_key()->value());
         entries = new_entries;
     }
@@ -244,7 +244,7 @@ int do_match(const std::shared_ptr<Environment> & env)
     Context context("When performing match action from command line:");
 
     std::string query(*CommandLine::get_instance()->begin_parameters());
-    std::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
+    std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(
                 parse_user_package_dep_spec(query, env.get(), UserPackageDepSpecOptions())));
     std::shared_ptr<const PackageIDSequence> entries((*env)[selection::AllVersionsSorted(
                 generator::Matches(*spec, MatchPackageOptions()) | filter::InstalledAtRoot(env->root()))]);
@@ -258,7 +258,7 @@ int do_match(const std::shared_ptr<Environment> & env)
                 "' resolves to '" << **entries->last() << "', which is a virtual for '"
                 << *(*entries->last())->virtual_for_key()->value() << "'. This will break with "
                 "new style virtuals.";
-        std::shared_ptr<PackageIDSequence> new_entries(new PackageIDSequence);
+        std::shared_ptr<PackageIDSequence> new_entries(std::make_shared<PackageIDSequence>());
         new_entries->push_back((*entries->last())->virtual_for_key()->value());
         entries = new_entries;
     }
@@ -288,7 +288,7 @@ int do_environment_variable(const std::shared_ptr<Environment> & env)
 
     std::string spec_str(*CommandLine::get_instance()->begin_parameters());
     std::string var_str(* next(CommandLine::get_instance()->begin_parameters()));
-    std::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
+    std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(
                 parse_user_package_dep_spec(spec_str, env.get(), UserPackageDepSpecOptions())));
 
     std::shared_ptr<const PackageIDSequence> entries((*env)[selection::AllVersionsSorted(

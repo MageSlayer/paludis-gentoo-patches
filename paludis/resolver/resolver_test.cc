@@ -89,7 +89,7 @@ paludis::resolver::resolver_test::get_resolvents_for_fn(const PackageDepSpec & s
         const std::shared_ptr<const SlotName> & slot,
         const std::shared_ptr<const Reason> &)
 {
-    std::shared_ptr<Resolvents> result(new Resolvents);
+    std::shared_ptr<Resolvents> result(std::make_shared<Resolvents>());
     result->push_back(Resolvent(spec, slot ? *slot : SlotName("0"), dt_install_to_slash));
     return result;
 }
@@ -231,7 +231,7 @@ paludis::resolver::resolver_test::get_constraints_for_dependent_fn(
         const std::shared_ptr<const PackageID> & id,
         const std::shared_ptr<const ChangeByResolventSequence> & ids)
 {
-    const std::shared_ptr<ConstraintSequence> result(new ConstraintSequence);
+    const std::shared_ptr<ConstraintSequence> result(std::make_shared<ConstraintSequence>());
 
     PartiallyMadePackageDepSpec partial_spec((PartiallyMadePackageDepSpecOptions()));
     partial_spec.package(id->name());
@@ -243,7 +243,7 @@ paludis::resolver::resolver_test::get_constraints_for_dependent_fn(
     for (ChangeByResolventSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
             i != i_end ; ++i)
     {
-        const std::shared_ptr<DependentReason> reason(new DependentReason(*i));
+        const std::shared_ptr<DependentReason> reason(std::make_shared<DependentReason>(*i));
 
         result->push_back(std::make_shared<Constraint>(make_named_values<Constraint>(
                             n::destination_type() = dt_install_to_slash,
@@ -264,7 +264,7 @@ paludis::resolver::resolver_test::get_constraints_for_purge_fn(
         const std::shared_ptr<const PackageID> & id,
         const std::shared_ptr<const ChangeByResolventSequence> & ids)
 {
-    const std::shared_ptr<ConstraintSequence> result(new ConstraintSequence);
+    const std::shared_ptr<ConstraintSequence> result(std::make_shared<ConstraintSequence>());
 
     PartiallyMadePackageDepSpec partial_spec((PartiallyMadePackageDepSpecOptions()));
     partial_spec.package(id->name());
@@ -273,7 +273,7 @@ paludis::resolver::resolver_test::get_constraints_for_purge_fn(
                         id->slot_key()->value(), false));
     PackageDepSpec spec(partial_spec);
 
-    const std::shared_ptr<WasUsedByReason> reason(new WasUsedByReason(ids));
+    const std::shared_ptr<WasUsedByReason> reason(std::make_shared<WasUsedByReason>(ids));
 
     result->push_back(std::make_shared<Constraint>(make_named_values<Constraint>(
                         n::destination_type() = dt_install_to_slash,
@@ -296,7 +296,7 @@ paludis::resolver::resolver_test::get_constraints_for_via_binary_fn(
     partial_spec.package(resolution->resolvent().package());
     PackageDepSpec spec(partial_spec);
 
-    std::shared_ptr<ConstraintSequence> result(new ConstraintSequence);
+    std::shared_ptr<ConstraintSequence> result(std::make_shared<ConstraintSequence>());
     result->push_back(std::make_shared<Constraint>(make_named_values<Constraint>(
                         n::destination_type() = resolution->resolvent().destination_type(),
                         n::nothing_is_fine_too() = false,
@@ -326,11 +326,11 @@ paludis::resolver::resolver_test::always_via_binary_fn(
 ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s, const std::string & e,
         const std::string & l) :
     TestCase(s),
-    allowed_to_remove_names(new QualifiedPackageNameSet),
-    remove_if_dependent_names(new QualifiedPackageNameSet),
-    prefer_or_avoid_names(new Map<QualifiedPackageName, bool>)
+    allowed_to_remove_names(std::make_shared<QualifiedPackageNameSet>()),
+    remove_if_dependent_names(std::make_shared<QualifiedPackageNameSet>()),
+    prefer_or_avoid_names(std::make_shared<Map<QualifiedPackageName, bool>>())
 {
-    std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+    std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
     keys->insert("format", "e");
     keys->insert("names_cache", "/var/empty");
     keys->insert("location", stringify(FSEntry::cwd() / ("resolver_TEST_" + t + "_dir") / "repo"));

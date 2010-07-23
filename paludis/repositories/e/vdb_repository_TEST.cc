@@ -96,7 +96,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
             keys->insert("provides_cache", "/var/empty");
@@ -116,8 +116,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::shared_ptr<Map<std::string, std::string> > keys(
-                    new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
             keys->insert("provides_cache", "/var/empty");
@@ -140,8 +139,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::shared_ptr<Map<std::string, std::string> > keys(
-                    new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
             keys->insert("provides_cache", "/var/empty");
@@ -211,7 +209,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
             keys->insert("provides_cache", "/var/empty");
@@ -266,8 +264,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::shared_ptr<Map<std::string, std::string> > keys(
-                    new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
             keys->insert("provides_cache", "/var/empty");
@@ -324,7 +321,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "srcrepo"));
@@ -454,7 +451,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "srcrepo"));
@@ -585,7 +582,7 @@ namespace test_cases
                 const std::string & chosen_one,
                 const std::string & victim) const
         {
-            std::shared_ptr<PackageIDSequence> replacing(new PackageIDSequence);
+            std::shared_ptr<PackageIDSequence> replacing(std::make_shared<PackageIDSequence>());
             if (! victim.empty())
                 replacing->push_back(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec(victim,
@@ -606,7 +603,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "namesincrtest_src"));
@@ -855,7 +852,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys = std::make_shared<Map<std::string, std::string>>();
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
@@ -948,7 +945,7 @@ namespace test_cases
                 const std::string & chosen_one,
                 const std::string & victim) const
         {
-            std::shared_ptr<PackageIDSequence> replacing(new PackageIDSequence);
+            std::shared_ptr<PackageIDSequence> replacing(std::make_shared<PackageIDSequence>());
             if (! victim.empty())
                 replacing->push_back(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec(victim,
@@ -969,7 +966,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "providesincrtest_src1"));
@@ -1164,7 +1161,7 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "reinstalltest_src1"));
@@ -1274,7 +1271,7 @@ namespace test_cases
                 const std::string & chosen_one,
                 const std::string & victim) const
         {
-            std::shared_ptr<PackageIDSequence> replacing(new PackageIDSequence);
+            std::shared_ptr<PackageIDSequence> replacing(std::make_shared<PackageIDSequence>());
             if (! victim.empty())
                 replacing->push_back(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec(victim,
@@ -1295,7 +1292,7 @@ namespace test_cases
         {
             TestEnvironment env(FSEntry(stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "root")).realpath());
             env.set_paludis_command("/bin/false");
-            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "vdb_repository_TEST_dir" / "postinsttest_src1"));

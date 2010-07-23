@@ -362,7 +362,7 @@ MatchCommand::run(
 
     PackageDepSpec spec(parse_user_package_dep_spec(*cmdline.begin_parameters(), env.get(), UserPackageDepSpecOptions()));
 
-    const std::shared_ptr<Set<std::string> > patterns(new Set<std::string>);
+    const std::shared_ptr<Set<std::string> > patterns(std::make_shared<Set<std::string>>());
     std::copy(next(cmdline.begin_parameters()), cmdline.end_parameters(), patterns->inserter());
 
     return run_hosted(env, cmdline.match_options, patterns, spec) ? EXIT_SUCCESS : EXIT_FAILURE;

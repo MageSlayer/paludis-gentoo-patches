@@ -58,7 +58,7 @@ namespace
     bool accept_keyword(const TestPortageEnvironment & env,
             const KeywordName & k, const PackageID & e)
     {
-        std::shared_ptr<KeywordNameSet> kk(new KeywordNameSet);
+        std::shared_ptr<KeywordNameSet> kk(std::make_shared<KeywordNameSet>());
         kk->insert(k);
         return env.accept_keywords(kk, e);
     }
@@ -176,7 +176,7 @@ namespace test_cases
                         generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-four-1",
                                     &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
             TEST_CHECK(accept_keyword(env, KeywordName("fred"), *id4));
-            std::shared_ptr<const KeywordNameSet> empty(new KeywordNameSet);
+            std::shared_ptr<const KeywordNameSet> empty(std::make_shared<KeywordNameSet>());
             TEST_CHECK(env.accept_keywords(empty, *id4));
 
             const std::shared_ptr<const PackageID> id5(*env[selection::RequireExactlyOne(

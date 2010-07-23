@@ -44,7 +44,7 @@ namespace
         Context context("When making " + std::string(slots ? "installed-slots" : "installed-packages") +
                 " set from '" + stringify(repo->name()) + "':");
 
-        std::shared_ptr<SetSpecTree> result(new SetSpecTree(std::make_shared<AllDepSpec>()));
+        std::shared_ptr<SetSpecTree> result(std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>()));
 
         std::shared_ptr<const PackageIDSequence> ids;
         if (slots)

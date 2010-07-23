@@ -44,8 +44,8 @@ namespace paludis
         std::shared_ptr<const MetadataValueKey<std::string> > format_key;
 
         Imp() :
-            virtual_packages(new FakeRepository::VirtualsSequence),
-            format_key(new LiteralMetadataValueKey<std::string> (
+            virtual_packages(std::make_shared<FakeRepository::VirtualsSequence>()),
+            format_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
                         "format", "format", mkt_significant, "fake"))
         {
         }

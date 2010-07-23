@@ -232,10 +232,10 @@ EInstalledRepository::perform_config(
 
     FSEntry ver_dir(id->fs_location_key()->value());
 
-    std::shared_ptr<FSEntrySequence> eclassdirs(new FSEntrySequence);
+    std::shared_ptr<FSEntrySequence> eclassdirs(std::make_shared<FSEntrySequence>());
     eclassdirs->push_back(ver_dir);
 
-    std::shared_ptr<FSEntry> load_env(new FSEntry(ver_dir / "environment.bz2"));
+    std::shared_ptr<FSEntry> load_env(std::make_shared<FSEntry>(ver_dir / "environment.bz2"));
     EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_config());
 
     for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
@@ -287,10 +287,10 @@ EInstalledRepository::perform_info(
 
     FSEntry ver_dir(id->fs_location_key()->value());
 
-    std::shared_ptr<FSEntrySequence> eclassdirs(new FSEntrySequence);
+    std::shared_ptr<FSEntrySequence> eclassdirs(std::make_shared<FSEntrySequence>());
     eclassdirs->push_back(ver_dir);
 
-    std::shared_ptr<FSEntry> load_env(new FSEntry(ver_dir / "environment.bz2"));
+    std::shared_ptr<FSEntry> load_env(std::make_shared<FSEntry>(ver_dir / "environment.bz2"));
 
     EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_info());
 

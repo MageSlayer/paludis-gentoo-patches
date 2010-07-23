@@ -53,7 +53,7 @@ namespace paludis
     void register_repositories<repository_groups::gems>(const repository_groups::gems * const,
             RepositoryFactory * const factory)
     {
-        std::shared_ptr<Set<std::string> > gems_formats(new Set<std::string>);
+        std::shared_ptr<Set<std::string> > gems_formats(std::make_shared<Set<std::string>>());
         gems_formats->insert("gems");
 
         factory->add_repository_format(
@@ -64,7 +64,7 @@ namespace paludis
                 GemsRepository::repository_factory_dependencies
                 );
 
-        std::shared_ptr<Set<std::string> > installed_gems_formats(new Set<std::string>);
+        std::shared_ptr<Set<std::string> > installed_gems_formats(std::make_shared<Set<std::string>>());
         installed_gems_formats->insert("installed_gems");
         installed_gems_formats->insert("installed-gems");
 

@@ -44,14 +44,14 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            const std::shared_ptr<FakeRepository> repo(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            const std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("repo")
                             )));
             env.package_database()->add_repository(1, repo);
             std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
-            std::shared_ptr<FakeInstalledRepository> installed_repo(new FakeInstalledRepository(
+            std::shared_ptr<FakeInstalledRepository> installed_repo(std::make_shared<FakeInstalledRepository>(
                         make_named_values<FakeInstalledRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("installed"),

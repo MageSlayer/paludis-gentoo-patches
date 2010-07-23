@@ -118,7 +118,7 @@ const std::shared_ptr<ChangesToMakeDecision>
 ChangesToMakeDecision::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "ChangesToMakeDecision");
-    std::shared_ptr<ChangesToMakeDecision> result(new ChangesToMakeDecision(
+    std::shared_ptr<ChangesToMakeDecision> result(std::make_shared<ChangesToMakeDecision>(
                 v.member<Resolvent>("resolvent"),
                 v.member<std::shared_ptr<const PackageID> >("origin_id"),
                 v.member<bool>("best"),
@@ -152,7 +152,7 @@ UnableToMakeDecision::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "UnableToMakeDecision");
 
-    std::shared_ptr<UnsuitableCandidates> unsuitable_candidates(new UnsuitableCandidates);
+    std::shared_ptr<UnsuitableCandidates> unsuitable_candidates(std::make_shared<UnsuitableCandidates>());
     Deserialisator vv(*v.find_remove_member("unsuitable_candidates"), "c");
     for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
         unsuitable_candidates->push_back(vv.member<UnsuitableCandidate>(stringify(n)));
@@ -169,14 +169,14 @@ RemoveDecision::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "RemoveDecision");
 
-    std::shared_ptr<PackageIDSequence> ids(new PackageIDSequence);
+    std::shared_ptr<PackageIDSequence> ids(std::make_shared<PackageIDSequence>());
     {
         Deserialisator vv(*v.find_remove_member("ids"), "c");
         for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
             ids->push_back(vv.member<std::shared_ptr<const PackageID> >(stringify(n)));
     }
 
-    const std::shared_ptr<RemoveDecision> result(new RemoveDecision(
+    const std::shared_ptr<RemoveDecision> result(std::make_shared<RemoveDecision>(
                 v.member<Resolvent>("resolvent"),
                 ids,
                 v.member<bool>("taken")
@@ -660,7 +660,7 @@ const std::shared_ptr<BreakDecision>
 BreakDecision::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "BreakDecision");
-    std::shared_ptr<BreakDecision> result(new BreakDecision(
+    std::shared_ptr<BreakDecision> result(std::make_shared<BreakDecision>(
                 v.member<Resolvent>("resolvent"),
                 v.member<std::shared_ptr<const PackageID> >("existing_id"),
                 v.member<bool>("taken")

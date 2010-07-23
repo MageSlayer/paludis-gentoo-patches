@@ -176,7 +176,7 @@ World::world_set() const
 {
     using namespace std::placeholders;
 
-    std::shared_ptr<GeneralSetDepTag> tag(new GeneralSetDepTag(SetName("world"), "Environment"));
+    std::shared_ptr<GeneralSetDepTag> tag(std::make_shared<GeneralSetDepTag>(SetName("world"), "Environment"));
 
     if (_imp->maybe_world_file)
     {

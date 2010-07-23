@@ -131,7 +131,7 @@ namespace
                 const Environment * const env,
                 const std::shared_ptr<const RepositoryNameSet> & repos) const
         {
-            std::shared_ptr<RepositoryNameSet> result(new RepositoryNameSet);
+            std::shared_ptr<RepositoryNameSet> result(std::make_shared<RepositoryNameSet>());
 
             for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                     r != r_end ; ++r)
@@ -147,7 +147,7 @@ namespace
                 const Environment * const,
                 const std::shared_ptr<const PackageIDSet> & id) const
         {
-            std::shared_ptr<PackageIDSet> result(new PackageIDSet);
+            std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
             for (PackageIDSet::ConstIterator i(id->begin()), i_end(id->end()) ;
                     i != i_end ; ++i)
@@ -172,7 +172,7 @@ namespace
                 const Environment * const env,
                 const std::shared_ptr<const RepositoryNameSet> & repos) const
         {
-            std::shared_ptr<RepositoryNameSet> result(new RepositoryNameSet);
+            std::shared_ptr<RepositoryNameSet> result(std::make_shared<RepositoryNameSet>());
 
             for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                     r != r_end ; ++r)
@@ -188,7 +188,7 @@ namespace
                 const Environment * const,
                 const std::shared_ptr<const PackageIDSet> & id) const
         {
-            std::shared_ptr<PackageIDSet> result(new PackageIDSet);
+            std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
             for (PackageIDSet::ConstIterator i(id->begin()), i_end(id->end()) ;
                     i != i_end ; ++i)
@@ -218,7 +218,7 @@ namespace
                 const Environment * const env,
                 const std::shared_ptr<const RepositoryNameSet> & repos) const
         {
-            std::shared_ptr<RepositoryNameSet> result(new RepositoryNameSet);
+            std::shared_ptr<RepositoryNameSet> result(std::make_shared<RepositoryNameSet>());
 
             for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                     r != r_end ; ++r)
@@ -234,7 +234,7 @@ namespace
                 const Environment * const,
                 const std::shared_ptr<const PackageIDSet> & id) const
         {
-            std::shared_ptr<PackageIDSet> result(new PackageIDSet);
+            std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
             for (PackageIDSet::ConstIterator i(id->begin()), i_end(id->end()) ;
                     i != i_end ; ++i)
@@ -311,7 +311,7 @@ namespace
                 const Environment * const,
                 const std::shared_ptr<const PackageIDSet> & id) const
         {
-            std::shared_ptr<PackageIDSet> result(new PackageIDSet);
+            std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
             for (PackageIDSet::ConstIterator i(id->begin()), i_end(id->end()) ;
                     i != i_end ; ++i)
@@ -349,7 +349,7 @@ namespace
                 const Environment * const,
                 const std::shared_ptr<const PackageIDSet> & id) const
         {
-            std::shared_ptr<PackageIDSet> result(new PackageIDSet);
+            std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
             for (PackageIDSet::ConstIterator i(id->begin()), i_end(id->end()) ;
                     i != i_end ; ++i)
@@ -372,7 +372,7 @@ namespace
                 const Environment * const,
                 const std::shared_ptr<const PackageIDSet> & id) const
         {
-            std::shared_ptr<PackageIDSet> result(new PackageIDSet);
+            std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
             for (PackageIDSet::ConstIterator i(id->begin()), i_end(id->end()) ;
                     i != i_end ; ++i)
@@ -404,7 +404,7 @@ namespace
                 const Environment * const env,
                 const std::shared_ptr<const PackageIDSet> & id) const
         {
-            std::shared_ptr<PackageIDSet> result(new PackageIDSet);
+            std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
             for (PackageIDSet::ConstIterator i(id->begin()), i_end(id->end()) ;
                     i != i_end ; ++i)

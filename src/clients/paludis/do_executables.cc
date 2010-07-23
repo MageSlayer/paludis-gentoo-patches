@@ -134,7 +134,7 @@ do_one_executables(
 {
     Context local_context("When handling query '" + q + "':");
 
-    std::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(
+    std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(
                 parse_user_package_dep_spec(q, env.get(), UserPackageDepSpecOptions() + updso_allow_wildcards,
                     filter::InstalledAtRoot(env->root()))));
 

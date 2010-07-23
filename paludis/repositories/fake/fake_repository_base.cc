@@ -55,7 +55,7 @@ namespace paludis
     };
 
     Imp<FakeRepositoryBase>::Imp(const Environment * const e) :
-        category_names(new CategoryNamePartSet),
+        category_names(std::make_shared<CategoryNamePartSet>()),
         env(e)
     {
     }
@@ -96,7 +96,7 @@ FakeRepositoryBase::category_names() const
 std::shared_ptr<const QualifiedPackageNameSet>
 FakeRepositoryBase::package_names(const CategoryNamePart & c) const
 {
-    std::shared_ptr<QualifiedPackageNameSet> result(new QualifiedPackageNameSet);
+    std::shared_ptr<QualifiedPackageNameSet> result(std::make_shared<QualifiedPackageNameSet>());
     if (! has_category_named(c))
         return result;
 
@@ -111,9 +111,9 @@ std::shared_ptr<const PackageIDSequence>
 FakeRepositoryBase::package_ids(const QualifiedPackageName & n) const
 {
     if (! has_category_named(n.category()))
-        return std::shared_ptr<PackageIDSequence>(new PackageIDSequence);
+        return std::shared_ptr<PackageIDSequence>(std::make_shared<PackageIDSequence>());
     if (! has_package_named(n))
-        return std::shared_ptr<PackageIDSequence>(new PackageIDSequence);
+        return std::shared_ptr<PackageIDSequence>(std::make_shared<PackageIDSequence>());
     return _imp->ids.find(n)->second;
 }
 
@@ -121,7 +121,7 @@ void
 FakeRepositoryBase::add_category(const CategoryNamePart & c)
 {
     _imp->category_names->insert(c);
-    _imp->package_names.insert(std::make_pair(c, new PackageNamePartSet));
+    _imp->package_names.insert(std::make_pair(c, std::make_shared<PackageNamePartSet>()));
 }
 
 void
@@ -129,7 +129,7 @@ FakeRepositoryBase::add_package(const QualifiedPackageName & q)
 {
     add_category(q.category());
     _imp->package_names.find(q.category())->second->insert(q.package());
-    _imp->ids.insert(std::make_pair(q, new PackageIDSequence));
+    _imp->ids.insert(std::make_pair(q, std::make_shared<PackageIDSequence>()));
 }
 
 namespace
@@ -159,7 +159,7 @@ FakeRepositoryBase::add_version(const QualifiedPackageName & q, const VersionSpe
                 _imp->ids.find(q)->second->end(), VersionIs(v)))
         throw InternalError(PALUDIS_HERE, "duplicate id added");
 
-    std::shared_ptr<FakePackageID> id(new FakePackageID(_imp->env, shared_from_this(), q, v));
+    std::shared_ptr<FakePackageID> id(std::make_shared<FakePackageID>(_imp->env, shared_from_this(), q, v));
     _imp->ids.find(q)->second->push_back(id);
     return id;
 }

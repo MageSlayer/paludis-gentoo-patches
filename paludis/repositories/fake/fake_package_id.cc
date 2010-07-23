@@ -245,7 +245,7 @@ namespace paludis
         Imp(const std::function<const std::shared_ptr<const FetchableURISpecTree> (const std::string &)> & f,
                 const std::string & r, const std::string & h, const MetadataKeyType t) :
             func(f),
-            initial_label(new URIListedThenMirrorsLabel("listed-then-mirrors")),
+            initial_label(std::make_shared<URIListedThenMirrorsLabel>("listed-then-mirrors")),
             raw_name(r),
             human_name(h),
             type(t)
@@ -478,7 +478,7 @@ namespace paludis
         Imp(const Environment * const e, const std::shared_ptr<const PackageID> & i) :
             env(e),
             id(i),
-            value(new Choices)
+            value(std::make_shared<Choices>())
         {
         }
     };
@@ -564,7 +564,7 @@ FakeMetadataChoicesKey::add(const std::string & n, const std::string & v)
 {
     if (_imp->choices.end() == _imp->choices.find(n))
     {
-        std::shared_ptr<Choice> c(new Choice(make_named_values<ChoiceParams>(
+        std::shared_ptr<Choice> c(std::make_shared<Choice>(make_named_values<ChoiceParams>(
                         n::consider_added_or_changed() = false,
                         n::contains_every_value() = false,
                         n::hidden() = false,
@@ -723,13 +723,13 @@ namespace paludis
             repository(r),
             name(q),
             version(v),
-            build_dependencies_labels(new DependenciesLabelSequence),
-            run_dependencies_labels(new DependenciesLabelSequence),
-            post_dependencies_labels(new DependenciesLabelSequence),
-            suggested_dependencies_labels(new DependenciesLabelSequence),
-            slot(new LiteralMetadataValueKey<SlotName>("SLOT", "Slot", mkt_internal, SlotName("0"))),
-            keywords(new FakeMetadataKeywordSetKey("KEYWORDS", "Keywords", "test", mkt_normal, id, env)),
-            behaviours_set(new Set<std::string>),
+            build_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
+            run_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
+            post_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
+            suggested_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
+            slot(std::make_shared<LiteralMetadataValueKey<SlotName>>("SLOT", "Slot", mkt_internal, SlotName("0"))),
+            keywords(std::make_shared<FakeMetadataKeywordSetKey>("KEYWORDS", "Keywords", "test", mkt_normal, id, env)),
+            behaviours_set(std::make_shared<Set<std::string>>()),
             has_masks(false)
         {
             build_dependencies_labels->push_back(std::make_shared<DependenciesBuildLabel>("DEPEND",
@@ -1321,7 +1321,7 @@ FakeMetadataKeywordSetKey::pretty_print_flat(const Formatter<KeywordName> & f) c
         if (! result.empty())
             result.append(" ");
 
-        std::shared_ptr<KeywordNameSet> k(new KeywordNameSet);
+        std::shared_ptr<KeywordNameSet> k(std::make_shared<KeywordNameSet>());
         k->insert(*i);
         if (_imp->env->accept_keywords(k, *_imp->id))
             result.append(f.format(*i, format::Accepted()));

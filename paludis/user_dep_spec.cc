@@ -186,7 +186,7 @@ namespace
 
             case '.':
                 {
-                    std::shared_ptr<const AdditionalPackageDepSpecRequirement> req(new UserKeyRequirement(flag.substr(1)));
+                    std::shared_ptr<const AdditionalPackageDepSpecRequirement> req(std::make_shared<UserKeyRequirement>(flag.substr(1)));
                     result.additional_requirement(req);
                 }
                 break;

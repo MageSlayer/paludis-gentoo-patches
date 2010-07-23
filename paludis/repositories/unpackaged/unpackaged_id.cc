@@ -78,16 +78,16 @@ namespace paludis
             name(q),
             version(v),
             repository_name(n),
-            build_dependencies_labels(new DependenciesLabelSequence),
-            run_dependencies_labels(new DependenciesLabelSequence),
-            slot_key(new LiteralMetadataValueKey<SlotName> ("slot", "Slot", mkt_internal, s)),
-            fs_location_key(new LiteralMetadataValueKey<FSEntry> ("location", "Location", mkt_normal, l)),
-            build_dependencies_key(new UnpackagedDependencyKey(env, "build_dependencies", "Build dependencies", mkt_dependencies,
+            build_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
+            run_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
+            slot_key(std::make_shared<LiteralMetadataValueKey<SlotName> >("slot", "Slot", mkt_internal, s)),
+            fs_location_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("location", "Location", mkt_normal, l)),
+            build_dependencies_key(std::make_shared<UnpackagedDependencyKey>(env, "build_dependencies", "Build dependencies", mkt_dependencies,
                         build_dependencies_labels, b)),
-            run_dependencies_key(new UnpackagedDependencyKey(env, "run_dependencies", "Run dependencies", mkt_dependencies,
+            run_dependencies_key(std::make_shared<UnpackagedDependencyKey>(env, "run_dependencies", "Run dependencies", mkt_dependencies,
                         run_dependencies_labels, r)),
-            description_key(new LiteralMetadataValueKey<std::string> ("description", "Description", mkt_significant, d)),
-            choices_key(new UnpackagedChoicesKey(env, "choices", "Choices", mkt_normal, id))
+            description_key(std::make_shared<LiteralMetadataValueKey<std::string> >("description", "Description", mkt_significant, d)),
+            choices_key(std::make_shared<UnpackagedChoicesKey>(env, "choices", "Choices", mkt_normal, id))
         {
             build_dependencies_labels->push_back(std::make_shared<DependenciesBuildLabel>("build_dependencies",
                             return_literal_function(true)));
@@ -461,7 +461,7 @@ UnpackagedID::invalidate_masks() const
 std::shared_ptr<const Set<std::string> >
 UnpackagedID::breaks_portage() const
 {
-    std::shared_ptr<Set<std::string> > why(new Set<std::string>);
+    std::shared_ptr<Set<std::string> > why(std::make_shared<Set<std::string>>());
     why->insert("format");
     return why;
 }

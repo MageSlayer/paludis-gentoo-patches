@@ -60,7 +60,7 @@ namespace paludis
             name(e.name()),
             version(e.version()),
             repo(e.repository()),
-            slot_key(new LiteralMetadataValueKey<SlotName>("SLOT", "Slot", mkt_internal, e.slot())),
+            slot_key(std::make_shared<LiteralMetadataValueKey<SlotName>>("SLOT", "Slot", mkt_internal, e.slot())),
             description_key(e.description()),
             repository_homepage_key(e.repository_homepage()),
             repository_description_key(e.repository_description()),

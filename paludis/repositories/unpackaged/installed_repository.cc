@@ -77,11 +77,11 @@ namespace paludis
         Imp(const InstalledUnpackagedRepositoryParams & p) :
             params(p),
             ndbam(p.location(), &supported_installed_unpackaged, "installed_unpackaged-1", user_version_spec_options()),
-            location_key(new LiteralMetadataValueKey<FSEntry> ("location", "location",
+            location_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("location", "location",
                         mkt_significant, params.location())),
-            root_key(new LiteralMetadataValueKey<FSEntry> ("root", "root",
+            root_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("root", "root",
                         mkt_normal, params.root())),
-            format_key(new LiteralMetadataValueKey<std::string> (
+            format_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
                         "format", "format", mkt_significant, "installed_unpackaged"))
         {
         }
@@ -121,7 +121,7 @@ std::shared_ptr<const PackageIDSequence>
 InstalledUnpackagedRepository::package_ids(const QualifiedPackageName & q) const
 {
     std::shared_ptr<NDBAMEntrySequence> entries(_imp->ndbam.entries(q));
-    std::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
+    std::shared_ptr<PackageIDSequence> result(std::make_shared<PackageIDSequence>());
 
     for (IndirectIterator<NDBAMEntrySequence::ConstIterator> e(entries->begin()), e_end(entries->end()) ;
             e != e_end ; ++e)

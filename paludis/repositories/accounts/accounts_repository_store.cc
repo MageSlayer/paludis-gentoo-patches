@@ -74,7 +74,7 @@ namespace paludis
             env(e),
             repo(r),
             installed(i),
-            categories(new CategoryNamePartSet)
+            categories(std::make_shared<CategoryNamePartSet>())
         {
             categories->insert(CategoryNamePart("user"));
             categories->insert(CategoryNamePart("group"));
@@ -130,9 +130,9 @@ AccountsRepositoryStore::_load(const std::shared_ptr<const Repository> & repo)
             continue;
         }
 
-        std::shared_ptr<Set<std::string> > r_set(new Set<std::string>);
+        std::shared_ptr<Set<std::string> > r_set(std::make_shared<Set<std::string>>());
         r_set->insert(stringify((*r)->name()));
-        std::shared_ptr<LiteralMetadataStringSetKey> r_key(new LiteralMetadataStringSetKey("defined_by", "Defined by repository", mkt_internal, r_set));
+        std::shared_ptr<LiteralMetadataStringSetKey> r_key(std::make_shared<LiteralMetadataStringSetKey>("defined_by", "Defined by repository", mkt_internal, r_set));
         _load_one(repo, r_key, dir);
     }
 }

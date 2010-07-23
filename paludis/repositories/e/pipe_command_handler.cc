@@ -272,7 +272,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                         "' resolves to '" << **entries->last() << "', which is a virtual for '"
                         << *(*entries->last())->virtual_for_key()->value() << "'. This will break with "
                         "new style virtuals.";
-                    std::shared_ptr<PackageIDSequence> new_entries(new PackageIDSequence);
+                    std::shared_ptr<PackageIDSequence> new_entries(std::make_shared<PackageIDSequence>());
                     new_entries->push_back((*entries->last())->virtual_for_key()->value());
                     entries = new_entries;
                 }
@@ -332,7 +332,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                             generator::Matches(spec, MatchPackageOptions()) | filter::InstalledAtRoot(environment->root()))]);
                 if (eapi->supported()->pipe_commands()->rewrite_virtuals() && (! entries->empty()))
                 {
-                    std::shared_ptr<PackageIDSequence> new_entries(new PackageIDSequence);
+                    std::shared_ptr<PackageIDSequence> new_entries(std::make_shared<PackageIDSequence>());
                     for (PackageIDSequence::ConstIterator i(entries->begin()), i_end(entries->end()) ;
                             i != i_end ; ++i)
                     {

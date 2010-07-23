@@ -72,17 +72,17 @@ namespace paludis
             big_nasty_mutex(m),
             has_category_names(false),
             has_ids(false),
-            location_key(new LiteralMetadataValueKey<FSEntry> ("location", "location",
+            location_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("location", "location",
                         mkt_significant, params.location())),
-            install_dir_key(new LiteralMetadataValueKey<FSEntry> ("install_dir", "install_dir",
+            install_dir_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("install_dir", "install_dir",
                         mkt_normal, params.install_dir())),
-            builddir_key(new LiteralMetadataValueKey<FSEntry> ("builddir", "builddir",
+            builddir_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("builddir", "builddir",
                         mkt_normal, params.builddir())),
-            sync_key(new LiteralMetadataValueKey<std::string> ("sync", "sync",
+            sync_key(std::make_shared<LiteralMetadataValueKey<std::string> >("sync", "sync",
                         mkt_normal, params.sync())),
-            sync_options_key(new LiteralMetadataValueKey<std::string> (
+            sync_options_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
                         "sync_options", "sync_options", mkt_normal, params.sync_options())),
-            format_key(new LiteralMetadataValueKey<std::string> ("format", "format",
+            format_key(std::make_shared<LiteralMetadataValueKey<std::string> >("format", "format",
                         mkt_significant, "gems"))
         {
         }
@@ -216,7 +216,7 @@ GemsRepository::need_category_names() const
     if (_imp->has_category_names)
         return;
 
-    std::shared_ptr<CategoryNamePartSet> cat(new CategoryNamePartSet);
+    std::shared_ptr<CategoryNamePartSet> cat(std::make_shared<CategoryNamePartSet>());
     _imp->category_names = cat;
 
     cat->insert(CategoryNamePart("gems"));
@@ -233,7 +233,7 @@ GemsRepository::need_ids() const
 
     need_category_names();
 
-    std::shared_ptr<QualifiedPackageNameSet> pkgs(new QualifiedPackageNameSet);
+    std::shared_ptr<QualifiedPackageNameSet> pkgs(std::make_shared<QualifiedPackageNameSet>());
     _imp->package_names.insert(std::make_pair(CategoryNamePart("gems"), pkgs));
 
     Context context("When loading gems yaml file:");

@@ -313,10 +313,10 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::shared_ptr<FakeRepository> fake(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            std::shared_ptr<FakeRepository> fake(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("fake"))));
-            std::shared_ptr<FakeInstalledRepository> fake_inst(new FakeInstalledRepository(
+            std::shared_ptr<FakeInstalledRepository> fake_inst(std::make_shared<FakeInstalledRepository>(
                         make_named_values<FakeInstalledRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("fake_inst"),
@@ -376,7 +376,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::shared_ptr<FakeRepository> fake(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            std::shared_ptr<FakeRepository> fake(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("fake"))));
             env.package_database()->add_repository(1, fake);
@@ -409,7 +409,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::shared_ptr<FakeRepository> fake(new FakeRepository(make_named_values<FakeRepositoryParams>(
+            std::shared_ptr<FakeRepository> fake(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("fake"))));
             env.package_database()->add_repository(1, fake);

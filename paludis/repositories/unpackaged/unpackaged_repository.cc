@@ -61,28 +61,28 @@ namespace paludis
         Imp(const RepositoryName & n,
                 const UnpackagedRepositoryParams & p) :
             params(p),
-            id(new UnpackagedID(params.environment(), params.name(), params.version(), params.slot(), n, params.location(),
+            id(std::make_shared<UnpackagedID>(params.environment(), params.name(), params.version(), params.slot(), n, params.location(),
                         params.build_dependencies(), params.run_dependencies(), params.description())),
-            ids(new PackageIDSequence),
-            package_names(new QualifiedPackageNameSet),
-            category_names(new CategoryNamePartSet),
-            location_key(new LiteralMetadataValueKey<FSEntry> ("location", "location",
+            ids(std::make_shared<PackageIDSequence>()),
+            package_names(std::make_shared<QualifiedPackageNameSet>()),
+            category_names(std::make_shared<CategoryNamePartSet>()),
+            location_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("location", "location",
                         mkt_significant, params.location())),
-            install_under_key(new LiteralMetadataValueKey<FSEntry> ("install_under", "install_under",
+            install_under_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("install_under", "install_under",
                         mkt_significant, params.install_under())),
-            rewrite_ids_over_to_root_key(new LiteralMetadataValueKey<long> ("rewrite_ids_over_to_root", "rewrite_ids_over_to_root",
+            rewrite_ids_over_to_root_key(std::make_shared<LiteralMetadataValueKey<long> >("rewrite_ids_over_to_root", "rewrite_ids_over_to_root",
                         mkt_normal, params.rewrite_ids_over_to_root())),
-            name_key(new LiteralMetadataValueKey<std::string> ("name", "name",
+            name_key(std::make_shared<LiteralMetadataValueKey<std::string> >("name", "name",
                         mkt_normal, stringify(params.name()))),
-            slot_key(new LiteralMetadataValueKey<std::string> ("slot", "slot",
+            slot_key(std::make_shared<LiteralMetadataValueKey<std::string> >("slot", "slot",
                         mkt_normal, stringify(params.slot()))),
-            format_key(new LiteralMetadataValueKey<std::string> (
+            format_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
                         "format", "format", mkt_significant, "unpackaged")),
-            build_dependencies_key(new LiteralMetadataValueKey<std::string> (
+            build_dependencies_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
                         "build_dependencies", "build_dependencies", mkt_normal, params.build_dependencies())),
-            run_dependencies_key(new LiteralMetadataValueKey<std::string> (
+            run_dependencies_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
                         "run_dependencies", "run_dependencies", mkt_normal, params.run_dependencies())),
-            description_key(new LiteralMetadataValueKey<std::string> (
+            description_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
                         "description", "description", mkt_normal, params.description()))
         {
             ids->push_back(id);

@@ -162,7 +162,7 @@ UnpackagedChoicesKey::value() const
     if (! _imp->value)
     {
         _imp->value = std::make_shared<Choices>();
-        std::shared_ptr<Choice> build_options(new Choice(make_named_values<ChoiceParams>(
+        std::shared_ptr<Choice> build_options(std::make_shared<Choice>(make_named_values<ChoiceParams>(
                         n::consider_added_or_changed() = false,
                         n::contains_every_value() = false,
                         n::hidden() = false,

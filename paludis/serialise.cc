@@ -273,7 +273,7 @@ Deserialisation::Deserialisation(const std::string & i, Deserialiser & d) :
                         k.append(1, c);
                     }
 
-                    std::shared_ptr<Deserialisation> de(new Deserialisation(k, d));
+                    std::shared_ptr<Deserialisation> de(std::make_shared<Deserialisation>(k, d));
                     _imp->children.push_back(de);
                 }
             }

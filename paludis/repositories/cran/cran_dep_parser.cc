@@ -36,7 +36,7 @@ cranrepository::parse_depends(const std::string & s)
 {
     Context context("When parsing CRAN 'Depends:' string: '" + s + "':");
 
-    std::shared_ptr<DependencySpecTree> result(new DependencySpecTree(std::make_shared<AllDepSpec>()));
+    std::shared_ptr<DependencySpecTree> result(std::make_shared<DependencySpecTree>(std::make_shared<AllDepSpec>()));
 
     std::list<std::string> specs;
 
@@ -66,7 +66,7 @@ cranrepository::parse_depends(const std::string & s)
     {
         Context local_context("When processing token '" + *a + "':");
 
-        std::shared_ptr<PackageDepSpec> spec(new PackageDepSpec(cranrepository::parse_cran_package_dep_spec(
+        std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(cranrepository::parse_cran_package_dep_spec(
                         strip_leading(strip_trailing(*a, " \r\n\t"), " \r\n\t"))));
         result->root()->append(spec);
     }

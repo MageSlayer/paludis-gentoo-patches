@@ -78,15 +78,15 @@ namespace paludis
             ndbam(params.location(), &supported_exndbam, "exndbam-1",
                     EAPIData::get_instance()->eapi_from_string(
                         params.eapi_when_unknown())->supported()->version_spec_options()),
-            location_key(new LiteralMetadataValueKey<FSEntry> ("location", "location",
+            location_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("location", "location",
                         mkt_significant, params.location())),
-            root_key(new LiteralMetadataValueKey<FSEntry> ("root", "root",
+            root_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("root", "root",
                         mkt_normal, params.root())),
-            format_key(new LiteralMetadataValueKey<std::string> ("format", "format",
+            format_key(std::make_shared<LiteralMetadataValueKey<std::string> >("format", "format",
                         mkt_significant, "vdb")),
-            builddir_key(new LiteralMetadataValueKey<FSEntry> ("builddir", "builddir",
+            builddir_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("builddir", "builddir",
                         mkt_normal, params.builddir())),
-            eapi_when_unknown_key(new LiteralMetadataValueKey<std::string> (
+            eapi_when_unknown_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
                         "eapi_when_unknown", "eapi_when_unknown", mkt_normal, params.eapi_when_unknown()))
         {
         }
@@ -160,7 +160,7 @@ ExndbamRepository::repository_factory_create(
                 *DistributionData::get_instance()->distribution_from_string(
                     env->distribution()))->default_eapi_when_unknown();
 
-    return std::shared_ptr<Repository>(new ExndbamRepository(
+    return std::shared_ptr<Repository>(std::make_shared<ExndbamRepository>(
                 RepositoryName(name),
                 make_named_values<ExndbamRepositoryParams>(
                     n::builddir() = builddir,
@@ -208,7 +208,7 @@ std::shared_ptr<const PackageIDSequence>
 ExndbamRepository::package_ids(const QualifiedPackageName & q) const
 {
     std::shared_ptr<NDBAMEntrySequence> entries(_imp->ndbam.entries(q));
-    std::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
+    std::shared_ptr<PackageIDSequence> result(std::make_shared<PackageIDSequence>());
 
     for (IndirectIterator<NDBAMEntrySequence::ConstIterator> e(entries->begin()), e_end(entries->end()) ;
             e != e_end ; ++e)
@@ -496,9 +496,9 @@ ExndbamRepository::perform_uninstall(
     std::shared_ptr<OutputManager> output_manager(a.options.make_output_manager()(a));
 
     FSEntry ver_dir(id->fs_location_key()->value().realpath());
-    std::shared_ptr<FSEntry> load_env(new FSEntry(ver_dir / "environment.bz2"));
+    std::shared_ptr<FSEntry> load_env(std::make_shared<FSEntry>(ver_dir / "environment.bz2"));
 
-    std::shared_ptr<FSEntrySequence> eclassdirs(new FSEntrySequence);
+    std::shared_ptr<FSEntrySequence> eclassdirs(std::make_shared<FSEntrySequence>());
     eclassdirs->push_back(ver_dir);
 
     EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_uninstall());

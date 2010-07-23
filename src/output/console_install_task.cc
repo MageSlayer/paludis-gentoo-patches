@@ -109,8 +109,8 @@ ConsoleInstallTask::ConsoleInstallTask(Environment * const env,
     InstallTask(env, options, d),
     _download_size(0),
     _download_size_overflow(false),
-    _all_tags(new Set<DepTagEntry, DepTagEntryComparator>),
-    _already_downloaded(new Set<FSEntry>),
+    _all_tags(std::make_shared<Set<DepTagEntry, DepTagEntryComparator>>()),
+    _already_downloaded(std::make_shared<Set<FSEntry>>()),
     _resolution_finished(false)
 {
     std::fill_n(_counts, static_cast<int>(last_count), 0);
@@ -1516,7 +1516,7 @@ ConsoleInstallTask::display_merge_list_entry_end(const DepListEntry &, const Dis
 std::shared_ptr<DepTagSummaryDisplayer>
 ConsoleInstallTask::make_dep_tag_summary_displayer()
 {
-    return std::shared_ptr<DepTagSummaryDisplayer>(new DepTagSummaryDisplayer(this));
+    return std::shared_ptr<DepTagSummaryDisplayer>(std::make_shared<DepTagSummaryDisplayer>(this));
 }
 
 std::shared_ptr<EntryDepTagDisplayer>

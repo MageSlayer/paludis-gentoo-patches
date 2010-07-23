@@ -172,7 +172,7 @@ paludis::cave::format_plain_metadata_key(
         const std::string & i,
         const std::string & f)
 {
-    std::shared_ptr<Map<char, std::string> > m(new Map<char, std::string>);
+    std::shared_ptr<Map<char, std::string> > m(std::make_shared<Map<char, std::string>>());
     m->insert('r', k->raw_name());
     m->insert('h', k->human_name());
     m->insert('v', format_plain_metadata_key_value(k));

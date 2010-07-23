@@ -50,7 +50,7 @@ namespace paludis
                 const std::string & s
                 ) :
             filename(o),
-            stream(new SafeOFStream(filename)),
+            stream(std::make_shared<SafeOFStream>(filename)),
             keep_on_success(k),
             keep_on_empty(l),
             summary_output_manager(m),
@@ -148,7 +148,7 @@ FileOutputManager::nothing_more_to_come()
 const std::shared_ptr<const Set<std::string> >
 FileOutputManager::factory_managers()
 {
-    std::shared_ptr<Set<std::string> > result(new Set<std::string>);
+    std::shared_ptr<Set<std::string> > result(std::make_shared<Set<std::string>>());
     result->insert("file");
     return result;
 }

@@ -72,7 +72,7 @@ StandardOutputManager::message(const MessageType, const std::string &)
 const std::shared_ptr<const Set<std::string> >
 StandardOutputManager::factory_managers()
 {
-    std::shared_ptr<Set<std::string> > result(new Set<std::string>);
+    std::shared_ptr<Set<std::string> > result(std::make_shared<Set<std::string>>());
     result->insert("standard");
     return result;
 }

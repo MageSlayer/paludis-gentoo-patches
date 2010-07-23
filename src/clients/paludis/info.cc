@@ -219,7 +219,7 @@ int do_one_info(
     Context local_context("When handling query '" + q + "':");
 
     std::shared_ptr<PackageDepSpec> spec(
-            new PackageDepSpec(parse_user_package_dep_spec(q, env.get(), UserPackageDepSpecOptions())));
+            std::make_shared<PackageDepSpec>(parse_user_package_dep_spec(q, env.get(), UserPackageDepSpecOptions())));
 
     std::shared_ptr<const PackageIDSequence>
         entries((*env)[selection::AllVersionsSorted(generator::Matches(*spec, MatchPackageOptions()))]),
@@ -228,7 +228,7 @@ int do_one_info(
         installable_entries((*env)[selection::AllVersionsSorted(
                     generator::Matches(*spec, MatchPackageOptions()) | filter::SupportsAction<InstallAction>() | filter::NotMasked())]);
 
-    std::shared_ptr<PackageIDSequence> to_show_entries(new PackageIDSequence);
+    std::shared_ptr<PackageIDSequence> to_show_entries(std::make_shared<PackageIDSequence>());
 
     if (entries->empty())
         throw NoSuchPackageError(q);

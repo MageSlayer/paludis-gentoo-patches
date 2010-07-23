@@ -55,7 +55,7 @@ namespace paludis
         Sets sets;
 
         Imp(Environment * const e, const FSEntry & r) :
-            package_database(new PackageDatabase(e)),
+            package_database(std::make_shared<PackageDatabase>(e)),
             paludis_command(""),
             root(r)
         {
@@ -150,7 +150,7 @@ TestEnvironment::root() const
 std::shared_ptr<const MirrorsSequence>
 TestEnvironment::mirrors(const std::string & s) const
 {
-    std::shared_ptr<MirrorsSequence> result(new MirrorsSequence);
+    std::shared_ptr<MirrorsSequence> result(std::make_shared<MirrorsSequence>());
 
     if (s == "example")
     {

@@ -102,7 +102,7 @@ KeywordsConf::add(const FSEntry & filename)
 
         try
         {
-            std::shared_ptr<PackageDepSpec> d(new PackageDepSpec(parse_user_package_dep_spec(
+            std::shared_ptr<PackageDepSpec> d(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec(
                             tokens.at(0), _imp->env,
                             UserPackageDepSpecOptions() + updso_allow_wildcards + updso_no_disambiguation + updso_throw_if_set)));
             if (d->package_ptr())

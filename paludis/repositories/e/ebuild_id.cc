@@ -133,10 +133,10 @@ namespace paludis
             eclass_mtimes(m),
             has_keys(false),
             has_masks(false),
-            raw_dependencies_labels(new DependenciesLabelSequence),
-            build_dependencies_labels(new DependenciesLabelSequence),
-            run_dependencies_labels(new DependenciesLabelSequence),
-            post_dependencies_labels(new DependenciesLabelSequence)
+            raw_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
+            build_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
+            run_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
+            post_dependencies_labels(std::make_shared<DependenciesLabelSequence>())
         {
             raw_dependencies_labels->push_back(std::make_shared<DependenciesBuildLabel>("build",
                             return_literal_function(true)));
@@ -335,7 +335,7 @@ EbuildID::need_keys_added() const
 
         if (_imp->eapi->supported()->choices_options()->profile_iuse_injection())
         {
-            std::shared_ptr<Set<std::string> > iuse_effective(new Set<std::string>);
+            std::shared_ptr<Set<std::string> > iuse_effective(std::make_shared<Set<std::string>>());
             if (! _imp->raw_iuse)
                 throw InternalError(PALUDIS_HERE, "no raw_iuse?");
 
@@ -1382,7 +1382,7 @@ EbuildID::add_build_options(const std::shared_ptr<Choices> & choices) const
 {
     if (eapi()->supported())
     {
-        std::shared_ptr<Choice> build_options(new Choice(make_named_values<ChoiceParams>(
+        std::shared_ptr<Choice> build_options(std::make_shared<Choice>(make_named_values<ChoiceParams>(
                         n::consider_added_or_changed() = false,
                         n::contains_every_value() = false,
                         n::hidden() = false,

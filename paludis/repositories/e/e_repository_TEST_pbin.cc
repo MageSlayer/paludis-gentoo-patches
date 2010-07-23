@@ -112,7 +112,7 @@ namespace test_cases
             env.set_paludis_command("/bin/false");
             FSEntry root(FSEntry::cwd() / "e_repository_TEST_pbin_dir" / "root");
 
-            std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
             keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_pbin_dir" / ("repo" + base_eapi)));
@@ -128,7 +128,7 @@ namespace test_cases
                         std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
 
-            std::shared_ptr<Map<std::string, std::string> > b_keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > b_keys(std::make_shared<Map<std::string, std::string>>());
             b_keys->insert("format", "e");
             b_keys->insert("names_cache", "/var/empty");
             b_keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_pbin_dir" / ("binrepo" + base_eapi)));
@@ -148,7 +148,7 @@ namespace test_cases
                         std::bind(from_keys, b_keys, std::placeholders::_1)));
             env.package_database()->add_repository(2, b_repo);
 
-            std::shared_ptr<Map<std::string, std::string> > v_keys(new Map<std::string, std::string>);
+            std::shared_ptr<Map<std::string, std::string> > v_keys(std::make_shared<Map<std::string, std::string>>());
             v_keys->insert("format", "vdb");
             v_keys->insert("names_cache", "/var/empty");
             v_keys->insert("provides_cache", "/var/empty");

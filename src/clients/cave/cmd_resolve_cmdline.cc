@@ -362,7 +362,7 @@ ResolveCommandLineImportOptions::apply(const std::shared_ptr<Environment> & env)
     if (! a_unpackaged_repository_params.specified())
         return;
 
-    std::shared_ptr<Map<std::string, std::string> > keys(new Map<std::string, std::string>);
+    std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
     for (args::StringSetArg::ConstIterator a(a_unpackaged_repository_params.begin_args()),
             a_end(a_unpackaged_repository_params.end_args()) ;
             a != a_end ; ++a)

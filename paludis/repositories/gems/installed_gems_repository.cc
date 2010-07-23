@@ -80,13 +80,13 @@ namespace paludis
             params(p),
             has_category_names(false),
             has_ids(false),
-            install_dir_key(new LiteralMetadataValueKey<FSEntry> ("install_dir", "install_dir",
+            install_dir_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("install_dir", "install_dir",
                         mkt_normal, params.install_dir())),
-            builddir_key(new LiteralMetadataValueKey<FSEntry> ("builddir", "builddir",
+            builddir_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("builddir", "builddir",
                         mkt_normal, params.builddir())),
-            root_key(new LiteralMetadataValueKey<FSEntry> (
+            root_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >(
                         "root", "root", mkt_normal, params.root())),
-            format_key(new LiteralMetadataValueKey<std::string> ("format", "format",
+            format_key(std::make_shared<LiteralMetadataValueKey<std::string> >("format", "format",
                         mkt_significant, "gems"))
         {
         }
@@ -209,7 +209,7 @@ InstalledGemsRepository::need_category_names() const
     if (_imp->has_category_names)
         return;
 
-    std::shared_ptr<CategoryNamePartSet> cat(new CategoryNamePartSet);
+    std::shared_ptr<CategoryNamePartSet> cat(std::make_shared<CategoryNamePartSet>());
     _imp->category_names = cat;
 
     cat->insert(CategoryNamePart("gems"));
@@ -230,7 +230,7 @@ InstalledGemsRepository::need_ids() const
 
     need_category_names();
 
-    std::shared_ptr<QualifiedPackageNameSet> pkgs(new QualifiedPackageNameSet);
+    std::shared_ptr<QualifiedPackageNameSet> pkgs(std::make_shared<QualifiedPackageNameSet>());
     _imp->package_names.insert(std::make_pair(gems, pkgs));
 
     for (DirIterator d(_imp->params.install_dir() / "specifications"), d_end ; d != d_end ; ++d)

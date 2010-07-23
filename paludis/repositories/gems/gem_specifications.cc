@@ -124,7 +124,7 @@ namespace
 
                 try
                 {
-                    std::shared_ptr<GemSpecification> spec(new GemSpecification(environment, repository, *i->second));
+                    std::shared_ptr<GemSpecification> spec(std::make_shared<GemSpecification>(environment, repository, *i->second));
                     _imp->specs.insert(std::make_pair(std::make_pair(spec->name(), spec->version()), spec));
                 }
                 catch (const InternalError &)

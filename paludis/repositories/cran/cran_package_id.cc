@@ -83,8 +83,8 @@ namespace paludis
             cran_repository(r),
             name("cran/" + cran_name_to_internal(strip_trailing_string(f.basename(), ".DESCRIPTION"))),
             version("0", VersionSpecOptions()),
-            suggests_labels(new DependenciesLabelSequence),
-            depends_labels(new DependenciesLabelSequence)
+            suggests_labels(std::make_shared<DependenciesLabelSequence>()),
+            depends_labels(std::make_shared<DependenciesLabelSequence>())
         {
             suggests_labels->push_back(std::make_shared<DependenciesSuggestionLabel>("Suggests", return_literal_function(true)));
             depends_labels->push_back(std::make_shared<DependenciesBuildLabel>("Depends", return_literal_function(true)));
@@ -97,9 +97,9 @@ namespace paludis
             cran_repository(c),
             name("cran/" + cran_name_to_internal(t)),
             version(r->version()),
-            contained_in_key(new PackageIDKey("Contained", "Contained in", r, mkt_normal)),
-            suggests_labels(new DependenciesLabelSequence),
-            depends_labels(new DependenciesLabelSequence)
+            contained_in_key(std::make_shared<PackageIDKey>("Contained", "Contained in", r, mkt_normal)),
+            suggests_labels(std::make_shared<DependenciesLabelSequence>()),
+            depends_labels(std::make_shared<DependenciesLabelSequence>())
         {
             suggests_labels->push_back(std::make_shared<DependenciesSuggestionLabel>("Suggests", return_literal_function(true)));
             depends_labels->push_back(std::make_shared<DependenciesBuildLabel>("Depends", return_literal_function(true)));
@@ -429,7 +429,7 @@ CRANPackageID::arbitrary_less_than_comparison(const PackageID &) const
 std::shared_ptr<const Set<std::string> >
 CRANPackageID::breaks_portage() const
 {
-    std::shared_ptr<Set<std::string> > why(new Set<std::string>);
+    std::shared_ptr<Set<std::string> > why(std::make_shared<Set<std::string>>());
     why->insert("format");
     return why;
 }

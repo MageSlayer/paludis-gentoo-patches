@@ -54,7 +54,7 @@ FindUnusedPackagesTask::~FindUnusedPackagesTask()
 std::shared_ptr<const PackageIDSequence>
 FindUnusedPackagesTask::execute(const QualifiedPackageName & package)
 {
-    std::shared_ptr<PackageIDSequence> result(new PackageIDSequence);
+    std::shared_ptr<PackageIDSequence> result(std::make_shared<PackageIDSequence>());
     std::shared_ptr<const PackageIDSequence> packages((*_env)[selection::AllVersionsGroupedBySlot(
                 generator::InRepository(_repo->name()) &
                 generator::Package(package)

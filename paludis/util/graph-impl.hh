@@ -381,7 +381,7 @@ namespace paludis
             if (done.size() < c)
             {
                 std::shared_ptr<NoGraphTopologicalOrderExistsError::RemainingNodes> r(
-                        new NoGraphTopologicalOrderExistsError::RemainingNodes);
+                        std::make_shared<NoGraphTopologicalOrderExistsError::RemainingNodes>());
                 for (typename DirectedGraph<Node_, Edge_, Comparator_>::NodeConstIterator n(g.begin_nodes()), n_end(g.end_nodes()) ; n != n_end ; ++n)
                     if (done.end() == done.find(*n))
                         r->add(stringify(depointer(*n)));

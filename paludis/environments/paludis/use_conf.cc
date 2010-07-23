@@ -40,7 +40,7 @@ namespace paludis
 
         Imp(const PaludisEnvironment * const e) :
             env(e),
-            handler(new PaludisLikeOptionsConf(make_named_values<PaludisLikeOptionsConfParams>(
+            handler(std::make_shared<PaludisLikeOptionsConf>(make_named_values<PaludisLikeOptionsConfParams>(
                             n::allow_locking() = false,
                             n::environment() = e,
                             n::make_config_file() = &make_bashable_conf

@@ -283,7 +283,7 @@ namespace
             const Environment * const env,
             const CreateOutputManagerInfo & i)
     {
-        std::shared_ptr<Map<std::string, std::string> > result(new Map<std::string, std::string>);
+        std::shared_ptr<Map<std::string, std::string> > result(std::make_shared<Map<std::string, std::string>>());
         CreateVarsFromInfo v(env, result);
         i.accept(v);
         return result;
