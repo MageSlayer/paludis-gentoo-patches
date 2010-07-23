@@ -43,19 +43,19 @@ namespace paludis
         ArgsHandler::ArgsIterator * args_index;
         ArgsHandler::ArgsIterator args_end;
         std::string env_prefix;
-        char & second_char_or_zero;
+        std::string & remaining_chars;
         bool no;
 
         Imp(
                 ArgsHandler::ArgsIterator * i,
                 ArgsHandler::ArgsIterator e,
                 std::string p,
-                char & s,
+                std::string & s,
                 bool n) :
             args_index(i),
             args_end(e),
             env_prefix(p),
-            second_char_or_zero(s),
+            remaining_chars(s),
             no(n)
         {
         }
@@ -63,7 +63,7 @@ namespace paludis
 }
 
 ArgsVisitor::ArgsVisitor(ArgsHandler::ArgsIterator * ai, ArgsHandler::ArgsIterator ae,
-        const std::string & env_prefix, char & s, bool n) :
+        const std::string & env_prefix, std::string & s, bool n) :
     Pimp<ArgsVisitor>(ai, ae, env_prefix, s, n)
 {
 }
@@ -123,7 +123,16 @@ void ArgsVisitor::visit(IntegerArg & arg)
     if (! _imp->no)
     {
         arg.set_specified(true);
-        std::string param = get_param(arg);
+        std::string param;
+
+        if ((! _imp->remaining_chars.empty()) && (std::string::npos == _imp->remaining_chars.find_first_not_of("0123456789")))
+        {
+            param = _imp->remaining_chars;
+            _imp->remaining_chars.clear();
+        }
+        else
+            param = get_param(arg);
+
         try
         {
             int a(destringify<int>(param));
@@ -148,10 +157,10 @@ void ArgsVisitor::visit(EnumArg & arg)
         arg.set_specified(true);
 
         std::string p;
-        if ('\0' != _imp->second_char_or_zero)
+        if (_imp->remaining_chars.length() == 1)
         {
-            p = std::string(1, _imp->second_char_or_zero);
-            _imp->second_char_or_zero = '\0';
+            p = _imp->remaining_chars;
+            _imp->remaining_chars.clear();
         }
         else
             p = get_param(arg);

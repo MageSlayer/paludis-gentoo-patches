@@ -228,14 +228,14 @@ ArgsHandler::run(
                 if (it == _imp->longopts.end())
                     throw BadArgument("--no-" + arg);
 
-                char second_char_or_zero('\0');
-                ArgsVisitor visitor(&argit, arge, env_prefix, second_char_or_zero, true);
+                std::string remaining_chars;
+                ArgsVisitor visitor(&argit, arge, env_prefix, remaining_chars, true);
                 it->second->accept(visitor);
             }
             else
             {
-                char second_char_or_zero('\0');
-                ArgsVisitor visitor(&argit, arge, env_prefix, second_char_or_zero, false);
+                std::string remaining_chars;
+                ArgsVisitor visitor(&argit, arge, env_prefix, remaining_chars, false);
                 it->second->accept(visitor);
             }
         }
@@ -245,11 +245,11 @@ ArgsHandler::run(
             for (std::string::iterator c = arg.begin(); c != arg.end(); ++c)
             {
                 bool maybe_second_char_used(false);
-                char second_char_or_zero('\0');
-                if (2 == arg.length() && c == arg.begin())
+                std::string remaining_chars;
+                if (arg.length() >= 2 && c == arg.begin())
                 {
                     maybe_second_char_used = true;
-                    second_char_or_zero = arg[1];
+                    remaining_chars = arg.substr(1);
                 }
 
                 std::map<char, ArgsOption *>::iterator it = _imp->shortopts.find(*c);
@@ -258,10 +258,10 @@ ArgsHandler::run(
                     throw BadArgument(std::string("-") + *c);
                 }
 
-                ArgsVisitor visitor(&argit, arge, env_prefix, second_char_or_zero, false);
+                ArgsVisitor visitor(&argit, arge, env_prefix, remaining_chars, false);
                 it->second->accept(visitor);
 
-                if (maybe_second_char_used && '\0' == second_char_or_zero)
+                if (maybe_second_char_used && remaining_chars.empty())
                     break;
             }
         }

@@ -68,13 +68,13 @@ namespace paludis
                 /**
                  * Constructor
                  *
-                 * \since 0.47
+                 * \since 0.49
                  */
                 ArgsVisitor(
                         ArgsHandler::ArgsIterator *,
                         ArgsHandler::ArgsIterator,
                         const std::string &,
-                        char & second_char_or_zero,
+                        std::string & remaining_chars,
                         bool no);
 
                 ~ArgsVisitor();
