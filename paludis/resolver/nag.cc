@@ -300,7 +300,7 @@ NAG::sorted_strongly_connected_components(
         throw InternalError(PALUDIS_HERE, "mismatch");
 
     /* build edges between SCCs */
-    PlainEdges scc_edges, scc_edges_backwards;
+    PlainEdges all_scc_edges, scc_edges, scc_edges_backwards;
     for (Edges::const_iterator e(_imp->edges.begin()), e_end(_imp->edges.end()) ;
             e != e_end ; ++e)
     {
@@ -311,6 +311,7 @@ NAG::sorted_strongly_connected_components(
             RepresentativeNodes::const_iterator to(representative_nodes.find(n->first));
             if (! (to->second == from->second))
             {
+                all_scc_edges.insert(std::make_pair(from->second, Nodes())).first->second.insert(to->second);
                 scc_edges.insert(std::make_pair(from->second, Nodes())).first->second.insert(to->second);
                 scc_edges_backwards.insert(std::make_pair(to->second, Nodes())).first->second.insert(from->second);
             }
@@ -323,7 +324,7 @@ NAG::sorted_strongly_connected_components(
 
     typedef std::set<std::pair<int, NAGIndex> > OrderableNow;
     OrderableNow orderable_now;
-    Nodes done;
+    Nodes done, pending_fetches;
 
     for (StronglyConnectedComponentsByRepresentative::const_iterator c(sccs.begin()), c_end(sccs.end()) ;
             c != c_end ; ++c)
@@ -333,7 +334,29 @@ NAG::sorted_strongly_connected_components(
     while (! orderable_now.empty())
     {
         OrderableNow::iterator ordering_now(orderable_now.begin());
-        result->push_back(sccs.find(ordering_now->second)->second);
+        StronglyConnectedComponentsByRepresentative::const_iterator ordering_now_scc(sccs.find(ordering_now->second));
+
+        if (ordering_now_scc->second.nodes()->size() == 1 && ordering_now_scc->second.nodes()->begin()->role() == nir_fetched)
+            pending_fetches.insert(ordering_now->second);
+        else
+        {
+            auto this_scc_edges(all_scc_edges.find(ordering_now->second));
+            if (this_scc_edges != all_scc_edges.end())
+            {
+                for (auto e(this_scc_edges->second.begin()), e_end(this_scc_edges->second.end()) ;
+                        e != e_end ; ++e)
+                {
+                    auto p(pending_fetches.find(*e));
+                    if (p != pending_fetches.end())
+                    {
+                        result->push_back(sccs.find(*e)->second);
+                        pending_fetches.erase(p);
+                    }
+                }
+            }
+
+            result->push_back(ordering_now_scc->second);
+        }
         done.insert(ordering_now->second);
 
         PlainEdges::iterator ordering_now_edges(scc_edges_backwards.find(ordering_now->second));
@@ -352,6 +375,9 @@ NAG::sorted_strongly_connected_components(
 
         orderable_now.erase(ordering_now);
     }
+
+    if (! pending_fetches.empty())
+        throw InternalError(PALUDIS_HERE, "still have pending fetches");
 
     if (done.size() != sccs.size())
         throw InternalError(PALUDIS_HERE, "mismatch");

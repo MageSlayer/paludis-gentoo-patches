@@ -138,24 +138,24 @@ namespace test_cases
 
             TEST_CHECK_EQUAL(resolved->job_lists()->execute_job_list()->length(), 6);
 
-            const InstallJob * const direct_dep_job(simple_visitor_cast<const InstallJob>(**resolved->job_lists()->execute_job_list()->fetch(3)));
+            const InstallJob * const direct_dep_job(simple_visitor_cast<const InstallJob>(**resolved->job_lists()->execute_job_list()->fetch(1)));
             TEST_CHECK(direct_dep_job);
             TEST_CHECK_EQUAL(join(direct_dep_job->requirements()->begin(), direct_dep_job->requirements()->end(), ", ", stringify_req),
                     "0 satisfied independent always");
 
-            const InstallJob * const indirect_dep_job(simple_visitor_cast<const InstallJob>(**resolved->job_lists()->execute_job_list()->fetch(4)));
+            const InstallJob * const indirect_dep_job(simple_visitor_cast<const InstallJob>(**resolved->job_lists()->execute_job_list()->fetch(3)));
             TEST_CHECK(indirect_dep_job);
             TEST_CHECK_EQUAL(join(indirect_dep_job->requirements()->begin(), indirect_dep_job->requirements()->end(), ", ", stringify_req),
-                    "1 satisfied independent always");
+                    "2 satisfied independent always");
 
             const InstallJob * const target_job(simple_visitor_cast<const InstallJob>(**resolved->job_lists()->execute_job_list()->fetch(5)));
             TEST_CHECK(target_job);
             if (direct_dep_installed)
                 TEST_CHECK_EQUAL(join(target_job->requirements()->begin(), target_job->requirements()->end(), ", ", stringify_req),
-                        "2 satisfied independent always, 4 independent, 3 independent");
+                        "4 satisfied independent always, 3 independent, 1 independent");
             else
                 TEST_CHECK_EQUAL(join(target_job->requirements()->begin(), target_job->requirements()->end(), ", ", stringify_req),
-                        "2 satisfied independent always, 3 satisfied, 4 independent, 3 independent");
+                        "4 satisfied independent always, 1 satisfied, 3 independent, 1 independent");
         }
     } test_continue_on_failure_false(false), test_continue_on_failure_true(true);
 
