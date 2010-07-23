@@ -24,16 +24,18 @@
  * A load of make_named_values functions.
  *
  * Bizarre oddity in C++98: you can only use an initialiser list when using
- * equals to initialise a newly constructed object. C++0x fixes this, but in the
- * mean time we can hack around it with this mess...
+ * equals to initialise a newly constructed object. C++0x fixes this, but GCC
+ * 4.4 is buggy, so for now we can't use braces directly...
  */
+
+#include <utility>
 
 namespace paludis
 {
     template <typename R_, typename... T_>
     R_ make_named_values(T_ && ... a)
     {
-        R_ result = { a... };
+        R_ result = { std::forward<T_>(a)... };
         return result;
     }
 }
