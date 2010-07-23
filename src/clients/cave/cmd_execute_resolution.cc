@@ -207,29 +207,65 @@ namespace
         return 0 == retcode;
     }
 
+    std::string maybe_replacing(
+            const std::shared_ptr<Environment> & env,
+            const std::shared_ptr<const PackageIDSequence> & ids,
+            const std::shared_ptr<const Sequence<PackageDepSpec> > & maybe_replacing_specs)
+    {
+        std::string r;
+
+        if (maybe_replacing_specs)
+            for (auto i(maybe_replacing_specs->begin()), i_end(maybe_replacing_specs->end()) ;
+                    i != i_end ; ++i)
+            {
+                if (r.empty())
+                    r = " replacing ";
+                else
+                    r.append(", ");
+
+                const auto replacing_ids((*env)[selection::BestVersionOnly(generator::Matches(*i, MatchPackageOptions()))]);
+                if (replacing_ids->empty())
+                    r.append(stringify(*i));
+                else if (ids->empty() || (*ids->begin())->name() != (*replacing_ids->begin())->name())
+                    r.append(stringify(**replacing_ids->begin()));
+                else
+                    r.append((*replacing_ids->begin())->canonical_form(idcf_no_name));
+            }
+
+        return r;
+    }
+
     void starting_action(
+            const std::shared_ptr<Environment> & env,
             const std::string & action,
             const std::shared_ptr<const PackageIDSequence> & ids,
+            const std::shared_ptr<const Sequence<PackageDepSpec> > & maybe_replacing_specs,
             const int x, const int y)
     {
         cout << endl;
         cout << c::bold_blue() << x << " of " << y << ": Starting " << action << " for "
-            << join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), ", ") << "..." << c::normal() << endl;
+            << join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), ", ")
+            << maybe_replacing(env, ids, maybe_replacing_specs)
+            << "..." << c::normal() << endl;
         cout << endl;
     }
 
     void done_action(
+            const std::shared_ptr<Environment> & env,
             const std::string & action,
             const std::shared_ptr<const PackageIDSequence> & ids,
+            const std::shared_ptr<const Sequence<PackageDepSpec> > & maybe_replacing_specs,
             const bool success)
     {
         cout << endl;
         if (success)
             cout << c::bold_green() << "Done " << action << " for "
-                << join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), ", ") << c::normal() << endl;
+                << join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), ", ")
+                << maybe_replacing(env, ids, maybe_replacing_specs) << c::normal() << endl;
         else
             cout << c::bold_red() << "Failed " << action << " for "
-                << join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), ", ") << c::normal() << endl;
+                << join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), ", ")
+                << maybe_replacing(env, ids, maybe_replacing_specs) << c::normal() << endl;
         cout << endl;
     }
 
@@ -704,7 +740,7 @@ namespace
                 case x1_pre:
                     {
                         ++counts.x_installs;
-                        starting_action(action_string, ids, counts.x_installs, counts.y_installs);
+                        starting_action(env, action_string, ids, install_item.replacing_specs(), counts.x_installs, counts.y_installs);
                     }
                     break;
 
@@ -739,7 +775,7 @@ namespace
                     break;
 
                 case x1_post:
-                    done_action(action_string, ids, 0 == retcode);
+                    done_action(env, action_string, ids, install_item.replacing_specs(), 0 == retcode);
                     break;
             }
 
@@ -763,7 +799,7 @@ namespace
                 case x1_pre:
                     {
                         ++counts.x_installs;
-                        starting_action("remove", ids, counts.x_installs, counts.y_installs);
+                        starting_action(env, "remove", ids, make_null_shared_ptr(), counts.x_installs, counts.y_installs);
                     }
                     break;
 
@@ -791,7 +827,7 @@ namespace
                     break;
 
                 case x1_post:
-                    done_action("remove", ids, 0 == retcode);
+                    done_action(env, "remove", ids, make_null_shared_ptr(), 0 == retcode);
                     break;
             }
 
@@ -808,7 +844,7 @@ namespace
                 case x1_pre:
                     {
                         ++counts.x_fetches;
-                        starting_action("fetch", ids, counts.x_fetches, counts.y_fetches);
+                        starting_action(env, "fetch", ids, make_null_shared_ptr(), counts.x_fetches, counts.y_fetches);
                     }
                     break;
 
@@ -834,7 +870,7 @@ namespace
                     break;
 
                 case x1_post:
-                    done_action("fetch", ids, 0 == retcode);
+                    done_action(env, "fetch", ids, make_null_shared_ptr(), 0 == retcode);
                     break;
             }
 
@@ -991,7 +1027,9 @@ namespace
 
         std::string visit(const InstallJob & j) const
         {
-            return "installing " + stringify_id_or_spec(env, j.origin_id_spec()) + " to " + stringify(j.destination_repository_name());
+            const auto ids((*env)[selection::BestVersionOnly(generator::Matches(j.origin_id_spec(), MatchPackageOptions()))]);
+            return "installing " + stringify_id_or_spec(env, j.origin_id_spec()) + " to ::" + stringify(j.destination_repository_name())
+                + maybe_replacing(env, ids, j.replacing_specs());
         }
 
         std::string visit(const FetchJob & j) const
@@ -1379,7 +1417,30 @@ namespace
 
         std::string visit(const InstallJob & j) const
         {
-            return "install " + stringify_id_or_spec(env, j.origin_id_spec()) + " to " + stringify(j.destination_repository_name());
+            std::string r;
+            if (! j.replacing_specs()->empty())
+            {
+                const auto origin_ids((*env)[selection::BestVersionOnly(generator::Matches(j.origin_id_spec(), MatchPackageOptions()))]);
+
+                for (auto i(j.replacing_specs()->begin()), i_end(j.replacing_specs()->end()) ;
+                        i != i_end ; ++i)
+                {
+                    if (r.empty())
+                        r = " replacing ";
+                    else
+                        r.append(", ");
+
+                    const auto ids((*env)[selection::BestVersionOnly(generator::Matches(*i, MatchPackageOptions()))]);
+                    if (ids->empty())
+                        r.append(stringify(*i));
+                    else if (origin_ids->empty() || (*origin_ids->begin())->name() != (*ids->begin())->name())
+                        r.append(stringify(**ids->begin()));
+                    else
+                        r.append((*ids->begin())->canonical_form(idcf_version));
+                }
+            }
+
+            return "install " + stringify_id_or_spec(env, j.origin_id_spec()) + " to ::" + stringify(j.destination_repository_name()) + r;
         }
 
         std::string visit(const UninstallJob & j) const
