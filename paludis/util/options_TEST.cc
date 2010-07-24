@@ -83,7 +83,7 @@ namespace test_cases
 
             TEST_CHECK(! options.any());
 
-            second = MyOptions() + mo_three + mo_eight;
+            second = { mo_three, mo_eight };
             options |= second;
             options += mo_seven;
             TEST_CHECK(options.any());
@@ -94,5 +94,25 @@ namespace test_cases
             TEST_CHECK(options.highest_bit() >= static_cast<int>(last_mo));
         }
     } test_options;
+
+    struct OptionsInitialiserTest : TestCase
+    {
+        OptionsInitialiserTest() : TestCase("options initialiser") { }
+
+        void run()
+        {
+            MyOptions a({});
+            TEST_CHECK(! a.any());
+
+            MyOptions b({ mo_two, mo_four, mo_six });
+            TEST_CHECK(! b[mo_one]);
+            TEST_CHECK(b[mo_two]);
+            TEST_CHECK(! b[mo_three]);
+            TEST_CHECK(b[mo_four]);
+            TEST_CHECK(! b[mo_five]);
+            TEST_CHECK(b[mo_six]);
+            TEST_CHECK(! b[mo_seven]);
+        }
+    } test_options_initialiser;
 }
 
