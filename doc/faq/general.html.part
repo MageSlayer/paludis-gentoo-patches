@@ -74,38 +74,11 @@ the code now does.</p>
 
 <h2 id="compilers">Known compiler issues</h2>
 
-<p>The primary supported compiler for building Paludis is GCC, version
-4.1 or later.  Some versions of GCC, and some compiler flags, are
-known to have problems (these are all GCC's fault):</p>
+<p>The primary supported compiler for building Paludis is GCC, version 4.4 or later. Older versions of GCC will not
+work, since we make use of various C++0x features.</p>
 
-<ul>
-    <li>GCC 4.1.1 segfaults while building Paludis.</li>
-
-    <li>GCC 4.2.2 fails with an internal error while building Paludis
-    if the <code>-g</code> compiler flag is used.</li>
-
-    <li>GCC 4.2.2 has been known to miscompile Paludis on the 64-bit
-    PowerPC architecture.</li>
-
-    <li>The <code>-O3</code> compiler flag causes linker errors when
-    building some versions of Paludis (note that the Gentoo and
-    paludis-overlay ebuilds remove this flag automatically).</li>
-
-    <li>The <code>-Os</code> compiler flag has been known to cause GCC
-    to miscompile Paludis at least on x86_64, and possibly others
-    (note that the Gentoo and paludis-overlay ebuilds remove this flag
-    automatically).</li>
-
-    <li>The <code>-O0</code> flag (or equivalently, absense of
-    any <code>-O</code>x flag) has been known to cause GCC to
-    miscompile Paludis in the past at least on x86_64.</li>
-</ul>
-
-<p>Recent (version 10.1) ICC will sometimes work. 10.1.008 has correctly compiled Paludis
-on x86_64, but only with most compiler optimisations disabled. With <code>-xT</code> (and
-probably others) the compiler will die with an internal error or a floating point
-exception; even without any non-standard optimisations turned on, ICC produces
-code that is measurably faster than GCC.</p>
+<p>At the time of writing, ICC does not appear to provide sufficient C++0x support, and LLVM's clang rejects the
+<code>type_traits</code> header supplied by <code>libstdc++</code>.</p>
 
 <h2 id="verb">What term should I use to mean "to install a package using Paludis"?</h2>
 
