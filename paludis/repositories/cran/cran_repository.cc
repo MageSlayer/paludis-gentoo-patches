@@ -420,15 +420,15 @@ CRANRepository::repository_factory_create(
     if (builddir.empty())
         builddir = "/var/tmp/paludis";
 
-    return std::shared_ptr<Repository>(std::make_shared<CRANRepository>(make_named_values<CRANRepositoryParams>(
-                    n::builddir() = builddir,
-                    n::distdir() = distdir,
-                    n::environment() = env,
-                    n::library() = library,
-                    n::location() = location,
-                    n::mirror() = mirror,
-                    n::sync() = sync
-                )));
+    return std::make_shared<CRANRepository>(make_named_values<CRANRepositoryParams>(
+                n::builddir() = builddir,
+                n::distdir() = distdir,
+                n::environment() = env,
+                n::library() = library,
+                n::location() = location,
+                n::mirror() = mirror,
+                n::sync() = sync
+                ));
 }
 
 RepositoryName

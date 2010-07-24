@@ -323,14 +323,14 @@ UnavailableRepository::repository_factory_create(
 
     std::string sync_options(f("sync_options"));
 
-    return std::shared_ptr<UnavailableRepository>(std::make_shared<UnavailableRepository>(
-                make_named_values<UnavailableRepositoryParams>(
-                    n::environment() = env,
-                    n::location() = location,
-                    n::name() = RepositoryName(name_str),
-                    n::sync() = sync,
-                    n::sync_options() = sync_options
-                )));
+    return std::make_shared<UnavailableRepository>(
+            make_named_values<UnavailableRepositoryParams>(
+                n::environment() = env,
+                n::location() = location,
+                n::name() = RepositoryName(name_str),
+                n::sync() = sync,
+                n::sync_options() = sync_options
+                ));
 }
 
 RepositoryName

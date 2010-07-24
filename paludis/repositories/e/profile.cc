@@ -45,7 +45,7 @@ namespace
         const std::string & a,
         const bool x)
     {
-        return std::shared_ptr<Profile>(std::make_shared<T_>(env, repo, name, locations, a, x));
+        return std::make_shared<T_>(env, repo, name, locations, a, x);
     }
 }
 

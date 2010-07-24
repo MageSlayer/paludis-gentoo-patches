@@ -1516,13 +1516,13 @@ ConsoleInstallTask::display_merge_list_entry_end(const DepListEntry &, const Dis
 std::shared_ptr<DepTagSummaryDisplayer>
 ConsoleInstallTask::make_dep_tag_summary_displayer()
 {
-    return std::shared_ptr<DepTagSummaryDisplayer>(std::make_shared<DepTagSummaryDisplayer>(this));
+    return std::make_shared<DepTagSummaryDisplayer>(this);
 }
 
 std::shared_ptr<EntryDepTagDisplayer>
 ConsoleInstallTask::make_entry_dep_tag_displayer()
 {
-    return std::shared_ptr<EntryDepTagDisplayer>(new EntryDepTagDisplayer());
+    return std::make_shared<EntryDepTagDisplayer>();
 }
 
 EntryDepTagDisplayer::EntryDepTagDisplayer()

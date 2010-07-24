@@ -129,13 +129,13 @@ namespace
         switch (p.type())
         {
             case sft_simple:
-                return std::shared_ptr<SetFileHandler>(std::make_shared<SimpleHandler>(p));
+                return std::make_shared<SimpleHandler>(p);
 
             case sft_paludis_conf:
-                return std::shared_ptr<SetFileHandler>(std::make_shared<PaludisConfHandler>(p));
+                return std::make_shared<PaludisConfHandler>(p);
 
             case sft_paludis_bash:
-                return std::shared_ptr<SetFileHandler>(std::make_shared<PaludisBashHandler>(p));
+                return std::make_shared<PaludisBashHandler>(p);
 
             case last_sft:
                 break;

@@ -59,7 +59,7 @@ namespace
     make_layout(const ERepository * const n, const FSEntry & b,
             std::shared_ptr<const FSEntrySequence> f)
     {
-        return std::shared_ptr<Layout>(std::make_shared<T_>(n, b, f));
+        return std::make_shared<T_>(n, b, f);
     }
 }
 

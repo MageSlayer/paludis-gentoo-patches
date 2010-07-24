@@ -440,5 +440,5 @@ PyHookFile::_get_traceback() const
 std::shared_ptr<HookFile>
 create_py_hook_file(const FSEntry & f, const bool b, const Environment * const e)
 {
-    return std::shared_ptr<HookFile>(std::make_shared<PyHookFile>(f, b, e));
+    return std::make_shared<PyHookFile>(f, b, e);
 }

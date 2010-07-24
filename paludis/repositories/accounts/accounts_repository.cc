@@ -171,11 +171,11 @@ AccountsRepository::repository_factory_create(
     if (name_str.empty())
         name_str = "accounts";
 
-    return std::shared_ptr<AccountsRepository>(std::make_shared<AccountsRepository>(
-                make_named_values<AccountsRepositoryParams>(
-                    n::environment() = env,
-                    n::name() = RepositoryName(name_str)
-                )));
+    return std::make_shared<AccountsRepository>(
+            make_named_values<AccountsRepositoryParams>(
+                n::environment() = env,
+                n::name() = RepositoryName(name_str)
+                ));
 }
 
 std::shared_ptr<Repository>
@@ -200,13 +200,13 @@ AccountsRepository::repository_factory_installed_create(
     if (root_str != "/")
         throw AccountsRepositoryConfigurationError("Values other than '/' for 'root' not yet supported");
 
-    return std::shared_ptr<AccountsRepository>(std::make_shared<AccountsRepository>(
-                make_named_values<InstalledAccountsRepositoryParams>(
-                    n::environment() = env,
-                    n::handler() = handler,
-                    n::name() = RepositoryName(name_str),
-                    n::root() = FSEntry(root_str)
-                )));
+    return std::make_shared<AccountsRepository>(
+            make_named_values<InstalledAccountsRepositoryParams>(
+                n::environment() = env,
+                n::handler() = handler,
+                n::name() = RepositoryName(name_str),
+                n::root() = FSEntry(root_str)
+                ));
 }
 
 RepositoryName

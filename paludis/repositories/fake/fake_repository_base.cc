@@ -111,9 +111,9 @@ std::shared_ptr<const PackageIDSequence>
 FakeRepositoryBase::package_ids(const QualifiedPackageName & n) const
 {
     if (! has_category_named(n.category()))
-        return std::shared_ptr<PackageIDSequence>(std::make_shared<PackageIDSequence>());
+        return std::make_shared<PackageIDSequence>();
     if (! has_package_named(n))
-        return std::shared_ptr<PackageIDSequence>(std::make_shared<PackageIDSequence>());
+        return std::make_shared<PackageIDSequence>();
     return _imp->ids.find(n)->second;
 }
 

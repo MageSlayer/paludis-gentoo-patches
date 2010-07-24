@@ -370,7 +370,7 @@ TraditionalLayout::package_names(const CategoryNamePart & c) const
     need_category_names();
 
     if (_imp->category_names.end() == _imp->category_names.find(c))
-        return std::shared_ptr<QualifiedPackageNameSet>(std::make_shared<QualifiedPackageNameSet>());
+        return std::make_shared<QualifiedPackageNameSet>();
 
     if ((_imp->tree_root / stringify(c)).is_directory_or_symlink_to_directory())
         for (DirIterator d(_imp->tree_root / stringify(c), DirIteratorOptions() + dio_inode_sort), d_end ; d != d_end ; ++d)
@@ -418,7 +418,7 @@ TraditionalLayout::package_ids(const QualifiedPackageName & n) const
         return _imp->ids.find(n)->second;
     }
     else
-        return std::shared_ptr<PackageIDSequence>(std::make_shared<PackageIDSequence>());
+        return std::make_shared<PackageIDSequence>();
 }
 
 const std::shared_ptr<const FSEntrySequence>

@@ -168,13 +168,13 @@ std::shared_ptr<const PackageIDSequence>
 InstalledVirtualsRepository::package_ids(const QualifiedPackageName & q) const
 {
     if (q.category().value() != "virtual")
-        return std::shared_ptr<PackageIDSequence>(std::make_shared<PackageIDSequence>());
+        return std::make_shared<PackageIDSequence>();
 
     need_ids();
 
     IDMap::const_iterator i(_imp->ids.find(q));
     if (i == _imp->ids.end())
-        return std::shared_ptr<PackageIDSequence>(std::make_shared<PackageIDSequence>());
+        return std::make_shared<PackageIDSequence>();
 
     return i->second;
 }
@@ -183,7 +183,7 @@ std::shared_ptr<const QualifiedPackageNameSet>
 InstalledVirtualsRepository::package_names(const CategoryNamePart & c) const
 {
     if (c.value() != "virtual")
-        return std::shared_ptr<QualifiedPackageNameSet>(std::make_shared<QualifiedPackageNameSet>());
+        return std::make_shared<QualifiedPackageNameSet>();
 
     need_ids();
 

@@ -308,6 +308,6 @@ RangeRewriter::spec() const
     if (_imp->invalid || ! _imp->spec_data)
         return std::shared_ptr<PackageDepSpec>();
 
-    return std::shared_ptr<PackageDepSpec>(std::make_shared<PackageDepSpec>(_imp->spec_data));
+    return std::make_shared<PackageDepSpec>(_imp->spec_data);
 }
 

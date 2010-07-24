@@ -393,11 +393,11 @@ CRANInstalledRepository::repository_factory_create(
     if (! f("world").empty())
         throw CRANInstalledRepositoryConfigurationError("Key 'world' is no longer supported.");
 
-    return std::shared_ptr<Repository>(std::make_shared<CRANInstalledRepository>(make_named_values<CRANInstalledRepositoryParams>(
-                    n::environment() = env,
-                    n::location() = location,
-                    n::root() = root
-                )));
+    return std::make_shared<CRANInstalledRepository>(make_named_values<CRANInstalledRepositoryParams>(
+                n::environment() = env,
+                n::location() = location,
+                n::root() = root
+                ));
 }
 
 RepositoryName

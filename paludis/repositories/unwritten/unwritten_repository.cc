@@ -323,14 +323,14 @@ UnwrittenRepository::repository_factory_create(
 
     std::string sync_options(f("sync_options"));
 
-    return std::shared_ptr<UnwrittenRepository>(std::make_shared<UnwrittenRepository>(
-                make_named_values<UnwrittenRepositoryParams>(
-                    n::environment() = env,
-                    n::location() = location,
-                    n::name() = RepositoryName(name_str),
-                    n::sync() = sync,
-                    n::sync_options() = sync_options
-                )));
+    return std::make_shared<UnwrittenRepository>(
+            make_named_values<UnwrittenRepositoryParams>(
+                n::environment() = env,
+                n::location() = location,
+                n::name() = RepositoryName(name_str),
+                n::sync() = sync,
+                n::sync_options() = sync_options
+                ));
 }
 
 RepositoryName

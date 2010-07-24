@@ -48,7 +48,7 @@ namespace
     static std::shared_ptr<Matcher>
     make(const std::string & s)
     {
-        return std::shared_ptr<Matcher>(std::make_shared<M_>(s));
+        return std::make_shared<M_>(s);
     }
 }
 

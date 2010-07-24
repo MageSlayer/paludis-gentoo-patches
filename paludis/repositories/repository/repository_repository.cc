@@ -291,14 +291,14 @@ RepositoryRepository::repository_factory_create(
     if (root_str.empty())
         root_str = "/";
 
-    return std::shared_ptr<RepositoryRepository>(std::make_shared<RepositoryRepository>(
-                make_named_values<RepositoryRepositoryParams>(
-                    n::config_filename() = config_filename,
-                    n::config_template() = config_template,
-                    n::environment() = env,
-                    n::name() = RepositoryName(name_str),
-                    n::root() = root_str
-                )));
+    return std::make_shared<RepositoryRepository>(
+            make_named_values<RepositoryRepositoryParams>(
+                n::config_filename() = config_filename,
+                n::config_template() = config_template,
+                n::environment() = env,
+                n::name() = RepositoryName(name_str),
+                n::root() = root_str
+                ));
 }
 
 RepositoryName

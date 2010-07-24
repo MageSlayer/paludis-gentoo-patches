@@ -87,19 +87,19 @@ namespace
             }
         }
 
-        return std::shared_ptr<Environment>(std::make_shared<NoConfigEnvironment>(
-                    make_named_values<no_config_environment::Params>(
-                        n::accept_unstable() = accept_unstable,
-                        n::disable_metadata_cache() = disable_metadata_cache,
-                        n::extra_accept_keywords() = extra_accept_keywords,
-                        n::extra_params() = extra_params,
-                        n::extra_repository_dirs() = extra_repository_dirs,
-                        n::master_repository_name() = master_repository_name,
-                        n::profiles_if_not_auto() = profile,
-                        n::repository_dir() = repository_dir,
-                        n::repository_type() = repository_type,
-                        n::write_cache() = write_cache
-                    )));
+        return std::make_shared<NoConfigEnvironment>(
+                make_named_values<no_config_environment::Params>(
+                    n::accept_unstable() = accept_unstable,
+                    n::disable_metadata_cache() = disable_metadata_cache,
+                    n::extra_accept_keywords() = extra_accept_keywords,
+                    n::extra_params() = extra_params,
+                    n::extra_repository_dirs() = extra_repository_dirs,
+                    n::master_repository_name() = master_repository_name,
+                    n::profiles_if_not_auto() = profile,
+                    n::repository_dir() = repository_dir,
+                    n::repository_type() = repository_type,
+                    n::write_cache() = write_cache
+                    ));
     }
 }
 

@@ -350,7 +350,7 @@ VDBRepository::repository_factory_create(
                 *DistributionData::get_instance()->distribution_from_string(
                     env->distribution()))->default_eapi_when_unknown();
 
-    return std::shared_ptr<Repository>(std::make_shared<VDBRepository>(make_named_values<VDBRepositoryParams>(
+    return std::make_shared<VDBRepository>(make_named_values<VDBRepositoryParams>(
                 n::builddir() = builddir,
                 n::eapi_when_unknown() = eapi_when_unknown,
                 n::environment() = env,
@@ -359,7 +359,7 @@ VDBRepository::repository_factory_create(
                 n::names_cache() = names_cache,
                 n::provides_cache() = provides_cache,
                 n::root() = root
-                )));
+                ));
 }
 
 RepositoryName

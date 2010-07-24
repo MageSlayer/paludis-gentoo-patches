@@ -29,7 +29,7 @@ namespace
     std::shared_ptr<Environment>
     make_portage_environment(const std::string & s)
     {
-        return std::shared_ptr<Environment>(std::make_shared<PortageEnvironment>(s));
+        return std::make_shared<PortageEnvironment>(s);
     }
 }
 

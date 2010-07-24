@@ -160,16 +160,16 @@ ExndbamRepository::repository_factory_create(
                 *DistributionData::get_instance()->distribution_from_string(
                     env->distribution()))->default_eapi_when_unknown();
 
-    return std::shared_ptr<Repository>(std::make_shared<ExndbamRepository>(
-                RepositoryName(name),
-                make_named_values<ExndbamRepositoryParams>(
-                    n::builddir() = builddir,
-                    n::eapi_when_unknown() = eapi_when_unknown,
-                    n::environment() = env,
-                    n::location() = location,
-                    n::root() = root
-                    )
-                ));
+    return std::make_shared<ExndbamRepository>(
+            RepositoryName(name),
+            make_named_values<ExndbamRepositoryParams>(
+                n::builddir() = builddir,
+                n::eapi_when_unknown() = eapi_when_unknown,
+                n::environment() = env,
+                n::location() = location,
+                n::root() = root
+                )
+            );
 }
 
 RepositoryName

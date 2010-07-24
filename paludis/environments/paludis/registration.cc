@@ -29,7 +29,7 @@ namespace
     std::shared_ptr<Environment>
     make_paludis_environment(const std::string & s)
     {
-        return std::shared_ptr<Environment>(std::make_shared<PaludisEnvironment>(s));
+        return std::make_shared<PaludisEnvironment>(s);
     }
 }
 

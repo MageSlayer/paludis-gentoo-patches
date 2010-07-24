@@ -46,45 +46,45 @@ namespace
     std::shared_ptr<DepTagCategory>
     make_glsa_dep_tag()
     {
-        return std::shared_ptr<DepTagCategory>(std::make_shared<DepTagCategory>(
-                    true,
-                    "glsa",
-                    "Security advisories",
-                    "Your system is potentially affected by these security issues:",
-                    "Please read the advisories carefully and take appropriate action."));
+        return std::make_shared<DepTagCategory>(
+                true,
+                "glsa",
+                "Security advisories",
+                "Your system is potentially affected by these security issues:",
+                "Please read the advisories carefully and take appropriate action.");
     }
 
     std::shared_ptr<DepTagCategory>
     make_general_set_dep_tag()
     {
-        return std::shared_ptr<DepTagCategory>(std::make_shared<DepTagCategory>(
-                    true,
-                    "general",
-                    "General sets",
-                    "",
-                    ""));
+        return std::make_shared<DepTagCategory>(
+                true,
+                "general",
+                "General sets",
+                "",
+                "");
     }
 
     std::shared_ptr<DepTagCategory>
     make_dependency_set_dep_tag()
     {
-        return std::shared_ptr<DepTagCategory>(std::make_shared<DepTagCategory>(
-                    false,
-                    "dependency",
-                    "Dependencies",
-                    "",
-                    ""));
+        return std::make_shared<DepTagCategory>(
+                false,
+                "dependency",
+                "Dependencies",
+                "",
+                "");
     }
 
     std::shared_ptr<DepTagCategory>
     make_target_dep_tag()
     {
-        return std::shared_ptr<DepTagCategory>(std::make_shared<DepTagCategory>(
-                    false,
-                    "target",
-                    "Targets",
-                    "",
-                    ""));
+        return std::make_shared<DepTagCategory>(
+                false,
+                "target",
+                "Targets",
+                "",
+                "");
     }
 }
 
