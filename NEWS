@@ -4,6 +4,27 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the Git log.
 
+0.50.0:
+    * We now require a compiler supporting various C++0x features, such as GCC
+      4.4 or later.
+
+    * format="exheres" and format="ebuild" are now known as format="e". The old
+      format names remain valid and are not yet deprecated.
+
+    * Arguments in the form -X0 are now parsed as -X 0 rather than -X -0.
+
+    * 'cave execute-resolution' now allows a single fetch job and a single
+      execute job to be executed in parallel.
+
+    * 'cave update-world' now displays whether or not world is changed.
+
+    * 'cave execute-resolution' headings and summaries now include information
+      on the versions being replaced, where appropriate
+
+    * 'cave resolve' will now select weakly masked packages rather than being
+      unable to decide. Such packages must be manually unmasked before the
+      resolution can proceed.
+
 0.48.6:
     * If the user explicitly specified an option for the special 'test' flag,
       this would override the build_options magic. This is now fixed.
