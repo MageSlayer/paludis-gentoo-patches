@@ -1210,6 +1210,11 @@ namespace
         {
             return allowed_to_break_system;
         }
+
+        bool visit(const MaskedConfirmation &) const
+        {
+            return false;
+        }
     };
 
     bool confirm_fn(

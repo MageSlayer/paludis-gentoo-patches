@@ -2065,6 +2065,13 @@ namespace
                 if (! fns.confirm_fn()(resolution, c))
                     changes_to_make_decision.add_required_confirmation(c);
             }
+
+            if (changes_to_make_decision.origin_id()->masked())
+            {
+                auto c(std::make_shared<MaskedConfirmation>());
+                if (! fns.confirm_fn()(resolution, c))
+                    changes_to_make_decision.add_required_confirmation(c);
+            }
         }
 
         void visit(BreakDecision & break_decision) const

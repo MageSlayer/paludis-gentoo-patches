@@ -698,6 +698,11 @@ namespace
         {
             return "--uninstalls-may-break system";
         }
+
+        std::string visit(const MaskedConfirmation &) const
+        {
+            return "being unmasked";
+        }
     };
 
     std::string stringify_confirmation(const RequiredConfirmation & c)

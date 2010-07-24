@@ -38,6 +38,8 @@ RequiredConfirmation::deserialise(Deserialisation & d)
         return BreakConfirmation::deserialise(d);
     else if (d.class_name() == "RemoveSystemPackageConfirmation")
         return RemoveSystemPackageConfirmation::deserialise(d);
+    else if (d.class_name() == "MaskedConfirmation")
+        return MaskedConfirmation::deserialise(d);
     else
         throw InternalError(PALUDIS_HERE, "unknown class '" + stringify(d.class_name()) + "'");
 
@@ -97,6 +99,20 @@ void
 RemoveSystemPackageConfirmation::serialise(Serialiser & s) const
 {
     s.object("RemoveSystemPackageConfirmation")
+        ;
+}
+
+const std::shared_ptr<MaskedConfirmation>
+MaskedConfirmation::deserialise(Deserialisation & d)
+{
+    Deserialisator v(d, "MaskedConfirmation");
+    return std::make_shared<MaskedConfirmation>();
+}
+
+void
+MaskedConfirmation::serialise(Serialiser & s) const
+{
+    s.object("MaskedConfirmation")
         ;
 }
 

@@ -32,7 +32,7 @@ namespace paludis
     {
         class PALUDIS_VISIBLE RequiredConfirmation :
             public virtual DeclareAbstractAcceptMethods<RequiredConfirmation, MakeTypeList<
-                DowngradeConfirmation, NotBestConfirmation, BreakConfirmation, RemoveSystemPackageConfirmation>::Type>
+                DowngradeConfirmation, NotBestConfirmation, BreakConfirmation, RemoveSystemPackageConfirmation, MaskedConfirmation>::Type>
         {
             public:
                 virtual void serialise(Serialiser &) const = 0;
@@ -80,6 +80,17 @@ namespace paludis
         {
             public:
                 static const std::shared_ptr<RemoveSystemPackageConfirmation> deserialise(
+                        Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual void serialise(Serialiser &) const;
+        };
+
+        class PALUDIS_VISIBLE MaskedConfirmation :
+            public RequiredConfirmation,
+            public ImplementAcceptMethods<RequiredConfirmation, MaskedConfirmation>
+        {
+            public:
+                static const std::shared_ptr<MaskedConfirmation> deserialise(
                         Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual void serialise(Serialiser &) const;
