@@ -24,6 +24,7 @@
 #include "formats.hh"
 #include "colour_formatter.hh"
 #include "match_qpns.hh"
+#include "not_strongly_masked.hh"
 #include <paludis/args/do_help.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/system.hh>
@@ -768,6 +769,186 @@ namespace
         cout << c::bold_green() << "    Take using: " << c::normal() << "--purge" << endl;
     }
 
+    struct MaskedByKeyVisitor
+    {
+        const std::string indent;
+
+        void visit(const MetadataValueKey<std::shared_ptr<const PackageID> > & k)
+        {
+            cout << indent << k.human_name() << " " << *k.value() << endl;
+        }
+
+        void visit(const MetadataValueKey<std::string> & k)
+        {
+            cout << indent << k.human_name() << " " << k.value() << endl;
+        }
+
+        void visit(const MetadataValueKey<SlotName> & k)
+        {
+            cout << indent << k.human_name() << " " << k.value() << endl;
+        }
+
+        void visit(const MetadataValueKey<long> & k)
+        {
+            cout << indent << k.human_name() << " " << k.value() << endl;
+        }
+
+        void visit(const MetadataValueKey<bool> & k)
+        {
+            cout << indent << k.human_name() << " " << k.value() << endl;
+        }
+
+        void visit(const MetadataSectionKey & k)
+        {
+            cout << indent << k.human_name() << endl;
+        }
+
+        void visit(const MetadataTimeKey & k)
+        {
+            cout << indent << k.human_name() << " " << pretty_print_time(k.value().seconds()) << endl;
+        }
+
+        void visit(const MetadataValueKey<std::shared_ptr<const Contents> > & k)
+        {
+            cout << indent << k.human_name() << endl;
+        }
+
+        void visit(const MetadataValueKey<std::shared_ptr<const RepositoryMaskInfo> > & k)
+        {
+            cout << indent << k.value()->mask_file() << endl;
+            for (Sequence<std::string>::ConstIterator l(k.value()->comment()->begin()), l_end(k.value()->comment()->end()) ;
+                    l != l_end ; ++l)
+                cout << indent << *l << endl;
+        }
+
+        void visit(const MetadataValueKey<FSEntry> & k)
+        {
+            cout << indent << k.human_name() << " " << k.value() << endl;
+        }
+
+        void visit(const MetadataCollectionKey<Set<std::string> > & k)
+        {
+            ColourFormatter formatter(0);
+            cout << indent << k.human_name() << " " << k.pretty_print_flat(formatter) << endl;
+        }
+
+        void visit(const MetadataCollectionKey<Sequence<std::string> > & k)
+        {
+            ColourFormatter formatter(0);
+            cout << indent << k.human_name() << " " << k.pretty_print_flat(formatter) << endl;
+        }
+
+        void visit(const MetadataCollectionKey<FSEntrySequence> & k)
+        {
+            ColourFormatter formatter(0);
+            cout << indent << k.human_name() << " " << k.pretty_print_flat(formatter) << endl;
+        }
+
+        void visit(const MetadataCollectionKey<PackageIDSequence> & k)
+        {
+            ColourFormatter formatter(0);
+            cout << indent << k.human_name() << " " << k.pretty_print_flat(formatter) << endl;
+        }
+
+        void visit(const MetadataSpecTreeKey<FetchableURISpecTree> & k)
+        {
+            ColourFormatter formatter(0);
+            cout << indent << k.human_name() << " " << k.pretty_print_flat(formatter) << endl;
+        }
+
+        void visit(const MetadataSpecTreeKey<SimpleURISpecTree> & k)
+        {
+            ColourFormatter formatter(0);
+            cout << indent << k.human_name() << " " << k.pretty_print_flat(formatter) << endl;
+        }
+
+        void visit(const MetadataSpecTreeKey<LicenseSpecTree> & k)
+        {
+            ColourFormatter formatter(0);
+            cout << indent << k.human_name() << " " << k.pretty_print_flat(formatter) << endl;
+        }
+
+        void visit(const MetadataSpecTreeKey<DependencySpecTree> & k)
+        {
+            ColourFormatter formatter(0);
+            cout << indent << k.human_name() << " " << k.pretty_print_flat(formatter) << endl;
+        }
+
+        void visit(const MetadataCollectionKey<KeywordNameSet> & k)
+        {
+            ColourFormatter formatter(0);
+            cout << indent << k.human_name() << " " << k.pretty_print_flat(formatter) << endl;
+        }
+
+        void visit(const MetadataSpecTreeKey<ProvideSpecTree> & k)
+        {
+            ColourFormatter formatter(0);
+            cout << indent << k.human_name() << " " << k.pretty_print_flat(formatter) << endl;
+        }
+
+        void visit(const MetadataSpecTreeKey<PlainTextSpecTree> & k)
+        {
+            ColourFormatter formatter(0);
+            cout << indent << k.human_name() << " " << k.pretty_print_flat(formatter) << endl;
+        }
+
+        void visit(const MetadataValueKey<std::shared_ptr<const Choices> > & k)
+        {
+            ColourFormatter formatter(0);
+            cout << indent << k.human_name() << endl;
+        }
+    };
+
+    struct MaskedByVisitor
+    {
+        const std::string colour;
+        const std::string indent;
+
+        void visit(const UserMask & m) const
+        {
+            cout << colour << indent << "Masked by " << c::normal() << m.description() << endl;
+        }
+
+        void visit(const RepositoryMask & m) const
+        {
+            MaskedByKeyVisitor v{indent + "    "};
+            cout << colour << indent << "Masked by " << c::normal() << m.description() << endl;
+            if (m.mask_key())
+                m.mask_key()->accept(v);
+        }
+
+        void visit(const UnacceptedMask & m) const
+        {
+            MaskedByKeyVisitor v{indent + "    "};
+            cout << colour << indent << "Masked by " << c::normal() << m.description() << endl;
+            if (m.unaccepted_key())
+                m.unaccepted_key()->accept(v);
+        }
+
+        void visit(const UnsupportedMask & m) const
+        {
+            cout << colour << indent << "Masked by " << c::normal() << m.description() << " (" << m.explanation() << ")" << endl;
+        }
+
+        void visit(const AssociationMask & m) const
+        {
+            cout << colour << indent << "Masked by " << c::normal() << m.description() <<
+                " (associated package '" << *m.associated_package() << "')" << endl;
+        }
+    };
+
+    void display_masks(
+            const std::shared_ptr<Environment> &,
+            const ChangesToMakeDecision & decision)
+    {
+        if (! decision.origin_id()->masked())
+            return;
+
+        for (auto m(decision.origin_id()->begin_masks()), m_end(decision.origin_id()->end_masks()) ;
+                m != m_end ; ++m)
+            (*m)->accept(MaskedByVisitor{c::bold_red(), "    "});
+    }
+
     void display_one_installish(
             const std::shared_ptr<Environment> & env,
             const DisplayResolutionCommandLine & cmdline,
@@ -784,26 +965,29 @@ namespace
         if (! decision.best())
             x = "-" + x;
 
-        do
-        {
-            switch (resolution->resolvent().destination_type())
+        if (decision.origin_id()->masked())
+            c = c::red();
+        else
+            do
             {
-                case dt_install_to_slash:
-                    if (decision.if_via_new_binary_in())
-                        c = c::yellow();
-                    continue;
+                switch (resolution->resolvent().destination_type())
+                {
+                    case dt_install_to_slash:
+                        if (decision.if_via_new_binary_in())
+                            c = c::yellow();
+                        continue;
 
-                case dt_create_binary:
-                    c = c::green();
-                    continue;
+                    case dt_create_binary:
+                        c = c::green();
+                        continue;
 
-                case last_dt:
-                    break;
+                    case last_dt:
+                        break;
+                }
+
+                throw InternalError(PALUDIS_HERE, "bad destination_type. huh?");
             }
-
-            throw InternalError(PALUDIS_HERE, "bad destination_type. huh?");
-        }
-        while (false);
+            while (false);
 
         if (untaken)
             x = "(" + x + ")";
@@ -889,6 +1073,7 @@ namespace
         display_one_description(env, cmdline, decision.origin_id(), ! old_id);
         display_choices(env, cmdline, decision.origin_id(), old_id, choices_to_explain);
         display_reasons(resolution, more_annotations);
+        display_masks(env, decision);
         if (untaken)
             display_untaken_change(decision);
         if (confirmations)
@@ -934,197 +1119,6 @@ namespace
             cout << "    " << c::bold_normal() << notes << c::normal() << endl;
     }
 
-    struct NotFixableMask
-    {
-        bool visit(const UserMask &) const
-        {
-            return false;
-        }
-
-        bool visit(const UnacceptedMask &) const
-        {
-            return false;
-        }
-
-        bool visit(const RepositoryMask &) const
-        {
-            return false;
-        }
-
-        bool visit(const UnsupportedMask &) const
-        {
-            return true;
-        }
-
-        bool visit(const AssociationMask &) const
-        {
-            return true;
-        }
-    };
-
-    struct MaskedByKeyVisitor
-    {
-        void visit(const MetadataValueKey<std::shared_ptr<const PackageID> > & k)
-        {
-            cout << "            " << k.human_name() << " " << *k.value() << endl;
-        }
-
-        void visit(const MetadataValueKey<std::string> & k)
-        {
-            cout << "            " << k.human_name() << " " << k.value() << endl;
-        }
-
-        void visit(const MetadataValueKey<SlotName> & k)
-        {
-            cout << "            " << k.human_name() << " " << k.value() << endl;
-        }
-
-        void visit(const MetadataValueKey<long> & k)
-        {
-            cout << "            " << k.human_name() << " " << k.value() << endl;
-        }
-
-        void visit(const MetadataValueKey<bool> & k)
-        {
-            cout << "            " << k.human_name() << " " << k.value() << endl;
-        }
-
-        void visit(const MetadataSectionKey & k)
-        {
-            cout << "            " << k.human_name() << endl;
-        }
-
-        void visit(const MetadataTimeKey & k)
-        {
-            cout << "            " << k.human_name() << " " << pretty_print_time(k.value().seconds()) << endl;
-        }
-
-        void visit(const MetadataValueKey<std::shared_ptr<const Contents> > & k)
-        {
-            cout << "            " << k.human_name() << endl;
-        }
-
-        void visit(const MetadataValueKey<std::shared_ptr<const RepositoryMaskInfo> > & k)
-        {
-            cout << "            " << k.value()->mask_file() << endl;
-            for (Sequence<std::string>::ConstIterator l(k.value()->comment()->begin()), l_end(k.value()->comment()->end()) ;
-                    l != l_end ; ++l)
-                cout << "            " << *l << endl;
-        }
-
-        void visit(const MetadataValueKey<FSEntry> & k)
-        {
-            cout << "            " << k.human_name() << " " << k.value() << endl;
-        }
-
-        void visit(const MetadataCollectionKey<Set<std::string> > & k)
-        {
-            ColourFormatter formatter(0);
-            cout << "            " << k.human_name() << " " << k.pretty_print_flat(formatter) << endl;
-        }
-
-        void visit(const MetadataCollectionKey<Sequence<std::string> > & k)
-        {
-            ColourFormatter formatter(0);
-            cout << "            " << k.human_name() << " " << k.pretty_print_flat(formatter) << endl;
-        }
-
-        void visit(const MetadataCollectionKey<FSEntrySequence> & k)
-        {
-            ColourFormatter formatter(0);
-            cout << "            " << k.human_name() << " " << k.pretty_print_flat(formatter) << endl;
-        }
-
-        void visit(const MetadataCollectionKey<PackageIDSequence> & k)
-        {
-            ColourFormatter formatter(0);
-            cout << "            " << k.human_name() << " " << k.pretty_print_flat(formatter) << endl;
-        }
-
-        void visit(const MetadataSpecTreeKey<FetchableURISpecTree> & k)
-        {
-            ColourFormatter formatter(0);
-            cout << "            " << k.human_name() << " " << k.pretty_print_flat(formatter) << endl;
-        }
-
-        void visit(const MetadataSpecTreeKey<SimpleURISpecTree> & k)
-        {
-            ColourFormatter formatter(0);
-            cout << "            " << k.human_name() << " " << k.pretty_print_flat(formatter) << endl;
-        }
-
-        void visit(const MetadataSpecTreeKey<LicenseSpecTree> & k)
-        {
-            ColourFormatter formatter(0);
-            cout << "            " << k.human_name() << " " << k.pretty_print_flat(formatter) << endl;
-        }
-
-        void visit(const MetadataSpecTreeKey<DependencySpecTree> & k)
-        {
-            ColourFormatter formatter(0);
-            cout << "            " << k.human_name() << " " << k.pretty_print_flat(formatter) << endl;
-        }
-
-        void visit(const MetadataCollectionKey<KeywordNameSet> & k)
-        {
-            ColourFormatter formatter(0);
-            cout << "            " << k.human_name() << " " << k.pretty_print_flat(formatter) << endl;
-        }
-
-        void visit(const MetadataSpecTreeKey<ProvideSpecTree> & k)
-        {
-            ColourFormatter formatter(0);
-            cout << "            " << k.human_name() << " " << k.pretty_print_flat(formatter) << endl;
-        }
-
-        void visit(const MetadataSpecTreeKey<PlainTextSpecTree> & k)
-        {
-            ColourFormatter formatter(0);
-            cout << "            " << k.human_name() << " " << k.pretty_print_flat(formatter) << endl;
-        }
-
-        void visit(const MetadataValueKey<std::shared_ptr<const Choices> > & k)
-        {
-            ColourFormatter formatter(0);
-            cout << "            " << k.human_name() << endl;
-        }
-    };
-
-    struct MaskedByVisitor
-    {
-        void visit(const UserMask & m) const
-        {
-            cout << "        Masked by " << m.description() << endl;
-        }
-
-        void visit(const RepositoryMask & m) const
-        {
-            MaskedByKeyVisitor v;
-            cout << "        Masked by " << m.description() << endl;
-            if (m.mask_key())
-                m.mask_key()->accept(v);
-        }
-
-        void visit(const UnacceptedMask & m) const
-        {
-            MaskedByKeyVisitor v;
-            cout << "        Masked by " << m.description() << endl;
-            if (m.unaccepted_key())
-                m.unaccepted_key()->accept(v);
-        }
-
-        void visit(const UnsupportedMask & m) const
-        {
-            cout << "        Masked by " << m.description() << " (" << m.explanation() << ")" << endl;
-        }
-
-        void visit(const AssociationMask & m) const
-        {
-            cout << "        Masked by " << m.description() <<
-                " (associated package '" << *m.associated_package() << "*)" << endl;
-        }
-    };
-
     void display_unable_to_make_decision(
             const std::shared_ptr<Environment> & env,
             const std::shared_ptr<const Resolution> & resolution,
@@ -1151,11 +1145,7 @@ namespace
                 colour = c::red();
             else if (u->package_id()->masked())
             {
-                NotFixableMask is_not_fixable_mask;
-                if (indirect_iterator(u->package_id()->end_masks()) == std::find_if(
-                            indirect_iterator(u->package_id()->begin_masks()),
-                            indirect_iterator(u->package_id()->end_masks()),
-                            accept_visitor_returning<bool>(is_not_fixable_mask)))
+                if (not_strongly_masked(u->package_id()))
                     colour = c::bold_red();
                 else
                     colour = c::red();
@@ -1165,7 +1155,7 @@ namespace
             for (PackageID::MasksConstIterator m(u->package_id()->begin_masks()),
                     m_end(u->package_id()->end_masks()) ;
                     m != m_end ; ++m)
-                (*m)->accept(MaskedByVisitor());
+                (*m)->accept(MaskedByVisitor{"", "        "});
 
             std::set<std::string> duplicates;
             for (Constraints::ConstIterator c(u->unmet_constraints()->begin()),
