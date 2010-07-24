@@ -4,6 +4,62 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the Git log.
 
+0.48.6:
+    * If the user explicitly specified an option for the special 'test' flag,
+      this would override the build_options magic. This is now fixed.
+
+    * Certain pkg_ functions are no longer skipped for 0-based EAPIs, to work
+      around badly behaving Gentoo ebuilds.
+
+    * If 'cave show' displays a masked package, it will now pick a version that
+      is easy to unmask over a higher version that cannot be unmasked.
+
+    * New 'cave verify' subcommand for checking whether installed packages have
+      been modified.
+
+0.48.5:
+    * xattr support was previously looking for attr/xattr.h rather than
+      sys/xattr.h, and so was not being detected on glibc systems without attr
+      installed. This is now corrected.
+
+    * On some systems, the Python bindings were giving dlopen related warnings
+      due to the linker trying to be too clever. This is now worked around.
+
+    * New cave subcommands for scripting: print-id-actions, print-id-masks,
+      print-repository-metadata, print-set.
+
+0.48.4:
+    * 'cave uninstall' now accepts wildcards.
+
+    * 'cave purge' and 'cave resolve' will no longer attempt to purge things
+      that cannot be uninstalled.
+
+    * 'cave show -t' now has short options for values.
+
+    * We now tolerate ebuilds that try to output things or die in global scope.
+
+0.48.3:
+    * 'cave display-resolution' now indicates when changing the origin
+      repository for an upgrade.
+
+    * 'cave display-resolution' now shows dependency reasons correctly.
+
+    * 'cave resolve !foo' now applies to all slots of foo, rather than using the
+      --target-slots option.
+
+    * 'cave uninstall' will now only update world if every slot has been
+      removed.
+
+    * 'cave execute-resolution' will now show pkg_nofetch information where
+      appropriate.
+
+    * 'cave resume' on a resume file that includes already-completed uninstalls
+      no longer errors.
+
+    * Uninstalls are now considered for 'cave execute-resolution
+      --continue-on-failure' (previously a failed uninstall would not count as a
+      failure).
+
 0.48.2:
     * The 'cave' client is now enabled by default. 'cave' is a modular console
       client that will eventually replace 'paludis'. It is currently reasonably
