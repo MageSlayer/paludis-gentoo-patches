@@ -23,6 +23,7 @@
 #include "formats.hh"
 #include "exceptions.hh"
 #include "select_format_for_spec.hh"
+#include "not_strongly_masked.hh"
 #include <paludis/args/args.hh>
 #include <paludis/args/do_help.hh>
 #include <paludis/name.hh>
@@ -863,34 +864,6 @@ namespace
         }
     }
 
-    struct WeakMask
-    {
-        bool visit(const UnacceptedMask &) const
-        {
-            return true;
-        }
-
-        bool visit(const UserMask &) const
-        {
-            return false;
-        }
-
-        bool visit(const RepositoryMask &) const
-        {
-            return true;
-        }
-
-        bool visit(const UnsupportedMask &) const
-        {
-            return false;
-        }
-
-        bool visit(const AssociationMask &) const
-        {
-            return false;
-        }
-    };
-
     void do_one_package(
             const ShowCommandLine & cmdline,
             const std::shared_ptr<Environment> & env,
@@ -915,16 +888,7 @@ namespace
             {
                 if ((*i)->masked())
                 {
-                    bool weak_masked(true);
-                    for (PackageID::MasksConstIterator m((*i)->begin_masks()), m_end((*i)->end_masks()) ;
-                            m != m_end ; ++m)
-                        if (! (*m)->accept_returning<bool>(WeakMask()))
-                        {
-                            weak_masked = false;
-                            break;
-                        }
-
-                    if (weak_masked)
+                    if (not_strongly_masked(*i))
                         best_weak_masked_installable = *i;
                     else
                         best_masked_installable = *i;
