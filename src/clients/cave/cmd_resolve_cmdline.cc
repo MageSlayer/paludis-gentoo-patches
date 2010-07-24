@@ -70,6 +70,9 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
             "Purge packages matching the given specification, if they will no longer be used after "
             "a resolution. Use '*/*' to accept all purges, but note that by doing so you are putting "
             "a great deal of trust in package authors to get dependencies right."),
+    a_no_override_masks(&g_resolution_options, "no-override-masks", '\0',
+            "If otherwise unable to make a decision, unless this option is specified the resolver "
+            "will try packages that are weakly masked too.", true),
 
     g_dependent_options(this, "Dependent Options", "Dependent options. A package is dependent if it "
             "requires (or looks like it might require) a package which is being removed. By default, "

@@ -285,10 +285,13 @@ namespace
 
     Filter make_unmaskable_filter_fn(
             const Environment * const,
-            const ResolveCommandLineResolutionOptions &,
+            const ResolveCommandLineResolutionOptions & cmdline,
             const std::shared_ptr<const Resolution> &)
     {
-        return UnmaskableFilter();
+        if (cmdline.a_no_override_masks.specified())
+            return filter::NotMasked();
+        else
+            return UnmaskableFilter();
     }
 
     const std::shared_ptr<const Sequence<std::string> > add_resolver_targets(
