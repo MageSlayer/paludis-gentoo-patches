@@ -115,13 +115,13 @@ PackageOrBlockDepSpec::deserialise(Deserialisation & d, const std::shared_ptr<co
 
     bool block(v.member<bool>("block"));
     PackageDepSpec spec(parse_elike_package_dep_spec(v.member<std::string>("spec"),
-                ELikePackageDepSpecOptions() + epdso_allow_tilde_greater_deps + epdso_nice_equal_star +
-                epdso_allow_ranged_deps + epdso_allow_use_deps + epdso_allow_use_deps_portage +
-                epdso_allow_use_dep_defaults + epdso_allow_repository_deps + epdso_allow_slot_star_deps +
-                epdso_allow_slot_equal_deps + epdso_allow_slot_deps + epdso_allow_key_requirements +
-                epdso_allow_use_dep_question_defaults,
-                VersionSpecOptions() + vso_flexible_dashes + vso_flexible_dots + vso_ignore_case +
-                vso_letters_anywhere + vso_dotted_suffixes,
+                { epdso_allow_tilde_greater_deps, epdso_nice_equal_star,
+                epdso_allow_ranged_deps, epdso_allow_use_deps, epdso_allow_use_deps_portage,
+                epdso_allow_use_dep_defaults, epdso_allow_repository_deps, epdso_allow_slot_star_deps,
+                epdso_allow_slot_equal_deps, epdso_allow_slot_deps, epdso_allow_key_requirements,
+                epdso_allow_use_dep_question_defaults },
+                { vso_flexible_dashes, vso_flexible_dots, vso_ignore_case,
+                vso_letters_anywhere, vso_dotted_suffixes },
                 for_id));
 
     std::shared_ptr<MetadataSectionKey> annotations;

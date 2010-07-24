@@ -493,7 +493,7 @@ namespace test_cases
 
                     const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
                                     PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
-                                            &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
+                                            &env, { })), { }))]->begin());
 
                     TEST_CHECK(id1->end_metadata() != id1->find_metadata("EAPI"));
                     TEST_CHECK(simple_visitor_cast<const MetadataValueKey<std::string> >(**id1->find_metadata("EAPI")));
@@ -512,7 +512,7 @@ namespace test_cases
 
                     const std::shared_ptr<const PackageID> id2(*env[selection::RequireExactlyOne(generator::Matches(
                                     PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-2",
-                                            &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
+                                            &env, { })), { }))]->begin());
 
                     TEST_CHECK(id2->end_metadata() != id2->find_metadata("EAPI"));
                     TEST_CHECK(bool(id2->short_description_key()));
@@ -528,7 +528,7 @@ namespace test_cases
 
                     const std::shared_ptr<const PackageID> id3(*env[selection::RequireExactlyOne(generator::Matches(
                                     PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-3",
-                                            &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
+                                            &env, { })), { }))]->begin());
 
                     TEST_CHECK(id3->end_metadata() != id3->find_metadata("EAPI"));
                     TEST_CHECK(bool(id3->short_description_key()));
@@ -574,7 +574,7 @@ namespace test_cases
 
                 const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-two-1",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
+                                        &env, { })), { }))]->begin());
 
                 TEST_CHECK(id1->end_metadata() != id1->find_metadata("EAPI"));
                 TEST_CHECK_EQUAL(std::static_pointer_cast<const erepository::ERepositoryID>(id1)->eapi()->name(), "UNKNOWN");
@@ -618,13 +618,13 @@ namespace test_cases
 
                 const std::shared_ptr<const PackageID> p1(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
+                                        &env, { })), { }))]->begin());
                 const std::shared_ptr<const PackageID> p2(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat-two/pkg-two-1",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
+                                        &env, { })), { }))]->begin());
                 const std::shared_ptr<const PackageID> p4(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-2",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
+                                        &env, { })), { }))]->begin());
 
                 test_choice(p1, "flag1",     true,  true,  false);
                 test_choice(p1, "flag2",     false, false, true);
@@ -705,29 +705,29 @@ namespace test_cases
 
             TEST_CHECK((*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=category/package-1::test-repo-18",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin())->masked());
+                                        &env, { })), { }))]->begin())->masked());
             TEST_CHECK((*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=category/package-2::test-repo-18",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin())->masked());
+                                        &env, { })), { }))]->begin())->masked());
             TEST_CHECK(! (*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=category/package-3::test-repo-18",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin())->masked());
+                                        &env, { })), { }))]->begin())->masked());
             TEST_CHECK(! (*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=category/package-4::test-repo-18",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin())->masked());
+                                        &env, { })), { }))]->begin())->masked());
 
             TEST_CHECK((*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=category/package-1::test-repo-19",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin())->masked());
+                                        &env, { })), { }))]->begin())->masked());
             TEST_CHECK(! (*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=category/package-2::test-repo-19",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin())->masked());
+                                        &env, { })), { }))]->begin())->masked());
             TEST_CHECK((*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=category/package-3::test-repo-19",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin())->masked());
+                                        &env, { })), { }))]->begin())->masked());
             TEST_CHECK(! (*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=category/package-4::test-repo-19",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin())->masked());
+                                        &env, { })), { }))]->begin())->masked());
         }
     } test_e_repository_repository_masks;
 
@@ -755,13 +755,13 @@ namespace test_cases
 
                 TEST_CHECK((*env[selection::RequireExactlyOne(generator::Matches(
                                     PackageDepSpec(parse_user_package_dep_spec("=cat/masked-0",
-                                            &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin())->masked());
+                                            &env, { })), { }))]->begin())->masked());
                 TEST_CHECK(! (*env[selection::RequireExactlyOne(generator::Matches(
                                     PackageDepSpec(parse_user_package_dep_spec("=cat/was_masked-0",
-                                            &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin())->masked());
+                                            &env, { })), { }))]->begin())->masked());
                 TEST_CHECK(! (*env[selection::RequireExactlyOne(generator::Matches(
                                     PackageDepSpec(parse_user_package_dep_spec("=cat/not_masked-0",
-                                            &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin())->masked());
+                                            &env, { })), { }))]->begin())->masked());
             }
         }
     } test_e_repository_query_profile_masks;
@@ -939,7 +939,7 @@ namespace test_cases
                 TestMessageSuffix suffix("no files", true);
                 const std::shared_ptr<const PackageID> no_files_id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("cat/no-files",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                                        &env, { })), { }))]->last());
                 TEST_CHECK(bool(no_files_id));
                 TEST_CHECK(bool(no_files_id->short_description_key()));
                 TEST_CHECK_EQUAL(no_files_id->short_description_key()->value(), "The Short Description");
@@ -950,7 +950,7 @@ namespace test_cases
                 TestMessageSuffix suffix("fetched files", true);
                 const std::shared_ptr<const PackageID> fetched_files_id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("cat/fetched-files",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                                        &env, { })), { }))]->last());
                 TEST_CHECK(bool(fetched_files_id));
                 TEST_CHECK((FSEntry("e_repository_TEST_dir") / "distdir" / "already-fetched.txt").is_regular_file());
                 fetched_files_id->perform_action(action);
@@ -962,7 +962,7 @@ namespace test_cases
                 TEST_CHECK(! (FSEntry("e_repository_TEST_dir") / "distdir" / "fetchable-1.txt").is_regular_file());
                 const std::shared_ptr<const PackageID> fetchable_files_id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("cat/fetchable-files",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                                        &env, { })), { }))]->last());
                 TEST_CHECK(bool(fetchable_files_id));
                 fetchable_files_id->perform_action(action);
                 TEST_CHECK((FSEntry("e_repository_TEST_dir") / "distdir" / "fetchable-1.txt").is_regular_file());
@@ -973,7 +973,7 @@ namespace test_cases
                 TEST_CHECK(! (FSEntry("e_repository_TEST_dir") / "distdir" / "arrowed.txt").is_regular_file());
                 const std::shared_ptr<const PackageID> arrow_files_id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("cat/arrow-files",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                                        &env, { })), { }))]->last());
                 TEST_CHECK(bool(arrow_files_id));
                 arrow_files_id->perform_action(action);
                 TEST_CHECK((FSEntry("e_repository_TEST_dir") / "distdir" / "arrowed.txt").is_regular_file());
@@ -983,7 +983,7 @@ namespace test_cases
                 TestMessageSuffix suffix("unfetchable files", true);
                 const std::shared_ptr<const PackageID> unfetchable_files_id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("cat/unfetchable-files",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                                        &env, { })), { }))]->last());
                 TEST_CHECK(bool(unfetchable_files_id));
                 TEST_CHECK_THROWS(unfetchable_files_id->perform_action(action), ActionFailedError);
             }
@@ -991,7 +991,7 @@ namespace test_cases
             {
                 const std::shared_ptr<const PackageID> no_files_restricted_id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("cat/no-files-restricted",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                                        &env, { })), { }))]->last());
                 TEST_CHECK(bool(no_files_restricted_id));
                 no_files_restricted_id->perform_action(action);
             }
@@ -999,7 +999,7 @@ namespace test_cases
             {
                 const std::shared_ptr<const PackageID> fetched_files_restricted_id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("cat/fetched-files-restricted",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                                        &env, { })), { }))]->last());
                 TEST_CHECK(bool(fetched_files_restricted_id));
                 fetched_files_restricted_id->perform_action(action);
             }
@@ -1007,7 +1007,7 @@ namespace test_cases
             {
                 const std::shared_ptr<const PackageID> fetchable_files_restricted_id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("cat/fetchable-files-restricted",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                                        &env, { })), { }))]->last());
                 TEST_CHECK(bool(fetchable_files_restricted_id));
                 TEST_CHECK_THROWS(fetchable_files_restricted_id->perform_action(action), ActionFailedError);
             }
@@ -1045,7 +1045,7 @@ namespace test_cases
 
             const std::shared_ptr<const PackageID> id(*env[selection::AllVersionsSorted(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("category/package",
-                                    &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                                    &env, { })), { }))]->last());
             TEST_CHECK(bool(id));
             repo->make_manifest(id->name());
             id->perform_action(action);

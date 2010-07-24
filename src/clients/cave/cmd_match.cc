@@ -360,7 +360,7 @@ MatchCommand::run(
     if (capped_distance(cmdline.begin_parameters(), cmdline.end_parameters(), 2) < 2)
         throw args::DoHelp("match requires at least two parameters");
 
-    PackageDepSpec spec(parse_user_package_dep_spec(*cmdline.begin_parameters(), env.get(), UserPackageDepSpecOptions()));
+    PackageDepSpec spec(parse_user_package_dep_spec(*cmdline.begin_parameters(), env.get(), { }));
 
     const std::shared_ptr<Set<std::string> > patterns(std::make_shared<Set<std::string>>());
     std::copy(next(cmdline.begin_parameters()), cmdline.end_parameters(), patterns->inserter());
@@ -376,7 +376,7 @@ MatchCommand::run_hosted(
         const PackageDepSpec & spec)
 {
     const std::shared_ptr<const PackageID> id(*((*env)[selection::RequireExactlyOne(
-                    generator::Matches(spec, MatchPackageOptions()))])->begin());
+                    generator::Matches(spec, { }))])->begin());
 
     std::list<std::string> texts;
 

@@ -545,7 +545,7 @@ InstalledUnpackagedID::uniquely_identifying_spec() const
 {
     return parse_user_package_dep_spec("=" + stringify(name()) + "-" + stringify(version()) +
             (slot_key() ? ":" + stringify(slot_key()->value()) : "") + "::" + stringify(repository()->name()),
-            _imp->env, UserPackageDepSpecOptions());
+            _imp->env, { });
 }
 
 const QualifiedPackageName
@@ -890,7 +890,7 @@ InstalledUnpackagedID::uninstall(const bool replace,
 
     unmerger.unmerge();
 
-    for (DirIterator d(ver_dir, DirIteratorOptions() + dio_include_dotfiles), d_end ; d != d_end ; ++d)
+    for (DirIterator d(ver_dir, { dio_include_dotfiles }), d_end ; d != d_end ; ++d)
         FSEntry(*d).unlink();
     ver_dir.rmdir();
 

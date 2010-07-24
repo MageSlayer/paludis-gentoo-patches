@@ -199,14 +199,14 @@ namespace
     {
         cout << format_general_s(f::show_wildcard_heading(), stringify(s));
 
-        const std::shared_ptr<const PackageIDSequence> names((*env)[selection::BestVersionOnly(generator::Matches(s, MatchPackageOptions()))]);
+        const std::shared_ptr<const PackageIDSequence> names((*env)[selection::BestVersionOnly(generator::Matches(s, { }))]);
         if (names->empty())
             throw NothingMatching(s);
 
         for (PackageIDSequence::ConstIterator i(names->begin()), i_end(names->end()) ;
                 i != i_end ; ++i)
         {
-            PackageDepSpec name_spec(make_package_dep_spec(PartiallyMadePackageDepSpecOptions()).package((*i)->name()));
+            PackageDepSpec name_spec(make_package_dep_spec({ }).package((*i)->name()));
             cout << format_general_s(select_format_for_spec(env, name_spec,
                         f::show_wildcard_spec_installed(),
                         f::show_wildcard_spec_installable(),
@@ -899,7 +899,7 @@ namespace
         cout << format_general_s(f::show_package_heading(), stringify(s));
 
         const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsGroupedBySlot(
-                    generator::Matches(s, MatchPackageOptions()))]);
+                    generator::Matches(s, { }))]);
         if (ids->empty())
             throw NothingMatching(s);
 
@@ -1029,7 +1029,7 @@ namespace
             const PackageDepSpec & s)
     {
         const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::BestVersionOnly(generator::Matches(s,
-                        MatchPackageOptions()))]);
+                        { }))]);
         if (ids->empty())
             throw NothingMatching(s);
 
@@ -1072,16 +1072,15 @@ ShowCommand::run(
             do_one_repository(cmdline, env, RepositoryName(*p));
         else if (cmdline.a_type.argument() == "wildcard")
             do_one_wildcard(env, parse_user_package_dep_spec(
-                        *p, env.get(), UserPackageDepSpecOptions() + updso_allow_wildcards));
+                        *p, env.get(), { updso_allow_wildcards }));
         else if (cmdline.a_type.argument() == "package")
             do_all_packages(cmdline, env, parse_user_package_dep_spec(
-                        *p, env.get(), UserPackageDepSpecOptions() + updso_allow_wildcards));
+                        *p, env.get(), { updso_allow_wildcards }));
         else if (cmdline.a_type.argument() == "auto")
         {
             try
             {
-                PackageDepSpec spec(parse_user_package_dep_spec(*p, env.get(), UserPackageDepSpecOptions() +
-                            updso_throw_if_set + updso_allow_wildcards));
+                PackageDepSpec spec(parse_user_package_dep_spec(*p, env.get(), { updso_throw_if_set, updso_allow_wildcards }));
                 if ((! spec.package_ptr()))
                     do_one_wildcard(env, spec);
                 else

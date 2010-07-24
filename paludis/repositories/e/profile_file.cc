@@ -127,7 +127,7 @@ ProfileFile<F_>::add_file(const FSEntry & f)
         throw ERepositoryConfigurationError("Can't use profile file '" + stringify(f) +
                 "' because it uses an unsupported EAPI");
 
-    F_ file(f, LineConfigFileOptions() + lcfo_disallow_continuations);
+    F_ file(f, { lcfo_disallow_continuations });
     for (typename F_::ConstIterator line(file.begin()), line_end(file.end()) ; line != line_end ; ++line)
     {
         const std::string key(FileEntryTraits<const typename std::remove_reference<typename F_::ConstIterator::value_type>::type>::extract_key(*line));

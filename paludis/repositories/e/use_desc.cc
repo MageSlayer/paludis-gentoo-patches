@@ -51,7 +51,7 @@ namespace paludis
         {
             if (f.is_regular_file_or_symlink_to_regular_file())
             {
-                LineConfigFile ff(f, LineConfigFileOptions() + lcfo_disallow_continuations);
+                LineConfigFile ff(f, { lcfo_disallow_continuations });
                 for (LineConfigFile::ConstIterator line(ff.begin()), line_end(ff.end()) ;
                         line != line_end ; ++line)
                 {

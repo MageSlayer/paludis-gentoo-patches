@@ -1016,7 +1016,7 @@ namespace test_cases
             TEST_CHECK(true);
             DepList d(&env, DepListOptions());
             TEST_CHECK_THROWS(d.add(PackageDepSpec(parse_user_package_dep_spec(merge_target,
-                                &env, UserPackageDepSpecOptions())),
+                                &env, { })),
                         env.default_destinations()), DepListError);
             TEST_CHECK(d.begin() == d.end());
         }
@@ -1044,7 +1044,7 @@ namespace test_cases
             TEST_CHECK(true);
             DepList d(&env, DepListOptions());
             TEST_CHECK_THROWS(d.add(PackageDepSpec(parse_user_package_dep_spec(merge_target,
-                                &env, UserPackageDepSpecOptions())),
+                                &env, { })),
                         env.default_destinations()), DepListError);
             TEST_CHECK(d.begin() == d.end());
         }
@@ -1112,7 +1112,7 @@ namespace test_cases
             TEST_CHECK(true);
             DepList d(&env, DepListOptions());
             TEST_CHECK_THROWS(d.add(PackageDepSpec(parse_user_package_dep_spec(merge_target,
-                                &env, UserPackageDepSpecOptions())),
+                                &env, { })),
                         env.default_destinations()), DepListError);
             TEST_CHECK(d.begin() == d.end());
         }
@@ -1140,7 +1140,7 @@ namespace test_cases
             TEST_CHECK(true);
             DepList d(&env, DepListOptions());
             TEST_CHECK_THROWS(d.add(PackageDepSpec(parse_user_package_dep_spec(merge_target,
-                                &env, UserPackageDepSpecOptions())),
+                                &env, { })),
                         env.default_destinations()), DepListError);
             TEST_CHECK(d.begin() == d.end());
         }
@@ -1503,7 +1503,7 @@ namespace test_cases
             TEST_CHECK(true);
             DepList d(&env, DepListOptions());
             TEST_CHECK_THROWS(d.add(PackageDepSpec(parse_user_package_dep_spec(merge_target,
-                                &env, UserPackageDepSpecOptions())),
+                                &env, { })),
                         env.default_destinations()), DepListError);
             TEST_CHECK(d.begin() == d.end());
         }
@@ -1571,7 +1571,7 @@ namespace test_cases
             TEST_CHECK(true);
             DepList d(&env, DepListOptions());
             TEST_CHECK_THROWS(d.add(PackageDepSpec(parse_user_package_dep_spec(merge_target,
-                                &env, UserPackageDepSpecOptions())),
+                                &env, { })),
                         env.default_destinations()), DepListError);
             TEST_CHECK(d.begin() == d.end());
         }
@@ -1639,7 +1639,7 @@ namespace test_cases
             TEST_CHECK(true);
             DepList d(&env, DepListOptions());
             TEST_CHECK_THROWS(d.add(PackageDepSpec(parse_user_package_dep_spec(merge_target,
-                                &env, UserPackageDepSpecOptions())),
+                                &env, { })),
                         env.default_destinations()), DepListError);
             TEST_CHECK(d.begin() == d.end());
         }
@@ -1707,7 +1707,7 @@ namespace test_cases
             TEST_CHECK(true);
             DepList d(&env, DepListOptions());
             TEST_CHECK_THROWS(d.add(PackageDepSpec(parse_user_package_dep_spec(merge_target,
-                                &env, UserPackageDepSpecOptions())),
+                                &env, { })),
                         env.default_destinations()), DepListError);
             TEST_CHECK(d.begin() == d.end());
         }
@@ -1769,7 +1769,7 @@ namespace test_cases
             TEST_CHECK(true);
             DepList d(&env, DepListOptions());
             TEST_CHECK_THROWS(d.add(PackageDepSpec(parse_user_package_dep_spec(merge_target,
-                                &env, UserPackageDepSpecOptions())),
+                                &env, { })),
                         env.default_destinations()), DepListError);
             TEST_CHECK(d.begin() == d.end());
         }
@@ -1799,7 +1799,7 @@ namespace test_cases
             TEST_CHECK(true);
             DepList d(&env, DepListOptions());
             TEST_CHECK_THROWS(d.add(PackageDepSpec(parse_user_package_dep_spec(merge_target,
-                                &env, UserPackageDepSpecOptions())),
+                                &env, { })),
                         env.default_destinations()), DepListError);
             TEST_CHECK(d.begin() == d.end());
         }
@@ -1861,7 +1861,7 @@ namespace test_cases
             TEST_CHECK(true);
             DepList d(&env, DepListOptions());
             TEST_CHECK_THROWS(d.add(PackageDepSpec(parse_user_package_dep_spec(merge_target,
-                                &env, UserPackageDepSpecOptions())),
+                                &env, { })),
                         env.default_destinations()), DepListError);
             TEST_CHECK(d.begin() == d.end());
         }
@@ -1891,7 +1891,7 @@ namespace test_cases
             TEST_CHECK(true);
             DepList d(&env, DepListOptions());
             TEST_CHECK_THROWS(d.add(PackageDepSpec(parse_user_package_dep_spec(merge_target,
-                                &env, UserPackageDepSpecOptions())),
+                                &env, { })),
                         env.default_destinations()), DepListError);
             TEST_CHECK(d.begin() == d.end());
         }
@@ -1952,12 +1952,12 @@ namespace test_cases
 
             DepList d(&env, DepListOptions());
             d.add(PackageDepSpec(parse_user_package_dep_spec("cat/one",
-                            &env, UserPackageDepSpecOptions())), env.default_destinations());
+                            &env, { })), env.default_destinations());
             TEST_CHECK_EQUAL(join(d.begin(), d.end(), " "),
                     "cat/four-1:0::repo cat/two-1:0::repo cat/three-1:0::repo cat/one-1:0::repo");
 
             TEST_CHECK_THROWS(d.add(PackageDepSpec(parse_user_package_dep_spec("cat/five",
-                                &env, UserPackageDepSpecOptions())),
+                                &env, { })),
                         env.default_destinations()), DepListError);
 
             TEST_CHECK_EQUAL(join(d.begin(), d.end(), " "),
@@ -1999,12 +1999,12 @@ namespace test_cases
 
             DepList d(&env, DepListOptions());
             d.add(PackageDepSpec(parse_user_package_dep_spec("cat/one",
-                            &env, UserPackageDepSpecOptions())), env.default_destinations());
+                            &env, { })), env.default_destinations());
             TEST_CHECK_EQUAL(join(d.begin(), d.end(), " "),
                     "cat/four-1:0::repo cat/two-1:0::repo cat/three-1:0::repo cat/one-1:0::repo");
 
             TEST_CHECK_THROWS(d.add(PackageDepSpec(parse_user_package_dep_spec("cat/five",
-                                &env, UserPackageDepSpecOptions())),
+                                &env, { })),
                         env.default_destinations()), DepListError);
 
             TEST_CHECK_EQUAL(join(d.begin(), d.end(), " "),
@@ -2042,7 +2042,7 @@ namespace test_cases
 
             DepList d(&env, DepListOptions());
             d.add(PackageDepSpec(parse_user_package_dep_spec("cat/one",
-                            &env, UserPackageDepSpecOptions())), env.default_destinations());
+                            &env, { })), env.default_destinations());
             TEST_CHECK_EQUAL(join(d.begin(), d.end(), " "), "cat/one-1:0::repo");
         }
     } test_dep_list_forced_downgrade_of_installed;
@@ -2077,7 +2077,7 @@ namespace test_cases
             DepList d(&env, DepListOptions());
             d.options()->fall_back() = dl_fall_back_never;
             TEST_CHECK_THROWS(d.add(PackageDepSpec(parse_user_package_dep_spec("cat/one",
-                                &env, UserPackageDepSpecOptions())),
+                                &env, { })),
                         env.default_destinations()), DepListError);
         }
     } test_dep_list_fall_back_never;
@@ -2112,9 +2112,9 @@ namespace test_cases
             DepList d(&env, DepListOptions());
             d.options()->fall_back() = dl_fall_back_as_needed;
             d.add(PackageDepSpec(parse_user_package_dep_spec("cat/one",
-                            &env, UserPackageDepSpecOptions())), env.default_destinations());
+                            &env, { })), env.default_destinations());
             d.add(PackageDepSpec(parse_user_package_dep_spec("cat/two",
-                            &env, UserPackageDepSpecOptions())), env.default_destinations());
+                            &env, { })), env.default_destinations());
             TEST_CHECK_EQUAL(join(d.begin(), d.end(), " "), "cat/two-2:0::installed_repo cat/one-1:0::repo");
         }
     } test_dep_list_fall_back_as_needed;
@@ -2150,29 +2150,29 @@ namespace test_cases
             DepList d1(&env, DepListOptions());
             d1.options()->fall_back() = dl_fall_back_as_needed_except_targets;
             d1.add(PackageDepSpec(parse_user_package_dep_spec("cat/one",
-                            &env, UserPackageDepSpecOptions())), env.default_destinations());
+                            &env, { })), env.default_destinations());
             TEST_CHECK_EQUAL(join(d1.begin(), d1.end(), " "), "cat/two-2:0::installed_repo cat/one-1:0::repo");
             TEST_CHECK_THROWS(d1.add(PackageDepSpec(parse_user_package_dep_spec("cat/three",
-                                &env, UserPackageDepSpecOptions())),
+                                &env, { })),
                         env.default_destinations()), DepListError);
 
             DepList d2(&env, DepListOptions());
             d2.options()->fall_back() = dl_fall_back_as_needed_except_targets;
             TEST_CHECK_THROWS(d2.add(PackageDepSpec(parse_user_package_dep_spec("cat/two",
-                                &env, UserPackageDepSpecOptions())),
+                                &env, { })),
                         env.default_destinations()), DepListError);
 
             DepList d3(&env, DepListOptions());
             d3.options()->fall_back() = dl_fall_back_as_needed_except_targets;
             std::shared_ptr<SetSpecTree> t3(std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>()));
-            t3->root()->append(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec("cat/one", &env, UserPackageDepSpecOptions())));
-            t3->root()->append(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec("cat/two", &env, UserPackageDepSpecOptions())));
+            t3->root()->append(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec("cat/one", &env, { })));
+            t3->root()->append(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec("cat/two", &env, { })));
             TEST_CHECK_THROWS(d3.add(*t3, env.default_destinations()), DepListError);
 
             DepList d4(&env, DepListOptions());
             std::shared_ptr<SetSpecTree> t4(std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>()));
-            t4->root()->append(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec("cat/one", &env, UserPackageDepSpecOptions())));
-            t4->root()->append(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec("cat/three", &env, UserPackageDepSpecOptions())));
+            t4->root()->append(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec("cat/one", &env, { })));
+            t4->root()->append(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec("cat/three", &env, { })));
             TEST_CHECK_THROWS(d4.add(*t4, env.default_destinations()), DepListError);
         }
     } test_dep_list_fall_back_as_needed_not_targets;
@@ -2208,15 +2208,15 @@ namespace test_cases
             DepList d1(&env, DepListOptions());
             d1.options()->upgrade() = dl_upgrade_as_needed;
             d1.add(PackageDepSpec(parse_user_package_dep_spec("cat/one",
-                            &env, UserPackageDepSpecOptions())), env.default_destinations());
+                            &env, { })), env.default_destinations());
             TEST_CHECK_EQUAL(join(d1.begin(), d1.end(), " "), "cat/two-0:0::installed_repo cat/one-1:0::repo");
 
             DepList d2(&env, DepListOptions());
             d2.options()->upgrade() = dl_upgrade_as_needed;
 
             std::shared_ptr<SetSpecTree> t2(std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>()));
-            t2->root()->append(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec("cat/one", &env, UserPackageDepSpecOptions())));
-            t2->root()->append(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec("cat/two", &env, UserPackageDepSpecOptions())));
+            t2->root()->append(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec("cat/one", &env, { })));
+            t2->root()->append(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec("cat/two", &env, { })));
             d2.add(*t2, env.default_destinations());
             TEST_CHECK_EQUAL(join(d2.begin(), d2.end(), " "), "cat/two-2:0::repo cat/one-1:0::repo");
         }
@@ -2264,7 +2264,7 @@ namespace test_cases
             DepList d1(&env, DepListOptions());
             d1.options()->reinstall_scm() = dl_reinstall_scm_always;
             d1.add(PackageDepSpec(parse_user_package_dep_spec("cat/zero",
-                            &env, UserPackageDepSpecOptions())), env.default_destinations());
+                            &env, { })), env.default_destinations());
             TEST_CHECK_EQUAL(join(d1.begin(), d1.end(), " "), "cat/one-scm:0::repo cat/two-2:0::installed_repo "
                     "cat/three-live-0:0::repo cat/four-cvs-0:0::repo cat/five-svn-0:0::repo cat/six-darcs-0:0::repo "
                     "cat/zero-1:0::repo");
@@ -2305,11 +2305,11 @@ namespace test_cases
             DepList d1(&env, DepListOptions());
             d1.options()->dependency_tags() = true;
             PackageDepSpec with_target_tag(parse_user_package_dep_spec("cat/one",
-                        &env, UserPackageDepSpecOptions()));
+                        &env, { }));
             with_target_tag.set_tag(std::shared_ptr<const DepTag>(std::make_shared<TargetDepTag>()));
             d1.add(with_target_tag, env.default_destinations());
             PackageDepSpec with_set_tag(parse_user_package_dep_spec("cat/two",
-                        &env, UserPackageDepSpecOptions()));
+                        &env, { }));
             with_set_tag.set_tag(std::shared_ptr<const DepTag>(std::make_shared<GeneralSetDepTag>(SetName("set"), "test")));
             d1.add(with_set_tag, env.default_destinations());
 

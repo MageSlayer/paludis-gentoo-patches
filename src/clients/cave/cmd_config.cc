@@ -94,9 +94,9 @@ ConfigCommand::run(
         throw args::DoHelp("config takes exactly one parameter");
 
     PackageDepSpec spec(parse_user_package_dep_spec(*cmdline.begin_parameters(), env.get(),
-                UserPackageDepSpecOptions()));
+                { }));
     const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsUnsorted(
-                generator::Matches(spec, MatchPackageOptions()) | filter::SupportsAction<ConfigAction>())]);
+                generator::Matches(spec, { }) | filter::SupportsAction<ConfigAction>())]);
     if (ids->empty())
         throw NothingMatching(spec);
     else if (1 != std::distance(ids->begin(), ids->end()))

@@ -110,7 +110,7 @@ NDBAM::NDBAM(const FSEntry & l,
     if ((l / "ndbam.conf").exists())
     {
         Context cc("When reading '" + stringify(l / "ndbam.conf") + "':");
-        KeyValueConfigFile k(l / "ndbam.conf", KeyValueConfigFileOptions(), &KeyValueConfigFile::no_defaults,
+        KeyValueConfigFile k(l / "ndbam.conf", { }, &KeyValueConfigFile::no_defaults,
                 &KeyValueConfigFile::no_transformation);
         if (k.get("ndbam_format") != "1")
             throw ConfigurationError("Unsupported NDBAM format '" + k.get("ndbam_format") + "'");
@@ -453,7 +453,7 @@ NDBAM::parse_contents(const PackageID & id,
         return;
     }
 
-    LineConfigFile f(ff, LineConfigFileOptions());
+    LineConfigFile f(ff, { });
     for (LineConfigFile::ConstIterator line(f.begin()), line_end(f.end()) ;
             line != line_end ; ++line)
     {

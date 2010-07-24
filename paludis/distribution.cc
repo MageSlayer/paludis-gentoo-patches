@@ -56,12 +56,12 @@ namespace paludis
             for (DirIterator d(getenv_with_default("PALUDIS_DISTRIBUTIONS_DIR", DATADIR "/paludis/distributions")), d_end ;
                     d != d_end ; ++d)
             {
-                if (! is_file_with_extension(*d, ".conf", IsFileWithOptions()))
+                if (! is_file_with_extension(*d, ".conf", { }))
                     continue;
 
                 Context cc("When loading distribution file '" + stringify(*d) + "':");
 
-                KeyValueConfigFile k(*d, KeyValueConfigFileOptions(), &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
+                KeyValueConfigFile k(*d, { }, &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
 
                 values.insert(std::make_pair(strip_trailing_string(d->basename(), ".conf"),
                             std::make_shared<Distribution>(make_named_values<Distribution>(

@@ -81,7 +81,7 @@ Stripper::do_dir_recursive(const FSEntry & f)
 
     on_enter_dir(f);
 
-    for (DirIterator d(f, DirIteratorOptions() + dio_include_dotfiles + dio_inode_sort), d_end ; d != d_end ; ++d)
+    for (DirIterator d(f, { dio_include_dotfiles, dio_inode_sort }), d_end ; d != d_end ; ++d)
     {
         if (d->is_symbolic_link())
             continue;

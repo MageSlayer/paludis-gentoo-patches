@@ -90,7 +90,7 @@ int do_what_needs_keywording(NoConfigEnvironment & env)
     {
         try
         {
-            d.add(parse_user_package_dep_spec(*p, &env, UserPackageDepSpecOptions()), env.default_destinations());
+            d.add(parse_user_package_dep_spec(*p, &env, { }), env.default_destinations());
         }
         catch (const NoSuchPackageError & e)
         {

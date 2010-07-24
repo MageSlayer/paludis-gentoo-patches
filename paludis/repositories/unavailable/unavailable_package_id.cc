@@ -137,7 +137,7 @@ UnavailablePackageID::uniquely_identifying_spec() const
     return parse_user_package_dep_spec("=" + stringify(name()) + "-" + stringify(version()) +
             (slot_key() ? ":" + stringify(slot_key()->value()) : "") + "::" + stringify(repository()->name()) +
             "[." + _imp->from_repositories_key->raw_name() + "=" + *_imp->from_repositories_key->value()->begin() + "]",
-            _imp->env, UserPackageDepSpecOptions());
+            _imp->env, { });
 }
 
 const QualifiedPackageName

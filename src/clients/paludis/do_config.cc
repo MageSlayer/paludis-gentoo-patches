@@ -77,11 +77,11 @@ namespace
         Context local_context("When handling query '" + target + "':");
 
         std::shared_ptr<PackageDepSpec> spec(
-                std::make_shared<PackageDepSpec>(parse_user_package_dep_spec(target, env.get(), UserPackageDepSpecOptions(),
+                std::make_shared<PackageDepSpec>(parse_user_package_dep_spec(target, env.get(), { },
                         filter::InstalledAtRoot(env->root()))));
 
         std::shared_ptr<const PackageIDSequence> entries(
-                (*env)[selection::AllVersionsUnsorted(generator::Matches(*spec, MatchPackageOptions()) | filter::InstalledAtRoot(env->root()))]);
+                (*env)[selection::AllVersionsUnsorted(generator::Matches(*spec, { }) | filter::InstalledAtRoot(env->root()))]);
 
         if (entries->empty())
             throw NoSuchPackageError(target);

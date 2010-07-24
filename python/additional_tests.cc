@@ -246,7 +246,7 @@ namespace formatter
     void test_package_roles(CanFormat<PackageDepSpec> & f)
     {
         TestEnvironment e;
-        PackageDepSpec p(parse_user_package_dep_spec("cat/pkg", &e, UserPackageDepSpecOptions()));
+        PackageDepSpec p(parse_user_package_dep_spec("cat/pkg", &e, { }));
         f.format(p, Plain());
         f.format(p, Installed());
         f.format(p, Installable());

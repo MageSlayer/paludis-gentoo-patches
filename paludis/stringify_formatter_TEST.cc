@@ -116,10 +116,10 @@ namespace test_cases
             PartialFormatter f;
             StringifyFormatter ff(f);
             BlockDepSpec b("!!!!!cat/pkg", parse_user_package_dep_spec("cat/pkg",
-                        &env, UserPackageDepSpecOptions()), false);
+                        &env, { }), false);
             NamedSetDepSpec u(SetName("foo"));
             std::string s(format_three(
-                        parse_user_package_dep_spec("cat/pkg", &env, UserPackageDepSpecOptions()),
+                        parse_user_package_dep_spec("cat/pkg", &env, { }),
                         b, u,
                         ff));
             TEST_CHECK_EQUAL(s, "<cat/pkg> !!!!!cat/pkg foo");

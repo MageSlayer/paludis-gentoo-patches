@@ -424,9 +424,8 @@ EbuildMetadataCommand::do_run_command(const Command & cmd)
 
         int exit_status(run_command(real_cmd));
 
-        KeyValueConfigFile f(metadata, KeyValueConfigFileOptions() + kvcfo_disallow_continuations + kvcfo_disallow_comments
-                + kvcfo_disallow_space_around_equals + kvcfo_disallow_unquoted_values + kvcfo_disallow_source
-                + kvcfo_disallow_variables + kvcfo_preserve_whitespace,
+        KeyValueConfigFile f(metadata, { kvcfo_disallow_continuations, kvcfo_disallow_comments , kvcfo_disallow_space_around_equals,
+                kvcfo_disallow_unquoted_values, kvcfo_disallow_source , kvcfo_disallow_variables, kvcfo_preserve_whitespace },
                 &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
 
         std::copy(f.begin(), f.end(), keys->inserter());

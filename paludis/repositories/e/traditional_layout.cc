@@ -117,7 +117,7 @@ TraditionalLayout::TraditionalLayout(const ERepository * const repo, const FSEnt
             {
                 for (DirIterator d(descs), d_end ; d != d_end ; ++d)
                 {
-                    if (! is_file_with_extension(*d, ".desc", IsFileWithOptions()))
+                    if (! is_file_with_extension(*d, ".desc", { }))
                         continue;
                     _imp->use_desc_files->push_back(std::make_pair(*d, ChoicePrefixName(strip_trailing_string(d->basename(), ".desc"))));
                 }
@@ -139,7 +139,7 @@ TraditionalLayout::TraditionalLayout(const ERepository * const repo, const FSEnt
     {
         for (DirIterator d(descs), d_end ; d != d_end ; ++d)
         {
-            if (! is_file_with_extension(*d, ".desc", IsFileWithOptions()))
+            if (! is_file_with_extension(*d, ".desc", { }))
                 continue;
             _imp->use_desc_files->push_back(std::make_pair(*d, strip_trailing_string(d->basename(), ".desc")));
         }
@@ -183,7 +183,7 @@ TraditionalLayout::need_category_names() const
         if (! i->exists())
             continue;
 
-        LineConfigFile cats(*i, LineConfigFileOptions() + lcfo_disallow_continuations);
+        LineConfigFile cats(*i, { lcfo_disallow_continuations });
 
         for (LineConfigFile::ConstIterator line(cats.begin()), line_end(cats.end()) ;
                 line != line_end ; ++line)
@@ -207,7 +207,7 @@ TraditionalLayout::need_category_names() const
     {
         Log::get_instance()->message("e.traditional_layout.categories.no_file", ll_qa, lc_context)
             << "No categories file for repository at '" << _imp->tree_root << "', faking it";
-        for (DirIterator d(_imp->tree_root, DirIteratorOptions() + dio_inode_sort), d_end ; d != d_end ; ++d)
+        for (DirIterator d(_imp->tree_root, { dio_inode_sort }), d_end ; d != d_end ; ++d)
         {
             if (! d->is_directory_or_symlink_to_directory())
                 continue;
@@ -247,7 +247,7 @@ TraditionalLayout::need_package_ids(const QualifiedPackageName & n) const
 
     FSEntry path(_imp->tree_root / stringify(n.category()) / stringify(n.package()));
 
-    for (DirIterator e(path, DirIteratorOptions() + dio_inode_sort), e_end ; e != e_end ; ++e)
+    for (DirIterator e(path, { dio_inode_sort }), e_end ; e != e_end ; ++e)
     {
         if (! _imp->repository->is_package_file(n, *e))
             continue;
@@ -373,7 +373,7 @@ TraditionalLayout::package_names(const CategoryNamePart & c) const
         return std::make_shared<QualifiedPackageNameSet>();
 
     if ((_imp->tree_root / stringify(c)).is_directory_or_symlink_to_directory())
-        for (DirIterator d(_imp->tree_root / stringify(c), DirIteratorOptions() + dio_inode_sort), d_end ; d != d_end ; ++d)
+        for (DirIterator d(_imp->tree_root / stringify(c), { dio_inode_sort }), d_end ; d != d_end ; ++d)
         {
             try
             {
@@ -586,7 +586,7 @@ namespace
         if (! d.exists())
             return;
 
-        std::list<FSEntry> files((DirIterator(d, DirIteratorOptions() + dio_inode_sort)),
+        std::list<FSEntry> files((DirIterator(d, { dio_inode_sort })),
                 DirIterator());
         for (std::list<FSEntry>::iterator f(files.begin()) ;
                 f != files.end() ; ++f)
@@ -602,7 +602,7 @@ namespace
                     continue;
                 if (is_file_with_prefix_extension((*f),
                             ("digest-"+stringify(qpn.package())), "",
-                            IsFileWithOptions()))
+                            { }))
                     continue;
                 m->insert((*f), "AUX");
             }
@@ -616,7 +616,7 @@ TraditionalLayout::manifest_files(const QualifiedPackageName & qpn) const
     std::shared_ptr<Map<FSEntry, std::string> > result(std::make_shared<Map<FSEntry, std::string>>());
     FSEntry package_dir = _imp->repository->layout()->package_directory(qpn);
 
-    std::list<FSEntry> package_files((DirIterator(package_dir, DirIteratorOptions() + dio_inode_sort)),
+    std::list<FSEntry> package_files((DirIterator(package_dir, { dio_inode_sort })),
             DirIterator());
     for (std::list<FSEntry>::iterator f(package_files.begin()) ;
             f != package_files.end() ; ++f)

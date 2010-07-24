@@ -64,7 +64,7 @@ namespace test_cases
             TEST_CHECK(bool(spec.short_description_key()));
             TEST_CHECK_EQUAL(spec.short_description_key()->value(), "This is the summary");
             TEST_CHECK_EQUAL(spec.name(), QualifiedPackageName("gems/demo"));
-            TEST_CHECK_EQUAL(spec.version(), VersionSpec("1.2.3", VersionSpecOptions()));
+            TEST_CHECK_EQUAL(spec.version(), VersionSpec("1.2.3", { }));
             TEST_CHECK(spec.find_metadata("rubyforge_project") == spec.end_metadata());
             TEST_CHECK(bool(spec.long_description_key()));
             TEST_CHECK_EQUAL(spec.long_description_key()->value(), "A longer description");

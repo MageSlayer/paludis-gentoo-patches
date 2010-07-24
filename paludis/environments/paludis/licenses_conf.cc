@@ -86,7 +86,7 @@ LicensesConf::add(const FSEntry & filename)
 {
     Context context("When adding source '" + stringify(filename) + "' as a licenses file:");
 
-    std::shared_ptr<LineConfigFile> f(make_bashable_conf(filename, LineConfigFileOptions()));
+    std::shared_ptr<LineConfigFile> f(make_bashable_conf(filename, { }));
     if (! f)
         return;
 
@@ -103,7 +103,7 @@ LicensesConf::add(const FSEntry & filename)
         {
             std::shared_ptr<PackageDepSpec> d(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec(
                             tokens.at(0), _imp->env,
-                            UserPackageDepSpecOptions() + updso_allow_wildcards + updso_no_disambiguation + updso_throw_if_set)));
+                            { updso_allow_wildcards, updso_no_disambiguation, updso_throw_if_set })));
             if (d->package_ptr())
             {
                 LicensesList & k(_imp->qualified[*d->package_ptr()][d]);
@@ -143,7 +143,7 @@ LicensesConf::query(const std::string & t, const PackageID & e) const
             for (PDSToLicensesList::const_iterator j(i->second.begin()), j_end(i->second.end()) ;
                     j != j_end ; ++j)
             {
-                if (! match_package(*_imp->env, *j->first, e, MatchPackageOptions()))
+                if (! match_package(*_imp->env, *j->first, e, { }))
                     continue;
 
                 for (LicensesList::const_iterator l(j->second.begin()), l_end(j->second.end()) ;
@@ -182,7 +182,7 @@ LicensesConf::query(const std::string & t, const PackageID & e) const
                 }
             }
 
-            if (! match_package_in_set(*_imp->env, *i->second.first, e, MatchPackageOptions()))
+            if (! match_package_in_set(*_imp->env, *i->second.first, e, { }))
                 continue;
 
             for (LicensesList::const_iterator l(i->second.second.begin()), l_end(i->second.second.end()) ;
@@ -208,7 +208,7 @@ LicensesConf::query(const std::string & t, const PackageID & e) const
     for (PDSToLicensesList::const_iterator j(_imp->unqualified.begin()), j_end(_imp->unqualified.end()) ;
             j != j_end ; ++j)
     {
-        if (! match_package(*_imp->env, *j->first, e, MatchPackageOptions()))
+        if (! match_package(*_imp->env, *j->first, e, { }))
             continue;
 
         for (LicensesList::const_iterator l(j->second.begin()), l_end(j->second.end()) ;

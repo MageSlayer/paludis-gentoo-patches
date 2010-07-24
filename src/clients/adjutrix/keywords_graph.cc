@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -84,7 +84,7 @@ namespace
         FindUnusedPackagesTask task(&e, &repo);
         std::shared_ptr<const PackageIDSequence> packages(e[selection::AllVersionsGroupedBySlot(
                 generator::InRepository(repo.name()) &
-                generator::Matches(make_package_dep_spec(PartiallyMadePackageDepSpecOptions()).package(package), MatchPackageOptions()))]);
+                generator::Matches(make_package_dep_spec({ }).package(package), { }))]);
         std::shared_ptr<const PackageIDSequence> unused(task.execute(package));
 
         if (packages->empty())

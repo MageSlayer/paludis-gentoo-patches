@@ -186,9 +186,9 @@ int do_has_version(const std::shared_ptr<Environment> & env)
 
     std::string query(*CommandLine::get_instance()->begin_parameters());
     std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(
-                parse_user_package_dep_spec(query, env.get(), UserPackageDepSpecOptions())));
+                parse_user_package_dep_spec(query, env.get(), { })));
     std::shared_ptr<const PackageIDSequence> entries((*env)[selection::SomeArbitraryVersion(
-                generator::Matches(*spec, MatchPackageOptions()) | filter::InstalledAtRoot(env->root()))]);
+                generator::Matches(*spec, { }) | filter::InstalledAtRoot(env->root()))]);
 
     if (entries->empty())
         return_code = 1;
@@ -204,9 +204,9 @@ int do_best_version(const std::shared_ptr<Environment> & env)
 
     std::string query(*CommandLine::get_instance()->begin_parameters());
     std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(
-                parse_user_package_dep_spec(query, env.get(), UserPackageDepSpecOptions())));
+                parse_user_package_dep_spec(query, env.get(), { })));
     std::shared_ptr<const PackageIDSequence> entries((*env)[selection::AllVersionsSorted(
-                generator::Matches(*spec, MatchPackageOptions()) | filter::InstalledAtRoot(env->root()))]);
+                generator::Matches(*spec, { }) | filter::InstalledAtRoot(env->root()))]);
 
     /* make built_with_use work for virtuals... icky... */
     while (! entries->empty())
@@ -245,9 +245,9 @@ int do_match(const std::shared_ptr<Environment> & env)
 
     std::string query(*CommandLine::get_instance()->begin_parameters());
     std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(
-                parse_user_package_dep_spec(query, env.get(), UserPackageDepSpecOptions())));
+                parse_user_package_dep_spec(query, env.get(), { })));
     std::shared_ptr<const PackageIDSequence> entries((*env)[selection::AllVersionsSorted(
-                generator::Matches(*spec, MatchPackageOptions()) | filter::InstalledAtRoot(env->root()))]);
+                generator::Matches(*spec, { }) | filter::InstalledAtRoot(env->root()))]);
 
     while (! entries->empty())
     {
@@ -289,13 +289,13 @@ int do_environment_variable(const std::shared_ptr<Environment> & env)
     std::string spec_str(*CommandLine::get_instance()->begin_parameters());
     std::string var_str(* next(CommandLine::get_instance()->begin_parameters()));
     std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(
-                parse_user_package_dep_spec(spec_str, env.get(), UserPackageDepSpecOptions())));
+                parse_user_package_dep_spec(spec_str, env.get(), { })));
 
     std::shared_ptr<const PackageIDSequence> entries((*env)[selection::AllVersionsSorted(
-                generator::Matches(*spec, MatchPackageOptions()) | filter::InstalledAtRoot(env->root()))]);
+                generator::Matches(*spec, { }) | filter::InstalledAtRoot(env->root()))]);
 
     if (entries->empty())
-        entries = (*env)[selection::AllVersionsSorted(generator::Matches(*spec, MatchPackageOptions()))];
+        entries = (*env)[selection::AllVersionsSorted(generator::Matches(*spec, { }))];
 
     if (entries->empty())
         throw NoSuchPackageError(spec_str);

@@ -233,7 +233,7 @@ paludis::resolver::resolver_test::get_constraints_for_dependent_fn(
 {
     const std::shared_ptr<ConstraintSequence> result(std::make_shared<ConstraintSequence>());
 
-    PartiallyMadePackageDepSpec partial_spec((PartiallyMadePackageDepSpecOptions()));
+    PartiallyMadePackageDepSpec partial_spec({ });
     partial_spec.package(id->name());
     if (id->slot_key())
         partial_spec.slot_requirement(std::make_shared<ELikeSlotExactRequirement>(
@@ -266,7 +266,7 @@ paludis::resolver::resolver_test::get_constraints_for_purge_fn(
 {
     const std::shared_ptr<ConstraintSequence> result(std::make_shared<ConstraintSequence>());
 
-    PartiallyMadePackageDepSpec partial_spec((PartiallyMadePackageDepSpecOptions()));
+    PartiallyMadePackageDepSpec partial_spec({ });
     partial_spec.package(id->name());
     if (id->slot_key())
         partial_spec.slot_requirement(std::make_shared<ELikeSlotExactRequirement>(
@@ -292,7 +292,7 @@ paludis::resolver::resolver_test::get_constraints_for_via_binary_fn(
         const std::shared_ptr<const Resolution> & resolution,
         const std::shared_ptr<const Resolution> & because_resolution)
 {
-    PartiallyMadePackageDepSpec partial_spec((PartiallyMadePackageDepSpecOptions()));
+    PartiallyMadePackageDepSpec partial_spec({ });
     partial_spec.package(resolution->resolvent().package());
     PackageDepSpec spec(partial_spec);
 
@@ -425,7 +425,7 @@ ResolverTestCase::get_resolved(const PackageOrBlockDepSpec & target)
 const std::shared_ptr<const Resolved>
 ResolverTestCase::get_resolved(const std::string & target)
 {
-    PackageDepSpec target_spec(parse_user_package_dep_spec(target, &env, UserPackageDepSpecOptions()));
+    PackageDepSpec target_spec(parse_user_package_dep_spec(target, &env, { }));
     return get_resolved(target_spec);
 }
 

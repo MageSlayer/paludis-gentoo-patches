@@ -159,7 +159,7 @@ UninstallTask::add_target(const std::string & target)
     try
     {
         std::shared_ptr<PackageDepSpec> pds(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec(
-                        target, _imp->env, UserPackageDepSpecOptions() + updso_throw_if_set + updso_allow_wildcards,
+                        target, _imp->env, { updso_throw_if_set, updso_allow_wildcards },
                         filter::SupportsAction<UninstallAction>())));
 
         if (_imp->had_set_targets)
@@ -176,7 +176,7 @@ UninstallTask::add_target(const std::string & target)
         {
             /* blech. wildcards. */
             std::shared_ptr<const PackageIDSequence> names((*_imp->env)[selection::BestVersionOnly(
-                        generator::Matches(*pds, MatchPackageOptions()) | filter::SupportsAction<UninstallAction>())]);
+                        generator::Matches(*pds, { }) | filter::SupportsAction<UninstallAction>())]);
             if (names->empty())
             {
                 /* no match. we'll get an error from this later anyway. */
@@ -260,7 +260,7 @@ UninstallTask::execute()
             Context local_context("When looking for target '" + stringify(**t) + "':");
 
             std::shared_ptr<const PackageIDSequence> r((*_imp->env)[selection::AllVersionsSorted(
-                        generator::Matches(**t, MatchPackageOptions()) |
+                        generator::Matches(**t, { }) |
                         filter::SupportsAction<UninstallAction>())]);
             if (r->empty())
             {
@@ -328,7 +328,7 @@ UninstallTask::execute()
         {
             bool remove(true);
             std::shared_ptr<const PackageIDSequence> installed((*_imp->env)[selection::AllVersionsUnsorted(
-                        generator::Matches(make_package_dep_spec(PartiallyMadePackageDepSpecOptions()).package(i->first), MatchPackageOptions()) |
+                        generator::Matches(make_package_dep_spec({ }).package(i->first), { }) |
                         filter::InstalledAtRoot(_imp->env->root())
                         )]);
             for (PackageIDSequence::ConstIterator r(installed->begin()), r_end(installed->end()) ;
@@ -338,7 +338,7 @@ UninstallTask::execute()
 
             if (remove)
                 all->root()->append(std::make_shared<PackageDepSpec>(make_package_dep_spec(
-                                    PartiallyMadePackageDepSpecOptions()).package(i->first)));
+                                    { }).package(i->first)));
         }
 
         world_remove_packages(all);

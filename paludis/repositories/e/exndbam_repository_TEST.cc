@@ -108,7 +108,7 @@ namespace test_cases
             if (! victim.empty())
                 replacing->push_back(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec(victim,
-                                &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
+                                &env, { })), { }))]->begin());
             InstallAction install_action(make_named_values<InstallActionOptions>(
                         n::destination() = exndbam_repo,
                         n::make_output_manager() = &make_standard_output_manager,
@@ -118,7 +118,7 @@ namespace test_cases
                     ));
             (*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec(chosen_one,
-                                &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin())->perform_action(install_action);
+                                &env, { })), { }))]->begin())->perform_action(install_action);
         }
 
         void run()

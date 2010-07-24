@@ -84,11 +84,11 @@ namespace test_cases
 
             const std::shared_ptr<const PackageID> idx(*env[selection::RequireExactlyOne(
                         generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-x-1",
-                                    &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
+                                    &env, { })), { }))]->begin());
 
             const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(
                         generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
-                                    &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
+                                    &env, { })), { }))]->begin());
 
             TEST_CHECK(get_use("one", env, idx));
             TEST_CHECK(get_use("two", env, idx));
@@ -119,7 +119,7 @@ namespace test_cases
 
             const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
-                                    &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
+                                    &env, { })), { }))]->begin());
             std::shared_ptr<const Choice> foo_cards;
             for (Choices::ConstIterator c(id1->choices_key()->value()->begin()), c_end(id1->choices_key()->value()->end()) ;
                     c != c_end ; ++c)
@@ -142,7 +142,7 @@ namespace test_cases
 
             const std::shared_ptr<const PackageID> idx(*env[selection::RequireExactlyOne(
                         generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-x-1",
-                                    &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
+                                    &env, { })), { }))]->begin());
 
             TEST_CHECK(accept_keyword(env, KeywordName("arch"), *idx));
             TEST_CHECK(accept_keyword(env, KeywordName("other_arch"), *idx));
@@ -150,7 +150,7 @@ namespace test_cases
 
             const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(
                         generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
-                                    &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
+                                    &env, { })), { }))]->begin());
 
             TEST_CHECK(accept_keyword(env, KeywordName("arch"), *id1));
             TEST_CHECK(accept_keyword(env, KeywordName("other_arch"), *id1));
@@ -158,7 +158,7 @@ namespace test_cases
 
             const std::shared_ptr<const PackageID> id2(*env[selection::RequireExactlyOne(
                         generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-two-1",
-                                    &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
+                                    &env, { })), { }))]->begin());
 
             TEST_CHECK(accept_keyword(env, KeywordName("other_arch"), *id2));
             TEST_CHECK(accept_keyword(env, KeywordName("arch"), *id2));
@@ -166,7 +166,7 @@ namespace test_cases
 
             const std::shared_ptr<const PackageID> id3(*env[selection::RequireExactlyOne(
                         generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-three-1",
-                                    &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
+                                    &env, { })), { }))]->begin());
 
             TEST_CHECK(! accept_keyword(env, KeywordName("other_arch"), *id3));
             TEST_CHECK(! accept_keyword(env, KeywordName("arch"), *id3));
@@ -174,14 +174,14 @@ namespace test_cases
 
             const std::shared_ptr<const PackageID> id4(*env[selection::RequireExactlyOne(
                         generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-four-1",
-                                    &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
+                                    &env, { })), { }))]->begin());
             TEST_CHECK(accept_keyword(env, KeywordName("fred"), *id4));
             std::shared_ptr<const KeywordNameSet> empty(std::make_shared<KeywordNameSet>());
             TEST_CHECK(env.accept_keywords(empty, *id4));
 
             const std::shared_ptr<const PackageID> id5(*env[selection::RequireExactlyOne(
                         generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-five-1",
-                                    &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->begin());
+                                    &env, { })), { }))]->begin());
             TEST_CHECK(accept_keyword(env, KeywordName("~foo"), *id5));
             TEST_CHECK(! accept_keyword(env, KeywordName("foo"), *id5));
         }
@@ -196,7 +196,7 @@ namespace test_cases
             TestPortageEnvironment env("portage_environment_TEST_dir/world");
             FSEntry w(FSEntry::cwd() / "portage_environment_TEST_dir" / "world" / "var" / "lib" / "portage" / "world");
 
-            env.update_config_files_for_package_move(make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
+            env.update_config_files_for_package_move(make_package_dep_spec({ })
                     .package(QualifiedPackageName("cat/before")),
                     QualifiedPackageName("cat/after"));
 

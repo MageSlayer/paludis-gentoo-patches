@@ -172,7 +172,7 @@ UninstallList::add_errors_for_system()
             continue;
 
         bool needed(false);
-        if (match_package_in_set(*_imp->env, *system, *l->package_id(), MatchPackageOptions()))
+        if (match_package_in_set(*_imp->env, *system, *l->package_id(), { }))
             needed = true;
 
         if ((! needed) && l->package_id()->provide_key())
@@ -183,10 +183,10 @@ UninstallList::add_errors_for_system()
                     v != v_end && ! needed ; ++v)
             {
                 const std::shared_ptr<const PackageIDSequence> virtuals((*_imp->env)[selection::AllVersionsUnsorted(
-                            generator::Matches(**v, MatchPackageOptions()))]);
+                            generator::Matches(**v, { }))]);
                 for (PackageIDSequence::ConstIterator i(virtuals->begin()), i_end(virtuals->end()) ;
                         i != i_end && ! needed ; ++i)
-                    if (match_package_in_set(*_imp->env, *system, **i, MatchPackageOptions()))
+                    if (match_package_in_set(*_imp->env, *system, **i, { }))
                         needed = true;
             }
         }
@@ -330,8 +330,8 @@ namespace
 
             std::shared_ptr<const PackageIDSequence> m(
                     best_only ?
-                    (*env)[selection::BestVersionOnly(generator::Matches(*node.spec(), MatchPackageOptions()) | filter::InstalledAtRoot(env->root()))] :
-                    (*env)[selection::AllVersionsSorted(generator::Matches(*node.spec(), MatchPackageOptions()) | filter::InstalledAtRoot(env->root()))]);
+                    (*env)[selection::BestVersionOnly(generator::Matches(*node.spec(), { }) | filter::InstalledAtRoot(env->root()))] :
+                    (*env)[selection::AllVersionsSorted(generator::Matches(*node.spec(), { }) | filter::InstalledAtRoot(env->root()))]);
             for (PackageIDSequence::ConstIterator it = m->begin(), it_end = m->end();
                  it_end != it; ++it)
                 matches->insert(make_named_values<DepTagEntry>(
@@ -473,7 +473,7 @@ UninstallList::add_unused_dependencies()
         for (PackageIDSet::ConstIterator i(unused_dependencies->begin()),
                 i_end(unused_dependencies->end()) ; i != i_end ; ++i)
         {
-            if (match_package_in_set(*_imp->env, *world, **i, MatchPackageOptions()))
+            if (match_package_in_set(*_imp->env, *world, **i, { }))
                 continue;
 
             if (_imp->uninstall_list.end() != std::find_if(_imp->uninstall_list.begin(),
@@ -550,7 +550,7 @@ UninstallList::collect_world() const
     for (PackageIDSet::ConstIterator i(everything->begin()),
             i_end(everything->end()) ; i != i_end ; ++i)
     {
-        if (match_package_in_set(*_imp->env, *world, **i, MatchPackageOptions()))
+        if (match_package_in_set(*_imp->env, *world, **i, { }))
             result->insert(*i);
     }
 

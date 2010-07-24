@@ -74,14 +74,14 @@ namespace test_cases
             env.package_database()->add_repository(10, repo2);
             env.package_database()->add_repository(0, inst_repo1);
 
-            repo1->add_version(CategoryNamePart("cat") + PackageNamePart("a"), VersionSpec("1", VersionSpecOptions()));
-            repo1->add_version(CategoryNamePart("cat") + PackageNamePart("b"), VersionSpec("2", VersionSpecOptions()));
+            repo1->add_version(CategoryNamePart("cat") + PackageNamePart("a"), VersionSpec("1", { }));
+            repo1->add_version(CategoryNamePart("cat") + PackageNamePart("b"), VersionSpec("2", { }));
 
-            repo2->add_version(CategoryNamePart("cat") + PackageNamePart("a"), VersionSpec("1", VersionSpecOptions()));
-            repo2->add_version(CategoryNamePart("cat") + PackageNamePart("a"), VersionSpec("2", VersionSpecOptions()))->keywords_key()->set_from_string("");
-            repo2->add_version(CategoryNamePart("cat") + PackageNamePart("c"), VersionSpec("3", VersionSpecOptions()));
+            repo2->add_version(CategoryNamePart("cat") + PackageNamePart("a"), VersionSpec("1", { }));
+            repo2->add_version(CategoryNamePart("cat") + PackageNamePart("a"), VersionSpec("2", { }))->keywords_key()->set_from_string("");
+            repo2->add_version(CategoryNamePart("cat") + PackageNamePart("c"), VersionSpec("3", { }));
 
-            inst_repo1->add_version(CategoryNamePart("cat") + PackageNamePart("a"), VersionSpec("1", VersionSpecOptions()));
+            inst_repo1->add_version(CategoryNamePart("cat") + PackageNamePart("a"), VersionSpec("1", { }));
         }
 
         virtual std::string get_expected() const = 0;
@@ -96,7 +96,7 @@ namespace test_cases
 
             std::shared_ptr<const PackageIDSequence> got_none(env[selection::AllVersionsSorted(
                         generator::Matches(parse_user_package_dep_spec("not/exist", &env,
-                                UserPackageDepSpecOptions()), MatchPackageOptions()) | filter)]);
+                                { }), { }) | filter)]);
             TEST_CHECK(bool(got_none));
             TEST_CHECK_EQUAL(join(indirect_iterator(got_none->begin()), indirect_iterator(got_none->end()), ", "), "");
         }
@@ -222,9 +222,9 @@ namespace test_cases
     {
         MatchesFilterTestCase() :
             FilterTestCaseBase("matches", filter::Matches(parse_user_package_dep_spec("cat/a",
-                            &env, UserPackageDepSpecOptions()), MatchPackageOptions()))
+                            &env, { }), { }))
         {
-        }        
+        }
 
         virtual std::string get_expected() const
         {
@@ -240,7 +240,7 @@ namespace test_cases
     {
         MatchesCatWildcardFilterTestCase() :
             FilterTestCaseBase("matches cat wildcard", filter::Matches(parse_user_package_dep_spec("*/a",
-                            &env, UserPackageDepSpecOptions() + updso_allow_wildcards), MatchPackageOptions()))
+                            &env, { updso_allow_wildcards }), { }))
         {
         }
 
@@ -258,7 +258,7 @@ namespace test_cases
     {
         MatchesPkgWildcardFilterTestCase() :
             FilterTestCaseBase("matches pkg wildcard", filter::Matches(parse_user_package_dep_spec("cat/*",
-                            &env, UserPackageDepSpecOptions() + updso_allow_wildcards), MatchPackageOptions()))
+                            &env, { updso_allow_wildcards }), { }))
         {
         }
 
@@ -279,7 +279,7 @@ namespace test_cases
         MatchesAllWildcardFilterTestCase() :
             FilterTestCaseBase("matches all wildcard", filter::Matches(
                         parse_user_package_dep_spec(">=*/*-2",
-                            &env, UserPackageDepSpecOptions() + updso_allow_wildcards), MatchPackageOptions()))
+                            &env, { updso_allow_wildcards }), { }))
         {
         }
 

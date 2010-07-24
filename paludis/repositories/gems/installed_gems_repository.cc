@@ -235,7 +235,7 @@ InstalledGemsRepository::need_ids() const
 
     for (DirIterator d(_imp->params.install_dir() / "specifications"), d_end ; d != d_end ; ++d)
     {
-        if (! is_file_with_extension(*d, ".gemspec", IsFileWithOptions()))
+        if (! is_file_with_extension(*d, ".gemspec", { }))
             continue;
 
         std::string s(strip_trailing_string(d->basename(), ".gemspec"));
@@ -247,7 +247,7 @@ InstalledGemsRepository::need_ids() const
             continue;
         }
 
-        VersionSpec v(s.substr(h + 1), VersionSpecOptions());
+        VersionSpec v(s.substr(h + 1), { });
         PackageNamePart p(s.substr(0, h));
         pkgs->insert(gems + p);
 

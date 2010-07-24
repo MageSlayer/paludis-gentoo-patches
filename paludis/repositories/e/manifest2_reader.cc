@@ -70,7 +70,7 @@ Manifest2Reader::Manifest2Reader(const FSEntry & f) :
     if (! f.exists())
         return;
 
-    LineConfigFile lines(_imp->manifest, LineConfigFileOptions());
+    LineConfigFile lines(_imp->manifest, { });
 
     for (LineConfigFile::ConstIterator l(lines.begin()), l_end(lines.end()) ;
         l != l_end ; ++l)

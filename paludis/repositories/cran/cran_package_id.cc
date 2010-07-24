@@ -82,7 +82,7 @@ namespace paludis
             repository(r),
             cran_repository(r),
             name("cran/" + cran_name_to_internal(strip_trailing_string(f.basename(), ".DESCRIPTION"))),
-            version("0", VersionSpecOptions()),
+            version("0", { }),
             suggests_labels(std::make_shared<DependenciesLabelSequence>()),
             depends_labels(std::make_shared<DependenciesLabelSequence>())
         {
@@ -152,14 +152,14 @@ CRANPackageID::CRANPackageID(const Environment * const env, const std::shared_pt
         {
             Context local_context("When handling Version: key:");
             Log::get_instance()->message("cran.id.broken", ll_warning, lc_context) << "No Version: key in '" << stringify(f) << "'";
-            _imp->version = VersionSpec("0", VersionSpecOptions());
+            _imp->version = VersionSpec("0", { });
             add_mask(std::make_shared<BrokenMask>('B', "Broken", "No Version: key"));
             return;
         }
         else
         {
             Context local_context("When handling Version: key:");
-            _imp->version = VersionSpec(cran_version_to_internal(file.get("Version")), VersionSpecOptions());
+            _imp->version = VersionSpec(cran_version_to_internal(file.get("Version")), { });
         }
 
         if (! file.get("License").empty())
@@ -462,7 +462,7 @@ PackageDepSpec
 CRANPackageID::uniquely_identifying_spec() const
 {
     return parse_user_package_dep_spec("=" + stringify(name()) + "-" + stringify(version()) + "::" + stringify(repository()->name()),
-            _imp->env, UserPackageDepSpecOptions());
+            _imp->env, { });
 }
 
 namespace

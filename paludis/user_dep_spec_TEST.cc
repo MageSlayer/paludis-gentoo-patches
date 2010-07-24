@@ -171,59 +171,59 @@ namespace test_cases
         {
             TestEnvironment env;
 
-            PackageDepSpec a(parse_user_package_dep_spec("foo/bar", &env, UserPackageDepSpecOptions()));
+            PackageDepSpec a(parse_user_package_dep_spec("foo/bar", &env, { }));
             check_spec(a, "foo/bar", "", "", "", "", "", "", "", "");
 
-            PackageDepSpec b(parse_user_package_dep_spec(">=foo/bar-1.2.3", &env, UserPackageDepSpecOptions()));
+            PackageDepSpec b(parse_user_package_dep_spec(">=foo/bar-1.2.3", &env, { }));
             check_spec(b, "foo/bar", "", "", ">=1.2.3", "", "", "", "", "");
 
-            PackageDepSpec c(parse_user_package_dep_spec("foo/bar:baz", &env, UserPackageDepSpecOptions()));
+            PackageDepSpec c(parse_user_package_dep_spec("foo/bar:baz", &env, { }));
             check_spec(c, "foo/bar", "", "", "", "", ":baz", "", "", "");
 
-            PackageDepSpec d(parse_user_package_dep_spec("=foo/bar-1.2*:1.2.1", &env, UserPackageDepSpecOptions()));
+            PackageDepSpec d(parse_user_package_dep_spec("=foo/bar-1.2*:1.2.1", &env, { }));
             check_spec(d, "foo/bar", "", "", "=*1.2", "", ":1.2.1", "", "", "");
 
-            PackageDepSpec e(parse_user_package_dep_spec("foo/bar:1.2.1", &env, UserPackageDepSpecOptions()));
+            PackageDepSpec e(parse_user_package_dep_spec("foo/bar:1.2.1", &env, { }));
             check_spec(e, "foo/bar", "", "", "", "", ":1.2.1", "", "", "");
 
-            PackageDepSpec f(parse_user_package_dep_spec("foo/bar:0", &env, UserPackageDepSpecOptions()));
+            PackageDepSpec f(parse_user_package_dep_spec("foo/bar:0", &env, { }));
             check_spec(f, "foo/bar", "", "", "", "", ":0", "", "", "");
 
-            PackageDepSpec g(parse_user_package_dep_spec("foo/bar-100dpi", &env, UserPackageDepSpecOptions()));
+            PackageDepSpec g(parse_user_package_dep_spec("foo/bar-100dpi", &env, { }));
             check_spec(g, "foo/bar-100dpi", "", "", "", "", "", "", "", "");
 
-            PackageDepSpec h(parse_user_package_dep_spec(">=foo/bar-100dpi-1.23", &env, UserPackageDepSpecOptions()));
+            PackageDepSpec h(parse_user_package_dep_spec(">=foo/bar-100dpi-1.23", &env, { }));
             check_spec(h, "foo/bar-100dpi", "", "", ">=1.23", "", "", "", "", "");
 
-            TEST_CHECK_THROWS(parse_user_package_dep_spec("", &env, UserPackageDepSpecOptions()), PackageDepSpecError);
-            TEST_CHECK_THROWS(parse_user_package_dep_spec("=foo/bar-1.2[=1.3]", &env, UserPackageDepSpecOptions()), PackageDepSpecError);
+            TEST_CHECK_THROWS(parse_user_package_dep_spec("", &env, { }), PackageDepSpecError);
+            TEST_CHECK_THROWS(parse_user_package_dep_spec("=foo/bar-1.2[=1.3]", &env, { }), PackageDepSpecError);
 
-            PackageDepSpec i(parse_user_package_dep_spec("foo/bar[one][-two]", &env, UserPackageDepSpecOptions()));
+            PackageDepSpec i(parse_user_package_dep_spec("foo/bar[one][-two]", &env, { }));
             check_spec(i, "foo/bar", "", "", "", "", "", "", "", "[-two], [one]");
 
-            PackageDepSpec j(parse_user_package_dep_spec("=foo/bar-scm-r3", &env, UserPackageDepSpecOptions()));
+            PackageDepSpec j(parse_user_package_dep_spec("=foo/bar-scm-r3", &env, { }));
             check_spec(j, "foo/bar", "", "", "=scm-r3", "", "", "", "", "");
 
-            PackageDepSpec k(parse_user_package_dep_spec("=foo/bar-scm", &env, UserPackageDepSpecOptions()));
+            PackageDepSpec k(parse_user_package_dep_spec("=foo/bar-scm", &env, { }));
             check_spec(k, "foo/bar", "", "", "=scm", "", "", "", "", "");
 
-            PackageDepSpec l(parse_user_package_dep_spec("foo/bar[one][-two][>=1.2&<2.0]", &env, UserPackageDepSpecOptions()));
+            PackageDepSpec l(parse_user_package_dep_spec("foo/bar[one][-two][>=1.2&<2.0]", &env, { }));
             check_spec(l, "foo/bar", "", "", ">=1.2, <2.0", "and", "", "", "", "[-two], [one]");
 
-            PackageDepSpec m(parse_user_package_dep_spec("foo/bar[=1.2|=1.3*|~1.4]", &env, UserPackageDepSpecOptions()));
+            PackageDepSpec m(parse_user_package_dep_spec("foo/bar[=1.2|=1.3*|~1.4]", &env, { }));
             check_spec(m, "foo/bar", "", "", "=1.2, =*1.3, ~1.4", "or", "", "", "", "");
 
-            PackageDepSpec n(parse_user_package_dep_spec("=foo/bar--1.2.3", &env, UserPackageDepSpecOptions()));
+            PackageDepSpec n(parse_user_package_dep_spec("=foo/bar--1.2.3", &env, { }));
             check_spec(n, "foo/bar-", "", "", "=1.2.3", "", "", "", "", "");
 
-            TEST_CHECK_THROWS(parse_user_package_dep_spec("=foo/bar--", &env, UserPackageDepSpecOptions()), PackageDepSpecError);
+            TEST_CHECK_THROWS(parse_user_package_dep_spec("=foo/bar--", &env, { }), PackageDepSpecError);
 
-            PackageDepSpec o(parse_user_package_dep_spec("=foo/bar---1.2.3", &env, UserPackageDepSpecOptions()));
+            PackageDepSpec o(parse_user_package_dep_spec("=foo/bar---1.2.3", &env, { }));
             check_spec(o, "foo/bar--", "", "", "=1.2.3", "", "", "", "", "");
 
-            TEST_CHECK_THROWS(parse_user_package_dep_spec("=foo/bar[.foo]", &env, UserPackageDepSpecOptions()), PackageDepSpecError);
+            TEST_CHECK_THROWS(parse_user_package_dep_spec("=foo/bar[.foo]", &env, { }), PackageDepSpecError);
 
-            PackageDepSpec p(parse_user_package_dep_spec("foo/bar[.key=value]", &env, UserPackageDepSpecOptions()));
+            PackageDepSpec p(parse_user_package_dep_spec("foo/bar[.key=value]", &env, { }));
             check_spec(p, "foo/bar", "", "", "", "", "", "", "", "[.key=value]");
         }
     } test_user_package_dep_spec;
@@ -236,22 +236,22 @@ namespace test_cases
         {
             TestEnvironment env;
 
-            PackageDepSpec a(parse_user_package_dep_spec("*/*", &env, UserPackageDepSpecOptions() + updso_allow_wildcards));
+            PackageDepSpec a(parse_user_package_dep_spec("*/*", &env, { updso_allow_wildcards }));
             check_spec(a, "", "", "", "", "", "", "", "", "");
 
-            PackageDepSpec b(parse_user_package_dep_spec("foo/*", &env, UserPackageDepSpecOptions() + updso_allow_wildcards));
+            PackageDepSpec b(parse_user_package_dep_spec("foo/*", &env, { updso_allow_wildcards }));
             check_spec(b, "", "foo", "", "", "", "", "", "", "");
 
-            PackageDepSpec c(parse_user_package_dep_spec("*/foo", &env, UserPackageDepSpecOptions() + updso_allow_wildcards));
+            PackageDepSpec c(parse_user_package_dep_spec("*/foo", &env, { updso_allow_wildcards }));
             check_spec(c, "", "", "foo", "", "", "", "", "", "");
 
-            PackageDepSpec d(parse_user_package_dep_spec("~*/*-0", &env, UserPackageDepSpecOptions() + updso_allow_wildcards));
+            PackageDepSpec d(parse_user_package_dep_spec("~*/*-0", &env, { updso_allow_wildcards }));
             check_spec(d, "", "", "", "~0", "", "", "", "", "");
 
-            PackageDepSpec e(parse_user_package_dep_spec(">=foo/*-1.23", &env, UserPackageDepSpecOptions() + updso_allow_wildcards));
+            PackageDepSpec e(parse_user_package_dep_spec(">=foo/*-1.23", &env, { updso_allow_wildcards }));
             check_spec(e, "", "foo", "", ">=1.23", "", "", "", "", "");
 
-            PackageDepSpec f(parse_user_package_dep_spec("=*/foo-1*", &env, UserPackageDepSpecOptions() + updso_allow_wildcards));
+            PackageDepSpec f(parse_user_package_dep_spec("=*/foo-1*", &env, { updso_allow_wildcards }));
             check_spec(f, "", "", "foo", "=*1", "", "", "", "", "");
         }
     } test_user_package_dep_spec_unspecific;
@@ -265,43 +265,43 @@ namespace test_cases
             TestEnvironment env;
 
             PackageDepSpec a(parse_user_package_dep_spec("cat/pkg::repo",
-                        &env, UserPackageDepSpecOptions() + updso_allow_wildcards));
+                        &env, { updso_allow_wildcards }));
             check_spec(a, "cat/pkg", "", "", "", "", "", "repo", "", "");
 
             PackageDepSpec b(parse_user_package_dep_spec("cat/pkg::->repo",
-                        &env, UserPackageDepSpecOptions() + updso_allow_wildcards));
+                        &env, { updso_allow_wildcards }));
             check_spec(b, "cat/pkg", "", "", "", "", "", "repo", "", "");
 
             PackageDepSpec c(parse_user_package_dep_spec("cat/pkg::repo->",
-                        &env, UserPackageDepSpecOptions() + updso_allow_wildcards));
+                        &env, { updso_allow_wildcards }));
             check_spec(c, "cat/pkg", "", "", "", "", "", "", "repo", "");
 
             PackageDepSpec d(parse_user_package_dep_spec("cat/pkg::r1->r2",
-                        &env, UserPackageDepSpecOptions() + updso_allow_wildcards));
+                        &env, { updso_allow_wildcards }));
             check_spec(d, "cat/pkg", "", "", "", "", "", "r2", "r1", "");
 
             PackageDepSpec e(parse_user_package_dep_spec("cat/pkg::/",
-                        &env, UserPackageDepSpecOptions() + updso_allow_wildcards));
+                        &env, { updso_allow_wildcards }));
             check_spec(e, "cat/pkg", "", "", "", "", "", "", "", "", "/");
 
             PackageDepSpec f(parse_user_package_dep_spec("cat/pkg::/path",
-                        &env, UserPackageDepSpecOptions() + updso_allow_wildcards));
+                        &env, { updso_allow_wildcards }));
             check_spec(f, "cat/pkg", "", "", "", "", "", "", "", "", "/path");
 
             PackageDepSpec g(parse_user_package_dep_spec("cat/pkg::/?",
-                        &env, UserPackageDepSpecOptions() + updso_allow_wildcards));
+                        &env, { updso_allow_wildcards }));
             check_spec(g, "cat/pkg", "", "", "", "", "", "", "", "", "", "/", false);
 
             PackageDepSpec h(parse_user_package_dep_spec("cat/pkg::/path?",
-                        &env, UserPackageDepSpecOptions() + updso_allow_wildcards));
+                        &env, { updso_allow_wildcards }));
             check_spec(h, "cat/pkg", "", "", "", "", "", "", "", "", "", "/path", false);
 
             PackageDepSpec i(parse_user_package_dep_spec("cat/pkg::/??",
-                        &env, UserPackageDepSpecOptions() + updso_allow_wildcards));
+                        &env, { updso_allow_wildcards }));
             check_spec(i, "cat/pkg", "", "", "", "", "", "", "", "", "", "/", true);
 
             PackageDepSpec j(parse_user_package_dep_spec("cat/pkg::/path??",
-                        &env, UserPackageDepSpecOptions() + updso_allow_wildcards));
+                        &env, { updso_allow_wildcards }));
             check_spec(j, "cat/pkg", "", "", "", "", "", "", "", "", "", "/path", true);
         }
     } test_user_package_dep_spec_repo;
@@ -331,40 +331,40 @@ namespace test_cases
             fake->add_version("cat", "pkg3", "1");
             fake_inst->add_version("dog", "pkg3", "1");
 
-            PackageDepSpec a(parse_user_package_dep_spec("pkg1", &env, UserPackageDepSpecOptions()));
+            PackageDepSpec a(parse_user_package_dep_spec("pkg1", &env, { }));
             check_spec(a, "cat/pkg1", "", "", "", "", "", "", "", "");
 
-            TEST_CHECK_THROWS(parse_user_package_dep_spec("pkg2", &env, UserPackageDepSpecOptions()), AmbiguousPackageNameError);
-            PackageDepSpec b(parse_user_package_dep_spec("pkg3", &env, UserPackageDepSpecOptions()));
+            TEST_CHECK_THROWS(parse_user_package_dep_spec("pkg2", &env, { }), AmbiguousPackageNameError);
+            PackageDepSpec b(parse_user_package_dep_spec("pkg3", &env, { }));
             check_spec(b, "dog/pkg3", "", "", "", "", "", "", "", "");
 
-            PackageDepSpec c(parse_user_package_dep_spec("pkg3", &env, UserPackageDepSpecOptions(), filter::SupportsAction<InstallAction>()));
+            PackageDepSpec c(parse_user_package_dep_spec("pkg3", &env, { }, filter::SupportsAction<InstallAction>()));
             check_spec(c, "cat/pkg3", "", "", "", "", "", "", "", "");
 
-            TEST_CHECK_THROWS(parse_user_package_dep_spec("pkg4", &env, UserPackageDepSpecOptions()), NoSuchPackageError);
+            TEST_CHECK_THROWS(parse_user_package_dep_spec("pkg4", &env, { }), NoSuchPackageError);
 
-            TEST_CHECK_THROWS(parse_user_package_dep_spec("pkg5", &env, UserPackageDepSpecOptions() + updso_no_disambiguation), PackageDepSpecError);
+            TEST_CHECK_THROWS(parse_user_package_dep_spec("pkg5", &env, { updso_no_disambiguation }), PackageDepSpecError);
 
-            PackageDepSpec d(parse_user_package_dep_spec("=pkg1-1", &env, UserPackageDepSpecOptions()));
+            PackageDepSpec d(parse_user_package_dep_spec("=pkg1-1", &env, { }));
             TEST_CHECK_STRINGIFY_EQUAL(d, "=cat/pkg1-1");
-            TEST_CHECK_THROWS(parse_user_package_dep_spec("=pkg1-42", &env, UserPackageDepSpecOptions()), NoSuchPackageError);
+            TEST_CHECK_THROWS(parse_user_package_dep_spec("=pkg1-42", &env, { }), NoSuchPackageError);
 
-            PackageDepSpec e(parse_user_package_dep_spec("=pkg1-1:0", &env, UserPackageDepSpecOptions()));
+            PackageDepSpec e(parse_user_package_dep_spec("=pkg1-1:0", &env, { }));
             TEST_CHECK_STRINGIFY_EQUAL(e, "=cat/pkg1-1:0");
-            TEST_CHECK_THROWS(parse_user_package_dep_spec("=pkg1-42:0", &env, UserPackageDepSpecOptions()), NoSuchPackageError);
+            TEST_CHECK_THROWS(parse_user_package_dep_spec("=pkg1-42:0", &env, { }), NoSuchPackageError);
 
-            PackageDepSpec f(parse_user_package_dep_spec("pkg1:0", &env, UserPackageDepSpecOptions()));
+            PackageDepSpec f(parse_user_package_dep_spec("pkg1:0", &env, { }));
             TEST_CHECK_STRINGIFY_EQUAL(f, "cat/pkg1:0");
 
-            PackageDepSpec g(parse_user_package_dep_spec("pkg1[-foo]", &env, UserPackageDepSpecOptions()));
+            PackageDepSpec g(parse_user_package_dep_spec("pkg1[-foo]", &env, { }));
             TEST_CHECK_STRINGIFY_EQUAL(g, "cat/pkg1[-foo]");
-            TEST_CHECK_THROWS(parse_user_package_dep_spec("pkg1[foo]", &env, UserPackageDepSpecOptions()), NoSuchPackageError);
+            TEST_CHECK_THROWS(parse_user_package_dep_spec("pkg1[foo]", &env, { }), NoSuchPackageError);
 
-            PackageDepSpec h(parse_user_package_dep_spec("pkg1[=1]", &env, UserPackageDepSpecOptions()));
+            PackageDepSpec h(parse_user_package_dep_spec("pkg1[=1]", &env, { }));
             TEST_CHECK_STRINGIFY_EQUAL(h, "=cat/pkg1-1");
-            TEST_CHECK_THROWS(parse_user_package_dep_spec("pkg1[=42]", &env, UserPackageDepSpecOptions()), NoSuchPackageError);
+            TEST_CHECK_THROWS(parse_user_package_dep_spec("pkg1[=42]", &env, { }), NoSuchPackageError);
 
-            PackageDepSpec i(parse_user_package_dep_spec("pkg1::fake", &env, UserPackageDepSpecOptions()));
+            PackageDepSpec i(parse_user_package_dep_spec("pkg1::fake", &env, { }));
             TEST_CHECK_STRINGIFY_EQUAL(i, "cat/pkg1::fake");
         }
     } test_user_package_dep_spec_disambiguation;
@@ -383,22 +383,22 @@ namespace test_cases
             fake->add_version("cat", "world", "1");
             fake->add_version("cat", "moon", "1");
 
-            TEST_CHECK_THROWS(parse_user_package_dep_spec("world", &env, UserPackageDepSpecOptions() + updso_throw_if_set), GotASetNotAPackageDepSpec);
-            TEST_CHECK_THROWS(parse_user_package_dep_spec("system", &env, UserPackageDepSpecOptions() + updso_throw_if_set), GotASetNotAPackageDepSpec);
-            PackageDepSpec a(parse_user_package_dep_spec("moon", &env, UserPackageDepSpecOptions() + updso_throw_if_set));
+            TEST_CHECK_THROWS(parse_user_package_dep_spec("world", &env, { updso_throw_if_set }), GotASetNotAPackageDepSpec);
+            TEST_CHECK_THROWS(parse_user_package_dep_spec("system", &env, { updso_throw_if_set }), GotASetNotAPackageDepSpec);
+            PackageDepSpec a(parse_user_package_dep_spec("moon", &env, { updso_throw_if_set }));
             TEST_CHECK_STRINGIFY_EQUAL(a, "cat/moon");
-            TEST_CHECK_THROWS(parse_user_package_dep_spec("mars", &env, UserPackageDepSpecOptions() + updso_throw_if_set), NoSuchPackageError);
+            TEST_CHECK_THROWS(parse_user_package_dep_spec("mars", &env, { updso_throw_if_set }), NoSuchPackageError);
 
-            TEST_CHECK_THROWS(parse_user_package_dep_spec("world", &env, UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set), GotASetNotAPackageDepSpec);
-            TEST_CHECK_THROWS(parse_user_package_dep_spec("system", &env, UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set), GotASetNotAPackageDepSpec);
-            TEST_CHECK_THROWS(parse_user_package_dep_spec("moon", &env, UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set), GotASetNotAPackageDepSpec);
-            TEST_CHECK_THROWS(parse_user_package_dep_spec("mars", &env, UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set), GotASetNotAPackageDepSpec);
+            TEST_CHECK_THROWS(parse_user_package_dep_spec("world", &env, { updso_no_disambiguation, updso_throw_if_set }), GotASetNotAPackageDepSpec);
+            TEST_CHECK_THROWS(parse_user_package_dep_spec("system", &env, { updso_no_disambiguation, updso_throw_if_set }), GotASetNotAPackageDepSpec);
+            TEST_CHECK_THROWS(parse_user_package_dep_spec("moon", &env, { updso_no_disambiguation, updso_throw_if_set }), GotASetNotAPackageDepSpec);
+            TEST_CHECK_THROWS(parse_user_package_dep_spec("mars", &env, { updso_no_disambiguation, updso_throw_if_set }), GotASetNotAPackageDepSpec);
 
-            TEST_CHECK_THROWS(parse_user_package_dep_spec("=world-123", &env, UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set), PackageDepSpecError);
-            TEST_CHECK_THROWS(parse_user_package_dep_spec("world*", &env, UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set), GotASetNotAPackageDepSpec);
-            TEST_CHECK_THROWS(parse_user_package_dep_spec("world**", &env, UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set), PackageDepSpecError);
+            TEST_CHECK_THROWS(parse_user_package_dep_spec("=world-123", &env, { updso_no_disambiguation, updso_throw_if_set }), PackageDepSpecError);
+            TEST_CHECK_THROWS(parse_user_package_dep_spec("world*", &env, { updso_no_disambiguation, updso_throw_if_set }), GotASetNotAPackageDepSpec);
+            TEST_CHECK_THROWS(parse_user_package_dep_spec("world**", &env, { updso_no_disambiguation, updso_throw_if_set }), PackageDepSpecError);
 
-            TEST_CHECK_THROWS(parse_user_package_dep_spec("system", &env, UserPackageDepSpecOptions()), NoSuchPackageError);
+            TEST_CHECK_THROWS(parse_user_package_dep_spec("system", &env, { }), NoSuchPackageError);
         }
     } test_user_package_dep_spec_sets;
 
@@ -421,53 +421,53 @@ namespace test_cases
             std::shared_ptr<FakePackageID> pkg3(fake->add_version("cat", "pkg1", "3"));
             pkg3->keywords_key()->set_from_string("~d");
 
-            PackageDepSpec a(parse_user_package_dep_spec("cat/pkg1[.KEYWORDS<~a]", &env, UserPackageDepSpecOptions()));
-            TEST_CHECK(match_package(env, a, *pkg1, MatchPackageOptions()));
-            TEST_CHECK(match_package(env, a, *pkg2, MatchPackageOptions()));
-            TEST_CHECK(! match_package(env, a, *pkg3, MatchPackageOptions()));
+            PackageDepSpec a(parse_user_package_dep_spec("cat/pkg1[.KEYWORDS<~a]", &env, { }));
+            TEST_CHECK(match_package(env, a, *pkg1, { }));
+            TEST_CHECK(match_package(env, a, *pkg2, { }));
+            TEST_CHECK(! match_package(env, a, *pkg3, { }));
 
-            PackageDepSpec b(parse_user_package_dep_spec("cat/pkg1[.KEYWORDS<~b]", &env, UserPackageDepSpecOptions()));
-            TEST_CHECK(match_package(env, b, *pkg1, MatchPackageOptions()));
-            TEST_CHECK(! match_package(env, b, *pkg2, MatchPackageOptions()));
-            TEST_CHECK(! match_package(env, b, *pkg3, MatchPackageOptions()));
+            PackageDepSpec b(parse_user_package_dep_spec("cat/pkg1[.KEYWORDS<~b]", &env, { }));
+            TEST_CHECK(match_package(env, b, *pkg1, { }));
+            TEST_CHECK(! match_package(env, b, *pkg2, { }));
+            TEST_CHECK(! match_package(env, b, *pkg3, { }));
 
-            PackageDepSpec c(parse_user_package_dep_spec("cat/pkg1[.KEYWORDS<~c]", &env, UserPackageDepSpecOptions()));
-            TEST_CHECK(! match_package(env, c, *pkg1, MatchPackageOptions()));
-            TEST_CHECK(match_package(env, c, *pkg2, MatchPackageOptions()));
-            TEST_CHECK(! match_package(env, c, *pkg3, MatchPackageOptions()));
+            PackageDepSpec c(parse_user_package_dep_spec("cat/pkg1[.KEYWORDS<~c]", &env, { }));
+            TEST_CHECK(! match_package(env, c, *pkg1, { }));
+            TEST_CHECK(match_package(env, c, *pkg2, { }));
+            TEST_CHECK(! match_package(env, c, *pkg3, { }));
 
-            PackageDepSpec d(parse_user_package_dep_spec("cat/pkg1[.KEYWORDS>~a]", &env, UserPackageDepSpecOptions()));
-            TEST_CHECK(! match_package(env, d, *pkg1, MatchPackageOptions()));
-            TEST_CHECK(! match_package(env, d, *pkg2, MatchPackageOptions()));
-            TEST_CHECK(! match_package(env, d, *pkg3, MatchPackageOptions()));
+            PackageDepSpec d(parse_user_package_dep_spec("cat/pkg1[.KEYWORDS>~a]", &env, { }));
+            TEST_CHECK(! match_package(env, d, *pkg1, { }));
+            TEST_CHECK(! match_package(env, d, *pkg2, { }));
+            TEST_CHECK(! match_package(env, d, *pkg3, { }));
 
-            PackageDepSpec e(parse_user_package_dep_spec("cat/pkg1[.KEYWORDS=~d]", &env, UserPackageDepSpecOptions()));
-            TEST_CHECK(! match_package(env, e, *pkg1, MatchPackageOptions()));
-            TEST_CHECK(! match_package(env, e, *pkg2, MatchPackageOptions()));
-            TEST_CHECK(match_package(env, e, *pkg3, MatchPackageOptions()));
+            PackageDepSpec e(parse_user_package_dep_spec("cat/pkg1[.KEYWORDS=~d]", &env, { }));
+            TEST_CHECK(! match_package(env, e, *pkg1, { }));
+            TEST_CHECK(! match_package(env, e, *pkg2, { }));
+            TEST_CHECK(match_package(env, e, *pkg3, { }));
 
-            PackageDepSpec f(parse_user_package_dep_spec("cat/pkg1[.KEYWORDS=~a ~c]", &env, UserPackageDepSpecOptions()));
-            TEST_CHECK(! match_package(env, f, *pkg1, MatchPackageOptions()));
-            TEST_CHECK(match_package(env, f, *pkg2, MatchPackageOptions()));
-            TEST_CHECK(! match_package(env, f, *pkg3, MatchPackageOptions()));
+            PackageDepSpec f(parse_user_package_dep_spec("cat/pkg1[.KEYWORDS=~a ~c]", &env, { }));
+            TEST_CHECK(! match_package(env, f, *pkg1, { }));
+            TEST_CHECK(match_package(env, f, *pkg2, { }));
+            TEST_CHECK(! match_package(env, f, *pkg3, { }));
 
-            PackageDepSpec g(parse_user_package_dep_spec("cat/pkg1[.HITCHHIKER=42]", &env, UserPackageDepSpecOptions()));
-            TEST_CHECK(match_package(env, g, *pkg1, MatchPackageOptions()));
+            PackageDepSpec g(parse_user_package_dep_spec("cat/pkg1[.HITCHHIKER=42]", &env, { }));
+            TEST_CHECK(match_package(env, g, *pkg1, { }));
 
-            PackageDepSpec h(parse_user_package_dep_spec("cat/pkg1[.HITCHHIKER<41]", &env, UserPackageDepSpecOptions()));
-            TEST_CHECK(! match_package(env, h, *pkg1, MatchPackageOptions()));
+            PackageDepSpec h(parse_user_package_dep_spec("cat/pkg1[.HITCHHIKER<41]", &env, { }));
+            TEST_CHECK(! match_package(env, h, *pkg1, { }));
 
-            PackageDepSpec i(parse_user_package_dep_spec("cat/pkg1[.HITCHHIKER<42]", &env, UserPackageDepSpecOptions()));
-            TEST_CHECK(! match_package(env, i, *pkg1, MatchPackageOptions()));
+            PackageDepSpec i(parse_user_package_dep_spec("cat/pkg1[.HITCHHIKER<42]", &env, { }));
+            TEST_CHECK(! match_package(env, i, *pkg1, { }));
 
-            PackageDepSpec j(parse_user_package_dep_spec("cat/pkg1[.HITCHHIKER<43]", &env, UserPackageDepSpecOptions()));
-            TEST_CHECK(match_package(env, j, *pkg1, MatchPackageOptions()));
+            PackageDepSpec j(parse_user_package_dep_spec("cat/pkg1[.HITCHHIKER<43]", &env, { }));
+            TEST_CHECK(match_package(env, j, *pkg1, { }));
 
-            PackageDepSpec k(parse_user_package_dep_spec("cat/pkg1[.HITCHHIKER>42]", &env, UserPackageDepSpecOptions()));
-            TEST_CHECK(! match_package(env, k, *pkg1, MatchPackageOptions()));
+            PackageDepSpec k(parse_user_package_dep_spec("cat/pkg1[.HITCHHIKER>42]", &env, { }));
+            TEST_CHECK(! match_package(env, k, *pkg1, { }));
 
-            PackageDepSpec l(parse_user_package_dep_spec("cat/pkg1[.HITCHHIKER>41]", &env, UserPackageDepSpecOptions()));
-            TEST_CHECK(match_package(env, l, *pkg1, MatchPackageOptions()));
+            PackageDepSpec l(parse_user_package_dep_spec("cat/pkg1[.HITCHHIKER>41]", &env, { }));
+            TEST_CHECK(match_package(env, l, *pkg1, { }));
         }
     } test_user_package_dep_spec_user_key_req;
 }

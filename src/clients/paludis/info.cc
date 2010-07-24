@@ -219,14 +219,14 @@ int do_one_info(
     Context local_context("When handling query '" + q + "':");
 
     std::shared_ptr<PackageDepSpec> spec(
-            std::make_shared<PackageDepSpec>(parse_user_package_dep_spec(q, env.get(), UserPackageDepSpecOptions())));
+            std::make_shared<PackageDepSpec>(parse_user_package_dep_spec(q, env.get(), { })));
 
     std::shared_ptr<const PackageIDSequence>
-        entries((*env)[selection::AllVersionsSorted(generator::Matches(*spec, MatchPackageOptions()))]),
+        entries((*env)[selection::AllVersionsSorted(generator::Matches(*spec, { }))]),
         installed_entries((*env)[selection::AllVersionsSorted(
-                    generator::Matches(*spec, MatchPackageOptions()) | filter::InstalledAtRoot(env->root()))]),
+                    generator::Matches(*spec, { }) | filter::InstalledAtRoot(env->root()))]),
         installable_entries((*env)[selection::AllVersionsSorted(
-                    generator::Matches(*spec, MatchPackageOptions()) | filter::SupportsAction<InstallAction>() | filter::NotMasked())]);
+                    generator::Matches(*spec, { }) | filter::SupportsAction<InstallAction>() | filter::NotMasked())]);
 
     std::shared_ptr<PackageIDSequence> to_show_entries(std::make_shared<PackageIDSequence>());
 

@@ -147,7 +147,7 @@ namespace
         Context context("When pretending for '" + stringify(origin_id_spec) + "':");
 
         const std::shared_ptr<const PackageID> origin_id(*(*env)[selection::RequireExactlyOne(
-                    generator::Matches(origin_id_spec, MatchPackageOptions()))]->begin());
+                    generator::Matches(origin_id_spec, { }))]->begin());
 
         if (0 != prev_x)
             cout << std::string(stringify(prev_x).length() + stringify(y).length() + 4, '\010');
@@ -223,7 +223,7 @@ namespace
                 else
                     r.append(", ");
 
-                const auto replacing_ids((*env)[selection::BestVersionOnly(generator::Matches(*i, MatchPackageOptions()))]);
+                const auto replacing_ids((*env)[selection::BestVersionOnly(generator::Matches(*i, { }))]);
                 if (replacing_ids->empty())
                     r.append(stringify(*i));
                 else if (ids->empty() || (*ids->begin())->name() != (*replacing_ids->begin())->name())
@@ -289,7 +289,7 @@ namespace
         Context context("When fetching for '" + stringify(id_spec) + "':");
 
         const std::shared_ptr<const PackageID> id(*(*env)[selection::RequireExactlyOne(
-                    generator::Matches(id_spec, MatchPackageOptions()))]->begin());
+                    generator::Matches(id_spec, { }))]->begin());
 
         std::string command(cmdline.program_options.a_perform_program.argument());
         if (command.empty())
@@ -363,7 +363,7 @@ namespace
             JobActiveState & active_state)
     {
         const std::shared_ptr<const PackageID> id(*(*env)[selection::RequireExactlyOne(
-                    generator::Matches(id_spec, MatchPackageOptions()))]->begin());
+                    generator::Matches(id_spec, { }))]->begin());
 
         Context context("When " + destination_string + " for '" + stringify(*id) + "':");
 
@@ -441,7 +441,7 @@ namespace
         Context context("When removing '" + stringify(id_spec) + "':");
 
         const std::shared_ptr<const PackageID> id(*(*env)[selection::RequireExactlyOne(
-                    generator::Matches(id_spec, MatchPackageOptions()))]->begin());
+                    generator::Matches(id_spec, { }))]->begin());
 
         std::string command(cmdline.program_options.a_perform_program.argument());
         if (command.empty())
@@ -560,7 +560,7 @@ namespace
                         continue;
                 }
 
-                PackageDepSpec spec(parse_user_package_dep_spec(aa, env.get(), UserPackageDepSpecOptions() + updso_no_disambiguation));
+                PackageDepSpec spec(parse_user_package_dep_spec(aa, env.get(), { updso_no_disambiguation }));
                 if (package_dep_spec_has_properties(spec, make_named_values<PackageDepSpecProperties>(
                                 n::has_additional_requirements() = false,
                                 n::has_category_name_part() = false,
@@ -733,7 +733,7 @@ namespace
                 throw InternalError(PALUDIS_HERE, "unhandled dt");
 
             const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::RequireExactlyOne(
-                        generator::Matches(install_item.origin_id_spec(), MatchPackageOptions()))]);
+                        generator::Matches(install_item.origin_id_spec(), { }))]);
 
             switch (part)
             {
@@ -790,7 +790,7 @@ namespace
                     i != i_end ; ++i)
             {
                 const std::shared_ptr<const PackageID> id(*(*env)[selection::RequireExactlyOne(
-                            generator::Matches(*i, MatchPackageOptions()))]->begin());
+                            generator::Matches(*i, { }))]->begin());
                 ids->push_back(id);
             }
 
@@ -837,7 +837,7 @@ namespace
         int visit(FetchJob & fetch_item)
         {
             const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::RequireExactlyOne(
-                        generator::Matches(fetch_item.origin_id_spec(), MatchPackageOptions()))]);
+                        generator::Matches(fetch_item.origin_id_spec(), { }))]);
 
             switch (part)
             {
@@ -951,7 +951,7 @@ namespace
             const PackageDepSpec & spec)
     {
         const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::BestVersionOnly(
-                    generator::Matches(spec, MatchPackageOptions()))]);
+                    generator::Matches(spec, { }))]);
         if (ids->empty())
             return stringify(spec);
         else
@@ -1027,7 +1027,7 @@ namespace
 
         std::string visit(const InstallJob & j) const
         {
-            const auto ids((*env)[selection::BestVersionOnly(generator::Matches(j.origin_id_spec(), MatchPackageOptions()))]);
+            const auto ids((*env)[selection::BestVersionOnly(generator::Matches(j.origin_id_spec(), { }))]);
             return "installing " + stringify_id_or_spec(env, j.origin_id_spec()) + " to ::" + stringify(j.destination_repository_name())
                 + maybe_replacing(env, ids, j.replacing_specs());
         }
@@ -1420,7 +1420,7 @@ namespace
             std::string r;
             if (! j.replacing_specs()->empty())
             {
-                const auto origin_ids((*env)[selection::BestVersionOnly(generator::Matches(j.origin_id_spec(), MatchPackageOptions()))]);
+                const auto origin_ids((*env)[selection::BestVersionOnly(generator::Matches(j.origin_id_spec(), { }))]);
 
                 for (auto i(j.replacing_specs()->begin()), i_end(j.replacing_specs()->end()) ;
                         i != i_end ; ++i)
@@ -1430,7 +1430,7 @@ namespace
                     else
                         r.append(", ");
 
-                    const auto ids((*env)[selection::BestVersionOnly(generator::Matches(*i, MatchPackageOptions()))]);
+                    const auto ids((*env)[selection::BestVersionOnly(generator::Matches(*i, { }))]);
                     if (ids->empty())
                         r.append(stringify(*i));
                     else if (origin_ids->empty() || (*origin_ids->begin())->name() != (*ids->begin())->name())

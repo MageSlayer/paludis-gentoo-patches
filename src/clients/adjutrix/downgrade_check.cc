@@ -58,7 +58,7 @@ namespace
 
         QualifiedPackageName old_package("dummy/dummy");
         std::string old_slot("dummy");
-        VersionSpec best_version("0", VersionSpecOptions());
+        VersionSpec best_version("0", { });
         for (IndirectIterator<PackageIDSequence::ConstIterator> m(matches->begin()), m_end(matches->end()) ;
                 m != m_end ; ++m)
         {
@@ -113,11 +113,11 @@ namespace
                 a(after.find(b->first));
             if (after.end() == a)
             {
-                PartiallyMadePackageDepSpec part_spec((PartiallyMadePackageDepSpecOptions()));
+                PartiallyMadePackageDepSpec part_spec({ });
                 part_spec.package(b->first.first);
                 if ("(none)" != b->first.second)
                     part_spec.slot_requirement(std::make_shared<UserSlotExactRequirement>(SlotName(b->first.second)));
-                if (! env[selection::SomeArbitraryVersion(generator::Matches(part_spec, MatchPackageOptions()))]->empty())
+                if (! env[selection::SomeArbitraryVersion(generator::Matches(part_spec, { }))]->empty())
                 {
                     results.insert(std::make_pair(b->first, stringify(b->second) + " -> nothing on " + desc));
                     exit_status |= 2;

@@ -142,8 +142,8 @@ namespace
             env.package_database()->add_repository(2, installed_repo);
 
             const std::shared_ptr<const PackageIDSequence> rlist(env[selection::AllVersionsSorted(generator::Matches(
-                            PackageDepSpec(parse_user_package_dep_spec(replacing, &env, UserPackageDepSpecOptions())),
-                            MatchPackageOptions()) |
+                            PackageDepSpec(parse_user_package_dep_spec(replacing, &env, { })),
+                            { }) |
                         filter::InstalledAtRoot(env.root()))]);
 
             InstallAction action(make_named_values<InstallActionOptions>(
@@ -156,7 +156,7 @@ namespace
 
             const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("cat/" + test,
-                                    &env, UserPackageDepSpecOptions())), MatchPackageOptions()) |
+                                    &env, { })), { }) |
                         filter::SupportsAction<InstallAction>())]->last());
             TEST_CHECK(bool(id));
             id->perform_action(action);

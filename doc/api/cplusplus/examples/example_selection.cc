@@ -62,22 +62,22 @@ int main(int argc, char * argv[])
          * object used determines the number and ordering of results. In the
          * simplest form, it takes a Generator as a parameter. */
         show_selection(env, selection::AllVersionsSorted(
-                    generator::Matches(make_package_dep_spec(PartiallyMadePackageDepSpecOptions()).package(
-                            QualifiedPackageName("sys-apps/paludis")), MatchPackageOptions())));
+                    generator::Matches(make_package_dep_spec({ }).package(
+                            QualifiedPackageName("sys-apps/paludis")), { })));
 
         /* Generators can be passed through a Filter. The Selection optimises
          * the code internally to avoid doing excess work. */
         show_selection(env, selection::AllVersionsSorted(
-                    generator::Matches(make_package_dep_spec(PartiallyMadePackageDepSpecOptions()).package(
-                            QualifiedPackageName("sys-apps/paludis")), MatchPackageOptions()) |
+                    generator::Matches(make_package_dep_spec({ }).package(
+                            QualifiedPackageName("sys-apps/paludis")), { }) |
                     filter::InstalledAtRoot(FSEntry("/"))));
 
         /* Filters can be combined. Usually filter::NotMasked should be combined
          * with filter::SupportsAction<InstallAction>, since installed packages
          * aren't masked. */
         show_selection(env, selection::AllVersionsSorted(
-                    generator::Matches(make_package_dep_spec(PartiallyMadePackageDepSpecOptions()).package(
-                            QualifiedPackageName("sys-apps/paludis")), MatchPackageOptions()) |
+                    generator::Matches(make_package_dep_spec({ }).package(
+                            QualifiedPackageName("sys-apps/paludis")), { }) |
                     filter::SupportsAction<InstallAction>() |
                     filter::NotMasked()));
 
@@ -85,8 +85,8 @@ int main(int argc, char * argv[])
          * is no metadata cache. Consider using other Selection objects if
          * you only need the best matching or some arbitrary matching ID. */
         show_selection(env, selection::BestVersionOnly(
-                    generator::Matches(make_package_dep_spec(PartiallyMadePackageDepSpecOptions()).package(
-                            QualifiedPackageName("sys-apps/paludis")), MatchPackageOptions()) |
+                    generator::Matches(make_package_dep_spec({ }).package(
+                            QualifiedPackageName("sys-apps/paludis")), { }) |
                     filter::SupportsAction<InstallAction>() |
                     filter::NotMasked()));
     }

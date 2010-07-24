@@ -131,7 +131,7 @@ ERepositoryNews::update_news() const
     {
         Context local_context("When handling news skip file '" + stringify(
                 _imp->skip_file) + "':");
-        LineConfigFile s(_imp->skip_file, LineConfigFileOptions() + lcfo_disallow_continuations);
+        LineConfigFile s(_imp->skip_file, { lcfo_disallow_continuations });
         std::copy(s.begin(), s.end(), std::inserter(skip, skip.end()));
     }
 
@@ -174,7 +174,7 @@ ERepositoryNews::update_news() const
                                 generator::Matches(PackageDepSpec(parse_elike_package_dep_spec(*i,
                                             eapi.supported()->package_dep_spec_parse_options(),
                                             eapi.supported()->version_spec_options(),
-                                            std::shared_ptr<const PackageID>())), MatchPackageOptions()) |
+                                            std::shared_ptr<const PackageID>())), { }) |
                                 filter::InstalledAtRoot(_imp->environment->root()))]->empty())
                         local_show = true;
                 show &= local_show;
@@ -274,8 +274,7 @@ NewsFile::NewsFile(const FSEntry & our_filename) :
     bool seen_content_type(false), seen_title(false), seen_author(false), seen_news_item_format(false), seen_posted(false),
          seen_revision(false);
 
-    LineConfigFile line_file(our_filename, LineConfigFileOptions() + lcfo_disallow_continuations + lcfo_no_skip_blank_lines
-            + lcfo_disallow_comments);
+    LineConfigFile line_file(our_filename, { lcfo_disallow_continuations, lcfo_no_skip_blank_lines, lcfo_disallow_comments });
     for (LineConfigFile::ConstIterator line(line_file.begin()), line_end(line_file.end()) ;
             line != line_end ; ++line)
     {

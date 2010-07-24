@@ -82,7 +82,7 @@ DepListOptions::DepListOptions() :
     installed_deps_post(dl_deps_try_post),
     installed_deps_pre(dl_deps_discard),
     installed_deps_runtime(dl_deps_try_post),
-    match_package_options(MatchPackageOptions()),
+    match_package_options({ }),
     new_slots(dl_new_slots_always),
     override_masks(make_null_shared_ptr()),
     reinstall(dl_reinstall_never),
@@ -863,7 +863,7 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<BlockDepSpec>::Typ
 
     if (node.spec()->blocking().package_ptr())
     {
-        PackageDepSpec just_package(make_package_dep_spec(PartiallyMadePackageDepSpecOptions()).package(
+        PackageDepSpec just_package(make_package_dep_spec({ }).package(
                     *node.spec()->blocking().package_ptr()));
         already_installed = (*d->_imp->env)[selection::AllVersionsUnsorted(
                 generator::Matches(just_package, d->_imp->opts->match_package_options()) |
@@ -1179,7 +1179,7 @@ DepList::add_package(const std::shared_ptr<const PackageID> & p, const std::shar
 
         for (DepSpecFlattener<ProvideSpecTree, PackageDepSpec>::ConstIterator i(f.begin()), i_end(f.end()) ; i != i_end ; ++i)
         {
-            std::shared_ptr<PackageDepSpec> pp(std::make_shared<PackageDepSpec>(make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
+            std::shared_ptr<PackageDepSpec> pp(std::make_shared<PackageDepSpec>(make_package_dep_spec({ })
                         .package(*(*i)->package_ptr())
                         .version_requirement(make_named_values<VersionRequirement>(
                                 n::version_operator() = vo_equal,
@@ -1703,7 +1703,7 @@ DepList::replaced(const PackageID & m) const
     std::pair<MergeListIndex::const_iterator, MergeListIndex::const_iterator> p(
             _imp->merge_list_index.equal_range(m.name()));
 
-    PackageDepSpec spec(make_package_dep_spec(PartiallyMadePackageDepSpecOptions()).package(m.name()));
+    PackageDepSpec spec(make_package_dep_spec({ }).package(m.name()));
     while (p.second != ((p.first = std::find_if(p.first, p.second,
                         MatchDepListEntryAgainstPackageDepSpec(_imp->env, spec, _imp->opts->match_package_options())))))
     {

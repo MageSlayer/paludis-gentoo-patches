@@ -273,7 +273,7 @@ namespace
                 if ('!' == p->first.at(0))
                 {
                     seen_packages = true;
-                    PackageDepSpec s(parse_user_package_dep_spec(p->first.substr(1), env.get(), UserPackageDepSpecOptions()));
+                    PackageDepSpec s(parse_user_package_dep_spec(p->first.substr(1), env.get(), { }));
                     BlockDepSpec bs("!" + stringify(s), s, false);
                     result->push_back(stringify(bs));
                     resolver->add_target(bs, p->second);
@@ -281,7 +281,7 @@ namespace
                 else
                 {
                     PackageDepSpec s(parse_user_package_dep_spec(p->first, env.get(),
-                                UserPackageDepSpecOptions() + updso_throw_if_set));
+                                { updso_throw_if_set }));
                     result->push_back(stringify(s));
                     resolver->add_target(s, p->second);
                     seen_packages = true;
@@ -531,7 +531,7 @@ namespace
                                 n::destination_type() = resolvent.destination_type(),
                                 n::nothing_is_fine_too() = true,
                                 n::reason() = std::make_shared<PresetReason>("is scm", make_null_shared_ptr()),
-                                n::spec() = make_package_dep_spec(PartiallyMadePackageDepSpecOptions()).package(resolvent.package()),
+                                n::spec() = make_package_dep_spec({ }).package(resolvent.package()),
                                 n::untaken() = false,
                                 n::use_existing() = ue_only_if_transient
                                 )));
@@ -616,7 +616,7 @@ namespace
         std::shared_ptr<const PackageID> best;
 
         const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::BestVersionOnly(
-                    generator::Matches(spec, MatchPackageOptions() + mpo_ignore_additional_requirements) |
+                    generator::Matches(spec, { mpo_ignore_additional_requirements }) |
                     filter::SupportsAction<InstallAction>() |
                     filter::NotMasked() |
                     (maybe_slot ? Filter(filter::Slot(*maybe_slot)) : Filter(filter::All())))]);
@@ -625,7 +625,7 @@ namespace
             best = *ids->begin();
 
         const std::shared_ptr<const PackageIDSequence> installed_ids((*env)[selection::BestVersionInEachSlot(
-                    generator::Matches(spec, MatchPackageOptions()) |
+                    generator::Matches(spec, { }) |
                     filter::InstalledAtRoot(FSEntry("/")))]);
 
         const args::EnumArg & arg(is_target(reason) ? resolution_options.a_target_slots : resolution_options.a_slots);
@@ -685,7 +685,7 @@ namespace
 
         for (PackageDepSpecList::const_iterator l(list.begin()), l_end(list.end()) ;
                 l != l_end ; ++l)
-            if (match_package(*env, *l, *id, MatchPackageOptions()))
+            if (match_package(*env, *l, *id, { }))
                 return true;
 
         return false;
@@ -738,7 +738,7 @@ namespace
 
                 const std::shared_ptr<const PackageIDSequence> installed_ids(
                         (*env)[selection::SomeArbitraryVersion(
-                            generator::Matches(*dep.spec().if_package(), MatchPackageOptions()) |
+                            generator::Matches(*dep.spec().if_package(), { }) |
                             filter::InstalledAtRoot(FSEntry("/")))]);
                 if (installed_ids->empty())
                     return false;
@@ -851,7 +851,7 @@ namespace
             {
                 const std::shared_ptr<const PackageIDSequence> installed_ids(
                         (*env)[selection::SomeArbitraryVersion(
-                            generator::Matches(*dep.spec().if_package(), MatchPackageOptions()) |
+                            generator::Matches(*dep.spec().if_package(), { }) |
                             filter::InstalledAtRoot(FSEntry("/")))]);
                 if (! installed_ids->empty())
                     return si_take;
@@ -933,7 +933,7 @@ namespace
     {
         for (PackageDepSpecList::const_iterator l(list.begin()), l_end(list.end()) ;
                 l != l_end ; ++l)
-            if (match_package(*env, *l, *i, MatchPackageOptions()))
+            if (match_package(*env, *l, *i, { }))
                 return true;
 
         return false;
@@ -1130,7 +1130,7 @@ namespace
                 for (PackageDepSpecList::const_iterator l(permit_downgrade.begin()), l_end(permit_downgrade.end()) ;
                         l != l_end ; ++l)
                 {
-                    if (match_package(*env, *l, *id, MatchPackageOptions()))
+                    if (match_package(*env, *l, *id, { }))
                         return true;
                 }
 
@@ -1143,7 +1143,7 @@ namespace
                 for (PackageDepSpecList::const_iterator l(permit_old_version.begin()), l_end(permit_old_version.end()) ;
                         l != l_end ; ++l)
                 {
-                    if (match_package(*env, *l, *id, MatchPackageOptions()))
+                    if (match_package(*env, *l, *id, { }))
                         return true;
                 }
 
@@ -1156,7 +1156,7 @@ namespace
                 for (PackageDepSpecList::const_iterator l(allowed_to_break_specs.begin()), l_end(allowed_to_break_specs.end()) ;
                         l != l_end ; ++l)
                 {
-                    if (match_package(*env, *l, *id, MatchPackageOptions()))
+                    if (match_package(*env, *l, *id, { }))
                         return true;
                 }
 
@@ -1199,7 +1199,7 @@ namespace
             spec = make_shared_copy(id->uniquely_identifying_spec());
         else
         {
-            PartiallyMadePackageDepSpec partial_spec((PartiallyMadePackageDepSpecOptions()));
+            PartiallyMadePackageDepSpec partial_spec({ });
             partial_spec.package(id->name());
             if (id->slot_key())
                 partial_spec.slot_requirement(std::make_shared<ELikeSlotExactRequirement>(
@@ -1234,7 +1234,7 @@ namespace
     {
         const std::shared_ptr<ConstraintSequence> result(std::make_shared<ConstraintSequence>());
 
-        PartiallyMadePackageDepSpec partial_spec((PartiallyMadePackageDepSpecOptions()));
+        PartiallyMadePackageDepSpec partial_spec({ });
         partial_spec.package(id->name());
         if (id->slot_key())
             partial_spec.slot_requirement(std::make_shared<ELikeSlotExactRequirement>(
@@ -1262,7 +1262,7 @@ namespace
     {
         const std::shared_ptr<ConstraintSequence> result(std::make_shared<ConstraintSequence>());
 
-        PartiallyMadePackageDepSpec partial_spec((PartiallyMadePackageDepSpecOptions()));
+        PartiallyMadePackageDepSpec partial_spec({ });
         partial_spec.package(resolution->resolvent().package());
         PackageDepSpec spec(partial_spec);
 
@@ -1620,7 +1620,7 @@ paludis::cave::resolve_common(
             i_end(resolution_options.a_permit_uninstall.end_args()) ;
             i != i_end ; ++i)
         allowed_to_remove_specs.push_back(parse_user_package_dep_spec(*i, env.get(),
-                    UserPackageDepSpecOptions() + updso_allow_wildcards));
+                    { updso_allow_wildcards }));
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_uninstalls_may_break.begin_args()),
             i_end(resolution_options.a_uninstalls_may_break.end_args()) ;
@@ -1629,122 +1629,122 @@ paludis::cave::resolve_common(
             allowed_to_break_system = true;
         else
             allowed_to_break_specs.push_back(parse_user_package_dep_spec(*i, env.get(),
-                        UserPackageDepSpecOptions() + updso_allow_wildcards));
+                        { updso_allow_wildcards }));
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_remove_if_dependent.begin_args()),
             i_end(resolution_options.a_remove_if_dependent.end_args()) ;
             i != i_end ; ++i)
         remove_if_dependent_specs.push_back(parse_user_package_dep_spec(*i, env.get(),
-                    UserPackageDepSpecOptions() + updso_allow_wildcards));
+                    { updso_allow_wildcards }));
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_less_restrictive_remove_blockers.begin_args()),
             i_end(resolution_options.a_less_restrictive_remove_blockers.end_args()) ;
             i != i_end ; ++i)
         less_restrictive_remove_blockers_specs.push_back(parse_user_package_dep_spec(*i, env.get(),
-                    UserPackageDepSpecOptions() + updso_allow_wildcards));
+                    { updso_allow_wildcards }));
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_purge.begin_args()),
             i_end(resolution_options.a_purge.end_args()) ;
             i != i_end ; ++i)
         purge_specs.push_back(parse_user_package_dep_spec(*i, env.get(),
-                    UserPackageDepSpecOptions() + updso_allow_wildcards));
+                    { updso_allow_wildcards }));
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_without.begin_args()),
             i_end(resolution_options.a_without.end_args()) ;
             i != i_end ; ++i)
         without.push_back(parse_user_package_dep_spec(*i, env.get(),
-                    UserPackageDepSpecOptions() + updso_allow_wildcards));
+                    { updso_allow_wildcards }));
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_with.begin_args()),
             i_end(resolution_options.a_with.end_args()) ;
             i != i_end ; ++i)
         with.push_back(parse_user_package_dep_spec(*i, env.get(),
-                    UserPackageDepSpecOptions() + updso_allow_wildcards));
+                    { updso_allow_wildcards }));
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_take.begin_args()),
             i_end(resolution_options.a_take.end_args()) ;
             i != i_end ; ++i)
         take.push_back(parse_user_package_dep_spec(*i, env.get(),
-                    UserPackageDepSpecOptions() + updso_allow_wildcards));
+                    { updso_allow_wildcards }));
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_take_from.begin_args()),
             i_end(resolution_options.a_take_from.end_args()) ;
             i != i_end ; ++i)
         take_from.push_back(parse_user_package_dep_spec(*i, env.get(),
-                    UserPackageDepSpecOptions() + updso_allow_wildcards));
+                    { updso_allow_wildcards }));
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_ignore.begin_args()),
             i_end(resolution_options.a_ignore.end_args()) ;
             i != i_end ; ++i)
         ignore.push_back(parse_user_package_dep_spec(*i, env.get(),
-                    UserPackageDepSpecOptions() + updso_allow_wildcards));
+                    { updso_allow_wildcards }));
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_ignore_from.begin_args()),
             i_end(resolution_options.a_ignore_from.end_args()) ;
             i != i_end ; ++i)
         ignore_from.push_back(parse_user_package_dep_spec(*i, env.get(),
-                    UserPackageDepSpecOptions() + updso_allow_wildcards));
+                    { updso_allow_wildcards }));
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_favour.begin_args()),
             i_end(resolution_options.a_favour.end_args()) ;
             i != i_end ; ++i)
         favour.push_back(parse_user_package_dep_spec(*i, env.get(),
-                    UserPackageDepSpecOptions() + updso_allow_wildcards));
+                    { updso_allow_wildcards }));
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_avoid.begin_args()),
             i_end(resolution_options.a_avoid.end_args()) ;
             i != i_end ; ++i)
         avoid.push_back(parse_user_package_dep_spec(*i, env.get(),
-                    UserPackageDepSpecOptions() + updso_allow_wildcards));
+                    { updso_allow_wildcards }));
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_early.begin_args()),
             i_end(resolution_options.a_early.end_args()) ;
             i != i_end ; ++i)
         early.push_back(parse_user_package_dep_spec(*i, env.get(),
-                    UserPackageDepSpecOptions() + updso_allow_wildcards));
+                    { updso_allow_wildcards }));
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_late.begin_args()),
             i_end(resolution_options.a_late.end_args()) ;
             i != i_end ; ++i)
         late.push_back(parse_user_package_dep_spec(*i, env.get(),
-                    UserPackageDepSpecOptions() + updso_allow_wildcards));
+                    { updso_allow_wildcards }));
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_no_dependencies_from.begin_args()),
             i_end(resolution_options.a_no_dependencies_from.end_args()) ;
             i != i_end ; ++i)
         no_dependencies_from.push_back(parse_user_package_dep_spec(*i, env.get(),
-                    UserPackageDepSpecOptions() + updso_allow_wildcards));
+                    { updso_allow_wildcards }));
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_no_blockers_from.begin_args()),
             i_end(resolution_options.a_no_blockers_from.end_args()) ;
             i != i_end ; ++i)
         no_blockers_from.push_back(parse_user_package_dep_spec(*i, env.get(),
-                    UserPackageDepSpecOptions() + updso_allow_wildcards));
+                    { updso_allow_wildcards }));
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_permit_downgrade.begin_args()),
             i_end(resolution_options.a_permit_downgrade.end_args()) ;
             i != i_end ; ++i)
         permit_downgrade.push_back(parse_user_package_dep_spec(*i, env.get(),
-                    UserPackageDepSpecOptions() + updso_allow_wildcards));
+                    { updso_allow_wildcards }));
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_permit_old_version.begin_args()),
             i_end(resolution_options.a_permit_old_version.end_args()) ;
             i != i_end ; ++i)
         permit_old_version.push_back(parse_user_package_dep_spec(*i, env.get(),
-                    UserPackageDepSpecOptions() + updso_allow_wildcards));
+                    { updso_allow_wildcards }));
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_not_usable.begin_args()),
             i_end(resolution_options.a_not_usable.end_args()) ;
             i != i_end ; ++i)
         not_usable_specs.push_back(parse_user_package_dep_spec(*i, env.get(),
-                    UserPackageDepSpecOptions() + updso_allow_wildcards));
+                    { updso_allow_wildcards }));
 
 #ifdef ENABLE_PBINS
     for (args::StringSetArg::ConstIterator i(resolution_options.a_via_binary.begin_args()),
             i_end(resolution_options.a_via_binary.end_args()) ;
             i != i_end ; ++i)
         via_binary_specs.push_back(parse_user_package_dep_spec(*i, env.get(),
-                    UserPackageDepSpecOptions() + updso_allow_wildcards));
+                    { updso_allow_wildcards }));
 #endif
 
     std::shared_ptr<Generator> all_binary_repos_generator, not_binary_repos_generator;
@@ -1779,7 +1779,7 @@ paludis::cave::resolve_common(
             i != i_end ; ++i)
     {
         const std::shared_ptr<const Reason> reason(std::make_shared<PresetReason>("preset", make_null_shared_ptr()));
-        PackageDepSpec spec(parse_user_package_dep_spec(*i, env.get(), UserPackageDepSpecOptions()));
+        PackageDepSpec spec(parse_user_package_dep_spec(*i, env.get(), { }));
         DestinationTypes all_dts;
         for (EnumIterator<DestinationType> t, t_end(last_dt) ; t != t_end ; ++t)
             all_dts += *t;

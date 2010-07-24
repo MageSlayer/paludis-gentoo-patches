@@ -288,8 +288,8 @@ PrintIDsCommand::run(
                 m_end(cmdline.a_matching.end_args()) ;
                 m != m_end ; ++m)
         {
-            PackageDepSpec s(parse_user_package_dep_spec(*m, env.get(), UserPackageDepSpecOptions() + updso_allow_wildcards));
-            g = g & generator::Matches(s, MatchPackageOptions());
+            PackageDepSpec s(parse_user_package_dep_spec(*m, env.get(), { updso_allow_wildcards }));
+            g = g & generator::Matches(s, { });
         }
     }
 

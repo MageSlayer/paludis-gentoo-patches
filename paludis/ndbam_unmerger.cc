@@ -265,7 +265,7 @@ NDBAMUnmerger::check_dir(const std::shared_ptr<const ContentsEntry> & e) const
         display("--- [gone ] " + stringify(f));
     else if (! (_imp->options.root() / f).is_directory())
         display("--- [!type] " + stringify(f));
-    else if (DirIterator(_imp->options.root() / f, DirIteratorOptions() + dio_include_dotfiles + dio_first_only) != DirIterator())
+    else if (DirIterator(_imp->options.root() / f, { dio_include_dotfiles, dio_first_only }) != DirIterator())
         display("--- [!empt] " + stringify(f));
     else
         return true;

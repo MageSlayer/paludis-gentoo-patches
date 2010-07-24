@@ -207,7 +207,7 @@ std::shared_ptr<T_>
 deep_copy(const std::shared_ptr<const T_> & x)
 {
     if (x)
-        return std::make_shared<T_>(*x);
+        return std::shared_ptr<T_>(std::make_shared<T_>(*x));
     else
         return std::shared_ptr<T_>();
 }

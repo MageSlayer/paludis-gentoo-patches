@@ -207,7 +207,7 @@ UnwrittenRepositoryFile::_load(const FSEntry & f)
     CategoryNamePart category("x");
     PackageNamePart package("x");
     std::shared_ptr<MetadataValueKey<SlotName> > slot;
-    VersionSpec version("0", VersionSpecOptions());
+    VersionSpec version("0", { });
     std::shared_ptr<UnwrittenRepositoryFileEntry> entry;
     while (std::getline(file, line))
     {

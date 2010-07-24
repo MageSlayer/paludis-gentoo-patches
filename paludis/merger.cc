@@ -209,7 +209,7 @@ Merger::do_dir_recursive(bool is_check, const FSEntry & src, const FSEntry & dst
 
     on_enter_dir(is_check, src);
 
-    DirIterator d(src, DirIteratorOptions() + dio_include_dotfiles + dio_inode_sort), d_end;
+    DirIterator d(src, { dio_include_dotfiles, dio_inode_sort }), d_end;
 
     if (is_check && d == d_end && dst != _imp->params.root().realpath())
     {
@@ -660,7 +660,7 @@ Merger::on_sym_over_misc(bool is_check, const FSEntry & src, const FSEntry & dst
 void
 Merger::do_ownership_fixes_recursive(const FSEntry & dir)
 {
-    for (DirIterator d(dir, DirIteratorOptions() + dio_include_dotfiles + dio_inode_sort), d_end ; d != d_end ; ++d)
+    for (DirIterator d(dir, { dio_include_dotfiles, dio_inode_sort }), d_end ; d != d_end ; ++d)
     {
         std::pair<uid_t, gid_t> new_ids(_imp->params.get_new_ids_or_minus_one()(*d));
         if (uid_t(-1) != new_ids.first || gid_t(-1) != new_ids.second)
@@ -887,7 +887,7 @@ Merger::rewrite_symlink_as_needed(const FSEntry & src, const FSEntry & dst_dir)
 void
 Merger::track_renamed_dir_recursive(const FSEntry & dst)
 {
-    for (DirIterator d(dst, DirIteratorOptions() + dio_include_dotfiles + dio_inode_sort), d_end ; d != d_end ; ++d)
+    for (DirIterator d(dst, { dio_include_dotfiles, dio_inode_sort }), d_end ; d != d_end ; ++d)
     {
         MergeStatusFlags merged_how;
         if (_imp->fixed_entries.end() != _imp->fixed_entries.find(_imp->params.image() / *d))
@@ -944,7 +944,7 @@ Merger::track_renamed_dir_recursive(const FSEntry & dst)
 void
 Merger::relabel_dir_recursive(const FSEntry & src, const FSEntry & dst)
 {
-    for (DirIterator d(src, DirIteratorOptions() + dio_include_dotfiles + dio_inode_sort), d_end ; d != d_end ; ++d)
+    for (DirIterator d(src, { dio_include_dotfiles, dio_inode_sort }), d_end ; d != d_end ; ++d)
     {
         mode_t mode(d->permissions());
         std::shared_ptr<const SecurityContext> secctx(

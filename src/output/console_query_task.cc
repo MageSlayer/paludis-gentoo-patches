@@ -92,7 +92,7 @@ ConsoleQueryTask::show(const PackageDepSpec & a, const std::shared_ptr<const Pac
     if (! a.package_ptr())
     {
         std::shared_ptr<const PackageIDSequence> entries(
-                (*_imp->env)[selection::BestVersionOnly(generator::Matches(a, MatchPackageOptions()))]);
+                (*_imp->env)[selection::BestVersionOnly(generator::Matches(a, { }))]);
         if (entries->empty())
             throw NoSuchPackageError(stringify(a));
 
@@ -115,9 +115,9 @@ ConsoleQueryTask::show_one(const PackageDepSpec & a, const std::shared_ptr<const
     /* prefer the best installed version, then the best visible version, then
      * the best version */
     std::shared_ptr<const PackageIDSequence>
-        entries((*_imp->env)[selection::AllVersionsSorted(generator::Matches(a, MatchPackageOptions()))]),
+        entries((*_imp->env)[selection::AllVersionsSorted(generator::Matches(a, { }))]),
         preferred_entries((*_imp->env)[selection::AllVersionsSorted(
-                    generator::Matches(a, MatchPackageOptions()) | filter::InstalledAtRoot(_imp->env->root()))]);
+                    generator::Matches(a, { }) | filter::InstalledAtRoot(_imp->env->root()))]);
     if (entries->empty())
         throw NoSuchPackageError(stringify(a));
     if (preferred_entries->empty())

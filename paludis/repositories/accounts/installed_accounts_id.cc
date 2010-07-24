@@ -70,7 +70,7 @@ namespace paludis
                 const bool u) :
             env(e),
             name(q),
-            version("0", VersionSpecOptions()),
+            version("0", { }),
             repository(r),
             behaviours_key(std::make_shared<LiteralMetadataStringSetKey>("behaviours", "Behaviours", mkt_internal,
                         behaviours_set)),
@@ -221,8 +221,7 @@ InstalledAccountsID::canonical_form(const PackageIDCanonicalForm f) const
 PackageDepSpec
 InstalledAccountsID::uniquely_identifying_spec() const
 {
-    return parse_user_package_dep_spec(stringify(name()) + "::" + stringify(repository()->name()),
-            _imp->env, UserPackageDepSpecOptions());
+    return parse_user_package_dep_spec(stringify(name()) + "::" + stringify(repository()->name()), _imp->env, { });
 }
 
 const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > >

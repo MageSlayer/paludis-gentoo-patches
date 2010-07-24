@@ -360,12 +360,12 @@ namespace
             const std::shared_ptr<Environment> & env,
             const std::string & param)
     {
-        PackageDepSpec spec(parse_user_package_dep_spec(param, env.get(), UserPackageDepSpecOptions()));
+        PackageDepSpec spec(parse_user_package_dep_spec(param, env.get(), { }));
 
         const std::shared_ptr<const PackageIDSequence> installed_ids((*env)[selection::AllVersionsSorted(generator::Matches(
-                        spec, MatchPackageOptions()) | filter::InstalledAtRoot(env->root()))]);
+                        spec, { }) | filter::InstalledAtRoot(env->root()))]);
         const std::shared_ptr<const PackageIDSequence> installable_ids((*env)[selection::BestVersionOnly(generator::Matches(
-                        spec, MatchPackageOptions()) | filter::SupportsAction<InstallAction>() | filter::NotMasked())]);
+                        spec, { }) | filter::SupportsAction<InstallAction>() | filter::NotMasked())]);
 
         if (installed_ids->empty() && installable_ids->empty())
             throw NothingMatching(param);

@@ -161,7 +161,7 @@ namespace
         ReverseDepChecker::visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & node)
     {
         std::shared_ptr<const PackageIDSequence> dep_entries((*_env)[selection::AllVersionsSorted(
-                    generator::Matches(*node.spec(), MatchPackageOptions() + mpo_ignore_additional_requirements))]);
+                    generator::Matches(*node.spec(), { mpo_ignore_additional_requirements }))]);
         std::shared_ptr<PackageIDSequence> matches(std::make_shared<PackageIDSequence>());
 
         bool header_written = false;
@@ -261,7 +261,7 @@ int do_find_reverse_deps(NoConfigEnvironment & env)
     try
     {
         spec = std::make_shared<PackageDepSpec>(parse_user_package_dep_spec(*CommandLine::get_instance()->begin_parameters(),
-                        &env, UserPackageDepSpecOptions()));
+                        &env, { }));
     }
     catch (const AmbiguousPackageNameError & e)
     {
@@ -303,7 +303,7 @@ int do_find_reverse_deps(NoConfigEnvironment & env)
     }
 
     std::shared_ptr<const PackageIDSequence> entries(env[selection::AllVersionsSorted(generator::Matches(
-                    *spec, MatchPackageOptions()))]);
+                    *spec, { }))]);
     int ret(0);
 
     if (entries->empty())

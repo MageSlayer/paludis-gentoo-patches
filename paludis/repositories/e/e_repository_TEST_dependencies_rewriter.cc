@@ -106,7 +106,7 @@ namespace test_cases
 
             const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("category/package",
-                                    &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                                    &env, { })), { }))]->last());
 
             StringifyFormatter ff;
 

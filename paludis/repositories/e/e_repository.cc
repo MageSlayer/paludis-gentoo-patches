@@ -357,7 +357,7 @@ namespace paludis
         if ((params.location() / "metadata" / "about.conf").is_regular_file_or_symlink_to_regular_file())
         {
             Context context("When loading about.conf:");
-            KeyValueConfigFile k(params.location() / "metadata" / "about.conf", KeyValueConfigFileOptions(),
+            KeyValueConfigFile k(params.location() / "metadata" / "about.conf", { },
                     &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
             if (! k.get("description").empty())
                 about_keys.push_back(std::make_shared<LiteralMetadataValueKey<std::string>>("description", "description",
@@ -414,7 +414,7 @@ namespace paludis
             else
             {
                 Context context("When loading profiles.desc file '" + stringify(profiles_desc) + "':");
-                LineConfigFile f(profiles_desc, LineConfigFileOptions());
+                LineConfigFile f(profiles_desc, { });
                 for (LineConfigFile::ConstIterator line(f.begin()), line_end(f.end()) ;
                         line != line_end ; ++line)
                 {
@@ -462,7 +462,7 @@ namespace
                 if (! name_file.is_regular_file())
                     break;
 
-                LineConfigFile f(name_file, LineConfigFileOptions() + lcfo_disallow_comments + lcfo_disallow_continuations + lcfo_no_skip_blank_lines);
+                LineConfigFile f(name_file, { lcfo_disallow_comments, lcfo_disallow_continuations, lcfo_no_skip_blank_lines });
                 if (f.begin() == f.end())
                     break;
                 return RepositoryName(*f.begin());
@@ -648,7 +648,7 @@ ERepository::repository_masked(const PackageID & id) const
     else
         for (std::list<std::pair<std::shared_ptr<const PackageDepSpec>, std::shared_ptr<const RepositoryMaskInfo> > >::const_iterator
                 k(r->second.begin()), k_end(r->second.end()) ; k != k_end ; ++k)
-            if (match_package(*_imp->params.environment(), *k->first, id, MatchPackageOptions()))
+            if (match_package(*_imp->params.environment(), *k->first, id, { }))
                 return k->second;
 
     return std::shared_ptr<const RepositoryMaskInfo>();
@@ -671,7 +671,7 @@ ERepository::arch_flags() const
             if (! p->exists())
                 continue;
 
-            LineConfigFile archs(*p, LineConfigFileOptions() + lcfo_disallow_continuations);
+            LineConfigFile archs(*p, { lcfo_disallow_continuations });
             std::copy(archs.begin(), archs.end(), create_inserter<UnprefixedChoiceName>(_imp->arch_flags->inserter()));
             found_one = true;
         }
@@ -701,7 +701,7 @@ ERepository::need_mirrors() const
         {
             if (p->exists())
             {
-                LineConfigFile mirrors(*p, LineConfigFileOptions() + lcfo_disallow_continuations);
+                LineConfigFile mirrors(*p, { lcfo_disallow_continuations });
                 for (LineConfigFile::ConstIterator line(mirrors.begin()) ; line != mirrors.end() ; ++line)
                 {
                     std::vector<std::string> ee;
@@ -812,12 +812,12 @@ ERepository::purge_invalid_cache() const
     if (master_mtime_file.exists())
         master_mtime = master_mtime_file.mtim().seconds();
 
-    for (DirIterator dc(write_cache, DirIteratorOptions() + dio_inode_sort), dc_end ; dc != dc_end ; ++dc)
+    for (DirIterator dc(write_cache, { dio_inode_sort }), dc_end ; dc != dc_end ; ++dc)
     {
         if (! dc->is_directory_or_symlink_to_directory())
             continue;
 
-        for (DirIterator dp(*dc, DirIteratorOptions() + dio_inode_sort), dp_end ; dp != dp_end ; ++dp)
+        for (DirIterator dp(*dc, { dio_inode_sort }), dp_end ; dp != dp_end ; ++dp)
         {
             if (! dp->is_regular_file_or_symlink_to_regular_file())
                 continue;
@@ -1229,7 +1229,7 @@ ERepository::repository_factory_create(
         throw ERepositoryConfigurationError("Key 'location' must start with a / (relative paths are not allowed)");
 
     std::shared_ptr<KeyValueConfigFile> layout_conf((FSEntry(location) / "metadata/layout.conf").exists() ?
-            new KeyValueConfigFile(FSEntry(location) / "metadata/layout.conf", KeyValueConfigFileOptions(),
+            new KeyValueConfigFile(FSEntry(location) / "metadata/layout.conf", { },
                 &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation)
             : 0);
 
@@ -1551,7 +1551,7 @@ ERepository::repository_factory_dependencies(
             throw ERepositoryConfigurationError("Key 'location' not specified or empty");
 
         std::shared_ptr<KeyValueConfigFile> layout_conf((FSEntry(location) / "metadata/layout.conf").exists() ?
-                new KeyValueConfigFile(FSEntry(location) / "metadata/layout.conf", KeyValueConfigFileOptions(),
+                new KeyValueConfigFile(FSEntry(location) / "metadata/layout.conf", { },
                     &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation)
                 : 0);
 
@@ -1591,7 +1591,7 @@ ERepository::eapi_for_file(const FSEntry & f) const
         Context context("When finding the EAPI to use for file '" + stringify(f) + "':");
         if ((dir / "eapi").is_regular_file_or_symlink_to_regular_file())
         {
-            LineConfigFile file(dir / "eapi", LineConfigFileOptions() + lcfo_disallow_continuations);
+            LineConfigFile file(dir / "eapi", { lcfo_disallow_continuations });
             if (file.begin() == file.end())
             {
                 Log::get_instance()->message("e.ebuild.profile_eapi_file.empty", ll_warning, lc_no_context)
@@ -1680,7 +1680,7 @@ namespace
 
         Suffixes() :
             file(FSEntry(getenv_with_default("PALUDIS_SUFFIXES_FILE", DATADIR "/paludis/ebuild_entries_suffixes.conf")),
-                    KeyValueConfigFileOptions(), &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation)
+                    { }, &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation)
         {
         }
 

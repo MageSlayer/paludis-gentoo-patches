@@ -103,7 +103,7 @@ namespace
     VulnerableChecker::visit(const SetSpecTree::NodeType<PackageDepSpec>::Type & node)
     {
         std::shared_ptr<const PackageIDSequence> insecure(_env[selection::AllVersionsSorted(
-                    generator::Matches(*node.spec(), MatchPackageOptions()))]);
+                    generator::Matches(*node.spec(), { }))]);
         for (PackageIDSequence::ConstIterator i(insecure->begin()),
                 i_end(insecure->end()) ; i != i_end ; ++i)
             if (node.spec()->tag() && simple_visitor_cast<const GLSADepTag>(*node.spec()->tag()))
@@ -211,12 +211,12 @@ ReportTask::execute()
                             std::shared_ptr<const PackageIDSequence> installable(
                                     (*e)[selection::BestVersionOnly((
                                             (generator::InRepository(RepositoryName(*o)) &
-                                             generator::Matches(make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
+                                             generator::Matches(make_package_dep_spec({ })
                                                  .package((*v)->name())
                                                  .version_requirement(make_named_values<VersionRequirement>(
                                                          n::version_operator() = vo_equal,
                                                          n::version_spec() = (*v)->version())),
-                                                 MatchPackageOptions())) |
+                                                 { })) |
                                             filter::SupportsAction<InstallAction>()))]);
 
                             if (! installable->empty())

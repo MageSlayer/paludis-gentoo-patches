@@ -474,12 +474,12 @@ namespace paludis
                     std::shared_ptr<HookFile> hook_file;
                     std::string name;
 
-                    if (is_file_with_extension(*e, ".hook", IsFileWithOptions()))
+                    if (is_file_with_extension(*e, ".hook", { }))
                     {
                         hook_file = std::make_shared<FancyHookFile>(*e, d->second, env);
                         name = strip_trailing_string(e->basename(), ".hook");
                     }
-                    else if (is_file_with_extension(*e, so_suffix, IsFileWithOptions()))
+                    else if (is_file_with_extension(*e, so_suffix, { }))
                     {
                         hook_file = std::make_shared<SoHookFile>(*e, d->second, env);
                         name = strip_trailing_string(e->basename(), so_suffix);
@@ -574,21 +574,21 @@ Hooker::_find_hooks(const Hook & hook) const
             if (ignore_hooks.find(e->basename()) != ignore_hooks.end())
                 continue;
 
-            if (is_file_with_extension(*e, ".bash", IsFileWithOptions()))
+            if (is_file_with_extension(*e, ".bash", { }))
                 if (! hook_files.insert(std::make_pair(strip_trailing_string(e->basename(), ".bash"),
                                 std::shared_ptr<HookFile>(std::make_shared<BashHookFile>(*e, d->second, _imp->env)))).second)
                     Log::get_instance()->message("hook.discarding", ll_warning, lc_context) << "Discarding hook file '" << *e
                         << "' because of naming conflict with '" <<
                         hook_files.find(stringify(strip_trailing_string(e->basename(), ".bash")))->second->file_name() << "'";
 
-            if (is_file_with_extension(*e, ".hook", IsFileWithOptions()))
+            if (is_file_with_extension(*e, ".hook", { }))
                 if (! hook_files.insert(std::make_pair(strip_trailing_string(e->basename(), ".hook"),
                                 std::shared_ptr<HookFile>(std::make_shared<FancyHookFile>(*e, d->second, _imp->env)))).second)
                     Log::get_instance()->message("hook.discarding", ll_warning, lc_context) << "Discarding hook file '" << *e
                         << "' because of naming conflict with '" <<
                         hook_files.find(stringify(strip_trailing_string(e->basename(), ".hook")))->second->file_name() << "'";
 
-            if (is_file_with_extension(*e, so_suffix, IsFileWithOptions()))
+            if (is_file_with_extension(*e, so_suffix, { }))
                  if (! hook_files.insert(std::make_pair(strip_trailing_string(e->basename(), so_suffix),
                                  std::shared_ptr<HookFile>(std::make_shared<SoHookFile>(*e, d->second, _imp->env)))).second)
                      Log::get_instance()->message("hook.discarding", ll_warning, lc_context) << "Discarding hook file '" << *e
@@ -596,7 +596,7 @@ Hooker::_find_hooks(const Hook & hook) const
                          hook_files.find(stringify(strip_trailing_string(e->basename(), so_suffix)))->second->file_name() << "'";
 
 #ifdef ENABLE_PYTHON_HOOKS
-            if (is_file_with_extension(*e, ".py", IsFileWithOptions()))
+            if (is_file_with_extension(*e, ".py", { }))
             {
                 static bool load_try(false);
                 static bool load_ok(false);
@@ -648,13 +648,13 @@ Hooker::_find_hooks(const Hook & hook) const
                 }
             }
 #elif ENABLE_PYTHON
-            if (is_file_with_extension(*e, ".py", IsFileWithOptions()))
+            if (is_file_with_extension(*e, ".py", { }))
             {
                 Log::get_instance()->message("hook.python.ignoring", ll_warning, lc_context) << "Ignoring hook '" << *e << "' because"
                     << " Paludis was built using a dev-libs/boost version older than 1.34.0.";
             }
 #else
-            if (is_file_with_extension(*e, ".py", IsFileWithOptions()))
+            if (is_file_with_extension(*e, ".py", { }))
             {
                 Log::get_instance()->message("hook.python.ignoring", ll_warning, lc_context) << "Ignoring hook '" << *e << "' because"
                     << " Paludis was built without Python support (also needs >=dev-libs/boost-1.34.0).";

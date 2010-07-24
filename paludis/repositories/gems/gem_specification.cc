@@ -316,7 +316,7 @@ PackageDepSpec
 GemSpecification::uniquely_identifying_spec() const
 {
     return parse_user_package_dep_spec("=" + stringify(name()) + "-" + stringify(version()) + "::" + stringify(repository()->name()),
-            _imp->environment, UserPackageDepSpecOptions());
+            _imp->environment, { });
 }
 
 const QualifiedPackageName
@@ -328,7 +328,7 @@ GemSpecification::name() const
 const VersionSpec
 GemSpecification::version() const
 {
-    return VersionSpec(_imp->version, VersionSpecOptions());
+    return VersionSpec(_imp->version, { });
 }
 
 const std::shared_ptr<const Repository>

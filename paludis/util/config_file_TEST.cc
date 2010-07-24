@@ -82,7 +82,7 @@ namespace test_cases
             s << "eight" << std::endl;
             s << "nine # ten" << std::endl;
 
-            LineConfigFile f(s, LineConfigFileOptions());
+            LineConfigFile f(s, { });
             TEST_CHECK_EQUAL(std::distance(f.begin(), f.end()), 7);
             std::vector<std::string> lines;
             std::copy(f.begin(), f.end(), std::back_inserter(lines));
@@ -97,8 +97,7 @@ namespace test_cases
             s.clear();
             s.seekg(0, std::ios::beg);
 
-            LineConfigFile g(s, LineConfigFileOptions() + lcfo_disallow_comments
-                    + lcfo_preserve_whitespace + lcfo_no_skip_blank_lines);
+            LineConfigFile g(s, { lcfo_disallow_comments, lcfo_preserve_whitespace, lcfo_no_skip_blank_lines });
             TEST_CHECK_EQUAL(std::distance(g.begin(), g.end()), 13);
             lines.clear();
             std::copy(g.begin(), g.end(), std::back_inserter(lines));
@@ -119,7 +118,7 @@ namespace test_cases
             s.clear();
             s.seekg(0, std::ios::beg);
 
-            LineConfigFile h(s, LineConfigFileOptions() + lcfo_allow_inline_comments);
+            LineConfigFile h(s, { lcfo_allow_inline_comments });
             TEST_CHECK_EQUAL(std::distance(f.begin(), f.end()), 7);
             lines.clear();
             std::copy(h.begin(), h.end(), std::back_inserter(lines));
@@ -141,21 +140,21 @@ namespace test_cases
         {
             FSEntry ff("config_file_TEST_dir/config_file");
             TEST_CHECK(ff.is_regular_file());
-            LineConfigFile f(ff, LineConfigFileOptions());
+            LineConfigFile f(ff, { });
             TEST_CHECK_EQUAL(std::distance(f.begin(), f.end()), 1);
             TEST_CHECK_EQUAL(*f.begin(), "I am a fish.");
 
             FSEntry ff2("config_file_TEST_dir/not_a_config_file");
             TEST_CHECK(! ff2.exists());
             LineConfigFile * f2(0);
-            TEST_CHECK_THROWS(f2 = new LineConfigFile(ff2, LineConfigFileOptions()), ConfigFileError);
+            TEST_CHECK_THROWS(f2 = new LineConfigFile(ff2, { }), ConfigFileError);
 
             if (0 != geteuid())
             {
                 FSEntry ff3("config_file_TEST_dir/unreadable_file");
                 TEST_CHECK(ff3.is_regular_file());
                 LineConfigFile * f3(0);
-                TEST_CHECK_THROWS(f3 = new LineConfigFile(ff3, LineConfigFileOptions()), ConfigFileError);
+                TEST_CHECK_THROWS(f3 = new LineConfigFile(ff3, { }), ConfigFileError);
             }
         }
     } test_config_file_open_file;
@@ -172,7 +171,7 @@ namespace test_cases
             s << "three=" << std::endl;
             s << "four = \"fourth\" " << std::endl;
             s << "five = ''" << std::endl;
-            KeyValueConfigFile ff(s, KeyValueConfigFileOptions() + kvcfo_preserve_whitespace,
+            KeyValueConfigFile ff(s, { kvcfo_preserve_whitespace },
                     &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
 
             TEST_CHECK_EQUAL(ff.get("one"), "first");
@@ -198,7 +197,7 @@ namespace test_cases
             s << "one='first" << std::endl;
             s << " first " << std::endl;
             s << "first'" << std::endl;
-            KeyValueConfigFile ff(s, KeyValueConfigFileOptions(),
+            KeyValueConfigFile ff(s, { },
                     &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
 
             TEST_CHECK_EQUAL(ff.get("one"), "first\n first \nfirst");
@@ -219,7 +218,7 @@ namespace test_cases
             s << "x=foo" << std::endl;
             s << "y = \"${x}\\\\${y}\\$${z}\"" << std::endl;
             s << "z = $x$y$z" << std::endl;
-            KeyValueConfigFile ff(s, KeyValueConfigFileOptions(),
+            KeyValueConfigFile ff(s, { },
                     &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
 
             TEST_CHECK_EQUAL(ff.get("x"), "foo");
@@ -238,7 +237,7 @@ namespace test_cases
             t << "f = " << std::endl;
             t << "g = foo \\" << std::endl;
             t << "    bar" << std::endl;
-            KeyValueConfigFile fg(t, KeyValueConfigFileOptions(),
+            KeyValueConfigFile fg(t, { },
                     std::bind(&predefined, t_defs, std::placeholders::_1, std::placeholders::_2),
                     &KeyValueConfigFile::no_transformation);
 
@@ -269,7 +268,7 @@ namespace test_cases
             std::stringstream s;
             s << "x=${foo}" << std::endl;
             s << "y=${moo}" << std::endl;
-            KeyValueConfigFile ff(s, KeyValueConfigFileOptions(),
+            KeyValueConfigFile ff(s, { },
                     std::bind(&predefined_from_config_file, std::cref(*d_ff), std::placeholders::_1, std::placeholders::_2),
                     &KeyValueConfigFile::no_transformation);
 
@@ -289,7 +288,7 @@ namespace test_cases
             d_s << "seven=\"spider\"" << std::endl;
             d_s << "source config_file_TEST_dir/sourced_one" << std::endl;
             d_s << "eight=\"octopus\"" << std::endl;
-            KeyValueConfigFile ff(d_s, KeyValueConfigFileOptions(),
+            KeyValueConfigFile ff(d_s, { },
                     &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
 
             TEST_CHECK_EQUAL(ff.get("one"), "cat");
@@ -318,7 +317,7 @@ namespace test_cases
             d_s << "export bar='plugh'" << std::endl;
             d_s << "baz = \"plover\"" << std::endl;
             d_s << "exportfoo = \"exportxyzzy\"" << std::endl;
-            KeyValueConfigFile ff(d_s, KeyValueConfigFileOptions() += kvcfo_ignore_export,
+            KeyValueConfigFile ff(d_s, { kvcfo_ignore_export },
                     &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
 
             TEST_CHECK_EQUAL(ff.get("foo"), "xyzzy");
@@ -328,7 +327,7 @@ namespace test_cases
 
             std::stringstream d_s2;
             d_s2 << "export = 42" << std::endl;
-            KeyValueConfigFile ff2(d_s2, KeyValueConfigFileOptions(),
+            KeyValueConfigFile ff2(d_s2, { },
                     &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
 
             TEST_CHECK_EQUAL(ff2.get("export"), "42");
@@ -347,57 +346,57 @@ namespace test_cases
         {
             std::stringstream s1;
             s1 << "x='" << std::endl;
-            TEST_CHECK_THROWS(KeyValueConfigFile ff(s1, KeyValueConfigFileOptions(),
+            TEST_CHECK_THROWS(KeyValueConfigFile ff(s1, { },
                         &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation), ConfigurationError);
 
             std::stringstream s2;
             s2 << "x='moo\"" << std::endl;
-            TEST_CHECK_THROWS(KeyValueConfigFile ff(s2, KeyValueConfigFileOptions(),
+            TEST_CHECK_THROWS(KeyValueConfigFile ff(s2, { },
                         &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation), ConfigurationError);
 
             std::stringstream s3;
             s3 << "x=${foo" << std::endl;
-            TEST_CHECK_THROWS(KeyValueConfigFile ff(s3, KeyValueConfigFileOptions(),
+            TEST_CHECK_THROWS(KeyValueConfigFile ff(s3, { },
                         &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation), ConfigurationError);
 
             std::stringstream s4;
             s4 << "x=$~" << std::endl;
-            TEST_CHECK_THROWS(KeyValueConfigFile ff(s4, KeyValueConfigFileOptions(),
+            TEST_CHECK_THROWS(KeyValueConfigFile ff(s4, { },
                         &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation), ConfigurationError);
 
             std::stringstream s5;
             s5 << "x=abc\\" << std::endl;
-            TEST_CHECK_THROWS(KeyValueConfigFile ff(s5, KeyValueConfigFileOptions(),
+            TEST_CHECK_THROWS(KeyValueConfigFile ff(s5, { },
                         &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation), ConfigurationError);
 
             std::stringstream s6;
             s6 << "x=$" << std::endl;
-            TEST_CHECK_THROWS(KeyValueConfigFile ff(s6, KeyValueConfigFileOptions(),
+            TEST_CHECK_THROWS(KeyValueConfigFile ff(s6, { },
                         &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation), ConfigurationError);
 
             std::stringstream s7;
             s7 << "x=blah \\" << std::endl;
-            TEST_CHECK_THROWS(KeyValueConfigFile ff(s7, KeyValueConfigFileOptions(),
+            TEST_CHECK_THROWS(KeyValueConfigFile ff(s7, { },
                         &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation), ConfigurationError);
 
             std::stringstream s8;
             s8 << "x=blah \\" << std::endl << "# foo" << std::endl;
-            TEST_CHECK_THROWS(KeyValueConfigFile ff(s8, KeyValueConfigFileOptions(),
+            TEST_CHECK_THROWS(KeyValueConfigFile ff(s8, { },
                         &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation), ConfigurationError);
 
             std::stringstream s9;
             s9 << "x='blah" << std::endl << "blah" << std::endl;
-            TEST_CHECK_THROWS(KeyValueConfigFile ff(s9, KeyValueConfigFileOptions(),
+            TEST_CHECK_THROWS(KeyValueConfigFile ff(s9, { },
                         &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation), ConfigurationError);
 
             std::stringstream s10;
             s10 << "export x=blah" << std::endl;
-            TEST_CHECK_THROWS(KeyValueConfigFile ff(s10, KeyValueConfigFileOptions(),
+            TEST_CHECK_THROWS(KeyValueConfigFile ff(s10, { },
                         &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation), ConfigurationError);
 
             std::stringstream s11;
             s11 << "export x = blah" << std::endl;
-            TEST_CHECK_THROWS(KeyValueConfigFile ff(s11, KeyValueConfigFileOptions() + kvcfo_ignore_export + kvcfo_disallow_space_around_equals,
+            TEST_CHECK_THROWS(KeyValueConfigFile ff(s11, { kvcfo_ignore_export, kvcfo_disallow_space_around_equals },
                         &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation), ConfigurationError);
         }
     } test_key_value_config_file_errors;
@@ -418,7 +417,7 @@ namespace test_cases
             s << "four" << std::endl;
             s << "five # moo" << std::endl;
 
-            LineConfigFile f(s, LineConfigFileOptions() + lcfo_allow_inline_comments);
+            LineConfigFile f(s, { lcfo_allow_inline_comments });
             TEST_CHECK_EQUAL(std::distance(f.begin(), f.end()), 5);
             std::vector<std::string> lines;
             std::copy(f.begin(), f.end(), std::back_inserter(lines));
@@ -443,7 +442,7 @@ namespace test_cases
             d_s << "three # bar" << std::endl;
             d_s << "four = four # foo" << std::endl;
             d_s << "five = five # moo" << std::endl;
-            KeyValueConfigFile ff(d_s, KeyValueConfigFileOptions() + kvcfo_allow_inline_comments,
+            KeyValueConfigFile ff(d_s, { kvcfo_allow_inline_comments },
                     &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
 
             TEST_CHECK_EQUAL(std::distance(ff.begin(), ff.end()), 5);
@@ -467,8 +466,7 @@ namespace test_cases
             d_s << "three four = \\" << std::endl;
             d_s << "\"four\" # one=three" << std::endl;
             d_s << "five=five # six=six" << std::endl;
-            KeyValueConfigFile ff(d_s, KeyValueConfigFileOptions() + kvcfo_allow_inline_comments + kvcfo_allow_multiple_assigns_per_line
-                    + kvcfo_disallow_space_inside_unquoted_values,
+            KeyValueConfigFile ff(d_s, { kvcfo_allow_inline_comments, kvcfo_allow_multiple_assigns_per_line, kvcfo_disallow_space_inside_unquoted_values },
                     &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
 
             TEST_CHECK_EQUAL(std::distance(ff.begin(), ff.end()), 5);
@@ -496,7 +494,7 @@ namespace test_cases
             d_s << "[var]" << std::endl;
             d_s << "b = x" << std::endl;
             d_s << "a = ${a} ${b} ${c}" << std::endl;
-            KeyValueConfigFile ff(d_s, KeyValueConfigFileOptions() + kvcfo_allow_sections,
+            KeyValueConfigFile ff(d_s, { kvcfo_allow_sections },
                     &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
 
             TEST_CHECK_EQUAL(std::distance(ff.begin(), ff.end()), 6);

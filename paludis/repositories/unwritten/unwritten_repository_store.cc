@@ -96,7 +96,7 @@ UnwrittenRepositoryStore::_populate(const Environment * const env, const FSEntry
 void
 UnwrittenRepositoryStore::_populate_one(const Environment * const env, const FSEntry & f)
 {
-    if (! is_file_with_extension(f, ".conf", IsFileWithOptions()))
+    if (! is_file_with_extension(f, ".conf", { }))
         return;
 
     Context context("When populating UnwrittenRepository from file '" + stringify(f) + "':");

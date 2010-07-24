@@ -81,10 +81,10 @@ CommaSeparatedDepPrinter::visit(const DependencySpecTree::NodeType<PackageDepSpe
 
     if (_imp->env)
     {
-        if (! (*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(*node.spec(), MatchPackageOptions()) |
+        if (! (*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(*node.spec(), { }) |
                     filter::InstalledAtRoot(_imp->env->root()))]->empty())
             _imp->s << _imp->formatter.format(*node.spec(), format::Installed());
-        else if (! (*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(*node.spec(), MatchPackageOptions()) |
+        else if (! (*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(*node.spec(), { }) |
                     filter::SupportsAction<InstallAction>() | filter::NotMasked())]->empty())
             _imp->s << _imp->formatter.format(*node.spec(), format::Installable());
         else

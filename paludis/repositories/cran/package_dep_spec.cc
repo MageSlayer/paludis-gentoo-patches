@@ -154,7 +154,7 @@ namespace
 
         virtual const PartiallyMadePackageDepSpecOptions options_for_partially_made_package_dep_spec() const
         {
-            return PartiallyMadePackageDepSpecOptions();
+            return { };
         }
     };
 }
@@ -202,7 +202,7 @@ paludis::cranrepository::parse_cran_package_dep_spec(const std::string & ss)
                 throw PackageDepSpecError("Invalid () entry '" + *t + "' in '" + ss + "'");
             data->version_requirement(make_named_values<VersionRequirement>(
                         n::version_operator() = VersionOperator(subtokens[0]),
-                        n::version_spec() = VersionSpec(cran_version_to_internal(subtokens[1]), VersionSpecOptions())));
+                        n::version_spec() = VersionSpec(cran_version_to_internal(subtokens[1]), { })));
         }
     }
 

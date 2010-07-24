@@ -60,7 +60,7 @@ namespace paludis
                 const UnavailableRepositoryIDParams & e) :
             env(e.environment()),
             name(e.name()),
-            version("0", VersionSpecOptions()),
+            version("0", { }),
             repo(e.repository()),
             dependencies_key(e.dependencies()),
             description_key(e.description()),
@@ -135,7 +135,7 @@ UnavailableRepositoryID::uniquely_identifying_spec() const
 {
     return parse_user_package_dep_spec("=" + stringify(name()) + "-" + stringify(version())
             + "::" + stringify(repository()->name()),
-            _imp->env, UserPackageDepSpecOptions());
+            _imp->env, { });
 }
 
 const QualifiedPackageName

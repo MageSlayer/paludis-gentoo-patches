@@ -165,8 +165,8 @@ AccountsRepositoryStore::_load_one_users(
         const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & from_repo,
         const FSEntry & dir)
 {
-    for (DirIterator d(dir, DirIteratorOptions()), d_end ; d != d_end ; ++d)
-        if (is_file_with_extension(*d, ".conf", IsFileWithOptions()))
+    for (DirIterator d(dir, { }), d_end ; d != d_end ; ++d)
+        if (is_file_with_extension(*d, ".conf", { }))
             _load_one_user(repo, from_repo, *d);
         else
             Log::get_instance()->message("accounts.unknown_file", ll_debug, lc_context) <<
@@ -221,8 +221,8 @@ AccountsRepositoryStore::_load_one_groups(
         const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & from_repo,
         const FSEntry & dir)
 {
-    for (DirIterator d(dir, DirIteratorOptions()), d_end ; d != d_end ; ++d)
-        if (is_file_with_extension(*d, ".conf", IsFileWithOptions()))
+    for (DirIterator d(dir, { }), d_end ; d != d_end ; ++d)
+        if (is_file_with_extension(*d, ".conf", { }))
             _load_one_group(repo, from_repo, *d);
         else
             Log::get_instance()->message("accounts.unknown_file", ll_debug, lc_context) <<

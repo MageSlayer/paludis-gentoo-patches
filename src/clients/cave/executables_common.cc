@@ -110,9 +110,9 @@ paludis::cave::executables_common(
             (*env)[selection::AllVersionsSorted(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec(
                             param, env.get(),
-                            UserPackageDepSpecOptions() + updso_allow_wildcards,
+                            { updso_allow_wildcards },
                             filter::InstalledAtRoot(env->root()))),
-                    MatchPackageOptions()) | filter::InstalledAtRoot(env->root()))]);
+                    { }) | filter::InstalledAtRoot(env->root()))]);
 
     if (entries->empty())
         throw NoSuchPackageError(param);

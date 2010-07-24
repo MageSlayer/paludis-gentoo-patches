@@ -77,7 +77,7 @@ PackageMaskConf::add(const FSEntry & filename)
 {
     Context context("When adding source '" + stringify(filename) + "' as a package mask or unmask file:");
 
-    std::shared_ptr<LineConfigFile> f(make_bashable_conf(filename, LineConfigFileOptions()));
+    std::shared_ptr<LineConfigFile> f(make_bashable_conf(filename, { }));
     if (! f)
         return;
 
@@ -88,7 +88,7 @@ PackageMaskConf::add(const FSEntry & filename)
         {
             _imp->masks.push_back(std::shared_ptr<PackageDepSpec>(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec(
                                 *line, _imp->env,
-                                UserPackageDepSpecOptions() + updso_allow_wildcards + updso_no_disambiguation + updso_throw_if_set))));
+                                { updso_allow_wildcards, updso_no_disambiguation, updso_throw_if_set }))));
         }
         catch (const GotASetNotAPackageDepSpec &)
         {
@@ -124,7 +124,7 @@ PackageMaskConf::query(const PackageID & e) const
                 }
             }
 
-            if (match_package_in_set(*_imp->env, *it->second, e, MatchPackageOptions()))
+            if (match_package_in_set(*_imp->env, *it->second, e, { }))
                 return true;
         }
     }

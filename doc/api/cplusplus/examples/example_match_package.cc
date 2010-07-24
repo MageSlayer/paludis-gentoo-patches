@@ -54,14 +54,14 @@ int main(int argc, char * argv[])
                 i != i_end ; ++i)
         {
             /* Is it paludis? */
-            if (match_package(*env, make_package_dep_spec(PartiallyMadePackageDepSpecOptions()).package(
-                            QualifiedPackageName("sys-apps/paludis")), **i, MatchPackageOptions()))
+            if (match_package(*env, make_package_dep_spec({ }).package(
+                            QualifiedPackageName("sys-apps/paludis")), **i, { }))
                 cout << left << setw(50) << (stringify(**i) + ":") << " " << "paludis" << endl;
 
             /* No. Is it in system or world? */
-            else if (match_package_in_set(*env, *system, **i, MatchPackageOptions()))
+            else if (match_package_in_set(*env, *system, **i, { }))
                 cout << left << setw(50) << (stringify(**i) + ":") << " " << "system" << endl;
-            else if (match_package_in_set(*env, *world, **i, MatchPackageOptions()))
+            else if (match_package_in_set(*env, *world, **i, { }))
                 cout << left << setw(50) << (stringify(**i) + ":") << " " << "world" << endl;
             else
                 cout << left << setw(50) << (stringify(**i) + ":") << " " << "nothing" << endl;

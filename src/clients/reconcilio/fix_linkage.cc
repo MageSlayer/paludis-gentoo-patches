@@ -96,7 +96,7 @@ do_fix_linkage(const std::shared_ptr<Environment> & env)
             std::cout << std::endl;
         }
 
-        PartiallyMadePackageDepSpec part_spec((PartiallyMadePackageDepSpecOptions()));
+        PartiallyMadePackageDepSpec part_spec({ });
         part_spec.package((*pkg_it)->name());
         if ((*pkg_it)->slot_key())
             part_spec.slot_requirement(std::make_shared<UserSlotExactRequirement>((*pkg_it)->slot_key()->value()));

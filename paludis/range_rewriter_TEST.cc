@@ -44,9 +44,9 @@ namespace test_cases
             TestEnvironment env;
             std::shared_ptr<DependencySpecTree> a(std::make_shared<DependencySpecTree>(std::make_shared<AllDepSpec>()));
             a->root()->append(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec("=a/b-1",
-                                &env, UserPackageDepSpecOptions())));
+                                &env, { })));
             a->root()->append(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec("=a/b-2",
-                                &env, UserPackageDepSpecOptions())));
+                                &env, { })));
 
             RangeRewriter r;
             TEST_CHECK(! r.spec());

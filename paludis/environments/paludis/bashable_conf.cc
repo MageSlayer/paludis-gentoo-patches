@@ -49,7 +49,7 @@ paludis::paludis_environment::make_bashable_conf(const FSEntry & f, const LineCo
 
     std::shared_ptr<LineConfigFile> result;
 
-    if (is_file_with_extension(f, ".bash", IsFileWithOptions()))
+    if (is_file_with_extension(f, ".bash", { }))
     {
         std::stringstream s;
         Command cmd(Command("bash '" + stringify(f) + "'")
@@ -82,7 +82,7 @@ paludis::paludis_environment::make_bashable_kv_conf(const FSEntry & f,
 
     std::shared_ptr<KeyValueConfigFile> result;
 
-    if (is_file_with_extension(f, ".bash", IsFileWithOptions()))
+    if (is_file_with_extension(f, ".bash", { }))
     {
         std::stringstream s;
         Command cmd(Command("bash '" + stringify(f) + "'")

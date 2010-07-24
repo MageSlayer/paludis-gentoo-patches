@@ -293,7 +293,7 @@ Imp<TraditionalProfile>::load_profile_parent(const FSEntry & dir)
     if (! (dir / "parent").exists())
         return;
 
-    LineConfigFile file(dir / "parent", LineConfigFileOptions() + lcfo_disallow_continuations);
+    LineConfigFile file(dir / "parent", { lcfo_disallow_continuations });
 
     LineConfigFile::ConstIterator i(file.begin()), i_end(file.end());
     bool once(false);
@@ -345,8 +345,7 @@ Imp<TraditionalProfile>::load_profile_make_defaults(const FSEntry & dir)
         throw ERepositoryConfigurationError("Can't use profile directory '" + stringify(dir) +
                 "' because it uses an unsupported EAPI");
 
-    KeyValueConfigFile file(dir / "make.defaults", KeyValueConfigFileOptions() +
-            kvcfo_disallow_source + kvcfo_disallow_space_inside_unquoted_values + kvcfo_allow_inline_comments + kvcfo_allow_multiple_assigns_per_line,
+    KeyValueConfigFile file(dir / "make.defaults", { kvcfo_disallow_source, kvcfo_disallow_space_inside_unquoted_values, kvcfo_allow_inline_comments, kvcfo_allow_multiple_assigns_per_line },
             &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
 
     for (KeyValueConfigFile::ConstIterator k(file.begin()), k_end(file.end()) ;
@@ -667,7 +666,7 @@ Imp<TraditionalProfile>::load_basic_use_file(const FSEntry & file, FlagStatusMap
         return;
 
     Context context("When loading basic use file '" + stringify(file) + ":");
-    LineConfigFile f(file, LineConfigFileOptions() + lcfo_disallow_continuations);
+    LineConfigFile f(file, { lcfo_disallow_continuations });
     for (LineConfigFile::ConstIterator line(f.begin()), line_end(f.end()) ;
             line != line_end ; ++line)
     {
@@ -706,7 +705,7 @@ Imp<TraditionalProfile>::load_spec_use_file(const EAPI & eapi, const FSEntry & f
         return;
 
     Context context("When loading specised use file '" + stringify(file) + ":");
-    LineConfigFile f(file, LineConfigFileOptions() + lcfo_disallow_continuations);
+    LineConfigFile f(file, { lcfo_disallow_continuations });
     for (LineConfigFile::ConstIterator line(f.begin()), line_end(f.end()) ;
             line != line_end ; ++line)
     {
@@ -871,7 +870,7 @@ TraditionalProfile::use_masked(
         for (PackageFlagStatusMapList::const_iterator g(i->package_use_mask.begin()),
                 g_end(i->package_use_mask.end()) ; g != g_end ; ++g)
         {
-            if (! match_package(*_imp->env, *g->first, *id, MatchPackageOptions()))
+            if (! match_package(*_imp->env, *g->first, *id, { }))
                 continue;
 
             FlagStatusMap::const_iterator h(g->second.find(value_prefixed));
@@ -907,7 +906,7 @@ TraditionalProfile::use_forced(
         for (PackageFlagStatusMapList::const_iterator g(i->package_use_force.begin()),
                 g_end(i->package_use_force.end()) ; g != g_end ; ++g)
         {
-            if (! match_package(*_imp->env, *g->first, *id, MatchPackageOptions()))
+            if (! match_package(*_imp->env, *g->first, *id, { }))
                 continue;
 
             FlagStatusMap::const_iterator h(g->second.find(value_prefixed));
@@ -936,7 +935,7 @@ TraditionalProfile::use_state_ignoring_masks(
         for (PackageFlagStatusMapList::const_iterator g(i->package_use.begin()),
                 g_end(i->package_use.end()) ; g != g_end ; ++g)
         {
-            if (! match_package(*_imp->env, *g->first, *id, MatchPackageOptions()))
+            if (! match_package(*_imp->env, *g->first, *id, { }))
                 continue;
 
             FlagStatusMap::const_iterator h(g->second.find(value_prefixed));
@@ -1045,7 +1044,7 @@ TraditionalProfile::profile_masked(const PackageID & id) const
     {
         for (std::list<std::pair<std::shared_ptr<const PackageDepSpec>, std::shared_ptr<const RepositoryMaskInfo> > >::const_iterator k(rr->second.begin()),
                 k_end(rr->second.end()) ; k != k_end ; ++k)
-            if (match_package(*_imp->env, *k->first, id, MatchPackageOptions()))
+            if (match_package(*_imp->env, *k->first, id, { }))
                 return k->second;
     }
 

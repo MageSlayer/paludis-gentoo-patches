@@ -215,7 +215,7 @@ ExheresProfile::_load_dir(const FSEntry & f)
 
     if ((f / "parents.conf").exists())
     {
-        LineConfigFile file(f / "parents.conf", LineConfigFileOptions());
+        LineConfigFile file(f / "parents.conf", { });
         for (LineConfigFile::ConstIterator line(file.begin()), line_end(file.end()) ;
                 line != line_end ; ++line)
             _load_dir((f / *line).realpath());
@@ -238,9 +238,8 @@ ExheresProfile::_load_dir(const FSEntry & f)
             throw ERepositoryConfigurationError("Can't use profile directory '" + stringify(f) +
                     "' because it uses an unsupported EAPI");
 
-        KeyValueConfigFile file(f / "make.defaults", KeyValueConfigFileOptions() +
-                kvcfo_disallow_source + kvcfo_disallow_space_inside_unquoted_values +
-                kvcfo_allow_inline_comments + kvcfo_allow_multiple_assigns_per_line,
+        KeyValueConfigFile file(f / "make.defaults", { kvcfo_disallow_source, kvcfo_disallow_space_inside_unquoted_values,
+                kvcfo_allow_inline_comments, kvcfo_allow_multiple_assigns_per_line },
                 &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
 
         for (KeyValueConfigFile::ConstIterator k(file.begin()), k_end(file.end()) ;
@@ -366,7 +365,7 @@ ExheresProfile::profile_masked(const PackageID & id) const
     {
         for (std::list<std::pair<std::shared_ptr<const PackageDepSpec>, std::shared_ptr<const RepositoryMaskInfo> > >::const_iterator k(rr->second.begin()),
                 k_end(rr->second.end()) ; k != k_end ; ++k)
-            if (match_package(*_imp->env, *k->first, id, MatchPackageOptions()))
+            if (match_package(*_imp->env, *k->first, id, { }))
                 return k->second;
     }
 

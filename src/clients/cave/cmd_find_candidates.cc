@@ -214,7 +214,7 @@ FindCandidatesCommand::run_hosted(
                 k_end(search_options.a_matching.end_args()) ;
                 k != k_end ; ++k)
         {
-            generator::Matches m(parse_user_package_dep_spec(*k, env.get(), UserPackageDepSpecOptions() + updso_allow_wildcards), MatchPackageOptions());
+            generator::Matches m(parse_user_package_dep_spec(*k, env.get(), { updso_allow_wildcards }), { });
 
             if (match_generator)
                 match_generator = std::make_shared<generator::Union>(*match_generator, m);

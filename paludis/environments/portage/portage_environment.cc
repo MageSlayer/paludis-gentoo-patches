@@ -312,7 +312,7 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
 
     if ((_imp->conf_dir / "portage" / "mirrors").exists())
     {
-        LineConfigFile m(_imp->conf_dir / "portage" / "mirrors", LineConfigFileOptions() + lcfo_disallow_continuations);
+        LineConfigFile m(_imp->conf_dir / "portage" / "mirrors", { lcfo_disallow_continuations });
         for (LineConfigFile::ConstIterator line(m.begin()), line_end(m.end()) ;
                 line != line_end ; ++line)
         {
@@ -362,7 +362,7 @@ PortageEnvironment::_load_atom_file(const FSEntry & f, I_ i, const std::string &
     }
     else
     {
-        LineConfigFile file(f, LineConfigFileOptions() + lcfo_disallow_continuations);
+        LineConfigFile file(f, { lcfo_disallow_continuations });
         for (LineConfigFile::ConstIterator line(file.begin()), line_end(file.end()) ;
                 line != line_end ; ++line)
         {
@@ -415,7 +415,7 @@ PortageEnvironment::_load_lined_file(const FSEntry & f, I_ i)
     }
     else
     {
-        LineConfigFile file(f, LineConfigFileOptions() + lcfo_disallow_continuations);
+        LineConfigFile file(f, { lcfo_disallow_continuations });
         for (LineConfigFile::ConstIterator line(file.begin()), line_end(file.end()) ;
                 line != line_end ; ++line)
             *i++ = std::shared_ptr<PackageDepSpec>(std::make_shared<PackageDepSpec>(
@@ -433,7 +433,7 @@ PortageEnvironment::_load_profile(const FSEntry & d)
     {
         Context context_local("When loading parent profiles:");
 
-        LineConfigFile f(d / "parent", LineConfigFileOptions() + lcfo_disallow_continuations);
+        LineConfigFile f(d / "parent", { lcfo_disallow_continuations });
         for (LineConfigFile::ConstIterator line(f.begin()), line_end(f.end()) ;
                 line != line_end ; ++line)
             _load_profile((d / *line).realpath());
@@ -567,7 +567,7 @@ PortageEnvironment::want_choice_enabled(
     for (PackageUse::const_iterator i(_imp->package_use.begin()), i_end(_imp->package_use.end()) ;
             i != i_end ; ++i)
     {
-        if (! match_package(*this, *i->first, *id, MatchPackageOptions()))
+        if (! match_package(*this, *i->first, *id, { }))
             continue;
 
         if (i->second == stringify(f))
@@ -623,7 +623,7 @@ PortageEnvironment::accept_keywords(const std::shared_ptr <const KeywordNameSet>
     for (PackageKeywords::const_iterator it(_imp->package_keywords.begin()),
              it_end(_imp->package_keywords.end()); it_end != it; ++it)
     {
-        if (! match_package(*this, *it->first, d, MatchPackageOptions()))
+        if (! match_package(*this, *it->first, d, { }))
             continue;
 
         if ("-*" == it->second)
@@ -667,7 +667,7 @@ PortageEnvironment::unmasked_by_user(const PackageID & e) const
 {
     for (PackageUnmask::const_iterator i(_imp->package_unmask.begin()), i_end(_imp->package_unmask.end()) ;
             i != i_end ; ++i)
-        if (match_package(*this, **i, e, MatchPackageOptions()))
+        if (match_package(*this, **i, e, { }))
             return true;
 
     return false;
@@ -692,7 +692,7 @@ PortageEnvironment::known_choice_value_names(const std::shared_ptr<const Package
     for (PackageUse::const_iterator i(_imp->package_use.begin()), i_end(_imp->package_use.end()) ;
             i != i_end ; ++i)
     {
-        if (! match_package(*this, *i->first, *id, MatchPackageOptions()))
+        if (! match_package(*this, *i->first, *id, { }))
             continue;
 
         if (0 == i->second.compare(0, prefix_lower.length(), prefix_lower, 0, prefix_lower.length()))
@@ -850,7 +850,7 @@ PortageEnvironment::mask_for_user(const PackageID & d, const bool o) const
 {
     for (PackageMask::const_iterator i(_imp->package_mask.begin()), i_end(_imp->package_mask.end()) ;
             i != i_end ; ++i)
-        if (match_package(*this, **i, d, MatchPackageOptions()))
+        if (match_package(*this, **i, d, { }))
             return std::make_shared<UserConfigMask>(o);
 
     return std::shared_ptr<const Mask>();

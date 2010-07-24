@@ -43,7 +43,7 @@ namespace test_cases
             {
                 TestEnvironment env;
                 paludis_environment::World world(&env, w);
-                world.update_config_files_for_package_move(make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
+                world.update_config_files_for_package_move(make_package_dep_spec({ })
                         .package(QualifiedPackageName("cat/before")),
                         QualifiedPackageName("cat/after"));
             }

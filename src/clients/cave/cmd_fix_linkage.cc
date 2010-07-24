@@ -210,7 +210,7 @@ FixLinkageCommand::run(
             cout << endl;
         }
 
-        PartiallyMadePackageDepSpec part_spec((PartiallyMadePackageDepSpecOptions()));
+        PartiallyMadePackageDepSpec part_spec({ });
         part_spec.package((*pkg_it)->name());
         if ((*pkg_it)->slot_key())
             part_spec.slot_requirement(std::make_shared<UserSlotExactRequirement>((*pkg_it)->slot_key()->value()));

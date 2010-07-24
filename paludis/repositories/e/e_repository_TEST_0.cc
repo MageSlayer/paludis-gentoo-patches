@@ -161,7 +161,7 @@ namespace test_cases
             {
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=virtual/virtual-pretend-installed-0",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                                        &env, { })), { }))]->last());
                 TEST_CHECK(bool(id));
             }
 #endif
@@ -170,7 +170,7 @@ namespace test_cases
                 TestMessageSuffix suffix("in-ebuild die", true);
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("cat/in-ebuild-die",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                                        &env, { })), { }))]->last());
                 TEST_CHECK(bool(id));
                 TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
@@ -179,7 +179,7 @@ namespace test_cases
                 TestMessageSuffix suffix("in-subshell die", true);
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("cat/in-subshell-die",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                                        &env, { })), { }))]->last());
                 TEST_CHECK(bool(id));
                 TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
@@ -188,7 +188,7 @@ namespace test_cases
                 TestMessageSuffix suffix("success", true);
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("cat/success",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                                        &env, { })), { }))]->last());
                 TEST_CHECK(bool(id));
                 id->perform_action(action);
             }
@@ -197,7 +197,7 @@ namespace test_cases
                 TestMessageSuffix suffix("unpack die", true);
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("cat/unpack-die",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                                        &env, { })), { }))]->last());
                 TEST_CHECK(bool(id));
                 TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
@@ -206,7 +206,7 @@ namespace test_cases
                 TestMessageSuffix suffix("econf die", true);
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("cat/econf-die",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                                        &env, { })), { }))]->last());
                 TEST_CHECK(bool(id));
                 TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
@@ -215,7 +215,7 @@ namespace test_cases
                 TestMessageSuffix suffix("emake fail", true);
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("cat/emake-fail",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                                        &env, { })), { }))]->last());
                 TEST_CHECK(bool(id));
                 id->perform_action(action);
             }
@@ -224,7 +224,7 @@ namespace test_cases
                 TestMessageSuffix suffix("emake die", true);
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("cat/emake-die",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                                        &env, { })), { }))]->last());
                 TEST_CHECK(bool(id));
                 TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
@@ -233,7 +233,7 @@ namespace test_cases
                 TestMessageSuffix suffix("einstall die", true);
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("cat/einstall-die",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                                        &env, { })), { }))]->last());
                 TEST_CHECK(bool(id));
                 TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
@@ -242,7 +242,7 @@ namespace test_cases
                 TestMessageSuffix suffix("keepdir die", true);
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("cat/keepdir-die",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                                        &env, { })), { }))]->last());
                 TEST_CHECK(bool(id));
                 TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
@@ -251,7 +251,7 @@ namespace test_cases
                 TestMessageSuffix suffix("dobin fail", true);
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("cat/dobin-fail",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                                        &env, { })), { }))]->last());
                 TEST_CHECK(bool(id));
                 id->perform_action(action);
             }
@@ -260,7 +260,7 @@ namespace test_cases
                 TestMessageSuffix suffix("dobin die", true);
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("cat/dobin-die",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                                        &env, { })), { }))]->last());
                 TEST_CHECK(bool(id));
                 TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
@@ -269,7 +269,7 @@ namespace test_cases
                 TestMessageSuffix suffix("fperms fail", true);
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("cat/fperms-fail",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                                        &env, { })), { }))]->last());
                 TEST_CHECK(bool(id));
                 id->perform_action(action);
             }
@@ -278,7 +278,7 @@ namespace test_cases
                 TestMessageSuffix suffix("fperms die", true);
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("cat/fperms-die",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                                        &env, { })), { }))]->last());
                 TEST_CHECK(bool(id));
                 TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
@@ -287,7 +287,7 @@ namespace test_cases
                 TestMessageSuffix suffix("econf source 0", true);
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/econf-source-0",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                                        &env, { })), { }))]->last());
                 TEST_CHECK(bool(id));
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "0");
                 TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
@@ -297,7 +297,7 @@ namespace test_cases
                 TestMessageSuffix suffix("doman 0", true);
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/doman-0",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                                        &env, { })), { }))]->last());
                 TEST_CHECK(bool(id));
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "0");
                 id->perform_action(action);
@@ -307,7 +307,7 @@ namespace test_cases
                 TestMessageSuffix suffix("no src_prepare 0", true);
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/src_prepare-0",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                                        &env, { })), { }))]->last());
                 TEST_CHECK(bool(id));
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "0");
                 id->perform_action(action);
@@ -317,7 +317,7 @@ namespace test_cases
                 TestMessageSuffix suffix("no src_configure 0", true);
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/src_configure-0",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                                        &env, { })), { }))]->last());
                 TEST_CHECK(bool(id));
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "0");
                 id->perform_action(action);
@@ -327,7 +327,7 @@ namespace test_cases
                 TestMessageSuffix suffix("best version", true);
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/best-version-0",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                                        &env, { })), { }))]->last());
                 TEST_CHECK(bool(id));
                 id->perform_action(action);
             }
@@ -336,7 +336,7 @@ namespace test_cases
                 TestMessageSuffix suffix("has version", true);
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/has-version-0",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                                        &env, { })), { }))]->last());
                 TEST_CHECK(bool(id));
                 id->perform_action(action);
             }
@@ -345,7 +345,7 @@ namespace test_cases
                 TestMessageSuffix suffix("match", true);
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/match-0",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                                        &env, { })), { }))]->last());
                 TEST_CHECK(bool(id));
                 id->perform_action(action);
             }
@@ -354,7 +354,7 @@ namespace test_cases
                 TestMessageSuffix suffix("vars", true);
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/vars-0",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                                        &env, { })), { }))]->last());
                 TEST_CHECK(bool(id));
                 id->perform_action(action);
             }
@@ -363,7 +363,7 @@ namespace test_cases
                 TestMessageSuffix suffix("expand vars", true);
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/expand-vars-0",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                                        &env, { })), { }))]->last());
                 TEST_CHECK(bool(id));
                 id->perform_action(action);
             }
@@ -372,7 +372,7 @@ namespace test_cases
                 TestMessageSuffix suffix("econf disable dependency tracking", true);
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/econf-disable-dependency-tracking-0",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                                        &env, { })), { }))]->last());
                 TEST_CHECK(bool(id));
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "0");
                 id->perform_action(action);

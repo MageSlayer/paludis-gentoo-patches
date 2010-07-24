@@ -498,12 +498,12 @@ namespace test_cases
 
     struct MergerEmptyDirAllowedTest : MergerTest
     {
-        MergerEmptyDirAllowedTest() : MergerTest("empty_dir_allowed", MergerOptions() + mo_allow_empty_dirs) { }
+        MergerEmptyDirAllowedTest() : MergerTest("empty_dir_allowed", { mo_allow_empty_dirs }) { }
 
         void run()
         {
             TEST_CHECK((image_dir / "empty").is_directory());
-            TEST_CHECK(DirIterator(image_dir / "empty", DirIteratorOptions() + dio_include_dotfiles + dio_first_only) == DirIterator());
+            TEST_CHECK(DirIterator(image_dir / "empty", { dio_include_dotfiles, dio_first_only }) == DirIterator());
 
             TEST_CHECK(merger.check());
         }
@@ -511,12 +511,12 @@ namespace test_cases
 
     struct MergerEmptyDirDisallowedTest : MergerTest
     {
-        MergerEmptyDirDisallowedTest() : MergerTest("empty_dir_disallowed", MergerOptions()) { }
+        MergerEmptyDirDisallowedTest() : MergerTest("empty_dir_disallowed", { }) { }
 
         void run()
         {
             TEST_CHECK((image_dir / "empty").is_directory());
-            TEST_CHECK(DirIterator(image_dir / "empty", DirIteratorOptions() + dio_include_dotfiles + dio_first_only) == DirIterator());
+            TEST_CHECK(DirIterator(image_dir / "empty", { dio_include_dotfiles, dio_first_only }) == DirIterator());
 
             TEST_CHECK(! merger.check());
         }
@@ -524,11 +524,11 @@ namespace test_cases
 
     struct MergerEmptyRootAllowedTest : MergerTest
     {
-        MergerEmptyRootAllowedTest() : MergerTest("empty_root_allowed", MergerOptions() + mo_allow_empty_dirs) { }
+        MergerEmptyRootAllowedTest() : MergerTest("empty_root_allowed", { mo_allow_empty_dirs }) { }
 
         void run()
         {
-            TEST_CHECK(DirIterator(image_dir, DirIteratorOptions() + dio_include_dotfiles + dio_first_only) == DirIterator());
+            TEST_CHECK(DirIterator(image_dir, { dio_include_dotfiles, dio_first_only }) == DirIterator());
 
             TEST_CHECK(merger.check());
         }
@@ -536,11 +536,11 @@ namespace test_cases
 
     struct MergerEmptyRootDisallowedTest : MergerTest
     {
-        MergerEmptyRootDisallowedTest() : MergerTest("empty_root_disallowed", MergerOptions()) { }
+        MergerEmptyRootDisallowedTest() : MergerTest("empty_root_disallowed", { }) { }
 
         void run()
         {
-            TEST_CHECK(DirIterator(image_dir, DirIteratorOptions() + dio_include_dotfiles + dio_first_only) == DirIterator());
+            TEST_CHECK(DirIterator(image_dir, { dio_include_dotfiles, dio_first_only }) == DirIterator());
 
             TEST_CHECK(! merger.check());
         }
@@ -548,7 +548,7 @@ namespace test_cases
 
     struct MergerMtimesTest : MergerTest
     {
-        MergerMtimesTest() : MergerTest("mtimes", MergerOptions() + mo_preserve_mtimes) { }
+        MergerMtimesTest() : MergerTest("mtimes", { mo_preserve_mtimes }) { }
 
         void run()
         {
@@ -570,7 +570,7 @@ namespace test_cases
 
     struct MergerMtimesFixTest : MergerTest
     {
-        MergerMtimesFixTest() : MergerTest("mtimes_fix", MergerOptions() + mo_preserve_mtimes, true) { }
+        MergerMtimesFixTest() : MergerTest("mtimes_fix", { mo_preserve_mtimes }, true) { }
 
         void run()
         {

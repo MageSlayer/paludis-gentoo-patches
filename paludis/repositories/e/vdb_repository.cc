@@ -520,7 +520,7 @@ VDBRepository::perform_uninstall(
     }
 
     /* remove vdb entry */
-    for (DirIterator d(pkg_dir, DirIteratorOptions() + dio_include_dotfiles), d_end ; d != d_end ; ++d)
+    for (DirIterator d(pkg_dir, { dio_include_dotfiles }), d_end ; d != d_end ; ++d)
         FSEntry(*d).unlink();
     pkg_dir.rmdir();
 
@@ -956,7 +956,7 @@ VDBRepository::merge(const MergeParams & m)
 
     if (! merger.check())
     {
-        for (DirIterator d(tmp_vdb_dir, DirIteratorOptions() + dio_include_dotfiles), d_end ; d != d_end ; ++d)
+        for (DirIterator d(tmp_vdb_dir, { dio_include_dotfiles }), d_end ; d != d_end ; ++d)
             FSEntry(*d).unlink();
         tmp_vdb_dir.rmdir();
         throw ActionFailedError("Not proceeding with install due to merge sanity check failing");
@@ -1063,7 +1063,7 @@ VDBRepository::need_category_names() const
 
     Context context("When loading category names from '" + stringify(_imp->params.location()) + "':");
 
-    for (DirIterator d(_imp->params.location(), DirIteratorOptions() + dio_inode_sort), d_end ; d != d_end ; ++d)
+    for (DirIterator d(_imp->params.location(), { dio_inode_sort }), d_end ; d != d_end ; ++d)
         try
         {
             if (d->is_directory_or_symlink_to_directory())
@@ -1096,7 +1096,7 @@ VDBRepository::need_package_ids(const CategoryNamePart & c) const
 
     std::shared_ptr<QualifiedPackageNameSet> q(std::make_shared<QualifiedPackageNameSet>());
 
-    for (DirIterator d(_imp->params.location() / stringify(c), DirIteratorOptions() + dio_inode_sort), d_end ; d != d_end ; ++d)
+    for (DirIterator d(_imp->params.location() / stringify(c), { dio_inode_sort }), d_end ; d != d_end ; ++d)
         try
         {
             if (d->is_directory_or_symlink_to_directory())
@@ -1106,7 +1106,7 @@ VDBRepository::need_package_ids(const CategoryNamePart & c) const
                     continue;
 
                 PackageDepSpec p(parse_user_package_dep_spec("=" + stringify(c) + "/" + s,
-                            _imp->params.environment(), UserPackageDepSpecOptions()));
+                            _imp->params.environment(), { }));
                 q->insert(*p.package_ptr());
                 IDMap::iterator i(_imp->ids.find(*p.package_ptr()));
                 if (_imp->ids.end() == i)
@@ -1320,7 +1320,7 @@ VDBRepository::perform_updates()
     if (cache_file.is_regular_file_or_symlink_to_regular_file())
     {
         Context ctx2("When reading update file timestamps from '" + stringify(cache_file) + "':");
-        LineConfigFile f(cache_file, LineConfigFileOptions() + lcfo_preserve_whitespace);
+        LineConfigFile f(cache_file, { lcfo_preserve_whitespace });
 
         for (LineConfigFile::ConstIterator line(f.begin()), line_end(f.end()) ;
                 line != line_end ; ++line)
@@ -1385,7 +1385,7 @@ VDBRepository::perform_updates()
                 continue;
             }
 
-            for (DirIterator d(k->value(), DirIteratorOptions()), d_end ;
+            for (DirIterator d(k->value(), { }), d_end ;
                     d != d_end ; ++d)
             {
                 Context context_3("When performing updates from '" + stringify(*d) + "':");
@@ -1404,7 +1404,7 @@ VDBRepository::perform_updates()
 
                 std::cout << "    Considering " << *d << std::endl;
 
-                LineConfigFile f(*d, LineConfigFileOptions());
+                LineConfigFile f(*d, { });
 
                 for (LineConfigFile::ConstIterator line(f.begin()), line_end(f.end()) ;
                         line != line_end ; ++line)
@@ -1447,11 +1447,11 @@ VDBRepository::perform_updates()
                         if (4 == tokens.size())
                         {
                             PackageDepSpec old_spec(parse_user_package_dep_spec(tokens.at(1), _imp->params.environment(),
-                                        UserPackageDepSpecOptions()));
+                                        { }));
                             SlotName old_slot(tokens.at(2)), new_slot(tokens.at(3));
 
                             const std::shared_ptr<const PackageIDSequence> ids((*_imp->params.environment())[selection::AllVersionsSorted(
-                                        (generator::Matches(old_spec, MatchPackageOptions()) & generator::InRepository(name())) |
+                                        (generator::Matches(old_spec, { }) & generator::InRepository(name())) |
                                         filter::Slot(old_slot)
                                         )]);
                             if (! ids->empty())
@@ -1531,7 +1531,7 @@ VDBRepository::perform_updates()
 
                     if (newpf != oldpf)
                     {
-                        for (DirIterator it(to_dir, DirIteratorOptions() + dio_inode_sort),
+                        for (DirIterator it(to_dir, { dio_inode_sort }),
                                  it_end; it_end != it; ++it)
                         {
                             std::string::size_type lastdot(it->basename().rfind('.'));
@@ -1601,7 +1601,7 @@ VDBRepository::perform_updates()
             for (DepRewrites::const_iterator i(dep_rewrites.begin()), i_end(dep_rewrites.end()) ;
                     i != i_end ; ++i)
                 _imp->params.environment()->update_config_files_for_package_move(
-                        make_package_dep_spec(PartiallyMadePackageDepSpecOptions()).package(i->first),
+                        make_package_dep_spec({ }).package(i->first),
                         i->second
                         );
         }

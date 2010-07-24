@@ -313,14 +313,14 @@ namespace
             for (typename C_::ConstIterator g(going_away->begin()), g_end(going_away->end()) ;
                     g != g_end ; ++g)
             {
-                if (! match_package(*env, *s.spec(), *dependent_checker_id(*g), MatchPackageOptions()))
+                if (! match_package(*env, *s.spec(), *dependent_checker_id(*g), { }))
                     continue;
 
                 bool any(false);
                 for (typename C_::ConstIterator n(newly_available->begin()), n_end(newly_available->end()) ;
                         n != n_end ; ++n)
                 {
-                    if (match_package(*env, *s.spec(), *dependent_checker_id(*n), MatchPackageOptions()))
+                    if (match_package(*env, *s.spec(), *dependent_checker_id(*n), { }))
                     {
                         any = true;
                         break;
@@ -780,13 +780,13 @@ namespace
         {
             if (constraint.spec().if_package())
             {
-                if (! match_package(*env, *constraint.spec().if_package(), *chosen_id, MatchPackageOptions()))
+                if (! match_package(*env, *constraint.spec().if_package(), *chosen_id, { }))
                     return false;
             }
             else
             {
                 if (match_package(*env, constraint.spec().if_block()->blocking(),
-                            *chosen_id, MatchPackageOptions()))
+                            *chosen_id, { }))
                     return false;
             }
 
@@ -1284,7 +1284,7 @@ Decider::find_any_score(
     if (is_block)
     {
         const std::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::BestVersionOnly(
-                    generator::Matches(spec, MatchPackageOptions() + mpo_ignore_additional_requirements)
+                    generator::Matches(spec, { mpo_ignore_additional_requirements })
                         | filter::SupportsAction<InstallAction>() | filter::NotMasked()
                     )]);
         if (ids->empty())
@@ -1294,7 +1294,7 @@ Decider::find_any_score(
     /* next: already installed */
     {
         const std::shared_ptr<const PackageIDSequence> installed_ids((*_imp->env)[selection::BestVersionOnly(
-                    generator::Matches(spec, MatchPackageOptions()) |
+                    generator::Matches(spec, { }) |
                     filter::InstalledAtRoot(FSEntry("/")))]);
         if (! installed_ids->empty() ^ is_block)
             return std::make_pair(acs_already_installed, operator_bias);
@@ -1304,7 +1304,7 @@ Decider::find_any_score(
     if (! is_block && spec.additional_requirements_ptr())
     {
         const std::shared_ptr<const PackageIDSequence> installed_ids((*_imp->env)[selection::BestVersionOnly(
-                    generator::Matches(spec, MatchPackageOptions() + mpo_ignore_additional_requirements) |
+                    generator::Matches(spec, { mpo_ignore_additional_requirements }) |
                     filter::InstalledAtRoot(FSEntry("/")))]);
         if (! installed_ids->empty())
             return std::make_pair(acs_wrong_options_installed, operator_bias);
@@ -1348,7 +1348,7 @@ Decider::find_any_score(
     if (is_block)
     {
         const std::shared_ptr<const PackageIDSequence> installed_ids((*_imp->env)[selection::BestVersionOnly(
-                    generator::Matches(spec, MatchPackageOptions()) |
+                    generator::Matches(spec, { }) |
                     filter::InstalledAtRoot(FSEntry("/")))]);
         if (! installed_ids->empty())
             return std::make_pair(acs_blocks_installed, operator_bias);
@@ -1358,7 +1358,7 @@ Decider::find_any_score(
     if (! is_block)
     {
         const std::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::BestVersionOnly(
-                    generator::Matches(spec, MatchPackageOptions() + mpo_ignore_additional_requirements)
+                    generator::Matches(spec, { mpo_ignore_additional_requirements })
                     )]);
         if (! ids->empty())
             return std::make_pair(acs_exists, operator_bias);
@@ -1774,9 +1774,9 @@ Decider::_find_id_for_from(
                 c != c_end ; ++c)
         {
             if ((*c)->spec().if_package())
-                ok = ok && match_package(*_imp->env, *(*c)->spec().if_package(), **i, MatchPackageOptions());
+                ok = ok && match_package(*_imp->env, *(*c)->spec().if_package(), **i, { });
             else
-                ok = ok && ! match_package(*_imp->env, (*c)->spec().if_block()->blocking(), **i, MatchPackageOptions());
+                ok = ok && ! match_package(*_imp->env, (*c)->spec().if_block()->blocking(), **i, { });
 
             if (! ok)
                 break;
@@ -1957,7 +1957,7 @@ Decider::_collect_world(
 
     for (PackageIDSet::ConstIterator i(from->begin()), i_end(from->end()) ;
             i != i_end ; ++i)
-        if (match_package_in_set(*_imp->env, *set, **i, MatchPackageOptions()))
+        if (match_package_in_set(*_imp->env, *set, **i, { }))
             result->insert(*i);
 
     return result;
@@ -1997,7 +1997,7 @@ Decider::_already_met(const SanitisedDependency & dep) const
                 generator::Matches(dep.spec().if_package() ?
                     *dep.spec().if_package() :
                     dep.spec().if_block()->blocking(),
-                    MatchPackageOptions()) |
+                    { }) |
                 filter::InstalledAtRoot(FSEntry("/")))]);
     if (installed_ids->empty())
         return bool(dep.spec().if_block());
@@ -2081,7 +2081,7 @@ namespace
             bool is_system(false);
             for (PackageIDSequence::ConstIterator i(remove_decision.ids()->begin()), i_end(remove_decision.ids()->end()) ;
                     i != i_end && ! is_system ; ++i)
-                if (match_package_in_set(*env, *env->set(SetName("system")), **i, MatchPackageOptions()))
+                if (match_package_in_set(*env, *env->set(SetName("system")), **i, { }))
                     is_system = true;
 
             if (is_system)
@@ -2177,7 +2177,7 @@ Decider::_resolve_purges()
 
         /* to catch packages being purged that are also in world and not used
          * by anything else */
-        if (match_package_in_set(*_imp->env, *world, **i, MatchPackageOptions()))
+        if (match_package_in_set(*_imp->env, *world, **i, { }))
             continue;
 
         const std::shared_ptr<ChangeByResolventSequence> used_to_use(std::make_shared<ChangeByResolventSequence>());
@@ -2294,7 +2294,7 @@ Decider::_collect_provided(
                 v != v_end ; ++v)
         {
             const std::shared_ptr<const PackageIDSequence> virtuals((*_imp->env)[selection::AllVersionsUnsorted(
-                        generator::Matches(**v, MatchPackageOptions()))]);
+                        generator::Matches(**v, { }))]);
             std::copy(virtuals->begin(), virtuals->end(), result->inserter());
         }
     }

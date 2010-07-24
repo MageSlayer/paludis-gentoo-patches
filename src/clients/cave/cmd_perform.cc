@@ -387,9 +387,9 @@ PerformCommand::run(
     std::string action(*cmdline.begin_parameters());
 
     PackageDepSpec spec(parse_user_package_dep_spec(*next(cmdline.begin_parameters()), env.get(),
-                UserPackageDepSpecOptions()));
+                { }));
     const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsUnsorted(
-                generator::Matches(spec, MatchPackageOptions()))]);
+                generator::Matches(spec, { }))]);
     if (ids->empty())
         throw NothingMatching(spec);
     else if (1 != std::distance(ids->begin(), ids->end()))
@@ -510,9 +510,9 @@ PerformCommand::run(
                 p_end(cmdline.a_replacing.end_args()) ;
                 p != p_end ; ++p)
         {
-            PackageDepSpec rspec(parse_user_package_dep_spec(*p, env.get(), UserPackageDepSpecOptions()));
+            PackageDepSpec rspec(parse_user_package_dep_spec(*p, env.get(), { }));
             const std::shared_ptr<const PackageIDSequence> rids((*env)[selection::AllVersionsUnsorted(
-                        generator::Matches(rspec, MatchPackageOptions()))]);
+                        generator::Matches(rspec, { }))]);
             if (rids->empty())
                 throw NothingMatching(rspec);
             else if (1 != std::distance(rids->begin(), rids->end()))

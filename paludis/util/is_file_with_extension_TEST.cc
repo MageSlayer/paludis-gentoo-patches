@@ -48,10 +48,10 @@ namespace test_cases
 
             TEST_CHECK(d.exists());
 
-            TEST_CHECK(! is_file_with_extension(c, "foo", IsFileWithOptions()));
-            TEST_CHECK(! is_file_with_extension(d, "foo", IsFileWithOptions()));
-            TEST_CHECK(! is_file_with_extension(c, "goat", IsFileWithOptions()));
-            TEST_CHECK(is_file_with_extension(d, "goat", IsFileWithOptions()));
+            TEST_CHECK(! is_file_with_extension(c, "foo", { }));
+            TEST_CHECK(! is_file_with_extension(d, "foo", { }));
+            TEST_CHECK(! is_file_with_extension(c, "goat", { }));
+            TEST_CHECK(is_file_with_extension(d, "goat", { }));
 
         }
     } test_is_file_with_extension;
@@ -71,11 +71,11 @@ namespace test_cases
 
             TEST_CHECK(e.exists());
 
-            TEST_CHECK(! is_file_with_prefix_extension(d, "teh", "foo", IsFileWithOptions()));
-            TEST_CHECK(! is_file_with_prefix_extension(e, "teh", "foo", IsFileWithOptions()));
-            TEST_CHECK(! is_file_with_prefix_extension(d, "is", "goat", IsFileWithOptions()));
-            TEST_CHECK(is_file_with_prefix_extension(e, "is", "goat", IsFileWithOptions()));
-            TEST_CHECK(! is_file_with_prefix_extension(e, "with", "goat", IsFileWithOptions()));
+            TEST_CHECK(! is_file_with_prefix_extension(d, "teh", "foo", { }));
+            TEST_CHECK(! is_file_with_prefix_extension(e, "teh", "foo", { }));
+            TEST_CHECK(! is_file_with_prefix_extension(d, "is", "goat", { }));
+            TEST_CHECK(is_file_with_prefix_extension(e, "is", "goat", { }));
+            TEST_CHECK(! is_file_with_prefix_extension(e, "with", "goat", { }));
         }
     } test_is_file_with_extension_prefix;
 

@@ -69,7 +69,7 @@ MirrorsConf::add(const FSEntry & filename)
 {
     Context context("When adding source '" + stringify(filename) + "' as a mirrors file:");
 
-    std::shared_ptr<LineConfigFile> f(make_bashable_conf(filename, LineConfigFileOptions()));
+    std::shared_ptr<LineConfigFile> f(make_bashable_conf(filename, { }));
     if (! f)
         return;
 

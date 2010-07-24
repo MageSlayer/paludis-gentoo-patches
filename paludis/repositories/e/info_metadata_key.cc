@@ -109,7 +109,7 @@ InfoVarsMetadataKey::value() const
 
         if (location->is_regular_file_or_symlink_to_regular_file())
         {
-            LineConfigFile f(*location, LineConfigFileOptions() + lcfo_disallow_continuations);
+            LineConfigFile f(*location, { lcfo_disallow_continuations });
             for (LineConfigFile::ConstIterator line(f.begin()), line_end(f.end()) ;
                     line != line_end ; ++line)
                 _imp->value->insert(*line);
@@ -166,7 +166,7 @@ InfoPkgsMetadataKey::need_keys_added() const
         if (location->is_regular_file_or_symlink_to_regular_file())
         {
             std::string eapi(_imp->e_repository->eapi_for_file(*location));
-            LineConfigFile p(*location, LineConfigFileOptions() + lcfo_disallow_continuations);
+            LineConfigFile p(*location, { lcfo_disallow_continuations });
             for (LineConfigFile::ConstIterator line(p.begin()), line_end(p.end()) ;
                     line != line_end ; ++line)
                 info_pkgs.insert(std::make_pair(*line, eapi));
@@ -185,7 +185,7 @@ InfoPkgsMetadataKey::need_keys_added() const
                         generator::Matches(parse_elike_package_dep_spec(i->first,
                                 eapi->supported()->package_dep_spec_parse_options(),
                                 eapi->supported()->version_spec_options(),
-                                std::shared_ptr<const PackageID>()), MatchPackageOptions()) |
+                                std::shared_ptr<const PackageID>()), { }) |
                         filter::InstalledAtRoot(_imp->env->root()))]);
 
             if (q->empty())

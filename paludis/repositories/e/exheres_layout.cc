@@ -117,7 +117,7 @@ ExheresLayout::ExheresLayout(const ERepository * const r, const FSEntry & tree_r
             {
                 for (DirIterator d(descs), d_end ; d != d_end ; ++d)
                 {
-                    if (! is_file_with_extension(*d, ".conf", IsFileWithOptions()))
+                    if (! is_file_with_extension(*d, ".conf", { }))
                         continue;
 
                     std::string p(strip_trailing_string(strip_trailing_string(d->basename(), ".conf"), ".local"));
@@ -142,7 +142,7 @@ ExheresLayout::ExheresLayout(const ERepository * const r, const FSEntry & tree_r
     {
         for (DirIterator d(descs), d_end ; d != d_end ; ++d)
         {
-            if (! is_file_with_extension(*d, ".conf", IsFileWithOptions()))
+            if (! is_file_with_extension(*d, ".conf", { }))
                 continue;
 
             std::string p(strip_trailing_string(strip_trailing_string(d->basename(), ".conf"), ".local"));
@@ -191,7 +191,7 @@ ExheresLayout::need_category_names() const
         if (! i->exists())
             continue;
 
-        LineConfigFile cats(*i, LineConfigFileOptions());
+        LineConfigFile cats(*i, { });
 
         for (LineConfigFile::ConstIterator line(cats.begin()), line_end(cats.end()) ;
                 line != line_end ; ++line)
@@ -591,7 +591,7 @@ namespace
                     continue;
                 if (is_file_with_prefix_extension((*f),
                             ("digest-"+stringify(qpn.package())), "",
-                            IsFileWithOptions()))
+                            { }))
                     continue;
                 m->insert((*f), "AUX");
             }

@@ -132,10 +132,10 @@ VirtualsDepKey::pretty_print(const DependencySpecTree::ItemFormatter & f) const
 {
     if (_imp->env)
     {
-        if (! (*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(*_imp->spec, MatchPackageOptions()) |
+        if (! (*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(*_imp->spec, { }) |
                     filter::InstalledAtRoot(_imp->env->root()))]->empty())
             return f.format(*_imp->spec, format::Installed());
-        else if (! (*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(*_imp->spec, MatchPackageOptions()) |
+        else if (! (*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(*_imp->spec, { }) |
                     filter::SupportsAction<InstallAction>() | filter::NotMasked())]->empty())
             return f.format(*_imp->spec, format::Installable());
         else
@@ -252,7 +252,7 @@ VirtualsPackageID::uniquely_identifying_spec() const
     return parse_user_package_dep_spec("=" + stringify(name()) + "-" + stringify(version()) +
             (slot_key() ? ":" + stringify(slot_key()->value()) : "") + "::" + stringify(repository()->name()) +
             "[." + _imp->virtual_for->raw_name() + "=" + stringify(*_imp->virtual_for->value()) + "]",
-            _imp->env, UserPackageDepSpecOptions());
+            _imp->env, { });
 }
 
 const QualifiedPackageName

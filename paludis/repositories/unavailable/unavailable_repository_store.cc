@@ -101,7 +101,7 @@ UnavailableRepositoryStore::_populate(const Environment * const env, const FSEnt
 void
 UnavailableRepositoryStore::_populate_one(const Environment * const env, const FSEntry & f)
 {
-    if (! is_file_with_extension(f, ".repository", IsFileWithOptions()))
+    if (! is_file_with_extension(f, ".repository", { }))
         return;
 
     Context context("When populating UnavailableRepository from file '" + stringify(f) + "':");

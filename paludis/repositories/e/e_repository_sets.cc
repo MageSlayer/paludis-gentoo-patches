@@ -264,7 +264,7 @@ ERepositorySets::security_set(bool insecurity) const
 
     for (DirIterator f(_imp->params.securitydir()), f_end ; f != f_end; ++f)
     {
-        if (! is_file_with_prefix_extension(*f, "glsa-", ".xml", IsFileWithOptions()))
+        if (! is_file_with_prefix_extension(*f, "glsa-", ".xml", { }))
             continue;
 
         Context local_context("When parsing security advisory '" + stringify(*f) + "':");
@@ -308,7 +308,7 @@ ERepositorySets::security_set(bool insecurity) const
                     if (insecurity)
                     {
                         std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(
-                                    make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
+                                    make_package_dep_spec({ })
                                     .package((*c)->name())
                                     .version_requirement(make_named_values<VersionRequirement>(
                                             n::version_operator() = vo_equal,
@@ -341,7 +341,7 @@ ERepositorySets::security_set(bool insecurity) const
                                 continue;
                             }
 
-                            std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
+                            std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(make_package_dep_spec({ })
                                         .package((*r)->name())
                                         .version_requirement(make_named_values<VersionRequirement>(
                                                 n::version_operator() = vo_equal,

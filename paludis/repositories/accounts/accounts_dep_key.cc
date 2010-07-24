@@ -54,7 +54,7 @@ namespace paludis
             for (Set<std::string>::ConstIterator i(s->begin()), i_end(s->end()) ;
                     i != i_end ; ++i)
             {
-                std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
+                std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(make_package_dep_spec({ })
                                 .package(CategoryNamePart("group") + PackageNamePart(*i))));
                 specs->push_back(spec);
                 tree->root()->append(spec);
@@ -125,10 +125,10 @@ AccountsDepKey::pretty_print_flat(const DependencySpecTree::ItemFormatter & f) c
 
         if (_imp->env)
         {
-            if (! (*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(**i, MatchPackageOptions()) |
+            if (! (*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(**i, { }) |
                         filter::InstalledAtRoot(_imp->env->root()))]->empty())
                 s << f.format(**i, format::Installed());
-            else if (! (*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(**i, MatchPackageOptions()) |
+            else if (! (*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(**i, { }) |
                         filter::SupportsAction<InstallAction>() | filter::NotMasked())]->empty())
                 s << f.format(**i, format::Installable());
             else

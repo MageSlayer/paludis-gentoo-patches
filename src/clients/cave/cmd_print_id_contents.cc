@@ -109,10 +109,10 @@ PrintIDContentsCommand::run(
         throw args::DoHelp("print-id-contents takes exactly one parameter");
 
     PackageDepSpec spec(parse_user_package_dep_spec(*cmdline.begin_parameters(), env.get(),
-                UserPackageDepSpecOptions(), filter::InstalledAtRoot(env->root())));
+                { }, filter::InstalledAtRoot(env->root())));
 
     std::shared_ptr<const PackageIDSequence> entries(
-            (*env)[selection::AllVersionsSorted(generator::Matches(spec, MatchPackageOptions()) | filter::InstalledAtRoot(env->root()))]);
+            (*env)[selection::AllVersionsSorted(generator::Matches(spec, { }) | filter::InstalledAtRoot(env->root()))]);
 
     if (entries->empty())
         throw NothingMatching(spec);

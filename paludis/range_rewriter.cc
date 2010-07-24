@@ -186,7 +186,7 @@ namespace
 
         virtual const PartiallyMadePackageDepSpecOptions options_for_partially_made_package_dep_spec() const
         {
-            return PartiallyMadePackageDepSpecOptions() + pmpdso_always_use_ranged_deps;
+            return { pmpdso_always_use_ranged_deps };
         }
     };
 }

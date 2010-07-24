@@ -128,8 +128,8 @@ namespace
                                 n::ignore() = &ignore_nothing,
                                 n::output_manager() = std::make_shared<StandardOutputManager>(),
                                 n::package_id() = *env[selection::RequireExactlyOne(generator::Matches(
-                                            parse_user_package_dep_spec("cat/" + fix(what), &env, UserPackageDepSpecOptions()),
-                                            MatchPackageOptions()))]->begin(),
+                                            parse_user_package_dep_spec("cat/" + fix(what), &env, { }),
+                                            { }))]->begin(),
                                 n::root() = root_dir
                                 ));
 

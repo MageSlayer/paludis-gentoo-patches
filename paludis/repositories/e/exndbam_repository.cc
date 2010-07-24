@@ -428,7 +428,7 @@ ExndbamRepository::merge(const MergeParams & m)
 
     if (! merger.check())
     {
-        for (DirIterator d(target_ver_dir, DirIteratorOptions() + dio_include_dotfiles), d_end
+        for (DirIterator d(target_ver_dir, { dio_include_dotfiles }), d_end
                 ; d != d_end ; ++d)
             FSEntry(*d).unlink();
         target_ver_dir.rmdir();
@@ -599,14 +599,14 @@ ExndbamRepository::perform_uninstall(
         }
     }
 
-    for (DirIterator d(ver_dir, DirIteratorOptions() + dio_include_dotfiles), d_end ; d != d_end ; ++d)
+    for (DirIterator d(ver_dir, { dio_include_dotfiles }), d_end ; d != d_end ; ++d)
         FSEntry(*d).unlink();
     ver_dir.rmdir();
 
     _imp->ndbam.remove_entry(id->name(), ver_dir);
 
     FSEntry pkg_dir(ver_dir.dirname());
-    if (DirIterator() == DirIterator(pkg_dir, DirIteratorOptions() + dio_include_dotfiles + dio_inode_sort + dio_first_only))
+    if (DirIterator() == DirIterator(pkg_dir, { dio_include_dotfiles, dio_inode_sort, dio_first_only }))
     {
         pkg_dir.rmdir();
 

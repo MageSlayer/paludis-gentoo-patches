@@ -140,7 +140,7 @@ namespace test_cases
                 TestMessageSuffix suffix("econf source 1", true);
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/econf-source-1",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                                        &env, { })), { }))]->last());
                 TEST_CHECK(bool(id));
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "1");
                 id->perform_action(action);
@@ -150,7 +150,7 @@ namespace test_cases
                 TestMessageSuffix suffix("dosym success 1", true);
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/dosym-success-1",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                                        &env, { })), { }))]->last());
                 TEST_CHECK(bool(id));
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "1");
                 id->perform_action(action);
@@ -160,7 +160,7 @@ namespace test_cases
                 TestMessageSuffix suffix("doman 1", true);
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/doman-1",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                                        &env, { })), { }))]->last());
                 TEST_CHECK(bool(id));
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "1");
                 id->perform_action(action);
@@ -170,7 +170,7 @@ namespace test_cases
                 TestMessageSuffix suffix("no src_prepare 1", true);
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/src_prepare-1",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                                        &env, { })), { }))]->last());
                 TEST_CHECK(bool(id));
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "1");
                 id->perform_action(action);
@@ -180,7 +180,7 @@ namespace test_cases
                 TestMessageSuffix suffix("no src_configure 1", true);
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/src_configure-1",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                                        &env, { })), { }))]->last());
                 TEST_CHECK(bool(id));
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "1");
                 id->perform_action(action);

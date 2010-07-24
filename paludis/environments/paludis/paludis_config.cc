@@ -850,7 +850,7 @@ const std::function<std::string (const std::string &)>
 PaludisConfig::repo_func_from_file(const FSEntry & repo_file)
 {
     std::shared_ptr<KeyValueConfigFile> kv;
-    if (is_file_with_extension(repo_file, ".bash", IsFileWithOptions()))
+    if (is_file_with_extension(repo_file, ".bash", { }))
     {
         std::stringstream s;
         Command cmd(Command("bash '" + stringify(repo_file) + "'")

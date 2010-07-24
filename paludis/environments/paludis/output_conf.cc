@@ -132,7 +132,7 @@ namespace
             rule.output_exclusivity_requirement() = destringify<OutputExclusivity>(v);
         else if (k == "matches")
             rule.matches_requirement() = make_shared_copy(parse_user_package_dep_spec(
-                        v, env, UserPackageDepSpecOptions() + updso_allow_wildcards + updso_no_disambiguation));
+                        v, env, { updso_allow_wildcards, updso_no_disambiguation }));
         else if (k == "action")
             rule.action_requirement() = v;
         else if (k == "ignore_unfetched")
@@ -194,7 +194,7 @@ namespace
                 return false;
 
             if (rule.matches_requirement() && ! match_package(*env, *rule.matches_requirement(),
-                        *i.package_id(), MatchPackageOptions()))
+                        *i.package_id(), { }))
                 return false;
 
             if (! rule.ignore_unfetched_requirement().is_indeterminate())
@@ -332,7 +332,7 @@ OutputConf::add(const FSEntry & filename)
 
     std::shared_ptr<KeyValueConfigFile> f(make_bashable_kv_conf(filename,
                 std::make_shared<Map<std::string, std::string>>(),
-                KeyValueConfigFileOptions() + kvcfo_allow_sections));
+                { kvcfo_allow_sections }));
     if (! f)
         return;
 

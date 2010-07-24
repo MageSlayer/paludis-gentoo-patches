@@ -107,7 +107,7 @@ namespace
                     break;
 
                 std::shared_ptr<const PackageIDSequence> matches((*env)[selection::AllVersionsSorted(
-                            generator::Matches(*node.spec(), MatchPackageOptions()) | filter::InstalledAtRoot(FSEntry("/")))]);
+                            generator::Matches(*node.spec(), { }) | filter::InstalledAtRoot(FSEntry("/")))]);
                 if (matches->empty())
                     break;
 

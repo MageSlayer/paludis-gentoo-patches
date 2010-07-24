@@ -140,7 +140,7 @@ namespace test_cases
                 TestMessageSuffix suffix("prefix", true);
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/prefix-3",
-                                        &env, UserPackageDepSpecOptions())), MatchPackageOptions()))]->last());
+                                        &env, { })), { }))]->last());
                 TEST_CHECK(bool(id));
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "3");
                 id->perform_action(action);

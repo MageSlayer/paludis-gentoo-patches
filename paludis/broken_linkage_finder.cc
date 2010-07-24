@@ -242,7 +242,7 @@ Imp<BrokenLinkageFinder>::walk_directory(const FSEntry & directory)
 
     try
     {
-        std::for_each(DirIterator(directory, DirIteratorOptions() + dio_include_dotfiles + dio_inode_sort), DirIterator(),
+        std::for_each(DirIterator(directory, { dio_include_dotfiles, dio_inode_sort }), DirIterator(),
                           std::bind(&Imp<BrokenLinkageFinder>::check_file, this, _1));
     }
     catch (const FSError & ex)

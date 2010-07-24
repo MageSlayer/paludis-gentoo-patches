@@ -301,7 +301,7 @@ namespace
     {
         const std::shared_ptr<const PackageID> maybe_id(id_for_decision_or_null(decision));
         if (maybe_id)
-            return match_package(*env, spec, *maybe_id, MatchPackageOptions());
+            return match_package(*env, spec, *maybe_id, { });
         else
         {
             /* could also match slot here too */
@@ -454,7 +454,7 @@ namespace
                 i != i_end ; ++i)
         {
             bool any(false);
-            PackageDepSpec spec(parse_user_package_dep_spec(*i, env.get(), UserPackageDepSpecOptions() + updso_allow_wildcards));
+            PackageDepSpec spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
             for (ResolutionsByResolvent::ConstIterator r(resolved->resolutions_by_resolvent()->begin()),
                     r_end(resolved->resolutions_by_resolvent()->end()) ;
                     r != r_end ; ++r)
@@ -1182,8 +1182,8 @@ namespace
                 cout << "        Did not meet " << s << endl;
 
                 if ((*c)->spec().if_package() && (*c)->spec().if_package()->additional_requirements_ptr() &&
-                        (! match_package(*env, *(*c)->spec().if_package(), *u->package_id(), MatchPackageOptions())) &&
-                        match_package(*env, *(*c)->spec().if_package(), *u->package_id(), MatchPackageOptions() + mpo_ignore_additional_requirements))
+                        (! match_package(*env, *(*c)->spec().if_package(), *u->package_id(), { })) &&
+                        match_package(*env, *(*c)->spec().if_package(), *u->package_id(), { mpo_ignore_additional_requirements }))
                 {
                     for (AdditionalPackageDepSpecRequirements::ConstIterator a((*c)->spec().if_package()->additional_requirements_ptr()->begin()),
                             a_end((*c)->spec().if_package()->additional_requirements_ptr()->end()) ;

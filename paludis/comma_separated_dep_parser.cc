@@ -48,8 +48,7 @@ CommaSeparatedDepParser::parse(const Environment * const env, const std::string 
         if (a.empty())
             continue;
 
-        std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec(a, env,
-                        UserPackageDepSpecOptions() + updso_no_disambiguation)));
+        std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec(a, env, { updso_no_disambiguation })));
         result->root()->append(spec);
     }
 

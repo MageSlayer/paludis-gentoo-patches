@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -38,9 +38,9 @@ paludis::cave::select_format_for_spec(
         const std::string & if_unavailable
         )
 {
-    if (! (*env)[selection::SomeArbitraryVersion(generator::Matches(spec, MatchPackageOptions()) | filter::InstalledAtRoot(FSEntry("/")))]->empty())
+    if (! (*env)[selection::SomeArbitraryVersion(generator::Matches(spec, { }) | filter::InstalledAtRoot(FSEntry("/")))]->empty())
         return if_installed;
-    if (! (*env)[selection::SomeArbitraryVersion(generator::Matches(spec, MatchPackageOptions()) | filter::SupportsAction<InstallAction>()
+    if (! (*env)[selection::SomeArbitraryVersion(generator::Matches(spec, { }) | filter::SupportsAction<InstallAction>()
                 | filter::NotMasked())]->empty())
         return if_installable;
     return if_unavailable;

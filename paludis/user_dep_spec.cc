@@ -74,7 +74,7 @@ namespace
             if (options[updso_no_disambiguation])
                 throw PackageDepSpecError("Need an explicit category specified");
             result.package(env->package_database()->fetch_unique_qualified_package_name(PackageNamePart(s),
-                filter::And(filter, filter::Matches(result, MatchPackageOptions()))));
+                filter::And(filter, filter::Matches(result, { }))));
         }
     }
 
@@ -194,7 +194,7 @@ namespace
             default:
                 {
                     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req(parse_elike_use_requirement(flag,
-                                std::shared_ptr<const PackageID>(), ELikeUseRequirementOptions()));
+                                std::shared_ptr<const PackageID>(), { }));
                     result.additional_requirement(req);
                 }
                 break;
@@ -786,8 +786,8 @@ UserKeyRequirement::as_raw_string() const
 VersionSpecOptions
 paludis::user_version_spec_options()
 {
-    return VersionSpecOptions() + vso_flexible_dashes + vso_flexible_dots +
-        vso_ignore_case + vso_letters_anywhere + vso_dotted_suffixes;
+    return { vso_flexible_dashes, vso_flexible_dots,
+        vso_ignore_case, vso_letters_anywhere, vso_dotted_suffixes };
 }
 
 template class Pimp<UserKeyRequirement>;

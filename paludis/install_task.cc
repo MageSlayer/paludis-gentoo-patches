@@ -244,13 +244,13 @@ namespace
 
             case 'U':
                 return std::make_shared<DepListEntryHandledSkippedUnsatisfied>(
-                            parse_user_package_dep_spec(s.substr(1), env, UserPackageDepSpecOptions()));
+                            parse_user_package_dep_spec(s.substr(1), env, { }));
 
             case 'D':
                 return std::make_shared<DepListEntryHandledSkippedDependent>(
                             *(*env)[selection::RequireExactlyOne(generator::Matches(
                                     parse_user_package_dep_spec(s.substr(1), env,
-                                        UserPackageDepSpecOptions()), MatchPackageOptions()))]->begin());
+                                        { }), { }))]->begin());
 
             case 'F':
                 if (s.length() != 1)
@@ -297,7 +297,7 @@ InstallTask::set_targets_from_serialisation(const std::string & format,
             throw InternalError(PALUDIS_HERE, "Serialised value '" + *s + "' too short: no package_id");
         const std::shared_ptr<const PackageID> package_id(*(*_imp->env)[selection::RequireExactlyOne(
                     generator::Matches(parse_user_package_dep_spec(*tokens.begin(),
-                            _imp->env, UserPackageDepSpecOptions()), MatchPackageOptions()))]->begin());
+                            _imp->env, { }), { }))]->begin());
         tokens.pop_front();
 
         if (tokens.empty())
@@ -467,7 +467,7 @@ InstallTask::_add_target(const std::string & target)
     try
     {
         std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec(target,
-                        _imp->env, UserPackageDepSpecOptions() + updso_throw_if_set + updso_allow_wildcards,
+                        _imp->env, { updso_throw_if_set, updso_allow_wildcards },
                         filter::SupportsAction<InstallAction>())));
 
         bool spec_is_installed(false);
@@ -502,7 +502,7 @@ InstallTask::_add_target(const std::string & target)
         else
         {
             std::shared_ptr<const PackageIDSequence> names((*_imp->env)[selection::BestVersionOnly(
-                        generator::Matches(*spec, MatchPackageOptions()) | filter::SupportsAction<InstallAction>())]);
+                        generator::Matches(*spec, { }) | filter::SupportsAction<InstallAction>())]);
 
             if (names->empty())
             {
@@ -555,7 +555,7 @@ InstallTask::_add_package_id(const std::shared_ptr<const PackageID> & target)
     if (! _imp->override_target_type)
         _imp->dep_list.options()->target_type() = dl_target_package;
 
-    PartiallyMadePackageDepSpec part_spec((PartiallyMadePackageDepSpecOptions()));
+    PartiallyMadePackageDepSpec part_spec({ });
     part_spec.package(target->name());
     part_spec.in_repository(target->repository()->name());
     part_spec.version_requirement(make_named_values<VersionRequirement>(
@@ -1179,7 +1179,7 @@ InstallTask::_do_world_updates()
                 {
                     if (s_had_package_targets)
                         all->root()->append(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec(*t, _imp->env,
-                                            UserPackageDepSpecOptions())));
+                                            { })));
                     else
                         all->root()->append(std::make_shared<NamedSetDepSpec>(SetName(*t)));
                 }
@@ -1508,7 +1508,7 @@ namespace
         void visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & node)
         {
             if (! failure)
-                if ((*env)[selection::SomeArbitraryVersion(generator::Matches(*node.spec(), MatchPackageOptions())
+                if ((*env)[selection::SomeArbitraryVersion(generator::Matches(*node.spec(), { })
                             | filter::InstalledAtRoot(env->root()))]->empty())
                     failure = node.spec();
         }
@@ -1698,7 +1698,7 @@ namespace
                 if (! d->handled())
                     continue;
 
-                if (! match_package(*env, *node.spec(), *d->package_id(), MatchPackageOptions()))
+                if (! match_package(*env, *node.spec(), *d->package_id(), { }))
                     continue;
 
                 CheckHandledVisitor v;
@@ -1713,7 +1713,7 @@ namespace
             /* no match on the dep list, fall back to installed packages. if
              * there are no matches here it's not a problem because of or-deps. */
             std::shared_ptr<const PackageIDSequence> installed((*env)[selection::AllVersionsUnsorted(
-                        generator::Matches(*node.spec(), MatchPackageOptions()) |
+                        generator::Matches(*node.spec(), { }) |
                         filter::InstalledAtRoot(env->root()))]);
 
             for (PackageIDSequence::ConstIterator i(installed->begin()), i_end(installed->end()) ;

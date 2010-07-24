@@ -505,9 +505,8 @@ namespace
         SetFile s(make_named_values<SetFileParams>(
                     n::environment() = env,
                     n::file_name() = f,
-                    n::parser() = std::bind(&parse_user_package_dep_spec,
-                            std::placeholders::_1, env, UserPackageDepSpecOptions() + updso_allow_wildcards,
-                            filter::All()),
+                    n::parser() = std::bind(&parse_user_package_dep_spec, std::placeholders::_1, env,
+                        UserPackageDepSpecOptions() + updso_allow_wildcards, filter::All()),
                     n::set_operator_mode() = mode,
                     n::tag() = tag,
                     n::type() = type
@@ -528,10 +527,10 @@ PaludisEnvironment::populate_sets() const
     if (! sets_dir.exists())
         return;
 
-    for (DirIterator d(sets_dir, DirIteratorOptions() + dio_inode_sort), d_end ;
+    for (DirIterator d(sets_dir, { dio_inode_sort }), d_end ;
             d != d_end ; ++d)
     {
-        if (is_file_with_extension(*d, ".bash", IsFileWithOptions()))
+        if (is_file_with_extension(*d, ".bash", { }))
         {
             SetName n(strip_trailing_string(d->basename(), ".bash"));
             add_set(n, n, std::bind(&make_set, this, *d, n, sfsmo_natural, sft_paludis_bash), false);
@@ -539,7 +538,7 @@ PaludisEnvironment::populate_sets() const
             SetName n_s(stringify(n) + "*");
             add_set(n_s, n_s, std::bind(&make_set, this, *d, n_s, sfsmo_star, sft_paludis_bash), false);
         }
-        else if (is_file_with_extension(*d, ".conf", IsFileWithOptions()))
+        else if (is_file_with_extension(*d, ".conf", { }))
         {
             SetName n(strip_trailing_string(d->basename(), ".conf"));
             add_set(n, n, std::bind(&make_set, this, *d, n, sfsmo_natural, sft_paludis_conf), false);

@@ -82,7 +82,7 @@ namespace paludis
                 const FSEntry & l, const bool u, const bool m) :
             env(e),
             name(q),
-            version("0", VersionSpecOptions()),
+            version("0", { }),
             repository(r),
             fs_location_key(std::make_shared<LiteralMetadataValueKey<FSEntry>>("location", "Location", mkt_internal, l)),
             from_repositories_key(f),
@@ -154,7 +154,7 @@ AccountsID::_need_file_keys() const
 
     Lock lock(_imp->mutex);
 
-    KeyValueConfigFile k(_imp->fs_location_key->value(), KeyValueConfigFileOptions(),
+    KeyValueConfigFile k(_imp->fs_location_key->value(), { },
             &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
 
     /* also need to change the handlers if any of the raw names are changed */
@@ -283,7 +283,7 @@ PackageDepSpec
 AccountsID::uniquely_identifying_spec() const
 {
     return parse_user_package_dep_spec(stringify(name()) + "::" + stringify(repository()->name()),
-            _imp->env, UserPackageDepSpecOptions());
+            _imp->env, { });
 }
 
 const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > >

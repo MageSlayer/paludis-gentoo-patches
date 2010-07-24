@@ -121,7 +121,7 @@ CommandFactory::CommandFactory() :
         if (! path.exists())
             continue;
 
-        for (DirIterator s(path, DirIteratorOptions() + dio_inode_sort), s_end ;
+        for (DirIterator s(path, { dio_inode_sort }), s_end ;
                 s != s_end ; ++s)
         {
             if (s->is_regular_file_or_symlink_to_regular_file() && s->has_permission(fs_ug_others, fs_perm_execute))

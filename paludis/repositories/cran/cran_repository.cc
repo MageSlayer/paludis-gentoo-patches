@@ -220,7 +220,7 @@ CRANRepository::need_ids() const
     Context context("When loading IDs for " + stringify(name()) + ":");
 
     for (DirIterator d(_imp->params.location()), d_end ; d != d_end ; ++d)
-        if (is_file_with_extension(*d, ".DESCRIPTION", IsFileWithOptions()))
+        if (is_file_with_extension(*d, ".DESCRIPTION", { }))
         {
             std::shared_ptr<cranrepository::CRANPackageID> id(std::make_shared<cranrepository::CRANPackageID>(_imp->params.environment(),
                         shared_from_this(), *d));

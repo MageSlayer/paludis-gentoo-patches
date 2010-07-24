@@ -63,7 +63,7 @@ namespace test_cases
         {
             TestEnvironment env;
             PackageDepSpec a(parse_user_package_dep_spec("cat/pkg:1::repo[=1|>3.2][foo]",
-                        &env, UserPackageDepSpecOptions()));
+                        &env, { }));
 
             std::shared_ptr<PackageDepSpec> b(std::static_pointer_cast<PackageDepSpec>(a.clone()));
             TEST_CHECK_STRINGIFY_EQUAL(a, *b);

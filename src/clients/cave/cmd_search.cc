@@ -106,7 +106,7 @@ namespace
             const PackageDepSpec & spec)
     {
         const std::shared_ptr<const PackageID> id(*((*env)[selection::RequireExactlyOne(
-                        generator::Matches(spec, MatchPackageOptions()))])->begin());
+                        generator::Matches(spec, { }))])->begin());
         result->insert(id->name());
     }
 

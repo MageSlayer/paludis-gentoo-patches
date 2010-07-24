@@ -67,7 +67,7 @@ PretendJob::deserialise(Deserialisation & d)
     Deserialisator v(d, "PretendJob");
     return std::make_shared<PretendJob>(
                 parse_user_package_dep_spec(v.member<std::string>("origin_id_spec"),
-                    d.deserialiser().environment(), UserPackageDepSpecOptions() + updso_no_disambiguation)
+                    d.deserialiser().environment(), { updso_no_disambiguation })
                 );
 }
 
@@ -165,7 +165,7 @@ FetchJob::deserialise(Deserialisation & d)
     std::shared_ptr<FetchJob> result(std::make_shared<FetchJob>(
                 requirements,
                 parse_user_package_dep_spec(v.member<std::string>("origin_id_spec"),
-                    d.deserialiser().environment(), UserPackageDepSpecOptions() + updso_no_disambiguation)
+                    d.deserialiser().environment(), { updso_no_disambiguation })
                 ));
     result->set_state(v.member<std::shared_ptr<JobState> >("state"));
     return result;
@@ -278,7 +278,7 @@ InstallJob::deserialise(Deserialisation & d)
         Deserialisator vv(*v.find_remove_member("replacing_specs"), "c");
         for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
             replacing_specs->push_back(parse_user_package_dep_spec(vv.member<std::string>(stringify(n)),
-                        d.deserialiser().environment(), UserPackageDepSpecOptions() + updso_no_disambiguation));
+                        d.deserialiser().environment(), { updso_no_disambiguation }));
     }
 
     std::shared_ptr<JobRequirements> requirements(std::make_shared<JobRequirements>());
@@ -291,7 +291,7 @@ InstallJob::deserialise(Deserialisation & d)
     std::shared_ptr<InstallJob> result(std::make_shared<InstallJob>(
                 requirements,
                 parse_user_package_dep_spec(v.member<std::string>("origin_id_spec"),
-                    d.deserialiser().environment(), UserPackageDepSpecOptions() + updso_no_disambiguation),
+                    d.deserialiser().environment(), { updso_no_disambiguation }),
                 RepositoryName(v.member<std::string>("destination_repository_name")),
                 destringify<DestinationType>(v.member<std::string>("destination_type")),
                 replacing_specs
@@ -387,7 +387,7 @@ UninstallJob::deserialise(Deserialisation & d)
         Deserialisator vv(*v.find_remove_member("ids_to_remove_specs"), "c");
         for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
             ids_to_remove_specs->push_back(parse_user_package_dep_spec(vv.member<std::string>(stringify(n)),
-                        d.deserialiser().environment(), UserPackageDepSpecOptions() + updso_no_disambiguation));
+                        d.deserialiser().environment(), { updso_no_disambiguation }));
     }
 
     std::shared_ptr<JobRequirements> requirements(std::make_shared<JobRequirements>());

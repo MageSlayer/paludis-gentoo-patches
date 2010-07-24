@@ -77,7 +77,7 @@ namespace test_cases
             const std::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string("exheres-0"));
             FetchVisitor v(&env, *env[selection::RequireExactlyOne(
                         generator::Matches(parse_user_package_dep_spec("=cat/pkg-1",
-                                &env, UserPackageDepSpecOptions()), MatchPackageOptions()))]->begin(),
+                                &env, { }), { }))]->begin(),
                     *eapi, FSEntry("fetch_visitor_TEST_dir/out"),
                     false, false, "test", std::make_shared<URIListedThenMirrorsLabel>("listed-then-mirrors"), false,
                     std::make_shared<StandardOutputManager>(), get_mirrors_fn);

@@ -54,8 +54,7 @@ int main(int argc, char * argv[])
              * updso_throw_if_set and catch the GotASetNotAPackageDepSpec
              * exception. If data about the spec is known at compile time,
              * make_package_dep_spec() should be used instead. */
-            PackageDepSpec spec(parse_user_package_dep_spec(
-                        *q, env.get(), UserPackageDepSpecOptions() + updso_allow_wildcards));
+            PackageDepSpec spec(parse_user_package_dep_spec(*q, env.get(), { updso_allow_wildcards }));
 
             /* Display information about the PackageDepSpec. */
             cout << "Information about '" << spec << "':" << endl;
@@ -142,7 +141,7 @@ int main(int argc, char * argv[])
 
             /* And display packages matching that spec */
             cout << "    " << left << setw(24) << "Matches:" << " ";
-            std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(generator::Matches(spec, MatchPackageOptions()))]);
+            std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(generator::Matches(spec, { }))]);
             bool need_indent(false);
             for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                     i != i_end ; ++i)

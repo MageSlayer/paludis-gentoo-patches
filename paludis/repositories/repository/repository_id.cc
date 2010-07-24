@@ -53,7 +53,7 @@ namespace paludis
         Imp(const RepositoryIDParams & e) :
             env(e.environment()),
             name(e.name()),
-            version("0", VersionSpecOptions()),
+            version("0", { }),
             repo(e.repository()),
             behaviours_key(std::make_shared<LiteralMetadataStringSetKey>("behaviours", "behaviours", mkt_internal, behaviours_set))
         {
@@ -125,7 +125,7 @@ RepositoryID::uniquely_identifying_spec() const
 {
     return parse_user_package_dep_spec("=" + stringify(name()) + "-" + stringify(version()) +
             + "::" + stringify(repository()->name()),
-            _imp->env, UserPackageDepSpecOptions());
+            _imp->env, { });
 }
 
 const QualifiedPackageName

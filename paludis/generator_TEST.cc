@@ -72,14 +72,14 @@ namespace test_cases
             env.package_database()->add_repository(10, repo2);
             env.package_database()->add_repository(0, inst_repo1);
 
-            repo1->add_version(CategoryNamePart("cat") + PackageNamePart("a"), VersionSpec("1", VersionSpecOptions()));
-            repo1->add_version(CategoryNamePart("cat") + PackageNamePart("b"), VersionSpec("2", VersionSpecOptions()));
+            repo1->add_version(CategoryNamePart("cat") + PackageNamePart("a"), VersionSpec("1", { }));
+            repo1->add_version(CategoryNamePart("cat") + PackageNamePart("b"), VersionSpec("2", { }));
 
-            repo2->add_version(CategoryNamePart("cat") + PackageNamePart("a"), VersionSpec("1", VersionSpecOptions()));
-            repo2->add_version(CategoryNamePart("cat") + PackageNamePart("a"), VersionSpec("2", VersionSpecOptions()))->keywords_key()->set_from_string("");
-            repo2->add_version(CategoryNamePart("cat") + PackageNamePart("c"), VersionSpec("3", VersionSpecOptions()));
+            repo2->add_version(CategoryNamePart("cat") + PackageNamePart("a"), VersionSpec("1", { }));
+            repo2->add_version(CategoryNamePart("cat") + PackageNamePart("a"), VersionSpec("2", { }))->keywords_key()->set_from_string("");
+            repo2->add_version(CategoryNamePart("cat") + PackageNamePart("c"), VersionSpec("3", { }));
 
-            inst_repo1->add_version(CategoryNamePart("cat") + PackageNamePart("a"), VersionSpec("1", VersionSpecOptions()));
+            inst_repo1->add_version(CategoryNamePart("cat") + PackageNamePart("a"), VersionSpec("1", { }));
         }
 
         virtual std::string get_expected() const = 0;
@@ -122,7 +122,7 @@ namespace test_cases
     {
         MatchesGeneratorTestCase() :
             GeneratorTestCaseBase("matches", generator::Matches(parse_user_package_dep_spec("cat/a",
-                            &env, UserPackageDepSpecOptions()), MatchPackageOptions()))
+                            &env, { }), { }))
         {
         }
 
@@ -140,7 +140,7 @@ namespace test_cases
     {
         MatchesCatWildcardGeneratorTestCase() :
             GeneratorTestCaseBase("matches cat wildcard", generator::Matches(parse_user_package_dep_spec("*/a",
-                            &env, UserPackageDepSpecOptions() + updso_allow_wildcards), MatchPackageOptions()))
+                            &env, { updso_allow_wildcards }), { }))
         {
         }
 
@@ -158,7 +158,7 @@ namespace test_cases
     {
         MatchesPkgWildcardGeneratorTestCase() :
             GeneratorTestCaseBase("matches pkg wildcard", generator::Matches(parse_user_package_dep_spec("cat/*",
-                            &env, UserPackageDepSpecOptions() + updso_allow_wildcards), MatchPackageOptions()))
+                            &env, { updso_allow_wildcards }), { }))
         {
         }
 
@@ -179,7 +179,7 @@ namespace test_cases
         MatchesAllWildcardGeneratorTestCase() :
             GeneratorTestCaseBase("matches all wildcard", generator::Matches(
                         parse_user_package_dep_spec(">=*/*-2",
-                            &env, UserPackageDepSpecOptions() + updso_allow_wildcards), MatchPackageOptions()))
+                            &env, { updso_allow_wildcards }), { }))
         {
         }
 
@@ -287,9 +287,9 @@ namespace test_cases
         IntersectionGeneratorTestCase() :
             GeneratorTestCaseBase("intersection", generator::Intersection(
                     generator::Matches(parse_user_package_dep_spec("*/a",
-                            &env, UserPackageDepSpecOptions() + updso_allow_wildcards), MatchPackageOptions()),
+                            &env, { updso_allow_wildcards }), { }),
                     generator::Matches(parse_user_package_dep_spec("cat/*",
-                            &env, UserPackageDepSpecOptions() + updso_allow_wildcards), MatchPackageOptions())
+                            &env, { updso_allow_wildcards }), { })
                     ))
         {
         }

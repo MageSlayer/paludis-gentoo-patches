@@ -136,9 +136,9 @@ namespace test_cases
 
             const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(
                         generator::Matches(parse_user_package_dep_spec("cat-one/foo:0",
-                                &env, UserPackageDepSpecOptions()), MatchPackageOptions()))]->begin());
+                                &env, { }), { }))]->begin());
 
-            TEST_CHECK_EQUAL(id1->version(), VersionSpec("1", VersionSpecOptions()));
+            TEST_CHECK_EQUAL(id1->version(), VersionSpec("1", { }));
             TEST_CHECK_EQUAL(id1->slot_key()->value(), SlotName("0"));
             TEST_CHECK_EQUAL(id1->name(), QualifiedPackageName("cat-one/foo"));
             TEST_CHECK_EQUAL(id1->repository()->name(), RepositoryName("installed-unpackaged"));
@@ -154,9 +154,9 @@ namespace test_cases
 
             const std::shared_ptr<const PackageID> id2(*env[selection::RequireExactlyOne(
                         generator::Matches(parse_user_package_dep_spec("cat-one/foo:1",
-                                &env, UserPackageDepSpecOptions()), MatchPackageOptions()))]->begin());
+                                &env, { }), { }))]->begin());
 
-            TEST_CHECK_EQUAL(id2->version(), VersionSpec("2", VersionSpecOptions()));
+            TEST_CHECK_EQUAL(id2->version(), VersionSpec("2", { }));
             TEST_CHECK_EQUAL(id2->slot_key()->value(), SlotName("1"));
             TEST_CHECK_EQUAL(id2->name(), QualifiedPackageName("cat-one/foo"));
             TEST_CHECK_EQUAL(id2->repository()->name(), RepositoryName("installed-unpackaged"));
@@ -190,13 +190,13 @@ namespace test_cases
 
             const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(
                         generator::Matches(parse_user_package_dep_spec("cat-one/foo:0",
-                                &env, UserPackageDepSpecOptions()), MatchPackageOptions()))]->begin());
+                                &env, { }), { }))]->begin());
 
             TEST_CHECK(! id1->masked());
 
             const std::shared_ptr<const PackageID> id2(*env[selection::RequireExactlyOne(
                         generator::Matches(parse_user_package_dep_spec("cat-one/foo:1",
-                                &env, UserPackageDepSpecOptions()), MatchPackageOptions()))]->begin());
+                                &env, { }), { }))]->begin());
 
             TEST_CHECK(! id2->masked());
         }
@@ -226,7 +226,7 @@ namespace test_cases
 
             const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(
                         generator::Matches(parse_user_package_dep_spec("cat-one/foo:1",
-                                &env, UserPackageDepSpecOptions()), MatchPackageOptions()))]->begin());
+                                &env, { }), { }))]->begin());
 
             TEST_CHECK(! id1->supports_action(SupportsActionTest<InstallAction>()));
             TEST_CHECK(! id1->supports_action(SupportsActionTest<ConfigAction>()));
@@ -318,7 +318,7 @@ namespace test_cases
 
             const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(
                         generator::Matches(parse_user_package_dep_spec("cat-one/foo:fred",
-                                &env, UserPackageDepSpecOptions()), MatchPackageOptions()))]->begin());
+                                &env, { }), { }))]->begin());
 
             UninstallAction action(make_named_values<UninstallActionOptions>(
                         n::config_protect() = "",
@@ -395,7 +395,7 @@ namespace test_cases
                                 n::rewrite_ids_over_to_root() = -1,
                                 n::run_dependencies() = "",
                                 n::slot() = SlotName("foo"),
-                                n::version() = VersionSpec("1.0", VersionSpecOptions())
+                                n::version() = VersionSpec("1.0", { })
                             )));
                 env.package_database()->add_repository(1, source_repo);
 
@@ -453,7 +453,7 @@ namespace test_cases
                                 n::rewrite_ids_over_to_root() = -1,
                                 n::run_dependencies() = "",
                                 n::slot() = SlotName("foo"),
-                                n::version() = VersionSpec("1.0", VersionSpecOptions())
+                                n::version() = VersionSpec("1.0", { })
                                 )));
                 env.package_database()->add_repository(1, source_repo);
 
@@ -513,7 +513,7 @@ namespace test_cases
                                 n::rewrite_ids_over_to_root() = -1,
                                 n::run_dependencies() = "",
                                 n::slot() = SlotName("foo"),
-                                n::version() = VersionSpec("1.0", VersionSpecOptions())
+                                n::version() = VersionSpec("1.0", { })
                             )));
                 env.package_database()->add_repository(1, source_repo);
 
@@ -577,7 +577,7 @@ namespace test_cases
                         ));
                 (*env[selection::RequireExactlyOne(generator::Matches(
                         parse_user_package_dep_spec("cat/pkg4a",
-                            &env, UserPackageDepSpecOptions()), MatchPackageOptions()))]->begin())->perform_action(action);
+                            &env, { }), { }))]->begin())->perform_action(action);
 
                 TEST_CHECK(FSEntry("installed_repository_TEST_dir/root4/dir").is_directory());
                 TEST_CHECK(! FSEntry("installed_repository_TEST_dir/root4/dir/4a").is_regular_file());
@@ -623,7 +623,7 @@ namespace test_cases
                         ));
                 (*env[selection::RequireExactlyOne(generator::Matches(
                         parse_user_package_dep_spec("cat/pkg4b",
-                            &env, UserPackageDepSpecOptions()), MatchPackageOptions()))]->begin())->perform_action(action);
+                            &env, { }), { }))]->begin())->perform_action(action);
 
                 TEST_CHECK(! FSEntry("installed_repository_TEST_dir/root4/dir").is_directory());
 

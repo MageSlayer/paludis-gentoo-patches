@@ -138,7 +138,7 @@ FuzzyCandidatesFinder::FuzzyCandidatesFinder(const Environment & e, const std::s
 
     if (std::string::npos != name.find('/'))
     {
-        PackageDepSpec pds(parse_user_package_dep_spec(name, &e, UserPackageDepSpecOptions()));
+        PackageDepSpec pds(parse_user_package_dep_spec(name, &e, { }));
 
         if (pds.package_ptr())
         {

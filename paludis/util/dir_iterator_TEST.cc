@@ -66,8 +66,8 @@ namespace test_cases
         {
             DirIterator iter(FSEntry("dir_iterator_TEST_dir"));
             DirIterator iter1(FSEntry("dir_iterator_TEST_dir"));
-            DirIterator iter2(FSEntry("dir_iterator_TEST_dir"), DirIteratorOptions() + dio_include_dotfiles);
-            DirIterator iter3(FSEntry("dir_iterator_TEST_dir"), DirIteratorOptions() + dio_inode_sort);
+            DirIterator iter2(FSEntry("dir_iterator_TEST_dir"), { dio_include_dotfiles });
+            DirIterator iter3(FSEntry("dir_iterator_TEST_dir"), { dio_inode_sort });
 
             TEST_CHECK(iter != DirIterator());
             TEST_CHECK(DirIterator() != iter);

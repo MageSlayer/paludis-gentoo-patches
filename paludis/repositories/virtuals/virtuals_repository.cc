@@ -222,7 +222,7 @@ VirtualsRepository::need_ids() const
             v(_imp->names.begin()), v_end(_imp->names.end()) ; v != v_end ; ++v)
     {
         std::shared_ptr<const PackageIDSequence> matches((*_imp->env)[selection::AllVersionsSorted(
-                    generator::Matches(*v->second, MatchPackageOptions()) |
+                    generator::Matches(*v->second, { }) |
                     filter::SupportsAction<InstallAction>())]);
 
         if (matches->empty())

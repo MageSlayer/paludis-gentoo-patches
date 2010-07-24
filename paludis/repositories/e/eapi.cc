@@ -349,11 +349,11 @@ namespace paludis
             for (DirIterator d(getenv_with_default("PALUDIS_EAPIS_DIR", DATADIR "/paludis/eapis")), d_end ;
                     d != d_end ; ++d)
             {
-                if (! is_file_with_extension(*d, ".conf", IsFileWithOptions()))
+                if (! is_file_with_extension(*d, ".conf", { }))
                     continue;
 
                 Context cc("When loading EAPI file '" + stringify(*d) + "':");
-                KeyValueConfigFile k(*d, KeyValueConfigFileOptions(),
+                KeyValueConfigFile k(*d, { },
                         std::bind(&predefined, stringify(d->dirname()), std::placeholders::_1, std::placeholders::_2),
                         &KeyValueConfigFile::no_transformation);
 

@@ -137,9 +137,9 @@ UninstallCommand::run(
     for (UninstallCommandLine::ParametersConstIterator p(cmdline.begin_parameters()), p_end(cmdline.end_parameters()) ;
             p != p_end ; ++p)
     {
-        PackageDepSpec spec(parse_user_package_dep_spec(*p, env.get(), UserPackageDepSpecOptions() + updso_allow_wildcards));
+        PackageDepSpec spec(parse_user_package_dep_spec(*p, env.get(), { updso_allow_wildcards }));
         const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(
-                    generator::Matches(spec, MatchPackageOptions()) | filter::SupportsAction<UninstallAction>())]);
+                    generator::Matches(spec, { }) | filter::SupportsAction<UninstallAction>())]);
         if (ids->empty())
             throw NothingMatching(spec);
         else if ((! cmdline.a_all_versions.specified()) && has_multiple_versions(ids))

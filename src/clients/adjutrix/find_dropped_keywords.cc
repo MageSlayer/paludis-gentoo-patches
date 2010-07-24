@@ -120,7 +120,7 @@ namespace
             p += ":" + stringify(slot);
         cout << "  " << std::setw(col_width_package - 2) << p;
 
-        if (best_keyworded != VersionSpec("0", VersionSpecOptions()))
+        if (best_keyworded != VersionSpec("0", { }))
             cout << std::setw(col_width_best_keyworded) << best_keyworded;
         else
             cout << std::setw(col_width_best_keyworded) << " ";
@@ -137,7 +137,7 @@ namespace
          * version for us, best stable version for anyone). */
 
         bool is_interesting(false);
-        VersionSpec worst_keyworded("99999999", VersionSpecOptions());
+        VersionSpec worst_keyworded("99999999", { });
         typedef std::map<std::string, VersionsEntry> VersionsInSlots;
         VersionsInSlots versions_in_slots;
 
@@ -151,8 +151,8 @@ namespace
             /* ensure that there's an entry for this SLOT */
             versions_in_slots.insert(std::make_pair(slot_as_string(*v), VersionsEntry(
                             make_named_values<VersionsEntry>(
-                                n::best_anywhere() = VersionSpec("0", VersionSpecOptions()),
-                                n::best_keyworded() = VersionSpec("0", VersionSpecOptions())
+                                n::best_anywhere() = VersionSpec("0", { }),
+                                n::best_keyworded() = VersionSpec("0", { })
                                 ))));
 
             if ((*v)->keywords_key()->value()->end() != (*v)->keywords_key()->value()->find(keyword) ||

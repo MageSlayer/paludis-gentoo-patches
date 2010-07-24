@@ -181,10 +181,10 @@ PrintIDMasksCommand::run(
     if (1 != std::distance(cmdline.begin_parameters(), cmdline.end_parameters()))
         throw args::DoHelp("print-id-masks takes exactly one parameter");
 
-    PackageDepSpec spec(parse_user_package_dep_spec(*cmdline.begin_parameters(), env.get(), UserPackageDepSpecOptions()));
+    PackageDepSpec spec(parse_user_package_dep_spec(*cmdline.begin_parameters(), env.get(), { }));
 
     std::shared_ptr<const PackageIDSequence> entries(
-            (*env)[selection::AllVersionsSorted(generator::Matches(spec, MatchPackageOptions()))]);
+            (*env)[selection::AllVersionsSorted(generator::Matches(spec, { }))]);
 
     if (entries->empty())
         throw NothingMatching(spec);
