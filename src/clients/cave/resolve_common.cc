@@ -25,6 +25,7 @@
 #include "exceptions.hh"
 #include "command_command_line.hh"
 #include "match_qpns.hh"
+#include "not_strongly_masked.hh"
 
 #include <paludis/util/mutex.hh>
 #include <paludis/util/stringify.hh>
@@ -40,6 +41,7 @@
 #include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/sequence-impl.hh>
+#include <paludis/util/set-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/args/do_help.hh>
@@ -63,6 +65,7 @@
 #include <paludis/notifier_callback.hh>
 #include <paludis/generator.hh>
 #include <paludis/filter.hh>
+#include <paludis/filter_handler.hh>
 #include <paludis/selection.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/version_spec.hh>
@@ -246,6 +249,46 @@ namespace
         }
 
         throw InternalError(PALUDIS_HERE, "bad dt");
+    }
+
+    struct UnmaskableFilterHandler :
+        AllFilterHandlerBase
+    {
+        virtual std::shared_ptr<const PackageIDSet> ids(
+                const Environment * const,
+                const std::shared_ptr<const PackageIDSet> & id) const
+        {
+            std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
+
+            for (PackageIDSet::ConstIterator i(id->begin()), i_end(id->end()) ;
+                    i != i_end ; ++i)
+                if (not_strongly_masked(*i))
+                    result->insert(*i);
+
+            return result;
+        }
+
+        virtual std::string as_string() const
+        {
+            return "unmaskable";
+        }
+    };
+
+    struct UnmaskableFilter :
+        Filter
+    {
+        UnmaskableFilter() :
+            Filter(std::make_shared<UnmaskableFilterHandler>())
+        {
+        }
+    };
+
+    Filter make_unmaskable_filter_fn(
+            const Environment * const,
+            const ResolveCommandLineResolutionOptions &,
+            const std::shared_ptr<const Resolution> &)
+    {
+        return UnmaskableFilter();
     }
 
     const std::shared_ptr<const Sequence<std::string> > add_resolver_targets(
@@ -1848,6 +1891,8 @@ paludis::cave::resolve_common(
                     env.get(), std::cref(resolution_options), all_binary_repos_generator, _1, _2),
                 n::make_origin_filtered_generator_fn() = std::bind(&make_origin_filtered_generator,
                     env.get(), std::cref(resolution_options), not_binary_repos_generator, _1, _2),
+                n::make_unmaskable_filter_fn() = std::bind(&make_unmaskable_filter_fn,
+                        env.get(), std::cref(resolution_options), _1),
                 n::order_early_fn() = std::bind(&order_early_fn,
                     env.get(), std::cref(resolution_options), std::cref(early), std::cref(late), _1),
                 n::prefer_or_avoid_fn() = std::bind(&prefer_or_avoid_fn,

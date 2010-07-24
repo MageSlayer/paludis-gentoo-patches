@@ -120,6 +120,13 @@ paludis::resolver::resolver_test::make_origin_filtered_generator_fn(const Genera
     return g;
 }
 
+Filter
+paludis::resolver::resolver_test::make_unmaskable_filter_fn(
+        const std::shared_ptr<const Resolution> &)
+{
+    return filter::NotMasked();
+}
+
 DestinationTypes
 paludis::resolver::resolver_test::get_destination_types_for_fn(const PackageDepSpec &,
         const std::shared_ptr<const PackageID> &,
@@ -393,6 +400,7 @@ ResolverTestCase::get_resolver_functions(InitialConstraints & initial_constraint
             n::interest_in_spec_fn() = &interest_in_spec_fn,
             n::make_destination_filtered_generator_fn() = &make_destination_filtered_generator_fn,
             n::make_origin_filtered_generator_fn() = &make_origin_filtered_generator_fn,
+            n::make_unmaskable_filter_fn() = &make_unmaskable_filter_fn,
             n::order_early_fn() = &order_early_fn,
             n::prefer_or_avoid_fn() = std::bind(&prefer_or_avoid_fn,
                     prefer_or_avoid_names, std::placeholders::_1),

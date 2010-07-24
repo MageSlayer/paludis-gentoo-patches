@@ -596,6 +596,12 @@ Decider::_make_origin_filtered_generator(const Generator & g,
     return _imp->fns.make_origin_filtered_generator_fn()(g, resolution);
 }
 
+Filter
+Decider::_make_unmaskable_filter(const std::shared_ptr<const Resolution> & resolution) const
+{
+    return _imp->fns.make_unmaskable_filter_fn()(resolution);
+}
+
 const std::shared_ptr<const PackageIDSequence>
 Decider::_find_replacing(
         const std::shared_ptr<const PackageID> & id,
@@ -970,7 +976,7 @@ Decider::_made_wrong_decision(
     std::shared_ptr<Resolution> adapted_resolution(std::make_shared<Resolution>(*resolution));
     adapted_resolution->constraints()->add(constraint);
 
-    const std::shared_ptr<Decision> decision(_try_to_find_decision_for(adapted_resolution));
+    const std::shared_ptr<Decision> decision(_try_to_find_decision_for(adapted_resolution, true, false));
     if (decision)
     {
         resolution->decision()->accept(WrongDecisionVisitor(std::bind(
@@ -1037,7 +1043,7 @@ Decider::_decide(const std::shared_ptr<Resolution> & resolution)
 
     _copy_other_destination_constraints(resolution);
 
-    std::shared_ptr<Decision> decision(_try_to_find_decision_for(resolution));
+    std::shared_ptr<Decision> decision(_try_to_find_decision_for(resolution, true, false));
     if (decision)
         resolution->decision() = decision;
     else
@@ -1338,7 +1344,7 @@ Decider::find_any_score(
             for (ConstraintSequence::ConstIterator c(constraints->begin()), c_end(constraints->end()) ;
                     c != c_end ; ++c)
                 resolution->constraints()->add(*c);
-            const std::shared_ptr<Decision> decision(_try_to_find_decision_for(resolution));
+            const std::shared_ptr<Decision> decision(_try_to_find_decision_for(resolution, false, false));
             if (decision)
                 return std::make_pair(acs_could_install, operator_bias);
         }
@@ -1474,10 +1480,12 @@ Decider::_get_error_resolvents_for(
 
 const std::shared_ptr<Decision>
 Decider::_try_to_find_decision_for(
-        const std::shared_ptr<const Resolution> & resolution) const
+        const std::shared_ptr<const Resolution> & resolution,
+        const bool also_try_masked,
+        const bool try_masked_this_time) const
 {
     const std::shared_ptr<const PackageID> existing_id(_find_existing_id_for(resolution));
-    std::pair<const std::shared_ptr<const PackageID>, bool> installable_id_best(_find_installable_id_for(resolution));
+    std::pair<const std::shared_ptr<const PackageID>, bool> installable_id_best(_find_installable_id_for(resolution, try_masked_this_time));
     const std::shared_ptr<const PackageID> installable_id(installable_id_best.first);
     bool best(installable_id_best.second);
 
@@ -1552,6 +1560,8 @@ Decider::_try_to_find_decision_for(
                         _installed_ids(resolution),
                         ! resolution->constraints()->all_untaken()
                         );
+        else if (also_try_masked && ! try_masked_this_time)
+            return _try_to_find_decision_for(resolution, true, true);
         else
             return make_null_shared_ptr();
     }
@@ -1671,7 +1681,7 @@ Decider::_cannot_decide_for(
     if (existing_id)
         unsuitable_candidates->push_back(_make_unsuitable_candidate(resolution, existing_id, true));
 
-    const std::shared_ptr<const PackageIDSequence> installable_ids(_find_installable_id_candidates_for(resolution, true));
+    const std::shared_ptr<const PackageIDSequence> installable_ids(_find_installable_id_candidates_for(resolution, true, false));
     for (PackageIDSequence::ConstIterator i(installable_ids->begin()), i_end(installable_ids->end()) ;
             i != i_end ; ++i)
         unsuitable_candidates->push_back(_make_unsuitable_candidate(resolution, *i, false));
@@ -1740,20 +1750,21 @@ Decider::_installed_ids(const std::shared_ptr<const Resolution> & resolution) co
 const std::shared_ptr<const PackageIDSequence>
 Decider::_find_installable_id_candidates_for(
         const std::shared_ptr<const Resolution> & resolution,
-        const bool include_errors) const
+        const bool include_errors,
+        const bool include_unmaskable) const
 {
     return (*_imp->env)[selection::AllVersionsSorted(
             _make_origin_filtered_generator(generator::Package(resolution->resolvent().package()), resolution) |
             make_slot_filter(resolution->resolvent()) |
             filter::SupportsAction<InstallAction>() |
-            ((! include_errors) ? Filter(filter::NotMasked()) : Filter(filter::All()))
+            (include_errors ? filter::All() : include_unmaskable ? _make_unmaskable_filter(resolution) : filter::NotMasked())
             )];
 }
 
 const std::pair<const std::shared_ptr<const PackageID>, bool>
-Decider::_find_installable_id_for(const std::shared_ptr<const Resolution> & resolution) const
+Decider::_find_installable_id_for(const std::shared_ptr<const Resolution> & resolution, const bool include_unmaskable) const
 {
-    return _find_id_for_from(resolution, _find_installable_id_candidates_for(resolution, false));
+    return _find_id_for_from(resolution, _find_installable_id_candidates_for(resolution, false, include_unmaskable));
 }
 
 const std::pair<const std::shared_ptr<const PackageID>, bool>

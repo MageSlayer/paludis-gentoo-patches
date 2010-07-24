@@ -61,6 +61,7 @@ namespace paludis
         typedef Name<struct interest_in_spec_fn_name> interest_in_spec_fn;
         typedef Name<struct make_destination_filtered_generator_fn_name> make_destination_filtered_generator_fn;
         typedef Name<struct make_origin_filtered_generator_fn_name> make_origin_filtered_generator_fn;
+        typedef Name<struct make_unmaskable_filter_fn_name> make_unmaskable_filter_fn;
         typedef Name<struct order_early_fn_name> order_early_fn;
         typedef Name<struct prefer_or_avoid_fn_name> prefer_or_avoid_fn;
         typedef Name<struct remove_if_dependent_fn_name> remove_if_dependent_fn;
@@ -145,6 +146,10 @@ namespace paludis
                 const std::shared_ptr<const Resolution> &
                 )> MakeOriginFilteredGeneratorFunction;
 
+        typedef std::function<Filter (
+                const std::shared_ptr<const Resolution> &
+                )> MakeUnmaskableFilterFunction;
+
         typedef std::function<Tribool (
                 const std::shared_ptr<const Resolution> &
                 )> OrderEarlyFunction;
@@ -176,6 +181,8 @@ namespace paludis
                 MakeDestinationFilteredGeneratorFunction> make_destination_filtered_generator_fn;
             NamedValue<n::make_origin_filtered_generator_fn,
                 MakeOriginFilteredGeneratorFunction> make_origin_filtered_generator_fn;
+            NamedValue<n::make_unmaskable_filter_fn,
+                MakeUnmaskableFilterFunction> make_unmaskable_filter_fn;
             NamedValue<n::order_early_fn, OrderEarlyFunction> order_early_fn;
             NamedValue<n::prefer_or_avoid_fn, PreferOrAvoidFunction> prefer_or_avoid_fn;
             NamedValue<n::remove_if_dependent_fn, RemoveIfDependentFunction> remove_if_dependent_fn;

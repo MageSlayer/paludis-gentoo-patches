@@ -103,6 +103,9 @@ namespace paludis
             FilteredGenerator make_origin_filtered_generator_fn(const Generator &,
                     const std::shared_ptr<const Resolution> &);
 
+            Filter make_unmaskable_filter_fn(
+                    const std::shared_ptr<const Resolution> &);
+
             DestinationTypes get_destination_types_for_fn(const PackageDepSpec &,
                     const std::shared_ptr<const PackageID> &,
                     const std::shared_ptr<const Reason> &);

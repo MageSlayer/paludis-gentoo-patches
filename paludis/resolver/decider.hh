@@ -175,11 +175,16 @@ namespace paludis
                         const Generator &,
                         const std::shared_ptr<const Resolution> &) const;
 
+                Filter _make_unmaskable_filter(
+                        const std::shared_ptr<const Resolution> &) const;
+
                 void _decide(const std::shared_ptr<Resolution> & resolution);
                 void _copy_other_destination_constraints(const std::shared_ptr<Resolution> & resolution);
 
                 const std::shared_ptr<Decision> _try_to_find_decision_for(
-                        const std::shared_ptr<const Resolution> & resolution) const;
+                        const std::shared_ptr<const Resolution> & resolution,
+                        const bool also_try_masked,
+                        const bool try_masked_this_time) const;
 
                 const std::shared_ptr<Decision> _cannot_decide_for(
                         const std::shared_ptr<const Resolution> & resolution) const;
@@ -200,9 +205,11 @@ namespace paludis
                         const std::shared_ptr<const Resolution> &) const;
                 const std::shared_ptr<const PackageIDSequence> _find_installable_id_candidates_for(
                         const std::shared_ptr<const Resolution> &,
-                        const bool include_errors) const;
+                        const bool include_errors,
+                        const bool include_unmaskable) const;
                 const std::pair<const std::shared_ptr<const PackageID>, bool> _find_installable_id_for(
-                        const std::shared_ptr<const Resolution> &) const;
+                        const std::shared_ptr<const Resolution> &,
+                        const bool include_unmaskable) const;
                 const std::pair<const std::shared_ptr<const PackageID>, bool> _find_id_for_from(
                         const std::shared_ptr<const Resolution> &,
                         const std::shared_ptr<const PackageIDSequence> &) const;
