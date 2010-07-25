@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # vim: set sw=4 sts=4 et :
 
-# Copyright (c) 2008 Ciaran McCreesh
+# Copyright (c) 2008, 2010 Ciaran McCreesh
 #
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General
@@ -25,6 +25,7 @@ builtin_pivotbin()
     tar jxvf "${!PALUDIS_BINARY_DISTDIR_VARIABLE}"/${!PALUDIS_ARCHIVES_VAR} -C "${!PALUDIS_TEMP_DIR_VAR}" --strip-components 1 PBIN/environment.bz2 || die "Couldn't extract env"
 
     ebuild_section "Switching to package environment"
+    export BINARY_REPOSITORY="${REPOSITORY}"
     export PALUDIS_LOAD_ENVIRONMENT="${!PALUDIS_TEMP_DIR_VAR}/environment.bz2"
     ebuild_load_environment --pivot
     export EAPI="${EAPI#pbin-1+}"
