@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # vim: set sw=4 sts=4 et :
 
-# Copyright (c) 2008 Ciaran McCreesh
+# Copyright (c) 2008, 2010 Ciaran McCreesh
 #
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General
@@ -60,6 +60,7 @@ make_binary_ebuild()
     export GENERATED_USING=${PKGMANAGER}
     export BINARY_URI="${bin_uri}"
     export EAPI="pbin-1+${EAPI}"
+    export GENERATED_FROM_REPOSITORY="${REPOSITORY}"
     echo export ${PALUDIS_BINARY_KEYWORDS_VARIABLE}="${binary_keywords}" 1>&2
     export ${PALUDIS_BINARY_KEYWORDS_VARIABLE}="${binary_keywords}"
 
