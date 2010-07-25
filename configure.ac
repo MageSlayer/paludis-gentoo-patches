@@ -637,12 +637,13 @@ int main(int, char **)
 	static_assert(false, "works");
 }
 ],
-	 [AC_MSG_RESULT([no])],
-	 [AC_MSG_RESULT([yes])
-	  PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_HAVE_STATIC_ASSERT=1"
-	  PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_HAVE_STATIC_ASSERT=1"
-	 ])],
-	[AC_MSG_RESULT([no])])
+	 [AC_MSG_RESULT([no])
+	  AC_MSG_ERROR([your compiler's static_assert is broken (try GCC 4.4+)])
+	 ],
+	 [AC_MSG_RESULT([yes])])],
+	[AC_MSG_RESULT([no])
+	 AC_MSG_ERROR([your compiler doesn't do static_assert (try GCC 4.4+)])
+	])
 dnl }}}
 
 dnl {{{ check for hashes
