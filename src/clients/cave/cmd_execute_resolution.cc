@@ -722,7 +722,7 @@ namespace
 
                 case dt_create_binary:
                     destination_string = "creating binary";
-                    action_string = "create binary";
+                    action_string = "create binary in ::" + stringify(install_item.destination_repository_name());
                     break;
 
                 case last_dt:
