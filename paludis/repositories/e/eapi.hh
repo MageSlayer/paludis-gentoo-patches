@@ -115,6 +115,9 @@ namespace paludis
         typedef Name<struct fancy_test_flag_name> fancy_test_flag;
         typedef Name<struct fix_mtimes_name> fix_mtimes;
         typedef Name<struct flat_list_index_name> flat_list_index;
+        typedef Name<struct generated_from_name> generated_from;
+        typedef Name<struct generated_time_name> generated_time;
+        typedef Name<struct generated_using_name> generated_using;
         typedef Name<struct has_expensive_tests_name> has_expensive_tests;
         typedef Name<struct has_optional_tests_name> has_optional_tests;
         typedef Name<struct has_recommended_tests_name> has_recommended_tests;
@@ -336,6 +339,9 @@ namespace paludis
             NamedValue<n::defined_phases, std::shared_ptr<const EAPIMetadataVariable> > defined_phases;
             NamedValue<n::dependencies, std::shared_ptr<const EAPIMetadataVariable> > dependencies;
             NamedValue<n::eapi, std::shared_ptr<const EAPIMetadataVariable> > eapi;
+            NamedValue<n::generated_from, std::shared_ptr<const EAPIMetadataVariable> > generated_from;
+            NamedValue<n::generated_time, std::shared_ptr<const EAPIMetadataVariable> > generated_time;
+            NamedValue<n::generated_using, std::shared_ptr<const EAPIMetadataVariable> > generated_using;
             NamedValue<n::homepage, std::shared_ptr<const EAPIMetadataVariable> > homepage;
             NamedValue<n::inherited, std::shared_ptr<const EAPIMetadataVariable> > inherited;
             NamedValue<n::iuse, std::shared_ptr<const EAPIMetadataVariable> > iuse;

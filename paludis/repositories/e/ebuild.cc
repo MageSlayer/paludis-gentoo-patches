@@ -626,6 +626,15 @@ EbuildMetadataCommand::load(const std::shared_ptr<const EbuildID> & id)
     if (! m.use()->name().empty())
         id->load_use(m.use()->name(), m.use()->description(), get(keys, m.use()->name()));
 
+    if (! m.generated_from()->name().empty())
+        id->load_generated_from(m.generated_from()->name(), m.generated_from()->description(), get(keys, m.generated_from()->name()));
+
+    if (! m.generated_time()->name().empty())
+        id->load_generated_time(m.generated_time()->name(), m.generated_time()->description(), get(keys, m.generated_time()->name()));
+
+    if (! m.generated_using()->name().empty())
+        id->load_generated_using(m.generated_using()->name(), m.generated_using()->description(), get(keys, m.generated_using()->name()));
+
     if (! m.upstream_changelog()->name().empty())
     {
         std::string value(get(keys, m.upstream_changelog()->name()));

@@ -54,6 +54,7 @@
 #include <paludis/util/return_literal_function.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/destringify.hh>
 
 #include <set>
 #include <iterator>
@@ -113,6 +114,9 @@ namespace paludis
         mutable std::shared_ptr<const ESimpleURIKey> upstream_release_notes;
         mutable std::shared_ptr<const EChoicesKey> choices;
         mutable std::shared_ptr<const EStringSetKey> defined_phases;
+        mutable std::shared_ptr<const EStringSetKey> generated_from;
+        mutable std::shared_ptr<const LiteralMetadataTimeKey> generated_time;
+        mutable std::shared_ptr<const LiteralMetadataValueKey<std::string> > generated_using;
 
         std::shared_ptr<DependenciesLabelSequence> raw_dependencies_labels;
         std::shared_ptr<DependenciesLabelSequence> build_dependencies_labels;
@@ -264,7 +268,7 @@ EbuildID::need_keys_added() const
                     n::maybe_output_manager() = make_null_shared_ptr(),
                     n::package_builddir() = _imp->repository->params().builddir() / (stringify(name().category()) + "-" + stringify(name().package()) + "-" + stringify(version()) + "-metadata"),
                     n::package_id() = shared_from_this(),
-                    n::portdir() = 
+                    n::portdir() =
                         (_imp->repository->params().master_repositories() && ! _imp->repository->params().master_repositories()->empty()) ?
                         (*_imp->repository->params().master_repositories()->begin())->params().location() : _imp->repository->params().location(),
                     n::root() = "/",
@@ -810,7 +814,8 @@ EbuildID::installed_time_key() const
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 EbuildID::from_repositories_key() const
 {
-    return std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >();
+    need_keys_added();
+    return _imp->generated_from;
 }
 
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
@@ -1089,6 +1094,30 @@ EbuildID::load_slot(const std::shared_ptr<const EAPIMetadataVariable> & m, const
     add_metadata_key(_imp->slot);
 }
 
+void
+EbuildID::load_generated_from(const std::string & r, const std::string & h, const std::string & v) const
+{
+    Lock l(_imp->mutex);
+    _imp->generated_from = std::make_shared<EStringSetKey>(shared_from_this(), r, h, v, mkt_normal);
+    add_metadata_key(_imp->generated_from);
+}
+
+void
+EbuildID::load_generated_time(const std::string & r, const std::string & h, const std::string & v) const
+{
+    Lock l(_imp->mutex);
+    _imp->generated_time = std::make_shared<LiteralMetadataTimeKey>(r, h, mkt_normal, Timestamp(destringify<std::time_t>(v), 0));
+    add_metadata_key(_imp->generated_time);
+}
+
+void
+EbuildID::load_generated_using(const std::string & r, const std::string & h, const std::string & v) const
+{
+    Lock l(_imp->mutex);
+    _imp->generated_using = std::make_shared<LiteralMetadataValueKey<std::string> >(r, h, mkt_normal, v);
+    add_metadata_key(_imp->generated_using);
+}
+
 namespace
 {
     struct SupportsActionQuery
@@ -1254,6 +1283,27 @@ EbuildID::upstream_release_notes_key() const
 {
     need_keys_added();
     return _imp->upstream_release_notes;
+}
+
+const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
+EbuildID::generated_from_key() const
+{
+    need_keys_added();
+    return _imp->generated_from;
+}
+
+const std::shared_ptr<const MetadataTimeKey>
+EbuildID::generated_time_key() const
+{
+    need_keys_added();
+    return _imp->generated_time;
+}
+
+const std::shared_ptr<const MetadataValueKey<std::string> >
+EbuildID::generated_using_key() const
+{
+    need_keys_added();
+    return _imp->generated_using;
 }
 
 const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Choices> > >

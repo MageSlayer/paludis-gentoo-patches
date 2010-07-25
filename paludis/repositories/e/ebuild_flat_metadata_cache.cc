@@ -242,6 +242,15 @@ namespace
             if (-1 != m.use()->flat_list_index() && ! m.use()->name().empty())
                 id->load_use(m.use()->name(), m.use()->description(), lines.at(m.use()->flat_list_index()));
 
+            if (-1 != m.generated_from()->flat_list_index() && ! m.generated_from()->name().empty())
+                id->load_generated_from(m.generated_from()->name(), m.generated_from()->description(), lines.at(m.generated_from()->flat_list_index()));
+
+            if (-1 != m.generated_time()->flat_list_index() && ! m.generated_time()->name().empty())
+                id->load_generated_time(m.generated_time()->name(), m.generated_time()->description(), lines.at(m.generated_time()->flat_list_index()));
+
+            if (-1 != m.generated_using()->flat_list_index() && ! m.generated_using()->name().empty())
+                id->load_generated_using(m.generated_using()->name(), m.generated_using()->description(), lines.at(m.generated_using()->flat_list_index()));
+
             if (-1 != m.upstream_changelog()->flat_list_index() && ! m.upstream_changelog()->name().empty())
             {
                 std::string value(lines.at(m.upstream_changelog()->flat_list_index()));
@@ -575,6 +584,15 @@ EbuildFlatMetadataCache::load(const std::shared_ptr<const EbuildID> & id, const 
             if (! m.use()->name().empty())
                 id->load_use(m.use()->name(), m.use()->description(), keys[m.use()->name()]);
 
+            if (! m.generated_from()->name().empty())
+                id->load_generated_from(m.generated_from()->name(), m.generated_from()->description(), keys[m.generated_from()->name()]);
+
+            if (! m.generated_time()->name().empty())
+                id->load_generated_time(m.generated_time()->name(), m.generated_time()->description(), keys[m.generated_time()->name()]);
+
+            if (! m.generated_using()->name().empty())
+                id->load_generated_using(m.generated_using()->name(), m.generated_using()->description(), keys[m.generated_using()->name()]);
+
             if (! m.upstream_changelog()->name().empty())
             {
                 std::string value(keys[m.upstream_changelog()->name()]);
@@ -809,6 +827,16 @@ EbuildFlatMetadataCache::save(const std::shared_ptr<const EbuildID> & id)
 
         if (! m.remote_ids()->name().empty() && id->remote_ids_key())
             write_kv(cache, m.remote_ids()->name(), flatten(id->remote_ids_key()->value()));
+
+        if (! m.generated_using()->name().empty() && id->generated_using_key())
+            write_kv(cache, m.generated_using()->name(), id->generated_using_key()->value());
+
+        if (! m.generated_time()->name().empty() && id->generated_time_key())
+            write_kv(cache, m.generated_time()->name(), stringify(id->generated_time_key()->value().seconds()));
+
+        if (! m.generated_from()->name().empty() && id->generated_from_key())
+            write_kv(cache, m.generated_from()->name(), join(id->generated_from_key()->value()->begin(),
+                        id->generated_from_key()->value()->end(), " "));
 
         if (! m.upstream_changelog()->name().empty() && id->upstream_changelog_key())
             write_kv(cache, m.upstream_changelog()->name(), flatten(id->upstream_changelog_key()->value()));

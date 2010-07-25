@@ -104,6 +104,9 @@ namespace paludis
                 const std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > upstream_changelog_key() const;
                 const std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > upstream_documentation_key() const;
                 const std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > upstream_release_notes_key() const;
+                const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > generated_from_key() const;
+                const std::shared_ptr<const MetadataTimeKey> generated_time_key() const;
+                const std::shared_ptr<const MetadataValueKey<std::string> > generated_using_key() const;
 
                 virtual bool arbitrary_less_than_comparison(const PackageID &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -145,6 +148,9 @@ namespace paludis
                 void load_remote_ids(const std::shared_ptr<const EAPIMetadataVariable> &, const std::string &) const;
                 void load_defined_phases(const std::string &, const std::string &, const std::string &) const;
                 void load_slot(const std::shared_ptr<const EAPIMetadataVariable> &, const std::string &) const;
+                void load_generated_from(const std::string &, const std::string &, const std::string &) const;
+                void load_generated_using(const std::string &, const std::string &, const std::string &) const;
+                void load_generated_time(const std::string &, const std::string &, const std::string &) const;
 
                 virtual bool supports_action(const SupportsActionTestBase &) const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual void perform_action(Action &) const;
