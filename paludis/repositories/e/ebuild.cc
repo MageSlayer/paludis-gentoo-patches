@@ -1243,7 +1243,7 @@ WriteBinaryEbuildCommand::operator() ()
             .with_setenv("PALUDIS_IGNORE_PIVOT_ENV_VARIABLES",
                     params.package_id()->eapi()->supported()->ebuild_options()->ignore_pivot_env_variables())
             .with_setenv("PALUDIS_BINARY_URI_PREFIX", params.destination_repository()->params().binary_uri_prefix())
-            .with_setenv("PALUDIS_BINARY_KEYWORDS", params.destination_repository()->params().binary_keywords())
+            .with_setenv("PALUDIS_BINARY_KEYWORDS", params.binary_keywords())
             .with_setenv("PALUDIS_BINARY_KEYWORDS_VARIABLE", EAPIData::get_instance()->eapi_from_string("pbin-1+"
                         + params.package_id()->eapi()->exported_name())->supported()->ebuild_metadata_variables()->keywords()->name())
             .with_setenv("PALUDIS_BINARY_DISTDIR_VARIABLE", EAPIData::get_instance()->eapi_from_string("pbin-1+"

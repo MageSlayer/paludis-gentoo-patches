@@ -165,6 +165,14 @@ namespace
 
         return result;
     }
+
+    std::shared_ptr<Set<std::string> > make_binary_keywords_filter(
+            const std::string & s)
+    {
+        auto result(std::make_shared<Set<std::string>>());
+        tokenise_whitespace(s, result->inserter());
+        return result;
+    }
 }
 
 namespace paludis
@@ -249,7 +257,7 @@ namespace paludis
 #ifdef ENABLE_PBINS
         std::shared_ptr<const MetadataValueKey<std::string> > binary_destination_key;
         std::shared_ptr<const MetadataValueKey<std::string> > binary_src_uri_prefix_key;
-        std::shared_ptr<const MetadataValueKey<std::string> > binary_keywords;
+        std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > binary_keywords_filter;
 #endif
         std::shared_ptr<const MetadataValueKey<FSEntry> > accounts_repository_data_location_key;
         std::shared_ptr<const MetadataValueKey<FSEntry> > e_updates_location_key;
@@ -343,9 +351,9 @@ namespace paludis
         binary_src_uri_prefix_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
                     "binary_uri_prefix", "binary_uri_prefix", params.binary_destination() ? mkt_normal : mkt_internal,
                     params.binary_uri_prefix())),
-        binary_keywords(std::make_shared<LiteralMetadataValueKey<std::string> >(
-                    "binary_keywords", "binary_keywords", params.binary_destination() ? mkt_normal : mkt_internal,
-                    params.binary_keywords())),
+        binary_keywords_filter(std::make_shared<LiteralMetadataStringSetKey>(
+                    "binary_keywords_filter", "binary_keywords_filter", params.binary_destination() ? mkt_normal : mkt_internal,
+                    make_binary_keywords_filter(params.binary_keywords_filter()))),
 #endif
         accounts_repository_data_location_key(layout->accounts_repository_data_location_key()),
         e_updates_location_key(layout->e_updates_location_key()),
@@ -550,7 +558,7 @@ ERepository::_add_metadata_keys() const
 #ifdef ENABLE_PBINS
     add_metadata_key(_imp->binary_destination_key);
     add_metadata_key(_imp->binary_src_uri_prefix_key);
-    add_metadata_key(_imp->binary_keywords);
+    add_metadata_key(_imp->binary_keywords_filter);
 #endif
     if (_imp->accounts_repository_data_location_key)
         add_metadata_key(_imp->accounts_repository_data_location_key);
@@ -1493,12 +1501,12 @@ ERepository::repository_factory_create(
 
     std::string binary_distdir(f("binary_distdir"));
 
-    std::string binary_keywords(f("binary_keywords"));
+    std::string binary_keywords_filter(f("binary_keywords_filter"));
 
-    if (binary_keywords.empty())
+    if (binary_keywords_filter.empty())
     {
         if (binary_destination)
-            throw ERepositoryConfigurationError("binary_destination = true, but binary_keywords is unset or empty");
+            throw ERepositoryConfigurationError("binary_destination = true, but binary_keywords_filter is unset or empty");
     }
 
     return std::make_shared<ERepository>(make_named_values<ERepositoryParams>(
@@ -1506,7 +1514,7 @@ ERepository::repository_factory_create(
                 n::auto_profiles() = auto_profiles,
                 n::binary_destination() = binary_destination,
                 n::binary_distdir() = binary_distdir,
-                n::binary_keywords() = binary_keywords,
+                n::binary_keywords_filter() = binary_keywords_filter,
                 n::binary_uri_prefix() = binary_uri_prefix,
                 n::builddir() = FSEntry(builddir).realpath_if_exists(),
                 n::cache() = cache,
@@ -2711,10 +2719,24 @@ ERepository::merge(const MergeParams & m)
     binary_ebuild_location.dirname().dirname().mkdir();
     binary_ebuild_location.dirname().mkdir();
 
+    std::string binary_keywords;
+    if (m.package_id()->keywords_key())
+    {
+        for (auto k(m.package_id()->keywords_key()->value()->begin()), k_end(m.package_id()->keywords_key()->value()->end()) ;
+                k != k_end ; ++k)
+            if (_imp->binary_keywords_filter->value()->end() != _imp->binary_keywords_filter->value()->find(stringify(*k)))
+            {
+                if (! binary_keywords.empty())
+                    binary_keywords.append(" ");
+                binary_keywords.append(stringify(*k));
+            }
+    }
+
     WriteBinaryEbuildCommand write_binary_ebuild_command(
             make_named_values<WriteBinaryEbuildCommandParams>(
             n::binary_distdir() = _imp->params.binary_distdir(),
             n::binary_ebuild_location() = binary_ebuild_location,
+            n::binary_keywords() = binary_keywords,
             n::builddir() = _imp->params.builddir(),
             n::destination_repository() = this,
             n::environment() = _imp->params.environment(),

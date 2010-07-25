@@ -139,7 +139,7 @@ namespace test_cases
             b_keys->insert("profile_eapi", "0");
             b_keys->insert("distdir", stringify(FSEntry::cwd() / "e_repository_TEST_pbin_dir" / "distdir"));
             b_keys->insert("binary_distdir", stringify(FSEntry::cwd() / "e_repository_TEST_pbin_dir" / "distdir"));
-            b_keys->insert("binary_keywords", "test");
+            b_keys->insert("binary_keywords_filter", "test");
             b_keys->insert("binary_destination", "true");
             b_keys->insert("master_repository", "repo" + base_eapi);
             b_keys->insert("builddir", stringify(FSEntry::cwd() / "e_repository_TEST_pbin_dir" / "build"));

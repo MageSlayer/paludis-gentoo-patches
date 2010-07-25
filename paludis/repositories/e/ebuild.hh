@@ -46,6 +46,7 @@ namespace paludis
         typedef Name<struct aa_name> aa;
         typedef Name<struct binary_distdir_name> binary_distdir;
         typedef Name<struct binary_ebuild_location_name> binary_ebuild_location;
+        typedef Name<struct binary_keywords_name> binary_keywords;
         typedef Name<struct builddir_name> builddir;
         typedef Name<struct clearenv_name> clearenv;
         typedef Name<struct commands_name> commands;
@@ -295,6 +296,7 @@ namespace paludis
         {
             NamedValue<n::binary_distdir, FSEntry> binary_distdir;
             NamedValue<n::binary_ebuild_location, FSEntry> binary_ebuild_location;
+            NamedValue<n::binary_keywords, std::string> binary_keywords;
             NamedValue<n::builddir, FSEntry> builddir;
             NamedValue<n::destination_repository, const ERepository *> destination_repository;
             NamedValue<n::environment, const Environment *> environment;

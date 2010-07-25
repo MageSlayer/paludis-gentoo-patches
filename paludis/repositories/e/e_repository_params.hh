@@ -43,7 +43,7 @@ namespace paludis
         typedef Name<struct auto_profiles_name> auto_profiles;
         typedef Name<struct binary_destination_name> binary_destination;
         typedef Name<struct binary_distdir_name> binary_distdir;
-        typedef Name<struct binary_keywords_name> binary_keywords;
+        typedef Name<struct binary_keywords_filter_name> binary_keywords_filter;
         typedef Name<struct binary_uri_prefix_name> binary_uri_prefix;
         typedef Name<struct builddir_name> builddir;
         typedef Name<struct cache_name> cache;
@@ -82,7 +82,7 @@ namespace paludis
             NamedValue<n::auto_profiles, bool> auto_profiles;
             NamedValue<n::binary_destination, bool> binary_destination;
             NamedValue<n::binary_distdir, FSEntry> binary_distdir;
-            NamedValue<n::binary_keywords, std::string> binary_keywords;
+            NamedValue<n::binary_keywords_filter, std::string> binary_keywords_filter;
             NamedValue<n::binary_uri_prefix, std::string> binary_uri_prefix;
             NamedValue<n::builddir, FSEntry> builddir;
             NamedValue<n::cache, FSEntry> cache;
