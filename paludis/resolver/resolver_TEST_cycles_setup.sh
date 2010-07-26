@@ -188,5 +188,72 @@ END
 
     done
 
+# cycle-deps
+echo 'cycle-deps' >> metadata/categories.conf
+
+mkdir -p 'packages/cycle-deps/target'
+cat <<END > packages/cycle-deps/target/target-1.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES="cycle-deps/dep-a"
+END
+
+mkdir -p 'packages/cycle-deps/dep-a'
+cat <<END > packages/cycle-deps/dep-a/dep-a-1.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES="build: cycle-deps/dep-b"
+END
+
+mkdir -p 'packages/cycle-deps/dep-b'
+cat <<END > packages/cycle-deps/dep-b/dep-b-1.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES="build: cycle-deps/dep-c cycle-deps/dep-d"
+END
+
+mkdir -p 'packages/cycle-deps/dep-c'
+cat <<END > packages/cycle-deps/dep-c/dep-c-1.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES="build: cycle-deps/dep-a"
+END
+
+mkdir -p 'packages/cycle-deps/dep-d'
+cat <<END > packages/cycle-deps/dep-d/dep-d-1.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES="build: cycle-deps/dep-e"
+END
+
+mkdir -p 'packages/cycle-deps/dep-e'
+cat <<END > packages/cycle-deps/dep-e/dep-e-1.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES="build: cycle-deps/dep-f"
+END
+
+mkdir -p 'packages/cycle-deps/dep-f'
+cat <<END > packages/cycle-deps/dep-f/dep-f-1.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES="build: cycle-deps/dep-d cycle-deps/dep-g"
+END
+
+mkdir -p 'packages/cycle-deps/dep-g'
+cat <<END > packages/cycle-deps/dep-g/dep-g-1.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES="build: cycle-deps/dep-c"
+END
+
 cd ..
 

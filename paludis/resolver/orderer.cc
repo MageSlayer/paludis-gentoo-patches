@@ -623,13 +623,14 @@ Orderer::_order_sub_ssccs(
                 scc_nag_without_met_deps.add_node(*r);
                 for (NAG::EdgesFromConstIterator e(scc_nag.begin_edges_from(*r)), e_end(scc_nag.end_edges_from(*r)) ;
                         e != e_end ; ++e)
-                    if ((! e->second.build_all_met()) || (! e->second.run_all_met()))
-                        scc_nag_without_met_deps.add_edge(*r, e->first, make_named_values<NAGEdgeProperties>(
-                                    n::build() = e->second.build() && ! e->second.build_all_met(),
-                                    n::build_all_met() = e->second.build_all_met(),
-                                    n::run() = e->second.run() && ! e->second.run_all_met(),
-                                    n::run_all_met() = e->second.run_all_met()
-                                    ));
+                    if (sub_scc->nodes()->end() != sub_scc->nodes()->find(e->first))
+                        if ((! e->second.build_all_met()) || (! e->second.run_all_met()))
+                            scc_nag_without_met_deps.add_edge(*r, e->first, make_named_values<NAGEdgeProperties>(
+                                        n::build() = e->second.build() && ! e->second.build_all_met(),
+                                        n::build_all_met() = e->second.build_all_met(),
+                                        n::run() = e->second.run() && ! e->second.run_all_met(),
+                                        n::run_all_met() = e->second.run_all_met()
+                                        ));
             }
 
             scc_nag_without_met_deps.verify_edges();

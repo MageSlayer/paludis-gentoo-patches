@@ -347,5 +347,49 @@ namespace test_cases
       test_self_x_b(-1, false), test_self_x_r(-1, true),
       test_self_0_b( 0, false), test_self_0_r( 0, true),
       test_self_1_b( 1, false), test_self_1_r( 1, true);
+
+    struct CycleDeps : ResolverCyclesTestCase
+    {
+        CycleDeps() :
+            ResolverCyclesTestCase("cycle deps")
+        {
+            install("cycle-deps", "dep-g", "1")->build_dependencies_key()->set_from_string("cycle-deps/dep-c");
+        }
+
+        virtual ResolverFunctions get_resolver_functions(InitialConstraints & initial_constraints)
+        {
+            ResolverFunctions result(ResolverCyclesTestCase::get_resolver_functions(initial_constraints));
+            result.get_use_existing_fn() = std::bind(&use_existing_if_same, std::placeholders::_1,
+                    std::placeholders::_2, std::placeholders::_3);
+            return result;
+        }
+
+        void run()
+        {
+            std::shared_ptr<const Resolved> resolved(get_resolved("cycle-deps/target"));
+
+            check_resolved(resolved,
+                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .change(QualifiedPackageName("cycle-deps/target"))
+                        .finished()),
+                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
+                        .change(QualifiedPackageName("cycle-deps/dep-d"))
+                        .change(QualifiedPackageName("cycle-deps/dep-e"))
+                        .change(QualifiedPackageName("cycle-deps/dep-f"))
+                        .change(QualifiedPackageName("cycle-deps/dep-a"))
+                        .change(QualifiedPackageName("cycle-deps/dep-b"))
+                        .change(QualifiedPackageName("cycle-deps/dep-c"))
+                        .finished()),
+                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished())
+                    );
+        }
+    } test_cycle_deps;
 }
 
