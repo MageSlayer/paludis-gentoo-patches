@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "merger.hh"
+#include <paludis/fs_merger.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/hooker.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -100,26 +100,26 @@ namespace paludis
 namespace
 {
     struct TestMerger :
-        Merger
+        FSMerger
     {
-        TestMerger(const MergerParams & p) :
-            Merger(p)
+        TestMerger(const FSMergerParams & p) :
+            FSMerger(p)
         {
         }
 
-        void record_install_file(const FSEntry &, const FSEntry &, const std::string &, const MergeStatusFlags &)
+        void record_install_file(const FSEntry &, const FSEntry &, const std::string &, const FSMergerStatusFlags &)
         {
         }
 
-        void record_install_dir(const FSEntry &, const FSEntry &, const MergeStatusFlags &)
+        void record_install_dir(const FSEntry &, const FSEntry &, const FSMergerStatusFlags &)
         {
         }
 
-        void record_install_sym(const FSEntry &, const FSEntry &, const MergeStatusFlags &)
+        void record_install_sym(const FSEntry &, const FSEntry &, const FSMergerStatusFlags &)
         {
         }
 
-        virtual void record_install_under_dir(const FSEntry &, const MergeStatusFlags &)
+        virtual void record_install_under_dir(const FSEntry &, const FSMergerStatusFlags &)
         {
         }
 
@@ -128,7 +128,7 @@ namespace
             if (is_check)
                 make_check_fail();
             else
-                throw MergerError(s);
+                throw FSMergerError(s);
         }
 
         void on_warn(bool, const std::string &)
@@ -168,12 +168,12 @@ namespace
             MergerTest(EntryType src_type, EntryType dst_type, int n = 0) :
                 TestCase("merge " + stringify(src_type) + " over " + stringify(dst_type) + (0 == n ? "" : " "
                             + stringify(n))),
-                image_dir("merger_TEST_dir/" + stringify(src_type) + "_over_" + stringify(dst_type)
+                image_dir("fs_merger_TEST_dir/" + stringify(src_type) + "_over_" + stringify(dst_type)
                         + (0 == n ? "" : "_" + stringify(n)) + "_dir/image"),
-                root_dir("merger_TEST_dir/" + stringify(src_type) + "_over_" + stringify(dst_type)
+                root_dir("fs_merger_TEST_dir/" + stringify(src_type) + "_over_" + stringify(dst_type)
                         + (0 == n ? "" : "_" + stringify(n)) + "_dir/root"),
-                env(FSEntry("merger_TEST_dir/hooks")),
-                merger(make_named_values<MergerParams>(
+                env(FSEntry("fs_merger_TEST_dir/hooks")),
+                merger(make_named_values<FSMergerParams>(
                             n::environment() = &env,
                             n::fix_mtimes_before() = Timestamp(0, 0),
                             n::get_new_ids_or_minus_one() = &get_new_ids_or_minus_one,
@@ -181,22 +181,22 @@ namespace
                             n::install_under() = FSEntry("/"),
                             n::merged_entries() = std::make_shared<FSEntrySet>(),
                             n::no_chown() = true,
-                            n::options() = MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs,
+                            n::options() = FSMergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs,
                             n::root() = root_dir
                         ))
             {
             }
 
             MergerTest(const std::string & custom_test,
-                    const MergerOptions & o = MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs,
+                    const FSMergerOptions & o = FSMergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs,
                     const bool fix = false) :
                 TestCase("merge " + custom_test + " test"),
-                image_dir("merger_TEST_dir/" + custom_test + "/image"),
-                root_dir("merger_TEST_dir/" + custom_test + "/root"),
-                env(FSEntry("merger_TEST_dir/hooks")),
-                merger(make_named_values<MergerParams>(
+                image_dir("fs_merger_TEST_dir/" + custom_test + "/image"),
+                root_dir("fs_merger_TEST_dir/" + custom_test + "/root"),
+                env(FSEntry("fs_merger_TEST_dir/hooks")),
+                merger(make_named_values<FSMergerParams>(
                         n::environment() = &env,
-                        n::fix_mtimes_before() = fix ? FSEntry("merger_TEST_dir/reference").mtim() : Timestamp(0, 0),
+                        n::fix_mtimes_before() = fix ? FSEntry("fs_merger_TEST_dir/reference").mtim() : Timestamp(0, 0),
                         n::get_new_ids_or_minus_one() = &get_new_ids_or_minus_one,
                         n::image() = image_dir,
                         n::install_under() = FSEntry("/"),
@@ -276,7 +276,7 @@ namespace test_cases
             TEST_CHECK((root_dir / "sym").is_directory());
 
             TEST_CHECK(! merger.check());
-            TEST_CHECK_THROWS(merger.merge(), MergerError);
+            TEST_CHECK_THROWS(merger.merge(), FSMergerError);
 
             TEST_CHECK((root_dir / "sym").is_directory());
         }
@@ -321,7 +321,7 @@ namespace test_cases
             TEST_CHECK((root_dir / "dir").is_regular_file());
 
             TEST_CHECK(! merger.check());
-            TEST_CHECK_THROWS(merger.merge(), MergerError);
+            TEST_CHECK_THROWS(merger.merge(), FSMergerError);
 
             TEST_CHECK((root_dir / "dir").is_regular_file());
         }
@@ -356,7 +356,7 @@ namespace test_cases
             TEST_CHECK((root_dir / "dir").realpath().is_regular_file());
 
             TEST_CHECK(! merger.check());
-            TEST_CHECK_THROWS(merger.merge(), MergerError);
+            TEST_CHECK_THROWS(merger.merge(), FSMergerError);
 
             TEST_CHECK((root_dir / "dir").is_symbolic_link());
             TEST_CHECK((root_dir / "dir").realpath().is_regular_file());
@@ -373,7 +373,7 @@ namespace test_cases
             TEST_CHECK_THROWS((root_dir / "dir").realpath(), FSError);
 
             TEST_CHECK(! merger.check());
-            TEST_CHECK_THROWS(merger.merge(), MergerError);
+            TEST_CHECK_THROWS(merger.merge(), FSMergerError);
 
             TEST_CHECK((root_dir / "dir").is_symbolic_link());
             TEST_CHECK_THROWS((root_dir / "dir").realpath(), FSError);
@@ -464,7 +464,7 @@ namespace test_cases
             TEST_CHECK((root_dir / "file").is_directory());
 
             TEST_CHECK(! merger.check());
-            TEST_CHECK_THROWS(merger.merge(), MergerError);
+            TEST_CHECK_THROWS(merger.merge(), FSMergerError);
 
             TEST_CHECK((root_dir / "file").is_directory());
         }
@@ -583,10 +583,10 @@ namespace test_cases
 
             TEST_CHECK(timestamps_nearly_equal((root_dir / "new_file").mtim(), m_new));
             TEST_CHECK(timestamps_nearly_equal((root_dir / "existing_file").mtim(), m_existing));
-            TEST_CHECK(timestamps_nearly_equal((root_dir / "dodgy_file").mtim(), FSEntry("merger_TEST_dir/reference").mtim()));
+            TEST_CHECK(timestamps_nearly_equal((root_dir / "dodgy_file").mtim(), FSEntry("fs_merger_TEST_dir/reference").mtim()));
 
             TEST_CHECK(timestamps_nearly_equal((root_dir / "dir" / "new_file").mtim(), m_dir_new));
-            TEST_CHECK(timestamps_nearly_equal((root_dir / "dir" / "dodgy_file").mtim(), FSEntry("merger_TEST_dir/reference").mtim()));
+            TEST_CHECK(timestamps_nearly_equal((root_dir / "dir" / "dodgy_file").mtim(), FSEntry("fs_merger_TEST_dir/reference").mtim()));
         }
     } test_merger_mtimes_fix;
 }

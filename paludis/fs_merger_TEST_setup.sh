@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # vim: set ft=sh sw=4 sts=4 et :
 
-mkdir merger_TEST_dir || exit 2
-cd merger_TEST_dir || exit 3
+mkdir fs_merger_TEST_dir || exit 2
+cd fs_merger_TEST_dir || exit 3
 
 # must be before anything else, since timestamps before this are treated as
 # dodgy

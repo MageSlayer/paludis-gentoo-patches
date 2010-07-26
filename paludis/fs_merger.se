@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # vim: set sw=4 sts=4 et ft=sh :
 
-make_enum_MergeStatusFlag()
+make_enum_FSMergerStatusFlag()
 {
     prefix msi
 
@@ -16,15 +16,16 @@ make_enum_MergeStatusFlag()
 
     doxygen_comment << "END"
         /**
-         * Status flags for Merger, used by MergeStatusFlags
+         * Status flags for FSMerger, used by FSMergerStatusFlags
          *
          * \ingroup g_repository
          * \since 0.26
+         * \since 0.51 called FSMergerStatusFlag instead of MergeStatusFlag
          */
 END
 }
 
-make_enum_MergerOption()
+make_enum_FSMergerOption()
 {
     prefix mo
     want_destringify

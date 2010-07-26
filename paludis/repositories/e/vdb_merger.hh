@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_GENTOO_VDB_MERGER_HH
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_GENTOO_VDB_MERGER_HH 1
 
-#include <paludis/merger.hh>
+#include <paludis/fs_merger.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/util/pimp.hh>
 #include <paludis/output_manager-fwd.hh>
@@ -61,7 +61,7 @@ namespace paludis
         NamedValue<n::fix_mtimes_before, Timestamp> fix_mtimes_before;
         NamedValue<n::image, FSEntry> image;
         NamedValue<n::merged_entries, std::shared_ptr<FSEntrySet> > merged_entries;
-        NamedValue<n::options, MergerOptions> options;
+        NamedValue<n::options, FSMergerOptions> options;
         NamedValue<n::output_manager, std::shared_ptr<OutputManager> > output_manager;
         NamedValue<n::package_id, std::shared_ptr<const PackageID> > package_id;
         NamedValue<n::root, FSEntry> root;
@@ -74,12 +74,12 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE VDBMerger :
-        public Merger,
+        public FSMerger,
         private Pimp<VDBMerger>
     {
         private:
             void display_override(const std::string &) const;
-            std::string make_arrows(const MergeStatusFlags &) const;
+            std::string make_arrows(const FSMergerStatusFlags &) const;
 
             Pimp<VDBMerger>::ImpPtr & _imp;
 
@@ -94,10 +94,10 @@ namespace paludis
 
             virtual Hook extend_hook(const Hook &);
 
-            virtual void record_install_file(const FSEntry &, const FSEntry &, const std::string &, const MergeStatusFlags &);
-            virtual void record_install_dir(const FSEntry &, const FSEntry &, const MergeStatusFlags &);
-            virtual void record_install_under_dir(const FSEntry &, const MergeStatusFlags &);
-            virtual void record_install_sym(const FSEntry &, const FSEntry &, const MergeStatusFlags &);
+            virtual void record_install_file(const FSEntry &, const FSEntry &, const std::string &, const FSMergerStatusFlags &);
+            virtual void record_install_dir(const FSEntry &, const FSEntry &, const FSMergerStatusFlags &);
+            virtual void record_install_under_dir(const FSEntry &, const FSMergerStatusFlags &);
+            virtual void record_install_sym(const FSEntry &, const FSEntry &, const FSMergerStatusFlags &);
 
             virtual void on_error(bool is_check, const std::string &);
             virtual void on_warn(bool is_check, const std::string &);

@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # vim: set ft=sh sw=4 sts=4 et :
 
-if [ -d merger_TEST_dir ] ; then
-    rm -fr merger_TEST_dir
+if [ -d fs_merger_TEST_dir ] ; then
+    rm -fr fs_merger_TEST_dir
 else
     true
 fi

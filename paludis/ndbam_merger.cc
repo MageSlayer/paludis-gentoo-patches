@@ -68,7 +68,7 @@ namespace paludis
 }
 
 NDBAMMerger::NDBAMMerger(const NDBAMMergerParams & p) :
-    Merger(make_named_values<MergerParams>(
+    FSMerger(make_named_values<FSMergerParams>(
                 n::environment() = p.environment(),
                 n::fix_mtimes_before() = p.fix_mtimes_before(),
                 n::get_new_ids_or_minus_one() = p.get_new_ids_or_minus_one(),
@@ -101,7 +101,7 @@ NDBAMMerger::extend_hook(const Hook & h)
         std::string pv(stringify(_imp->params.package_id()->version().remove_revision()));
         std::string slot(_imp->params.package_id()->slot_key() ? stringify(_imp->params.package_id()->slot_key()->value()) : "");
 
-        return Merger::extend_hook(h)
+        return FSMerger::extend_hook(h)
             ("P", pn + "-" + pv)
             ("PNV", pn + "-" + pv)
             ("PN", pn)
@@ -117,7 +117,7 @@ NDBAMMerger::extend_hook(const Hook & h)
             ("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " "));
     }
     else
-        return Merger::extend_hook(h)
+        return FSMerger::extend_hook(h)
             ("CONFIG_PROTECT", _imp->params.config_protect())
             ("CONFIG_PROTECT_MASK", _imp->params.config_protect_mask())
             ("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " "));
@@ -149,7 +149,7 @@ namespace
 }
 
 void
-NDBAMMerger::record_install_file(const FSEntry & src, const FSEntry & dst_dir, const std::string & dst_name, const MergeStatusFlags & flags)
+NDBAMMerger::record_install_file(const FSEntry & src, const FSEntry & dst_dir, const std::string & dst_name, const FSMergerStatusFlags & flags)
 {
     std::string tidy(stringify((dst_dir / dst_name).strip_leading(_imp->realroot))),
             tidy_real(stringify((dst_dir / src.basename()).strip_leading(_imp->realroot)));
@@ -157,7 +157,7 @@ NDBAMMerger::record_install_file(const FSEntry & src, const FSEntry & dst_dir, c
 
     SafeIFStream infile(FSEntry(dst_dir / dst_name));
     if (! infile)
-        throw MergerError("Cannot read '" + stringify(FSEntry(dst_dir / dst_name)) + "'");
+        throw FSMergerError("Cannot read '" + stringify(FSEntry(dst_dir / dst_name)) + "'");
 
     MD5 md5(infile);
 
@@ -174,7 +174,7 @@ NDBAMMerger::record_install_file(const FSEntry & src, const FSEntry & dst_dir, c
 }
 
 void
-NDBAMMerger::record_install_dir(const FSEntry & src, const FSEntry & dst_dir, const MergeStatusFlags & flags)
+NDBAMMerger::record_install_dir(const FSEntry & src, const FSEntry & dst_dir, const FSMergerStatusFlags & flags)
 {
     std::string tidy(stringify((dst_dir / src.basename()).strip_leading(_imp->realroot)));
     display_override(make_arrows(flags) + " [dir] " + tidy);
@@ -183,7 +183,7 @@ NDBAMMerger::record_install_dir(const FSEntry & src, const FSEntry & dst_dir, co
 }
 
 void
-NDBAMMerger::record_install_under_dir(const FSEntry & dst, const MergeStatusFlags & flags)
+NDBAMMerger::record_install_under_dir(const FSEntry & dst, const FSMergerStatusFlags & flags)
 {
     std::string tidy(stringify(dst.strip_leading(_imp->realroot)));
     display_override(make_arrows(flags) + " [dir] " + tidy);
@@ -192,7 +192,7 @@ NDBAMMerger::record_install_under_dir(const FSEntry & dst, const MergeStatusFlag
 }
 
 void
-NDBAMMerger::record_install_sym(const FSEntry & src, const FSEntry & dst_dir, const MergeStatusFlags & flags)
+NDBAMMerger::record_install_sym(const FSEntry & src, const FSEntry & dst_dir, const FSMergerStatusFlags & flags)
 {
     std::string tidy(stringify((dst_dir / src.basename()).strip_leading(_imp->realroot)));
     std::string target((dst_dir / src.basename()).readlink());
@@ -213,7 +213,7 @@ NDBAMMerger::on_error(bool is_check, const std::string & s)
     if (is_check)
         _imp->params.output_manager()->stdout_stream() << "." << std::endl << "!!! " << s << std::endl;
     else
-        throw MergerError(s);
+        throw FSMergerError(s);
 }
 
 void
@@ -256,7 +256,7 @@ NDBAMMerger::make_config_protect_name(const FSEntry & src, const FSEntry & dst)
 
     SafeIFStream our_md5_file(src);
     if (! our_md5_file)
-        throw MergerError("Could not get md5 for '" + stringify((dst / src.basename()).strip_leading(_imp->realroot)) + "'");
+        throw FSMergerError("Could not get md5 for '" + stringify((dst / src.basename()).strip_leading(_imp->realroot)) + "'");
     MD5 our_md5(our_md5_file);
 
     while (true)
@@ -284,10 +284,10 @@ NDBAMMerger::make_config_protect_name(const FSEntry & src, const FSEntry & dst)
 }
 
 std::string
-NDBAMMerger::make_arrows(const MergeStatusFlags & flags) const
+NDBAMMerger::make_arrows(const FSMergerStatusFlags & flags) const
 {
     std::string result(">>>");
-    for (EnumIterator<MergeStatusFlag> m, m_end(last_msi) ;
+    for (EnumIterator<FSMergerStatusFlag> m, m_end(last_msi) ;
             m != m_end ; ++m)
     {
         if (! flags[*m])
@@ -342,14 +342,14 @@ NDBAMMerger::merge()
 {
     display_override(">>> Merging to " + stringify(_imp->params.root()));
     _imp->contents_file = std::make_shared<SafeOFStream>(_imp->params.contents_file());
-    Merger::merge();
+    FSMerger::merge();
 }
 
 bool
 NDBAMMerger::check()
 {
     _imp->params.output_manager()->stdout_stream() << ">>> Checking whether we can merge to " << _imp->params.root() << " ";
-    bool result(Merger::check());
+    bool result(FSMerger::check());
     _imp->params.output_manager()->stdout_stream() << std::endl;
     return result;
 }

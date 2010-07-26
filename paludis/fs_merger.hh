@@ -17,10 +17,10 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_MERGER_HH
-#define PALUDIS_GUARD_PALUDIS_MERGER_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_FS_MERGER_HH
+#define PALUDIS_GUARD_PALUDIS_FS_MERGER_HH 1
 
-#include <paludis/merger-fwd.hh>
+#include <paludis/fs_merger-fwd.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/options.hh>
@@ -32,7 +32,7 @@
 #include <sys/types.h>
 
 /** \file
- * Declarations for the Merger class, which can be used by Repository
+ * Declarations for the FSMerger class, which can be used by Repository
  * implementations to perform to-filesystem merging.
  *
  * \ingroup g_repository
@@ -61,14 +61,15 @@ namespace paludis
     }
 
     /**
-     * Parameters for a basic Merger.
+     * Parameters for a basic FSMerger.
      *
      * \see Merger
      * \ingroup g_repository
      * \nosubgrouping
      * \since 0.30
+     * \since 0.51 called FSMergerParams instead of MergerParams
      */
-    struct MergerParams
+    struct FSMergerParams
     {
         NamedValue<n::environment, Environment *> environment;
 
@@ -92,25 +93,25 @@ namespace paludis
         NamedValue<n::merged_entries, std::shared_ptr<FSEntrySet> > merged_entries;
 
         NamedValue<n::no_chown, bool> no_chown;
-        NamedValue<n::options, MergerOptions> options;
+        NamedValue<n::options, FSMergerOptions> options;
         NamedValue<n::root, FSEntry> root;
     };
 
     /**
-     * Thrown if an error occurs during a Merger operation.
+     * Thrown if an error occurs during an FSMerger operation.
      *
      * \ingroup g_repository
      * \ingroup g_exceptions
      * \nosubgrouping
      */
-    class PALUDIS_VISIBLE MergerError :
+    class PALUDIS_VISIBLE FSMergerError :
         public Exception
     {
         public:
             ///\name Basic operations
             ///\{
 
-            MergerError(const std::string & msg) throw ();
+            FSMergerError(const std::string & msg) throw ();
 
             ///\}
     };
@@ -121,15 +122,16 @@ namespace paludis
      * \ingroup g_exceptions
      * \ingroup g_repository
      * \nosubgrouping
+     * \since 0.51 called FSMerger instead of Merger
      */
-    class PALUDIS_VISIBLE Merger :
-        private Pimp<Merger>
+    class PALUDIS_VISIBLE FSMerger :
+        private Pimp<FSMerger>
     {
         private:
             void track_renamed_dir_recursive(const FSEntry &);
             void relabel_dir_recursive(const FSEntry &, const FSEntry &);
             void rewrite_symlink_as_needed(const FSEntry &, const FSEntry &);
-            void try_to_copy_xattrs(const FSEntry &, int, MergeStatusFlags &);
+            void try_to_copy_xattrs(const FSEntry &, int, FSMergerStatusFlags &);
             bool symlink_needs_rewriting(const FSEntry &);
             void do_ownership_fixes_recursive(const FSEntry &);
 
@@ -137,7 +139,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            Merger(const MergerParams &);
+            FSMerger(const FSMergerParams &);
 
             ///\}
 
@@ -174,10 +176,10 @@ namespace paludis
             ///\name Track and record merges
             ///\{
 
-            void track_install_file(const FSEntry &, const FSEntry &, const std::string &, const MergeStatusFlags &);
-            void track_install_dir(const FSEntry &, const FSEntry &, const MergeStatusFlags &);
-            void track_install_under_dir(const FSEntry &, const MergeStatusFlags &);
-            void track_install_sym(const FSEntry &, const FSEntry &, const MergeStatusFlags &);
+            void track_install_file(const FSEntry &, const FSEntry &, const std::string &, const FSMergerStatusFlags &);
+            void track_install_dir(const FSEntry &, const FSEntry &, const FSMergerStatusFlags &);
+            void track_install_under_dir(const FSEntry &, const FSMergerStatusFlags &);
+            void track_install_sym(const FSEntry &, const FSEntry &, const FSMergerStatusFlags &);
 
             ///\}
 
@@ -191,9 +193,9 @@ namespace paludis
             virtual void on_file_over_sym(bool is_check, const FSEntry &, const FSEntry &);
             virtual void on_file_over_misc(bool is_check, const FSEntry &, const FSEntry &);
 
-            virtual MergeStatusFlags install_file(const FSEntry &, const FSEntry &, const std::string &) PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual FSMergerStatusFlags install_file(const FSEntry &, const FSEntry &, const std::string &) PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual void unlink_file(FSEntry);
-            virtual void record_install_file(const FSEntry &, const FSEntry &, const std::string &, const MergeStatusFlags &) = 0;
+            virtual void record_install_file(const FSEntry &, const FSEntry &, const std::string &, const FSMergerStatusFlags &) = 0;
 
             virtual void on_dir(bool is_check, const FSEntry &, const FSEntry &);
             virtual void on_dir_over_nothing(bool is_check, const FSEntry &, const FSEntry &);
@@ -202,10 +204,10 @@ namespace paludis
             virtual void on_dir_over_sym(bool is_check, const FSEntry &, const FSEntry &);
             virtual void on_dir_over_misc(bool is_check, const FSEntry &, const FSEntry &);
 
-            virtual MergeStatusFlags install_dir(const FSEntry &, const FSEntry &) PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual FSMergerStatusFlags install_dir(const FSEntry &, const FSEntry &) PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual void unlink_dir(FSEntry);
-            virtual void record_install_dir(const FSEntry &, const FSEntry &, const MergeStatusFlags &) = 0;
-            virtual void record_install_under_dir(const FSEntry &, const MergeStatusFlags &) = 0;
+            virtual void record_install_dir(const FSEntry &, const FSEntry &, const FSMergerStatusFlags &) = 0;
+            virtual void record_install_under_dir(const FSEntry &, const FSMergerStatusFlags &) = 0;
 
             virtual void on_sym(bool is_check, const FSEntry &, const FSEntry &);
             virtual void on_sym_over_nothing(bool is_check, const FSEntry &, const FSEntry &);
@@ -214,9 +216,9 @@ namespace paludis
             virtual void on_sym_over_sym(bool is_check, const FSEntry &, const FSEntry &);
             virtual void on_sym_over_misc(bool is_check, const FSEntry &, const FSEntry &);
 
-            virtual MergeStatusFlags install_sym(const FSEntry &, const FSEntry &) PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual FSMergerStatusFlags install_sym(const FSEntry &, const FSEntry &) PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual void unlink_sym(FSEntry);
-            virtual void record_install_sym(const FSEntry &, const FSEntry &, const MergeStatusFlags &) = 0;
+            virtual void record_install_sym(const FSEntry &, const FSEntry &, const FSMergerStatusFlags &) = 0;
 
             virtual void unlink_misc(FSEntry);
             virtual void on_misc(bool is_check, const FSEntry &, const FSEntry &);
@@ -247,7 +249,10 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            virtual ~Merger();
+            virtual ~FSMerger();
+
+            FSMerger(const FSMerger &) = delete;
+            FSMerger & operator= (const FSMerger &) = delete;
 
             ///\}
 

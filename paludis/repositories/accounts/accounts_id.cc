@@ -492,7 +492,7 @@ AccountsID::perform_action(Action & action) const
                             n::environment_file() = FSEntry("/dev/null"),
                             n::image_dir() = fs_location_key()->value(),
                             n::merged_entries() = std::make_shared<FSEntrySet>(),
-                            n::options() = MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs,
+                            n::options() = FSMergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs,
                             n::output_manager() = output_manager,
                             n::package_id() = shared_from_this(),
                             n::perform_uninstall() = install_action->options.perform_uninstall(),

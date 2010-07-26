@@ -80,7 +80,7 @@ namespace
 }
 
 VDBMerger::VDBMerger(const VDBMergerParams & p) :
-    Merger(make_named_values<MergerParams>(
+    FSMerger(make_named_values<FSMergerParams>(
                 n::environment() = p.environment(),
                 n::fix_mtimes_before() = p.fix_mtimes_before(),
                 n::get_new_ids_or_minus_one() = std::bind(&get_new_ids_or_minus_one, p.environment(), std::placeholders::_1),
@@ -113,7 +113,7 @@ VDBMerger::extend_hook(const Hook & h)
         std::string pv(stringify(_imp->params.package_id()->version().remove_revision()));
         std::string slot(_imp->params.package_id()->slot_key() ? stringify(_imp->params.package_id()->slot_key()->value()) : "");
 
-        return Merger::extend_hook(h)
+        return FSMerger::extend_hook(h)
             ("P", pn + "-" + pv)
             ("PNV", pn + "-" + pv)
             ("PN", pn)
@@ -129,14 +129,14 @@ VDBMerger::extend_hook(const Hook & h)
             ("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " "));
     }
     else
-        return Merger::extend_hook(h)
+        return FSMerger::extend_hook(h)
             ("CONFIG_PROTECT", _imp->params.config_protect())
             ("CONFIG_PROTECT_MASK", _imp->params.config_protect_mask())
             ("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " "));
 }
 
 void
-VDBMerger::record_install_file(const FSEntry & src, const FSEntry & dst_dir, const std::string & dst_name, const MergeStatusFlags & flags)
+VDBMerger::record_install_file(const FSEntry & src, const FSEntry & dst_dir, const std::string & dst_name, const FSMergerStatusFlags & flags)
 {
     std::string tidy(stringify((dst_dir / dst_name).strip_leading(_imp->realroot))),
             tidy_real(stringify((dst_dir / src.basename()).strip_leading(_imp->realroot)));
@@ -144,7 +144,7 @@ VDBMerger::record_install_file(const FSEntry & src, const FSEntry & dst_dir, con
 
     SafeIFStream infile(FSEntry(dst_dir / dst_name));
     if (! infile)
-        throw MergerError("Cannot read '" + stringify(FSEntry(dst_dir / dst_name)) + "'");
+        throw FSMergerError("Cannot read '" + stringify(FSEntry(dst_dir / dst_name)) + "'");
 
     MD5 md5(infile);
 
@@ -157,7 +157,7 @@ VDBMerger::record_install_file(const FSEntry & src, const FSEntry & dst_dir, con
 }
 
 void
-VDBMerger::record_install_dir(const FSEntry & src, const FSEntry & dst_dir, const MergeStatusFlags & flags)
+VDBMerger::record_install_dir(const FSEntry & src, const FSEntry & dst_dir, const FSMergerStatusFlags & flags)
 {
     std::string tidy(stringify((dst_dir / src.basename()).strip_leading(_imp->realroot)));
     display_override(make_arrows(flags) + " [dir] " + tidy);
@@ -166,7 +166,7 @@ VDBMerger::record_install_dir(const FSEntry & src, const FSEntry & dst_dir, cons
 }
 
 void
-VDBMerger::record_install_under_dir(const FSEntry & dst_dir, const MergeStatusFlags & flags)
+VDBMerger::record_install_under_dir(const FSEntry & dst_dir, const FSMergerStatusFlags & flags)
 {
     std::string tidy(stringify(dst_dir.strip_leading(_imp->realroot)));
     display_override(make_arrows(flags) + " [dir] " + tidy);
@@ -175,7 +175,7 @@ VDBMerger::record_install_under_dir(const FSEntry & dst_dir, const MergeStatusFl
 }
 
 void
-VDBMerger::record_install_sym(const FSEntry & src, const FSEntry & dst_dir, const MergeStatusFlags & flags)
+VDBMerger::record_install_sym(const FSEntry & src, const FSEntry & dst_dir, const FSMergerStatusFlags & flags)
 {
     std::string tidy(stringify((dst_dir / src.basename()).strip_leading(_imp->realroot)));
     std::string target((dst_dir / src.basename()).readlink());
@@ -194,7 +194,7 @@ VDBMerger::on_error(bool is_check, const std::string & s)
     if (is_check)
         _imp->params.output_manager()->stdout_stream() << "." << std::endl << "!!! " << s << std::endl;
     else
-        throw MergerError(s);
+        throw FSMergerError(s);
 }
 
 void
@@ -237,7 +237,7 @@ VDBMerger::make_config_protect_name(const FSEntry & src, const FSEntry & dst)
 
     SafeIFStream our_md5_file(src);
     if (! our_md5_file)
-        throw MergerError("Could not get md5 for '" + stringify((dst / src.basename()).strip_leading(_imp->realroot)) + "'");
+        throw FSMergerError("Could not get md5 for '" + stringify((dst / src.basename()).strip_leading(_imp->realroot)) + "'");
     MD5 our_md5(our_md5_file);
 
     while (true)
@@ -272,14 +272,14 @@ VDBMerger::merge()
 {
     display_override(">>> Merging to " + stringify(_imp->params.root()));
     _imp->contents_file = std::make_shared<SafeOFStream>(_imp->params.contents_file());
-    Merger::merge();
+    FSMerger::merge();
 }
 
 bool
 VDBMerger::check()
 {
     _imp->params.output_manager()->stdout_stream() << ">>> Checking whether we can merge to " << _imp->params.root() << " ";
-    bool result(Merger::check());
+    bool result(FSMerger::check());
     _imp->params.output_manager()->stdout_stream() << std::endl;
     return result;
 }
@@ -297,16 +297,16 @@ void
 VDBMerger::on_file(bool is_check, const FSEntry & src, const FSEntry & dst)
 {
     if (is_check && std::string::npos != src.basename().find('\n'))
-        throw MergerError("File '" + stringify(src) + "' contains a newline in its name, which cannot be stored by VDB");
-    Merger::on_file(is_check, src, dst);
+        throw FSMergerError("File '" + stringify(src) + "' contains a newline in its name, which cannot be stored by VDB");
+    FSMerger::on_file(is_check, src, dst);
 }
 
 void
 VDBMerger::on_dir(bool is_check, const FSEntry & src, const FSEntry & dst)
 {
     if (is_check && std::string::npos != src.basename().find('\n'))
-        throw MergerError("Directory '" + stringify(src) + "' contains a newline in its name, which cannot be stored by VDB");
-    Merger::on_dir(is_check, src, dst);
+        throw FSMergerError("Directory '" + stringify(src) + "' contains a newline in its name, which cannot be stored by VDB");
+    FSMerger::on_dir(is_check, src, dst);
 }
 
 void
@@ -315,14 +315,14 @@ VDBMerger::on_sym(bool is_check, const FSEntry & src, const FSEntry & dst)
     if (is_check)
     {
         if (std::string::npos != src.basename().find('\n'))
-            throw MergerError("Symlink '" + stringify(src) + "' contains a newline in its name, which cannot be stored by VDB");
+            throw FSMergerError("Symlink '" + stringify(src) + "' contains a newline in its name, which cannot be stored by VDB");
         if (std::string::npos != src.readlink().find('\n'))
-            throw MergerError("Symlink '" + stringify(src) + "' contains a newline in its target '" +
+            throw FSMergerError("Symlink '" + stringify(src) + "' contains a newline in its target '" +
                               src.readlink() + "', which cannot be stored by VDB");
         if (std::string::npos != stringify(src).find(" -> "))
-            throw MergerError("Symlink '" + stringify(src) + "' contains a ' -> ' in its name, which cannot be stored by VDB");
+            throw FSMergerError("Symlink '" + stringify(src) + "' contains a ' -> ' in its name, which cannot be stored by VDB");
     }
-    Merger::on_sym(is_check, src, dst);
+    FSMerger::on_sym(is_check, src, dst);
 }
 
 void
@@ -332,10 +332,10 @@ VDBMerger::display_override(const std::string & message) const
 }
 
 std::string
-VDBMerger::make_arrows(const MergeStatusFlags & flags) const
+VDBMerger::make_arrows(const FSMergerStatusFlags & flags) const
 {
     std::string result(">>>");
-    for (EnumIterator<MergeStatusFlag> m, m_end(last_msi) ;
+    for (EnumIterator<FSMergerStatusFlag> m, m_end(last_msi) ;
             m != m_end ; ++m)
     {
         if (! flags[*m])

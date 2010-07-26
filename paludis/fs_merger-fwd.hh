@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_MERGER_FWD_HH
-#define PALUDIS_GUARD_PALUDIS_MERGER_FWD_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_FS_MERGER_FWD_HH
+#define PALUDIS_GUARD_PALUDIS_FS_MERGER_FWD_HH 1
 
 #include <iosfwd>
 #include <paludis/util/attributes.hh>
@@ -28,34 +28,37 @@
 #include <functional>
 
 /** \file
- * Forward declarations for paludis/merger.hh .
+ * Forward declarations for paludis/fs_merger.hh .
  *
  * \ingroup g_repository
+ * \since 0.51
  */
 
 namespace paludis
 {
-#include <paludis/merger-se.hh>
+#include <paludis/fs_merger-se.hh>
 
     /**
-     * Boolean options for Merger.
+     * Boolean options for FSMerger.
      *
      * \ingroup g_repository
      * \since 0.26
+     * \since 0.51 called FSMergerOptions instead of MergerOptions
      */
-    typedef Options<MergerOption> MergerOptions;
+    typedef Options<FSMergerOption> FSMergerOptions;
 
     /**
      * Status flags for Merger.
      *
      * \ingroup g_repository
      * \since 0.26
+     * \since 0.51 called FSMergerStatusFlags instead of MergeStatusFlags
      */
-    typedef Options<MergeStatusFlag> MergeStatusFlags;
+    typedef Options<FSMergerStatusFlag> FSMergerStatusFlags;
 
-    class MergerParams;
-    class MergerError;
-    class Merger;
+    class FSMergerParams;
+    class FSMergerError;
+    class FSMerger;
 }
 
 #endif
