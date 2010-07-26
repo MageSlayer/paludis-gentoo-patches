@@ -231,6 +231,9 @@ Decider::_resolve_dependents()
     {
         _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
 
+        if (! (*s)->supports_action(SupportsActionTest<UninstallAction>()))
+            continue;
+
         const std::shared_ptr<const ChangeByResolventSequence> dependent_upon(_dependent_upon(
                     *s, changing.first, changing.second));
         if (dependent_upon->empty())
@@ -1943,7 +1946,7 @@ Decider::purge()
             i_seq->push_back(*i);
             for (auto u(unused->begin()), u_end(unused->end()) ;
                     u != u_end ; ++u)
-                if (! _collect_depped_upon(*u, i_seq)->empty())
+                if ((*u)->supports_action(SupportsActionTest<UninstallAction>()) && ! _collect_depped_upon(*u, i_seq)->empty())
                     used_to_use->push_back(make_named_values<ChangeByResolvent>(
                                 n::package_id() = *u,
                                 n::resolvent() = Resolvent(*u, dt_install_to_slash)
@@ -2203,7 +2206,7 @@ Decider::_resolve_purges()
         star_i_set->push_back(*i);
         for (ChangeByResolventSequence::ConstIterator g(going_away_newly_available.first->begin()), g_end(going_away_newly_available.first->end()) ;
                 g != g_end ; ++g)
-            if (! _collect_depped_upon(g->package_id(), star_i_set)->empty())
+            if (g->package_id()->supports_action(SupportsActionTest<UninstallAction>()) && ! _collect_depped_upon(g->package_id(), star_i_set)->empty())
                 used_to_use->push_back(*g);
 
         Resolvent resolvent(*i, dt_install_to_slash);
