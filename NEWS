@@ -4,6 +4,14 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the Git log.
 
+0.50.1:
+    * 'cave purge' and 'cave resolve' will no longer either give misleading
+      output or produce a horrible error when a package providing an old style
+      virtual is marked for purging.
+
+    * 'cave resolve' will no longer give a horrible error when encountering
+      certain convoluted circular dependencies.
+
 0.50.0:
     * We now require a compiler supporting various C++0x features, such as GCC
       4.4 or later.
