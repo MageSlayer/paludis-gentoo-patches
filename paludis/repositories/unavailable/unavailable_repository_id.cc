@@ -208,7 +208,7 @@ UnavailableRepositoryID::perform_action(Action & action) const
                             n::environment_file() = FSEntry("/dev/null"),
                             n::image_dir() = FSEntry("/dev/null"),
                             n::merged_entries() = std::make_shared<FSEntrySet>(),
-                            n::options() = FSMergerOptions(),
+                            n::options() = MergerOptions(),
                             n::output_manager() = output_manager,
                             n::package_id() = shared_from_this(),
                             n::perform_uninstall() = install_action->options.perform_uninstall(),

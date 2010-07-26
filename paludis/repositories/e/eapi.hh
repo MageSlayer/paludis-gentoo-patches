@@ -30,7 +30,7 @@
 #include <paludis/util/singleton.hh>
 #include <paludis/name.hh>
 #include <paludis/dep_spec-fwd.hh>
-#include <paludis/fs_merger-fwd.hh>
+#include <paludis/merger-fwd.hh>
 #include <memory>
 
 namespace paludis
@@ -272,7 +272,7 @@ namespace paludis
             NamedValue<n::ebuild_options, std::shared_ptr<const EAPIEbuildOptions> > ebuild_options;
             NamedValue<n::ebuild_phases, std::shared_ptr<const EAPIEbuildPhases> > ebuild_phases;
             NamedValue<n::iuse_flag_parse_options, IUseFlagParseOptions> iuse_flag_parse_options;
-            NamedValue<n::merger_options, FSMergerOptions> merger_options;
+            NamedValue<n::merger_options, MergerOptions> merger_options;
             NamedValue<n::package_dep_spec_parse_options, ELikePackageDepSpecOptions> package_dep_spec_parse_options;
             NamedValue<n::pipe_commands, std::shared_ptr<const EAPIPipeCommands> > pipe_commands;
             NamedValue<n::tools_options, std::shared_ptr<const EAPIToolsOptions> > tools_options;

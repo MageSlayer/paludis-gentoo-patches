@@ -27,6 +27,7 @@
 #include <paludis/util/named_value.hh>
 #include <paludis/util/timestamp.hh>
 #include <paludis/merger_entry_type.hh>
+#include <paludis/merger.hh>
 #include <iosfwd>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -93,7 +94,7 @@ namespace paludis
         NamedValue<n::merged_entries, std::shared_ptr<FSEntrySet> > merged_entries;
 
         NamedValue<n::no_chown, bool> no_chown;
-        NamedValue<n::options, FSMergerOptions> options;
+        NamedValue<n::options, MergerOptions> options;
         NamedValue<n::root, FSEntry> root;
     };
 
@@ -125,7 +126,8 @@ namespace paludis
      * \since 0.51 called FSMerger instead of Merger
      */
     class PALUDIS_VISIBLE FSMerger :
-        private Pimp<FSMerger>
+        private Pimp<FSMerger>,
+        public Merger
     {
         private:
             void track_renamed_dir_recursive(const FSEntry &);
@@ -148,9 +150,6 @@ namespace paludis
              */
             void make_check_fail();
 
-            /**
-             * Allows subclasses to extend hook calls.
-             */
             virtual Hook extend_hook(const Hook &);
 
             /**

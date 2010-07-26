@@ -86,7 +86,7 @@ namespace
                             n::fix_mtimes_before() = Timestamp(0, 0),
                             n::image() = FSEntry::cwd() / "vdb_merger_TEST_dir" / what / "image",
                             n::merged_entries() = std::make_shared<FSEntrySet>(),
-                            n::options() = FSMergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs,
+                            n::options() = MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs,
                             n::output_manager() = std::make_shared<StandardOutputManager>(),
                             n::package_id() = std::shared_ptr<PackageID>(),
                             n::root() = root_dir

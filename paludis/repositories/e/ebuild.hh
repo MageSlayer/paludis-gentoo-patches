@@ -303,7 +303,7 @@ namespace paludis
             NamedValue<n::environment_file, FSEntry> environment_file;
             NamedValue<n::image, FSEntry> image;
             NamedValue<n::maybe_output_manager, std::shared_ptr<OutputManager> > maybe_output_manager;
-            NamedValue<n::merger_options, FSMergerOptions> merger_options;
+            NamedValue<n::merger_options, MergerOptions> merger_options;
             NamedValue<n::package_id, std::shared_ptr<const erepository::ERepositoryID> > package_id;
         };
 

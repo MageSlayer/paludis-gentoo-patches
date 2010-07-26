@@ -25,23 +25,3 @@ make_enum_FSMergerStatusFlag()
 END
 }
 
-make_enum_FSMergerOption()
-{
-    prefix mo
-    want_destringify
-
-    key mo_rewrite_symlinks            "Fix symlinks that point into the image directory (otherwise throw an error)"
-    key mo_allow_empty_dirs            "Allow merging empty directories"
-    key mo_preserve_mtimes             "Preserve mtimes \since 0.42"
-    key mo_nondestructive              "Don't destroy the image when merging \since 0.44"
-
-    doxygen_comment << "END"
-        /**
-         * Boolean options for Merger, used by MergerOptions
-         *
-         * \ingroup g_repository
-         * \since 0.26
-         */
-END
-}
-

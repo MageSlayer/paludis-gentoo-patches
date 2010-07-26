@@ -2389,7 +2389,7 @@ ERepository::install(const std::shared_ptr<const ERepositoryID> & id,
                         + "' to destination '" + stringify(install_action.options.destination()->name())
                         + "' because destination does not provide destination_interface");
 
-            FSMergerOptions extra_merger_options;
+            MergerOptions extra_merger_options;
             if (preserve_work_choice && preserve_work_choice->enabled())
                 extra_merger_options += mo_nondestructive;
 

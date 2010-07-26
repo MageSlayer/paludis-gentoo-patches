@@ -56,7 +56,7 @@ namespace paludis
         NamedValue<n::image, FSEntry> image;
         NamedValue<n::install_under, FSEntry> install_under;
         NamedValue<n::merged_entries, std::shared_ptr<FSEntrySet> > merged_entries;
-        NamedValue<n::options, FSMergerOptions> options;
+        NamedValue<n::options, MergerOptions> options;
         NamedValue<n::output_manager, std::shared_ptr<OutputManager> > output_manager;
         NamedValue<n::package_id, std::shared_ptr<const PackageID> > package_id;
         NamedValue<n::root, FSEntry> root;

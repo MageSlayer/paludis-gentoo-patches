@@ -305,14 +305,14 @@ namespace
                 version_spec_options += destringify<VersionSpecOption>(*t);
         }
 
-        FSMergerOptions merger_options;
+        MergerOptions merger_options;
         {
             std::list<std::string> merger_options_tokens;
             tokenise_whitespace(check_get(k, "merger_options"), std::back_inserter(merger_options_tokens));
             for (std::list<std::string>::const_iterator t(merger_options_tokens.begin()),
                     t_end(merger_options_tokens.end()) ;
                     t != t_end ; ++t)
-                merger_options += destringify<FSMergerOption>(*t);
+                merger_options += destringify<MergerOption>(*t);
         }
 
         return std::make_shared<SupportedEAPI>(make_named_values<SupportedEAPI>(

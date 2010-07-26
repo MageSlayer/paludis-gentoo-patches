@@ -181,14 +181,14 @@ namespace
                             n::install_under() = FSEntry("/"),
                             n::merged_entries() = std::make_shared<FSEntrySet>(),
                             n::no_chown() = true,
-                            n::options() = FSMergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs,
+                            n::options() = MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs,
                             n::root() = root_dir
                         ))
             {
             }
 
             MergerTest(const std::string & custom_test,
-                    const FSMergerOptions & o = FSMergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs,
+                    const MergerOptions & o = MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs,
                     const bool fix = false) :
                 TestCase("merge " + custom_test + " test"),
                 image_dir("fs_merger_TEST_dir/" + custom_test + "/image"),

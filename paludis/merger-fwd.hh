@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 David Leverton
+ * Copyright (c) 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,37 +17,28 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_FS_MERGER_FWD_HH
-#define PALUDIS_GUARD_PALUDIS_FS_MERGER_FWD_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_MERGER_FWD_HH
+#define PALUDIS_GUARD_PALUDIS_MERGER_FWD_HH 1
 
 #include <iosfwd>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/options-fwd.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 
-/** \file
- * Forward declarations for paludis/fs_merger.hh .
- *
- * \ingroup g_repository
- * \since 0.51
- */
-
 namespace paludis
 {
-#include <paludis/fs_merger-se.hh>
+
+#include <paludis/merger-se.hh>
 
     /**
-     * Status flags for Merger.
+     * Boolean options for Merger.
      *
      * \ingroup g_repository
      * \since 0.26
-     * \since 0.51 called FSMergerStatusFlags instead of MergeStatusFlags
      */
-    typedef Options<FSMergerStatusFlag> FSMergerStatusFlags;
+    typedef Options<MergerOption> MergerOptions;
 
-    class FSMergerParams;
-    class FSMergerError;
-    class FSMerger;
+    class Merger;
 }
 
 #endif
