@@ -1102,8 +1102,9 @@ namespace
         const std::shared_ptr<ExecuteJob> job;
         const std::shared_ptr<const JobLists> lists;
         JobRequirementIf require_if;
-        Mutex & retcode_mutex;
-        int & retcode;
+        Mutex & global_retcode_mutex;
+        int & global_retcode;
+        int local_retcode;
         ExecuteCounts & counts;
         std::string & old_heading;
 
@@ -1128,8 +1129,9 @@ namespace
             job(j),
             lists(l),
             require_if(r),
-            retcode_mutex(m),
-            retcode(rc),
+            global_retcode_mutex(m),
+            global_retcode(rc),
+            local_retcode(0),
             counts(k),
             old_heading(h),
             last_flushed(Timestamp::now()),
@@ -1181,19 +1183,13 @@ namespace
 
                 if (initial_state.failed)
                 {
-                    {
-                        Lock lock(retcode_mutex);
-                        retcode = 1;
-                    }
+                    local_retcode = 1;
                     want = false;
                     already_done_action(env, "failed", job, counts);
                 }
                 else if (initial_state.skipped)
                 {
-                    {
-                        Lock lock(retcode_mutex);
-                        retcode = 1;
-                    }
+                    local_retcode = 1;
                     want = false;
                     already_done_action(env, "skipped", job, counts);
                 }
@@ -1204,7 +1200,12 @@ namespace
                 }
             }
 
-            if ((0 != retcode) && want)
+            {
+                Lock lock(global_retcode_mutex);
+                local_retcode |= global_retcode;
+            }
+
+            if ((0 != local_retcode) && want)
             {
                 if (last_jri == require_if)
                     want = false;
@@ -1226,10 +1227,9 @@ namespace
 
             if (want)
             {
-                ExecuteOneVisitor execute(env, cmdline, counts, job_mutex, x1_pre, retcode);
-                int local_retcode(job->accept_returning<int>(execute));
-                Lock lock(retcode_mutex);
-                retcode |= local_retcode;
+                ExecuteOneVisitor execute(env, cmdline, counts, job_mutex, x1_pre, local_retcode);
+                int job_retcode(job->accept_returning<int>(execute));
+                local_retcode |= job_retcode;
             }
         }
 
@@ -1237,10 +1237,9 @@ namespace
         {
             if (want)
             {
-                ExecuteOneVisitor execute(env, cmdline, counts, job_mutex, x1_main, retcode);
-                int local_retcode(job->accept_returning<int>(execute));
-                Lock lock(retcode_mutex);
-                retcode |= local_retcode;
+                ExecuteOneVisitor execute(env, cmdline, counts, job_mutex, x1_main, local_retcode);
+                int job_retcode(job->accept_returning<int>(execute));
+                local_retcode |= job_retcode;
             }
             else if (! already_done)
             {
@@ -1305,8 +1304,8 @@ namespace
         {
             if (want)
             {
-                ExecuteOneVisitor execute(env, cmdline, counts, job_mutex, x1_post, retcode);
-                retcode |= job->accept_returning<int>(execute);
+                ExecuteOneVisitor execute(env, cmdline, counts, job_mutex, x1_post, local_retcode);
+                local_retcode |= job->accept_returning<int>(execute);
 
                 Lock lock(job_mutex);
                 const std::shared_ptr<OutputManager> output_manager(
@@ -1318,6 +1317,11 @@ namespace
                         display_active();
                     output_manager->nothing_more_to_come();
                 }
+            }
+
+            {
+                Lock lock(global_retcode_mutex);
+                global_retcode |= local_retcode;
             }
         }
     };
