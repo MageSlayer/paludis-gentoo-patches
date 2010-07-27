@@ -10,7 +10,7 @@
     <li><a href="different.html#elog">ELOG Equivalent</a></li>
     <li><a href="different.html#mkdir">No Automatic Directory Creation</a></li>
     <li><a href="different.html#revdep_rebuild">Revdep-rebuild Equivalent</a></li>
-    <li><a href="different.html#playman">No Layman (and how Playman is different)</a></li>
+    <li><a href="different.html#layman">Alternatives to Layman</a></li>
     <li><a href="different.html#package_provided">No <code>package.provided</code> file</a></li>
 </ul>
 
@@ -96,18 +96,20 @@ local root access.</p>
 
 <p>Use the <code>reconcilio</code> client.</p>
 
-<h2 id="playman">No Layman (and how Playman is different)</h2>
+<h2 id="layman">Alternatives to Layman</h2>
 
-<p>Many gentoo projects and developers maintain ebuild overlays which can be
-configured with the <code>layman</code> tool. Layman will not work with a
-paludis configuration. Instead, you should use the <code>playman</code> tool.
-Unlike layman, playman only creates the necessary configuration for the overlay,
-and is not used to sync it. A regular <code>paludis --sync</code> will sync your
-main repository as well as your overlays.</p>
+<p>Portage does not natively support multiple repositories, so the <code>layman</code> tool is used to hack around this.
+Since Paludis does support multiple repositories, there is no need for a fancy tool to manage and sync overlays.</p>
 
-<p>To get playman, just install paludis 0.26.0_alpha13 or later with the ruby-bindings
-USE flag enabled. The script will be installed as /usr/bin/playman.
-<code>playman --help</code> describes the available options.</p>
+<p>Adding a repository to Paludis simply requires an appropriate configuration file to be created, and then a normal
+sync to be carried out. It is possible to create repository configuration files by hand; however, an automated method is
+available which simplifies things considerably. To enable the automated method, simply ensure that the <a
+    href="../configuration/repositories/unavailable.html">unavailable</a> and <a
+    href="../configuration/repositories/repository.html">repository</a> repositories have been configured, and then a
+repository can automatically by configured simply by installing <code>repository/somerepo</code>.</p>
+
+<p>Note that previously, a script named <code>playman</code> was used for this purpose; the automatic method is now
+considered preferable.</p>
 
 <h2 id="package_provided">No <code>package.provided</code> file</h2>
 

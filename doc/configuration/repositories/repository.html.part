@@ -4,7 +4,7 @@
 
 <p>The <code>repository</code> repository format is used to automatically create configuration files for new
 repositories whose information is published in <code>unavailable</code> format repositories, which can be installed
-using packages named like <code>repository/foo</code>. At present it is only supported on Exherbo.</p>
+using packages named like <code>repository/foo</code>. It is supported on Exherbo and Gentoo.</p>
 
 <p>As well as the <a href="index.html">general keys supported for all repositories</a>, the following keys have meaning
 for <code>repository</code> format repositories:</p>
@@ -22,7 +22,20 @@ for <code>repository</code> format repositories:</p>
 
 <h2>Repository Template</h2>
 
-<p>A typical <code>/etc/paludis/repository.template</code> will look like:</p>
+<p>On Gentoo, a typical <code>/etc/paludis/repository.template</code> will look like:</p>
+
+<pre>
+format = %{repository_template_format}
+location = /var/db/paludis/repositories/%{repository_template_name}
+sync = %{repository_template_sync}
+master_repository = gentoo
+</pre>
+
+<p>Note that after a repository is 'installed', it may be necessary to remove the <code>master_repository</code> line
+from the generated repository configuration if a repository specifies its own masters via <code>layout.conf</code>.
+Paludis will issue a warning when this is necessary.
+
+<p>On Exherbo, a typical <code>/etc/paludis/repository.template</code> will look like:</p>
 
 <pre>
 format = %{repository_template_format}
@@ -30,6 +43,10 @@ location = /var/db/paludis/repositories/%{repository_template_name}
 sync = %{repository_template_sync}
 </pre>
 
-<p>Note again the <code>%</code> variables. Percent variables are replaced when creating the repository template file;
-variables using the conventional dollar syntax are written without substitution to the configuration file.</p>
+<p>There is no need to specify a <code>master_repository</code>, since all Exherbo repositories specify their own
+masters.</p>
+
+<p>In both cases, note again the <code>%</code> variables. Percent variables are replaced when creating the repository
+template file; variables using the conventional dollar syntax are written without substitution to the configuration
+file.</p>
 

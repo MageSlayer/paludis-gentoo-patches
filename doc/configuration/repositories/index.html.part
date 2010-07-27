@@ -50,6 +50,8 @@ other keys.</p>
 <h3>For All Distributions</h3>
 
 <ul>
+    <li><a href="e.html">e</a> format, for ebuild and exheres repositories.</li>
+    <li><a href="repository.html">repository</a>, for automatic repository configuration.</li>
     <li><a href="unavailable.html">unavailable</a>, for information about ebuilds that are present in an overlay or
     supplemental repository that is not configured on this system.</li>
     <li><a href="installed_unpackaged.html">installed_unpackaged</a>, for tracking installs of packages installed
@@ -59,7 +61,6 @@ other keys.</p>
 <h3>Gentoo and Derived Distributions</h3>
 
 <ul>
-    <li><a href="e.html">e</a> format, for ebuild repositories.</li>
     <li><a href="vdb.html">VDB</a>, for tracking installed ebuilds.</li>
 </ul>
 
@@ -79,11 +80,9 @@ old-style virtuals:</p>
 <h3>Exherbo</h3>
 
 <ul>
-    <li><a href="e.html">e</a> format, for exheres repositories.</li>
     <li><a href="exndbam.html">exndbam</a>, for tracking installed packages installed from an exheres.</li>
     <li><a href="accounts.html">accounts</a> and <a href="installed_accounts.html">installed_accounts</a> format
     repositories, for tracking user and group accounts.</li>
-    <li><a href="repository.html">repository</a>, for automatic repository configuration.</li>
     <li><a href="unwritten.html">unwritten</a>, for packages that have yet to be written.</li>
 </ul>
 
