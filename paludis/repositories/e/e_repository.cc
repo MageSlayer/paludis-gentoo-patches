@@ -1242,7 +1242,7 @@ ERepository::repository_factory_create(
         {
             Log::get_instance()->message("e.ebuild.configuration.master_repository", ll_warning, lc_context) << "Key 'master_repository' in '"
                 << f("repo_file") << "' will override '" << (FSEntry(location) / "metadata/layout.conf")
-                << "'.";
+                << "'. You should probably remove the 'master_repository' setting from your repository config file.";
         }
 
         Context context_local("When finding configuration information for master_repository '"
