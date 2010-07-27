@@ -49,10 +49,8 @@ namespace paludis
     }
 
     /**
-     * Options used by Synce
-     * .
+     * Options used by Syncer.
      *
-     InstalledAt(env->root())cer
      * \ingroup g_repository
      * \nosubgrouping
      */
