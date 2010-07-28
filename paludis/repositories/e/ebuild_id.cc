@@ -814,8 +814,13 @@ EbuildID::installed_time_key() const
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 EbuildID::from_repositories_key() const
 {
-    need_keys_added();
-    return _imp->generated_from;
+    if (might_be_binary())
+    {
+        need_keys_added();
+        return _imp->generated_from;
+    }
+    else
+        return make_null_shared_ptr();
 }
 
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
@@ -1537,5 +1542,20 @@ EbuildID::purge_invalid_cache() const
                 write_cache_file.unlink();
         }
     }
+}
+
+bool
+EbuildID::might_be_binary() const
+{
+    auto path(stringify(_imp->ebuild));
+    auto dot_pos(path.rfind('.'));
+
+    if (std::string::npos != dot_pos)
+    {
+        auto extension(path.substr(dot_pos + 1));
+        return 0 == extension.compare(0, 4, "pbin");
+    }
+    else
+        return false;
 }
 
