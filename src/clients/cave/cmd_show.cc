@@ -96,6 +96,7 @@ namespace
         args::SwitchArg a_flat;
         args::SwitchArg a_raw_names;
         args::SwitchArg a_one_version;
+        args::SwitchArg a_no_versions;
 
         ShowCommandLine() :
             g_object_options(main_options_section(), "Object Options", "Alter how objects are interpreted."),
@@ -123,7 +124,9 @@ namespace
                     "Display raw rather than human readable key names", true),
             a_one_version(&g_display_options, "one-version", '1',
                     "Display only a single version of any package, rather than all installed and the "
-                    "best installable package", true)
+                    "best installable package", true),
+            a_no_versions(&g_display_options, "no-versions", '0',
+                    "Don't display any version-specific information", true)
         {
             add_usage_line("spec ...");
         }
@@ -968,7 +971,10 @@ namespace
             cout << endl;
         }
 
-        if (cmdline.a_one_version.specified())
+        if (cmdline.a_no_versions.specified())
+        {
+        }
+        else if (cmdline.a_one_version.specified())
         {
             if (best_installable)
                 do_one_package_id(cmdline, env, best_installable, all_installed->empty() ? make_null_shared_ptr() : *all_installed->rbegin(), true);
