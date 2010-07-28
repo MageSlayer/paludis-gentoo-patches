@@ -421,6 +421,7 @@ paludis-*.*.*.tar.bz2
 /paludis/syncers/dotar+ftp
 /paludis/syncers/dotar+http
 /paludis/syncers/dotar+https
+/paludis/tar_merger_TEST
 /paludis/uninstall_list_TEST
 /paludis/user_dep_spec_TEST
 /paludis/util/Makefile.am

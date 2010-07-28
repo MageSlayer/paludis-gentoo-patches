@@ -163,6 +163,15 @@ if ENABLE_PYTHON_HOOKS
 lib_LTLIBRARIES += libpaludispythonhooks_@PALUDIS_PC_SLOT@.la
 endif
 
+if ENABLE_PBINS
+lib_LTLIBRARIES += libpaludistarextras_@PALUDIS_PC_SLOT@.la
+endif
+
+libpaludistarextras_@PALUDIS_PC_SLOT@_la_SOURCES = tar_extras.cc tar_extras.hh
+libpaludistarextras_@PALUDIS_PC_SLOT@_la_CXXFLAGS = $(AM_CXXFLAGS)
+libpaludistarextras_@PALUDIS_PC_SLOT@_la_LIBADD = -larchive
+libpaludistarextras_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
+
 paludis_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/
 paludis_include_HEADERS = headerlist seheaderlist
 

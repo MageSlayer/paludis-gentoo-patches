@@ -33,9 +33,11 @@ namespace paludis
     namespace n
     {
         typedef Name<struct environment_name> environment;
+        typedef Name<struct get_new_ids_or_minus_one_name> get_new_ids_or_minus_one;
         typedef Name<struct image_name> image;
         typedef Name<struct install_under_name> install_under;
         typedef Name<struct merged_entries_name> merged_entries;
+        typedef Name<struct no_chown_name> no_chown;
         typedef Name<struct options_name> options;
         typedef Name<struct root_name> root;
     }
@@ -51,9 +53,11 @@ namespace paludis
     struct MergerParams
     {
         NamedValue<n::environment, Environment *> environment;
+        NamedValue<n::get_new_ids_or_minus_one, std::function<std::pair<uid_t, gid_t> (const FSEntry &)> > get_new_ids_or_minus_one;
         NamedValue<n::image, FSEntry> image;
         NamedValue<n::install_under, FSEntry> install_under;
         NamedValue<n::merged_entries, std::shared_ptr<FSEntrySet> > merged_entries;
+        NamedValue<n::no_chown, bool> no_chown;
         NamedValue<n::options, MergerOptions> options;
         NamedValue<n::root, FSEntry> root;
     };
@@ -71,6 +75,8 @@ namespace paludis
         protected:
             bool symlink_needs_rewriting(const FSEntry &);
             void set_skipped_dir(const bool);
+            void do_ownership_fixes_recursive(const FSEntry &);
+            bool fixed_ownership_for(const FSEntry &);
 
             /**
              * Allows subclasses to extend hook calls.
@@ -119,9 +125,11 @@ namespace paludis
             virtual void on_dir(bool is_check, const FSEntry &, const FSEntry &);
             virtual void on_sym(bool is_check, const FSEntry &, const FSEntry &);
 
-            virtual void on_file_main(bool is_check, const EntryType, const FSEntry &, const FSEntry &) = 0;
-            virtual void on_dir_main(bool is_check, const EntryType, const FSEntry &, const FSEntry &) = 0;
-            virtual void on_sym_main(bool is_check, const EntryType, const FSEntry &, const FSEntry &) = 0;
+            virtual void on_file_main(bool is_check, const FSEntry &, const FSEntry &) = 0;
+            virtual void on_dir_main(bool is_check, const FSEntry &, const FSEntry &) = 0;
+            virtual void on_sym_main(bool is_check, const FSEntry &, const FSEntry &) = 0;
+
+            virtual void prepare_install_under() = 0;
 
         public:
             explicit Merger(const MergerParams &);
@@ -134,6 +142,11 @@ namespace paludis
              * Check a merge, return whether no errors were encountered.
              */
             virtual bool check() PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /**
+             * Perform the merge.
+             */
+            virtual void merge();
     };
 }
 

@@ -91,6 +91,7 @@ need_xml_check=
 need_pcrecpp_check=
 need_syck_check=
 need_gem_check=
+need_libarchive_check=
 need_resolver=
 
 dnl {{{ we can use abi::__cxa_demangle
@@ -1466,6 +1467,7 @@ AC_SUBST([ENABLE_VISIBILITY])
 AM_CONDITIONAL([ENABLE_PBINS], test "x$enable_pbins" = "xyes")
 if test x"$ENABLE_PBINS" = "xyes" ; then
 	AC_DEFINE([ENABLE_PBINS], [1], [Build pbin support])
+	need_libarchive_check=yes
 fi
 
 dnl }}}
@@ -1497,6 +1499,17 @@ if test "x$need_pcrecpp_check" = "xyes" ; then
 		[AC_MSG_ERROR([pcrecpp (http://www.pcre.org/) is required if --with-clients=inquisitio or --with-clients=cave is used])])
 	AC_SUBST(PCRECPPDEPS_CFLAGS)
 	AC_SUBST(PCRECPPDEPS_LIBS)
+fi
+dnl }}}
+
+dnl {{{ libarchive
+if test "x$need_libarchive_check" = "xyes" ; then
+	AC_MSG_CHECKING([for libarchive])
+	AC_PREPROC_IFELSE([
+#include <archive.h>
+],
+	[AC_MSG_RESULT([yes])],
+	[AC_MSG_ERROR([libarchive is required for pbins])])
 fi
 dnl }}}
 

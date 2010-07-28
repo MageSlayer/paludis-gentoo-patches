@@ -133,7 +133,6 @@ namespace paludis
             void relabel_dir_recursive(const FSEntry &, const FSEntry &);
             void rewrite_symlink_as_needed(const FSEntry &, const FSEntry &);
             void try_to_copy_xattrs(const FSEntry &, int, FSMergerStatusFlags &);
-            void do_ownership_fixes_recursive(const FSEntry &);
 
             Pimp<FSMerger>::ImpPtr & _imp;
 
@@ -160,7 +159,7 @@ namespace paludis
             ///\name Handle filesystem entry things
             ///\{
 
-            virtual void on_file_main(bool is_check, const EntryType, const FSEntry & src, const FSEntry & dst);
+            virtual void on_file_main(bool is_check, const FSEntry & src, const FSEntry & dst);
             virtual void on_file_over_nothing(bool is_check, const FSEntry &, const FSEntry &);
             virtual void on_file_over_file(bool is_check, const FSEntry &, const FSEntry &);
             virtual void on_file_over_dir(bool is_check, const FSEntry &, const FSEntry &);
@@ -171,7 +170,7 @@ namespace paludis
             virtual void unlink_file(FSEntry);
             virtual void record_install_file(const FSEntry &, const FSEntry &, const std::string &, const FSMergerStatusFlags &) = 0;
 
-            virtual void on_dir_main(bool is_check, const EntryType, const FSEntry & src, const FSEntry & dst);
+            virtual void on_dir_main(bool is_check, const FSEntry & src, const FSEntry & dst);
             virtual void on_dir_over_nothing(bool is_check, const FSEntry &, const FSEntry &);
             virtual void on_dir_over_file(bool is_check, const FSEntry &, const FSEntry &);
             virtual void on_dir_over_dir(bool is_check, const FSEntry &, const FSEntry &);
@@ -183,7 +182,7 @@ namespace paludis
             virtual void record_install_dir(const FSEntry &, const FSEntry &, const FSMergerStatusFlags &) = 0;
             virtual void record_install_under_dir(const FSEntry &, const FSMergerStatusFlags &) = 0;
 
-            virtual void on_sym_main(bool is_check, const EntryType, const FSEntry & src, const FSEntry & dst);
+            virtual void on_sym_main(bool is_check, const FSEntry & src, const FSEntry & dst);
             virtual void on_sym_over_nothing(bool is_check, const FSEntry &, const FSEntry &);
             virtual void on_sym_over_file(bool is_check, const FSEntry &, const FSEntry &);
             virtual void on_sym_over_dir(bool is_check, const FSEntry &, const FSEntry &);
@@ -195,6 +194,8 @@ namespace paludis
             virtual void record_install_sym(const FSEntry &, const FSEntry &, const FSMergerStatusFlags &) = 0;
 
             virtual void unlink_misc(FSEntry);
+
+            virtual void prepare_install_under();
 
             ///\}
 
@@ -217,9 +218,6 @@ namespace paludis
 
             ///\}
 
-            /**
-             * Perform the merge.
-             */
             virtual void merge();
     };
 

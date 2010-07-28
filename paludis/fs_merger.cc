@@ -59,7 +59,6 @@ namespace paludis
     template <>
     struct Imp<FSMerger>
     {
-        std::set<FSEntry> fixed_entries;
         MergedMap merged_ids;
         FSMergerParams params;
 
@@ -79,9 +78,11 @@ FSMerger::FSMerger(const FSMergerParams & p) :
     Pimp<FSMerger>(p),
     Merger(make_named_values<MergerParams>(
                 n::environment() = p.environment(),
+                n::get_new_ids_or_minus_one() = p.get_new_ids_or_minus_one(),
                 n::image() = p.image(),
                 n::install_under() = p.install_under(),
                 n::merged_entries() = p.merged_entries(),
+                n::no_chown() = p.no_chown(),
                 n::options() = p.options(),
                 n::root() = p.root()
                 )),
@@ -96,9 +97,6 @@ FSMerger::~FSMerger()
 void
 FSMerger::merge()
 {
-    Context context("When performing merge from '" + stringify(_imp->params.image()) + "' to '"
-            + stringify(_imp->params.root()) + "':");
-
     struct SaveUmask
     {
         mode_t m;
@@ -114,43 +112,27 @@ FSMerger::merge()
         }
     } old_umask(::umask(0000));
 
-    if (0 != _imp->params.environment()->perform_hook(extend_hook(
-                         Hook("merger_install_pre")
-                         ("INSTALL_SOURCE", stringify(_imp->params.image()))
-                         ("INSTALL_DESTINATION", stringify(_imp->params.root())))).max_exit_status())
-        Log::get_instance()->message("merger.pre_hooks.failure", ll_warning, lc_context) <<
-            "Merge of '" << _imp->params.image() << "' to '" << _imp->params.root() << "' pre hooks returned non-zero";
+    Merger::merge();
+}
 
-    /* special handling for install_under */
-    {
-        Context local_context("When preparing install_under directory '" + stringify(_imp->params.install_under()) + "' under root '"
-                + stringify(_imp->params.root()) + "':");
+void
+FSMerger::prepare_install_under()
+{
+    Context context("When preparing install_under directory '" + stringify(_imp->params.install_under()) + "' under root '"
+            + stringify(_imp->params.root()) + "':");
 
-        std::list<FSEntry> dd;
-        for (FSEntry d(_imp->params.root().realpath() / _imp->params.install_under()), d_end(_imp->params.root().realpath()) ;
-                d != d_end ; d = d.dirname())
-            dd.push_front(d);
-        for (std::list<FSEntry>::iterator d(dd.begin()), d_end(dd.end()) ; d != d_end ; ++d)
-            if (! d->exists())
-            {
-                d->mkdir();
-                track_install_under_dir(*d, FSMergerStatusFlags());
-            }
-            else
-                track_install_under_dir(*d, FSMergerStatusFlags() + msi_used_existing);
-    }
-
-    if (! _imp->params.no_chown())
-        do_ownership_fixes_recursive(_imp->params.image());
-
-    do_dir_recursive(false, _imp->params.image(), (_imp->params.root() / _imp->params.install_under()).realpath());
-
-    if (0 != _imp->params.environment()->perform_hook(extend_hook(
-                         Hook("merger_install_post")
-                         ("INSTALL_SOURCE", stringify(_imp->params.image()))
-                         ("INSTALL_DESTINATION", stringify(_imp->params.root())))).max_exit_status())
-        Log::get_instance()->message("merger.post_hooks.failure", ll_warning, lc_context) <<
-            "Merge of '" << _imp->params.image() << "' to '" << _imp->params.root() << "' post hooks returned non-zero";
+    std::list<FSEntry> dd;
+    for (FSEntry d(_imp->params.root().realpath() / _imp->params.install_under()), d_end(_imp->params.root().realpath()) ;
+            d != d_end ; d = d.dirname())
+        dd.push_front(d);
+    for (std::list<FSEntry>::iterator d(dd.begin()), d_end(dd.end()) ; d != d_end ; ++d)
+        if (! d->exists())
+        {
+            d->mkdir();
+            track_install_under_dir(*d, FSMergerStatusFlags());
+        }
+        else
+            track_install_under_dir(*d, FSMergerStatusFlags() + msi_used_existing);
 }
 
 void
@@ -308,59 +290,6 @@ FSMerger::on_sym_over_misc(bool is_check, const FSEntry & src, const FSEntry & d
     track_install_sym(src, dst, install_sym(src, dst) + msi_unlinked_first);
 }
 
-void
-FSMerger::do_ownership_fixes_recursive(const FSEntry & dir)
-{
-    for (DirIterator d(dir, { dio_include_dotfiles, dio_inode_sort }), d_end ; d != d_end ; ++d)
-    {
-        std::pair<uid_t, gid_t> new_ids(_imp->params.get_new_ids_or_minus_one()(*d));
-        if (uid_t(-1) != new_ids.first || gid_t(-1) != new_ids.second)
-        {
-            FSEntry f(*d);
-            f.lchown(new_ids.first, new_ids.second);
-
-            if (et_sym != entry_type(*d))
-            {
-                mode_t mode(f.permissions());
-
-                if (et_dir == entry_type(*d))
-                {
-                    if (uid_t(-1) != new_ids.first)
-                        mode &= ~S_ISUID;
-                    if (gid_t(-1) != new_ids.second)
-                        mode &= ~S_ISGID;
-                }
-
-                f.chmod(mode); /* set*id */
-            }
-
-            _imp->fixed_entries.insert(f);
-        }
-
-        EntryType m(entry_type(*d));
-        switch (m)
-        {
-            case et_sym:
-            case et_file:
-                continue;
-
-            case et_dir:
-                do_ownership_fixes_recursive(*d);
-                continue;
-
-            case et_misc:
-                throw FSMergerError("Unexpected 'et_misc' entry found at: " + stringify(*d));
-                continue;
-
-            case et_nothing:
-            case last_et:
-                ;
-        }
-
-        throw InternalError(PALUDIS_HERE, "Unexpected entry_type '" + stringify(m) + "'");
-    }
-}
-
 FSMergerStatusFlags
 FSMerger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::string & dst_name)
 {
@@ -492,7 +421,7 @@ FSMerger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::
         _imp->merged_ids.insert(make_pair(src.lowlevel_id(), stringify(dst_real)));
     }
 
-    if (_imp->fixed_entries.end() != _imp->fixed_entries.find(src))
+    if (fixed_ownership_for(src))
         result += msi_fixed_ownership;
 
     if (0 != _imp->params.environment()->perform_hook(extend_hook(
@@ -532,7 +461,7 @@ FSMerger::track_renamed_dir_recursive(const FSEntry & dst)
     for (DirIterator d(dst, { dio_include_dotfiles, dio_inode_sort }), d_end ; d != d_end ; ++d)
     {
         FSMergerStatusFlags merged_how;
-        if (_imp->fixed_entries.end() != _imp->fixed_entries.find(_imp->params.image() / *d))
+        if (fixed_ownership_for(_imp->params.image() / *d))
             merged_how += msi_fixed_ownership;
         EntryType m(entry_type(*d));
         switch (m)
@@ -659,7 +588,7 @@ FSMerger::install_dir(const FSEntry & src, const FSEntry & dst_dir)
         try_to_copy_xattrs(src, dst_fd, result);
     }
 
-    if (_imp->fixed_entries.end() != _imp->fixed_entries.find(src))
+    if (fixed_ownership_for(src))
         result += msi_fixed_ownership;
 
     if (0 != _imp->params.environment()->perform_hook(extend_hook(
@@ -727,7 +656,7 @@ FSMerger::install_sym(const FSEntry & src, const FSEntry & dst_dir)
     if (! _imp->params.no_chown())
     {
         dst.lchown(src.owner(), src.group());
-        if (_imp->fixed_entries.end() != _imp->fixed_entries.find(src))
+        if (fixed_ownership_for(src))
             result += msi_fixed_ownership;
     }
 
@@ -938,8 +867,10 @@ FSMerger::track_install_sym(const FSEntry & src, const FSEntry & dst_dir, const 
 }
 
 void
-FSMerger::on_file_main(bool is_check, const EntryType m, const FSEntry & src, const FSEntry & dst)
+FSMerger::on_file_main(bool is_check, const FSEntry & src, const FSEntry & dst)
 {
+    EntryType m(entry_type(dst / src.basename()));
+
     do
     {
         switch (m)
@@ -973,8 +904,10 @@ FSMerger::on_file_main(bool is_check, const EntryType m, const FSEntry & src, co
 }
 
 void
-FSMerger::on_dir_main(bool is_check, const EntryType m, const FSEntry & src, const FSEntry & dst)
+FSMerger::on_dir_main(bool is_check, const FSEntry & src, const FSEntry & dst)
 {
+    EntryType m(entry_type(dst / src.basename()));
+
     do
     {
         switch (m)
@@ -1009,8 +942,10 @@ FSMerger::on_dir_main(bool is_check, const EntryType m, const FSEntry & src, con
 }
 
 void
-FSMerger::on_sym_main(bool is_check, const EntryType m, const FSEntry & src, const FSEntry & dst)
+FSMerger::on_sym_main(bool is_check, const FSEntry & src, const FSEntry & dst)
 {
+    EntryType m(entry_type(dst / src.basename()));
+
     do
     {
         switch (m)

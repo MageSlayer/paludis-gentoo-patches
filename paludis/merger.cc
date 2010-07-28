@@ -25,6 +25,7 @@
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/environment.hh>
 #include <paludis/hook.hh>
+#include <set>
 #include <istream>
 #include <ostream>
 
@@ -43,6 +44,8 @@ namespace paludis
         MergerParams params;
         bool result;
         bool skip_dir;
+
+        std::set<FSEntry> fixed_entries;
 
         Imp(const MergerParams & p) :
             params(p),
@@ -90,6 +93,35 @@ Merger::check()
 
     return _imp->result;
 }
+
+void
+Merger::merge()
+{
+    Context context("When performing merge from '" + stringify(_imp->params.image()) + "' to '"
+            + stringify(_imp->params.root()) + "':");
+
+    if (0 != _imp->params.environment()->perform_hook(extend_hook(
+                         Hook("merger_install_pre")
+                         ("INSTALL_SOURCE", stringify(_imp->params.image()))
+                         ("INSTALL_DESTINATION", stringify(_imp->params.root())))).max_exit_status())
+        Log::get_instance()->message("merger.pre_hooks.failure", ll_warning, lc_context) <<
+            "Merge of '" << _imp->params.image() << "' to '" << _imp->params.root() << "' pre hooks returned non-zero";
+
+    prepare_install_under();
+
+    if (! _imp->params.no_chown())
+        do_ownership_fixes_recursive(_imp->params.image());
+
+    do_dir_recursive(false, _imp->params.image(), (_imp->params.root() / _imp->params.install_under()).realpath());
+
+    if (0 != _imp->params.environment()->perform_hook(extend_hook(
+                         Hook("merger_install_post")
+                         ("INSTALL_SOURCE", stringify(_imp->params.image()))
+                         ("INSTALL_DESTINATION", stringify(_imp->params.root())))).max_exit_status())
+        Log::get_instance()->message("merger.post_hooks.failure", ll_warning, lc_context) <<
+            "Merge of '" << _imp->params.image() << "' to '" << _imp->params.root() << "' post hooks returned non-zero";
+}
+
 
 void
 Merger::make_check_fail()
@@ -196,8 +228,6 @@ Merger::on_file(bool is_check, const FSEntry & src, const FSEntry & dst)
 {
     Context context("When handling file '" + stringify(src) + "' to '" + stringify(dst) + "':");
 
-    EntryType m(entry_type(dst / src.basename()));
-
     if (is_check &&
         0 != _imp->params.environment()->perform_hook(extend_hook(
                          Hook("merger_check_file_pre")
@@ -224,7 +254,7 @@ Merger::on_file(bool is_check, const FSEntry & src, const FSEntry & dst)
         }
     }
 
-    on_file_main(is_check, m, src, dst);
+    on_file_main(is_check, src, dst);
 
     if (is_check &&
         0 != _imp->params.environment()->perform_hook(extend_hook(
@@ -238,8 +268,6 @@ void
 Merger::on_dir(bool is_check, const FSEntry & src, const FSEntry & dst)
 {
     Context context("When handling dir '" + stringify(src) + "' to '" + stringify(dst) + "':");
-
-    EntryType m(entry_type(dst / src.basename()));
 
     if (is_check &&
         0 != _imp->params.environment()->perform_hook(extend_hook(
@@ -268,7 +296,7 @@ Merger::on_dir(bool is_check, const FSEntry & src, const FSEntry & dst)
         }
     }
 
-    on_dir_main(is_check, m, src, dst);
+    on_dir_main(is_check, src, dst);
 
     if (is_check &&
         0 != _imp->params.environment()->perform_hook(extend_hook(
@@ -282,8 +310,6 @@ void
 Merger::on_sym(bool is_check, const FSEntry & src, const FSEntry & dst)
 {
     Context context("When handling sym '" + stringify(src) + "' to '" + stringify(dst) + "':");
-
-    EntryType m(entry_type(dst / src.basename()));
 
     if (is_check &&
         0 != _imp->params.environment()->perform_hook(extend_hook(
@@ -316,7 +342,7 @@ Merger::on_sym(bool is_check, const FSEntry & src, const FSEntry & dst)
             on_error(is_check, "Symlink to image detected at: " + stringify(src) + " (" + src.readlink() + ")");
     }
 
-    on_sym_main(is_check, m, src, dst);
+    on_sym_main(is_check, src, dst);
 
     if (is_check &&
         0 != _imp->params.environment()->perform_hook(extend_hook(
@@ -348,5 +374,64 @@ void
 Merger::set_skipped_dir(const bool value)
 {
     _imp->skip_dir = value;
+}
+
+void
+Merger::do_ownership_fixes_recursive(const FSEntry & dir)
+{
+    for (DirIterator d(dir, { dio_include_dotfiles, dio_inode_sort }), d_end ; d != d_end ; ++d)
+    {
+        std::pair<uid_t, gid_t> new_ids(_imp->params.get_new_ids_or_minus_one()(*d));
+        if (uid_t(-1) != new_ids.first || gid_t(-1) != new_ids.second)
+        {
+            FSEntry f(*d);
+            f.lchown(new_ids.first, new_ids.second);
+
+            if (et_sym != entry_type(*d))
+            {
+                mode_t mode(f.permissions());
+
+                if (et_dir == entry_type(*d))
+                {
+                    if (uid_t(-1) != new_ids.first)
+                        mode &= ~S_ISUID;
+                    if (gid_t(-1) != new_ids.second)
+                        mode &= ~S_ISGID;
+                }
+
+                f.chmod(mode); /* set*id */
+            }
+
+            _imp->fixed_entries.insert(f);
+        }
+
+        EntryType m(entry_type(*d));
+        switch (m)
+        {
+            case et_sym:
+            case et_file:
+                continue;
+
+            case et_dir:
+                do_ownership_fixes_recursive(*d);
+                continue;
+
+            case et_misc:
+                throw MergerError("Unexpected 'et_misc' entry found at: " + stringify(*d));
+                continue;
+
+            case et_nothing:
+            case last_et:
+                ;
+        }
+
+        throw InternalError(PALUDIS_HERE, "Unexpected entry_type '" + stringify(m) + "'");
+    }
+}
+
+bool
+Merger::fixed_ownership_for(const FSEntry & f)
+{
+    return _imp->fixed_entries.end() != _imp->fixed_entries.find(f);
 }
 
