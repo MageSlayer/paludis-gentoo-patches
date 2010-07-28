@@ -1200,12 +1200,13 @@ namespace
                 }
             }
 
+            int current_global_retcode;
             {
                 Lock lock(global_retcode_mutex);
-                local_retcode |= global_retcode;
+                current_global_retcode = global_retcode;
             }
 
-            if ((0 != local_retcode) && want)
+            if ((0 != local_retcode || 0 != current_global_retcode) && want)
             {
                 if (last_jri == require_if)
                     want = false;
