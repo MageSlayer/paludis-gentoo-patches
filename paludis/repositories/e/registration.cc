@@ -40,6 +40,15 @@ namespace
         else
             return 1;
     }
+
+    std::shared_ptr<Repository> deprecated_create(
+            Environment * const env,
+            const std::function<std::string (const std::string &)> & f)
+    {
+        Log::get_instance()->message("e.format.deprecated", ll_warning, lc_context)
+            << "Format '" << f("format") << "' in '" << f("repo_file") << "' is deprecated, use format='e' instead";
+        return ERepository::repository_factory_create(env, f);
+    }
 }
 
 namespace paludis
@@ -55,14 +64,24 @@ namespace paludis
     {
         std::shared_ptr<Set<std::string> > ebuild_formats(std::make_shared<Set<std::string>>());
         ebuild_formats->insert("e");
-        ebuild_formats->insert("ebuild");
-        ebuild_formats->insert("exheres");
 
         factory->add_repository_format(
                 ebuild_formats,
                 &ERepository::repository_factory_name,
                 &generic_importance,
                 &ERepository::repository_factory_create,
+                &ERepository::repository_factory_dependencies
+                );
+
+        std::shared_ptr<Set<std::string> > deprecated_ebuild_formats(std::make_shared<Set<std::string>>());
+        deprecated_ebuild_formats->insert("ebuild");
+        deprecated_ebuild_formats->insert("exheres");
+
+        factory->add_repository_format(
+                deprecated_ebuild_formats,
+                &ERepository::repository_factory_name,
+                &generic_importance,
+                &deprecated_create,
                 &ERepository::repository_factory_dependencies
                 );
 
