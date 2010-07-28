@@ -28,6 +28,7 @@
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/timestamp.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/selinux/security_context.hh>
 #include <paludis/environment.hh>
 #include <paludis/hook.hh>
@@ -61,59 +62,35 @@ namespace paludis
         std::set<FSEntry> fixed_entries;
         MergedMap merged_ids;
         FSMergerParams params;
-        bool result;
-        bool skip_dir;
 
         Imp(const FSMergerParams & p) :
-            params(p),
-            result(true),
-            skip_dir(false)
+            params(p)
         {
         }
     };
 }
 
 FSMergerError::FSMergerError(const std::string & s) throw () :
-    Exception(s)
+    MergerError(s)
 {
 }
 
 FSMerger::FSMerger(const FSMergerParams & p) :
-    Pimp<FSMerger>(p)
+    Pimp<FSMerger>(p),
+    Merger(make_named_values<MergerParams>(
+                n::environment() = p.environment(),
+                n::image() = p.image(),
+                n::install_under() = p.install_under(),
+                n::merged_entries() = p.merged_entries(),
+                n::options() = p.options(),
+                n::root() = p.root()
+                )),
+    _imp(Pimp<FSMerger>::_imp)
 {
 }
 
 FSMerger::~FSMerger()
 {
-}
-
-bool
-FSMerger::check()
-{
-    Context context("When checking merge from '" + stringify(_imp->params.image()) + "' to '"
-            + stringify(_imp->params.root()) + "':");
-
-    if (0 != _imp->params.environment()->perform_hook(extend_hook(
-                         Hook("merger_check_pre")
-                         ("INSTALL_SOURCE", stringify(_imp->params.image()))
-                         ("INSTALL_DESTINATION", stringify(_imp->params.root())))).max_exit_status())
-        make_check_fail();
-
-    do_dir_recursive(true, _imp->params.image(), _imp->params.root() / _imp->params.install_under());
-
-    if (0 != _imp->params.environment()->perform_hook(extend_hook(
-                         Hook("merger_check_post")
-                         ("INSTALL_SOURCE", stringify(_imp->params.image()))
-                         ("INSTALL_DESTINATION", stringify(_imp->params.root())))).max_exit_status())
-        make_check_fail();
-
-    return _imp->result;
-}
-
-void
-FSMerger::make_check_fail()
-{
-    _imp->result = false;
 }
 
 void
@@ -174,332 +151,6 @@ FSMerger::merge()
                          ("INSTALL_DESTINATION", stringify(_imp->params.root())))).max_exit_status())
         Log::get_instance()->message("merger.post_hooks.failure", ll_warning, lc_context) <<
             "Merge of '" << _imp->params.image() << "' to '" << _imp->params.root() << "' post hooks returned non-zero";
-}
-
-EntryType
-FSMerger::entry_type(const FSEntry & f)
-{
-    Context context("When checking type of '" + stringify(f) + "':");
-
-    if (! f.exists())
-        return et_nothing;
-
-    if (f.is_symbolic_link())
-        return et_sym;
-
-    if (f.is_regular_file())
-        return et_file;
-
-    if (f.is_directory())
-        return et_dir;
-
-    return et_misc;
-}
-
-void
-FSMerger::do_dir_recursive(bool is_check, const FSEntry & src, const FSEntry & dst)
-{
-    Context context("When " + stringify(is_check ? "checking" : "performing") + " merge from '" +
-            stringify(src) + "' to '" + stringify(dst) + "':");
-
-    if (! src.is_directory())
-        throw FSMergerError("Source directory '" + stringify(src) + "' is not a directory");
-    if ((! is_check) && (! dst.is_directory()))
-        throw FSMergerError("Destination directory '" + stringify(dst) + "' is not a directory");
-
-    on_enter_dir(is_check, src);
-
-    DirIterator d(src, { dio_include_dotfiles, dio_inode_sort }), d_end;
-
-    if (is_check && d == d_end && dst != _imp->params.root().realpath())
-    {
-        if (_imp->params.options()[mo_allow_empty_dirs])
-            Log::get_instance()->message("merger.empty_directory", ll_warning, lc_context) << "Installing empty directory '"
-                << stringify(dst) << "'";
-        else
-            on_error(is_check, "Attempted to install empty directory '" + stringify(dst) + "'");
-    }
-
-    for ( ; d != d_end ; ++d)
-    {
-        EntryType m(entry_type(*d));
-        switch (m)
-        {
-            case et_sym:
-                on_sym(is_check, *d, dst);
-                continue;
-
-            case et_file:
-                on_file(is_check, *d, dst);
-                continue;
-
-            case et_dir:
-                on_dir(is_check, *d, dst);
-                if (_imp->result)
-                {
-                    if (! _imp->skip_dir)
-                        do_dir_recursive(is_check, *d,
-                                is_check ? (dst / d->basename()) : (dst / d->basename()).realpath());
-                    else
-                        _imp->skip_dir = false;
-                }
-                continue;
-
-            case et_misc:
-                on_misc(is_check, *d, dst);
-                continue;
-
-            case et_nothing:
-            case last_et:
-                ;
-        }
-
-        throw InternalError(PALUDIS_HERE, "Unexpected entry_type '" + stringify(m) + "'");
-    }
-
-    on_leave_dir(is_check, src);
-}
-
-void
-FSMerger::on_file(bool is_check, const FSEntry & src, const FSEntry & dst)
-{
-    Context context("When handling file '" + stringify(src) + "' to '" + stringify(dst) + "':");
-
-    EntryType m(entry_type(dst / src.basename()));
-
-    if (is_check &&
-        0 != _imp->params.environment()->perform_hook(extend_hook(
-                         Hook("merger_check_file_pre")
-                         ("INSTALL_SOURCE", stringify(src))
-                         ("INSTALL_DESTINATION", stringify(dst / src.basename())))).max_exit_status())
-        make_check_fail();
-
-    if (! is_check)
-    {
-        HookResult hr(_imp->params.environment()->perform_hook(extend_hook(
-                        Hook("merger_install_file_override")
-                        ("INSTALL_SOURCE", stringify(src))
-                        ("INSTALL_DESTINATION", stringify(dst / src.basename()))
-                        .grab_output(Hook::AllowedOutputValues()("skip")))));
-
-        if (hr.max_exit_status() != 0)
-            Log::get_instance()->message("merger.file.skip_hooks.failure", ll_warning, lc_context) << "Merge of '"
-                << stringify(src) << "' to '" << stringify(dst) << "' skip hooks returned non-zero";
-        else if (hr.output() == "skip")
-        {
-            std::string tidy(stringify((dst / src.basename()).strip_leading(_imp->params.root().realpath())));
-            display_override("--- [skp] " + tidy);
-            return;
-        }
-    }
-
-    do
-    {
-        switch (m)
-        {
-            case et_nothing:
-                on_file_over_nothing(is_check, src, dst);
-                continue;
-
-            case et_sym:
-                on_file_over_sym(is_check, src, dst);
-                continue;
-
-            case et_dir:
-                on_file_over_dir(is_check, src, dst);
-                continue;
-
-            case et_misc:
-                on_file_over_misc(is_check, src, dst);
-                continue;
-
-            case et_file:
-                on_file_over_file(is_check, src, dst);
-                continue;
-
-            case last_et:
-                ;
-        }
-
-        throw InternalError(PALUDIS_HERE, "Unexpected entry_type '" + stringify(m) + "'");
-    } while (false);
-
-    if (is_check &&
-        0 != _imp->params.environment()->perform_hook(extend_hook(
-                         Hook("merger_check_file_post")
-                         ("INSTALL_SOURCE", stringify(src))
-                         ("INSTALL_DESTINATION", stringify(dst / src.basename())))).max_exit_status())
-        make_check_fail();
-}
-
-void
-FSMerger::on_dir(bool is_check, const FSEntry & src, const FSEntry & dst)
-{
-    Context context("When handling dir '" + stringify(src) + "' to '" + stringify(dst) + "':");
-
-    EntryType m(entry_type(dst / src.basename()));
-
-    if (is_check &&
-        0 != _imp->params.environment()->perform_hook(extend_hook(
-                         Hook("merger_check_dir_pre")
-                         ("INSTALL_SOURCE", stringify(src))
-                         ("INSTALL_DESTINATION", stringify(dst / src.basename())))).max_exit_status())
-        make_check_fail();
-
-    if (! is_check)
-    {
-        HookResult hr(_imp->params.environment()->perform_hook(extend_hook(
-                        Hook("merger_install_dir_override")
-                        ("INSTALL_SOURCE", stringify(src))
-                        ("INSTALL_DESTINATION", stringify(dst / src.basename()))
-                        .grab_output(Hook::AllowedOutputValues()("skip")))));
-
-        if (hr.max_exit_status() != 0)
-            Log::get_instance()->message("merger.dir.skip_hooks.failure", ll_warning, lc_context) << "Merge of '"
-                << stringify(src) << "' to '" << stringify(dst) << "' skip hooks returned non-zero";
-        else if (hr.output() == "skip")
-        {
-            std::string tidy(stringify((dst / src.basename()).strip_leading(_imp->params.root().realpath())));
-            display_override("--- [skp] " + tidy);
-            _imp->skip_dir = true;
-            return;
-        }
-    }
-
-    do
-    {
-        switch (m)
-        {
-            case et_nothing:
-                on_dir_over_nothing(is_check, src, dst);
-                continue;
-
-            case et_sym:
-                on_dir_over_sym(is_check, src, dst);
-                continue;
-
-            case et_dir:
-                on_dir_over_dir(is_check, src, dst);
-                continue;
-
-            case et_misc:
-                on_dir_over_misc(is_check, src, dst);
-                continue;
-
-            case et_file:
-                on_dir_over_file(is_check, src, dst);
-                continue;
-
-            case last_et:
-                ;
-        }
-
-        throw InternalError(PALUDIS_HERE, "Unexpected entry_type '" + stringify(m) + "'");
-
-    } while (false);
-
-    if (is_check &&
-        0 != _imp->params.environment()->perform_hook(extend_hook(
-                         Hook("merger_check_dir_post")
-                         ("INSTALL_SOURCE", stringify(src))
-                         ("INSTALL_DESTINATION", stringify(dst / src.basename())))).max_exit_status())
-        make_check_fail();
-}
-
-void
-FSMerger::on_sym(bool is_check, const FSEntry & src, const FSEntry & dst)
-{
-    Context context("When handling sym '" + stringify(src) + "' to '" + stringify(dst) + "':");
-
-    EntryType m(entry_type(dst / src.basename()));
-
-    if (is_check &&
-        0 != _imp->params.environment()->perform_hook(extend_hook(
-                         Hook("merger_check_sym_post")
-                         ("INSTALL_SOURCE", stringify(src))
-                         ("INSTALL_DESTINATION", stringify(dst / src.basename())))).max_exit_status())
-        make_check_fail();
-
-    if (! is_check)
-    {
-        HookResult hr(_imp->params.environment()->perform_hook(extend_hook(
-                        Hook("merger_install_sym_override")
-                        ("INSTALL_SOURCE", stringify(src))
-                        ("INSTALL_DESTINATION", stringify(dst / src.basename()))
-                        .grab_output(Hook::AllowedOutputValues()("skip")))));
-
-        if (hr.max_exit_status() != 0)
-            Log::get_instance()->message("merger.sym.skip_hooks.failure", ll_warning, lc_context) << "Merge of '"
-                << stringify(src) << "' to '" << stringify(dst) << "' skip hooks returned non-zero";
-        else if (hr.output() == "skip")
-        {
-            std::string tidy(stringify((dst / src.basename()).strip_leading(_imp->params.root().realpath())));
-            display_override("--- [skp] " + tidy);
-            return;
-        }
-    }
-    else
-    {
-        if (symlink_needs_rewriting(src) && ! _imp->params.options()[mo_rewrite_symlinks])
-            on_error(is_check, "Symlink to image detected at: " + stringify(src) + " (" + src.readlink() + ")");
-    }
-
-    do
-    {
-        switch (m)
-        {
-            case et_nothing:
-                on_sym_over_nothing(is_check, src, dst);
-                continue;
-
-            case et_sym:
-                on_sym_over_sym(is_check, src, dst);
-                continue;
-
-            case et_dir:
-                on_sym_over_dir(is_check, src, dst);
-                continue;
-
-            case et_misc:
-                on_sym_over_misc(is_check, src, dst);
-                continue;
-
-            case et_file:
-                on_sym_over_file(is_check, src, dst);
-                continue;
-
-            case last_et:
-                ;
-        }
-
-        throw InternalError(PALUDIS_HERE, "Unexpected entry_type '" + stringify(m) + "'");
-    } while (false);
-
-    if (is_check &&
-        0 != _imp->params.environment()->perform_hook(extend_hook(
-                         Hook("merger_check_sym_post")
-                         ("INSTALL_SOURCE", stringify(src))
-                         ("INSTALL_DESTINATION", stringify(dst / src.basename())))).max_exit_status())
-        make_check_fail();
-}
-
-void
-FSMerger::on_misc(bool is_check, const FSEntry & src, const FSEntry & dst)
-{
-    Context context("When handling misc '" + stringify(src) + "' to '" + stringify(dst) + "':");
-
-    on_error(is_check, "Cannot write '" + stringify(src) + "' to '" + stringify(dst) +
-            "' because it is not a recognised file type");
-}
-
-void
-FSMerger::on_enter_dir(bool, const FSEntry)
-{
-}
-
-void
-FSMerger::on_leave_dir(bool, const FSEntry)
-{
 }
 
 void
@@ -855,15 +506,6 @@ FSMerger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::
     return result;
 }
 
-bool
-FSMerger::symlink_needs_rewriting(const FSEntry & sym)
-{
-    std::string target(sym.readlink());
-    std::string real_image(stringify(_imp->params.image().realpath()));
-
-    return (0 == target.compare(0, real_image.length(), real_image));
-}
-
 void
 FSMerger::rewrite_symlink_as_needed(const FSEntry & src, const FSEntry & dst_dir)
 {
@@ -990,7 +632,7 @@ FSMerger::install_dir(const FSEntry & src, const FSEntry & dst_dir)
     {
         result += msi_rename;
         track_renamed_dir_recursive(dst);
-        _imp->skip_dir = true;
+        set_skipped_dir(true);
     }
     else
     {
@@ -1293,5 +935,111 @@ FSMerger::track_install_sym(const FSEntry & src, const FSEntry & dst_dir, const 
 {
     _imp->params.merged_entries()->insert(dst_dir / src.basename());
     record_install_sym(src, dst_dir, flags);
+}
+
+void
+FSMerger::on_file_main(bool is_check, const EntryType m, const FSEntry & src, const FSEntry & dst)
+{
+    do
+    {
+        switch (m)
+        {
+            case et_nothing:
+                on_file_over_nothing(is_check, src, dst);
+                continue;
+
+            case et_sym:
+                on_file_over_sym(is_check, src, dst);
+                continue;
+
+            case et_dir:
+                on_file_over_dir(is_check, src, dst);
+                continue;
+
+            case et_misc:
+                on_file_over_misc(is_check, src, dst);
+                continue;
+
+            case et_file:
+                on_file_over_file(is_check, src, dst);
+                continue;
+
+            case last_et:
+                ;
+        }
+
+        throw InternalError(PALUDIS_HERE, "Unexpected entry_type '" + stringify(m) + "'");
+    } while (false);
+}
+
+void
+FSMerger::on_dir_main(bool is_check, const EntryType m, const FSEntry & src, const FSEntry & dst)
+{
+    do
+    {
+        switch (m)
+        {
+            case et_nothing:
+                on_dir_over_nothing(is_check, src, dst);
+                continue;
+
+            case et_sym:
+                on_dir_over_sym(is_check, src, dst);
+                continue;
+
+            case et_dir:
+                on_dir_over_dir(is_check, src, dst);
+                continue;
+
+            case et_misc:
+                on_dir_over_misc(is_check, src, dst);
+                continue;
+
+            case et_file:
+                on_dir_over_file(is_check, src, dst);
+                continue;
+
+            case last_et:
+                ;
+        }
+
+        throw InternalError(PALUDIS_HERE, "Unexpected entry_type '" + stringify(m) + "'");
+
+    } while (false);
+}
+
+void
+FSMerger::on_sym_main(bool is_check, const EntryType m, const FSEntry & src, const FSEntry & dst)
+{
+    do
+    {
+        switch (m)
+        {
+            case et_nothing:
+                on_sym_over_nothing(is_check, src, dst);
+                continue;
+
+            case et_sym:
+                on_sym_over_sym(is_check, src, dst);
+                continue;
+
+            case et_dir:
+                on_sym_over_dir(is_check, src, dst);
+                continue;
+
+            case et_misc:
+                on_sym_over_misc(is_check, src, dst);
+                continue;
+
+            case et_file:
+                on_sym_over_file(is_check, src, dst);
+                continue;
+
+            case last_et:
+                ;
+        }
+
+        throw InternalError(PALUDIS_HERE, "Unexpected entry_type '" + stringify(m) + "'");
+    } while (false);
 }
 

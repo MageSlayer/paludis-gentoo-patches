@@ -28,6 +28,8 @@
 #include <paludis/util/timestamp.hh>
 #include <paludis/merger_entry_type.hh>
 #include <paludis/merger.hh>
+#include <paludis/environment-fwd.hh>
+#include <paludis/hook-fwd.hh>
 #include <iosfwd>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -45,9 +47,6 @@
 
 namespace paludis
 {
-    class Environment;
-    class Hook;
-
     namespace n
     {
         typedef Name<struct environment_name> environment;
@@ -106,7 +105,7 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE FSMergerError :
-        public Exception
+        public MergerError
     {
         public:
             ///\name Basic operations
@@ -134,8 +133,9 @@ namespace paludis
             void relabel_dir_recursive(const FSEntry &, const FSEntry &);
             void rewrite_symlink_as_needed(const FSEntry &, const FSEntry &);
             void try_to_copy_xattrs(const FSEntry &, int, FSMergerStatusFlags &);
-            bool symlink_needs_rewriting(const FSEntry &);
             void do_ownership_fixes_recursive(const FSEntry &);
+
+            Pimp<FSMerger>::ImpPtr & _imp;
 
         protected:
             ///\name Basic operations
@@ -145,32 +145,7 @@ namespace paludis
 
             ///\}
 
-            /**
-             * When called, makes check()'s result a failure.
-             */
-            void make_check_fail();
-
             virtual Hook extend_hook(const Hook &);
-
-            /**
-             * Determine the entry type of a filesystem entry.
-             */
-            virtual EntryType entry_type(const FSEntry &);
-
-            /**
-             * Handle a directory, recursively.
-             */
-            virtual void do_dir_recursive(bool is_check, const FSEntry &, const FSEntry &);
-
-            /**
-             * Allows subclasses to perform behaviour when entering a directory.
-             */
-            virtual void on_enter_dir(bool is_check, const FSEntry);
-
-            /**
-             * Allows subclasses to perform behaviour when leaving a directory.
-             */
-            virtual void on_leave_dir(bool is_check, const FSEntry);
 
             ///\name Track and record merges
             ///\{
@@ -185,7 +160,7 @@ namespace paludis
             ///\name Handle filesystem entry things
             ///\{
 
-            virtual void on_file(bool is_check, const FSEntry &, const FSEntry &);
+            virtual void on_file_main(bool is_check, const EntryType, const FSEntry & src, const FSEntry & dst);
             virtual void on_file_over_nothing(bool is_check, const FSEntry &, const FSEntry &);
             virtual void on_file_over_file(bool is_check, const FSEntry &, const FSEntry &);
             virtual void on_file_over_dir(bool is_check, const FSEntry &, const FSEntry &);
@@ -196,7 +171,7 @@ namespace paludis
             virtual void unlink_file(FSEntry);
             virtual void record_install_file(const FSEntry &, const FSEntry &, const std::string &, const FSMergerStatusFlags &) = 0;
 
-            virtual void on_dir(bool is_check, const FSEntry &, const FSEntry &);
+            virtual void on_dir_main(bool is_check, const EntryType, const FSEntry & src, const FSEntry & dst);
             virtual void on_dir_over_nothing(bool is_check, const FSEntry &, const FSEntry &);
             virtual void on_dir_over_file(bool is_check, const FSEntry &, const FSEntry &);
             virtual void on_dir_over_dir(bool is_check, const FSEntry &, const FSEntry &);
@@ -208,7 +183,7 @@ namespace paludis
             virtual void record_install_dir(const FSEntry &, const FSEntry &, const FSMergerStatusFlags &) = 0;
             virtual void record_install_under_dir(const FSEntry &, const FSMergerStatusFlags &) = 0;
 
-            virtual void on_sym(bool is_check, const FSEntry &, const FSEntry &);
+            virtual void on_sym_main(bool is_check, const EntryType, const FSEntry & src, const FSEntry & dst);
             virtual void on_sym_over_nothing(bool is_check, const FSEntry &, const FSEntry &);
             virtual void on_sym_over_file(bool is_check, const FSEntry &, const FSEntry &);
             virtual void on_sym_over_dir(bool is_check, const FSEntry &, const FSEntry &);
@@ -220,21 +195,8 @@ namespace paludis
             virtual void record_install_sym(const FSEntry &, const FSEntry &, const FSMergerStatusFlags &) = 0;
 
             virtual void unlink_misc(FSEntry);
-            virtual void on_misc(bool is_check, const FSEntry &, const FSEntry &);
 
             ///\}
-
-            /**
-             * What to do when an error occurs.
-             */
-            virtual void on_error(bool is_check, const std::string &) = 0;
-
-            /**
-             * What to do when a warning occurs.
-             */
-            virtual void on_warn(bool is_check, const std::string &) = 0;
-
-            virtual void display_override(const std::string &) const = 0;
 
             ///\name Configuration protection
             ///\{
@@ -254,11 +216,6 @@ namespace paludis
             FSMerger & operator= (const FSMerger &) = delete;
 
             ///\}
-
-            /**
-             * Check a merge, return whether no errors were encountered.
-             */
-            virtual bool check() PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Perform the merge.
