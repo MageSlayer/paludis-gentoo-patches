@@ -2725,13 +2725,17 @@ ERepository::merge(const MergeParams & m)
                 n::output_manager() = m.output_manager(),
                 n::package_id() = m.package_id(),
                 n::root() = FSEntry("/"),
-                n::tar_file() = _imp->params.binary_distdir() / (bin_dist_base + ".tar.bz2")
+                n::tar_file() = _imp->params.binary_distdir() / (bin_dist_base + ".tar")
             ));
 
     if (! merger.check())
         throw ActionFailedError("Not proceeding with install due to merge sanity check failing");
 
     merger.merge();
+
+    Command compress_cmd("bzip2 " + stringify(_imp->params.binary_distdir() / (bin_dist_base + ".tar")));
+    if (0 != run_command(compress_cmd))
+        throw ActionFailedError("Compressing tarball failed");
 
     FSEntry binary_ebuild_location(layout()->binary_ebuild_location(
                 m.package_id()->name(), m.package_id()->version(),

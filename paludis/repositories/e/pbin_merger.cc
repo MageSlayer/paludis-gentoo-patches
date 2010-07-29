@@ -63,7 +63,7 @@ namespace
 PbinMerger::PbinMerger(const PbinMergerParams & p) :
     Pimp<PbinMerger>(p),
     TarMerger(make_named_values<TarMergerParams>(
-                n::compression() = tmc_bz2,
+                n::compression() = tmc_none,
                 n::environment() = p.environment(),
                 n::fix_mtimes_before() = p.fix_mtimes_before(),
                 n::get_new_ids_or_minus_one() = std::bind(&get_new_ids_or_minus_one, p.environment(), std::placeholders::_1),
