@@ -113,6 +113,7 @@ Merger::merge()
         do_ownership_fixes_recursive(_imp->params.image());
 
     do_dir_recursive(false, _imp->params.image(), canonicalise_root_path(_imp->params.root() / _imp->params.install_under()));
+    on_done_merge();
 
     if (0 != _imp->params.environment()->perform_hook(extend_hook(
                          Hook("merger_install_post")
@@ -431,5 +432,10 @@ bool
 Merger::fixed_ownership_for(const FSEntry & f)
 {
     return _imp->fixed_entries.end() != _imp->fixed_entries.find(f);
+}
+
+void
+Merger::on_done_merge()
+{
 }
 

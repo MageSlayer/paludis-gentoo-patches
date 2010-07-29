@@ -109,6 +109,12 @@ namespace paludis
             virtual void on_leave_dir(bool is_check, const FSEntry);
 
             /**
+             * Allows subclasses to perform behaviour when everything has been
+             * merged, before any cleanup.
+             */
+            virtual void on_done_merge();
+
+            /**
              * What to do when an error occurs.
              */
             virtual void on_error(bool is_check, const std::string &) = 0;
