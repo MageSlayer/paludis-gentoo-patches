@@ -69,6 +69,9 @@ namespace paludis
         private:
             Pimp<TarMerger>::ImpPtr & _imp;
 
+        protected:
+            virtual FSEntry canonicalise_root_path(const FSEntry & f);
+
         public:
             TarMerger(const TarMergerParams &);
             ~TarMerger();

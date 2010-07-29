@@ -197,6 +197,10 @@ namespace paludis
 
             virtual void prepare_install_under();
 
+            virtual FSEntry canonicalise_root_path(const FSEntry & f);
+
+            virtual void do_dir_recursive(bool is_check, const FSEntry &, const FSEntry &);
+
             ///\}
 
             ///\name Configuration protection

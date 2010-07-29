@@ -112,7 +112,7 @@ Merger::merge()
     if (! _imp->params.no_chown())
         do_ownership_fixes_recursive(_imp->params.image());
 
-    do_dir_recursive(false, _imp->params.image(), (_imp->params.root() / _imp->params.install_under()).realpath());
+    do_dir_recursive(false, _imp->params.image(), canonicalise_root_path(_imp->params.root() / _imp->params.install_under()));
 
     if (0 != _imp->params.environment()->perform_hook(extend_hook(
                          Hook("merger_install_post")
@@ -137,8 +137,6 @@ Merger::do_dir_recursive(bool is_check, const FSEntry & src, const FSEntry & dst
 
     if (! src.is_directory())
         throw MergerError("Source directory '" + stringify(src) + "' is not a directory");
-    if ((! is_check) && (! dst.is_directory()))
-        throw MergerError("Destination directory '" + stringify(dst) + "' is not a directory");
 
     on_enter_dir(is_check, src);
 
@@ -172,7 +170,7 @@ Merger::do_dir_recursive(bool is_check, const FSEntry & src, const FSEntry & dst
                 {
                     if (! _imp->skip_dir)
                         do_dir_recursive(is_check, *d,
-                                is_check ? (dst / d->basename()) : (dst / d->basename()).realpath());
+                                is_check ? (dst / d->basename()) : canonicalise_root_path(dst / d->basename()));
                     else
                         _imp->skip_dir = false;
                 }

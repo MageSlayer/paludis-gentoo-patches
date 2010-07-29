@@ -978,3 +978,18 @@ FSMerger::on_sym_main(bool is_check, const FSEntry & src, const FSEntry & dst)
     } while (false);
 }
 
+FSEntry
+FSMerger::canonicalise_root_path(const FSEntry & f)
+{
+    return f.realpath();
+}
+
+void
+FSMerger::do_dir_recursive(bool is_check, const FSEntry & src, const FSEntry & dst)
+{
+    if ((! is_check) && (! dst.is_directory()))
+        throw MergerError("Destination directory '" + stringify(dst) + "' is not a directory");
+
+    Merger::do_dir_recursive(is_check, src, dst);
+}
+

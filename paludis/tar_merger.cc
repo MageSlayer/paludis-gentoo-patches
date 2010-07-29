@@ -148,3 +148,9 @@ TarMerger::merge()
     }
 }
 
+FSEntry
+TarMerger::canonicalise_root_path(const FSEntry & f)
+{
+    return f;
+}
+

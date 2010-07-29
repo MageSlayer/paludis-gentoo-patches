@@ -131,6 +131,8 @@ namespace paludis
 
             virtual void prepare_install_under() = 0;
 
+            virtual FSEntry canonicalise_root_path(const FSEntry &) = 0;
+
         public:
             explicit Merger(const MergerParams &);
             ~Merger();
