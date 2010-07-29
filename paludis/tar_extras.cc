@@ -70,6 +70,24 @@ paludis_tar_extras_add_file(PaludisTarExtras * const extras, const std::string &
 
 extern "C"
 void
+paludis_tar_extras_add_sym(PaludisTarExtras * const extras, const std::string & from, const std::string & path, const std::string & dest)
+{
+    struct archive_entry * entry(archive_entry_new());
+
+    struct stat st;
+    lstat(from.c_str(), &st);
+
+    archive_entry_copy_pathname(entry, path.c_str());
+    archive_entry_copy_stat(entry, &st);
+    archive_entry_copy_symlink(entry, dest.c_str());
+    archive_write_header(extras->archive, entry);
+
+    archive_write_finish_entry(extras->archive);
+    archive_entry_free(entry);
+}
+
+extern "C"
+void
 paludis_tar_extras_cleanup(PaludisTarExtras * const extras)
 {
     archive_write_close(extras->archive);

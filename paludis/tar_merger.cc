@@ -39,11 +39,13 @@ namespace
     {
         typedef PaludisTarExtras * (* InitPtr) (const std::string &);
         typedef void (* AddFilePtr) (PaludisTarExtras * const, const std::string &, const std::string &);
+        typedef void (* AddSymPtr) (PaludisTarExtras * const, const std::string &, const std::string &, const std::string &);
         typedef void (* CleanupPtr) (PaludisTarExtras * const);
 
         void * handle;
         InitPtr init;
         AddFilePtr add_file;
+        AddSymPtr add_sym;
         CleanupPtr cleanup;
 
         TarMergerHandle()
@@ -59,6 +61,10 @@ namespace
             add_file = STUPID_CAST(AddFilePtr, ::dlsym(handle, "paludis_tar_extras_add_file"));
             if (! add_file)
                 throw MergerError("Unable to add_file from libpaludistarextras due to error '" + stringify(::dlerror()) + "' from dlsym");
+
+            add_sym = STUPID_CAST(AddSymPtr, ::dlsym(handle, "paludis_tar_extras_add_sym"));
+            if (! add_sym)
+                throw MergerError("Unable to add_sym from libpaludistarextras due to error '" + stringify(::dlerror()) + "' from dlsym");
 
             cleanup = STUPID_CAST(CleanupPtr, ::dlsym(handle, "paludis_tar_extras_cleanup"));
             if (! cleanup)
@@ -121,8 +127,10 @@ TarMerger::on_dir_main(bool, const FSEntry &, const FSEntry &)
 }
 
 void
-TarMerger::on_sym_main(bool, const FSEntry &, const FSEntry &)
+TarMerger::on_sym_main(bool, const FSEntry & src, const FSEntry & dst)
 {
+    (*TarMergerHandle::get_instance()->add_sym)(_imp->tar, stringify(src), strip_leading(stringify(dst / src.basename()), "/"),
+            stringify(src.readlink()));
 }
 
 void

@@ -119,6 +119,12 @@ namespace test_cases
 
             TEST_CHECK((FSEntry("tar_merger_TEST_dir") / "simple_extract" / "subdir" / "subsubdir" / "script").is_regular_file());
             TEST_CHECK((FSEntry("tar_merger_TEST_dir") / "simple_extract" / "subdir" / "subsubdir" / "script").has_permission(fs_ug_owner, fs_perm_execute));
+
+            TEST_CHECK((FSEntry("tar_merger_TEST_dir") / "simple_extract" / "goodsym").is_symbolic_link());
+            TEST_CHECK((FSEntry("tar_merger_TEST_dir") / "simple_extract" / "goodsym").readlink() == "file");
+
+            TEST_CHECK((FSEntry("tar_merger_TEST_dir") / "simple_extract" / "badsym").is_symbolic_link());
+            TEST_CHECK((FSEntry("tar_merger_TEST_dir") / "simple_extract" / "badsym").readlink() == "nothing");
         }
     } test_simple_tar_merger;
 }
