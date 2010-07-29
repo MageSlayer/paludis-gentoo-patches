@@ -1510,6 +1510,19 @@ if test "x$need_libarchive_check" = "xyes" ; then
 ],
 	[AC_MSG_RESULT([yes])],
 	[AC_MSG_ERROR([libarchive is required for pbins])])
+
+	AC_MSG_CHECKING([whether your libarchive is new enough])
+	AC_PREPROC_IFELSE([
+#include <archive.h>
+
+int main(int, char **)
+{
+	struct archive * archive;
+    archive_write_set_format_gnutar(archive);
+}
+],
+	[AC_MSG_RESULT([yes])],
+	[AC_MSG_ERROR([a more recent libarchive than the one you have is required for pbins])])
 fi
 dnl }}}
 
