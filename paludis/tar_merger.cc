@@ -130,6 +130,7 @@ TarMerger::on_file_main(bool is_check, const FSEntry & src, const FSEntry & dst)
 void
 TarMerger::add_file(const FSEntry & src, const FSEntry & dst)
 {
+    track_install_file(src, dst);
     (*TarMergerHandle::get_instance()->add_file)(_imp->tar, stringify(src), strip_leading(stringify(dst), "/"));
 }
 
@@ -139,8 +140,12 @@ TarMerger::on_dir_main(bool, const FSEntry &, const FSEntry &)
 }
 
 void
-TarMerger::on_sym_main(bool, const FSEntry & src, const FSEntry & dst)
+TarMerger::on_sym_main(bool is_check, const FSEntry & src, const FSEntry & dst)
 {
+    if (is_check)
+        return;
+
+    track_install_sym(src, dst / src.basename());
     (*TarMergerHandle::get_instance()->add_sym)(_imp->tar, stringify(src), strip_leading(stringify(dst / src.basename()), "/"),
             stringify(src.readlink()));
 }

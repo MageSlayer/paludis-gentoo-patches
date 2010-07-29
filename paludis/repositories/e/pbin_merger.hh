@@ -76,6 +76,9 @@ namespace paludis
 
                 virtual void on_done_merge();
 
+                virtual void track_install_file(const FSEntry &, const FSEntry &);
+                virtual void track_install_sym(const FSEntry &, const FSEntry &);
+
             public:
                 PbinMerger(const PbinMergerParams &);
                 ~PbinMerger();

@@ -67,6 +67,14 @@ namespace
         void display_override(const std::string &) const
         {
         }
+
+        void track_install_file(const FSEntry &, const FSEntry &)
+        {
+        }
+
+        void track_install_sym(const FSEntry &, const FSEntry &)
+        {
+        }
     };
 }
 

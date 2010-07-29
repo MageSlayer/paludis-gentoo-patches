@@ -76,6 +76,9 @@ namespace paludis
 
             virtual void add_file(const FSEntry &, const FSEntry &);
 
+            virtual void track_install_file(const FSEntry &, const FSEntry &) = 0;
+            virtual void track_install_sym(const FSEntry &, const FSEntry &) = 0;
+
         public:
             TarMerger(const TarMergerParams &);
             ~TarMerger();

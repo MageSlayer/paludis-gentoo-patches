@@ -167,3 +167,15 @@ PbinMerger::on_done_merge()
     add_file(_imp->params.environment_file(), FSEntry("/PBIN/environment"));
 }
 
+void
+PbinMerger::track_install_file(const FSEntry &, const FSEntry & dst)
+{
+    display_override(">>> [obj] " + stringify(dst));
+}
+
+void
+PbinMerger::track_install_sym(const FSEntry &, const FSEntry & dst)
+{
+    display_override(">>> [sym] " + stringify(dst));
+}
+
