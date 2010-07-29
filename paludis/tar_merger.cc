@@ -124,7 +124,13 @@ TarMerger::on_file_main(bool is_check, const FSEntry & src, const FSEntry & dst)
     if (is_check)
         return;
 
-    (*TarMergerHandle::get_instance()->add_file)(_imp->tar, stringify(src), strip_leading(stringify(dst / src.basename()), "/"));
+    add_file(src, dst / src.basename());
+}
+
+void
+TarMerger::add_file(const FSEntry & src, const FSEntry & dst)
+{
+    (*TarMergerHandle::get_instance()->add_file)(_imp->tar, stringify(src), strip_leading(stringify(dst), "/"));
 }
 
 void

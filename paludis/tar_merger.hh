@@ -74,6 +74,8 @@ namespace paludis
         protected:
             virtual FSEntry canonicalise_root_path(const FSEntry & f);
 
+            virtual void add_file(const FSEntry &, const FSEntry &);
+
         public:
             TarMerger(const TarMergerParams &);
             ~TarMerger();
