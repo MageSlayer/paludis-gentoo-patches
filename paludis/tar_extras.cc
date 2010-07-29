@@ -31,12 +31,17 @@ struct PaludisTarExtras
 
 extern "C"
 PaludisTarExtras *
-paludis_tar_extras_init(const std::string & f)
+paludis_tar_extras_init(const std::string & f, const std::string & compress)
 {
     auto extras(new PaludisTarExtras);
     extras->archive = archive_write_new();
-    archive_write_set_compression_none(extras->archive);
-    archive_write_set_format_pax(extras->archive);
+
+    if (compress == "bz2")
+        archive_write_set_compression_bzip2(extras->archive);
+    else
+        archive_write_set_compression_none(extras->archive);
+
+    archive_write_set_format_gnutar(extras->archive);
     archive_write_open_filename(extras->archive, f.c_str());
     return extras;
 }

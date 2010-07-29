@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# vim: set sw=4 sts=4 et ft=sh :
+
+make_enum_TarMergerCompression()
+{
+    prefix tmc
+
+    key tmc_none               "No compression"
+    key tmc_bz2                "Compress using bz2"
+
+    doxygen_comment << "END"
+        /**
+         * Compression for TarMerger
+         *
+         * \see TarMerger
+         * \ingroup g_repository
+         */
+END
+}
+

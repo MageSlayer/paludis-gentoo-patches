@@ -28,6 +28,7 @@ namespace paludis
 {
     namespace n
     {
+        typedef Name<struct compression_name> compression;
         typedef Name<struct environment_name> environment;
         typedef Name<struct fix_mtimes_before_name> fix_mtimes_before;
         typedef Name<struct get_new_ids_or_minus_one_name> get_new_ids_or_minus_one;
@@ -50,6 +51,7 @@ namespace paludis
      */
     struct TarMergerParams
     {
+        NamedValue<n::compression, TarMergerCompression> compression;
         NamedValue<n::environment, Environment *> environment;
         NamedValue<n::fix_mtimes_before, Timestamp> fix_mtimes_before;
         NamedValue<n::get_new_ids_or_minus_one, std::function<std::pair<uid_t, gid_t> (const FSEntry &)> > get_new_ids_or_minus_one;

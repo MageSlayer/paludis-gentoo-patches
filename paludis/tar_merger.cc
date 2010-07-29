@@ -23,7 +23,11 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/util/strip.hh>
+#include <paludis/util/exception.hh>
+#include <paludis/util/stringify.hh>
 #include <paludis/about.hh>
+
+#include <ostream>
 
 #include <dlfcn.h>
 #include <stdint.h>
@@ -32,12 +36,14 @@
 
 using namespace paludis;
 
+#include <paludis/tar_merger-se.cc>
+
 namespace
 {
     struct TarMergerHandle :
         Singleton<TarMergerHandle>
     {
-        typedef PaludisTarExtras * (* InitPtr) (const std::string &);
+        typedef PaludisTarExtras * (* InitPtr) (const std::string &, const std::string &);
         typedef void (* AddFilePtr) (PaludisTarExtras * const, const std::string &, const std::string &);
         typedef void (* AddSymPtr) (PaludisTarExtras * const, const std::string &, const std::string &, const std::string &);
         typedef void (* CleanupPtr) (PaludisTarExtras * const);
@@ -141,7 +147,26 @@ TarMerger::prepare_install_under()
 void
 TarMerger::merge()
 {
-    _imp->tar = (*TarMergerHandle::get_instance()->init)(stringify(_imp->params.tar_file()));
+    std::string compress;
+
+    switch (_imp->params.compression())
+    {
+        case tmc_none:
+            compress = "none";
+            break;
+
+        case tmc_bz2:
+            compress = "bz2";
+            break;
+
+        case last_tmc:
+            break;
+    };
+
+    if (compress.empty())
+        throw InternalError(PALUDIS_HERE, "unknown compress");
+
+    _imp->tar = (*TarMergerHandle::get_instance()->init)(stringify(_imp->params.tar_file()), compress);
 
     try
     {

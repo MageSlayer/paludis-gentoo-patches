@@ -87,6 +87,7 @@ namespace test_cases
 
             TestEnvironment env;
             TestTarMerger merger(make_named_values<TarMergerParams>(
+                        n::compression() = tmc_none,
                         n::environment() = &env,
                         n::fix_mtimes_before() = Timestamp(0, 0),
                         n::get_new_ids_or_minus_one() = &get_new_ids_or_minus_one,

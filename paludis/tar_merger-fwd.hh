@@ -20,9 +20,15 @@
 #ifndef PALUDIS_GUARD_PALUDIS_TAR_MERGER_FWD_HH
 #define PALUDIS_GUARD_PALUDIS_TAR_MERGER_FWD_HH 1
 
+#include <paludis/util/attributes.hh>
+#include <iosfwd>
+
 namespace paludis
 {
     class TarMerger;
+
+#include <paludis/tar_merger-se.hh>
+
 }
 
 #endif
