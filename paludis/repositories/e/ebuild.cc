@@ -39,7 +39,6 @@
 #include <paludis/util/destringify.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/set.hh>
-#include <paludis/util/cookie.hh>
 #include <paludis/output_manager.hh>
 
 #include <paludis/about.hh>
@@ -1202,14 +1201,10 @@ WriteBinaryEbuildCommand::operator() ()
         throw ActionFailedError("Don't know how to write binary ebuilds using EAPI 'pbin-1+" +
                 params.package_id()->eapi()->exported_name());
 
-    std::string bindistfile(stringify(params.destination_repository()->name()) + "--" + stringify(params.package_id()->name().category())
-            + "--" + stringify(params.package_id()->name().package()) + "-" + stringify(params.package_id()->version())
-            + "--" + cookie());
-
     std::string ebuild_cmd(getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis") +
             "/write_binary_ebuild.bash '" +
             stringify(params.binary_ebuild_location()) + "' '" +
-            stringify(params.binary_distdir() / bindistfile) + "' '" +
+            stringify(params.binary_distdir() / params.binary_dist_base()) + "' '" +
             stringify(params.environment_file()) + "' '" +
             stringify(params.image()) + "'");
 

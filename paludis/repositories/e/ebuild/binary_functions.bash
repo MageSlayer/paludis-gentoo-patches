@@ -16,42 +16,6 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
-make_binary_tarball()
-{
-    local imagedir="${1}" envfile="${2}" bindistfile="${3}"
-    local tmpdir="${PALUDIS_TMPDIR}/pbin-$(basename "${bindistfile}" )"
-
-    echo tar cvf "${bindistfile}".tar --files-from /dev/null 1>&2
-    tar cvf "${bindistfile}".tar --files-from /dev/null || die "making tarball failed"
-
-    echo find "${imagedir}" -mindepth 1 -maxdepth 1 -printf '%f\0' \| \
-            xargs -0 tar rpvf "${bindistfile}".tar -C "${imagedir}" 1>&2
-    find "${imagedir}" -mindepth 1 -maxdepth 1 -printf '%f\0' | \
-            xargs -0 tar rpvf "${bindistfile}".tar -C "${imagedir}" \
-            || die "adding image to tarball failed"
-
-    echo rm -fr "${tmpdir}" 1>&2
-    rm -fr "${tmpdir}"
-
-    echo mkdir "${tmpdir}" 1>&2
-    mkdir "${tmpdir}" || die "mkdir ${tmpdir} failed"
-
-    echo mkdir "${tmpdir}"/PBIN 1>&2
-    mkdir "${tmpdir}"/PBIN 1>&2
-
-    echo bzip2 \< "${envfile}" \> "${tmpdir}/PBIN/environment.bz2" 1>&2
-    bzip2 < "${envfile}" > "${tmpdir}/PBIN/environment.bz2"
-
-    echo "tar rvf "${bindistfile}".tar -C "${tmpdir}" 'PBIN'" 1>&2
-    tar rvf "${bindistfile}".tar -C "${tmpdir}" 'PBIN' || die "adding env to tarball failed"
-
-    echo rm -fr "${tmpdir}" 1>&2
-    rm -fr "${tmpdir}"
-
-    echo bzip2 "${bindistfile}".tar 1>&2
-    bzip2 "${bindistfile}".tar || die "compressing tarball failed"
-}
-
 make_binary_ebuild()
 {
     local ebuildfile="${1}" bin_uri="${2}" binary_keywords="${3}"

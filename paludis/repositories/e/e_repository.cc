@@ -44,6 +44,7 @@
 #include <paludis/repositories/e/pretend_fetch_visitor.hh>
 #include <paludis/repositories/e/e_stripper.hh>
 #include <paludis/repositories/e/myoptions_requirements_verifier.hh>
+#include <paludis/repositories/e/pbin_merger.hh>
 
 #include <paludis/about.hh>
 #include <paludis/action.hh>
@@ -62,6 +63,7 @@
 #include <paludis/repository_name_cache.hh>
 #include <paludis/syncer.hh>
 
+#include <paludis/util/cookie.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/create_iterator-impl.hh>
 #include <paludis/util/destringify.hh>
@@ -2704,6 +2706,33 @@ ERepository::merge(const MergeParams & m)
     if (! is_suitable_destination_for(*m.package_id()))
         throw ActionFailedError("Not a suitable destination for '" + stringify(*m.package_id()) + "'");
 
+    bool fix_mtimes(std::static_pointer_cast<const ERepositoryID>(
+                m.package_id())->eapi()->supported()->ebuild_options()->fix_mtimes());
+
+    std::string bin_dist_base(stringify(name()) + "--" + stringify(m.package_id()->name().category())
+            + "--" + stringify(m.package_id()->name().package()) + "-" + stringify(m.package_id()->version())
+            + "--" + cookie());
+
+    PbinMerger merger(
+            make_named_values<PbinMergerParams>(
+                n::environment() = _imp->params.environment(),
+                n::environment_file() = m.environment_file(),
+                n::fix_mtimes_before() = fix_mtimes ?  m.build_start_time() : Timestamp(0, 0),
+                n::image() = m.image_dir(),
+                n::install_under() = FSEntry("/"),
+                n::merged_entries() = m.merged_entries(),
+                n::options() = m.options(),
+                n::output_manager() = m.output_manager(),
+                n::package_id() = m.package_id(),
+                n::root() = FSEntry("/"),
+                n::tar_file() = _imp->params.binary_distdir() / (bin_dist_base + ".tar.bz2")
+            ));
+
+    if (! merger.check())
+        throw ActionFailedError("Not proceeding with install due to merge sanity check failing");
+
+    merger.merge();
+
     FSEntry binary_ebuild_location(layout()->binary_ebuild_location(
                 m.package_id()->name(), m.package_id()->version(),
                 "pbin-1+" + std::static_pointer_cast<const ERepositoryID>(m.package_id())->eapi()->name()));
@@ -2726,18 +2755,19 @@ ERepository::merge(const MergeParams & m)
 
     WriteBinaryEbuildCommand write_binary_ebuild_command(
             make_named_values<WriteBinaryEbuildCommandParams>(
-            n::binary_distdir() = _imp->params.binary_distdir(),
-            n::binary_ebuild_location() = binary_ebuild_location,
-            n::binary_keywords() = binary_keywords,
-            n::builddir() = _imp->params.builddir(),
-            n::destination_repository() = this,
-            n::environment() = _imp->params.environment(),
-            n::environment_file() = m.environment_file(),
-            n::image() = m.image_dir(),
-            n::maybe_output_manager() = m.output_manager(),
-            n::merger_options() = std::static_pointer_cast<const ERepositoryID>(m.package_id())->eapi()->supported()->merger_options(),
-            n::package_id() = std::static_pointer_cast<const ERepositoryID>(m.package_id())
-            ));
+                n::binary_dist_base() = bin_dist_base,
+                n::binary_distdir() = _imp->params.binary_distdir(),
+                n::binary_ebuild_location() = binary_ebuild_location,
+                n::binary_keywords() = binary_keywords,
+                n::builddir() = _imp->params.builddir(),
+                n::destination_repository() = this,
+                n::environment() = _imp->params.environment(),
+                n::environment_file() = m.environment_file(),
+                n::image() = m.image_dir(),
+                n::maybe_output_manager() = m.output_manager(),
+                n::merger_options() = std::static_pointer_cast<const ERepositoryID>(m.package_id())->eapi()->supported()->merger_options(),
+                n::package_id() = std::static_pointer_cast<const ERepositoryID>(m.package_id())
+                ));
 
     write_binary_ebuild_command();
 }

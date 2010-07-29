@@ -115,30 +115,6 @@ main()
         die "ebuildfile \"${ebuildfile}\" exists and is not a regular file"
     fi
 
-    if ! [[ -d $(dirname "${bindistfile}" ) ]] ; then
-        die "dirname(bindistfile) \"$(dirname "${bindistfile}" )\" is not a directory"
-    fi
-
-    if [[ -e "${bindistfile}".tar ]] ; then
-        die "bindistfile \"${bindistfile}.tar\" already exists, not overwriting"
-    fi
-
-    if [[ -e "${bindistfile}".tar.bz2 ]] ; then
-        die "bindistfile \"${bindistfile}.tar.bz2\" already exists, not overwriting"
-    fi
-
-    if ! [[ -f "${envfile}" ]] ; then
-        die "envfile \"${envfile}\" is not a file"
-    fi
-
-    if ! [[ -d "${imagedir}" ]] ; then
-        die "imagedir \"${imagedir}\" is not a directory"
-    fi
-
-    ebuild_section "Writing binary tarball to '${bindistfile}.tar.bz2'..."
-
-    make_binary_tarball "${imagedir}" "${envfile}" "${bindistfile}"
-
     ebuild_section "Loading saved environment..."
 
     ebuild_safe_source "${envfile}"

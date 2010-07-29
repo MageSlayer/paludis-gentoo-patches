@@ -68,6 +68,7 @@ noinst_HEADERS = \
 	metadata_xml.hh \
 	myoption.hh \
 	myoptions_requirements_verifier.hh \
+	pbin_merger.hh \
 	pipe_command_handler.hh \
 	profile.hh \
 	profile_file.hh \
@@ -126,6 +127,7 @@ libpaludiserepository_la_SOURCES = \
 	metadata_xml.cc \
 	myoption.cc \
 	myoptions_requirements_verifier.cc \
+	pbin_merger.cc \
 	pipe_command_handler.cc \
 	profile.cc \
 	profile_file.cc \

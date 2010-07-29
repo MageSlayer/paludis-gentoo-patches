@@ -21,12 +21,12 @@ builtin_pivotbin()
     [[ ! -d "${!PALUDIS_TEMP_DIR_VAR}" ]] && die "Can't use \${${PALUDIS_TEMP_DIR_VAR}}=${!PALUDIS_TEMP_DIR_VAR}"
 
     ebuild_section "Extracting package environment"
-    echo tar jxvf "${!PALUDIS_BINARY_DISTDIR_VARIABLE}"/${!PALUDIS_ARCHIVES_VAR} -C "${!PALUDIS_TEMP_DIR_VAR}" --strip-components 1 PBIN/environment.bz2 1>&2
-    tar jxvf "${!PALUDIS_BINARY_DISTDIR_VARIABLE}"/${!PALUDIS_ARCHIVES_VAR} -C "${!PALUDIS_TEMP_DIR_VAR}" --strip-components 1 PBIN/environment.bz2 || die "Couldn't extract env"
+    echo tar jxvf "${!PALUDIS_BINARY_DISTDIR_VARIABLE}"/${!PALUDIS_ARCHIVES_VAR} -C "${!PALUDIS_TEMP_DIR_VAR}" --strip-components 1 PBIN/environment 1>&2
+    tar jxvf "${!PALUDIS_BINARY_DISTDIR_VARIABLE}"/${!PALUDIS_ARCHIVES_VAR} -C "${!PALUDIS_TEMP_DIR_VAR}" --strip-components 1 PBIN/environment || die "Couldn't extract env"
 
     ebuild_section "Switching to package environment"
     export BINARY_REPOSITORY="${REPOSITORY}"
-    export PALUDIS_LOAD_ENVIRONMENT="${!PALUDIS_TEMP_DIR_VAR}/environment.bz2"
+    export PALUDIS_LOAD_ENVIRONMENT="${!PALUDIS_TEMP_DIR_VAR}/environment"
     ebuild_load_environment --pivot
     export EAPI="${EAPI#pbin-1+}"
 
