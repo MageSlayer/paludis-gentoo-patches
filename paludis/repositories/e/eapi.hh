@@ -125,6 +125,7 @@ namespace paludis
         typedef Name<struct ignore_pivot_env_functions_name> ignore_pivot_env_functions;
         typedef Name<struct ignore_pivot_env_variables_name> ignore_pivot_env_variables;
         typedef Name<struct inherited_name> inherited;
+        typedef Name<struct is_pbin_name> is_pbin;
         typedef Name<struct iuse_name> iuse;
         typedef Name<struct iuse_effective_name> iuse_effective;
         typedef Name<struct iuse_flag_parse_options_name> iuse_flag_parse_options;
@@ -271,6 +272,7 @@ namespace paludis
             NamedValue<n::ebuild_metadata_variables, std::shared_ptr<const EAPIEbuildMetadataVariables> > ebuild_metadata_variables;
             NamedValue<n::ebuild_options, std::shared_ptr<const EAPIEbuildOptions> > ebuild_options;
             NamedValue<n::ebuild_phases, std::shared_ptr<const EAPIEbuildPhases> > ebuild_phases;
+            NamedValue<n::is_pbin, bool> is_pbin;
             NamedValue<n::iuse_flag_parse_options, IUseFlagParseOptions> iuse_flag_parse_options;
             NamedValue<n::merger_options, MergerOptions> merger_options;
             NamedValue<n::package_dep_spec_parse_options, ELikePackageDepSpecOptions> package_dep_spec_parse_options;

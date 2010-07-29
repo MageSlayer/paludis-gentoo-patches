@@ -326,6 +326,7 @@ namespace
                         n::ebuild_metadata_variables() = make_ebuild_metadata_variables(k),
                         n::ebuild_options() = make_ebuild_options(k),
                         n::ebuild_phases() = make_ebuild_phases(k),
+                        n::is_pbin() = destringify_key<bool>(k, "is_pbin"),
                         n::iuse_flag_parse_options() = iuse_flag_parse_options,
                         n::merger_options() = merger_options,
                         n::package_dep_spec_parse_options() = package_dep_spec_parse_options,

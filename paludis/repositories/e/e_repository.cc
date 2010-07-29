@@ -2410,7 +2410,7 @@ ERepository::install(const std::shared_ptr<const ERepositoryID> & id,
         }
         else if (phase->option("strip"))
         {
-            if (! strip_restrict)
+            if ((! id->eapi()->supported()->is_pbin()) && (! strip_restrict))
             {
                 std::string libdir("lib");
                 FSEntry root(install_action.options.destination()->installed_root_key() ?

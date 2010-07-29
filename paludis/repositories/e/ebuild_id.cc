@@ -1448,59 +1448,72 @@ EbuildID::add_build_options(const std::shared_ptr<Choices> & choices) const
                         )));
         choices->add(build_options);
 
-        bool may_be_unrestricted_test(true), may_be_unrestricted_strip(true);
-
-        /* if we unconditionally restrict an action, don't add a build option
-         * for it. but if we conditionally restrict it, do, to avoid weirdness
-         * in cases like RESTRICT="test? ( test )." */
-        if (restrict_key())
+        if (! eapi()->supported()->is_pbin())
         {
-            UnconditionalRestrictFinder f;
-            restrict_key()->value()->root()->accept(f);
-            may_be_unrestricted_test = f.s.end() == f.s.find("test");
-            may_be_unrestricted_strip = f.s.end() == f.s.find("strip");
-        }
+            bool may_be_unrestricted_test(true), may_be_unrestricted_strip(true);
 
-        /* optional_tests */
-        if (eapi()->supported()->choices_options()->has_optional_tests())
-            if (may_be_unrestricted_test)
-                build_options->add(std::make_shared<ELikeOptionalTestsChoiceValue>(shared_from_this(), _imp->environment, build_options));
-
-        /* recommended_tests */
-        if (eapi()->supported()->choices_options()->has_recommended_tests())
-            if (may_be_unrestricted_test)
-                build_options->add(std::make_shared<ELikeRecommendedTestsChoiceValue>(shared_from_this(), _imp->environment, build_options));
-
-        /* expensive_tests */
-        if (eapi()->supported()->choices_options()->has_expensive_tests())
-        {
-            if (! _imp->defined_phases)
-                throw InternalError(PALUDIS_HERE, "bug! no defined_phases yet");
-
-            bool has_expensive_test_phase(false);
-            EAPIPhases phases(_imp->eapi->supported()->ebuild_phases()->ebuild_install());
-            for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
-                    phase != phase_end ; ++phase)
+            /* if we unconditionally restrict an action, don't add a build option
+             * for it. but if we conditionally restrict it, do, to avoid weirdness
+             * in cases like RESTRICT="test? ( test )." */
+            if (restrict_key())
             {
-                if (phase->option("expensive_tests"))
-                {
-                    if (_imp->defined_phases->value()->end() != _imp->defined_phases->value()->find(phase->equal_option("skipname")))
-                    {
-                        has_expensive_test_phase = true;
-                        break;
-                    }
-                }
+                UnconditionalRestrictFinder f;
+                restrict_key()->value()->root()->accept(f);
+                may_be_unrestricted_test = f.s.end() == f.s.find("test");
+                may_be_unrestricted_strip = f.s.end() == f.s.find("strip");
             }
 
-            if (has_expensive_test_phase)
-                build_options->add(std::make_shared<ELikeExpensiveTestsChoiceValue>(shared_from_this(), _imp->environment, build_options));
-        }
+            /* optional_tests */
+            if (eapi()->supported()->choices_options()->has_optional_tests())
+                if (may_be_unrestricted_test)
+                    build_options->add(std::make_shared<ELikeOptionalTestsChoiceValue>(shared_from_this(), _imp->environment, build_options));
 
-        /* split, strip */
-        if (may_be_unrestricted_strip)
-        {
-            build_options->add(std::make_shared<ELikeSplitChoiceValue>(shared_from_this(), _imp->environment, build_options));
-            build_options->add(std::make_shared<ELikeStripChoiceValue>(shared_from_this(), _imp->environment, build_options));
+            /* recommended_tests */
+            if (eapi()->supported()->choices_options()->has_recommended_tests())
+                if (may_be_unrestricted_test)
+                    build_options->add(std::make_shared<ELikeRecommendedTestsChoiceValue>(shared_from_this(), _imp->environment, build_options));
+
+            /* expensive_tests */
+            if (eapi()->supported()->choices_options()->has_expensive_tests())
+            {
+                if (! _imp->defined_phases)
+                    throw InternalError(PALUDIS_HERE, "bug! no defined_phases yet");
+
+                bool has_expensive_test_phase(false);
+                EAPIPhases phases(_imp->eapi->supported()->ebuild_phases()->ebuild_install());
+                for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
+                        phase != phase_end ; ++phase)
+                {
+                    if (phase->option("expensive_tests"))
+                    {
+                        if (_imp->defined_phases->value()->end() != _imp->defined_phases->value()->find(phase->equal_option("skipname")))
+                        {
+                            has_expensive_test_phase = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (has_expensive_test_phase)
+                    build_options->add(std::make_shared<ELikeExpensiveTestsChoiceValue>(shared_from_this(), _imp->environment, build_options));
+            }
+
+            /* split, strip */
+            if (may_be_unrestricted_strip)
+            {
+                build_options->add(std::make_shared<ELikeSplitChoiceValue>(shared_from_this(), _imp->environment, build_options));
+                build_options->add(std::make_shared<ELikeStripChoiceValue>(shared_from_this(), _imp->environment, build_options));
+            }
+
+            /* jobs */
+            if (! eapi()->supported()->ebuild_environment_variables()->env_jobs().empty())
+            {
+                if (! _imp->defined_phases)
+                    throw InternalError(PALUDIS_HERE, "bug! no defined_phases yet");
+
+                build_options->add(std::make_shared<ELikeJobsChoiceValue>(
+                            shared_from_this(), _imp->environment, build_options));
+            }
         }
 
         /* trace */
@@ -1510,16 +1523,6 @@ EbuildID::add_build_options(const std::shared_ptr<Choices> & choices) const
         /* preserve_work */
         build_options->add(std::make_shared<ELikePreserveWorkChoiceValue>(
                         shared_from_this(), _imp->environment, build_options, false));
-
-        /* jobs */
-        if (! eapi()->supported()->ebuild_environment_variables()->env_jobs().empty())
-        {
-            if (! _imp->defined_phases)
-                throw InternalError(PALUDIS_HERE, "bug! no defined_phases yet");
-
-            build_options->add(std::make_shared<ELikeJobsChoiceValue>(
-                            shared_from_this(), _imp->environment, build_options));
-        }
     }
 }
 
