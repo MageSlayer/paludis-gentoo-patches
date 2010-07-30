@@ -392,9 +392,11 @@ namespace test_cases
                                 n::install_under() = FSEntry("/"),
                                 n::location() = FSEntry("installed_repository_TEST_dir/src4a"),
                                 n::name() = QualifiedPackageName("cat/pkg4a"),
+                                n::preserve_work() = indeterminate,
                                 n::rewrite_ids_over_to_root() = -1,
                                 n::run_dependencies() = "",
                                 n::slot() = SlotName("foo"),
+                                n::strip() = indeterminate,
                                 n::version() = VersionSpec("1.0", { })
                             )));
                 env.package_database()->add_repository(1, source_repo);
@@ -450,9 +452,11 @@ namespace test_cases
                                 n::install_under() = FSEntry("/"),
                                 n::location() = FSEntry("installed_repository_TEST_dir/src4b1"),
                                 n::name() = QualifiedPackageName("cat/pkg4b"),
+                                n::preserve_work() = indeterminate,
                                 n::rewrite_ids_over_to_root() = -1,
                                 n::run_dependencies() = "",
                                 n::slot() = SlotName("foo"),
+                                n::strip() = indeterminate,
                                 n::version() = VersionSpec("1.0", { })
                                 )));
                 env.package_database()->add_repository(1, source_repo);
@@ -510,9 +514,11 @@ namespace test_cases
                                 n::install_under() = FSEntry("/"),
                                 n::location() = FSEntry("installed_repository_TEST_dir/src4b2"),
                                 n::name() = QualifiedPackageName("cat/pkg4b"),
+                                n::preserve_work() = indeterminate,
                                 n::rewrite_ids_over_to_root() = -1,
                                 n::run_dependencies() = "",
                                 n::slot() = SlotName("foo"),
+                                n::strip() = indeterminate,
                                 n::version() = VersionSpec("1.0", { })
                             )));
                 env.package_database()->add_repository(1, source_repo);

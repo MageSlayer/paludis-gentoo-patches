@@ -22,6 +22,7 @@
 
 #include <paludis/elike_choices-fwd.hh>
 #include <paludis/util/attributes.hh>
+#include <paludis/util/tribool-fwd.hh>
 #include <paludis/choice.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/package_id-fwd.hh>
@@ -33,10 +34,11 @@ namespace paludis
     {
         private:
             const bool _enabled;
+            const bool _forced;
 
         public:
             ELikeStripChoiceValue(const std::shared_ptr<const PackageID> &,
-                    const Environment * const env, const std::shared_ptr<const Choice> &);
+                    const Environment * const env, const std::shared_ptr<const Choice> &, const Tribool forced_value);
 
             virtual const UnprefixedChoiceName unprefixed_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const ChoiceNameWithPrefix name_with_prefix() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -56,10 +58,11 @@ namespace paludis
     {
         private:
             const bool _enabled;
+            const bool _forced;
 
         public:
             ELikeSplitChoiceValue(const std::shared_ptr<const PackageID> &,
-                    const Environment * const env, const std::shared_ptr<const Choice> &);
+                    const Environment * const env, const std::shared_ptr<const Choice> &, const Tribool forced_value);
 
             virtual const UnprefixedChoiceName unprefixed_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const ChoiceNameWithPrefix name_with_prefix() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -195,16 +198,17 @@ namespace paludis
     {
         private:
             const bool _enabled;
+            const bool _forced;
 
         public:
             /**
-             * \since 0.48.1
+             * \since 0.51.0
              */
             ELikePreserveWorkChoiceValue(
                     const std::shared_ptr<const PackageID> &,
                     const Environment * const env,
                     const std::shared_ptr<const Choice> &,
-                    const bool enabled_by_default);
+                    const Tribool forced_value);
 
             virtual const UnprefixedChoiceName unprefixed_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const ChoiceNameWithPrefix name_with_prefix() const PALUDIS_ATTRIBUTE((warn_unused_result));

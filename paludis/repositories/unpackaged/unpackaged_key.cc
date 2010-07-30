@@ -171,9 +171,20 @@ UnpackagedChoicesKey::value() const
                         n::raw_name() = canonical_build_options_raw_name(),
                         n::show_with_no_prefix() = false
                         )));
-        build_options->add(std::make_shared<ELikeSplitChoiceValue>(_imp->id->shared_from_this(), _imp->env, build_options));
-        build_options->add(std::make_shared<ELikeStripChoiceValue>(_imp->id->shared_from_this(), _imp->env, build_options));
-        build_options->add(std::make_shared<ELikePreserveWorkChoiceValue>(_imp->id->shared_from_this(), _imp->env, build_options, true));
+
+        Tribool strip(indeterminate);
+        if (_imp->id->strip_key())
+            strip = _imp->id->strip_key()->value();
+
+        build_options->add(std::make_shared<ELikeSplitChoiceValue>(_imp->id->shared_from_this(), _imp->env, build_options, strip));
+        build_options->add(std::make_shared<ELikeStripChoiceValue>(_imp->id->shared_from_this(), _imp->env, build_options, strip));
+
+        Tribool preserve_work(indeterminate);
+        if (_imp->id->preserve_work_key())
+            preserve_work = _imp->id->preserve_work_key()->value();
+
+        build_options->add(std::make_shared<ELikePreserveWorkChoiceValue>(_imp->id->shared_from_this(), _imp->env, build_options, preserve_work));
+
         _imp->value->add(build_options);
     }
 

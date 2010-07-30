@@ -23,6 +23,7 @@
 #include <paludis/repository.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/pimp.hh>
+#include <paludis/util/tribool.hh>
 
 namespace paludis
 {
@@ -34,9 +35,11 @@ namespace paludis
         typedef Name<struct install_under_name> install_under;
         typedef Name<struct location_name> location;
         typedef Name<struct name_name> name;
+        typedef Name<struct preserve_work_name> preserve_work;
         typedef Name<struct rewrite_ids_over_to_root_name> rewrite_ids_over_to_root;
         typedef Name<struct run_dependencies_name> run_dependencies;
         typedef Name<struct slot_name> slot;
+        typedef Name<struct strip_name> strip;
         typedef Name<struct version_name> version;
     }
 
@@ -50,9 +53,11 @@ namespace paludis
             NamedValue<n::install_under, FSEntry> install_under;
             NamedValue<n::location, FSEntry> location;
             NamedValue<n::name, QualifiedPackageName> name;
+            NamedValue<n::preserve_work, Tribool> preserve_work;
             NamedValue<n::rewrite_ids_over_to_root, int> rewrite_ids_over_to_root;
             NamedValue<n::run_dependencies, std::string> run_dependencies;
             NamedValue<n::slot, SlotName> slot;
+            NamedValue<n::strip, Tribool> strip;
             NamedValue<n::version, VersionSpec> version;
         };
     }

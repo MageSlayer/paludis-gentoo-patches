@@ -24,6 +24,7 @@
 #include <paludis/name-fwd.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/pimp.hh>
+#include <paludis/util/tribool.hh>
 #include <memory>
 
 namespace paludis
@@ -45,7 +46,8 @@ namespace paludis
             public:
                 UnpackagedID(const Environment * const, const QualifiedPackageName &, const VersionSpec &,
                         const SlotName &, const RepositoryName &, const FSEntry &,
-                        const std::string &, const std::string &, const std::string &);
+                        const std::string &, const std::string &, const std::string &,
+                        const Tribool, const Tribool);
 
                 ~UnpackagedID();
 
@@ -76,6 +78,9 @@ namespace paludis
                 virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > behaviours_key() const;
                 virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > from_repositories_key() const;
                 virtual const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Choices> > > choices_key() const;
+
+                const std::shared_ptr<const MetadataValueKey<bool> > strip_key() const;
+                const std::shared_ptr<const MetadataValueKey<bool> > preserve_work_key() const;
 
                 virtual bool supports_action(const SupportsActionTestBase &) const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual void perform_action(Action &) const;

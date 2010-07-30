@@ -39,8 +39,10 @@ ELikeStripChoiceValue::canonical_name_with_prefix()
 }
 
 ELikeStripChoiceValue::ELikeStripChoiceValue(const std::shared_ptr<const PackageID> & id,
-        const Environment * const env, const std::shared_ptr<const Choice> & choice) :
-    _enabled(! env->want_choice_enabled(id, choice, canonical_unprefixed_name()).is_false())
+        const Environment * const env, const std::shared_ptr<const Choice> & choice, const Tribool forced_value) :
+    _enabled(forced_value.is_indeterminate() ? ! env->want_choice_enabled(id, choice, canonical_unprefixed_name()).is_false() :
+            forced_value.is_true() ? true : false),
+    _forced(! forced_value.is_indeterminate())
 {
 }
 
@@ -105,8 +107,11 @@ ELikeSplitChoiceValue::canonical_name_with_prefix()
 }
 
 ELikeSplitChoiceValue::ELikeSplitChoiceValue(const std::shared_ptr<const PackageID> & id,
-        const Environment * const env, const std::shared_ptr<const Choice> & choice) :
-    _enabled(! env->want_choice_enabled(id, choice, canonical_unprefixed_name()).is_false())
+        const Environment * const env, const std::shared_ptr<const Choice> & choice,
+        const Tribool forced_value) :
+    _enabled(forced_value.is_indeterminate() ? ! env->want_choice_enabled(id, choice, canonical_unprefixed_name()).is_false() :
+            forced_value.is_true() ? true : false),
+    _forced(! forced_value.is_indeterminate())
 {
 }
 
@@ -546,10 +551,10 @@ ELikePreserveWorkChoiceValue::canonical_name_with_prefix()
 
 ELikePreserveWorkChoiceValue::ELikePreserveWorkChoiceValue(const std::shared_ptr<const PackageID> & id,
         const Environment * const env, const std::shared_ptr<const Choice> & choice,
-        const bool by_default) :
-    _enabled(by_default ?
-            ! env->want_choice_enabled(id, choice, canonical_unprefixed_name()).is_false() :
-            env->want_choice_enabled(id, choice, canonical_unprefixed_name()).is_true())
+        const Tribool forced_value) :
+    _enabled(forced_value.is_indeterminate() ? env->want_choice_enabled(id, choice, canonical_unprefixed_name()).is_true() :
+            forced_value.is_true() ? true : false),
+    _forced(! forced_value.is_indeterminate())
 {
 }
 

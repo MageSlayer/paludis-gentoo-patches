@@ -63,6 +63,8 @@ namespace paludis
         const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies_key;
         const std::shared_ptr<const MetadataValueKey<std::string> > description_key;
         const std::shared_ptr<const UnpackagedChoicesKey> choices_key;
+        const std::shared_ptr<LiteralMetadataValueKey<bool> > strip_key;
+        const std::shared_ptr<LiteralMetadataValueKey<bool> > preserve_work_key;
 
         Imp(const Environment * const e,
                 const QualifiedPackageName & q,
@@ -73,6 +75,8 @@ namespace paludis
                 const std::string & b,
                 const std::string & r,
                 const std::string & d,
+                const Tribool ds,
+                const Tribool dw,
                 const UnpackagedID * const id) :
             env(e),
             name(q),
@@ -87,7 +91,11 @@ namespace paludis
             run_dependencies_key(std::make_shared<UnpackagedDependencyKey>(env, "run_dependencies", "Run dependencies", mkt_dependencies,
                         run_dependencies_labels, r)),
             description_key(std::make_shared<LiteralMetadataValueKey<std::string> >("description", "Description", mkt_significant, d)),
-            choices_key(std::make_shared<UnpackagedChoicesKey>(env, "choices", "Choices", mkt_normal, id))
+            choices_key(std::make_shared<UnpackagedChoicesKey>(env, "choices", "Choices", mkt_normal, id)),
+            strip_key(ds.is_indeterminate() ? make_null_shared_ptr() :
+                    std::make_shared<LiteralMetadataValueKey<bool>>("strip", "Strip", mkt_internal, ds.is_true() ? true : false)),
+            preserve_work_key(dw.is_indeterminate() ? make_null_shared_ptr() :
+                    std::make_shared<LiteralMetadataValueKey<bool>>("preserve_work", "Preserve work", mkt_internal, dw.is_true() ? true : false))
         {
             build_dependencies_labels->push_back(std::make_shared<DependenciesBuildLabel>("build_dependencies",
                             return_literal_function(true)));
@@ -99,8 +107,8 @@ namespace paludis
 
 UnpackagedID::UnpackagedID(const Environment * const e, const QualifiedPackageName & q,
         const VersionSpec & v, const SlotName & s, const RepositoryName & n, const FSEntry & l,
-        const std::string & b, const std::string & r, const std::string & d) :
-    Pimp<UnpackagedID>(e, q, v, s, n, l, b, r, d, this),
+        const std::string & b, const std::string & r, const std::string & d, const Tribool ds, const Tribool dw) :
+    Pimp<UnpackagedID>(e, q, v, s, n, l, b, r, d, ds, dw, this),
     _imp(Pimp<UnpackagedID>::_imp)
 {
     add_metadata_key(_imp->slot_key);
@@ -109,6 +117,10 @@ UnpackagedID::UnpackagedID(const Environment * const e, const QualifiedPackageNa
     add_metadata_key(_imp->run_dependencies_key);
     add_metadata_key(_imp->description_key);
     add_metadata_key(_imp->choices_key);
+    if (_imp->strip_key)
+        add_metadata_key(_imp->strip_key);
+    if (_imp->preserve_work_key)
+        add_metadata_key(_imp->preserve_work_key);
 }
 
 UnpackagedID::~UnpackagedID()
@@ -296,6 +308,18 @@ const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 UnpackagedID::behaviours_key() const
 {
     return make_null_shared_ptr();
+}
+
+const std::shared_ptr<const MetadataValueKey<bool> >
+UnpackagedID::strip_key() const
+{
+    return _imp->strip_key;
+}
+
+const std::shared_ptr<const MetadataValueKey<bool> >
+UnpackagedID::preserve_work_key() const
+{
+    return _imp->preserve_work_key;
 }
 
 bool

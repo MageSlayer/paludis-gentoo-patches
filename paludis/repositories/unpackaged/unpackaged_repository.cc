@@ -62,7 +62,7 @@ namespace paludis
                 const UnpackagedRepositoryParams & p) :
             params(p),
             id(std::make_shared<UnpackagedID>(params.environment(), params.name(), params.version(), params.slot(), n, params.location(),
-                        params.build_dependencies(), params.run_dependencies(), params.description())),
+                        params.build_dependencies(), params.run_dependencies(), params.description(), params.strip(), params.preserve_work())),
             ids(std::make_shared<PackageIDSequence>()),
             package_names(std::make_shared<QualifiedPackageNameSet>()),
             category_names(std::make_shared<CategoryNamePartSet>()),
@@ -254,6 +254,14 @@ UnpackagedRepository::repository_factory_create(
         rewrite_ids_over_to_root = destringify<int>(f("rewrite_ids_over_to_root"));
     }
 
+    Tribool strip(indeterminate);
+    if (! f("strip").empty())
+        strip = destringify<bool>(f("strip"));
+
+    Tribool preserve_work(indeterminate);
+    if (! f("preserve_work").empty())
+        preserve_work = destringify<bool>(f("preserve_work"));
+
     return std::make_shared<UnpackagedRepository>(RepositoryName("unpackaged"),
                 make_named_values<unpackaged_repositories::UnpackagedRepositoryParams>(
                     n::build_dependencies() = build_dependencies,
@@ -262,9 +270,11 @@ UnpackagedRepository::repository_factory_create(
                     n::install_under() = install_under,
                     n::location() = location,
                     n::name() = QualifiedPackageName(name),
+                    n::preserve_work() = preserve_work,
                     n::rewrite_ids_over_to_root() = rewrite_ids_over_to_root,
                     n::run_dependencies() = run_dependencies,
                     n::slot() = SlotName(slot),
+                    n::strip() = strip,
                     n::version() = VersionSpec(version, user_version_spec_options())
                 ));
 }
