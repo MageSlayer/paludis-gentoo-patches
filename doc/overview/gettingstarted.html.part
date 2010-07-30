@@ -271,11 +271,12 @@ however, do not provide this.)</p>
 <p>For details on <code>sync</code> formats, use <code>paludis --list-sync-protocols</code>. The listed options can be
 used via <code>sync_options = </code>.</p>
 
-<h5>repositories/layman.conf</h5>
+<h5>repositories/layman.conf and repositories/repository.conf</h5>
 
 <p>You may also wish to set up an unavailable repository for tracking repositories in layman. See <a
     href="../configuration/repositories/unavailable.html">the unavailable repository documentation</a> for a sample repository
-config.</p>
+config. This may be combined with a repository repository for automatic configuration of repositories. See <a
+    href="../configuration/repositories/repository.html">the repository repository documentation</a> for details.</p>
 
 <p>Next, proceed to <a href="#testing">Testing a configuration</a>.</p>
 
