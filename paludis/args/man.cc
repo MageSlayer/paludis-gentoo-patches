@@ -472,7 +472,15 @@ namespace
 {
     void escape(std::ostream & stream, const std::string & s)
     {
-        for (std::string::const_iterator t(s.begin()), t_end(s.end()); t != t_end; ++t)
+        auto t(s.begin()), t_end(s.end());
+
+        if (t != t_end && *t == '\'')
+        {
+            stream << "\\'";
+            ++t;
+        }
+
+        for ( ; t != t_end ; ++t)
         {
             if ('\\' == *t)
                 stream << '\\';
@@ -634,7 +642,8 @@ ManWriter::start_notes()
 void
 ManWriter::note(const std::string & s)
 {
-    _os << s << endl << endl;
+    escape(_os, s);
+    _os << endl << endl;
 }
 
 void
