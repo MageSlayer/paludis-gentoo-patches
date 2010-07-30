@@ -72,10 +72,10 @@ namespace
         ResumeCommandLine() :
             g_retry_options(main_options_section(), "Retry Options", "Retry options. By default, 'cave resume' will "
                     "treat packages that were already skipped or already failed as skipped or failed, respectively."),
-            a_retry_failed(&g_retry_options, "retry-failed", 'f', "Retry any job that has already failed", true),
-            a_retry_skipped(&g_retry_options, "retry-skipped", 's', "Retry any job that has already been skipped. Note that "
+            a_retry_failed(&g_retry_options, "retry-failed", 'r', "Retry any job that has already failed", true),
+            a_retry_skipped(&g_retry_options, "retry-skipped", 'R', "Retry any job that has already been skipped. Note that "
                     "the job will just be skipped again unless circumstances have changed.", true),
-            a_skip_failed(&g_retry_options, "skip-failed", 'F', "Skip any job that has already failed", true),
+            a_skip_failed(&g_retry_options, "skip-failed", 's', "Skip any job that has already failed", true),
             execution_options(this),
             program_options(this)
         {
