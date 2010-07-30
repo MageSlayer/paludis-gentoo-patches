@@ -124,7 +124,6 @@ namespace paludis
         NamedValue<n::make_output_manager, std::function<std::shared_ptr<OutputManager> (
                 const FetchAction &)> > make_output_manager;
 
-
         NamedValue<n::safe_resume, bool> safe_resume;
 
         /**
