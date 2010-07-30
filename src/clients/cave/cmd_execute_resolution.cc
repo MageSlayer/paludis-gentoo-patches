@@ -601,7 +601,7 @@ namespace
             const std::shared_ptr<Environment> & env,
             const ExecuteResolutionCommandLine & cmdline)
     {
-        if (cmdline.execution_options.a_preserve_world.specified())
+        if (cmdline.execution_options.a_preserve_world.specified() || cmdline.execution_options.a_fetch.specified())
             return;
 
         cout << endl << c::bold_green() << "Updating world" << c::normal() << endl << endl;
@@ -1199,6 +1199,9 @@ namespace
                     already_done_action(env, "succeeded", job, counts);
                 }
             }
+
+            if (want && cmdline.execution_options.a_fetch.specified())
+                want = simple_visitor_cast<const FetchJob>(*job);
 
             int current_global_retcode;
             {

@@ -311,6 +311,8 @@ ResolveCommandLineExecutionOptions::ResolveCommandLineExecutionOptions(args::Arg
             "specified, then 'cave resume' can resume execution from this file."),
 
     g_jobs_options(this, "Jobs Options", "Options controlling jobs and parallelism."),
+    a_fetch(&g_jobs_options, "fetch", 'f', "Skip any jobs that are not fetch jobs. Should be combined with "
+            "--continue-on-failure if any of the packages to be merged have fetch dependencies.", true),
     a_fetch_jobs(&g_jobs_options, "fetch-jobs", 'J', "The number of parallel fetch jobs to launch. If set to 0, fetches "
             "will be carried out sequentially with other jobs. Values higher than 1 are currently treated "
             "as being 1. Defaults to 1."),

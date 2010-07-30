@@ -97,7 +97,6 @@ namespace paludis
             args::EnumArg a_make;
             args::EnumArg a_make_dependencies;
             args::StringSetArg a_via_binary;
-//            args::SwitchArg a_fetch;
 #endif
 
 //            args::ArgsGroup g_query_options;
@@ -127,6 +126,7 @@ namespace paludis
             args::StringArg a_resume_file;
 
             args::ArgsGroup g_jobs_options;
+            args::SwitchArg a_fetch;
             args::IntegerArg a_fetch_jobs;
 
             args::ArgsGroup g_phase_options;
