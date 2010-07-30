@@ -24,7 +24,7 @@ for <code>unavailable</code> format repositories:</p>
     <dd>Any options to be passed to the syncer. Optional.</dd>
 </dl>
 
-<p>On Exherbo, when used in conjunction with <a href="repository.html">repository format repositories</a>, the
+<p>When used in conjunction with <a href="repository.html">repository format repositories</a>, the
 <code>unavailable</code> repository format also allows automatic installation of configuration files for new repository
 files.</p>
 
