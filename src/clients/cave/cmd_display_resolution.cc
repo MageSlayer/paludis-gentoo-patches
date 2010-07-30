@@ -482,7 +482,7 @@ namespace
             const std::shared_ptr<const PackageID> & id,
             const bool is_new)
     {
-        if (id->short_description_key())
+        if (id->short_description_key() && ! id->short_description_key()->value().empty())
         {
             bool show(false);
             if (cmdline.display_options.a_show_descriptions.argument() == "none")
