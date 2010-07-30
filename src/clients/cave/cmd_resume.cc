@@ -96,7 +96,7 @@ namespace
         virtual std::string app_description() const
         {
             return "Resumes a failed resultion from 'cave resolve'. To enable resumes, use "
-                "'cave resolve --resume-file state' --execute, and then if errors occur, use "
+                "'cave resolve --resume-file state --execute', and then if errors occur, use "
                 "'cave resume --resume-file state [ --retry-failed ] [ --retry-skipped ]' to "
                 "try again.";
         }
