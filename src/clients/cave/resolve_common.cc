@@ -798,9 +798,10 @@ namespace
             throw InternalError(PALUDIS_HERE, "NothingNoChangeDecision shouldn't have deps");
         }
 
-        bool visit(const UnableToMakeDecision &) const PALUDIS_ATTRIBUTE((noreturn))
+        bool visit(const UnableToMakeDecision &) const
         {
-            throw InternalError(PALUDIS_HERE, "UnableToMakeDecision shouldn't have deps");
+            /* might've gone from a sensible decision to unable later on */
+            return false;
         }
 
         bool visit(const RemoveDecision &) const PALUDIS_ATTRIBUTE((noreturn))
