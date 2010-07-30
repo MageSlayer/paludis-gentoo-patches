@@ -315,7 +315,7 @@ ResolveCommandLineExecutionOptions::ResolveCommandLineExecutionOptions(args::Arg
             "--continue-on-failure if any of the packages to be merged have fetch dependencies.", true),
     a_fetch_jobs(&g_jobs_options, "fetch-jobs", 'J', "The number of parallel fetch jobs to launch. If set to 0, fetches "
             "will be carried out sequentially with other jobs. Values higher than 1 are currently treated "
-            "as being 1. Defaults to 1."),
+            "as being 1. Defaults to 1, or if --fetch is specified, 0."),
 
     g_phase_options(this, "Phase Options", "Options controlling which phases to execute. No sanity checking "
             "is done, allowing you to shoot as many feet off as you desire. Phase names do not have the "
@@ -331,7 +331,7 @@ ResolveCommandLineExecutionOptions::ResolveCommandLineExecutionOptions(args::Arg
             ("last",                       "Only the last package on the list"),
             "all")
 {
-    a_fetch_jobs.set_argument(1);
+    a_fetch_jobs.set_argument(-1);
 }
 
 ResolveCommandLineProgramOptions::ResolveCommandLineProgramOptions(args::ArgsHandler * const h) :

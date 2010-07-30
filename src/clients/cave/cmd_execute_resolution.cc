@@ -281,6 +281,7 @@ namespace
     bool do_fetch(
             const std::shared_ptr<Environment> & env,
             const ExecuteResolutionCommandLine & cmdline,
+            const int n_fetch_jobs,
             const PackageDepSpec & id_spec,
             const int x, const int y, bool normal_only,
             Mutex & job_mutex,
@@ -296,7 +297,7 @@ namespace
             command = "$CAVE perform";
 
         command.append(" fetch --hooks --if-supported --managed-output ");
-        if (cmdline.execution_options.a_fetch_jobs.argument() != 0)
+        if (0 != n_fetch_jobs)
             command.append("--output-exclusivity with-others --no-terminal-titles ");
         command.append(stringify(id->uniquely_identifying_spec()));
         command.append(" --x-of-y '" + stringify(x) + " of " + stringify(y) + "'");
@@ -354,6 +355,7 @@ namespace
     bool do_install(
             const std::shared_ptr<Environment> & env,
             const ExecuteResolutionCommandLine & cmdline,
+            const int n_fetch_jobs,
             const PackageDepSpec & id_spec,
             const RepositoryName & destination_repository_name,
             const std::shared_ptr<const Sequence<PackageDepSpec> > & replacing_specs,
@@ -372,7 +374,7 @@ namespace
             command = "$CAVE perform";
 
         command.append(" install --hooks --managed-output ");
-        if (cmdline.execution_options.a_fetch_jobs.argument() != 0)
+        if (0 != n_fetch_jobs)
             command.append("--output-exclusivity with-others ");
         command.append(stringify(id->uniquely_identifying_spec()));
         command.append(" --destination " + stringify(destination_repository_name));
@@ -433,6 +435,7 @@ namespace
     bool do_uninstall(
             const std::shared_ptr<Environment> & env,
             const ExecuteResolutionCommandLine & cmdline,
+            const int n_fetch_jobs,
             const PackageDepSpec & id_spec,
             const int x, const int y,
             Mutex & job_mutex,
@@ -448,7 +451,7 @@ namespace
             command = "$CAVE perform";
 
         command.append(" uninstall --hooks --managed-output ");
-        if (cmdline.execution_options.a_fetch_jobs.argument() != 0)
+        if (0 != n_fetch_jobs)
             command.append("--output-exclusivity with-others ");
         command.append(stringify(id->uniquely_identifying_spec()));
 
@@ -689,6 +692,7 @@ namespace
     {
         const std::shared_ptr<Environment> env;
         const ExecuteResolutionCommandLine & cmdline;
+        const int n_fetch_jobs;
         ExecuteCounts & counts;
         Mutex & job_mutex;
         const ExecuteOneVisitorPart part;
@@ -697,12 +701,14 @@ namespace
         ExecuteOneVisitor(
                 const std::shared_ptr<Environment> & e,
                 const ExecuteResolutionCommandLine & c,
+                const int n,
                 ExecuteCounts & k,
                 Mutex & m,
                 ExecuteOneVisitorPart p,
                 int r) :
             env(e),
             cmdline(c),
+            n_fetch_jobs(n),
             counts(k),
             job_mutex(m),
             part(p),
@@ -752,7 +758,7 @@ namespace
                             install_item.set_state(active_state);
                         }
 
-                        if (! do_fetch(env, cmdline, install_item.origin_id_spec(), counts.x_installs, counts.y_installs, false,
+                        if (! do_fetch(env, cmdline, n_fetch_jobs, install_item.origin_id_spec(), counts.x_installs, counts.y_installs, false,
                                     job_mutex, *active_state))
                         {
                             Lock lock(job_mutex);
@@ -760,7 +766,7 @@ namespace
                             return 1;
                         }
 
-                        if (! do_install(env, cmdline, install_item.origin_id_spec(), install_item.destination_repository_name(),
+                        if (! do_install(env, cmdline, n_fetch_jobs, install_item.origin_id_spec(), install_item.destination_repository_name(),
                                     install_item.replacing_specs(), destination_string,
                                     counts.x_installs, counts.y_installs, job_mutex, *active_state))
                         {
@@ -814,7 +820,7 @@ namespace
                         for (Sequence<PackageDepSpec>::ConstIterator i(uninstall_item.ids_to_remove_specs()->begin()),
                                 i_end(uninstall_item.ids_to_remove_specs()->end()) ;
                                 i != i_end ; ++i)
-                            if (! do_uninstall(env, cmdline, *i, counts.x_installs, counts.y_installs, job_mutex, *active_state))
+                            if (! do_uninstall(env, cmdline, n_fetch_jobs, *i, counts.x_installs, counts.y_installs, job_mutex, *active_state))
                             {
                                 Lock lock(job_mutex);
                                 uninstall_item.set_state(active_state->failed());
@@ -856,7 +862,7 @@ namespace
                             fetch_item.set_state(active_state);
                         }
 
-                        if (! do_fetch(env, cmdline, fetch_item.origin_id_spec(), counts.x_fetches, counts.y_fetches, true,
+                        if (! do_fetch(env, cmdline, n_fetch_jobs, fetch_item.origin_id_spec(), counts.x_fetches, counts.y_fetches, true,
                                     job_mutex, *active_state))
                         {
                             Lock lock(job_mutex);
@@ -1099,6 +1105,7 @@ namespace
     {
         const std::shared_ptr<Environment> env;
         const ExecuteResolutionCommandLine & cmdline;
+        const int n_fetch_jobs;
         const std::shared_ptr<ExecuteJob> job;
         const std::shared_ptr<const JobLists> lists;
         JobRequirementIf require_if;
@@ -1117,6 +1124,7 @@ namespace
         ExecuteJobExecutive(
                 const std::shared_ptr<Environment> & e,
                 const ExecuteResolutionCommandLine & c,
+                const int n,
                 const std::shared_ptr<ExecuteJob> & j,
                 const std::shared_ptr<const JobLists> & l,
                 JobRequirementIf r,
@@ -1126,6 +1134,7 @@ namespace
                 std::string & h) :
             env(e),
             cmdline(c),
+            n_fetch_jobs(n),
             job(j),
             lists(l),
             require_if(r),
@@ -1143,7 +1152,7 @@ namespace
 
         std::string queue_name() const
         {
-            if (cmdline.execution_options.a_fetch_jobs.argument() != 0)
+            if (0 != n_fetch_jobs)
                 return simple_visitor_cast<const FetchJob>(*job) ? "fetch" : "execute";
             else
                 return "execute";
@@ -1231,7 +1240,7 @@ namespace
 
             if (want)
             {
-                ExecuteOneVisitor execute(env, cmdline, counts, job_mutex, x1_pre, local_retcode);
+                ExecuteOneVisitor execute(env, cmdline, n_fetch_jobs, counts, job_mutex, x1_pre, local_retcode);
                 int job_retcode(job->accept_returning<int>(execute));
                 local_retcode |= job_retcode;
             }
@@ -1241,7 +1250,7 @@ namespace
         {
             if (want)
             {
-                ExecuteOneVisitor execute(env, cmdline, counts, job_mutex, x1_main, local_retcode);
+                ExecuteOneVisitor execute(env, cmdline, n_fetch_jobs, counts, job_mutex, x1_main, local_retcode);
                 int job_retcode(job->accept_returning<int>(execute));
                 local_retcode |= job_retcode;
             }
@@ -1254,7 +1263,7 @@ namespace
 
         void display_active()
         {
-            if (cmdline.execution_options.a_fetch_jobs.argument() == 0)
+            if (n_fetch_jobs == 0)
                 return;
 
             Lock lock(job_mutex);
@@ -1308,7 +1317,7 @@ namespace
         {
             if (want)
             {
-                ExecuteOneVisitor execute(env, cmdline, counts, job_mutex, x1_post, local_retcode);
+                ExecuteOneVisitor execute(env, cmdline, n_fetch_jobs, counts, job_mutex, x1_post, local_retcode);
                 local_retcode |= job->accept_returning<int>(execute);
 
                 Lock lock(job_mutex);
@@ -1333,7 +1342,8 @@ namespace
     int execute_executions(
             const std::shared_ptr<Environment> & env,
             const std::shared_ptr<JobLists> & lists,
-            const ExecuteResolutionCommandLine & cmdline)
+            const ExecuteResolutionCommandLine & cmdline,
+            const int n_fetch_jobs)
     {
         int retcode(0);
         Mutex retcode_mutex;
@@ -1369,7 +1379,7 @@ namespace
         for (JobList<ExecuteJob>::ConstIterator c(lists->execute_job_list()->begin()),
                 c_end(lists->execute_job_list()->end()) ;
                 c != c_end ; ++c)
-            executor.add(std::make_shared<ExecuteJobExecutive>(env, cmdline, *c, lists, require_if, retcode_mutex,
+            executor.add(std::make_shared<ExecuteJobExecutive>(env, cmdline, n_fetch_jobs, *c, lists, require_if, retcode_mutex,
                             retcode, counts, old_heading));
 
         executor.execute();
@@ -1385,7 +1395,8 @@ namespace
     int execute_resolution_main(
             const std::shared_ptr<Environment> & env,
             const std::shared_ptr<JobLists> & lists,
-            const ExecuteResolutionCommandLine & cmdline)
+            const ExecuteResolutionCommandLine & cmdline,
+            const int n_fetch_jobs)
     {
         for (JobList<ExecuteJob>::ConstIterator c(lists->execute_job_list()->begin()),
                 c_end(lists->execute_job_list()->end()) ;
@@ -1399,7 +1410,7 @@ namespace
         if (0 != retcode || cmdline.a_pretend.specified())
             return retcode;
 
-        retcode |= execute_executions(env, lists, cmdline);
+        retcode |= execute_executions(env, lists, cmdline, n_fetch_jobs);
 
         if (0 != retcode)
             return retcode;
@@ -1596,7 +1607,8 @@ namespace
     int execute_resolution(
             const std::shared_ptr<Environment> & env,
             const std::shared_ptr<JobLists> & lists,
-            const ExecuteResolutionCommandLine & cmdline)
+            const ExecuteResolutionCommandLine & cmdline,
+            const int n_fetch_jobs)
     {
         Context context("When executing chosen resolution:");
 
@@ -1608,7 +1620,7 @@ namespace
 
         try
         {
-            retcode = execute_resolution_main(env, lists, cmdline);
+            retcode = execute_resolution_main(env, lists, cmdline, n_fetch_jobs);
         }
         catch (...)
         {
@@ -1682,7 +1694,15 @@ ExecuteResolutionCommand::run(
         close(fd);
     }
 
-    return execute_resolution(env, lists, cmdline);
+    int n_fetch_jobs;
+    if (cmdline.execution_options.a_fetch_jobs.specified())
+        n_fetch_jobs = cmdline.execution_options.a_fetch_jobs.argument();
+    else if (cmdline.execution_options.a_fetch.specified())
+        n_fetch_jobs = 0;
+    else
+        n_fetch_jobs = 1;
+
+    return execute_resolution(env, lists, cmdline, n_fetch_jobs);
 }
 
 int
