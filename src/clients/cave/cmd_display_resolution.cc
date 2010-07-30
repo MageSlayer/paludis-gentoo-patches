@@ -41,6 +41,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/pretty_print.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/return_literal_function.hh>
 #include <paludis/resolver/resolutions_by_resolvent.hh>
 #include <paludis/resolver/reason.hh>
 #include <paludis/resolver/sanitised_dependencies.hh>
@@ -70,6 +71,9 @@
 #include <paludis/environment.hh>
 #include <paludis/mask.hh>
 #include <paludis/serialise.hh>
+#include <paludis/action.hh>
+#include <paludis/output_manager_from_environment.hh>
+#include <paludis/output_manager.hh>
 
 #include <set>
 #include <iterator>
@@ -77,6 +81,7 @@
 #include <iomanip>
 #include <cstdlib>
 #include <map>
+#include <limits>
 
 using namespace paludis;
 using namespace cave;
@@ -954,6 +959,98 @@ namespace
             (*m)->accept(MaskedByVisitor{c::bold_red(), "    "});
     }
 
+    struct Totals
+    {
+        std::set<FSEntry> download_files;
+        bool download_overflow;
+        unsigned long download_size;
+
+        int changes_count;
+
+        Totals() :
+            download_overflow(false),
+            download_size(0),
+            changes_count(0)
+        {
+        }
+    };
+
+    struct FindDistfilesSize :
+        PretendFetchAction
+    {
+        std::shared_ptr<Totals> totals;
+        unsigned long size;
+        bool overflow;
+
+        FindDistfilesSize(const FetchActionOptions & o, const std::shared_ptr<Totals> & a) :
+            PretendFetchAction(o),
+            totals(a),
+            size(0),
+            overflow(false)
+        {
+        }
+
+        void will_fetch(const FSEntry & destination, const unsigned long size_in_bytes)
+        {
+            if (totals->download_files.end() != totals->download_files.find(destination))
+                return;
+            totals->download_files.insert(destination);
+            unsigned long new_size(size + size_in_bytes);
+            if (new_size < size)
+                overflow = true;
+            else
+                size = new_size;
+        }
+    };
+
+    void display_downloads(
+            const std::shared_ptr<Environment> & env,
+            const DisplayResolutionCommandLine &,
+            const std::shared_ptr<const PackageID> & id,
+            const std::shared_ptr<Totals> & totals
+            )
+    {
+        if (! id->supports_action(SupportsActionTest<PretendFetchAction>()))
+            return;
+
+        OutputManagerFromEnvironment output_manager_holder(env.get(), id, oe_exclusive, { });
+
+        FindDistfilesSize action(make_named_values<FetchActionOptions>(
+                    n::errors() = std::make_shared<Sequence<FetchActionFailure>>(),
+                    n::exclude_unmirrorable() = false,
+                    n::fetch_parts() = FetchParts() + fp_regulars,
+                    n::ignore_not_in_manifest() = false,
+                    n::ignore_unfetched() = false,
+                    n::make_output_manager() = std::ref(output_manager_holder),
+                    n::safe_resume() = true,
+                    n::want_phase() = std::bind(return_literal_function(wp_yes))
+                    ),
+                totals);
+        id->perform_action(action);
+
+        if (output_manager_holder.output_manager_if_constructed())
+            output_manager_holder.output_manager_if_constructed()->succeeded();
+
+        if (0 == action.size)
+            return;
+
+        if (action.overflow)
+            cout << "    More than " << pretty_print_bytes(std::numeric_limits<unsigned long>::max()) << " to download" << endl;
+        else
+            cout << "    " << pretty_print_bytes(action.size) << " to download" << endl;
+
+        if (action.overflow)
+            totals->download_overflow = true;
+        else
+        {
+            unsigned long new_size(totals->download_size + action.size);
+            if (new_size < totals->download_size)
+                totals->download_overflow = true;
+            else
+                totals->download_size = new_size;
+        }
+    }
+
     void display_one_installish(
             const std::shared_ptr<Environment> & env,
             const DisplayResolutionCommandLine & cmdline,
@@ -964,7 +1061,8 @@ namespace
             const bool untaken,
             const bool unorderable,
             const std::string & notes,
-            ChoicesToExplain & choices_to_explain)
+            ChoicesToExplain & choices_to_explain,
+            const std::shared_ptr<Totals> & maybe_totals)
     {
         std::string x("X"), c;
         if (! decision.best())
@@ -1079,6 +1177,11 @@ namespace
         display_choices(env, cmdline, decision.origin_id(), old_id, choices_to_explain);
         display_reasons(resolution, more_annotations);
         display_masks(env, decision);
+        if (maybe_totals)
+        {
+            display_downloads(env, cmdline, decision.origin_id(), maybe_totals);
+            ++maybe_totals->changes_count;
+        }
         if (untaken)
             display_untaken_change(decision);
         if (confirmations)
@@ -1284,6 +1387,7 @@ namespace
         const bool unorderable;
         const std::string cycle_breaking;
         ChoicesToExplain & choices_to_explain;
+        const std::shared_ptr<Totals> maybe_totals;
 
         DisplayAVisitor(
                 const std::shared_ptr<Environment> & e,
@@ -1294,7 +1398,8 @@ namespace
                 bool ut,
                 bool un,
                 const std::string & s,
-                ChoicesToExplain & x) :
+                ChoicesToExplain & x,
+                const std::shared_ptr<Totals> & d) :
             env(e),
             cmdline(c),
             resolution(r),
@@ -1303,7 +1408,8 @@ namespace
             untaken(ut),
             unorderable(un),
             cycle_breaking(s),
-            choices_to_explain(x)
+            choices_to_explain(x),
+            maybe_totals(d)
         {
         }
 
@@ -1319,7 +1425,8 @@ namespace
                     untaken,
                     unorderable,
                     cycle_breaking,
-                    choices_to_explain);
+                    choices_to_explain,
+                    maybe_totals);
         }
 
 
@@ -1358,7 +1465,8 @@ namespace
             const bool more_annotations,
             const bool unconfirmed,
             const bool untaken,
-            const bool unorderable)
+            const bool unorderable,
+            const std::shared_ptr<Totals> & maybe_totals)
     {
         Context context("When displaying changes and removes:");
 
@@ -1390,7 +1498,8 @@ namespace
                     untaken,
                     unorderable,
                     star_i.second ? star_i.second->cycle_breaking() : "",
-                    choices_to_explain);
+                    choices_to_explain,
+                    maybe_totals);
             star_i.first->accept(v);
         }
 
@@ -1404,10 +1513,23 @@ namespace
             const std::shared_ptr<Environment> & env,
             const std::shared_ptr<const Resolved> & resolved,
             const DisplayResolutionCommandLine & cmdline,
-            ChoicesToExplain & choices_to_explain)
+            ChoicesToExplain & choices_to_explain,
+            const std::shared_ptr<Totals> & totals)
     {
         display_a_changes_and_removes(env, resolved, resolved->taken_change_or_remove_decisions(),
-                cmdline, choices_to_explain, false, false, false, false);
+                cmdline, choices_to_explain, false, false, false, false, totals);
+    }
+
+    void display_totals(
+            const std::shared_ptr<Totals> & totals)
+    {
+        cout << "Total " << totals->changes_count << " changes";
+
+        if (totals->download_overflow)
+            cout << ", more than " << pretty_print_bytes(std::numeric_limits<unsigned long>::max()) << " to download";
+        else if (0 != totals->download_size)
+            cout << ", " << pretty_print_bytes(totals->download_size) << " to download";
+        cout << endl << endl;
     }
 
     void display_unorderable_changes_and_removed(
@@ -1418,7 +1540,7 @@ namespace
     {
         if (! resolved->taken_unorderable_decisions()->empty())
             display_a_changes_and_removes(env, resolved, resolved->taken_unorderable_decisions(),
-                    cmdline, choices_to_explain, false, false, false, true);
+                    cmdline, choices_to_explain, false, false, false, true, make_null_shared_ptr());
     }
 
     void display_untaken_changes_and_removes(
@@ -1429,7 +1551,7 @@ namespace
     {
         if (! resolved->untaken_change_or_remove_decisions()->empty())
             display_a_changes_and_removes(env, resolved, resolved->untaken_change_or_remove_decisions(),
-                    cmdline, choices_to_explain, true, false, true, false);
+                    cmdline, choices_to_explain, true, false, true, false, make_null_shared_ptr());
     }
 
     void display_an_errors(
@@ -1489,7 +1611,7 @@ namespace
         ChoicesToExplain ignore_choices_to_explain;
         if (! resolved->taken_unconfirmed_decisions()->empty())
             display_a_changes_and_removes(env, resolved, resolved->taken_unconfirmed_decisions(),
-                    cmdline, ignore_choices_to_explain, true, true, false, false);
+                    cmdline, ignore_choices_to_explain, true, true, false, false, make_null_shared_ptr());
     }
 }
 
@@ -1532,7 +1654,9 @@ DisplayResolutionCommand::run(
     }
 
     ChoicesToExplain choices_to_explain;
-    display_changes_and_removes(env, resolved, cmdline, choices_to_explain);
+    auto totals(std::make_shared<Totals>());
+    display_changes_and_removes(env, resolved, cmdline, choices_to_explain, totals);
+    display_totals(totals);
     display_unorderable_changes_and_removed(env, resolved, cmdline, choices_to_explain);
     display_untaken_changes_and_removes(env, resolved, cmdline, choices_to_explain);
     display_choices_to_explain(env, cmdline, choices_to_explain);
