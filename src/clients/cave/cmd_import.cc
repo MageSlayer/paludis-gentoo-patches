@@ -80,12 +80,14 @@ namespace
         args::StringArg a_location;
         args::StringArg a_install_under;
         args::IntegerArg a_rewrite_ids_over_to_root;
+        args::EnumArg a_strip;
+        args::EnumArg a_preserve_work;
 
         args::ArgsGroup g_metadata_options;
         args::StringArg a_description;
         args::StringSetArg a_build_dependency;
         args::StringSetArg a_run_dependency;
-        args::StringArg a_preserve_metadata;
+        args::SwitchArg a_preserve_metadata;
 
         ImportCommandLine() :
             g_execution_options(main_options_section(), "Execution Options", "Control execution."),
@@ -99,6 +101,20 @@ namespace
                     "Install under the specified directory, rather than /"),
             a_rewrite_ids_over_to_root(&g_contents_options, "rewrite-ids-over-to-root", 'r',
                     "Change any UID or GID over this value to 0 (-1 disables, default)"),
+            a_strip(&g_contents_options, "strip", 's',
+                    "Specify whether to strip and split objects being installed.",
+                    args::EnumArg::EnumArgOptions
+                    ("config",       'c',   "Use build_options: split and build_options: strip from user configuration")
+                    ("always",       'a',   "Split and strip, regardless of user configuration")
+                    ("never",        'n',   "Do not split or strip, regardless of user configuration"),
+                    "config"),
+            a_preserve_work(&g_contents_options, "preserve-work", 'p',
+                    "Specify whether to avoid carrying out destructive merge actions (e.g. using rename() rather than copying)",
+                    args::EnumArg::EnumArgOptions
+                    ("config",       'c',   "Use build_options: preserve_work from user configuration")
+                    ("always",       'a',   "Allow desructive merges, regardless of user configuration")
+                    ("never",        'n',   "Do not merge destructively, regardless of user configuration"),
+                    "config"),
 
             g_metadata_options(main_options_section(), "Metadata Options",
                     "Options specifying metadata for the package being installed"),
@@ -110,7 +126,7 @@ namespace
                     "Specify a run dependency. May be specified multiple times."),
             a_preserve_metadata(&g_metadata_options, "preserve-metadata", 'P',
                     "If replacing a package previously installed using this command, copy its description "
-                    "and dependencies")
+                    "and dependencies", true)
         {
             add_usage_line("[ --location blah ] cat/pkg [ version ] [ slot ] "
                     "[ --execute ] [ -- options for 'cave resolve' ]");
@@ -238,6 +254,18 @@ ImportCommand::run(
                 cmdline.a_run_dependency.begin_args(),
                 cmdline.a_run_dependency.end_args(), ", ");
 
+    std::string strip;
+    if (cmdline.a_strip.argument() == "never")
+        strip = "false";
+    else if (cmdline.a_strip.argument() == "always")
+        strip = "true";
+
+    std::string preserve_work;
+    if (cmdline.a_preserve_work.argument() == "never")
+        preserve_work = "false";
+    else if (cmdline.a_preserve_work.argument() == "always")
+        preserve_work = "true";
+
     std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
     keys->insert("location", stringify(
                 cmdline.a_location.specified() ?
@@ -257,6 +285,8 @@ ImportCommand::run(
     keys->insert("description", description);
     keys->insert("build_dependencies", build_dependencies);
     keys->insert("run_dependencies", run_dependencies);
+    keys->insert("strip", strip);
+    keys->insert("preserve_work", preserve_work);
     std::shared_ptr<Repository> repo(RepositoryFactory::get_instance()->create(env.get(),
                 std::bind(from_keys, keys, std::placeholders::_1)));
     env->package_database()->add_repository(10, repo);
