@@ -33,6 +33,7 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/make_shared_copy.hh>
+#include <paludis/util/return_literal_function.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/repository_factory.hh>
 #include <paludis/package_database.hh>
@@ -122,5 +123,52 @@ namespace test_cases
                     );
         }
     } test_purges;
+
+    struct TestStarSlotPurges : ResolverPurgesTestCase
+    {
+        TestStarSlotPurges() :
+            ResolverPurgesTestCase("star slot purges")
+        {
+            install("star-slot-purges", "target", "1")->set_slot(SlotName("1"));
+            install("star-slot-purges", "target", "2")->set_slot(SlotName("2"));
+
+            install("star-slot-purges", "uses", "1")->build_dependencies_key()->set_from_string("star-slot-purges/target:*");
+
+            allowed_to_remove_names->insert(QualifiedPackageName("star-slot-purges/target"));
+        }
+
+        virtual ResolverFunctions get_resolver_functions(InitialConstraints & initial_constraints)
+        {
+            ResolverFunctions result(ResolverPurgesTestCase::get_resolver_functions(initial_constraints));
+            result.get_use_existing_fn() = std::bind(&use_existing_if_possible_except_target, std::placeholders::_1,
+                    std::placeholders::_2, std::placeholders::_3);
+            result.confirm_fn() = std::bind(return_literal_function(false));
+            return result;
+        }
+
+        void run()
+        {
+            std::shared_ptr<const Resolved> resolved(get_resolved(BlockDepSpec(
+                            "!star-slot-purges/target:1",
+                            parse_user_package_dep_spec("star-slot-purges/target:1", &env, { }),
+                            false)));
+
+            check_resolved(resolved,
+                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .remove(QualifiedPackageName("star-slot-purges/target"))
+                        .finished()),
+                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished())
+                    );
+        }
+    } test_star_slot_purges;
 }
 

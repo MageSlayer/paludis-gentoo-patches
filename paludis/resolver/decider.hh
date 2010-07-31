@@ -248,7 +248,8 @@ namespace paludis
                 const std::shared_ptr<const ChangeByResolventSequence> _dependent_upon(
                         const std::shared_ptr<const PackageID> &,
                         const std::shared_ptr<const ChangeByResolventSequence> &,
-                        const std::shared_ptr<const ChangeByResolventSequence> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                        const std::shared_ptr<const ChangeByResolventSequence> &,
+                        const std::shared_ptr<const PackageIDSequence> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 void _confirm(const std::shared_ptr<const Resolution> & resolution);
 
@@ -261,6 +262,7 @@ namespace paludis
 
                 const std::shared_ptr<const PackageIDSet> _collect_depped_upon(
                         const std::shared_ptr<const PackageID> &,
+                        const std::shared_ptr<const PackageIDSequence> &,
                         const std::shared_ptr<const PackageIDSequence> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 const std::shared_ptr<const PackageIDSet> _collect_provided(
