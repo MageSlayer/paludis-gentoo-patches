@@ -98,6 +98,13 @@ namespace
     typedef std::map<Resolvent, std::shared_ptr<Constraints> > InitialConstraints;
     typedef std::list<PackageDepSpec> PackageDepSpecList;
 
+    bool can_make_binary_for(const std::shared_ptr<const PackageID> & id)
+    {
+        if (! id->behaviours_key())
+            return true;
+        return id->behaviours_key()->value()->end() == id->behaviours_key()->value()->find("unbinaryable");
+    }
+
     struct DestinationTypesFinder
     {
         const Environment * const env;
@@ -118,7 +125,12 @@ namespace
         {
 #ifdef ENABLE_PBINS
             if (resolution_options.a_make.argument() == "binaries")
-                return DestinationTypes() + dt_create_binary;
+            {
+                if (package_id && can_make_binary_for(package_id))
+                    return DestinationTypes() + dt_create_binary;
+                else
+                    return DestinationTypes();
+            }
             else if (resolution_options.a_make.argument() == "install")
                 return DestinationTypes() + dt_install_to_slash;
             else
@@ -151,16 +163,20 @@ namespace
 #ifdef ENABLE_PBINS
             if (resolution_options.a_make.argument() == "binaries")
             {
+                bool binary_if_possible(false);
                 if (resolution_options.a_make_dependencies.argument() == "auto" ||
                         resolution_options.a_make_dependencies.argument() == "all")
-                    extras += dt_create_binary;
+                    binary_if_possible = true;
                 else if (resolution_options.a_make_dependencies.argument() == "runtime")
                 {
                     /* this will track run deps of build deps, which isn't
                      * really right... */
                     if (is_run_or_post_dep(dep.sanitised_dependency()))
-                        extras += dt_create_binary;
+                        binary_if_possible = true;
                 }
+
+                if (binary_if_possible && package_id && can_make_binary_for(package_id))
+                    extras += dt_create_binary;
             }
 #endif
 
@@ -1349,7 +1365,7 @@ namespace
         if (! changes_decision)
             return false;
 
-        return match_any(env, list, changes_decision->origin_id());
+        return can_make_binary_for(changes_decision->origin_id()) && match_any(env, list, changes_decision->origin_id());
     }
 
     void serialise_resolved(StringListStream & ser_stream, const Resolved & resolved)
