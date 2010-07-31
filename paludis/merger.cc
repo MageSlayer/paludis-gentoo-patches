@@ -342,7 +342,7 @@ Merger::on_sym(bool is_check, const FSEntry & src, const FSEntry & dst)
     {
         if (! _imp->params.options()[mo_rewrite_symlinks])
             on_error(is_check, "Symlink to image detected at: " + stringify(src) + " (" + src.readlink() + ")");
-        else if (! is_check)
+        else if (is_check)
             rewrite_symlink_as_needed(src, dst);
     }
 
