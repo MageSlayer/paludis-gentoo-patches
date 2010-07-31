@@ -24,6 +24,7 @@
 #include <paludis/util/named_value.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/options.hh>
+#include <paludis/util/timestamp.hh>
 #include <paludis/hook-fwd.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/merger_entry_type.hh>
@@ -33,6 +34,7 @@ namespace paludis
     namespace n
     {
         typedef Name<struct environment_name> environment;
+        typedef Name<struct fix_mtimes_before_name> fix_mtimes_before;
         typedef Name<struct get_new_ids_or_minus_one_name> get_new_ids_or_minus_one;
         typedef Name<struct image_name> image;
         typedef Name<struct install_under_name> install_under;
@@ -53,6 +55,7 @@ namespace paludis
     struct MergerParams
     {
         NamedValue<n::environment, Environment *> environment;
+        NamedValue<n::fix_mtimes_before, Timestamp> fix_mtimes_before;
         NamedValue<n::get_new_ids_or_minus_one, std::function<std::pair<uid_t, gid_t> (const FSEntry &)> > get_new_ids_or_minus_one;
         NamedValue<n::image, FSEntry> image;
         NamedValue<n::install_under, FSEntry> install_under;

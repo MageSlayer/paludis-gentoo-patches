@@ -110,6 +110,7 @@ TarMerger::TarMerger(const TarMergerParams & p) :
     Pimp<TarMerger>(p),
     Merger(make_named_values<MergerParams>(
                 n::environment() = p.environment(),
+                n::fix_mtimes_before() = p.fix_mtimes_before(),
                 n::get_new_ids_or_minus_one() = p.get_new_ids_or_minus_one(),
                 n::image() = p.image(),
                 n::install_under() = FSEntry("/"),

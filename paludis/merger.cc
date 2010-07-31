@@ -23,6 +23,7 @@
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/pimp-impl.hh>
+#include <paludis/util/timestamp.hh>
 #include <paludis/selinux/security_context.hh>
 #include <paludis/environment.hh>
 #include <paludis/hook.hh>
@@ -254,7 +255,10 @@ Merger::on_file(bool is_check, const FSEntry & src, const FSEntry & dst)
         }
     }
 
-    on_file_main(is_check, src, dst);
+    if (is_check && src.mtim() < _imp->params.fix_mtimes_before())
+        FSEntry(src).utime(_imp->params.fix_mtimes_before());
+
+    on_file_main(is_check, FSEntry(stringify(src)), dst);
 
     if (is_check &&
         0 != _imp->params.environment()->perform_hook(extend_hook(
@@ -346,7 +350,7 @@ Merger::on_sym(bool is_check, const FSEntry & src, const FSEntry & dst)
             rewrite_symlink_as_needed(src, dst);
     }
 
-    on_sym_main(is_check, src, dst);
+    on_sym_main(is_check, FSEntry(stringify(src)), dst);
 
     if (is_check &&
         0 != _imp->params.environment()->perform_hook(extend_hook(

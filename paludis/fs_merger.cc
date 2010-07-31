@@ -78,6 +78,7 @@ FSMerger::FSMerger(const FSMergerParams & p) :
     Pimp<FSMerger>(p),
     Merger(make_named_values<MergerParams>(
                 n::environment() = p.environment(),
+                n::fix_mtimes_before() = p.fix_mtimes_before(),
                 n::get_new_ids_or_minus_one() = p.get_new_ids_or_minus_one(),
                 n::image() = p.image(),
                 n::install_under() = p.install_under(),
@@ -333,19 +334,9 @@ FSMerger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::
         _imp->merged_ids.insert(make_pair(src.lowlevel_id(), stringify(dst_real)));
 
         FSEntry d(stringify(dst_real));
-        if (touch && (
-                    (! _imp->params.options()[mo_preserve_mtimes]) ||
-                    (d.mtim() < _imp->params.fix_mtimes_before())
-                    ))
-        {
-            bool ok(false);
-            if (d.mtim() < _imp->params.fix_mtimes_before())
-                ok = d.utime(_imp->params.fix_mtimes_before());
-            else
-                ok = d.utime(Timestamp::now());
-            if (! ok)
+        if (touch && ! _imp->params.options()[mo_preserve_mtimes])
+            if (! d.utime(Timestamp::now()))
                 throw FSMergerError("utime(" + stringify(dst_real) + ", 0) failed: " + stringify(::strerror(errno)));
-        }
 
         /* set*id bits get partially clobbered on a rename on linux */
         dst_real.chmod(src_perms);
@@ -405,9 +396,6 @@ FSMerger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::
         if (_imp->params.options()[mo_preserve_mtimes])
         {
             Timestamp timestamp(src.mtim());
-            if (timestamp < _imp->params.fix_mtimes_before())
-                timestamp = _imp->params.fix_mtimes_before();
-
             struct timespec ts[2];
             ts[0] = ts[1] = timestamp.as_timespec();
             if (0 != ::futimens(output_fd, ts))
@@ -457,19 +445,9 @@ FSMerger::track_renamed_dir_recursive(const FSEntry & dst)
                     bool touch(_imp->merged_ids.end() == _imp->merged_ids.find(d->lowlevel_id()));
                     _imp->merged_ids.insert(make_pair(d->lowlevel_id(), stringify(*d)));
 
-                    if (touch && (
-                                (! _imp->params.options()[mo_preserve_mtimes]) ||
-                                (d->mtim() < _imp->params.fix_mtimes_before())
-                                ))
-                    {
-                        bool ok(false);
-                        if (d->mtim() < _imp->params.fix_mtimes_before())
-                            ok = FSEntry(*d).utime(_imp->params.fix_mtimes_before());
-                        else
-                            ok = FSEntry(*d).utime(Timestamp::now());
-                        if (! ok)
+                    if (touch && ! _imp->params.options()[mo_preserve_mtimes])
+                        if (! FSEntry(*d).utime(Timestamp::now()))
                             throw FSMergerError("utime(" + stringify(*d) + ", 0) failed: " + stringify(::strerror(errno)));
-                    }
                     track_install_file(*d, dst, stringify(d->basename()), merged_how + msi_parent_rename);
                 }
                 continue;
