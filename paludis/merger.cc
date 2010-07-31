@@ -312,7 +312,7 @@ Merger::on_sym(bool is_check, const FSEntry & src, const FSEntry & dst)
 
     if (is_check &&
         0 != _imp->params.environment()->perform_hook(extend_hook(
-                         Hook("merger_check_sym_post")
+                         Hook("merger_check_sym_pre")
                          ("INSTALL_SOURCE", stringify(src))
                          ("INSTALL_DESTINATION", stringify(dst / src.basename())))).max_exit_status())
         make_check_fail();
