@@ -74,6 +74,7 @@ namespace paludis
     {
         protected:
             bool symlink_needs_rewriting(const FSEntry &);
+            void rewrite_symlink_as_needed(const FSEntry &, const FSEntry &);
             void set_skipped_dir(const bool);
             void do_ownership_fixes_recursive(const FSEntry &);
             bool fixed_ownership_for(const FSEntry &);

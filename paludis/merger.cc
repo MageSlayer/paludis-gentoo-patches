@@ -23,6 +23,7 @@
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/pimp-impl.hh>
+#include <paludis/selinux/security_context.hh>
 #include <paludis/environment.hh>
 #include <paludis/hook.hh>
 #include <set>
@@ -334,11 +335,15 @@ Merger::on_sym(bool is_check, const FSEntry & src, const FSEntry & dst)
             display_override("--- [skp] " + tidy);
             return;
         }
+
     }
-    else
+
+    if (symlink_needs_rewriting(src))
     {
-        if (symlink_needs_rewriting(src) && ! _imp->params.options()[mo_rewrite_symlinks])
+        if (! _imp->params.options()[mo_rewrite_symlinks])
             on_error(is_check, "Symlink to image detected at: " + stringify(src) + " (" + src.readlink() + ")");
+        else if (! is_check)
+            rewrite_symlink_as_needed(src, dst);
     }
 
     on_sym_main(is_check, src, dst);
@@ -437,5 +442,25 @@ Merger::fixed_ownership_for(const FSEntry & f)
 void
 Merger::on_done_merge()
 {
+}
+
+void
+Merger::rewrite_symlink_as_needed(const FSEntry & src, const FSEntry & dst_dir)
+{
+    if (! symlink_needs_rewriting(src))
+        return;
+
+    FSCreateCon createcon(MatchPathCon::get_instance()->match(stringify(dst_dir / src.basename()), S_IFLNK));
+
+    FSEntry real_image(_imp->params.image().realpath());
+    FSEntry dst(src.readlink());
+    std::string fixed_dst(stringify(dst.strip_leading(real_image)));
+
+    Log::get_instance()->message("merger.rewriting_symlink", ll_qa, lc_context) << "Rewriting bad symlink: "
+            << src << " -> " << dst << " to " << fixed_dst;
+
+    FSEntry s(src);
+    s.unlink();
+    s.symlink(fixed_dst);
 }
 

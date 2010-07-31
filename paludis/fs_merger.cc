@@ -436,26 +436,6 @@ FSMerger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::
 }
 
 void
-FSMerger::rewrite_symlink_as_needed(const FSEntry & src, const FSEntry & dst_dir)
-{
-    if (! symlink_needs_rewriting(src))
-        return;
-
-    FSCreateCon createcon(MatchPathCon::get_instance()->match(stringify(dst_dir / src.basename()), S_IFLNK));
-
-    FSEntry real_image(_imp->params.image().realpath());
-    FSEntry dst(src.readlink());
-    std::string fixed_dst(stringify(dst.strip_leading(real_image)));
-
-    Log::get_instance()->message("merger.rewriting_symlink", ll_qa, lc_context) << "Rewriting bad symlink: "
-            << src << " -> " << dst << " to " << fixed_dst;
-
-    FSEntry s(dst_dir / src.basename());
-    s.unlink();
-    s.symlink(fixed_dst);
-}
-
-void
 FSMerger::track_renamed_dir_recursive(const FSEntry & dst)
 {
     for (DirIterator d(dst, { dio_include_dotfiles, dio_inode_sort }), d_end ; d != d_end ; ++d)
@@ -620,33 +600,26 @@ FSMerger::install_sym(const FSEntry & src, const FSEntry & dst_dir)
     if (0 != (src.permissions() & (S_ISVTX | S_ISUID | S_ISGID)))
         result += msi_setid_bits;
 
-    bool do_sym(false);
+    bool do_sym(true);
 
-    if (symlink_needs_rewriting(src))
-        rewrite_symlink_as_needed(src, dst_dir);
-    else
+    FSCreateCon createcon(MatchPathCon::get_instance()->match(stringify(dst), S_IFLNK));
+    std::pair<MergedMap::const_iterator, MergedMap::const_iterator> ii(
+            _imp->merged_ids.equal_range(src.lowlevel_id()));
+    for (MergedMap::const_iterator i = ii.first ; i != ii.second ; ++i)
     {
-        do_sym = true;
-        FSCreateCon createcon(MatchPathCon::get_instance()->match(stringify(dst), S_IFLNK));
-        std::pair<MergedMap::const_iterator, MergedMap::const_iterator> ii(
-                _imp->merged_ids.equal_range(src.lowlevel_id()));
-        for (MergedMap::const_iterator i = ii.first ; i != ii.second ; ++i)
+        if (0 == ::link(i->second.c_str(), stringify(dst).c_str()))
         {
-            if (0 == ::link(i->second.c_str(), stringify(dst).c_str()))
-            {
-                do_sym = false;
-                result += msi_as_hardlink;
-                break;
-            }
-            Log::get_instance()->message("merger.sym.link_failed", ll_debug, lc_context)
-                    << "link(" << i->second + ", " << stringify(dst) << ") failed: "
-                    << ::strerror(errno);
+            do_sym = false;
+            result += msi_as_hardlink;
+            break;
         }
+        Log::get_instance()->message("merger.sym.link_failed", ll_debug, lc_context)
+            << "link(" << i->second + ", " << stringify(dst) << ") failed: "
+            << ::strerror(errno);
     }
 
     if (do_sym)
     {
-        FSCreateCon createcon(MatchPathCon::get_instance()->match(stringify(dst), S_IFLNK));
         if (0 != ::symlink(stringify(src.readlink()).c_str(), stringify(dst).c_str()))
             throw FSMergerError("Couldn't create symlink at '" + stringify(dst) + "': "
                     + stringify(::strerror(errno)));
