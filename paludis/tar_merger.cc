@@ -32,6 +32,8 @@
 #include <dlfcn.h>
 #include <stdint.h>
 
+#include "config.h"
+
 #define STUPID_CAST(type, val) reinterpret_cast<type>(reinterpret_cast<uintptr_t>(val))
 
 using namespace paludis;
@@ -56,6 +58,10 @@ namespace
 
         TarMergerHandle()
         {
+#if ! ENABLE_PBINS
+            throw NotAvailableError("Paludis was built without support for pbins");
+#endif
+
             handle = ::dlopen(("libpaludistarextras_" + stringify(PALUDIS_PC_SLOT) + ".so").c_str(), RTLD_NOW | RTLD_GLOBAL);
             if (! handle)
                 throw MergerError("Unable to open libpaludistarextras due to error '" + stringify(::dlerror()) + "' from dlopen");

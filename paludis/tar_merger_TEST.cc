@@ -30,6 +30,8 @@
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 
+#include "config.h"
+
 using namespace paludis;
 using namespace test;
 
@@ -80,6 +82,8 @@ namespace
 
 namespace test_cases
 {
+#if ENABLE_PBINS
+
     struct SimpleTarMergerTest : TestCase
     {
         SimpleTarMergerTest() : TestCase("simple tar merge") { }
@@ -136,5 +140,39 @@ namespace test_cases
             TEST_CHECK((FSEntry("tar_merger_TEST_dir") / "simple_extract" / "badsym").readlink() == "nothing");
         }
     } test_simple_tar_merger;
+
+#else
+
+    struct TarMergerNotAvailable : TestCase
+    {
+        TarMergerNotAvailable() : TestCase("tar merger not available") { }
+
+        void run()
+        {
+            auto output(FSEntry("tar_merger_TEST_dir") / "simple.tar");
+
+            TestEnvironment env;
+            TestTarMerger merger(make_named_values<TarMergerParams>(
+                        n::compression() = tmc_none,
+                        n::environment() = &env,
+                        n::fix_mtimes_before() = Timestamp(0, 0),
+                        n::get_new_ids_or_minus_one() = &get_new_ids_or_minus_one,
+                        n::image() = FSEntry("tar_merger_TEST_dir") / "simple",
+                        n::install_under() = FSEntry("/"),
+                        n::merged_entries() = std::make_shared<FSEntrySet>(),
+                        n::no_chown() = true,
+                        n::options() = MergerOptions(),
+                        n::root() = FSEntry("/"),
+                        n::tar_file() = output
+                        ));
+
+            TEST_CHECK(! output.is_regular_file());
+
+            TEST_CHECK_THROWS(merger.merge(), NotAvailableError);
+        }
+    } test_tar_merger_not_available;
+
+#endif
+
 }
 
