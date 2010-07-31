@@ -54,6 +54,8 @@ namespace paludis
         const std::shared_ptr<const MetadataValueKey<std::string> > homepage_key;
         const std::shared_ptr<const MetadataValueKey<std::string> > sync_key;
         const std::shared_ptr<const MetadataValueKey<std::string> > format_key;
+        const std::shared_ptr<LiteralMetadataStringSetKey> behaviours_key;
+        static const std::shared_ptr<Set<std::string> > behaviours_set;
         const std::shared_ptr<const Mask> mask;
 
         Imp(
@@ -67,11 +69,24 @@ namespace paludis
             homepage_key(e.homepage()),
             sync_key(e.sync()),
             format_key(e.format()),
+            behaviours_key(std::make_shared<LiteralMetadataStringSetKey>("behaviours", "behaviours", mkt_internal, behaviours_set)),
             mask(e.mask())
         {
         }
     };
 }
+
+namespace
+{
+    std::shared_ptr<Set<std::string> > make_behaviours()
+    {
+        std::shared_ptr<Set<std::string> > result(std::make_shared<Set<std::string>>());
+        result->insert("unbinaryable");
+        return result;
+    }
+}
+
+const std::shared_ptr<Set<std::string> > Imp<UnavailableRepositoryID>::behaviours_set = make_behaviours();
 
 UnavailableRepositoryID::UnavailableRepositoryID(const UnavailableRepositoryIDParams & entry) :
     Pimp<UnavailableRepositoryID>(entry),
@@ -87,6 +102,8 @@ UnavailableRepositoryID::UnavailableRepositoryID(const UnavailableRepositoryIDPa
         add_metadata_key(_imp->sync_key);
     if (_imp->format_key)
         add_metadata_key(_imp->format_key);
+    if (_imp->behaviours_key)
+        add_metadata_key(_imp->behaviours_key);
     if (_imp->mask)
         add_mask(_imp->mask);
 }
@@ -287,7 +304,7 @@ UnavailableRepositoryID::fs_location_key() const
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 UnavailableRepositoryID::behaviours_key() const
 {
-    return make_null_shared_ptr();
+    return _imp->behaviours_key;
 }
 
 const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > >
