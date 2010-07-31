@@ -46,6 +46,7 @@
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/generator.hh>
+#include <paludis/selection.hh>
 #include <paludis/elike_slot_requirement.hh>
 
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
@@ -85,12 +86,24 @@ paludis::resolver::resolver_test::initial_constraints_for_fn(
 }
 
 std::shared_ptr<Resolvents>
-paludis::resolver::resolver_test::get_resolvents_for_fn(const PackageDepSpec & spec,
+paludis::resolver::resolver_test::get_resolvents_for_fn(
+        const Environment * const env,
+        const PackageDepSpec & spec,
         const std::shared_ptr<const SlotName> & slot,
         const std::shared_ptr<const Reason> &)
 {
-    std::shared_ptr<Resolvents> result(std::make_shared<Resolvents>());
-    result->push_back(Resolvent(spec, slot ? *slot : SlotName("0"), dt_install_to_slash));
+    auto result(std::make_shared<Resolvents>());
+    if (slot)
+        result->push_back(Resolvent(spec, *slot, dt_install_to_slash));
+    else
+    {
+        auto ids((*env)[selection::BestVersionInEachSlot(
+                    generator::Matches(spec, { mpo_ignore_additional_requirements }))]);
+        for (auto i(ids->begin()), i_end(ids->end()) ;
+                i != i_end ; ++i)
+            if ((*i)->slot_key())
+                result->push_back(Resolvent(spec, (*i)->slot_key()->value(), dt_install_to_slash));
+    }
     return result;
 }
 
@@ -395,7 +408,8 @@ ResolverTestCase::get_resolver_functions(InitialConstraints & initial_constraint
             n::get_initial_constraints_for_fn() =
                 std::bind(&initial_constraints_for_fn, std::ref(initial_constraints),
                     std::placeholders::_1),
-            n::get_resolvents_for_fn() = &get_resolvents_for_fn,
+            n::get_resolvents_for_fn() = std::bind(&get_resolvents_for_fn, &env, std::placeholders::_1,
+                std::placeholders::_2, std::placeholders::_3),
             n::get_use_existing_fn() = &get_use_existing_fn,
             n::interest_in_spec_fn() = &interest_in_spec_fn,
             n::make_destination_filtered_generator_fn() = &make_destination_filtered_generator_fn,

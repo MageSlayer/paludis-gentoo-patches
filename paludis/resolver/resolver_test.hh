@@ -83,7 +83,9 @@ namespace paludis
                     const std::shared_ptr<const Resolution> &,
                     const std::shared_ptr<const Resolution> &);
 
-            std::shared_ptr<Resolvents> get_resolvents_for_fn(const PackageDepSpec & spec,
+            std::shared_ptr<Resolvents> get_resolvents_for_fn(
+                    const Environment * const,
+                    const PackageDepSpec & spec,
                     const std::shared_ptr<const SlotName> &,
                     const std::shared_ptr<const Reason> &);
 
