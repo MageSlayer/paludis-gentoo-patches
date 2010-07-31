@@ -57,7 +57,7 @@ namespace paludis
         typedef Name<struct get_destination_types_for_fn_name> get_destination_types_for_fn;
         typedef Name<struct get_initial_constraints_for_fn_name> get_initial_constraints_for_fn;
         typedef Name<struct get_resolvents_for_fn_name> get_resolvents_for_fn;
-        typedef Name<struct get_use_existing_fn_name> get_use_existing_fn;
+        typedef Name<struct get_use_existing_nothing_fn_name> get_use_existing_nothing_fn;
         typedef Name<struct interest_in_spec_fn_name> interest_in_spec_fn;
         typedef Name<struct make_destination_filtered_generator_fn_name> make_destination_filtered_generator_fn;
         typedef Name<struct make_origin_filtered_generator_fn_name> make_origin_filtered_generator_fn;
@@ -125,11 +125,11 @@ namespace paludis
                 const std::shared_ptr<const Reason> &
                 )> GetResolventsForFunction;
 
-        typedef std::function<UseExisting (
+        typedef std::function<std::pair<UseExisting, bool> (
                 const std::shared_ptr<const Resolution> &,
                 const PackageDepSpec &,
                 const std::shared_ptr<const Reason> &
-                )> GetUseExistingFunction;
+                )> GetUseExistingNothingFunction;
 
         typedef std::function<SpecInterest (
                 const std::shared_ptr<const Resolution> &,
@@ -175,7 +175,7 @@ namespace paludis
             NamedValue<n::get_destination_types_for_fn, GetDestinationTypesForFunction> get_destination_types_for_fn;
             NamedValue<n::get_initial_constraints_for_fn, GetInitialConstraintsFunction> get_initial_constraints_for_fn;
             NamedValue<n::get_resolvents_for_fn, GetResolventsForFunction> get_resolvents_for_fn;
-            NamedValue<n::get_use_existing_fn, GetUseExistingFunction> get_use_existing_fn;
+            NamedValue<n::get_use_existing_nothing_fn, GetUseExistingNothingFunction> get_use_existing_nothing_fn;
             NamedValue<n::interest_in_spec_fn, InterestInSpecFunction> interest_in_spec_fn;
             NamedValue<n::make_destination_filtered_generator_fn,
                 MakeDestinationFilteredGeneratorFunction> make_destination_filtered_generator_fn;

@@ -61,13 +61,13 @@ namespace
         }
     };
 
-    UseExisting
+    std::pair<UseExisting, bool>
     use_existing_if_same(
             const std::shared_ptr<const Resolution> &,
             const PackageDepSpec &,
             const std::shared_ptr<const Reason> &)
     {
-        return ue_if_same;
+        return std::make_pair(ue_if_same, false);
     }
 }
 
@@ -85,7 +85,7 @@ namespace test_cases
         virtual ResolverFunctions get_resolver_functions(InitialConstraints & initial_constraints)
         {
             ResolverFunctions result(ResolverCyclesTestCase::get_resolver_functions(initial_constraints));
-            result.get_use_existing_fn() = std::bind(&use_existing_if_same, std::placeholders::_1,
+            result.get_use_existing_nothing_fn() = std::bind(&use_existing_if_same, std::placeholders::_1,
                     std::placeholders::_2, std::placeholders::_3);
             return result;
         }
@@ -290,7 +290,7 @@ namespace test_cases
         virtual ResolverFunctions get_resolver_functions(InitialConstraints & initial_constraints)
         {
             ResolverFunctions result(ResolverCyclesTestCase::get_resolver_functions(initial_constraints));
-            result.get_use_existing_fn() = std::bind(&use_existing_if_same, std::placeholders::_1,
+            result.get_use_existing_nothing_fn() = std::bind(&use_existing_if_same, std::placeholders::_1,
                     std::placeholders::_2, std::placeholders::_3);
             return result;
         }
@@ -359,7 +359,7 @@ namespace test_cases
         virtual ResolverFunctions get_resolver_functions(InitialConstraints & initial_constraints)
         {
             ResolverFunctions result(ResolverCyclesTestCase::get_resolver_functions(initial_constraints));
-            result.get_use_existing_fn() = std::bind(&use_existing_if_same, std::placeholders::_1,
+            result.get_use_existing_nothing_fn() = std::bind(&use_existing_if_same, std::placeholders::_1,
                     std::placeholders::_2, std::placeholders::_3);
             return result;
         }

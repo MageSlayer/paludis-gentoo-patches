@@ -730,14 +730,16 @@ Decider::_make_constraints_from_target(
 {
     if (spec.if_package())
     {
+        auto existing(_imp->fns.get_use_existing_nothing_fn()(resolution, *spec.if_package(), reason));
+
         const std::shared_ptr<ConstraintSequence> result(std::make_shared<ConstraintSequence>());
         result->push_back(std::make_shared<Constraint>(make_named_values<Constraint>(
                             n::destination_type() = resolution->resolvent().destination_type(),
-                            n::nothing_is_fine_too() = false,
+                            n::nothing_is_fine_too() = existing.second,
                             n::reason() = reason,
                             n::spec() = spec,
                             n::untaken() = false,
-                            n::use_existing() = _imp->fns.get_use_existing_fn()(resolution, *spec.if_package(), reason)
+                            n::use_existing() = existing.first
                             )));
         return result;
     }
@@ -756,14 +758,16 @@ Decider::_make_constraints_from_dependency(
 {
     if (dep.spec().if_package())
     {
+        auto existing(_imp->fns.get_use_existing_nothing_fn()(resolution, *dep.spec().if_package(), reason));
+
         const std::shared_ptr<ConstraintSequence> result(std::make_shared<ConstraintSequence>());
         result->push_back(std::make_shared<Constraint>(make_named_values<Constraint>(
                             n::destination_type() = resolution->resolvent().destination_type(),
-                            n::nothing_is_fine_too() = false,
+                            n::nothing_is_fine_too() = existing.second,
                             n::reason() = reason,
                             n::spec() = *dep.spec().if_package(),
                             n::untaken() = si_untaken == interest,
-                            n::use_existing() = _imp->fns.get_use_existing_fn()(resolution, *dep.spec().if_package(), reason)
+                            n::use_existing() = existing.first
                             )));
         return result;
     }

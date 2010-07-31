@@ -89,7 +89,7 @@ namespace paludis
                     const std::shared_ptr<const SlotName> &,
                     const std::shared_ptr<const Reason> &);
 
-            UseExisting get_use_existing_fn(
+            std::pair<UseExisting, bool> get_use_existing_nothing_fn(
                     const std::shared_ptr<const Resolution> &,
                     const PackageDepSpec &,
                     const std::shared_ptr<const Reason> &);

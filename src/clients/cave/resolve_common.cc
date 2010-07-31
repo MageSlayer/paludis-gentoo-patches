@@ -398,46 +398,46 @@ namespace
         {
         }
 
-        UseExisting visit(const DependencyReason &) const
+        std::pair<UseExisting, bool> visit(const DependencyReason &) const
         {
-            return use_existing_from_cmdline(resolution_options.a_keep, false);
+            return std::make_pair(use_existing_from_cmdline(resolution_options.a_keep, false), false);
         }
 
-        UseExisting visit(const TargetReason &) const
+        std::pair<UseExisting, bool> visit(const TargetReason &) const
         {
-            return use_existing_from_cmdline(resolution_options.a_keep_targets, from_set);
+            return std::make_pair(use_existing_from_cmdline(resolution_options.a_keep_targets, from_set), false);
         }
 
-        UseExisting visit(const DependentReason &) const
+        std::pair<UseExisting, bool> visit(const DependentReason &) const
         {
-            return ue_if_possible;
+            return std::make_pair(ue_if_possible, false);
         }
 
-        UseExisting visit(const WasUsedByReason &) const
+        std::pair<UseExisting, bool> visit(const WasUsedByReason &) const
         {
-            return ue_if_possible;
+            return std::make_pair(ue_if_possible, false);
         }
 
-        UseExisting visit(const PresetReason &) const
+        std::pair<UseExisting, bool> visit(const PresetReason &) const
         {
-            return ue_if_possible;
+            return std::make_pair(ue_if_possible, false);
         }
 
-        UseExisting visit(const ViaBinaryReason &) const
+        std::pair<UseExisting, bool> visit(const ViaBinaryReason &) const
         {
-            return ue_if_possible;
+            return std::make_pair(ue_if_possible, false);
         }
 
-        UseExisting visit(const SetReason & r) const
+        std::pair<UseExisting, bool> visit(const SetReason & r) const
         {
             UseExistingVisitor v(resolution_options, true);
-            return r.reason_for_set()->accept_returning<UseExisting>(v);
+            return r.reason_for_set()->accept_returning<std::pair<UseExisting, bool> >(v);
         }
 
-        UseExisting visit(const LikeOtherDestinationTypeReason & r) const
+        std::pair<UseExisting, bool> visit(const LikeOtherDestinationTypeReason & r) const
         {
             UseExistingVisitor v(resolution_options, true);
-            return r.reason_for_other()->accept_returning<UseExisting>(v);
+            return r.reason_for_other()->accept_returning<std::pair<UseExisting, bool> >(v);
         }
     };
 
@@ -472,7 +472,7 @@ namespace
         return false;
     }
 
-    UseExisting use_existing_fn(
+    std::pair<UseExisting, bool> use_existing_nothing_fn(
             const Environment * const env,
             const ResolveCommandLineResolutionOptions & resolution_options,
             const PackageDepSpecList & without,
@@ -484,13 +484,13 @@ namespace
         if (spec.package_ptr())
         {
             if (use_existing_from_withish(env, *spec.package_ptr(), without))
-                return ue_if_possible;
+                return std::make_pair(ue_if_possible, true);
             if (use_existing_from_withish(env, *spec.package_ptr(), with))
-                return ue_never;
+                return std::make_pair(ue_never, false);
         }
 
         UseExistingVisitor v(resolution_options, false);
-        return reason->accept_returning<UseExisting>(v);
+        return reason->accept_returning<std::pair<UseExisting, bool> >(v);
     }
 
     int reinstall_scm_days(const ResolveCommandLineResolutionOptions & resolution_options)
@@ -1906,7 +1906,7 @@ paludis::cave::resolve_common(
                     std::cref(initial_constraints), all_binary_repos_generator, _1),
                 n::get_resolvents_for_fn() = std::bind(&get_resolvents_for_fn,
                     env.get(), std::cref(resolution_options), _1, _2, _3, DestinationTypes()),
-                n::get_use_existing_fn() = std::bind(&use_existing_fn,
+                n::get_use_existing_nothing_fn() = std::bind(&use_existing_nothing_fn,
                     env.get(), std::cref(resolution_options), std::cref(without), std::cref(with), _1, _2, _3),
                 n::interest_in_spec_fn() = std::bind(&interest_in_spec_fn,
                     env.get(), std::cref(resolution_options), std::cref(take), std::cref(take_from),

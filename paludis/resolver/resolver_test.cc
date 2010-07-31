@@ -183,13 +183,13 @@ paludis::resolver::resolver_test::interest_in_spec_fn(
         return si_take;
 }
 
-UseExisting
-paludis::resolver::resolver_test::get_use_existing_fn(
+std::pair<UseExisting, bool>
+paludis::resolver::resolver_test::get_use_existing_nothing_fn(
         const std::shared_ptr<const Resolution> &,
         const PackageDepSpec &,
         const std::shared_ptr<const Reason> &)
 {
-    return ue_never;
+    return std::make_pair(ue_never, false);
 }
 
 const std::shared_ptr<const Repository>
@@ -410,7 +410,7 @@ ResolverTestCase::get_resolver_functions(InitialConstraints & initial_constraint
                     std::placeholders::_1),
             n::get_resolvents_for_fn() = std::bind(&get_resolvents_for_fn, &env, std::placeholders::_1,
                 std::placeholders::_2, std::placeholders::_3),
-            n::get_use_existing_fn() = &get_use_existing_fn,
+            n::get_use_existing_nothing_fn() = &get_use_existing_nothing_fn,
             n::interest_in_spec_fn() = &interest_in_spec_fn,
             n::make_destination_filtered_generator_fn() = &make_destination_filtered_generator_fn,
             n::make_origin_filtered_generator_fn() = &make_origin_filtered_generator_fn,

@@ -62,16 +62,16 @@ namespace
         }
     };
 
-    UseExisting
+    std::pair<UseExisting, bool>
     use_existing_if_possible_except_target(
             const std::shared_ptr<const Resolution> &,
             const PackageDepSpec & s,
             const std::shared_ptr<const Reason> &)
     {
         if (s.package_ptr() && s.package_ptr()->package() == PackageNamePart("target"))
-            return ue_never;
+            return std::make_pair(ue_never, false);
         else
-            return ue_if_possible;
+            return std::make_pair(ue_if_possible, false);
     }
 }
 
@@ -96,7 +96,7 @@ namespace test_cases
         virtual ResolverFunctions get_resolver_functions(InitialConstraints & initial_constraints)
         {
             ResolverFunctions result(ResolverPurgesTestCase::get_resolver_functions(initial_constraints));
-            result.get_use_existing_fn() = std::bind(&use_existing_if_possible_except_target, std::placeholders::_1,
+            result.get_use_existing_nothing_fn() = std::bind(&use_existing_if_possible_except_target, std::placeholders::_1,
                     std::placeholders::_2, std::placeholders::_3);
             return result;
         }
@@ -140,7 +140,7 @@ namespace test_cases
         virtual ResolverFunctions get_resolver_functions(InitialConstraints & initial_constraints)
         {
             ResolverFunctions result(ResolverPurgesTestCase::get_resolver_functions(initial_constraints));
-            result.get_use_existing_fn() = std::bind(&use_existing_if_possible_except_target, std::placeholders::_1,
+            result.get_use_existing_nothing_fn() = std::bind(&use_existing_if_possible_except_target, std::placeholders::_1,
                     std::placeholders::_2, std::placeholders::_3);
             result.confirm_fn() = std::bind(return_literal_function(false));
             return result;
