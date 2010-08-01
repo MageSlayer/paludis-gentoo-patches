@@ -108,8 +108,7 @@ namespace paludis
             Filter make_unmaskable_filter_fn(
                     const std::shared_ptr<const Resolution> &);
 
-            DestinationTypes get_destination_types_for_fn(const PackageDepSpec &,
-                    const std::shared_ptr<const PackageID> &,
+            DestinationTypes get_destination_types_for_error_fn(const PackageDepSpec &,
                     const std::shared_ptr<const Reason> &);
 
             bool allowed_to_remove_fn(

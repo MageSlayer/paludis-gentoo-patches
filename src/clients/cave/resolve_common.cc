@@ -173,7 +173,7 @@ namespace
     {
         const Environment * const env;
         const ResolveCommandLineResolutionOptions & resolution_options;
-        const std::shared_ptr<const PackageID> package_id;
+        const std::shared_ptr<const PackageID> package_id_unless_error;
 
         DestinationTypesFinder(
                 const Environment * const e,
@@ -181,7 +181,7 @@ namespace
                 const std::shared_ptr<const PackageID> & i) :
             env(e),
             resolution_options(c),
-            package_id(i)
+            package_id_unless_error(i)
         {
         }
 
@@ -234,7 +234,7 @@ namespace
                         binary_if_possible = true;
                 }
 
-                if (binary_if_possible && package_id && can_make_binary_for(package_id))
+                if (binary_if_possible && package_id_unless_error && can_make_binary_for(package_id_unless_error))
                     extras += dt_create_binary;
             }
 #endif
@@ -262,10 +262,10 @@ namespace
             const Environment * const env,
             const ResolveCommandLineResolutionOptions & resolution_options,
             const PackageDepSpec &,
-            const std::shared_ptr<const PackageID> & id,
+            const std::shared_ptr<const PackageID> & id_unless_error,
             const std::shared_ptr<const Reason> & reason)
     {
-        DestinationTypesFinder f(env, resolution_options, id);
+        DestinationTypesFinder f(env, resolution_options, id_unless_error);
         return reason->accept_returning<DestinationTypes>(f);
     }
 
@@ -1908,8 +1908,8 @@ paludis::cave::resolve_common(
                     env.get(), std::cref(purge_specs), _1, _2, _3),
                 n::get_constraints_for_via_binary_fn() = std::bind(&get_constraints_for_via_binary_fn,
                     env.get(), _1, _2),
-                n::get_destination_types_for_fn() = std::bind(&get_destination_types_for_fn,
-                    env.get(), std::cref(resolution_options), _1, _2, _3),
+                n::get_destination_types_for_error_fn() = std::bind(&get_destination_types_for_fn,
+                    env.get(), std::cref(resolution_options), _1, make_null_shared_ptr(), _2),
                 n::get_initial_constraints_for_fn() = std::bind(&initial_constraints_for_fn,
                     env.get(), std::cref(resolution_options), std::cref(without),
                     std::cref(initial_constraints), binary_destinations, _1),

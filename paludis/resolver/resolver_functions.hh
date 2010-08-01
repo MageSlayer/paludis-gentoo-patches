@@ -54,7 +54,7 @@ namespace paludis
         typedef Name<struct get_constraints_for_dependent_fn_name> get_constraints_for_dependent_fn;
         typedef Name<struct get_constraints_for_purge_fn_name> get_constraints_for_purge_fn;
         typedef Name<struct get_constraints_for_via_binary_fn_name> get_constraints_for_via_binary_fn;
-        typedef Name<struct get_destination_types_for_fn_name> get_destination_types_for_fn;
+        typedef Name<struct get_destination_types_for_error_fn_name> get_destination_types_for_error_fn;
         typedef Name<struct get_initial_constraints_for_fn_name> get_initial_constraints_for_fn;
         typedef Name<struct get_resolvents_for_fn_name> get_resolvents_for_fn;
         typedef Name<struct get_use_existing_nothing_fn_name> get_use_existing_nothing_fn;
@@ -111,9 +111,8 @@ namespace paludis
 
         typedef std::function<DestinationTypes (
                 const PackageDepSpec &,
-                const std::shared_ptr<const PackageID> &,
                 const std::shared_ptr<const Reason> &
-                )> GetDestinationTypesForFunction;
+                )> GetDestinationTypesForErrorFunction;
 
         typedef std::function<std::shared_ptr<Constraints> (
                 const Resolvent &
@@ -172,7 +171,7 @@ namespace paludis
             NamedValue<n::get_constraints_for_dependent_fn, GetConstraintsForDependentFunction> get_constraints_for_dependent_fn;
             NamedValue<n::get_constraints_for_purge_fn, GetConstraintsForPurgeFunction> get_constraints_for_purge_fn;
             NamedValue<n::get_constraints_for_via_binary_fn, GetConstraintsForViaBinaryFunction> get_constraints_for_via_binary_fn;
-            NamedValue<n::get_destination_types_for_fn, GetDestinationTypesForFunction> get_destination_types_for_fn;
+            NamedValue<n::get_destination_types_for_error_fn, GetDestinationTypesForErrorFunction> get_destination_types_for_error_fn;
             NamedValue<n::get_initial_constraints_for_fn, GetInitialConstraintsFunction> get_initial_constraints_for_fn;
             NamedValue<n::get_resolvents_for_fn, GetResolventsForFunction> get_resolvents_for_fn;
             NamedValue<n::get_use_existing_nothing_fn, GetUseExistingNothingFunction> get_use_existing_nothing_fn;

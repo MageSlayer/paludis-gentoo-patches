@@ -141,8 +141,7 @@ paludis::resolver::resolver_test::make_unmaskable_filter_fn(
 }
 
 DestinationTypes
-paludis::resolver::resolver_test::get_destination_types_for_fn(const PackageDepSpec &,
-        const std::shared_ptr<const PackageID> &,
+paludis::resolver::resolver_test::get_destination_types_for_error_fn(const PackageDepSpec &,
         const std::shared_ptr<const Reason> &)
 {
     return DestinationTypes() + dt_install_to_slash;
@@ -404,7 +403,7 @@ ResolverTestCase::get_resolver_functions(InitialConstraints & initial_constraint
             n::get_constraints_for_dependent_fn() = &get_constraints_for_dependent_fn,
             n::get_constraints_for_purge_fn() = &get_constraints_for_purge_fn,
             n::get_constraints_for_via_binary_fn() = &get_constraints_for_via_binary_fn,
-            n::get_destination_types_for_fn() = &get_destination_types_for_fn,
+            n::get_destination_types_for_error_fn() = &get_destination_types_for_error_fn,
             n::get_initial_constraints_for_fn() =
                 std::bind(&initial_constraints_for_fn, std::ref(initial_constraints),
                     std::placeholders::_1),

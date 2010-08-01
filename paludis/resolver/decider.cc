@@ -1498,12 +1498,11 @@ Decider::_get_resolvents_for(
 }
 
 const DestinationTypes
-Decider::_get_destination_types_for(
+Decider::_get_destination_types_for_error(
         const PackageDepSpec & spec,
-        const std::shared_ptr<const PackageID> & id,
         const std::shared_ptr<const Reason> & reason) const
 {
-    return _imp->fns.get_destination_types_for_fn()(spec, id, reason);
+    return _imp->fns.get_destination_types_for_error_fn()(spec, reason);
 }
 
 const std::shared_ptr<const Resolvents>
@@ -1514,7 +1513,7 @@ Decider::_get_error_resolvents_for(
     Context context("When finding slots for '" + stringify(spec) + "', which can't be found the normal way:");
 
     std::shared_ptr<Resolvents> result(std::make_shared<Resolvents>());
-    DestinationTypes destination_types(_get_destination_types_for(spec, make_null_shared_ptr(), reason));
+    DestinationTypes destination_types(_get_destination_types_for_error(spec, reason));
     for (EnumIterator<DestinationType> t, t_end(last_dt) ; t != t_end ; ++t)
         if (destination_types[*t])
             result->push_back(Resolvent(spec, true, *t));
