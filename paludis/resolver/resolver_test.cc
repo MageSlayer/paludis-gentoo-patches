@@ -116,7 +116,10 @@ paludis::resolver::resolver_test::make_destination_filtered_generator_fn(const G
     switch (resolution->resolvent().destination_type())
     {
         case dt_install_to_slash:
-            return g | filter::InstalledAtRoot(FSEntry("/"));
+            return g | filter::InstalledAtSlash();
+
+        case dt_install_to_chroot:
+            return g | filter::InstalledAtNotSlash();
 
         case dt_create_binary:
             throw InternalError(PALUDIS_HERE, "no dt_create_binary yet");

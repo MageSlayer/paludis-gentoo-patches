@@ -7,6 +7,7 @@ make_enum_DestinationType()
     namespace paludis::resolver
 
     key dt_install_to_slash      "Install to the / fs"
+    key dt_install_to_chroot     "Install to the chroot"
     key dt_create_binary         "Create a binary"
 
     want_destringify

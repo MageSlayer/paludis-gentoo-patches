@@ -351,6 +351,10 @@ namespace
                 result << ", installing to /";
                 break;
 
+            case dt_install_to_chroot:
+                result << ", installing to chroot";
+                break;
+
             case dt_create_binary:
                 result << ", creating a binary";
                 break;
@@ -1102,6 +1106,12 @@ namespace
                             c = c::yellow();
                         if (maybe_totals)
                             ++maybe_totals->installs_ct_count.insert(std::make_pair(decision.change_type(), 0)).first->second;
+                        continue;
+
+                    case dt_install_to_chroot:
+                        c = c::blue();
+                        if (maybe_totals)
+                            ++maybe_totals->installs_count;
                         continue;
 
                     case dt_create_binary:

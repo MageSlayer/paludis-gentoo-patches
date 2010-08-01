@@ -777,6 +777,11 @@ namespace
                     action_string = "install to /";
                     break;
 
+                case dt_install_to_chroot:
+                    destination_string = "installing to chroot";
+                    action_string = "install to chroot";
+                    break;
+
                 case dt_create_binary:
                     destination_string = "creating binary";
                     action_string = "create binary in ::" + stringify(install_item.destination_repository_name());

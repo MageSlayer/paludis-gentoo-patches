@@ -282,7 +282,10 @@ namespace
         switch (r.destination_type())
         {
             case dt_install_to_slash:
-                return g | filter::InstalledAtRoot(FSEntry("/"));
+                return g | filter::InstalledAtSlash();
+
+            case dt_install_to_chroot:
+                return g | filter::InstalledAtNotSlash();
 
             case dt_create_binary:
                 if (binary_destinations)
@@ -996,6 +999,11 @@ namespace
                         continue;
                     break;
 
+                case dt_install_to_chroot:
+                    if ((! (*r)->installed_root_key()) || ((*r)->installed_root_key()->value() == FSEntry("/")))
+                        continue;
+                    break;
+
                 case dt_create_binary:
                     if ((*r)->installed_root_key())
                         continue;
@@ -1029,7 +1037,10 @@ namespace
         switch (resolvent.destination_type())
         {
             case dt_install_to_slash:
-                return filter::InstalledAtRoot(FSEntry("/"));
+                return filter::InstalledAtSlash();
+
+            case dt_install_to_chroot:
+                return filter::InstalledAtNotSlash();
 
             case dt_create_binary:
                 throw InternalError(PALUDIS_HERE, "no dt_create_binary yet");
