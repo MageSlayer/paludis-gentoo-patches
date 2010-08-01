@@ -171,6 +171,34 @@ namespace paludis
         };
 
         /**
+         * A Filter which accepts only PackageID instances that are installed to
+         * the / fs.
+         *
+         * \ingroup g_selections
+         * \since 0.51
+         */
+        class PALUDIS_VISIBLE InstalledAtSlash :
+            public Filter
+        {
+            public:
+                InstalledAtSlash();
+        };
+
+        /**
+         * A Filter which accepts only PackageID instances that are installed to
+         * an fs other than /.
+         *
+         * \ingroup g_selections
+         * \since 0.51
+         */
+        class PALUDIS_VISIBLE InstalledAtNotSlash :
+            public Filter
+        {
+            public:
+                InstalledAtNotSlash();
+        };
+
+        /**
          * A Filter which accepts only PackageID instances that are accepted by
          * two different filters.
          *

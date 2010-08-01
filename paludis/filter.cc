@@ -204,13 +204,15 @@ namespace
         }
     };
 
-    struct InstalledAtRootFilterHandler :
+    struct InstalledAtFilterHandler :
         AllFilterHandlerBase
     {
         const FSEntry root;
+        const bool equal;
 
-        InstalledAtRootFilterHandler(const FSEntry & r) :
-            root(r)
+        InstalledAtFilterHandler(const FSEntry & r, const bool e) :
+            root(r),
+            equal(e)
         {
         }
 
@@ -224,12 +226,13 @@ namespace
                     r != r_end ; ++r)
             {
                 const std::shared_ptr<const Repository> repo(env->package_database()->fetch_repository(*r));
-                if (repo->installed_root_key() && root == repo->installed_root_key()->value())
+                if (equal == (repo->installed_root_key() && root == repo->installed_root_key()->value()))
                     result->insert(*r);
             }
 
             return result;
         }
+
         virtual std::shared_ptr<const PackageIDSet> ids(
                 const Environment * const,
                 const std::shared_ptr<const PackageIDSet> & id) const
@@ -245,7 +248,7 @@ namespace
 
         virtual std::string as_string() const
         {
-            return "installed at root " + stringify(root);
+            return "installed " + std::string(equal ? "" : "not ") + "at root " + stringify(root);
         }
     };
 
@@ -443,7 +446,17 @@ filter::NotMasked::NotMasked() :
 }
 
 filter::InstalledAtRoot::InstalledAtRoot(const FSEntry & r) :
-    Filter(std::make_shared<InstalledAtRootFilterHandler>(r))
+    Filter(std::make_shared<InstalledAtFilterHandler>(r, true))
+{
+}
+
+filter::InstalledAtSlash::InstalledAtSlash() :
+    Filter(std::make_shared<InstalledAtFilterHandler>(FSEntry("/"), true))
+{
+}
+
+filter::InstalledAtNotSlash::InstalledAtNotSlash() :
+    Filter(std::make_shared<InstalledAtFilterHandler>(FSEntry("/"), false))
 {
 }
 

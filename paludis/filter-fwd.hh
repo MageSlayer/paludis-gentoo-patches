@@ -38,10 +38,13 @@ namespace paludis
         class All;
         template <typename> class SupportsAction;
         class NotMasked;
-        class InstalledAtRoot;
         class And;
         class Slot;
         class Matches;
+
+        class InstalledAtRoot;
+        class InstalledAtSlash;
+        class InstalledAtNotSlash;
     }
 
     /**
