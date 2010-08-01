@@ -310,9 +310,11 @@ namespace
             const Generator & g,
             const std::shared_ptr<const Resolution> &)
     {
+#ifdef ENABLE_PBINS
         if (resolution_options.a_make.argument() == "binaries")
             return g | BinaryableFilter();
         else
+#endif
             return g;
     }
 

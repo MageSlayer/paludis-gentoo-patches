@@ -58,7 +58,7 @@ namespace
 
         TarMergerHandle()
         {
-#if ! ENABLE_PBINS
+#ifndef ENABLE_PBINS
             throw NotAvailableError("Paludis was built without support for pbins");
 #endif
 
