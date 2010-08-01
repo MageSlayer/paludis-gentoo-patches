@@ -34,6 +34,7 @@
 #include <paludis/util/return_literal_function.hh>
 #include <paludis/util/timestamp.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/singleton-impl.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
@@ -54,6 +55,20 @@ using namespace paludis::unpackaged_repositories;
 
 namespace
 {
+    struct InstalledUnpackagedIDBehaviours :
+        Singleton<InstalledUnpackagedIDBehaviours>
+    {
+        std::shared_ptr<Set<std::string> > behaviours_value;
+        std::shared_ptr<LiteralMetadataStringSetKey> behaviours_key;
+
+        InstalledUnpackagedIDBehaviours() :
+            behaviours_value(std::make_shared<Set<std::string>>()),
+            behaviours_key(std::make_shared<LiteralMetadataStringSetKey>("behaviours", "behaviours", mkt_internal, behaviours_value))
+        {
+            behaviours_value->insert("transient");
+        }
+    };
+
     std::string format_string(const std::string & i, const Formatter<std::string> & f)
     {
         return f.format(i, format::Plain());
@@ -406,8 +421,6 @@ namespace paludis
         std::shared_ptr<InstalledUnpackagedDependencyKey> run_dependencies_key;
         std::shared_ptr<LiteralMetadataStringSetKey> behaviours_key;
 
-        static const std::shared_ptr<Set<std::string> > behaviours_set;
-
         Imp(
                 const Environment * const e,
                 const PackageID * const id,
@@ -428,7 +441,7 @@ namespace paludis
             run_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
             slot_key(std::make_shared<LiteralMetadataValueKey<SlotName> >("slot", "Slot", mkt_internal, s)),
             fs_location_key(std::make_shared<InstalledUnpackagedFSEntryKey>(l)),
-            behaviours_key(std::make_shared<LiteralMetadataStringSetKey>("behaviours", "behaviours", mkt_internal, behaviours_set))
+            behaviours_key(InstalledUnpackagedIDBehaviours::get_instance()->behaviours_key)
         {
             build_dependencies_labels->push_back(std::make_shared<DependenciesBuildLabel>("build_dependencies",
                             return_literal_function(true)));
@@ -463,18 +476,6 @@ namespace paludis
         }
     };
 }
-
-namespace
-{
-    std::shared_ptr<Set<std::string> > make_behaviours()
-    {
-        std::shared_ptr<Set<std::string> > result(std::make_shared<Set<std::string>>());
-        result->insert("transient");
-        return result;
-    }
-}
-
-const std::shared_ptr<Set<std::string> > Imp<InstalledUnpackagedID>::behaviours_set = make_behaviours();
 
 InstalledUnpackagedID::InstalledUnpackagedID(const Environment * const e, const QualifiedPackageName & q,
         const VersionSpec & v, const SlotName & s, const RepositoryName & n, const FSEntry & l,

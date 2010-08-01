@@ -31,6 +31,7 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/singleton-impl.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
@@ -42,6 +43,23 @@
 
 using namespace paludis;
 using namespace paludis::accounts_repository;
+
+namespace
+{
+    struct AccountsIDBehaviours :
+        Singleton<AccountsIDBehaviours>
+    {
+        std::shared_ptr<Set<std::string> > behaviours_value;
+        std::shared_ptr<LiteralMetadataStringSetKey> behaviours_key;
+
+        AccountsIDBehaviours() :
+            behaviours_value(std::make_shared<Set<std::string>>()),
+            behaviours_key(std::make_shared<LiteralMetadataStringSetKey>("behaviours", "behaviours", mkt_internal, behaviours_value))
+        {
+            behaviours_value->insert("unbinaryable");
+        }
+    };
+}
 
 namespace paludis
 {
@@ -56,7 +74,6 @@ namespace paludis
 
         const std::shared_ptr<const LiteralMetadataValueKey<FSEntry> > fs_location_key;
         const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > from_repositories_key;
-        static const std::shared_ptr<Set<std::string> > behaviours_set;
         const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > behaviours_key;
         const std::shared_ptr<const AccountsInstalledMask> mask;
 
@@ -88,7 +105,7 @@ namespace paludis
             repository(r),
             fs_location_key(std::make_shared<LiteralMetadataValueKey<FSEntry>>("location", "Location", mkt_internal, l)),
             from_repositories_key(f),
-            behaviours_key(std::make_shared<LiteralMetadataStringSetKey>("behaviours", "behaviours", mkt_internal, behaviours_set)),
+            behaviours_key(AccountsIDBehaviours::get_instance()->behaviours_key),
             mask(m ? std::make_shared<AccountsInstalledMask>() : make_null_shared_ptr()),
             is_user(u),
             has_file_keys(false),
@@ -97,18 +114,6 @@ namespace paludis
         }
     };
 }
-
-namespace
-{
-    std::shared_ptr<Set<std::string> > make_behaviours()
-    {
-        std::shared_ptr<Set<std::string> > result(std::make_shared<Set<std::string>>());
-        result->insert("unbinaryable");
-        return result;
-    }
-}
-
-const std::shared_ptr<Set<std::string> > Imp<AccountsID>::behaviours_set = make_behaviours();
 
 AccountsID::AccountsID(const Environment * const e,
         const QualifiedPackageName & q, const std::shared_ptr<const Repository> & r,

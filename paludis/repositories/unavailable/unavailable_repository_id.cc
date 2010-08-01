@@ -27,6 +27,7 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/singleton-impl.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/metadata_key.hh>
@@ -38,6 +39,23 @@
 
 using namespace paludis;
 using namespace paludis::unavailable_repository;
+
+namespace
+{
+    struct UnavailableRepositoryIDBehaviours :
+        Singleton<UnavailableRepositoryIDBehaviours>
+    {
+        std::shared_ptr<Set<std::string> > behaviours_value;
+        std::shared_ptr<LiteralMetadataStringSetKey> behaviours_key;
+
+        UnavailableRepositoryIDBehaviours() :
+            behaviours_value(std::make_shared<Set<std::string>>()),
+            behaviours_key(std::make_shared<LiteralMetadataStringSetKey>("behaviours", "behaviours", mkt_internal, behaviours_value))
+        {
+            behaviours_value->insert("unbinaryable");
+        }
+    };
+}
 
 namespace paludis
 {
@@ -54,12 +72,10 @@ namespace paludis
         const std::shared_ptr<const MetadataValueKey<std::string> > homepage_key;
         const std::shared_ptr<const MetadataValueKey<std::string> > sync_key;
         const std::shared_ptr<const MetadataValueKey<std::string> > format_key;
-        const std::shared_ptr<LiteralMetadataStringSetKey> behaviours_key;
-        static const std::shared_ptr<Set<std::string> > behaviours_set;
+        const std::shared_ptr<const LiteralMetadataStringSetKey> behaviours_key;
         const std::shared_ptr<const Mask> mask;
 
-        Imp(
-                const UnavailableRepositoryIDParams & e) :
+        Imp(const UnavailableRepositoryIDParams & e) :
             env(e.environment()),
             name(e.name()),
             version("0", { }),
@@ -69,24 +85,12 @@ namespace paludis
             homepage_key(e.homepage()),
             sync_key(e.sync()),
             format_key(e.format()),
-            behaviours_key(std::make_shared<LiteralMetadataStringSetKey>("behaviours", "behaviours", mkt_internal, behaviours_set)),
+            behaviours_key(UnavailableRepositoryIDBehaviours::get_instance()->behaviours_key),
             mask(e.mask())
         {
         }
     };
 }
-
-namespace
-{
-    std::shared_ptr<Set<std::string> > make_behaviours()
-    {
-        std::shared_ptr<Set<std::string> > result(std::make_shared<Set<std::string>>());
-        result->insert("unbinaryable");
-        return result;
-    }
-}
-
-const std::shared_ptr<Set<std::string> > Imp<UnavailableRepositoryID>::behaviours_set = make_behaviours();
 
 UnavailableRepositoryID::UnavailableRepositoryID(const UnavailableRepositoryIDParams & entry) :
     Pimp<UnavailableRepositoryID>(entry),

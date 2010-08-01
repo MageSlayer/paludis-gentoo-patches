@@ -26,6 +26,7 @@
 #include <paludis/util/hashes.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/singleton-impl.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/metadata_key.hh>
@@ -36,6 +37,24 @@
 
 using namespace paludis;
 using namespace paludis::repository_repository;
+
+namespace
+{
+    struct RepositoryIDBehaviours :
+        Singleton<RepositoryIDBehaviours>
+    {
+        std::shared_ptr<Set<std::string> > behaviours_value;
+        std::shared_ptr<LiteralMetadataStringSetKey> behaviours_key;
+
+        RepositoryIDBehaviours() :
+            behaviours_value(std::make_shared<Set<std::string>>()),
+            behaviours_key(std::make_shared<LiteralMetadataStringSetKey>("behaviours", "behaviours", mkt_internal, behaviours_value))
+        {
+            behaviours_value->insert("transient");
+            behaviours_value->insert("used");
+        }
+    };
+}
 
 namespace paludis
 {
@@ -48,31 +67,17 @@ namespace paludis
         const RepositoryRepository * const repo;
 
         const std::shared_ptr<LiteralMetadataStringSetKey> behaviours_key;
-        static const std::shared_ptr<Set<std::string> > behaviours_set;
 
         Imp(const RepositoryIDParams & e) :
             env(e.environment()),
             name(e.name()),
             version("0", { }),
             repo(e.repository()),
-            behaviours_key(std::make_shared<LiteralMetadataStringSetKey>("behaviours", "behaviours", mkt_internal, behaviours_set))
+            behaviours_key(RepositoryIDBehaviours::get_instance()->behaviours_key)
         {
         }
     };
 }
-
-namespace
-{
-    std::shared_ptr<Set<std::string> > make_behaviours()
-    {
-        std::shared_ptr<Set<std::string> > result(std::make_shared<Set<std::string>>());
-        result->insert("transient");
-        result->insert("used");
-        return result;
-    }
-}
-
-const std::shared_ptr<Set<std::string> > Imp<RepositoryID>::behaviours_set = make_behaviours();
 
 RepositoryID::RepositoryID(const RepositoryIDParams & entry) :
     Pimp<RepositoryID>(entry),

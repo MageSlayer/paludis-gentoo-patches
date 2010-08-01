@@ -30,6 +30,7 @@
 #include <paludis/util/mutex.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/singleton-impl.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/literal_metadata_key.hh>
@@ -46,6 +47,24 @@
 using namespace paludis;
 using namespace paludis::accounts_repository;
 
+namespace
+{
+    struct InstalledAccountsIDBehaviours :
+        Singleton<InstalledAccountsIDBehaviours>
+    {
+        std::shared_ptr<Set<std::string> > behaviours_value;
+        std::shared_ptr<LiteralMetadataStringSetKey> behaviours_key;
+
+        InstalledAccountsIDBehaviours() :
+            behaviours_value(std::make_shared<Set<std::string>>()),
+            behaviours_key(std::make_shared<LiteralMetadataStringSetKey>("behaviours", "behaviours", mkt_internal, behaviours_value))
+        {
+            behaviours_value->insert("transient");
+            behaviours_value->insert("used");
+        }
+    };
+}
+
 namespace paludis
 {
     template <>
@@ -56,8 +75,6 @@ namespace paludis
         const QualifiedPackageName name;
         const VersionSpec version;
         const std::shared_ptr<const Repository> repository;
-
-        static const std::shared_ptr<Set<std::string> > behaviours_set;
         const std::shared_ptr<const LiteralMetadataStringSetKey> behaviours_key;
 
         mutable Mutex mutex;
@@ -72,26 +89,12 @@ namespace paludis
             name(q),
             version("0", { }),
             repository(r),
-            behaviours_key(std::make_shared<LiteralMetadataStringSetKey>("behaviours", "Behaviours", mkt_internal,
-                        behaviours_set)),
+            behaviours_key(InstalledAccountsIDBehaviours::get_instance()->behaviours_key),
             is_user(u)
         {
         }
     };
 }
-
-namespace
-{
-    std::shared_ptr<Set<std::string> > make_behaviours()
-    {
-        std::shared_ptr<Set<std::string> > result(std::make_shared<Set<std::string>>());
-        result->insert("transient");
-        result->insert("used");
-        return result;
-    }
-}
-
-const std::shared_ptr<Set<std::string> > Imp<InstalledAccountsID>::behaviours_set = make_behaviours();
 
 InstalledAccountsID::InstalledAccountsID(const Environment * const e,
         const QualifiedPackageName & q, const std::shared_ptr<const Repository> & r, const bool u) :
