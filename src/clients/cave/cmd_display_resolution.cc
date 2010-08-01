@@ -965,12 +965,14 @@ namespace
         bool download_overflow;
         unsigned long download_size;
 
-        int changes_count;
+        int installs_count, binary_installs_count, uninstalls_count;
 
         Totals() :
             download_overflow(false),
             download_size(0),
-            changes_count(0)
+            installs_count(0),
+            binary_installs_count(0),
+            uninstalls_count(0)
         {
         }
     };
@@ -1078,10 +1080,14 @@ namespace
                     case dt_install_to_slash:
                         if (decision.if_via_new_binary_in())
                             c = c::yellow();
+                        if (maybe_totals)
+                            ++maybe_totals->installs_count;
                         continue;
 
                     case dt_create_binary:
                         c = c::green();
+                        if (maybe_totals)
+                            ++maybe_totals->binary_installs_count;
                         continue;
 
                     case last_dt:
@@ -1178,10 +1184,7 @@ namespace
         display_reasons(resolution, more_annotations);
         display_masks(env, decision);
         if (maybe_totals)
-        {
             display_downloads(env, cmdline, decision.origin_id(), maybe_totals);
-            ++maybe_totals->changes_count;
-        }
         if (untaken)
             display_untaken_change(decision);
         if (confirmations)
@@ -1198,7 +1201,8 @@ namespace
             const bool more_annotations,
             const bool confirmations,
             const bool untaken,
-            const std::string & notes)
+            const std::string & notes,
+            const std::shared_ptr<Totals> & maybe_totals)
     {
         if (untaken)
             cout << "(<) " << c::bold_green() << decision.resolvent().package() << c::normal() << " ";
@@ -1225,6 +1229,9 @@ namespace
             display_confirmations(decision);
         if (! notes.empty())
             cout << "    " << c::bold_normal() << notes << c::normal() << endl;
+
+        if (maybe_totals)
+            ++maybe_totals->uninstalls_count;
     }
 
     void display_unable_to_make_decision(
@@ -1440,7 +1447,8 @@ namespace
                     more_annotations,
                     unconfirmed,
                     untaken,
-                    cycle_breaking);
+                    cycle_breaking,
+                    maybe_totals);
         }
 
         void visit(const BreakDecision & break_decision)
@@ -1523,7 +1531,35 @@ namespace
     void display_totals(
             const std::shared_ptr<Totals> & totals)
     {
-        cout << "Total " << totals->changes_count << " changes";
+        if (0 == totals->installs_count + totals->binary_installs_count + totals->uninstalls_count)
+            return;
+
+        cout << "Total " ;
+        bool need_comma(false);
+
+        if (0 != totals->installs_count)
+        {
+            if (need_comma)
+                cout << ", ";
+            need_comma = true;
+            cout << totals->installs_count << " installs";
+        }
+
+        if (0 != totals->binary_installs_count)
+        {
+            if (need_comma)
+                cout << ", ";
+            need_comma = true;
+            cout << totals->binary_installs_count << " binaries";
+        }
+
+        if (0 != totals->uninstalls_count)
+        {
+            if (need_comma)
+                cout << ", ";
+            need_comma = true;
+            cout << totals->uninstalls_count << " uninstalls";
+        }
 
         if (totals->download_overflow)
             cout << ", more than " << pretty_print_bytes(std::numeric_limits<unsigned long>::max()) << " to download";
