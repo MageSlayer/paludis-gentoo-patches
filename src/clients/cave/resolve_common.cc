@@ -406,23 +406,53 @@ namespace
 
     struct UseExistingVisitor
     {
+        const Environment * const env;
         const ResolveCommandLineResolutionOptions & resolution_options;
         const bool from_set;
+        const Resolvent resolvent;
 
-        UseExistingVisitor(const ResolveCommandLineResolutionOptions & c, const bool f) :
+        UseExistingVisitor(const Environment * const e, const ResolveCommandLineResolutionOptions & c, const bool f, const Resolvent & r) :
+            env(e),
             resolution_options(c),
-            from_set(f)
+            from_set(f),
+            resolvent(r)
         {
+        }
+
+        bool creating_binary_and_no_binaryable_ids() const
+        {
+            if (resolvent.destination_type() != dt_create_binary)
+                return false;
+
+            auto origin_ids((*env)[selection::AllVersionsSorted(
+                        generator::Package(resolvent.package()) |
+                        make_slot_filter(resolvent) |
+                        filter::SupportsAction<InstallAction>() |
+                        filter::NotMasked()
+                        )]);
+            if (origin_ids->empty())
+                return false;
+            else
+            {
+                for (auto i(origin_ids->begin()), i_end(origin_ids->end()) ;
+                        i != i_end ; ++i)
+                    if (can_make_binary_for(*i))
+                        return false;
+
+                return true;
+            }
         }
 
         std::pair<UseExisting, bool> visit(const DependencyReason &) const
         {
-            return std::make_pair(use_existing_from_cmdline(resolution_options.a_keep, false), false);
+            return std::make_pair(use_existing_from_cmdline(resolution_options.a_keep, false),
+                    creating_binary_and_no_binaryable_ids());
         }
 
         std::pair<UseExisting, bool> visit(const TargetReason &) const
         {
-            return std::make_pair(use_existing_from_cmdline(resolution_options.a_keep_targets, from_set), false);
+            return std::make_pair(use_existing_from_cmdline(resolution_options.a_keep_targets, from_set),
+                    creating_binary_and_no_binaryable_ids());
         }
 
         std::pair<UseExisting, bool> visit(const DependentReason &) const
@@ -447,13 +477,13 @@ namespace
 
         std::pair<UseExisting, bool> visit(const SetReason & r) const
         {
-            UseExistingVisitor v(resolution_options, true);
+            UseExistingVisitor v(env, resolution_options, true, resolvent);
             return r.reason_for_set()->accept_returning<std::pair<UseExisting, bool> >(v);
         }
 
         std::pair<UseExisting, bool> visit(const LikeOtherDestinationTypeReason & r) const
         {
-            UseExistingVisitor v(resolution_options, true);
+            UseExistingVisitor v(env, resolution_options, true, resolvent);
             return r.reason_for_other()->accept_returning<std::pair<UseExisting, bool> >(v);
         }
     };
@@ -494,7 +524,7 @@ namespace
             const ResolveCommandLineResolutionOptions & resolution_options,
             const PackageDepSpecList & without,
             const PackageDepSpecList & with,
-            const std::shared_ptr<const Resolution> &,
+            const std::shared_ptr<const Resolution> & resolution,
             const PackageDepSpec & spec,
             const std::shared_ptr<const Reason> & reason)
     {
@@ -506,7 +536,7 @@ namespace
                 return std::make_pair(ue_never, false);
         }
 
-        UseExistingVisitor v(resolution_options, false);
+        UseExistingVisitor v(env, resolution_options, false, resolution->resolvent());
         return reason->accept_returning<std::pair<UseExisting, bool> >(v);
     }
 
