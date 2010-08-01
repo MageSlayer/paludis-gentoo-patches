@@ -92,6 +92,7 @@ using std::endl;
 
 typedef std::map<ChoiceNameWithPrefix, std::shared_ptr<PackageIDSequence> > ChoiceValuesToExplain;
 typedef std::map<std::string, ChoiceValuesToExplain> ChoicesToExplain;
+typedef std::map<std::string, int> AlreadyCycleNotes;
 
 namespace
 {
@@ -1062,7 +1063,8 @@ namespace
             const bool confirmations,
             const bool untaken,
             const bool unorderable,
-            const std::string & notes,
+            const std::string & cycle_notes,
+            int cycle_notes_heading,
             ChoicesToExplain & choices_to_explain,
             const std::shared_ptr<Totals> & maybe_totals)
     {
@@ -1173,6 +1175,10 @@ namespace
                     cout << (*i)->canonical_form(idcf_full);
             }
         }
+
+        if (-1 != cycle_notes_heading)
+            cout << " " << (unorderable ? c::bold_red() : c::bold_normal()) << "[cycle " << cycle_notes_heading << "]" << c::normal();
+
         cout << endl;
 
         std::shared_ptr<const PackageID> old_id;
@@ -1189,8 +1195,8 @@ namespace
             display_untaken_change(decision);
         if (confirmations)
             display_confirmations(decision);
-        if (! notes.empty())
-            cout << "    " << (unorderable ? c::bold_red() : c::bold_normal()) << notes << c::normal() << endl;
+        if (! cycle_notes.empty())
+            cout << "    " << (unorderable ? c::bold_red() : c::bold_normal()) << cycle_notes << c::normal() << endl;
     }
 
     void display_one_uninstall(
@@ -1201,7 +1207,9 @@ namespace
             const bool more_annotations,
             const bool confirmations,
             const bool untaken,
-            const std::string & notes,
+            const bool unorderable,
+            const std::string & cycle_notes,
+            int cycle_notes_heading,
             const std::shared_ptr<Totals> & maybe_totals)
     {
         if (untaken)
@@ -1221,14 +1229,17 @@ namespace
             cout << (*i)->canonical_form(idcf_no_name);
         }
 
+        if (-1 != cycle_notes_heading)
+            cout << " " << (unorderable ? c::bold_red() : c::bold_normal()) << "[cycle " << cycle_notes_heading << "]" << c::normal();
+
         cout << endl;
         display_reasons(resolution, more_annotations);
         if (untaken)
             display_untaken_remove(decision);
         if (confirmations)
             display_confirmations(decision);
-        if (! notes.empty())
-            cout << "    " << c::bold_normal() << notes << c::normal() << endl;
+        if (! cycle_notes.empty())
+            cout << "    " << c::bold_normal() << cycle_notes << c::normal() << endl;
 
         if (maybe_totals)
             ++maybe_totals->uninstalls_count;
@@ -1392,7 +1403,8 @@ namespace
         const bool unconfirmed;
         const bool untaken;
         const bool unorderable;
-        const std::string cycle_breaking;
+        const std::string cycle_notes;
+        const int cycle_notes_heading;
         ChoicesToExplain & choices_to_explain;
         const std::shared_ptr<Totals> maybe_totals;
 
@@ -1404,7 +1416,8 @@ namespace
                 bool uc,
                 bool ut,
                 bool un,
-                const std::string & s,
+                const std::string & cn,
+                int ch,
                 ChoicesToExplain & x,
                 const std::shared_ptr<Totals> & d) :
             env(e),
@@ -1414,7 +1427,8 @@ namespace
             unconfirmed(uc),
             untaken(ut),
             unorderable(un),
-            cycle_breaking(s),
+            cycle_notes(cn),
+            cycle_notes_heading(ch),
             choices_to_explain(x),
             maybe_totals(d)
         {
@@ -1431,7 +1445,8 @@ namespace
                     unconfirmed,
                     untaken,
                     unorderable,
-                    cycle_breaking,
+                    cycle_notes,
+                    cycle_notes_heading,
                     choices_to_explain,
                     maybe_totals);
         }
@@ -1447,7 +1462,9 @@ namespace
                     more_annotations,
                     unconfirmed,
                     untaken,
-                    cycle_breaking,
+                    unorderable,
+                    cycle_notes,
+                    cycle_notes_heading,
                     maybe_totals);
         }
 
@@ -1474,7 +1491,8 @@ namespace
             const bool unconfirmed,
             const bool untaken,
             const bool unorderable,
-            const std::shared_ptr<Totals> & maybe_totals)
+            const std::shared_ptr<Totals> & maybe_totals,
+            AlreadyCycleNotes & already_cycle_notes)
     {
         Context context("When displaying changes and removes:");
 
@@ -1497,6 +1515,18 @@ namespace
                 std::shared_ptr<const ConfirmableDecision>,
                 std::shared_ptr<const OrdererNotes> > star_i(get_decision_and_notes(*i));
 
+            std::string cycle_notes;
+            int cycle_notes_heading(-1);
+            if (star_i.second && ! star_i.second->cycle_breaking().empty())
+            {
+                auto existing(already_cycle_notes.find(star_i.second->cycle_breaking()));
+                if (existing != already_cycle_notes.end())
+                    cycle_notes_heading = existing->second;
+                else
+                    std::tie(cycle_notes, cycle_notes_heading) = *already_cycle_notes.insert(std::make_pair(
+                                star_i.second->cycle_breaking(), already_cycle_notes.size() + 1)).first;
+            }
+
             DisplayAVisitor v(
                     env,
                     cmdline,
@@ -1505,7 +1535,8 @@ namespace
                     unconfirmed,
                     untaken,
                     unorderable,
-                    star_i.second ? star_i.second->cycle_breaking() : "",
+                    cycle_notes,
+                    cycle_notes_heading,
                     choices_to_explain,
                     maybe_totals);
             star_i.first->accept(v);
@@ -1522,10 +1553,11 @@ namespace
             const std::shared_ptr<const Resolved> & resolved,
             const DisplayResolutionCommandLine & cmdline,
             ChoicesToExplain & choices_to_explain,
-            const std::shared_ptr<Totals> & totals)
+            const std::shared_ptr<Totals> & totals,
+            AlreadyCycleNotes & already_cycle_notes)
     {
         display_a_changes_and_removes(env, resolved, resolved->taken_change_or_remove_decisions(),
-                cmdline, choices_to_explain, false, false, false, false, totals);
+                cmdline, choices_to_explain, false, false, false, false, totals, already_cycle_notes);
     }
 
     void display_totals(
@@ -1572,22 +1604,24 @@ namespace
             const std::shared_ptr<Environment> & env,
             const std::shared_ptr<const Resolved> & resolved,
             const DisplayResolutionCommandLine & cmdline,
-            ChoicesToExplain & choices_to_explain)
+            ChoicesToExplain & choices_to_explain,
+            AlreadyCycleNotes & already_cycle_notes)
     {
         if (! resolved->taken_unorderable_decisions()->empty())
             display_a_changes_and_removes(env, resolved, resolved->taken_unorderable_decisions(),
-                    cmdline, choices_to_explain, false, false, false, true, make_null_shared_ptr());
+                    cmdline, choices_to_explain, false, false, false, true, make_null_shared_ptr(), already_cycle_notes);
     }
 
     void display_untaken_changes_and_removes(
             const std::shared_ptr<Environment> & env,
             const std::shared_ptr<const Resolved> & resolved,
             const DisplayResolutionCommandLine & cmdline,
-            ChoicesToExplain & choices_to_explain)
+            ChoicesToExplain & choices_to_explain,
+            AlreadyCycleNotes & already_cycle_notes)
     {
         if (! resolved->untaken_change_or_remove_decisions()->empty())
             display_a_changes_and_removes(env, resolved, resolved->untaken_change_or_remove_decisions(),
-                    cmdline, choices_to_explain, true, false, true, false, make_null_shared_ptr());
+                    cmdline, choices_to_explain, true, false, true, false, make_null_shared_ptr(), already_cycle_notes);
     }
 
     void display_an_errors(
@@ -1642,12 +1676,13 @@ namespace
     void display_taken_changes_requiring_confirmation(
             const std::shared_ptr<Environment> & env,
             const std::shared_ptr<const Resolved> & resolved,
-            const DisplayResolutionCommandLine & cmdline)
+            const DisplayResolutionCommandLine & cmdline,
+            AlreadyCycleNotes & already_cycle_notes)
     {
         ChoicesToExplain ignore_choices_to_explain;
         if (! resolved->taken_unconfirmed_decisions()->empty())
             display_a_changes_and_removes(env, resolved, resolved->taken_unconfirmed_decisions(),
-                    cmdline, ignore_choices_to_explain, true, true, false, false, make_null_shared_ptr());
+                    cmdline, ignore_choices_to_explain, true, true, false, false, make_null_shared_ptr(), already_cycle_notes);
     }
 }
 
@@ -1690,15 +1725,16 @@ DisplayResolutionCommand::run(
     }
 
     ChoicesToExplain choices_to_explain;
+    AlreadyCycleNotes already_cycle_notes;
     auto totals(std::make_shared<Totals>());
-    display_changes_and_removes(env, resolved, cmdline, choices_to_explain, totals);
+    display_changes_and_removes(env, resolved, cmdline, choices_to_explain, totals, already_cycle_notes);
     display_totals(totals);
-    display_unorderable_changes_and_removed(env, resolved, cmdline, choices_to_explain);
-    display_untaken_changes_and_removes(env, resolved, cmdline, choices_to_explain);
+    display_unorderable_changes_and_removed(env, resolved, cmdline, choices_to_explain, already_cycle_notes);
+    display_untaken_changes_and_removes(env, resolved, cmdline, choices_to_explain, already_cycle_notes);
     display_choices_to_explain(env, cmdline, choices_to_explain);
     display_taken_errors(env, resolved, cmdline);
     display_untaken_errors(env, resolved, cmdline);
-    display_taken_changes_requiring_confirmation(env, resolved, cmdline);
+    display_taken_changes_requiring_confirmation(env, resolved, cmdline, already_cycle_notes);
     display_explanations(env, resolved, cmdline);
 
     return 0;
