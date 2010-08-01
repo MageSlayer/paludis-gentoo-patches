@@ -45,6 +45,8 @@ namespace paludis
                 virtual void need_keys_added() const;
                 virtual void need_masks_added() const;
 
+                void need_behaviours() const;
+
             public:
                 EbuildID(const QualifiedPackageName &, const VersionSpec &,
                         const Environment * const e,

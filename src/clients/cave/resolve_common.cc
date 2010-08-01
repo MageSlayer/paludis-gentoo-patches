@@ -105,6 +105,70 @@ namespace
         return id->behaviours_key()->value()->end() == id->behaviours_key()->value()->find("unbinaryable");
     }
 
+    struct UnmaskableFilterHandler :
+        AllFilterHandlerBase
+    {
+        virtual std::shared_ptr<const PackageIDSet> ids(
+                const Environment * const,
+                const std::shared_ptr<const PackageIDSet> & id) const
+        {
+            std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
+
+            for (PackageIDSet::ConstIterator i(id->begin()), i_end(id->end()) ;
+                    i != i_end ; ++i)
+                if (not_strongly_masked(*i))
+                    result->insert(*i);
+
+            return result;
+        }
+
+        virtual std::string as_string() const
+        {
+            return "unmaskable";
+        }
+    };
+
+    struct BinaryableFilterHandler :
+        AllFilterHandlerBase
+    {
+        virtual std::shared_ptr<const PackageIDSet> ids(
+                const Environment * const,
+                const std::shared_ptr<const PackageIDSet> & id) const
+        {
+            std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
+
+            for (PackageIDSet::ConstIterator i(id->begin()), i_end(id->end()) ;
+                    i != i_end ; ++i)
+                if (can_make_binary_for(*i))
+                    result->insert(*i);
+
+            return result;
+        }
+
+        virtual std::string as_string() const
+        {
+            return "binaryable";
+        }
+    };
+
+    struct UnmaskableFilter :
+        Filter
+    {
+        UnmaskableFilter() :
+            Filter(std::make_shared<UnmaskableFilterHandler>())
+        {
+        }
+    };
+
+    struct BinaryableFilter :
+        Filter
+    {
+        BinaryableFilter() :
+            Filter(std::make_shared<BinaryableFilterHandler>())
+        {
+        }
+    };
+
     struct DestinationTypesFinder
     {
         const Environment * const env;
@@ -125,12 +189,7 @@ namespace
         {
 #ifdef ENABLE_PBINS
             if (resolution_options.a_make.argument() == "binaries")
-            {
-                if (package_id && can_make_binary_for(package_id))
-                    return DestinationTypes() + dt_create_binary;
-                else
-                    return DestinationTypes();
-            }
+                return DestinationTypes() + dt_create_binary;
             else if (resolution_options.a_make.argument() == "install")
                 return DestinationTypes() + dt_install_to_slash;
             else
@@ -213,7 +272,7 @@ namespace
     FilteredGenerator make_destination_filtered_generator(
             const Environment * const,
             const ResolveCommandLineResolutionOptions &,
-            const std::shared_ptr<const Generator> & all_binary_repos_generator,
+            const std::shared_ptr<const Generator> & binary_destinations,
             const Generator & g,
             const Resolvent & r)
     {
@@ -223,8 +282,8 @@ namespace
                 return g | filter::InstalledAtRoot(FSEntry("/"));
 
             case dt_create_binary:
-                if (all_binary_repos_generator)
-                    return g & *all_binary_repos_generator;
+                if (binary_destinations)
+                    return g & *binary_destinations;
                 else
                     return generator::Nothing();
 
@@ -238,66 +297,24 @@ namespace
     FilteredGenerator make_destination_filtered_generator_with_resolution(
             const Environment * const env,
             const ResolveCommandLineResolutionOptions & resolution_options,
-            const std::shared_ptr<const Generator> & all_binary_repos_generator,
+            const std::shared_ptr<const Generator> & binary_destinations,
             const Generator & g,
             const std::shared_ptr<const Resolution> & r)
     {
-        return make_destination_filtered_generator(env, resolution_options, all_binary_repos_generator, g, r->resolvent());
+        return make_destination_filtered_generator(env, resolution_options, binary_destinations, g, r->resolvent());
     }
 
     FilteredGenerator make_origin_filtered_generator(
             const Environment * const,
-            const ResolveCommandLineResolutionOptions &,
-            const std::shared_ptr<const Generator> & not_binary_repos_generator,
+            const ResolveCommandLineResolutionOptions & resolution_options,
             const Generator & g,
-            const std::shared_ptr<const Resolution> & r)
+            const std::shared_ptr<const Resolution> &)
     {
-        switch (r->resolvent().destination_type())
-        {
-            case dt_install_to_slash:
-                return g;
-
-            case dt_create_binary:
-                return g & *not_binary_repos_generator;
-
-            case last_dt:
-                break;
-        }
-
-        throw InternalError(PALUDIS_HERE, "bad dt");
+        if (resolution_options.a_make.argument() == "binaries")
+            return g | BinaryableFilter();
+        else
+            return g;
     }
-
-    struct UnmaskableFilterHandler :
-        AllFilterHandlerBase
-    {
-        virtual std::shared_ptr<const PackageIDSet> ids(
-                const Environment * const,
-                const std::shared_ptr<const PackageIDSet> & id) const
-        {
-            std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
-
-            for (PackageIDSet::ConstIterator i(id->begin()), i_end(id->end()) ;
-                    i != i_end ; ++i)
-                if (not_strongly_masked(*i))
-                    result->insert(*i);
-
-            return result;
-        }
-
-        virtual std::string as_string() const
-        {
-            return "unmaskable";
-        }
-    };
-
-    struct UnmaskableFilter :
-        Filter
-    {
-        UnmaskableFilter() :
-            Filter(std::make_shared<UnmaskableFilterHandler>())
-        {
-        }
-    };
 
     Filter make_unmaskable_filter_fn(
             const Environment * const,
@@ -554,14 +571,14 @@ namespace
     bool installed_is_scm_older_than(
             const Environment * const env,
             const ResolveCommandLineResolutionOptions & resolution_options,
-            const std::shared_ptr<const Generator> & all_binary_repos_generator,
+            const std::shared_ptr<const Generator> & binary_destinations,
             const Resolvent & q,
             const int n)
     {
         Context context("When working out whether '" + stringify(q) + "' has installed SCM packages:");
 
         const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsUnsorted(
-                    make_destination_filtered_generator(env, resolution_options, all_binary_repos_generator,
+                    make_destination_filtered_generator(env, resolution_options, binary_destinations,
                         generator::Package(q.package()), q) |
                     make_slot_filter(q)
                     )]);
@@ -579,14 +596,14 @@ namespace
     const std::shared_ptr<Constraints> make_initial_constraints_for(
             const Environment * const env,
             const ResolveCommandLineResolutionOptions & resolution_options,
-            const std::shared_ptr<const Generator> & all_binary_repos_generator,
+            const std::shared_ptr<const Generator> & binary_destinations,
             const PackageDepSpecList & without,
             const Resolvent & resolvent)
     {
         const std::shared_ptr<Constraints> result(std::make_shared<Constraints>());
 
         int n(reinstall_scm_days(resolution_options));
-        if ((-1 != n) && installed_is_scm_older_than(env, resolution_options, all_binary_repos_generator, resolvent, n)
+        if ((-1 != n) && installed_is_scm_older_than(env, resolution_options, binary_destinations, resolvent, n)
                 && ! use_existing_from_withish(env, resolvent.package(), without))
         {
             result->add(std::make_shared<Constraint>(make_named_values<Constraint>(
@@ -607,12 +624,12 @@ namespace
             const ResolveCommandLineResolutionOptions & resolution_options,
             const PackageDepSpecList & without,
             const InitialConstraints & initial_constraints,
-            const std::shared_ptr<const Generator> & all_binary_repos_generator,
+            const std::shared_ptr<const Generator> & binary_destinations,
             const Resolvent & resolvent)
     {
         InitialConstraints::const_iterator i(initial_constraints.find(resolvent));
         if (i == initial_constraints.end())
-            return make_initial_constraints_for(env, resolution_options, all_binary_repos_generator, without, resolvent);
+            return make_initial_constraints_for(env, resolution_options, binary_destinations, without, resolvent);
         else
             return i->second;
     }
@@ -1815,7 +1832,7 @@ paludis::cave::resolve_common(
                     { updso_allow_wildcards }));
 #endif
 
-    std::shared_ptr<Generator> all_binary_repos_generator, not_binary_repos_generator;
+    std::shared_ptr<Generator> binary_destinations;
     for (PackageDatabase::RepositoryConstIterator r(env->package_database()->begin_repositories()),
             r_end(env->package_database()->end_repositories()) ;
             r != r_end ; ++r)
@@ -1823,24 +1840,16 @@ paludis::cave::resolve_common(
         {
             if ((*r)->destination_interface())
             {
-                if (all_binary_repos_generator)
-                    all_binary_repos_generator = std::make_shared<generator::Union>(*all_binary_repos_generator,
+                if (binary_destinations)
+                    binary_destinations = std::make_shared<generator::Union>(*binary_destinations,
                                 generator::InRepository((*r)->name()));
                 else
-                    all_binary_repos_generator = std::make_shared<generator::InRepository>((*r)->name());
-            }
-            else
-            {
-                if (not_binary_repos_generator)
-                    not_binary_repos_generator = std::make_shared<generator::Union>(*not_binary_repos_generator,
-                                generator::InRepository((*r)->name()));
-                else
-                    not_binary_repos_generator = std::make_shared<generator::InRepository>((*r)->name());
+                    binary_destinations = std::make_shared<generator::InRepository>((*r)->name());
             }
         }
 
-    if (! all_binary_repos_generator)
-        all_binary_repos_generator = std::make_shared<generator::Nothing>();
+    if (! binary_destinations)
+        binary_destinations = std::make_shared<generator::Nothing>();
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_preset.begin_args()),
             i_end(resolution_options.a_preset.end_args()) ;
@@ -1870,7 +1879,7 @@ paludis::cave::resolve_common(
                             n::use_existing() = ue_if_possible
                             )));
             initial_constraints.insert(std::make_pair(*r, make_initial_constraints_for(
-                            env.get(), resolution_options, all_binary_repos_generator, without, *r))).first->second->add(
+                            env.get(), resolution_options, binary_destinations, without, *r))).first->second->add(
                     constraint);
         }
     }
@@ -1903,7 +1912,7 @@ paludis::cave::resolve_common(
                     env.get(), std::cref(resolution_options), _1, _2, _3),
                 n::get_initial_constraints_for_fn() = std::bind(&initial_constraints_for_fn,
                     env.get(), std::cref(resolution_options), std::cref(without),
-                    std::cref(initial_constraints), all_binary_repos_generator, _1),
+                    std::cref(initial_constraints), binary_destinations, _1),
                 n::get_resolvents_for_fn() = std::bind(&get_resolvents_for_fn,
                     env.get(), std::cref(resolution_options), _1, _2, _3, DestinationTypes()),
                 n::get_use_existing_nothing_fn() = std::bind(&use_existing_nothing_fn,
@@ -1913,9 +1922,9 @@ paludis::cave::resolve_common(
                     std::cref(ignore), std::cref(ignore_from), std::cref(no_blockers_from),
                     std::cref(no_dependencies_from), _1, _2),
                 n::make_destination_filtered_generator_fn() = std::bind(&make_destination_filtered_generator_with_resolution,
-                    env.get(), std::cref(resolution_options), all_binary_repos_generator, _1, _2),
+                    env.get(), std::cref(resolution_options), binary_destinations, _1, _2),
                 n::make_origin_filtered_generator_fn() = std::bind(&make_origin_filtered_generator,
-                    env.get(), std::cref(resolution_options), not_binary_repos_generator, _1, _2),
+                    env.get(), std::cref(resolution_options), _1, _2),
                 n::make_unmaskable_filter_fn() = std::bind(&make_unmaskable_filter_fn,
                         env.get(), std::cref(resolution_options), _1),
                 n::order_early_fn() = std::bind(&order_early_fn,
@@ -1957,7 +1966,7 @@ paludis::cave::resolve_common(
                     restarts.push_back(e);
                     display_callback(ResolverRestart());
                     initial_constraints.insert(std::make_pair(e.resolvent(), make_initial_constraints_for(
-                                    env.get(), resolution_options, all_binary_repos_generator, without, e.resolvent()))).first->second->add(
+                                    env.get(), resolution_options, binary_destinations, without, e.resolvent()))).first->second->add(
                             e.suggested_preset());
                     resolver = std::make_shared<Resolver>(env.get(), resolver_functions);
 

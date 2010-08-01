@@ -537,6 +537,9 @@ Orderer::_add_binary_cleverness(const std::shared_ptr<const Resolution> & resolu
         if (! non_binary_changes_decision)
             continue;
 
+        if (changes_decision->origin_id() != non_binary_changes_decision->origin_id())
+            throw InternalError(PALUDIS_HERE, "chose different origin ids: " + stringify(*changes_decision->origin_id()) + " vs "
+                    + stringify(*non_binary_changes_decision->origin_id()));
         non_binary_changes_decision->set_via_new_binary_in(changes_decision->destination()->repository());
 
         NAGIndex from(make_named_values<NAGIndex>(

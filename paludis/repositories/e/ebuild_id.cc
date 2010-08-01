@@ -55,6 +55,7 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/destringify.hh>
+#include <paludis/util/singleton-impl.hh>
 
 #include <set>
 #include <iterator>
@@ -117,6 +118,7 @@ namespace paludis
         mutable std::shared_ptr<const EStringSetKey> generated_from;
         mutable std::shared_ptr<const LiteralMetadataTimeKey> generated_time;
         mutable std::shared_ptr<const LiteralMetadataValueKey<std::string> > generated_using;
+        mutable std::shared_ptr<const LiteralMetadataStringSetKey> behaviours;
 
         std::shared_ptr<DependenciesLabelSequence> raw_dependencies_labels;
         std::shared_ptr<DependenciesLabelSequence> build_dependencies_labels;
@@ -171,6 +173,23 @@ EbuildID::EbuildID(const QualifiedPackageName & q, const VersionSpec & v,
 
 EbuildID::~EbuildID()
 {
+}
+
+namespace
+{
+    struct PbinBehaviours :
+        Singleton<PbinBehaviours>
+    {
+        std::shared_ptr<Set<std::string> > behaviours_value;
+        std::shared_ptr<LiteralMetadataStringSetKey> behaviours_key;
+
+        PbinBehaviours() :
+            behaviours_value(std::make_shared<Set<std::string>>()),
+            behaviours_key(std::make_shared<LiteralMetadataStringSetKey>("behaviours", "behaviours", mkt_internal, behaviours_value))
+        {
+            behaviours_value->insert("unbinaryable");
+        }
+    };
 }
 
 void
@@ -388,6 +407,12 @@ EbuildID::need_keys_added() const
                     _imp->eapi->supported()->ebuild_environment_variables()->description_choices(),
                     mkt_normal, e_repository(),
                     maybe_use_descriptions);
+
+        if (_imp->eapi->supported()->is_pbin())
+        {
+            _imp->behaviours = PbinBehaviours::get_instance()->behaviours_key;
+            add_metadata_key(_imp->behaviours);
+        }
     }
     else
         _imp->choices = std::make_shared<EChoicesKey>(_imp->environment, shared_from_this(), "PALUDIS_CHOICES", "Choices", mkt_normal,
@@ -706,7 +731,8 @@ EbuildID::raw_use_expand_hidden_key() const
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 EbuildID::behaviours_key() const
 {
-    return make_null_shared_ptr();
+    need_keys_added();
+    return _imp->behaviours;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> >
