@@ -27,6 +27,7 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/named_value.hh>
 
+#include <paludis/changed_choices-fwd.hh>
 #include <paludis/dep_label.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/dep_tag-fwd.hh>
@@ -190,6 +191,11 @@ namespace paludis
             bool condition_met() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
+             * Would our condition met, if certain choices were changed?
+             */
+            bool condition_would_be_met_when(const ChangedChoices &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /**
              * Is our condition meetable?
              *
              * This takes into account inverses, masks, forces etc.
@@ -231,6 +237,11 @@ namespace paludis
              * Fetch the result for condition_met.
              */
             virtual bool condition_met() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            /**
+             * Fetch the result for condition_would_be_met_when.
+             */
+            virtual bool condition_would_be_met_when(const ChangedChoices &) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
              * Fetch the result for condition_meetable.

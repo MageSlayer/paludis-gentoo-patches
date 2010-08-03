@@ -198,6 +198,12 @@ ConditionalDepSpec::condition_met() const
 }
 
 bool
+ConditionalDepSpec::condition_would_be_met_when(const ChangedChoices & c) const
+{
+    return _imp->data->condition_would_be_met_when(c);
+}
+
+bool
 ConditionalDepSpec::condition_meetable() const
 {
     return _imp->data->condition_meetable();

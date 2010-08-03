@@ -23,8 +23,10 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/destringify.hh>
+#include <paludis/util/tribool.hh>
 #include <paludis/util/log.hh>
 #include <paludis/dep_spec.hh>
+#include <paludis/changed_choices.hh>
 #include <paludis/name.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/environment.hh>
@@ -136,6 +138,18 @@ namespace
                 throw InternalError(PALUDIS_HERE, "! id");
 
             return condition_met() || ! icky_use_query_locked(flag, *id, no_warning_for_unlisted);
+        }
+
+        virtual bool condition_would_be_met_when(const ChangedChoices & changes) const
+        {
+            Tribool overridden(changes.overridden_value(flag));
+
+            if (overridden.is_indeterminate())
+                return condition_met();
+            else if (! condition_meetable())
+                return condition_met();
+            else
+                return overridden.is_true() ^ inverse;
         }
 
         virtual void need_keys_added() const
