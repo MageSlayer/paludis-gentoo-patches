@@ -710,6 +710,11 @@ namespace
         {
             return "being unmasked";
         }
+
+        std::string visit(const ChangedChoicesConfirmation &) const
+        {
+            return "being reconfigured";
+        }
     };
 
     std::string stringify_confirmation(const RequiredConfirmation & c)
@@ -1306,7 +1311,7 @@ namespace
                             a_end((*c)->spec().if_package()->additional_requirements_ptr()->end()) ;
                             a != a_end ; ++a)
                     {
-                        const std::pair<bool, std::string> p((*a)->requirement_met(env.get(), *u->package_id()));
+                        const std::pair<bool, std::string> p((*a)->requirement_met(env.get(), 0, *u->package_id(), 0));
                         if (p.first)
                             continue;
 

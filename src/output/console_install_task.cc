@@ -1766,7 +1766,7 @@ ConsoleInstallTask::on_additional_requirements_not_met_error(const AdditionalReq
                 i_end(e.query().additional_requirements_ptr()->end()) ;
                 i != i_end ; ++i)
         {
-            const std::pair<bool, std::string> r((*i)->requirement_met(environment(), *e.package_id()));
+            const std::pair<bool, std::string> r((*i)->requirement_met(environment(), 0, *e.package_id(), 0));
             if (r.first)
                 continue;
             output_stream() << "    * " << r.second << endl;

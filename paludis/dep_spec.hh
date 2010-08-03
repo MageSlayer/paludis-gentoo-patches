@@ -308,9 +308,28 @@ namespace paludis
              * meaningless.
              *
              * \since 0.44 returns pair<bool, std::string>
+             * \since 0.51 takes optional ChangedChoices arguments
              */
             virtual const std::pair<bool, std::string> requirement_met(
-                    const Environment * const, const PackageID &) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+                    const Environment * const,
+                    const ChangedChoices * const maybe_changes_to_owner,
+                    const PackageID &,
+                    const ChangedChoices * const maybe_changes_to_target) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            /**
+             * If possible, indicate which choices to change to make our
+             * requirement met for a particular ID.
+             *
+             * Verifies that the ID has the appropriate choice, and that that
+             * choice isn't locked.
+             *
+             * \since 0.51
+             */
+            virtual bool accumulate_changes_to_make_met(
+                    const Environment * const,
+                    const ChangedChoices * const maybe_changes_to_owner,
+                    const std::shared_ptr<const PackageID> &,
+                    ChangedChoices &) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
              * Return a human readable string representation of ourself.

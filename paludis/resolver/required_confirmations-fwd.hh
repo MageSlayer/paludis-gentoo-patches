@@ -33,6 +33,7 @@ namespace paludis
         struct BreakConfirmation;
         struct RemoveSystemPackageConfirmation;
         struct MaskedConfirmation;
+        struct ChangedChoicesConfirmation;
 
         typedef Sequence<std::shared_ptr<const RequiredConfirmation> > RequiredConfirmations;
     }

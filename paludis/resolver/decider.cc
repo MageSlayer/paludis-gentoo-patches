@@ -61,6 +61,7 @@
 #include <paludis/elike_slot_requirement.hh>
 #include <paludis/dep_spec_flattener.hh>
 #include <paludis/package_id.hh>
+#include <paludis/changed_choices.hh>
 
 #include <paludis/util/pimp-impl.hh>
 
@@ -826,17 +827,17 @@ namespace
         {
         }
 
-        bool ok(const std::shared_ptr<const PackageID> & chosen_id) const
+        bool ok(const std::shared_ptr<const PackageID> & chosen_id,
+                const std::shared_ptr<const ChangedChoices> & changed_choices) const
         {
             if (constraint.spec().if_package())
             {
-                if (! match_package(*env, *constraint.spec().if_package(), *chosen_id, { }))
+                if (! match_package_with_maybe_changes(*env, *constraint.spec().if_package(), 0, *chosen_id, changed_choices.get(), { }))
                     return false;
             }
             else
             {
-                if (match_package(*env, constraint.spec().if_block()->blocking(),
-                            *chosen_id, { }))
+                if (match_package_with_maybe_changes(*env, constraint.spec().if_block()->blocking(), 0, *chosen_id, changed_choices.get(), { }))
                     return false;
             }
 
@@ -845,12 +846,12 @@ namespace
 
         bool visit(const ChangesToMakeDecision & decision) const
         {
-            return ok(decision.origin_id());
+            return ok(decision.origin_id(), decision.if_changed_choices());
         }
 
         bool visit(const ExistingNoChangeDecision & decision) const
         {
-            return ok(decision.existing_id());
+            return ok(decision.existing_id(), make_null_shared_ptr());
         }
 
         bool visit(const NothingNoChangeDecision &) const
@@ -1153,7 +1154,7 @@ namespace
         const std::pair<std::shared_ptr<const PackageID>, std::shared_ptr<const ChangedChoices> > visit(const ChangesToMakeDecision & decision) const
         {
             if (decision.taken())
-                return std::make_pair(decision.origin_id(), make_null_shared_ptr());
+                return std::make_pair(decision.origin_id(), decision.if_changed_choices());
             else
                 return std::make_pair(make_null_shared_ptr(), make_null_shared_ptr());
         }
@@ -1758,7 +1759,7 @@ const std::shared_ptr<const PackageID>
 Decider::_find_existing_id_for(const std::shared_ptr<const Resolution> & resolution) const
 {
     const std::shared_ptr<const PackageIDSequence> ids(_installed_ids(resolution));
-    return std::get<0>(_find_id_for_from(resolution, ids));
+    return std::get<0>(_find_id_for_from(resolution, ids, false, false));
 }
 
 bool
@@ -1813,14 +1814,20 @@ Decider::_find_installable_id_candidates_for(
 const Decider::FoundID
 Decider::_find_installable_id_for(const std::shared_ptr<const Resolution> & resolution, const bool include_unmaskable) const
 {
-    return _find_id_for_from(resolution, _find_installable_id_candidates_for(resolution, false, include_unmaskable));
+    return _find_id_for_from(resolution, _find_installable_id_candidates_for(resolution, false, include_unmaskable), true, false);
 }
 
 const Decider::FoundID
 Decider::_find_id_for_from(
         const std::shared_ptr<const Resolution> & resolution,
-        const std::shared_ptr<const PackageIDSequence> & ids) const
+        const std::shared_ptr<const PackageIDSequence> & ids,
+        const bool try_changing_choices,
+        const bool trying_changing_choices) const
 {
+    MatchPackageOptions opts;
+    if (trying_changing_choices)
+        opts += mpo_ignore_additional_requirements;
+
     std::shared_ptr<const PackageID> best_version;
     for (PackageIDSequence::ReverseConstIterator i(ids->rbegin()), i_end(ids->rend()) ;
             i != i_end ; ++i)
@@ -1834,19 +1841,78 @@ Decider::_find_id_for_from(
                 c != c_end ; ++c)
         {
             if ((*c)->spec().if_package())
-                ok = ok && match_package(*_imp->env, *(*c)->spec().if_package(), **i, { });
+                ok = ok && match_package(*_imp->env, *(*c)->spec().if_package(), **i, opts);
             else
-                ok = ok && ! match_package(*_imp->env, (*c)->spec().if_block()->blocking(), **i, { });
+                ok = ok && ! match_package(*_imp->env, (*c)->spec().if_block()->blocking(), **i, opts);
 
             if (! ok)
                 break;
         }
 
         if (ok)
-            return FoundID(*i, make_null_shared_ptr(), (*i)->version() == best_version->version());
+        {
+            std::shared_ptr<ChangedChoices> changed_choices(std::make_shared<ChangedChoices>());
+            if (trying_changing_choices)
+            {
+                for (Constraints::ConstIterator c(resolution->constraints()->begin()),
+                        c_end(resolution->constraints()->end()) ;
+                        c != c_end ; ++c)
+                {
+                    if (! ok)
+                        break;
+
+                    if (! (*c)->spec().if_package())
+                    {
+                        if ((*c)->spec().if_block()->blocking().additional_requirements_ptr() &&
+                                ! (*c)->spec().if_block()->blocking().additional_requirements_ptr()->empty())
+                        {
+                            /* too complicated for now */
+                            ok = false;
+                        }
+                        break;
+                    }
+
+                    if (! (*c)->spec().if_package()->additional_requirements_ptr())
+                    {
+                        /* no additional requirements, so no tinkering required */
+                        continue;
+                    }
+
+                    for (auto a((*c)->spec().if_package()->additional_requirements_ptr()->begin()),
+                            a_end((*c)->spec().if_package()->additional_requirements_ptr()->end()) ;
+                            a != a_end ; ++a)
+                        if (! (*a)->accumulate_changes_to_make_met(_imp->env, 0, *i, *changed_choices))
+                        {
+                            ok = false;
+                            break;
+                        }
+                }
+            }
+
+            /* might have an early requirement of [x], and a later [-x], and
+             * chosen to change because of the latter */
+            for (Constraints::ConstIterator c(resolution->constraints()->begin()),
+                    c_end(resolution->constraints()->end()) ;
+                    c != c_end ; ++c)
+            {
+                if (! ok)
+                    break;
+
+                if ((*c)->spec().if_package())
+                    ok = ok && match_package_with_maybe_changes(*_imp->env, *(*c)->spec().if_package(), 0, **i, changed_choices.get(), { });
+                else
+                    ok = ok && ! match_package_with_maybe_changes(*_imp->env, (*c)->spec().if_block()->blocking(), 0, **i, changed_choices.get(), { });
+            }
+
+            if (ok)
+                return FoundID(*i, changed_choices->empty() ? make_null_shared_ptr() : changed_choices, (*i)->version() == best_version->version());
+        }
     }
 
-    return FoundID(make_null_shared_ptr(), make_null_shared_ptr(), false);
+    if (try_changing_choices && ! trying_changing_choices)
+        return _find_id_for_from(resolution, ids, true, true);
+    else
+        return FoundID(make_null_shared_ptr(), make_null_shared_ptr(), false);
 }
 
 const std::shared_ptr<const Constraints>
@@ -2119,6 +2185,13 @@ namespace
             if (changes_to_make_decision.origin_id()->masked())
             {
                 auto c(std::make_shared<MaskedConfirmation>());
+                if (! fns.confirm_fn()(resolution, c))
+                    changes_to_make_decision.add_required_confirmation(c);
+            }
+
+            if (changes_to_make_decision.if_changed_choices())
+            {
+                auto c(std::make_shared<ChangedChoicesConfirmation>());
                 if (! fns.confirm_fn()(resolution, c))
                     changes_to_make_decision.add_required_confirmation(c);
             }

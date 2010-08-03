@@ -1285,6 +1285,11 @@ namespace
         {
             return false;
         }
+
+        bool visit(const ChangedChoicesConfirmation &) const
+        {
+            return false;
+        }
     };
 
     bool confirm_fn(

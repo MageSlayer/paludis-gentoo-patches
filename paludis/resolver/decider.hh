@@ -215,7 +215,9 @@ namespace paludis
                         const bool include_unmaskable) const;
                 const FoundID _find_id_for_from(
                         const std::shared_ptr<const Resolution> &,
-                        const std::shared_ptr<const PackageIDSequence> &) const;
+                        const std::shared_ptr<const PackageIDSequence> &,
+                        const bool try_changing_choices,
+                        const bool trying_changing_choices) const;
 
                 const std::shared_ptr<const Constraints> _get_unmatching_constraints(
                         const std::shared_ptr<const Resolution> &,

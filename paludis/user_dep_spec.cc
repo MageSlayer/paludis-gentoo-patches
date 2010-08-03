@@ -749,7 +749,7 @@ namespace
 }
 
 const std::pair<bool, std::string>
-UserKeyRequirement::requirement_met(const Environment * const, const PackageID & id) const
+UserKeyRequirement::requirement_met(const Environment * const, const ChangedChoices * const, const PackageID & id, const ChangedChoices * const) const
 {
     Context context("When working out whether '" + stringify(id) + "' matches " + as_raw_string() + ":");
 
@@ -781,6 +781,16 @@ const std::string
 UserKeyRequirement::as_raw_string() const
 {
     return "[." + _imp->key + std::string(1, _imp->op) + _imp->value + "]";
+}
+
+bool
+UserKeyRequirement::accumulate_changes_to_make_met(
+        const Environment * const,
+        const ChangedChoices * const,
+        const std::shared_ptr<const PackageID> &,
+        ChangedChoices &) const
+{
+    return false;
 }
 
 VersionSpecOptions
