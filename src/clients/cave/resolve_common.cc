@@ -190,17 +190,15 @@ namespace
 
         DestinationTypes visit(const TargetReason &) const
         {
-#ifdef ENABLE_PBINS
             if (resolution_options.a_make.argument() == "binaries")
                 return DestinationTypes() + dt_create_binary;
             else if (resolution_options.a_make.argument() == "install")
                 return DestinationTypes() + dt_install_to_slash;
+            else if (resolution_options.a_make.argument() == "chroot")
+                return DestinationTypes() + dt_install_to_chroot;
             else
                 throw args::DoHelp("Don't understand argument '" + resolution_options.a_make.argument() + "' to '--"
                         + resolution_options.a_make.long_name() + "'");
-#else
-            return DestinationTypes() + dt_install_to_slash;
-#endif
         }
 
         DestinationTypes visit(const DependentReason &) const
@@ -222,7 +220,6 @@ namespace
         {
             DestinationTypes extras;
 
-#ifdef ENABLE_PBINS
             if (resolution_options.a_make.argument() == "binaries")
             {
                 bool binary_if_possible(false);
@@ -240,7 +237,21 @@ namespace
                 if (binary_if_possible && package_id_unless_error && can_make_binary_for(package_id_unless_error))
                     extras += dt_create_binary;
             }
-#endif
+            else if (resolution_options.a_make.argument() == "chroot")
+            {
+                bool chroot_if_possible(false);
+                if (resolution_options.a_make_dependencies.argument() == "auto" ||
+                        resolution_options.a_make_dependencies.argument() == "all")
+                    chroot_if_possible = true;
+                else if (resolution_options.a_make_dependencies.argument() == "runtime")
+                {
+                    if (is_run_or_post_dep(dep.sanitised_dependency()))
+                        chroot_if_possible = true;
+                }
+
+                if (chroot_if_possible)
+                    extras += dt_install_to_chroot;
+            }
 
             return (DestinationTypes() + dt_install_to_slash) | extras;
         }
@@ -316,11 +327,9 @@ namespace
             const Generator & g,
             const std::shared_ptr<const Resolution> &)
     {
-#ifdef ENABLE_PBINS
         if (resolution_options.a_make.argument() == "binaries")
             return g | BinaryableFilter();
         else
-#endif
             return g;
     }
 
@@ -743,7 +752,8 @@ namespace
 
         const std::shared_ptr<const PackageIDSequence> installed_ids((*env)[selection::BestVersionInEachSlot(
                     generator::Matches(spec, { }) |
-                    filter::InstalledAtRoot(FSEntry("/")))]);
+                    (resolution_options.a_make.argument() == "chroot" ?
+                     Filter(filter::InstalledAtNotSlash()) : Filter(filter::InstalledAtSlash())))]);
 
         const args::EnumArg & arg(is_target(reason) ? resolution_options.a_target_slots : resolution_options.a_slots);
 
