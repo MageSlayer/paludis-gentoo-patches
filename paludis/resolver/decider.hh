@@ -46,6 +46,8 @@
 #include <paludis/repository-fwd.hh>
 #include <paludis/filtered_generator-fwd.hh>
 #include <paludis/generator-fwd.hh>
+#include <paludis/changed_choices-fwd.hh>
+#include <tuple>
 
 namespace paludis
 {
@@ -55,6 +57,8 @@ namespace paludis
             private Pimp<Decider>
         {
             private:
+                typedef std::tuple<std::shared_ptr<const PackageID>, std::shared_ptr<const ChangedChoices>, bool> FoundID;
+
                 const std::shared_ptr<Resolution> _create_resolution_for_resolvent(const Resolvent &) const;
                 const std::shared_ptr<Resolution> _resolution_for_resolvent(const Resolvent &, const Tribool);
 
@@ -206,10 +210,10 @@ namespace paludis
                         const std::shared_ptr<const Resolution> &,
                         const bool include_errors,
                         const bool include_unmaskable) const;
-                const std::pair<const std::shared_ptr<const PackageID>, bool> _find_installable_id_for(
+                const FoundID _find_installable_id_for(
                         const std::shared_ptr<const Resolution> &,
                         const bool include_unmaskable) const;
-                const std::pair<const std::shared_ptr<const PackageID>, bool> _find_id_for_from(
+                const FoundID _find_id_for_from(
                         const std::shared_ptr<const Resolution> &,
                         const std::shared_ptr<const PackageIDSequence> &) const;
 

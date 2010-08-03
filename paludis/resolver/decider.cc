@@ -60,6 +60,7 @@
 #include <paludis/action.hh>
 #include <paludis/elike_slot_requirement.hh>
 #include <paludis/dep_spec_flattener.hh>
+#include <paludis/package_id.hh>
 
 #include <paludis/util/pimp-impl.hh>
 
@@ -1126,40 +1127,40 @@ namespace
 {
     struct DependenciesNecessityVisitor
     {
-        const std::shared_ptr<const PackageID> visit(const NothingNoChangeDecision &) const
+        const std::pair<std::shared_ptr<const PackageID>, std::shared_ptr<const ChangedChoices> > visit(const NothingNoChangeDecision &) const
         {
-            return make_null_shared_ptr();
+            return std::make_pair(make_null_shared_ptr(), make_null_shared_ptr());
         }
 
-        const std::shared_ptr<const PackageID> visit(const RemoveDecision &) const
+        const std::pair<std::shared_ptr<const PackageID>, std::shared_ptr<const ChangedChoices> > visit(const RemoveDecision &) const
         {
-            return make_null_shared_ptr();
+            return std::make_pair(make_null_shared_ptr(), make_null_shared_ptr());
         }
 
-        const std::shared_ptr<const PackageID> visit(const UnableToMakeDecision &) const
+        const std::pair<std::shared_ptr<const PackageID>, std::shared_ptr<const ChangedChoices> > visit(const UnableToMakeDecision &) const
         {
-            return make_null_shared_ptr();
+            return std::make_pair(make_null_shared_ptr(), make_null_shared_ptr());
         }
 
-        const std::shared_ptr<const PackageID> visit(const ExistingNoChangeDecision & decision) const
+        const std::pair<std::shared_ptr<const PackageID>, std::shared_ptr<const ChangedChoices> > visit(const ExistingNoChangeDecision & decision) const
         {
             if (decision.taken())
-                return decision.existing_id();
+                return std::make_pair(decision.existing_id(), make_null_shared_ptr());
             else
-                return make_null_shared_ptr();
+                return std::make_pair(make_null_shared_ptr(), make_null_shared_ptr());
         }
 
-        const std::shared_ptr<const PackageID> visit(const ChangesToMakeDecision & decision) const
+        const std::pair<std::shared_ptr<const PackageID>, std::shared_ptr<const ChangedChoices> > visit(const ChangesToMakeDecision & decision) const
         {
             if (decision.taken())
-                return decision.origin_id();
+                return std::make_pair(decision.origin_id(), make_null_shared_ptr());
             else
-                return make_null_shared_ptr();
+                return std::make_pair(make_null_shared_ptr(), make_null_shared_ptr());
         }
 
-        const std::shared_ptr<const PackageID> visit(const BreakDecision &) const
+        const std::pair<std::shared_ptr<const PackageID>, std::shared_ptr<const ChangedChoices> > visit(const BreakDecision &) const
         {
-            return make_null_shared_ptr();
+            return std::make_pair(make_null_shared_ptr(), make_null_shared_ptr());
         }
     };
 }
@@ -1168,9 +1169,11 @@ void
 Decider::_add_dependencies_if_necessary(
         const std::shared_ptr<Resolution> & our_resolution)
 {
-    const std::shared_ptr<const PackageID> package_id(
-            our_resolution->decision()->accept_returning<std::shared_ptr<const PackageID> >(
-                DependenciesNecessityVisitor()));
+    std::shared_ptr<const PackageID> package_id;
+    std::shared_ptr<const ChangedChoices> changed_choices;
+    std::tie(package_id, changed_choices) = our_resolution->decision()->accept_returning<
+        std::pair<std::shared_ptr<const PackageID>, std::shared_ptr<const ChangedChoices> > >(DependenciesNecessityVisitor());
+
     if (! package_id)
         return;
 
@@ -1178,7 +1181,7 @@ Decider::_add_dependencies_if_necessary(
             + stringify(*package_id) + "':");
 
     const std::shared_ptr<SanitisedDependencies> deps(std::make_shared<SanitisedDependencies>());
-    deps->populate(_imp->env, *this, our_resolution, package_id);
+    deps->populate(_imp->env, *this, our_resolution, package_id, changed_choices);
 
     for (SanitisedDependencies::ConstIterator s(deps->begin()), s_end(deps->end()) ;
             s != s_end ; ++s)
@@ -1527,9 +1530,11 @@ Decider::_try_to_find_decision_for(
         const bool try_masked_this_time) const
 {
     const std::shared_ptr<const PackageID> existing_id(_find_existing_id_for(resolution));
-    std::pair<const std::shared_ptr<const PackageID>, bool> installable_id_best(_find_installable_id_for(resolution, try_masked_this_time));
-    const std::shared_ptr<const PackageID> installable_id(installable_id_best.first);
-    bool best(installable_id_best.second);
+
+    std::shared_ptr<const PackageID> installable_id;
+    std::shared_ptr<const ChangedChoices> changed_choices;
+    bool best;
+    std::tie(installable_id, changed_choices, best) = _find_installable_id_for(resolution, try_masked_this_time);
 
     if (resolution->constraints()->nothing_is_fine_too())
     {
@@ -1550,6 +1555,7 @@ Decider::_try_to_find_decision_for(
         return std::make_shared<ChangesToMakeDecision>(
                     resolution->resolvent(),
                     installable_id,
+                    changed_choices,
                     best,
                     last_ct,
                     ! resolution->constraints()->all_untaken(),
@@ -1677,6 +1683,7 @@ Decider::_try_to_find_decision_for(
         const std::shared_ptr<Decision> changes_to_make(std::make_shared<ChangesToMakeDecision>(
                     resolution->resolvent(),
                     installable_id,
+                    changed_choices,
                     best,
                     last_ct,
                     ! resolution->constraints()->all_untaken(),
@@ -1751,7 +1758,7 @@ const std::shared_ptr<const PackageID>
 Decider::_find_existing_id_for(const std::shared_ptr<const Resolution> & resolution) const
 {
     const std::shared_ptr<const PackageIDSequence> ids(_installed_ids(resolution));
-    return _find_id_for_from(resolution, ids).first;
+    return std::get<0>(_find_id_for_from(resolution, ids));
 }
 
 bool
@@ -1803,13 +1810,13 @@ Decider::_find_installable_id_candidates_for(
             )];
 }
 
-const std::pair<const std::shared_ptr<const PackageID>, bool>
+const Decider::FoundID
 Decider::_find_installable_id_for(const std::shared_ptr<const Resolution> & resolution, const bool include_unmaskable) const
 {
     return _find_id_for_from(resolution, _find_installable_id_candidates_for(resolution, false, include_unmaskable));
 }
 
-const std::pair<const std::shared_ptr<const PackageID>, bool>
+const Decider::FoundID
 Decider::_find_id_for_from(
         const std::shared_ptr<const Resolution> & resolution,
         const std::shared_ptr<const PackageIDSequence> & ids) const
@@ -1836,10 +1843,10 @@ Decider::_find_id_for_from(
         }
 
         if (ok)
-            return std::make_pair(*i, (*i)->version() == best_version->version());
+            return FoundID(*i, make_null_shared_ptr(), (*i)->version() == best_version->version());
     }
 
-    return std::make_pair(make_null_shared_ptr(), false);
+    return FoundID(make_null_shared_ptr(), make_null_shared_ptr(), false);
 }
 
 const std::shared_ptr<const Constraints>
@@ -1873,6 +1880,7 @@ Decider::_get_unmatching_constraints(
             decision = std::make_shared<ChangesToMakeDecision>(
                         resolution->resolvent(),
                         id,
+                        make_null_shared_ptr(),
                         false,
                         last_ct,
                         ! (*c)->untaken(),

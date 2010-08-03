@@ -47,6 +47,7 @@
 #include <paludis/util/enum_iterator.hh>
 #include <paludis/environment.hh>
 #include <paludis/notifier_callback.hh>
+#include <paludis/package_id.hh>
 #include <unordered_set>
 #include <unordered_map>
 #include <algorithm>

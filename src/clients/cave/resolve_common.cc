@@ -77,6 +77,7 @@
 #include <paludis/selection_cache.hh>
 #include <paludis/package_dep_spec_properties.hh>
 #include <paludis/elike_slot_requirement.hh>
+#include <paludis/package_id.hh>
 
 #include <algorithm>
 #include <iostream>

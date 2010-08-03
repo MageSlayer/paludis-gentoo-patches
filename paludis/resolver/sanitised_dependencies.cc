@@ -60,6 +60,7 @@ namespace
     struct MakeAnyOfStringVisitor
     {
         std::string result;
+        const std::shared_ptr<const ChangedChoices> changed_choices;
 
         void visit(const DependencySpecTree::NodeType<NamedSetDepSpec>::Type & s)
         {
@@ -83,9 +84,9 @@ namespace
 
         void visit(const DependencySpecTree::NodeType<ConditionalDepSpec>::Type & node)
         {
-            if (node.spec()->condition_met())
+            if (changed_choices ? node.spec()->condition_would_be_met_when(*changed_choices) : node.spec()->condition_met())
             {
-                MakeAnyOfStringVisitor v;
+                MakeAnyOfStringVisitor v{"", changed_choices};
                 std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(v));
                 result.append(" " + stringify(*node.spec()) + " (" + v.result + " )");
             }
@@ -93,14 +94,14 @@ namespace
 
         void visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type & node)
         {
-            MakeAnyOfStringVisitor v;
+            MakeAnyOfStringVisitor v{"", changed_choices};
             std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(v));
             result.append(" || (" + v.result + " )");
         }
 
         void visit(const DependencySpecTree::NodeType<AllDepSpec>::Type & node)
         {
-            MakeAnyOfStringVisitor v;
+            MakeAnyOfStringVisitor v{"", changed_choices};
             std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(v));
             result.append(" (" + v.result + " )");
         }
@@ -111,6 +112,7 @@ namespace
         const Decider & decider;
         const std::shared_ptr<const Resolution> our_resolution;
         const std::shared_ptr<const PackageID> our_id;
+        const std::shared_ptr<const ChangedChoices> changed_choices;
         const std::function<SanitisedDependency (const PackageOrBlockDepSpec &)> parent_make_sanitised;
 
         bool super_complicated, nested;
@@ -122,10 +124,12 @@ namespace
 
         AnyDepSpecChildHandler(const Decider & r, const std::shared_ptr<const Resolution> & q,
                 const std::shared_ptr<const PackageID> & o,
+                const std::shared_ptr<const ChangedChoices> & c,
                 const std::function<SanitisedDependency (const PackageOrBlockDepSpec &)> & f) :
             decider(r),
             our_resolution(q),
             our_id(o),
+            changed_choices(c),
             parent_make_sanitised(f),
             super_complicated(false),
             nested(false),
@@ -183,7 +187,7 @@ namespace
 
         void visit(const DependencySpecTree::NodeType<ConditionalDepSpec>::Type & node)
         {
-            if (node.spec()->condition_met())
+            if (changed_choices ? node.spec()->condition_would_be_met_when(*changed_choices) : node.spec()->condition_met())
             {
                 nested = true;
 
@@ -214,7 +218,7 @@ namespace
 
         void visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type & node)
         {
-            AnyDepSpecChildHandler h(decider, our_resolution, our_id, parent_make_sanitised);
+            AnyDepSpecChildHandler h(decider, our_resolution, our_id, changed_choices, parent_make_sanitised);
             std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(h));
             std::list<SanitisedDependency> l;
             h.commit(
@@ -302,6 +306,7 @@ namespace
         const Decider & decider;
         const std::shared_ptr<const Resolution> our_resolution;
         const std::shared_ptr<const PackageID> & our_id;
+        const std::shared_ptr<const ChangedChoices> & changed_choices;
         SanitisedDependencies & sanitised_dependencies;
         const std::string raw_name;
         const std::string human_name;
@@ -313,6 +318,7 @@ namespace
                 const Decider & r,
                 const std::shared_ptr<const Resolution> & q,
                 const std::shared_ptr<const PackageID> & f,
+                const std::shared_ptr<const ChangedChoices> & c,
                 SanitisedDependencies & s,
                 const std::shared_ptr<const DependenciesLabelSequence> & l,
                 const std::string & rn,
@@ -322,6 +328,7 @@ namespace
             decider(r),
             our_resolution(q),
             our_id(f),
+            changed_choices(c),
             sanitised_dependencies(s),
             raw_name(rn),
             human_name(hn),
@@ -371,7 +378,7 @@ namespace
 
         void visit(const DependencySpecTree::NodeType<ConditionalDepSpec>::Type & node)
         {
-            if (node.spec()->condition_met())
+            if (changed_choices ? node.spec()->condition_would_be_met_when(*changed_choices) : node.spec()->condition_met())
             {
                 labels_stack.push_front(*labels_stack.begin());
                 std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
@@ -391,12 +398,12 @@ namespace
             Save<std::string> save_original_specs_as_string(&original_specs_as_string);
 
             {
-                MakeAnyOfStringVisitor v;
+                MakeAnyOfStringVisitor v{"", changed_choices};
                 std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(v));
                 original_specs_as_string = "|| (" + v.result + " )";
             }
 
-            AnyDepSpecChildHandler h(decider, our_resolution, our_id,
+            AnyDepSpecChildHandler h(decider, our_resolution, our_id, changed_choices,
                     std::bind(&Finder::make_sanitised, this, std::placeholders::_1));
             std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(h));
             h.commit(
@@ -453,12 +460,13 @@ SanitisedDependencies::_populate_one(
         const Decider & decider,
         const std::shared_ptr<const Resolution> & resolution,
         const std::shared_ptr<const PackageID> & id,
+        const std::shared_ptr<const ChangedChoices> & changed,
         const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > (PackageID::* const pmf) () const
         )
 {
     Context context("When finding dependencies for '" + stringify(*id) + "' from key '" + ((*id).*pmf)()->raw_name() + "':");
 
-    Finder f(env, decider, resolution, id, *this, ((*id).*pmf)()->initial_labels(), ((*id).*pmf)()->raw_name(),
+    Finder f(env, decider, resolution, id, changed, *this, ((*id).*pmf)()->initial_labels(), ((*id).*pmf)()->raw_name(),
             ((*id).*pmf)()->human_name(), "");
     ((*id).*pmf)()->value()->root()->accept(f);
 }
@@ -468,22 +476,23 @@ SanitisedDependencies::populate(
         const Environment * const env,
         const Decider & decider,
         const std::shared_ptr<const Resolution> & resolution,
-        const std::shared_ptr<const PackageID> & id)
+        const std::shared_ptr<const PackageID> & id,
+        const std::shared_ptr<const ChangedChoices> & changed)
 {
     Context context("When finding dependencies for '" + stringify(*id) + "':");
 
     if (id->dependencies_key())
-        _populate_one(env, decider, resolution, id, &PackageID::dependencies_key);
+        _populate_one(env, decider, resolution, id, changed, &PackageID::dependencies_key);
     else
     {
         if (id->build_dependencies_key())
-            _populate_one(env, decider, resolution, id, &PackageID::build_dependencies_key);
+            _populate_one(env, decider, resolution, id, changed, &PackageID::build_dependencies_key);
         if (id->run_dependencies_key())
-            _populate_one(env, decider, resolution, id, &PackageID::run_dependencies_key);
+            _populate_one(env, decider, resolution, id, changed, &PackageID::run_dependencies_key);
         if (id->post_dependencies_key())
-            _populate_one(env, decider, resolution, id, &PackageID::post_dependencies_key);
+            _populate_one(env, decider, resolution, id, changed, &PackageID::post_dependencies_key);
         if (id->suggested_dependencies_key())
-            _populate_one(env, decider, resolution, id, &PackageID::suggested_dependencies_key);
+            _populate_one(env, decider, resolution, id, changed, &PackageID::suggested_dependencies_key);
     }
 }
 
