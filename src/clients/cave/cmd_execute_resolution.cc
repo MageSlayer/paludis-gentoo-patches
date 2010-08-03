@@ -137,6 +137,57 @@ namespace
         }
     };
 
+    struct NotASuccess
+    {
+        bool operator() (const std::shared_ptr<const ExecuteJob> & job) const
+        {
+            return (! job->state()) || ! simple_visitor_cast<const JobSucceededState>(*job->state());
+        }
+    };
+
+    void write_resume_file(
+            const std::shared_ptr<Environment> &,
+            const std::shared_ptr<JobLists> & lists,
+            const ExecuteResolutionCommandLine & cmdline,
+            const bool erase)
+    {
+        if (! cmdline.execution_options.a_resume_file.specified())
+            return;
+
+        FSEntry resume_file(cmdline.execution_options.a_resume_file.argument());
+        bool success(lists->execute_job_list()->end() == std::find_if(lists->execute_job_list()->begin(),
+                    lists->execute_job_list()->end(), NotASuccess()));
+        if (success)
+        {
+            if (erase)
+            {
+                cout << endl << "Erasing resume file " << resume_file << "..." << endl;
+                resume_file.unlink();
+            }
+        }
+        else
+        {
+            std::shared_ptr<Sequence<std::string> > targets(std::make_shared<Sequence<std::string>>());
+            std::copy(cmdline.begin_parameters(), cmdline.end_parameters(), targets->back_inserter());
+
+            std::shared_ptr<Sequence<std::string> > world_specs(std::make_shared<Sequence<std::string>>());
+            std::copy(cmdline.a_world_specs.begin_args(), cmdline.a_world_specs.end_args(), world_specs->back_inserter());
+
+            ResumeData resume_data(make_named_values<ResumeData>(
+                        n::job_lists() = lists,
+                        n::preserve_world() = cmdline.execution_options.a_preserve_world.specified(),
+                        n::target_set() = cmdline.a_set.specified(),
+                        n::targets() = targets,
+                        n::world_specs() = world_specs
+                        ));
+
+            cout << endl << "Writing resume information to " << resume_file << "..." << endl;
+            SafeOFStream stream(resume_file);
+            Serialiser ser(stream);
+            resume_data.serialise(ser);
+        }
+    }
+
     bool do_pretend(
             const std::shared_ptr<Environment> & env,
             const ExecuteResolutionCommandLine & cmdline,
@@ -1107,7 +1158,7 @@ namespace
         const ExecuteResolutionCommandLine & cmdline;
         const int n_fetch_jobs;
         const std::shared_ptr<ExecuteJob> job;
-        const std::shared_ptr<const JobLists> lists;
+        const std::shared_ptr<JobLists> lists;
         JobRequirementIf require_if;
         Mutex & global_retcode_mutex;
         int & global_retcode;
@@ -1126,7 +1177,7 @@ namespace
                 const ExecuteResolutionCommandLine & c,
                 const int n,
                 const std::shared_ptr<ExecuteJob> & j,
-                const std::shared_ptr<const JobLists> & l,
+                const std::shared_ptr<JobLists> & l,
                 JobRequirementIf r,
                 Mutex & m,
                 int & rc,
@@ -1336,6 +1387,9 @@ namespace
                 Lock lock(global_retcode_mutex);
                 global_retcode |= local_retcode;
             }
+
+            if (want)
+                write_resume_file(env, lists, cmdline, false);
         }
     };
 
@@ -1557,53 +1611,6 @@ namespace
         }
     }
 
-    struct NotASuccess
-    {
-        bool operator() (const std::shared_ptr<const ExecuteJob> & job) const
-        {
-            return (! job->state()) || ! simple_visitor_cast<const JobSucceededState>(*job->state());
-        }
-    };
-
-    void write_resume_file(
-            const std::shared_ptr<Environment> &,
-            const std::shared_ptr<JobLists> & lists,
-            const ExecuteResolutionCommandLine & cmdline)
-    {
-        if (! cmdline.execution_options.a_resume_file.specified())
-            return;
-
-        FSEntry resume_file(cmdline.execution_options.a_resume_file.argument());
-        bool success(lists->execute_job_list()->end() == std::find_if(lists->execute_job_list()->begin(),
-                    lists->execute_job_list()->end(), NotASuccess()));
-        if (success)
-        {
-            cout << endl << "Erasing resume file " << resume_file << "..." << endl;
-            resume_file.unlink();
-        }
-        else
-        {
-            std::shared_ptr<Sequence<std::string> > targets(std::make_shared<Sequence<std::string>>());
-            std::copy(cmdline.begin_parameters(), cmdline.end_parameters(), targets->back_inserter());
-
-            std::shared_ptr<Sequence<std::string> > world_specs(std::make_shared<Sequence<std::string>>());
-            std::copy(cmdline.a_world_specs.begin_args(), cmdline.a_world_specs.end_args(), world_specs->back_inserter());
-
-            ResumeData resume_data(make_named_values<ResumeData>(
-                        n::job_lists() = lists,
-                        n::preserve_world() = cmdline.execution_options.a_preserve_world.specified(),
-                        n::target_set() = cmdline.a_set.specified(),
-                        n::targets() = targets,
-                        n::world_specs() = world_specs
-                        ));
-
-            cout << endl << "Writing resume information to " << resume_file << "..." << endl;
-            SafeOFStream stream(resume_file);
-            Serialiser ser(stream);
-            resume_data.serialise(ser);
-        }
-    }
-
     int execute_resolution(
             const std::shared_ptr<Environment> & env,
             const std::shared_ptr<JobLists> & lists,
@@ -1625,7 +1632,7 @@ namespace
         catch (...)
         {
             if ((! cmdline.a_pretend.specified()) || (0 == retcode))
-                write_resume_file(env, lists, cmdline);
+                write_resume_file(env, lists, cmdline, true);
 
             if (! cmdline.a_pretend.specified())
                 display_summary(env, lists, 0 != retcode);
@@ -1640,7 +1647,7 @@ namespace
         }
 
         if ((! cmdline.a_pretend.specified()) || (0 == retcode))
-            write_resume_file(env, lists, cmdline);
+            write_resume_file(env, lists, cmdline, true);
 
         if (! cmdline.a_pretend.specified())
             display_summary(env, lists, 0 != retcode);
