@@ -1159,34 +1159,40 @@ namespace
 
     struct ChosenIDVisitor
     {
-        const std::shared_ptr<const PackageID> visit(const ChangesToMakeDecision & decision) const
+        const std::pair<std::shared_ptr<const PackageID>, std::shared_ptr<const ChangedChoices> > visit(
+                const ChangesToMakeDecision & decision) const
         {
-            return decision.origin_id();
+            return std::make_pair(decision.origin_id(), decision.if_changed_choices());
         }
 
-        const std::shared_ptr<const PackageID> visit(const BreakDecision & decision) const
+        const std::pair<std::shared_ptr<const PackageID>, std::shared_ptr<const ChangedChoices> > visit(
+                const BreakDecision & decision) const
         {
-            return decision.existing_id();
+            return std::make_pair(decision.existing_id(), make_null_shared_ptr());
         }
 
-        const std::shared_ptr<const PackageID> visit(const ExistingNoChangeDecision & decision) const
+        const std::pair<std::shared_ptr<const PackageID>, std::shared_ptr<const ChangedChoices> > visit(
+                const ExistingNoChangeDecision & decision) const
         {
-            return decision.existing_id();
+            return std::make_pair(decision.existing_id(), make_null_shared_ptr());
         }
 
-        const std::shared_ptr<const PackageID> visit(const NothingNoChangeDecision &) const
+        const std::pair<std::shared_ptr<const PackageID>, std::shared_ptr<const ChangedChoices> > visit(
+                const NothingNoChangeDecision &) const
         {
-            return make_null_shared_ptr();
+            return std::make_pair(make_null_shared_ptr(), make_null_shared_ptr());
         }
 
-        const std::shared_ptr<const PackageID> visit(const RemoveDecision &) const
+        const std::pair<std::shared_ptr<const PackageID>, std::shared_ptr<const ChangedChoices> > visit(
+                const RemoveDecision &) const
         {
-            return make_null_shared_ptr();
+            return std::make_pair(make_null_shared_ptr(), make_null_shared_ptr());
         }
 
-        const std::shared_ptr<const PackageID> visit(const UnableToMakeDecision &) const
+        const std::pair<std::shared_ptr<const PackageID>, std::shared_ptr<const ChangedChoices> > visit(
+                const UnableToMakeDecision &) const
         {
-            return make_null_shared_ptr();
+            return std::make_pair(make_null_shared_ptr(), make_null_shared_ptr());
         }
     };
 
@@ -1197,8 +1203,9 @@ namespace
             const PackageDepSpecList & late,
             const std::shared_ptr<const Resolution> & r)
     {
-        const std::shared_ptr<const PackageID> id(r->decision()->accept_returning<std::shared_ptr<const PackageID> >(
-                    ChosenIDVisitor()));
+        const std::shared_ptr<const PackageID> id(
+                r->decision()->accept_returning<std::pair<std::shared_ptr<const PackageID>, std::shared_ptr<const ChangedChoices> > >(
+                    ChosenIDVisitor()).first);
         if (id)
         {
             if (match_any(env, early, id))
@@ -1304,7 +1311,8 @@ namespace
     {
         return c->accept_returning<bool>(ConfirmFnVisitor(env, resolution_options, permit_downgrade, permit_old_version,
                     allowed_to_break_specs, allowed_to_break_system,
-                    r->decision()->accept_returning<std::shared_ptr<const PackageID> >(ChosenIDVisitor())
+                    r->decision()->accept_returning<std::pair<std::shared_ptr<const PackageID>, std::shared_ptr<const ChangedChoices> > >(
+                        ChosenIDVisitor()).first
                     ));
     }
 
@@ -1697,12 +1705,16 @@ namespace
             std::cout << "* " << r->resolvent() << std::endl;
 
             std::cout << "    Had decided upon ";
-            const std::shared_ptr<const PackageID> id(r->previous_decision()->accept_returning<
-                    std::shared_ptr<const PackageID> >(ChosenIDVisitor()));
-            if (id)
-                std::cout << *id;
+            auto c(r->previous_decision()->accept_returning<std::pair<std::shared_ptr<const PackageID>, std::shared_ptr<const ChangedChoices> > >(
+                        ChosenIDVisitor()));
+            if (c.first)
+                std::cout << *c.first;
             else
                 std::cout << r->previous_decision()->accept_returning<std::string>(KindNameVisitor());
+
+            if (c.second)
+                std::cout << " (with changed choices)";
+
             std::cout << std::endl;
 
             std::cout << "    Which did not satisfy " << r->problematic_constraint()->spec()
