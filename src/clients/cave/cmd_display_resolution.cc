@@ -42,6 +42,7 @@
 #include <paludis/util/pretty_print.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/return_literal_function.hh>
+#include <paludis/util/enum_iterator.hh>
 #include <paludis/resolver/resolutions_by_resolvent.hh>
 #include <paludis/resolver/reason.hh>
 #include <paludis/resolver/sanitised_dependencies.hh>
@@ -966,12 +967,12 @@ namespace
         bool download_overflow;
         unsigned long download_size;
 
-        int installs_count, binary_installs_count, uninstalls_count;
+        std::map<ChangeType, int> installs_ct_count;
+        int binary_installs_count, uninstalls_count;
 
         Totals() :
             download_overflow(false),
             download_size(0),
-            installs_count(0),
             binary_installs_count(0),
             uninstalls_count(0)
         {
@@ -1083,7 +1084,7 @@ namespace
                         if (decision.if_via_new_binary_in())
                             c = c::yellow();
                         if (maybe_totals)
-                            ++maybe_totals->installs_count;
+                            ++maybe_totals->installs_ct_count.insert(std::make_pair(decision.change_type(), 0)).first->second;
                         continue;
 
                     case dt_create_binary:
@@ -1563,18 +1564,48 @@ namespace
     void display_totals(
             const std::shared_ptr<Totals> & totals)
     {
-        if (0 == totals->installs_count + totals->binary_installs_count + totals->uninstalls_count)
+        if (totals->installs_ct_count.empty() && 0 == totals->binary_installs_count + totals->uninstalls_count)
             return;
 
         cout << "Total " ;
         bool need_comma(false);
 
-        if (0 != totals->installs_count)
+        for (EnumIterator<ChangeType> e, e_end(last_ct) ;
+                e != e_end ; ++e)
         {
+            auto c(totals->installs_ct_count.find(*e));
+            if (c == totals->installs_ct_count.end())
+                continue;
+
             if (need_comma)
                 cout << ", ";
             need_comma = true;
-            cout << totals->installs_count << " installs";
+            cout << c->second;
+            switch (c->first)
+            {
+                case ct_new:
+                    cout << " new installs";
+                    break;
+
+                case ct_slot_new:
+                    cout << " new slot installs";
+                    break;
+
+                case ct_upgrade:
+                    cout << " upgrades";
+                    break;
+
+                case ct_reinstall:
+                    cout << " reinstalls";
+                    break;
+
+                case ct_downgrade:
+                    cout << " downgrades";
+                    break;
+
+                case last_ct:
+                    throw InternalError(PALUDIS_HERE, "bad change_type. huh?");
+            }
         }
 
         if (0 != totals->binary_installs_count)
