@@ -138,7 +138,9 @@ namespace paludis
                         const std::shared_ptr<const Decision> & d,
                         const std::shared_ptr<const Constraint> & c) const;
 
-                const PackageDepSpec _make_spec_for_preloading(const PackageDepSpec & spec) const;
+                const PackageDepSpec _make_spec_for_preloading(
+                        const PackageDepSpec & spec,
+                        const std::shared_ptr<const ChangedChoices> &) const;
 
                 const std::shared_ptr<const PackageIDSequence> _find_replacing(
                         const std::shared_ptr<const PackageID> &,

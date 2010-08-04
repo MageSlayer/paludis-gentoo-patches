@@ -946,7 +946,7 @@ namespace
         }
     };
 
-    struct GetChangedChoices
+    struct GetConstraintChangedChoices
     {
         const std::shared_ptr<const ChangedChoices> visit(const TargetReason &) const
         {
@@ -992,7 +992,46 @@ namespace
     std::shared_ptr<const ChangedChoices> get_changed_choices_for(
             const std::shared_ptr<const Constraint> & constraint)
     {
-        return constraint->reason()->accept_returning<std::shared_ptr<const ChangedChoices> >(GetChangedChoices());
+        return constraint->reason()->accept_returning<std::shared_ptr<const ChangedChoices> >(GetConstraintChangedChoices());
+    }
+
+    struct GetDecisionChangedChoices
+    {
+        const std::shared_ptr<const ChangedChoices> visit(const ChangesToMakeDecision & d) const
+        {
+            return d.if_changed_choices();
+        }
+
+        const std::shared_ptr<const ChangedChoices> visit(const ExistingNoChangeDecision &) const
+        {
+            return make_null_shared_ptr();
+        }
+
+        const std::shared_ptr<const ChangedChoices> visit(const NothingNoChangeDecision &) const
+        {
+            return make_null_shared_ptr();
+        }
+
+        const std::shared_ptr<const ChangedChoices> visit(const UnableToMakeDecision &) const
+        {
+            return make_null_shared_ptr();
+        }
+
+        const std::shared_ptr<const ChangedChoices> visit(const RemoveDecision &) const
+        {
+            return make_null_shared_ptr();
+        }
+
+        const std::shared_ptr<const ChangedChoices> visit(const BreakDecision &) const
+        {
+            return make_null_shared_ptr();
+        }
+    };
+
+    std::shared_ptr<const ChangedChoices> get_changed_choices_for(
+            const std::shared_ptr<const Decision> & decision)
+    {
+        return decision->accept_returning<std::shared_ptr<const ChangedChoices> >(GetDecisionChangedChoices());
     }
 }
 
@@ -1099,7 +1138,7 @@ Decider::_suggest_restart_with(
 
 const std::shared_ptr<const Constraint>
 Decider::_make_constraint_for_preloading(
-        const std::shared_ptr<const Decision> &,
+        const std::shared_ptr<const Decision> & decision,
         const std::shared_ptr<const Constraint> & c) const
 {
     const std::shared_ptr<Constraint> result(std::make_shared<Constraint>(*c));
@@ -1107,14 +1146,16 @@ Decider::_make_constraint_for_preloading(
     const std::shared_ptr<PresetReason> reason(std::make_shared<PresetReason>("restarted because of", c->reason()));
     result->reason() = reason;
 
+    const std::shared_ptr<const ChangedChoices> changed_choices(get_changed_choices_for(decision));
+
     if (result->spec().if_package())
     {
-        PackageDepSpec s(_make_spec_for_preloading(*result->spec().if_package()));
+        PackageDepSpec s(_make_spec_for_preloading(*result->spec().if_package(), changed_choices));
         result->spec().if_package() = std::make_shared<PackageDepSpec>(s);
     }
     else
     {
-        PackageDepSpec s(_make_spec_for_preloading(result->spec().if_block()->blocking()));
+        PackageDepSpec s(_make_spec_for_preloading(result->spec().if_block()->blocking(), changed_choices));
         result->spec().if_block() = std::make_shared<BlockDepSpec>(
                     "!" + stringify(s),
                     s,
@@ -1125,13 +1166,18 @@ Decider::_make_constraint_for_preloading(
 }
 
 const PackageDepSpec
-Decider::_make_spec_for_preloading(const PackageDepSpec & spec) const
+Decider::_make_spec_for_preloading(const PackageDepSpec & spec,
+        const std::shared_ptr<const ChangedChoices> & changed_choices) const
 {
     PartiallyMadePackageDepSpec result(spec);
 
     /* we don't want to copy use deps from the constraint, since things like
      * [foo?] start to get weird when there's no longer an associated ID. */
     result.clear_additional_requirements();
+
+    /* but we do want to impose our own ChangedChoices if necessary. */
+    if (changed_choices)
+        changed_choices->add_additional_requirements_to(result);
 
     return result;
 }

@@ -22,6 +22,8 @@
 #include <paludis/util/tribool.hh>
 #include <paludis/choice.hh>
 #include <paludis/serialise-impl.hh>
+#include <paludis/elike_use_requirement-fwd.hh>
+#include <paludis/dep_spec.hh>
 #include <map>
 
 using namespace paludis;
@@ -53,6 +55,21 @@ bool
 ChangedChoices::empty() const
 {
     return _imp->overrides.empty();
+}
+
+void
+ChangedChoices::add_additional_requirements_to(PartiallyMadePackageDepSpec & spec) const
+{
+    for (auto o(_imp->overrides.begin()), o_end(_imp->overrides.end()) ;
+            o != o_end ; ++o)
+    {
+        if (o->second)
+            spec.additional_requirement(parse_elike_use_requirement("" + stringify(o->first) + "(-)",
+                        make_null_shared_ptr(), { euro_allow_default_values }));
+        else
+            spec.additional_requirement(parse_elike_use_requirement("-" + stringify(o->first) + "(-)",
+                        make_null_shared_ptr(), { euro_allow_default_values }));
+    }
 }
 
 Tribool

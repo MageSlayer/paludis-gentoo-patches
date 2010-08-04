@@ -26,6 +26,7 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/choice-fwd.hh>
 #include <paludis/serialise-fwd.hh>
+#include <paludis/dep_spec-fwd.hh>
 #include <memory>
 
 namespace paludis
@@ -42,6 +43,8 @@ namespace paludis
             Tribool overridden_value(const ChoiceNameWithPrefix &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             bool empty() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            void add_additional_requirements_to(PartiallyMadePackageDepSpec &) const;
 
             void serialise(Serialiser &) const;
 
