@@ -1076,7 +1076,7 @@ Decider::_made_wrong_decision(
     std::shared_ptr<Resolution> adapted_resolution(std::make_shared<Resolution>(*resolution));
     adapted_resolution->constraints()->add(constraint);
 
-    const std::shared_ptr<Decision> decision(_try_to_find_decision_for(adapted_resolution, true, false));
+    const std::shared_ptr<Decision> decision(_try_to_find_decision_for(adapted_resolution, true, false, true, false));
     if (decision)
     {
         resolution->decision()->accept(WrongDecisionVisitor(std::bind(
@@ -1143,7 +1143,7 @@ Decider::_decide(const std::shared_ptr<Resolution> & resolution)
 
     _copy_other_destination_constraints(resolution);
 
-    std::shared_ptr<Decision> decision(_try_to_find_decision_for(resolution, true, false));
+    std::shared_ptr<Decision> decision(_try_to_find_decision_for(resolution, true, false, true, false));
     if (decision)
         resolution->decision() = decision;
     else
@@ -1446,7 +1446,7 @@ Decider::find_any_score(
             for (ConstraintSequence::ConstIterator c(constraints->begin()), c_end(constraints->end()) ;
                     c != c_end ; ++c)
                 resolution->constraints()->add(*c);
-            const std::shared_ptr<Decision> decision(_try_to_find_decision_for(resolution, false, false));
+            const std::shared_ptr<Decision> decision(_try_to_find_decision_for(resolution, false, false, false, false));
             if (decision)
                 return std::make_pair(acs_could_install, operator_bias);
         }
@@ -1582,6 +1582,8 @@ Decider::_get_error_resolvents_for(
 const std::shared_ptr<Decision>
 Decider::_try_to_find_decision_for(
         const std::shared_ptr<const Resolution> & resolution,
+        const bool also_try_option_changes,
+        const bool try_option_changes_this_time,
         const bool also_try_masked,
         const bool try_masked_this_time) const
 {
@@ -1590,7 +1592,7 @@ Decider::_try_to_find_decision_for(
     std::shared_ptr<const PackageID> installable_id;
     std::shared_ptr<const ChangedChoices> changed_choices;
     bool best;
-    std::tie(installable_id, changed_choices, best) = _find_installable_id_for(resolution, try_masked_this_time);
+    std::tie(installable_id, changed_choices, best) = _find_installable_id_for(resolution, try_option_changes_this_time, try_masked_this_time);
 
     if (resolution->constraints()->nothing_is_fine_too())
     {
@@ -1664,8 +1666,10 @@ Decider::_try_to_find_decision_for(
                         _installed_ids(resolution),
                         ! resolution->constraints()->all_untaken()
                         );
+        else if (also_try_option_changes && ! try_option_changes_this_time)
+            return _try_to_find_decision_for(resolution, true, true, also_try_masked, try_masked_this_time);
         else if (also_try_masked && ! try_masked_this_time)
-            return _try_to_find_decision_for(resolution, true, true);
+            return _try_to_find_decision_for(resolution, also_try_option_changes, try_option_changes_this_time, true, true);
         else
             return make_null_shared_ptr();
     }
@@ -1867,9 +1871,11 @@ Decider::_find_installable_id_candidates_for(
 }
 
 const Decider::FoundID
-Decider::_find_installable_id_for(const std::shared_ptr<const Resolution> & resolution, const bool include_unmaskable) const
+Decider::_find_installable_id_for(const std::shared_ptr<const Resolution> & resolution,
+        const bool include_option_changes,
+        const bool include_unmaskable) const
 {
-    return _find_id_for_from(resolution, _find_installable_id_candidates_for(resolution, false, include_unmaskable), true, false);
+    return _find_id_for_from(resolution, _find_installable_id_candidates_for(resolution, false, include_unmaskable), include_option_changes, false);
 }
 
 const Decider::FoundID

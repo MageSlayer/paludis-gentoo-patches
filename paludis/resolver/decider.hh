@@ -186,6 +186,8 @@ namespace paludis
 
                 const std::shared_ptr<Decision> _try_to_find_decision_for(
                         const std::shared_ptr<const Resolution> & resolution,
+                        const bool also_try_option_changes,
+                        const bool try_option_changes_this_time,
                         const bool also_try_masked,
                         const bool try_masked_this_time) const;
 
@@ -212,6 +214,7 @@ namespace paludis
                         const bool include_unmaskable) const;
                 const FoundID _find_installable_id_for(
                         const std::shared_ptr<const Resolution> &,
+                        const bool include_option_changes,
                         const bool include_unmaskable) const;
                 const FoundID _find_id_for_from(
                         const std::shared_ptr<const Resolution> &,
