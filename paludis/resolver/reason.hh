@@ -30,6 +30,7 @@
 #include <paludis/name-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/serialise-fwd.hh>
+#include <paludis/changed_choices-fwd.hh>
 #include <memory>
 
 namespace paludis
@@ -72,6 +73,7 @@ namespace paludis
             public:
                 DependencyReason(
                         const std::shared_ptr<const PackageID> & id,
+                        const std::shared_ptr<const ChangedChoices> &,
                         const Resolvent &,
                         const SanitisedDependency & s,
                         const bool already_met);
@@ -79,6 +81,7 @@ namespace paludis
                 ~DependencyReason();
 
                 const std::shared_ptr<const PackageID> from_id() const;
+                const std::shared_ptr<const ChangedChoices> from_id_changed_choices() const;
                 const Resolvent from_resolvent() const;
                 const SanitisedDependency & sanitised_dependency() const;
                 bool already_met() const PALUDIS_ATTRIBUTE((warn_unused_result));

@@ -819,10 +819,14 @@ namespace
     struct CheckConstraintVisitor
     {
         const Environment * const env;
+        const std::shared_ptr<const ChangedChoices> changed_choices_for_constraint;
         const Constraint constraint;
 
-        CheckConstraintVisitor(const Environment * const e, const Constraint & c) :
+        CheckConstraintVisitor(const Environment * const e,
+                const std::shared_ptr<const ChangedChoices> & h,
+                const Constraint & c) :
             env(e),
+            changed_choices_for_constraint(h),
             constraint(c)
         {
         }
@@ -832,12 +836,14 @@ namespace
         {
             if (constraint.spec().if_package())
             {
-                if (! match_package_with_maybe_changes(*env, *constraint.spec().if_package(), 0, *chosen_id, changed_choices.get(), { }))
+                if (! match_package_with_maybe_changes(*env, *constraint.spec().if_package(),
+                            changed_choices_for_constraint.get(), *chosen_id, changed_choices.get(), { }))
                     return false;
             }
             else
             {
-                if (match_package_with_maybe_changes(*env, constraint.spec().if_block()->blocking(), 0, *chosen_id, changed_choices.get(), { }))
+                if (match_package_with_maybe_changes(*env, constraint.spec().if_block()->blocking(),
+                            changed_choices_for_constraint.get(), *chosen_id, changed_choices.get(), { }))
                     return false;
             }
 
@@ -939,6 +945,55 @@ namespace
             return true;
         }
     };
+
+    struct GetChangedChoices
+    {
+        const std::shared_ptr<const ChangedChoices> visit(const TargetReason &) const
+        {
+            return make_null_shared_ptr();
+        }
+
+        const std::shared_ptr<const ChangedChoices> visit(const DependentReason &) const
+        {
+            return make_null_shared_ptr();
+        }
+
+        const std::shared_ptr<const ChangedChoices> visit(const PresetReason &) const
+        {
+            return make_null_shared_ptr();
+        }
+
+        const std::shared_ptr<const ChangedChoices> visit(const DependencyReason & r) const
+        {
+            return r.from_id_changed_choices();
+        }
+
+        const std::shared_ptr<const ChangedChoices> visit(const ViaBinaryReason &) const
+        {
+            return make_null_shared_ptr();
+        }
+
+        const std::shared_ptr<const ChangedChoices> visit(const WasUsedByReason &) const
+        {
+            return make_null_shared_ptr();
+        }
+
+        const std::shared_ptr<const ChangedChoices> visit(const LikeOtherDestinationTypeReason &) const
+        {
+            return make_null_shared_ptr();
+        }
+
+        const std::shared_ptr<const ChangedChoices> visit(const SetReason & r) const
+        {
+            return r.reason_for_set()->accept_returning<std::shared_ptr<const ChangedChoices> >(*this);
+        }
+    };
+
+    std::shared_ptr<const ChangedChoices> get_changed_choices_for(
+            const std::shared_ptr<const Constraint> & constraint)
+    {
+        return constraint->reason()->accept_returning<std::shared_ptr<const ChangedChoices> >(GetChangedChoices());
+    }
 }
 
 bool
@@ -946,7 +1001,7 @@ Decider::_check_constraint(
         const std::shared_ptr<const Constraint> & constraint,
         const std::shared_ptr<const Decision> & decision) const
 {
-    if (! decision->accept_returning<bool>(CheckConstraintVisitor(_imp->env, *constraint)))
+    if (! decision->accept_returning<bool>(CheckConstraintVisitor(_imp->env, get_changed_choices_for(constraint), *constraint)))
         return false;
 
     if (! decision->accept_returning<bool>(CheckUseExistingVisitor(constraint)))
@@ -1203,7 +1258,7 @@ Decider::_add_dependencies_if_necessary(
         }
 
         const std::shared_ptr<DependencyReason> reason(std::make_shared<DependencyReason>(
-                    package_id, our_resolution->resolvent(), *s, _already_met(*s)));
+                    package_id, changed_choices, our_resolution->resolvent(), *s, _already_met(*s)));
 
         std::shared_ptr<const Resolvents> resolvents;
 
@@ -1364,7 +1419,7 @@ Decider::find_any_score(
     }
 
     const std::shared_ptr<DependencyReason> reason(std::make_shared<DependencyReason>(
-                our_id, our_resolution->resolvent(), dep, _already_met(dep)));
+                our_id, make_null_shared_ptr(), our_resolution->resolvent(), dep, _already_met(dep)));
     const std::shared_ptr<const Resolvents> resolvents(_get_resolvents_for(spec, reason));
 
     /* next: will already be installing */
@@ -1881,7 +1936,8 @@ Decider::_find_id_for_from(
                     for (auto a((*c)->spec().if_package()->additional_requirements_ptr()->begin()),
                             a_end((*c)->spec().if_package()->additional_requirements_ptr()->end()) ;
                             a != a_end ; ++a)
-                        if (! (*a)->accumulate_changes_to_make_met(_imp->env, 0, *i, *changed_choices))
+                        if (! (*a)->accumulate_changes_to_make_met(_imp->env,
+                                    get_changed_choices_for(*c).get(), *i, *changed_choices))
                         {
                             ok = false;
                             break;
@@ -1899,9 +1955,11 @@ Decider::_find_id_for_from(
                     break;
 
                 if ((*c)->spec().if_package())
-                    ok = ok && match_package_with_maybe_changes(*_imp->env, *(*c)->spec().if_package(), 0, **i, changed_choices.get(), { });
+                    ok = ok && match_package_with_maybe_changes(*_imp->env, *(*c)->spec().if_package(),
+                            get_changed_choices_for(*c).get(), **i, changed_choices.get(), { });
                 else
-                    ok = ok && ! match_package_with_maybe_changes(*_imp->env, (*c)->spec().if_block()->blocking(), 0, **i, changed_choices.get(), { });
+                    ok = ok && ! match_package_with_maybe_changes(*_imp->env, (*c)->spec().if_block()->blocking(),
+                            get_changed_choices_for(*c).get(), **i, changed_choices.get(), { });
             }
 
             if (ok)
