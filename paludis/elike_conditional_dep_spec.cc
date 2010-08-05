@@ -61,7 +61,7 @@ namespace
 
         if (! no_warning_for_unlisted)
             if (! id.choices_key()->value()->has_matching_contains_every_value_prefix(f))
-                Log::get_instance()->message("elike_use_requirement.query", ll_warning, lc_context) <<
+                Log::get_instance()->message("elike_conditional_dep_spec.query", ll_warning, lc_context) <<
                     "ID '" << id << "' has no flag named '" << f << "'";
         return false;
     }
@@ -81,7 +81,7 @@ namespace
 
         if (! no_warning_for_unlisted)
             if (! id.choices_key()->value()->has_matching_contains_every_value_prefix(f))
-                Log::get_instance()->message("elike_use_requirement.query", ll_warning, lc_context) <<
+                Log::get_instance()->message("elike_conditional_dep_spec.query", ll_warning, lc_context) <<
                     "ID '" << id << "' has no flag named '" << f << "'";
         return false;
     }

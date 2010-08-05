@@ -12,5 +12,6 @@ make_enum_ELikeUseRequirementOption()
     key euro_portage_syntax                "Parse using Portage syntax"
     key euro_both_syntaxes                 "Accept both Portage and Paludis syntax"
     key euro_strict_parsing                "Error rather than warn for violations"
+    key euro_missing_is_qa                 "Missing flags with no default value is a QA violation"
 }
 
