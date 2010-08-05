@@ -33,6 +33,7 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/action.hh>
 #include <paludis/repository.hh>
+#include <paludis/additional_package_dep_spec_requirement.hh>
 
 #include <paludis/util/indirect_iterator-impl.hh>
 

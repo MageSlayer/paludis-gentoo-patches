@@ -32,6 +32,7 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/choice.hh>
 #include <paludis/changed_choices.hh>
+#include <paludis/additional_package_dep_spec_requirement.hh>
 #include <vector>
 #include <functional>
 #include <algorithm>

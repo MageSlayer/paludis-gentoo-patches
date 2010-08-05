@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -83,25 +83,8 @@ namespace paludis
     class PartiallyMadePackageDepSpec;
     class ConditionalDepSpecData;
 
-    class AdditionalPackageDepSpecRequirement;
-
     struct InstallableToRepository;
     struct InstallableToPath;
-
-    /**
-     * An AdditionalPackageDepSpecRequirement can be written to an ostream.
-     *
-     * \ingroup g_dep_spec
-     */
-    std::ostream & operator<< (std::ostream &, const AdditionalPackageDepSpecRequirement &) PALUDIS_VISIBLE;
-
-    /**
-     * A collection of additional requirements for a PackageDepSpec.
-     *
-     * \since 0.26
-     * \ingroup g_dep_spec
-     */
-    typedef Sequence<std::shared_ptr<const AdditionalPackageDepSpecRequirement> > AdditionalPackageDepSpecRequirements;
 
     /**
      * Create a PackageDepSpec from various rules.

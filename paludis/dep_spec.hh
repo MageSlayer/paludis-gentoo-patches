@@ -39,6 +39,7 @@
 #include <paludis/slot_requirement-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/environment-fwd.hh>
+#include <paludis/additional_package_dep_spec_requirement-fwd.hh>
 
 #include <memory>
 #include <functional>
@@ -281,65 +282,6 @@ namespace paludis
              * Fetch our text.
              */
             std::string text() const;
-    };
-
-    /**
-     * An additional requirement for a PackageDepSpec.
-     *
-     * \since 0.26
-     * \ingroup g_dep_spec
-     */
-    class PALUDIS_VISIBLE AdditionalPackageDepSpecRequirement
-    {
-        public:
-            AdditionalPackageDepSpecRequirement() = default;
-            virtual ~AdditionalPackageDepSpecRequirement();
-
-            AdditionalPackageDepSpecRequirement(const AdditionalPackageDepSpecRequirement &) = delete;
-            AdditionalPackageDepSpecRequirement & operator= (const AdditionalPackageDepSpecRequirement &) = delete;
-
-            /**
-             * Is our requirement met for a given PackageID?
-             *
-             * The string in the return type might be a description of why the
-             * requirement was not met. Sometimes better messages can be given
-             * than simply the return value of as_human_string() when the ID to
-             * be matched is known. If the bool is false, the string is
-             * meaningless.
-             *
-             * \since 0.44 returns pair<bool, std::string>
-             * \since 0.51 takes optional ChangedChoices arguments
-             */
-            virtual const std::pair<bool, std::string> requirement_met(
-                    const Environment * const,
-                    const ChangedChoices * const maybe_changes_to_owner,
-                    const PackageID &,
-                    const ChangedChoices * const maybe_changes_to_target) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            /**
-             * If possible, indicate which choices to change to make our
-             * requirement met for a particular ID.
-             *
-             * Verifies that the ID has the appropriate choice, and that that
-             * choice isn't locked.
-             *
-             * \since 0.51
-             */
-            virtual bool accumulate_changes_to_make_met(
-                    const Environment * const,
-                    const ChangedChoices * const maybe_changes_to_owner,
-                    const std::shared_ptr<const PackageID> &,
-                    ChangedChoices &) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            /**
-             * Return a human readable string representation of ourself.
-             */
-            virtual const std::string as_human_string() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            /**
-             * Return a raw string representation of ourself.
-             */
-            virtual const std::string as_raw_string() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 
     namespace n

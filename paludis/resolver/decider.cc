@@ -62,6 +62,7 @@
 #include <paludis/dep_spec_flattener.hh>
 #include <paludis/package_id.hh>
 #include <paludis/changed_choices.hh>
+#include <paludis/additional_package_dep_spec_requirement.hh>
 
 #include <paludis/util/pimp-impl.hh>
 

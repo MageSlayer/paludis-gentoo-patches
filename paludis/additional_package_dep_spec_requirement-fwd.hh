@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2010 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,29 +17,32 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_ELIKE_USE_REQUIREMENT_FWD_HH
-#define PALUDIS_GUARD_PALUDIS_ELIKE_USE_REQUIREMENT_FWD_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_ADDITIONAL_PACKAGE_DEP_SPEC_REQUIREMENT_FWD_HH
+#define PALUDIS_GUARD_PALUDIS_ADDITIONAL_PACKAGE_DEP_SPEC_REQUIREMENT_FWD_HH 1
 
 #include <paludis/util/attributes.hh>
-#include <paludis/util/options-fwd.hh>
-#include <paludis/package_id-fwd.hh>
-#include <paludis/dep_spec-fwd.hh>
-#include <paludis/additional_package_dep_spec_requirement-fwd.hh>
+#include <paludis/util/sequence-fwd.hh>
 #include <iosfwd>
-#include <string>
 #include <memory>
 
 namespace paludis
 {
-    class ELikeUseRequirementError;
+    class AdditionalPackageDepSpecRequirement;
 
-#include <paludis/elike_use_requirement-se.hh>
+    /**
+     * An AdditionalPackageDepSpecRequirement can be written to an ostream.
+     *
+     * \ingroup g_dep_spec
+     */
+    std::ostream & operator<< (std::ostream &, const AdditionalPackageDepSpecRequirement &) PALUDIS_VISIBLE;
 
-    typedef Options<ELikeUseRequirementOption> ELikeUseRequirementOptions;
-
-    std::shared_ptr<const AdditionalPackageDepSpecRequirement> parse_elike_use_requirement(
-            const std::string &, const std::shared_ptr<const PackageID> &, const ELikeUseRequirementOptions &)
-        PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
+    /**
+     * A collection of additional requirements for a PackageDepSpec.
+     *
+     * \since 0.26
+     * \ingroup g_dep_spec
+     */
+    typedef Sequence<std::shared_ptr<const AdditionalPackageDepSpecRequirement> > AdditionalPackageDepSpecRequirements;
 }
 
 #endif

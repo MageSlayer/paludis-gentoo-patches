@@ -26,6 +26,7 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/choice.hh>
+#include <paludis/additional_package_dep_spec_requirement.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <list>

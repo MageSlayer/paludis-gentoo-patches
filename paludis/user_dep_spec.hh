@@ -24,6 +24,7 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/slot_requirement.hh>
 #include <paludis/filter.hh>
+#include <paludis/additional_package_dep_spec_requirement.hh>
 #include <paludis/util/pimp.hh>
 
 namespace paludis

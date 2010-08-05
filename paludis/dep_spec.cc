@@ -36,6 +36,7 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/additional_package_dep_spec_requirement.hh>
 #include <functional>
 #include <algorithm>
 #include <list>
@@ -742,17 +743,6 @@ PackageDepSpec::need_keys_added() const
 {
 }
 
-AdditionalPackageDepSpecRequirement::~AdditionalPackageDepSpecRequirement()
-{
-}
-
-std::ostream &
-paludis::operator<< (std::ostream & s, const AdditionalPackageDepSpecRequirement & a)
-{
-    s << a.as_raw_string();
-    return s;
-}
-
 PartiallyMadePackageDepSpec
 paludis::make_package_dep_spec(const PartiallyMadePackageDepSpecOptions & o)
 {
@@ -1227,9 +1217,6 @@ PartiallyMadePackageDepSpec::to_package_dep_spec() const
 
 template class LabelsDepSpec<URILabel>;
 template class LabelsDepSpec<DependenciesLabel>;
-
-template class Sequence<std::shared_ptr<const AdditionalPackageDepSpecRequirement> >;
-template class WrappedForwardIterator<AdditionalPackageDepSpecRequirements::ConstIteratorTag, const std::shared_ptr<const AdditionalPackageDepSpecRequirement> >;
 
 template class Cloneable<DepSpec>;
 template class Pimp<ConditionalDepSpec>;
