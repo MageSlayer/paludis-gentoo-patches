@@ -222,11 +222,44 @@ namespace
 
                 if (_flags.length() >= 2 && ":*" == _flags.substr(_flags.length() - 2))
                 {
-                    /* too complicated for now */
-                    return false;
-                }
+                    if ((! _options[euro_allow_self_deps]) || (! _id) || (! _id->choices_key()))
+                        throw ELikeUseRequirementError(_flags, "[prefix:*] not allowed here");
+                    if (_options[euro_portage_syntax] && ! _options[euro_both_syntaxes])
+                    {
+                        if (_options[euro_strict_parsing])
+                            throw ELikeUseRequirementError(_flags, "[prefix:*] not allowed here");
+                        else
+                            Log::get_instance()->message("elike_use_requirement.prefix_star_not_allowed", ll_warning, lc_context)
+                                << "[prefix:*] not safe for use here";
+                    }
 
-                ChoiceNameWithPrefix flag(_flags);
+                    ChoicePrefixName prefix(_flags.substr(0, _flags.length() - 2));
+                    Choices::ConstIterator cc(_id->choices_key()->value()->find(prefix));
+                    if (cc == _id->choices_key()->value()->end())
+                        Log::get_instance()->message("elike_use_requirement.prefix_star_unmatching", ll_warning, lc_context) <<
+                            "ID '" << *_id << "' uses requirement '" << _flags << "' but has no choice prefix '" << prefix << "'";
+                    else
+                    {
+                        for (Choice::ConstIterator v((*cc)->begin()), v_end((*cc)->end()) ;
+                                v != v_end ; ++v)
+                            if (! one_accumulate_changes_to_make_met(env, maybe_changes_to_owner, id, changed_choices, (*v)->name_with_prefix()))
+                                return false;
+                    }
+                }
+                else
+                    if (! one_accumulate_changes_to_make_met(env, maybe_changes_to_owner, id, changed_choices, ChoiceNameWithPrefix(_flags)))
+                        return false;
+
+                return true;
+            }
+
+            bool one_accumulate_changes_to_make_met(
+                    const Environment * const,
+                    const ChangedChoices * const,
+                    const std::shared_ptr<const PackageID> & id,
+                    ChangedChoices & changed_choices,
+                    const ChoiceNameWithPrefix & flag) const
+            {
                 const std::shared_ptr<const ChoiceValue> v(id->choices_key()->value()->find_by_name_with_prefix(flag));
 
                 if (! v)
