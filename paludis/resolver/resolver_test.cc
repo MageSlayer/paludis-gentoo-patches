@@ -39,6 +39,7 @@
 #include <paludis/util/set-impl.hh>
 #include <paludis/util/tribool.hh>
 #include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/return_literal_function.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/repository_factory.hh>
 #include <paludis/package_database.hh>
@@ -394,6 +395,7 @@ ResolverFunctions
 ResolverTestCase::get_resolver_functions(InitialConstraints & initial_constraints)
 {
     return make_named_values<ResolverFunctions>(
+            n::allow_choice_changes_fn() = std::bind(return_literal_function(true)),
             n::allowed_to_remove_fn() = std::bind(&allowed_to_remove_fn,
                     allowed_to_remove_names, std::placeholders::_1, std::placeholders::_2),
             n::always_via_binary_fn() = &always_via_binary_fn,

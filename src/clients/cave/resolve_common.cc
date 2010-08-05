@@ -44,6 +44,7 @@
 #include <paludis/util/set-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/return_literal_function.hh>
 #include <paludis/args/do_help.hh>
 #include <paludis/args/escape.hh>
 #include <paludis/resolver/resolver.hh>
@@ -1941,6 +1942,8 @@ paludis::cave::resolve_common(
     using std::placeholders::_4;
 
     ResolverFunctions resolver_functions(make_named_values<ResolverFunctions>(
+                n::allow_choice_changes_fn() = std::bind(return_literal_function(
+                        ! resolution_options.a_no_override_flags.specified())),
                 n::allowed_to_remove_fn() = std::bind(&allowed_to_remove_fn,
                     env.get(), std::cref(allowed_to_remove_specs), _1, _2),
                 n::always_via_binary_fn() = std::bind(&always_via_binary_fn,

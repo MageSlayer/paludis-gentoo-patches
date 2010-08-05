@@ -183,6 +183,9 @@ namespace paludis
                 Filter _make_unmaskable_filter(
                         const std::shared_ptr<const Resolution> &) const;
 
+                bool _allow_choice_changes_for(
+                        const std::shared_ptr<const Resolution> &) const;
+
                 void _decide(const std::shared_ptr<Resolution> & resolution);
                 void _copy_other_destination_constraints(const std::shared_ptr<Resolution> & resolution);
 

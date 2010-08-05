@@ -646,6 +646,12 @@ Decider::_make_unmaskable_filter(const std::shared_ptr<const Resolution> & resol
     return _imp->fns.make_unmaskable_filter_fn()(resolution);
 }
 
+bool
+Decider::_allow_choice_changes_for(const std::shared_ptr<const Resolution> & resolution) const
+{
+    return _imp->fns.allow_choice_changes_fn()(resolution);
+}
+
 const std::shared_ptr<const PackageIDSequence>
 Decider::_find_replacing(
         const std::shared_ptr<const PackageID> & id,
@@ -1118,7 +1124,8 @@ Decider::_made_wrong_decision(
     std::shared_ptr<Resolution> adapted_resolution(std::make_shared<Resolution>(*resolution));
     adapted_resolution->constraints()->add(constraint);
 
-    const std::shared_ptr<Decision> decision(_try_to_find_decision_for(adapted_resolution, true, false, true, false));
+    const std::shared_ptr<Decision> decision(_try_to_find_decision_for(
+                adapted_resolution, _allow_choice_changes_for(resolution), false, true, false));
     if (decision)
     {
         resolution->decision()->accept(WrongDecisionVisitor(std::bind(
@@ -1192,7 +1199,8 @@ Decider::_decide(const std::shared_ptr<Resolution> & resolution)
 
     _copy_other_destination_constraints(resolution);
 
-    std::shared_ptr<Decision> decision(_try_to_find_decision_for(resolution, true, false, true, false));
+    std::shared_ptr<Decision> decision(_try_to_find_decision_for(
+                resolution, _allow_choice_changes_for(resolution), false, true, false));
     if (decision)
         resolution->decision() = decision;
     else

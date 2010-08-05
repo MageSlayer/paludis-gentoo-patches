@@ -46,6 +46,7 @@ namespace paludis
 {
     namespace n
     {
+        typedef Name<struct allow_choice_changes_fn_name> allow_choice_changes_fn;
         typedef Name<struct allowed_to_remove_fn_name> allowed_to_remove_fn;
         typedef Name<struct always_via_binary_fn_name> always_via_binary_fn;
         typedef Name<struct can_use_fn_name> can_use_fn;
@@ -69,6 +70,10 @@ namespace paludis
 
     namespace resolver
     {
+        typedef std::function<bool (
+                const std::shared_ptr<const Resolution> &
+                )> AllowChoiceChangesFunction;
+
         typedef std::function<bool (
                 const std::shared_ptr<const Resolution> &,
                 const std::shared_ptr<const PackageID> &
@@ -163,6 +168,7 @@ namespace paludis
 
         struct ResolverFunctions
         {
+            NamedValue<n::allow_choice_changes_fn, AllowChoiceChangesFunction> allow_choice_changes_fn;
             NamedValue<n::allowed_to_remove_fn, AllowedToRemoveFunction> allowed_to_remove_fn;
             NamedValue<n::always_via_binary_fn, AlwaysViaBinaryFunction> always_via_binary_fn;
             NamedValue<n::can_use_fn, CanUseFunction> can_use_fn;

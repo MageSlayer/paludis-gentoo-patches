@@ -73,6 +73,10 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
     a_no_override_masks(&g_resolution_options, "no-override-masks", '\0',
             "If otherwise unable to make a decision, unless this option is specified the resolver "
             "will try packages that are weakly masked too.", true),
+    a_no_override_flags(&g_resolution_options, "no-override-flags", '\0',
+            "If otherwise unable to make a decision, unless this option is specified the resolver "
+            "will try selecting packages using different options to the ones specified in the user's "
+            "configuration.", true),
 
     g_dependent_options(this, "Dependent Options", "Dependent options. A package is dependent if it "
             "requires (or looks like it might require) a package which is being removed. By default, "
