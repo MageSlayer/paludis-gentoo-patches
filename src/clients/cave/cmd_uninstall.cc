@@ -35,6 +35,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 
+#include <algorithm>
 #include <iostream>
 #include <set>
 #include <cstdlib>

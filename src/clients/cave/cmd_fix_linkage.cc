@@ -36,6 +36,7 @@
 #include <paludis/notifier_callback.hh>
 #include <paludis/version_operator.hh>
 #include <paludis/version_requirements.hh>
+#include <paludis/partially_made_package_dep_spec.hh>
 
 #include <iostream>
 #include <set>

@@ -36,6 +36,7 @@
 #include <paludis/generator.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/package_dep_spec_properties.hh>
+#include <paludis/partially_made_package_dep_spec.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/set-impl.hh>
 #include <paludis/util/log.hh>

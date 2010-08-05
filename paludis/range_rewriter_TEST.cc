@@ -22,6 +22,7 @@
 #include <paludis/user_dep_spec.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/accept_visitor.hh>
 #include <paludis/environments/test/test_environment.hh>
 
 #include <test/test_runner.hh>

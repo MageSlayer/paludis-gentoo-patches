@@ -20,13 +20,14 @@
 #include <src/output/colour.hh>
 #include "query.hh"
 #include <src/output/console_query_task.hh>
-#include <functional>
-#include <iomanip>
-#include <iostream>
 #include <paludis/paludis.hh>
 #include <paludis/fuzzy_finder.hh>
 #include <paludis/filter.hh>
 #include <string>
+#include <functional>
+#include <iomanip>
+#include <iostream>
+#include <algorithm>
 
 /** \file
  * Handle the --query action for the main paludis program.

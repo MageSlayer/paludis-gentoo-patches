@@ -24,6 +24,7 @@
 #include <paludis/serialise-impl.hh>
 #include <paludis/elike_use_requirement-fwd.hh>
 #include <paludis/dep_spec.hh>
+#include <paludis/partially_made_package_dep_spec.hh>
 #include <map>
 
 using namespace paludis;

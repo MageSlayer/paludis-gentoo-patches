@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,6 +20,7 @@
 #include <paludis/repositories/fake/dep_parser.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/accept_visitor.hh>
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
 #include <sstream>

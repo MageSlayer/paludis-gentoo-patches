@@ -28,6 +28,7 @@
 #include <paludis/version_spec.hh>
 #include <paludis/version_requirements.hh>
 #include <paludis/user_dep_spec.hh>
+#include <paludis/partially_made_package_dep_spec.hh>
 #include <strings.h>
 
 using namespace paludis;

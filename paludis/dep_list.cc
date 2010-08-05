@@ -40,6 +40,7 @@
 #include <paludis/choice.hh>
 #include <paludis/package_dep_spec_properties.hh>
 #include <paludis/notifier_callback.hh>
+#include <paludis/partially_made_package_dep_spec.hh>
 
 #include <paludis/util/join.hh>
 #include <paludis/util/log.hh>

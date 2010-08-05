@@ -48,6 +48,7 @@
 #include <paludis/generator.hh>
 #include <paludis/selection.hh>
 #include <paludis/elike_slot_requirement.hh>
+#include <paludis/partially_made_package_dep_spec.hh>
 
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>

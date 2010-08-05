@@ -35,12 +35,14 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/pimp-impl.hh>
+#include <paludis/util/accept_visitor.hh>
 #include <paludis/environment.hh>
 #include <paludis/notifier_callback.hh>
 #include <paludis/spec_tree.hh>
 #include <paludis/repository.hh>
 
-#include <paludis/util/pimp-impl.hh>
+#include <algorithm>
 #include <set>
 
 using namespace paludis;

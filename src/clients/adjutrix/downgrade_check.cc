@@ -35,6 +35,7 @@
 #include <paludis/filtered_generator.hh>
 #include <paludis/selection.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/partially_made_package_dep_spec.hh>
 #include <iostream>
 #include <vector>
 #include <map>

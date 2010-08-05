@@ -44,9 +44,11 @@
 #include <paludis/util/pretty_print.hh>
 #include <paludis/util/timestamp.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/accept_visitor.hh>
 #include <paludis/action.hh>
 #include <paludis/mask.hh>
 #include <paludis/choice.hh>
+#include <paludis/partially_made_package_dep_spec.hh>
 #include <cstdlib>
 #include <iostream>
 #include <algorithm>

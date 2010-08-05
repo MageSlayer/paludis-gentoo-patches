@@ -45,6 +45,7 @@
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/tribool.hh>
 #include <paludis/util/enum_iterator.hh>
+#include <paludis/partially_made_package_dep_spec.hh>
 #include <paludis/environment.hh>
 #include <paludis/notifier_callback.hh>
 #include <paludis/package_id.hh>

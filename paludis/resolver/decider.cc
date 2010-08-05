@@ -44,6 +44,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/accept_visitor.hh>
 #include <paludis/environment.hh>
 #include <paludis/notifier_callback.hh>
 #include <paludis/repository.hh>
@@ -63,6 +64,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/changed_choices.hh>
 #include <paludis/additional_package_dep_spec_requirement.hh>
+#include <paludis/partially_made_package_dep_spec.hh>
 
 #include <paludis/util/pimp-impl.hh>
 

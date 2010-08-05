@@ -28,15 +28,17 @@
 #include <paludis/environment.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/version_requirements.hh>
+#include <paludis/partially_made_package_dep_spec.hh>
+
 #include <paludis/util/save.hh>
 #include <paludis/util/stringify.hh>
-
 #include <paludis/util/clone-impl.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/wrapped_output_iterator-impl.hh>
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/accept_visitor.hh>
 
 #include <type_traits>
 #include <list>

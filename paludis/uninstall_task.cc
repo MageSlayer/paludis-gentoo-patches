@@ -37,12 +37,14 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/accept_visitor.hh>
 #include <paludis/package_database.hh>
 #include <paludis/hook.hh>
 #include <paludis/dep_tag.hh>
 #include <paludis/repository.hh>
 #include <paludis/output_manager_from_environment.hh>
 #include <paludis/output_manager.hh>
+#include <paludis/partially_made_package_dep_spec.hh>
 #include <map>
 #include <set>
 #include <list>

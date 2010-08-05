@@ -30,6 +30,8 @@
 #include <paludis/util/member_iterator-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/accept_visitor.hh>
+#include <algorithm>
 #include <list>
 #include <ruby.h>
 

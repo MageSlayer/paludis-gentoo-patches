@@ -38,6 +38,7 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/package_database.hh>
 #include <paludis/version_requirements.hh>
+#include <paludis/partially_made_package_dep_spec.hh>
 #include <algorithm>
 #include <set>
 #include <map>

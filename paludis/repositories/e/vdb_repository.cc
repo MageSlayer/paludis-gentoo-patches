@@ -54,7 +54,10 @@
 #include <paludis/generator.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/filter.hh>
+#include <paludis/output_manager.hh>
+#include <paludis/partially_made_package_dep_spec.hh>
 
+#include <paludis/util/accept_visitor.hh>
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/fast_unique_copy.hh>
 #include <paludis/util/mutex.hh>
@@ -73,7 +76,6 @@
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
-#include <paludis/output_manager.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/safe_ofstream.hh>
 #include <paludis/util/timestamp.hh>

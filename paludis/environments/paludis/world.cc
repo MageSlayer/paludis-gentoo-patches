@@ -28,6 +28,7 @@
 #include <paludis/set_file.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/dep_tag.hh>
+#include <paludis/partially_made_package_dep_spec.hh>
 #include <functional>
 
 using namespace paludis;

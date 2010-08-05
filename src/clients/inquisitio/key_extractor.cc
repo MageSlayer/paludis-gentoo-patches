@@ -27,6 +27,7 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/timestamp.hh>
+#include <paludis/util/accept_visitor.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/stringify_formatter.hh>

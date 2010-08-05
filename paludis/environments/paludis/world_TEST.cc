@@ -22,6 +22,7 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/options.hh>
+#include <paludis/partially_made_package_dep_spec.hh>
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
 #include <iterator>

@@ -30,6 +30,7 @@
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/hook.hh>
+#include <paludis/partially_made_package_dep_spec.hh>
 
 #include <paludis/util/log.hh>
 #include <paludis/util/operators.hh>

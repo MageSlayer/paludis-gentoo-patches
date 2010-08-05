@@ -43,9 +43,11 @@
 #include <paludis/util/pretty_print.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/timestamp.hh>
+#include <paludis/util/accept_visitor.hh>
 #include <paludis/environments/no_config/no_config_environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/metadata_key.hh>
+#include <algorithm>
 #include <functional>
 #include <iostream>
 #include <map>

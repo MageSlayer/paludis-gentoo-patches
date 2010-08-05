@@ -28,8 +28,10 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/sequence.hh>
+#include <paludis/util/accept_visitor.hh>
 #include <paludis/metadata_key.hh>
 #include <list>
+#include <algorithm>
 
 using namespace paludis;
 using namespace paludis::erepository;

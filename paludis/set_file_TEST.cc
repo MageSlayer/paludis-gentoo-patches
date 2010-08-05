@@ -17,17 +17,20 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "set_file.hh"
-#include <test/test_runner.hh>
-#include <test/test_framework.hh>
+#include <paludis/set_file.hh>
+#include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/safe_ifstream.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/accept_visitor.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/user_dep_spec.hh>
-#include <paludis/environments/test/test_environment.hh>
-#include <paludis/util/safe_ifstream.hh>
 
-#include <paludis/util/indirect_iterator-impl.hh>
+#include <test/test_runner.hh>
+#include <test/test_framework.hh>
+
+#include <algorithm>
 
 using namespace test;
 using namespace paludis;

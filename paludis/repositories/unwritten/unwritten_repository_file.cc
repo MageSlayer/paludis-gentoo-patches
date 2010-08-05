@@ -27,6 +27,7 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/accept_visitor.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/literal_metadata_key.hh>
@@ -41,6 +42,7 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 
 #include <list>
+#include <algorithm>
 
 using namespace paludis;
 using namespace paludis::unwritten_repository;

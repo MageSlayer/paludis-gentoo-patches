@@ -35,6 +35,7 @@
 #include <paludis/selection.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/choice.hh>
+#include <paludis/partially_made_package_dep_spec.hh>
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
 

@@ -23,12 +23,14 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/options.hh>
+#include <paludis/util/accept_visitor.hh>
 #include <paludis/environment.hh>
 #include <paludis/selection.hh>
 #include <paludis/generator.hh>
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/action-fwd.hh>
+#include <algorithm>
 #include <ostream>
 #include <sstream>
 

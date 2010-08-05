@@ -29,6 +29,7 @@
 #include <paludis/formatter.hh>
 #include <paludis/environment.hh>
 #include <paludis/util/pimp-impl.hh>
+#include <paludis/partially_made_package_dep_spec.hh>
 #include <sstream>
 #include <list>
 

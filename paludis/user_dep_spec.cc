@@ -29,6 +29,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/dep_label.hh>
+#include <paludis/partially_made_package_dep_spec.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/make_named_values.hh>
@@ -38,6 +39,7 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/timestamp.hh>
 #include <paludis/util/destringify.hh>
+#include <paludis/util/accept_visitor.hh>
 #include <algorithm>
 
 using namespace paludis;

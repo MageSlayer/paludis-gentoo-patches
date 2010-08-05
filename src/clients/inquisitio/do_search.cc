@@ -31,6 +31,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/notifier_callback.hh>
+#include <paludis/partially_made_package_dep_spec.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/create_iterator-impl.hh>

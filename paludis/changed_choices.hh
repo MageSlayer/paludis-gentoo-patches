@@ -27,6 +27,7 @@
 #include <paludis/choice-fwd.hh>
 #include <paludis/serialise-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
+#include <paludis/partially_made_package_dep_spec-fwd.hh>
 #include <memory>
 
 namespace paludis

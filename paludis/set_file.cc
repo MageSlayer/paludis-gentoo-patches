@@ -34,6 +34,7 @@
 #include <paludis/generator.hh>
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
+#include <paludis/partially_made_package_dep_spec.hh>
 #include <list>
 #include <vector>
 #include <algorithm>

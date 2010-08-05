@@ -20,15 +20,9 @@
 #ifndef PALUDIS_GUARD_PALUDIS_DEP_SPEC_FWD_HH
 #define PALUDIS_GUARD_PALUDIS_DEP_SPEC_FWD_HH 1
 
-#include <iosfwd>
-#include <string>
-#include <paludis/dep_label-fwd.hh>
-#include <paludis/dep_spec-fwd.hh>
-#include <paludis/formatter-fwd.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/sequence-fwd.hh>
-#include <paludis/util/options-fwd.hh>
-#include <memory>
+#include <paludis/dep_label-fwd.hh>
+#include <iosfwd>
 
 /** \file
  * Forward declarations for paludis/dep_spec.hh .
@@ -53,16 +47,6 @@ namespace paludis
     class PlainTextLabelDepSpec;
     template <typename T_> class LabelsDepSpec;
 
-#include <paludis/dep_spec-se.hh>
-
-    /**
-     * Options for PartiallyMadePackageDepSpec.
-     *
-     * \ingroup g_dep_spec
-     * \since 0.38
-     */
-    typedef Options<PartiallyMadePackageDepSpecOption> PartiallyMadePackageDepSpecOptions;
-
     /**
      * A URILabelsDepSpec represents labels in a FetchableURISpecTree.
      *
@@ -80,22 +64,10 @@ namespace paludis
     typedef LabelsDepSpec<DependenciesLabel> DependenciesLabelsDepSpec;
 
     class PackageDepSpecData;
-    class PartiallyMadePackageDepSpec;
     class ConditionalDepSpecData;
 
     struct InstallableToRepository;
     struct InstallableToPath;
-
-    /**
-     * Create a PackageDepSpec from various rules.
-     *
-     * Note the return type is a PartiallyMadePackageDepSpec, which is implicitly convertible to
-     * a PackageDepSpec.
-     *
-     * \ingroup g_dep_spec
-     * \since 0.26
-     */
-    PartiallyMadePackageDepSpec make_package_dep_spec(const PartiallyMadePackageDepSpecOptions &) PALUDIS_VISIBLE;
 
     /**
      * A PlainTextDepSpec can be written to an ostream.

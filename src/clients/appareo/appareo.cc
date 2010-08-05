@@ -41,6 +41,7 @@
 #include <paludis/util/set.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/package_database.hh>
+#include <algorithm>
 #include <functional>
 #include <iostream>
 #include <map>
