@@ -51,6 +51,7 @@
 #include <paludis/dep_spec_flattener.hh>
 #include <paludis/literal_metadata_key.hh>
 
+#include <algorithm>
 #include <functional>
 #include <list>
 #include <vector>

@@ -25,6 +25,7 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/accept_visitor.hh>
 #include <paludis/repository.hh>
 #include <list>
 #include <algorithm>

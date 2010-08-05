@@ -29,6 +29,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/dep_label.hh>
+#include <paludis/partially_made_package_dep_spec.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/make_named_values.hh>
@@ -38,6 +39,7 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/timestamp.hh>
 #include <paludis/util/destringify.hh>
+#include <paludis/util/accept_visitor.hh>
 #include <algorithm>
 
 using namespace paludis;
@@ -749,7 +751,7 @@ namespace
 }
 
 const std::pair<bool, std::string>
-UserKeyRequirement::requirement_met(const Environment * const, const PackageID & id) const
+UserKeyRequirement::requirement_met(const Environment * const, const ChangedChoices * const, const PackageID & id, const ChangedChoices * const) const
 {
     Context context("When working out whether '" + stringify(id) + "' matches " + as_raw_string() + ":");
 
@@ -781,6 +783,16 @@ const std::string
 UserKeyRequirement::as_raw_string() const
 {
     return "[." + _imp->key + std::string(1, _imp->op) + _imp->value + "]";
+}
+
+bool
+UserKeyRequirement::accumulate_changes_to_make_met(
+        const Environment * const,
+        const ChangedChoices * const,
+        const std::shared_ptr<const PackageID> &,
+        ChangedChoices &) const
+{
+    return false;
 }
 
 VersionSpecOptions

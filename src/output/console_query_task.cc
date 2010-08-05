@@ -33,6 +33,7 @@
 #include <paludis/util/pretty_print.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/timestamp.hh>
+#include <paludis/util/accept_visitor.hh>
 #include <paludis/package_dep_spec_properties.hh>
 #include <paludis/mask.hh>
 #include <paludis/metadata_key.hh>
@@ -44,6 +45,7 @@
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/choice.hh>
+#include <paludis/partially_made_package_dep_spec.hh>
 #include <list>
 #include <algorithm>
 

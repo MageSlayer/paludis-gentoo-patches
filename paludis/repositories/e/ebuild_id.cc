@@ -56,9 +56,11 @@
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/singleton-impl.hh>
+#include <paludis/util/accept_visitor.hh>
 
 #include <set>
 #include <iterator>
+#include <algorithm>
 
 using namespace paludis;
 using namespace paludis::erepository;

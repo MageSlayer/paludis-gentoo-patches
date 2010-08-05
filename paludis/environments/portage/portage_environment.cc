@@ -51,6 +51,7 @@
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/repository_factory.hh>
 #include <paludis/choice.hh>
+#include <paludis/partially_made_package_dep_spec.hh>
 #include <functional>
 #include <algorithm>
 #include <set>

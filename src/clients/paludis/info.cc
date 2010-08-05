@@ -31,6 +31,7 @@
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/timestamp.hh>
+#include <paludis/util/accept_visitor.hh>
 #include <paludis/package_database.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_id.hh>

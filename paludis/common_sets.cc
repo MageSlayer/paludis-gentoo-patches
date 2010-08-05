@@ -28,6 +28,7 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/package_id.hh>
 #include <paludis/elike_slot_requirement.hh>
+#include <paludis/partially_made_package_dep_spec.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/stringify.hh>

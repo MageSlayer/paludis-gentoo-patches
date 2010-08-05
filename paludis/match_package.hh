@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -36,7 +36,7 @@
 #include <paludis/spec_tree-fwd.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/package_id-fwd.hh>
-#include <memory>
+#include <paludis/changed_choices-fwd.hh>
 
 namespace paludis
 {
@@ -50,6 +50,23 @@ namespace paludis
             const Environment & env,
             const PackageDepSpec & spec,
             const PackageID & target,
+            const MatchPackageOptions & options)
+        PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
+
+    /**
+     * Return whether the specified PackageID matches the specified
+     * PackageDepSpec, with the specified ChangedChoices applied to the target
+     * and the ID from which the dep came.
+     *
+     * \ingroup g_query
+     * \since 0.51
+     */
+    bool match_package_with_maybe_changes(
+            const Environment & env,
+            const PackageDepSpec & spec,
+            const ChangedChoices * const maybe_changes_to_owner,
+            const PackageID & target,
+            const ChangedChoices * const maybe_changes_to_target,
             const MatchPackageOptions & options)
         PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
 

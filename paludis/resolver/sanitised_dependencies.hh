@@ -70,6 +70,7 @@ namespace paludis
                         const Decider &,
                         const std::shared_ptr<const Resolution> &,
                         const std::shared_ptr<const PackageID> &,
+                        const std::shared_ptr<const ChangedChoices> &,
                         const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > (PackageID::* const) () const
                         );
 
@@ -81,7 +82,8 @@ namespace paludis
                         const Environment * const,
                         const Decider &,
                         const std::shared_ptr<const Resolution> &,
-                        const std::shared_ptr<const PackageID> &);
+                        const std::shared_ptr<const PackageID> &,
+                        const std::shared_ptr<const ChangedChoices> &);
 
                 void add(const SanitisedDependency & d);
 

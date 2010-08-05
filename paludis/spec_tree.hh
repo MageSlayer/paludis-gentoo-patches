@@ -24,11 +24,8 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/select.hh>
 #include <paludis/util/simple_visitor.hh>
-#include <paludis/util/sequence-fwd.hh>
-
 #include <paludis/util/sequence.hh>
-#include <paludis/util/accept_visitor.hh>
-#include <algorithm>
+#include <paludis/formatter.hh>
 
 namespace paludis
 {

@@ -50,6 +50,7 @@
 
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
+#include <algorithm>
 #include <functional>
 #include <set>
 #include <string>

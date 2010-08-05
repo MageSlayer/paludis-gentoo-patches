@@ -21,6 +21,8 @@
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/accept_visitor.hh>
+#include <algorithm>
 
 using namespace paludis;
 using namespace paludis::spec_tree_internals;

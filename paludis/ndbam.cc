@@ -36,6 +36,7 @@
 #include <paludis/name.hh>
 #include <paludis/contents.hh>
 #include <paludis/literal_metadata_key.hh>
+#include <algorithm>
 #include <unordered_map>
 #include <functional>
 #include <vector>

@@ -31,6 +31,8 @@
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/choice.hh>
+#include <paludis/changed_choices.hh>
+#include <paludis/additional_package_dep_spec_requirement.hh>
 #include <vector>
 #include <functional>
 #include <algorithm>
@@ -39,7 +41,12 @@ using namespace paludis;
 
 namespace
 {
-    bool icky_use_query(const ChoiceNameWithPrefix & f, const PackageID & id, Tribool default_value = Tribool(indeterminate))
+    bool icky_use_query(
+            const ELikeUseRequirementOptions & options,
+            const ChoiceNameWithPrefix & f,
+            const PackageID & id,
+            const ChangedChoices * const changed_choices,
+            Tribool default_value = Tribool(indeterminate))
     {
         if (! id.choices_key())
         {
@@ -48,12 +55,20 @@ namespace
             return false;
         }
 
+        if (changed_choices)
+        {
+            auto c(changed_choices->overridden_value(f));
+            if (! c.is_indeterminate())
+                return c.is_true();
+        }
+
         const std::shared_ptr<const ChoiceValue> v(id.choices_key()->value()->find_by_name_with_prefix(f));
         if (v)
             return v->enabled();
 
-        if (default_value.is_indeterminate() && ! id.choices_key()->value()->has_matching_contains_every_value_prefix(f))
-            Log::get_instance()->message("elike_use_requirement.query", ll_warning, lc_context) <<
+        if (default_value.is_indeterminate() && ! id.choices_key()->value()->has_matching_contains_every_value_prefix(f) &&
+                options[euro_missing_is_qa])
+            Log::get_instance()->message("elike_use_requirement.query", ll_qa, lc_context) <<
                 "ID '" << id << "' has no flag named '" << f << "'";
         return default_value.is_true();
     }
@@ -63,18 +78,20 @@ namespace
         private:
             const std::string _flags;
             const std::shared_ptr<const PackageID> _id;
-            const ELikeUseRequirementOptions _options;
             const Tribool _default_value;
             const bool _ignore_if_no_such_group;
+
+        protected:
+            const ELikeUseRequirementOptions _options;
 
         public:
             UseRequirement(const std::string & n, const std::shared_ptr<const PackageID> & i,
                     const ELikeUseRequirementOptions & o, Tribool d, const bool g) :
                 _flags(n),
                 _id(i),
-                _options(o),
                 _default_value(d),
-                _ignore_if_no_such_group(g)
+                _ignore_if_no_such_group(g),
+                _options(o)
             {
             }
 
@@ -85,12 +102,16 @@ namespace
             virtual bool one_requirement_met_base(
                     const Environment * const,
                     const ChoiceNameWithPrefix &,
-                    const PackageID &) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+                    const ChangedChoices * const,
+                    const PackageID &,
+                    const ChangedChoices * const) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             bool one_requirement_met(
                     const Environment * const env,
                     const ChoiceNameWithPrefix & c,
-                    const PackageID & id) const PALUDIS_ATTRIBUTE((warn_unused_result))
+                    const ChangedChoices * const maybe_changes_to_owner,
+                    const PackageID & id,
+                    const ChangedChoices * const maybe_changes_to_target) const PALUDIS_ATTRIBUTE((warn_unused_result))
             {
                 if (_ignore_if_no_such_group)
                 {
@@ -105,7 +126,7 @@ namespace
                         return true;
                 }
 
-                return one_requirement_met_base(env, c, id);
+                return one_requirement_met_base(env, c, maybe_changes_to_owner, id, maybe_changes_to_target);
             }
 
             virtual const std::string as_human_string() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
@@ -120,7 +141,11 @@ namespace
                 return _id;
             }
 
-            const std::pair<bool, std::string> requirement_met(const Environment * const env, const PackageID & i) const
+            const std::pair<bool, std::string> requirement_met(
+                    const Environment * const env,
+                    const ChangedChoices * const maybe_changes_to_owner,
+                    const PackageID & i,
+                    const ChangedChoices * const maybe_changes_to_target) const
             {
                 if (_flags.length() >= 2 && ":*" == _flags.substr(_flags.length() - 2))
                 {
@@ -145,7 +170,7 @@ namespace
                         std::pair<bool, std::string> result(true, "");
                         for (Choice::ConstIterator v((*cc)->begin()), v_end((*cc)->end()) ;
                                 v != v_end ; ++v)
-                            if (! one_requirement_met(env, (*v)->name_with_prefix(), i))
+                            if (! one_requirement_met(env, (*v)->name_with_prefix(), maybe_changes_to_owner, i, maybe_changes_to_target))
                             {
                                 if (! result.first)
                                     result.second.append(", ");
@@ -161,7 +186,7 @@ namespace
                     }
                 }
                 else
-                    if (! one_requirement_met(env, ChoiceNameWithPrefix(_flags), i))
+                    if (! one_requirement_met(env, ChoiceNameWithPrefix(_flags), maybe_changes_to_owner, i, maybe_changes_to_target))
                         return std::make_pair(false, as_human_string());
 
                 return std::make_pair(true, as_human_string());
@@ -185,6 +210,69 @@ namespace
 
                 return result;
             }
+
+            bool accumulate_changes_to_make_met(
+                    const Environment * const env,
+                    const ChangedChoices * const maybe_changes_to_owner,
+                    const std::shared_ptr<const PackageID> & id,
+                    ChangedChoices & changed_choices) const
+            {
+                if (requirement_met(env, maybe_changes_to_owner, *id, &changed_choices).first)
+                    return true;
+
+                if (_flags.length() >= 2 && ":*" == _flags.substr(_flags.length() - 2))
+                {
+                    if ((! _options[euro_allow_self_deps]) || (! _id) || (! _id->choices_key()))
+                        throw ELikeUseRequirementError(_flags, "[prefix:*] not allowed here");
+                    if (_options[euro_portage_syntax] && ! _options[euro_both_syntaxes])
+                    {
+                        if (_options[euro_strict_parsing])
+                            throw ELikeUseRequirementError(_flags, "[prefix:*] not allowed here");
+                        else
+                            Log::get_instance()->message("elike_use_requirement.prefix_star_not_allowed", ll_warning, lc_context)
+                                << "[prefix:*] not safe for use here";
+                    }
+
+                    ChoicePrefixName prefix(_flags.substr(0, _flags.length() - 2));
+                    Choices::ConstIterator cc(_id->choices_key()->value()->find(prefix));
+                    if (cc == _id->choices_key()->value()->end())
+                        Log::get_instance()->message("elike_use_requirement.prefix_star_unmatching", ll_warning, lc_context) <<
+                            "ID '" << *_id << "' uses requirement '" << _flags << "' but has no choice prefix '" << prefix << "'";
+                    else
+                    {
+                        for (Choice::ConstIterator v((*cc)->begin()), v_end((*cc)->end()) ;
+                                v != v_end ; ++v)
+                            if (! one_accumulate_changes_to_make_met(env, maybe_changes_to_owner, id, changed_choices, (*v)->name_with_prefix()))
+                                return false;
+                    }
+                }
+                else
+                    if (! one_accumulate_changes_to_make_met(env, maybe_changes_to_owner, id, changed_choices, ChoiceNameWithPrefix(_flags)))
+                        return false;
+
+                return true;
+            }
+
+            bool one_accumulate_changes_to_make_met(
+                    const Environment * const,
+                    const ChangedChoices * const,
+                    const std::shared_ptr<const PackageID> & id,
+                    ChangedChoices & changed_choices,
+                    const ChoiceNameWithPrefix & flag) const
+            {
+                const std::shared_ptr<const ChoiceValue> v(id->choices_key()->value()->find_by_name_with_prefix(flag));
+
+                if (! v)
+                {
+                    /* warning messages get done elsewhere, no need here */
+                    return false;
+                }
+
+                if (v->locked() || ! v->explicitly_listed())
+                    return false;
+
+                return changed_choices.add_override_if_possible(flag, ! v->enabled());;
+            }
     };
 
     class PALUDIS_VISIBLE EnabledUseRequirement :
@@ -199,10 +287,10 @@ namespace
             {
             }
 
-            virtual bool one_requirement_met_base(const Environment * const, const ChoiceNameWithPrefix & flag,
-                    const PackageID & pkg) const
+            virtual bool one_requirement_met_base(const Environment * const, const ChoiceNameWithPrefix & flag, const ChangedChoices * const,
+                    const PackageID & pkg, const ChangedChoices * const changed_choices) const
             {
-                return icky_use_query(flag, pkg, default_value());
+                return icky_use_query(_options, flag, pkg, changed_choices, default_value());
             }
 
             virtual const std::string as_human_string() const
@@ -223,10 +311,10 @@ namespace
             {
             }
 
-            virtual bool one_requirement_met_base(const Environment * const, const ChoiceNameWithPrefix & flag,
-                    const PackageID & pkg) const
+            virtual bool one_requirement_met_base(const Environment * const, const ChoiceNameWithPrefix & flag, const ChangedChoices * const,
+                    const PackageID & pkg, const ChangedChoices * const changed_choices) const
             {
-                return ! icky_use_query(flag, pkg, default_value());
+                return ! icky_use_query(_options, flag, pkg, changed_choices, default_value());
             }
 
             virtual const std::string as_human_string() const
@@ -262,9 +350,10 @@ namespace
             }
 
             virtual bool one_requirement_met_base(const Environment * const, const ChoiceNameWithPrefix & flag,
-                    const PackageID & pkg) const
+                    const ChangedChoices * const maybe_changes_to_owner, const PackageID & pkg, const ChangedChoices * const changed_choices) const
             {
-                return ! icky_use_query(flag, *package_id()) || icky_use_query(flag, pkg, default_value());
+                return ! icky_use_query(_options, flag, *package_id(), maybe_changes_to_owner) ||
+                    icky_use_query(_options, flag, pkg, changed_choices, default_value());
             }
 
             virtual const std::string as_human_string() const
@@ -287,9 +376,10 @@ namespace
             }
 
             virtual bool one_requirement_met_base(const Environment * const, const ChoiceNameWithPrefix & flag,
-                    const PackageID & pkg) const
+                    const ChangedChoices * const maybe_changes_to_owner, const PackageID & pkg, const ChangedChoices * const changed_choices) const
             {
-                return icky_use_query(flag, *package_id()) || icky_use_query(flag, pkg, default_value());
+                return icky_use_query(_options, flag, *package_id(), maybe_changes_to_owner) ||
+                    icky_use_query(_options, flag, pkg, changed_choices, default_value());
             }
 
             virtual const std::string as_human_string() const
@@ -312,9 +402,10 @@ namespace
             }
 
             virtual bool one_requirement_met_base(const Environment * const, const ChoiceNameWithPrefix & flag,
-                    const PackageID & pkg) const
+                    const ChangedChoices * const maybe_changes_to_owner, const PackageID & pkg, const ChangedChoices * const changed_choices) const
             {
-                return ! icky_use_query(flag, *package_id()) || ! icky_use_query(flag, pkg, default_value());
+                return ! icky_use_query(_options, flag, *package_id(), maybe_changes_to_owner) ||
+                    ! icky_use_query(_options, flag, pkg, changed_choices, default_value());
             }
 
             virtual const std::string as_human_string() const
@@ -337,9 +428,10 @@ namespace
             }
 
             virtual bool one_requirement_met_base(const Environment * const, const ChoiceNameWithPrefix & flag,
-                    const PackageID & pkg) const
+                    const ChangedChoices * const maybe_changes_to_owner, const PackageID & pkg, const ChangedChoices * const changed_choices) const
             {
-                return icky_use_query(flag, *package_id()) || ! icky_use_query(flag, pkg, default_value());
+                return icky_use_query(_options, flag, *package_id(), maybe_changes_to_owner) ||
+                    ! icky_use_query(_options, flag, pkg, changed_choices, default_value());
             }
 
             virtual const std::string as_human_string() const
@@ -362,9 +454,10 @@ namespace
             }
 
             virtual bool one_requirement_met_base(const Environment * const, const ChoiceNameWithPrefix & flag,
-                    const PackageID & pkg) const
+                    const ChangedChoices * const maybe_changes_to_owner, const PackageID & pkg, const ChangedChoices * const changed_choices) const
             {
-                return icky_use_query(flag, pkg, default_value()) == icky_use_query(flag, *package_id());
+                return icky_use_query(_options, flag, pkg, changed_choices, default_value()) ==
+                    icky_use_query(_options, flag, *package_id(), maybe_changes_to_owner);
             }
 
             virtual const std::string as_human_string() const
@@ -387,9 +480,10 @@ namespace
             }
 
             virtual bool one_requirement_met_base(const Environment * const, const ChoiceNameWithPrefix & flag,
-                    const PackageID & pkg) const
+                    const ChangedChoices * const maybe_changes_to_owner, const PackageID & pkg, const ChangedChoices * const changed_choices) const
             {
-                return icky_use_query(flag, pkg, default_value()) != icky_use_query(flag, *package_id());
+                return icky_use_query(_options, flag, pkg, changed_choices, default_value()) !=
+                    icky_use_query(_options, flag, *package_id(), maybe_changes_to_owner);
             }
 
             virtual const std::string as_human_string() const
@@ -414,7 +508,11 @@ namespace
             {
             }
 
-            virtual const std::pair<bool, std::string> requirement_met(const Environment * const env, const PackageID & id) const
+            virtual const std::pair<bool, std::string> requirement_met(
+                    const Environment * const env,
+                    const ChangedChoices * const maybe_changes_to_owner,
+                    const PackageID & id,
+                    const ChangedChoices * const maybe_changes_to_target) const
             {
                 using namespace std::placeholders;
 
@@ -422,7 +520,7 @@ namespace
                 for (Reqs::const_iterator r(_reqs.begin()), r_end(_reqs.end()) ;
                         r != r_end ; ++r)
                 {
-                    std::pair<bool, std::string> r_result((*r)->requirement_met(env, id));
+                    std::pair<bool, std::string> r_result((*r)->requirement_met(env, maybe_changes_to_owner, id, maybe_changes_to_target));
                     if (! r_result.first)
                     {
                         if (! result.first)
@@ -448,6 +546,20 @@ namespace
             void add_requirement(const std::shared_ptr<const UseRequirement> & req)
             {
                 _reqs.push_back(req);
+            }
+
+            virtual bool accumulate_changes_to_make_met(
+                    const Environment * const env,
+                    const ChangedChoices * const maybe_changes_to_owner,
+                    const std::shared_ptr<const PackageID> & id,
+                    ChangedChoices & changed_choices) const
+            {
+                for (auto r(_reqs.begin()), r_end(_reqs.end()) ;
+                        r != r_end ; ++r)
+                    if (! (*r)->accumulate_changes_to_make_met(env, maybe_changes_to_owner, id, changed_choices))
+                        return false;
+
+                return true;
             }
     };
 

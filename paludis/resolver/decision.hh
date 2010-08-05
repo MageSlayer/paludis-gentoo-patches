@@ -30,7 +30,9 @@
 #include <paludis/util/simple_visitor.hh>
 #include <paludis/util/type_list.hh>
 #include <paludis/serialise-fwd.hh>
-#include <paludis/package_id.hh>
+#include <paludis/package_id-fwd.hh>
+#include <paludis/changed_choices-fwd.hh>
+#include <paludis/name-fwd.hh>
 
 namespace paludis
 {
@@ -150,6 +152,7 @@ namespace paludis
                 ChangesToMakeDecision(
                         const Resolvent &,
                         const std::shared_ptr<const PackageID> &,
+                        const std::shared_ptr<const ChangedChoices> &,
                         const bool best,
                         const ChangeType,
                         const bool taken,
@@ -165,6 +168,9 @@ namespace paludis
                 void set_destination(const std::shared_ptr<const Destination> &);
 
                 const std::shared_ptr<const PackageID> origin_id() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                const std::shared_ptr<const ChangedChoices> if_changed_choices() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 const std::shared_ptr<const RepositoryName> if_via_new_binary_in() const

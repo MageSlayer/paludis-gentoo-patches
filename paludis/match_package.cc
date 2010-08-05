@@ -33,6 +33,7 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/action.hh>
 #include <paludis/repository.hh>
+#include <paludis/additional_package_dep_spec_requirement.hh>
 
 #include <paludis/util/indirect_iterator-impl.hh>
 
@@ -76,10 +77,12 @@ namespace
 }
 
 bool
-paludis::match_package(
+paludis::match_package_with_maybe_changes(
         const Environment & env,
         const PackageDepSpec & spec,
+        const ChangedChoices * const maybe_changes_to_owner,
         const PackageID & entry,
+        const ChangedChoices * const maybe_changes_to_target,
         const MatchPackageOptions & options)
 {
     if (spec.package_ptr() && *spec.package_ptr() != entry.name())
@@ -203,12 +206,22 @@ paludis::match_package(
         {
             for (AdditionalPackageDepSpecRequirements::ConstIterator u(spec.additional_requirements_ptr()->begin()),
                     u_end(spec.additional_requirements_ptr()->end()) ; u != u_end ; ++u)
-                if (! (*u)->requirement_met(&env, entry).first)
+                if (! (*u)->requirement_met(&env, maybe_changes_to_owner, entry, maybe_changes_to_target).first)
                     return false;
         }
     }
 
     return true;
+}
+
+bool
+paludis::match_package(
+        const Environment & env,
+        const PackageDepSpec & spec,
+        const PackageID & target,
+        const MatchPackageOptions & options)
+{
+    return match_package_with_maybe_changes(env, spec, 0, target, 0, options);
 }
 
 bool

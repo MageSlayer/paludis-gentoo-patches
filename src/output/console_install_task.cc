@@ -53,6 +53,7 @@
 #include <paludis/output_manager.hh>
 #include <paludis/dep_list.hh>
 #include <paludis/notifier_callback.hh>
+#include <paludis/partially_made_package_dep_spec.hh>
 
 #include <functional>
 #include <algorithm>
@@ -1766,7 +1767,7 @@ ConsoleInstallTask::on_additional_requirements_not_met_error(const AdditionalReq
                 i_end(e.query().additional_requirements_ptr()->end()) ;
                 i != i_end ; ++i)
         {
-            const std::pair<bool, std::string> r((*i)->requirement_met(environment(), *e.package_id()));
+            const std::pair<bool, std::string> r((*i)->requirement_met(environment(), 0, *e.package_id(), 0));
             if (r.first)
                 continue;
             output_stream() << "    * " << r.second << endl;

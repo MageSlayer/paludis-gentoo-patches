@@ -24,6 +24,7 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/slot_requirement.hh>
 #include <paludis/filter.hh>
+#include <paludis/additional_package_dep_spec_requirement.hh>
 #include <paludis/util/pimp.hh>
 
 namespace paludis
@@ -78,9 +79,16 @@ namespace paludis
             ///\}
 
             virtual const std::pair<bool, std::string> requirement_met(
-                    const Environment * const, const PackageID &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                    const Environment * const, const ChangedChoices *,
+                    const PackageID &, const ChangedChoices * const) const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string as_human_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string as_raw_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual bool accumulate_changes_to_make_met(
+                    const Environment * const,
+                    const ChangedChoices * const,
+                    const std::shared_ptr<const PackageID> &,
+                    ChangedChoices &) const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     extern template class Pimp<UserKeyRequirement>;

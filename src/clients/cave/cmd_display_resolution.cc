@@ -75,6 +75,7 @@
 #include <paludis/action.hh>
 #include <paludis/output_manager_from_environment.hh>
 #include <paludis/output_manager.hh>
+#include <paludis/changed_choices.hh>
 
 #include <set>
 #include <iterator>
@@ -512,6 +513,7 @@ namespace
             const std::shared_ptr<Environment> &,
             const DisplayResolutionCommandLine & cmdline,
             const std::shared_ptr<const PackageID> & id,
+            const std::shared_ptr<const ChangedChoices> & changed_choices,
             const std::shared_ptr<const PackageID> & old_id,
             ChoicesToExplain & choices_to_explain
             )
@@ -555,8 +557,12 @@ namespace
                 if (! s.empty())
                     s.append(" ");
 
+                Tribool changed_state(indeterminate);
+                if (changed_choices)
+                    changed_state = changed_choices->overridden_value((*i)->name_with_prefix());
+
                 std::string t;
-                if ((*i)->enabled())
+                if ((changed_state.is_indeterminate() && (*i)->enabled()) || (changed_state.is_true()))
                 {
                     if ((*i)->locked())
                         t = formatter.format(**i, format::Forced());
@@ -597,6 +603,9 @@ namespace
                         t = formatter.decorate(**i, t, format::Added());
                 }
 
+                if (! changed_state.is_indeterminate())
+                    t = t + c::bold_red() + " (!)" + c::normal();
+
                 s.append(t);
 
                 bool show_description;
@@ -623,7 +632,10 @@ namespace
         if (s.empty())
             return;
 
-        cout << "    " << s << endl;
+        if (changed_choices)
+            cout << "    " << c::bold_red() << "Changes needed: " << c::normal() << s << endl;
+        else
+            cout << "    " << s << endl;
     }
 
     void display_reasons(
@@ -709,6 +721,11 @@ namespace
         std::string visit(const MaskedConfirmation &) const
         {
             return "being unmasked";
+        }
+
+        std::string visit(const ChangedChoicesConfirmation &) const
+        {
+            return "being reconfigured";
         }
     };
 
@@ -1073,7 +1090,7 @@ namespace
         if (! decision.best())
             x = "-" + x;
 
-        if (decision.origin_id()->masked())
+        if (decision.origin_id()->masked() || decision.if_changed_choices())
             c = c::red();
         else
             do
@@ -1187,7 +1204,7 @@ namespace
             old_id = *decision.destination()->replacing()->begin();
 
         display_one_description(env, cmdline, decision.origin_id(), ! old_id);
-        display_choices(env, cmdline, decision.origin_id(), old_id, choices_to_explain);
+        display_choices(env, cmdline, decision.origin_id(), decision.if_changed_choices(), old_id, choices_to_explain);
         display_reasons(resolution, more_annotations);
         display_masks(env, decision);
         if (maybe_totals)
@@ -1306,7 +1323,7 @@ namespace
                             a_end((*c)->spec().if_package()->additional_requirements_ptr()->end()) ;
                             a != a_end ; ++a)
                     {
-                        const std::pair<bool, std::string> p((*a)->requirement_met(env.get(), *u->package_id()));
+                        const std::pair<bool, std::string> p((*a)->requirement_met(env.get(), 0, *u->package_id(), 0));
                         if (p.first)
                             continue;
 

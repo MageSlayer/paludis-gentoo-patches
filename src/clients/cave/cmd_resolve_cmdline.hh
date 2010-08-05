@@ -49,6 +49,7 @@ namespace paludis
             args::StringSetArg a_permit_old_version;
             args::StringSetArg a_purge;
             args::SwitchArg a_no_override_masks;
+            args::SwitchArg a_no_override_flags;
 
             args::ArgsGroup g_dependent_options;
             args::StringSetArg a_uninstalls_may_break;

@@ -43,9 +43,11 @@
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/return_literal_function.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/accept_visitor.hh>
 #include <map>
 #include <list>
 #include <sstream>
+#include <algorithm>
 
 using namespace paludis;
 using namespace paludis::fakerepository;

@@ -35,7 +35,9 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/accept_visitor.hh>
 #include <paludis/output_manager.hh>
+#include <algorithm>
 #include <list>
 
 using namespace paludis;

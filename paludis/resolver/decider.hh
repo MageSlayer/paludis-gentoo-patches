@@ -46,6 +46,8 @@
 #include <paludis/repository-fwd.hh>
 #include <paludis/filtered_generator-fwd.hh>
 #include <paludis/generator-fwd.hh>
+#include <paludis/changed_choices-fwd.hh>
+#include <tuple>
 
 namespace paludis
 {
@@ -55,6 +57,8 @@ namespace paludis
             private Pimp<Decider>
         {
             private:
+                typedef std::tuple<std::shared_ptr<const PackageID>, std::shared_ptr<const ChangedChoices>, bool> FoundID;
+
                 const std::shared_ptr<Resolution> _create_resolution_for_resolvent(const Resolvent &) const;
                 const std::shared_ptr<Resolution> _resolution_for_resolvent(const Resolvent &, const Tribool);
 
@@ -134,7 +138,9 @@ namespace paludis
                         const std::shared_ptr<const Decision> & d,
                         const std::shared_ptr<const Constraint> & c) const;
 
-                const PackageDepSpec _make_spec_for_preloading(const PackageDepSpec & spec) const;
+                const PackageDepSpec _make_spec_for_preloading(
+                        const PackageDepSpec & spec,
+                        const std::shared_ptr<const ChangedChoices> &) const;
 
                 const std::shared_ptr<const PackageIDSequence> _find_replacing(
                         const std::shared_ptr<const PackageID> &,
@@ -177,11 +183,16 @@ namespace paludis
                 Filter _make_unmaskable_filter(
                         const std::shared_ptr<const Resolution> &) const;
 
+                bool _allow_choice_changes_for(
+                        const std::shared_ptr<const Resolution> &) const;
+
                 void _decide(const std::shared_ptr<Resolution> & resolution);
                 void _copy_other_destination_constraints(const std::shared_ptr<Resolution> & resolution);
 
                 const std::shared_ptr<Decision> _try_to_find_decision_for(
                         const std::shared_ptr<const Resolution> & resolution,
+                        const bool also_try_option_changes,
+                        const bool try_option_changes_this_time,
                         const bool also_try_masked,
                         const bool try_masked_this_time) const;
 
@@ -206,12 +217,15 @@ namespace paludis
                         const std::shared_ptr<const Resolution> &,
                         const bool include_errors,
                         const bool include_unmaskable) const;
-                const std::pair<const std::shared_ptr<const PackageID>, bool> _find_installable_id_for(
+                const FoundID _find_installable_id_for(
                         const std::shared_ptr<const Resolution> &,
+                        const bool include_option_changes,
                         const bool include_unmaskable) const;
-                const std::pair<const std::shared_ptr<const PackageID>, bool> _find_id_for_from(
+                const FoundID _find_id_for_from(
                         const std::shared_ptr<const Resolution> &,
-                        const std::shared_ptr<const PackageIDSequence> &) const;
+                        const std::shared_ptr<const PackageIDSequence> &,
+                        const bool try_changing_choices,
+                        const bool trying_changing_choices) const;
 
                 const std::shared_ptr<const Constraints> _get_unmatching_constraints(
                         const std::shared_ptr<const Resolution> &,

@@ -35,6 +35,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/version_requirements.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/partially_made_package_dep_spec.hh>
 
 #include <src/output/colour.hh>
 

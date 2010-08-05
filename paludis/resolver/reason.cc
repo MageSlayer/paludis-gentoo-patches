@@ -24,6 +24,7 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/serialise-impl.hh>
+#include <paludis/changed_choices.hh>
 
 using namespace paludis;
 using namespace paludis::resolver;
@@ -75,13 +76,16 @@ namespace paludis
     struct Imp<DependencyReason>
     {
         const std::shared_ptr<const PackageID> from_id;
+        const std::shared_ptr<const ChangedChoices> changed_choices;
         const Resolvent from_resolvent;
         const SanitisedDependency dep;
         const bool already_met;
 
         Imp(const std::shared_ptr<const PackageID> & i,
+                const std::shared_ptr<const ChangedChoices> & c,
                 const Resolvent & r, const SanitisedDependency & d, const bool a) :
             from_id(i),
+            changed_choices(c),
             from_resolvent(r),
             dep(d),
             already_met(a)
@@ -91,10 +95,11 @@ namespace paludis
 }
 
 DependencyReason::DependencyReason(const std::shared_ptr<const PackageID> & i,
+        const std::shared_ptr<const ChangedChoices> & c,
         const Resolvent & r,
         const SanitisedDependency & d,
         const bool a) :
-    Pimp<DependencyReason>(i, r, d, a)
+    Pimp<DependencyReason>(i, c, r, d, a)
 {
 }
 
@@ -106,6 +111,12 @@ const std::shared_ptr<const PackageID>
 DependencyReason::from_id() const
 {
     return _imp->from_id;
+}
+
+const std::shared_ptr<const ChangedChoices>
+DependencyReason::from_id_changed_choices() const
+{
+    return _imp->changed_choices;
 }
 
 const Resolvent
@@ -132,6 +143,7 @@ DependencyReason::serialise(Serialiser & s) const
     s.object("DependencyReason")
         .member(SerialiserFlags<>(), "already_met", already_met())
         .member(SerialiserFlags<serialise::might_be_null>(), "from_id", from_id())
+        .member(SerialiserFlags<serialise::might_be_null>(), "from_id_changed_choices", from_id_changed_choices())
         .member(SerialiserFlags<>(), "from_resolvent", from_resolvent())
         .member(SerialiserFlags<>(), "sanitised_dependency", sanitised_dependency())
         ;
@@ -416,6 +428,7 @@ Reason::deserialise(Deserialisation & d)
         const std::shared_ptr<const PackageID> from_id(v.member<std::shared_ptr<const PackageID> >("from_id"));
         return std::make_shared<DependencyReason>(
                     from_id,
+                    v.member<std::shared_ptr<const ChangedChoices> >("from_id_changed_choices"),
                     v.member<Resolvent>("from_resolvent"),
                     SanitisedDependency::deserialise(*v.find_remove_member("sanitised_dependency"), from_id),
                     v.member<bool>("already_met")

@@ -33,6 +33,7 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/accept_visitor.hh>
 
 #include <algorithm>
 #include <set>

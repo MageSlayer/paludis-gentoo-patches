@@ -25,6 +25,7 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/accept_visitor.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
@@ -35,6 +36,7 @@
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/partially_made_package_dep_spec.hh>
 #include <functional>
 #include <algorithm>
 #include <list>

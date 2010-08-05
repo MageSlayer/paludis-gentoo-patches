@@ -27,6 +27,7 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/dep_spec.hh>
+#include <paludis/dep_spec_data.hh>
 #include <paludis/version_operator.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/version_requirements.hh>

@@ -30,6 +30,7 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/serialise-impl.hh>
+#include <paludis/changed_choices.hh>
 #include <sstream>
 
 using namespace paludis;
@@ -121,6 +122,7 @@ ChangesToMakeDecision::deserialise(Deserialisation & d)
     std::shared_ptr<ChangesToMakeDecision> result(std::make_shared<ChangesToMakeDecision>(
                 v.member<Resolvent>("resolvent"),
                 v.member<std::shared_ptr<const PackageID> >("origin_id"),
+                v.member<std::shared_ptr<const ChangedChoices> >("if_changed_choices"),
                 v.member<bool>("best"),
                 destringify<ChangeType>(v.member<std::string>("change_type")),
                 v.member<bool>("taken"),
@@ -329,6 +331,7 @@ namespace paludis
     {
         const Resolvent resolvent;
         const std::shared_ptr<const PackageID> origin_id;
+        const std::shared_ptr<const ChangedChoices> changed_choices;
         const bool best;
         ChangeType change_type;
         const bool taken;
@@ -339,12 +342,14 @@ namespace paludis
         Imp(
                 const Resolvent & l,
                 const std::shared_ptr<const PackageID> & o,
+                const std::shared_ptr<const ChangedChoices> & h,
                 const bool b,
                 const ChangeType c,
                 const bool t,
                 const std::shared_ptr<const Destination> & d) :
             resolvent(l),
             origin_id(o),
+            changed_choices(h),
             best(b),
             change_type(c),
             taken(t),
@@ -357,12 +362,13 @@ namespace paludis
 ChangesToMakeDecision::ChangesToMakeDecision(
         const Resolvent & r,
         const std::shared_ptr<const PackageID> & o,
+        const std::shared_ptr<const ChangedChoices> & h,
         const bool b,
         const ChangeType c,
         const bool t,
         const std::shared_ptr<const Destination> & d,
         const std::function<void (ChangesToMakeDecision &)> & f) :
-    Pimp<ChangesToMakeDecision>(r, o, b, c, t, d)
+    Pimp<ChangesToMakeDecision>(r, o, h, b, c, t, d)
 {
     if (f)
         f(*this);
@@ -400,6 +406,12 @@ const std::shared_ptr<const PackageID>
 ChangesToMakeDecision::origin_id() const
 {
     return _imp->origin_id;
+}
+
+const std::shared_ptr<const ChangedChoices>
+ChangesToMakeDecision::if_changed_choices() const
+{
+    return _imp->changed_choices;
 }
 
 ChangeType
@@ -450,6 +462,7 @@ ChangesToMakeDecision::serialise(Serialiser & s) const
     s.object("ChangesToMakeDecision")
         .member(SerialiserFlags<>(), "resolvent", resolvent())
         .member(SerialiserFlags<serialise::might_be_null>(), "origin_id", origin_id())
+        .member(SerialiserFlags<serialise::might_be_null>(), "if_changed_choices", if_changed_choices())
         .member(SerialiserFlags<>(), "best", best())
         .member(SerialiserFlags<>(), "change_type", stringify(change_type()))
         .member(SerialiserFlags<serialise::might_be_null>(), "destination", destination())

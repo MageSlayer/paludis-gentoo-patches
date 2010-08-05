@@ -27,6 +27,7 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/named_value.hh>
 
+#include <paludis/changed_choices-fwd.hh>
 #include <paludis/dep_label.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/dep_tag-fwd.hh>
@@ -38,9 +39,11 @@
 #include <paludis/slot_requirement-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/environment-fwd.hh>
+#include <paludis/additional_package_dep_spec_requirement-fwd.hh>
+#include <paludis/partially_made_package_dep_spec-fwd.hh>
+#include <paludis/dep_spec_data-fwd.hh>
 
 #include <memory>
-#include <functional>
 
 /** \file
  * Declarations for dependency spec classes.
@@ -190,6 +193,11 @@ namespace paludis
             bool condition_met() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
+             * Would our condition met, if certain choices were changed?
+             */
+            bool condition_would_be_met_when(const ChangedChoices &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /**
              * Is our condition meetable?
              *
              * This takes into account inverses, masks, forces etc.
@@ -203,39 +211,6 @@ namespace paludis
              * to gain access to additional data stored in the ConditionalDepSpecData.
              */
             const std::shared_ptr<const ConditionalDepSpecData> data() const PALUDIS_ATTRIBUTE((warn_unused_result));
-    };
-
-    /**
-     * Data for a ConditionalDepSpec.
-     *
-     * \since 0.26
-     * \ingroup g_dep_spec
-     */
-    class PALUDIS_VISIBLE ConditionalDepSpecData :
-        public MetadataKeyHolder
-    {
-        public:
-            ///\name Basic operations
-            ///\{
-
-            virtual ~ConditionalDepSpecData();
-
-            ///\}
-
-            /**
-             * Fetch ourself as a string.
-             */
-            virtual std::string as_string() const = 0;
-
-            /**
-             * Fetch the result for condition_met.
-             */
-            virtual bool condition_met() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            /**
-             * Fetch the result for condition_meetable.
-             */
-            virtual bool condition_meetable() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 
     /**
@@ -272,46 +247,6 @@ namespace paludis
             std::string text() const;
     };
 
-    /**
-     * An additional requirement for a PackageDepSpec.
-     *
-     * \since 0.26
-     * \ingroup g_dep_spec
-     */
-    class PALUDIS_VISIBLE AdditionalPackageDepSpecRequirement
-    {
-        public:
-            AdditionalPackageDepSpecRequirement() = default;
-            virtual ~AdditionalPackageDepSpecRequirement();
-
-            AdditionalPackageDepSpecRequirement(const AdditionalPackageDepSpecRequirement &) = delete;
-            AdditionalPackageDepSpecRequirement & operator= (const AdditionalPackageDepSpecRequirement &) = delete;
-
-            /**
-             * Is our requirement met for a given PackageID?
-             *
-             * The string in the return type might be a description of why the
-             * requirement was not met. Sometimes better messages can be given
-             * than simply the return value of as_human_string() when the ID to
-             * be matched is known. If the bool is false, the string is
-             * meaningless.
-             *
-             * \since 0.44 returns pair<bool, std::string>
-             */
-            virtual const std::pair<bool, std::string> requirement_met(
-                    const Environment * const, const PackageID &) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            /**
-             * Return a human readable string representation of ourself.
-             */
-            virtual const std::string as_human_string() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            /**
-             * Return a raw string representation of ourself.
-             */
-            virtual const std::string as_raw_string() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-    };
-
     namespace n
     {
         typedef Name<struct include_masked_name> include_masked;
@@ -341,118 +276,6 @@ namespace paludis
     {
         NamedValue<n::include_masked, bool> include_masked;
         NamedValue<n::path, FSEntry> path;
-    };
-
-    /**
-     * A PartiallyMadePackageDepSpec is returned by make_package_dep_spec()
-     * and is used to incrementally build a PackageDepSpec.
-     *
-     * \ingroup g_dep_spec
-     * \since 0.26
-     */
-    class PALUDIS_VISIBLE PartiallyMadePackageDepSpec :
-        private Pimp<PartiallyMadePackageDepSpec>
-    {
-        public:
-            ///\name Basic operations
-            ///\{
-
-            PartiallyMadePackageDepSpec(const PartiallyMadePackageDepSpecOptions &);
-            ~PartiallyMadePackageDepSpec();
-            PartiallyMadePackageDepSpec(const PackageDepSpec &);
-            PartiallyMadePackageDepSpec(const PartiallyMadePackageDepSpec &);
-
-            ///\}
-
-            /**
-             * Set our package requirements, return ourself.
-             */
-            PartiallyMadePackageDepSpec & package(const QualifiedPackageName &);
-
-            /**
-             * Set our slot requirements, return ourself.
-             */
-            PartiallyMadePackageDepSpec & slot_requirement(const std::shared_ptr<const SlotRequirement> &);
-
-            /**
-             * Set our in-repository requirement, return ourself.
-             */
-            PartiallyMadePackageDepSpec & in_repository(const RepositoryName &);
-
-            /**
-             * Set our from-repository requirement, return ourself.
-             */
-            PartiallyMadePackageDepSpec & from_repository(const RepositoryName &);
-
-            /**
-             * Set our installable-to-repository requirement, return ourself.
-             *
-             * \since 0.32
-             */
-            PartiallyMadePackageDepSpec & installable_to_repository(const InstallableToRepository &);
-
-            /**
-             * Set our installed-at-path requirement, return ourself.
-             *
-             * \since 0.32
-             */
-            PartiallyMadePackageDepSpec & installed_at_path(const FSEntry &);
-
-            /**
-             * Set our installable-to-path requirement, return ourself.
-             *
-             * \since 0.32
-             */
-            PartiallyMadePackageDepSpec & installable_to_path(const InstallableToPath &);
-
-            /**
-             * Set our package name part requirements, return ourself.
-             */
-            PartiallyMadePackageDepSpec & package_name_part(const PackageNamePart &);
-
-            /**
-             * Set our category name part requirements, return ourself.
-             */
-            PartiallyMadePackageDepSpec & category_name_part(const CategoryNamePart &);
-
-            /**
-             * Add a version requirement, return ourself.
-             */
-            PartiallyMadePackageDepSpec & version_requirement(const VersionRequirement &);
-
-            /**
-             * Set our version requirements mode, return ourself.
-             */
-            PartiallyMadePackageDepSpec & version_requirements_mode(const VersionRequirementsMode &);
-
-            /**
-             * Add an additional requirement, return ourself.
-             */
-            PartiallyMadePackageDepSpec & additional_requirement(
-                    const std::shared_ptr<const AdditionalPackageDepSpecRequirement> &);
-
-            /**
-             * Clear additional requirements, return ourself.
-             *
-             * \since 0.41
-             */
-            PartiallyMadePackageDepSpec & clear_additional_requirements();
-
-            /**
-             * Add annotations
-             */
-            PartiallyMadePackageDepSpec & annotations(
-                    const std::shared_ptr<const MetadataSectionKey> &);
-
-            /**
-             * Turn ourselves into a PackageDepSpec.
-             */
-            operator const PackageDepSpec() const;
-
-            /**
-             * Explicitly turn ourselves into a PackageDepSpec.
-             */
-            const PackageDepSpec to_package_dep_spec() const;
     };
 
     /**
@@ -590,106 +413,6 @@ namespace paludis
              * Access to our data.
              */
             std::shared_ptr<const PackageDepSpecData> data() const;
-    };
-
-    /**
-     * Data for a PackageDepSpec.
-     *
-     * \since 0.26
-     * \ingroup g_dep_spec
-     */
-    class PALUDIS_VISIBLE PackageDepSpecData
-    {
-        public:
-            ///\name Basic operations
-            ///\{
-
-            virtual ~PackageDepSpecData();
-
-            ///\}
-
-            /**
-             * Fetch ourself as a string.
-             */
-            virtual std::string as_string() const = 0;
-
-            /**
-             * Fetch the package name (may be a zero pointer).
-             */
-            virtual std::shared_ptr<const QualifiedPackageName> package_ptr() const = 0;
-
-            /**
-             * Fetch the package name part, if wildcarded, or a zero pointer otherwise.
-             */
-            virtual std::shared_ptr<const PackageNamePart> package_name_part_ptr() const = 0;
-
-            /**
-             * Fetch the category name part, if wildcarded, or a zero pointer otherwise.
-             */
-            virtual std::shared_ptr<const CategoryNamePart> category_name_part_ptr() const = 0;
-
-            /**
-             * Fetch the version requirements (may be a zero pointer).
-             */
-            virtual std::shared_ptr<const VersionRequirements> version_requirements_ptr() const = 0;
-
-            /**
-             * Fetch the version requirements mode.
-             */
-            virtual VersionRequirementsMode version_requirements_mode() const = 0;
-
-            /**
-             * Fetch the slot name (may be a zero pointer).
-             */
-            virtual std::shared_ptr<const SlotRequirement> slot_requirement_ptr() const = 0;
-
-            /**
-             * Fetch the from-repository requirement (may be a zero pointer).
-             */
-            virtual std::shared_ptr<const RepositoryName> in_repository_ptr() const = 0;
-
-            /**
-             * Fetch the installable-to-repository requirement (may be a zero pointer).
-             *
-             * \since 0.32
-             */
-            virtual std::shared_ptr<const InstallableToRepository> installable_to_repository_ptr() const = 0;
-
-            /**
-             * Fetch the from-repository requirement (may be a zero pointer).
-             */
-            virtual std::shared_ptr<const RepositoryName> from_repository_ptr() const = 0;
-
-            /**
-             * Fetch the installed-at-path requirement (may be a zero pointer).
-             *
-             * \since 0.32
-             */
-            virtual std::shared_ptr<const FSEntry> installed_at_path_ptr() const = 0;
-
-            /**
-             * Fetch the installable-to-path requirement (may be a zero pointer).
-             *
-             * \since 0.32
-             */
-            virtual std::shared_ptr<const InstallableToPath> installable_to_path_ptr() const = 0;
-
-            /**
-             * Fetch the additional requirements (may be a zero pointer).
-             */
-            virtual std::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements_ptr() const = 0;
-
-            /**
-             * Fetch the annotations (may be a zero pointer).
-             */
-            virtual std::shared_ptr<const MetadataSectionKey> annotations_key() const = 0;
-
-            /**
-             * Fetch options if we're being used to construct a new PartiallyMadePackageDepSpec.
-             *
-             * \since 0.38
-             */
-            virtual const PartiallyMadePackageDepSpecOptions options_for_partially_made_package_dep_spec() const = 0;
     };
 
     /**
@@ -977,7 +700,6 @@ namespace paludis
     extern template class Cloneable<DepSpec>;
     extern template class Pimp<ConditionalDepSpec>;
     extern template class CloneUsingThis<DepSpec, ConditionalDepSpec>;
-    extern template class Pimp<PartiallyMadePackageDepSpec>;
     extern template class Pimp<PackageDepSpec>;
     extern template class CloneUsingThis<DepSpec, PackageDepSpec>;
     extern template class Pimp<DependenciesLabelsDepSpec>;

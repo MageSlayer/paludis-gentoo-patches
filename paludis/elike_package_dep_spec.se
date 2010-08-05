@@ -14,6 +14,7 @@ make_enum_ELikePackageDepSpecOption()
     key epdso_allow_use_deps_portage             "Allow [use] deps with Portage syntax"
     key epdso_allow_use_dep_defaults             "Allow [use(+)] and [use(-)] deps"
     key epdso_allow_use_dep_question_defaults    "Allow [use(?)] deps"
+    key epdso_missing_use_deps_is_qa             "Missing [use] flags with no default is a QA violation"
     key epdso_allow_ranged_deps                  "Allow [op version] deps"
     key epdso_allow_tilde_greater_deps           "Allow ~> deps"
     key epdso_disallow_nonranged_deps            "Disallow >=foo/bar-1 deps"

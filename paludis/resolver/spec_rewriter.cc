@@ -36,6 +36,7 @@
 #include <paludis/filter.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/partially_made_package_dep_spec.hh>
 #include <map>
 #include <set>
 
