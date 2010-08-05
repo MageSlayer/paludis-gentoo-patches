@@ -1512,7 +1512,7 @@ if test "x$need_libarchive_check" = "xyes" ; then
 	[AC_MSG_ERROR([libarchive is required for pbins])])
 
 	AC_MSG_CHECKING([whether your libarchive is new enough])
-	AC_PREPROC_IFELSE([
+	AC_COMPILE_IFELSE([
 #include <archive.h>
 
 int main(int, char **)
