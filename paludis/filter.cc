@@ -226,7 +226,7 @@ namespace
                     r != r_end ; ++r)
             {
                 const std::shared_ptr<const Repository> repo(env->package_database()->fetch_repository(*r));
-                if (equal == (repo->installed_root_key() && root == repo->installed_root_key()->value()))
+                if (repo->installed_root_key() && (equal == (root == repo->installed_root_key()->value())))
                     result->insert(*r);
             }
 
