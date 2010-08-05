@@ -63,9 +63,6 @@ namespace paludis
      */
     typedef LabelsDepSpec<DependenciesLabel> DependenciesLabelsDepSpec;
 
-    class PackageDepSpecData;
-    class ConditionalDepSpecData;
-
     struct InstallableToRepository;
     struct InstallableToPath;
 

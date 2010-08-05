@@ -33,6 +33,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/repository.hh>
 #include <paludis/choice.hh>
+#include <paludis/dep_spec_data.hh>
 #include <ostream>
 #include <string>
 

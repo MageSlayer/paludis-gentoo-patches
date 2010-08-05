@@ -27,6 +27,7 @@
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/version_requirements.hh>
 #include <paludis/additional_package_dep_spec_requirement.hh>
+#include <paludis/dep_spec_data.hh>
 #include <iterator>
 #include <algorithm>
 #include <ostream>

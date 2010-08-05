@@ -37,6 +37,8 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/additional_package_dep_spec_requirement.hh>
+#include <paludis/dep_spec_data.hh>
+
 #include <functional>
 #include <algorithm>
 #include <list>
@@ -218,10 +220,6 @@ std::string
 ConditionalDepSpec::_as_string() const
 {
     return _imp->data->as_string();
-}
-
-ConditionalDepSpecData::~ConditionalDepSpecData()
-{
 }
 
 std::string
@@ -594,10 +592,6 @@ LabelsDepSpec<T_>::add_label(const std::shared_ptr<const T_> & item)
 template <typename T_>
 void
 LabelsDepSpec<T_>::need_keys_added() const
-{
-}
-
-PackageDepSpecData::~PackageDepSpecData()
 {
 }
 

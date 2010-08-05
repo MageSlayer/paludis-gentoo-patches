@@ -41,9 +41,9 @@
 #include <paludis/environment-fwd.hh>
 #include <paludis/additional_package_dep_spec_requirement-fwd.hh>
 #include <paludis/partially_made_package_dep_spec-fwd.hh>
+#include <paludis/dep_spec_data-fwd.hh>
 
 #include <memory>
-#include <functional>
 
 /** \file
  * Declarations for dependency spec classes.
@@ -211,44 +211,6 @@ namespace paludis
              * to gain access to additional data stored in the ConditionalDepSpecData.
              */
             const std::shared_ptr<const ConditionalDepSpecData> data() const PALUDIS_ATTRIBUTE((warn_unused_result));
-    };
-
-    /**
-     * Data for a ConditionalDepSpec.
-     *
-     * \since 0.26
-     * \ingroup g_dep_spec
-     */
-    class PALUDIS_VISIBLE ConditionalDepSpecData :
-        public MetadataKeyHolder
-    {
-        public:
-            ///\name Basic operations
-            ///\{
-
-            virtual ~ConditionalDepSpecData();
-
-            ///\}
-
-            /**
-             * Fetch ourself as a string.
-             */
-            virtual std::string as_string() const = 0;
-
-            /**
-             * Fetch the result for condition_met.
-             */
-            virtual bool condition_met() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            /**
-             * Fetch the result for condition_would_be_met_when.
-             */
-            virtual bool condition_would_be_met_when(const ChangedChoices &) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            /**
-             * Fetch the result for condition_meetable.
-             */
-            virtual bool condition_meetable() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 
     /**
@@ -451,106 +413,6 @@ namespace paludis
              * Access to our data.
              */
             std::shared_ptr<const PackageDepSpecData> data() const;
-    };
-
-    /**
-     * Data for a PackageDepSpec.
-     *
-     * \since 0.26
-     * \ingroup g_dep_spec
-     */
-    class PALUDIS_VISIBLE PackageDepSpecData
-    {
-        public:
-            ///\name Basic operations
-            ///\{
-
-            virtual ~PackageDepSpecData();
-
-            ///\}
-
-            /**
-             * Fetch ourself as a string.
-             */
-            virtual std::string as_string() const = 0;
-
-            /**
-             * Fetch the package name (may be a zero pointer).
-             */
-            virtual std::shared_ptr<const QualifiedPackageName> package_ptr() const = 0;
-
-            /**
-             * Fetch the package name part, if wildcarded, or a zero pointer otherwise.
-             */
-            virtual std::shared_ptr<const PackageNamePart> package_name_part_ptr() const = 0;
-
-            /**
-             * Fetch the category name part, if wildcarded, or a zero pointer otherwise.
-             */
-            virtual std::shared_ptr<const CategoryNamePart> category_name_part_ptr() const = 0;
-
-            /**
-             * Fetch the version requirements (may be a zero pointer).
-             */
-            virtual std::shared_ptr<const VersionRequirements> version_requirements_ptr() const = 0;
-
-            /**
-             * Fetch the version requirements mode.
-             */
-            virtual VersionRequirementsMode version_requirements_mode() const = 0;
-
-            /**
-             * Fetch the slot name (may be a zero pointer).
-             */
-            virtual std::shared_ptr<const SlotRequirement> slot_requirement_ptr() const = 0;
-
-            /**
-             * Fetch the from-repository requirement (may be a zero pointer).
-             */
-            virtual std::shared_ptr<const RepositoryName> in_repository_ptr() const = 0;
-
-            /**
-             * Fetch the installable-to-repository requirement (may be a zero pointer).
-             *
-             * \since 0.32
-             */
-            virtual std::shared_ptr<const InstallableToRepository> installable_to_repository_ptr() const = 0;
-
-            /**
-             * Fetch the from-repository requirement (may be a zero pointer).
-             */
-            virtual std::shared_ptr<const RepositoryName> from_repository_ptr() const = 0;
-
-            /**
-             * Fetch the installed-at-path requirement (may be a zero pointer).
-             *
-             * \since 0.32
-             */
-            virtual std::shared_ptr<const FSEntry> installed_at_path_ptr() const = 0;
-
-            /**
-             * Fetch the installable-to-path requirement (may be a zero pointer).
-             *
-             * \since 0.32
-             */
-            virtual std::shared_ptr<const InstallableToPath> installable_to_path_ptr() const = 0;
-
-            /**
-             * Fetch the additional requirements (may be a zero pointer).
-             */
-            virtual std::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements_ptr() const = 0;
-
-            /**
-             * Fetch the annotations (may be a zero pointer).
-             */
-            virtual std::shared_ptr<const MetadataSectionKey> annotations_key() const = 0;
-
-            /**
-             * Fetch options if we're being used to construct a new PartiallyMadePackageDepSpec.
-             *
-             * \since 0.38
-             */
-            virtual const PartiallyMadePackageDepSpecOptions options_for_partially_made_package_dep_spec() const = 0;
     };
 
     /**

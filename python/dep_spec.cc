@@ -29,6 +29,7 @@
 #include <paludis/user_dep_spec.hh>
 #include <paludis/version_requirements.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
+#include <paludis/dep_spec_data.hh>
 
 #include <paludis/util/save.hh>
 #include <paludis/util/stringify.hh>
