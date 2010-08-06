@@ -108,6 +108,13 @@ namespace
         return id->behaviours_key()->value()->end() == id->behaviours_key()->value()->find("unbinaryable");
     }
 
+    bool can_chroot(const std::shared_ptr<const PackageID> & id)
+    {
+        if (! id->behaviours_key())
+            return true;
+        return id->behaviours_key()->value()->end() == id->behaviours_key()->value()->find("unchrootable");
+    }
+
     struct UnmaskableFilterHandler :
         AllFilterHandlerBase
     {
@@ -249,7 +256,7 @@ namespace
                         chroot_if_possible = true;
                 }
 
-                if (chroot_if_possible)
+                if (chroot_if_possible && package_id_unless_error && can_chroot(package_id_unless_error))
                     extras += dt_install_to_chroot;
             }
 
@@ -436,10 +443,28 @@ namespace
         {
         }
 
-        bool creating_binary_and_no_binaryable_ids() const
+        bool creating_and_no_appropriate_ids() const
         {
-            if (resolvent.destination_type() != dt_create_binary)
-                return false;
+            bool (* can)(const std::shared_ptr<const PackageID> &)(0);
+            switch (resolvent.destination_type())
+            {
+                case dt_install_to_slash:
+                    return false;
+
+                case dt_create_binary:
+                    can = &can_make_binary_for;
+                    break;
+
+                case dt_install_to_chroot:
+                    can = &can_chroot;
+                    break;
+
+                case last_dt:
+                    break;
+            }
+
+            if (! can)
+                throw InternalError(PALUDIS_HERE, "unhandled dt");
 
             auto origin_ids((*env)[selection::AllVersionsSorted(
                         generator::Package(resolvent.package()) |
@@ -453,7 +478,7 @@ namespace
             {
                 for (auto i(origin_ids->begin()), i_end(origin_ids->end()) ;
                         i != i_end ; ++i)
-                    if (can_make_binary_for(*i))
+                    if ((*can)(*i))
                         return false;
 
                 return true;
@@ -463,13 +488,13 @@ namespace
         std::pair<UseExisting, bool> visit(const DependencyReason &) const
         {
             return std::make_pair(use_existing_from_cmdline(resolution_options.a_keep, false),
-                    creating_binary_and_no_binaryable_ids());
+                    creating_and_no_appropriate_ids());
         }
 
         std::pair<UseExisting, bool> visit(const TargetReason &) const
         {
             return std::make_pair(use_existing_from_cmdline(resolution_options.a_keep_targets, from_set),
-                    creating_binary_and_no_binaryable_ids());
+                    creating_and_no_appropriate_ids());
         }
 
         std::pair<UseExisting, bool> visit(const DependentReason &) const

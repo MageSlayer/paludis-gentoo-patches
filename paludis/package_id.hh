@@ -322,6 +322,7 @@ namespace paludis
              * - "transient", saying that an installed ID's origin is expected not to exist
              * - "used", saying that an installed ID should not be treated as unused
              * - "unbinaryable", saying that we should be excluded from requests to create a binary
+             * - "unchrootable", saying that we should be excluded from requests to install to a chroot
              *
              * \since 0.48
              */

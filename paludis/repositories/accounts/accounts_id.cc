@@ -57,6 +57,7 @@ namespace
             behaviours_key(std::make_shared<LiteralMetadataStringSetKey>("behaviours", "behaviours", mkt_internal, behaviours_value))
         {
             behaviours_value->insert("unbinaryable");
+            behaviours_value->insert("unchrootable");
         }
     };
 }
