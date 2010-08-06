@@ -69,6 +69,7 @@
 #include <paludis/resolver/allowed_to_remove_helper.hh>
 #include <paludis/resolver/always_via_binary_helper.hh>
 #include <paludis/resolver/can_use_helper.hh>
+#include <paludis/resolver/confirm_helper.hh>
 
 #include <paludis/user_dep_spec.hh>
 #include <paludis/notifier_callback.hh>
@@ -1215,105 +1216,6 @@ namespace
         return indeterminate;
     }
 
-    struct ConfirmFnVisitor
-    {
-        const Environment * const env;
-        const ResolveCommandLineResolutionOptions & resolution_options;
-        const PackageDepSpecList & permit_downgrade;
-        const PackageDepSpecList & permit_old_version;
-        const PackageDepSpecList & allowed_to_break_specs;
-        const bool allowed_to_break_system;
-        const std::shared_ptr<const PackageID> id;
-
-        ConfirmFnVisitor(const Environment * const e,
-                const ResolveCommandLineResolutionOptions & r,
-                const PackageDepSpecList & d,
-                const PackageDepSpecList & o,
-                const PackageDepSpecList & a,
-                const bool s,
-                const std::shared_ptr<const PackageID> & i) :
-            env(e),
-            resolution_options(r),
-            permit_downgrade(d),
-            permit_old_version(o),
-            allowed_to_break_specs(a),
-            allowed_to_break_system(s),
-            id(i)
-        {
-        }
-
-        bool visit(const DowngradeConfirmation &) const
-        {
-            if (id)
-                for (PackageDepSpecList::const_iterator l(permit_downgrade.begin()), l_end(permit_downgrade.end()) ;
-                        l != l_end ; ++l)
-                {
-                    if (match_package(*env, *l, *id, { }))
-                        return true;
-                }
-
-            return false;
-        }
-
-        bool visit(const NotBestConfirmation &) const
-        {
-            if (id)
-                for (PackageDepSpecList::const_iterator l(permit_old_version.begin()), l_end(permit_old_version.end()) ;
-                        l != l_end ; ++l)
-                {
-                    if (match_package(*env, *l, *id, { }))
-                        return true;
-                }
-
-            return false;
-        }
-
-        bool visit(const BreakConfirmation &) const
-        {
-            if (id)
-                for (PackageDepSpecList::const_iterator l(allowed_to_break_specs.begin()), l_end(allowed_to_break_specs.end()) ;
-                        l != l_end ; ++l)
-                {
-                    if (match_package(*env, *l, *id, { }))
-                        return true;
-                }
-
-            return false;
-        }
-
-        bool visit(const RemoveSystemPackageConfirmation &) const
-        {
-            return allowed_to_break_system;
-        }
-
-        bool visit(const MaskedConfirmation &) const
-        {
-            return false;
-        }
-
-        bool visit(const ChangedChoicesConfirmation &) const
-        {
-            return false;
-        }
-    };
-
-    bool confirm_fn(
-            const Environment * const env,
-            const ResolveCommandLineResolutionOptions & resolution_options,
-            const PackageDepSpecList & permit_downgrade,
-            const PackageDepSpecList & permit_old_version,
-            const PackageDepSpecList & allowed_to_break_specs,
-            const bool allowed_to_break_system,
-            const std::shared_ptr<const Resolution> & r,
-            const std::shared_ptr<const RequiredConfirmation> & c)
-    {
-        return c->accept_returning<bool>(ConfirmFnVisitor(env, resolution_options, permit_downgrade, permit_old_version,
-                    allowed_to_break_specs, allowed_to_break_system,
-                    r->decision()->accept_returning<std::pair<std::shared_ptr<const PackageID>, std::shared_ptr<const ChangedChoices> > >(
-                        ChosenIDVisitor()).first
-                    ));
-    }
-
     const std::shared_ptr<ConstraintSequence> get_constraints_for_dependent_fn(
             const Environment * const env,
             const PackageDepSpecList & list,
@@ -1722,20 +1624,10 @@ paludis::cave::resolve_common(
     int retcode(0);
 
     InitialConstraints initial_constraints;
-    PackageDepSpecList allowed_to_break_specs, remove_if_dependent_specs,
+    PackageDepSpecList remove_if_dependent_specs,
                        less_restrictive_remove_blockers_specs, purge_specs, with, without,
-                       permit_old_version, permit_downgrade, take, take_from, ignore, ignore_from,
+                       take, take_from, ignore, ignore_from,
                        favour, avoid, early, late, no_dependencies_from, no_blockers_from;
-    bool allowed_to_break_system(false);
-
-    for (args::StringSetArg::ConstIterator i(resolution_options.a_uninstalls_may_break.begin_args()),
-            i_end(resolution_options.a_uninstalls_may_break.end_args()) ;
-            i != i_end ; ++i)
-        if (*i == "system")
-            allowed_to_break_system = true;
-        else
-            allowed_to_break_specs.push_back(parse_user_package_dep_spec(*i, env.get(),
-                        { updso_allow_wildcards }));
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_remove_if_dependent.begin_args()),
             i_end(resolution_options.a_remove_if_dependent.end_args()) ;
@@ -1827,18 +1719,6 @@ paludis::cave::resolve_common(
         no_blockers_from.push_back(parse_user_package_dep_spec(*i, env.get(),
                     { updso_allow_wildcards }));
 
-    for (args::StringSetArg::ConstIterator i(resolution_options.a_permit_downgrade.begin_args()),
-            i_end(resolution_options.a_permit_downgrade.end_args()) ;
-            i != i_end ; ++i)
-        permit_downgrade.push_back(parse_user_package_dep_spec(*i, env.get(),
-                    { updso_allow_wildcards }));
-
-    for (args::StringSetArg::ConstIterator i(resolution_options.a_permit_old_version.begin_args()),
-            i_end(resolution_options.a_permit_old_version.end_args()) ;
-            i != i_end ; ++i)
-        permit_old_version.push_back(parse_user_package_dep_spec(*i, env.get(),
-                    { updso_allow_wildcards }));
-
     std::shared_ptr<Generator> binary_destinations;
     for (PackageDatabase::RepositoryConstIterator r(env->package_database()->begin_repositories()),
             r_end(env->package_database()->end_repositories()) ;
@@ -1919,15 +1799,29 @@ paludis::cave::resolve_common(
             i != i_end ; ++i)
         can_use_helper.add_cannot_use_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
 
+    ConfirmHelper confirm_helper(env.get());
+    for (args::StringSetArg::ConstIterator i(resolution_options.a_permit_downgrade.begin_args()),
+            i_end(resolution_options.a_permit_downgrade.end_args()) ;
+            i != i_end ; ++i)
+        confirm_helper.add_permit_downgrade_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
+    for (args::StringSetArg::ConstIterator i(resolution_options.a_permit_old_version.begin_args()),
+            i_end(resolution_options.a_permit_old_version.end_args()) ;
+            i != i_end ; ++i)
+        confirm_helper.add_permit_old_version_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
+    for (args::StringSetArg::ConstIterator i(resolution_options.a_uninstalls_may_break.begin_args()),
+            i_end(resolution_options.a_uninstalls_may_break.end_args()) ;
+            i != i_end ; ++i)
+        if (*i == "system")
+            confirm_helper.set_allowed_to_break_system(true);
+        else
+            confirm_helper.add_allowed_to_break_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
+
     ResolverFunctions resolver_functions(make_named_values<ResolverFunctions>(
                 n::allow_choice_changes_fn() = std::cref(allow_choice_changes_helper),
                 n::allowed_to_remove_fn() = std::cref(allowed_to_remove_helper),
                 n::always_via_binary_fn() = std::cref(always_via_binary_helper),
                 n::can_use_fn() = std::cref(can_use_helper),
-                n::confirm_fn() = std::bind(&confirm_fn,
-                    env.get(), std::cref(resolution_options), std::cref(permit_downgrade),
-                    std::cref(permit_old_version), std::cref(allowed_to_break_specs),
-                    allowed_to_break_system, _1, _2),
+                n::confirm_fn() = std::cref(confirm_helper),
                 n::find_repository_for_fn() = std::bind(&find_repository_for_fn,
                     env.get(), std::cref(resolution_options), _1, _2),
                 n::get_constraints_for_dependent_fn() = std::bind(&get_constraints_for_dependent_fn,

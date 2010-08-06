@@ -231,14 +231,6 @@ paludis::resolver::resolver_test::order_early_fn(
     return indeterminate;
 }
 
-bool
-paludis::resolver::resolver_test::confirm_fn(
-        const std::shared_ptr<const Resolution> &,
-        const std::shared_ptr<const RequiredConfirmation> &)
-{
-    return true;
-}
-
 const std::shared_ptr<ConstraintSequence>
 paludis::resolver::resolver_test::get_constraints_for_dependent_fn(
         const std::shared_ptr<const Resolution> &,
@@ -331,7 +323,8 @@ ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s,
     allow_choice_changes_helper(&env),
     allowed_to_remove_helper(&env),
     always_via_binary_helper(&env),
-    can_use_helper(&env)
+    can_use_helper(&env),
+    confirm_helper(&env)
 {
     std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
     keys->insert("format", "e");
@@ -381,7 +374,7 @@ ResolverTestCase::get_resolver_functions(InitialConstraints & initial_constraint
             n::allowed_to_remove_fn() = std::cref(allowed_to_remove_helper),
             n::always_via_binary_fn() = std::cref(always_via_binary_helper),
             n::can_use_fn() = std::cref(can_use_helper),
-            n::confirm_fn() = &confirm_fn,
+            n::confirm_fn() = std::cref(confirm_helper),
             n::find_repository_for_fn() = std::bind(&find_repository_for_fn,
                     &env, std::placeholders::_1, std::placeholders::_2),
             n::get_constraints_for_dependent_fn() = &get_constraints_for_dependent_fn,

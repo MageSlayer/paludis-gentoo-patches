@@ -35,6 +35,7 @@ noinst_HEADERS = \
 	can_use_helper.hh can_use_helper-fwd.hh \
 	change_by_resolvent.hh change_by_resolvent-fwd.hh \
 	change_type.hh change_type-fwd.hh change_type-se.hh \
+	confirm_helper.hh confirm_helper-fwd.hh \
 	constraint.hh constraint-fwd.hh \
 	decider.hh decider-fwd.hh \
 	decision.hh decision-fwd.hh \
@@ -75,6 +76,7 @@ libpaludisresolver_a_SOURCES = \
 	can_use_helper.cc \
 	change_by_resolvent.cc \
 	change_type.cc \
+	confirm_helper.cc \
 	constraint.cc \
 	decider.cc \
 	decision.cc \
