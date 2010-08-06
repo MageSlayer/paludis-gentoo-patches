@@ -3,6 +3,7 @@
 # vim: set et sw=2 sts=2 ts=2 ft=zsh :
 # ZSH completion for `cave`
 # Written by Ingmar Vanhassel <ingmar@exherbo.org>
+# Updated by Bo Ørsted Andresen <zlin@exherbo.org>
 
 _cave()
 {
@@ -15,32 +16,51 @@ _cave()
                                                     qa\:"Show QA messages and warnings only (default)"
                                                     warning\:"Show warnings only"
                                                     silent\:"Suppress all log messages (UNSAFE)"))'
+    '(--help -h)'{--help,-h}'[Display help messsage]'
+    '(-v --version)'{-v,--version}'[Display version information]'
   )
 
   _cave_commands=(
     'config:Perform post-install configuration on a package'
+    'contents:Display the contents of a package ID'
+    "display-resolution:Displays a dependency resolution created using \'cave resolve\'"
+    'executables:Display executables belonging to an ID'
+    "execute-resolution:Executes a dependency resolution created using \'cave resolve\'"
+    'find-candidates:Find a list of candidate packages for a search'
     'fix-cache:Fix on-disk caches'
     'fix-linkage:Identify packages with broken linkage that can be fixed by rebuilds'
-    'help:Display help information for a particular command'
+    'help:Display help information'
+    'import:Import a package from a directory containing its image'
     'info:Display a summary of configuration and package information'
+    'match:Determine whether a particular package version has certain properties'
+    'owner:Shows package IDs owning a given file'
     'perform:Perform an action upon a package'
     'print-categories:Prints a list of known categories'
     'print-commands:Prints a list of known cave commands'
     'print-environment-metadata:Prints environment metadata'
+    'print-id-actions:Prints ID actions'
     'print-id-contents:Prints the contents of a package ID'
     'print-id-executables:Prints a list of executables belonging to an ID'
+    'print-id-masks:Prints ID masks'
     'print-id-metadata:Prints ID metadata'
     'print-ids:Prints a list of known IDs'
     'print-owners:Prints a list of package IDs owning a given file'
     'print-packages:Prints a list of package names'
     'print-repositories:Prints a list of repositories'
+    'print-repository-formats:Prints a list of available repository formats'
+    'print-repository-metadata:Prints repository metadata'
+    'print-set:Prints a list of known sets'
     'print-sets:Prints a list of sets'
     'print-sync-protocols:Prints a list of sync protocols'
-    'resolve:Display how to resolve targets and optionally perform that resolution'
+    'purge:Uninstall unused packages'
+    'resolve:Display how to resolve one or more targets, and possibly then perform that resolution'
+    "resume:Resume a failed resolution from \'cave resolve\'"
     'search:Search for packages with particular characteristics'
-    'show:Displays a formatted summary of a given object'
+    'show:Display a summary of a given object'
     'sync:Sync all or specified repositories'
-    'update-world:Update the world set'
+    'uninstall:Uninstall one or more packages'
+    'update-world:Updates the world set'
+    "verify:Verify that an installed package\'s files haven\'t changed"
   )
 
   for (( i=1; i <= ${CURRENT}; i++ )); do
