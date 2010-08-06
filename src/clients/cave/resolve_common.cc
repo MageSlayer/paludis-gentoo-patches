@@ -45,8 +45,10 @@
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/return_literal_function.hh>
+
 #include <paludis/args/do_help.hh>
 #include <paludis/args/escape.hh>
+
 #include <paludis/resolver/resolver.hh>
 #include <paludis/resolver/resolution.hh>
 #include <paludis/resolver/decision.hh>
@@ -62,6 +64,9 @@
 #include <paludis/resolver/decisions.hh>
 #include <paludis/resolver/change_by_resolvent.hh>
 #include <paludis/resolver/labels_classifier.hh>
+
+#include <paludis/resolver/allow_choice_changes_helper.hh>
+
 #include <paludis/user_dep_spec.hh>
 #include <paludis/notifier_callback.hh>
 #include <paludis/generator.hh>
@@ -1987,9 +1992,11 @@ paludis::cave::resolve_common(
     using std::placeholders::_3;
     using std::placeholders::_4;
 
+    AllowChoiceChangesHelper allow_choice_changes_helper(env.get());;
+    allow_choice_changes_helper.set_allow_choice_changes(! resolution_options.a_no_override_flags.specified());
+
     ResolverFunctions resolver_functions(make_named_values<ResolverFunctions>(
-                n::allow_choice_changes_fn() = std::bind(return_literal_function(
-                        ! resolution_options.a_no_override_flags.specified())),
+                n::allow_choice_changes_fn() = std::cref(allow_choice_changes_helper),
                 n::allowed_to_remove_fn() = std::bind(&allowed_to_remove_fn,
                     env.get(), std::cref(allowed_to_remove_specs), _1, _2),
                 n::always_via_binary_fn() = std::bind(&always_via_binary_fn,

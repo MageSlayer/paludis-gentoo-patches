@@ -28,6 +28,7 @@ BUILT_SOURCES = \
 	use_existing-se.hh use_existing-se.cc
 
 noinst_HEADERS = \
+	allow_choice_changes_helper.hh allow_choice_changes_helper-fwd.hh \
 	any_child_score.hh any_child_score-fwd.hh any_child_score-se.hh \
 	change_by_resolvent.hh change_by_resolvent-fwd.hh \
 	change_type.hh change_type-fwd.hh change_type-se.hh \
@@ -64,6 +65,7 @@ noinst_HEADERS = \
 	use_existing.hh use_existing-fwd.hh use_existing-se.hh
 
 libpaludisresolver_a_SOURCES = \
+	allow_choice_changes_helper.cc \
 	any_child_score.cc \
 	change_by_resolvent.cc \
 	change_type.cc \

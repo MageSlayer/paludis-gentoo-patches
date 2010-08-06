@@ -34,14 +34,22 @@
 #include <paludis/resolver/package_or_block_dep_spec-fwd.hh>
 #include <paludis/resolver/resolved-fwd.hh>
 #include <paludis/resolver/change_by_resolvent-fwd.hh>
+
+#include <paludis/resolver/allow_choice_changes_helper.hh>
+
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
+
 #include <paludis/environments/test/test_environment.hh>
+
 #include <paludis/util/map-fwd.hh>
+
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/filtered_generator-fwd.hh>
 #include <paludis/generator-fwd.hh>
+
 #include <test/test_framework.hh>
+
 #include <memory>
 #include <string>
 #include <map>
@@ -145,6 +153,8 @@ namespace paludis
                 std::shared_ptr<QualifiedPackageNameSet> allowed_to_remove_names;
                 std::shared_ptr<QualifiedPackageNameSet> remove_if_dependent_names;
                 std::shared_ptr<Map<QualifiedPackageName, bool> > prefer_or_avoid_names;
+
+                AllowChoiceChangesHelper allow_choice_changes_helper;
 
                 ResolverTestCase(const std::string & group, const std::string & test_name, const std::string & eapi,
                         const std::string & layout);

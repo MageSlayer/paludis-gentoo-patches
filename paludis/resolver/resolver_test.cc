@@ -39,7 +39,6 @@
 #include <paludis/util/set-impl.hh>
 #include <paludis/util/tribool.hh>
 #include <paludis/util/simple_visitor_cast.hh>
-#include <paludis/util/return_literal_function.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/repository_factory.hh>
 #include <paludis/package_database.hh>
@@ -352,7 +351,8 @@ ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s,
     TestCase(s),
     allowed_to_remove_names(std::make_shared<QualifiedPackageNameSet>()),
     remove_if_dependent_names(std::make_shared<QualifiedPackageNameSet>()),
-    prefer_or_avoid_names(std::make_shared<Map<QualifiedPackageName, bool>>())
+    prefer_or_avoid_names(std::make_shared<Map<QualifiedPackageName, bool>>()),
+    allow_choice_changes_helper(&env)
 {
     std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
     keys->insert("format", "e");
@@ -398,7 +398,7 @@ ResolverFunctions
 ResolverTestCase::get_resolver_functions(InitialConstraints & initial_constraints)
 {
     return make_named_values<ResolverFunctions>(
-            n::allow_choice_changes_fn() = std::bind(return_literal_function(true)),
+            n::allow_choice_changes_fn() = std::cref(allow_choice_changes_helper),
             n::allowed_to_remove_fn() = std::bind(&allowed_to_remove_fn,
                     allowed_to_remove_names, std::placeholders::_1, std::placeholders::_2),
             n::always_via_binary_fn() = &always_via_binary_fn,
