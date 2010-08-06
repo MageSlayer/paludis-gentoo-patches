@@ -4,6 +4,57 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the Git log.
 
+0.52.0:
+    * format="exheres" and format="ebuild" are now deprecated in favour of
+      format="e".
+
+    * Specifying 'root' in a repository config file now overrides the
+      environment-supplied default.
+
+    * 'cave resolve' will now select packages even if [use] dependencies are
+      unmet, and will display the necessary changes needed to user
+      configuration.
+
+    * 'cave resolve --without' will now allow nothing at all to be installed.
+
+    * 'cave resolve' now has options for chroot handling.
+
+    * 'cave execute-resolution' now writes resume data after every job
+      completion, rather than just upon normal exit.
+
+    * 'cave import' now has '--strip --preserve-work' options, and the default
+      for build_options: preserve_work is now disabled.
+
+    * 'cave print-ids' now has short options.
+
+    * 'cave display-resolution' now displays better job count information, and
+      more compact at displaying circular dependencies.
+
+0.50.3:
+    * :* dependencies no longer count as matching every slot when testing
+      removal safety.
+
+    * When 'cave resolve' changes from having made a decision to being unable to
+      make a decision, and where dependencies from the previously made decision
+      have already been tracked, a horrible error is no longer produced.
+
+    * 'cave display-resolution' now shows download sizes, and no longer displays
+      empty descriptions.
+
+    * 'cave resolve' now has a '--fetch' option to skip non-fetch jobs.
+
+    * 'cave show' now has a '--no-versions' option.
+
+0.50.2:
+    * 'cave resolve --continue-on-failure' interacted weirdly with background
+      fetching. This is now fixed.
+
+    * Support for automatic repository configuration creation via installing
+      a 'repository/somerepo' pseudo-package is now available on Gentoo.
+
+    * Queries in the form '*/*::foo->' no longer force pointless generation of
+      metadata for ebuilds.
+
 0.50.1:
     * 'cave purge' and 'cave resolve' will no longer either give misleading
       output or produce a horrible error when a package providing an old style
