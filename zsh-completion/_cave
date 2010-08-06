@@ -304,55 +304,72 @@ _cave_cmd_print-repositories()
     '--format[Show only repositories of a specific format]:repository format: '
 }
 
-(( ${+functions[_cave_cmd_resolve]} )) ||
-_cave_cmd_resolve()
-{
-  _arguments -s : \
+_cave_resolve_arguments=(
     '(--help -h)'{--help,-h}'[Display help messsage]' \
-    '(--execute -x)'{--execute,-x}'[Execute resolution]' \
+    '(--execute -x --no-execute)'{--execute,-x,--no-execute}'[Execute the suggested actions]' \
     '(--lazy -z --complete -c --everything -e --no-lazy --no-complete --no-everything)'{--lazy,-z,--no-lazy}'[Do as little work as possible]' \
     '(--lazy -z --complete -c --everything -e --no-lazy --no-complete --no-everything)'{--complete,-c,--no-complete}'[Do all optional work]' \
     '(--lazy -z --complete -c --everything -e --no-lazy --no-complete --no-everything)'{--everything,-e,--no-everything}'[Do all optional work, and also reinstall]' \
-    '(--explain -X)'{--explain,-X}'[Explain why decisions are made]:Spec: ' \
-    '*'{--permit-uninstall,-U}'[Permit uninstallation of packages matching a package spec]:Spec: ' \
-    '*'{--permit-downgrade,-d}'[Permit downgrades of packages matching a package spec]:Spec: ' \
-    '*'{--permit-old-version,-o}'[Permit installs of versions worse than the best visible version in the slot for packages matching a package spec]:Spec: ' \
-    '*'{--uninstalls-may-break,-u}'[Permit uninstalls that might break packages matching the specified package spec]:Spec: ' \
-    '*'{--remove-if-dependent,-r}'[Remove dependent packages that might be broken by other changes if those packages match a package spec]:Spec: ' \
-    '*'{--less-restrictive-remove-blockers,-l}'[Use less restrictive blockers for packages matching the supplied package spec]:Spec: ' \
-    '(--keep-targets -K)'{--keep-targets,-K}'[Select whether to keep target packages]:When:((auto never if-transient if-same if-same-version if-possible))' \
-    '(--keep -k)'{--keep,-k}'[Select whether to keep packages that are not targets]:When:((never if-transient if-same if-same-version if-possible))' \
-    '(--reinstall-scm -R)'{--reinstall-scm,-R}'[Select whether to reinstall SCM packages that would otherwise be kept]:When:((always daily weekly never))' \
+    '*'{--permit-uninstall,-U}'[Permit uninstallation of packages matching the supplied specification]:Spec: ' \
+    '*'{--permit-downgrade,-d}'[Permit downgrades matching the supplied specification]:Spec: ' \
+    '*'{--permit-old-version,-o}'[Permit installs of versions matching the supplied specification even if those versions are worse than the best visible version in the slot]:Spec: ' \
+    '*'{--purge,-P}'[Purge packages matching the given specification, if they will no longer be used after a resolution]:Spec: ' \
+    '(--no-override-masks --no-no-override-masks)'{--no-override-masks,--no-no-override-masks}'[If otherwise unable to make a decision, unless this option is specified the resolver will try packages that are weakly masked too]' \
+    '(--no-override-flags --no-no-override-flags)'{--no-override-flags,--no-no-override-flags}'[If otherwise unable to make a decision, unless this option is specified the resolver will try selecting packages using different options to the ones specified in the user'\''s configuration]' \
+    '*'{--uninstalls-may-break,-u}'[Permit uninstalls that might break packages matching the specified specification]:Spec: ' \
+    '*'{--remove-if-dependent,-r}'[Remove dependent packages that might be broken by other changes if those packages match the specified specification]:Spec: ' \
+    '*'{--less-restrictive-remove-blockers,-l}'[Use less restrictive blockers for packages matching the supplied specification if that package is to be removed by --remove-if-dependent]:Spec: ' \
+    '(--keep-targets -K)'{--keep-targets,-K}'[Select whether to keep target packages]:When:((auto a never n if-transient t if-same s if-same-version v if-possible p))' \
+    '(--keep -k)'{--keep,-k}'[Select whether to keep installed packages that are not targets]:When:((never n if-transient t if-same s if-same-version v if-possible p))' \
+    '(--reinstall-scm -R)'{--reinstall-scm,-R}'[Select whether to reinstall SCM packages that would otherwise be kept]:When:((always a daily d weekly w never n))' \
     '*'{--with,-w}'[Never keep installed packages with the supplied package name]:Spec: ' \
     '*'{--without,-W}'[Keep installed packages with the supplied package name if possible]:Spec: ' \
-    '(--target-slots -S)'{--target-slots,-S}'[Which slots to consider for targets]:Which:((best-or-installed installed-or-best all best))' \
-    '(--slots -s)'{--slots,-s}'[Which slots to consider for packages that are not targets]:Which:((best-or-installed installed-or-best all best))' \
+    '(--target-slots -S)'{--target-slots,-S}'[Which slots to consider for targets]:Which:((best-or-installed x installed-or-best i all a best b))' \
+    '(--slots -s)'{--slots,-s}'[Which slots to consider for packages that are not targets]:Which:((best-or-installed x installed-or-best i all a best b))' \
     '(--follow-installed-build-dependencies --no-follow-installed-build-dependencies -D)'{--follow-installed-build-dependencies,--no-follow-installed-build-dependencies,-D}'[Follow build dependencies for installed packages]' \
     '(--no-follow-installed-dependencies --no-no-follow-installed-dependencies -n)'{--no-follow-installed-dependencies,--no-no-follow-installed-dependencies,-n}'[Ignore dependencies for installed packages]' \
-    '*'{--no-dependencies-from,-0}'[Ignore dependencies (not blockers) from packages matching a package spec]:Spec: ' \
-    '*'{--no-blockers-from,-!}'[Ignore blockers from packages matching a package spec]:Spec: ' \
-    '(--dump --no-dump)'{--dump,--no-dump}'[Dump debug output]' \
-    '(--dump-dependencies --no-dump-dependencies)'{--dump-dependencies,--no-dump-dependencies}'[Dump the sanitised dependencies selected for every package]' \
-    '(--dump-restarts --no-dump-restarts)'{--dump-restarts,--no-dump-restarts}'[Dump restarts]' \
-    '--suggestions[Control whether suggestions are taken]:When:((ignore display take))' \
-    '--recommendations[Control whether recommendations are taken]:When:((ignore display take))' \
-    '*'{--take,-t}'[Take suggestions matching a package spec]:Spec: ' \
-    '*'{--take-from,-T}'[Take suggestions made by any package matching a package spec]:Spec: ' \
-    '*'{--ignore,-i}'[Discard any suggestion matching a package spec]:Spec: ' \
-    '*'{--ignore-from,-I}'[Discard all suggestions made by any package matching a package spec]:Spec: ' \
-    '*'{--favour,-F}'[If there is a choice, favour the specified package name]:Spec: ' \
-    '*'{--avoid,-A}'[If there is a choice, avoid the specified package name]:Spec: ' \
+    '*'{--no-dependencies-from,-0}'[Ignore dependencies (not blockers) from packages matching the supplied specification]:Spec: ' \
+    '*'{--no-blockers-from,-!}'[Ignore blockers from packages matching the supplied specification]:Spec: ' \
+    '--suggestions[How to treat suggestions and recommendations]:When:((ignore display take))' \
+    '--recommendations[How to treat recommendations]:When:((ignore display take))' \
+    '*'{--take,-t}'[Take any suggestion matching the supplied package specification]:Spec: ' \
+    '*'{--take-from,-T}'[Take all suggestions made by any package matching the supplied package specification]:Spec: ' \
+    '*'{--ignore,-i}'[Discard any suggestion matching the supplied package specification]:Spec: ' \
+    '*'{--ignore-from,-I}'[Discard all suggestions made by any package matching the supplied package specification]:Spec: ' \
+    '*'{--favour,-F}'[If there is a choice, favour the specified package names]:Spec: ' \
+    '*'{--avoid,-A}'[If there is a choice, avoid the specified package names]:Spec: ' \
+    '*'{--not-usable,-N}'[Consider installed packages matching the supplied specification as being unusable when breaking dependency cycles]' \
+    '*'{--early,-E}'[When given a collection of otherwise equally desirable packages to order, order packages matching the supplied spec first]' \
+    '*'{--late,-L}'[When given a collection of otherwise equally desirable packages to order, order packages matching the supplied spec last]' \
     '*'{--preset,-p}'[Preset a given constraint]:Spec: ' \
-    '(--create-binaries -b)'{--create-binaries,-b}'[Create binary packages in the specified repository]:Repository:_cave_repositories' \
-    '*'{--no-binaries-for,-B}'[Do not create binary packages from any origin ID matching a spec]:Spec: ' \
-    '(--install-to-root -/ --no-install-to-root)'{--install-to-root,-/,--no-install-to-root}'[Install packages to /]' \
+    '(--make -m)'{--make,-m}'[Specify what to do with targets]:Make:((install i binaries b chroot c))' \
+    '(--make-dependencies -M)'{--make-dependencies,-M}'[Specify what to do with dependencies of targets]:When:((auto runtime r all a none n))' \
+    '*'{--via-binary,-b}'[When building a package matching the supplied spec, create a binary package and use that for the install]' \
+    '(--dump --no-dump)'{--dump,--no-dump}'[Dump debug output]' \
+    '(--dump-restarts --no-dump-restarts)'{--dump-restarts,--no-dump-restarts}'[Dump restarts]' \
     '(--preserve-world -1 --no-preserve-world)'{--preserve-world,-1,--no-preserve-world}'[Do not modify the world set]' \
-    '(--continue-on-failure -C)'{--continue-on-failure,-C}'[Whether to continue after an error occurs]:When:((if-fetching never if-satisfied if-independent always))' \
+    '(--continue-on-failure -C)'{--continue-on-failure,-C}'[Whether to continue after an error occurs]:When:((never n if-satisfied s if-independent i always a))' \
+    '--resume-file[Write resume information to the specified file]' \
+    '(--fetch -f --no-fetch)'{--fetch,-f,--no-fetch}'[Skip any jobs that are not fetch jobs]' \
+    '(--fetch-jobs -J)'{--fetch-jobs,-J}'[The number of parallel fetch jobs to launch]' \
     '*--skip-phase[Skip the named phases]:Phase:((fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup))' \
     '*--abort-at-phase[Abort when a named phase is encountered]:Phase:((fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup))' \
     '*--skip-until-phase[Skip every phase until a named phase is encountered]:Phase:((fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup))' \
     '*--change-phases-for[Control to which packages these phase options apply]:Which:((all first last))' \
+    '--show-option-descriptions[Whether to display descriptions for package options]:Which:((none new changed all))' \
     '--show-descriptions[Whether to display package descriptions]:When:((none new all))' \
+    '(--explain -X)'{--explain,-X}'[Explain why the resolver made a particular decision]:Spec: ' \
+    '--display-resolution-program[The program used to display the resolution]:Command: ' \
+    '--execute-resolution-program[The program used to execute the resolution]:Command: ' \
+    '--perform-program[The program used to perform actions]:Command: ' \
+    '--update-world-program[The program used to perform world updates]:Command: '
+)
+
+(( ${+functions[_cave_cmd_resolve]} )) ||
+_cave_cmd_resolve()
+{
+  _arguments -s : \
+    ${_cave_resolve_arguments[@]} \
     '*:package depspec:_cave_packages' && return 0
 }
 
