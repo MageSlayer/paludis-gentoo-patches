@@ -43,6 +43,7 @@ noinst_HEADERS = \
 	destination.hh destination-fwd.hh \
 	destination_types.hh destination_types-fwd.hh destination_types-se.hh \
 	find_repository_for_helper.hh find_repository_for_helper-fwd.hh \
+	get_constraints_for_dependent_helper.hh get_constraints_for_dependent_helper-fwd.hh \
 	job.hh job-fwd.hh \
 	job_list.hh job_list-fwd.hh \
 	job_lists.hh job_lists-fwd.hh \
@@ -85,6 +86,7 @@ libpaludisresolver_a_SOURCES = \
 	destination.cc \
 	destination_types.cc \
 	find_repository_for_helper.cc \
+	get_constraints_for_dependent_helper.cc \
 	job.cc \
 	job_list.cc \
 	job_lists.cc \

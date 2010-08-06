@@ -41,6 +41,7 @@
 #include <paludis/resolver/can_use_helper.hh>
 #include <paludis/resolver/confirm_helper.hh>
 #include <paludis/resolver/find_repository_for_helper.hh>
+#include <paludis/resolver/get_constraints_for_dependent_helper.hh>
 
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
@@ -78,12 +79,6 @@ namespace paludis
             const std::shared_ptr<Constraints> initial_constraints_for_fn(
                     const InitialConstraints & initial_constraints,
                     const Resolvent & resolvent);
-
-            const std::shared_ptr<ConstraintSequence>
-            get_constraints_for_dependent_fn(
-                    const std::shared_ptr<const Resolution> &,
-                    const std::shared_ptr<const PackageID> & id,
-                    const std::shared_ptr<const ChangeByResolventSequence> & ids);
 
             const std::shared_ptr<ConstraintSequence>
             get_constraints_for_purge_fn(
@@ -144,6 +139,7 @@ namespace paludis
                 CanUseHelper can_use_helper;
                 ConfirmHelper confirm_helper;
                 FindRepositoryForHelper find_repository_for_helper;
+                GetConstraintsForDependentHelper get_constraints_for_dependent_helper;
 
                 ResolverTestCase(const std::string & group, const std::string & test_name, const std::string & eapi,
                         const std::string & layout);

@@ -223,39 +223,6 @@ paludis::resolver::resolver_test::order_early_fn(
 }
 
 const std::shared_ptr<ConstraintSequence>
-paludis::resolver::resolver_test::get_constraints_for_dependent_fn(
-        const std::shared_ptr<const Resolution> &,
-        const std::shared_ptr<const PackageID> & id,
-        const std::shared_ptr<const ChangeByResolventSequence> & ids)
-{
-    const std::shared_ptr<ConstraintSequence> result(std::make_shared<ConstraintSequence>());
-
-    PartiallyMadePackageDepSpec partial_spec({ });
-    partial_spec.package(id->name());
-    if (id->slot_key())
-        partial_spec.slot_requirement(std::make_shared<ELikeSlotExactRequirement>(
-                        id->slot_key()->value(), false));
-    PackageDepSpec spec(partial_spec);
-
-    for (ChangeByResolventSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
-            i != i_end ; ++i)
-    {
-        const std::shared_ptr<DependentReason> reason(std::make_shared<DependentReason>(*i));
-
-        result->push_back(std::make_shared<Constraint>(make_named_values<Constraint>(
-                            n::destination_type() = dt_install_to_slash,
-                            n::nothing_is_fine_too() = true,
-                            n::reason() = reason,
-                            n::spec() = BlockDepSpec("!" + stringify(spec), spec, false),
-                            n::untaken() = false,
-                            n::use_existing() = ue_if_possible
-                            )));
-    }
-
-    return result;
-}
-
-const std::shared_ptr<ConstraintSequence>
 paludis::resolver::resolver_test::get_constraints_for_purge_fn(
         const std::shared_ptr<const Resolution> &,
         const std::shared_ptr<const PackageID> & id,
@@ -316,7 +283,8 @@ ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s,
     always_via_binary_helper(&env),
     can_use_helper(&env),
     confirm_helper(&env),
-    find_repository_for_helper(&env)
+    find_repository_for_helper(&env),
+    get_constraints_for_dependent_helper(&env)
 {
     std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
     keys->insert("format", "e");
@@ -368,7 +336,7 @@ ResolverTestCase::get_resolver_functions(InitialConstraints & initial_constraint
             n::can_use_fn() = std::cref(can_use_helper),
             n::confirm_fn() = std::cref(confirm_helper),
             n::find_repository_for_fn() = std::cref(find_repository_for_helper),
-            n::get_constraints_for_dependent_fn() = &get_constraints_for_dependent_fn,
+            n::get_constraints_for_dependent_fn() = std::cref(get_constraints_for_dependent_helper),
             n::get_constraints_for_purge_fn() = &get_constraints_for_purge_fn,
             n::get_constraints_for_via_binary_fn() = &get_constraints_for_via_binary_fn,
             n::get_destination_types_for_error_fn() = &get_destination_types_for_error_fn,
