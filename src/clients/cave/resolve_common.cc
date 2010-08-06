@@ -68,6 +68,7 @@
 #include <paludis/resolver/allow_choice_changes_helper.hh>
 #include <paludis/resolver/allowed_to_remove_helper.hh>
 #include <paludis/resolver/always_via_binary_helper.hh>
+#include <paludis/resolver/can_use_helper.hh>
 
 #include <paludis/user_dep_spec.hh>
 #include <paludis/notifier_callback.hh>
@@ -1408,14 +1409,6 @@ namespace
         return result;
     }
 
-    bool can_use_fn(
-            const Environment * const env,
-            const PackageDepSpecList & list,
-            const std::shared_ptr<const PackageID> & id)
-    {
-        return ! match_any(env, list, id);
-    }
-
     void serialise_resolved(StringListStream & ser_stream, const Resolved & resolved)
     {
         Serialiser ser(ser_stream);
@@ -1732,7 +1725,7 @@ paludis::cave::resolve_common(
     PackageDepSpecList allowed_to_break_specs, remove_if_dependent_specs,
                        less_restrictive_remove_blockers_specs, purge_specs, with, without,
                        permit_old_version, permit_downgrade, take, take_from, ignore, ignore_from,
-                       favour, avoid, early, late, no_dependencies_from, no_blockers_from, not_usable_specs;
+                       favour, avoid, early, late, no_dependencies_from, no_blockers_from;
     bool allowed_to_break_system(false);
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_uninstalls_may_break.begin_args()),
@@ -1846,12 +1839,6 @@ paludis::cave::resolve_common(
         permit_old_version.push_back(parse_user_package_dep_spec(*i, env.get(),
                     { updso_allow_wildcards }));
 
-    for (args::StringSetArg::ConstIterator i(resolution_options.a_not_usable.begin_args()),
-            i_end(resolution_options.a_not_usable.end_args()) ;
-            i != i_end ; ++i)
-        not_usable_specs.push_back(parse_user_package_dep_spec(*i, env.get(),
-                    { updso_allow_wildcards }));
-
     std::shared_ptr<Generator> binary_destinations;
     for (PackageDatabase::RepositoryConstIterator r(env->package_database()->begin_repositories()),
             r_end(env->package_database()->end_repositories()) ;
@@ -1926,12 +1913,17 @@ paludis::cave::resolve_common(
         always_via_binary_helper.add_always_via_binary_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
 #endif
 
+    CanUseHelper can_use_helper(env.get());
+    for (args::StringSetArg::ConstIterator i(resolution_options.a_not_usable.begin_args()),
+            i_end(resolution_options.a_not_usable.end_args()) ;
+            i != i_end ; ++i)
+        can_use_helper.add_cannot_use_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
+
     ResolverFunctions resolver_functions(make_named_values<ResolverFunctions>(
                 n::allow_choice_changes_fn() = std::cref(allow_choice_changes_helper),
                 n::allowed_to_remove_fn() = std::cref(allowed_to_remove_helper),
                 n::always_via_binary_fn() = std::cref(always_via_binary_helper),
-                n::can_use_fn() = std::bind(&can_use_fn,
-                    env.get(), std::cref(not_usable_specs), _1),
+                n::can_use_fn() = std::cref(can_use_helper),
                 n::confirm_fn() = std::bind(&confirm_fn,
                     env.get(), std::cref(resolution_options), std::cref(permit_downgrade),
                     std::cref(permit_old_version), std::cref(allowed_to_break_specs),

@@ -38,6 +38,7 @@
 #include <paludis/resolver/allow_choice_changes_helper.hh>
 #include <paludis/resolver/allowed_to_remove_helper.hh>
 #include <paludis/resolver/always_via_binary_helper.hh>
+#include <paludis/resolver/can_use_helper.hh>
 
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
@@ -136,9 +137,6 @@ namespace paludis
                     const std::shared_ptr<const Resolution> &,
                     const std::shared_ptr<const RequiredConfirmation> &);
 
-            bool can_use_fn(
-                    const std::shared_ptr<const PackageID> &);
-
             struct ResolverTestCase : test::TestCase
             {
                 TestEnvironment env;
@@ -150,6 +148,7 @@ namespace paludis
                 AllowChoiceChangesHelper allow_choice_changes_helper;
                 AllowedToRemoveHelper allowed_to_remove_helper;
                 AlwaysViaBinaryHelper always_via_binary_helper;
+                CanUseHelper can_use_helper;
 
                 ResolverTestCase(const std::string & group, const std::string & test_name, const std::string & eapi,
                         const std::string & layout);

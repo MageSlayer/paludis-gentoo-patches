@@ -32,6 +32,7 @@ noinst_HEADERS = \
 	allowed_to_remove_helper.hh allowed_to_remove_helper-fwd.hh \
 	always_via_binary_helper.hh always_via_binary_helper-fwd.hh \
 	any_child_score.hh any_child_score-fwd.hh any_child_score-se.hh \
+	can_use_helper.hh can_use_helper-fwd.hh \
 	change_by_resolvent.hh change_by_resolvent-fwd.hh \
 	change_type.hh change_type-fwd.hh change_type-se.hh \
 	constraint.hh constraint-fwd.hh \
@@ -71,6 +72,7 @@ libpaludisresolver_a_SOURCES = \
 	allowed_to_remove_helper.cc \
 	always_via_binary_helper.cc \
 	any_child_score.cc \
+	can_use_helper.cc \
 	change_by_resolvent.cc \
 	change_type.cc \
 	constraint.cc \
