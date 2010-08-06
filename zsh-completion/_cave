@@ -95,7 +95,8 @@ _cave()
 _cave_cmd_config()
 {
   _arguments -s : \
-    '(--help -h)'{--help,-h}'[Display help messsage]'
+    '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '*:package depspec:_cave_packages' && return 0
 }
 
 (( ${+functions[_cave_cmd_fix-cache]} )) ||
@@ -113,9 +114,9 @@ _cave_cmd_fix-linkage()
 {
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
-    '(--execute -x)'{--execute,-x}'[Execute resolution]' \
-    '--library[Only rebuild packages linked against this library, even if it exists]:Library: ' \
-    '--exact[Rebuild the same package version that is currently installed]'
+    '(--execute -x --no-execute)'{--execute,-x,--no-execute}'[Execute the suggested actions]' \
+    '(--library -l)'{--library,-l}'[Only rebuild packages linked against this library, even if it exists]:Library: ' \
+    '(--exact -e --no-exact)'{--exact,-e,--no-exact}'[Rebuild the same package version that is currently installed]'
 }
 
 (( ${+functions[_cave_cmd_help]} )) ||
@@ -123,6 +124,7 @@ _cave_cmd_help()
 {
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '(--all -a)'{--all,-a}'[Print all available commands to standard output]' \
     '*::arg:->cave_commands' && return
 
   case ${state} in
@@ -136,7 +138,8 @@ _cave_cmd_help()
 _cave_cmd_info()
 {
   _arguments -s : \
-    '(--help -h)'{--help,-h}'[Display help messsage]'
+    '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '*::arg:->cave_commands' && return
 }
 
 (( ${+functions[_cave_cmd_perform]} )) ||
@@ -144,10 +147,12 @@ _cave_cmd_perform()
 {
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
-    '(--if-supported --no-if-supported)'{--if-supported,--no-if-supported}'[Exit with success rather than erroring, if the action is not supported]' \
-    '(--hooks --no-hooks)'{--hooks,--no-hooks}'[Execute appropriate hooks for the action]' \
-    '--x-of-y[Set the value of the X_OF_Y variable that is passed to hooks]:value: ' \
-    '(--background --no-background)'{--background,--no-background}'[Indicate that we are being run in the background]' \
+    '(--if-supported --no-if-supported)'{--if-supported,--no-if-supported}'[If the action is not supported, exit silently with success rather than erroring]' \
+    '(--hooks --no-hooks)'{--hooks,--no-hooks}'[Also execute the appropriate hooks for the action]' \
+    '--x-of-y[Specify the value of the X_OF_Y variable that is passed to hooks]:value: ' \
+    '--no-terminal-titles[Do not change terminal titles]' \
+    '--managed-output[Specify that our output is being managed by another process]' \
+    '--output-exclusivity[Specify the exclusivity of our output]:Exclusitivity:((exclusive with-others background))' \
     ':subcommand:->subcommand' \
     '*::options:->options' && ret=0
 
@@ -177,15 +182,16 @@ _cave_cmd_perform()
           fetch|pretend-fetch)
             _arguments -s : \
               '(--exclude-unmirrorable --no-exclude-unmirrorable)'{--exclude-unmirrorable,--no-exclude-unmirrorable}'[Do not include unmirrorable components]' \
-              '(--fetch-unneeded --no-fetch-unneeded)'{--fetch-unneeded,--no-fetch-unneeded}'[Fetch components that aren'\''t needed]' \
-              '(--ignore-unfetched --no-ignore-unfetched)'{--ignore-unfetched,--no-ignore-unfetched}'[Only verify components that have already been downloaded]' \
+              '(--fetch-unneeded --no-fetch-unneeded)'{--fetch-unneeded,--no-fetch-unneeded}'[Also fetch components that aren'\''t needed]' \
+              '(--ignore-unfetched --no-ignore-unfetched)'{--ignore-unfetched,--no-ignore-unfetched}'[Do not fetch any component that has not already been downloaded]' \
+              '(--ignore-manual-fetch-errors --no-ignore-manual-fetch-errors)'{--ignore-manual-fetch-errors,--no-ignore-manual-fetch-errors}'[Ignore any errors that say that manual fetching is required for a component]' \
               '(--regulars-only --no-regulars-only)'{--regulars-only,--no-regulars-only}'[Only fetch regular components]' \
               '*:package depspec:_cave_packages' && ret=0
             ;;
           install|pretend)
             _arguments -s : \
               '--destination[Repository to which the install should take place]:repository name:_cave_repositories' \
-              '--replacing[Spec uniquely identifying the ID to be replaced]:package spec: ' \
+              '*--replacing[Spec uniquely identifying the ID to be replaced as part of the install]:package spec: ' \
               '*--skip-phase[Skip the named phases]:phase:((fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup))' \
               '*--abort-at-phase[Abort when a named phase is encountered]:phase:((fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup))' \
               '*--skip-until-phase[Skip every phase until a named phase is encountered]:phase:((fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup))' \
@@ -215,7 +221,7 @@ _cave_cmd_print-commands()
 {
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
-    '--all[Print all available commands]'
+    '(--all -a)'{--all,-a}'[Print all available commands]'
 }
 
 (( ${+functions[_cave_cmd_print-environment-metadata]} )) ||
@@ -233,8 +239,7 @@ _cave_cmd_print-id-contents()
 {
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
-    '--best[If the spec matches multiple IDs, select the best ID rather than giving an error]' \
-    '--nobest[If the spec matches multiple IDs, give an error]' \
+    '(--best --no-best)'{--best,--no-best}'[If the spec matches multiple IDs, select the best ID rather than giving an error]' \
     '--format[Select the output format]:format: ' \
     '*:package depspec:_cave_packages' && return 0
 }
@@ -253,8 +258,7 @@ _cave_cmd_print-id-metadata()
 {
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
-    '--best[If the spec matches multiple IDs, select the best ID rather than giving an error]' \
-    '--nobest[If the spec matches multiple IDs, give an error]' \
+    '(--best --no-best)'{--best,--no-best}'[If the spec matches multiple IDs, select the best ID rather than giving an error]' \
     '*--raw-name[Show only keys with this raw name]:raw name: ' \
     '*--human-name[Show only keys with this human name]:human name: ' \
     '--format[Select the output format]:output format: ' \
@@ -266,9 +270,10 @@ _cave_cmd_print-ids()
 {
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
-    '--matching[Show only IDs matching this spec]:package spec: ' \
-    '--supporting[Show only IDs supporting this action]:supporting action:((install uninstall pretend config fetch pretend-fetch info))' \
-    '--with-mask[Show only IDs with this kind of mask]:with mask:((none any user unaccepted repository unsupported association))'
+    '*'{--matching,-m}'[Show only IDs matching this spec]:package spec: ' \
+    '*'{--supporting,-s}'[Show only IDs supporting this action]:supporting action:((install uninstall pretend config fetch pretend-fetch info))' \
+    '(--with-mask -M)'{--with-mask,-M}'[Show only IDs with this kind of mask]:with mask:((none any user unaccepted repository unsupported association))' \
+    '(--format -f)'{--format,-f}'[Select the output format]:output format: '
 }
 
 (( ${+functions[_cave_cmd_print-owners]} )) ||
@@ -276,7 +281,7 @@ _cave_cmd_print-owners()
 {
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
-    '(--match -m)'{--match,-m}'[Which match algorithm to use]:match algorithm:((auto\:"If pattern starts with a \/, full; if it contains a \/, partial; otherwise, basename (default)"
+    '(--match -m)'{--match,-m}'[Which match algorithm to use]:match algorithm:((auto\:"If pattern starts with a \/, full; if it contains a \/, partial; otherwise, basename"
                                                                                 basename\:"Basename match"
                                                                                 full\:"Full match"
                                                                                 partial\:"Partial match"))' \
@@ -357,7 +362,8 @@ _cave_cmd_search()
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
     '(--all-versions -a --no-all-versions)'{--all-versions,-a,--no-all-versions}'[Search in every version of packages]' \
-    '(--type -t)'{--type,-t}'[Alter how patterns are matched]:Matching:((text exact))' \
+    '--matching[Search only in packages matching the supplied specification]:Spec: ' \
+    '(--type -t)'{--type,-t}'[Specify which matching algorithm to use]:Matching:((text t exact x regex r))' \
     '(--and -& --no-and)'{--and,-\&,--no-and}'[If multiple patterns are specified, require that all patterns match]' \
     '(--not -! --no-not)'{--not,-\!,--no-not}'[Invert the results of pattern matches]' \
     '*'{--key,-k}'[Search the named metadata key]' \
@@ -370,20 +376,24 @@ _cave_cmd_show()
 {
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
-    '(--type -t)'{--type,-t}'[Specify the type of the specified objects]:object type:((auto repository set wildcard package))' \
-    '(--complex-keys -c)'{--complex-keys,-c}'[Show complex keys]' \
-    '(--internal-keys -i)'{--internal-keys,-i}'[Show keys regardless of importance, including internal-only values]' \
-    '(--flat -f)'{--flat,-f}'[Do not spread key values over multiple lines]' \
-    '(--raw-names -r)'{--raw-names,-r}'[Display raw key names]' \
+    '(--type -t)'{--type,-t}'[Specify the type of the specified objects]:object type:((auto a repository r set s wildcard w package p))' \
+    '(--complex-keys -c --no-complex-keys)'{--complex-keys,-c,--no-complex-keys}'[Show complex keys]' \
+    '(--internal-keys -i --no-internal-keys)'{--internal-keys,-i,--no-internal-keys}'[Show keys marked as internal-only]' \
+    '(--significant-keys-only -s --no-significant-keys-only)'{--significant-keys-only,-s,--no-significant-keys-only}'[Show only keys marked as significant]' \
+    '*'{--key,-k}'[Show keys with the given name]' \
+    '(--flat -f --no-flat)'{--flat,-f,--no-flat}'[Do not spread key values over multiple lines]' \
+    '(--raw-names -r --no-raw-names)'{--raw-names,-r,--no-raw-names}'[Display raw rather than human readable key names]' \
+    '(--one-version -1 --no-one-version --no-versions -0 --no-no-versions)'{--one-version,-1,--no-one-version}'[Display only a single version of any package, rather than all installed and the best installable package]' \
+    '(--one-version -1 --no-one-version --no-versions -0 --no-no-versions)'{--no-versions,-0,--no-no-versions}'[Don'\''t display any version-specific information]' \
     '*:package depspec:_cave_packages' && return 0
 }
 
 (( ${+functions[_cave_cmd_sync]} )) ||
 _cave_cmd_sync()
 {
-  # TODO: Complete repository names
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '--sequential[Only perform one sync at a time]' \
     '*:repository:_cave_repositories' && return 0
 }
 
@@ -392,6 +402,7 @@ _cave_cmd_update-world()
 {
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '(--verbose --no-verbose)'{--verbose,--no-verbose}'[Produce verbose output]' \
     '(--remove --no-remove -r)'{--remove,--no-remove,-r}'[Remove the specified items]' \
     '(--set --no-set -s)'{--set,--no-set,-s}'[Parameters are set names, not package names]' \
     '*:package depspec:_cave_packages' && return 0
