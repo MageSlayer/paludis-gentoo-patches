@@ -90,7 +90,7 @@ namespace test_cases
             install("purges", "unrelated-dep", "0");
             install("purges", "unrelated", "0")->build_dependencies_key()->set_from_string("purges/unrelated-dep");
 
-            allowed_to_remove_names->insert(QualifiedPackageName("purges/old-dep"));
+            allowed_to_remove_helper.add_allowed_to_remove_spec(parse_user_package_dep_spec("purges/old-dep", &env, { }));
         }
 
         virtual ResolverFunctions get_resolver_functions(InitialConstraints & initial_constraints)
@@ -134,7 +134,7 @@ namespace test_cases
 
             install("star-slot-purges", "uses", "1")->build_dependencies_key()->set_from_string("star-slot-purges/target:*");
 
-            allowed_to_remove_names->insert(QualifiedPackageName("star-slot-purges/target"));
+            allowed_to_remove_helper.add_allowed_to_remove_spec(parse_user_package_dep_spec("star-slot-purges/target", &env, { }));
         }
 
         virtual ResolverFunctions get_resolver_functions(InitialConstraints & initial_constraints)

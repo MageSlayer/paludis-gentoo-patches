@@ -140,8 +140,8 @@ namespace test_cases
             ResolverBlockersTestCase("remove" + std::string(t ? " transient" : "")),
             transient(t)
         {
-            allowed_to_remove_names->insert(QualifiedPackageName("remove/a-pkg"));
-            allowed_to_remove_names->insert(QualifiedPackageName("remove/z-pkg"));
+            allowed_to_remove_helper.add_allowed_to_remove_spec(parse_user_package_dep_spec("remove/a-pkg", &env, { }));
+            allowed_to_remove_helper.add_allowed_to_remove_spec(parse_user_package_dep_spec("remove/z-pkg", &env, { }));
             install("remove", "a-pkg", "1")->behaviours_set()->insert(transient ? "transient" : "");
             install("remove", "z-pkg", "1")->behaviours_set()->insert(transient ? "transient" : "");
         }
@@ -177,7 +177,7 @@ namespace test_cases
             ResolverBlockersTestCase("target" + std::string(x ? " exists" : "")),
             exists(x)
         {
-            allowed_to_remove_names->insert(QualifiedPackageName("target/target"));
+            allowed_to_remove_helper.add_allowed_to_remove_spec(parse_user_package_dep_spec("target/target", &env, { }));
 
             if (exists)
                 install("target", "target", "1");
@@ -222,7 +222,7 @@ namespace test_cases
             allowed(a)
         {
             if (allowed)
-                allowed_to_remove_names->insert(QualifiedPackageName("blocked-and-dep/both"));
+                allowed_to_remove_helper.add_allowed_to_remove_spec(parse_user_package_dep_spec("blocked-and-dep/both", &env, { }));
 
             if (exists)
                 install("blocked-and-dep", "both", "1");
@@ -336,7 +336,7 @@ namespace test_cases
             if (installed_version != -1)
                 install(cat, "dep", stringify(installed_version));
 
-            allowed_to_remove_names->insert(QualifiedPackageName(cat + "/dep"));
+            allowed_to_remove_helper.add_allowed_to_remove_spec(parse_user_package_dep_spec(stringify(cat) + "/dep", &env, { }));
         }
 
         void run()

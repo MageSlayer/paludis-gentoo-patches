@@ -80,11 +80,11 @@ namespace test_cases
             install("breaking", "dep", "1")->run_dependencies_key()->set_from_string("breaking/target");
             install("breaking", "target", "1");
 
-            allowed_to_remove_names->insert(QualifiedPackageName("breaking/target"));
+            allowed_to_remove_helper.add_allowed_to_remove_spec(parse_user_package_dep_spec("breaking/target", &env, { }));
             if (allowed_to_remove)
             {
                 remove_if_dependent_names->insert(QualifiedPackageName("breaking/dep"));
-                allowed_to_remove_names->insert(QualifiedPackageName("breaking/dep"));
+                allowed_to_remove_helper.add_allowed_to_remove_spec(parse_user_package_dep_spec("breaking/dep", &env, { }));
             }
         }
 

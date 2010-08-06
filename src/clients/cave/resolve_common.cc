@@ -66,6 +66,7 @@
 #include <paludis/resolver/labels_classifier.hh>
 
 #include <paludis/resolver/allow_choice_changes_helper.hh>
+#include <paludis/resolver/allowed_to_remove_helper.hh>
 
 #include <paludis/user_dep_spec.hh>
 #include <paludis/notifier_callback.hh>
@@ -1105,64 +1106,6 @@ namespace
         return false;
     }
 
-    struct AllowedToRemoveVisitor
-    {
-        bool visit(const DependentReason &) const
-        {
-            return true;
-        }
-
-        bool visit(const TargetReason &) const
-        {
-            return true;
-        }
-
-        bool visit(const DependencyReason &) const
-        {
-            return false;
-        }
-
-        bool visit(const WasUsedByReason &) const
-        {
-            return true;
-        }
-
-        bool visit(const ViaBinaryReason &) const
-        {
-            return false;
-        }
-
-        bool visit(const SetReason & r) const
-        {
-            return r.reason_for_set()->accept_returning<bool>(*this);
-        }
-
-        bool visit(const LikeOtherDestinationTypeReason & r) const
-        {
-            return r.reason_for_other()->accept_returning<bool>(*this);
-        }
-
-        bool visit(const PresetReason &) const
-        {
-            return false;
-        }
-    };
-
-    bool allowed_to_remove_fn(
-            const Environment * const env,
-            const PackageDepSpecList & list,
-            const std::shared_ptr<const Resolution> & resolution,
-            const std::shared_ptr<const PackageID> & i)
-    {
-        for (Constraints::ConstIterator c(resolution->constraints()->begin()),
-                c_end(resolution->constraints()->end()) ;
-                c != c_end ; ++c)
-            if ((*c)->reason()->accept_returning<bool>(AllowedToRemoveVisitor()))
-                return true;
-
-        return match_any(env, list, i);
-    }
-
     bool remove_if_dependent_fn(
             const Environment * const env,
             const PackageDepSpecList & list,
@@ -1797,18 +1740,12 @@ paludis::cave::resolve_common(
     int retcode(0);
 
     InitialConstraints initial_constraints;
-    PackageDepSpecList allowed_to_remove_specs, allowed_to_break_specs, remove_if_dependent_specs,
+    PackageDepSpecList allowed_to_break_specs, remove_if_dependent_specs,
                        less_restrictive_remove_blockers_specs, purge_specs, with, without,
                        permit_old_version, permit_downgrade, take, take_from, ignore, ignore_from,
                        favour, avoid, early, late, no_dependencies_from, no_blockers_from, not_usable_specs,
                        via_binary_specs;
     bool allowed_to_break_system(false);
-
-    for (args::StringSetArg::ConstIterator i(resolution_options.a_permit_uninstall.begin_args()),
-            i_end(resolution_options.a_permit_uninstall.end_args()) ;
-            i != i_end ; ++i)
-        allowed_to_remove_specs.push_back(parse_user_package_dep_spec(*i, env.get(),
-                    { updso_allow_wildcards }));
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_uninstalls_may_break.begin_args()),
             i_end(resolution_options.a_uninstalls_may_break.end_args()) ;
@@ -1995,10 +1932,15 @@ paludis::cave::resolve_common(
     AllowChoiceChangesHelper allow_choice_changes_helper(env.get());;
     allow_choice_changes_helper.set_allow_choice_changes(! resolution_options.a_no_override_flags.specified());
 
+    AllowedToRemoveHelper allowed_to_remove_helper(env.get());
+    for (args::StringSetArg::ConstIterator i(resolution_options.a_permit_uninstall.begin_args()),
+            i_end(resolution_options.a_permit_uninstall.end_args()) ;
+            i != i_end ; ++i)
+        allowed_to_remove_helper.add_allowed_to_remove_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
+
     ResolverFunctions resolver_functions(make_named_values<ResolverFunctions>(
                 n::allow_choice_changes_fn() = std::cref(allow_choice_changes_helper),
-                n::allowed_to_remove_fn() = std::bind(&allowed_to_remove_fn,
-                    env.get(), std::cref(allowed_to_remove_specs), _1, _2),
+                n::allowed_to_remove_fn() = std::cref(allowed_to_remove_helper),
                 n::always_via_binary_fn() = std::bind(&always_via_binary_fn,
                     env.get(), std::cref(via_binary_specs), _1),
                 n::can_use_fn() = std::bind(&can_use_fn,

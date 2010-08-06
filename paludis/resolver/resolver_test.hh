@@ -36,6 +36,7 @@
 #include <paludis/resolver/change_by_resolvent-fwd.hh>
 
 #include <paludis/resolver/allow_choice_changes_helper.hh>
+#include <paludis/resolver/allowed_to_remove_helper.hh>
 
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
@@ -119,11 +120,6 @@ namespace paludis
             DestinationTypes get_destination_types_for_error_fn(const PackageDepSpec &,
                     const std::shared_ptr<const Reason> &);
 
-            bool allowed_to_remove_fn(
-                    const std::shared_ptr<const QualifiedPackageNameSet> &,
-                    const std::shared_ptr<const Resolution> &,
-                    const std::shared_ptr<const PackageID> &);
-
             bool remove_if_dependent_fn(
                     const std::shared_ptr<const QualifiedPackageNameSet> &,
                     const std::shared_ptr<const PackageID> &);
@@ -150,11 +146,11 @@ namespace paludis
                 TestEnvironment env;
                 std::shared_ptr<Repository> repo, inst_repo;
                 std::shared_ptr<FakeInstalledRepository> fake_inst_repo;
-                std::shared_ptr<QualifiedPackageNameSet> allowed_to_remove_names;
                 std::shared_ptr<QualifiedPackageNameSet> remove_if_dependent_names;
                 std::shared_ptr<Map<QualifiedPackageName, bool> > prefer_or_avoid_names;
 
                 AllowChoiceChangesHelper allow_choice_changes_helper;
+                AllowedToRemoveHelper allowed_to_remove_helper;
 
                 ResolverTestCase(const std::string & group, const std::string & test_name, const std::string & eapi,
                         const std::string & layout);

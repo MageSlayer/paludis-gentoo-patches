@@ -169,10 +169,10 @@ namespace test_cases
             install("continue-on-failure-uninstall", "target", "1")->build_dependencies_key()->set_from_string("continue-on-failure-uninstall/dep");
             install("continue-on-failure-uninstall", "needs-target", "1")->build_dependencies_key()->set_from_string("continue-on-failure-uninstall/target");
 
-            allowed_to_remove_names->insert(QualifiedPackageName("continue-on-failure-uninstall/dep-of-dep"));
-            allowed_to_remove_names->insert(QualifiedPackageName("continue-on-failure-uninstall/dep"));
-            allowed_to_remove_names->insert(QualifiedPackageName("continue-on-failure-uninstall/target"));
-            allowed_to_remove_names->insert(QualifiedPackageName("continue-on-failure-uninstall/needs-target"));
+            allowed_to_remove_helper.add_allowed_to_remove_spec(parse_user_package_dep_spec("continue-on-failure-uninstall/dep-of-dep", &env, { }));
+            allowed_to_remove_helper.add_allowed_to_remove_spec(parse_user_package_dep_spec("continue-on-failure-uninstall/dep", &env, { }));
+            allowed_to_remove_helper.add_allowed_to_remove_spec(parse_user_package_dep_spec("continue-on-failure-uninstall/target", &env, { }));
+            allowed_to_remove_helper.add_allowed_to_remove_spec(parse_user_package_dep_spec("continue-on-failure-uninstall/needs-target", &env, { }));
 
             remove_if_dependent_names->insert(QualifiedPackageName("continue-on-failure-uninstall/dep-of-dep"));
             remove_if_dependent_names->insert(QualifiedPackageName("continue-on-failure-uninstall/dep"));
