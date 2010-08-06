@@ -67,6 +67,7 @@
 
 #include <paludis/resolver/allow_choice_changes_helper.hh>
 #include <paludis/resolver/allowed_to_remove_helper.hh>
+#include <paludis/resolver/always_via_binary_helper.hh>
 
 #include <paludis/user_dep_spec.hh>
 #include <paludis/notifier_callback.hh>
@@ -1415,18 +1416,6 @@ namespace
         return ! match_any(env, list, id);
     }
 
-    bool always_via_binary_fn(
-            const Environment * const env,
-            const PackageDepSpecList & list,
-            const std::shared_ptr<const Resolution> & resolution)
-    {
-        const ChangesToMakeDecision * changes_decision(simple_visitor_cast<const ChangesToMakeDecision>(*resolution->decision()));
-        if (! changes_decision)
-            return false;
-
-        return can_make_binary_for(changes_decision->origin_id()) && match_any(env, list, changes_decision->origin_id());
-    }
-
     void serialise_resolved(StringListStream & ser_stream, const Resolved & resolved)
     {
         Serialiser ser(ser_stream);
@@ -1743,8 +1732,7 @@ paludis::cave::resolve_common(
     PackageDepSpecList allowed_to_break_specs, remove_if_dependent_specs,
                        less_restrictive_remove_blockers_specs, purge_specs, with, without,
                        permit_old_version, permit_downgrade, take, take_from, ignore, ignore_from,
-                       favour, avoid, early, late, no_dependencies_from, no_blockers_from, not_usable_specs,
-                       via_binary_specs;
+                       favour, avoid, early, late, no_dependencies_from, no_blockers_from, not_usable_specs;
     bool allowed_to_break_system(false);
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_uninstalls_may_break.begin_args()),
@@ -1864,14 +1852,6 @@ paludis::cave::resolve_common(
         not_usable_specs.push_back(parse_user_package_dep_spec(*i, env.get(),
                     { updso_allow_wildcards }));
 
-#ifdef ENABLE_PBINS
-    for (args::StringSetArg::ConstIterator i(resolution_options.a_via_binary.begin_args()),
-            i_end(resolution_options.a_via_binary.end_args()) ;
-            i != i_end ; ++i)
-        via_binary_specs.push_back(parse_user_package_dep_spec(*i, env.get(),
-                    { updso_allow_wildcards }));
-#endif
-
     std::shared_ptr<Generator> binary_destinations;
     for (PackageDatabase::RepositoryConstIterator r(env->package_database()->begin_repositories()),
             r_end(env->package_database()->end_repositories()) ;
@@ -1938,11 +1918,18 @@ paludis::cave::resolve_common(
             i != i_end ; ++i)
         allowed_to_remove_helper.add_allowed_to_remove_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
 
+    AlwaysViaBinaryHelper always_via_binary_helper(env.get());
+#ifdef ENABLE_PBINS
+    for (args::StringSetArg::ConstIterator i(resolution_options.a_via_binary.begin_args()),
+            i_end(resolution_options.a_via_binary.end_args()) ;
+            i != i_end ; ++i)
+        always_via_binary_helper.add_always_via_binary_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
+#endif
+
     ResolverFunctions resolver_functions(make_named_values<ResolverFunctions>(
                 n::allow_choice_changes_fn() = std::cref(allow_choice_changes_helper),
                 n::allowed_to_remove_fn() = std::cref(allowed_to_remove_helper),
-                n::always_via_binary_fn() = std::bind(&always_via_binary_fn,
-                    env.get(), std::cref(via_binary_specs), _1),
+                n::always_via_binary_fn() = std::cref(always_via_binary_helper),
                 n::can_use_fn() = std::bind(&can_use_fn,
                     env.get(), std::cref(not_usable_specs), _1),
                 n::confirm_fn() = std::bind(&confirm_fn,

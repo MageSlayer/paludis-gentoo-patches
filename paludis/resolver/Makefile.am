@@ -30,6 +30,7 @@ BUILT_SOURCES = \
 noinst_HEADERS = \
 	allow_choice_changes_helper.hh allow_choice_changes_helper-fwd.hh \
 	allowed_to_remove_helper.hh allowed_to_remove_helper-fwd.hh \
+	always_via_binary_helper.hh always_via_binary_helper-fwd.hh \
 	any_child_score.hh any_child_score-fwd.hh any_child_score-se.hh \
 	change_by_resolvent.hh change_by_resolvent-fwd.hh \
 	change_type.hh change_type-fwd.hh change_type-se.hh \
@@ -68,6 +69,7 @@ noinst_HEADERS = \
 libpaludisresolver_a_SOURCES = \
 	allow_choice_changes_helper.cc \
 	allowed_to_remove_helper.cc \
+	always_via_binary_helper.cc \
 	any_child_score.cc \
 	change_by_resolvent.cc \
 	change_type.cc \

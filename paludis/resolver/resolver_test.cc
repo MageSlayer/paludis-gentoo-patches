@@ -330,20 +330,14 @@ paludis::resolver::resolver_test::can_use_fn(
     return true;
 }
 
-bool
-paludis::resolver::resolver_test::always_via_binary_fn(
-        const std::shared_ptr<const Resolution> &)
-{
-    return false;
-}
-
 ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s, const std::string & e,
         const std::string & l) :
     TestCase(s),
     remove_if_dependent_names(std::make_shared<QualifiedPackageNameSet>()),
     prefer_or_avoid_names(std::make_shared<Map<QualifiedPackageName, bool>>()),
     allow_choice_changes_helper(&env),
-    allowed_to_remove_helper(&env)
+    allowed_to_remove_helper(&env),
+    always_via_binary_helper(&env)
 {
     std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
     keys->insert("format", "e");
@@ -391,7 +385,7 @@ ResolverTestCase::get_resolver_functions(InitialConstraints & initial_constraint
     return make_named_values<ResolverFunctions>(
             n::allow_choice_changes_fn() = std::cref(allow_choice_changes_helper),
             n::allowed_to_remove_fn() = std::cref(allowed_to_remove_helper),
-            n::always_via_binary_fn() = &always_via_binary_fn,
+            n::always_via_binary_fn() = std::cref(always_via_binary_helper),
             n::can_use_fn() = &can_use_fn,
             n::confirm_fn() = &confirm_fn,
             n::find_repository_for_fn() = std::bind(&find_repository_for_fn,
