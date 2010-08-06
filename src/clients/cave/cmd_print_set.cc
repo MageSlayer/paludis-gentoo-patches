@@ -138,7 +138,7 @@ PrintSetCommand::run(
     }
 
     if (1 != std::distance(cmdline.begin_parameters(), cmdline.end_parameters()))
-        throw args::DoHelp("print-ids takes exactly one parameter");
+        throw args::DoHelp("print-set takes exactly one parameter");
 
     const std::shared_ptr<const SetSpecTree> set(env->set(SetName(*cmdline.begin_parameters())));
     if (! set)
