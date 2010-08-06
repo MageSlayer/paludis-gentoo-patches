@@ -195,15 +195,6 @@ paludis::resolver::resolver_test::get_use_existing_nothing_fn(
     return std::make_pair(ue_never, false);
 }
 
-const std::shared_ptr<const Repository>
-paludis::resolver::resolver_test::find_repository_for_fn(
-        const Environment * const env,
-        const std::shared_ptr<const Resolution> &,
-        const ChangesToMakeDecision &)
-{
-    return env->package_database()->fetch_repository(RepositoryName("installed"));
-}
-
 bool
 paludis::resolver::resolver_test::remove_if_dependent_fn(
         const std::shared_ptr<const QualifiedPackageNameSet> & s,
@@ -324,7 +315,8 @@ ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s,
     allowed_to_remove_helper(&env),
     always_via_binary_helper(&env),
     can_use_helper(&env),
-    confirm_helper(&env)
+    confirm_helper(&env),
+    find_repository_for_helper(&env)
 {
     std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
     keys->insert("format", "e");
@@ -375,8 +367,7 @@ ResolverTestCase::get_resolver_functions(InitialConstraints & initial_constraint
             n::always_via_binary_fn() = std::cref(always_via_binary_helper),
             n::can_use_fn() = std::cref(can_use_helper),
             n::confirm_fn() = std::cref(confirm_helper),
-            n::find_repository_for_fn() = std::bind(&find_repository_for_fn,
-                    &env, std::placeholders::_1, std::placeholders::_2),
+            n::find_repository_for_fn() = std::cref(find_repository_for_helper),
             n::get_constraints_for_dependent_fn() = &get_constraints_for_dependent_fn,
             n::get_constraints_for_purge_fn() = &get_constraints_for_purge_fn,
             n::get_constraints_for_via_binary_fn() = &get_constraints_for_via_binary_fn,

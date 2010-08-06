@@ -42,6 +42,7 @@ noinst_HEADERS = \
 	decisions.hh decisions-fwd.hh \
 	destination.hh destination-fwd.hh \
 	destination_types.hh destination_types-fwd.hh destination_types-se.hh \
+	find_repository_for_helper.hh find_repository_for_helper-fwd.hh \
 	job.hh job-fwd.hh \
 	job_list.hh job_list-fwd.hh \
 	job_lists.hh job_lists-fwd.hh \
@@ -83,6 +84,7 @@ libpaludisresolver_a_SOURCES = \
 	decisions.cc \
 	destination.cc \
 	destination_types.cc \
+	find_repository_for_helper.cc \
 	job.cc \
 	job_list.cc \
 	job_lists.cc \

@@ -40,6 +40,7 @@
 #include <paludis/resolver/always_via_binary_helper.hh>
 #include <paludis/resolver/can_use_helper.hh>
 #include <paludis/resolver/confirm_helper.hh>
+#include <paludis/resolver/find_repository_for_helper.hh>
 
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
@@ -106,11 +107,6 @@ namespace paludis
                     const PackageDepSpec &,
                     const std::shared_ptr<const Reason> &);
 
-            const std::shared_ptr<const Repository> find_repository_for_fn(
-                    const Environment * const,
-                    const std::shared_ptr<const Resolution> &,
-                    const ChangesToMakeDecision &);
-
             FilteredGenerator make_destination_filtered_generator_fn(const Generator &,
                     const std::shared_ptr<const Resolution> &);
 
@@ -147,6 +143,7 @@ namespace paludis
                 AlwaysViaBinaryHelper always_via_binary_helper;
                 CanUseHelper can_use_helper;
                 ConfirmHelper confirm_helper;
+                FindRepositoryForHelper find_repository_for_helper;
 
                 ResolverTestCase(const std::string & group, const std::string & test_name, const std::string & eapi,
                         const std::string & layout);

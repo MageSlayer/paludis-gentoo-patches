@@ -70,6 +70,7 @@
 #include <paludis/resolver/always_via_binary_helper.hh>
 #include <paludis/resolver/can_use_helper.hh>
 #include <paludis/resolver/confirm_helper.hh>
+#include <paludis/resolver/find_repository_for_helper.hh>
 
 #include <paludis/user_dep_spec.hh>
 #include <paludis/notifier_callback.hh>
@@ -1025,57 +1026,6 @@ namespace
             return si_ignore;
     }
 
-    const std::shared_ptr<const Repository>
-    find_repository_for_fn(const Environment * const env,
-            const ResolveCommandLineResolutionOptions &,
-            const std::shared_ptr<const Resolution> & resolution,
-            const ChangesToMakeDecision & decision)
-    {
-        std::shared_ptr<const Repository> result;
-        for (PackageDatabase::RepositoryConstIterator r(env->package_database()->begin_repositories()),
-                r_end(env->package_database()->end_repositories()) ;
-                r != r_end ; ++r)
-        {
-            switch (resolution->resolvent().destination_type())
-            {
-                case dt_install_to_slash:
-                    if ((! (*r)->installed_root_key()) || ((*r)->installed_root_key()->value() != FSEntry("/")))
-                        continue;
-                    break;
-
-                case dt_install_to_chroot:
-                    if ((! (*r)->installed_root_key()) || ((*r)->installed_root_key()->value() == FSEntry("/")))
-                        continue;
-                    break;
-
-                case dt_create_binary:
-                    if ((*r)->installed_root_key())
-                        continue;
-                    break;
-
-                case last_dt:
-                    break;
-            }
-
-            if ((*r)->destination_interface() &&
-                    (*r)->destination_interface()->is_suitable_destination_for(*decision.origin_id()))
-            {
-                if (result)
-                    throw ConfigurationError("For '" + stringify(*decision.origin_id())
-                            + "' with destination type " + stringify(resolution->resolvent().destination_type())
-                            + ", don't know whether to install to ::" + stringify(result->name())
-                            + " or ::" + stringify((*r)->name()));
-                else
-                    result = *r;
-            }
-        }
-
-        if (! result)
-            throw ConfigurationError("No repository suitable for '" + stringify(*decision.origin_id())
-                    + "' with destination type " + stringify(resolution->resolvent().destination_type()) + " has been configured");
-        return result;
-    }
-
     Filter make_destination_filter_fn(const Resolvent & resolvent)
     {
         switch (resolvent.destination_type())
@@ -1816,14 +1766,15 @@ paludis::cave::resolve_common(
         else
             confirm_helper.add_allowed_to_break_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
 
+    FindRepositoryForHelper find_repository_for_helper(env.get());
+
     ResolverFunctions resolver_functions(make_named_values<ResolverFunctions>(
                 n::allow_choice_changes_fn() = std::cref(allow_choice_changes_helper),
                 n::allowed_to_remove_fn() = std::cref(allowed_to_remove_helper),
                 n::always_via_binary_fn() = std::cref(always_via_binary_helper),
                 n::can_use_fn() = std::cref(can_use_helper),
                 n::confirm_fn() = std::cref(confirm_helper),
-                n::find_repository_for_fn() = std::bind(&find_repository_for_fn,
-                    env.get(), std::cref(resolution_options), _1, _2),
+                n::find_repository_for_fn() = std::cref(find_repository_for_helper),
                 n::get_constraints_for_dependent_fn() = std::bind(&get_constraints_for_dependent_fn,
                     env.get(), std::cref(less_restrictive_remove_blockers_specs), _1, _2, _3),
                 n::get_constraints_for_purge_fn() = std::bind(&get_constraints_for_purge_fn,
