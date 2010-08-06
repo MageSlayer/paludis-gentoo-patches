@@ -510,7 +510,8 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         }
     }
 
-    _imp->predefined_conf_vars_func = std::bind(&initial_conf_vars, _imp->root_prefix, std::placeholders::_1);
+    _imp->predefined_conf_vars_func = std::bind(&initial_conf_vars,
+            _imp->root_prefix.empty() ? "/" : _imp->root_prefix, std::placeholders::_1);
 
     Log::get_instance()->message("paludis_environment.paludis_config.real_dir", ll_debug, lc_no_context)
         << "PaludisConfig real directory is '" << local_config_dir << "', root prefix is '" << _imp->root_prefix
@@ -879,8 +880,6 @@ PaludisConfig::repo_func_from_file(const FSEntry & repo_file)
             std::bind(&from_kv, kv, std::placeholders::_1));
 
     repo_func = std::bind(&override, "repo_file", stringify(repo_file), repo_func, std::placeholders::_1);
-    repo_func = std::bind(&override, "root", _imp->root_prefix.empty() ? "/" : _imp->root_prefix,
-            repo_func, std::placeholders::_1);
 
     return repo_func;
 }
