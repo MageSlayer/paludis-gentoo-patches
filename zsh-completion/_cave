@@ -99,6 +99,72 @@ _cave_cmd_config()
     '*:package depspec:_cave_packages' && return 0
 }
 
+(( ${+functions[_cave_cmd_contents]} )) ||
+_cave_cmd_contents()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '*:package depspec:_cave_packages' && return 0
+}
+
+(( ${+functions[_cave_cmd_display-resolution]} )) ||
+_cave_cmd_display-resolution()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '--show-option-descriptions[Whether to display descriptions for package options]:Which:((none new changed all))' \
+    '--show-descriptions[Whether to display package descriptions]:When:((none new all))' \
+    '(--explain -X)'{--explain,-X}'[Explain why the resolver made a particular decision]:Spec: ' \
+    '--unpackaged-repository-params[Specifies the parameters used to construct an unpackaged repository]'
+}
+
+(( ${+functions[_cave_cmd_executables]} )) ||
+_cave_cmd_executables()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '*:package depspec:_cave_packages' && return 0
+}
+
+(( ${+functions[_cave_cmd_execute-resolution]} )) ||
+_cave_cmd_execute-resolution()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '--pretend[Only carry out the pretend action]' \
+    '--set[Our target is a set rather than package specs]' \
+    '--world-specs[Use the specified spec or set name for updating world]' \
+    '(--preserve-world -1 --no-preserve-world)'{--preserve-world,-1,--no-preserve-world}'[Do not modify the world set]' \
+    '(--continue-on-failure -C)'{--continue-on-failure,-C}'[Whether to continue after an error occurs]:When:((never n if-satisfied s if-independent i always a))' \
+    '--resume-file[Write resume information to the specified file]' \
+    '(--fetch -f --no-fetch)'{--fetch,-f,--no-fetch}'[Skip any jobs that are not fetch jobs]' \
+    '(--fetch-jobs -J)'{--fetch-jobs,-J}'[The number of parallel fetch jobs to launch]' \
+    '*--skip-phase[Skip the named phases]:Phase:((fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup))' \
+    '*--abort-at-phase[Abort when a named phase is encountered]:Phase:((fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup))' \
+    '*--skip-until-phase[Skip every phase until a named phase is encountered]:Phase:((fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup))' \
+    '*--change-phases-for[Control to which packages these phase options apply]:Which:((all first last))' \
+    '--display-resolution-program[The program used to display the resolution]:Command: ' \
+    '--execute-resolution-program[The program used to execute the resolution]:Command: ' \
+    '--perform-program[The program used to perform actions]:Command: ' \
+    '--update-world-program[The program used to perform world updates]:Command: ' \
+    '--unpackaged-repository-params[Specifies the parameters used to construct an unpackaged repository]'
+}
+
+(( ${+functions[_cave_cmd_find-candidates]} )) ||
+_cave_cmd_find-candidates()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '(--all-versions -a --no-all-versions)'{--all-versions,-a,--no-all-versions}'[Search in every version of packages]' \
+    '--matching[Search only in packages matching the supplied specification]:Spec: ' \
+    '(--type -t)'{--type,-t}'[Specify which matching algorithm to use]:Matching:((text t exact x regex r))' \
+    '(--and -& --no-and)'{--and,-\&,--no-and}'[If multiple patterns are specified, require that all patterns match]' \
+    '(--not -! --no-not)'{--not,-\!,--no-not}'[Invert the results of pattern matches]' \
+    '*'{--key,-k}'[Search the named metadata key]' \
+    '(--name -n --no-name)'{--name,-n,--no-name}'[Search package names]' \
+    '(--description -d --no-description)'{--description,-d,--no-description}'[Search package descriptions]'
+}
+
 (( ${+functions[_cave_cmd_fix-cache]} )) ||
 _cave_cmd_fix-cache()
 {
@@ -134,12 +200,54 @@ _cave_cmd_help()
   esac
 }
 
+(( ${+functions[_cave_cmd_import]} )) ||
+_cave_cmd_import()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '(--execute -x --no-execute)'{--execute,-x,--no-execute}'[Execute the suggested actions]' \
+    '(--location -l)'{--location,-l}'[Specify the directory containing the image to install]' \
+    '(--install-under -u)'{--install-under,-u}'[Install under the specified directory, rather than /]' \
+    '(--rewrite-ids-over-to-root -r)'{--rewrite-ids-over-to-root,-r}'[Change any UID or GID over this value to 0]' \
+    '(--strip -s)'{--strip,-s}'[Specify whether to strip and split objects being installed]:When:((config c always a never n))' \
+    '(--preserve-work -p)'{--preserve-work,-p}'[Specify whether to avoid carrying out destructive merge actions]:When:((config c always a never n))' \
+    '(--description -D)'{--description,-D}'[Specify a description for the package]:Description: ' \
+    '*'{--build-dependency,-B}'[Specify a build dependency]:Package: ' \
+    '*'{--run-dependency,-R}'[Specify a run dependency]:Package: ' \
+    '(--preserve-metadata -P --no-preserve-metadata)'{--preserve-metadata,-P,--no-preserve-metadata}'[If replacing a package previously installed using this command, copy its description and dependencies]'
+}
+
 (( ${+functions[_cave_cmd_info]} )) ||
 _cave_cmd_info()
 {
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
     '*::arg:->cave_commands' && return
+}
+
+(( ${+functions[_cave_cmd_match]} )) ||
+_cave_cmd_match()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '(--type -t)'{--type,-t}'[Specify which matching algorithm to use]:Matching:((text t exact x regex r))' \
+    '(--and -& --no-and)'{--and,-\&,--no-and}'[If multiple patterns are specified, require that all patterns match]' \
+    '(--not -! --no-not)'{--not,-\!,--no-not}'[Invert the results of pattern matches]' \
+    '*'{--key,-k}'[Search the named metadata key]' \
+    '(--name -n --no-name)'{--name,-n,--no-name}'[Search package names]' \
+    '(--description -d --no-description)'{--description,-d,--no-description}'[Search package descriptions]'
+}
+
+(( ${+functions[_cave_cmd_owner]} )) ||
+_cave_cmd_owner()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '(--match -m)'{--match,-m}'[Which match algorithm to use]:match algorithm:((auto\:"If pattern starts with a \/, full; if it contains a \/, partial; otherwise, basename"
+                                                                                basename\:"Basename match"
+                                                                                full\:"Full match"
+                                                                                partial\:"Partial match"))' \
+    '*:file:_files'
 }
 
 (( ${+functions[_cave_cmd_perform]} )) ||
@@ -234,6 +342,15 @@ _cave_cmd_print-environment-metadata()
     '--format[Select the output format]:format: '
 }
 
+(( ${+functions[_cave_cmd_print-id-actions]} )) ||
+_cave_cmd_print-id-actions()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '(--best --no-best)'{--best,--no-best}'[If the spec matches multiple IDs, select the best ID rather than giving an error]' \
+    '*:package depspec:_cave_packages' && return 0
+}
+
 (( ${+functions[_cave_cmd_print-id-contents]} )) ||
 _cave_cmd_print-id-contents()
 {
@@ -252,6 +369,17 @@ _cave_cmd_print-id-executables()
     '*:package depspec:_cave_packages' && return 0
 }
 
+(( ${+functions[_cave_cmd_print-id-masks]} )) ||
+_cave_cmd_print-id-masks()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '(--best --no-best)'{--best,--no-best}'[If the spec matches multiple IDs, select the best ID rather than giving an error]' \
+    '(--overridden --no-overridden)'{--overridden,--no-overridden}'[Show overridden masks]' \
+    '(--no-active --no-no-active)'{--no-active,--no-no-active}'[No not show active (non-overridden) masks]' \
+    '--format[Select the output format]:format: ' \
+    '*:package depspec:_cave_packages' && return 0
+}
 
 (( ${+functions[_cave_cmd_print-id-metadata]} )) ||
 _cave_cmd_print-id-metadata()
@@ -295,13 +423,52 @@ _cave_cmd_print-packages()
     '(--help -h)'{--help,-h}'[Display help messsage]'
 }
 
-
 (( ${+functions[_cave_cmd_print-repositories]} )) ||
 _cave_cmd_print-repositories()
 {
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
     '--format[Show only repositories of a specific format]:repository format: '
+}
+
+(( ${+functions[_cave_cmd_print-repository-formats]} )) ||
+_cave_cmd_print-repository-formats()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]'
+}
+
+(( ${+functions[_cave_cmd_print-repository-metadata]} )) ||
+_cave_cmd_print-repository-metadata()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '*--raw-name[Show only keys with this raw name]:raw name: ' \
+    '*--human-name[Show only keys with this human name]:human name: ' \
+    '--format[Select the output format]:format: ' \
+    '*:repository:_cave_repositories' && return 0
+}
+
+(( ${+functions[_cave_cmd_print-set]} )) ||
+_cave_cmd_print-set()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '(--expand -x --no-expand)'{--expand,-x,--no-expand}'[Expand set contents recursively]'
+}
+
+(( ${+functions[_cave_cmd_print-sets]} )) ||
+_cave_cmd_print-sets()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]'
+}
+
+(( ${+functions[_cave_cmd_print-sync-protocols]} )) ||
+_cave_cmd_print-sync-protocols()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]'
 }
 
 _cave_resolve_arguments=(
@@ -365,12 +532,42 @@ _cave_resolve_arguments=(
     '--update-world-program[The program used to perform world updates]:Command: '
 )
 
+(( ${+functions[_cave_cmd_purge]} )) ||
+_cave_cmd_purge()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]' \
+    ${_cave_resolve_arguments[@]}
+}
+
 (( ${+functions[_cave_cmd_resolve]} )) ||
 _cave_cmd_resolve()
 {
   _arguments -s : \
     ${_cave_resolve_arguments[@]} \
     '*:package depspec:_cave_packages' && return 0
+}
+
+(( ${+functions[_cave_cmd_resume]} )) ||
+_cave_cmd_resume()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '(--retry-failed -r --no-retry-failed)'{--retry-failed,-r,--no-retry-failed}'[Retry any job that has already failed]' \
+    '(--retry-skipped -R --no-retry-skipped)'{--retry-skipped,-R,--no-retry-skipped}'[Retry any job that has already been skipped]' \
+    '(--skip-failed -s --no-skip-failed)'{--skip-failed,-s,--no-skip-failed}'[Skip any job that has already failed]' \
+    '(--continue-on-failure -C)'{--continue-on-failure,-C}'[Whether to continue after an error occurs]:When:((never n if-satisfied s if-independent i always a))' \
+    '--resume-file[Write resume information to the specified file]' \
+    '(--fetch -f --no-fetch)'{--fetch,-f,--no-fetch}'[Skip any jobs that are not fetch jobs]' \
+    '(--fetch-jobs -J)'{--fetch-jobs,-J}'[The number of parallel fetch jobs to launch]' \
+    '*--skip-phase[Skip the named phases]:Phase:((fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup))' \
+    '*--abort-at-phase[Abort when a named phase is encountered]:Phase:((fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup))' \
+    '*--skip-until-phase[Skip every phase until a named phase is encountered]:Phase:((fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup))' \
+    '*--change-phases-for[Control to which packages these phase options apply]:Which:((all first last))' \
+    '--display-resolution-program[The program used to display the resolution]:Command: ' \
+    '--execute-resolution-program[The program used to execute the resolution]:Command: ' \
+    '--perform-program[The program used to perform actions]:Command: ' \
+    '--update-world-program[The program used to perform world updates]:Command: '
 }
 
 (( ${+functions[_cave_cmd_search]} )) ||
@@ -414,6 +611,16 @@ _cave_cmd_sync()
     '*:repository:_cave_repositories' && return 0
 }
 
+(( ${+functions[_cave_cmd_uninstall]} )) ||
+_cave_cmd_uninstall()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '(--all-versions -a --no-all-versions)'{--all-versions,-a,--no-all-versions}'[Search in every version of packages]' \
+    ${_cave_resolve_arguments[@]} \
+    '*:package depspec:_cave_packages' && return 0
+}
+
 (( ${+functions[_cave_cmd_update-world]} )) ||
 _cave_cmd_update-world()
 {
@@ -423,6 +630,13 @@ _cave_cmd_update-world()
     '(--remove --no-remove -r)'{--remove,--no-remove,-r}'[Remove the specified items]' \
     '(--set --no-set -s)'{--set,--no-set,-s}'[Parameters are set names, not package names]' \
     '*:package depspec:_cave_packages' && return 0
+}
+
+(( ${+functions[_cave_cmd_verify]} )) ||
+_cave_cmd_verify()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]'
 }
 
 (( ${+functions[_cave_packages]} )) ||
