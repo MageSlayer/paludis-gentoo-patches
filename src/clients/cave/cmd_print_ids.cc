@@ -81,10 +81,10 @@ namespace
 
         PrintIDsCommandLine() :
             g_filters(main_options_section(), "Filters", "Filter the output. Each filter may be specified more than once."),
-            a_matching(&g_filters, "matching", '\0', "Show only IDs matching this spec. If specified multiple "
+            a_matching(&g_filters, "matching", 'm', "Show only IDs matching this spec. If specified multiple "
                     "times, only IDs matching every spec are selected.",
                     args::StringSetArg::StringSetArgOptions()),
-            a_supporting(&g_filters, "supporting", '\0', "Show only IDs supporting this action. If specified "
+            a_supporting(&g_filters, "supporting", 's', "Show only IDs supporting this action. If specified "
                     "multiple times, all listed actions must be supported.",
                     args::StringSetArg::StringSetArgOptions
                     ("install",       "able to be installed")
@@ -95,7 +95,7 @@ namespace
                     ("pretend-fetch", "able to have sources pretend-fetched")
                     ("info",          "provides extra pre- or post-install information")
                     ),
-            a_with_mask(&g_filters, "with-mask", '\0', "Show only IDs with this kind of mask. If specified "
+            a_with_mask(&g_filters, "with-mask", 'M', "Show only IDs with this kind of mask. If specified "
                     "multiple times, all listed masks must be present.",
                     args::StringSetArg::StringSetArgOptions
                     ("none",          "no mask")
@@ -107,7 +107,7 @@ namespace
                     ("association",   "masked by association")
                    ),
             g_display_options(main_options_section(), "Display Options", "Controls the output format."),
-            a_format(&g_display_options, "format", '\0', "Select the output format. Special tokens recognised are "
+            a_format(&g_display_options, "format", 'f', "Select the output format. Special tokens recognised are "
                     "%c for category, %p for package, %v for version, %s for slot, %: for ':' if we have a slot and "
                     "empty otherwise, %r for repository, %F for the canonical full form, %V for the canonical full "
                     "version, %W for the canonical full unversioned form, %N for the canonical full unnamed form, "
