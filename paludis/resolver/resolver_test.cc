@@ -222,28 +222,6 @@ paludis::resolver::resolver_test::order_early_fn(
     return indeterminate;
 }
 
-const std::shared_ptr<ConstraintSequence>
-paludis::resolver::resolver_test::get_constraints_for_via_binary_fn(
-        const std::shared_ptr<const Resolution> & resolution,
-        const std::shared_ptr<const Resolution> & because_resolution)
-{
-    PartiallyMadePackageDepSpec partial_spec({ });
-    partial_spec.package(resolution->resolvent().package());
-    PackageDepSpec spec(partial_spec);
-
-    std::shared_ptr<ConstraintSequence> result(std::make_shared<ConstraintSequence>());
-    result->push_back(std::make_shared<Constraint>(make_named_values<Constraint>(
-                        n::destination_type() = resolution->resolvent().destination_type(),
-                        n::nothing_is_fine_too() = false,
-                        n::reason() = std::make_shared<ViaBinaryReason>(because_resolution->resolvent()),
-                        n::spec() = spec,
-                        n::untaken() = false,
-                        n::use_existing() = ue_if_possible
-                        )));
-
-    return result;
-}
-
 ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s, const std::string & e,
         const std::string & l) :
     TestCase(s),
@@ -256,7 +234,8 @@ ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s,
     confirm_helper(&env),
     find_repository_for_helper(&env),
     get_constraints_for_dependent_helper(&env),
-    get_constraints_for_purge_helper(&env)
+    get_constraints_for_purge_helper(&env),
+    get_constraints_for_via_binary_helper(&env)
 {
     std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
     keys->insert("format", "e");
@@ -310,7 +289,7 @@ ResolverTestCase::get_resolver_functions(InitialConstraints & initial_constraint
             n::find_repository_for_fn() = std::cref(find_repository_for_helper),
             n::get_constraints_for_dependent_fn() = std::cref(get_constraints_for_dependent_helper),
             n::get_constraints_for_purge_fn() = std::cref(get_constraints_for_purge_helper),
-            n::get_constraints_for_via_binary_fn() = &get_constraints_for_via_binary_fn,
+            n::get_constraints_for_via_binary_fn() = std::cref(get_constraints_for_via_binary_helper),
             n::get_destination_types_for_error_fn() = &get_destination_types_for_error_fn,
             n::get_initial_constraints_for_fn() =
                 std::bind(&initial_constraints_for_fn, std::ref(initial_constraints),
