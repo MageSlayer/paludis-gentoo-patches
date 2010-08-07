@@ -45,6 +45,7 @@
 #include <paludis/resolver/get_constraints_for_purge_helper.hh>
 #include <paludis/resolver/get_constraints_for_via_binary_helper.hh>
 #include <paludis/resolver/get_destination_types_for_error_helper.hh>
+#include <paludis/resolver/make_destination_filtered_generator_helper.hh>
 #include <paludis/resolver/make_origin_filtered_generator_helper.hh>
 #include <paludis/resolver/make_unmaskable_filter_helper.hh>
 #include <paludis/resolver/order_early_helper.hh>
@@ -99,9 +100,6 @@ namespace paludis
                     const PackageDepSpec &,
                     const std::shared_ptr<const Reason> &);
 
-            FilteredGenerator make_destination_filtered_generator_fn(const Generator &,
-                    const std::shared_ptr<const Resolution> &);
-
             struct ResolverTestCase : test::TestCase
             {
                 TestEnvironment env;
@@ -118,6 +116,7 @@ namespace paludis
                 GetConstraintsForPurgeHelper get_constraints_for_purge_helper;
                 GetConstraintsForViaBinaryHelper get_constraints_for_via_binary_helper;
                 GetDestinationTypesForErrorHelper get_destination_types_for_error_helper;
+                MakeDestinationFilteredGeneratorHelper make_destination_filtered_generator_helper;
                 MakeOriginFilteredGeneratorHelper make_origin_filtered_generator_helper;
                 MakeUnmaskableFilterHelper make_unmaskable_filter_helper;
                 OrderEarlyHelper order_early_helper;

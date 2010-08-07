@@ -74,6 +74,7 @@
 #include <paludis/resolver/get_constraints_for_purge_helper.hh>
 #include <paludis/resolver/get_constraints_for_via_binary_helper.hh>
 #include <paludis/resolver/get_destination_types_for_error_helper.hh>
+#include <paludis/resolver/make_destination_filtered_generator_helper.hh>
 #include <paludis/resolver/make_origin_filtered_generator_helper.hh>
 #include <paludis/resolver/make_unmaskable_filter_helper.hh>
 #include <paludis/resolver/order_early_helper.hh>
@@ -271,16 +272,6 @@ namespace
         }
 
         throw InternalError(PALUDIS_HERE, stringify(r.destination_type()));
-    }
-
-    FilteredGenerator make_destination_filtered_generator_with_resolution(
-            const Environment * const env,
-            const ResolveCommandLineResolutionOptions & resolution_options,
-            const std::shared_ptr<const Generator> & binary_destinations,
-            const Generator & g,
-            const std::shared_ptr<const Resolution> & r)
-    {
-        return make_destination_filtered_generator(env, resolution_options, binary_destinations, g, r->resolvent());
     }
 
     const std::shared_ptr<const Sequence<std::string> > add_resolver_targets(
@@ -1508,6 +1499,8 @@ paludis::cave::resolve_common(
         throw args::DoHelp("Don't understand argument '" + resolution_options.a_make.argument() + "' to '--"
                 + resolution_options.a_make.long_name() + "'");
 
+    MakeDestinationFilteredGeneratorHelper make_destination_filtered_generator_helper(env.get());
+
     MakeOriginFilteredGeneratorHelper make_origin_filtered_generator_helper(env.get());
     make_origin_filtered_generator_helper.set_making_binaries("binaries" == resolution_options.a_make.argument());
 
@@ -1563,8 +1556,7 @@ paludis::cave::resolve_common(
                     env.get(), std::cref(resolution_options), std::cref(take), std::cref(take_from),
                     std::cref(ignore), std::cref(ignore_from), std::cref(no_blockers_from),
                     std::cref(no_dependencies_from), _1, _2),
-                n::make_destination_filtered_generator_fn() = std::bind(&make_destination_filtered_generator_with_resolution,
-                    env.get(), std::cref(resolution_options), binary_destinations, _1, _2),
+                n::make_destination_filtered_generator_fn() = std::cref(make_destination_filtered_generator_helper),
                 n::make_origin_filtered_generator_fn() = std::cref(make_origin_filtered_generator_helper),
                 n::make_unmaskable_filter_fn() = std::cref(make_unmaskable_filter_helper),
                 n::order_early_fn() = std::cref(order_early_helper),
