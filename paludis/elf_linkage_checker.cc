@@ -291,7 +291,7 @@ ElfLinkageChecker::need_breakage_added(
     for (std::vector<FSEntry>::const_iterator dir_it(_imp->extra_lib_dirs.begin()),
              dir_it_end(_imp->extra_lib_dirs.end()); dir_it_end != dir_it; ++dir_it)
     {
-        Context ctx("When seaching for missing libraries in '" + stringify(*dir_it) + "':");
+        Context ctx("When searching for missing libraries in '" + stringify(*dir_it) + "':");
 
         for (AllMissing::iterator missing_it(all_missing.begin()),
                  missing_it_end(all_missing.end()); missing_it_end != missing_it; ++missing_it)
