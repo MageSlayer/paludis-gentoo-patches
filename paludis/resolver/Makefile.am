@@ -46,6 +46,7 @@ noinst_HEADERS = \
 	get_constraints_for_dependent_helper.hh get_constraints_for_dependent_helper-fwd.hh \
 	get_constraints_for_purge_helper.hh get_constraints_for_dependent_helper-fwd.hh \
 	get_constraints_for_via_binary_helper.hh get_constraints_for_via_binary_helper-fwd.hh \
+	get_destination_types_for_error_helper.hh get_destination_types_for_error_helper-fwd.hh \
 	job.hh job-fwd.hh \
 	job_list.hh job_list-fwd.hh \
 	job_lists.hh job_lists-fwd.hh \
@@ -91,6 +92,7 @@ libpaludisresolver_a_SOURCES = \
 	get_constraints_for_dependent_helper.cc \
 	get_constraints_for_purge_helper.cc \
 	get_constraints_for_via_binary_helper.cc \
+	get_destination_types_for_error_helper.cc \
 	job.cc \
 	job_list.cc \
 	job_lists.cc \

@@ -74,6 +74,7 @@
 #include <paludis/resolver/get_constraints_for_dependent_helper.hh>
 #include <paludis/resolver/get_constraints_for_purge_helper.hh>
 #include <paludis/resolver/get_constraints_for_via_binary_helper.hh>
+#include <paludis/resolver/get_destination_types_for_error_helper.hh>
 
 #include <paludis/user_dep_spec.hh>
 #include <paludis/notifier_callback.hh>
@@ -1677,6 +1678,17 @@ paludis::cave::resolve_common(
 
     GetConstraintsForViaBinaryHelper get_constraints_for_via_binary_helper(env.get());
 
+    GetDestinationTypesForErrorHelper get_destination_types_for_error_helper(env.get());
+    if (resolution_options.a_make.argument() == "binaries")
+        get_destination_types_for_error_helper.set_target_destination_type(dt_create_binary);
+    else if (resolution_options.a_make.argument() == "install")
+        get_destination_types_for_error_helper.set_target_destination_type(dt_install_to_slash);
+    else if (resolution_options.a_make.argument() == "chroot")
+        get_destination_types_for_error_helper.set_target_destination_type(dt_install_to_chroot);
+    else
+        throw args::DoHelp("Don't understand argument '" + resolution_options.a_make.argument() + "' to '--"
+                + resolution_options.a_make.long_name() + "'");
+
     ResolverFunctions resolver_functions(make_named_values<ResolverFunctions>(
                 n::allow_choice_changes_fn() = std::cref(allow_choice_changes_helper),
                 n::allowed_to_remove_fn() = std::cref(allowed_to_remove_helper),
@@ -1687,8 +1699,7 @@ paludis::cave::resolve_common(
                 n::get_constraints_for_dependent_fn() = std::cref(get_constraints_for_dependent_helper),
                 n::get_constraints_for_purge_fn() = std::cref(get_constraints_for_purge_helper),
                 n::get_constraints_for_via_binary_fn() = std::cref(get_constraints_for_via_binary_helper),
-                n::get_destination_types_for_error_fn() = std::bind(&get_destination_types_for_fn,
-                    env.get(), std::cref(resolution_options), _1, make_null_shared_ptr(), _2),
+                n::get_destination_types_for_error_fn() = std::cref(get_destination_types_for_error_helper),
                 n::get_initial_constraints_for_fn() = std::bind(&initial_constraints_for_fn,
                     env.get(), std::cref(resolution_options), std::cref(without),
                     std::cref(initial_constraints), binary_destinations, _1),

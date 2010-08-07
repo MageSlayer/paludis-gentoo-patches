@@ -44,6 +44,7 @@
 #include <paludis/resolver/get_constraints_for_dependent_helper.hh>
 #include <paludis/resolver/get_constraints_for_purge_helper.hh>
 #include <paludis/resolver/get_constraints_for_via_binary_helper.hh>
+#include <paludis/resolver/get_destination_types_for_error_helper.hh>
 
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
@@ -102,9 +103,6 @@ namespace paludis
             Filter make_unmaskable_filter_fn(
                     const std::shared_ptr<const Resolution> &);
 
-            DestinationTypes get_destination_types_for_error_fn(const PackageDepSpec &,
-                    const std::shared_ptr<const Reason> &);
-
             bool remove_if_dependent_fn(
                     const std::shared_ptr<const QualifiedPackageNameSet> &,
                     const std::shared_ptr<const PackageID> &);
@@ -133,6 +131,7 @@ namespace paludis
                 GetConstraintsForDependentHelper get_constraints_for_dependent_helper;
                 GetConstraintsForPurgeHelper get_constraints_for_purge_helper;
                 GetConstraintsForViaBinaryHelper get_constraints_for_via_binary_helper;
+                GetDestinationTypesForErrorHelper get_destination_types_for_error_helper;
 
                 ResolverTestCase(const std::string & group, const std::string & test_name, const std::string & eapi,
                         const std::string & layout);

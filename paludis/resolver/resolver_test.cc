@@ -144,13 +144,6 @@ paludis::resolver::resolver_test::make_unmaskable_filter_fn(
     return filter::NotMasked();
 }
 
-DestinationTypes
-paludis::resolver::resolver_test::get_destination_types_for_error_fn(const PackageDepSpec &,
-        const std::shared_ptr<const Reason> &)
-{
-    return DestinationTypes() + dt_install_to_slash;
-}
-
 namespace
 {
 #ifdef ENABLE_VIRTUALS_REPOSITORY
@@ -235,7 +228,8 @@ ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s,
     find_repository_for_helper(&env),
     get_constraints_for_dependent_helper(&env),
     get_constraints_for_purge_helper(&env),
-    get_constraints_for_via_binary_helper(&env)
+    get_constraints_for_via_binary_helper(&env),
+    get_destination_types_for_error_helper(&env)
 {
     std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
     keys->insert("format", "e");
@@ -290,7 +284,7 @@ ResolverTestCase::get_resolver_functions(InitialConstraints & initial_constraint
             n::get_constraints_for_dependent_fn() = std::cref(get_constraints_for_dependent_helper),
             n::get_constraints_for_purge_fn() = std::cref(get_constraints_for_purge_helper),
             n::get_constraints_for_via_binary_fn() = std::cref(get_constraints_for_via_binary_helper),
-            n::get_destination_types_for_error_fn() = &get_destination_types_for_error_fn,
+            n::get_destination_types_for_error_fn() = std::cref(get_destination_types_for_error_helper),
             n::get_initial_constraints_for_fn() =
                 std::bind(&initial_constraints_for_fn, std::ref(initial_constraints),
                     std::placeholders::_1),
