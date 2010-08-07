@@ -17,19 +17,14 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_SRC_CLIENTS_CAVE_NOT_STRONGLY_MASKED_HH
-#define PALUDIS_GUARD_SRC_CLIENTS_CAVE_NOT_STRONGLY_MASKED_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_MASK_UTILS_HH
+#define PALUDIS_GUARD_PALUDIS_MASK_UTILS_HH 1
 
-#include <paludis/package_id-fwd.hh>
-#include <paludis/util/attributes.hh>
-#include <memory>
+#include <paludis/mask_utils-fwd.hh>
 
 namespace paludis
 {
-    namespace cave
-    {
-        bool not_strongly_masked(const std::shared_ptr<const PackageID> &) PALUDIS_ATTRIBUTE((warn_unused_result));
-    }
+
 }
 
 #endif

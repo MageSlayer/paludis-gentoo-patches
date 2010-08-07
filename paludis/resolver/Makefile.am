@@ -54,6 +54,7 @@ noinst_HEADERS = \
 	job_requirements.hh job_requirements-fwd.hh \
 	job_state.hh job_state-fwd.hh \
 	labels_classifier.hh labels_classifier-fwd.hh \
+	make_unmaskable_filter_helper.hh make_unmaskable_filter_helper-fwd.hh \
 	nag.hh nag-fwd.hh \
 	order_early_helper.hh order_early_helper-fwd.hh \
 	orderer.hh orderer-fwd.hh \
@@ -104,6 +105,7 @@ libpaludisresolver_a_SOURCES = \
 	job_requirements.cc \
 	job_state.cc \
 	labels_classifier.cc \
+	make_unmaskable_filter_helper.cc \
 	nag.cc \
 	order_early_helper.cc \
 	orderer.cc \

@@ -17,12 +17,11 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "not_strongly_masked.hh"
+#include <paludis/mask_utils.hh>
 #include <paludis/package_id.hh>
 #include <paludis/mask.hh>
 
 using namespace paludis;
-using namespace cave;
 
 namespace
 {
@@ -56,7 +55,7 @@ namespace
 }
 
 bool
-paludis::cave::not_strongly_masked(const std::shared_ptr<const PackageID> & id)
+paludis::not_strongly_masked(const std::shared_ptr<const PackageID> & id)
 {
     for (auto m(id->begin_masks()), m_end(id->end_masks()) ;
             m != m_end ; ++m)

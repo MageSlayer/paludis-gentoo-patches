@@ -25,7 +25,6 @@
 #include "exceptions.hh"
 #include "command_command_line.hh"
 #include "match_qpns.hh"
-#include "not_strongly_masked.hh"
 
 #include <paludis/util/mutex.hh>
 #include <paludis/util/stringify.hh>
@@ -75,6 +74,7 @@
 #include <paludis/resolver/get_constraints_for_purge_helper.hh>
 #include <paludis/resolver/get_constraints_for_via_binary_helper.hh>
 #include <paludis/resolver/get_destination_types_for_error_helper.hh>
+#include <paludis/resolver/make_unmaskable_filter_helper.hh>
 #include <paludis/resolver/order_early_helper.hh>
 #include <paludis/resolver/remove_if_dependent_helper.hh>
 #include <paludis/resolver/prefer_or_avoid_helper.hh>
@@ -97,6 +97,7 @@
 #include <paludis/elike_slot_requirement.hh>
 #include <paludis/package_id.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
+#include <paludis/mask_utils.hh>
 
 #include <algorithm>
 #include <iostream>
@@ -132,29 +133,6 @@ namespace
         return id->behaviours_key()->value()->end() == id->behaviours_key()->value()->find("unchrootable");
     }
 
-    struct UnmaskableFilterHandler :
-        AllFilterHandlerBase
-    {
-        virtual std::shared_ptr<const PackageIDSet> ids(
-                const Environment * const,
-                const std::shared_ptr<const PackageIDSet> & id) const
-        {
-            std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
-
-            for (PackageIDSet::ConstIterator i(id->begin()), i_end(id->end()) ;
-                    i != i_end ; ++i)
-                if (not_strongly_masked(*i))
-                    result->insert(*i);
-
-            return result;
-        }
-
-        virtual std::string as_string() const
-        {
-            return "unmaskable";
-        }
-    };
-
     struct BinaryableFilterHandler :
         AllFilterHandlerBase
     {
@@ -175,15 +153,6 @@ namespace
         virtual std::string as_string() const
         {
             return "binaryable";
-        }
-    };
-
-    struct UnmaskableFilter :
-        Filter
-    {
-        UnmaskableFilter() :
-            Filter(std::make_shared<UnmaskableFilterHandler>())
-        {
         }
     };
 
@@ -355,17 +324,6 @@ namespace
             return g | BinaryableFilter();
         else
             return g;
-    }
-
-    Filter make_unmaskable_filter_fn(
-            const Environment * const,
-            const ResolveCommandLineResolutionOptions & cmdline,
-            const std::shared_ptr<const Resolution> &)
-    {
-        if (cmdline.a_no_override_masks.specified())
-            return filter::NotMasked();
-        else
-            return UnmaskableFilter();
     }
 
     const std::shared_ptr<const Sequence<std::string> > add_resolver_targets(
@@ -1593,6 +1551,9 @@ paludis::cave::resolve_common(
         throw args::DoHelp("Don't understand argument '" + resolution_options.a_make.argument() + "' to '--"
                 + resolution_options.a_make.long_name() + "'");
 
+    MakeUnmaskableFilterHelper make_unmaskable_filter_helper(env.get());
+    make_unmaskable_filter_helper.set_override_masks(! resolution_options.a_no_override_masks.specified());
+
     OrderEarlyHelper order_early_helper(env.get());
     for (args::StringSetArg::ConstIterator i(resolution_options.a_early.begin_args()),
             i_end(resolution_options.a_early.end_args()) ;
@@ -1646,8 +1607,7 @@ paludis::cave::resolve_common(
                     env.get(), std::cref(resolution_options), binary_destinations, _1, _2),
                 n::make_origin_filtered_generator_fn() = std::bind(&make_origin_filtered_generator,
                     env.get(), std::cref(resolution_options), _1, _2),
-                n::make_unmaskable_filter_fn() = std::bind(&make_unmaskable_filter_fn,
-                        env.get(), std::cref(resolution_options), _1),
+                n::make_unmaskable_filter_fn() = std::cref(make_unmaskable_filter_helper),
                 n::order_early_fn() = std::cref(order_early_helper),
                 n::prefer_or_avoid_fn() = std::cref(prefer_or_avoid_helper),
                 n::remove_if_dependent_fn() = std::cref(remove_if_dependent_helper)

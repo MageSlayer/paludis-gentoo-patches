@@ -24,7 +24,6 @@
 #include "formats.hh"
 #include "colour_formatter.hh"
 #include "match_qpns.hh"
-#include "not_strongly_masked.hh"
 #include <paludis/args/do_help.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/system.hh>
@@ -76,6 +75,7 @@
 #include <paludis/output_manager_from_environment.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/changed_choices.hh>
+#include <paludis/mask_utils.hh>
 
 #include <set>
 #include <iterator>

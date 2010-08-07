@@ -137,13 +137,6 @@ paludis::resolver::resolver_test::make_origin_filtered_generator_fn(const Genera
     return g;
 }
 
-Filter
-paludis::resolver::resolver_test::make_unmaskable_filter_fn(
-        const std::shared_ptr<const Resolution> &)
-{
-    return filter::NotMasked();
-}
-
 namespace
 {
 #ifdef ENABLE_VIRTUALS_REPOSITORY
@@ -201,6 +194,7 @@ ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s,
     get_constraints_for_purge_helper(&env),
     get_constraints_for_via_binary_helper(&env),
     get_destination_types_for_error_helper(&env),
+    make_unmaskable_filter_helper(&env),
     order_early_helper(&env),
     prefer_or_avoid_helper(&env),
     remove_if_dependent_helper(&env)
@@ -243,6 +237,8 @@ ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s,
     env.package_database()->add_repository(0, RepositoryFactory::get_instance()->create(&env, virtuals_repo_keys));
     env.package_database()->add_repository(0, RepositoryFactory::get_instance()->create(&env, installed_virtuals_repo_keys));
 #endif
+
+    make_unmaskable_filter_helper.set_override_masks(false);
 }
 
 ResolverFunctions
@@ -268,7 +264,7 @@ ResolverTestCase::get_resolver_functions(InitialConstraints & initial_constraint
             n::interest_in_spec_fn() = &interest_in_spec_fn,
             n::make_destination_filtered_generator_fn() = &make_destination_filtered_generator_fn,
             n::make_origin_filtered_generator_fn() = &make_origin_filtered_generator_fn,
-            n::make_unmaskable_filter_fn() = &make_unmaskable_filter_fn,
+            n::make_unmaskable_filter_fn() = std::cref(make_unmaskable_filter_helper),
             n::order_early_fn() = std::cref(order_early_helper),
             n::prefer_or_avoid_fn() = std::cref(prefer_or_avoid_helper),
             n::remove_if_dependent_fn() = std::cref(remove_if_dependent_helper)

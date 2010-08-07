@@ -23,7 +23,6 @@
 #include "formats.hh"
 #include "exceptions.hh"
 #include "select_format_for_spec.hh"
-#include "not_strongly_masked.hh"
 #include <paludis/args/args.hh>
 #include <paludis/args/do_help.hh>
 #include <paludis/name.hh>
@@ -49,6 +48,7 @@
 #include <paludis/mask.hh>
 #include <paludis/choice.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
+#include <paludis/mask_utils.hh>
 #include <cstdlib>
 #include <iostream>
 #include <algorithm>
