@@ -46,6 +46,7 @@
 #include <paludis/resolver/get_constraints_for_via_binary_helper.hh>
 #include <paludis/resolver/get_destination_types_for_error_helper.hh>
 #include <paludis/resolver/remove_if_dependent_helper.hh>
+#include <paludis/resolver/prefer_or_avoid_helper.hh>
 
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
@@ -104,10 +105,6 @@ namespace paludis
             Filter make_unmaskable_filter_fn(
                     const std::shared_ptr<const Resolution> &);
 
-            Tribool prefer_or_avoid_fn(
-                        const std::shared_ptr<const Map<QualifiedPackageName, bool> > &,
-                        const QualifiedPackageName &);
-
             Tribool order_early_fn(
                         const std::shared_ptr<const Resolution> &);
 
@@ -116,7 +113,6 @@ namespace paludis
                 TestEnvironment env;
                 std::shared_ptr<Repository> repo, inst_repo;
                 std::shared_ptr<FakeInstalledRepository> fake_inst_repo;
-                std::shared_ptr<Map<QualifiedPackageName, bool> > prefer_or_avoid_names;
 
                 AllowChoiceChangesHelper allow_choice_changes_helper;
                 AllowedToRemoveHelper allowed_to_remove_helper;
@@ -128,6 +124,7 @@ namespace paludis
                 GetConstraintsForPurgeHelper get_constraints_for_purge_helper;
                 GetConstraintsForViaBinaryHelper get_constraints_for_via_binary_helper;
                 GetDestinationTypesForErrorHelper get_destination_types_for_error_helper;
+                PreferOrAvoidHelper prefer_or_avoid_helper;
                 RemoveIfDependentHelper remove_if_dependent_helper;
 
                 ResolverTestCase(const std::string & group, const std::string & test_name, const std::string & eapi,

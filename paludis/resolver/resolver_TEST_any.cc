@@ -162,10 +162,15 @@ namespace test_cases
             a(aa),
             b(bb)
         {
-            if (! a.is_indeterminate())
-                prefer_or_avoid_names->insert(QualifiedPackageName("preferences/dep-a"), a.is_true());
-            if (! b.is_indeterminate())
-                prefer_or_avoid_names->insert(QualifiedPackageName("preferences/dep-b"), b.is_true());
+            if (a.is_true())
+                prefer_or_avoid_helper.add_prefer_name(QualifiedPackageName("preferences/dep-a"));
+            else if (a.is_false())
+                prefer_or_avoid_helper.add_avoid_name(QualifiedPackageName("preferences/dep-a"));
+
+            if (b.is_true())
+                prefer_or_avoid_helper.add_prefer_name(QualifiedPackageName("preferences/dep-b"));
+            else if (b.is_false())
+                prefer_or_avoid_helper.add_avoid_name(QualifiedPackageName("preferences/dep-b"));
         }
 
         void run()

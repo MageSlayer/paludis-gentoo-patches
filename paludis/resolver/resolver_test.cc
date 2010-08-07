@@ -189,18 +189,6 @@ paludis::resolver::resolver_test::get_use_existing_nothing_fn(
 }
 
 Tribool
-paludis::resolver::resolver_test::prefer_or_avoid_fn(
-        const std::shared_ptr<const Map<QualifiedPackageName, bool> > & s,
-        const QualifiedPackageName & q)
-{
-    const Map<QualifiedPackageName, bool>::ConstIterator r(s->find(q));
-    if (s->end() != r)
-        return Tribool(r->second);
-    else
-        return indeterminate;
-}
-
-Tribool
 paludis::resolver::resolver_test::order_early_fn(
         const std::shared_ptr<const Resolution> &)
 {
@@ -210,7 +198,6 @@ paludis::resolver::resolver_test::order_early_fn(
 ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s, const std::string & e,
         const std::string & l) :
     TestCase(s),
-    prefer_or_avoid_names(std::make_shared<Map<QualifiedPackageName, bool>>()),
     allow_choice_changes_helper(&env),
     allowed_to_remove_helper(&env),
     always_via_binary_helper(&env),
@@ -221,6 +208,7 @@ ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s,
     get_constraints_for_purge_helper(&env),
     get_constraints_for_via_binary_helper(&env),
     get_destination_types_for_error_helper(&env),
+    prefer_or_avoid_helper(&env),
     remove_if_dependent_helper(&env)
 {
     std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
@@ -288,8 +276,7 @@ ResolverTestCase::get_resolver_functions(InitialConstraints & initial_constraint
             n::make_origin_filtered_generator_fn() = &make_origin_filtered_generator_fn,
             n::make_unmaskable_filter_fn() = &make_unmaskable_filter_fn,
             n::order_early_fn() = &order_early_fn,
-            n::prefer_or_avoid_fn() = std::bind(&prefer_or_avoid_fn,
-                    prefer_or_avoid_names, std::placeholders::_1),
+            n::prefer_or_avoid_fn() = std::cref(prefer_or_avoid_helper),
             n::remove_if_dependent_fn() = std::cref(remove_if_dependent_helper)
             );
 }

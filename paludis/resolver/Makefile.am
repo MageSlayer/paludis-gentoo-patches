@@ -57,6 +57,7 @@ noinst_HEADERS = \
 	orderer.hh orderer-fwd.hh \
 	orderer_notes.hh orderer_notes-fwd.hh \
 	package_or_block_dep_spec.hh package_or_block_dep_spec-fwd.hh \
+	prefer_or_avoid_helper.hh prefer_or_avoid_helper-fwd.hh \
 	reason.hh reason-fwd.hh \
 	remove_if_dependent_helper.hh remove_if_dependent_helper-fwd.hh \
 	required_confirmations.hh required_confirmations-fwd.hh \
@@ -104,6 +105,7 @@ libpaludisresolver_a_SOURCES = \
 	orderer.cc \
 	orderer_notes.cc \
 	package_or_block_dep_spec.cc \
+	prefer_or_avoid_helper.cc \
 	reason.cc \
 	remove_if_dependent_helper.cc \
 	required_confirmations.cc \

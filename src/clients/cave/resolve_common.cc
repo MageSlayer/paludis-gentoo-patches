@@ -76,6 +76,7 @@
 #include <paludis/resolver/get_constraints_for_via_binary_helper.hh>
 #include <paludis/resolver/get_destination_types_for_error_helper.hh>
 #include <paludis/resolver/remove_if_dependent_helper.hh>
+#include <paludis/resolver/prefer_or_avoid_helper.hh>
 
 #include <paludis/user_dep_spec.hh>
 #include <paludis/notifier_callback.hh>
@@ -1064,45 +1065,6 @@ namespace
         return false;
     }
 
-    bool prefer_or_avoid_one(const Environment * const, const QualifiedPackageName & q, const PackageDepSpec & s)
-    {
-        Context context("When working out whether we favour or avoid '" + stringify(q) + "' due to '"
-                + stringify(s) + "':");
-
-        if (! package_dep_spec_has_properties(s, make_named_values<PackageDepSpecProperties>(
-                        n::has_additional_requirements() = false,
-                        n::has_category_name_part() = false,
-                        n::has_from_repository() = false,
-                        n::has_in_repository() = false,
-                        n::has_installable_to_path() = false,
-                        n::has_installable_to_repository() = false,
-                        n::has_installed_at_path() = false,
-                        n::has_package() = true,
-                        n::has_package_name_part() = false,
-                        n::has_slot_requirement() = false,
-                        n::has_tag() = indeterminate,
-                        n::has_version_requirements() = false
-                        )))
-            throw args::DoHelp("'" + stringify(s) + "' is not a simple cat/pkg");
-        return *s.package_ptr() == q;
-    }
-
-    Tribool prefer_or_avoid_fn(
-            const Environment * const env,
-            const ResolveCommandLineResolutionOptions &,
-            const PackageDepSpecList & favour,
-            const PackageDepSpecList & avoid,
-            const QualifiedPackageName & q)
-    {
-        if (favour.end() != std::find_if(favour.begin(), favour.end(),
-                    std::bind(&prefer_or_avoid_one, env, q, std::placeholders::_1)))
-            return true;
-        if (avoid.end() != std::find_if(avoid.begin(), avoid.end(),
-                    std::bind(&prefer_or_avoid_one, env, q, std::placeholders::_1)))
-            return false;
-        return indeterminate;
-    }
-
     struct ChosenIDVisitor
     {
         const std::pair<std::shared_ptr<const PackageID>, std::shared_ptr<const ChangedChoices> > visit(
@@ -1477,7 +1439,7 @@ paludis::cave::resolve_common(
 
     InitialConstraints initial_constraints;
     PackageDepSpecList with, without, take, take_from, ignore, ignore_from,
-                       favour, avoid, early, late, no_dependencies_from, no_blockers_from;
+                       early, late, no_dependencies_from, no_blockers_from;
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_without.begin_args()),
             i_end(resolution_options.a_without.end_args()) ;
@@ -1513,18 +1475,6 @@ paludis::cave::resolve_common(
             i_end(resolution_options.a_ignore_from.end_args()) ;
             i != i_end ; ++i)
         ignore_from.push_back(parse_user_package_dep_spec(*i, env.get(),
-                    { updso_allow_wildcards }));
-
-    for (args::StringSetArg::ConstIterator i(resolution_options.a_favour.begin_args()),
-            i_end(resolution_options.a_favour.end_args()) ;
-            i != i_end ; ++i)
-        favour.push_back(parse_user_package_dep_spec(*i, env.get(),
-                    { updso_allow_wildcards }));
-
-    for (args::StringSetArg::ConstIterator i(resolution_options.a_avoid.begin_args()),
-            i_end(resolution_options.a_avoid.end_args()) ;
-            i != i_end ; ++i)
-        avoid.push_back(parse_user_package_dep_spec(*i, env.get(),
                     { updso_allow_wildcards }));
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_early.begin_args()),
@@ -1676,6 +1626,16 @@ paludis::cave::resolve_common(
         throw args::DoHelp("Don't understand argument '" + resolution_options.a_make.argument() + "' to '--"
                 + resolution_options.a_make.long_name() + "'");
 
+    PreferOrAvoidHelper prefer_or_avoid_helper(env.get());
+    for (args::StringSetArg::ConstIterator i(resolution_options.a_favour.begin_args()),
+            i_end(resolution_options.a_favour.end_args()) ;
+            i != i_end ; ++i)
+        prefer_or_avoid_helper.add_prefer_name(QualifiedPackageName(*i));
+    for (args::StringSetArg::ConstIterator i(resolution_options.a_avoid.begin_args()),
+            i_end(resolution_options.a_avoid.end_args()) ;
+            i != i_end ; ++i)
+        prefer_or_avoid_helper.add_avoid_name(QualifiedPackageName(*i));
+
     RemoveIfDependentHelper remove_if_dependent_helper(env.get());
     for (args::StringSetArg::ConstIterator i(resolution_options.a_remove_if_dependent.begin_args()),
             i_end(resolution_options.a_remove_if_dependent.end_args()) ;
@@ -1712,8 +1672,7 @@ paludis::cave::resolve_common(
                         env.get(), std::cref(resolution_options), _1),
                 n::order_early_fn() = std::bind(&order_early_fn,
                     env.get(), std::cref(resolution_options), std::cref(early), std::cref(late), _1),
-                n::prefer_or_avoid_fn() = std::bind(&prefer_or_avoid_fn,
-                    env.get(), std::cref(resolution_options), std::cref(favour), std::cref(avoid), _1),
+                n::prefer_or_avoid_fn() = std::cref(prefer_or_avoid_helper),
                 n::remove_if_dependent_fn() = std::cref(remove_if_dependent_helper)
                 ));
 
