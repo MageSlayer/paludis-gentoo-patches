@@ -45,6 +45,7 @@
 #include <paludis/resolver/get_constraints_for_purge_helper.hh>
 #include <paludis/resolver/get_constraints_for_via_binary_helper.hh>
 #include <paludis/resolver/get_destination_types_for_error_helper.hh>
+#include <paludis/resolver/order_early_helper.hh>
 #include <paludis/resolver/remove_if_dependent_helper.hh>
 #include <paludis/resolver/prefer_or_avoid_helper.hh>
 
@@ -105,9 +106,6 @@ namespace paludis
             Filter make_unmaskable_filter_fn(
                     const std::shared_ptr<const Resolution> &);
 
-            Tribool order_early_fn(
-                        const std::shared_ptr<const Resolution> &);
-
             struct ResolverTestCase : test::TestCase
             {
                 TestEnvironment env;
@@ -124,6 +122,7 @@ namespace paludis
                 GetConstraintsForPurgeHelper get_constraints_for_purge_helper;
                 GetConstraintsForViaBinaryHelper get_constraints_for_via_binary_helper;
                 GetDestinationTypesForErrorHelper get_destination_types_for_error_helper;
+                OrderEarlyHelper order_early_helper;
                 PreferOrAvoidHelper prefer_or_avoid_helper;
                 RemoveIfDependentHelper remove_if_dependent_helper;
 

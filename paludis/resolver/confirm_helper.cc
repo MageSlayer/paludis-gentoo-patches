@@ -24,6 +24,7 @@
 #include <paludis/resolver/resolution.hh>
 #include <paludis/resolver/decision.hh>
 #include <paludis/resolver/required_confirmations.hh>
+#include <paludis/resolver/decision_utils.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/dep_spec.hh>
@@ -136,39 +137,6 @@ namespace
             return false;
         }
     };
-
-    struct IDVisitor
-    {
-        std::shared_ptr<const PackageID> visit(const ChangesToMakeDecision & decision) const
-        {
-            return decision.origin_id();
-        }
-
-        std::shared_ptr<const PackageID> visit(const BreakDecision & decision) const
-        {
-            return decision.existing_id();
-        }
-
-        std::shared_ptr<const PackageID> visit(const ExistingNoChangeDecision & decision) const
-        {
-            return decision.existing_id();
-        }
-
-        std::shared_ptr<const PackageID> visit(const NothingNoChangeDecision &) const
-        {
-            return make_null_shared_ptr();
-        }
-
-        std::shared_ptr<const PackageID> visit(const RemoveDecision &) const
-        {
-            return make_null_shared_ptr();
-        }
-
-        std::shared_ptr<const PackageID> visit(const UnableToMakeDecision &) const
-        {
-            return make_null_shared_ptr();
-        }
-    };
 }
 
 bool
@@ -176,7 +144,7 @@ ConfirmHelper::operator() (
         const std::shared_ptr<const Resolution> & resolution,
         const std::shared_ptr<const RequiredConfirmation> & confirmation) const
 {
-    auto id(resolution->decision()->accept_returning<std::shared_ptr<const PackageID> >(IDVisitor()));
+    auto id(get_decided_id_or_null(resolution->decision()));
     return confirmation->accept_returning<bool>(ConfirmVisitor{_imp->env, _imp->permit_downgrade_specs,
             _imp->permit_old_version_specs, _imp->allowed_to_break_specs, _imp->allowed_to_break_system, id});
 }

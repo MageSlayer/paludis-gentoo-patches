@@ -188,13 +188,6 @@ paludis::resolver::resolver_test::get_use_existing_nothing_fn(
     return std::make_pair(ue_never, false);
 }
 
-Tribool
-paludis::resolver::resolver_test::order_early_fn(
-        const std::shared_ptr<const Resolution> &)
-{
-    return indeterminate;
-}
-
 ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s, const std::string & e,
         const std::string & l) :
     TestCase(s),
@@ -208,6 +201,7 @@ ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s,
     get_constraints_for_purge_helper(&env),
     get_constraints_for_via_binary_helper(&env),
     get_destination_types_for_error_helper(&env),
+    order_early_helper(&env),
     prefer_or_avoid_helper(&env),
     remove_if_dependent_helper(&env)
 {
@@ -275,7 +269,7 @@ ResolverTestCase::get_resolver_functions(InitialConstraints & initial_constraint
             n::make_destination_filtered_generator_fn() = &make_destination_filtered_generator_fn,
             n::make_origin_filtered_generator_fn() = &make_origin_filtered_generator_fn,
             n::make_unmaskable_filter_fn() = &make_unmaskable_filter_fn,
-            n::order_early_fn() = &order_early_fn,
+            n::order_early_fn() = std::cref(order_early_helper),
             n::prefer_or_avoid_fn() = std::cref(prefer_or_avoid_helper),
             n::remove_if_dependent_fn() = std::cref(remove_if_dependent_helper)
             );

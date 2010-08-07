@@ -75,6 +75,7 @@
 #include <paludis/resolver/get_constraints_for_purge_helper.hh>
 #include <paludis/resolver/get_constraints_for_via_binary_helper.hh>
 #include <paludis/resolver/get_destination_types_for_error_helper.hh>
+#include <paludis/resolver/order_early_helper.hh>
 #include <paludis/resolver/remove_if_dependent_helper.hh>
 #include <paludis/resolver/prefer_or_avoid_helper.hh>
 
@@ -1104,27 +1105,6 @@ namespace
         }
     };
 
-    Tribool order_early_fn(
-            const Environment * const env,
-            const ResolveCommandLineResolutionOptions &,
-            const PackageDepSpecList & early,
-            const PackageDepSpecList & late,
-            const std::shared_ptr<const Resolution> & r)
-    {
-        const std::shared_ptr<const PackageID> id(
-                r->decision()->accept_returning<std::pair<std::shared_ptr<const PackageID>, std::shared_ptr<const ChangedChoices> > >(
-                    ChosenIDVisitor()).first);
-        if (id)
-        {
-            if (match_any(env, early, id))
-                return true;
-            if (match_any(env, late, id))
-                return false;
-        }
-
-        return indeterminate;
-    }
-
     void serialise_resolved(StringListStream & ser_stream, const Resolved & resolved)
     {
         Serialiser ser(ser_stream);
@@ -1438,8 +1418,7 @@ paludis::cave::resolve_common(
     int retcode(0);
 
     InitialConstraints initial_constraints;
-    PackageDepSpecList with, without, take, take_from, ignore, ignore_from,
-                       early, late, no_dependencies_from, no_blockers_from;
+    PackageDepSpecList with, without, take, take_from, ignore, ignore_from, no_dependencies_from, no_blockers_from;
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_without.begin_args()),
             i_end(resolution_options.a_without.end_args()) ;
@@ -1475,18 +1454,6 @@ paludis::cave::resolve_common(
             i_end(resolution_options.a_ignore_from.end_args()) ;
             i != i_end ; ++i)
         ignore_from.push_back(parse_user_package_dep_spec(*i, env.get(),
-                    { updso_allow_wildcards }));
-
-    for (args::StringSetArg::ConstIterator i(resolution_options.a_early.begin_args()),
-            i_end(resolution_options.a_early.end_args()) ;
-            i != i_end ; ++i)
-        early.push_back(parse_user_package_dep_spec(*i, env.get(),
-                    { updso_allow_wildcards }));
-
-    for (args::StringSetArg::ConstIterator i(resolution_options.a_late.begin_args()),
-            i_end(resolution_options.a_late.end_args()) ;
-            i != i_end ; ++i)
-        late.push_back(parse_user_package_dep_spec(*i, env.get(),
                     { updso_allow_wildcards }));
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_no_dependencies_from.begin_args()),
@@ -1626,6 +1593,17 @@ paludis::cave::resolve_common(
         throw args::DoHelp("Don't understand argument '" + resolution_options.a_make.argument() + "' to '--"
                 + resolution_options.a_make.long_name() + "'");
 
+    OrderEarlyHelper order_early_helper(env.get());
+    for (args::StringSetArg::ConstIterator i(resolution_options.a_early.begin_args()),
+            i_end(resolution_options.a_early.end_args()) ;
+            i != i_end ; ++i)
+        order_early_helper.add_early_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
+
+    for (args::StringSetArg::ConstIterator i(resolution_options.a_late.begin_args()),
+            i_end(resolution_options.a_late.end_args()) ;
+            i != i_end ; ++i)
+        order_early_helper.add_late_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
+
     PreferOrAvoidHelper prefer_or_avoid_helper(env.get());
     for (args::StringSetArg::ConstIterator i(resolution_options.a_favour.begin_args()),
             i_end(resolution_options.a_favour.end_args()) ;
@@ -1670,8 +1648,7 @@ paludis::cave::resolve_common(
                     env.get(), std::cref(resolution_options), _1, _2),
                 n::make_unmaskable_filter_fn() = std::bind(&make_unmaskable_filter_fn,
                         env.get(), std::cref(resolution_options), _1),
-                n::order_early_fn() = std::bind(&order_early_fn,
-                    env.get(), std::cref(resolution_options), std::cref(early), std::cref(late), _1),
+                n::order_early_fn() = std::cref(order_early_helper),
                 n::prefer_or_avoid_fn() = std::cref(prefer_or_avoid_helper),
                 n::remove_if_dependent_fn() = std::cref(remove_if_dependent_helper)
                 ));

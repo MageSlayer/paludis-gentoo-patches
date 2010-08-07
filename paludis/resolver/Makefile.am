@@ -39,6 +39,7 @@ noinst_HEADERS = \
 	constraint.hh constraint-fwd.hh \
 	decider.hh decider-fwd.hh \
 	decision.hh decision-fwd.hh \
+	decision_utils.hh decision_utils-fwd.hh \
 	decisions.hh decisions-fwd.hh \
 	destination.hh destination-fwd.hh \
 	destination_types.hh destination_types-fwd.hh destination_types-se.hh \
@@ -54,6 +55,7 @@ noinst_HEADERS = \
 	job_state.hh job_state-fwd.hh \
 	labels_classifier.hh labels_classifier-fwd.hh \
 	nag.hh nag-fwd.hh \
+	order_early_helper.hh order_early_helper-fwd.hh \
 	orderer.hh orderer-fwd.hh \
 	orderer_notes.hh orderer_notes-fwd.hh \
 	package_or_block_dep_spec.hh package_or_block_dep_spec-fwd.hh \
@@ -87,6 +89,7 @@ libpaludisresolver_a_SOURCES = \
 	constraint.cc \
 	decider.cc \
 	decision.cc \
+	decision_utils.cc \
 	decisions.cc \
 	destination.cc \
 	destination_types.cc \
@@ -102,6 +105,7 @@ libpaludisresolver_a_SOURCES = \
 	job_state.cc \
 	labels_classifier.cc \
 	nag.cc \
+	order_early_helper.cc \
 	orderer.cc \
 	orderer_notes.cc \
 	package_or_block_dep_spec.cc \
