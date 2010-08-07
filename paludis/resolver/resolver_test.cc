@@ -130,13 +130,6 @@ paludis::resolver::resolver_test::make_destination_filtered_generator_fn(const G
     throw InternalError(PALUDIS_HERE, "unhandled dt");
 }
 
-FilteredGenerator
-paludis::resolver::resolver_test::make_origin_filtered_generator_fn(const Generator & g,
-        const std::shared_ptr<const Resolution> &)
-{
-    return g;
-}
-
 namespace
 {
 #ifdef ENABLE_VIRTUALS_REPOSITORY
@@ -194,6 +187,7 @@ ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s,
     get_constraints_for_purge_helper(&env),
     get_constraints_for_via_binary_helper(&env),
     get_destination_types_for_error_helper(&env),
+    make_origin_filtered_generator_helper(&env),
     make_unmaskable_filter_helper(&env),
     order_early_helper(&env),
     prefer_or_avoid_helper(&env),
@@ -263,7 +257,7 @@ ResolverTestCase::get_resolver_functions(InitialConstraints & initial_constraint
             n::get_use_existing_nothing_fn() = &get_use_existing_nothing_fn,
             n::interest_in_spec_fn() = &interest_in_spec_fn,
             n::make_destination_filtered_generator_fn() = &make_destination_filtered_generator_fn,
-            n::make_origin_filtered_generator_fn() = &make_origin_filtered_generator_fn,
+            n::make_origin_filtered_generator_fn() = std::cref(make_origin_filtered_generator_helper),
             n::make_unmaskable_filter_fn() = std::cref(make_unmaskable_filter_helper),
             n::order_early_fn() = std::cref(order_early_helper),
             n::prefer_or_avoid_fn() = std::cref(prefer_or_avoid_helper),

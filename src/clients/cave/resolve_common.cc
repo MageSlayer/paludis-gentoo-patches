@@ -74,6 +74,7 @@
 #include <paludis/resolver/get_constraints_for_purge_helper.hh>
 #include <paludis/resolver/get_constraints_for_via_binary_helper.hh>
 #include <paludis/resolver/get_destination_types_for_error_helper.hh>
+#include <paludis/resolver/make_origin_filtered_generator_helper.hh>
 #include <paludis/resolver/make_unmaskable_filter_helper.hh>
 #include <paludis/resolver/order_early_helper.hh>
 #include <paludis/resolver/remove_if_dependent_helper.hh>
@@ -132,38 +133,6 @@ namespace
             return true;
         return id->behaviours_key()->value()->end() == id->behaviours_key()->value()->find("unchrootable");
     }
-
-    struct BinaryableFilterHandler :
-        AllFilterHandlerBase
-    {
-        virtual std::shared_ptr<const PackageIDSet> ids(
-                const Environment * const,
-                const std::shared_ptr<const PackageIDSet> & id) const
-        {
-            std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
-
-            for (PackageIDSet::ConstIterator i(id->begin()), i_end(id->end()) ;
-                    i != i_end ; ++i)
-                if (can_make_binary_for(*i))
-                    result->insert(*i);
-
-            return result;
-        }
-
-        virtual std::string as_string() const
-        {
-            return "binaryable";
-        }
-    };
-
-    struct BinaryableFilter :
-        Filter
-    {
-        BinaryableFilter() :
-            Filter(std::make_shared<BinaryableFilterHandler>())
-        {
-        }
-    };
 
     struct DestinationTypesFinder
     {
@@ -312,18 +281,6 @@ namespace
             const std::shared_ptr<const Resolution> & r)
     {
         return make_destination_filtered_generator(env, resolution_options, binary_destinations, g, r->resolvent());
-    }
-
-    FilteredGenerator make_origin_filtered_generator(
-            const Environment * const,
-            const ResolveCommandLineResolutionOptions & resolution_options,
-            const Generator & g,
-            const std::shared_ptr<const Resolution> &)
-    {
-        if (resolution_options.a_make.argument() == "binaries")
-            return g | BinaryableFilter();
-        else
-            return g;
     }
 
     const std::shared_ptr<const Sequence<std::string> > add_resolver_targets(
@@ -1551,6 +1508,9 @@ paludis::cave::resolve_common(
         throw args::DoHelp("Don't understand argument '" + resolution_options.a_make.argument() + "' to '--"
                 + resolution_options.a_make.long_name() + "'");
 
+    MakeOriginFilteredGeneratorHelper make_origin_filtered_generator_helper(env.get());
+    make_origin_filtered_generator_helper.set_making_binaries("binaries" == resolution_options.a_make.argument());
+
     MakeUnmaskableFilterHelper make_unmaskable_filter_helper(env.get());
     make_unmaskable_filter_helper.set_override_masks(! resolution_options.a_no_override_masks.specified());
 
@@ -1605,8 +1565,7 @@ paludis::cave::resolve_common(
                     std::cref(no_dependencies_from), _1, _2),
                 n::make_destination_filtered_generator_fn() = std::bind(&make_destination_filtered_generator_with_resolution,
                     env.get(), std::cref(resolution_options), binary_destinations, _1, _2),
-                n::make_origin_filtered_generator_fn() = std::bind(&make_origin_filtered_generator,
-                    env.get(), std::cref(resolution_options), _1, _2),
+                n::make_origin_filtered_generator_fn() = std::cref(make_origin_filtered_generator_helper),
                 n::make_unmaskable_filter_fn() = std::cref(make_unmaskable_filter_helper),
                 n::order_early_fn() = std::cref(order_early_helper),
                 n::prefer_or_avoid_fn() = std::cref(prefer_or_avoid_helper),

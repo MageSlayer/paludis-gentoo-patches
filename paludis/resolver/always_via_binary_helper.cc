@@ -23,6 +23,7 @@
 #include <paludis/resolver/resolvent.hh>
 #include <paludis/resolver/resolution.hh>
 #include <paludis/resolver/decision.hh>
+#include <paludis/resolver/destination_utils.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/dep_spec.hh>
@@ -59,16 +60,6 @@ void
 AlwaysViaBinaryHelper::add_always_via_binary_spec(const PackageDepSpec & spec)
 {
     _imp->always_via_binary_specs.insert(spec);
-}
-
-namespace
-{
-    bool can_make_binary_for(const std::shared_ptr<const PackageID> & id)
-    {
-        if (! id->behaviours_key())
-            return true;
-        return id->behaviours_key()->value()->end() == id->behaviours_key()->value()->find("unbinaryable");
-    }
 }
 
 bool
