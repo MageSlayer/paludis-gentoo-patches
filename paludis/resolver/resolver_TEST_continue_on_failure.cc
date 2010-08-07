@@ -174,7 +174,8 @@ namespace test_cases
             get_constraints_for_purge_helper.add_purge_spec(parse_user_package_dep_spec("continue-on-failure-uninstall/target", &env, { }));
 
             allowed_to_remove_helper.add_allowed_to_remove_spec(parse_user_package_dep_spec("continue-on-failure-uninstall/needs-target", &env, { }));
-            remove_if_dependent_names->insert(QualifiedPackageName("continue-on-failure-uninstall/needs-target"));
+
+            remove_if_dependent_helper.add_remove_if_dependent_spec(parse_user_package_dep_spec("continue-on-failure-uninstall/needs-target", &env, { }));
         }
 
         void run()

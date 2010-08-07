@@ -83,7 +83,7 @@ namespace test_cases
             allowed_to_remove_helper.add_allowed_to_remove_spec(parse_user_package_dep_spec("breaking/target", &env, { }));
             if (allowed_to_remove)
             {
-                remove_if_dependent_names->insert(QualifiedPackageName("breaking/dep"));
+                remove_if_dependent_helper.add_remove_if_dependent_spec(parse_user_package_dep_spec("breaking/dep", &env, { }));
                 allowed_to_remove_helper.add_allowed_to_remove_spec(parse_user_package_dep_spec("breaking/dep", &env, { }));
             }
         }

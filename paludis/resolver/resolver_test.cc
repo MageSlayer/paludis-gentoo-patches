@@ -188,14 +188,6 @@ paludis::resolver::resolver_test::get_use_existing_nothing_fn(
     return std::make_pair(ue_never, false);
 }
 
-bool
-paludis::resolver::resolver_test::remove_if_dependent_fn(
-        const std::shared_ptr<const QualifiedPackageNameSet> & s,
-        const std::shared_ptr<const PackageID> & i)
-{
-    return s->end() != s->find(i->name());
-}
-
 Tribool
 paludis::resolver::resolver_test::prefer_or_avoid_fn(
         const std::shared_ptr<const Map<QualifiedPackageName, bool> > & s,
@@ -218,7 +210,6 @@ paludis::resolver::resolver_test::order_early_fn(
 ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s, const std::string & e,
         const std::string & l) :
     TestCase(s),
-    remove_if_dependent_names(std::make_shared<QualifiedPackageNameSet>()),
     prefer_or_avoid_names(std::make_shared<Map<QualifiedPackageName, bool>>()),
     allow_choice_changes_helper(&env),
     allowed_to_remove_helper(&env),
@@ -229,7 +220,8 @@ ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s,
     get_constraints_for_dependent_helper(&env),
     get_constraints_for_purge_helper(&env),
     get_constraints_for_via_binary_helper(&env),
-    get_destination_types_for_error_helper(&env)
+    get_destination_types_for_error_helper(&env),
+    remove_if_dependent_helper(&env)
 {
     std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
     keys->insert("format", "e");
@@ -298,8 +290,7 @@ ResolverTestCase::get_resolver_functions(InitialConstraints & initial_constraint
             n::order_early_fn() = &order_early_fn,
             n::prefer_or_avoid_fn() = std::bind(&prefer_or_avoid_fn,
                     prefer_or_avoid_names, std::placeholders::_1),
-            n::remove_if_dependent_fn() = std::bind(&remove_if_dependent_fn,
-                    remove_if_dependent_names, std::placeholders::_1)
+            n::remove_if_dependent_fn() = std::cref(remove_if_dependent_helper)
             );
 }
 

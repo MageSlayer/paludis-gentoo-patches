@@ -75,6 +75,7 @@
 #include <paludis/resolver/get_constraints_for_purge_helper.hh>
 #include <paludis/resolver/get_constraints_for_via_binary_helper.hh>
 #include <paludis/resolver/get_destination_types_for_error_helper.hh>
+#include <paludis/resolver/remove_if_dependent_helper.hh>
 
 #include <paludis/user_dep_spec.hh>
 #include <paludis/notifier_callback.hh>
@@ -1063,14 +1064,6 @@ namespace
         return false;
     }
 
-    bool remove_if_dependent_fn(
-            const Environment * const env,
-            const PackageDepSpecList & list,
-            const std::shared_ptr<const PackageID> & i)
-    {
-        return match_any(env, list, i);
-    }
-
     bool prefer_or_avoid_one(const Environment * const, const QualifiedPackageName & q, const PackageDepSpec & s)
     {
         Context context("When working out whether we favour or avoid '" + stringify(q) + "' due to '"
@@ -1483,14 +1476,8 @@ paludis::cave::resolve_common(
     int retcode(0);
 
     InitialConstraints initial_constraints;
-    PackageDepSpecList remove_if_dependent_specs, with, without, take, take_from, ignore, ignore_from,
+    PackageDepSpecList with, without, take, take_from, ignore, ignore_from,
                        favour, avoid, early, late, no_dependencies_from, no_blockers_from;
-
-    for (args::StringSetArg::ConstIterator i(resolution_options.a_remove_if_dependent.begin_args()),
-            i_end(resolution_options.a_remove_if_dependent.end_args()) ;
-            i != i_end ; ++i)
-        remove_if_dependent_specs.push_back(parse_user_package_dep_spec(*i, env.get(),
-                    { updso_allow_wildcards }));
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_without.begin_args()),
             i_end(resolution_options.a_without.end_args()) ;
@@ -1689,6 +1676,12 @@ paludis::cave::resolve_common(
         throw args::DoHelp("Don't understand argument '" + resolution_options.a_make.argument() + "' to '--"
                 + resolution_options.a_make.long_name() + "'");
 
+    RemoveIfDependentHelper remove_if_dependent_helper(env.get());
+    for (args::StringSetArg::ConstIterator i(resolution_options.a_remove_if_dependent.begin_args()),
+            i_end(resolution_options.a_remove_if_dependent.end_args()) ;
+            i != i_end ; ++i)
+        remove_if_dependent_helper.add_remove_if_dependent_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
+
     ResolverFunctions resolver_functions(make_named_values<ResolverFunctions>(
                 n::allow_choice_changes_fn() = std::cref(allow_choice_changes_helper),
                 n::allowed_to_remove_fn() = std::cref(allowed_to_remove_helper),
@@ -1721,8 +1714,7 @@ paludis::cave::resolve_common(
                     env.get(), std::cref(resolution_options), std::cref(early), std::cref(late), _1),
                 n::prefer_or_avoid_fn() = std::bind(&prefer_or_avoid_fn,
                     env.get(), std::cref(resolution_options), std::cref(favour), std::cref(avoid), _1),
-                n::remove_if_dependent_fn() = std::bind(&remove_if_dependent_fn,
-                    env.get(), std::cref(remove_if_dependent_specs), _1)
+                n::remove_if_dependent_fn() = std::cref(remove_if_dependent_helper)
                 ));
 
     ScopedSelectionCache selection_cache(env.get());
