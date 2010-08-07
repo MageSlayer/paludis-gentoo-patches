@@ -72,6 +72,7 @@
 #include <paludis/resolver/confirm_helper.hh>
 #include <paludis/resolver/find_repository_for_helper.hh>
 #include <paludis/resolver/get_constraints_for_dependent_helper.hh>
+#include <paludis/resolver/get_constraints_for_purge_helper.hh>
 
 #include <paludis/user_dep_spec.hh>
 #include <paludis/notifier_callback.hh>
@@ -1167,36 +1168,6 @@ namespace
         return indeterminate;
     }
 
-    const std::shared_ptr<ConstraintSequence> get_constraints_for_purge_fn(
-            const Environment * const env,
-            const PackageDepSpecList & list,
-            const std::shared_ptr<const Resolution> &,
-            const std::shared_ptr<const PackageID> & id,
-            const std::shared_ptr<const ChangeByResolventSequence> & ids)
-    {
-        const std::shared_ptr<ConstraintSequence> result(std::make_shared<ConstraintSequence>());
-
-        PartiallyMadePackageDepSpec partial_spec({ });
-        partial_spec.package(id->name());
-        if (id->slot_key())
-            partial_spec.slot_requirement(std::make_shared<ELikeSlotExactRequirement>(
-                            id->slot_key()->value(), false));
-        PackageDepSpec spec(partial_spec);
-
-        const std::shared_ptr<WasUsedByReason> reason(std::make_shared<WasUsedByReason>(ids));
-
-        result->push_back(std::make_shared<Constraint>(make_named_values<Constraint>(
-                            n::destination_type() = dt_install_to_slash,
-                            n::nothing_is_fine_too() = true,
-                            n::reason() = reason,
-                            n::spec() = BlockDepSpec("!" + stringify(spec), spec, false),
-                            n::untaken() = ! match_any(env, list, id),
-                            n::use_existing() = ue_if_possible
-                            )));
-
-        return result;
-    }
-
     const std::shared_ptr<ConstraintSequence> get_constraints_for_via_binary_fn(
             const Environment * const,
             const std::shared_ptr<const Resolution> & resolution,
@@ -1535,20 +1506,13 @@ paludis::cave::resolve_common(
     int retcode(0);
 
     InitialConstraints initial_constraints;
-    PackageDepSpecList remove_if_dependent_specs, purge_specs, with, without,
-                       take, take_from, ignore, ignore_from,
+    PackageDepSpecList remove_if_dependent_specs, with, without, take, take_from, ignore, ignore_from,
                        favour, avoid, early, late, no_dependencies_from, no_blockers_from;
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_remove_if_dependent.begin_args()),
             i_end(resolution_options.a_remove_if_dependent.end_args()) ;
             i != i_end ; ++i)
         remove_if_dependent_specs.push_back(parse_user_package_dep_spec(*i, env.get(),
-                    { updso_allow_wildcards }));
-
-    for (args::StringSetArg::ConstIterator i(resolution_options.a_purge.begin_args()),
-            i_end(resolution_options.a_purge.end_args()) ;
-            i != i_end ; ++i)
-        purge_specs.push_back(parse_user_package_dep_spec(*i, env.get(),
                     { updso_allow_wildcards }));
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_without.begin_args()),
@@ -1729,6 +1693,12 @@ paludis::cave::resolve_common(
         get_constraints_for_dependent_helper.add_less_restrictive_remove_blockers_spec(
                 parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
 
+    GetConstraintsForPurgeHelper get_constraints_for_purge_helper(env.get());
+    for (args::StringSetArg::ConstIterator i(resolution_options.a_purge.begin_args()),
+            i_end(resolution_options.a_purge.end_args()) ;
+            i != i_end ; ++i)
+        get_constraints_for_purge_helper.add_purge_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
+
     ResolverFunctions resolver_functions(make_named_values<ResolverFunctions>(
                 n::allow_choice_changes_fn() = std::cref(allow_choice_changes_helper),
                 n::allowed_to_remove_fn() = std::cref(allowed_to_remove_helper),
@@ -1737,8 +1707,7 @@ paludis::cave::resolve_common(
                 n::confirm_fn() = std::cref(confirm_helper),
                 n::find_repository_for_fn() = std::cref(find_repository_for_helper),
                 n::get_constraints_for_dependent_fn() = std::cref(get_constraints_for_dependent_helper),
-                n::get_constraints_for_purge_fn() = std::bind(&get_constraints_for_purge_fn,
-                    env.get(), std::cref(purge_specs), _1, _2, _3),
+                n::get_constraints_for_purge_fn() = std::cref(get_constraints_for_purge_helper),
                 n::get_constraints_for_via_binary_fn() = std::bind(&get_constraints_for_via_binary_fn,
                     env.get(), _1, _2),
                 n::get_destination_types_for_error_fn() = std::bind(&get_destination_types_for_fn,
