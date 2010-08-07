@@ -56,7 +56,7 @@ namespace
         static const unsigned MIPS_ABI2 = 32;
 
         unsigned _machine;
-        unsigned char _class, _os_abi, _os_abi_version;
+        unsigned char _class;
         bool _bigendian, _mips_n32;
 
         bool operator< (const ElfArchitecture &) const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -77,8 +77,6 @@ namespace
         ElfArchitecture(const ElfObject<ElfType_> & elf) :
             _machine(normalise_arch(elf.get_arch())),
             _class(ElfType_::elf_class),
-            _os_abi(elf.get_os_abi()),
-            _os_abi_version(elf.get_os_abi_version()),
             _bigendian(elf.is_big_endian()),
             _mips_n32(EM_MIPS == _machine && MIPS_ABI2 & elf.get_flags())
         {
@@ -92,10 +90,6 @@ namespace
             return _machine < other._machine;
         if (_class != other._class)
             return _class < other._class;
-        if (_os_abi != other._os_abi)
-            return _os_abi < other._os_abi;
-        if (_os_abi_version != other._os_abi_version)
-            return _os_abi_version < other._os_abi_version;
         if (_bigendian != other._bigendian)
             return _bigendian < other._bigendian;
         return _mips_n32 < other._mips_n32;
