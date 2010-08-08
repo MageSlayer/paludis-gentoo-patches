@@ -4,6 +4,11 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the Git log.
 
+0.52.1:
+    * glibc 2.12 changes the OS ABI used by its libraries. 'cave fix-linkage'
+      and 'reconcilio' have been updated to ignore OS ABI mismatches to avoid
+      marking every package that uses libc as being broken.
+
 0.52.0:
     * format="exheres" and format="ebuild" are now deprecated in favour of
       format="e".
