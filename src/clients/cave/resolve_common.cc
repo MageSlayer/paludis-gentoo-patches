@@ -53,6 +53,7 @@
 #include <paludis/resolver/destination_utils.hh>
 #include <paludis/resolver/resolver_functions.hh>
 #include <paludis/resolver/reason.hh>
+#include <paludis/resolver/reason_utils.hh>
 #include <paludis/resolver/suggest_restart.hh>
 #include <paludis/resolver/resolvent.hh>
 #include <paludis/resolver/constraint.hh>
@@ -75,6 +76,7 @@
 #include <paludis/resolver/get_constraints_for_purge_helper.hh>
 #include <paludis/resolver/get_constraints_for_via_binary_helper.hh>
 #include <paludis/resolver/get_destination_types_for_error_helper.hh>
+#include <paludis/resolver/get_resolvents_for_helper.hh>
 #include <paludis/resolver/get_use_existing_nothing_helper.hh>
 #include <paludis/resolver/interest_in_spec_helper.hh>
 #include <paludis/resolver/make_destination_filtered_generator_helper.hh>
@@ -123,13 +125,6 @@ namespace
 {
     typedef std::map<Resolvent, std::shared_ptr<Constraints> > InitialConstraints;
     typedef std::list<PackageDepSpec> PackageDepSpecList;
-
-    bool can_make_binary_for(const std::shared_ptr<const PackageID> & id)
-    {
-        if (! id->behaviours_key())
-            return true;
-        return id->behaviours_key()->value()->end() == id->behaviours_key()->value()->find("unbinaryable");
-    }
 
     struct DestinationTypesFinder
     {
@@ -482,55 +477,6 @@ namespace
             return make_initial_constraints_for(env, resolution_options, binary_destinations, without, resolvent);
         else
             return i->second;
-    }
-
-    struct IsTargetVisitor
-    {
-        bool visit(const DependencyReason &) const
-        {
-            return false;
-        }
-
-        bool visit(const DependentReason &) const
-        {
-            return false;
-        }
-
-        bool visit(const WasUsedByReason &) const
-        {
-            return false;
-        }
-
-        bool visit(const PresetReason &) const
-        {
-            return false;
-        }
-
-        bool visit(const ViaBinaryReason &) const
-        {
-            return false;
-        }
-
-        bool visit(const TargetReason &) const
-        {
-            return true;
-        }
-
-        bool visit(const LikeOtherDestinationTypeReason & r) const
-        {
-            return r.reason_for_other()->accept_returning<bool>(*this);
-        }
-
-        bool visit(const SetReason & r) const
-        {
-            return r.reason_for_set()->accept_returning<bool>(*this);
-        }
-    };
-
-    bool is_target(const std::shared_ptr<const Reason> & reason)
-    {
-        IsTargetVisitor v;
-        return reason->accept_returning<bool>(v);
     }
 
     const std::shared_ptr<Resolvents>
@@ -995,6 +941,19 @@ namespace
             throw args::DoHelp("Don't understand argument '" + arg.argument() + "' to '--"
                     + arg.long_name() + "'");
     }
+
+    DestinationType destination_type_from_arg(const args::EnumArg & arg)
+    {
+        if (arg.argument() == "binaries")
+            return dt_create_binary;
+        else if (arg.argument() == "install")
+            return dt_install_to_slash;
+        else if (arg.argument() == "chroot")
+            return dt_install_to_chroot;
+        else
+            throw args::DoHelp("Don't understand argument '" + arg.argument() + "' to '--"
+                    + arg.long_name() + "'");
+    }
 }
 
 int
@@ -1135,15 +1094,66 @@ paludis::cave::resolve_common(
     GetConstraintsForViaBinaryHelper get_constraints_for_via_binary_helper(env.get());
 
     GetDestinationTypesForErrorHelper get_destination_types_for_error_helper(env.get());
-    if (resolution_options.a_make.argument() == "binaries")
-        get_destination_types_for_error_helper.set_target_destination_type(dt_create_binary);
-    else if (resolution_options.a_make.argument() == "install")
-        get_destination_types_for_error_helper.set_target_destination_type(dt_install_to_slash);
-    else if (resolution_options.a_make.argument() == "chroot")
-        get_destination_types_for_error_helper.set_target_destination_type(dt_install_to_chroot);
+    get_destination_types_for_error_helper.set_target_destination_type(destination_type_from_arg(resolution_options.a_make));
+
+    GetResolventsForHelper get_resolvents_for_helper(env.get());
+    get_resolvents_for_helper.set_target_destination_type(destination_type_from_arg(resolution_options.a_make));
+
+    if (resolution_options.a_make_dependencies.argument() == "auto")
+    {
+        if ("install" == resolution_options.a_make.argument())
+        {
+            get_resolvents_for_helper.set_want_target_dependencies(true);
+            get_resolvents_for_helper.set_want_target_runtime_dependencies(true);
+        }
+        else
+        {
+            get_resolvents_for_helper.set_want_target_dependencies(false);
+            get_resolvents_for_helper.set_want_target_runtime_dependencies(true);
+        }
+    }
+    else if (resolution_options.a_make_dependencies.argument() == "runtime")
+    {
+        get_resolvents_for_helper.set_want_target_dependencies(false);
+        get_resolvents_for_helper.set_want_target_runtime_dependencies(true);
+    }
+    else if (resolution_options.a_make_dependencies.argument() == "all")
+    {
+        get_resolvents_for_helper.set_want_target_dependencies(true);
+        get_resolvents_for_helper.set_want_target_runtime_dependencies(true);
+    }
+    else if (resolution_options.a_make_dependencies.argument() == "none")
+    {
+        get_resolvents_for_helper.set_want_target_dependencies(false);
+        get_resolvents_for_helper.set_want_target_runtime_dependencies(false);
+    }
     else
-        throw args::DoHelp("Don't understand argument '" + resolution_options.a_make.argument() + "' to '--"
-                + resolution_options.a_make.long_name() + "'");
+        throw args::DoHelp("Don't understand argument '" + resolution_options.a_make_dependencies.argument() + "' to '--"
+                + resolution_options.a_make_dependencies.long_name() + "'");
+
+    if (resolution_options.a_slots.argument() == "best-or-installed")
+        get_resolvents_for_helper.set_slots(true, false, true);
+    else if (resolution_options.a_slots.argument() == "installed-or-best")
+        get_resolvents_for_helper.set_slots(false, true, true);
+    else if (resolution_options.a_slots.argument() == "all")
+        get_resolvents_for_helper.set_slots(true, true, false);
+    else if (resolution_options.a_slots.argument() == "best")
+        get_resolvents_for_helper.set_slots(true, false, false);
+    else
+        throw args::DoHelp("Don't understand argument '" + resolution_options.a_slots.argument() + "' to '--"
+                + resolution_options.a_slots.long_name() + "'");
+
+    if (resolution_options.a_target_slots.argument() == "best-or-installed")
+        get_resolvents_for_helper.set_target_slots(true, false, true);
+    else if (resolution_options.a_target_slots.argument() == "installed-or-best")
+        get_resolvents_for_helper.set_target_slots(false, true, true);
+    else if (resolution_options.a_target_slots.argument() == "all")
+        get_resolvents_for_helper.set_target_slots(true, true, false);
+    else if (resolution_options.a_target_slots.argument() == "best")
+        get_resolvents_for_helper.set_target_slots(true, false, false);
+    else
+        throw args::DoHelp("Don't understand argument '" + resolution_options.a_target_slots.argument() + "' to '--"
+                + resolution_options.a_target_slots.long_name() + "'");
 
     GetUseExistingNothingHelper get_use_existing_nothing_helper(env.get());
     for (args::StringSetArg::ConstIterator i(resolution_options.a_without.begin_args()),
@@ -1263,8 +1273,7 @@ paludis::cave::resolve_common(
                 n::get_initial_constraints_for_fn() = std::bind(&initial_constraints_for_fn,
                     env.get(), std::cref(resolution_options), std::cref(without),
                     std::cref(initial_constraints), binary_destinations, _1),
-                n::get_resolvents_for_fn() = std::bind(&get_resolvents_for_fn,
-                    env.get(), std::cref(resolution_options), _1, _2, _3, DestinationTypes()),
+                n::get_resolvents_for_fn() = std::cref(get_resolvents_for_helper),
                 n::get_use_existing_nothing_fn() = std::cref(get_use_existing_nothing_helper),
                 n::interest_in_spec_fn() = std::cref(interest_in_spec_helper),
                 n::make_destination_filtered_generator_fn() = std::cref(make_destination_filtered_generator_helper),

@@ -49,6 +49,7 @@ noinst_HEADERS = \
 	get_constraints_for_purge_helper.hh get_constraints_for_dependent_helper-fwd.hh \
 	get_constraints_for_via_binary_helper.hh get_constraints_for_via_binary_helper-fwd.hh \
 	get_destination_types_for_error_helper.hh get_destination_types_for_error_helper-fwd.hh \
+	get_resolvents_for_helper.hh get_resolvents_for_helper-fwd.hh \
 	get_use_existing_nothing_helper.hh get_use_existing_nothing_helper-fwd.hh \
 	interest_in_spec_helper.hh interest_in_spec_helper-fwd.hh \
 	job.hh job-fwd.hh \
@@ -68,6 +69,7 @@ noinst_HEADERS = \
 	package_or_block_dep_spec.hh package_or_block_dep_spec-fwd.hh \
 	prefer_or_avoid_helper.hh prefer_or_avoid_helper-fwd.hh \
 	reason.hh reason-fwd.hh \
+	reason_utils.hh reason_utils-fwd.hh \
 	remove_if_dependent_helper.hh remove_if_dependent_helper-fwd.hh \
 	required_confirmations.hh required_confirmations-fwd.hh \
 	resolution.hh resolution-fwd.hh \
@@ -106,6 +108,7 @@ libpaludisresolver_a_SOURCES = \
 	get_constraints_for_purge_helper.cc \
 	get_constraints_for_via_binary_helper.cc \
 	get_destination_types_for_error_helper.cc \
+	get_resolvents_for_helper.cc \
 	get_use_existing_nothing_helper.cc \
 	interest_in_spec_helper.cc \
 	job.cc \
@@ -125,6 +128,7 @@ libpaludisresolver_a_SOURCES = \
 	package_or_block_dep_spec.cc \
 	prefer_or_avoid_helper.cc \
 	reason.cc \
+	reason_utils.cc \
 	remove_if_dependent_helper.cc \
 	required_confirmations.cc \
 	resolution.cc \

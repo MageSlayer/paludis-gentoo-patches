@@ -86,28 +86,6 @@ paludis::resolver::resolver_test::initial_constraints_for_fn(
         return i->second;
 }
 
-std::shared_ptr<Resolvents>
-paludis::resolver::resolver_test::get_resolvents_for_fn(
-        const Environment * const env,
-        const PackageDepSpec & spec,
-        const std::shared_ptr<const SlotName> & slot,
-        const std::shared_ptr<const Reason> &)
-{
-    auto result(std::make_shared<Resolvents>());
-    if (slot)
-        result->push_back(Resolvent(spec, *slot, dt_install_to_slash));
-    else
-    {
-        auto ids((*env)[selection::BestVersionInEachSlot(
-                    generator::Matches(spec, { mpo_ignore_additional_requirements }))]);
-        for (auto i(ids->begin()), i_end(ids->end()) ;
-                i != i_end ; ++i)
-            if ((*i)->slot_key())
-                result->push_back(Resolvent(spec, (*i)->slot_key()->value(), dt_install_to_slash));
-    }
-    return result;
-}
-
 namespace
 {
 #ifdef ENABLE_VIRTUALS_REPOSITORY
@@ -146,6 +124,7 @@ ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s,
     get_constraints_for_purge_helper(&env),
     get_constraints_for_via_binary_helper(&env),
     get_destination_types_for_error_helper(&env),
+    get_resolvents_for_helper(&env),
     get_use_existing_nothing_helper(&env),
     interest_in_spec_helper(&env),
     make_destination_filtered_generator_helper(&env),
@@ -217,8 +196,7 @@ ResolverTestCase::get_resolver_functions(InitialConstraints & initial_constraint
             n::get_initial_constraints_for_fn() =
                 std::bind(&initial_constraints_for_fn, std::ref(initial_constraints),
                     std::placeholders::_1),
-            n::get_resolvents_for_fn() = std::bind(&get_resolvents_for_fn, &env, std::placeholders::_1,
-                std::placeholders::_2, std::placeholders::_3),
+            n::get_resolvents_for_fn() = std::cref(get_resolvents_for_helper),
             n::get_use_existing_nothing_fn() = std::cref(get_use_existing_nothing_helper),
             n::interest_in_spec_fn() = std::cref(interest_in_spec_helper),
             n::make_destination_filtered_generator_fn() = std::cref(make_destination_filtered_generator_helper),
