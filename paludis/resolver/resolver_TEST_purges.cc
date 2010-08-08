@@ -61,18 +61,6 @@ namespace
         {
         }
     };
-
-    std::pair<UseExisting, bool>
-    use_existing_if_possible_except_target(
-            const std::shared_ptr<const Resolution> &,
-            const PackageDepSpec & s,
-            const std::shared_ptr<const Reason> &)
-    {
-        if (s.package_ptr() && s.package_ptr()->package() == PackageNamePart("target"))
-            return std::make_pair(ue_never, false);
-        else
-            return std::make_pair(ue_if_possible, false);
-    }
 }
 
 namespace test_cases
@@ -91,14 +79,8 @@ namespace test_cases
             install("purges", "unrelated", "0")->build_dependencies_key()->set_from_string("purges/unrelated-dep");
 
             get_constraints_for_purge_helper.add_purge_spec(parse_user_package_dep_spec("purges/old-dep", &env, { }));
-        }
 
-        virtual ResolverFunctions get_resolver_functions(InitialConstraints & initial_constraints)
-        {
-            ResolverFunctions result(ResolverPurgesTestCase::get_resolver_functions(initial_constraints));
-            result.get_use_existing_nothing_fn() = std::bind(&use_existing_if_possible_except_target, std::placeholders::_1,
-                    std::placeholders::_2, std::placeholders::_3);
-            return result;
+            get_use_existing_nothing_helper.set_use_existing_for_dependencies(ue_if_possible);
         }
 
         void run()
@@ -135,15 +117,8 @@ namespace test_cases
             install("star-slot-purges", "uses", "1")->build_dependencies_key()->set_from_string("star-slot-purges/target:*");
 
             get_constraints_for_purge_helper.add_purge_spec(parse_user_package_dep_spec("star-slot-purges/target", &env, { }));
-        }
 
-        virtual ResolverFunctions get_resolver_functions(InitialConstraints & initial_constraints)
-        {
-            ResolverFunctions result(ResolverPurgesTestCase::get_resolver_functions(initial_constraints));
-            result.get_use_existing_nothing_fn() = std::bind(&use_existing_if_possible_except_target, std::placeholders::_1,
-                    std::placeholders::_2, std::placeholders::_3);
-            result.confirm_fn() = std::bind(return_literal_function(false));
-            return result;
+            get_use_existing_nothing_helper.set_use_existing_for_dependencies(ue_if_possible);
         }
 
         void run()

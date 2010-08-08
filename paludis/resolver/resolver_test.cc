@@ -133,15 +133,6 @@ namespace
 #endif
 }
 
-std::pair<UseExisting, bool>
-paludis::resolver::resolver_test::get_use_existing_nothing_fn(
-        const std::shared_ptr<const Resolution> &,
-        const PackageDepSpec &,
-        const std::shared_ptr<const Reason> &)
-{
-    return std::make_pair(ue_never, false);
-}
-
 ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s, const std::string & e,
         const std::string & l) :
     TestCase(s),
@@ -155,6 +146,7 @@ ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s,
     get_constraints_for_purge_helper(&env),
     get_constraints_for_via_binary_helper(&env),
     get_destination_types_for_error_helper(&env),
+    get_use_existing_nothing_helper(&env),
     interest_in_spec_helper(&env),
     make_destination_filtered_generator_helper(&env),
     make_origin_filtered_generator_helper(&env),
@@ -227,7 +219,7 @@ ResolverTestCase::get_resolver_functions(InitialConstraints & initial_constraint
                     std::placeholders::_1),
             n::get_resolvents_for_fn() = std::bind(&get_resolvents_for_fn, &env, std::placeholders::_1,
                 std::placeholders::_2, std::placeholders::_3),
-            n::get_use_existing_nothing_fn() = &get_use_existing_nothing_fn,
+            n::get_use_existing_nothing_fn() = std::cref(get_use_existing_nothing_helper),
             n::interest_in_spec_fn() = std::cref(interest_in_spec_helper),
             n::make_destination_filtered_generator_fn() = std::cref(make_destination_filtered_generator_helper),
             n::make_origin_filtered_generator_fn() = std::cref(make_origin_filtered_generator_helper),

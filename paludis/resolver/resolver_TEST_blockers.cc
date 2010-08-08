@@ -58,6 +58,7 @@ namespace
         ResolverBlockersTestCase(const std::string & s, const std::string & e = "exheres-0") :
             ResolverTestCase("blockers", s, e, "exheres")
         {
+            get_use_existing_nothing_helper.set_use_existing_for_dependencies(ue_never);
         }
     };
 }

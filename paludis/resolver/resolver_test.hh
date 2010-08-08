@@ -45,6 +45,7 @@
 #include <paludis/resolver/get_constraints_for_purge_helper.hh>
 #include <paludis/resolver/get_constraints_for_via_binary_helper.hh>
 #include <paludis/resolver/get_destination_types_for_error_helper.hh>
+#include <paludis/resolver/get_use_existing_nothing_helper.hh>
 #include <paludis/resolver/interest_in_spec_helper.hh>
 #include <paludis/resolver/make_destination_filtered_generator_helper.hh>
 #include <paludis/resolver/make_origin_filtered_generator_helper.hh>
@@ -92,11 +93,6 @@ namespace paludis
                     const std::shared_ptr<const SlotName> &,
                     const std::shared_ptr<const Reason> &);
 
-            std::pair<UseExisting, bool> get_use_existing_nothing_fn(
-                    const std::shared_ptr<const Resolution> &,
-                    const PackageDepSpec &,
-                    const std::shared_ptr<const Reason> &);
-
             struct ResolverTestCase : test::TestCase
             {
                 TestEnvironment env;
@@ -113,6 +109,7 @@ namespace paludis
                 GetConstraintsForPurgeHelper get_constraints_for_purge_helper;
                 GetConstraintsForViaBinaryHelper get_constraints_for_via_binary_helper;
                 GetDestinationTypesForErrorHelper get_destination_types_for_error_helper;
+                GetUseExistingNothingHelper get_use_existing_nothing_helper;
                 InterestInSpecHelper interest_in_spec_helper;
                 MakeDestinationFilteredGeneratorHelper make_destination_filtered_generator_helper;
                 MakeOriginFilteredGeneratorHelper make_origin_filtered_generator_helper;

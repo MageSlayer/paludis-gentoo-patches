@@ -32,3 +32,11 @@ paludis::resolver::can_make_binary_for(const std::shared_ptr<const PackageID> & 
     return id->behaviours_key()->value()->end() == id->behaviours_key()->value()->find("unbinaryable");
 }
 
+bool
+paludis::resolver::can_chroot(const std::shared_ptr<const PackageID> & id)
+{
+    if (! id->behaviours_key())
+        return true;
+    return id->behaviours_key()->value()->end() == id->behaviours_key()->value()->find("unchrootable");
+}
+

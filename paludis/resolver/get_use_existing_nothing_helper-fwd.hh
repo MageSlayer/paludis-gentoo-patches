@@ -17,18 +17,14 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_DESTINATION_UTILS_FWD_HH
-#define PALUDIS_GUARD_PALUDIS_RESOLVER_DESTINATION_UTILS_FWD_HH 1
-
-#include <paludis/util/attributes.hh>
-#include <paludis/package_id-fwd.hh>
+#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_GET_USE_EXISTING_NOTHING_HELPER_FWD_HH
+#define PALUDIS_GUARD_PALUDIS_RESOLVER_GET_USE_EXISTING_NOTHING_HELPER_FWD_HH 1
 
 namespace paludis
 {
     namespace resolver
     {
-        bool can_make_binary_for(const std::shared_ptr<const PackageID> & id) PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
-        bool can_chroot(const std::shared_ptr<const PackageID> & id) PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
+        struct GetUseExistingNothingHelper;
     }
 }
 

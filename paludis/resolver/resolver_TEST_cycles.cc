@@ -58,17 +58,9 @@ namespace
         ResolverCyclesTestCase(const std::string & s) :
             ResolverTestCase("cycles", s, "exheres-0", "exheres")
         {
+            get_use_existing_nothing_helper.set_use_existing_for_dependencies(ue_never);
         }
     };
-
-    std::pair<UseExisting, bool>
-    use_existing_if_same(
-            const std::shared_ptr<const Resolution> &,
-            const PackageDepSpec &,
-            const std::shared_ptr<const Reason> &)
-    {
-        return std::make_pair(ue_if_same, false);
-    }
 }
 
 namespace test_cases
@@ -80,14 +72,8 @@ namespace test_cases
         {
             install("no-changes", "dep-a", "1")->build_dependencies_key()->set_from_string("no-changes/dep-b");
             install("no-changes", "dep-b", "1")->build_dependencies_key()->set_from_string("no-changes/dep-a");
-        }
 
-        virtual ResolverFunctions get_resolver_functions(InitialConstraints & initial_constraints)
-        {
-            ResolverFunctions result(ResolverCyclesTestCase::get_resolver_functions(initial_constraints));
-            result.get_use_existing_nothing_fn() = std::bind(&use_existing_if_same, std::placeholders::_1,
-                    std::placeholders::_2, std::placeholders::_3);
-            return result;
+            get_use_existing_nothing_helper.set_use_existing_for_dependencies(ue_if_same);
         }
 
         void run()
@@ -285,14 +271,8 @@ namespace test_cases
         {
             if (-1 != installed_version)
                 install(cat, "dep", stringify(installed_version));
-        }
 
-        virtual ResolverFunctions get_resolver_functions(InitialConstraints & initial_constraints)
-        {
-            ResolverFunctions result(ResolverCyclesTestCase::get_resolver_functions(initial_constraints));
-            result.get_use_existing_nothing_fn() = std::bind(&use_existing_if_same, std::placeholders::_1,
-                    std::placeholders::_2, std::placeholders::_3);
-            return result;
+            get_use_existing_nothing_helper.set_use_existing_for_dependencies(ue_if_same);
         }
 
         void run()
@@ -354,14 +334,8 @@ namespace test_cases
             ResolverCyclesTestCase("cycle deps")
         {
             install("cycle-deps", "dep-g", "1")->build_dependencies_key()->set_from_string("cycle-deps/dep-c");
-        }
 
-        virtual ResolverFunctions get_resolver_functions(InitialConstraints & initial_constraints)
-        {
-            ResolverFunctions result(ResolverCyclesTestCase::get_resolver_functions(initial_constraints));
-            result.get_use_existing_nothing_fn() = std::bind(&use_existing_if_same, std::placeholders::_1,
-                    std::placeholders::_2, std::placeholders::_3);
-            return result;
+            get_use_existing_nothing_helper.set_use_existing_for_dependencies(ue_if_same);
         }
 
         void run()

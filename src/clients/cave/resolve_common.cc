@@ -50,6 +50,7 @@
 #include <paludis/resolver/resolver.hh>
 #include <paludis/resolver/resolution.hh>
 #include <paludis/resolver/decision.hh>
+#include <paludis/resolver/destination_utils.hh>
 #include <paludis/resolver/resolver_functions.hh>
 #include <paludis/resolver/reason.hh>
 #include <paludis/resolver/suggest_restart.hh>
@@ -74,6 +75,7 @@
 #include <paludis/resolver/get_constraints_for_purge_helper.hh>
 #include <paludis/resolver/get_constraints_for_via_binary_helper.hh>
 #include <paludis/resolver/get_destination_types_for_error_helper.hh>
+#include <paludis/resolver/get_use_existing_nothing_helper.hh>
 #include <paludis/resolver/interest_in_spec_helper.hh>
 #include <paludis/resolver/make_destination_filtered_generator_helper.hh>
 #include <paludis/resolver/make_origin_filtered_generator_helper.hh>
@@ -127,13 +129,6 @@ namespace
         if (! id->behaviours_key())
             return true;
         return id->behaviours_key()->value()->end() == id->behaviours_key()->value()->find("unbinaryable");
-    }
-
-    bool can_chroot(const std::shared_ptr<const PackageID> & id)
-    {
-        if (! id->behaviours_key())
-            return true;
-        return id->behaviours_key()->value()->end() == id->behaviours_key()->value()->find("unchrootable");
     }
 
     struct DestinationTypesFinder
@@ -334,126 +329,6 @@ namespace
         return result;
     }
 
-    UseExisting use_existing_from_cmdline(const args::EnumArg & a, const bool is_set)
-    {
-        if (a.argument() == "auto")
-            return is_set ? ue_if_same : ue_never;
-        else if (a.argument() == "never")
-            return ue_never;
-        else if (a.argument() == "if-transient")
-            return ue_only_if_transient;
-        else if (a.argument() == "if-same")
-            return ue_if_same;
-        else if (a.argument() == "if-same-version")
-            return ue_if_same_version;
-        else if (a.argument() == "if-possible")
-            return ue_if_possible;
-        else
-            throw args::DoHelp("Don't understand argument '" + a.argument() + "' to '--" + a.long_name() + "'");
-    }
-
-    struct UseExistingVisitor
-    {
-        const Environment * const env;
-        const ResolveCommandLineResolutionOptions & resolution_options;
-        const bool from_set;
-        const Resolvent resolvent;
-
-        UseExistingVisitor(const Environment * const e, const ResolveCommandLineResolutionOptions & c, const bool f, const Resolvent & r) :
-            env(e),
-            resolution_options(c),
-            from_set(f),
-            resolvent(r)
-        {
-        }
-
-        bool creating_and_no_appropriate_ids() const
-        {
-            bool (* can)(const std::shared_ptr<const PackageID> &)(0);
-            switch (resolvent.destination_type())
-            {
-                case dt_install_to_slash:
-                    return false;
-
-                case dt_create_binary:
-                    can = &can_make_binary_for;
-                    break;
-
-                case dt_install_to_chroot:
-                    can = &can_chroot;
-                    break;
-
-                case last_dt:
-                    break;
-            }
-
-            if (! can)
-                throw InternalError(PALUDIS_HERE, "unhandled dt");
-
-            auto origin_ids((*env)[selection::AllVersionsSorted(
-                        generator::Package(resolvent.package()) |
-                        make_slot_filter(resolvent) |
-                        filter::SupportsAction<InstallAction>() |
-                        filter::NotMasked()
-                        )]);
-            if (origin_ids->empty())
-                return false;
-            else
-            {
-                for (auto i(origin_ids->begin()), i_end(origin_ids->end()) ;
-                        i != i_end ; ++i)
-                    if ((*can)(*i))
-                        return false;
-
-                return true;
-            }
-        }
-
-        std::pair<UseExisting, bool> visit(const DependencyReason &) const
-        {
-            return std::make_pair(use_existing_from_cmdline(resolution_options.a_keep, false),
-                    creating_and_no_appropriate_ids());
-        }
-
-        std::pair<UseExisting, bool> visit(const TargetReason &) const
-        {
-            return std::make_pair(use_existing_from_cmdline(resolution_options.a_keep_targets, from_set),
-                    creating_and_no_appropriate_ids());
-        }
-
-        std::pair<UseExisting, bool> visit(const DependentReason &) const
-        {
-            return std::make_pair(ue_if_possible, false);
-        }
-
-        std::pair<UseExisting, bool> visit(const WasUsedByReason &) const
-        {
-            return std::make_pair(ue_if_possible, false);
-        }
-
-        std::pair<UseExisting, bool> visit(const PresetReason &) const
-        {
-            return std::make_pair(ue_if_possible, false);
-        }
-
-        std::pair<UseExisting, bool> visit(const ViaBinaryReason &) const
-        {
-            return std::make_pair(ue_if_possible, false);
-        }
-
-        std::pair<UseExisting, bool> visit(const SetReason & r) const
-        {
-            UseExistingVisitor v(env, resolution_options, true, resolvent);
-            return r.reason_for_set()->accept_returning<std::pair<UseExisting, bool> >(v);
-        }
-
-        std::pair<UseExisting, bool> visit(const LikeOtherDestinationTypeReason & r) const
-        {
-            UseExistingVisitor v(env, resolution_options, true, resolvent);
-            return r.reason_for_other()->accept_returning<std::pair<UseExisting, bool> >(v);
-        }
-    };
-
     bool use_existing_from_withish(
             const Environment * const,
             const QualifiedPackageName & name,
@@ -483,27 +358,6 @@ namespace
         }
 
         return false;
-    }
-
-    std::pair<UseExisting, bool> use_existing_nothing_fn(
-            const Environment * const env,
-            const ResolveCommandLineResolutionOptions & resolution_options,
-            const PackageDepSpecList & without,
-            const PackageDepSpecList & with,
-            const std::shared_ptr<const Resolution> & resolution,
-            const PackageDepSpec & spec,
-            const std::shared_ptr<const Reason> & reason)
-    {
-        if (spec.package_ptr())
-        {
-            if (use_existing_from_withish(env, *spec.package_ptr(), without))
-                return std::make_pair(ue_if_possible, true);
-            if (use_existing_from_withish(env, *spec.package_ptr(), with))
-                return std::make_pair(ue_never, false);
-        }
-
-        UseExistingVisitor v(env, resolution_options, false, resolution->resolvent());
-        return reason->accept_returning<std::pair<UseExisting, bool> >(v);
     }
 
     int reinstall_scm_days(const ResolveCommandLineResolutionOptions & resolution_options)
@@ -1117,6 +971,30 @@ namespace
 
         std::cout << std::endl;
     }
+
+    UseExisting use_existing_from_arg(const args::EnumArg & arg, const bool is_set)
+    {
+        if (arg.argument() == "auto")
+        {
+            if (is_set)
+                return ue_if_same;
+            else
+                return ue_never;
+        }
+        else if (arg.argument() == "never")
+            return ue_never;
+        else if (arg.argument() == "if-transient")
+            return ue_only_if_transient;
+        else if (arg.argument() == "if-same")
+            return ue_if_same;
+        else if (arg.argument() == "if-same-version")
+            return ue_if_same_version;
+        else if (arg.argument() == "if-possible")
+            return ue_if_possible;
+        else
+            throw args::DoHelp("Don't understand argument '" + arg.argument() + "' to '--"
+                    + arg.long_name() + "'");
+    }
 }
 
 int
@@ -1134,18 +1012,12 @@ paludis::cave::resolve_common(
     int retcode(0);
 
     InitialConstraints initial_constraints;
-    PackageDepSpecList with, without;
+    PackageDepSpecList without;
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_without.begin_args()),
             i_end(resolution_options.a_without.end_args()) ;
             i != i_end ; ++i)
         without.push_back(parse_user_package_dep_spec(*i, env.get(),
-                    { updso_allow_wildcards }));
-
-    for (args::StringSetArg::ConstIterator i(resolution_options.a_with.begin_args()),
-            i_end(resolution_options.a_with.end_args()) ;
-            i != i_end ; ++i)
-        with.push_back(parse_user_package_dep_spec(*i, env.get(),
                     { updso_allow_wildcards }));
 
     std::shared_ptr<Generator> binary_destinations;
@@ -1273,6 +1145,21 @@ paludis::cave::resolve_common(
         throw args::DoHelp("Don't understand argument '" + resolution_options.a_make.argument() + "' to '--"
                 + resolution_options.a_make.long_name() + "'");
 
+    GetUseExistingNothingHelper get_use_existing_nothing_helper(env.get());
+    for (args::StringSetArg::ConstIterator i(resolution_options.a_without.begin_args()),
+            i_end(resolution_options.a_without.end_args()) ;
+            i != i_end ; ++i)
+        get_use_existing_nothing_helper.add_without_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
+
+    for (args::StringSetArg::ConstIterator i(resolution_options.a_with.begin_args()),
+            i_end(resolution_options.a_with.end_args()) ;
+            i != i_end ; ++i)
+        get_use_existing_nothing_helper.add_with_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
+
+    get_use_existing_nothing_helper.set_use_existing_for_dependencies(use_existing_from_arg(resolution_options.a_keep, false));
+    get_use_existing_nothing_helper.set_use_existing_for_targets(use_existing_from_arg(resolution_options.a_keep_targets, false));
+    get_use_existing_nothing_helper.set_use_existing_for_set_targets(use_existing_from_arg(resolution_options.a_keep_targets, true));
+
     MakeDestinationFilteredGeneratorHelper make_destination_filtered_generator_helper(env.get());
 
     MakeOriginFilteredGeneratorHelper make_origin_filtered_generator_helper(env.get());
@@ -1378,8 +1265,7 @@ paludis::cave::resolve_common(
                     std::cref(initial_constraints), binary_destinations, _1),
                 n::get_resolvents_for_fn() = std::bind(&get_resolvents_for_fn,
                     env.get(), std::cref(resolution_options), _1, _2, _3, DestinationTypes()),
-                n::get_use_existing_nothing_fn() = std::bind(&use_existing_nothing_fn,
-                    env.get(), std::cref(resolution_options), std::cref(without), std::cref(with), _1, _2, _3),
+                n::get_use_existing_nothing_fn() = std::cref(get_use_existing_nothing_helper),
                 n::interest_in_spec_fn() = std::cref(interest_in_spec_helper),
                 n::make_destination_filtered_generator_fn() = std::cref(make_destination_filtered_generator_helper),
                 n::make_origin_filtered_generator_fn() = std::cref(make_origin_filtered_generator_helper),

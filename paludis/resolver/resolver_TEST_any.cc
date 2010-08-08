@@ -60,6 +60,7 @@ namespace
         ResolverAnyTestCase(const std::string & s) :
             ResolverTestCase("any", s, "exheres-0", "exheres")
         {
+            get_use_existing_nothing_helper.set_use_existing_for_dependencies(ue_never);
         }
     };
 }

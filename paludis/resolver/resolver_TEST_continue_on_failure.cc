@@ -67,15 +67,6 @@ namespace
         }
     };
 
-    std::pair<UseExisting, bool>
-    use_existing_if_same(
-            const std::shared_ptr<const Resolution> &,
-            const PackageDepSpec &,
-            const std::shared_ptr<const Reason> &)
-    {
-        return std::make_pair(ue_if_same, false);
-    }
-
     std::string
     stringify_req(const JobRequirement & r)
     {
@@ -104,14 +95,9 @@ namespace test_cases
             if (d)
                 install("continue-on-failure", "direct-dep", "0");
             install("continue-on-failure", "unchanged-dep", "1")->build_dependencies_key()->set_from_string("continue-on-failure/indirect-dep");
-        }
 
-        virtual ResolverFunctions get_resolver_functions(InitialConstraints & initial_constraints)
-        {
-            ResolverFunctions result(ResolverContinueOnFailureTestCase::get_resolver_functions(initial_constraints));
-            result.get_use_existing_nothing_fn() = std::bind(&use_existing_if_same, std::placeholders::_1,
-                    std::placeholders::_2, std::placeholders::_3);
-            return result;
+            get_use_existing_nothing_helper.set_use_existing_for_dependencies(ue_if_same);
+            get_use_existing_nothing_helper.set_use_existing_for_targets(ue_if_same);
         }
 
         void run()
