@@ -43,28 +43,24 @@
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/return_literal_function.hh>
+#include <paludis/util/join.hh>
+#include <paludis/util/tribool.hh>
 
 #include <paludis/args/do_help.hh>
 #include <paludis/args/escape.hh>
 
 #include <paludis/resolver/resolver.hh>
-#include <paludis/resolver/resolution.hh>
-#include <paludis/resolver/decision.hh>
-#include <paludis/resolver/destination_utils.hh>
-#include <paludis/resolver/resolver_functions.hh>
-#include <paludis/resolver/reason.hh>
-#include <paludis/resolver/reason_utils.hh>
-#include <paludis/resolver/suggest_restart.hh>
-#include <paludis/resolver/resolvent.hh>
-#include <paludis/resolver/constraint.hh>
-#include <paludis/resolver/sanitised_dependencies.hh>
-#include <paludis/resolver/resolutions_by_resolvent.hh>
-#include <paludis/resolver/required_confirmations.hh>
+#include <paludis/resolver/package_or_block_dep_spec.hh>
+#include <paludis/resolver/decision_utils.hh>
 #include <paludis/resolver/job_lists.hh>
-#include <paludis/resolver/decisions.hh>
 #include <paludis/resolver/change_by_resolvent.hh>
-#include <paludis/resolver/labels_classifier.hh>
-#include <paludis/resolver/match_qpns.hh>
+#include <paludis/resolver/reason.hh>
+#include <paludis/resolver/sanitised_dependencies.hh>
+#include <paludis/resolver/suggest_restart.hh>
+#include <paludis/resolver/decision.hh>
+#include <paludis/resolver/constraint.hh>
+#include <paludis/resolver/resolver_functions.hh>
+#include <paludis/resolver/decisions.hh>
 
 #include <paludis/resolver/allow_choice_changes_helper.hh>
 #include <paludis/resolver/allowed_to_remove_helper.hh>
@@ -76,6 +72,7 @@
 #include <paludis/resolver/get_constraints_for_purge_helper.hh>
 #include <paludis/resolver/get_constraints_for_via_binary_helper.hh>
 #include <paludis/resolver/get_destination_types_for_error_helper.hh>
+#include <paludis/resolver/get_initial_constraints_for_helper.hh>
 #include <paludis/resolver/get_resolvents_for_helper.hh>
 #include <paludis/resolver/get_use_existing_nothing_helper.hh>
 #include <paludis/resolver/interest_in_spec_helper.hh>
@@ -88,23 +85,11 @@
 
 #include <paludis/user_dep_spec.hh>
 #include <paludis/notifier_callback.hh>
-#include <paludis/generator.hh>
-#include <paludis/filter.hh>
-#include <paludis/filter_handler.hh>
-#include <paludis/selection.hh>
-#include <paludis/filtered_generator.hh>
-#include <paludis/version_spec.hh>
-#include <paludis/metadata_key.hh>
 #include <paludis/environment.hh>
-#include <paludis/match_package.hh>
-#include <paludis/package_database.hh>
 #include <paludis/serialise-impl.hh>
 #include <paludis/selection_cache.hh>
-#include <paludis/package_dep_spec_properties.hh>
-#include <paludis/elike_slot_requirement.hh>
 #include <paludis/package_id.hh>
-#include <paludis/partially_made_package_dep_spec.hh>
-#include <paludis/mask_utils.hh>
+#include <paludis/filtered_generator.hh>
 
 #include <algorithm>
 #include <iostream>
@@ -123,148 +108,6 @@ using std::endl;
 
 namespace
 {
-    typedef std::map<Resolvent, std::shared_ptr<Constraints> > InitialConstraints;
-    typedef std::list<PackageDepSpec> PackageDepSpecList;
-
-    struct DestinationTypesFinder
-    {
-        const Environment * const env;
-        const ResolveCommandLineResolutionOptions & resolution_options;
-        const std::shared_ptr<const PackageID> package_id_unless_error;
-
-        DestinationTypesFinder(
-                const Environment * const e,
-                const ResolveCommandLineResolutionOptions & c,
-                const std::shared_ptr<const PackageID> & i) :
-            env(e),
-            resolution_options(c),
-            package_id_unless_error(i)
-        {
-        }
-
-        DestinationTypes visit(const TargetReason &) const
-        {
-            if (resolution_options.a_make.argument() == "binaries")
-                return DestinationTypes() + dt_create_binary;
-            else if (resolution_options.a_make.argument() == "install")
-                return DestinationTypes() + dt_install_to_slash;
-            else if (resolution_options.a_make.argument() == "chroot")
-                return DestinationTypes() + dt_install_to_chroot;
-            else
-                throw args::DoHelp("Don't understand argument '" + resolution_options.a_make.argument() + "' to '--"
-                        + resolution_options.a_make.long_name() + "'");
-        }
-
-        DestinationTypes visit(const DependentReason &) const
-        {
-            return DestinationTypes() + dt_install_to_slash;
-        }
-
-        DestinationTypes visit(const ViaBinaryReason &) const
-        {
-            return DestinationTypes();
-        }
-
-        DestinationTypes visit(const WasUsedByReason &) const
-        {
-            return DestinationTypes() + dt_install_to_slash;
-        }
-
-        DestinationTypes visit(const DependencyReason & dep) const
-        {
-            DestinationTypes extras;
-
-            if (resolution_options.a_make.argument() == "binaries")
-            {
-                bool binary_if_possible(false);
-                if (resolution_options.a_make_dependencies.argument() == "auto" ||
-                        resolution_options.a_make_dependencies.argument() == "all")
-                    binary_if_possible = true;
-                else if (resolution_options.a_make_dependencies.argument() == "runtime")
-                {
-                    /* this will track run deps of build deps, which isn't
-                     * really right... */
-                    if (is_run_or_post_dep(dep.sanitised_dependency()))
-                        binary_if_possible = true;
-                }
-
-                if (binary_if_possible && package_id_unless_error && can_make_binary_for(package_id_unless_error))
-                    extras += dt_create_binary;
-            }
-            else if (resolution_options.a_make.argument() == "chroot")
-            {
-                bool chroot_if_possible(false);
-                if (resolution_options.a_make_dependencies.argument() == "auto" ||
-                        resolution_options.a_make_dependencies.argument() == "all")
-                    chroot_if_possible = true;
-                else if (resolution_options.a_make_dependencies.argument() == "runtime")
-                {
-                    if (is_run_or_post_dep(dep.sanitised_dependency()))
-                        chroot_if_possible = true;
-                }
-
-                if (chroot_if_possible && package_id_unless_error && can_chroot(package_id_unless_error))
-                    extras += dt_install_to_chroot;
-            }
-
-            return (DestinationTypes() + dt_install_to_slash) | extras;
-        }
-
-        DestinationTypes visit(const PresetReason &) const
-        {
-            return DestinationTypes();
-        }
-
-        DestinationTypes visit(const LikeOtherDestinationTypeReason & r) const
-        {
-            return r.reason_for_other()->accept_returning<DestinationTypes>(*this);
-        }
-
-        DestinationTypes visit(const SetReason & r) const
-        {
-            return r.reason_for_set()->accept_returning<DestinationTypes>(*this);
-        }
-    };
-
-    DestinationTypes get_destination_types_for_fn(
-            const Environment * const env,
-            const ResolveCommandLineResolutionOptions & resolution_options,
-            const PackageDepSpec &,
-            const std::shared_ptr<const PackageID> & id_unless_error,
-            const std::shared_ptr<const Reason> & reason)
-    {
-        DestinationTypesFinder f(env, resolution_options, id_unless_error);
-        return reason->accept_returning<DestinationTypes>(f);
-    }
-
-    FilteredGenerator make_destination_filtered_generator(
-            const Environment * const,
-            const ResolveCommandLineResolutionOptions &,
-            const std::shared_ptr<const Generator> & binary_destinations,
-            const Generator & g,
-            const Resolvent & r)
-    {
-        switch (r.destination_type())
-        {
-            case dt_install_to_slash:
-                return g | filter::InstalledAtSlash();
-
-            case dt_install_to_chroot:
-                return g | filter::InstalledAtNotSlash();
-
-            case dt_create_binary:
-                if (binary_destinations)
-                    return g & *binary_destinations;
-                else
-                    return generator::Nothing();
-
-            case last_dt:
-                break;
-        }
-
-        throw InternalError(PALUDIS_HERE, stringify(r.destination_type()));
-    }
-
     const std::shared_ptr<const Sequence<std::string> > add_resolver_targets(
             const std::shared_ptr<Environment> & env,
             const std::shared_ptr<Resolver> & resolver,
@@ -324,37 +167,6 @@ namespace
         return result;
     }
 
-    bool use_existing_from_withish(
-            const Environment * const,
-            const QualifiedPackageName & name,
-            const PackageDepSpecList & list)
-    {
-        for (PackageDepSpecList::const_iterator l(list.begin()), l_end(list.end()) ;
-                l != l_end ; ++l)
-        {
-            if (! package_dep_spec_has_properties(*l, make_named_values<PackageDepSpecProperties>(
-                            n::has_additional_requirements() = false,
-                            n::has_category_name_part() = false,
-                            n::has_from_repository() = false,
-                            n::has_in_repository() = false,
-                            n::has_installable_to_path() = false,
-                            n::has_installable_to_repository() = false,
-                            n::has_installed_at_path() = false,
-                            n::has_package() = true,
-                            n::has_package_name_part() = false,
-                            n::has_slot_requirement() = false,
-                            n::has_tag() = indeterminate,
-                            n::has_version_requirements() = false
-                            )))
-                throw args::DoHelp("'" + stringify(*l) + "' is not a simple cat/pkg");
-
-            if (name == *l->package_ptr())
-                return true;
-        }
-
-        return false;
-    }
-
     int reinstall_scm_days(const ResolveCommandLineResolutionOptions & resolution_options)
     {
         if (resolution_options.a_reinstall_scm.argument() == "always")
@@ -369,257 +181,6 @@ namespace
             throw args::DoHelp("Don't understand argument '" + resolution_options.a_reinstall_scm.argument() + "' to '--"
                     + resolution_options.a_reinstall_scm.long_name() + "'");
     }
-
-    bool is_scm_name(const QualifiedPackageName & n)
-    {
-        std::string pkg(stringify(n.package()));
-        switch (pkg.length())
-        {
-            case 0:
-            case 1:
-            case 2:
-            case 3:
-                return false;
-
-            default:
-                if (0 == pkg.compare(pkg.length() - 6, 6, "-darcs"))
-                    return true;
-
-            case 5:
-                if (0 == pkg.compare(pkg.length() - 5, 5, "-live"))
-                    return true;
-
-            case 4:
-                if (0 == pkg.compare(pkg.length() - 4, 4, "-cvs"))
-                    return true;
-                if (0 == pkg.compare(pkg.length() - 4, 4, "-svn"))
-                    return true;
-                return false;
-        }
-    }
-
-    bool is_scm_older_than(const std::shared_ptr<const PackageID> & id, const int n)
-    {
-        if (id->version().is_scm() || is_scm_name(id->name()))
-        {
-            static Timestamp current_time(Timestamp::now()); /* static to avoid weirdness */
-            time_t installed_time(current_time.seconds());
-            if (id->installed_time_key())
-                installed_time = id->installed_time_key()->value().seconds();
-
-            return (current_time.seconds() - installed_time) > (24 * 60 * 60 * n);
-        }
-        else
-            return false;
-    }
-
-    bool installed_is_scm_older_than(
-            const Environment * const env,
-            const ResolveCommandLineResolutionOptions & resolution_options,
-            const std::shared_ptr<const Generator> & binary_destinations,
-            const Resolvent & q,
-            const int n)
-    {
-        Context context("When working out whether '" + stringify(q) + "' has installed SCM packages:");
-
-        const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsUnsorted(
-                    make_destination_filtered_generator(env, resolution_options, binary_destinations,
-                        generator::Package(q.package()), q) |
-                    make_slot_filter(q)
-                    )]);
-
-        for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
-                i != i_end ; ++i)
-        {
-            if (is_scm_older_than(*i, n))
-                return true;
-        }
-
-        return false;
-    }
-
-    const std::shared_ptr<Constraints> make_initial_constraints_for(
-            const Environment * const env,
-            const ResolveCommandLineResolutionOptions & resolution_options,
-            const std::shared_ptr<const Generator> & binary_destinations,
-            const PackageDepSpecList & without,
-            const Resolvent & resolvent)
-    {
-        const std::shared_ptr<Constraints> result(std::make_shared<Constraints>());
-
-        int n(reinstall_scm_days(resolution_options));
-        if ((-1 != n) && installed_is_scm_older_than(env, resolution_options, binary_destinations, resolvent, n)
-                && ! use_existing_from_withish(env, resolvent.package(), without))
-        {
-            result->add(std::make_shared<Constraint>(make_named_values<Constraint>(
-                                n::destination_type() = resolvent.destination_type(),
-                                n::nothing_is_fine_too() = true,
-                                n::reason() = std::make_shared<PresetReason>("is scm", make_null_shared_ptr()),
-                                n::spec() = make_package_dep_spec({ }).package(resolvent.package()),
-                                n::untaken() = false,
-                                n::use_existing() = ue_only_if_transient
-                                )));
-        }
-
-        return result;
-    }
-
-    const std::shared_ptr<Constraints> initial_constraints_for_fn(
-            const Environment * const env,
-            const ResolveCommandLineResolutionOptions & resolution_options,
-            const PackageDepSpecList & without,
-            const InitialConstraints & initial_constraints,
-            const std::shared_ptr<const Generator> & binary_destinations,
-            const Resolvent & resolvent)
-    {
-        InitialConstraints::const_iterator i(initial_constraints.find(resolvent));
-        if (i == initial_constraints.end())
-            return make_initial_constraints_for(env, resolution_options, binary_destinations, without, resolvent);
-        else
-            return i->second;
-    }
-
-    const std::shared_ptr<Resolvents>
-    get_resolvents_for_fn(const Environment * const env,
-            const ResolveCommandLineResolutionOptions & resolution_options,
-            const PackageDepSpec & spec,
-            const std::shared_ptr<const SlotName> & maybe_slot,
-            const std::shared_ptr<const Reason> & reason,
-            const DestinationTypes & extra_dts)
-    {
-        std::shared_ptr<PackageIDSequence> result_ids(std::make_shared<PackageIDSequence>());
-        std::shared_ptr<const PackageID> best;
-
-        const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::BestVersionOnly(
-                    generator::Matches(spec, { mpo_ignore_additional_requirements }) |
-                    filter::SupportsAction<InstallAction>() |
-                    filter::NotMasked() |
-                    (maybe_slot ? Filter(filter::Slot(*maybe_slot)) : Filter(filter::All())))]);
-
-        if (! ids->empty())
-            best = *ids->begin();
-
-        const std::shared_ptr<const PackageIDSequence> installed_ids((*env)[selection::BestVersionInEachSlot(
-                    generator::Matches(spec, { }) |
-                    (resolution_options.a_make.argument() == "chroot" ?
-                     Filter(filter::InstalledAtNotSlash()) : Filter(filter::InstalledAtSlash())))]);
-
-        const args::EnumArg & arg(is_target(reason) ? resolution_options.a_target_slots : resolution_options.a_slots);
-
-        if (! best)
-            std::copy(installed_ids->begin(), installed_ids->end(), result_ids->back_inserter());
-        else if (arg.argument() == "best-or-installed")
-        {
-            if (indirect_iterator(installed_ids->end()) == std::find(indirect_iterator(installed_ids->begin()),
-                        indirect_iterator(installed_ids->end()), *best))
-                result_ids->push_back(best);
-            else
-                std::copy(installed_ids->begin(), installed_ids->end(), result_ids->back_inserter());
-        }
-        else if (arg.argument() == "installed-or-best")
-        {
-            if (installed_ids->empty())
-                result_ids->push_back(best);
-            else
-                std::copy(installed_ids->begin(), installed_ids->end(), result_ids->back_inserter());
-        }
-        else if (arg.argument() == "all")
-        {
-            if (indirect_iterator(installed_ids->end()) == std::find(indirect_iterator(installed_ids->begin()),
-                        indirect_iterator(installed_ids->end()), *best))
-                result_ids->push_back(best);
-            std::copy(installed_ids->begin(), installed_ids->end(), result_ids->back_inserter());
-        }
-        else if (arg.argument() == "best")
-            result_ids->push_back(best);
-        else
-            throw args::DoHelp("Don't understand argument '" + arg.argument() + "' to '--"
-                    + arg.long_name() + "'");
-
-        std::shared_ptr<Resolvents> result(std::make_shared<Resolvents>());
-        for (PackageIDSequence::ConstIterator i(result_ids->begin()), i_end(result_ids->end()) ;
-                i != i_end ; ++i)
-        {
-            DestinationTypes destination_types(get_destination_types_for_fn(env, resolution_options, spec, *i, reason) | extra_dts);
-            for (EnumIterator<DestinationType> t, t_end(last_dt) ; t != t_end ; ++t)
-                if (destination_types[*t])
-                    result->push_back(Resolvent(*i, *t));
-        }
-
-        return result;
-    }
-
-    Filter make_destination_filter_fn(const Resolvent & resolvent)
-    {
-        switch (resolvent.destination_type())
-        {
-            case dt_install_to_slash:
-                return filter::InstalledAtSlash();
-
-            case dt_install_to_chroot:
-                return filter::InstalledAtNotSlash();
-
-            case dt_create_binary:
-                throw InternalError(PALUDIS_HERE, "no dt_create_binary yet");
-
-            case last_dt:
-                break;
-        }
-
-        throw InternalError(PALUDIS_HERE, "unhandled dt");
-    }
-
-    bool match_any(
-            const Environment * const env,
-            const PackageDepSpecList & list,
-            const std::shared_ptr<const PackageID> & i)
-    {
-        for (PackageDepSpecList::const_iterator l(list.begin()), l_end(list.end()) ;
-                l != l_end ; ++l)
-            if (match_package(*env, *l, *i, { }))
-                return true;
-
-        return false;
-    }
-
-    struct ChosenIDVisitor
-    {
-        const std::pair<std::shared_ptr<const PackageID>, std::shared_ptr<const ChangedChoices> > visit(
-                const ChangesToMakeDecision & decision) const
-        {
-            return std::make_pair(decision.origin_id(), decision.if_changed_choices());
-        }
-
-        const std::pair<std::shared_ptr<const PackageID>, std::shared_ptr<const ChangedChoices> > visit(
-                const BreakDecision & decision) const
-        {
-            return std::make_pair(decision.existing_id(), make_null_shared_ptr());
-        }
-
-        const std::pair<std::shared_ptr<const PackageID>, std::shared_ptr<const ChangedChoices> > visit(
-                const ExistingNoChangeDecision & decision) const
-        {
-            return std::make_pair(decision.existing_id(), make_null_shared_ptr());
-        }
-
-        const std::pair<std::shared_ptr<const PackageID>, std::shared_ptr<const ChangedChoices> > visit(
-                const NothingNoChangeDecision &) const
-        {
-            return std::make_pair(make_null_shared_ptr(), make_null_shared_ptr());
-        }
-
-        const std::pair<std::shared_ptr<const PackageID>, std::shared_ptr<const ChangedChoices> > visit(
-                const RemoveDecision &) const
-        {
-            return std::make_pair(make_null_shared_ptr(), make_null_shared_ptr());
-        }
-
-        const std::pair<std::shared_ptr<const PackageID>, std::shared_ptr<const ChangedChoices> > visit(
-                const UnableToMakeDecision &) const
-        {
-            return std::make_pair(make_null_shared_ptr(), make_null_shared_ptr());
-        }
-    };
 
     void serialise_resolved(StringListStream & ser_stream, const Resolved & resolved)
     {
@@ -895,15 +456,11 @@ namespace
             std::cout << "* " << r->resolvent() << std::endl;
 
             std::cout << "    Had decided upon ";
-            auto c(r->previous_decision()->accept_returning<std::pair<std::shared_ptr<const PackageID>, std::shared_ptr<const ChangedChoices> > >(
-                        ChosenIDVisitor()));
-            if (c.first)
-                std::cout << *c.first;
+            auto c(get_decided_id_or_null(r->previous_decision()));
+            if (c)
+                std::cout << *c;
             else
                 std::cout << r->previous_decision()->accept_returning<std::string>(KindNameVisitor());
-
-            if (c.second)
-                std::cout << " (with changed choices)";
 
             std::cout << std::endl;
 
@@ -970,72 +527,6 @@ paludis::cave::resolve_common(
 {
     int retcode(0);
 
-    InitialConstraints initial_constraints;
-    PackageDepSpecList without;
-
-    for (args::StringSetArg::ConstIterator i(resolution_options.a_without.begin_args()),
-            i_end(resolution_options.a_without.end_args()) ;
-            i != i_end ; ++i)
-        without.push_back(parse_user_package_dep_spec(*i, env.get(),
-                    { updso_allow_wildcards }));
-
-    std::shared_ptr<Generator> binary_destinations;
-    for (PackageDatabase::RepositoryConstIterator r(env->package_database()->begin_repositories()),
-            r_end(env->package_database()->end_repositories()) ;
-            r != r_end ; ++r)
-        if (! (*r)->installed_root_key())
-        {
-            if ((*r)->destination_interface())
-            {
-                if (binary_destinations)
-                    binary_destinations = std::make_shared<generator::Union>(*binary_destinations,
-                                generator::InRepository((*r)->name()));
-                else
-                    binary_destinations = std::make_shared<generator::InRepository>((*r)->name());
-            }
-        }
-
-    if (! binary_destinations)
-        binary_destinations = std::make_shared<generator::Nothing>();
-
-    for (args::StringSetArg::ConstIterator i(resolution_options.a_preset.begin_args()),
-            i_end(resolution_options.a_preset.end_args()) ;
-            i != i_end ; ++i)
-    {
-        const std::shared_ptr<const Reason> reason(std::make_shared<PresetReason>("preset", make_null_shared_ptr()));
-        PackageDepSpec spec(parse_user_package_dep_spec(*i, env.get(), { }));
-        DestinationTypes all_dts;
-        for (EnumIterator<DestinationType> t, t_end(last_dt) ; t != t_end ; ++t)
-            all_dts += *t;
-        const std::shared_ptr<const Resolvents> resolvents(get_resolvents_for_fn(
-                    env.get(), resolution_options, spec, make_null_shared_ptr(), reason,
-                    all_dts));
-
-        if (resolvents->empty())
-            throw args::DoHelp("Preset '" + *i + "' has no resolvents");
-
-        for (Resolvents::ConstIterator r(resolvents->begin()), r_end(resolvents->end()) ;
-                r != r_end ; ++r)
-        {
-            const std::shared_ptr<Constraint> constraint(std::make_shared<Constraint>(make_named_values<Constraint>(
-                            n::destination_type() = r->destination_type(),
-                            n::nothing_is_fine_too() = true,
-                            n::reason() = reason,
-                            n::spec() = spec,
-                            n::untaken() = false,
-                            n::use_existing() = ue_if_possible
-                            )));
-            initial_constraints.insert(std::make_pair(*r, make_initial_constraints_for(
-                            env.get(), resolution_options, binary_destinations, without, *r))).first->second->add(
-                    constraint);
-        }
-    }
-
-    using std::placeholders::_1;
-    using std::placeholders::_2;
-    using std::placeholders::_3;
-    using std::placeholders::_4;
-
     AllowChoiceChangesHelper allow_choice_changes_helper(env.get());;
     allow_choice_changes_helper.set_allow_choice_changes(! resolution_options.a_no_override_flags.specified());
 
@@ -1095,6 +586,19 @@ paludis::cave::resolve_common(
 
     GetDestinationTypesForErrorHelper get_destination_types_for_error_helper(env.get());
     get_destination_types_for_error_helper.set_target_destination_type(destination_type_from_arg(resolution_options.a_make));
+
+    GetInitialConstraintsForHelper get_initial_constraints_for_helper(env.get());
+    for (args::StringSetArg::ConstIterator i(resolution_options.a_without.begin_args()),
+            i_end(resolution_options.a_without.end_args()) ;
+            i != i_end ; ++i)
+        get_initial_constraints_for_helper.add_without_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
+
+    for (args::StringSetArg::ConstIterator i(resolution_options.a_preset.begin_args()),
+            i_end(resolution_options.a_preset.end_args()) ;
+            i != i_end ; ++i)
+        get_initial_constraints_for_helper.add_preset_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
+
+    get_initial_constraints_for_helper.set_reinstall_scm_days(reinstall_scm_days(resolution_options));
 
     GetResolventsForHelper get_resolvents_for_helper(env.get());
     get_resolvents_for_helper.set_target_destination_type(destination_type_from_arg(resolution_options.a_make));
@@ -1270,9 +774,7 @@ paludis::cave::resolve_common(
                 n::get_constraints_for_purge_fn() = std::cref(get_constraints_for_purge_helper),
                 n::get_constraints_for_via_binary_fn() = std::cref(get_constraints_for_via_binary_helper),
                 n::get_destination_types_for_error_fn() = std::cref(get_destination_types_for_error_helper),
-                n::get_initial_constraints_for_fn() = std::bind(&initial_constraints_for_fn,
-                    env.get(), std::cref(resolution_options), std::cref(without),
-                    std::cref(initial_constraints), binary_destinations, _1),
+                n::get_initial_constraints_for_fn() = std::cref(get_initial_constraints_for_helper),
                 n::get_resolvents_for_fn() = std::cref(get_resolvents_for_helper),
                 n::get_use_existing_nothing_fn() = std::cref(get_use_existing_nothing_helper),
                 n::interest_in_spec_fn() = std::cref(interest_in_spec_helper),
@@ -1314,9 +816,7 @@ paludis::cave::resolve_common(
                 {
                     restarts.push_back(e);
                     display_callback(ResolverRestart());
-                    initial_constraints.insert(std::make_pair(e.resolvent(), make_initial_constraints_for(
-                                    env.get(), resolution_options, binary_destinations, without, e.resolvent()))).first->second->add(
-                            e.suggested_preset());
+                    get_initial_constraints_for_helper.add_suggested_restart(e);
                     resolver = std::make_shared<Resolver>(env.get(), resolver_functions);
 
                     if (restarts.size() > 9000)

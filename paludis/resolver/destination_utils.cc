@@ -20,6 +20,12 @@
 #include <paludis/resolver/destination_utils.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/filtered_generator.hh>
+#include <paludis/generator.hh>
+#include <paludis/generator_handler.hh>
+#include <paludis/filter.hh>
+#include <paludis/environment.hh>
+#include <paludis/package_database.hh>
 
 using namespace paludis;
 using namespace paludis::resolver;
@@ -38,5 +44,62 @@ paludis::resolver::can_chroot(const std::shared_ptr<const PackageID> & id)
     if (! id->behaviours_key())
         return true;
     return id->behaviours_key()->value()->end() == id->behaviours_key()->value()->find("unchrootable");
+}
+
+namespace
+{
+    struct BinaryDestinationGeneratorHandler :
+        AllGeneratorHandlerBase
+    {
+        virtual std::shared_ptr<const RepositoryNameSet> repositories(
+                const Environment * const env) const
+        {
+            using namespace std::placeholders;
+            std::shared_ptr<RepositoryNameSet> result(std::make_shared<RepositoryNameSet>());
+            for (auto r(env->package_database()->begin_repositories()),
+                    r_end(env->package_database()->end_repositories()) ;
+                    r != r_end ; ++r)
+                if (! (*r)->installed_root_key())
+                    if ((*r)->destination_interface())
+                        result->insert((*r)->name());
+
+            return result;
+        }
+
+        virtual std::string as_string() const
+        {
+            return "binary destination repositories";
+        }
+    };
+
+    struct BinaryDestinationGenerator :
+        Generator
+    {
+        BinaryDestinationGenerator() :
+            Generator(std::make_shared<BinaryDestinationGeneratorHandler>())
+        {
+        }
+    };
+}
+
+FilteredGenerator
+paludis::resolver::destination_filtered_generator(const DestinationType t, const Generator & g)
+{
+    switch (t)
+    {
+        case dt_install_to_slash:
+            return g | filter::InstalledAtSlash();
+
+        case dt_install_to_chroot:
+            return g | filter::InstalledAtNotSlash();
+
+        case dt_create_binary:
+            return g & BinaryDestinationGenerator();
+
+        case last_dt:
+            break;
+    }
+
+    throw InternalError(PALUDIS_HERE, "unhandled dt");
 }
 

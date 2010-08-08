@@ -86,13 +86,9 @@ namespace test_cases
                 remove_if_dependent_helper.add_remove_if_dependent_spec(parse_user_package_dep_spec("breaking/dep", &env, { }));
                 allowed_to_remove_helper.add_allowed_to_remove_spec(parse_user_package_dep_spec("breaking/dep", &env, { }));
             }
-        }
 
-        virtual ResolverFunctions get_resolver_functions(InitialConstraints & initial_constraints)
-        {
-            ResolverFunctions result(ResolverUninstallsTestCase::get_resolver_functions(initial_constraints));
-            result.confirm_fn() = std::bind(return_literal_function(confirm));
-            return result;
+            if (confirm)
+                confirm_helper.add_allowed_to_break_spec(parse_user_package_dep_spec("*/*", &env, { updso_allow_wildcards }));
         }
 
         void run()

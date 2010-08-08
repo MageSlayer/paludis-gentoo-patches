@@ -22,13 +22,13 @@
 #include <paludis/resolver/constraint.hh>
 #include <paludis/resolver/resolvent.hh>
 #include <paludis/resolver/resolution.hh>
+#include <paludis/resolver/destination_utils.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/set.hh>
 #include <paludis/filter.hh>
 #include <paludis/filter_handler.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/generator.hh>
-#include <paludis/generator_handler.hh>
 #include <paludis/package_database.hh>
 #include <paludis/repository.hh>
 #include <paludis/metadata_key.hh>
@@ -59,63 +59,12 @@ MakeDestinationFilteredGeneratorHelper::MakeDestinationFilteredGeneratorHelper(c
 
 MakeDestinationFilteredGeneratorHelper::~MakeDestinationFilteredGeneratorHelper() = default;
 
-namespace
-{
-    struct BinaryDestinationGeneratorHandler :
-        AllGeneratorHandlerBase
-    {
-        virtual std::shared_ptr<const RepositoryNameSet> repositories(
-                const Environment * const env) const
-        {
-            using namespace std::placeholders;
-            std::shared_ptr<RepositoryNameSet> result(std::make_shared<RepositoryNameSet>());
-            for (auto r(env->package_database()->begin_repositories()),
-                    r_end(env->package_database()->end_repositories()) ;
-                    r != r_end ; ++r)
-                if (! (*r)->installed_root_key())
-                    if ((*r)->destination_interface())
-                        result->insert((*r)->name());
-
-            return result;
-        }
-
-        virtual std::string as_string() const
-        {
-            return "binary destination repositories";
-        }
-    };
-
-    struct BinaryDestinationGenerator :
-        Generator
-    {
-        BinaryDestinationGenerator() :
-            Generator(std::make_shared<BinaryDestinationGeneratorHandler>())
-        {
-        }
-    };
-}
-
 FilteredGenerator
 MakeDestinationFilteredGeneratorHelper::operator() (
         const Generator & g,
         const std::shared_ptr<const Resolution> & r) const
 {
-    switch (r->resolvent().destination_type())
-    {
-        case dt_install_to_slash:
-            return g | filter::InstalledAtSlash();
-
-        case dt_install_to_chroot:
-            return g | filter::InstalledAtNotSlash();
-
-        case dt_create_binary:
-            return g & BinaryDestinationGenerator();
-
-        case last_dt:
-            break;
-    }
-
-    throw InternalError(PALUDIS_HERE, "unhandled dt");
+    return destination_filtered_generator(r->resolvent().destination_type(), g);
 }
 
 template class Pimp<MakeDestinationFilteredGeneratorHelper>;

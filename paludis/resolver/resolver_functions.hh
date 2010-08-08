@@ -121,7 +121,7 @@ namespace paludis
 
         typedef std::function<std::shared_ptr<Constraints> (
                 const Resolvent &
-                )> GetInitialConstraintsFunction;
+                )> GetInitialConstraintsForFunction;
 
         typedef std::function<std::shared_ptr<Resolvents> (
                 const PackageDepSpec &,
@@ -178,7 +178,7 @@ namespace paludis
             NamedValue<n::get_constraints_for_purge_fn, GetConstraintsForPurgeFunction> get_constraints_for_purge_fn;
             NamedValue<n::get_constraints_for_via_binary_fn, GetConstraintsForViaBinaryFunction> get_constraints_for_via_binary_fn;
             NamedValue<n::get_destination_types_for_error_fn, GetDestinationTypesForErrorFunction> get_destination_types_for_error_fn;
-            NamedValue<n::get_initial_constraints_for_fn, GetInitialConstraintsFunction> get_initial_constraints_for_fn;
+            NamedValue<n::get_initial_constraints_for_fn, GetInitialConstraintsForFunction> get_initial_constraints_for_fn;
             NamedValue<n::get_resolvents_for_fn, GetResolventsForFunction> get_resolvents_for_fn;
             NamedValue<n::get_use_existing_nothing_fn, GetUseExistingNothingFunction> get_use_existing_nothing_fn;
             NamedValue<n::interest_in_spec_fn, InterestInSpecFunction> interest_in_spec_fn;

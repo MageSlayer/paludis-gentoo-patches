@@ -45,6 +45,7 @@
 #include <paludis/resolver/get_constraints_for_purge_helper.hh>
 #include <paludis/resolver/get_constraints_for_via_binary_helper.hh>
 #include <paludis/resolver/get_destination_types_for_error_helper.hh>
+#include <paludis/resolver/get_initial_constraints_for_helper.hh>
 #include <paludis/resolver/get_resolvents_for_helper.hh>
 #include <paludis/resolver/get_use_existing_nothing_helper.hh>
 #include <paludis/resolver/interest_in_spec_helper.hh>
@@ -82,12 +83,6 @@ namespace paludis
             std::string from_keys(const std::shared_ptr<const Map<std::string, std::string> > & m,
                     const std::string & k);
 
-            typedef std::map<Resolvent, std::shared_ptr<Constraints> > InitialConstraints;
-
-            const std::shared_ptr<Constraints> initial_constraints_for_fn(
-                    const InitialConstraints & initial_constraints,
-                    const Resolvent & resolvent);
-
             struct ResolverTestCase : test::TestCase
             {
                 TestEnvironment env;
@@ -104,6 +99,7 @@ namespace paludis
                 GetConstraintsForPurgeHelper get_constraints_for_purge_helper;
                 GetConstraintsForViaBinaryHelper get_constraints_for_via_binary_helper;
                 GetDestinationTypesForErrorHelper get_destination_types_for_error_helper;
+                GetInitialConstraintsForHelper get_initial_constraints_for_helper;
                 GetResolventsForHelper get_resolvents_for_helper;
                 GetUseExistingNothingHelper get_use_existing_nothing_helper;
                 InterestInSpecHelper interest_in_spec_helper;
@@ -120,7 +116,7 @@ namespace paludis
                 const std::shared_ptr<const Resolved> get_resolved(const PackageOrBlockDepSpec & target);
                 const std::shared_ptr<const Resolved> get_resolved(const std::string & target);
 
-                virtual ResolverFunctions get_resolver_functions(InitialConstraints &);
+                virtual ResolverFunctions get_resolver_functions();
 
                 struct DecisionChecks
                 {

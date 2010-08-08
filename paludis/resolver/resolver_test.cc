@@ -74,18 +74,6 @@ paludis::resolver::resolver_test::from_keys(const std::shared_ptr<const Map<std:
         return mm->second;
 }
 
-const std::shared_ptr<Constraints>
-paludis::resolver::resolver_test::initial_constraints_for_fn(
-        const InitialConstraints & initial_constraints,
-        const Resolvent & resolvent)
-{
-    InitialConstraints::const_iterator i(initial_constraints.find(resolvent));
-    if (i == initial_constraints.end())
-        return std::make_shared<Constraints>();
-    else
-        return i->second;
-}
-
 namespace
 {
 #ifdef ENABLE_VIRTUALS_REPOSITORY
@@ -124,6 +112,7 @@ ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s,
     get_constraints_for_purge_helper(&env),
     get_constraints_for_via_binary_helper(&env),
     get_destination_types_for_error_helper(&env),
+    get_initial_constraints_for_helper(&env),
     get_resolvents_for_helper(&env),
     get_use_existing_nothing_helper(&env),
     interest_in_spec_helper(&env),
@@ -180,7 +169,7 @@ ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s,
 }
 
 ResolverFunctions
-ResolverTestCase::get_resolver_functions(InitialConstraints & initial_constraints)
+ResolverTestCase::get_resolver_functions()
 {
     return make_named_values<ResolverFunctions>(
             n::allow_choice_changes_fn() = std::cref(allow_choice_changes_helper),
@@ -193,9 +182,7 @@ ResolverTestCase::get_resolver_functions(InitialConstraints & initial_constraint
             n::get_constraints_for_purge_fn() = std::cref(get_constraints_for_purge_helper),
             n::get_constraints_for_via_binary_fn() = std::cref(get_constraints_for_via_binary_helper),
             n::get_destination_types_for_error_fn() = std::cref(get_destination_types_for_error_helper),
-            n::get_initial_constraints_for_fn() =
-                std::bind(&initial_constraints_for_fn, std::ref(initial_constraints),
-                    std::placeholders::_1),
+            n::get_initial_constraints_for_fn() = std::cref(get_initial_constraints_for_helper),
             n::get_resolvents_for_fn() = std::cref(get_resolvents_for_helper),
             n::get_use_existing_nothing_fn() = std::cref(get_use_existing_nothing_helper),
             n::interest_in_spec_fn() = std::cref(interest_in_spec_helper),
@@ -211,20 +198,18 @@ ResolverTestCase::get_resolver_functions(InitialConstraints & initial_constraint
 const std::shared_ptr<const Resolved>
 ResolverTestCase::get_resolved(const PackageOrBlockDepSpec & target)
 {
-    InitialConstraints initial_constraints;
-
     while (true)
     {
         try
         {
-            Resolver resolver(&env, get_resolver_functions(initial_constraints));
+            Resolver resolver(&env, get_resolver_functions());
             resolver.add_target(target, "");
             resolver.resolve();
             return resolver.resolved();
         }
         catch (const SuggestRestart & e)
         {
-            initial_constraints.insert(std::make_pair(e.resolvent(), std::make_shared<Constraints>())).first->second->add(e.suggested_preset());
+            get_initial_constraints_for_helper.add_suggested_restart(e);
         }
     }
 }
