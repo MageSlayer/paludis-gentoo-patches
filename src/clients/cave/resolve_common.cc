@@ -24,7 +24,6 @@
 #include "cmd_execute_resolution.hh"
 #include "exceptions.hh"
 #include "command_command_line.hh"
-#include "match_qpns.hh"
 
 #include <paludis/util/mutex.hh>
 #include <paludis/util/stringify.hh>
@@ -63,6 +62,7 @@
 #include <paludis/resolver/decisions.hh>
 #include <paludis/resolver/change_by_resolvent.hh>
 #include <paludis/resolver/labels_classifier.hh>
+#include <paludis/resolver/match_qpns.hh>
 
 #include <paludis/resolver/allow_choice_changes_helper.hh>
 #include <paludis/resolver/allowed_to_remove_helper.hh>
@@ -74,6 +74,7 @@
 #include <paludis/resolver/get_constraints_for_purge_helper.hh>
 #include <paludis/resolver/get_constraints_for_via_binary_helper.hh>
 #include <paludis/resolver/get_destination_types_for_error_helper.hh>
+#include <paludis/resolver/interest_in_spec_helper.hh>
 #include <paludis/resolver/make_destination_filtered_generator_helper.hh>
 #include <paludis/resolver/make_origin_filtered_generator_helper.hh>
 #include <paludis/resolver/make_unmaskable_filter_helper.hh>
@@ -748,197 +749,6 @@ namespace
         return result;
     }
 
-    bool ignore_dep_from(
-            const Environment * const env,
-            const ResolveCommandLineResolutionOptions &,
-            const PackageDepSpecList & no_blockers_from,
-            const PackageDepSpecList & no_dependencies_from,
-            const std::shared_ptr<const PackageID> & id,
-            const bool is_block)
-    {
-        const PackageDepSpecList & list(is_block ? no_blockers_from : no_dependencies_from);
-
-        for (PackageDepSpecList::const_iterator l(list.begin()), l_end(list.end()) ;
-                l != l_end ; ++l)
-            if (match_package(*env, *l, *id, { }))
-                return true;
-
-        return false;
-    }
-
-    struct CareAboutDepFnVisitor
-    {
-        const Environment * const env;
-        const ResolveCommandLineResolutionOptions & resolution_options;
-        const PackageDepSpecList & no_blockers_from;
-        const PackageDepSpecList & no_dependencies_from;
-        const SanitisedDependency dep;
-
-        CareAboutDepFnVisitor(const Environment * const e,
-                const ResolveCommandLineResolutionOptions & c,
-                const PackageDepSpecList & b,
-                const PackageDepSpecList & f,
-                const SanitisedDependency & d) :
-            env(e),
-            resolution_options(c),
-            no_blockers_from(b),
-            no_dependencies_from(f),
-            dep(d)
-        {
-        }
-
-        bool visit(const ExistingNoChangeDecision & decision) const
-        {
-            if (ignore_dep_from(env, resolution_options, no_blockers_from, no_dependencies_from,
-                        decision.existing_id(), bool(dep.spec().if_block())))
-                return false;
-
-            if (! is_enabled_dep(dep))
-                return false;
-
-            if (! resolution_options.a_follow_installed_build_dependencies.specified())
-                if (is_just_build_dep(dep))
-                    return false;
-            if (resolution_options.a_no_follow_installed_dependencies.specified())
-                if (! is_compiled_against_dep(dep))
-                    return false;
-
-            if (is_suggestion(dep) || is_recommendation(dep))
-            {
-                /* we only take a suggestion or recommendation for an existing
-                 * package if it's already met. for now, we ignore suggested
-                 * and recommended blocks no matter what. */
-                if (dep.spec().if_block())
-                    return false;
-
-                const std::shared_ptr<const PackageIDSequence> installed_ids(
-                        (*env)[selection::SomeArbitraryVersion(
-                            generator::Matches(*dep.spec().if_package(), { }) |
-                            filter::InstalledAtRoot(FSEntry("/")))]);
-                if (installed_ids->empty())
-                    return false;
-            }
-
-            return true;
-        }
-
-        bool visit(const NothingNoChangeDecision &) const PALUDIS_ATTRIBUTE((noreturn))
-        {
-            throw InternalError(PALUDIS_HERE, "NothingNoChangeDecision shouldn't have deps");
-        }
-
-        bool visit(const UnableToMakeDecision &) const
-        {
-            /* might've gone from a sensible decision to unable later on */
-            return false;
-        }
-
-        bool visit(const RemoveDecision &) const PALUDIS_ATTRIBUTE((noreturn))
-        {
-            throw InternalError(PALUDIS_HERE, "RemoveDecision shouldn't have deps");
-        }
-
-        bool visit(const BreakDecision &) const PALUDIS_ATTRIBUTE((noreturn))
-        {
-            throw InternalError(PALUDIS_HERE, "BreakDecision shouldn't have deps");
-        }
-
-        bool visit(const ChangesToMakeDecision & decision) const
-        {
-            if (ignore_dep_from(env, resolution_options, no_blockers_from,
-                        no_dependencies_from, decision.origin_id(), bool(dep.spec().if_block())))
-                return false;
-
-            if (is_enabled_dep(dep))
-                return true;
-
-            return false;
-        }
-    };
-
-    SpecInterest interest_in_spec_fn(
-            const Environment * const env,
-            const ResolveCommandLineResolutionOptions & resolution_options,
-            const PackageDepSpecList & take,
-            const PackageDepSpecList & take_from,
-            const PackageDepSpecList & ignore,
-            const PackageDepSpecList & ignore_from,
-            const PackageDepSpecList & no_blockers_from,
-            const PackageDepSpecList & no_dependencies_from,
-            const std::shared_ptr<const Resolution> & resolution,
-            const SanitisedDependency & dep)
-    {
-        CareAboutDepFnVisitor v(env, resolution_options, no_blockers_from, no_dependencies_from, dep);
-        if (resolution->decision()->accept_returning<bool>(v))
-        {
-            bool suggestion(is_suggestion(dep)), recommendation(is_recommendation(dep));
-
-            if (! (suggestion || recommendation))
-                return si_take;
-
-            for (PackageDepSpecList::const_iterator l(take.begin()), l_end(take.end()) ;
-                    l != l_end ; ++l)
-            {
-                PackageDepSpec spec(*dep.spec().if_package());
-                if (match_qpns(*env, *l, *spec.package_ptr()))
-                    return si_take;
-            }
-
-            for (PackageDepSpecList::const_iterator l(take_from.begin()), l_end(take_from.end()) ;
-                    l != l_end ; ++l)
-            {
-                if (match_qpns(*env, *l, resolution->resolvent().package()))
-                    return si_take;
-            }
-
-            for (PackageDepSpecList::const_iterator l(ignore.begin()), l_end(ignore.end()) ;
-                    l != l_end ; ++l)
-            {
-                PackageDepSpec spec(*dep.spec().if_package());
-                if (match_qpns(*env, *l, *spec.package_ptr()))
-                    return si_ignore;
-            }
-
-            for (PackageDepSpecList::const_iterator l(ignore_from.begin()), l_end(ignore_from.end()) ;
-                    l != l_end ; ++l)
-            {
-                if (match_qpns(*env, *l, resolution->resolvent().package()))
-                    return si_ignore;
-            }
-
-            if (suggestion)
-            {
-                if (resolution_options.a_suggestions.argument() == "take")
-                    return si_take;
-                else if (resolution_options.a_suggestions.argument() == "ignore")
-                    return si_ignore;
-            }
-
-            if (recommendation)
-            {
-                if (resolution_options.a_recommendations.argument() == "take")
-                    return si_take;
-                else if (resolution_options.a_recommendations.argument() == "ignore")
-                    return si_ignore;
-            }
-
-            /* we also take suggestions and recommendations that have already been installed */
-            if (dep.spec().if_package())
-            {
-                const std::shared_ptr<const PackageIDSequence> installed_ids(
-                        (*env)[selection::SomeArbitraryVersion(
-                            generator::Matches(*dep.spec().if_package(), { }) |
-                            filter::InstalledAtRoot(FSEntry("/")))]);
-                if (! installed_ids->empty())
-                    return si_take;
-            }
-
-            return si_untaken;
-        }
-        else
-            return si_ignore;
-    }
-
     Filter make_destination_filter_fn(const Resolvent & resolvent)
     {
         switch (resolvent.destination_type())
@@ -1324,7 +1134,7 @@ paludis::cave::resolve_common(
     int retcode(0);
 
     InitialConstraints initial_constraints;
-    PackageDepSpecList with, without, take, take_from, ignore, ignore_from, no_dependencies_from, no_blockers_from;
+    PackageDepSpecList with, without;
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_without.begin_args()),
             i_end(resolution_options.a_without.end_args()) ;
@@ -1336,42 +1146,6 @@ paludis::cave::resolve_common(
             i_end(resolution_options.a_with.end_args()) ;
             i != i_end ; ++i)
         with.push_back(parse_user_package_dep_spec(*i, env.get(),
-                    { updso_allow_wildcards }));
-
-    for (args::StringSetArg::ConstIterator i(resolution_options.a_take.begin_args()),
-            i_end(resolution_options.a_take.end_args()) ;
-            i != i_end ; ++i)
-        take.push_back(parse_user_package_dep_spec(*i, env.get(),
-                    { updso_allow_wildcards }));
-
-    for (args::StringSetArg::ConstIterator i(resolution_options.a_take_from.begin_args()),
-            i_end(resolution_options.a_take_from.end_args()) ;
-            i != i_end ; ++i)
-        take_from.push_back(parse_user_package_dep_spec(*i, env.get(),
-                    { updso_allow_wildcards }));
-
-    for (args::StringSetArg::ConstIterator i(resolution_options.a_ignore.begin_args()),
-            i_end(resolution_options.a_ignore.end_args()) ;
-            i != i_end ; ++i)
-        ignore.push_back(parse_user_package_dep_spec(*i, env.get(),
-                    { updso_allow_wildcards }));
-
-    for (args::StringSetArg::ConstIterator i(resolution_options.a_ignore_from.begin_args()),
-            i_end(resolution_options.a_ignore_from.end_args()) ;
-            i != i_end ; ++i)
-        ignore_from.push_back(parse_user_package_dep_spec(*i, env.get(),
-                    { updso_allow_wildcards }));
-
-    for (args::StringSetArg::ConstIterator i(resolution_options.a_no_dependencies_from.begin_args()),
-            i_end(resolution_options.a_no_dependencies_from.end_args()) ;
-            i != i_end ; ++i)
-        no_dependencies_from.push_back(parse_user_package_dep_spec(*i, env.get(),
-                    { updso_allow_wildcards }));
-
-    for (args::StringSetArg::ConstIterator i(resolution_options.a_no_blockers_from.begin_args()),
-            i_end(resolution_options.a_no_blockers_from.end_args()) ;
-            i != i_end ; ++i)
-        no_blockers_from.push_back(parse_user_package_dep_spec(*i, env.get(),
                     { updso_allow_wildcards }));
 
     std::shared_ptr<Generator> binary_destinations;
@@ -1534,6 +1308,60 @@ paludis::cave::resolve_common(
             i != i_end ; ++i)
         remove_if_dependent_helper.add_remove_if_dependent_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
 
+    InterestInSpecHelper interest_in_spec_helper(env.get());
+    for (args::StringSetArg::ConstIterator i(resolution_options.a_take.begin_args()),
+            i_end(resolution_options.a_take.end_args()) ;
+            i != i_end ; ++i)
+        interest_in_spec_helper.add_take_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
+
+    for (args::StringSetArg::ConstIterator i(resolution_options.a_take_from.begin_args()),
+            i_end(resolution_options.a_take_from.end_args()) ;
+            i != i_end ; ++i)
+        interest_in_spec_helper.add_take_from_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
+
+    for (args::StringSetArg::ConstIterator i(resolution_options.a_ignore.begin_args()),
+            i_end(resolution_options.a_ignore.end_args()) ;
+            i != i_end ; ++i)
+        interest_in_spec_helper.add_ignore_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
+
+    for (args::StringSetArg::ConstIterator i(resolution_options.a_ignore_from.begin_args()),
+            i_end(resolution_options.a_ignore_from.end_args()) ;
+            i != i_end ; ++i)
+        interest_in_spec_helper.add_ignore_from_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
+
+    for (args::StringSetArg::ConstIterator i(resolution_options.a_no_dependencies_from.begin_args()),
+            i_end(resolution_options.a_no_dependencies_from.end_args()) ;
+            i != i_end ; ++i)
+        interest_in_spec_helper.add_no_dependencies_from_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
+
+    for (args::StringSetArg::ConstIterator i(resolution_options.a_no_blockers_from.begin_args()),
+            i_end(resolution_options.a_no_blockers_from.end_args()) ;
+            i != i_end ; ++i)
+        interest_in_spec_helper.add_no_blockers_from_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
+
+    interest_in_spec_helper.set_follow_installed_dependencies(! resolution_options.a_no_follow_installed_dependencies.specified());
+    interest_in_spec_helper.set_follow_installed_build_dependencies(resolution_options.a_follow_installed_build_dependencies.specified());
+
+    if (resolution_options.a_suggestions.argument() == "take")
+        interest_in_spec_helper.set_take_suggestions(true);
+    else if (resolution_options.a_suggestions.argument() == "display")
+        interest_in_spec_helper.set_take_suggestions(indeterminate);
+    else if (resolution_options.a_suggestions.argument() == "ignore")
+        interest_in_spec_helper.set_take_suggestions(false);
+    else
+        throw args::DoHelp("Don't understand argument '" + resolution_options.a_suggestions.argument() + "' to '--"
+                + resolution_options.a_suggestions.long_name() + "'");
+
+    if (resolution_options.a_recommendations.argument() == "take")
+        interest_in_spec_helper.set_take_recommendations(true);
+    else if (resolution_options.a_recommendations.argument() == "display")
+        interest_in_spec_helper.set_take_recommendations(indeterminate);
+    else if (resolution_options.a_recommendations.argument() == "ignore")
+        interest_in_spec_helper.set_take_recommendations(false);
+    else
+        throw args::DoHelp("Don't understand argument '" + resolution_options.a_recommendations.argument() + "' to '--"
+                + resolution_options.a_recommendations.long_name() + "'");
+
     ResolverFunctions resolver_functions(make_named_values<ResolverFunctions>(
                 n::allow_choice_changes_fn() = std::cref(allow_choice_changes_helper),
                 n::allowed_to_remove_fn() = std::cref(allowed_to_remove_helper),
@@ -1552,10 +1380,7 @@ paludis::cave::resolve_common(
                     env.get(), std::cref(resolution_options), _1, _2, _3, DestinationTypes()),
                 n::get_use_existing_nothing_fn() = std::bind(&use_existing_nothing_fn,
                     env.get(), std::cref(resolution_options), std::cref(without), std::cref(with), _1, _2, _3),
-                n::interest_in_spec_fn() = std::bind(&interest_in_spec_fn,
-                    env.get(), std::cref(resolution_options), std::cref(take), std::cref(take_from),
-                    std::cref(ignore), std::cref(ignore_from), std::cref(no_blockers_from),
-                    std::cref(no_dependencies_from), _1, _2),
+                n::interest_in_spec_fn() = std::cref(interest_in_spec_helper),
                 n::make_destination_filtered_generator_fn() = std::cref(make_destination_filtered_generator_helper),
                 n::make_origin_filtered_generator_fn() = std::cref(make_origin_filtered_generator_helper),
                 n::make_unmaskable_filter_fn() = std::cref(make_unmaskable_filter_helper),

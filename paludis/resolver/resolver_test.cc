@@ -133,16 +133,6 @@ namespace
 #endif
 }
 
-SpecInterest
-paludis::resolver::resolver_test::interest_in_spec_fn(
-        const std::shared_ptr<const Resolution> &, const SanitisedDependency & dep)
-{
-    if (is_suggestion(dep))
-        return si_untaken;
-    else
-        return si_take;
-}
-
 std::pair<UseExisting, bool>
 paludis::resolver::resolver_test::get_use_existing_nothing_fn(
         const std::shared_ptr<const Resolution> &,
@@ -165,6 +155,7 @@ ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s,
     get_constraints_for_purge_helper(&env),
     get_constraints_for_via_binary_helper(&env),
     get_destination_types_for_error_helper(&env),
+    interest_in_spec_helper(&env),
     make_destination_filtered_generator_helper(&env),
     make_origin_filtered_generator_helper(&env),
     make_unmaskable_filter_helper(&env),
@@ -211,6 +202,9 @@ ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s,
     env.package_database()->add_repository(0, RepositoryFactory::get_instance()->create(&env, installed_virtuals_repo_keys));
 #endif
 
+    interest_in_spec_helper.set_follow_installed_dependencies(true);
+    interest_in_spec_helper.set_follow_installed_build_dependencies(true);
+
     make_unmaskable_filter_helper.set_override_masks(false);
 }
 
@@ -234,7 +228,7 @@ ResolverTestCase::get_resolver_functions(InitialConstraints & initial_constraint
             n::get_resolvents_for_fn() = std::bind(&get_resolvents_for_fn, &env, std::placeholders::_1,
                 std::placeholders::_2, std::placeholders::_3),
             n::get_use_existing_nothing_fn() = &get_use_existing_nothing_fn,
-            n::interest_in_spec_fn() = &interest_in_spec_fn,
+            n::interest_in_spec_fn() = std::cref(interest_in_spec_helper),
             n::make_destination_filtered_generator_fn() = std::cref(make_destination_filtered_generator_helper),
             n::make_origin_filtered_generator_fn() = std::cref(make_origin_filtered_generator_helper),
             n::make_unmaskable_filter_fn() = std::cref(make_unmaskable_filter_helper),

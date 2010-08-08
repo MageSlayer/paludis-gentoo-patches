@@ -155,7 +155,6 @@ libcave_a_SOURCES = \
 	formats.cc formats.hh \
 	script_command.cc script_command.hh \
 	select_format_for_spec.cc select_format_for_spec.hh \
-	match_qpns.cc match_qpns.hh \
 	owner_common.cc owner_common.hh \
 	resolve_common.cc resolve_common.hh \
 	resume_data.cc resume_data.hh

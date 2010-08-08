@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "match_qpns.hh"
+#include <paludis/resolver/match_qpns.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_dep_spec_properties.hh>
@@ -25,11 +25,11 @@
 #include <paludis/util/make_named_values.hh>
 
 using namespace paludis;
-using namespace cave;
+using namespace paludis::resolver;
 
 // The 's' is silent...
 bool
-paludis::cave::match_qpns(
+paludis::resolver::match_qpns(
         const Environment &,
         const PackageDepSpec & spec,
         const QualifiedPackageName & package)

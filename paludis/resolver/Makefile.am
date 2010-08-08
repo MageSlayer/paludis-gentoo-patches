@@ -49,6 +49,7 @@ noinst_HEADERS = \
 	get_constraints_for_purge_helper.hh get_constraints_for_dependent_helper-fwd.hh \
 	get_constraints_for_via_binary_helper.hh get_constraints_for_via_binary_helper-fwd.hh \
 	get_destination_types_for_error_helper.hh get_destination_types_for_error_helper-fwd.hh \
+	interest_in_spec_helper.hh interest_in_spec_helper-fwd.hh \
 	job.hh job-fwd.hh \
 	job_list.hh job_list-fwd.hh \
 	job_lists.hh job_lists-fwd.hh \
@@ -58,6 +59,7 @@ noinst_HEADERS = \
 	make_destination_filtered_generator_helper.hh make_destination_filtered_generator_helper-fwd.hh \
 	make_origin_filtered_generator_helper.hh make_origin_filtered_generator_helper-fwd.hh \
 	make_unmaskable_filter_helper.hh make_unmaskable_filter_helper-fwd.hh \
+	match_qpns.hh match_qpns-fwd.hh \
 	nag.hh nag-fwd.hh \
 	order_early_helper.hh order_early_helper-fwd.hh \
 	orderer.hh orderer-fwd.hh \
@@ -103,6 +105,7 @@ libpaludisresolver_a_SOURCES = \
 	get_constraints_for_purge_helper.cc \
 	get_constraints_for_via_binary_helper.cc \
 	get_destination_types_for_error_helper.cc \
+	interest_in_spec_helper.cc \
 	job.cc \
 	job_list.cc \
 	job_lists.cc \
@@ -112,6 +115,7 @@ libpaludisresolver_a_SOURCES = \
 	make_destination_filtered_generator_helper.cc \
 	make_origin_filtered_generator_helper.cc \
 	make_unmaskable_filter_helper.cc \
+	match_qpns.cc \
 	nag.cc \
 	order_early_helper.cc \
 	orderer.cc \

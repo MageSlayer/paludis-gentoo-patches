@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Mike Kelly
+ * Copyright (c) 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,23 +17,14 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_SRC_CLIENTS_CAVE_MATCH_QPNS_HH
-#define PALUDIS_GUARD_SRC_CLIENTS_CAVE_MATCH_QPNS_HH 1
-
-#include <paludis/util/attributes.hh>
-#include <paludis/dep_spec-fwd.hh>
-#include <paludis/environment-fwd.hh>
-#include <paludis/name-fwd.hh>
+#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_INTEREST_IN_SPEC_HELPER_FWD_HH
+#define PALUDIS_GUARD_PALUDIS_RESOLVER_INTEREST_IN_SPEC_HELPER_FWD_HH 1
 
 namespace paludis
 {
-    namespace cave
+    namespace resolver
     {
-        bool match_qpns(
-                const Environment & env,
-                const PackageDepSpec & spec,
-                const QualifiedPackageName & package)
-            PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
+        struct InterestInSpecHelper;
     }
 }
 

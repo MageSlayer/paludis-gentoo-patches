@@ -45,6 +45,7 @@
 #include <paludis/resolver/get_constraints_for_purge_helper.hh>
 #include <paludis/resolver/get_constraints_for_via_binary_helper.hh>
 #include <paludis/resolver/get_destination_types_for_error_helper.hh>
+#include <paludis/resolver/interest_in_spec_helper.hh>
 #include <paludis/resolver/make_destination_filtered_generator_helper.hh>
 #include <paludis/resolver/make_origin_filtered_generator_helper.hh>
 #include <paludis/resolver/make_unmaskable_filter_helper.hh>
@@ -81,10 +82,6 @@ namespace paludis
 
             typedef std::map<Resolvent, std::shared_ptr<Constraints> > InitialConstraints;
 
-            SpecInterest interest_in_spec_fn(
-                    const std::shared_ptr<const Resolution> &,
-                    const SanitisedDependency &);
-
             const std::shared_ptr<Constraints> initial_constraints_for_fn(
                     const InitialConstraints & initial_constraints,
                     const Resolvent & resolvent);
@@ -116,6 +113,7 @@ namespace paludis
                 GetConstraintsForPurgeHelper get_constraints_for_purge_helper;
                 GetConstraintsForViaBinaryHelper get_constraints_for_via_binary_helper;
                 GetDestinationTypesForErrorHelper get_destination_types_for_error_helper;
+                InterestInSpecHelper interest_in_spec_helper;
                 MakeDestinationFilteredGeneratorHelper make_destination_filtered_generator_helper;
                 MakeOriginFilteredGeneratorHelper make_origin_filtered_generator_helper;
                 MakeUnmaskableFilterHelper make_unmaskable_filter_helper;

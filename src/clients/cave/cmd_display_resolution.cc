@@ -23,7 +23,6 @@
 #include "command_command_line.hh"
 #include "formats.hh"
 #include "colour_formatter.hh"
-#include "match_qpns.hh"
 #include <paludis/args/do_help.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/system.hh>
@@ -56,6 +55,7 @@
 #include <paludis/resolver/required_confirmations.hh>
 #include <paludis/resolver/orderer_notes.hh>
 #include <paludis/resolver/change_by_resolvent.hh>
+#include <paludis/resolver/match_qpns.hh>
 #include <paludis/package_id.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/metadata_key.hh>
