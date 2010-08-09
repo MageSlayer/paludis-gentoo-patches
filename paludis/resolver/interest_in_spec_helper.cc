@@ -160,7 +160,7 @@ namespace
 
         bool visit(const ExistingNoChangeDecision & decision) const
         {
-            if (ignore_dep_from(env, no_blockers_from_specs, no_dependencies_from_specs, decision.existing_id(), dep.spec().if_block()))
+            if (ignore_dep_from(env, no_blockers_from_specs, no_dependencies_from_specs, decision.existing_id(), bool(dep.spec().if_block())))
                 return false;
 
             if (! is_enabled_dep(dep))
@@ -215,7 +215,7 @@ namespace
 
         bool visit(const ChangesToMakeDecision & decision) const
         {
-            if (ignore_dep_from(env, no_blockers_from_specs, no_dependencies_from_specs, decision.origin_id(), dep.spec().if_block()))
+            if (ignore_dep_from(env, no_blockers_from_specs, no_dependencies_from_specs, decision.origin_id(), bool(dep.spec().if_block())))
                 return false;
 
             if (is_enabled_dep(dep))
