@@ -531,8 +531,7 @@ namespace
         if (old_id && old_id->choices_key())
             old_choices = old_id->choices_key()->value();
 
-        bool non_blank_prefix(false);
-        std::string s;
+        std::pair<std::string, bool> changed_s_prefix("", false), unchanged_s_prefix("", false);
         for (Choices::ConstIterator k(id->choices_key()->value()->begin()),
                 k_end(id->choices_key()->value()->end()) ;
                 k != k_end ; ++k)
@@ -547,23 +546,26 @@ namespace
                 if (! (*i)->explicitly_listed())
                     continue;
 
-                if (! shown_prefix)
-                {
-                    if (non_blank_prefix || ! (*k)->show_with_no_prefix())
-                    {
-                        shown_prefix = true;
-                        if (! s.empty())
-                            s.append(" ");
-                        s.append((*k)->raw_name() + ":");
-                    }
-                }
-
-                if (! s.empty())
-                    s.append(" ");
-
                 Tribool changed_state(indeterminate);
                 if (changed_choices)
                     changed_state = changed_choices->overridden_value((*i)->name_with_prefix());
+
+                auto & s_prefix(changed_state.is_indeterminate() ? unchanged_s_prefix : changed_s_prefix);
+
+                if (! shown_prefix)
+                {
+                    if (s_prefix.second || ! (*k)->show_with_no_prefix())
+                    {
+                        s_prefix.second = true;
+                        shown_prefix = true;
+                        if (! s_prefix.first.empty())
+                            s_prefix.first.append(" ");
+                        s_prefix.first.append((*k)->raw_name() + ":");
+                    }
+                }
+
+                if (! s_prefix.first.empty())
+                    s_prefix.first.append(" ");
 
                 std::string t;
                 if ((changed_state.is_indeterminate() && (*i)->enabled()) || (changed_state.is_true()))
@@ -607,10 +609,7 @@ namespace
                         t = formatter.decorate(**i, t, format::Added());
                 }
 
-                if (! changed_state.is_indeterminate())
-                    t = t + c::bold_red() + " (!)" + c::normal();
-
-                s.append(t);
+                s_prefix.first.append(t);
 
                 bool show_description;
                 if (cmdline.display_options.a_show_option_descriptions.argument() == "none")
@@ -633,13 +632,18 @@ namespace
             }
         }
 
-        if (s.empty())
+        if (changed_s_prefix.first.empty() && unchanged_s_prefix.first.empty())
             return;
 
-        if (changed_choices)
-            cout << "    " << c::bold_red() << "Changes needed: " << c::normal() << s << endl;
-        else
-            cout << "    " << s << endl;
+        cout << "    ";
+        if (! changed_s_prefix.first.empty())
+        {
+            cout << c::bold_red() << "Need changes for: " << c::normal() << changed_s_prefix.first;
+            if (! changed_s_prefix.first.empty())
+                cout << " " << c::bold_normal() << "No changes needed: " << c::normal();
+        }
+
+        cout << unchanged_s_prefix.first << endl;
     }
 
     void display_reasons(
