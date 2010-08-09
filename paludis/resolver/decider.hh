@@ -194,7 +194,8 @@ namespace paludis
                         const bool also_try_option_changes,
                         const bool try_option_changes_this_time,
                         const bool also_try_masked,
-                        const bool try_masked_this_time) const;
+                        const bool try_masked_this_time,
+                        const bool try_removes_if_allowed) const;
 
                 const std::shared_ptr<Decision> _cannot_decide_for(
                         const std::shared_ptr<const Resolution> & resolution) const;

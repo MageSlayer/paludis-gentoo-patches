@@ -261,10 +261,18 @@ Decider::_resolve_dependents()
             _apply_resolution_constraint(resolution, *c);
 
         if ((! remove) && (! resolution->decision()))
-            resolution->decision() = std::make_shared<BreakDecision>(
+        {
+            if (! _try_to_find_decision_for(resolution, false, false, false, false, false))
+                resolution->decision() = std::make_shared<BreakDecision>(
                         resolvent,
                         *s,
                         true);
+            else
+            {
+                /* we'll do the actual deciding plus deps etc later */
+                changed = true;
+            }
+        }
     }
 
     return changed;
@@ -1125,7 +1133,7 @@ Decider::_made_wrong_decision(
     adapted_resolution->constraints()->add(constraint);
 
     const std::shared_ptr<Decision> decision(_try_to_find_decision_for(
-                adapted_resolution, _allow_choice_changes_for(resolution), false, true, false));
+                adapted_resolution, _allow_choice_changes_for(resolution), false, true, false, true));
     if (decision)
     {
         resolution->decision()->accept(WrongDecisionVisitor(std::bind(
@@ -1200,7 +1208,7 @@ Decider::_decide(const std::shared_ptr<Resolution> & resolution)
     _copy_other_destination_constraints(resolution);
 
     std::shared_ptr<Decision> decision(_try_to_find_decision_for(
-                resolution, _allow_choice_changes_for(resolution), false, true, false));
+                resolution, _allow_choice_changes_for(resolution), false, true, false, true));
     if (decision)
         resolution->decision() = decision;
     else
@@ -1503,7 +1511,7 @@ Decider::find_any_score(
             for (ConstraintSequence::ConstIterator c(constraints->begin()), c_end(constraints->end()) ;
                     c != c_end ; ++c)
                 resolution->constraints()->add(*c);
-            const std::shared_ptr<Decision> decision(_try_to_find_decision_for(resolution, false, false, false, false));
+            const std::shared_ptr<Decision> decision(_try_to_find_decision_for(resolution, false, false, false, false, false));
             if (decision)
                 return std::make_pair(acs_could_install, operator_bias);
         }
@@ -1642,7 +1650,8 @@ Decider::_try_to_find_decision_for(
         const bool also_try_option_changes,
         const bool try_option_changes_this_time,
         const bool also_try_masked,
-        const bool try_masked_this_time) const
+        const bool try_masked_this_time,
+        const bool try_removes_if_allowed) const
 {
     const std::shared_ptr<const PackageID> existing_id(_find_existing_id_for(resolution));
 
@@ -1717,16 +1726,16 @@ Decider::_try_to_find_decision_for(
         /* we can't stick with our existing id, if there is one, and we can't
          * fix it by installing things. this might be an error, or we might be
          * able to remove things. */
-        if (resolution->constraints()->nothing_is_fine_too() && _installed_but_allowed_to_remove(resolution))
+        if (try_removes_if_allowed && resolution->constraints()->nothing_is_fine_too() && _installed_but_allowed_to_remove(resolution))
             return std::make_shared<RemoveDecision>(
                         resolution->resolvent(),
                         _installed_ids(resolution),
                         ! resolution->constraints()->all_untaken()
                         );
         else if (also_try_option_changes && ! try_option_changes_this_time)
-            return _try_to_find_decision_for(resolution, true, true, also_try_masked, try_masked_this_time);
+            return _try_to_find_decision_for(resolution, true, true, also_try_masked, try_masked_this_time, try_removes_if_allowed);
         else if (also_try_masked && ! try_masked_this_time)
-            return _try_to_find_decision_for(resolution, also_try_option_changes, try_option_changes_this_time, true, true);
+            return _try_to_find_decision_for(resolution, also_try_option_changes, try_option_changes_this_time, true, true, try_removes_if_allowed);
         else
             return make_null_shared_ptr();
     }
