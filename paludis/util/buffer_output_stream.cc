@@ -60,7 +60,7 @@ BufferOutputStreamBuf::overflow(int_type c)
     if (c != traits_type::eof())
     {
         _imp->active_string.append(std::string(1, c));
-        if (c == '\n')
+        if (c == '\n' || c == '\r')
         {
             _imp->complete_strings.push_back(_imp->active_string);
             _imp->active_string.clear();
@@ -76,7 +76,7 @@ BufferOutputStreamBuf::xsputn(const char * s, std::streamsize num)
     Lock lock(_imp->mutex);
 
     _imp->active_string.append(std::string(s, num));
-    if (std::string::npos != _imp->active_string.find('\n', _imp->active_string.length() - num))
+    if (std::string::npos != _imp->active_string.find_first_of("\r\n", _imp->active_string.length() - num))
     {
         _imp->complete_strings.push_back(_imp->active_string);
         _imp->active_string.clear();
