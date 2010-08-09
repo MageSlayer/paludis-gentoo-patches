@@ -2698,6 +2698,18 @@ ERepository::get_environment_variable(
     return cmd.result();
 }
 
+namespace
+{
+    std::shared_ptr<const PackageID> find_id(const std::shared_ptr<const PackageIDSequence> & ids, const VersionSpec & v)
+    {
+        for (auto i(ids->begin()), i_end(ids->end()) ;
+                i != i_end ; ++i)
+            if ((*i)->version() == v)
+                return *i;
+        return make_null_shared_ptr();
+    }
+}
+
 void
 ERepository::merge(const MergeParams & m)
 {
@@ -2706,6 +2718,8 @@ ERepository::merge(const MergeParams & m)
 
     if (! is_suitable_destination_for(*m.package_id()))
         throw ActionFailedError("Not a suitable destination for '" + stringify(*m.package_id()) + "'");
+
+    auto is_replace(find_id(package_ids(m.package_id()->name()), m.package_id()->version()));
 
     bool fix_mtimes(std::static_pointer_cast<const ERepositoryID>(
                 m.package_id())->eapi()->supported()->ebuild_options()->fix_mtimes());
@@ -2775,6 +2789,30 @@ ERepository::merge(const MergeParams & m)
                 ));
 
     write_binary_ebuild_command();
+
+    if (is_replace)
+    {
+        /* 0.1 replacing 00.1 etc */
+        if (is_replace->fs_location_key()->value() != binary_ebuild_location)
+            FSEntry(is_replace->fs_location_key()->value()).unlink();
+
+        do
+        {
+            FSEntry cache(_imp->params.write_cache());
+            if (cache == FSEntry("/var/empty"))
+                break;
+
+            if (_imp->params.append_repository_name_to_write_cache())
+                cache /= stringify(name());
+
+            cache /= stringify(is_replace->name().category());
+            cache /= (stringify(is_replace->name().package()) + "-" + stringify(is_replace->version()));
+
+            if (cache.is_regular_file_or_symlink_to_regular_file())
+                cache.unlink();
+        }
+        while (false);
+    }
 }
 
 bool
