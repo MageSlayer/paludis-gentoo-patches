@@ -58,6 +58,19 @@ namespace
         {
             return "Prints a list of package names. No formatting is used, making the output suitable for parsing by scripts.";
         }
+
+        args::ArgsGroup g_filters;
+        args::StringSetArg a_repository;
+        args::StringSetArg a_category;
+
+        PrintPackagesCommandLine() :
+            g_filters(main_options_section(), "Filters", "Filter the output. Each filter may be specified more than once."),
+            a_repository(&g_filters, "repository", 'r', "Show only names in the specified repository.",
+                    args::StringSetArg::StringSetArgOptions()),
+            a_category(&g_filters, "category", 'c', "Show only names in the specified category.",
+                    args::StringSetArg::StringSetArgOptions())
+        {
+        }
     };
 }
 
@@ -84,10 +97,20 @@ PrintPackagesCommand::run(
     for (PackageDatabase::RepositoryConstIterator r(env->package_database()->begin_repositories()), r_end(env->package_database()->end_repositories());
             r != r_end; ++r)
     {
+        if (cmdline.a_repository.specified())
+            if (cmdline.a_repository.end_args() == std::find(
+                        cmdline.a_repository.begin_args(), cmdline.a_repository.end_args(), stringify((*r)->name())))
+                continue;
+
         std::shared_ptr<const CategoryNamePartSet> categories((*r)->category_names());
         for (CategoryNamePartSet::ConstIterator c(categories->begin()), c_end(categories->end());
                 c != c_end; ++c)
         {
+            if (cmdline.a_category.specified())
+                if (cmdline.a_category.end_args() == std::find(
+                            cmdline.a_category.begin_args(), cmdline.a_category.end_args(), stringify(*c)))
+                    continue;
+
             std::shared_ptr<const QualifiedPackageNameSet> packages((*r)->package_names(*c));
             std::copy(packages->begin(), packages->end(), std::inserter(all_packages, all_packages.begin()));
         }
