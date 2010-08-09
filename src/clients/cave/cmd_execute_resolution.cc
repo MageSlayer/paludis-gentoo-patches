@@ -1317,7 +1317,7 @@ namespace
             }
         }
 
-        void display_active()
+        void display_active(const bool force)
         {
             if (n_fetch_jobs == 0)
                 return;
@@ -1332,14 +1332,26 @@ namespace
 
                 if (output_manager->want_to_flush())
                 {
-                    if (heading != old_heading)
+                    bool really_flush(true);
+
+                    if ((! force) && (heading != old_heading) && (! old_heading.empty()))
                     {
-                        cout << endl << c::bold_yellow() << heading << c::normal() << endl << endl;
-                        old_heading = heading;
+                        /* avoid hopping backwards and forwards between outputs too much */
+                        if (Timestamp::now().seconds() - last_output.seconds() < 2)
+                            really_flush = false;
                     }
 
-                    output_manager->flush();
-                    last_output = Timestamp::now();
+                    if (really_flush)
+                    {
+                        if (heading != old_heading)
+                        {
+                            cout << endl << c::bold_yellow() << heading << c::normal() << endl << endl;
+                            old_heading = heading;
+                        }
+
+                        output_manager->flush();
+                        last_output = Timestamp::now();
+                    }
                 }
                 else
                 {
@@ -1359,13 +1371,13 @@ namespace
                     job->state()->accept_returning<std::shared_ptr<OutputManager> >(GetOutputManager()));
 
             if (output_manager && output_manager->want_to_flush())
-                display_active();
+                display_active(false);
             else
             {
 
                 Timestamp now(Timestamp::now());
                 if (now.seconds() - last_flushed.seconds() >= 10)
-                    display_active();
+                    display_active(true);
             }
         }
 
@@ -1383,9 +1395,11 @@ namespace
                 if (output_manager)
                 {
                     if (output_manager->want_to_flush())
-                        display_active();
+                        display_active(true);
                     output_manager->nothing_more_to_come();
                 }
+
+                old_heading = "";
             }
 
             {
