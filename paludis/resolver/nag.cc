@@ -157,8 +157,9 @@ NAG::verify_edges() const
             e != e_end ; ++e)
     {
         if (_imp->nodes.end() == _imp->nodes.find(e->first))
-            throw InternalError(PALUDIS_HERE, "Missing node for edge '" + stringify(e->first) + "' in nodes { "
-                    + join(_imp->nodes.begin(), _imp->nodes.end(), ", ") + " }");
+            throw InternalError(PALUDIS_HERE, "Missing node for edge '" + stringify(e->first)
+                    + "' to { '" + join(first_iterator(e->second.begin()), first_iterator(e->second.end()), "', '")
+                    + " }' in nodes { " + join(_imp->nodes.begin(), _imp->nodes.end(), ", ") + " }");
 
         for (NodesWithProperties::const_iterator f(e->second.begin()), f_end(e->second.end()) ;
                 f != f_end ; ++f)
