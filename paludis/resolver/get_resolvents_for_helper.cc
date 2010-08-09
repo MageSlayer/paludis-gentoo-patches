@@ -257,7 +257,7 @@ GetResolventsForHelper::operator() (
 
     if (! best)
         std::copy(installed_ids->begin(), installed_ids->end(), result_ids->back_inserter());
-    else if (want_best && fallback && ! want_installed) // (arg.argument() == "best-or-installed")
+    else if (want_best && fallback && ! want_installed)
     {
         if (indirect_iterator(installed_ids->end()) == std::find(indirect_iterator(installed_ids->begin()),
                     indirect_iterator(installed_ids->end()), *best))
