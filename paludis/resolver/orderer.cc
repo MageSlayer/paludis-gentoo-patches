@@ -328,6 +328,12 @@ namespace
 
         void visit(const DependentReason & r)
         {
+            /* we may be constrained by a dep from a package that was changed
+             * from a non error decision to an unable to make decision */
+            if (ignore_dependencies_from_resolvents.end() != ignore_dependencies_from_resolvents.find(
+                        r.id_and_resolvent_being_removed().resolvent()))
+                return;
+
             NAGIndex from(make_named_values<NAGIndex>(
                         n::resolvent() = r.id_and_resolvent_being_removed().resolvent(),
                         n::role() = nir_done
