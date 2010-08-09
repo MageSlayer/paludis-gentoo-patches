@@ -431,7 +431,7 @@ Orderer::resolve()
     {
         _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
 
-        if (ignore_dependencies_from_resolvents.end() != ignore_edges_from_resolvents.find((*r)->resolvent()))
+        if (ignore_edges_from_resolvents.end() != ignore_edges_from_resolvents.find((*r)->resolvent()))
             continue;
 
         _add_binary_cleverness(*r);
