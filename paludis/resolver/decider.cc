@@ -351,7 +351,8 @@ namespace
             for (typename C_::ConstIterator g(going_away->begin()), g_end(going_away->end()) ;
                     g != g_end ; ++g)
             {
-                PartiallyMadePackageDepSpec part_spec(*s.spec());
+                auto spec(s.spec());
+
                 if (s.spec()->slot_requirement_ptr() && simple_visitor_cast<const SlotAnyUnlockedRequirement>(
                             *s.spec()->slot_requirement_ptr()))
                 {
@@ -359,19 +360,21 @@ namespace
                     if (! best_eventual_id)
                         best_eventual_id = best_eventual(env, *s.spec(), not_changing_slots);
                     if (best_eventual_id && best_eventual_id->slot_key())
+                    {
+                        PartiallyMadePackageDepSpec part_spec(*s.spec());
                         part_spec.slot_requirement(std::make_shared<ELikeSlotExactRequirement>(best_eventual_id->slot_key()->value(), false));
+                        spec = std::make_shared<PackageDepSpec>(part_spec);
+                    }
                 }
 
-                PackageDepSpec spec(part_spec);
-
-                if (! match_package(*env, spec, *dependent_checker_id(*g), { }))
+                if (! match_package(*env, *spec, *dependent_checker_id(*g), { }))
                     continue;
 
                 bool any(false);
                 for (typename C_::ConstIterator n(newly_available->begin()), n_end(newly_available->end()) ;
                         n != n_end ; ++n)
                 {
-                    if (match_package(*env, spec, *dependent_checker_id(*n), { }))
+                    if (match_package(*env, *spec, *dependent_checker_id(*n), { }))
                     {
                         any = true;
                         break;
