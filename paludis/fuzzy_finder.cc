@@ -97,8 +97,9 @@ namespace
 
         for (QualifiedPackageNameSet::ConstIterator p(pkgs->begin()),
                     p_end(pkgs->end()); p_end != p; ++p)
-            if (tolower(p->package().value()[0]) == _first_char &&
-                _distance_calculator.distance_with(tolower_0_cost(p->package().value())) <= _threshold)
+            if (std::string::npos != stringify(p->package()).find(_package) || (
+                        tolower(p->package().value()[0]) == _first_char &&
+                        _distance_calculator.distance_with(tolower_0_cost(p->package().value())) <= _threshold))
                 result->insert(*p);
 
         return result;
