@@ -46,7 +46,7 @@ noinst_HEADERS = \
 	destination_utils.hh destination_utils-fwd.hh \
 	find_repository_for_helper.hh find_repository_for_helper-fwd.hh \
 	get_constraints_for_dependent_helper.hh get_constraints_for_dependent_helper-fwd.hh \
-	get_constraints_for_purge_helper.hh get_constraints_for_dependent_helper-fwd.hh \
+	get_constraints_for_purge_helper.hh get_constraints_for_purge_helper-fwd.hh \
 	get_constraints_for_via_binary_helper.hh get_constraints_for_via_binary_helper-fwd.hh \
 	get_destination_types_for_error_helper.hh get_destination_types_for_error_helper-fwd.hh \
 	get_initial_constraints_for_helper.hh get_initial_constraints_for_helper-fwd.hh \
