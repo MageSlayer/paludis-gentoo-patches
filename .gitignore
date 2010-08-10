@@ -233,8 +233,6 @@ paludis-*.*.*.tar.bz2
 /paludis/args/args_TEST
 /paludis/broken_linkage_configuration_TEST
 /paludis/comma_separated_dep_parser_TEST
-/paludis/dep_list_TEST
-/paludis/dep_list_TEST_blockers
 /paludis/dep_spec_TEST
 /paludis/elike_dep_parser_TEST
 /paludis/elike_use_requirement_TEST
@@ -254,10 +252,12 @@ paludis-*.*.*.tar.bz2
 /paludis/hooker_TEST
 /paludis/host_tuple_name_TEST
 /paludis/ihateautomake.cc
+/paludis/legacy/dep_list_TEST
+/paludis/legacy/dep_list_TEST_blockers
+/paludis/legacy/range_rewriter_TEST
 /paludis/name_TEST
 /paludis/package_database_TEST
 /paludis/paludis.hh
-/paludis/range_rewriter_TEST
 /paludis/repositories/accounts/accounts_repository_TEST
 /paludis/repositories/cran/cran_dep_parser_TEST
 /paludis/repositories/cran/cran_installed_repository_TEST

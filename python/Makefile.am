@@ -136,6 +136,7 @@ libpaludispython_@PALUDIS_PC_SLOT@_la_SOURCES = $(IF_PYTHON_SOURCES)
 TESTS = $(IF_PYTHON_TESTS)
 
 libpaludispython_@PALUDIS_PC_SLOT@_la_LIBADD = \
+	$(top_builddir)/paludis/legacy/libpaludislegacy_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la
 

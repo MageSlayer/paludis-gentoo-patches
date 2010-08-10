@@ -26,8 +26,8 @@
 #include <cstdlib>
 #include <cstring>
 
-#include <paludis/install_task.hh>
-#include <paludis/tasks_exceptions.hh>
+#include <paludis/legacy/install_task.hh>
+#include <paludis/legacy/tasks_exceptions.hh>
 
 #include <paludis/util/log.hh>
 #include <paludis/util/tokeniser.hh>

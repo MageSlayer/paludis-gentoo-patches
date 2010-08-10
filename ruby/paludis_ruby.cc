@@ -22,7 +22,7 @@
 #include <paludis/util/config_file.hh>
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/util/pimp-impl.hh>
-#include <paludis/dep_list_exceptions.hh>
+#include <paludis/legacy/dep_list_exceptions.hh>
 #include <paludis/match_package.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/version_operator.hh>

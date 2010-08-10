@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  * Copyright (c) 2007 David Leverton
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -25,8 +25,8 @@
 
 #include <paludis/args/args_option.hh>
 #include <paludis/args/args_group.hh>
-#include <paludis/dep_list-fwd.hh>
-#include <paludis/install_task.hh>
+#include <paludis/legacy/dep_list-fwd.hh>
+#include <paludis/legacy/install_task.hh>
 
 /** \file
  * Declarations for the InstallArgsGroup class.

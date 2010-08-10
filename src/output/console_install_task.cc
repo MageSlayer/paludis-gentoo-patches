@@ -51,7 +51,7 @@
 #include <paludis/choice.hh>
 #include <paludis/output_manager_from_environment.hh>
 #include <paludis/output_manager.hh>
-#include <paludis/dep_list.hh>
+#include <paludis/legacy/dep_list.hh>
 #include <paludis/notifier_callback.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
 

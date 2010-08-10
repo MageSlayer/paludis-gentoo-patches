@@ -22,9 +22,9 @@
 
 #include <paludis/util/pimp.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
-#include <paludis/dep_list.hh>
-#include <paludis/dep_list_exceptions.hh>
-#include <paludis/tasks_exceptions.hh>
+#include <paludis/legacy/dep_list.hh>
+#include <paludis/legacy/dep_list_exceptions.hh>
+#include <paludis/legacy/tasks_exceptions.hh>
 #include <paludis/repository-fwd.hh>
 #include <paludis/action-fwd.hh>
 #include <paludis/package_database-fwd.hh>
@@ -44,7 +44,7 @@ namespace paludis
 {
     class Environment;
 
-#include <paludis/install_task-se.hh>
+#include <paludis/legacy/install_task-se.hh>
 
     /**
      * Task used to install one or more targets.

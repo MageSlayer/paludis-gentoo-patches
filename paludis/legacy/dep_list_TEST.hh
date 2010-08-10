@@ -20,8 +20,8 @@
 #ifndef PALUDIS_GUARD_PALUDIS_DEP_LIST_TEST_HH
 #define PALUDIS_GUARD_PALUDIS_DEP_LIST_TEST_HH 1
 
-#include <paludis/dep_list.hh>
-#include <paludis/dep_list_exceptions.hh>
+#include <paludis/legacy/dep_list.hh>
+#include <paludis/legacy/dep_list_exceptions.hh>
 #include <paludis/repositories/fake/fake_repository.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/util/fs_entry.hh>

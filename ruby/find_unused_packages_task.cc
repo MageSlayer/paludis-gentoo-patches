@@ -18,7 +18,7 @@
  */
 
 #include <paludis_ruby.hh>
-#include <paludis/find_unused_packages_task.hh>
+#include <paludis/legacy/find_unused_packages_task.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/sequence-impl.hh>
 #include <ruby.h>

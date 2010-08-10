@@ -23,9 +23,9 @@
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/mask-fwd.hh>
 #include <paludis/dep_tag.hh>
-#include <paludis/dep_list_options.hh>
-#include <paludis/dep_list-fwd.hh>
-#include <paludis/handled_information-fwd.hh>
+#include <paludis/legacy/dep_list_options.hh>
+#include <paludis/legacy/dep_list-fwd.hh>
+#include <paludis/legacy/handled_information-fwd.hh>
 #include <paludis/name.hh>
 #include <paludis/environment.hh>
 #include <paludis/match_package.hh>

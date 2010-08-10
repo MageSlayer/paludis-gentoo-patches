@@ -17,7 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/install_task.hh>
+#include <paludis/legacy/install_task.hh>
+#include <paludis/legacy/handled_information.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/action.hh>
@@ -30,7 +31,7 @@
 #include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
 #include <paludis/version_requirements.hh>
-#include <paludis/tasks_exceptions.hh>
+#include <paludis/legacy/tasks_exceptions.hh>
 #include <paludis/selection.hh>
 #include <paludis/filter.hh>
 #include <paludis/generator.hh>
@@ -49,7 +50,6 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/return_literal_function.hh>
-#include <paludis/handled_information.hh>
 #include <paludis/create_output_manager_info.hh>
 #include <paludis/output_manager_from_environment.hh>
 #include <paludis/output_manager.hh>
@@ -63,7 +63,7 @@
 
 using namespace paludis;
 
-#include <paludis/install_task-se.cc>
+#include <paludis/legacy/install_task-se.cc>
 
 namespace
 {

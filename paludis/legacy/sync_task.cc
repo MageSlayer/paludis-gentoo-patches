@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "sync_task.hh"
+#include <paludis/legacy/sync_task.hh>
 #include <paludis/environment.hh>
 #include <paludis/syncer.hh>
 #include <paludis/util/pimp-impl.hh>

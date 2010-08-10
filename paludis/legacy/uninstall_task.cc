@@ -17,12 +17,12 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/uninstall_task.hh>
+#include <paludis/legacy/uninstall_task.hh>
 #include <paludis/environment.hh>
 #include <paludis/action.hh>
 #include <paludis/uninstall_list.hh>
 #include <paludis/dep_spec_flattener.hh>
-#include <paludis/tasks_exceptions.hh>
+#include <paludis/legacy/tasks_exceptions.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/selection.hh>
 #include <paludis/generator.hh>

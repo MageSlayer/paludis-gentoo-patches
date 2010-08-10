@@ -20,7 +20,7 @@
 #ifndef PALUDIS_GUARD_SRC_CONSOLE_INSTALL_TASK_HH
 #define PALUDIS_GUARD_SRC_CONSOLE_INSTALL_TASK_HH 1
 
-#include <paludis/install_task.hh>
+#include <paludis/legacy/install_task.hh>
 #include <paludis/util/set.hh>
 #include <paludis/choice.hh>
 #include <paludis/name.hh>

@@ -20,7 +20,7 @@
 #include "find_unused_packages.hh"
 #include "command_line.hh"
 
-#include <paludis/find_unused_packages_task.hh>
+#include <paludis/legacy/find_unused_packages_task.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/set.hh>

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,8 +20,8 @@
 #include <src/output/colour.hh>
 #include "uninstall.hh"
 
-#include <paludis/uninstall_task.hh>
-#include <paludis/tasks_exceptions.hh>
+#include <paludis/legacy/uninstall_task.hh>
+#include <paludis/legacy/tasks_exceptions.hh>
 #include <paludis/util/set.hh>
 #include <paludis/uninstall_list.hh>
 #include <paludis/package_database.hh>

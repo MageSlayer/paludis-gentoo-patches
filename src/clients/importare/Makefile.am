@@ -33,6 +33,7 @@ importare_SOURCES = \
 
 importare_LDADD = \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/legacy/libpaludislegacy_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/args/legacy/libpaludisargslegacy_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/args/libpaludisargs_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \

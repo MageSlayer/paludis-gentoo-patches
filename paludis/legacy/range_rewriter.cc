@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/range_rewriter.hh>
+#include <paludis/legacy/range_rewriter.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/version_requirements.hh>
 #include <paludis/package_dep_spec_properties.hh>

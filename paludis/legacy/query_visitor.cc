@@ -17,9 +17,9 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/query_visitor.hh>
-#include <paludis/dep_list.hh>
-#include <paludis/range_rewriter.hh>
+#include <paludis/legacy/query_visitor.hh>
+#include <paludis/legacy/dep_list.hh>
+#include <paludis/legacy/range_rewriter.hh>
 #include <paludis/package_database.hh>
 #include <paludis/selection.hh>
 #include <paludis/generator.hh>

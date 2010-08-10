@@ -18,7 +18,7 @@
  */
 
 #include <paludis_ruby.hh>
-#include <paludis/dep_list.hh>
+#include <paludis/legacy/dep_list.hh>
 #include <paludis/dep_tag.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/set.hh>

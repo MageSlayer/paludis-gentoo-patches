@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,12 +17,18 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "dep_list_options.hh"
-#include <ostream>
-#include <paludis/util/exception.hh>
-#include <paludis/util/stringify.hh>
+#include <paludis/legacy/tasks_exceptions.hh>
 
 using namespace paludis;
 
-#include <paludis/dep_list_options-se.cc>
+MultipleSetTargetsSpecified::MultipleSetTargetsSpecified() throw () :
+    Exception("More than one set target was specified")
+{
+}
+
+HadBothPackageAndSetTargets::HadBothPackageAndSetTargets() throw () :
+    Exception("Both package and set targets were specified")
+{
+}
+
 

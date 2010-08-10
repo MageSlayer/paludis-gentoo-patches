@@ -62,7 +62,12 @@ module RDoc
 
         def generate_consts(header, type, in_class)
             consts = []
-            file = File.read(ENV["TOP_SRCDIR"] + "/#{header}")
+            if File.exist?(ENV["TOP_SRCDIR"] + "/#{header}")
+                file = File.read(ENV["TOP_SRCDIR"] + "/#{header}")
+            else
+                file = File.read(ENV["TOP_SRCDIR"] + "/#{header.sub(%r[^paludis/], "paludis/legacy/")}")
+            end
+
             match = Regexp.new(/enum\s+#{type}\s+\{([^}]+)\}/)#, Regexp::MULTILINE)
             if file =~ match
                 enum = $1

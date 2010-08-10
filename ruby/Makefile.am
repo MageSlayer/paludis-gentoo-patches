@@ -106,6 +106,7 @@ libpaludisruby_@PALUDIS_PC_SLOT@_la_SOURCES = $(IF_RUBY_SOURCES)
 TESTS = $(IF_RUBY_TESTS)
 
 libpaludisruby_@PALUDIS_PC_SLOT@_la_LIBADD = \
+	$(top_builddir)/paludis/legacy/libpaludislegacy_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(PTHREAD_LIBS)

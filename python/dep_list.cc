@@ -20,8 +20,8 @@
 #include <python/paludis_python.hh>
 #include <python/exception.hh>
 
-#include <paludis/dep_list.hh>
-#include <paludis/dep_list_exceptions.hh>
+#include <paludis/legacy/dep_list.hh>
+#include <paludis/legacy/dep_list_exceptions.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 
 

@@ -17,12 +17,12 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/dep_list.hh>
-#include <paludis/dep_list_exceptions.hh>
-#include <paludis/query_visitor.hh>
-#include <paludis/range_rewriter.hh>
-#include <paludis/show_suggest_visitor.hh>
-#include <paludis/handled_information.hh>
+#include <paludis/legacy/dep_list.hh>
+#include <paludis/legacy/dep_list_exceptions.hh>
+#include <paludis/legacy/query_visitor.hh>
+#include <paludis/legacy/show_suggest_visitor.hh>
+#include <paludis/legacy/range_rewriter.hh>
+#include <paludis/legacy/handled_information.hh>
 
 #include <paludis/dep_spec.hh>
 #include <paludis/user_dep_spec.hh>

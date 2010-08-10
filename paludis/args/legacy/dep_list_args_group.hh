@@ -24,8 +24,8 @@
 #include <paludis/args/args_option.hh>
 #include <paludis/args/legacy/deps_option_arg.hh>
 #include <paludis/args/args_group.hh>
-#include <paludis/dep_list.hh>
-#include <paludis/install_task.hh>
+#include <paludis/legacy/dep_list.hh>
+#include <paludis/legacy/install_task.hh>
 
 namespace paludis
 {

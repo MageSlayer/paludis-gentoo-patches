@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/find_unused_packages_task.hh>
+#include <paludis/legacy/find_unused_packages_task.hh>
 #include <paludis/environment.hh>
 #include <paludis/repository.hh>
 #include <paludis/package_database.hh>

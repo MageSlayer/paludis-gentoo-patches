@@ -22,7 +22,9 @@
 
 #include <paludis/util/pimp.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
-#include <paludis/dep_list.hh>
+#include <paludis/util/attributes.hh>
+#include <paludis/name-fwd.hh>
+#include <string>
 
 /** \file
  * Declarations for SyncTask.

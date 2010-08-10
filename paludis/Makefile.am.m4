@@ -134,17 +134,6 @@ libpaludis_@PALUDIS_PC_SLOT@_la_LIBADD = \
 libpaludismanpagethings_@PALUDIS_PC_SLOT@_la_LIBADD = \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la
 
-dep_list_TEST_SOURCES += dep_list_TEST.hh
-define(`testlist', testlist `dep_list_TEST_blockers')dnl
-dep_list_TEST_blockers_SOURCES = dep_list_TEST_blockers.cc dep_list_TEST.hh
-dep_list_TEST_blockers_LDADD = \
-	$(top_builddir)/paludis/util/test_extras.o \
-	$(top_builddir)/test/libtest.a \
-	libpaludis_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
-	$(DYNAMIC_LD_LIBS)
-dep_list_TEST_blockers_CXXFLAGS = -I$(top_srcdir) $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
-
 TESTS = testlist
 
 check_PROGRAMS = $(TESTS) stripper_TEST_binary

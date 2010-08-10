@@ -19,7 +19,6 @@
  */
 
 #include <paludis_ruby.hh>
-#include <paludis/dep_list.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/options.hh>
