@@ -209,7 +209,7 @@ VerifyCommand::run(
             (*env)[selection::AllVersionsSorted(generator::Matches(spec, { }) | filter::InstalledAtRoot(env->root()))]);
 
     if (entries->empty())
-        throw NothingMatching(spec);
+        nothing_matching_error(env.get(), *cmdline.begin_parameters(), filter::InstalledAtRoot(env->root()));
 
     int exit_status(0);
     for (PackageIDSequence::ConstIterator i(entries->begin()), i_end(entries->end()) ;

@@ -130,7 +130,7 @@ ContentsCommand::run(
             (*env)[selection::AllVersionsSorted(generator::Matches(spec, { }) | filter::InstalledAtRoot(env->root()))]);
 
     if (entries->empty())
-        throw NothingMatching(spec);
+        nothing_matching_error(env.get(), *cmdline.begin_parameters(), filter::InstalledAtRoot(env->root()));
 
     const std::shared_ptr<const PackageID> id(*entries->last());
     if (! id->contents_key())

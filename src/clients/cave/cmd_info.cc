@@ -368,7 +368,7 @@ namespace
                         spec, { }) | filter::SupportsAction<InstallAction>() | filter::NotMasked())]);
 
         if (installed_ids->empty() && installable_ids->empty())
-            throw NothingMatching(param);
+            nothing_matching_error(env.get(), param, filter::InstalledAtRoot(env->root()));
 
         for (PackageIDSequence::ConstIterator i(installed_ids->begin()), i_end(installed_ids->end()) ;
                 i != i_end ; ++i)

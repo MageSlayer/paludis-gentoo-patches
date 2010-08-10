@@ -1080,7 +1080,7 @@ ShowCommand::run(
                 }
             }
 
-            throw NothingMatching(*p);
+            nothing_matching_error(env.get(), *p, filter::All());
         }
         else
             throw args::DoHelp("bad value '" + cmdline.a_type.argument() + "' for --" + cmdline.a_type.long_name());

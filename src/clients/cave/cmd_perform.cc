@@ -402,12 +402,11 @@ PerformCommand::run(
 
     std::string action(*cmdline.begin_parameters());
 
-    PackageDepSpec spec(parse_user_package_dep_spec(*next(cmdline.begin_parameters()), env.get(),
-                { }));
-    const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsUnsorted(
-                generator::Matches(spec, { }))]);
+    const auto spec_str(*next(cmdline.begin_parameters()));
+    const auto spec(parse_user_package_dep_spec(spec_str, env.get(), { }));
+    const auto ids((*env)[selection::AllVersionsUnsorted(generator::Matches(spec, { }))]);
     if (ids->empty())
-        throw NothingMatching(spec);
+        nothing_matching_error(env.get(), spec_str, filter::All());
     else if (1 != std::distance(ids->begin(), ids->end()))
         throw BeMoreSpecific(spec, ids);
     const std::shared_ptr<const PackageID> id(*ids->begin());
@@ -527,10 +526,9 @@ PerformCommand::run(
                 p != p_end ; ++p)
         {
             PackageDepSpec rspec(parse_user_package_dep_spec(*p, env.get(), { }));
-            const std::shared_ptr<const PackageIDSequence> rids((*env)[selection::AllVersionsUnsorted(
-                        generator::Matches(rspec, { }))]);
+            const std::shared_ptr<const PackageIDSequence> rids((*env)[selection::AllVersionsUnsorted(generator::Matches(rspec, { }))]);
             if (rids->empty())
-                throw NothingMatching(rspec);
+                nothing_matching_error(env.get(), *p, filter::All());
             else if (1 != std::distance(rids->begin(), rids->end()))
                 throw BeMoreSpecific(rspec, rids);
             else

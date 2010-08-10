@@ -142,7 +142,7 @@ UninstallCommand::run(
         const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(
                     generator::Matches(spec, { }) | filter::SupportsAction<UninstallAction>())]);
         if (ids->empty())
-            throw NothingMatching(spec);
+            nothing_matching_error(env.get(), *p, filter::SupportsAction<UninstallAction>());
         else if ((! cmdline.a_all_versions.specified()) && has_multiple_versions(ids))
             throw BeMoreSpecific(spec, ids);
         else

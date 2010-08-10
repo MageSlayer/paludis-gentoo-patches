@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -24,6 +24,8 @@
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/name-fwd.hh>
+#include <paludis/filter-fwd.hh>
+#include <paludis/environment-fwd.hh>
 #include <memory>
 
 namespace paludis
@@ -63,6 +65,11 @@ namespace paludis
                         const RepositoryName &,
                         const std::string & r) throw ();
         };
+
+        void nothing_matching_error(
+                const Environment * const,
+                const std::string &,
+                const Filter &) PALUDIS_ATTRIBUTE((noreturn));
     }
 }
 
