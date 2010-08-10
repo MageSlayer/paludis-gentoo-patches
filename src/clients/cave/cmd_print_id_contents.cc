@@ -71,12 +71,24 @@ namespace
         args::ArgsGroup g_spec_options;
         args::SwitchArg a_best;
 
+        args::ArgsGroup g_filter_options;
+        args::EnumArg a_type;
+
         args::ArgsGroup g_display_options;
         args::StringArg a_format;
 
         PrintContentsCommandLine() :
             g_spec_options(main_options_section(), "Spec Options", "Alter how the supplied spec is used."),
             a_best(&g_spec_options, "best", '\0', "If the spec matches multiple IDs, select the best ID rather than giving an error.", true),
+            g_filter_options(main_options_section(), "Filter Options", "Alter which contents entries are displayed."),
+            a_type(&g_filter_options, "type", 't', "Display only entries of the specified type",
+                    args::EnumArg::EnumArgOptions
+                    ("all",   'a', "Show all entries")
+                    ("file",  'f', "Show only file entries")
+                    ("dir",   'd', "Show only directory entries")
+                    ("sym",   's', "Show only symlink entries")
+                    ("other", 'o', "Show only other entries"),
+                    "all"),
             g_display_options(main_options_section(), "Display Options", "Controls the output format."),
             a_format(&g_display_options, "format", '\0', "Select the output format. Special tokens recognised are "
                     "%n for filename, %d for dirname, %b for basename, %t for symlink targets (blank for non-symlinks), "
@@ -88,6 +100,41 @@ namespace
             a_format.set_argument("%n%a%t\\n");
         }
     };
+
+    struct MatchTypeVisitor
+    {
+        const args::EnumArg & arg;
+
+        bool visit(const ContentsFileEntry &) const
+        {
+            return arg.argument() == "file";
+        }
+
+        bool visit(const ContentsDirEntry &) const
+        {
+            return arg.argument() == "dir";
+        }
+
+        bool visit(const ContentsSymEntry &) const
+        {
+            return arg.argument() == "sym";
+        }
+
+        bool visit(const ContentsOtherEntry &) const
+        {
+            return arg.argument() == "other";
+        }
+    };
+
+    bool match_type(
+            const args::EnumArg & arg,
+            const std::shared_ptr<const ContentsEntry> & entry)
+    {
+        if (arg.argument() == "all")
+            return true;
+
+        return entry->accept_returning<bool>(MatchTypeVisitor{arg});
+    }
 }
 
 int
@@ -124,11 +171,10 @@ PrintIDContentsCommand::run(
     if (! id->contents_key())
         throw BadIDForCommand(spec, id, "does not support listing contents");
 
-    std::transform(
-            id->contents_key()->value()->begin(),
-            id->contents_key()->value()->end(),
-            std::ostream_iterator<std::string>(cout, ""),
-            std::bind(format_plain_contents_entry, std::placeholders::_1, cmdline.a_format.argument()));
+    for (auto c(id->contents_key()->value()->begin()), c_end(id->contents_key()->value()->end()) ;
+            c != c_end ; ++c)
+        if (match_type(cmdline.a_type, *c))
+            cout << format_plain_contents_entry(*c, cmdline.a_format.argument());
 
     return EXIT_SUCCESS;
 }
