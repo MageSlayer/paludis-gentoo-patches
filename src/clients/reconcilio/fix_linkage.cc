@@ -49,12 +49,14 @@ do_fix_linkage(const std::shared_ptr<Environment> & env)
     Context ctx("When performing the Fix Linkage action:");
 
     std::string library(CommandLine::get_instance()->a_library.argument());
+    auto libraries(std::make_shared<Sequence<std::string>>());
+    libraries->push_back(library);
 
     if (library.empty())
         std::cout << "Searching for broken packages... " << std::flush;
     else
         std::cout << "Searching for packages that depend on " << library << "... " << std::flush;
-    BrokenLinkageFinder finder(env.get(), library);
+    BrokenLinkageFinder finder(env.get(), libraries);
     std::cout << std::endl;
 
     if (finder.begin_broken_packages() == finder.end_broken_packages())

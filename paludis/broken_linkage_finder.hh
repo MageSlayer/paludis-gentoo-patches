@@ -23,6 +23,7 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/pimp.hh>
+#include <paludis/util/sequence-fwd.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 
 #include <paludis/environment-fwd.hh>
@@ -36,7 +37,7 @@ namespace paludis
         private paludis::Pimp<BrokenLinkageFinder>
     {
         public:
-            BrokenLinkageFinder(const paludis::Environment *, const std::string &);
+            BrokenLinkageFinder(const paludis::Environment *, const std::shared_ptr<const Sequence<std::string>> &);
             ~BrokenLinkageFinder();
 
             BrokenLinkageFinder(const BrokenLinkageFinder &) = delete;

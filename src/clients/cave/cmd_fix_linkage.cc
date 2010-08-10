@@ -63,14 +63,14 @@ namespace
         args::SwitchArg a_execute;
 
         args::ArgsGroup g_linkage_options;
-        args::StringArg a_library;
+        args::StringSetArg a_libraries;
         args::SwitchArg a_exact;
 
         FixLinkageCommandLine() :
             g_execution_options(main_options_section(), "Execution Options", "Control execution."),
             a_execute(&g_execution_options, "execute", 'x', "Execute the suggested actions", true),
             g_linkage_options(main_options_section(), "Linkage options", "Options relating to linkage"),
-            a_library(&g_linkage_options, "library", 'l', "Only rebuild packages linked against this library, even if it exists"),
+            a_libraries(&g_linkage_options, "library", 'l', "Only rebuild packages linked against this library, even if it exists. May be specified multiple times."),
             a_exact(&g_linkage_options, "exact", 'e', "Rebuild the same package version that is currently installed", true)
         {
             add_usage_line("[ -x|--execute ] [ --library foo.so.1 ] [ -- options for 'cave resolve' ]");
@@ -166,21 +166,23 @@ FixLinkageCommand::run(
     if (cmdline.a_execute.specified())
         resolve_cmdline.resolution_options.a_execute.set_specified(true);
 
-    std::string library(cmdline.a_library.argument());
+    auto libraries(std::make_shared<Sequence<std::string>>());
+    std::copy(cmdline.a_libraries.begin_args(), cmdline.a_libraries.end_args(),
+              std::back_inserter(*libraries));
     std::shared_ptr<BrokenLinkageFinder> finder;
     {
         DisplayCallback display_callback("Searching: ");
         ScopedNotifierCallback display_callback_holder(env.get(),
                 NotifierCallbackFunction(std::cref(display_callback)));
-        finder = std::make_shared<BrokenLinkageFinder>(env.get(), cmdline.a_library.argument());
+        finder = std::make_shared<BrokenLinkageFinder>(env.get(), libraries);
     }
 
     if (finder->begin_broken_packages() == finder->end_broken_packages())
     {
-        if (library.empty())
+        if (libraries->empty())
             cout << "No broken packages found" << endl;
         else
-            cout << "No packages that depend on " << library << " found" << endl;
+            cout << "No packages that depend on " << join(libraries->begin(), libraries->end(), ", ") << " found" << endl;
 
         return EXIT_SUCCESS;
     }
@@ -199,7 +201,7 @@ FixLinkageCommand::run(
                  file_it_end(finder->end_broken_files(*pkg_it)); file_it_end != file_it; ++file_it)
         {
             cout << "    " << *file_it;
-            if (library.empty())
+            if (libraries->empty())
             {
                 cout << " (requires "
                           << join(finder->begin_missing_requirements(*pkg_it, *file_it),
@@ -227,16 +229,16 @@ FixLinkageCommand::run(
     std::shared_ptr<const PackageID> orphans;
     if (finder->begin_broken_files(orphans) != finder->end_broken_files(orphans))
     {
-        if (library.empty())
+        if (libraries->empty())
             cout << endl << "The following broken files are not owned by any installed package:" << endl;
         else
-            cout << endl << "The following files that depend on " << library << " are not owned by any installed package:" << endl;
+            cout << endl << "The following files that depend on " << join(libraries->begin(), libraries->end(), ", ") << " are not owned by any installed package:" << endl;
 
         for (BrokenLinkageFinder::BrokenFileConstIterator file_it(finder->begin_broken_files(orphans)),
                  file_it_end(finder->end_broken_files(orphans)); file_it_end != file_it; ++file_it)
         {
             cout << "    " << *file_it;
-            if (library.empty())
+            if (libraries->empty())
                 cout << " (requires "
                           << join(finder->begin_missing_requirements(orphans, *file_it),
                                   finder->end_missing_requirements(orphans, *file_it),

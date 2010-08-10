@@ -67,7 +67,7 @@ namespace paludis
     {
         const Environment * env;
         const BrokenLinkageConfiguration config;
-        std::string library;
+        std::shared_ptr<const Sequence<std::string>> libraries;
 
         std::vector<std::shared_ptr<LinkageChecker> > checkers;
         std::set<FSEntry> extra_lib_dirs;
@@ -88,10 +88,10 @@ namespace paludis
         void add_breakage(const FSEntry &, const std::string &);
         void gather_package(const std::shared_ptr<const PackageID> &);
 
-        Imp(const Environment * the_env, const std::string & the_library) :
+        Imp(const Environment * the_env, const std::shared_ptr<const Sequence<std::string>> & the_libraries) :
             env(the_env),
             config(the_env->root()),
-            library(the_library),
+            libraries(the_libraries),
             has_files(false)
         {
         }
@@ -139,15 +139,16 @@ namespace
     };
 }
 
-BrokenLinkageFinder::BrokenLinkageFinder(const Environment * env, const std::string & library) :
-    Pimp<BrokenLinkageFinder>(env, library)
+BrokenLinkageFinder::BrokenLinkageFinder(const Environment * env, const std::shared_ptr<const Sequence<std::string>> & libraries) :
+    Pimp<BrokenLinkageFinder>(env, libraries)
 {
     using namespace std::placeholders;
 
     Context ctx("When checking for broken linkage in '" + stringify(env->root()) + "':");
 
-    _imp->checkers.push_back(std::shared_ptr<LinkageChecker>(std::make_shared<ElfLinkageChecker>(env->root(), library)));
-    if (library.empty())
+    for (auto i(libraries->begin()), i_end(libraries->end()) ; i != i_end ; ++i)
+        _imp->checkers.push_back(std::shared_ptr<LinkageChecker>(std::make_shared<ElfLinkageChecker>(env->root(), *i)));
+    if (libraries->empty())
         _imp->checkers.push_back(std::shared_ptr<LinkageChecker>(std::make_shared<LibtoolLinkageChecker>(env->root())));
 
     std::vector<FSEntry> search_dirs_nosyms, search_dirs_pruned;
@@ -293,7 +294,7 @@ Imp<BrokenLinkageFinder>::add_breakage(const FSEntry & file, const std::string &
 {
     using namespace std::placeholders;
 
-    if (library.empty() && config.lib_is_masked(req))
+    if (libraries->empty() && config.lib_is_masked(req))
         return;
 
     if (! has_files)
