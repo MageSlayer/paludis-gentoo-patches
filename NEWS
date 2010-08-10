@@ -4,6 +4,27 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the Git log.
 
+0.52.2:
+    * 'cave perform' now calls '_fail' hooks.
+
+    * 'cave print-id-contents' now has '--type'
+
+    * 'cave print-packages' now has '--repository' and '--category'
+
+    * Output buffering of commands has changed to better handle progress bars of
+      the kind displayed by 'wget' and 'git'. To avoid excessive hopping, 'cave
+      execute-resolution' will now only switch between buffered outputs every
+      few seconds, rather than 0.1s if new output is available.
+
+    * 'cave display-resolution' now shows flag changes in a more obvious manner.
+
+    * 'cave purge' and purge checking for 'cave resolve' are now significantly
+      faster.
+
+    * 'cave resolve --less-restrictive-remove-blockers' is now much more likely
+      to be able to fix breakages by reinstalls. A horrible error that was most
+      easily triggered by use of this option is now fixed.
+
 0.52.1:
     * glibc 2.12 changes the OS ABI used by its libraries. 'cave fix-linkage'
       and 'reconcilio' have been updated to ignore OS ABI mismatches to avoid
