@@ -9,9 +9,16 @@ TESTS =
 
 paludis_args_legacy_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/args/legacy
 
-paludis_args_legacy_include_HEADERS =
+paludis_args_legacy_include_HEADERS = \
+	deps_option_arg.hh     \
+	dep_list_args_group.hh \
+	install_args_group.hh
 
-libpaludisargslegacy_@PALUDIS_PC_SLOT@_la_SOURCES =
+libpaludisargslegacy_@PALUDIS_PC_SLOT@_la_SOURCES = \
+	deps_option_arg.cc \
+	dep_list_args_group.cc \
+	install_args_group.cc
+
 libpaludisargslegacy_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
 libpaludisargslegacy_@PALUDIS_PC_SLOT@_la_LIBADD = \

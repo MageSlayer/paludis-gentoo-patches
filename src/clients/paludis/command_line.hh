@@ -22,8 +22,8 @@
 
 #include <paludis/args/args.hh>
 #include <paludis/util/singleton.hh>
-#include <paludis/args/dep_list_args_group.hh>
-#include <paludis/args/install_args_group.hh>
+#include <paludis/args/legacy/dep_list_args_group.hh>
+#include <paludis/args/legacy/install_args_group.hh>
 #include <paludis/args/log_level_arg.hh>
 
 /** \file

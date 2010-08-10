@@ -23,7 +23,6 @@
 #include <paludis/args/args.hh>
 #include <paludis/util/singleton.hh>
 #include <paludis/args/log_level_arg.hh>
-#include <paludis/args/deps_option_arg.hh>
 
 class CommandLine :
     public paludis::args::ArgsHandler,
