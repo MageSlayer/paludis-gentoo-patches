@@ -261,8 +261,9 @@ namespace
                             ("MESSAGE", e.message())
                             ("X_OF_Y", cmdline.a_x_of_y.argument())
                             ));
-                throw;
             }
+
+            throw;
         }
 
         if (cmdline.a_hooks.specified())
