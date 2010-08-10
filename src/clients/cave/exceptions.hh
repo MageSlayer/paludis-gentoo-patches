@@ -38,6 +38,14 @@ namespace paludis
             public:
                 NothingMatching(const PackageDepSpec &) throw ();
                 NothingMatching(const std::string &) throw ();
+                NothingMatching(const std::string &, const std::string &) throw ();
+        };
+
+        class PALUDIS_VISIBLE NothingMatchingWithSuggestions :
+            public NothingMatching
+        {
+            public:
+                NothingMatchingWithSuggestions(const std::string &, const std::string &) throw ();
         };
 
         class PALUDIS_VISIBLE BeMoreSpecific :

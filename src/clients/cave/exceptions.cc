@@ -23,8 +23,10 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/iterator_funcs.hh>
 #include <paludis/package_id.hh>
 #include <paludis/dep_spec.hh>
+#include <paludis/fuzzy_finder.hh>
 
 using namespace paludis;
 using namespace cave;
@@ -36,6 +38,16 @@ NothingMatching::NothingMatching(const PackageDepSpec & spec) throw () :
 
 NothingMatching::NothingMatching(const std::string & name) throw () :
     Exception("Found nothing suitable matching '" + name + "'")
+{
+}
+
+NothingMatching::NothingMatching(const std::string & name, const std::string & extra_message) throw () :
+    Exception("Found nothing suitable matching '" + name + "'" + extra_message)
+{
+}
+
+NothingMatchingWithSuggestions::NothingMatchingWithSuggestions(const std::string & name, const std::string & suggestions) throw () :
+    NothingMatching(name, "; did you mean " + suggestions + "?")
 {
 }
 
@@ -58,10 +70,17 @@ BadRepositoryForCommand::BadRepositoryForCommand(const RepositoryName & name, co
 
 void
 paludis::cave::nothing_matching_error(
-        const Environment * const,
+        const Environment * const env,
         const std::string & s,
-        const Filter &)
+        const Filter & filter)
 {
-    throw NothingMatching(s);
+    FuzzyCandidatesFinder f(*env, s, filter);
+
+    if (f.begin() == f.end())
+        throw NothingMatching(s);
+    else if (next(f.begin()) == f.end())
+        throw NothingMatchingWithSuggestions(s, "'" + stringify(*f.begin()) + "'");
+    else
+        throw NothingMatchingWithSuggestions(s, "one of '" + join(f.begin(), f.end(), "', '") + "'");
 }
 
