@@ -1643,6 +1643,7 @@ AC_OUTPUT(
 	paludis/Makefile
 	paludis/about.hh
 	paludis/args/Makefile
+	paludis/args/legacy/Makefile
 	paludis/distributions/Makefile
 	paludis/distributions/exherbo/Makefile
 	paludis/distributions/gentoo/Makefile
@@ -1653,6 +1654,7 @@ AC_OUTPUT(
 	paludis/environments/test/Makefile
 	paludis/fetchers/Makefile
 	paludis/fetchers/demos/Makefile
+	paludis/legacy/Makefile
 	paludis/repositories/Makefile
 	paludis/repositories/accounts/Makefile
 	paludis/repositories/cran/Makefile

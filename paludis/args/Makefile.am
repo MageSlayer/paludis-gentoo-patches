@@ -1,5 +1,7 @@
 include $(top_srcdir)/misc/common-makefile.am
 
+SUBDIRS = . legacy
+
 DISTCLEANFILES = args_handler-se.hh args_handler-se.cc
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
 EXTRA_DIST = args_handler-se.hh args_handler-se.cc args_handler.se
