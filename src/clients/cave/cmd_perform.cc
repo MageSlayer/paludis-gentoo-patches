@@ -248,7 +248,22 @@ namespace
                         ).max_exit_status())
                 throw ActionAbortedError("Aborted by hook");
 
-        id->perform_action(action);
+        try
+        {
+            id->perform_action(action);
+        }
+        catch (const ActionFailedError & e)
+        {
+            if (cmdline.a_hooks.specified())
+            {
+                HookResult PALUDIS_ATTRIBUTE((unused)) dummy(env->perform_hook(Hook(action_name + "_fail")
+                            ("TARGET", stringify(*id))
+                            ("MESSAGE", e.message())
+                            ("X_OF_Y", cmdline.a_x_of_y.argument())
+                            ));
+                throw;
+            }
+        }
 
         if (cmdline.a_hooks.specified())
             if (0 != env->perform_hook(Hook(action_name + "_post")
