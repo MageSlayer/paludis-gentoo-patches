@@ -99,6 +99,8 @@ namespace
         std::shared_ptr<const MetadataValueKey<std::string> > cbuild;
         std::shared_ptr<const MetadataValueKey<std::string> > cflags;
         std::shared_ptr<const MetadataValueKey<std::string> > chost;
+        std::shared_ptr<const MetadataValueKey<std::string> > config_protect;
+        std::shared_ptr<const MetadataValueKey<std::string> > config_protect_mask;
         std::shared_ptr<const MetadataValueKey<std::string> > ctarget;
         std::shared_ptr<const MetadataValueKey<std::string> > cxxflags;
         std::shared_ptr<const MetadataValueKey<std::string> > ldflags;
@@ -537,6 +539,20 @@ EInstalledRepositoryID::need_keys_added() const
         _imp->keys->chost = std::make_shared<LiteralMetadataValueKey<std::string> >("CHOST", "CHOST",
                     mkt_internal, file_contents(_imp->dir / "CHOST"));
         add_metadata_key(_imp->keys->chost);
+    }
+
+    if ((_imp->dir / "CONFIG_PROTECT").exists())
+    {
+        _imp->keys->config_protect = std::make_shared<LiteralMetadataValueKey<std::string> >("CONFIG_PROTECT", "CONFIG_PROTECT",
+                    mkt_internal, file_contents(_imp->dir / "CONFIG_PROTECT"));
+        add_metadata_key(_imp->keys->config_protect);
+    }
+
+    if ((_imp->dir / "CONFIG_PROTECT_MASK").exists())
+    {
+        _imp->keys->config_protect_mask = std::make_shared<LiteralMetadataValueKey<std::string> >("CONFIG_PROTECT_MASK", "CONFIG_PROTECT_MASK",
+                    mkt_internal, file_contents(_imp->dir / "CONFIG_PROTECT_MASK"));
+        add_metadata_key(_imp->keys->config_protect_mask);
     }
 
     if ((_imp->dir / "CXXFLAGS").exists())
