@@ -36,6 +36,7 @@
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/singleton-impl.hh>
 #include <paludis/about.hh>
 #include <list>
 #include <iterator>
@@ -523,7 +524,8 @@ Hooker::add_dir(const FSEntry & dir, const bool v)
 
 namespace
 {
-    struct PyHookFileHandle
+    struct PyHookFileHandle :
+        Singleton<PyHookFileHandle>
     {
         Mutex mutex;
         void * handle;
@@ -542,8 +544,7 @@ namespace
             if (0 != handle)
                 dlclose(handle);
         }
-
-    } pyhookfilehandle;
+    };
 }
 
 std::shared_ptr<Sequence<std::shared_ptr<HookFile> > >
@@ -602,22 +603,22 @@ Hooker::_find_hooks(const Hook & hook) const
                 static bool load_ok(false);
 
                 {
-                    Lock lock(pyhookfilehandle.mutex);
+                    Lock lock(PyHookFileHandle::get_instance()->mutex);
 
                     if (! load_try)
                     {
                         load_try = true;
                         std::string soname("libpaludispythonhooks_" + stringify(PALUDIS_PC_SLOT) + ".so");
 
-                        pyhookfilehandle.handle = dlopen(soname.c_str(), RTLD_NOW | RTLD_GLOBAL);
-                        if (pyhookfilehandle.handle)
+                        PyHookFileHandle::get_instance()->handle = dlopen(soname.c_str(), RTLD_NOW | RTLD_GLOBAL);
+                        if (PyHookFileHandle::get_instance()->handle)
                         {
-                            pyhookfilehandle.create_py_hook_file_handle =
+                            PyHookFileHandle::get_instance()->create_py_hook_file_handle =
                                 reinterpret_cast<std::shared_ptr<HookFile> (*)(
                                         const FSEntry &, const bool, const Environment * const)>(
                                             reinterpret_cast<uintptr_t>(dlsym(
-                                                    pyhookfilehandle.handle, "create_py_hook_file")));
-                            if (pyhookfilehandle.create_py_hook_file_handle)
+                                                    PyHookFileHandle::get_instance()->handle, "create_py_hook_file")));
+                            if (PyHookFileHandle::get_instance()->create_py_hook_file_handle)
                             {
                                 load_ok = true;
                             }
@@ -638,7 +639,7 @@ Hooker::_find_hooks(const Hook & hook) const
                 if (load_ok)
                 {
                     if (! hook_files.insert(std::make_pair(strip_trailing_string(e->basename(), ".py"),
-                                    std::shared_ptr<HookFile>(pyhookfilehandle.create_py_hook_file_handle(
+                                    std::shared_ptr<HookFile>(PyHookFileHandle::get_instance()->create_py_hook_file_handle(
                                              *e, d->second, _imp->env)))).second)
                         Log::get_instance()->message("hook.discarding", ll_warning, lc_context) <<
                             "Discarding hook file '" << *e
