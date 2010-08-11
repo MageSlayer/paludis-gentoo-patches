@@ -84,6 +84,7 @@ namespace paludis
         typedef Name<struct env_a_name> env_a;
         typedef Name<struct env_aa_name> env_aa;
         typedef Name<struct env_accept_keywords_name> env_accept_keywords;
+        typedef Name<struct env_accept_license_name> env_accept_license;
         typedef Name<struct env_arch_name> env_arch;
         typedef Name<struct env_d_name> env_d;
         typedef Name<struct env_distdir_name> env_distdir;
@@ -300,6 +301,7 @@ namespace paludis
             NamedValue<n::env_a, std::string> env_a;
             NamedValue<n::env_aa, std::string> env_aa;
             NamedValue<n::env_accept_keywords, std::string> env_accept_keywords;
+            NamedValue<n::env_accept_license, std::string> env_accept_license;
             NamedValue<n::env_arch, std::string> env_arch;
             NamedValue<n::env_d, std::string> env_d;
             NamedValue<n::env_distdir, std::string> env_distdir;

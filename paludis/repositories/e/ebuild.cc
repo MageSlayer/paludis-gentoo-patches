@@ -834,6 +834,9 @@ EbuildInstallCommand::extend_command(const Command & cmd)
     if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_aa().empty())
         result.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_aa(),
                 install_params.aa());
+    if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_accept_license().empty())
+        result.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_accept_license(),
+                install_params.accept_license());
     if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use().empty())
         result.with_setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use(),
                 install_params.use());

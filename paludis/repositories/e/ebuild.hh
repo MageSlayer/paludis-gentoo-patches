@@ -44,6 +44,7 @@ namespace paludis
     {
         typedef Name<struct a_name> a;
         typedef Name<struct aa_name> aa;
+        typedef Name<struct accept_license_name> accept_license;
         typedef Name<struct binary_dist_base_name> binary_dist_base;
         typedef Name<struct binary_distdir_name> binary_distdir;
         typedef Name<struct binary_ebuild_location_name> binary_ebuild_location;
@@ -175,6 +176,7 @@ namespace paludis
         {
             NamedValue<n::a, std::string> a;
             NamedValue<n::aa, std::string> aa;
+            NamedValue<n::accept_license, std::string> accept_license;
             NamedValue<n::config_protect, std::string> config_protect;
             NamedValue<n::config_protect_mask, std::string> config_protect_mask;
             NamedValue<n::expand_vars, std::shared_ptr<const Map<std::string, std::string> > > expand_vars;

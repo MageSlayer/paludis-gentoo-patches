@@ -2231,6 +2231,37 @@ namespace
     {
         return s->end() != s->find(f);
     }
+
+    struct AcceptLicenseFinder
+    {
+        std::stringstream s;
+
+        AcceptLicenseFinder()
+        {
+            s << "*";
+        }
+
+        void visit(const LicenseSpecTree::NodeType<AllDepSpec>::Type & node)
+        {
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
+        }
+
+        void visit(const LicenseSpecTree::NodeType<AnyDepSpec>::Type & node)
+        {
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
+        }
+
+        void visit(const LicenseSpecTree::NodeType<ConditionalDepSpec>::Type & node)
+        {
+            if (node.spec()->condition_met())
+                std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
+        }
+
+        void visit(const LicenseSpecTree::NodeType<LicenseDepSpec>::Type & node)
+        {
+            s << " " << node.spec()->text();
+        }
+    };
 }
 
 void
@@ -2269,7 +2300,7 @@ ERepository::install(const std::shared_ptr<const ERepositoryID> & id,
                     std::bind(std::equal_to<std::string>(), std::bind(std::mem_fn(&StringDepSpec::text), _1), "nostrip"));
     }
 
-    std::string archives, all_archives;
+    std::string archives, all_archives, accept_license;
     {
         std::set<std::string> already_in_archives;
 
@@ -2310,6 +2341,18 @@ ERepository::install(const std::shared_ptr<const ERepositoryID> & id,
         }
         else
             all_archives = "AA-not-set-for-this-EAPI";
+
+        /* make ACCEPT_LICENSE */
+        if (! id->eapi()->supported()->ebuild_environment_variables()->env_accept_license().empty())
+        {
+            AcceptLicenseFinder g;
+            if (id->license_key())
+                id->license_key()->value()->root()->accept(g);
+
+            accept_license = g.s.str();
+        }
+        else
+            accept_license = "ACCEPT_LICENSE-not-set-for-this-EAPI";
     }
 
     /* Strip trailing space. Some ebuilds rely upon this. From kde-meta.eclass:
@@ -2504,6 +2547,7 @@ ERepository::install(const std::shared_ptr<const ERepositoryID> & id,
                     make_named_values<EbuildInstallCommandParams>(
                             n::a() = archives,
                             n::aa() = all_archives,
+                            n::accept_license() = accept_license,
                             n::config_protect() = environment_updated_profile_variable("CONFIG_PROTECT"),
                             n::config_protect_mask() = environment_updated_profile_variable("CONFIG_PROTECT_MASK"),
                             n::expand_vars() = expand_vars,

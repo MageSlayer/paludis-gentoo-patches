@@ -75,6 +75,7 @@ namespace
                         n::env_a() = check_get(k, "env_a"),
                         n::env_aa() = check_get(k, "env_aa"),
                         n::env_accept_keywords() = check_get(k, "env_accept_keywords"),
+                        n::env_accept_license() = check_get(k, "env_accept_license"),
                         n::env_arch() = check_get(k, "env_arch"),
                         n::env_d() = check_get(k, "env_d"),
                         n::env_distdir() = check_get(k, "env_distdir"),
