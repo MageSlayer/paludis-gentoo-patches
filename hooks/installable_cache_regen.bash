@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # vim: set et sw=4 sts=4 :
 
-# Copyright (c) 2006, 2008 Ciaran McCreesh
+# Copyright (c) 2006, 2008, 2010 Ciaran McCreesh
 #
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,7 +21,7 @@ source ${PALUDIS_ECHO_FUNCTIONS_DIR:-${PALUDIS_EBUILD_DIR}}/echo_functions.bash
 
 echo
 einfo_unhooked "Regenerating cache for installable repositories..."
-${PALUDIS_COMMAND} --regenerate-installable-cache
+${CAVE:-cave} fix-cache --installable
 einfo_unhooked "Done regenerating cache for installable repositories"
 
 true

@@ -24,7 +24,7 @@ if [[ -n "${PALUDIS_NO_LIVE_DESTINATION}" ]] ; then
     exit 0
 fi
 
-vdb_loc="$(${PALUDIS_COMMAND} --log-level silent --configuration-variable installed location )"
+vdb_loc=$(${CAVE:-cave} print-repository-metadata installed --raw-name location --format '%v' )
 cfg_protect_list="${vdb_loc}/.cache/all_CONFIG_PROTECT"
 cfg_protect_mask_list="${vdb_loc}/.cache/all_CONFIG_PROTECT_MASK"
 
@@ -36,26 +36,17 @@ if [[ ! -f "${cfg_protect_list}" || ! -f "${cfg_protect_mask_list}" ]] ; then
     > "${cfg_protect_list}"
     > "${cfg_protect_mask_list}"
 
-    installed_pkgs=$(${PALUDIS_COMMAND} --log-level silent --list-packages --repository installed |grep "^*" |cut -d" " -f2)
+    cfg_protect=$(${CAVE:-cave} print-id-metadata --all '*/*'::installed --raw-name CONFIG_PROTECT --format '%v' | xargs -n1 | uniq )
+    for x in ${cfg_protect} ; do
+        echo "${x}" >> "${cfg_protect_list}"
+    done
 
-    n=0
-    n_end=$(wc -w <<<$installed_pkgs)
-    for p in ${installed_pkgs} ; do
-        n=$(( $n + 1 ))
-        if [[ 0 == $(( n % 20 )) ]] ; then
-            ewarn "    ${n} of ${n_end}"
-        fi
-        cfg_protect=$(${PALUDIS_COMMAND} --log-level silent --environment-variable ${p} CONFIG_PROTECT)
-        for x in ${cfg_protect} ; do
-            echo "${x}" >> "${cfg_protect_list}"
-        done
-
-        cfg_protect_mask=$(${PALUDIS_COMMAND} --log-level silent --environment-variable ${p} CONFIG_PROTECT_MASK)
-        for x in ${cfg_protect_mask} ; do
-            echo "${x}" >> "${cfg_protect_mask_list}"
-        done
+    cfg_protect_mask=$(${CAVE:-cave} print-id-metadata --all '*/*'::installed --raw-name CONFIG_PROTECT_MASK --format '%v' | xargs -n1 | uniq )
+    for x in ${cfg_protect_mask} ; do
+        echo "${x}" >> "${cfg_protect_mask_list}"
     done
 fi
+
 einfo "Updating CONFIG_PROTECT and CONFIG_PROTECT_MASK caches."
 
 # Now, update the lists with our current values.

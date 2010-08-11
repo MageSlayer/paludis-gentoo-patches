@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # vim: set et sw=4 sts=4 :
 
-# Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+# Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
 #
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General
@@ -31,7 +31,7 @@ einfo_unhooked "Checking whether the GNU info directory needs updating..."
 export INFOPATH=$(source /etc/profile.env 2>/dev/null ; echo $INFOPATH )
 
 regen_info_dirs=
-vdb_loc=$(${PALUDIS_COMMAND} --configuration-variable installed location )
+vdb_loc=$(${CAVE:-cave} print-repository-metadata installed --raw-name location --format '%v' )
 for info_path in ${INFOPATH//:/ } ; do
     info_path="${ROOT%/}/${info_path}"
     [[ -d "${info_path}" ]] || continue
