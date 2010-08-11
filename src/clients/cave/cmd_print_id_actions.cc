@@ -66,11 +66,13 @@ namespace
         }
 
         args::ArgsGroup g_spec_options;
+        args::SwitchArg a_all;
         args::SwitchArg a_best;
 
         PrintIDActionsCommandLine() :
             g_spec_options(main_options_section(), "Spec Options", "Alter how the supplied spec is used."),
-            a_best(&g_spec_options, "best", '\0', "If the spec matches multiple IDs, select the best ID rather than giving an error.", true)
+            a_all(&g_spec_options, "all", 'a', "If the spec matches multiple IDs, display all matches.", true),
+            a_best(&g_spec_options, "best", 'b', "If the spec matches multiple IDs, select the best ID rather than giving an error.", true)
         {
             add_usage_line("spec");
         }
@@ -110,18 +112,21 @@ PrintIDActionsCommand::run(
     if (entries->empty())
         throw NothingMatching(spec);
 
-    if ((! cmdline.a_best.specified()) && (next(entries->begin()) != entries->end()))
+    if ((! cmdline.a_best.specified()) && (! cmdline.a_all.specified())
+            && (next(entries->begin()) != entries->end()))
         throw BeMoreSpecific(spec, entries);
 
-    const std::shared_ptr<const PackageID> id(*entries->last());
-
-    do_one_action<ConfigAction>(id);
-    do_one_action<FetchAction>(id);
-    do_one_action<InfoAction>(id);
-    do_one_action<InstallAction>(id);
-    do_one_action<PretendAction>(id);
-    do_one_action<PretendFetchAction>(id);
-    do_one_action<UninstallAction>(id);
+    for (auto i(cmdline.a_best.specified() ? entries->last() : entries->begin()), i_end(entries->end()) ;
+            i != i_end ; ++i)
+    {
+        do_one_action<ConfigAction>(*i);
+        do_one_action<FetchAction>(*i);
+        do_one_action<InfoAction>(*i);
+        do_one_action<InstallAction>(*i);
+        do_one_action<PretendAction>(*i);
+        do_one_action<PretendFetchAction>(*i);
+        do_one_action<UninstallAction>(*i);
+    }
 
     return EXIT_SUCCESS;
 }

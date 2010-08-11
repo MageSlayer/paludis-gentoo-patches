@@ -66,6 +66,7 @@ namespace
         }
 
         args::ArgsGroup g_spec_options;
+        args::SwitchArg a_all;
         args::SwitchArg a_best;
 
         args::ArgsGroup g_filters;
@@ -77,6 +78,7 @@ namespace
 
         PrintIDMetadataCommandLine() :
             g_spec_options(main_options_section(), "Spec Options", "Alter how the supplied spec is used."),
+            a_all(&g_spec_options, "all", 'a', "If the spec matches multiple IDs, display all matches.", true),
             a_best(&g_spec_options, "best", '\0', "If the spec matches multiple IDs, select the best ID rather than giving an error.", true),
             g_filters(main_options_section(), "Filters", "Filter the output. Each filter may be specified more than once."),
             a_raw_name(&g_filters, "raw-name", '\0', "Show only keys with this raw name. If specified more than once, "
@@ -154,12 +156,15 @@ PrintIDMetadataCommand::run(
     if (entries->empty())
         throw NothingMatching(spec);
 
-    if ((! cmdline.a_best.specified()) && (next(entries->begin()) != entries->end()))
+    if ((! cmdline.a_best.specified()) && (! cmdline.a_all.specified())
+            && (next(entries->begin()) != entries->end()))
         throw BeMoreSpecific(spec, entries);
 
-    for (PackageID::MetadataConstIterator m((*entries->last())->begin_metadata()), m_end((*entries->last())->end_metadata()) ;
-            m != m_end ; ++m)
-        do_one_key(*m, cmdline, "");
+    for (auto i(cmdline.a_best.specified() ? entries->last() : entries->begin()), i_end(entries->end()) ;
+            i != i_end ; ++i)
+        for (PackageID::MetadataConstIterator m((*i)->begin_metadata()), m_end((*i)->end_metadata()) ;
+                m != m_end ; ++m)
+            do_one_key(*m, cmdline, "");
 
     return EXIT_SUCCESS;
 }

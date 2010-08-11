@@ -69,6 +69,7 @@ namespace
         }
 
         args::ArgsGroup g_spec_options;
+        args::SwitchArg a_all;
         args::SwitchArg a_best;
 
         args::ArgsGroup g_filter_options;
@@ -79,7 +80,8 @@ namespace
 
         PrintContentsCommandLine() :
             g_spec_options(main_options_section(), "Spec Options", "Alter how the supplied spec is used."),
-            a_best(&g_spec_options, "best", '\0', "If the spec matches multiple IDs, select the best ID rather than giving an error.", true),
+            a_all(&g_spec_options, "all", 'a', "If the spec matches multiple IDs, display all matches.", true),
+            a_best(&g_spec_options, "best", 'b', "If the spec matches multiple IDs, select the best ID rather than giving an error.", true),
             g_filter_options(main_options_section(), "Filter Options", "Alter which contents entries are displayed."),
             a_type(&g_filter_options, "type", 't', "Display only entries of the specified type",
                     args::EnumArg::EnumArgOptions
@@ -164,17 +166,21 @@ PrintIDContentsCommand::run(
     if (entries->empty())
         throw NothingMatching(spec);
 
-    if ((! cmdline.a_best.specified()) && (next(entries->begin()) != entries->end()))
+    if ((! cmdline.a_best.specified()) && (! cmdline.a_all.specified())
+            && (next(entries->begin()) != entries->end()))
         throw BeMoreSpecific(spec, entries);
 
-    const std::shared_ptr<const PackageID> id(*entries->last());
-    if (! id->contents_key())
-        throw BadIDForCommand(spec, id, "does not support listing contents");
+    for (auto i(cmdline.a_best.specified() ? entries->last() : entries->begin()), i_end(entries->end()) ;
+            i != i_end ; ++i)
+    {
+        if (! (*i)->contents_key())
+            throw BadIDForCommand(spec, (*i), "does not support listing contents");
 
-    for (auto c(id->contents_key()->value()->begin()), c_end(id->contents_key()->value()->end()) ;
-            c != c_end ; ++c)
-        if (match_type(cmdline.a_type, *c))
-            cout << format_plain_contents_entry(*c, cmdline.a_format.argument());
+        for (auto c((*i)->contents_key()->value()->begin()), c_end((*i)->contents_key()->value()->end()) ;
+                c != c_end ; ++c)
+            if (match_type(cmdline.a_type, *c))
+                cout << format_plain_contents_entry(*c, cmdline.a_format.argument());
+    }
 
     return EXIT_SUCCESS;
 }

@@ -71,6 +71,7 @@ namespace
         }
 
         args::ArgsGroup g_spec_options;
+        args::SwitchArg a_all;
         args::SwitchArg a_best;
 
         args::ArgsGroup g_filters;
@@ -82,6 +83,7 @@ namespace
 
         PrintIDMasksCommandLine() :
             g_spec_options(main_options_section(), "Spec Options", "Alter how the supplied spec is used."),
+            a_all(&g_spec_options, "all", 'a', "If the spec matches multiple IDs, display all matches.", true),
             a_best(&g_spec_options, "best", '\0', "If the spec matches multiple IDs, select the best ID rather than giving an error.", true),
             g_filters(main_options_section(), "Filters", "Filter the output."),
             a_overridden(&g_filters, "overridden", '\0', "Show overridden masks", true),
@@ -189,18 +191,23 @@ PrintIDMasksCommand::run(
     if (entries->empty())
         throw NothingMatching(spec);
 
-    if ((! cmdline.a_best.specified()) && (next(entries->begin()) != entries->end()))
+    if ((! cmdline.a_best.specified()) && (! cmdline.a_all.specified())
+            && (next(entries->begin()) != entries->end()))
         throw BeMoreSpecific(spec, entries);
 
-    if (! cmdline.a_no_active.specified())
-        for (PackageID::MasksConstIterator m((*entries->last())->begin_masks()), m_end((*entries->last())->end_masks()) ;
-                m != m_end ; ++m)
-            do_one_mask(*m, last_mro, cmdline);
+    for (auto i(cmdline.a_best.specified() ? entries->last() : entries->begin()), i_end(entries->end()) ;
+            i != i_end ; ++i)
+    {
+        if (! cmdline.a_no_active.specified())
+            for (PackageID::MasksConstIterator m((*i)->begin_masks()), m_end((*i)->end_masks()) ;
+                    m != m_end ; ++m)
+                do_one_mask(*m, last_mro, cmdline);
 
-    if (cmdline.a_overridden.specified())
-        for (PackageID::OverriddenMasksConstIterator m((*entries->last())->begin_overridden_masks()), m_end((*entries->last())->end_overridden_masks()) ;
-                m != m_end ; ++m)
-            do_one_mask((*m)->mask(), (*m)->override_reason(), cmdline);
+        if (cmdline.a_overridden.specified())
+            for (PackageID::OverriddenMasksConstIterator m((*i)->begin_overridden_masks()), m_end((*i)->end_overridden_masks()) ;
+                    m != m_end ; ++m)
+                do_one_mask((*m)->mask(), (*m)->override_reason(), cmdline);
+    }
 
     return EXIT_SUCCESS;
 }
