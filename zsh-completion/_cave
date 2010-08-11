@@ -181,7 +181,7 @@ _cave_cmd_fix-linkage()
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
     '(--execute -x --no-execute)'{--execute,-x,--no-execute}'[Execute the suggested actions]' \
-    '(--library -l)'{--library,-l}'[Only rebuild packages linked against this library, even if it exists]:Library: ' \
+    '*'{--library,-l}'[Only rebuild packages linked against this library, even if it exists]:Library: ' \
     '(--exact -e --no-exact)'{--exact,-e,--no-exact}'[Rebuild the same package version that is currently installed]'
 }
 
@@ -347,7 +347,8 @@ _cave_cmd_print-id-actions()
 {
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
-    '(--best --no-best)'{--best,--no-best}'[If the spec matches multiple IDs, select the best ID rather than giving an error]' \
+    '(--all -a --no-all)'{--all,-a,--no-all}'[If the spec matches multiple IDs, display all matches]' \
+    '(--best -b --no-best)'{--best,-b,--no-best}'[If the spec matches multiple IDs, select the best ID rather than giving an error]' \
     '*:package depspec:_cave_packages' && return 0
 }
 
@@ -356,8 +357,19 @@ _cave_cmd_print-id-contents()
 {
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
-    '(--best --no-best)'{--best,--no-best}'[If the spec matches multiple IDs, select the best ID rather than giving an error]' \
+    '(--all -a --no-all)'{--all,-a,--no-all}'[If the spec matches multiple IDs, display all matches]' \
+    '(--best -b --no-best)'{--best,-b,--no-best}'[If the spec matches multiple IDs, select the best ID rather than giving an error]' \
     '--format[Select the output format]:format: ' \
+    '*'{--type,-t}'[Display only entries of the specified type]:contents type:((all\:"Show all entries"
+                                                                                a\:"Show all entries"
+                                                                                file\:"Show only file entries"
+                                                                                f\:"Show only file entries"
+                                                                                dir\:"Show only directory entries"
+                                                                                d\:"Show only directory entries"
+                                                                                sym\:"Show only symlink entries"
+                                                                                s\:"Show only symlink entries"
+                                                                                other\:"Show only other entries"
+                                                                                o\:"Show only other entries"))' \
     '*:package depspec:_cave_packages' && return 0
 }
 
@@ -374,6 +386,7 @@ _cave_cmd_print-id-masks()
 {
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '(--all -a --no-all)'{--all,-a,--no-all}'[If the spec matches multiple IDs, display all matches]' \
     '(--best --no-best)'{--best,--no-best}'[If the spec matches multiple IDs, select the best ID rather than giving an error]' \
     '(--overridden --no-overridden)'{--overridden,--no-overridden}'[Show overridden masks]' \
     '(--no-active --no-no-active)'{--no-active,--no-no-active}'[No not show active (non-overridden) masks]' \
@@ -386,6 +399,7 @@ _cave_cmd_print-id-metadata()
 {
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '(--all -a --no-all)'{--all,-a,--no-all}'[If the spec matches multiple IDs, display all matches]' \
     '(--best --no-best)'{--best,--no-best}'[If the spec matches multiple IDs, select the best ID rather than giving an error]' \
     '*--raw-name[Show only keys with this raw name]:raw name: ' \
     '*--human-name[Show only keys with this human name]:human name: ' \
@@ -420,7 +434,9 @@ _cave_cmd_print-owners()
 _cave_cmd_print-packages()
 {
   _arguments -s : \
-    '(--help -h)'{--help,-h}'[Display help messsage]'
+    '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '*'{--repository,-r}'[Show only names in the specified repository]' \
+    '*'{--category,-c}'[Show only names in the specified category]'
 }
 
 (( ${+functions[_cave_cmd_print-repositories]} )) ||
