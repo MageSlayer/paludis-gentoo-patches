@@ -113,6 +113,7 @@
 
 #include <dlfcn.h>
 #include <stdint.h>
+#include <fcntl.h>
 
 #include "config.h"
 
@@ -2856,6 +2857,12 @@ ERepository::merge(const MergeParams & m)
                 cache.unlink();
         }
         while (false);
+    }
+
+    if (! has_category_named(m.package_id()->name().category()))
+    {
+        SafeOFStream s(_imp->layout->categories_file(), O_CREAT | O_WRONLY | O_CLOEXEC | O_APPEND);
+        s << m.package_id()->name().category() << std::endl;
     }
 }
 
