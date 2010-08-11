@@ -4,6 +4,27 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the Git log.
 
+0.52.3:
+    * A bug causing screwiness with soft-blocking EAPI 3 packages where both
+      packages installed the same file with an mtime in the distant past has
+      been fixed.
+
+    * GCC 4.5 appears to be unhappy with dlclose being called in a static
+      variable's destructor. We no longer do this.
+
+    * ACCEPT_LICENSE is now automatically set based upon accepted licences that
+      have been accepted by the user.
+
+    * 'cave print-id-*' now have '--all' and will accept wildcards.
+
+    * CONFIG_PROTECT and CONFIG_PROTECT_MASK for installed packages are now
+      accessible as metadata keys.
+
+    * Certain 'cave' commands will now suggest possibilities if there is nothing
+      matching the target supplied. Fuzzy name matching will now also suggest
+      packages whose names contain the target as a substring, as well as
+      packages whose names are similar to the target.
+
 0.52.2:
     * 'cave perform' now calls '_fail' hooks.
 
