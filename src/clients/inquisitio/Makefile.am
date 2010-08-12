@@ -21,10 +21,9 @@ man_inquisitio_SOURCES = \
 	command_line.hh       command_line.cc
 
 man_inquisitio_LDADD = \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/args/libpaludisargs_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/args/libpaludisman_@PALUDIS_PC_SLOT@.a \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/libpaludismanpagethings_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/src/output/liboutput.a \
 	$(DYNAMIC_LD_LIBS) \
 	$(PCRECPPDEPS_LIBS)

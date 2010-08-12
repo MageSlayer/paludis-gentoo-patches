@@ -80,8 +80,6 @@ libpaludispythonhooks_@PALUDIS_PC_SLOT@_la_CXXFLAGS = $(AM_CXXFLAGS) \
 libpaludispythonhooks_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0 @BOOST_PYTHON_LIB@ -lpython@PYTHON_VERSION@
 libpaludispythonhooks_@PALUDIS_PC_SLOT@_la_LIBADD = libpaludis_@PALUDIS_PC_SLOT@.la
 
-libpaludismanpagethings_@PALUDIS_PC_SLOT@_la_SOURCES = name.cc
-
 libpaludissohooks_TEST_@PALUDIS_PC_SLOT@_la_SOURCES = sohooks_TEST.cc
 
 # -rpath to force shared library
@@ -131,9 +129,6 @@ libpaludis_@PALUDIS_PC_SLOT@_la_LIBADD = \
 	@DYNAMIC_LD_LIBS@ \
 	$(PTHREAD_LIBS)
 
-libpaludismanpagethings_@PALUDIS_PC_SLOT@_la_LIBADD = \
-	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la
-
 TESTS = testlist
 
 check_PROGRAMS = $(TESTS) stripper_TEST_binary
@@ -146,7 +141,6 @@ paludis_libexecdir = $(libexecdir)/paludis
 paludis_libexec_SCRIPTS = hooker.bash
 
 lib_LTLIBRARIES = libpaludis_@PALUDIS_PC_SLOT@.la
-noinst_LTLIBRARIES = libpaludismanpagethings_@PALUDIS_PC_SLOT@.la
 
 if ENABLE_PYTHON_HOOKS
 lib_LTLIBRARIES += libpaludispythonhooks_@PALUDIS_PC_SLOT@.la

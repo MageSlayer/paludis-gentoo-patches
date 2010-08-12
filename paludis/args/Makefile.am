@@ -39,9 +39,7 @@ libpaludisargs_@PALUDIS_PC_SLOT@_la_SOURCES = \
 	args_visitor.cc \
 	args_dumper.cc \
 	escape.cc \
-	log_level_arg.cc
-
-libpaludisman_@PALUDIS_PC_SLOT@_a_SOURCES = \
+	log_level_arg.cc \
 	man.cc
 
 libpaludisargs_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
@@ -51,7 +49,6 @@ libpaludisargs_@PALUDIS_PC_SLOT@_la_LIBADD = \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la
 
 lib_LTLIBRARIES = libpaludisargs_@PALUDIS_PC_SLOT@.la
-noinst_LIBRARIES = libpaludisman_@PALUDIS_PC_SLOT@.a
 
 check_PROGRAMS = $(TESTS)
 
