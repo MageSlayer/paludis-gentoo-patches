@@ -235,7 +235,8 @@ namespace
             const PerformCommandLine & cmdline,
             const std::shared_ptr<const PackageID> & id,
             const std::string & action_name,
-            Action & action)
+            Action & action,
+            OutputManagerFromIPCOrEnvironment & output_manager_holder)
     {
         if (cmdline.a_x_of_y.specified() && ! cmdline.a_no_terminal_titles.specified())
             std::cout << "\x1b]2;" << cmdline.a_x_of_y.argument() << " " << action_name << " "
@@ -245,7 +246,7 @@ namespace
             if (0 != env->perform_hook(Hook(action_name + "_pre")
                         ("TARGET", stringify(*id))
                         ("X_OF_Y", cmdline.a_x_of_y.argument()),
-                        make_null_shared_ptr()).max_exit_status())
+                        output_manager_holder.output_manager_if_constructed()).max_exit_status())
                 throw ActionAbortedError("Aborted by hook");
 
         try
@@ -260,7 +261,7 @@ namespace
                             ("TARGET", stringify(*id))
                             ("MESSAGE", e.message())
                             ("X_OF_Y", cmdline.a_x_of_y.argument()),
-                            make_null_shared_ptr()));
+                            output_manager_holder.output_manager_if_constructed()));
             }
 
             throw;
@@ -270,7 +271,7 @@ namespace
             if (0 != env->perform_hook(Hook(action_name + "_post")
                         ("TARGET", stringify(*id))
                         ("X_OF_Y", cmdline.a_x_of_y.argument()),
-                        make_null_shared_ptr()).max_exit_status())
+                        output_manager_holder.output_manager_if_constructed()).max_exit_status())
                 throw ActionAbortedError("Aborted by hook");
 
         if (cmdline.a_x_of_y.specified() && ! cmdline.a_no_terminal_titles.specified())
@@ -288,10 +289,11 @@ namespace
             const PerformCommandLine & cmdline,
             const std::shared_ptr<const PackageID> & id,
             const std::string & action_name,
-            const UninstallActionOptions & options)
+            const UninstallActionOptions & options,
+            OutputManagerFromIPCOrEnvironment & output_manager_holder)
     {
         UninstallAction uninstall_action(options);
-        execute(env, cmdline, id, "clean", uninstall_action);
+        execute(env, cmdline, id, "clean", uninstall_action, output_manager_holder);
 
         if (cmdline.a_x_of_y.specified() && ! cmdline.a_no_terminal_titles.specified())
             std::cout << "\x1b]2;" << cmdline.a_x_of_y.argument() << " " << action_name << " "
@@ -428,7 +430,7 @@ PerformCommand::run(
                     n::make_output_manager() = std::ref(output_manager_holder)
                     ));
         ConfigAction config_action(options);
-        execute(env, cmdline, id, action, config_action);
+        execute(env, cmdline, id, action, config_action, output_manager_holder);
     }
     else if (action == "fetch")
     {
@@ -452,7 +454,7 @@ PerformCommand::run(
 
         try
         {
-            execute(env, cmdline, id, action, fetch_action);
+            execute(env, cmdline, id, action, fetch_action, output_manager_holder);
         }
         catch (const ActionFailedError &)
         {
@@ -485,7 +487,7 @@ PerformCommand::run(
                     n::want_phase() = std::bind(return_literal_function(wp_yes))
                     ));
         OurPretendFetchAction pretend_fetch_action(options);
-        execute(env, cmdline, id, action, pretend_fetch_action);
+        execute(env, cmdline, id, action, pretend_fetch_action, output_manager_holder);
 
         if (! output_manager_holder.output_manager_if_constructed())
             output_manager_holder(pretend_fetch_action);
@@ -507,7 +509,7 @@ PerformCommand::run(
                     n::make_output_manager() = std::ref(output_manager_holder)
                     ));
         InfoAction info_action(options);
-        execute(env, cmdline, id, action, info_action);
+        execute(env, cmdline, id, action, info_action, output_manager_holder);
     }
     else if (action == "install")
     {
@@ -542,13 +544,13 @@ PerformCommand::run(
                     n::make_output_manager() = std::ref(output_manager_holder),
                     n::perform_uninstall() = std::bind(&perform_uninstall,
                             env, std::cref(cmdline), std::placeholders::_1,
-                            action, std::placeholders::_2
+                            action, std::placeholders::_2, std::ref(output_manager_holder)
                             ),
                     n::replacing() = replacing,
                     n::want_phase() = want_phase
                     ));
         InstallAction install_action(options);
-        execute(env, cmdline, id, action, install_action);
+        execute(env, cmdline, id, action, install_action, output_manager_holder);
     }
     else if (action == "pretend")
     {
@@ -560,7 +562,7 @@ PerformCommand::run(
                     n::make_output_manager() = std::ref(output_manager_holder)
                     ));
         PretendAction pretend_action(options);
-        execute(env, cmdline, id, action, pretend_action);
+        execute(env, cmdline, id, action, pretend_action, output_manager_holder);
         if (pretend_action.failed())
             return EXIT_FAILURE;
     }
@@ -578,7 +580,7 @@ PerformCommand::run(
                     n::make_output_manager() = std::ref(output_manager_holder)
                     ));
         UninstallAction uninstall_action(options);
-        execute(env, cmdline, id, action, uninstall_action);
+        execute(env, cmdline, id, action, uninstall_action, output_manager_holder);
     }
     else
         throw args::DoHelp("action '" + action + "' unrecognised");
