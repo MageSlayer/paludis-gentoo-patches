@@ -2098,7 +2098,7 @@ ERepository::fetch(const std::shared_ptr<const ERepositoryID> & id,
                         n::maybe_output_manager() = output_manager,
                         n::package_builddir() = package_builddir,
                         n::package_id() = id,
-                        n::portdir() = 
+                        n::portdir() =
                             (_imp->params.master_repositories() && ! _imp->params.master_repositories()->empty()) ?
                             (*_imp->params.master_repositories()->begin())->params().location() : _imp->params.location(),
                         n::root() = "/",
@@ -2533,7 +2533,7 @@ ERepository::install(const std::shared_ptr<const ERepositoryID> & id,
                     n::maybe_output_manager() = output_manager,
                     n::package_builddir() = package_builddir,
                     n::package_id() = id,
-                    n::portdir() = 
+                    n::portdir() =
                         (_imp->params.master_repositories() && ! _imp->params.master_repositories()->empty()) ?
                         (*_imp->params.master_repositories()->begin())->params().location() : _imp->params.location(),
                     n::root() = install_action.options.destination()->installed_root_key() ?
