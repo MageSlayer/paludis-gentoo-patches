@@ -27,6 +27,7 @@
 #include <paludis/util/named_value.hh>
 #include <paludis/merger_entry_type.hh>
 #include <paludis/contents-fwd.hh>
+#include <paludis/output_manager-fwd.hh>
 #include <functional>
 
 /** \file
@@ -49,6 +50,7 @@ namespace paludis
     {
         typedef Name<struct environment_name> environment;
         typedef Name<struct ignore_name> ignore;
+        typedef Name<struct maybe_output_manager_name> maybe_output_manager;
         typedef Name<struct root_name> root;
     }
 
@@ -63,6 +65,7 @@ namespace paludis
     {
         NamedValue<n::environment, const Environment *> environment;
         NamedValue<n::ignore, const std::function<bool (const FSEntry &)> > ignore;
+        NamedValue<n::maybe_output_manager, std::shared_ptr<OutputManager> > maybe_output_manager;
         NamedValue<n::root, FSEntry> root;
     };
 

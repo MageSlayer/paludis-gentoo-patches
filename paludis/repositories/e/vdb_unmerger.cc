@@ -72,6 +72,7 @@ VDBUnmerger::VDBUnmerger(const VDBUnmergerOptions & o) :
     Unmerger(make_named_values<UnmergerOptions>(
                 n::environment() = o.environment(),
                 n::ignore() = o.ignore(),
+                n::maybe_output_manager() = o.output_manager(),
                 n::root() = o.root()
             )),
     Pimp<VDBUnmerger>(o),
