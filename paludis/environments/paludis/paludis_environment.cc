@@ -207,7 +207,9 @@ PaludisEnvironment::set_paludis_command(const std::string & s)
 }
 
 HookResult
-PaludisEnvironment::perform_hook(const Hook & hook) const
+PaludisEnvironment::perform_hook(
+        const Hook & hook,
+        const std::shared_ptr<OutputManager> & optional_output_manager) const
 {
     Lock lock(_imp->hook_mutex);
 
@@ -220,7 +222,7 @@ PaludisEnvironment::perform_hook(const Hook & hook) const
             _imp->hooker->add_dir(h->first, h->second);
     }
 
-    return _imp->hooker->perform_hook(hook);
+    return _imp->hooker->perform_hook(hook, optional_output_manager);
 }
 
 std::shared_ptr<const FSEntrySequence>

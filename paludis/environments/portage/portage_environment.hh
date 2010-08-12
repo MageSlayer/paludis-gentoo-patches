@@ -124,7 +124,9 @@ namespace paludis
             virtual std::shared_ptr<const MirrorsSequence> mirrors(const std::string &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual HookResult perform_hook(const Hook &) const
+            virtual HookResult perform_hook(
+                    const Hook &,
+                    const std::shared_ptr<OutputManager> &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual std::shared_ptr<PackageDatabase> package_database()

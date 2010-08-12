@@ -84,7 +84,7 @@ namespace paludis
 
             virtual const bool is_unimportant() const;
 
-            HookResult perform_hook(const Hook &)
+            HookResult perform_hook(const Hook &, const std::shared_ptr<OutputManager> &)
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /* Repository */

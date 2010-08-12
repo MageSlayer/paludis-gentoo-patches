@@ -24,6 +24,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/timestamp.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/selinux/security_context.hh>
 #include <paludis/environment.hh>
 #include <paludis/hook.hh>
@@ -82,7 +83,8 @@ Merger::check()
     if (0 != _imp->params.environment()->perform_hook(extend_hook(
                          Hook("merger_check_pre")
                          ("INSTALL_SOURCE", stringify(_imp->params.image()))
-                         ("INSTALL_DESTINATION", stringify(_imp->params.root())))).max_exit_status())
+                         ("INSTALL_DESTINATION", stringify(_imp->params.root()))),
+                make_null_shared_ptr()).max_exit_status())
         make_check_fail();
 
     do_dir_recursive(true, _imp->params.image(), _imp->params.root() / _imp->params.install_under());
@@ -90,7 +92,8 @@ Merger::check()
     if (0 != _imp->params.environment()->perform_hook(extend_hook(
                          Hook("merger_check_post")
                          ("INSTALL_SOURCE", stringify(_imp->params.image()))
-                         ("INSTALL_DESTINATION", stringify(_imp->params.root())))).max_exit_status())
+                         ("INSTALL_DESTINATION", stringify(_imp->params.root()))),
+                make_null_shared_ptr()).max_exit_status())
         make_check_fail();
 
     return _imp->result;
@@ -105,7 +108,8 @@ Merger::merge()
     if (0 != _imp->params.environment()->perform_hook(extend_hook(
                          Hook("merger_install_pre")
                          ("INSTALL_SOURCE", stringify(_imp->params.image()))
-                         ("INSTALL_DESTINATION", stringify(_imp->params.root())))).max_exit_status())
+                         ("INSTALL_DESTINATION", stringify(_imp->params.root()))),
+                make_null_shared_ptr()).max_exit_status())
         Log::get_instance()->message("merger.pre_hooks.failure", ll_warning, lc_context) <<
             "Merge of '" << _imp->params.image() << "' to '" << _imp->params.root() << "' pre hooks returned non-zero";
 
@@ -120,7 +124,8 @@ Merger::merge()
     if (0 != _imp->params.environment()->perform_hook(extend_hook(
                          Hook("merger_install_post")
                          ("INSTALL_SOURCE", stringify(_imp->params.image()))
-                         ("INSTALL_DESTINATION", stringify(_imp->params.root())))).max_exit_status())
+                         ("INSTALL_DESTINATION", stringify(_imp->params.root()))),
+                make_null_shared_ptr()).max_exit_status())
         Log::get_instance()->message("merger.post_hooks.failure", ll_warning, lc_context) <<
             "Merge of '" << _imp->params.image() << "' to '" << _imp->params.root() << "' post hooks returned non-zero";
 }
@@ -233,7 +238,8 @@ Merger::on_file(bool is_check, const FSEntry & src, const FSEntry & dst)
         0 != _imp->params.environment()->perform_hook(extend_hook(
                          Hook("merger_check_file_pre")
                          ("INSTALL_SOURCE", stringify(src))
-                         ("INSTALL_DESTINATION", stringify(dst / src.basename())))).max_exit_status())
+                         ("INSTALL_DESTINATION", stringify(dst / src.basename()))),
+            make_null_shared_ptr()).max_exit_status())
         make_check_fail();
 
     if (! is_check)
@@ -242,7 +248,8 @@ Merger::on_file(bool is_check, const FSEntry & src, const FSEntry & dst)
                         Hook("merger_install_file_override")
                         ("INSTALL_SOURCE", stringify(src))
                         ("INSTALL_DESTINATION", stringify(dst / src.basename()))
-                        .grab_output(Hook::AllowedOutputValues()("skip")))));
+                        .grab_output(Hook::AllowedOutputValues()("skip"))),
+                    make_null_shared_ptr()));
 
         if (hr.max_exit_status() != 0)
             Log::get_instance()->message("merger.file.skip_hooks.failure", ll_warning, lc_context) << "Merge of '"
@@ -264,7 +271,8 @@ Merger::on_file(bool is_check, const FSEntry & src, const FSEntry & dst)
         0 != _imp->params.environment()->perform_hook(extend_hook(
                          Hook("merger_check_file_post")
                          ("INSTALL_SOURCE", stringify(src))
-                         ("INSTALL_DESTINATION", stringify(dst / src.basename())))).max_exit_status())
+                         ("INSTALL_DESTINATION", stringify(dst / src.basename()))),
+            make_null_shared_ptr()).max_exit_status())
         make_check_fail();
 }
 
@@ -277,7 +285,8 @@ Merger::on_dir(bool is_check, const FSEntry & src, const FSEntry & dst)
         0 != _imp->params.environment()->perform_hook(extend_hook(
                          Hook("merger_check_dir_pre")
                          ("INSTALL_SOURCE", stringify(src))
-                         ("INSTALL_DESTINATION", stringify(dst / src.basename())))).max_exit_status())
+                         ("INSTALL_DESTINATION", stringify(dst / src.basename()))),
+            make_null_shared_ptr()).max_exit_status())
         make_check_fail();
 
     if (! is_check)
@@ -286,7 +295,8 @@ Merger::on_dir(bool is_check, const FSEntry & src, const FSEntry & dst)
                         Hook("merger_install_dir_override")
                         ("INSTALL_SOURCE", stringify(src))
                         ("INSTALL_DESTINATION", stringify(dst / src.basename()))
-                        .grab_output(Hook::AllowedOutputValues()("skip")))));
+                        .grab_output(Hook::AllowedOutputValues()("skip"))),
+                    make_null_shared_ptr()));
 
         if (hr.max_exit_status() != 0)
             Log::get_instance()->message("merger.dir.skip_hooks.failure", ll_warning, lc_context) << "Merge of '"
@@ -306,7 +316,8 @@ Merger::on_dir(bool is_check, const FSEntry & src, const FSEntry & dst)
         0 != _imp->params.environment()->perform_hook(extend_hook(
                          Hook("merger_check_dir_post")
                          ("INSTALL_SOURCE", stringify(src))
-                         ("INSTALL_DESTINATION", stringify(dst / src.basename())))).max_exit_status())
+                         ("INSTALL_DESTINATION", stringify(dst / src.basename()))),
+            make_null_shared_ptr()).max_exit_status())
         make_check_fail();
 }
 
@@ -319,7 +330,8 @@ Merger::on_sym(bool is_check, const FSEntry & src, const FSEntry & dst)
         0 != _imp->params.environment()->perform_hook(extend_hook(
                          Hook("merger_check_sym_pre")
                          ("INSTALL_SOURCE", stringify(src))
-                         ("INSTALL_DESTINATION", stringify(dst / src.basename())))).max_exit_status())
+                         ("INSTALL_DESTINATION", stringify(dst / src.basename()))),
+            make_null_shared_ptr()).max_exit_status())
         make_check_fail();
 
     if (! is_check)
@@ -328,7 +340,8 @@ Merger::on_sym(bool is_check, const FSEntry & src, const FSEntry & dst)
                         Hook("merger_install_sym_override")
                         ("INSTALL_SOURCE", stringify(src))
                         ("INSTALL_DESTINATION", stringify(dst / src.basename()))
-                        .grab_output(Hook::AllowedOutputValues()("skip")))));
+                        .grab_output(Hook::AllowedOutputValues()("skip"))),
+                    make_null_shared_ptr()));
 
         if (hr.max_exit_status() != 0)
             Log::get_instance()->message("merger.sym.skip_hooks.failure", ll_warning, lc_context) << "Merge of '"
@@ -356,7 +369,8 @@ Merger::on_sym(bool is_check, const FSEntry & src, const FSEntry & dst)
         0 != _imp->params.environment()->perform_hook(extend_hook(
                          Hook("merger_check_sym_post")
                          ("INSTALL_SOURCE", stringify(src))
-                         ("INSTALL_DESTINATION", stringify(dst / src.basename())))).max_exit_status())
+                         ("INSTALL_DESTINATION", stringify(dst / src.basename()))),
+            make_null_shared_ptr()).max_exit_status())
         make_check_fail();
 }
 

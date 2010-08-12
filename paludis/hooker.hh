@@ -24,6 +24,7 @@
 #include <paludis/util/pimp.hh>
 #include <paludis/util/graph-fwd.hh>
 #include <paludis/util/sequence-fwd.hh>
+#include <paludis/output_manager-fwd.hh>
 #include <memory>
 #include <string>
 
@@ -64,9 +65,17 @@ namespace paludis
 
             ///\}
 
-            virtual HookResult run(const Hook &) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+            /**
+             * \since 0.53 takes optional_output_manager
+             */
+            virtual HookResult run(
+                    const Hook &,
+                    const std::shared_ptr<OutputManager> & optional_output_manager) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
             virtual const FSEntry file_name() const = 0;
+
             virtual void add_dependencies(const Hook &, DirectedGraph<std::string, int> &) = 0;
+
             virtual const std::shared_ptr<const Sequence<std::string> > auto_hook_names() const = 0;
     };
 
@@ -96,8 +105,12 @@ namespace paludis
 
             /**
              * Perform a hook, return HookResult.
+             *
+             * \since 0.53 takes optional_output_manager
              */
-            HookResult perform_hook(const Hook &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+            HookResult perform_hook(
+                    const Hook &,
+                    const std::shared_ptr<OutputManager> & optional_output_manager) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Add a new hook directory.

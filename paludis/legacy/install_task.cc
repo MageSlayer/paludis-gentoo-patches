@@ -50,6 +50,7 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/return_literal_function.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/create_output_manager_info.hh>
 #include <paludis/output_manager_from_environment.hh>
 #include <paludis/output_manager.hh>
@@ -590,10 +591,9 @@ InstallTask::_display_task_list()
 
     if (_imp->pretend &&
         0 != perform_hook(Hook("install_pretend_pre")
-                                    ("TARGETS", join(
-                                        _imp->raw_targets.begin(), _imp->raw_targets.end(), " "))
-                                    ("DEPLIST_HAS_ERRORS", stringify(_imp->dep_list.has_errors()))
-                        ).max_exit_status())
+                                    ("TARGETS", join(_imp->raw_targets.begin(), _imp->raw_targets.end(), " "))
+                                    ("DEPLIST_HAS_ERRORS", stringify(_imp->dep_list.has_errors())),
+                        make_null_shared_ptr()).max_exit_status())
         throw ActionAbortedError("Pretend install aborted by hook");
 
     on_display_merge_list_pre();
@@ -605,7 +605,8 @@ InstallTask::_display_task_list()
         if (_imp->pretend &&
                 0 != perform_hook(Hook("install_pretend_display_item_pre")
                     ("TARGET", stringify(*dep->package_id()))
-                    ("KIND", stringify(dep->kind()))).max_exit_status())
+                    ("KIND", stringify(dep->kind())),
+                    make_null_shared_ptr()).max_exit_status())
             throw ActionAbortedError("Pretend install aborted by hook");
 
         on_display_merge_list_entry(*dep);
@@ -613,7 +614,8 @@ InstallTask::_display_task_list()
         if (_imp->pretend &&
                 0 != perform_hook(Hook("install_pretend_display_item_post")
                     ("TARGET", stringify(*dep->package_id()))
-                    ("KIND", stringify(dep->kind()))).max_exit_status())
+                    ("KIND", stringify(dep->kind())),
+                    make_null_shared_ptr()).max_exit_status())
             throw ActionAbortedError("Pretend install aborted by hook");
     }
 
@@ -803,10 +805,9 @@ InstallTask::_pretend()
     if (_imp->pretend)
     {
         if (0 != perform_hook(Hook("install_pretend_post")
-                                    ("TARGETS", join(
-                                        _imp->raw_targets.begin(), _imp->raw_targets.end(), " "))
-                                    ("DEPLIST_HAS_ERRORS", stringify(_imp->dep_list.has_errors()))
-                        ).max_exit_status())
+                                    ("TARGETS", join(_imp->raw_targets.begin(), _imp->raw_targets.end(), " "))
+                                    ("DEPLIST_HAS_ERRORS", stringify(_imp->dep_list.has_errors())),
+                        make_null_shared_ptr()).max_exit_status())
             throw ActionAbortedError("Pretend install aborted by hook");
     }
 
@@ -823,7 +824,8 @@ InstallTask::_clean(
 {
     /* clean one item */
     if (0 != perform_hook(Hook("clean_pre")("TARGET", stringify(*id))
-                 ("X_OF_Y", stringify(x) + " of " + stringify(y))).max_exit_status())
+                 ("X_OF_Y", stringify(x) + " of " + stringify(y)),
+                 make_null_shared_ptr()).max_exit_status())
         throw ActionAbortedError("Clean of '" + cpvr + "' aborted by hook");
     on_clean_pre(*dep, *id, x, y, s, f);
 
@@ -836,13 +838,15 @@ InstallTask::_clean(
     {
         on_clean_fail(*dep, *id, x, y, s, f);
         HookResult PALUDIS_ATTRIBUTE((unused)) dummy(perform_hook(Hook("clean_fail")
-                    ("TARGET", stringify(*id))("MESSAGE", e.message())));
+                    ("TARGET", stringify(*id))("MESSAGE", e.message()),
+                    make_null_shared_ptr()));
         throw;
     }
 
     on_clean_post(*dep, *id, x, y, s, f);
     if (0 != perform_hook(Hook("clean_post")("TARGET", stringify(*id))
-                 ("X_OF_Y", stringify(x) + " of " + stringify(y))).max_exit_status())
+                 ("X_OF_Y", stringify(x) + " of " + stringify(y)),
+                 make_null_shared_ptr()).max_exit_status())
         throw ActionAbortedError("Clean of '" + cpvr + "' aborted by hook");
 }
 
@@ -868,7 +872,8 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
     {
         if (0 != perform_hook(Hook("fetch_pre")
                      ("TARGET", cpvr)
-                     ("X_OF_Y", stringify(x) + " of " + stringify(y))).max_exit_status())
+                     ("X_OF_Y", stringify(x) + " of " + stringify(y)),
+                     make_null_shared_ptr()).max_exit_status())
             throw ActionAbortedError("Fetch of '" + cpvr + "' aborted by hook");
         on_fetch_pre(*dep, x, y, s, f);
     }
@@ -877,7 +882,8 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
         if (0 != perform_hook(Hook("install_pre")
                      ("TARGET", cpvr)
                      ("X_OF_Y", stringify(x) + " of " + stringify(y))
-                     ("PALUDIS_NO_LIVE_DESTINATION", live_destination ? "" : "yes")).max_exit_status())
+                     ("PALUDIS_NO_LIVE_DESTINATION", live_destination ? "" : "yes"),
+                     make_null_shared_ptr()).max_exit_status())
             throw ActionAbortedError("Install of '" + cpvr + "' aborted by hook");
         on_install_pre(*dep, x, y, s, f);
     }
@@ -957,7 +963,8 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
     catch (const ActionFailedError & e)
     {
         on_install_fail(*dep, x, y, s, f);
-        HookResult PALUDIS_ATTRIBUTE((unused)) dummy(perform_hook(Hook("install_fail")("TARGET", cpvr)("MESSAGE", e.message())));
+        HookResult PALUDIS_ATTRIBUTE((unused)) dummy(perform_hook(Hook("install_fail")("TARGET", cpvr)("MESSAGE", e.message()),
+                    make_null_shared_ptr()));
         throw;
     }
 
@@ -967,7 +974,8 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
         on_fetch_post(*dep, x, y, s, f);
         if (0 != perform_hook(Hook("fetch_post")
                      ("TARGET", cpvr)
-                     ("X_OF_Y", stringify(x) + " of " + stringify(y))).max_exit_status())
+                     ("X_OF_Y", stringify(x) + " of " + stringify(y)),
+                     make_null_shared_ptr()).max_exit_status())
             throw ActionAbortedError("Fetch of '" + cpvr + "' aborted by hook");
     }
     else
@@ -976,7 +984,8 @@ InstallTask::_one(const DepList::Iterator dep, const int x, const int y, const i
         if (0 != perform_hook(Hook("install_post")
                      ("TARGET", cpvr)
                      ("X_OF_Y", stringify(x) + " of " + stringify(y))
-                     ("PALUDIS_NO_LIVE_DESTINATION", live_destination ? "" : "yes")).max_exit_status())
+                     ("PALUDIS_NO_LIVE_DESTINATION", live_destination ? "" : "yes"),
+                     make_null_shared_ptr()).max_exit_status())
             throw ActionAbortedError("Install of '" + cpvr + "' aborted by hook");
     }
 
@@ -1014,7 +1023,8 @@ InstallTask::_main_actions_pre_hooks()
     if (_imp->fetch_only)
     {
         if (0 != perform_hook(Hook("fetch_all_pre")("TARGETS", join(
-                             _imp->raw_targets.begin(), _imp->raw_targets.end(), " "))).max_exit_status())
+                             _imp->raw_targets.begin(), _imp->raw_targets.end(), " ")),
+                    make_null_shared_ptr()).max_exit_status())
             throw ActionAbortedError("Fetch aborted by hook");
         on_fetch_all_pre();
     }
@@ -1029,7 +1039,8 @@ InstallTask::_main_actions_pre_hooks()
 
         if (0 != perform_hook(Hook("install_all_pre")
                      ("TARGETS", join(_imp->raw_targets.begin(), _imp->raw_targets.end(), " "))
-                     ("PALUDIS_NO_LIVE_DESTINATION", any_live_destination ? "" : "yes")).max_exit_status())
+                     ("PALUDIS_NO_LIVE_DESTINATION", any_live_destination ? "" : "yes"),
+                     make_null_shared_ptr()).max_exit_status())
             throw ActionAbortedError("Install aborted by hook");
         on_install_all_pre();
     }
@@ -1217,14 +1228,16 @@ InstallTask::_main_actions_post_hooks()
     {
         on_fetch_all_post();
         if (0 != perform_hook(Hook("fetch_all_post")("TARGETS", join(
-                             _imp->raw_targets.begin(), _imp->raw_targets.end(), " "))).max_exit_status())
+                             _imp->raw_targets.begin(), _imp->raw_targets.end(), " ")),
+                    make_null_shared_ptr()).max_exit_status())
             throw ActionAbortedError("Fetch aborted by hook");
     }
     else
     {
         on_install_all_post();
         if (0 != perform_hook(Hook("install_all_post")("TARGETS", join(
-                             _imp->raw_targets.begin(), _imp->raw_targets.end(), " "))).max_exit_status())
+                             _imp->raw_targets.begin(), _imp->raw_targets.end(), " ")),
+                    make_null_shared_ptr()).max_exit_status())
             throw ActionAbortedError("Install aborted by hook");
     }
 }
@@ -1262,7 +1275,8 @@ InstallTask::execute()
                     ("PRETEND", stringify(_imp->pretend))
                     ("FETCH_ONLY", stringify(_imp->fetch_only))
                     ("DEPLIST_HAS_ERRORS", stringify(_imp->dep_list.has_errors()))
-                    ).max_exit_status())
+                    ,
+                    make_null_shared_ptr()).max_exit_status())
             throw ActionAbortedError("Install task execute aborted by hook");
 
         _execute();
@@ -1311,7 +1325,8 @@ InstallTask::execute()
                 ("FETCH_ONLY", stringify(_imp->fetch_only))
                 ("SUCCESS", stringify(success))
                 ("DEPLIST_HAS_ERRORS", stringify(_imp->dep_list.has_errors()))
-                ).max_exit_status())
+                ,
+                make_null_shared_ptr()).max_exit_status())
         throw ActionAbortedError("Install task execute aborted by hook");
 }
 
@@ -1381,9 +1396,9 @@ InstallTask::set_safe_resume(const bool value)
 }
 
 HookResult
-InstallTask::perform_hook(const Hook & hook)
+InstallTask::perform_hook(const Hook & hook, const std::shared_ptr<OutputManager> & optional_output_manager)
 {
-    return _imp->env->perform_hook(hook);
+    return _imp->env->perform_hook(hook, optional_output_manager);
 }
 
 void

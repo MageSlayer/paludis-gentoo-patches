@@ -355,7 +355,8 @@ UninstallTask::execute()
 
     if (0 !=
         _imp->env->perform_hook(Hook("uninstall_all_pre")("TARGETS", join(_imp->raw_targets.begin(),
-                         _imp->raw_targets.end(), " "))).max_exit_status())
+                         _imp->raw_targets.end(), " ")),
+            make_null_shared_ptr()).max_exit_status())
         throw ActionAbortedError("Uninstall aborted by hook");
     on_uninstall_all_pre();
 
@@ -374,7 +375,8 @@ UninstallTask::execute()
 
         if (0 !=
             _imp->env->perform_hook(Hook("uninstall_pre")("TARGET", cpvr)
-                     ("X_OF_Y", stringify(x) + " of " + stringify(y))).max_exit_status())
+                     ("X_OF_Y", stringify(x) + " of " + stringify(y)),
+                     make_null_shared_ptr()).max_exit_status())
             throw ActionAbortedError("Uninstall of '" + cpvr + "' aborted by hook");
         on_uninstall_pre(*i);
 
@@ -397,21 +399,24 @@ UninstallTask::execute()
         }
         catch (const ActionFailedError & e)
         {
-            HookResult PALUDIS_ATTRIBUTE((unused)) dummy(_imp->env->perform_hook(Hook("uninstall_fail")("TARGET", cpvr)("MESSAGE", e.message())));
+            HookResult PALUDIS_ATTRIBUTE((unused)) dummy(_imp->env->perform_hook(Hook("uninstall_fail")("TARGET", cpvr)("MESSAGE", e.message()),
+                        make_null_shared_ptr()));
             throw;
         }
 
         on_uninstall_post(*i);
         if (0 !=
             _imp->env->perform_hook(Hook("uninstall_post")("TARGET", cpvr)
-                     ("X_OF_Y", stringify(x) + " of " + stringify(y))).max_exit_status())
+                     ("X_OF_Y", stringify(x) + " of " + stringify(y)),
+                     make_null_shared_ptr()).max_exit_status())
             throw ActionAbortedError("Uninstall of '" + cpvr + "' aborted by hook");
     }
 
     on_uninstall_all_post();
     if (0 !=
         _imp->env->perform_hook(Hook("uninstall_all_post")("TARGETS", join(_imp->raw_targets.begin(),
-                         _imp->raw_targets.end(), " "))).max_exit_status())
+                         _imp->raw_targets.end(), " ")),
+            make_null_shared_ptr()).max_exit_status())
         throw ActionAbortedError("Uninstall aborted by hook");
 }
 

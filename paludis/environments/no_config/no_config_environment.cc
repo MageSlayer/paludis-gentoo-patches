@@ -542,7 +542,10 @@ NoConfigEnvironment::root() const
 }
 
 HookResult
-NoConfigEnvironment::perform_hook(const Hook &) const
+NoConfigEnvironment::perform_hook(
+        const Hook &,
+        const std::shared_ptr<OutputManager> &
+        ) const
 {
     return make_named_values<HookResult>(n::max_exit_status() = 0, n::output() = "");
 }

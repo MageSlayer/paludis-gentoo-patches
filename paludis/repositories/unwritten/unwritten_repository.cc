@@ -358,7 +358,7 @@ UnwrittenRepository::populate_sets() const
 }
 
 HookResult
-UnwrittenRepository::perform_hook(const Hook &)
+UnwrittenRepository::perform_hook(const Hook &, const std::shared_ptr<OutputManager> &)
 {
     return make_named_values<HookResult>(n::max_exit_status() = 0, n::output() = "");
 }

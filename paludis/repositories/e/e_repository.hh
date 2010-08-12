@@ -149,7 +149,7 @@ namespace paludis
             std::string profile_variable(const std::string &) const;
             std::string environment_updated_profile_variable(const std::string &) const;
 
-            HookResult perform_hook(const Hook &)
+            HookResult perform_hook(const Hook &, const std::shared_ptr<OutputManager> &)
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual std::shared_ptr<const CategoryNamePartSet> unimportant_category_names() const;

@@ -24,6 +24,7 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/safe_ifstream.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
 #include <iterator>
@@ -45,19 +46,24 @@ namespace test_cases
 
             hooker.add_dir(FSEntry("hooker_TEST_dir/"), false);
 #ifdef ENABLE_PYTHON_HOOKS
-            result = hooker.perform_hook(Hook("py_hook"));
+            result = hooker.perform_hook(Hook("py_hook"),
+                    make_null_shared_ptr());
             TEST_CHECK_EQUAL(result.max_exit_status(), 0);
 #endif
-            result = hooker.perform_hook(Hook("simple_hook"));
+            result = hooker.perform_hook(Hook("simple_hook"),
+                    make_null_shared_ptr());
             TEST_CHECK_EQUAL(result.max_exit_status(), 3);
             TEST_CHECK_EQUAL(result.output(), "");
-            result = hooker.perform_hook(Hook("fancy_hook"));
+            result = hooker.perform_hook(Hook("fancy_hook"),
+                    make_null_shared_ptr());
             TEST_CHECK_EQUAL(result.max_exit_status(), 5);
             TEST_CHECK_EQUAL(result.output(), "");
-            result = hooker.perform_hook(Hook("so_hook"));
+            result = hooker.perform_hook(Hook("so_hook"),
+                    make_null_shared_ptr());
             TEST_CHECK_EQUAL(result.max_exit_status(), 6);
             TEST_CHECK_EQUAL(result.output(), "");
-            result = hooker.perform_hook(Hook("several_hooks"));
+            result = hooker.perform_hook(Hook("several_hooks"),
+                    make_null_shared_ptr());
             TEST_CHECK_EQUAL(result.max_exit_status(), 7);
             TEST_CHECK_EQUAL(result.output(), "");
 
@@ -76,7 +82,8 @@ namespace test_cases
             FSEntry("hooker_TEST_dir/ordering.out").unlink();
 
             hooker.add_dir(FSEntry("hooker_TEST_dir/"), false);
-            HookResult result(hooker.perform_hook(Hook("ordering")));
+            HookResult result(hooker.perform_hook(Hook("ordering"),
+                        make_null_shared_ptr()));
             TEST_CHECK_EQUAL(result.max_exit_status(), 0);
             TEST_CHECK_EQUAL(result.output(), "");
 
@@ -104,7 +111,8 @@ namespace test_cases
             FSEntry("hooker_TEST_dir/bad_hooks.out").unlink();
 
             hooker.add_dir(FSEntry("hooker_TEST_dir/"), false);
-            HookResult result(hooker.perform_hook(Hook("bad_hooks")));
+            HookResult result(hooker.perform_hook(Hook("bad_hooks"),
+                        make_null_shared_ptr()));
             TEST_CHECK_EQUAL(result.max_exit_status(), 123);
             TEST_CHECK_EQUAL(result.output(), "");
 
@@ -127,7 +135,8 @@ namespace test_cases
             FSEntry("hooker_TEST_dir/cycles.out").unlink();
 
             hooker.add_dir(FSEntry("hooker_TEST_dir/"), false);
-            HookResult result(hooker.perform_hook(Hook("cycles")));
+            HookResult result(hooker.perform_hook(Hook("cycles"),
+                        make_null_shared_ptr()));
             TEST_CHECK_EQUAL(result.max_exit_status(), 0);
             TEST_CHECK_EQUAL(result.output(), "");
 
@@ -153,44 +162,52 @@ namespace test_cases
             hooker.add_dir(FSEntry("hooker_TEST_dir/"), false);
 
             result = hooker.perform_hook(Hook("simple_hook_output")
-                    .grab_output(Hook::AllowedOutputValues()("foo")));
+                    .grab_output(Hook::AllowedOutputValues()("foo")),
+                    make_null_shared_ptr());
             TEST_CHECK_EQUAL(result.max_exit_status(), 0);
             TEST_CHECK_EQUAL(result.output(), "foo");
 
             result = hooker.perform_hook(Hook("fancy_hook_output")
-                    .grab_output(Hook::AllowedOutputValues()("foo")));
+                    .grab_output(Hook::AllowedOutputValues()("foo")),
+                    make_null_shared_ptr());
             TEST_CHECK_EQUAL(result.max_exit_status(), 0);
             TEST_CHECK_EQUAL(result.output(), "foo");
 
             result = hooker.perform_hook(Hook("so_hook_output")
-                     .grab_output(Hook::AllowedOutputValues()("foo")));
+                     .grab_output(Hook::AllowedOutputValues()("foo")),
+                     make_null_shared_ptr());
             TEST_CHECK_EQUAL(result.max_exit_status(), 0);
             TEST_CHECK_EQUAL(result.output(), "foo");
 
 #ifdef ENABLE_PYTHON_HOOKS
             result = hooker.perform_hook(Hook("py_hook_output")
-                     .grab_output(Hook::AllowedOutputValues()("foo")));
+                     .grab_output(Hook::AllowedOutputValues()("foo")),
+                     make_null_shared_ptr());
             TEST_CHECK_EQUAL(result.max_exit_status(), 0);
             TEST_CHECK_EQUAL(result.output(), "foo");
 #endif
 
             result = hooker.perform_hook(Hook("several_hooks_output")
-                    .grab_output(Hook::AllowedOutputValues()));
+                    .grab_output(Hook::AllowedOutputValues()),
+                    make_null_shared_ptr());
             TEST_CHECK_EQUAL(result.max_exit_status(), 0);
             TEST_CHECK_EQUAL(result.output(), "one");
 
             result = hooker.perform_hook(Hook("several_hooks_output")
-                    .grab_output(Hook::AllowedOutputValues()("one")));
+                    .grab_output(Hook::AllowedOutputValues()("one")),
+                    make_null_shared_ptr());
             TEST_CHECK_EQUAL(result.max_exit_status(), 0);
             TEST_CHECK_EQUAL(result.output(), "one");
 
             result = hooker.perform_hook(Hook("several_hooks_output")
-                    .grab_output(Hook::AllowedOutputValues()("two")("three")));
+                    .grab_output(Hook::AllowedOutputValues()("two")("three")),
+                    make_null_shared_ptr());
             TEST_CHECK_EQUAL(result.max_exit_status(), 0);
             TEST_CHECK_EQUAL(result.output(), "two");
 
             result = hooker.perform_hook(Hook("several_hooks_output")
-                    .grab_output(Hook::AllowedOutputValues()("blah")));
+                    .grab_output(Hook::AllowedOutputValues()("blah")),
+                    make_null_shared_ptr());
             TEST_CHECK_EQUAL(result.output(), "");
             TEST_CHECK_EQUAL(result.max_exit_status(), 0);
 
@@ -216,7 +233,8 @@ namespace test_cases
             hooker.add_dir(FSEntry("hooker_TEST_dir/"), false);
 
             HookResult result(hooker.perform_hook(Hook("several_hooks_output_bad")
-                        .grab_output(Hook::AllowedOutputValues())));
+                        .grab_output(Hook::AllowedOutputValues()),
+                        make_null_shared_ptr()));
             TEST_CHECK_EQUAL(result.output(), "two");
             TEST_CHECK_EQUAL(result.max_exit_status(), 99);
 

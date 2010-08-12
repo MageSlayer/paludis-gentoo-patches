@@ -31,6 +31,7 @@
 #include <paludis/util/return_literal_function.hh>
 #include <paludis/util/executor.hh>
 #include <paludis/util/timestamp.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/standard_output_manager.hh>
 #include <paludis/repository.hh>
@@ -156,8 +157,8 @@ namespace
                             ("TARGET", stringify(name))
                             ("NUMBER_DONE", stringify(executor->done()))
                             ("NUMBER_ACTIVE", stringify(executor->active()))
-                            ("NUMBER_PENDING", stringify(executor->pending()))
-                            ).max_exit_status())
+                            ("NUMBER_PENDING", stringify(executor->pending())),
+                            make_null_shared_ptr()).max_exit_status())
                     throw SyncFailedError("Sync aborted by hook");
 
                 const std::shared_ptr<Repository> repo(env->package_database()->fetch_repository(name));
@@ -258,8 +259,8 @@ namespace
                                 ("TARGET", stringify(name))
                                 ("NUMBER_DONE", stringify(executor->done()))
                                 ("NUMBER_ACTIVE", stringify(executor->active()))
-                                ("NUMBER_PENDING", stringify(executor->pending()))
-                                ).max_exit_status())
+                                ("NUMBER_PENDING", stringify(executor->pending())),
+                                make_null_shared_ptr()).max_exit_status())
                         throw SyncFailedError("Sync aborted by hook");
                 }
 
@@ -385,8 +386,8 @@ SyncCommand::run(
     cout << format_general_s(f::sync_heading(), "Starting sync");
 
     if (0 != env->perform_hook(Hook("sync_all_pre")
-                ("TARGETS", join(repos.begin(), repos.end(), " ")
-                )).max_exit_status())
+                ("TARGETS", join(repos.begin(), repos.end(), " ")),
+                make_null_shared_ptr()).max_exit_status())
         throw SyncFailedError("Sync aborted by hook");
 
     cout << format_general_s(f::sync_repos_title(), "");
@@ -401,8 +402,8 @@ SyncCommand::run(
     }
 
     if (0 != env->perform_hook(Hook("sync_all_post")
-                ("TARGETS", join(repos.begin(), repos.end(), " ")
-                )).max_exit_status())
+                ("TARGETS", join(repos.begin(), repos.end(), " ")),
+                make_null_shared_ptr()).max_exit_status())
         throw SyncFailedError("Sync aborted by hook");
 
     return retcode;

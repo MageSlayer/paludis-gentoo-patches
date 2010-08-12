@@ -326,7 +326,7 @@ RepositoryRepository::populate_sets() const
 }
 
 HookResult
-RepositoryRepository::perform_hook(const Hook &)
+RepositoryRepository::perform_hook(const Hook &, const std::shared_ptr<OutputManager> &)
 {
     return make_named_values<HookResult>(n::max_exit_status() = 0, n::output() = "");
 }

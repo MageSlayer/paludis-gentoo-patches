@@ -432,7 +432,7 @@ InstalledGemsRepository::populate_sets() const
 }
 
 HookResult
-InstalledGemsRepository::perform_hook(const Hook &)
+InstalledGemsRepository::perform_hook(const Hook &, const std::shared_ptr<OutputManager> &)
 {
     return make_named_values<HookResult>(n::max_exit_status() = 0, n::output() = "");
 }

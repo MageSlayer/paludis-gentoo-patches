@@ -563,7 +563,9 @@ CRANRepository::populate_sets() const
 }
 
 HookResult
-CRANRepository::perform_hook(const Hook &)
+CRANRepository::perform_hook(
+        const Hook &,
+        const std::shared_ptr<OutputManager> &)
 {
     return make_named_values<HookResult>(n::max_exit_status() = 0, n::output() = "");
 }

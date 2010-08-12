@@ -704,7 +704,9 @@ PortageEnvironment::known_choice_value_names(const std::shared_ptr<const Package
 }
 
 HookResult
-PortageEnvironment::perform_hook(const Hook & hook) const
+PortageEnvironment::perform_hook(
+        const Hook & hook,
+        const std::shared_ptr<OutputManager> & optional_output_manager) const
 {
     using namespace std::placeholders;
 
@@ -717,7 +719,7 @@ PortageEnvironment::perform_hook(const Hook & hook) const
                 std::bind(std::mem_fn(&Hooker::add_dir), _imp->hooker.get(), _1, false));
     }
 
-    return _imp->hooker->perform_hook(hook);
+    return _imp->hooker->perform_hook(hook, optional_output_manager);
 }
 
 std::shared_ptr<const FSEntrySequence>

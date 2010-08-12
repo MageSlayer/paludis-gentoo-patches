@@ -425,8 +425,11 @@ namespace paludis
              * Perform a hook.
              *
              * \since 0.40 (previously in an interface)
+             * \since 0.53 takes optional_output_manager
              */
-            virtual HookResult perform_hook(const Hook & hook)
+            virtual HookResult perform_hook(
+                    const Hook & hook,
+                    const std::shared_ptr<OutputManager> & optional_output_manager)
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**

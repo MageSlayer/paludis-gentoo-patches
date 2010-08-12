@@ -130,7 +130,7 @@ namespace paludis
 
             ///\}
 
-            virtual HookResult perform_hook(const Hook & hook)
+            virtual HookResult perform_hook(const Hook & hook, const std::shared_ptr<OutputManager> &)
                 PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }

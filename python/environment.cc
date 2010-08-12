@@ -302,7 +302,7 @@ class EnvironmentImplementationWrapper :
         }
 
         // FIXME - Hooks are not exposed
-        virtual HookResult perform_hook(const Hook & h) const
+        virtual HookResult perform_hook(const Hook & h, const std::shared_ptr<OutputManager> &) const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             return make_named_values<HookResult>(n::max_exit_status() = 0, n::output() = "");

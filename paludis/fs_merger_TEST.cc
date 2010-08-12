@@ -67,7 +67,7 @@ namespace paludis
 
             virtual ~HookTestEnvironment();
 
-            virtual HookResult perform_hook(const Hook &) const
+            virtual HookResult perform_hook(const Hook &, const std::shared_ptr<OutputManager> &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
     };
@@ -83,7 +83,7 @@ namespace paludis
     }
 
     HookResult
-    HookTestEnvironment::perform_hook(const Hook & hook) const
+    HookTestEnvironment::perform_hook(const Hook & hook, const std::shared_ptr<OutputManager> & optional_output_manager) const
     {
         if (! hooker)
         {
@@ -92,7 +92,7 @@ namespace paludis
                     h_end(hook_dirs.end()) ; h != h_end ; ++h)
                 hooker->add_dir(h->first, h->second);
         }
-        return hooker->perform_hook(hook);
+        return hooker->perform_hook(hook, optional_output_manager);
     }
 }
 

@@ -156,7 +156,7 @@ EInstalledRepository::want_pre_post_phases() const
 }
 
 HookResult
-EInstalledRepository::perform_hook(const Hook & hook)
+EInstalledRepository::perform_hook(const Hook & hook, const std::shared_ptr<OutputManager> &)
 {
     Context context("When performing hook '" + stringify(hook.name()) + "' for repository '"
             + stringify(name()) + "':");

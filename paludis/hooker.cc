@@ -72,7 +72,9 @@ namespace
             {
             }
 
-            virtual HookResult run(const Hook &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual HookResult run(
+                    const Hook &,
+                    const std::shared_ptr<OutputManager> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual const FSEntry file_name() const
             {
@@ -107,7 +109,9 @@ namespace
             {
             }
 
-            virtual HookResult run(const Hook &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual HookResult run(
+                    const Hook &,
+                    const std::shared_ptr<OutputManager> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual const FSEntry file_name() const
             {
@@ -134,7 +138,9 @@ namespace
         public:
             SoHookFile(const FSEntry &, const bool, const Environment * const);
 
-            virtual HookResult run(const Hook &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual HookResult run(
+                    const Hook &,
+                    const std::shared_ptr<OutputManager> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual const FSEntry file_name() const
             {
@@ -148,7 +154,9 @@ namespace
 }
 
 HookResult
-BashHookFile::run(const Hook & hook) const
+BashHookFile::run(
+        const Hook & hook,
+        const std::shared_ptr<OutputManager> &) const
 {
     Context c("When running hook script '" + stringify(file_name()) + "' for hook '" + hook.name() + "':");
 
@@ -199,7 +207,8 @@ BashHookFile::run(const Hook & hook) const
 }
 
 HookResult
-FancyHookFile::run(const Hook & hook) const
+FancyHookFile::run(const Hook & hook,
+        const std::shared_ptr<OutputManager> &) const
 {
     Context c("When running hook script '" + stringify(file_name()) + "' for hook '" + hook.name() + "':");
 
@@ -403,7 +412,8 @@ SoHookFile::SoHookFile(const FSEntry & f, const bool, const Environment * const 
 }
 
 HookResult
-SoHookFile::run(const Hook & hook) const
+SoHookFile::run(const Hook & hook,
+        const std::shared_ptr<OutputManager> &) const
 {
     Context c("When running .so hook '" + stringify(file_name()) + "' for hook '" + hook.name() + "':");
 
@@ -701,7 +711,9 @@ Hooker::_find_hooks(const Hook & hook) const
 }
 
 HookResult
-Hooker::perform_hook(const Hook & hook) const
+Hooker::perform_hook(
+        const Hook & hook,
+        const std::shared_ptr<OutputManager> & optional_output_manager) const
 {
     HookResult result(make_named_values<HookResult>(n::max_exit_status() = 0, n::output() = ""));
 
@@ -718,14 +730,14 @@ Hooker::perform_hook(const Hook & hook) const
                 for (PackageDatabase::RepositoryConstIterator r(_imp->env->package_database()->begin_repositories()),
                         r_end(_imp->env->package_database()->end_repositories()) ; r != r_end ; ++r)
                     result.max_exit_status() = std::max(result.max_exit_status(),
-                            ((*r)->perform_hook(hook)).max_exit_status());
+                            ((*r)->perform_hook(hook, optional_output_manager)).max_exit_status());
                 continue;
 
             case hod_grab:
                 for (PackageDatabase::RepositoryConstIterator r(_imp->env->package_database()->begin_repositories()),
                         r_end(_imp->env->package_database()->end_repositories()) ; r != r_end ; ++r)
                 {
-                    HookResult tmp((*r)->perform_hook(hook));
+                    HookResult tmp((*r)->perform_hook(hook, optional_output_manager));
                     if (tmp.max_exit_status() > result.max_exit_status())
                         result = tmp;
                     else if (! tmp.output().empty())
@@ -767,7 +779,7 @@ Hooker::perform_hook(const Hook & hook) const
                     for (Sequence<std::shared_ptr<HookFile> >::ConstIterator f(h->second->begin()),
                             f_end(h->second->end()) ; f != f_end ; ++f)
                         if ((*f)->file_name().is_regular_file_or_symlink_to_regular_file())
-                            result.max_exit_status() = std::max(result.max_exit_status(), (*f)->run(hook).max_exit_status());
+                            result.max_exit_status() = std::max(result.max_exit_status(), (*f)->run(hook, optional_output_manager).max_exit_status());
                         else
                             Log::get_instance()->message("hook.not_regular_file", ll_warning, lc_context) << "Hook file '" <<
                                 (*f)->file_name() << "' is not a regular file or has been removed";
@@ -784,7 +796,7 @@ Hooker::perform_hook(const Hook & hook) const
                             continue;
                         }
 
-                        HookResult tmp((*f)->run(hook));
+                        HookResult tmp((*f)->run(hook, optional_output_manager));
                         if (tmp.max_exit_status() > result.max_exit_status())
                             result = tmp;
                         else if (! tmp.output().empty())

@@ -244,8 +244,8 @@ namespace
         if (cmdline.a_hooks.specified())
             if (0 != env->perform_hook(Hook(action_name + "_pre")
                         ("TARGET", stringify(*id))
-                        ("X_OF_Y", cmdline.a_x_of_y.argument())
-                        ).max_exit_status())
+                        ("X_OF_Y", cmdline.a_x_of_y.argument()),
+                        make_null_shared_ptr()).max_exit_status())
                 throw ActionAbortedError("Aborted by hook");
 
         try
@@ -259,8 +259,8 @@ namespace
                 HookResult PALUDIS_ATTRIBUTE((unused)) dummy(env->perform_hook(Hook(action_name + "_fail")
                             ("TARGET", stringify(*id))
                             ("MESSAGE", e.message())
-                            ("X_OF_Y", cmdline.a_x_of_y.argument())
-                            ));
+                            ("X_OF_Y", cmdline.a_x_of_y.argument()),
+                            make_null_shared_ptr()));
             }
 
             throw;
@@ -269,8 +269,8 @@ namespace
         if (cmdline.a_hooks.specified())
             if (0 != env->perform_hook(Hook(action_name + "_post")
                         ("TARGET", stringify(*id))
-                        ("X_OF_Y", cmdline.a_x_of_y.argument())
-                        ).max_exit_status())
+                        ("X_OF_Y", cmdline.a_x_of_y.argument()),
+                        make_null_shared_ptr()).max_exit_status())
                 throw ActionAbortedError("Aborted by hook");
 
         if (cmdline.a_x_of_y.specified() && ! cmdline.a_no_terminal_titles.specified())

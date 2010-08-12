@@ -83,7 +83,9 @@ namespace paludis
 
                 virtual bool some_ids_might_not_be_masked() const;
 
-                HookResult perform_hook(const Hook & hook)
+                HookResult perform_hook(
+                        const Hook & hook,
+                        const std::shared_ptr<OutputManager> &)
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual bool sync(const std::shared_ptr<OutputManager> &) const;

@@ -231,7 +231,7 @@ InstalledVirtualsRepository::invalidate_masks()
 }
 
 HookResult
-InstalledVirtualsRepository::perform_hook(const Hook & hook)
+InstalledVirtualsRepository::perform_hook(const Hook & hook, const std::shared_ptr<OutputManager> &)
 {
     Context context("When performing hook '" + stringify(hook.name()) + "' for repository '"
             + stringify(name()) + "':");

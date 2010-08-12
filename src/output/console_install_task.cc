@@ -1971,12 +1971,12 @@ ConsoleInstallTask::on_installed_paludis()
 }
 
 HookResult
-ConsoleInstallTask::perform_hook(const Hook & hook)
+ConsoleInstallTask::perform_hook(const Hook & hook, const std::shared_ptr<OutputManager> & optional_output_manager)
 {
     std::string resume_command(make_resume_command(true));
     if (resume_command.empty())
-        return InstallTask::perform_hook(hook);
-    return InstallTask::perform_hook(hook("RESUME_COMMAND", resume_command));
+        return InstallTask::perform_hook(hook, optional_output_manager);
+    return InstallTask::perform_hook(hook("RESUME_COMMAND", resume_command), optional_output_manager);
 }
 
 void

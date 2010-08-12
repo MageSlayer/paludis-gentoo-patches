@@ -990,7 +990,7 @@ ERepository::want_pre_post_phases() const
 }
 
 HookResult
-ERepository::perform_hook(const Hook & hook)
+ERepository::perform_hook(const Hook & hook, const std::shared_ptr<OutputManager> &)
 {
     Context context("When performing hook '" + stringify(hook.name()) + "' for repository '"
             + stringify(name()) + "':");

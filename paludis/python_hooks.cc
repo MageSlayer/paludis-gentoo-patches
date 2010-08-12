@@ -63,7 +63,7 @@ namespace
         public:
             PyHookFile(const FSEntry &, const bool, const Environment * const);
 
-            virtual HookResult run(const Hook &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual HookResult run(const Hook &, const std::shared_ptr<OutputManager> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual const FSEntry file_name() const
             {
@@ -151,7 +151,7 @@ PyHookFile::PyHookFile(const FSEntry & f, const bool r, const Environment * cons
 }
 
 HookResult
-PyHookFile::run(const Hook & hook) const
+PyHookFile::run(const Hook & hook, const std::shared_ptr<OutputManager> &) const
 {
     Context c("When running hook '" + stringify(file_name()) + "' for hook '" + hook.name() + "':");
 

@@ -673,8 +673,8 @@ namespace
         int x(0), y(lists->pretend_job_list()->length()), prev_x(0);
 
         if (0 != env->perform_hook(Hook("pretend_all_pre")
-                    ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
-                    ).max_exit_status())
+                    ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " ")),
+                    make_null_shared_ptr()).max_exit_status())
             throw ActionAbortedError("Aborted by hook");
 
         for (JobList<PretendJob>::ConstIterator c(lists->pretend_job_list()->begin()),
@@ -693,8 +693,8 @@ namespace
             cout << endl;
 
         if (0 != env->perform_hook(Hook("pretend_all_post")
-                    ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
-                    ).max_exit_status())
+                    ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " ")),
+                    make_null_shared_ptr()).max_exit_status())
             throw ActionAbortedError("Aborted by hook");
 
         return failed ? 1 : 0;
@@ -1428,8 +1428,8 @@ namespace
             (*c)->accept(counts);
 
         if (0 != env->perform_hook(Hook("install_all_pre")
-                    ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
-                    ).max_exit_status())
+                    ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " ")),
+                    make_null_shared_ptr()).max_exit_status())
             throw ActionAbortedError("Aborted by hook");
 
         JobRequirementIf require_if(last_jri);
@@ -1458,8 +1458,8 @@ namespace
         executor.execute();
 
         if (0 != env->perform_hook(Hook("install_all_post")
-                    ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
-                    ).max_exit_status())
+                    ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " ")),
+                    make_null_shared_ptr()).max_exit_status())
             throw ActionAbortedError("Aborted by hook");
 
         return retcode;
@@ -1640,8 +1640,8 @@ namespace
 
         int retcode(0);
         if (0 != env->perform_hook(Hook("install_task_execute_pre")
-                    ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
-                    ).max_exit_status())
+                    ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " ")),
+                    make_null_shared_ptr()).max_exit_status())
             throw ActionAbortedError("Aborted by hook");
 
         try
@@ -1659,8 +1659,8 @@ namespace
             if (0 != env->perform_hook(Hook("install_task_execute_post")
                         ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
                         ("PRETEND", stringify(cmdline.a_pretend.specified()))
-                        ("SUCCESS", stringify(false))
-                        ).max_exit_status())
+                        ("SUCCESS", stringify(false)),
+                        make_null_shared_ptr()).max_exit_status())
                 throw ActionAbortedError("Aborted by hook");
             throw;
         }
@@ -1674,8 +1674,8 @@ namespace
         if (0 != env->perform_hook(Hook("install_task_execute_post")
                     ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
                     ("PRETEND", stringify(cmdline.a_pretend.specified()))
-                    ("SUCCESS", stringify(true))
-                    ).max_exit_status())
+                    ("SUCCESS", stringify(true)),
+                    make_null_shared_ptr()).max_exit_status())
             throw ActionAbortedError("Aborted by hook");
 
         return retcode;

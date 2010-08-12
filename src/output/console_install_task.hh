@@ -250,7 +250,7 @@ namespace paludis
             void show_resume_command(const std::string &) const;
             virtual std::string make_resume_command(const bool undo_failures) const = 0;
             virtual void on_installed_paludis();
-            virtual HookResult perform_hook(const Hook &);
+            virtual HookResult perform_hook(const Hook &, const std::shared_ptr<OutputManager> &);
 
             ///\}
 
