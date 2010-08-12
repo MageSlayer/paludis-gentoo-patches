@@ -23,8 +23,16 @@
 has_version()
 {
     illegal_in_global_scope
-    [[ "${#@}" -ne 1 ]] && die "$0 should take exactly one arg"
-    local r=$(paludis_pipe_command HAS_VERSION "$EAPI" "$1" )
+    local slash
+    if [[ "${#}" -eq 1 ]]; then
+        slash=--root
+    elif [[ "${#}" -eq 2 ]]; then
+        slash=${1}
+        shift
+    else
+        die "$0 should take one or two arguments"
+    fi
+    local r=$(paludis_pipe_command HAS_VERSION "$EAPI" "$slash" "$1" )
     return ${r%%;*}
 }
 
@@ -36,8 +44,16 @@ portageq()
 best_version()
 {
     illegal_in_global_scope
-    [[ "${#@}" -ne 1 ]] && die "$0 should take exactly one arg"
-    local r=$(paludis_pipe_command BEST_VERSION "$EAPI" "$1" )
+    local slash
+    if [[ "${#}" -eq 1 ]]; then
+        slash=--root
+    elif [[ "${#}" -eq 2 ]]; then
+        slash=${1}
+        shift
+    else
+        die "$0 should take one or two arguments"
+    fi
+    local r=$(paludis_pipe_command BEST_VERSION "$EAPI" "$slash" "$1" )
     echo ${r#*;}
     return ${r%%;*}
 }

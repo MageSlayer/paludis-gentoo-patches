@@ -249,7 +249,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
         }
         else if (tokens[0] == "BEST_VERSION")
         {
-            if (tokens.size() != 3)
+            if (tokens.size() != 4)
             {
                 Log::get_instance()->message("e.pipe_commands.best_version.bad", ll_warning, lc_context) << "Got bad BEST_VERSION pipe command";
                 return "Ebad BEST_VERSION command";
@@ -260,11 +260,19 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                 if (! eapi->supported())
                     return "EBEST_VERSION EAPI " + tokens[1] + " unsupported";
 
-                PackageDepSpec spec(parse_elike_package_dep_spec(tokens[2],
+                Filter root((filter::All()));
+                if (tokens[2] == "--slash")
+                    root = filter::InstalledAtSlash();
+                else if (tokens[2] == "--root")
+                    root = filter::InstalledAtRoot(environment->preferred_root_key()->value());
+                else
+                    return "Ebad BEST_VERSION " + tokens[2] + " argument";
+
+                PackageDepSpec spec(parse_elike_package_dep_spec(tokens[3],
                             eapi->supported()->package_dep_spec_parse_options(),
                             eapi->supported()->version_spec_options(), package_id));
                 std::shared_ptr<const PackageIDSequence> entries((*environment)[selection::AllVersionsSorted(
-                            generator::Matches(spec, { }) | filter::InstalledAtRoot(environment->preferred_root_key()->value()))]);
+                            generator::Matches(spec, { }) | root)]);
                 if (eapi->supported()->pipe_commands()->rewrite_virtuals() && (! entries->empty()) &&
                         (*entries->last())->virtual_for_key())
                 {
@@ -290,7 +298,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
         }
         else if (tokens[0] == "HAS_VERSION")
         {
-            if (tokens.size() != 3)
+            if (tokens.size() != 4)
             {
                 Log::get_instance()->message("e.pipe_commands.has_version.bad", ll_warning, lc_context) << "Got bad HAS_VERSION pipe command";
                 return "Ebad HAS_VERSION command";
@@ -301,11 +309,19 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                 if (! eapi->supported())
                     return "EHAS_VERSION EAPI " + tokens[1] + " unsupported";
 
-                PackageDepSpec spec(parse_elike_package_dep_spec(tokens[2],
+                Filter root((filter::All()));
+                if (tokens[2] == "--slash")
+                    root = filter::InstalledAtSlash();
+                else if (tokens[2] == "--root")
+                    root = filter::InstalledAtRoot(environment->preferred_root_key()->value());
+                else
+                    return "Ebad HAS_VERSION " + tokens[2] + " argument";
+
+                PackageDepSpec spec(parse_elike_package_dep_spec(tokens[3],
                             eapi->supported()->package_dep_spec_parse_options(),
                             eapi->supported()->version_spec_options(), package_id));
                 std::shared_ptr<const PackageIDSequence> entries((*environment)[selection::SomeArbitraryVersion(
-                            generator::Matches(spec, { }) | filter::InstalledAtRoot(environment->preferred_root_key()->value()))]);
+                            generator::Matches(spec, { }) | root)]);
                 if (entries->empty())
                     return "O1;";
                 else

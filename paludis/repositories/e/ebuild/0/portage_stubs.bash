@@ -61,7 +61,7 @@ portageq()
 best_version()
 {
     [[ "${#@}" -ne 1 ]] && die "$0 should take exactly one arg"
-    local r=$(paludis_pipe_command BEST_VERSION "$EAPI" "$1" )
+    local r=$(paludis_pipe_command BEST_VERSION "$EAPI" --root "$1" )
     echo ${r#*;}
     return ${r%%;*}
 }
@@ -69,7 +69,7 @@ best_version()
 has_version()
 {
     [[ "${#@}" -ne 1 ]] && die "$0 should take exactly one arg"
-    local r=$(paludis_pipe_command HAS_VERSION "$EAPI" "$1" )
+    local r=$(paludis_pipe_command HAS_VERSION "$EAPI" --root "$1" )
     return ${r%%;*}
 }
 
