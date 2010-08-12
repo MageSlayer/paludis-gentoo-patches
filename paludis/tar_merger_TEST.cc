@@ -26,6 +26,7 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/hook.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
@@ -105,6 +106,7 @@ namespace test_cases
                         n::get_new_ids_or_minus_one() = &get_new_ids_or_minus_one,
                         n::image() = FSEntry("tar_merger_TEST_dir") / "simple",
                         n::install_under() = FSEntry("/"),
+                        n::maybe_output_manager() = make_null_shared_ptr(),
                         n::merged_entries() = std::make_shared<FSEntrySet>(),
                         n::no_chown() = true,
                         n::options() = MergerOptions(),

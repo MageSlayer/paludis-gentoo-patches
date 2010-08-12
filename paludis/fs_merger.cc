@@ -83,6 +83,7 @@ FSMerger::FSMerger(const FSMergerParams & p) :
                 n::get_new_ids_or_minus_one() = p.get_new_ids_or_minus_one(),
                 n::image() = p.image(),
                 n::install_under() = p.install_under(),
+                n::maybe_output_manager() = p.maybe_output_manager(),
                 n::merged_entries() = p.merged_entries(),
                 n::no_chown() = p.no_chown(),
                 n::options() = p.options(),
@@ -310,7 +311,7 @@ FSMerger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::
                         ("INSTALL_SOURCE", stringify(src))
                         ("INSTALL_DESTINATION", stringify(dst_dir / src.basename()))
                         ("REAL_DESTINATION", stringify(dst_real))),
-                make_null_shared_ptr()).max_exit_status())
+                _imp->params.maybe_output_manager()).max_exit_status())
         Log::get_instance()->message("merger.file.pre_hooks.failure", ll_warning, lc_context) <<
                 "Merge of '" << src << "' to '" << dst_dir << "' pre hooks returned non-zero";
 
@@ -419,7 +420,7 @@ FSMerger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::
                          ("INSTALL_SOURCE", stringify(src))
                          ("INSTALL_DESTINATION", stringify(dst_dir / src.basename()))
                          ("REAL_DESTINATION", stringify(dst_real))),
-                make_null_shared_ptr()).max_exit_status())
+                _imp->params.maybe_output_manager()).max_exit_status())
         Log::get_instance()->message("merger.file.post_hooks.failed", ll_warning, lc_context) <<
             "Merge of '" << src << "' to '" << dst_dir << "' post hooks returned non-zero";
 
@@ -500,7 +501,7 @@ FSMerger::install_dir(const FSEntry & src, const FSEntry & dst_dir)
                          Hook("merger_install_dir_pre")
                          ("INSTALL_SOURCE", stringify(src))
                          ("INSTALL_DESTINATION", stringify(dst_dir / src.basename()))),
-                make_null_shared_ptr()).max_exit_status())
+                _imp->params.maybe_output_manager()).max_exit_status())
         Log::get_instance()->message("merger.dir.pre_hooks.failure", ll_warning, lc_context)
             << "Merge of '" << src << "' to '" << dst_dir << "' pre hooks returned non-zero";
 
@@ -557,7 +558,7 @@ FSMerger::install_dir(const FSEntry & src, const FSEntry & dst_dir)
                          Hook("merger_install_dir_post")
                          ("INSTALL_SOURCE", stringify(src))
                          ("INSTALL_DESTINATION", stringify(dst_dir / src.basename()))),
-                make_null_shared_ptr()).max_exit_status())
+                _imp->params.maybe_output_manager()).max_exit_status())
         Log::get_instance()->message("merger.dir.post_hooks.failure", ll_warning, lc_context)
             << "Merge of '" << src << "' to '" << dst_dir << "' post hooks returned non-zero";
 
@@ -577,7 +578,7 @@ FSMerger::install_sym(const FSEntry & src, const FSEntry & dst_dir)
                          Hook("merger_install_sym_pre")
                          ("INSTALL_SOURCE", stringify(src))
                          ("INSTALL_DESTINATION", stringify(dst))),
-                make_null_shared_ptr()).max_exit_status())
+                _imp->params.maybe_output_manager()).max_exit_status())
         Log::get_instance()->message("merger.sym.pre_hooks.failure", ll_warning, lc_context)
             << "Merge of '" << src << "' to '" << dst_dir << "' pre hooks returned non-zero";
 
@@ -621,7 +622,7 @@ FSMerger::install_sym(const FSEntry & src, const FSEntry & dst_dir)
                          Hook("merger_install_sym_post")
                          ("INSTALL_SOURCE", stringify(src))
                          ("INSTALL_DESTINATION", stringify(dst))),
-                make_null_shared_ptr()).max_exit_status())
+                _imp->params.maybe_output_manager()).max_exit_status())
         Log::get_instance()->message("merger.sym.post_hooks.failure", ll_warning, lc_context) <<
             "Merge of '" << src << "' to '" << dst_dir << "' post hooks returned non-zero";
 
@@ -634,7 +635,7 @@ FSMerger::unlink_file(FSEntry d)
     if (0 != _imp->params.environment()->perform_hook(extend_hook(
                          Hook("merger_unlink_file_pre")
                          ("UNLINK_TARGET", stringify(d))),
-                make_null_shared_ptr()).max_exit_status())
+                _imp->params.maybe_output_manager()).max_exit_status())
         Log::get_instance()->message("merger.unlink_file.pre_hooks.failure", ll_warning, lc_context) <<
             "Unmerge of '" << d << "' pre hooks returned non-zero";
 
@@ -644,7 +645,7 @@ FSMerger::unlink_file(FSEntry d)
     if (0 != _imp->params.environment()->perform_hook(extend_hook(
                          Hook("merger_unlink_file_post")
                          ("UNLINK_TARGET", stringify(d))),
-                make_null_shared_ptr()).max_exit_status())
+                _imp->params.maybe_output_manager()).max_exit_status())
         Log::get_instance()->message("merger.unlink_file.post_hooks.failure", ll_warning, lc_context) <<
             "Unmerge of '" << d << "' post hooks returned non-zero";
 }
@@ -655,7 +656,7 @@ FSMerger::unlink_sym(FSEntry d)
     if (0 != _imp->params.environment()->perform_hook(extend_hook(
                          Hook("merger_unlink_sym_pre")
                          ("UNLINK_TARGET", stringify(d))),
-                make_null_shared_ptr()).max_exit_status())
+                _imp->params.maybe_output_manager()).max_exit_status())
         Log::get_instance()->message("merger.unlink_sym.pre_hooks.failure", ll_warning, lc_context) <<
             "Unmerge of '" << d << "' pre hooks returned non-zero";
 
@@ -664,7 +665,7 @@ FSMerger::unlink_sym(FSEntry d)
     if (0 != _imp->params.environment()->perform_hook(extend_hook(
                          Hook("merger_unlink_sym_post")
                          ("UNLINK_TARGET", stringify(d))),
-                make_null_shared_ptr()).max_exit_status())
+                _imp->params.maybe_output_manager()).max_exit_status())
         Log::get_instance()->message("merger.unlink_sym.post_hooks.failure", ll_warning, lc_context) <<
             "Unmerge of '" << d << "' post hooks returned non-zero";
 }
@@ -675,7 +676,7 @@ FSMerger::unlink_dir(FSEntry d)
     if (0 != _imp->params.environment()->perform_hook(extend_hook(
                          Hook("merger_unlink_dir_pre")
                          ("UNLINK_TARGET", stringify(d))),
-                make_null_shared_ptr()).max_exit_status())
+                _imp->params.maybe_output_manager()).max_exit_status())
         Log::get_instance()->message("merger.unlink_dir.pre_hooks.failure", ll_warning, lc_context) <<
             "Unmerge of '" << d << "' pre hooks returned non-zero";
 
@@ -684,7 +685,7 @@ FSMerger::unlink_dir(FSEntry d)
     if (0 != _imp->params.environment()->perform_hook(extend_hook(
                          Hook("merger_unlink_dir_post")
                          ("UNLINK_TARGET", stringify(d))),
-                make_null_shared_ptr()).max_exit_status())
+                _imp->params.maybe_output_manager()).max_exit_status())
         Log::get_instance()->message("merger.unlink_dir.post_hooks.failure", ll_warning, lc_context) <<
             "Unmerge of '" << d << "' post hooks returned non-zero";
 }
@@ -695,7 +696,7 @@ FSMerger::unlink_misc(FSEntry d)
     if (0 != _imp->params.environment()->perform_hook(extend_hook(
                          Hook("merger_unlink_misc_pre")
                          ("UNLINK_TARGET", stringify(d))),
-                make_null_shared_ptr()).max_exit_status())
+                _imp->params.maybe_output_manager()).max_exit_status())
         Log::get_instance()->message("merger.unlink_misc.pre_hooks.failure", ll_warning, lc_context) <<
             "Unmerge of '" << d << "' pre hooks returned non-zero";
 
@@ -704,7 +705,7 @@ FSMerger::unlink_misc(FSEntry d)
     if (0 != _imp->params.environment()->perform_hook(extend_hook(
                          Hook("merger_unlink_misc_post")
                          ("UNLINK_TARGET", stringify(d))),
-                make_null_shared_ptr()).max_exit_status())
+                _imp->params.maybe_output_manager()).max_exit_status())
         Log::get_instance()->message("merger.unlink_misc.post_hooks.failure", ll_warning, lc_context) <<
             "Unmerge of '" << d << "' post hooks returned non-zero";
 }

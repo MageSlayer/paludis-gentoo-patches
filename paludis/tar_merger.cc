@@ -114,6 +114,7 @@ TarMerger::TarMerger(const TarMergerParams & p) :
                 n::get_new_ids_or_minus_one() = p.get_new_ids_or_minus_one(),
                 n::image() = p.image(),
                 n::install_under() = FSEntry("/"),
+                n::maybe_output_manager() = p.maybe_output_manager(),
                 n::merged_entries() = p.merged_entries(),
                 n::no_chown() = p.no_chown(),
                 n::options() = p.options(),

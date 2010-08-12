@@ -86,6 +86,7 @@ VDBMerger::VDBMerger(const VDBMergerParams & p) :
                 n::get_new_ids_or_minus_one() = std::bind(&get_new_ids_or_minus_one, p.environment(), std::placeholders::_1),
                 n::image() = p.image(),
                 n::install_under() = FSEntry("/"),
+                n::maybe_output_manager() = p.output_manager(),
                 n::merged_entries() = p.merged_entries(),
                 n::no_chown() = ! getenv_with_default("PALUDIS_NO_CHOWN", "").empty(),
                 n::options() = p.options(),

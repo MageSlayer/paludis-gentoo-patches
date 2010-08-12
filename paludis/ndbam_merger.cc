@@ -74,6 +74,7 @@ NDBAMMerger::NDBAMMerger(const NDBAMMergerParams & p) :
                 n::get_new_ids_or_minus_one() = p.get_new_ids_or_minus_one(),
                 n::image() = p.image(),
                 n::install_under() = p.install_under(),
+                n::maybe_output_manager() = p.output_manager(),
                 n::merged_entries() = p.merged_entries(),
                 n::no_chown() = ! getenv_with_default("PALUDIS_NO_CHOWN", "").empty(),
                 n::options() = p.options(),

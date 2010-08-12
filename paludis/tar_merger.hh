@@ -34,6 +34,7 @@ namespace paludis
         typedef Name<struct get_new_ids_or_minus_one_name> get_new_ids_or_minus_one;
         typedef Name<struct image_name> image;
         typedef Name<struct install_under_name> install_under;
+        typedef Name<struct maybe_output_manager_name> maybe_output_manager;
         typedef Name<struct merged_entries_name> merged_entries;
         typedef Name<struct no_chown_name> no_chown;
         typedef Name<struct options_name> options;
@@ -57,6 +58,7 @@ namespace paludis
         NamedValue<n::get_new_ids_or_minus_one, std::function<std::pair<uid_t, gid_t> (const FSEntry &)> > get_new_ids_or_minus_one;
         NamedValue<n::image, FSEntry> image;
         NamedValue<n::install_under, FSEntry> install_under;
+        NamedValue<n::maybe_output_manager, std::shared_ptr<OutputManager> > maybe_output_manager;
         NamedValue<n::merged_entries, std::shared_ptr<FSEntrySet> > merged_entries;
         NamedValue<n::no_chown, bool> no_chown;
         NamedValue<n::options, MergerOptions> options;
