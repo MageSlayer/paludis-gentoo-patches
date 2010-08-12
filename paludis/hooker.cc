@@ -38,6 +38,7 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/about.hh>
+#include <paludis/output_manager.hh>
 #include <list>
 #include <iterator>
 #include <dlfcn.h>
@@ -156,7 +157,7 @@ namespace
 HookResult
 BashHookFile::run(
         const Hook & hook,
-        const std::shared_ptr<OutputManager> &) const
+        const std::shared_ptr<OutputManager> & optional_output_manager) const
 {
     Context c("When running hook script '" + stringify(file_name()) + "' for hook '" + hook.name() + "':");
 
@@ -180,6 +181,13 @@ BashHookFile::run(
 
     for (Hook::ConstIterator x(hook.begin()), x_end(hook.end()) ; x != x_end ; ++x)
         cmd.with_setenv(x->first, x->second);
+
+    if (optional_output_manager)
+    {
+        /* hod_grab can override this later */
+        cmd.with_captured_stdout_stream(&optional_output_manager->stdout_stream());
+        cmd.with_captured_stderr_stream(&optional_output_manager->stderr_stream());
+    }
 
     int exit_status(0);
     std::string output("");
@@ -208,7 +216,7 @@ BashHookFile::run(
 
 HookResult
 FancyHookFile::run(const Hook & hook,
-        const std::shared_ptr<OutputManager> &) const
+        const std::shared_ptr<OutputManager> & optional_output_manager) const
 {
     Context c("When running hook script '" + stringify(file_name()) + "' for hook '" + hook.name() + "':");
 
@@ -235,6 +243,13 @@ FancyHookFile::run(const Hook & hook,
 
     for (Hook::ConstIterator x(hook.begin()), x_end(hook.end()) ; x != x_end ; ++x)
         cmd.with_setenv(x->first, x->second);
+
+    if (optional_output_manager)
+    {
+        /* hod_grab can override this later */
+        cmd.with_captured_stdout_stream(&optional_output_manager->stdout_stream());
+        cmd.with_captured_stderr_stream(&optional_output_manager->stderr_stream());
+    }
 
     int exit_status(0);
     std::string output("");
