@@ -132,7 +132,7 @@ namespace
             const Environment * const _env;
 
             void * _dl;
-            HookResult (*_run)(const Environment *, const Hook &);
+            HookResult (*_run)(const Environment *, const Hook &, const std::shared_ptr<OutputManager> &);
             void (*_add_dependencies)(const Environment *, const Hook &, DirectedGraph<std::string, int> &);
             const std::shared_ptr<const Sequence<std::string > > (*_auto_hook_names)(const Environment *);
 
@@ -406,12 +406,12 @@ SoHookFile::SoHookFile(const FSEntry & f, const bool, const Environment * const 
     if (_dl)
     {
         _run = reinterpret_cast<HookResult (*)(
-            const Environment *, const Hook &)>(
-                reinterpret_cast<uintptr_t>(dlsym(_dl, "paludis_hook_run")));
+            const Environment *, const Hook &, const std::shared_ptr<OutputManager> &)>(
+                reinterpret_cast<uintptr_t>(dlsym(_dl, "paludis_hook_run_3")));
 
         if (! _run)
-            Log::get_instance()->message("hook.so.no_paludis_hook_run", ll_warning, lc_no_context)
-                << ".so hook '" << f << "' does not define the paludis_hook_run function";
+            Log::get_instance()->message("hook.so.no_paludis_hook_run_3", ll_warning, lc_no_context)
+                << ".so hook '" << f << "' does not define the paludis_hook_run_3 function";
 
         _add_dependencies = reinterpret_cast<void (*)(
             const Environment *, const Hook &, DirectedGraph<std::string, int> &)>(
@@ -428,7 +428,7 @@ SoHookFile::SoHookFile(const FSEntry & f, const bool, const Environment * const 
 
 HookResult
 SoHookFile::run(const Hook & hook,
-        const std::shared_ptr<OutputManager> &) const
+        const std::shared_ptr<OutputManager> & optional_output_manager) const
 {
     Context c("When running .so hook '" + stringify(file_name()) + "' for hook '" + hook.name() + "':");
 
@@ -438,7 +438,7 @@ SoHookFile::run(const Hook & hook,
     Log::get_instance()->message("hook.so.starting", ll_debug, lc_no_context) << "Starting .so hook '" <<
         file_name() << "' for '" << hook.name() << "'";
 
-    return _run(_env, hook);
+    return _run(_env, hook, optional_output_manager);
 }
 
 void

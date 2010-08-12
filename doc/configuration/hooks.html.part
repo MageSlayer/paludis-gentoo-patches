@@ -432,7 +432,8 @@ The hook takes the form of a shared library with a filename ending in <code>.so.
 where <i>N</i> is the first component of the Paludis version number multiplied by 100,
 plus the second component of the version number (for example, 26 for Paludis 0.26.x,
 or 102 for Paludis 1.2.y).  The library must export a function with prototype
-<code>paludis::HookResult paludis_hook_run(const paludis::Environment *, const paludis::Hook &amp;)</code>
+<code>paludis::HookResult paludis_hook_run_3(const paludis::Environment *,
+    const paludis::Hook &amp;, const std::shared_ptr&lt;paludis::OutputManager&gt; &amp;)</code>
 that performs the action, and optionally one with prototype
 <code>void paludis_hook_add_dependencies(const paludis::Environment *, const paludis::Hook &amp;,
     paludis::DirectedGraph&lt;std::string, int&gt; &amp;)</code>
@@ -449,6 +450,9 @@ declared in the header <code>&lt;paludis/hook.hh&gt;</code>, including any neces
 <dt><code>const paludis::Hook &amp;</code></dt>
 <dd>Contains information about the hook being called.  In <code>paludis_hook_add_dependencies</code>,
 the only useful member is <code>name()</code>.</dd>
+<dt><code>const std::shared_ptr&lt;paludis::OutputManager&gt; &amp;</code></dt>
+<dd>The output manager being used when the hook is run. Will sometimes be a null pointer, as not all hooks are run with
+output managed -- in this case, use of stdout is normal.</dd>
 <dt><code>paludis::DirectedGraph&lt;std::string, int&gt; &amp;</code></dt>
 <dd>A graph containing, as nodes, all named hooks that will be executed along with
 this one.  The <code>paludis_hook_add_dependencies</code> function should add any

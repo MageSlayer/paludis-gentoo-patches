@@ -29,6 +29,7 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/sequence-fwd.hh>
 #include <paludis/util/named_value.hh>
+#include <paludis/output_manager-fwd.hh>
 #include <memory>
 #include <string>
 
@@ -153,8 +154,8 @@ namespace paludis
     extern template class WrappedForwardIterator<Hook::ConstIteratorTag, const std::pair<const std::string, std::string> >;
 }
 
-extern "C" paludis::HookResult PALUDIS_VISIBLE paludis_hook_run(
-    const paludis::Environment *, const paludis::Hook &);
+extern "C" paludis::HookResult PALUDIS_VISIBLE paludis_hook_run_3(
+    const paludis::Environment *, const paludis::Hook &, const std::shared_ptr<paludis::OutputManager> &);
 
 extern "C" void PALUDIS_VISIBLE paludis_hook_add_dependencies(
     const paludis::Environment *, const paludis::Hook &, paludis::DirectedGraph<std::string, int> &);

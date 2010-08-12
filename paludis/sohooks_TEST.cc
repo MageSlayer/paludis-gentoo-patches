@@ -61,8 +61,9 @@ namespace
     }
 }
 
+extern "C"
 HookResult
-paludis_hook_run(const Environment * env, const Hook & hook)
+paludis_hook_run_3(const Environment * env, const Hook & hook, const std::shared_ptr<OutputManager> &)
 {
     if ("so_hook" == hook.name())
         return so_hook_run(env, hook);
@@ -74,6 +75,7 @@ paludis_hook_run(const Environment * env, const Hook & hook)
     return make_named_values<HookResult>(n::max_exit_status() = 0, n::output() = "");
 }
 
+extern "C"
 void
 paludis_hook_add_dependencies(const Environment * env, const Hook & hook,
                               DirectedGraph<std::string, int> & graph)
