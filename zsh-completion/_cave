@@ -40,6 +40,7 @@ _cave()
     'print-environment-metadata:Prints environment metadata'
     'print-id-actions:Prints ID actions'
     'print-id-contents:Prints the contents of a package ID'
+    'print-id-environment-variable:Prints ID environment variables'
     'print-id-executables:Prints a list of executables belonging to an ID'
     'print-id-masks:Prints ID masks'
     'print-id-metadata:Prints ID metadata'
@@ -53,6 +54,7 @@ _cave()
     'print-sets:Prints a list of sets'
     'print-sync-protocols:Prints a list of sync protocols'
     'purge:Uninstall unused packages'
+    'report:Display a summary of potential problems with installed packages'
     'resolve:Display how to resolve one or more targets, and possibly then perform that resolution'
     "resume:Resume a failed resolution from \'cave resolve\'"
     'search:Search for packages with particular characteristics'
@@ -156,13 +158,15 @@ _cave_cmd_find-candidates()
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
     '(--all-versions -a --no-all-versions)'{--all-versions,-a,--no-all-versions}'[Search in every version of packages]' \
+    '(--visible -v --no-visible)'{--visible,-v,--no-visible}'[Search only in visible (not masked) versions of packages]' \
     '--matching[Search only in packages matching the supplied specification]:Spec: ' \
     '(--type -t)'{--type,-t}'[Specify which matching algorithm to use]:Matching:((text t exact x regex r))' \
     '(--and -& --no-and)'{--and,-\&,--no-and}'[If multiple patterns are specified, require that all patterns match]' \
     '(--not -! --no-not)'{--not,-\!,--no-not}'[Invert the results of pattern matches]' \
     '*'{--key,-k}'[Search the named metadata key]' \
     '(--name -n --no-name)'{--name,-n,--no-name}'[Search package names]' \
-    '(--description -d --no-description)'{--description,-d,--no-description}'[Search package descriptions]'
+    '(--description -d --no-description)'{--description,-d,--no-description}'[Search package descriptions]' \
+    '(--enabled-only -e --no-enabled-only)'{--enabled-only,-e,--no-enabled-only}'[Only search enabled parts of conditional dependency spec trees]'
 }
 
 (( ${+functions[_cave_cmd_fix-cache]} )) ||
@@ -235,7 +239,8 @@ _cave_cmd_match()
     '(--not -! --no-not)'{--not,-\!,--no-not}'[Invert the results of pattern matches]' \
     '*'{--key,-k}'[Search the named metadata key]' \
     '(--name -n --no-name)'{--name,-n,--no-name}'[Search package names]' \
-    '(--description -d --no-description)'{--description,-d,--no-description}'[Search package descriptions]'
+    '(--description -d --no-description)'{--description,-d,--no-description}'[Search package descriptions]' \
+    '(--enabled-only -e --no-enabled-only)'{--enabled-only,-e,--no-enabled-only}'[Only search enabled parts of conditional dependency spec trees]'
 }
 
 (( ${+functions[_cave_cmd_owner]} )) ||
@@ -373,6 +378,18 @@ _cave_cmd_print-id-contents()
     '*:package depspec:_cave_packages' && return 0
 }
 
+(( ${+functions[_cave_cmd_print-id-environment-variable]} )) ||
+_cave_cmd_print-id-environment-variable()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '(--all -a --no-all)'{--all,-a,--no-all}'[If the spec matches multiple IDs, display all matches]' \
+    '(--best --no-best)'{--best,--no-best}'[If the spec matches multiple IDs, select the best ID rather than giving an error]' \
+    '*--variable-name[Show this environment variable]:environment variable: ' \
+    '--format[Select the output format]:format: ' \
+    '*:package depspec:_cave_packages' && return 0
+}
+
 (( ${+functions[_cave_cmd_print-id-executables]} )) ||
 _cave_cmd_print-id-executables()
 {
@@ -487,6 +504,13 @@ _cave_cmd_print-sync-protocols()
     '(--help -h)'{--help,-h}'[Display help messsage]'
 }
 
+(( ${+functions[_cave_cmd_report]} )) ||
+_cave_cmd_report()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]'
+}
+
 _cave_resolve_arguments=(
     '(--help -h)'{--help,-h}'[Display help messsage]' \
     '(--execute -x --no-execute)'{--execute,-x,--no-execute}'[Execute the suggested actions]' \
@@ -592,13 +616,15 @@ _cave_cmd_search()
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
     '(--all-versions -a --no-all-versions)'{--all-versions,-a,--no-all-versions}'[Search in every version of packages]' \
+    '(--visible -v --no-visible)'{--visible,-v,--no-visible}'[Search only in visible (not masked) versions of packages]' \
     '--matching[Search only in packages matching the supplied specification]:Spec: ' \
     '(--type -t)'{--type,-t}'[Specify which matching algorithm to use]:Matching:((text t exact x regex r))' \
     '(--and -& --no-and)'{--and,-\&,--no-and}'[If multiple patterns are specified, require that all patterns match]' \
     '(--not -! --no-not)'{--not,-\!,--no-not}'[Invert the results of pattern matches]' \
     '*'{--key,-k}'[Search the named metadata key]' \
     '(--name -n --no-name)'{--name,-n,--no-name}'[Search package names]' \
-    '(--description -d --no-description)'{--description,-d,--no-description}'[Search package descriptions]'
+    '(--description -d --no-description)'{--description,-d,--no-description}'[Search package descriptions]' \
+    '(--enabled-only -e --no-enabled-only)'{--enabled-only,-e,--no-enabled-only}'[Only search enabled parts of conditional dependency spec trees]'
 }
 
 (( ${+functions[_cave_cmd_show]} )) ||
