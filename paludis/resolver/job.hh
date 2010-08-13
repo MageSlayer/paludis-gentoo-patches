@@ -41,11 +41,15 @@ namespace paludis
         {
             public:
                 PretendJob(
-                        const PackageDepSpec &
+                        const PackageDepSpec &,
+                        const RepositoryName &,
+                        const DestinationType
                         );
                 ~PretendJob();
 
                 const PackageDepSpec origin_id_spec() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const RepositoryName destination_repository_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                DestinationType destination_type() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 static const std::shared_ptr<PretendJob> deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
                 void serialise(Serialiser &) const;

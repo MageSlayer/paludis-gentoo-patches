@@ -808,7 +808,9 @@ namespace
                             throw InternalError(PALUDIS_HERE, "haven't scheduled the fetch for " + stringify(index.resolvent()) + " yet");
 
                         resolved->job_lists()->pretend_job_list()->append(std::make_shared<PretendJob>(
-                                        changes_to_make_decision.origin_id()->uniquely_identifying_spec()));
+                                        changes_to_make_decision.origin_id()->uniquely_identifying_spec(),
+                                        changes_to_make_decision.destination()->repository(),
+                                        changes_to_make_decision.resolvent().destination_type()));
 
                         const std::shared_ptr<JobRequirements> requirements(std::make_shared<JobRequirements>());
                         requirements->push_back(make_named_values<JobRequirement>(

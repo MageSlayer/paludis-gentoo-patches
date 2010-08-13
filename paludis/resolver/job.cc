@@ -38,16 +38,20 @@ namespace paludis
     struct Imp<PretendJob>
     {
         const PackageDepSpec origin_id_spec;
+        const RepositoryName destination_repository_name;
+        const DestinationType destination_type;
 
-        Imp(const PackageDepSpec & o) :
-            origin_id_spec(o)
+        Imp(const PackageDepSpec & o, const RepositoryName & r, const DestinationType t) :
+            origin_id_spec(o),
+            destination_repository_name(r),
+            destination_type(t)
         {
         }
     };
 }
 
-PretendJob::PretendJob(const PackageDepSpec & o) :
-    Pimp<PretendJob>(o)
+PretendJob::PretendJob(const PackageDepSpec & o, const RepositoryName & r, const DestinationType t) :
+    Pimp<PretendJob>(o, r, t)
 {
 }
 
@@ -61,13 +65,27 @@ PretendJob::origin_id_spec() const
     return _imp->origin_id_spec;
 }
 
+const RepositoryName
+PretendJob::destination_repository_name() const
+{
+    return _imp->destination_repository_name;
+}
+
+DestinationType
+PretendJob::destination_type() const
+{
+    return _imp->destination_type;
+}
+
 const std::shared_ptr<PretendJob>
 PretendJob::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "PretendJob");
     return std::make_shared<PretendJob>(
                 parse_user_package_dep_spec(v.member<std::string>("origin_id_spec"),
-                    d.deserialiser().environment(), { updso_no_disambiguation })
+                    d.deserialiser().environment(), { updso_no_disambiguation }),
+                RepositoryName(v.member<std::string>("destination_repository_name")),
+                destringify<DestinationType>(v.member<std::string>("destination_type"))
                 );
 }
 
@@ -76,6 +94,8 @@ PretendJob::serialise(Serialiser & s) const
 {
     s.object("PretendJob")
         .member(SerialiserFlags<>(), "origin_id_spec", stringify(origin_id_spec()))
+        .member(SerialiserFlags<>(), "destination_type", stringify(destination_type()))
+        .member(SerialiserFlags<>(), "destination_repository_name", stringify(destination_repository_name()))
         ;
 }
 
