@@ -32,6 +32,10 @@
 #include <paludis/resolver/resolver.hh>
 #include <paludis/resolver/required_confirmations.hh>
 #include <paludis/resolver/change_by_resolvent.hh>
+#include <paludis/resolver/collect_depped_upon.hh>
+#include <paludis/resolver/collect_installed.hh>
+#include <paludis/resolver/collect_purges.hh>
+#include <paludis/resolver/accumulate_deps_and_provides.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_named_values.hh>
@@ -60,7 +64,6 @@
 #include <paludis/choice.hh>
 #include <paludis/action.hh>
 #include <paludis/elike_slot_requirement.hh>
-#include <paludis/dep_spec_flattener.hh>
 #include <paludis/package_id.hh>
 #include <paludis/changed_choices.hh>
 #include <paludis/additional_package_dep_spec_requirement.hh>
@@ -239,9 +242,9 @@ Decider::_resolve_dependents()
         if (! (*s)->supports_action(SupportsActionTest<UninstallAction>()))
             continue;
 
-        const std::shared_ptr<const ChangeByResolventSequence> dependent_upon(_dependent_upon(
-                    *s, changing.first, changing.second, staying));
-        if (dependent_upon->empty())
+        const std::shared_ptr<const ChangeByResolventSequence> dependent_upon_ids(dependent_upon(
+                    _imp->env, *s, changing.first, changing.second, staying));
+        if (dependent_upon_ids->empty())
             continue;
 
         Resolvent resolvent(*s, dt_install_to_slash);
@@ -255,7 +258,7 @@ Decider::_resolve_dependents()
 
         const std::shared_ptr<Resolution> resolution(_resolution_for_resolvent(resolvent, true));
         const std::shared_ptr<const ConstraintSequence> constraints(_make_constraints_for_dependent(
-                    resolution, *s, dependent_upon));
+                    resolution, *s, dependent_upon_ids));
         for (ConstraintSequence::ConstIterator c(constraints->begin()), c_end(constraints->end()) ;
                 c != c_end ; ++c)
             _apply_resolution_constraint(resolution, *c);
@@ -289,160 +292,10 @@ Decider::_make_constraints_for_dependent(
 
 namespace
 {
-    const std::shared_ptr<const PackageID> dependent_checker_id(const std::shared_ptr<const PackageID> & i)
-    {
-        return i;
-    }
-
-    const std::shared_ptr<const PackageID> dependent_checker_id(const ChangeByResolvent & i)
-    {
-        return i.package_id();
-    }
-
-    template <typename S_>
-    const std::shared_ptr<const PackageID> best_eventual(
-            const Environment * const env,
-            const PackageDepSpec & spec,
-            const S_ & seq)
-    {
-        std::shared_ptr<const PackageID> result;
-
-        for (auto i(seq->begin()), i_end(seq->end()) ;
-                i != i_end ; ++i)
-        {
-            if ((! result) || dependent_checker_id(*i)->version() >= result->version())
-                if (match_package(*env, spec, *dependent_checker_id(*i), { }))
-                    result = dependent_checker_id(*i);
-        }
-
-        return result;
-    }
-
-    template <typename C_>
-    struct DependentChecker
-    {
-        const Environment * const env;
-        const std::shared_ptr<const C_> going_away;
-        const std::shared_ptr<const C_> newly_available;
-        const std::shared_ptr<const PackageIDSequence> not_changing_slots;
-        const std::shared_ptr<C_> result;
-
-        DependentChecker(
-                const Environment * const e,
-                const std::shared_ptr<const C_> & g,
-                const std::shared_ptr<const C_> & n,
-                const std::shared_ptr<const PackageIDSequence> & s) :
-            env(e),
-            going_away(g),
-            newly_available(n),
-            not_changing_slots(s),
-            result(std::make_shared<C_>())
-        {
-        }
-
-        void visit(const DependencySpecTree::NodeType<NamedSetDepSpec>::Type & s)
-        {
-            const std::shared_ptr<const SetSpecTree> set(env->set(s.spec()->name()));
-            set->top()->accept(*this);
-        }
-
-        void visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & s)
-        {
-            for (typename C_::ConstIterator g(going_away->begin()), g_end(going_away->end()) ;
-                    g != g_end ; ++g)
-            {
-                auto spec(s.spec());
-
-                if (s.spec()->slot_requirement_ptr() && simple_visitor_cast<const SlotAnyUnlockedRequirement>(
-                            *s.spec()->slot_requirement_ptr()))
-                {
-                    auto best_eventual_id(best_eventual(env, *s.spec(), newly_available));
-                    if (! best_eventual_id)
-                        best_eventual_id = best_eventual(env, *s.spec(), not_changing_slots);
-                    if (best_eventual_id && best_eventual_id->slot_key())
-                    {
-                        PartiallyMadePackageDepSpec part_spec(*s.spec());
-                        part_spec.slot_requirement(std::make_shared<ELikeSlotExactRequirement>(best_eventual_id->slot_key()->value(), false));
-                        spec = std::make_shared<PackageDepSpec>(part_spec);
-                    }
-                }
-
-                if (! match_package(*env, *spec, *dependent_checker_id(*g), { }))
-                    continue;
-
-                bool any(false);
-                for (typename C_::ConstIterator n(newly_available->begin()), n_end(newly_available->end()) ;
-                        n != n_end ; ++n)
-                {
-                    if (match_package(*env, *spec, *dependent_checker_id(*n), { }))
-                    {
-                        any = true;
-                        break;
-                    }
-                }
-
-                if (! any)
-                    result->push_back(*g);
-            }
-        }
-
-        void visit(const DependencySpecTree::NodeType<BlockDepSpec>::Type &)
-        {
-        }
-
-        void visit(const DependencySpecTree::NodeType<ConditionalDepSpec>::Type & s)
-        {
-            if (s.spec()->condition_met())
-                std::for_each(indirect_iterator(s.begin()), indirect_iterator(s.end()),
-                        accept_visitor(*this));
-        }
-
-        void visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type & s)
-        {
-            std::for_each(indirect_iterator(s.begin()), indirect_iterator(s.end()),
-                    accept_visitor(*this));
-        }
-
-        void visit(const DependencySpecTree::NodeType<AllDepSpec>::Type & s)
-        {
-            std::for_each(indirect_iterator(s.begin()), indirect_iterator(s.end()),
-                    accept_visitor(*this));
-        }
-
-        void visit(const DependencySpecTree::NodeType<DependenciesLabelsDepSpec>::Type &)
-        {
-        }
-    };
-
     const std::shared_ptr<const PackageID> get_change_by_resolvent_id(const ChangeByResolvent & r)
     {
         return r.package_id();
     }
-}
-
-const std::shared_ptr<const ChangeByResolventSequence>
-Decider::_dependent_upon(
-        const std::shared_ptr<const PackageID> & id,
-        const std::shared_ptr<const ChangeByResolventSequence> & going_away,
-        const std::shared_ptr<const ChangeByResolventSequence> & staying,
-        const std::shared_ptr<const PackageIDSequence> & not_changing_slots) const
-{
-    DependentChecker<ChangeByResolventSequence> c(_imp->env, going_away, staying, not_changing_slots);
-    if (id->dependencies_key())
-        id->dependencies_key()->value()->top()->accept(c);
-    else
-    {
-        if (id->build_dependencies_key())
-            id->build_dependencies_key()->value()->top()->accept(c);
-        if (id->run_dependencies_key())
-            id->run_dependencies_key()->value()->top()->accept(c);
-        if (id->post_dependencies_key())
-            id->post_dependencies_key()->value()->top()->accept(c);
-        if (id->suggested_dependencies_key())
-            id->suggested_dependencies_key()->value()->top()->accept(c);
-    }
-
-    return c.result;
 }
 
 namespace
@@ -2155,20 +2008,14 @@ Decider::purge()
 {
     Context context("When purging everything:");
 
-    _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Collecting"));
+    _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Collecting Unused"));
 
-    const std::shared_ptr<const PackageIDSet> have_now(_collect_installed());
+    const std::shared_ptr<const PackageIDSet> have_now(collect_installed(_imp->env));
     const std::shared_ptr<PackageIDSequence> have_now_seq(std::make_shared<PackageIDSequence>());
     std::copy(have_now->begin(), have_now->end(), have_now_seq->back_inserter());
 
-    const std::shared_ptr<const PackageIDSet> world(_collect_world(have_now));
-    const std::shared_ptr<const PackageIDSet> world_plus_deps(_accumulate_deps_and_provides(world, have_now_seq, true));
-
-    _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Calculating Unused"));
-
-    const std::shared_ptr<PackageIDSet> unused(std::make_shared<PackageIDSet>());
-    std::set_difference(have_now->begin(), have_now->end(),
-            world_plus_deps->begin(), world_plus_deps->end(), unused->inserter(), PackageIDSetComparator());
+    auto unused(collect_purges(_imp->env, have_now, have_now_seq,
+                std::bind(&Environment::trigger_notifier_callback, _imp->env, NotifierCallbackResolverStepEvent())));
 
     for (PackageIDSet::ConstIterator i(unused->begin()), i_end(unused->end()) ;
             i != i_end ; ++i)
@@ -2192,7 +2039,8 @@ Decider::purge()
             i_seq->push_back(*i);
             for (auto u(unused->begin()), u_end(unused->end()) ;
                     u != u_end ; ++u)
-                if ((*u)->supports_action(SupportsActionTest<UninstallAction>()) && ! _collect_depped_upon(*u, i_seq, have_now_seq)->empty())
+                if ((*u)->supports_action(SupportsActionTest<UninstallAction>()) &&
+                        ! collect_depped_upon(_imp->env, *u, i_seq, have_now_seq)->empty())
                     used_to_use->push_back(make_named_values<ChangeByResolvent>(
                                 n::package_id() = *u,
                                 n::resolvent() = Resolvent(*u, dt_install_to_slash)
@@ -2206,21 +2054,6 @@ Decider::purge()
 
         _decide(resolution);
     }
-}
-
-const std::shared_ptr<const PackageIDSet>
-Decider::_collect_world(
-        const std::shared_ptr<const PackageIDSet> & from) const
-{
-    const std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
-    const std::shared_ptr<const SetSpecTree> set(_imp->env->set(SetName("world")));
-
-    for (PackageIDSet::ConstIterator i(from->begin()), i_end(from->end()) ;
-            i != i_end ; ++i)
-        if (match_package_in_set(*_imp->env, *set, **i, { }))
-            result->insert(*i);
-
-    return result;
 }
 
 void
@@ -2392,7 +2225,7 @@ Decider::_resolve_purges()
     std::transform(going_away_newly_available.second->begin(), going_away_newly_available.second->end(),
             newly_available->inserter(), get_change_by_resolvent_id);
 
-    const std::shared_ptr<const PackageIDSet> have_now(_collect_installed());
+    const std::shared_ptr<const PackageIDSet> have_now(collect_installed(_imp->env));
 
     const std::shared_ptr<PackageIDSet> have_now_minus_going_away(std::make_shared<PackageIDSet>());
     std::set_difference(have_now->begin(), have_now->end(),
@@ -2405,8 +2238,10 @@ Decider::_resolve_purges()
     const std::shared_ptr<PackageIDSequence> will_eventually_have(std::make_shared<PackageIDSequence>());
     std::copy(will_eventually_have_set->begin(), will_eventually_have_set->end(), will_eventually_have->back_inserter());
 
-    const std::shared_ptr<const PackageIDSet> used_originally(_accumulate_deps_and_provides(going_away, will_eventually_have, false));
-    const std::shared_ptr<const PackageIDSet> used_afterwards(_accumulate_deps_and_provides(newly_available, will_eventually_have, false));
+    const std::shared_ptr<const PackageIDSet> used_originally(accumulate_deps_and_provides(_imp->env, going_away, will_eventually_have, false,
+                std::bind(&Environment::trigger_notifier_callback, _imp->env, NotifierCallbackResolverStepEvent())));
+    const std::shared_ptr<const PackageIDSet> used_afterwards(accumulate_deps_and_provides(_imp->env, newly_available, will_eventually_have, false,
+                std::bind(&Environment::trigger_notifier_callback, _imp->env, NotifierCallbackResolverStepEvent())));
 
     const std::shared_ptr<PackageIDSet> used_originally_and_not_going_away(std::make_shared<PackageIDSet>());
     std::set_difference(used_originally->begin(), used_originally->end(),
@@ -2431,7 +2266,7 @@ Decider::_resolve_purges()
     {
         _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
 
-        const std::shared_ptr<const PackageIDSet> used(_collect_depped_upon(*u, newly_unused_seq, have_now_minus_going_away_seq));
+        const std::shared_ptr<const PackageIDSet> used(collect_depped_upon(_imp->env, *u, newly_unused_seq, have_now_minus_going_away_seq));
         std::copy(used->begin(), used->end(), used_by_unchanging->inserter());
     }
 
@@ -2463,7 +2298,7 @@ Decider::_resolve_purges()
         for (ChangeByResolventSequence::ConstIterator g(going_away_newly_available.first->begin()), g_end(going_away_newly_available.first->end()) ;
                 g != g_end ; ++g)
             if (g->package_id()->supports_action(SupportsActionTest<UninstallAction>()) &&
-                    ! _collect_depped_upon(g->package_id(), star_i_set, have_now_minus_going_away_seq)->empty())
+                    ! collect_depped_upon(_imp->env, g->package_id(), star_i_set, have_now_minus_going_away_seq)->empty())
                 used_to_use->push_back(*g);
 
         Resolvent resolvent(*i, dt_install_to_slash);
@@ -2484,102 +2319,6 @@ Decider::_resolve_purges()
     }
 
     return changed;
-}
-
-const std::shared_ptr<const PackageIDSet>
-Decider::_collect_installed() const
-{
-    const std::shared_ptr<const PackageIDSequence> q((*_imp->env)[selection::AllVersionsUnsorted(
-                generator::All() | filter::InstalledAtRoot(FSEntry("/")))]);
-    const std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
-
-    std::copy(q->begin(), q->end(), result->inserter());
-    return result;
-}
-
-const std::shared_ptr<const PackageIDSet>
-Decider::_accumulate_deps_and_provides(
-        const std::shared_ptr<const PackageIDSet> & start,
-        const std::shared_ptr<const PackageIDSequence> & will_eventually_have,
-        const bool recurse) const
-{
-    const std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>()), done(std::make_shared<PackageIDSet>());
-    std::copy(start->begin(), start->end(), result->inserter());
-
-    while (result->size() > done->size())
-    {
-        const std::shared_ptr<PackageIDSet> more(std::make_shared<PackageIDSet>());
-        std::set_difference(result->begin(), result->end(), done->begin(), done->end(), more->inserter(), PackageIDSetComparator());
-
-        for (PackageIDSet::ConstIterator i(more->begin()), i_end(more->end()) ;
-                i != i_end ; ++i)
-        {
-            _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
-
-            done->insert(*i);
-
-            const std::shared_ptr<const PackageIDSet> depped_upon(_collect_depped_upon(
-                        *i, will_eventually_have, std::make_shared<PackageIDSequence>()));
-            std::copy(depped_upon->begin(), depped_upon->end(), result->inserter());
-
-            const std::shared_ptr<const PackageIDSet> provided(_collect_provided(*i));
-            std::copy(provided->begin(), provided->end(), result->inserter());
-        }
-
-        if (! recurse)
-            break;
-    }
-
-    return result;
-}
-
-const std::shared_ptr<const PackageIDSet>
-Decider::_collect_depped_upon(
-        const std::shared_ptr<const PackageID> & id,
-        const std::shared_ptr<const PackageIDSequence> & candidates,
-        const std::shared_ptr<const PackageIDSequence> & not_changing_slots) const
-{
-    DependentChecker<PackageIDSequence> c(_imp->env, candidates, std::make_shared<PackageIDSequence>(), not_changing_slots);
-    if (id->dependencies_key())
-        id->dependencies_key()->value()->top()->accept(c);
-    else
-    {
-        if (id->build_dependencies_key())
-            id->build_dependencies_key()->value()->top()->accept(c);
-        if (id->run_dependencies_key())
-            id->run_dependencies_key()->value()->top()->accept(c);
-        if (id->post_dependencies_key())
-            id->post_dependencies_key()->value()->top()->accept(c);
-        if (id->suggested_dependencies_key())
-            id->suggested_dependencies_key()->value()->top()->accept(c);
-    }
-
-    const std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
-    std::copy(c.result->begin(), c.result->end(), result->inserter());
-    return result;
-}
-
-const std::shared_ptr<const PackageIDSet>
-Decider::_collect_provided(
-        const std::shared_ptr<const PackageID> & id) const
-{
-    const std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
-
-    if (id->provide_key())
-    {
-        DepSpecFlattener<ProvideSpecTree, PackageDepSpec> f(_imp->env);
-        id->provide_key()->value()->top()->accept(f);
-
-        for (DepSpecFlattener<ProvideSpecTree, PackageDepSpec>::ConstIterator v(f.begin()), v_end(f.end()) ;
-                v != v_end ; ++v)
-        {
-            const std::shared_ptr<const PackageIDSequence> virtuals((*_imp->env)[selection::AllVersionsUnsorted(
-                        generator::Matches(**v, { }))]);
-            std::copy(virtuals->begin(), virtuals->end(), result->inserter());
-        }
-    }
-
-    return result;
 }
 
 const std::shared_ptr<ConstraintSequence>

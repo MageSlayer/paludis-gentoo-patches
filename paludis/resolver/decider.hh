@@ -259,31 +259,7 @@ namespace paludis
                 const std::shared_ptr<const PackageIDSequence> _collect_staying(
                         const std::shared_ptr<const ChangeByResolventSequence> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                const std::shared_ptr<const ChangeByResolventSequence> _dependent_upon(
-                        const std::shared_ptr<const PackageID> &,
-                        const std::shared_ptr<const ChangeByResolventSequence> &,
-                        const std::shared_ptr<const ChangeByResolventSequence> &,
-                        const std::shared_ptr<const PackageIDSequence> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
-
                 void _confirm(const std::shared_ptr<const Resolution> & resolution);
-
-                const std::shared_ptr<const PackageIDSet> _collect_installed() const PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                const std::shared_ptr<const PackageIDSet> _accumulate_deps_and_provides(
-                        const std::shared_ptr<const PackageIDSet> &,
-                        const std::shared_ptr<const PackageIDSequence> &,
-                        const bool recurse) const PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                const std::shared_ptr<const PackageIDSet> _collect_depped_upon(
-                        const std::shared_ptr<const PackageID> &,
-                        const std::shared_ptr<const PackageIDSequence> &,
-                        const std::shared_ptr<const PackageIDSequence> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                const std::shared_ptr<const PackageIDSet> _collect_provided(
-                        const std::shared_ptr<const PackageID> & id) const PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                const std::shared_ptr<const PackageIDSet> _collect_world(
-                        const std::shared_ptr<const PackageIDSet> & from) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 bool _can_use(
                         const std::shared_ptr<const PackageID> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
