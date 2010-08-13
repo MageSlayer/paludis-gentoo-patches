@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # vim: set sw=4 sts=4 et tw=80 :
 #
-# Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+# Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
 #
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General
@@ -247,19 +247,23 @@ module Paludis
     end
 
     class TestCase_PretendAction < Test::Unit::TestCase
+        def env
+            @env or @env = EnvironmentFactory.instance.create("")
+        end
+
         def test_create
-            assert_kind_of PretendAction, PretendAction.new
-            assert_kind_of Action, PretendAction.new
+            assert_kind_of PretendAction, PretendAction.new(PretendActionOptions.new(destination))
+            assert_kind_of Action, PretendAction.new(PretendActionOptions.new(destination))
         end
 
         def test_bad_create
             assert_raise ArgumentError do
-                PretendAction.new('')
+                PretendAction.new()
             end
         end
 
         def test_methods
-            action = PretendAction.new
+            action = PretendAction.new(PretendActionOptions.new(destination))
             assert !action.failed?
 
             assert_nothing_raised do
@@ -267,6 +271,10 @@ module Paludis
             end
 
             assert action.failed?
+        end
+
+        def destination
+            @destination or @destination = FakeRepository.new(env, 'fake');
         end
     end
 end

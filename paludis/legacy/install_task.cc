@@ -748,6 +748,7 @@ InstallTask::_pretend()
             if (dep->package_id()->supports_action(pretend_action_query))
             {
                 PretendActionOptions options(make_named_values<PretendActionOptions>(
+                            n::destination() = dep->destination(),
                             n::make_output_manager() = std::ref(output_manager_holder)
                             ));
                 PretendAction pretend_action(options);

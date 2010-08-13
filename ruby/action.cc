@@ -47,6 +47,7 @@ namespace
     static VALUE c_uninstall_action_options;
     static VALUE c_uninstall_action;
 
+    static VALUE c_pretend_action_options;
     static VALUE c_pretend_action;
 
     static VALUE c_pretend_fetch_action;
@@ -96,6 +97,21 @@ namespace
         }
     }
 
+    const PretendActionOptions
+    value_to_pretend_action_options(VALUE v)
+    {
+        if (rb_obj_is_kind_of(v, c_pretend_action_options))
+        {
+            PretendActionOptions * v_ptr;
+            Data_Get_Struct(v, PretendActionOptions, v_ptr);
+            return *v_ptr;
+        }
+        else
+        {
+            rb_raise(rb_eTypeError, "Can't convert %s into PretendActionOptions", rb_obj_classname(v));
+        }
+    }
+
     VALUE
     install_action_options_to_value(const InstallActionOptions & m)
     {
@@ -103,6 +119,21 @@ namespace
         try
         {
             return Data_Wrap_Struct(c_install_action_options, 0, &Common<InstallActionOptions>::free, m_ptr);
+        }
+        catch (const std::exception & e)
+        {
+            delete m_ptr;
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    VALUE
+    pretend_action_options_to_value(const PretendActionOptions & m)
+    {
+        PretendActionOptions * m_ptr(new PretendActionOptions(m));
+        try
+        {
+            return Data_Wrap_Struct(c_pretend_action_options, 0, &Common<PretendActionOptions>::free, m_ptr);
         }
         catch (const std::exception & e)
         {
@@ -458,14 +489,6 @@ namespace
      *
      * Create new ConfigAction
      */
-    /*
-     * Document-method PretendAction.new
-     *
-     * call-seq:
-     *     PretendAction.new -> PretendAction
-     *
-     * Create new PretendAction
-     */
     template <typename A_, typename O_>
     struct EasyActionNew
     {
@@ -547,6 +570,43 @@ namespace
     }
 
     /*
+     * call-seq:
+     *     PretendActionOptions.new(destination) -> InstallActionOptions
+     */
+    VALUE
+    pretend_action_options_new(int argc, VALUE *argv, VALUE self)
+    {
+        PretendActionOptions * ptr(0);
+        try
+        {
+            std::shared_ptr<Repository> v_destination;
+
+            if (1 == argc)
+            {
+                v_destination = value_to_repository(argv[0]);
+            }
+            else
+            {
+                rb_raise(rb_eArgError, "PretendActionOptions expects one argument, but got %d",argc);
+            }
+
+            ptr = new PretendActionOptions(make_named_values<PretendActionOptions>(
+                        n::destination() = v_destination,
+                        n::make_output_manager() = &make_standard_output_manager
+                    ));
+
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<PretendActionOptions>::free, ptr));
+            rb_obj_call_init(tdata, argc, argv);
+            return tdata;
+        }
+        catch (const std::exception & e)
+        {
+            delete ptr;
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    /*
      * Document-method: destination
      *
      * call-seq:
@@ -559,6 +619,22 @@ namespace
     {
         InstallActionOptions * p;
         Data_Get_Struct(self, InstallActionOptions, p);
+        return repository_to_value((*p).destination());
+    }
+
+    /*
+     * Document-method: destination
+     *
+     * call-seq:
+     *     destination -> Repository
+     *
+     * Our destination
+     */
+    VALUE
+    pretend_action_options_destination(VALUE self)
+    {
+        PretendActionOptions * p;
+        Data_Get_Struct(self, PretendActionOptions, p);
         return repository_to_value((*p).destination());
     }
 
@@ -581,6 +657,23 @@ namespace
 
     /*
      * call-seq:
+     *     PretendAction.new(pretend_action_options) -> PretendAction
+     *
+     * Create a new PretendAction.
+     */
+    VALUE
+    pretend_action_new(VALUE self, VALUE opts)
+    {
+        const PretendActionOptions opts_ptr(value_to_pretend_action_options(opts));
+        std::shared_ptr<Action> * a(
+                new std::shared_ptr<Action>(std::make_shared<PretendAction>(opts_ptr)));
+        VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::shared_ptr<Action> >::free, a));
+        rb_obj_call_init(tdata, 1, &self);
+        return tdata;
+    }
+
+    /*
+     * call-seq:
      *     options -> InstallActionOptions
      *
      * Our InstallActionOptions.
@@ -591,6 +684,20 @@ namespace
         std::shared_ptr<Action> * p;
         Data_Get_Struct(self, std::shared_ptr<Action>, p);
         return install_action_options_to_value(std::static_pointer_cast<InstallAction>(*p)->options);
+    }
+
+    /*
+     * call-seq:
+     *     options -> PretendActionOptions
+     *
+     * Our PretendActionOptions.
+     */
+    VALUE
+    pretend_action_options(VALUE self)
+    {
+        std::shared_ptr<Action> * p;
+        Data_Get_Struct(self, std::shared_ptr<Action>, p);
+        return pretend_action_options_to_value(std::static_pointer_cast<PretendAction>(*p)->options);
     }
 
     bool ignore_nothing(const FSEntry &)
@@ -838,16 +945,26 @@ namespace
         rb_define_method(c_uninstall_action, "options", RUBY_FUNC_CAST(&uninstall_action_options), 0);
 
         /*
+         * Document-class: Paludis::PretendActionOptions
+         *
+         * Options for Paludis::PretendAction.
+         */
+        c_pretend_action_options = rb_define_class_under(paludis_module(), "PretendActionOptions", rb_cObject);
+        rb_define_singleton_method(c_pretend_action_options, "new", RUBY_FUNC_CAST(&pretend_action_options_new), -1);
+        rb_define_method(c_pretend_action_options, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
+        rb_define_method(c_pretend_action_options, "destination", RUBY_FUNC_CAST(&pretend_action_options_destination), 0);
+
+        /*
          * Document-class: Paludis::PretendAction
          *
          * A PretendAction is used by InstallTask to handle install-pretend-phase checks on a PackageID.
          */
         c_pretend_action = rb_define_class_under(paludis_module(), "PretendAction", c_action);
-        rb_define_singleton_method(c_pretend_action, "new",
-                RUBY_FUNC_CAST((&EasyActionNew<PretendAction, PretendActionOptions>::easy_action_new)), 0);
+        rb_define_singleton_method(c_pretend_action, "new", RUBY_FUNC_CAST(&pretend_action_new), 1);
         rb_define_method(c_pretend_action, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
         rb_define_method(c_pretend_action, "failed?", RUBY_FUNC_CAST(&pretend_action_failed), 0);
         rb_define_method(c_pretend_action, "set_failed", RUBY_FUNC_CAST(&pretend_action_set_failed), 0);
+        rb_define_method(c_pretend_action, "options", RUBY_FUNC_CAST(&pretend_action_options), 0);
 
         c_pretend_fetch_action = rb_define_class_under(paludis_module(), "PretendFetchAction", c_action);
         rb_funcall(c_pretend_fetch_action, rb_intern("private_class_method"), 1, rb_str_new2("new"));

@@ -143,7 +143,7 @@ namespace
                     "be backgrounded or run in parallel with installs", true),
 
             g_install_action_options(main_options_section(), "Install Action Options",
-                    "Options for if the action is 'install'"),
+                    "Options for if the action is 'install' or (for --destination) 'pretend'"),
             a_destination(&g_install_action_options, "destination", '\0',
                     "The name of the repository to which the install should take place"),
             a_replacing(&g_install_action_options, "replacing", '\0',
@@ -168,7 +168,7 @@ namespace
                     " [ --ignore-unfetched ] spec");
             add_usage_line("info spec");
             add_usage_line("install --destination repo [ --replacing spec ... ] spec");
-            add_usage_line("pretend spec");
+            add_usage_line("pretend --destination repo spec");
             add_usage_line("pretend-fetch spec");
             add_usage_line("uninstall [ --config-protect values ] spec");
         }
@@ -557,8 +557,15 @@ PerformCommand::run(
         if (cmdline.a_if_supported.specified() && ! id->supports_action(SupportsActionTest<PretendAction>()))
             return EXIT_SUCCESS;
 
+        if (! cmdline.a_destination.specified())
+            throw args::DoHelp("--destination must be specified for a pretend");
+
+        const std::shared_ptr<Repository> destination(env->package_database()->fetch_repository(
+                    RepositoryName(cmdline.a_destination.argument())));
+
         OutputManagerFromIPCOrEnvironment output_manager_holder(env.get(), cmdline, id);
         PretendActionOptions options(make_named_values<PretendActionOptions>(
+                    n::destination() = destination,
                     n::make_output_manager() = std::ref(output_manager_holder)
                     ));
         PretendAction pretend_action(options);

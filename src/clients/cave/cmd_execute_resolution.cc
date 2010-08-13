@@ -192,6 +192,7 @@ namespace
             const std::shared_ptr<Environment> & env,
             const ExecuteResolutionCommandLine & cmdline,
             const PackageDepSpec & origin_id_spec,
+            const RepositoryName & destination_repository_name,
             const int x, const int y, const int prev_x,
             std::shared_ptr<OutputManager> & output_manager_goes_here)
     {
@@ -212,6 +213,8 @@ namespace
         args->push_back("--x-of-y");
         args->push_back(stringify(x) + " of " + stringify(y));
         args->push_back(stringify(origin_id->uniquely_identifying_spec()));
+        args->push_back("--destination");
+        args->push_back(stringify(destination_repository_name));
 
         int retcode;
 
@@ -685,7 +688,8 @@ namespace
                 cout << "Executing pretend actions: " << std::flush;
 
             std::shared_ptr<OutputManager> output_manager_goes_here;
-            failed = failed || ! do_pretend(env, cmdline, (*c)->origin_id_spec(), x, y, prev_x, output_manager_goes_here);
+            failed = failed || ! do_pretend(env, cmdline, (*c)->origin_id_spec(), (*c)->destination_repository_name(),
+                    x, y, prev_x, output_manager_goes_here);
             prev_x = x;
         }
 

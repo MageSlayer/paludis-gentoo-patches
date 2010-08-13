@@ -111,9 +111,11 @@ namespace
                     ));
     }
 
-    PretendActionOptions * make_pretend_action_options()
+    PretendActionOptions * make_pretend_action_options(
+            const std::shared_ptr<paludis::Repository> & r)
     {
         return new PretendActionOptions(make_named_values<PretendActionOptions>(
+                    n::destination() = r,
                     n::make_output_manager() = &make_standard_output_manager
                     ));
     }
@@ -243,7 +245,7 @@ void expose_action()
 
         .def("__init__",
                 bp::make_constructor(&make_pretend_action_options),
-                "__init__()"
+                "__init__(Repository)"
             )
         ;
 

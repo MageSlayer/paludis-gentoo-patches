@@ -363,6 +363,8 @@ namespace paludis
      */
     struct PretendActionOptions
     {
+        NamedValue<n::destination, std::shared_ptr<Repository> > destination;
+
         /**
          * This is a function to avoid chicken / egg problems when using
          * Environment::create_output_manager.

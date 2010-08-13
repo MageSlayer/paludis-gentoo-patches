@@ -77,7 +77,10 @@ class TestCase_06_UninstallAction(unittest.TestCase):
 
 class TestCase_08_PretendAction(unittest.TestCase):
     def test_01_create(self):
-        PretendAction(PretendActionOptions())
+        env = TestEnvironment()
+        repo1 = FakeRepository(env, "1")
+        pao = PretendActionOptions(repo1)
+        PretendAction(pao)
 
 class TestCase_09_ConfigAction(unittest.TestCase):
     def test_01_create(self):
