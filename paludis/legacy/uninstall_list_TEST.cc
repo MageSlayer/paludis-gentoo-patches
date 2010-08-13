@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/uninstall_list.hh>
+#include <paludis/legacy/uninstall_list.hh>
 #include <paludis/repositories/fake/fake_repository.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>

@@ -17,9 +17,9 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/report_task.hh>
+#include <paludis/legacy/report_task.hh>
+#include <paludis/legacy/uninstall_list.hh>
 #include <paludis/util/log.hh>
-#include <paludis/uninstall_list.hh>
 #include <paludis/environment.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/dep_tag.hh>

@@ -22,8 +22,8 @@
 
 #include <paludis/legacy/uninstall_task.hh>
 #include <paludis/legacy/tasks_exceptions.hh>
+#include <paludis/legacy/uninstall_list.hh>
 #include <paludis/util/set.hh>
-#include <paludis/uninstall_list.hh>
 #include <paludis/package_database.hh>
 #include <paludis/action.hh>
 #include <paludis/fuzzy_finder.hh>

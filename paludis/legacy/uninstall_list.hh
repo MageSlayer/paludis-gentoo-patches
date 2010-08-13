@@ -38,7 +38,7 @@
 
 namespace paludis
 {
-#include <paludis/uninstall_list-se.hh>
+#include <paludis/legacy/uninstall_list-se.hh>
 
     namespace n
     {

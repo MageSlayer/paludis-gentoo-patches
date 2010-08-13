@@ -255,6 +255,7 @@ paludis-*.*.*.tar.bz2
 /paludis/legacy/dep_list_TEST
 /paludis/legacy/dep_list_TEST_blockers
 /paludis/legacy/range_rewriter_TEST
+/paludis/legacy/uninstall_list_TEST
 /paludis/name_TEST
 /paludis/package_database_TEST
 /paludis/paludis.hh
@@ -422,7 +423,6 @@ paludis-*.*.*.tar.bz2
 /paludis/syncers/dotar+http
 /paludis/syncers/dotar+https
 /paludis/tar_merger_TEST
-/paludis/uninstall_list_TEST
 /paludis/user_dep_spec_TEST
 /paludis/util/Makefile.am
 /paludis/util/action_queue_TEST

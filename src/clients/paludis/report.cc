@@ -20,7 +20,7 @@
 #include "report.hh"
 #include <src/output/colour.hh>
 #include <src/output/mask_displayer.hh>
-#include <paludis/report_task.hh>
+#include <paludis/legacy/report_task.hh>
 #include <paludis/mask.hh>
 #include <paludis/dep_tag.hh>
 #include <paludis/package_id.hh>

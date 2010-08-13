@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/uninstall_list.hh>
+#include <paludis/legacy/uninstall_list.hh>
 #include <paludis/environment.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/log.hh>
@@ -52,7 +52,7 @@
 
 using namespace paludis;
 
-#include <paludis/uninstall_list-se.cc>
+#include <paludis/legacy/uninstall_list-se.cc>
 
 typedef std::unordered_map<
     std::shared_ptr<const PackageID>,
