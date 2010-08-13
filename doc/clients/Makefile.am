@@ -58,6 +58,7 @@ CAVE_COMMANDS_HTML = \
 	cave-print-sets.html \
 	cave-print-sync-protocols.html \
 	cave-purge.html \
+	cave-report.html \
 	cave-resolve.html \
 	cave-resume.html \
 	cave-search.html \

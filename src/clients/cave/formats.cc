@@ -687,3 +687,39 @@ paludis::cave::f::verify_error()
     return c::bold_red() + "    %s:" + c::normal() + "%{column 32}%r\\n";
 }
 
+const std::string
+paludis::cave::f::report_package_id()
+{
+    return c::bold_blue() + "%s" + c::normal() + "\\n";
+}
+
+const std::string
+paludis::cave::f::report_package_no_origin()
+{
+    return "    No longer exists in original repository %s\\n";
+}
+
+const std::string
+paludis::cave::f::report_package_origin()
+{
+    return "    Origin %s:\\n";
+}
+
+const std::string
+paludis::cave::f::report_package_origin_masked()
+{
+    return "        Masked in original repository\\n";
+}
+
+const std::string
+paludis::cave::f::report_package_origin_insecure()
+{
+    return "        Marked as insecure\\n";
+}
+
+const std::string
+paludis::cave::f::report_package_unused()
+{
+    return "    Not used by any package in world\\n";
+}
+

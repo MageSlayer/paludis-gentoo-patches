@@ -172,6 +172,13 @@ namespace paludis
 
             const std::string verify_package();
             const std::string verify_error();
+
+            const std::string report_package_id();
+            const std::string report_package_no_origin();
+            const std::string report_package_origin();
+            const std::string report_package_origin_masked();
+            const std::string report_package_origin_insecure();
+            const std::string report_package_unused();
         }
     }
 }
