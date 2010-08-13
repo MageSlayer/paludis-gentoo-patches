@@ -90,6 +90,7 @@
 #include <paludis/selection_cache.hh>
 #include <paludis/package_id.hh>
 #include <paludis/filtered_generator.hh>
+#include <paludis/metadata_key.hh>
 
 #include <algorithm>
 #include <iostream>
@@ -499,9 +500,18 @@ namespace
                     + arg.long_name() + "'");
     }
 
-    DestinationType destination_type_from_arg(const args::EnumArg & arg)
+    DestinationType destination_type_from_arg(
+            const Environment * const env,
+            const args::EnumArg & arg)
     {
-        if (arg.argument() == "binaries")
+        if (arg.argument() == "auto")
+        {
+            if (env->preferred_root_key()->value() == FSEntry("/"))
+                return dt_install_to_slash;
+            else
+                return dt_install_to_chroot;
+        }
+        else if (arg.argument() == "binaries")
             return dt_create_binary;
         else if (arg.argument() == "install")
             return dt_install_to_slash;
@@ -585,7 +595,7 @@ paludis::cave::resolve_common(
     GetConstraintsForViaBinaryHelper get_constraints_for_via_binary_helper(env.get());
 
     GetDestinationTypesForErrorHelper get_destination_types_for_error_helper(env.get());
-    get_destination_types_for_error_helper.set_target_destination_type(destination_type_from_arg(resolution_options.a_make));
+    get_destination_types_for_error_helper.set_target_destination_type(destination_type_from_arg(env.get(), resolution_options.a_make));
 
     GetInitialConstraintsForHelper get_initial_constraints_for_helper(env.get());
     for (args::StringSetArg::ConstIterator i(resolution_options.a_without.begin_args()),
@@ -601,11 +611,11 @@ paludis::cave::resolve_common(
     get_initial_constraints_for_helper.set_reinstall_scm_days(reinstall_scm_days(resolution_options));
 
     GetResolventsForHelper get_resolvents_for_helper(env.get());
-    get_resolvents_for_helper.set_target_destination_type(destination_type_from_arg(resolution_options.a_make));
+    get_resolvents_for_helper.set_target_destination_type(destination_type_from_arg(env.get(), resolution_options.a_make));
 
     if (resolution_options.a_make_dependencies.argument() == "auto")
     {
-        if ("install" == resolution_options.a_make.argument())
+        if (dt_install_to_slash == destination_type_from_arg(env.get(), resolution_options.a_make))
         {
             get_resolvents_for_helper.set_want_target_dependencies(true);
             get_resolvents_for_helper.set_want_target_runtime_dependencies(true);
@@ -677,7 +687,8 @@ paludis::cave::resolve_common(
     MakeDestinationFilteredGeneratorHelper make_destination_filtered_generator_helper(env.get());
 
     MakeOriginFilteredGeneratorHelper make_origin_filtered_generator_helper(env.get());
-    make_origin_filtered_generator_helper.set_making_binaries("binaries" == resolution_options.a_make.argument());
+    make_origin_filtered_generator_helper.set_making_binaries(
+            dt_create_binary == destination_type_from_arg(env.get(), resolution_options.a_make));
 
     MakeUnmaskableFilterHelper make_unmaskable_filter_helper(env.get());
     make_unmaskable_filter_helper.set_override_masks(! resolution_options.a_no_override_masks.specified());

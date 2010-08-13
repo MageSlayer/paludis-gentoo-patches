@@ -232,12 +232,13 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
             "will always be installed to / as necessary."),
     a_make(&g_destination_options, "make", 'm', "Specify what to do with targets.",
             args::EnumArg::EnumArgOptions
+            ("auto",                  'a', "'install', or 'chroot' if the preferred root is not /")
             ("install",               'i', "Install targets to /")
 #ifdef ENABLE_PBINS
             ("binaries",              'b', "Create binary packages for targets")
 #endif
             ("chroot",                'c', "Install targets to a chroot"),
-            "install"),
+            "auto"),
     a_make_dependencies(&g_destination_options, "make-dependencies", 'M', "Specify what to do with dependencies of "
             "targets. Only useful when '--make' is not set to 'install', since dependencies on / are considered "
             "specially.",
