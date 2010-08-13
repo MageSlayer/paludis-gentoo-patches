@@ -215,14 +215,14 @@ namespace
                     if (! spec)
                         throw InternalError(PALUDIS_HERE, "Bad params.set_name_suffix");
 
-                    result->root()->append(spec);
+                    result->top()->append(spec);
                 }
                 else
                 {
                     std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(params.parser()(tokens.at(1))));
                     if (params.tag())
                         spec->set_tag(params.tag());
-                    result->root()->append(spec);
+                    result->top()->append(spec);
                 }
             }
             else if ("?" == tokens.at(0))
@@ -246,7 +246,7 @@ namespace
                     else if (! (*params.environment())[selection::SomeArbitraryVersion(
                                 generator::Package(*spec->package_ptr()) |
                                 filter::InstalledAtRoot(params.environment()->root()))]->empty())
-                        result->root()->append(spec);
+                        result->top()->append(spec);
                 }
                 else
                     Log::get_instance()->message("set_file.bad_operator", ll_warning, lc_context)
@@ -276,7 +276,7 @@ namespace
                                     .slot_requirement(spec->slot_requirement_ptr()),
                                     { }) |
                                 filter::InstalledAtRoot(params.environment()->root()))]->empty())
-                        result->root()->append(spec);
+                        result->top()->append(spec);
                 }
                 else
                     Log::get_instance()->message("set_file.bad_operator", ll_warning, lc_context)
@@ -339,14 +339,14 @@ SimpleHandler::_create_contents() const
             if (std::string::npos == i->find('/'))
             {
                 std::shared_ptr<NamedSetDepSpec> p(std::make_shared<NamedSetDepSpec>(SetName(*i)));
-                _contents->root()->append(p);
+                _contents->top()->append(p);
             }
             else
             {
                 std::shared_ptr<PackageDepSpec> p(std::make_shared<PackageDepSpec>(_p.parser()(stringify(*i))));
                 if (_p.tag())
                     p->set_tag(_p.tag());
-                _contents->root()->append(p);
+                _contents->top()->append(p);
             }
         }
         catch (const InternalError &)

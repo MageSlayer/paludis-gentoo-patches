@@ -58,7 +58,7 @@ namespace paludis
                 std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(make_package_dep_spec({ })
                                 .package(CategoryNamePart("group") + PackageNamePart(*i))));
                 specs->push_back(spec);
-                tree->root()->append(spec);
+                tree->top()->append(spec);
             }
 
             initial_labels->push_back(std::make_shared<DependenciesBuildLabel>("build", return_literal_function(true)));

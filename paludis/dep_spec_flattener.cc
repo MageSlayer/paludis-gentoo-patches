@@ -255,7 +255,7 @@ DepSpecFlattener<Heirarchy_, Item_>::handle_named_set(const NamedSetDepSpec & sp
     if (! set)
         throw NoSuchSetError(stringify(spec.name()));
 
-    set->root()->accept(*this);
+    set->top()->accept(*this);
 
     _imp->recursing_sets.erase(spec.name());
 }

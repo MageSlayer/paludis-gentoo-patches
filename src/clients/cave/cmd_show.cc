@@ -175,7 +175,7 @@ namespace
                 throw RecursivelyDefinedSetError(stringify(node.spec()->name()));
             ++indent;
 
-            set->root()->accept(*this);
+            set->top()->accept(*this);
 
             recursing_sets.erase(node.spec()->name());
             --indent;
@@ -196,7 +196,7 @@ namespace
             throw NoSuchSetError(stringify(s));
 
         SetDisplayer d(env, 1);
-        set->root()->accept(d);
+        set->top()->accept(d);
 
         cout << endl;
     }

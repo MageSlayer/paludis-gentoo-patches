@@ -83,7 +83,7 @@ namespace test_cases
 
             {
                 SetSpecStringifier p;
-                f.contents()->root()->accept(p);
+                f.contents()->top()->accept(p);
                 TEST_CHECK_STRINGIFY_EQUAL(p.s.str(), "( foo/bar >=bar/baz-1.23 ) ");
             }
 
@@ -91,7 +91,7 @@ namespace test_cases
             f.add("moo/oink");
             {
                 SetSpecStringifier p;
-                f.contents()->root()->accept(p);
+                f.contents()->top()->accept(p);
                 TEST_CHECK_STRINGIFY_EQUAL(p.s.str(), "( foo/bar >=bar/baz-1.23 moo/oink ) ");
             }
 
@@ -109,7 +109,7 @@ namespace test_cases
 
             {
                 SetSpecStringifier p;
-                f.contents()->root()->accept(p);
+                f.contents()->top()->accept(p);
                 TEST_CHECK_STRINGIFY_EQUAL(p.s.str(), "( foo/bar moo/oink ) ");
             }
 
@@ -150,7 +150,7 @@ namespace test_cases
 
             {
                 SetSpecStringifier p;
-                f.contents()->root()->accept(p);
+                f.contents()->top()->accept(p);
                 TEST_CHECK_STRINGIFY_EQUAL(p.s.str(), "( >=bar/baz-1.23 set ) ");
             }
 
@@ -160,7 +160,7 @@ namespace test_cases
             f.add("couch");
             {
                 SetSpecStringifier p;
-                f.contents()->root()->accept(p);
+                f.contents()->top()->accept(p);
                 TEST_CHECK_STRINGIFY_EQUAL(p.s.str(), "( >=bar/baz-1.23 set moo/oink couch ) ");
             }
 
@@ -179,7 +179,7 @@ namespace test_cases
 
             {
                 SetSpecStringifier p;
-                f.contents()->root()->accept(p);
+                f.contents()->top()->accept(p);
                 TEST_CHECK_STRINGIFY_EQUAL(p.s.str(), "( moo/oink couch ) ");
             }
 
@@ -220,7 +220,7 @@ namespace test_cases
 
             {
                 SetSpecStringifier p;
-                f.contents()->root()->accept(p);
+                f.contents()->top()->accept(p);
                 TEST_CHECK_STRINGIFY_EQUAL(p.s.str(), "( >=bar/bar-1.23 set set2* ) ");
             }
 
@@ -235,7 +235,7 @@ namespace test_cases
 
             {
                 SetSpecStringifier p;
-                fstar.contents()->root()->accept(p);
+                fstar.contents()->top()->accept(p);
                 TEST_CHECK_STRINGIFY_EQUAL(p.s.str(), "( foo/foo >=bar/bar-1.23 >=baz/baz-1.23 set* set2* ) ");
             }
 

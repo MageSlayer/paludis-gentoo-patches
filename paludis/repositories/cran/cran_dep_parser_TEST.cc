@@ -44,29 +44,29 @@ namespace test_cases
 
             // test R dependency
             std::string dep1("R (>= 2.0.0)");
-            cranrepository::parse_depends(dep1)->root()->accept(d1);
+            cranrepository::parse_depends(dep1)->top()->accept(d1);
             TEST_CHECK_EQUAL(stringify(d1), "R (>= 2.0.0)");
 
             // test varying whitespaces
             std::string dep2("testpackage1   \t(<1.9)");
-            cranrepository::parse_depends(dep2)->root()->accept(d2);
+            cranrepository::parse_depends(dep2)->top()->accept(d2);
             TEST_CHECK_EQUAL(stringify(d2), "testpackage1 (< 1.9)");
 
             // test for package-name and version normalisation
             std::string dep3("R.matlab (>= 2.3-1)");
-            cranrepository::parse_depends(dep3)->root()->accept(d3);
+            cranrepository::parse_depends(dep3)->top()->accept(d3);
             TEST_CHECK_EQUAL(stringify(d3), "R.matlab (>= 2.3.1)");
 
             std::string dep4("foo (>= 2, <3)");
-            cranrepository::parse_depends(dep4)->root()->accept(d4);
+            cranrepository::parse_depends(dep4)->top()->accept(d4);
             TEST_CHECK_EQUAL(stringify(d4), "foo (>= 2, < 3)");
 
             std::string dep5("foo (>= 2), bar (<=3)");
-            cranrepository::parse_depends(dep5)->root()->accept(d5);
+            cranrepository::parse_depends(dep5)->top()->accept(d5);
             TEST_CHECK_EQUAL(stringify(d5), "foo (>= 2), bar (<= 3)");
 
             std::string dep6("foo (>= 2, <= 4), bar (<=3)");
-            cranrepository::parse_depends(dep6)->root()->accept(d6);
+            cranrepository::parse_depends(dep6)->top()->accept(d6);
             TEST_CHECK_EQUAL(stringify(d6), "foo (>= 2, <= 4), bar (<= 3)");
         }
     } test_cran_dep_parser;

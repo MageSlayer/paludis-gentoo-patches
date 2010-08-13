@@ -499,7 +499,7 @@ InstallTask::_add_target(const std::string & target)
         {
             /* no wildcards */
             spec->set_tag(std::shared_ptr<const DepTag>(std::make_shared<TargetDepTag>()));
-            _imp->targets->root()->append(spec);
+            _imp->targets->top()->append(spec);
         }
         else
         {
@@ -510,7 +510,7 @@ InstallTask::_add_target(const std::string & target)
             {
                 /* no match. we'll get an error from this later anyway. */
                 spec->set_tag(std::shared_ptr<const DepTag>(std::make_shared<TargetDepTag>()));
-                _imp->targets->root()->append(spec);
+                _imp->targets->top()->append(spec);
             }
             else
                 for (PackageIDSequence::ConstIterator i(names->begin()), i_end(names->end()) ;
@@ -520,7 +520,7 @@ InstallTask::_add_target(const std::string & target)
                     p.package((*i)->name());
                     std::shared_ptr<PackageDepSpec> specn(std::make_shared<PackageDepSpec>(p));
                     specn->set_tag(std::shared_ptr<const DepTag>(std::make_shared<TargetDepTag>()));
-                    _imp->targets->root()->append(specn);
+                    _imp->targets->top()->append(specn);
                 }
         }
 
@@ -534,7 +534,7 @@ InstallTask::_add_target(const std::string & target)
             throw HadBothPackageAndSetTargets();
         _imp->had_set_targets = true;
 
-        _imp->targets->root()->append(std::make_shared<NamedSetDepSpec>(SetName(target)));
+        _imp->targets->top()->append(std::make_shared<NamedSetDepSpec>(SetName(target)));
         if (! _imp->override_target_type)
             _imp->dep_list.options()->target_type() = dl_target_set;
 
@@ -569,7 +569,7 @@ InstallTask::_add_package_id(const std::shared_ptr<const PackageID> & target)
 
     std::shared_ptr<PackageDepSpec> spec(make_shared_copy(PackageDepSpec(part_spec)));
     spec->set_tag(std::shared_ptr<const DepTag>(std::make_shared<TargetDepTag>()));
-    _imp->targets->root()->append(spec);
+    _imp->targets->top()->append(spec);
 
     _imp->raw_targets.push_back(stringify(*spec));
 }
@@ -1190,10 +1190,10 @@ InstallTask::_do_world_updates()
                         t != t_end ; ++t)
                 {
                     if (s_had_package_targets)
-                        all->root()->append(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec(*t, _imp->env,
+                        all->top()->append(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec(*t, _imp->env,
                                             { })));
                     else
-                        all->root()->append(std::make_shared<NamedSetDepSpec>(SetName(*t)));
+                        all->top()->append(std::make_shared<NamedSetDepSpec>(SetName(*t)));
                 }
 
                 if (s_had_package_targets)
@@ -1476,7 +1476,7 @@ void
 InstallTask::world_update_packages(const std::shared_ptr<const SetSpecTree> & a)
 {
     WorldTargetFinder w(_imp->env, this);
-    a->root()->accept(w);
+    a->top()->accept(w);
 }
 
 bool
@@ -1570,7 +1570,7 @@ namespace
                 return;
             }
 
-            set->root()->accept(*this);
+            set->top()->accept(*this);
 
             recursing_sets.erase(node.spec()->name());
         }
@@ -1587,23 +1587,23 @@ InstallTask::_unsatisfied(const DepListEntry & e) const
     if (dl_deps_pre == _imp->dep_list.options()->uninstalled_deps_pre() ||
             dl_deps_pre_or_post == _imp->dep_list.options()->uninstalled_deps_pre())
         if (e.package_id()->build_dependencies_key())
-            e.package_id()->build_dependencies_key()->value()->root()->accept(v);
+            e.package_id()->build_dependencies_key()->value()->top()->accept(v);
 
     if (dl_deps_pre == _imp->dep_list.options()->uninstalled_deps_runtime() ||
             dl_deps_pre_or_post == _imp->dep_list.options()->uninstalled_deps_runtime())
         if (e.package_id()->run_dependencies_key())
-            e.package_id()->run_dependencies_key()->value()->root()->accept(v);
+            e.package_id()->run_dependencies_key()->value()->top()->accept(v);
 
     if (dl_deps_pre == _imp->dep_list.options()->uninstalled_deps_post() ||
             dl_deps_pre_or_post == _imp->dep_list.options()->uninstalled_deps_post())
         if (e.package_id()->post_dependencies_key())
-            e.package_id()->post_dependencies_key()->value()->root()->accept(v);
+            e.package_id()->post_dependencies_key()->value()->top()->accept(v);
 
     if ((dl_deps_pre == _imp->dep_list.options()->uninstalled_deps_suggested() ||
                 dl_deps_pre_or_post == _imp->dep_list.options()->uninstalled_deps_suggested())
             && dl_suggested_install == _imp->dep_list.options()->suggested())
         if (e.package_id()->suggested_dependencies_key())
-            e.package_id()->suggested_dependencies_key()->value()->root()->accept(v);
+            e.package_id()->suggested_dependencies_key()->value()->top()->accept(v);
 
     return v.failure;
 }
@@ -1744,23 +1744,23 @@ namespace
                 if (dl_deps_pre == dep_list.options()->uninstalled_deps_pre() ||
                         dl_deps_pre_or_post == dep_list.options()->uninstalled_deps_pre())
                     if ((*i)->build_dependencies_key())
-                        (*i)->build_dependencies_key()->value()->root()->accept(v);
+                        (*i)->build_dependencies_key()->value()->top()->accept(v);
 
                 if (dl_deps_pre == dep_list.options()->uninstalled_deps_runtime() ||
                         dl_deps_pre_or_post == dep_list.options()->uninstalled_deps_runtime())
                     if ((*i)->run_dependencies_key())
-                        (*i)->run_dependencies_key()->value()->root()->accept(v);
+                        (*i)->run_dependencies_key()->value()->top()->accept(v);
 
                 if (dl_deps_pre == dep_list.options()->uninstalled_deps_post() ||
                         dl_deps_pre_or_post == dep_list.options()->uninstalled_deps_post())
                     if ((*i)->post_dependencies_key())
-                        (*i)->post_dependencies_key()->value()->root()->accept(v);
+                        (*i)->post_dependencies_key()->value()->top()->accept(v);
 
                 if ((dl_deps_pre == dep_list.options()->uninstalled_deps_suggested() ||
                             dl_deps_pre_or_post == dep_list.options()->uninstalled_deps_suggested())
                         && dl_suggested_install == dep_list.options()->suggested())
                     if ((*i)->suggested_dependencies_key())
-                        (*i)->suggested_dependencies_key()->value()->root()->accept(v);
+                        (*i)->suggested_dependencies_key()->value()->top()->accept(v);
 
                 if (v.failure)
                 {
@@ -1794,7 +1794,7 @@ namespace
                 return;
             }
 
-            set->root()->accept(*this);
+            set->top()->accept(*this);
 
             recursing_sets.erase(node.spec()->name());
         }
@@ -1828,23 +1828,23 @@ InstallTask::_dependent(const DepListEntry & e) const
     if (dl_deps_pre == _imp->dep_list.options()->uninstalled_deps_pre() ||
             dl_deps_pre_or_post == _imp->dep_list.options()->uninstalled_deps_pre())
         if (e.package_id()->build_dependencies_key())
-            e.package_id()->build_dependencies_key()->value()->root()->accept(v);
+            e.package_id()->build_dependencies_key()->value()->top()->accept(v);
 
     if (dl_deps_pre == _imp->dep_list.options()->uninstalled_deps_runtime() ||
             dl_deps_pre_or_post == _imp->dep_list.options()->uninstalled_deps_runtime())
         if (e.package_id()->run_dependencies_key())
-            e.package_id()->run_dependencies_key()->value()->root()->accept(v);
+            e.package_id()->run_dependencies_key()->value()->top()->accept(v);
 
     if (dl_deps_pre == _imp->dep_list.options()->uninstalled_deps_post() ||
             dl_deps_pre_or_post == _imp->dep_list.options()->uninstalled_deps_post())
         if (e.package_id()->post_dependencies_key())
-            e.package_id()->post_dependencies_key()->value()->root()->accept(v);
+            e.package_id()->post_dependencies_key()->value()->top()->accept(v);
 
     if ((dl_deps_pre == _imp->dep_list.options()->uninstalled_deps_suggested() ||
                 dl_deps_pre_or_post == _imp->dep_list.options()->uninstalled_deps_suggested())
             && dl_suggested_install == _imp->dep_list.options()->suggested())
         if (e.package_id()->suggested_dependencies_key())
-            e.package_id()->suggested_dependencies_key()->value()->root()->accept(v);
+            e.package_id()->suggested_dependencies_key()->value()->top()->accept(v);
 
     return v.failure;
 }

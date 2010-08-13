@@ -592,7 +592,7 @@ namespace
                 case '=':
                     return false;
                 case '<':
-                    return s.value()->root()->accept_returning<bool>(SpecTreeSearcher(pattern));
+                    return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(pattern));
             }
 
             return false;
@@ -605,7 +605,7 @@ namespace
                 case '=':
                     return false;
                 case '<':
-                    return s.value()->root()->accept_returning<bool>(SpecTreeSearcher(pattern));
+                    return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(pattern));
             }
 
             return false;
@@ -618,7 +618,7 @@ namespace
                 case '=':
                     return false;
                 case '<':
-                    return s.value()->root()->accept_returning<bool>(SpecTreeSearcher(pattern));
+                    return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(pattern));
             }
 
             return false;
@@ -631,7 +631,7 @@ namespace
                 case '=':
                     return false;
                 case '<':
-                    return s.value()->root()->accept_returning<bool>(SpecTreeSearcher(pattern));
+                    return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(pattern));
             }
 
             return false;
@@ -644,7 +644,7 @@ namespace
                 case '=':
                     return false;
                 case '<':
-                    return s.value()->root()->accept_returning<bool>(SpecTreeSearcher(pattern));
+                    return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(pattern));
             }
 
             return false;
@@ -657,7 +657,7 @@ namespace
                 case '=':
                     return false;
                 case '<':
-                    return s.value()->root()->accept_returning<bool>(SpecTreeSearcher(pattern));
+                    return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(pattern));
             }
 
             return false;
@@ -670,7 +670,7 @@ namespace
                 case '=':
                     return false;
                 case '<':
-                    return s.value()->root()->accept_returning<bool>(SpecTreeSearcher(pattern));
+                    return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(pattern));
             }
 
             return false;

@@ -528,7 +528,7 @@ EbuildID::need_masks_added() const
     if (license_key())
     {
         LicenceChecker c(_imp->environment, &Environment::accept_license, this);
-        license_key()->value()->root()->accept(c);
+        license_key()->value()->top()->accept(c);
         if (! c.ok)
             add_mask(std::make_shared<EUnacceptedMask>('L',
                             DistributionData::get_instance()->distribution_from_string(
@@ -1486,7 +1486,7 @@ EbuildID::add_build_options(const std::shared_ptr<Choices> & choices) const
             if (restrict_key())
             {
                 UnconditionalRestrictFinder f;
-                restrict_key()->value()->root()->accept(f);
+                restrict_key()->value()->top()->accept(f);
                 may_be_unrestricted_test = f.s.end() == f.s.find("test");
                 may_be_unrestricted_strip = f.s.end() == f.s.find("strip");
             }

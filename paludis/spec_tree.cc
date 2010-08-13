@@ -108,28 +108,28 @@ InnerNode<Tree_, Item_>::spec() const
 
 template <typename NodeList_, typename RootNode_>
 SpecTree<NodeList_, RootNode_>::SpecTree(const std::shared_ptr<RootNode_> & spec) :
-    _root(std::make_shared<typename InnerNodeType<RootNode_>::Type>(spec))
+    _top(std::make_shared<typename InnerNodeType<RootNode_>::Type>(spec))
 {
 }
 
 template <typename NodeList_, typename RootNode_>
 SpecTree<NodeList_, RootNode_>::SpecTree(const std::shared_ptr<const RootNode_> & spec) :
-    _root(std::make_shared<typename InnerNodeType<RootNode_>::Type>(spec))
+    _top(std::make_shared<typename InnerNodeType<RootNode_>::Type>(spec))
 {
 }
 
 template <typename NodeList_, typename RootNode_>
 const std::shared_ptr<typename SpecTree<NodeList_, RootNode_>::template InnerNodeType<RootNode_>::Type>
-SpecTree<NodeList_, RootNode_>::root()
+SpecTree<NodeList_, RootNode_>::top()
 {
-    return _root;
+    return _top;
 }
 
 template <typename NodeList_, typename RootNode_>
 const std::shared_ptr<const typename SpecTree<NodeList_, RootNode_>::template InnerNodeType<RootNode_>::Type>
-SpecTree<NodeList_, RootNode_>::root() const
+SpecTree<NodeList_, RootNode_>::top() const
 {
-    return _root;
+    return _top;
 }
 
 namespace

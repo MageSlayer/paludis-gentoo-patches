@@ -343,7 +343,7 @@ namespace
         void visit(const DependencySpecTree::NodeType<NamedSetDepSpec>::Type & s)
         {
             const std::shared_ptr<const SetSpecTree> set(env->set(s.spec()->name()));
-            set->root()->accept(*this);
+            set->top()->accept(*this);
         }
 
         void visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & s)
@@ -429,17 +429,17 @@ Decider::_dependent_upon(
 {
     DependentChecker<ChangeByResolventSequence> c(_imp->env, going_away, staying, not_changing_slots);
     if (id->dependencies_key())
-        id->dependencies_key()->value()->root()->accept(c);
+        id->dependencies_key()->value()->top()->accept(c);
     else
     {
         if (id->build_dependencies_key())
-            id->build_dependencies_key()->value()->root()->accept(c);
+            id->build_dependencies_key()->value()->top()->accept(c);
         if (id->run_dependencies_key())
-            id->run_dependencies_key()->value()->root()->accept(c);
+            id->run_dependencies_key()->value()->top()->accept(c);
         if (id->post_dependencies_key())
-            id->post_dependencies_key()->value()->root()->accept(c);
+            id->post_dependencies_key()->value()->top()->accept(c);
         if (id->suggested_dependencies_key())
-            id->suggested_dependencies_key()->value()->root()->accept(c);
+            id->suggested_dependencies_key()->value()->top()->accept(c);
     }
 
     return c.result;
@@ -2541,17 +2541,17 @@ Decider::_collect_depped_upon(
 {
     DependentChecker<PackageIDSequence> c(_imp->env, candidates, std::make_shared<PackageIDSequence>(), not_changing_slots);
     if (id->dependencies_key())
-        id->dependencies_key()->value()->root()->accept(c);
+        id->dependencies_key()->value()->top()->accept(c);
     else
     {
         if (id->build_dependencies_key())
-            id->build_dependencies_key()->value()->root()->accept(c);
+            id->build_dependencies_key()->value()->top()->accept(c);
         if (id->run_dependencies_key())
-            id->run_dependencies_key()->value()->root()->accept(c);
+            id->run_dependencies_key()->value()->top()->accept(c);
         if (id->post_dependencies_key())
-            id->post_dependencies_key()->value()->root()->accept(c);
+            id->post_dependencies_key()->value()->top()->accept(c);
         if (id->suggested_dependencies_key())
-            id->suggested_dependencies_key()->value()->root()->accept(c);
+            id->suggested_dependencies_key()->value()->top()->accept(c);
     }
 
     const std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
@@ -2568,7 +2568,7 @@ Decider::_collect_provided(
     if (id->provide_key())
     {
         DepSpecFlattener<ProvideSpecTree, PackageDepSpec> f(_imp->env);
-        id->provide_key()->value()->root()->accept(f);
+        id->provide_key()->value()->top()->accept(f);
 
         for (DepSpecFlattener<ProvideSpecTree, PackageDepSpec>::ConstIterator v(f.begin()), v_end(f.end()) ;
                 v != v_end ; ++v)

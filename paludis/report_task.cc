@@ -89,7 +89,7 @@ namespace
                     return;
                 }
 
-                set->root()->accept(*this);
+                set->top()->accept(*this);
 
                 _recursing_sets.erase(node.spec()->name());
             }
@@ -152,7 +152,7 @@ ReportTask::execute()
     {
         std::shared_ptr<const SetSpecTree> insecure(_imp->env->set(SetName("insecurity")));
         if (insecure)
-            insecure->root()->accept(vuln);
+            insecure->top()->accept(vuln);
     }
     catch (const NotAvailableError &)
     {

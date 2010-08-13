@@ -171,7 +171,7 @@ paludis::fakerepository::parse_depend(const std::string & s,
 
     ParseStackTypes<DependencySpecTree>::Stack stack;
     std::shared_ptr<DependencySpecTree> top(std::make_shared<DependencySpecTree>(std::make_shared<AllDepSpec>()));
-    stack.push_front(top->root());
+    stack.push_front(top->top());
 
     ELikeDepParserCallbacks callbacks(
             make_named_values<ELikeDepParserCallbacks>(
@@ -201,7 +201,7 @@ paludis::fakerepository::parse_provide(const std::string & s,
 
     ParseStackTypes<ProvideSpecTree>::Stack stack;
     std::shared_ptr<ProvideSpecTree> top(std::make_shared<ProvideSpecTree>(std::make_shared<AllDepSpec>()));
-    stack.push_front(top->root());
+    stack.push_front(top->top());
 
     ELikeDepParserCallbacks callbacks(
             make_named_values<ELikeDepParserCallbacks>(
@@ -231,7 +231,7 @@ paludis::fakerepository::parse_fetchable_uri(const std::string & s,
 
     ParseStackTypes<FetchableURISpecTree>::Stack stack;
     std::shared_ptr<FetchableURISpecTree> top(std::make_shared<FetchableURISpecTree>(std::make_shared<AllDepSpec>()));
-    stack.push_front(top->root());
+    stack.push_front(top->top());
 
     ELikeDepParserCallbacks callbacks(
             make_named_values<ELikeDepParserCallbacks>(
@@ -261,7 +261,7 @@ paludis::fakerepository::parse_simple_uri(const std::string & s,
 
     ParseStackTypes<SimpleURISpecTree>::Stack stack;
     std::shared_ptr<SimpleURISpecTree> top(std::make_shared<SimpleURISpecTree>(std::make_shared<AllDepSpec>()));
-    stack.push_front(top->root());
+    stack.push_front(top->top());
 
     ELikeDepParserCallbacks callbacks(
             make_named_values<ELikeDepParserCallbacks>(
@@ -291,7 +291,7 @@ paludis::fakerepository::parse_license(const std::string & s,
 
     ParseStackTypes<LicenseSpecTree>::Stack stack;
     std::shared_ptr<LicenseSpecTree> top(std::make_shared<LicenseSpecTree>(std::make_shared<AllDepSpec>()));
-    stack.push_front(top->root());
+    stack.push_front(top->top());
 
     ELikeDepParserCallbacks callbacks(
             make_named_values<ELikeDepParserCallbacks>(

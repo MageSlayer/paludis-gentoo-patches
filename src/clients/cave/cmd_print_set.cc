@@ -107,7 +107,7 @@ namespace
                 if (! set)
                     throw NoSuchSetError(stringify(name));
 
-                set->root()->accept(*this);
+                set->top()->accept(*this);
 
                 recursing.erase(name);
             }
@@ -145,7 +145,7 @@ PrintSetCommand::run(
         throw NothingMatching(*cmdline.begin_parameters());
 
     std::set<SetName> recursing;
-    set->root()->accept(SetPrinter(env, cmdline, recursing));
+    set->top()->accept(SetPrinter(env, cmdline, recursing));
 
     return EXIT_SUCCESS;
 }

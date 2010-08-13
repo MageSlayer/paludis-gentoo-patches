@@ -56,14 +56,14 @@ namespace
         for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                 i != i_end ; ++i)
             if (slots && (*i)->slot_key())
-                result->root()->append(std::make_shared<PackageDepSpec>(
+                result->top()->append(std::make_shared<PackageDepSpec>(
                                 make_package_dep_spec({ })
                                 .package((*i)->name())
                                 .slot_requirement(std::make_shared<ELikeSlotExactRequirement>(
                                             (*i)->slot_key()->value(), false))
                                 ));
             else
-                result->root()->append(std::make_shared<PackageDepSpec>(
+                result->top()->append(std::make_shared<PackageDepSpec>(
                                 make_package_dep_spec({ })
                                 .package((*i)->name())
                                 ));

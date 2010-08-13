@@ -1146,7 +1146,7 @@ FakePackageID::need_masks_added() const
     if (license_key())
     {
         LicenceChecker c(_imp->env, &Environment::accept_license, this);
-        license_key()->value()->root()->accept(c);
+        license_key()->value()->top()->accept(c);
         if (! c.ok)
             add_mask(std::make_shared<FakeUnacceptedMask>('L', "license", license_key()));
     }

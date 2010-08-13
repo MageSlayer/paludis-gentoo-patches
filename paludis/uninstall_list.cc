@@ -178,7 +178,7 @@ UninstallList::add_errors_for_system()
         if ((! needed) && l->package_id()->provide_key())
         {
             DepSpecFlattener<ProvideSpecTree, PackageDepSpec> f(_imp->env);
-            l->package_id()->provide_key()->value()->root()->accept(f);
+            l->package_id()->provide_key()->value()->top()->accept(f);
             for (DepSpecFlattener<ProvideSpecTree, PackageDepSpec>::ConstIterator v(f.begin()), v_end(f.end()) ;
                     v != v_end && ! needed ; ++v)
             {
@@ -380,7 +380,7 @@ namespace
                 return;
             }
 
-            set->root()->accept(*this);
+            set->top()->accept(*this);
 
             recursing_sets.erase(node.spec()->name());
         }
@@ -406,13 +406,13 @@ UninstallList::collect_depped_upon(std::shared_ptr<const PackageIDSet> targets) 
         {
             DepCollector c(_imp->env, *i);
             if ((*i)->build_dependencies_key())
-                (*i)->build_dependencies_key()->value()->root()->accept(c);
+                (*i)->build_dependencies_key()->value()->top()->accept(c);
             if ((*i)->run_dependencies_key())
-                (*i)->run_dependencies_key()->value()->root()->accept(c);
+                (*i)->run_dependencies_key()->value()->top()->accept(c);
             if ((*i)->post_dependencies_key())
-                (*i)->post_dependencies_key()->value()->root()->accept(c);
+                (*i)->post_dependencies_key()->value()->top()->accept(c);
             if ((*i)->suggested_dependencies_key())
-                (*i)->suggested_dependencies_key()->value()->root()->accept(c);
+                (*i)->suggested_dependencies_key()->value()->top()->accept(c);
 
             cache = _imp->dep_collector_cache.insert(std::make_pair(*i,
                         std::shared_ptr<const DepListEntryTags>(c.matches))).first;
@@ -506,13 +506,13 @@ UninstallList::add_dependencies(const PackageID & e, const bool error)
         {
             DepCollector c(_imp->env, *i);
             if ((*i)->build_dependencies_key())
-                (*i)->build_dependencies_key()->value()->root()->accept(c);
+                (*i)->build_dependencies_key()->value()->top()->accept(c);
             if ((*i)->run_dependencies_key())
-                (*i)->run_dependencies_key()->value()->root()->accept(c);
+                (*i)->run_dependencies_key()->value()->top()->accept(c);
             if ((*i)->post_dependencies_key())
-                (*i)->post_dependencies_key()->value()->root()->accept(c);
+                (*i)->post_dependencies_key()->value()->top()->accept(c);
             if ((*i)->suggested_dependencies_key())
-                (*i)->suggested_dependencies_key()->value()->root()->accept(c);
+                (*i)->suggested_dependencies_key()->value()->top()->accept(c);
             cache = _imp->dep_collector_cache.insert(std::make_pair(*i,
                         std::shared_ptr<const DepListEntryTags>(c.matches))).first;
         }

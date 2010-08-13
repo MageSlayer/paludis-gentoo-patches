@@ -297,7 +297,7 @@ namespace
             result(r)
         {
             if (result)
-                add_to = result->root();
+                add_to = result->top();
 
             std::shared_ptr<WrappedSpecBase> * p;
             Data_Get_Struct(val, std::shared_ptr<WrappedSpecBase>, p);
@@ -357,7 +357,7 @@ namespace
         static void handle(ValueToTree<H_> * const t, const WrappedSpec<AllDepSpec> & spec)
         {
             t->result.reset(new H_(spec.spec()));
-            t->add_to = t->result->root();
+            t->add_to = t->result->top();
         }
     };
 
@@ -1415,7 +1415,7 @@ paludis::ruby::dep_tree_to_value(const std::shared_ptr<const T_> & m)
     try
     {
         TreeToValue v;
-        m->root()->accept(v);
+        m->top()->accept(v);
         std::shared_ptr<const WrappedSpecBase> * ptr(new std::shared_ptr<const WrappedSpecBase>(v.wrapped));
         return Data_Wrap_Struct(v.klass, 0, &Common<std::shared_ptr<const WrappedSpecBase> >::free, ptr);
     }

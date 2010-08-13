@@ -55,9 +55,9 @@ RewrittenSpec::as_spec_tree() const
     for (Sequence<PackageOrBlockDepSpec>::ConstIterator i(specs()->begin()), i_end(specs()->end()) ;
             i != i_end ; ++i)
         if (i->if_package())
-            result->root()->append(i->if_package());
+            result->top()->append(i->if_package());
         else
-            result->root()->append(i->if_block());
+            result->top()->append(i->if_block());
 
     return result;
 }

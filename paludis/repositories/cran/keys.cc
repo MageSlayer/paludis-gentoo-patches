@@ -212,7 +212,7 @@ DepKey::pretty_print(const DependencySpecTree::ItemFormatter & f) const
 {
     StringifyFormatter ff(f);
     DepSpecPrettyPrinter p(_imp->env, ff, 12, true);
-    value()->root()->accept(p);
+    value()->top()->accept(p);
     return stringify(p);
 }
 
@@ -221,7 +221,7 @@ DepKey::pretty_print_flat(const DependencySpecTree::ItemFormatter & f) const
 {
     StringifyFormatter ff(f);
     DepSpecPrettyPrinter p(_imp->env, ff, 0, false);
-    value()->root()->accept(p);
+    value()->top()->accept(p);
     return stringify(p);
 }
 

@@ -142,14 +142,14 @@ namespace
         std::string pretty_print(const SimpleURISpecTree::ItemFormatter & f) const
         {
             UnwrittenHomepagePrinter p(f);
-            value()->root()->accept(p);
+            value()->top()->accept(p);
             return p.s.str();
         }
 
         std::string pretty_print_flat(const SimpleURISpecTree::ItemFormatter & f) const
         {
             UnwrittenHomepagePrinter p(f);
-            value()->root()->accept(p);
+            value()->top()->accept(p);
             return p.s.str();
         }
 
@@ -311,7 +311,7 @@ UnwrittenRepositoryFile::_load(const FSEntry & f)
                 tokenise_whitespace(token2, std::back_inserter(tokens));
                 for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
                         t != t_end ; ++t)
-                    tree->root()->append(std::make_shared<SimpleURIDepSpec>(*t));
+                    tree->top()->append(std::make_shared<SimpleURIDepSpec>(*t));
                 entry->homepage() = std::make_shared<UnwrittenHomepageKey>("homepage", "Homepage", mkt_normal, tree);
             }
             else if (token == "comment")

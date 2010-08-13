@@ -162,7 +162,7 @@ ExheresProfile::ExheresProfile(
                             std::shared_ptr<const PackageID>())));
 
             spec->set_tag(_imp->system_tag);
-            _imp->system_packages->root()->append(spec);
+            _imp->system_packages->top()->append(spec);
         }
 
     for (ProfileFile<MaskFile>::ConstIterator line(_imp->package_mask_file.begin()), line_end(_imp->package_mask_file.end()) ;

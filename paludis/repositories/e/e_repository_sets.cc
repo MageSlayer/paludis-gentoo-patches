@@ -318,7 +318,7 @@ ERepositorySets::security_set(bool insecurity) const
                                             n::version_spec() = (*c)->version()))
                                     .in_repository((*c)->repository()->name())));
                         spec->set_tag(glsa_tags.find(glsa->id())->second);
-                        security_packages->root()->append(spec);
+                        security_packages->top()->append(spec);
                     }
                     else
                     {
@@ -351,7 +351,7 @@ ERepositorySets::security_set(bool insecurity) const
                                                 n::version_spec() = (*r)->version()))
                                         .in_repository((*r)->repository()->name())));
                             spec->set_tag(glsa_tags.find(glsa->id())->second);
-                            security_packages->root()->append(spec);
+                            security_packages->top()->append(spec);
                             ok = true;
                             break;
                         }

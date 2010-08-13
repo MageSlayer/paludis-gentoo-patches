@@ -86,7 +86,7 @@ namespace paludis
             raw_name(r),
             human_name(h)
         {
-            value->root()->append(spec);
+            value->top()->append(spec);
         }
     };
 }

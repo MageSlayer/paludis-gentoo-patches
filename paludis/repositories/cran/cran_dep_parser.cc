@@ -68,7 +68,7 @@ cranrepository::parse_depends(const std::string & s)
 
         std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(cranrepository::parse_cran_package_dep_spec(
                         strip_leading(strip_trailing(*a, " \r\n\t"), " \r\n\t"))));
-        result->root()->append(spec);
+        result->top()->append(spec);
     }
 
     return result;

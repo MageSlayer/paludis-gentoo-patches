@@ -281,37 +281,37 @@ namespace
         void visit(const MetadataSpecTreeKey<PlainTextSpecTree> & k)
         {
             SpecTreeAsString m = { texts };
-            k.value()->root()->accept(m);
+            k.value()->top()->accept(m);
         }
 
         void visit(const MetadataSpecTreeKey<DependencySpecTree> & k)
         {
             SpecTreeAsString m = { texts };
-            k.value()->root()->accept(m);
+            k.value()->top()->accept(m);
         }
 
         void visit(const MetadataSpecTreeKey<LicenseSpecTree> & k)
         {
             SpecTreeAsString m = { texts };
-            k.value()->root()->accept(m);
+            k.value()->top()->accept(m);
         }
 
         void visit(const MetadataSpecTreeKey<ProvideSpecTree> & k)
         {
             SpecTreeAsString m = { texts };
-            k.value()->root()->accept(m);
+            k.value()->top()->accept(m);
         }
 
         void visit(const MetadataSpecTreeKey<SimpleURISpecTree> & k)
         {
             SpecTreeAsString m = { texts };
-            k.value()->root()->accept(m);
+            k.value()->top()->accept(m);
         }
 
         void visit(const MetadataSpecTreeKey<FetchableURISpecTree> & k)
         {
             SpecTreeAsString m = { texts };
-            k.value()->root()->accept(m);
+            k.value()->top()->accept(m);
         }
 
         void visit(const MetadataCollectionKey<Sequence<FSEntry> > & k)

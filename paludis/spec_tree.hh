@@ -170,9 +170,9 @@ namespace paludis
 
             explicit SpecTree(const std::shared_ptr<const RootNode_> & spec);
 
-            const std::shared_ptr<typename InnerNodeType<RootNode_>::Type> root();
+            const std::shared_ptr<typename InnerNodeType<RootNode_>::Type> top();
 
-            const std::shared_ptr<const typename InnerNodeType<RootNode_>::Type> root() const;
+            const std::shared_ptr<const typename InnerNodeType<RootNode_>::Type> top() const;
 
             typedef Formatter<
                 typename Select<TypeListContains<VisitableTypeList, typename NodeType<PackageDepSpec>::Type>::value,
@@ -200,7 +200,7 @@ namespace paludis
                 > ItemFormatter;
 
         private:
-            const std::shared_ptr<typename InnerNodeType<RootNode_>::Type> _root;
+            const std::shared_ptr<typename InnerNodeType<RootNode_>::Type> _top;
     };
 
     extern template class WrappedForwardIterator<spec_tree_internals::BasicInnerNode<GenericSpecTree>::ConstIteratorTag,

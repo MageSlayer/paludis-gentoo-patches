@@ -311,7 +311,7 @@ EChoicesKey::populate_myoptions() const
 
     /* yay. myoptions is easy. */
     MyOptionsFinder myoptions;
-    _imp->id->raw_myoptions_key()->value()->root()->accept(myoptions);
+    _imp->id->raw_myoptions_key()->value()->top()->accept(myoptions);
 
     if (_imp->id->raw_use_expand_key())
         for (Set<std::string>::ConstIterator u(_imp->id->raw_use_expand_key()->value()->begin()),

@@ -147,7 +147,7 @@ namespace
             const std::shared_ptr<const RewrittenSpec> if_rewritten(decider.rewrite_if_special(spec,
                         make_shared_copy(our_resolution->resolvent())));
             if (if_rewritten)
-                if_rewritten->as_spec_tree()->root()->accept(*this);
+                if_rewritten->as_spec_tree()->top()->accept(*this);
             else
             {
                 if (active_sublist)
@@ -345,7 +345,7 @@ namespace
             const std::shared_ptr<const RewrittenSpec> if_rewritten(decider.rewrite_if_special(dep.spec(),
                         make_shared_copy(our_resolution->resolvent())));
             if (if_rewritten)
-                if_rewritten->as_spec_tree()->root()->accept(*this);
+                if_rewritten->as_spec_tree()->top()->accept(*this);
             else
                 sanitised_dependencies.add(dep);
         }
@@ -418,7 +418,7 @@ namespace
         {
             const std::shared_ptr<const SetSpecTree> set(env->set(node.spec()->name()));
             if (set)
-                set->root()->accept(*this);
+                set->top()->accept(*this);
             else
                 throw NoSuchSetError(stringify(node.spec()->name()));
         }
@@ -470,7 +470,7 @@ SanitisedDependencies::_populate_one(
 
     Finder f(env, decider, resolution, id, changed, *this, ((*id).*pmf)()->initial_labels(), ((*id).*pmf)()->raw_name(),
             ((*id).*pmf)()->human_name(), "");
-    ((*id).*pmf)()->value()->root()->accept(f);
+    ((*id).*pmf)()->value()->top()->accept(f);
 }
 
 void

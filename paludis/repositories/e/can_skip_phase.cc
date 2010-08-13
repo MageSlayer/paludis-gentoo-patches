@@ -88,7 +88,7 @@ paludis::erepository::can_skip_phase(const std::shared_ptr<const ERepositoryID> 
             if (id->fetches_key())
             {
                 FindAnyFetchesFinder f;
-                id->fetches_key()->value()->root()->accept(f);
+                id->fetches_key()->value()->top()->accept(f);
                 if (! f.result)
                     return false;
             }

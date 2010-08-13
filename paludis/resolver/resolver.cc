@@ -131,7 +131,7 @@ namespace
             if (! set)
                 throw NoSuchSetError(stringify(n.spec()->name()));
 
-            set->root()->accept(SetExpander(env, decider,
+            set->top()->accept(SetExpander(env, decider,
                         std::make_shared<SetReason>(n.spec()->name(), reason), recurse));
 
             recurse.erase(n.spec()->name());
@@ -160,7 +160,7 @@ Resolver::add_target(const SetName & set_name, const std::string & extra_informa
         throw NoSuchSetError(stringify(set_name));
 
     RecursingNames recurse;
-    set->root()->accept(SetExpander(_imp->env, _imp->decider, std::make_shared<TargetReason>(extra_information), recurse));
+    set->top()->accept(SetExpander(_imp->env, _imp->decider, std::make_shared<TargetReason>(extra_information), recurse));
 }
 
 void

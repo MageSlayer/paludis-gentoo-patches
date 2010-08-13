@@ -85,7 +85,7 @@ namespace
             void check(const std::shared_ptr<const DependencySpecTree> & tree, const std::string & depname)
             {
                 _depname = depname;
-                tree->root()->accept(*this);
+                tree->top()->accept(*this);
             }
 
             bool found_matches()
@@ -126,7 +126,7 @@ namespace
                     return;
                 }
 
-                set->root()->accept(*this);
+                set->top()->accept(*this);
 
                 _recursing_sets.erase(node.spec()->name());
             }

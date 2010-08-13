@@ -326,7 +326,7 @@ paludis::erepository::parse_depend(const std::string & s,
     std::shared_ptr<DepSpec> thing_to_annotate(spec);
     std::shared_ptr<DependencySpecTree> top(std::make_shared<DependencySpecTree>(spec));
     stack.push_front(make_named_values<ParseStackTypes<DependencySpecTree>::Item>(
-                n::item() = top->root(),
+                n::item() = top->top(),
                 n::spec() = spec
             ));
 
@@ -369,7 +369,7 @@ paludis::erepository::parse_provide(const std::string & s,
     std::shared_ptr<DepSpec> thing_to_annotate(spec);
     std::shared_ptr<ProvideSpecTree> top(std::make_shared<ProvideSpecTree>(spec));
     stack.push_front(make_named_values<ParseStackTypes<ProvideSpecTree>::Item>(
-                n::item() = top->root(),
+                n::item() = top->top(),
                 n::spec() = spec
             ));
 
@@ -408,7 +408,7 @@ paludis::erepository::parse_fetchable_uri(const std::string & s,
     std::shared_ptr<DepSpec> thing_to_annotate(spec);
     std::shared_ptr<FetchableURISpecTree> top(std::make_shared<FetchableURISpecTree>(spec));
     stack.push_front(make_named_values<ParseStackTypes<FetchableURISpecTree>::Item>(
-                n::item() = top->root(),
+                n::item() = top->top(),
                 n::spec() = spec
             ));
 
@@ -451,7 +451,7 @@ paludis::erepository::parse_simple_uri(const std::string & s,
     std::shared_ptr<DepSpec> thing_to_annotate(spec);
     std::shared_ptr<SimpleURISpecTree> top(std::make_shared<SimpleURISpecTree>(spec));
     stack.push_front(make_named_values<ParseStackTypes<SimpleURISpecTree>::Item>(
-                n::item() = top->root(),
+                n::item() = top->top(),
                 n::spec() = spec
             ));
 
@@ -490,7 +490,7 @@ paludis::erepository::parse_license(const std::string & s,
     std::shared_ptr<DepSpec> thing_to_annotate(spec);
     std::shared_ptr<LicenseSpecTree> top(std::make_shared<LicenseSpecTree>(spec));
     stack.push_front(make_named_values<ParseStackTypes<LicenseSpecTree>::Item>(
-                n::item() = top->root(),
+                n::item() = top->top(),
                 n::spec() = spec
             ));
 
@@ -529,7 +529,7 @@ paludis::erepository::parse_plain_text(const std::string & s,
     std::shared_ptr<DepSpec> thing_to_annotate(spec);
     std::shared_ptr<PlainTextSpecTree> top(std::make_shared<PlainTextSpecTree>(spec));
     stack.push_front(make_named_values<ParseStackTypes<PlainTextSpecTree>::Item>(
-                n::item() = top->root(),
+                n::item() = top->top(),
                 n::spec() = spec
             ));
 
@@ -568,7 +568,7 @@ paludis::erepository::parse_myoptions(const std::string & s,
     std::shared_ptr<DepSpec> thing_to_annotate(spec);
     std::shared_ptr<PlainTextSpecTree> top(std::make_shared<PlainTextSpecTree>(spec));
     stack.push_front(make_named_values<ParseStackTypes<PlainTextSpecTree>::Item>(
-                n::item() = top->root(),
+                n::item() = top->top(),
                 n::spec() = spec
             ));
 

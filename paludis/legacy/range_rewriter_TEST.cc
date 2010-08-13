@@ -44,14 +44,14 @@ namespace test_cases
         {
             TestEnvironment env;
             std::shared_ptr<DependencySpecTree> a(std::make_shared<DependencySpecTree>(std::make_shared<AllDepSpec>()));
-            a->root()->append(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec("=a/b-1",
+            a->top()->append(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec("=a/b-1",
                                 &env, { })));
-            a->root()->append(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec("=a/b-2",
+            a->top()->append(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec("=a/b-2",
                                 &env, { })));
 
             RangeRewriter r;
             TEST_CHECK(! r.spec());
-            std::for_each(indirect_iterator(a->root()->begin()), indirect_iterator(a->root()->end()), accept_visitor(r));
+            std::for_each(indirect_iterator(a->top()->begin()), indirect_iterator(a->top()->end()), accept_visitor(r));
             TEST_CHECK(bool(r.spec()));
 
             TEST_CHECK(bool(r.spec()));

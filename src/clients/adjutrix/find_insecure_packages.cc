@@ -115,7 +115,7 @@ namespace
                     return;
                 }
 
-                set->root()->accept(*this);
+                set->top()->accept(*this);
 
                 recursing_sets.erase(node.spec()->name());
             }
@@ -174,7 +174,7 @@ void do_find_insecure_packages(const NoConfigEnvironment & env)
         write_repository_header(r->name());
 
         ListInsecureVisitor v(env);
-        all_insecure->root()->accept(v);
+        all_insecure->top()->accept(v);
         cout << v << endl;
     }
 }

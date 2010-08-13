@@ -209,7 +209,7 @@ UninstallTask::add_target(const std::string & target)
 
         std::shared_ptr<const SetSpecTree> spec(_imp->env->set(SetName(target)));
         DepSpecFlattener<SetSpecTree, PackageDepSpec> f(_imp->env);
-        spec->root()->accept(f);
+        spec->top()->accept(f);
         std::copy(f.begin(), f.end(), std::back_inserter(_imp->targets));
     }
 
@@ -339,7 +339,7 @@ UninstallTask::execute()
                     remove = false;
 
             if (remove)
-                all->root()->append(std::make_shared<PackageDepSpec>(make_package_dep_spec(
+                all->top()->append(std::make_shared<PackageDepSpec>(make_package_dep_spec(
                                     { }).package(i->first)));
         }
 
@@ -484,7 +484,7 @@ void
 UninstallTask::world_remove_packages(const std::shared_ptr<const SetSpecTree> & a)
 {
     WorldTargetFinder w(_imp->env, this);
-    a->root()->accept(w);
+    a->top()->accept(w);
 }
 
 template class WrappedForwardIterator<AmbiguousUnmergeTargetError::ConstIteratorTag, const std::shared_ptr<const PackageID> >;

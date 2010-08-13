@@ -105,7 +105,7 @@ FakeInstalledRepository::provided_packages() const
                     continue;
 
                 DepSpecFlattener<ProvideSpecTree, PackageDepSpec> f(environment());
-                (*v)->provide_key()->value()->root()->accept(f);
+                (*v)->provide_key()->value()->top()->accept(f);
 
                 for (DepSpecFlattener<ProvideSpecTree, PackageDepSpec>::ConstIterator q(f.begin()), q_end(f.end()) ; q != q_end ; ++q)
                     result->push_back(make_named_values<RepositoryProvidesEntry>(

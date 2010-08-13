@@ -91,7 +91,7 @@ namespace test_cases
                         "( ( a/a b/b ) )", &env, std::shared_ptr<const PackageID>()));
 
             QuickPrinter p;
-            d->root()->accept(p);
+            d->top()->accept(p);
             TEST_CHECK_EQUAL(p.str.str(), "all<all<all<p<a/a>p<b/b>>>>");
         }
     } dep_parser_test;

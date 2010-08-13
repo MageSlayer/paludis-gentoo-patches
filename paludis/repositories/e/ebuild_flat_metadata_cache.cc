@@ -172,7 +172,7 @@ namespace
             if (-1 != m.dependencies()->flat_list_index() && ! m.dependencies()->name().empty())
             {
                 DependenciesRewriter rewriter;
-                parse_depend(lines.at(m.dependencies()->flat_list_index()), _imp->env, id, *id->eapi())->root()->accept(rewriter);
+                parse_depend(lines.at(m.dependencies()->flat_list_index()), _imp->env, id, *id->eapi())->top()->accept(rewriter);
                 id->load_raw_depend(m.dependencies()->name(), m.dependencies()->description(),
                         lines.at(m.dependencies()->flat_list_index()));
                 id->load_build_depend(m.dependencies()->name() + ".DEPEND", m.dependencies()->description() + " (build)", rewriter.depend(), true);
@@ -515,7 +515,7 @@ EbuildFlatMetadataCache::load(const std::shared_ptr<const EbuildID> & id, const 
             if (! m.dependencies()->name().empty())
             {
                 DependenciesRewriter rewriter;
-                parse_depend(keys[m.dependencies()->name()], _imp->env, id, *id->eapi())->root()->accept(rewriter);
+                parse_depend(keys[m.dependencies()->name()], _imp->env, id, *id->eapi())->top()->accept(rewriter);
                 id->load_raw_depend(m.dependencies()->name(), m.dependencies()->description(),
                         keys[m.dependencies()->name()]);
                 id->load_build_depend(m.dependencies()->name() + ".DEPEND", m.dependencies()->description() + " (build)", rewriter.depend(), true);
@@ -662,7 +662,7 @@ namespace
     {
         StringifyFormatter ff;
         DepSpecPrettyPrinter p(0, std::shared_ptr<const PackageID>(), ff, 0, false, false);
-        d->root()->accept(p);
+        d->top()->accept(p);
         return stringify(p);
     }
 

@@ -171,7 +171,7 @@ EDependenciesKey::pretty_print(const DependencySpecTree::ItemFormatter & f) cons
 {
     StringifyFormatter ff(f);
     DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, true, true);
-    value()->root()->accept(p);
+    value()->top()->accept(p);
     return stringify(p);
 }
 
@@ -180,7 +180,7 @@ EDependenciesKey::pretty_print_flat(const DependencySpecTree::ItemFormatter & f)
 {
     StringifyFormatter ff(f);
     DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, false, true);
-    value()->root()->accept(p);
+    value()->top()->accept(p);
     return stringify(p);
 }
 
@@ -258,7 +258,7 @@ ELicenseKey::pretty_print(const LicenseSpecTree::ItemFormatter & f) const
 {
     StringifyFormatter ff(f);
     DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, true, true);
-    value()->root()->accept(p);
+    value()->top()->accept(p);
     return stringify(p);
 }
 
@@ -267,7 +267,7 @@ ELicenseKey::pretty_print_flat(const LicenseSpecTree::ItemFormatter & f) const
 {
     StringifyFormatter ff(f);
     DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, false, true);
-    value()->root()->accept(p);
+    value()->top()->accept(p);
     return stringify(p);
 }
 
@@ -346,7 +346,7 @@ EFetchableURIKey::pretty_print(const FetchableURISpecTree::ItemFormatter & f) co
 {
     StringifyFormatter ff(f);
     DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, true, true);
-    value()->root()->accept(p);
+    value()->top()->accept(p);
     return stringify(p);
 }
 
@@ -355,7 +355,7 @@ EFetchableURIKey::pretty_print_flat(const FetchableURISpecTree::ItemFormatter & 
 {
     StringifyFormatter ff(f);
     DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, false, true);
-    value()->root()->accept(p);
+    value()->top()->accept(p);
     return stringify(p);
 }
 
@@ -368,7 +368,7 @@ EFetchableURIKey::initial_label() const
     {
         DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> f(_imp->env);
         if (_imp->id->restrict_key())
-            _imp->id->restrict_key()->value()->root()->accept(f);
+            _imp->id->restrict_key()->value()->top()->accept(f);
         for (DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec>::ConstIterator i(f.begin()), i_end(f.end()) ;
                 i != i_end ; ++i)
         {
@@ -471,7 +471,7 @@ ESimpleURIKey::pretty_print(const SimpleURISpecTree::ItemFormatter & f) const
 {
     StringifyFormatter ff(f);
     DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, true, true);
-    value()->root()->accept(p);
+    value()->top()->accept(p);
     return stringify(p);
 }
 
@@ -480,7 +480,7 @@ ESimpleURIKey::pretty_print_flat(const SimpleURISpecTree::ItemFormatter & f) con
 {
     StringifyFormatter ff(f);
     DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, false, true);
-    value()->root()->accept(p);
+    value()->top()->accept(p);
     return stringify(p);
 }
 
@@ -558,7 +558,7 @@ EPlainTextSpecKey::pretty_print(const PlainTextSpecTree::ItemFormatter & f) cons
 {
     StringifyFormatter ff(f);
     DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, true, true);
-    value()->root()->accept(p);
+    value()->top()->accept(p);
     return stringify(p);
 }
 
@@ -567,7 +567,7 @@ EPlainTextSpecKey::pretty_print_flat(const PlainTextSpecTree::ItemFormatter & f)
 {
     StringifyFormatter ff(f);
     DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, false, true);
-    value()->root()->accept(p);
+    value()->top()->accept(p);
     return stringify(p);
 }
 
@@ -646,7 +646,7 @@ EMyOptionsKey::pretty_print(const PlainTextSpecTree::ItemFormatter & f) const
 {
     StringifyFormatter ff(f);
     DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, true, true);
-    value()->root()->accept(p);
+    value()->top()->accept(p);
     return stringify(p);
 }
 
@@ -655,7 +655,7 @@ EMyOptionsKey::pretty_print_flat(const PlainTextSpecTree::ItemFormatter & f) con
 {
     StringifyFormatter ff(f);
     DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, false, true);
-    value()->root()->accept(p);
+    value()->top()->accept(p);
     return stringify(p);
 }
 
@@ -733,7 +733,7 @@ EProvideKey::pretty_print(const ProvideSpecTree::ItemFormatter & f) const
 {
     StringifyFormatter ff(f);
     DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, true, true);
-    value()->root()->accept(p);
+    value()->top()->accept(p);
     return stringify(p);
 }
 
@@ -742,7 +742,7 @@ EProvideKey::pretty_print_flat(const ProvideSpecTree::ItemFormatter & f) const
 {
     StringifyFormatter ff(f);
     DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, false, true);
-    value()->root()->accept(p);
+    value()->top()->accept(p);
     return stringify(p);
 }
 

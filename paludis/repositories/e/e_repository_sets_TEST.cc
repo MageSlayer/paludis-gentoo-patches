@@ -105,7 +105,7 @@ namespace test_cases
             TEST_CHECK(bool(set1));
             StringifyFormatter ff;
             erepository::DepSpecPrettyPrinter pretty(0, std::shared_ptr<const PackageID>(), ff, 0, false, false);
-            set1->root()->accept(pretty);
+            set1->top()->accept(pretty);
             TEST_CHECK_STRINGIFY_EQUAL(pretty, "cat-one/foo >=cat-two/bar-2");
         }
     } test_e_repository_sets_maintainer_defined_sets_list;
@@ -135,7 +135,7 @@ namespace test_cases
             std::shared_ptr<const SetSpecTree> insecurity(env.set(SetName("insecurity::test-repo-1")));
             StringifyFormatter ff;
             erepository::DepSpecPrettyPrinter pretty(0, std::shared_ptr<const PackageID>(), ff, 0, false, false);
-            insecurity->root()->accept(pretty);
+            insecurity->top()->accept(pretty);
             TEST_CHECK_STRINGIFY_EQUAL(pretty, "=cat-four/xyzzy-2.0.1::test-repo-1 =cat-four/xyzzy-2.0.2::test-repo-1 =cat-one/foo-1::test-repo-1 =cat-two/bar-1.5::test-repo-1 "
                                        "=cat-two/bar-1.5.1::test-repo-1 =cat-three/baz-1.0::test-repo-1 "
                                        "=cat-three/baz-1.1-r2::test-repo-1 =cat-three/baz-1.2::test-repo-1");
@@ -179,7 +179,7 @@ namespace test_cases
             std::shared_ptr<const SetSpecTree> security(env.set(SetName("security::test-repo-1")));
             StringifyFormatter ff;
             erepository::DepSpecPrettyPrinter pretty(0, std::shared_ptr<const PackageID>(), ff, 0, false, false);
-            security->root()->accept(pretty);
+            security->top()->accept(pretty);
             TEST_CHECK_STRINGIFY_EQUAL(pretty, "=cat-four/xyzzy-2.0.3::test-repo-1 =cat-two/bar-2.0::test-repo-1 =cat-three/baz-1.3::test-repo-1");
         }
     } test_e_repository_sets_security_set;

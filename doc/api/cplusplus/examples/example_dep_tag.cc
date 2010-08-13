@@ -90,7 +90,7 @@ namespace
         /* The set isn't necessarily flat. We use DepSpecFlattener to make it
          * so, rather than writing a full visitor ourselves. */
         DepSpecFlattener<SetSpecTree, PackageDepSpec> set_flat(env.get());
-        set->root()->accept(set_flat);
+        set->top()->accept(set_flat);
 
         cout << "Set '" << name << "':" << endl;
 

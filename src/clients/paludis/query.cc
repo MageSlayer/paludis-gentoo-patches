@@ -113,7 +113,7 @@ void do_one_set_query(
 {
     cout << "* " << colour(cl_package_name, q) << endl;
     SetPrettyPrinter packages;
-    set->root()->accept(packages);
+    set->top()->accept(packages);
     cout << "    " << std::setw(22) << std::left << "Packages:" << std::setw(0)
         << endl << packages.stream.str() << endl;
 }

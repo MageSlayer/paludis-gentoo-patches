@@ -343,7 +343,7 @@ namespace
                 else
                 {
                     TreeVisitor v(_key, _visible_only, _env, _id, _m);
-                    s.value()->root()->accept(v);
+                    s.value()->top()->accept(v);
                     result = v.result;
                 }
             }
@@ -358,7 +358,7 @@ namespace
                 else
                 {
                     TreeVisitor v(_key, _visible_only, _env, _id, _m);
-                    s.value()->root()->accept(v);
+                    s.value()->top()->accept(v);
                     result = v.result;
                 }
             }
@@ -373,7 +373,7 @@ namespace
                 else
                 {
                     TreeVisitor v(_key, _visible_only, _env, _id, _m);
-                    s.value()->root()->accept(v);
+                    s.value()->top()->accept(v);
                     result = v.result;
                 }
             }
@@ -388,7 +388,7 @@ namespace
                 else
                 {
                     TreeVisitor v(_key, _visible_only, _env, _id, _m);
-                    s.value()->root()->accept(v);
+                    s.value()->top()->accept(v);
                     result = v.result;
                 }
             }
@@ -403,7 +403,7 @@ namespace
                 else
                 {
                     TreeVisitor v(_key, _visible_only, _env, _id, _m);
-                    s.value()->root()->accept(v);
+                    s.value()->top()->accept(v);
                     result = v.result;
                 }
             }
@@ -418,7 +418,7 @@ namespace
                 else
                 {
                     TreeVisitor v(_key, _visible_only, _env, _id, _m);
-                    s.value()->root()->accept(v);
+                    s.value()->top()->accept(v);
                     result = v.result;
                 }
             }
@@ -433,7 +433,7 @@ namespace
                 else
                 {
                     TreeVisitor v(_key, _visible_only, _env, _id, _m);
-                    s.value()->root()->accept(v);
+                    s.value()->top()->accept(v);
                     result = v.result;
                 }
             }

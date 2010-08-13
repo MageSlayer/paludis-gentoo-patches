@@ -129,7 +129,7 @@ QueryVisitor::visit(const DependencySpecTree::NodeType<NamedSetDepSpec>::Type & 
         return;
     }
 
-    set->root()->accept(*this);
+    set->top()->accept(*this);
 
     _imp->recursing_sets.erase(node.spec()->name());
 }
@@ -166,8 +166,8 @@ QueryVisitor::visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type & node)
     if (r.spec())
     {
         DependencySpecTree tree(std::make_shared<AllDepSpec>());
-        tree.root()->append(r.spec());
-        tree.root()->accept(*this);
+        tree.top()->append(r.spec());
+        tree.top()->accept(*this);
     }
     else
         for (DependencySpecTree::NodeType<AnyDepSpec>::Type::ConstIterator c(node.begin()), c_end(node.end()) ;
@@ -186,8 +186,8 @@ void
 QueryVisitor::visit(const DependencySpecTree::NodeType<BlockDepSpec>::Type & node)
 {
     DependencySpecTree tree(std::make_shared<AllDepSpec>());
-    tree.root()->append(std::static_pointer_cast<const PackageDepSpec>(node.spec()->blocking().clone()));
-    tree.root()->accept(*this);
+    tree.top()->append(std::static_pointer_cast<const PackageDepSpec>(node.spec()->blocking().clone()));
+    tree.top()->accept(*this);
     _imp->result = !_imp->result;
 }
 

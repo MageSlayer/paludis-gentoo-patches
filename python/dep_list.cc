@@ -42,7 +42,7 @@ struct DepListWrapper
     already_installed(const DepList & self, std::shared_ptr<const DependencySpecTree> st,
             std::shared_ptr<const DestinationsSet> & d)
     {
-        return self.already_installed(*st->root(), d);
+        return self.already_installed(*st->top(), d);
     }
 };
 

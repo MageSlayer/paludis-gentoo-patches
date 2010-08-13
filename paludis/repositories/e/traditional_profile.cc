@@ -582,7 +582,7 @@ Imp<TraditionalProfile>::make_vars_from_file_vars()
                                 std::shared_ptr<const PackageID>())));
 
                 spec->set_tag(system_tag);
-                system_packages->root()->append(spec);
+                system_packages->top()->append(spec);
             }
     }
     catch (const InternalError &)

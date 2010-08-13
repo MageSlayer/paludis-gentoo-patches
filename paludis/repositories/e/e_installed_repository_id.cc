@@ -317,7 +317,7 @@ EInstalledRepositoryID::need_keys_added() const
             std::string raw_deps_str(file_contents(_imp->dir / vars->dependencies()->name()));
             std::shared_ptr<DependencySpecTree> raw_deps(parse_depend(raw_deps_str,
                     _imp->environment, shared_from_this(), *eapi()));
-            raw_deps->root()->accept(rewriter);
+            raw_deps->top()->accept(rewriter);
 
             _imp->keys->raw_dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), vars->dependencies()->name(),
                         vars->dependencies()->description(), raw_deps_str, _imp->build_dependencies_labels, mkt_dependencies);

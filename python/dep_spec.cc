@@ -733,7 +733,7 @@ void dispatch(SpecTreeFromPython<H_> * const v, const PyD_ & d)
 template <typename H_>
 SpecTreeFromPython<H_>::SpecTreeFromPython() :
     _result(std::make_shared<H_>(std::make_shared<AllDepSpec>())),
-    _add_to(_result->root())
+    _add_to(_result->top())
 {
 }
 
@@ -946,7 +946,7 @@ struct RegisterSpecTreeToPython
     convert(const std::shared_ptr<const T_> & n)
     {
         SpecTreeToPython v;
-        n->root()->accept(v);
+        n->top()->accept(v);
         return bp::incref(bp::object(v.result()).ptr());
     }
 };

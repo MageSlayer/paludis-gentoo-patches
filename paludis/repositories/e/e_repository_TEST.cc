@@ -504,11 +504,11 @@ namespace test_cases
                     StringifyFormatter ff;
                     erepository::DepSpecPrettyPrinter pd(0, std::shared_ptr<const PackageID>(), ff, 0, false, false);
                     TEST_CHECK(bool(id1->build_dependencies_key()));
-                    id1->build_dependencies_key()->value()->root()->accept(pd);
+                    id1->build_dependencies_key()->value()->top()->accept(pd);
                     TEST_CHECK_STRINGIFY_EQUAL(pd, "foo/bar");
                     erepository::DepSpecPrettyPrinter pr(0, std::shared_ptr<const PackageID>(), ff, 0, false, false);
                     TEST_CHECK(bool(id1->run_dependencies_key()));
-                    id1->run_dependencies_key()->value()->root()->accept(pr);
+                    id1->run_dependencies_key()->value()->top()->accept(pr);
                     TEST_CHECK_STRINGIFY_EQUAL(pr, "foo/bar");
 
                     const std::shared_ptr<const PackageID> id2(*env[selection::RequireExactlyOne(generator::Matches(
@@ -520,11 +520,11 @@ namespace test_cases
                     TEST_CHECK_EQUAL(id2->short_description_key()->value(), "dquote \" squote ' backslash \\ dollar $");
                     erepository::DepSpecPrettyPrinter pd2(0, std::shared_ptr<const PackageID>(), ff, 0, false, false);
                     TEST_CHECK(bool(id2->build_dependencies_key()));
-                    id2->build_dependencies_key()->value()->root()->accept(pd2);
+                    id2->build_dependencies_key()->value()->top()->accept(pd2);
                     TEST_CHECK_STRINGIFY_EQUAL(pd2, "foo/bar bar/baz");
                     erepository::DepSpecPrettyPrinter pr2(0, std::shared_ptr<const PackageID>(), ff, 0, false, false);
                     TEST_CHECK(bool(id2->run_dependencies_key()));
-                    id2->run_dependencies_key()->value()->root()->accept(pr2);
+                    id2->run_dependencies_key()->value()->top()->accept(pr2);
                     TEST_CHECK_STRINGIFY_EQUAL(pr2, "foo/bar");
 
                     const std::shared_ptr<const PackageID> id3(*env[selection::RequireExactlyOne(generator::Matches(

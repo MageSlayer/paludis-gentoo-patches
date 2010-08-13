@@ -100,7 +100,7 @@ std::string
 UnpackagedDependencyKey::pretty_print(const DependencySpecTree::ItemFormatter & f) const
 {
     CommaSeparatedDepPrinter p(_imp->env, f, false);
-    _imp->value->root()->accept(p);
+    _imp->value->top()->accept(p);
     return p.result();
 }
 
@@ -108,7 +108,7 @@ std::string
 UnpackagedDependencyKey::pretty_print_flat(const DependencySpecTree::ItemFormatter & f) const
 {
     CommaSeparatedDepPrinter p(_imp->env, f, true);
-    _imp->value->root()->accept(p);
+    _imp->value->top()->accept(p);
     return p.result();
 }
 

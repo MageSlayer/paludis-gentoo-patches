@@ -1125,7 +1125,7 @@ ERepository::make_manifest(const QualifiedPackageName & qpn)
         if (! id->fetches_key())
             continue;
         AAVisitor aa;
-        id->fetches_key()->value()->root()->accept(aa);
+        id->fetches_key()->value()->top()->accept(aa);
 
         for (AAVisitor::ConstIterator d(aa.begin()) ;
                 d != aa.end() ; ++d)
@@ -1137,7 +1137,7 @@ ERepository::make_manifest(const QualifiedPackageName & qpn)
             FSEntry f(params().distdir() / *d);
 
             if (! f.is_regular_file_or_symlink_to_regular_file())
-	        throw MissingDistfileError("Distfile '" + f.basename() + "' does not exist");
+                throw MissingDistfileError("Distfile '" + f.basename() + "' does not exist");
 
             SafeIFStream file_stream(f);
 
@@ -1933,7 +1933,7 @@ ERepository::fetch(const std::shared_ptr<const ERepositoryID> & id,
     {
         DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> restricts(_imp->params.environment());
         if (id->restrict_key())
-            id->restrict_key()->value()->root()->accept(restricts);
+            id->restrict_key()->value()->top()->accept(restricts);
 
         for (DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec>::ConstIterator i(restricts.begin()), i_end(restricts.end()) ;
                 i != i_end ; ++i)
@@ -1958,7 +1958,7 @@ ERepository::fetch(const std::shared_ptr<const ERepositoryID> & id,
         /* make A */
         AFinder f(_imp->params.environment(), id);
         if (id->fetches_key())
-            id->fetches_key()->value()->root()->accept(f);
+            id->fetches_key()->value()->top()->accept(f);
 
         for (AFinder::ConstIterator i(f.begin()), i_end(f.end()) ; i != i_end ; ++i)
         {
@@ -1977,7 +1977,7 @@ ERepository::fetch(const std::shared_ptr<const ERepositoryID> & id,
         {
             AAVisitor g;
             if (id->fetches_key())
-                id->fetches_key()->value()->root()->accept(g);
+                id->fetches_key()->value()->top()->accept(g);
             std::set<std::string> already_in_all_archives;
 
             for (AAVisitor::ConstIterator gg(g.begin()), gg_end(g.end()) ; gg != gg_end ; ++gg)
@@ -2029,10 +2029,10 @@ ERepository::fetch(const std::shared_ptr<const ERepositoryID> & id,
                     fetch_userpriv_ok, mirrors_name,
                     id->fetches_key()->initial_label(), fetch_action.options.safe_resume(),
                     output_manager, std::bind(&get_mirrors_fn, std::placeholders::_1, std::cref(_imp->mirrors)));
-            id->fetches_key()->value()->root()->accept(f);
+            id->fetches_key()->value()->top()->accept(f);
         }
 
-        id->fetches_key()->value()->root()->accept(c);
+        id->fetches_key()->value()->top()->accept(c);
     }
 
     if ( (fetch_action.options.fetch_parts()[fp_extras]) && ((c.need_nofetch()) ||
@@ -2198,7 +2198,7 @@ ERepository::pretend_fetch(const std::shared_ptr<const ERepositoryID> & id,
         PretendFetchVisitor f(_imp->params.environment(), id, *id->eapi(),
                 params().distdir(), a.options.fetch_parts()[fp_unneeded],
                 id->fetches_key()->initial_label(), a);
-        id->fetches_key()->value()->root()->accept(f);
+        id->fetches_key()->value()->top()->accept(f);
     }
 }
 
@@ -2282,7 +2282,7 @@ ERepository::install(const std::shared_ptr<const ERepositoryID> & id,
     {
         DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> restricts(_imp->params.environment());
         if (id->restrict_key())
-            id->restrict_key()->value()->root()->accept(restricts);
+            id->restrict_key()->value()->top()->accept(restricts);
 
         userpriv_restrict =
             indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
@@ -2308,7 +2308,7 @@ ERepository::install(const std::shared_ptr<const ERepositoryID> & id,
         /* make A */
         AFinder f(_imp->params.environment(), id);
         if (id->fetches_key())
-            id->fetches_key()->value()->root()->accept(f);
+            id->fetches_key()->value()->top()->accept(f);
 
         for (AFinder::ConstIterator i(f.begin()), i_end(f.end()) ; i != i_end ; ++i)
         {
@@ -2327,7 +2327,7 @@ ERepository::install(const std::shared_ptr<const ERepositoryID> & id,
         {
             AAVisitor g;
             if (id->fetches_key())
-                id->fetches_key()->value()->root()->accept(g);
+                id->fetches_key()->value()->top()->accept(g);
             std::set<std::string> already_in_all_archives;
 
             for (AAVisitor::ConstIterator gg(g.begin()), gg_end(g.end()) ; gg != gg_end ; ++gg)
@@ -2348,7 +2348,7 @@ ERepository::install(const std::shared_ptr<const ERepositoryID> & id,
         {
             AcceptLicenseFinder g;
             if (id->license_key())
-                id->license_key()->value()->root()->accept(g);
+                id->license_key()->value()->top()->accept(g);
 
             accept_license = g.s.str();
         }
@@ -2606,7 +2606,7 @@ ERepository::info(const std::shared_ptr<const ERepositoryID> & id,
     {
         DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> restricts(_imp->params.environment());
         if (id->restrict_key())
-            id->restrict_key()->value()->root()->accept(restricts);
+            id->restrict_key()->value()->top()->accept(restricts);
 
         userpriv_restrict =
             indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
@@ -2698,7 +2698,7 @@ ERepository::get_environment_variable(
 
         DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> restricts(_imp->params.environment());
         if (id->restrict_key())
-            id->restrict_key()->value()->root()->accept(restricts);
+            id->restrict_key()->value()->top()->accept(restricts);
 
         userpriv_restrict =
             indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
@@ -2916,7 +2916,7 @@ ERepository::pretend(
     {
         DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> restricts(_imp->params.environment());
         if (id->restrict_key())
-            id->restrict_key()->value()->root()->accept(restricts);
+            id->restrict_key()->value()->top()->accept(restricts);
 
         userpriv_restrict =
             indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
@@ -2938,7 +2938,7 @@ ERepository::pretend(
     if (id->raw_myoptions_key())
     {
         MyOptionsRequirementsVerifier verifier(id);
-        id->raw_myoptions_key()->value()->root()->accept(verifier);
+        id->raw_myoptions_key()->value()->top()->accept(verifier);
 
         if (verifier.unmet_requirements() && ! verifier.unmet_requirements()->empty())
         {

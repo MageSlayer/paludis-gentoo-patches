@@ -714,7 +714,7 @@ VDBRepository::provides_from_package_id(const PackageID & id) const
 
         std::shared_ptr<const ProvideSpecTree> provide(id.provide_key()->value());
         DepSpecFlattener<ProvideSpecTree, PackageDepSpec> f(_imp->params.environment());
-        provide->root()->accept(f);
+        provide->top()->accept(f);
 
         std::shared_ptr<std::list<QualifiedPackageName> > qpns(std::make_shared<std::list<QualifiedPackageName>>());
 
@@ -1291,7 +1291,7 @@ namespace
             const DepRewrites & rewrites)
     {
         DepRewriter v(rewrites);
-        key->value()->root()->accept(v);
+        key->value()->top()->accept(v);
         if (v.changed)
         {
             std::cout << "    Rewriting " << f << std::endl;

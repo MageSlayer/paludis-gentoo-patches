@@ -448,7 +448,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                             environment, *eapi, package_id, before));
                 StringifyFormatter ff;
                 DepSpecPrettyPrinter p(0, std::shared_ptr<const PackageID>(), ff, 0, false, false);
-                after->root()->accept(p);
+                after->top()->accept(p);
                 return "O0;" + stringify(p);
             }
             else if (var == eapi->supported()->ebuild_metadata_variables()->myoptions()->name())
@@ -468,7 +468,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                 MyOptionsRewriter p(package_id,
                         eapi->supported()->annotations()->myoptions_description(),
                         std::string(1, eapi->supported()->choices_options()->use_expand_separator()));
-                mm->value()->root()->accept(p);
+                mm->value()->top()->accept(p);
                 return "O0;" + p.str.str();
             }
 

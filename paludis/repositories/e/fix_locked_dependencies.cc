@@ -68,7 +68,7 @@ namespace
             eapi(a),
             id(i)
         {
-            stack.push_front(result->root());
+            stack.push_front(result->top());
         }
 
         void visit(const DependencySpecTree::NodeType<AllDepSpec>::Type & node)
@@ -151,7 +151,7 @@ paludis::erepository::fix_locked_dependencies(
         const std::shared_ptr<const DependencySpecTree> & b)
 {
     Fixer f(env, e, id);
-    b->root()->accept(f);
+    b->top()->accept(f);
     return f.result;
 }
 

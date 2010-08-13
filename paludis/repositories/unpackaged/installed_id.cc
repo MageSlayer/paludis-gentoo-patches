@@ -362,7 +362,7 @@ namespace
             pretty_print(const DependencySpecTree::ItemFormatter & f) const
             {
                 CommaSeparatedDepPrinter p(_env, f, false);
-                value()->root()->accept(p);
+                value()->top()->accept(p);
                 return p.result();
             }
 
@@ -370,7 +370,7 @@ namespace
             pretty_print_flat(const DependencySpecTree::ItemFormatter & f) const
             {
                 CommaSeparatedDepPrinter p(_env, f, true);
-                value()->root()->accept(p);
+                value()->top()->accept(p);
                 return p.result();
             }
 

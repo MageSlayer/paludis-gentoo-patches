@@ -702,7 +702,7 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<NamedSetDepSpec>::
         throw RecursivelyDefinedSetError(stringify(node.spec()->name()));
     }
 
-    set->root()->accept(*this);
+    set->top()->accept(*this);
 
     recursing_sets.erase(node.spec()->name());
 }
@@ -1108,7 +1108,7 @@ DepList::add(const SetSpecTree & spec, const std::shared_ptr<const DestinationsS
             _imp->current_top_level_target ? _imp->current_top_level_target : &spec);
 
     AddVisitor visitor(this, false, destinations);
-    spec.root()->accept(visitor);
+    spec.top()->accept(visitor);
     transaction.commit();
 }
 
@@ -1116,7 +1116,7 @@ void
 DepList::add(const PackageDepSpec & spec, const std::shared_ptr<const DestinationsSet> & destinations)
 {
     SetSpecTree tree(std::make_shared<AllDepSpec>());
-    tree.root()->append(std::make_shared<PackageDepSpec>(spec));
+    tree.top()->append(std::make_shared<PackageDepSpec>(spec));
     add(tree, destinations);
 }
 
@@ -1171,7 +1171,7 @@ DepList::add_package(const std::shared_ptr<const PackageID> & p, const std::shar
     if (p->provide_key())
     {
         DepSpecFlattener<ProvideSpecTree, PackageDepSpec> f(_imp->env);
-        p->provide_key()->value()->root()->accept(f);
+        p->provide_key()->value()->top()->accept(f);
 
         if (f.begin() != f.end() && ! (*DistributionData::get_instance()->distribution_from_string(
                     _imp->env->distribution())).support_old_style_virtuals())
@@ -1223,7 +1223,7 @@ DepList::add_package(const std::shared_ptr<const PackageID> & p, const std::shar
         Save<MergeList::iterator> suggest_save_merge_list_insert_position(&_imp->merge_list_insert_position,
                 next(our_merge_entry_position));
         ShowSuggestVisitor visitor(this, destinations, _imp->env, _imp->current_package_id(), _imp->opts->dependency_tags(), false);
-        p->suggested_dependencies_key()->value()->root()->accept(visitor);
+        p->suggested_dependencies_key()->value()->top()->accept(visitor);
     }
 
     /* add suggests in post depend too */
@@ -1233,34 +1233,34 @@ DepList::add_package(const std::shared_ptr<const PackageID> & p, const std::shar
         Save<MergeList::iterator> suggest_save_merge_list_insert_position(&_imp->merge_list_insert_position,
                 next(our_merge_entry_position));
         ShowSuggestVisitor visitor(this, destinations, _imp->env, _imp->current_package_id(), _imp->opts->dependency_tags(), true);
-        p->post_dependencies_key()->value()->root()->accept(visitor);
+        p->post_dependencies_key()->value()->top()->accept(visitor);
     }
 
     /* add pre dependencies */
     if (p->build_dependencies_key())
-        add_predeps(*p->build_dependencies_key()->value()->root(), _imp->opts->uninstalled_deps_pre(), "build", destinations, false);
+        add_predeps(*p->build_dependencies_key()->value()->top(), _imp->opts->uninstalled_deps_pre(), "build", destinations, false);
     if (p->run_dependencies_key())
-        add_predeps(*p->run_dependencies_key()->value()->root(), _imp->opts->uninstalled_deps_runtime(), "run", destinations, false);
+        add_predeps(*p->run_dependencies_key()->value()->top(), _imp->opts->uninstalled_deps_runtime(), "run", destinations, false);
     if (p->post_dependencies_key())
-        add_predeps(*p->post_dependencies_key()->value()->root(), _imp->opts->uninstalled_deps_post(), "post", destinations,
+        add_predeps(*p->post_dependencies_key()->value()->top(), _imp->opts->uninstalled_deps_post(), "post", destinations,
                 (_imp->opts->suggested() == dl_suggested_install) ? false : true);
     if (_imp->opts->suggested() == dl_suggested_install && p->suggested_dependencies_key())
-        add_predeps(*p->suggested_dependencies_key()->value()->root(), _imp->opts->uninstalled_deps_suggested(), "suggest", destinations, false);
+        add_predeps(*p->suggested_dependencies_key()->value()->top(), _imp->opts->uninstalled_deps_suggested(), "suggest", destinations, false);
 
     our_merge_entry_position->state() = dle_has_pre_deps;
     _imp->merge_list_insert_position = next(our_merge_entry_post_position);
 
     /* add post dependencies */
     if (p->build_dependencies_key())
-        add_postdeps(*p->build_dependencies_key()->value()->root(), _imp->opts->uninstalled_deps_pre(), "build", destinations, false);
+        add_postdeps(*p->build_dependencies_key()->value()->top(), _imp->opts->uninstalled_deps_pre(), "build", destinations, false);
     if (p->run_dependencies_key())
-        add_postdeps(*p->run_dependencies_key()->value()->root(), _imp->opts->uninstalled_deps_runtime(), "run", destinations, false);
+        add_postdeps(*p->run_dependencies_key()->value()->top(), _imp->opts->uninstalled_deps_runtime(), "run", destinations, false);
     if (p->post_dependencies_key())
-        add_postdeps(*p->post_dependencies_key()->value()->root(), _imp->opts->uninstalled_deps_post(), "post", destinations,
+        add_postdeps(*p->post_dependencies_key()->value()->top(), _imp->opts->uninstalled_deps_post(), "post", destinations,
                 (_imp->opts->suggested() == dl_suggested_install) ? false : true);
 
     if (_imp->opts->suggested() == dl_suggested_install && p->suggested_dependencies_key())
-        add_postdeps(*p->suggested_dependencies_key()->value()->root(), _imp->opts->uninstalled_deps_suggested(), "suggest", destinations, false);
+        add_postdeps(*p->suggested_dependencies_key()->value()->top(), _imp->opts->uninstalled_deps_suggested(), "suggest", destinations, false);
 
     our_merge_entry_position->state() = dle_has_all_deps;
 }
@@ -1437,21 +1437,21 @@ DepList::add_already_installed_package(const std::shared_ptr<const PackageID> & 
             our_merge_entry);
 
     if (p->build_dependencies_key())
-        add_predeps(*p->build_dependencies_key()->value()->root(), _imp->opts->installed_deps_pre(), "build", destinations, false);
+        add_predeps(*p->build_dependencies_key()->value()->top(), _imp->opts->installed_deps_pre(), "build", destinations, false);
     if (p->run_dependencies_key())
-        add_predeps(*p->run_dependencies_key()->value()->root(), _imp->opts->installed_deps_runtime(), "run", destinations, false);
+        add_predeps(*p->run_dependencies_key()->value()->top(), _imp->opts->installed_deps_runtime(), "run", destinations, false);
     if (p->post_dependencies_key())
-        add_predeps(*p->post_dependencies_key()->value()->root(), _imp->opts->installed_deps_post(), "post", destinations, true);
+        add_predeps(*p->post_dependencies_key()->value()->top(), _imp->opts->installed_deps_post(), "post", destinations, true);
 
     our_merge_entry->state() = dle_has_pre_deps;
     _imp->merge_list_insert_position = next(our_merge_entry);
 
     if (p->build_dependencies_key())
-        add_postdeps(*p->build_dependencies_key()->value()->root(), _imp->opts->installed_deps_pre(), "build", destinations, false);
+        add_postdeps(*p->build_dependencies_key()->value()->top(), _imp->opts->installed_deps_pre(), "build", destinations, false);
     if (p->run_dependencies_key())
-        add_postdeps(*p->run_dependencies_key()->value()->root(), _imp->opts->installed_deps_runtime(), "run", destinations, false);
+        add_postdeps(*p->run_dependencies_key()->value()->top(), _imp->opts->installed_deps_runtime(), "run", destinations, false);
     if (p->post_dependencies_key())
-        add_postdeps(*p->post_dependencies_key()->value()->root(), _imp->opts->installed_deps_post(), "post", destinations, true);
+        add_postdeps(*p->post_dependencies_key()->value()->top(), _imp->opts->installed_deps_post(), "post", destinations, true);
 }
 
 namespace

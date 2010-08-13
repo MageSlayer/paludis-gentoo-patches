@@ -254,7 +254,7 @@ ShowSuggestVisitor::visit(const DependencySpecTree::NodeType<NamedSetDepSpec>::T
         return;
     }
 
-    set->root()->accept(*this);
+    set->top()->accept(*this);
 
     _imp->recursing_sets.erase(node.spec()->name());
 }

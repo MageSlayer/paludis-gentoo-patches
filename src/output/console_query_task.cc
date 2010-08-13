@@ -472,7 +472,7 @@ namespace
                     {
                         task->output_left_column(k.human_name() + ":", in);
                         ComplexLicenseFinder is_complex;
-                        k.value()->root()->accept(is_complex);
+                        k.value()->top()->accept(is_complex);
                         if (is_complex)
                         {
                             task->output_right_column("");

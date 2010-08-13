@@ -71,8 +71,8 @@ namespace test_cases
             DepSpecPrettyPrinter
                 a(0, std::shared_ptr<const PackageID>(), ff, 0, false, false),
                 b(0, std::shared_ptr<const PackageID>(), ff, 0, false, false);
-            aa->root()->accept(a);
-            bb->root()->accept(b);
+            aa->top()->accept(a);
+            bb->top()->accept(b);
 
             TEST_CHECK_STRINGIFY_EQUAL(a, b);
 
@@ -83,8 +83,8 @@ namespace test_cases
             DepSpecPrettyPrinter
                 c(0, std::shared_ptr<const PackageID>(), ff, 0, false, false),
                 d(0, std::shared_ptr<const PackageID>(), ff, 0, false, false);
-            cc->root()->accept(c);
-            dd->root()->accept(d);
+            cc->top()->accept(c);
+            dd->top()->accept(d);
 
             TEST_CHECK_STRINGIFY_EQUAL(c, "foo/bar:= cat/installed:= >=cat/installed-1.2:= <=cat/installed-1.2:=");
             TEST_CHECK_STRINGIFY_EQUAL(d, "foo/bar:= cat/installed:=monkey >=cat/installed-1.2:= <=cat/installed-1.2:=monkey");

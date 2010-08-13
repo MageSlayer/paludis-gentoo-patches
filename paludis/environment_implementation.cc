@@ -49,22 +49,22 @@ namespace
 
     struct CombineSets
     {
-        std::shared_ptr<AllDepSpec> root;
+        std::shared_ptr<AllDepSpec> top;
         std::shared_ptr<SetSpecTree> tree;
 
         void add(const SetName & s)
         {
-            tree->root()->append(std::make_shared<NamedSetDepSpec>(s));
+            tree->top()->append(std::make_shared<NamedSetDepSpec>(s));
         }
 
         CombineSets() :
-            root(std::make_shared<AllDepSpec>()),
-            tree(std::make_shared<SetSpecTree>(root))
+            top(std::make_shared<AllDepSpec>()),
+            tree(std::make_shared<SetSpecTree>(top))
         {
         }
 
         CombineSets(const CombineSets & other) :
-            root(other.root),
+            top(other.top),
             tree(other.tree)
         {
         }
@@ -320,7 +320,7 @@ namespace
             << "The 'everything' set is deprecated. Use either 'installed-packages' or 'installed-slots' instead";
 
         std::shared_ptr<SetSpecTree> result(std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>()));
-        result->root()->append(std::make_shared<NamedSetDepSpec>(SetName("installed-packages")));
+        result->top()->append(std::make_shared<NamedSetDepSpec>(SetName("installed-packages")));
         return result;
     }
 }

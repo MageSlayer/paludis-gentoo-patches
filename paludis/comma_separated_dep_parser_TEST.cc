@@ -40,7 +40,7 @@ namespace test_cases
                     CommaSeparatedDepParser::parse(&env, "cat/one  , cat/two, cat/three\n"));
             StringifyFormatter f;
             CommaSeparatedDepPrinter p(&env, f, true);
-            spec->root()->accept(p);
+            spec->top()->accept(p);
             TEST_CHECK_EQUAL(p.result(), "cat/one, cat/two, cat/three");
         }
     } test_dep_parser;
