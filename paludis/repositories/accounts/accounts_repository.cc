@@ -411,7 +411,7 @@ bool
 AccountsRepository::is_default_destination() const
 {
     return _imp->handler_if_installed &&
-        _imp->params_if_installed->environment()->root() == installed_root_key()->value();
+        _imp->params_if_installed->environment()->preferred_root_key()->value() == installed_root_key()->value();
 }
 
 bool

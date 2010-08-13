@@ -514,14 +514,14 @@ ConsoleInstallTask::on_display_merge_list_entry(const DepListEntry & d)
                 generator::Matches(make_package_dep_spec({ })
                     .package(d.package_id()->name()).in_repository(*repo), { }) :
                 generator::Matches(make_package_dep_spec({ })
-                    .package(d.package_id()->name()), { }) | filter::InstalledAtRoot(environment()->root())
+                    .package(d.package_id()->name()), { }) | filter::InstalledAtRoot(environment()->preferred_root_key()->value())
                 )]);;
 
     std::shared_ptr<const PackageIDSequence> existing_slot_repo((*environment())[selection::AllVersionsSorted((repo ?
                     generator::Matches(make_package_dep_spec({ })
                         .package(d.package_id()->name()).in_repository(*repo), { }) :
                     generator::Matches(make_package_dep_spec({ })
-                        .package(d.package_id()->name()), { }) | filter::InstalledAtRoot(environment()->root()))
+                        .package(d.package_id()->name()), { }) | filter::InstalledAtRoot(environment()->preferred_root_key()->value()))
                 | filter::SameSlot(d.package_id()))]);
 
     display_merge_list_entry_start(d, m);
@@ -973,11 +973,10 @@ ConsoleInstallTask::display_merge_list_entry_for(const PackageID & d, const Disp
 void
 ConsoleInstallTask::display_merge_list_entry_repository(const DepListEntry & d, const DisplayMode m)
 {
-    // XXX fix this once the new resolver's in
     std::shared_ptr<const PackageIDSequence> inst((*environment())[selection::BestVersionOnly(
                 generator::Package(d.package_id()->name()) |
                 filter::SameSlot(d.package_id()) |
-                filter::InstalledAtRoot(environment()->root()))]);
+                filter::InstalledAtRoot(environment()->preferred_root_key()->value()))]);
     bool changed(normal_entry == m &&
             ! inst->empty() && (*inst->begin())->from_repositories_key() &&
             (*inst->begin())->from_repositories_key()->value()->end() ==
@@ -1446,7 +1445,7 @@ ConsoleInstallTask::display_merge_list_entry_package_tags(const DepListEntry & d
             std::static_pointer_cast<const DependencyDepTag>(tag->tag())->dependency());
         if (d.kind() != dlk_masked && d.kind() != dlk_block && (*environment())[selection::SomeArbitraryVersion(
                 generator::Matches(*spec, { }) |
-                filter::InstalledAtRoot(environment()->root()))]->empty())
+                filter::InstalledAtRoot(environment()->preferred_root_key()->value()))]->empty())
             unsatisfied_dependents.insert(tag->tag()->short_text());
         else
             dependents.insert(tag->tag()->short_text());
@@ -1948,7 +1947,7 @@ ConsoleInstallTask::show_resume_command(const std::string & resume_command_templ
 void
 ConsoleInstallTask::on_installed_paludis()
 {
-    std::string r(stringify(environment()->root()));
+    std::string r(stringify(environment()->preferred_root_key()->value()));
     std::string exec_mode(getenv_with_default("PALUDIS_EXEC_PALUDIS", ""));
 
     if ("always" != exec_mode)

@@ -29,6 +29,7 @@
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/action.hh>
+#include <paludis/metadata_key.hh>
 #include <algorithm>
 #include <sstream>
 
@@ -84,7 +85,7 @@ CommaSeparatedDepPrinter::visit(const DependencySpecTree::NodeType<PackageDepSpe
     if (_imp->env)
     {
         if (! (*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(*node.spec(), { }) |
-                    filter::InstalledAtRoot(_imp->env->root()))]->empty())
+                    filter::InstalledAtRoot(_imp->env->preferred_root_key()->value()))]->empty())
             _imp->s << _imp->formatter.format(*node.spec(), format::Installed());
         else if (! (*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(*node.spec(), { }) |
                     filter::SupportsAction<InstallAction>() | filter::NotMasked())]->empty())

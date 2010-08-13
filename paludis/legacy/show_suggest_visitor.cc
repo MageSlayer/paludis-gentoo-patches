@@ -27,6 +27,7 @@
 #include <paludis/generator.hh>
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
+#include <paludis/metadata_key.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/pimp-impl.hh>
@@ -191,7 +192,7 @@ ShowSuggestVisitor::visit(const DependencySpecTree::NodeType<PackageDepSpec>::Ty
 
     std::shared_ptr<const PackageIDSequence> installed_matches((*_imp->environment)[selection::AllVersionsSorted(
                 generator::Matches(*node.spec(), _imp->dep_list->options()->match_package_options())
-                | filter::InstalledAtRoot(_imp->environment->root()))]);
+                | filter::InstalledAtRoot(_imp->environment->preferred_root_key()->value()))]);
     if (! installed_matches->empty())
     {
         Log::get_instance()->message("dep_list.show_suggest_visitor.already_installed", ll_debug, lc_context)

@@ -30,6 +30,7 @@
 #include <paludis/generator.hh>
 #include <paludis/selection.hh>
 #include <paludis/filter.hh>
+#include <paludis/metadata_key.hh>
 
 #include <iostream>
 #include <limits>
@@ -306,7 +307,7 @@ namespace
 
                 try
                 {
-                    FuzzyCandidatesFinder f(*env, e.name(), filter::InstalledAtRoot(env->root()));
+                    FuzzyCandidatesFinder f(*env, e.name(), filter::InstalledAtRoot(env->preferred_root_key()->value()));
 
                     if (f.begin() == f.end())
                         cerr << "No suggestions found." << endl;

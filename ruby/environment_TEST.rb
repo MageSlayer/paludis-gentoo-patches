@@ -2,7 +2,7 @@
 # vim: set sw=4 sts=4 et tw=80 :
 
 #
-# Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+# Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
 # Copyright (c) 2007, 2008 Richard Brown
 #
 # This file is part of the Paludis package manager. Paludis is free software;
@@ -219,25 +219,9 @@ module Paludis
         end
     end
 
-    class TestCase_EnvironmentRoot < Test::Unit::TestCase
-        def test_root
-            assert_kind_of String, env.root
-        end
-    end
-
     class TestCase_EnvironmentDefaultDestinations < Test::Unit::TestCase
         def test_default_destinations
             assert_kind_of Array, env.default_destinations
-        end
-    end
-
-    class TestCase_EnvironmentRoot < Test::Unit::TestCase
-        def env
-            NoConfigEnvironment.new(Dir.getwd().to_s + "/environment_TEST_dir/testrepo")
-        end
-
-        def test_root
-            assert_kind_of String, env.root
         end
     end
 

@@ -203,13 +203,13 @@ VerifyCommand::run(
         throw args::DoHelp("verify takes exactly one parameter");
 
     PackageDepSpec spec(parse_user_package_dep_spec(*cmdline.begin_parameters(), env.get(),
-                { updso_allow_wildcards }, filter::InstalledAtRoot(env->root())));
+                { updso_allow_wildcards }, filter::InstalledAtRoot(env->preferred_root_key()->value())));
 
     std::shared_ptr<const PackageIDSequence> entries(
-            (*env)[selection::AllVersionsSorted(generator::Matches(spec, { }) | filter::InstalledAtRoot(env->root()))]);
+            (*env)[selection::AllVersionsSorted(generator::Matches(spec, { }) | filter::InstalledAtRoot(env->preferred_root_key()->value()))]);
 
     if (entries->empty())
-        nothing_matching_error(env.get(), *cmdline.begin_parameters(), filter::InstalledAtRoot(env->root()));
+        nothing_matching_error(env.get(), *cmdline.begin_parameters(), filter::InstalledAtRoot(env->preferred_root_key()->value()));
 
     int exit_status(0);
     for (PackageIDSequence::ConstIterator i(entries->begin()), i_end(entries->end()) ;

@@ -88,9 +88,6 @@ namespace paludis
             virtual std::shared_ptr<const FSEntrySequence> hook_dirs() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const FSEntry root() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
             virtual uid_t reduced_uid() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -144,6 +141,7 @@ namespace paludis
 
             virtual const std::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
             virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > config_location_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > preferred_root_key() const;
 
             virtual const Tribool want_choice_enabled(
                     const std::shared_ptr<const PackageID> &,

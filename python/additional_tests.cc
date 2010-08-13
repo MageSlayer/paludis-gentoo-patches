@@ -80,8 +80,6 @@ namespace environment
 
         e.set_paludis_command("paludis");
 
-        e.root();
-
         e.reduced_uid();
 
         e.reduced_gid();

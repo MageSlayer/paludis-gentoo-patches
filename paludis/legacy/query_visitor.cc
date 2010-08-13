@@ -25,6 +25,7 @@
 #include <paludis/generator.hh>
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
+#include <paludis/metadata_key.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/log.hh>
@@ -91,7 +92,7 @@ QueryVisitor::visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & n
     // TODO: check destinations
     std::shared_ptr<const PackageIDSequence> matches((*_imp->environment)[selection::AllVersionsUnsorted(
                 generator::Matches(*node.spec(), _imp->dep_list->options()->match_package_options()) |
-                filter::InstalledAtRoot(_imp->environment->root()))]);
+                filter::InstalledAtRoot(_imp->environment->preferred_root_key()->value()))]);
 
     if (indirect_iterator(matches->end()) != std::find_if(indirect_iterator(matches->begin()), indirect_iterator(matches->end()),
                 std::bind(std::logical_not<bool>(), std::bind(std::mem_fn(&DepList::replaced), _imp->dep_list, _1))))

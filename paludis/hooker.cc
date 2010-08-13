@@ -39,6 +39,8 @@
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/about.hh>
 #include <paludis/output_manager.hh>
+#include <paludis/metadata_key.hh>
+
 #include <list>
 #include <iterator>
 #include <dlfcn.h>
@@ -165,7 +167,7 @@ BashHookFile::run(
         file_name() << "' for '" << hook.name() << "'";
 
     Command cmd(Command("bash '" + stringify(file_name()) + "'")
-            .with_setenv("ROOT", stringify(_env->root()))
+            .with_setenv("ROOT", stringify(_env->preferred_root_key()->value()))
             .with_setenv("HOOK", hook.name())
             .with_setenv("HOOK_FILE", stringify(file_name()))
             .with_setenv("HOOK_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
@@ -227,7 +229,7 @@ FancyHookFile::run(const Hook & hook,
             "/hooker.bash '" + stringify(file_name()) + "' 'hook_run_" + stringify(hook.name()) + "'");
 
     cmd
-        .with_setenv("ROOT", stringify(_env->root()))
+        .with_setenv("ROOT", stringify(_env->preferred_root_key()->value()))
         .with_setenv("HOOK", hook.name())
         .with_setenv("HOOK_FILE", stringify(file_name()))
         .with_setenv("HOOK_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
@@ -288,7 +290,7 @@ FancyHookFile::auto_hook_names() const
             "/hooker.bash '" + stringify(file_name()) + "' 'hook_auto_names'");
 
     cmd
-        .with_setenv("ROOT", stringify(_env->root()))
+        .with_setenv("ROOT", stringify(_env->preferred_root_key()->value()))
         .with_setenv("HOOK_FILE", stringify(file_name()))
         .with_setenv("HOOK_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
         .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
@@ -345,7 +347,7 @@ FancyHookFile::_add_dependency_class(const Hook & hook, DirectedGraph<std::strin
             stringify(hook.name()) + "'");
 
     cmd
-        .with_setenv("ROOT", stringify(_env->root()))
+        .with_setenv("ROOT", stringify(_env->preferred_root_key()->value()))
         .with_setenv("HOOK", hook.name())
         .with_setenv("HOOK_FILE", stringify(file_name()))
         .with_setenv("HOOK_LOG_LEVEL", stringify(Log::get_instance()->log_level()))

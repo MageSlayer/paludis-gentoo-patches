@@ -86,6 +86,7 @@ namespace paludis
         std::shared_ptr<LiteralMetadataValueKey<std::string> > format_key;
         std::shared_ptr<LiteralMetadataValueKey<FSEntry> > config_location_key;
         std::shared_ptr<LiteralMetadataValueKey<FSEntry> > world_file_key;
+        std::shared_ptr<LiteralMetadataValueKey<FSEntry> > preferred_root_key;
 
         Imp(PaludisEnvironment * const e, std::shared_ptr<PaludisConfig> c) :
             done_hooks(false),
@@ -97,7 +98,9 @@ namespace paludis
                         config->config_dir())),
             world_file_key(config->world()->location_if_set() ? std::make_shared<LiteralMetadataValueKey<FSEntry>>("world_file", "World file", mkt_normal,
                             *config->world()->location_if_set())
-                    : std::shared_ptr<LiteralMetadataValueKey<FSEntry> >())
+                    : std::shared_ptr<LiteralMetadataValueKey<FSEntry> >()),
+            preferred_root_key(std::make_shared<LiteralMetadataValueKey<FSEntry>>("root", "Root", mkt_normal,
+                        config->root()))
         {
         }
 
@@ -156,6 +159,7 @@ PaludisEnvironment::PaludisEnvironment(const std::string & s) :
     add_metadata_key(_imp->config_location_key);
     if (_imp->world_file_key)
         add_metadata_key(_imp->world_file_key);
+    add_metadata_key(_imp->preferred_root_key);
 }
 
 PaludisEnvironment::~PaludisEnvironment()
@@ -301,12 +305,6 @@ PaludisEnvironment::mirrors(const std::string & m) const
     return _imp->config->mirrors_conf()->query(m);
 }
 
-const FSEntry
-PaludisEnvironment::root() const
-{
-    return _imp->config->root();
-}
-
 uid_t
 PaludisEnvironment::reduced_uid() const
 {
@@ -449,6 +447,12 @@ const std::shared_ptr<const MetadataValueKey<FSEntry> >
 PaludisEnvironment::config_location_key() const
 {
     return _imp->config_location_key;
+}
+
+const std::shared_ptr<const MetadataValueKey<FSEntry> >
+PaludisEnvironment::preferred_root_key() const
+{
+    return _imp->preferred_root_key;
 }
 
 const Tribool

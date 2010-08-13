@@ -188,7 +188,7 @@ int do_has_version(const std::shared_ptr<Environment> & env)
     std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(
                 parse_user_package_dep_spec(query, env.get(), { })));
     std::shared_ptr<const PackageIDSequence> entries((*env)[selection::SomeArbitraryVersion(
-                generator::Matches(*spec, { }) | filter::InstalledAtRoot(env->root()))]);
+                generator::Matches(*spec, { }) | filter::InstalledAtRoot(env->preferred_root_key()->value()))]);
 
     if (entries->empty())
         return_code = 1;
@@ -206,7 +206,7 @@ int do_best_version(const std::shared_ptr<Environment> & env)
     std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(
                 parse_user_package_dep_spec(query, env.get(), { })));
     std::shared_ptr<const PackageIDSequence> entries((*env)[selection::AllVersionsSorted(
-                generator::Matches(*spec, { }) | filter::InstalledAtRoot(env->root()))]);
+                generator::Matches(*spec, { }) | filter::InstalledAtRoot(env->preferred_root_key()->value()))]);
 
     /* make built_with_use work for virtuals... icky... */
     while (! entries->empty())
@@ -247,7 +247,7 @@ int do_match(const std::shared_ptr<Environment> & env)
     std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(
                 parse_user_package_dep_spec(query, env.get(), { })));
     std::shared_ptr<const PackageIDSequence> entries((*env)[selection::AllVersionsSorted(
-                generator::Matches(*spec, { }) | filter::InstalledAtRoot(env->root()))]);
+                generator::Matches(*spec, { }) | filter::InstalledAtRoot(env->preferred_root_key()->value()))]);
 
     while (! entries->empty())
     {
@@ -292,7 +292,7 @@ int do_environment_variable(const std::shared_ptr<Environment> & env)
                 parse_user_package_dep_spec(spec_str, env.get(), { })));
 
     std::shared_ptr<const PackageIDSequence> entries((*env)[selection::AllVersionsSorted(
-                generator::Matches(*spec, { }) | filter::InstalledAtRoot(env->root()))]);
+                generator::Matches(*spec, { }) | filter::InstalledAtRoot(env->preferred_root_key()->value()))]);
 
     if (entries->empty())
         entries = (*env)[selection::AllVersionsSorted(generator::Matches(*spec, { }))];

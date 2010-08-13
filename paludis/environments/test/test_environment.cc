@@ -34,6 +34,7 @@
 #include <paludis/hook.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/choice.hh>
+#include <paludis/literal_metadata_key.hh>
 #include <functional>
 #include <unordered_map>
 #include <string>
@@ -53,11 +54,13 @@ namespace paludis
         std::unordered_map<std::string, Tribool> override_want_choice_enabled;
         FSEntry root;
         Sets sets;
+        std::shared_ptr<LiteralMetadataValueKey<FSEntry> > preferred_root_key;
 
         Imp(Environment * const e, const FSEntry & r) :
             package_database(std::make_shared<PackageDatabase>(e)),
             paludis_command(""),
-            root(r)
+            root(r),
+            preferred_root_key(std::make_shared<LiteralMetadataValueKey<FSEntry>>("root", "Root", mkt_normal, root))
         {
         }
     };
@@ -67,12 +70,14 @@ TestEnvironment::TestEnvironment() :
     Pimp<TestEnvironment>(this, FSEntry("/")),
     _imp(Pimp<TestEnvironment>::_imp)
 {
+    add_metadata_key(_imp->preferred_root_key);
 }
 
 TestEnvironment::TestEnvironment(const FSEntry & r) :
     Pimp<TestEnvironment>(this, r),
     _imp(Pimp<TestEnvironment>::_imp)
 {
+    add_metadata_key(_imp->preferred_root_key);
 }
 
 TestEnvironment::~TestEnvironment()
@@ -139,12 +144,6 @@ gid_t
 TestEnvironment::reduced_gid() const
 {
     return destringify<int>(getenv_with_default("PALUDIS_REDUCED_GID", stringify(getgid())));
-}
-
-const FSEntry
-TestEnvironment::root() const
-{
-    return _imp->root;
 }
 
 std::shared_ptr<const MirrorsSequence>
@@ -232,6 +231,12 @@ const std::shared_ptr<const MetadataValueKey<FSEntry> >
 TestEnvironment::config_location_key() const
 {
     return std::shared_ptr<const MetadataValueKey<FSEntry> >();
+}
+
+const std::shared_ptr<const MetadataValueKey<FSEntry> >
+TestEnvironment::preferred_root_key() const
+{
+    return _imp->preferred_root_key;
 }
 
 const Tribool

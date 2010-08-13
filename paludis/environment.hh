@@ -302,11 +302,6 @@ namespace paludis
             virtual void set_paludis_command(const std::string &) = 0;
 
             /**
-             * Our root location for installs.
-             */
-            virtual const FSEntry root() const = 0;
-
-            /**
              * User id to use when reduced privs are permissible.
              */
             virtual uid_t reduced_uid() const = 0;
@@ -460,6 +455,14 @@ namespace paludis
 
             ///\name Specific metadata keys
             ///\{
+
+            /**
+             * The preferred_root_key, which must not be null, specifies the
+             * preferred filesystem root for actions.
+             *
+             * \since 0.54
+             */
+            virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > preferred_root_key() const = 0;
 
             /**
              * The format_key, if non-zero, holds our environment's format. Environment

@@ -296,7 +296,7 @@ ERepositorySets::security_set(bool insecurity) const
                 else
                     candidates = (*_imp->environment)[selection::AllVersionsSorted(
                             generator::Package(glsa_pkg->name()) |
-                            filter::InstalledAtRoot(_imp->environment->root()))];
+                            filter::InstalledAtRoot(_imp->environment->preferred_root_key()->value()))];
 
                 for (PackageIDSequence::ConstIterator c(candidates->begin()), c_end(candidates->end()) ;
                         c != c_end ; ++c)

@@ -400,7 +400,7 @@ InstalledUnpackagedRepository::is_suitable_destination_for(const PackageID & e) 
 bool
 InstalledUnpackagedRepository::is_default_destination() const
 {
-    return _imp->params.environment()->root() == installed_root_key()->value();
+    return _imp->params.environment()->preferred_root_key()->value() == installed_root_key()->value();
 }
 
 bool

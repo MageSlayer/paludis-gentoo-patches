@@ -70,10 +70,6 @@ class TestCase_01_Environments(unittest.TestCase):
         self.assert_(isinstance(nce2.main_repository, Repository))
         self.assert_(isinstance(nce2.master_repository, Repository))
 
-    def test_09_root(self):
-        self.assert_(isinstance(self.e.root, str))
-        self.assert_(isinstance(self.nce.root, str))
-
     def test_10_default_destinations(self):
         self.assert_(isinstance(self.e.default_destinations, DestinationsIterable))
         self.assert_(isinstance(self.nce.default_destinations, DestinationsIterable))
@@ -126,9 +122,6 @@ class TestCase_04_Environment_subclassingd(unittest.TestCase):
 
         def set_paludis_command(self, s):
             pass
-
-        def root(self):
-            return "/"
 
         def reduced_uid(self):
             return 0

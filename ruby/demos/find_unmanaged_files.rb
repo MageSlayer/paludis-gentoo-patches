@@ -73,7 +73,7 @@ end
 
 env = Paludis::EnvironmentFactory.instance.create env_spec
 db = env.package_database
-root = env.root[-1] == ?/ ? env.root.chop : env.root
+root = env.preferred_root_key.value[-1] == ?/ ? env.preferred_root_key.value.chop : env.preferred_root_key.value
 
 directories = []
 

@@ -301,7 +301,7 @@ namespace
         {
             return ! env[selection::SomeArbitraryVersion(
                     generator::Package(*u->spec()->package_ptr()) |
-                    filter::InstalledAtRoot(env.root()))]->empty();
+                    filter::InstalledAtRoot(env.preferred_root_key()->value()))]->empty();
         }
         else
             return false;
@@ -426,7 +426,7 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<PackageDepSpec>::T
     // TODO: check destinations
     std::shared_ptr<const PackageIDSequence> already_installed((*d->_imp->env)[selection::AllVersionsSorted(
                 generator::Matches(*node.spec(), d->_imp->opts->match_package_options()) |
-                filter::InstalledAtRoot(d->_imp->env->root()))]);
+                filter::InstalledAtRoot(d->_imp->env->preferred_root_key()->value()))]);
 
     /* are we already on the merge list? */
     std::pair<MergeListIndex::iterator, MergeListIndex::iterator> q;
@@ -661,7 +661,7 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<PackageDepSpec>::T
                 std::shared_ptr<const PackageIDSequence> are_we_downgrading(
                         (*d->_imp->env)[selection::AllVersionsSorted(
                             generator::Package(best_visible_candidate->name()) |
-                            filter::InstalledAtRoot(d->_imp->env->root()) |
+                            filter::InstalledAtRoot(d->_imp->env->preferred_root_key()->value()) |
                             filter::SameSlot(best_visible_candidate))]);
 
                 if (are_we_downgrading->empty())
@@ -868,7 +868,7 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<BlockDepSpec>::Typ
                     *node.spec()->blocking().package_ptr()));
         already_installed = (*d->_imp->env)[selection::AllVersionsUnsorted(
                 generator::Matches(just_package, d->_imp->opts->match_package_options()) |
-                filter::InstalledAtRoot(d->_imp->env->root()))];
+                filter::InstalledAtRoot(d->_imp->env->preferred_root_key()->value()))];
 
         MatchDepListEntryAgainstPackageDepSpec m(d->_imp->env, just_package, d->_imp->opts->match_package_options());
         for (std::pair<MergeListIndex::const_iterator, MergeListIndex::const_iterator> p(
@@ -894,7 +894,7 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<BlockDepSpec>::Typ
         /* TODO: InstalledAtRoot? */
         already_installed = (*d->_imp->env)[selection::AllVersionsUnsorted(
                 generator::All() |
-                filter::InstalledAtRoot(d->_imp->env->root()))];
+                filter::InstalledAtRoot(d->_imp->env->preferred_root_key()->value()))];
     }
 
     if (already_installed->empty() && will_be_installed.empty() && ! check_whole_list)

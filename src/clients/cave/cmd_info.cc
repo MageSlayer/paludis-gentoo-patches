@@ -363,12 +363,12 @@ namespace
         PackageDepSpec spec(parse_user_package_dep_spec(param, env.get(), { }));
 
         const std::shared_ptr<const PackageIDSequence> installed_ids((*env)[selection::AllVersionsSorted(generator::Matches(
-                        spec, { }) | filter::InstalledAtRoot(env->root()))]);
+                        spec, { }) | filter::InstalledAtRoot(env->preferred_root_key()->value()))]);
         const std::shared_ptr<const PackageIDSequence> installable_ids((*env)[selection::BestVersionOnly(generator::Matches(
                         spec, { }) | filter::SupportsAction<InstallAction>() | filter::NotMasked())]);
 
         if (installed_ids->empty() && installable_ids->empty())
-            nothing_matching_error(env.get(), param, filter::InstalledAtRoot(env->root()));
+            nothing_matching_error(env.get(), param, filter::InstalledAtRoot(env->preferred_root_key()->value()));
 
         for (PackageIDSequence::ConstIterator i(installed_ids->begin()), i_end(installed_ids->end()) ;
                 i != i_end ; ++i)

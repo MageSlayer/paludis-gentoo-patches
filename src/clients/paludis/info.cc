@@ -225,7 +225,7 @@ int do_one_info(
     std::shared_ptr<const PackageIDSequence>
         entries((*env)[selection::AllVersionsSorted(generator::Matches(*spec, { }))]),
         installed_entries((*env)[selection::AllVersionsSorted(
-                    generator::Matches(*spec, { }) | filter::InstalledAtRoot(env->root()))]),
+                    generator::Matches(*spec, { }) | filter::InstalledAtRoot(env->preferred_root_key()->value()))]),
         installable_entries((*env)[selection::AllVersionsSorted(
                     generator::Matches(*spec, { }) | filter::SupportsAction<InstallAction>() | filter::NotMasked())]);
 

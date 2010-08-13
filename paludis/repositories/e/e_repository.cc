@@ -2651,7 +2651,7 @@ ERepository::info(const std::shared_ptr<const ERepositoryID> & id,
                 n::portdir() =
                     (_imp->params.master_repositories() && ! _imp->params.master_repositories()->empty()) ?
                     (*_imp->params.master_repositories()->begin())->params().location() : _imp->params.location(),
-                n::root() = stringify(_imp->params.environment()->root()),
+                n::root() = stringify(_imp->params.environment()->preferred_root_key()->value()),
                 n::sandbox() = phase->option("sandbox"),
                 n::sydbox() = phase->option("sydbox"),
                 n::userpriv() = phase->option("userpriv") && userpriv_ok
@@ -2969,7 +2969,9 @@ ERepository::pretend(
                             n::portdir() =
                                 (_imp->params.master_repositories() && ! _imp->params.master_repositories()->empty()) ?
                                 (*_imp->params.master_repositories()->begin())->params().location() : _imp->params.location(),
-                            n::root() = stringify(_imp->params.environment()->root()),
+                            n::root() = a.options.destination()->installed_root_key() ?
+                                stringify(a.options.destination()->installed_root_key()->value()) :
+                                "/",
                             n::sandbox() = phase->option("sandbox"),
                             n::sydbox() = phase->option("sydbox"),
                             n::userpriv() = phase->option("userpriv") && userpriv_ok
@@ -3024,7 +3026,9 @@ ERepository::pretend(
                 n::portdir() =
                     (_imp->params.master_repositories() && ! _imp->params.master_repositories()->empty()) ?
                     (*_imp->params.master_repositories()->begin())->params().location() : _imp->params.location(),
-                n::root() = stringify(_imp->params.environment()->root()),
+                n::root() = a.options.destination()->installed_root_key() ?
+                    stringify(a.options.destination()->installed_root_key()->value()) :
+                    "/",
                 n::sandbox() = phase->option("sandbox"),
                 n::sydbox() = phase->option("sydbox"),
                 n::userpriv() = phase->option("userpriv") && userpriv_ok

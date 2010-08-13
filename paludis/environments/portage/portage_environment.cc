@@ -111,6 +111,7 @@ namespace paludis
         std::shared_ptr<LiteralMetadataValueKey<std::string> > format_key;
         std::shared_ptr<LiteralMetadataValueKey<FSEntry> > config_location_key;
         std::shared_ptr<LiteralMetadataValueKey<FSEntry> > world_file_key;
+        std::shared_ptr<LiteralMetadataValueKey<FSEntry> > preferred_root_key;
 
         Imp(Environment * const e, const std::string & s) :
             conf_dir(FSEntry(s.empty() ? "/" : s) / SYSCONFDIR),
@@ -250,6 +251,13 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
                     std::bind(&predefined, _imp->vars, std::placeholders::_1, std::placeholders::_2),
                     &do_incremental);
 
+    {
+        std::string fixed_root_var(_imp->vars->get("ROOT"));
+        if (fixed_root_var.empty())
+            fixed_root_var = "/";
+        _imp->preferred_root_key = std::make_shared<LiteralMetadataValueKey<FSEntry>>("root", "Root", mkt_normal, FSEntry(fixed_root_var));
+    }
+
     /* TODO: load USE etc from env? */
 
     /* repositories */
@@ -343,6 +351,7 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
     add_metadata_key(_imp->format_key);
     add_metadata_key(_imp->config_location_key);
     add_metadata_key(_imp->world_file_key);
+    add_metadata_key(_imp->preferred_root_key);
 }
 
 template<typename I_>
@@ -464,7 +473,7 @@ PortageEnvironment::_add_installed_virtuals_repository()
 {
 #ifdef ENABLE_VIRTUALS_REPOSITORY
     std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
-    keys->insert("root", stringify(root()));
+    keys->insert("root", stringify(preferred_root_key()->value()));
     keys->insert("format", "installed_virtuals");
     package_database()->add_repository(-1,
             RepositoryFactory::get_instance()->create(this, std::bind(from_keys, keys, std::placeholders::_1)));
@@ -483,7 +492,7 @@ PortageEnvironment::_add_ebuild_repository(const FSEntry & portdir, const std::s
         const std::string & sync, int importance)
 {
     std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
-    keys->insert("root", stringify(root()));
+    keys->insert("root", stringify(preferred_root_key()->value()));
     keys->insert("location", stringify(portdir));
     keys->insert("profiles", stringify((_imp->conf_dir / "make.profile").realpath()) + " " +
             ((_imp->conf_dir / "portage" / "profile").is_directory() ?
@@ -515,8 +524,8 @@ PortageEnvironment::_add_vdb_repository()
     Context context("When creating vdb repository:");
 
     std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
-    keys->insert("root", stringify(root()));
-    keys->insert("location", stringify(root() / "/var/db/pkg"));
+    keys->insert("root", stringify(preferred_root_key()->value()));
+    keys->insert("location", stringify(preferred_root_key()->value() / "/var/db/pkg"));
     keys->insert("format", "vdb");
     keys->insert("names_cache", "/var/empty");
     keys->insert("provides_cache", "/var/empty");
@@ -652,15 +661,6 @@ PortageEnvironment::accept_keywords(const std::shared_ptr <const KeywordNameSet>
             return true;
 
     return false;
-}
-
-const FSEntry
-PortageEnvironment::root() const
-{
-    if (_imp->vars->get("ROOT").empty())
-        return FSEntry("/");
-    else
-        return FSEntry(_imp->vars->get("ROOT"));
 }
 
 bool
@@ -983,6 +983,12 @@ const std::shared_ptr<const MetadataValueKey<FSEntry> >
 PortageEnvironment::config_location_key() const
 {
     return _imp->config_location_key;
+}
+
+const std::shared_ptr<const MetadataValueKey<FSEntry> >
+PortageEnvironment::preferred_root_key() const
+{
+    return _imp->preferred_root_key;
 }
 
 const std::shared_ptr<OutputManager>

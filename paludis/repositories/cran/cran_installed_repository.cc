@@ -388,7 +388,7 @@ CRANInstalledRepository::repository_factory_create(
 
     std::string root(f("root"));
     if (root.empty())
-        root = stringify(env->root());
+        root = stringify(env->preferred_root_key()->value());
 
     if (! f("world").empty())
         throw CRANInstalledRepositoryConfigurationError("Key 'world' is no longer supported.");
@@ -470,7 +470,7 @@ CRANInstalledRepository::is_suitable_destination_for(const PackageID & e) const
 bool
 CRANInstalledRepository::is_default_destination() const
 {
-    return _imp->params.environment()->root() == installed_root_key()->value();
+    return _imp->params.environment()->preferred_root_key()->value() == installed_root_key()->value();
 }
 
 bool

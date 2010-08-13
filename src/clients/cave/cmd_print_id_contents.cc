@@ -158,10 +158,10 @@ PrintIDContentsCommand::run(
         throw args::DoHelp("print-id-contents takes exactly one parameter");
 
     PackageDepSpec spec(parse_user_package_dep_spec(*cmdline.begin_parameters(), env.get(),
-                { updso_allow_wildcards }, filter::InstalledAtRoot(env->root())));
+                { updso_allow_wildcards }, filter::InstalledAtRoot(env->preferred_root_key()->value())));
 
     std::shared_ptr<const PackageIDSequence> entries(
-            (*env)[selection::AllVersionsSorted(generator::Matches(spec, { }) | filter::InstalledAtRoot(env->root()))]);
+            (*env)[selection::AllVersionsSorted(generator::Matches(spec, { }) | filter::InstalledAtRoot(env->preferred_root_key()->value()))]);
 
     if (entries->empty())
         throw NothingMatching(spec);

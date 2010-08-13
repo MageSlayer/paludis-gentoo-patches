@@ -122,7 +122,7 @@ FakeInstalledRepository::provided_packages() const
 bool
 FakeInstalledRepository::is_default_destination() const
 {
-    return environment()->root() == installed_root_key()->value();
+    return environment()->preferred_root_key()->value() == installed_root_key()->value();
 }
 
 bool

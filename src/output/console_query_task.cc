@@ -119,7 +119,7 @@ ConsoleQueryTask::show_one(const PackageDepSpec & a, const std::shared_ptr<const
     std::shared_ptr<const PackageIDSequence>
         entries((*_imp->env)[selection::AllVersionsSorted(generator::Matches(a, { }))]),
         preferred_entries((*_imp->env)[selection::AllVersionsSorted(
-                    generator::Matches(a, { }) | filter::InstalledAtRoot(_imp->env->root()))]);
+                    generator::Matches(a, { }) | filter::InstalledAtRoot(_imp->env->preferred_root_key()->value()))]);
     if (entries->empty())
         throw NoSuchPackageError(stringify(a));
     if (preferred_entries->empty())

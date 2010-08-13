@@ -134,7 +134,7 @@ VirtualsDepKey::pretty_print(const DependencySpecTree::ItemFormatter & f) const
     if (_imp->env)
     {
         if (! (*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(*_imp->spec, { }) |
-                    filter::InstalledAtRoot(_imp->env->root()))]->empty())
+                    filter::InstalledAtRoot(_imp->env->preferred_root_key()->value()))]->empty())
             return f.format(*_imp->spec, format::Installed());
         else if (! (*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(*_imp->spec, { }) |
                     filter::SupportsAction<InstallAction>() | filter::NotMasked())]->empty())

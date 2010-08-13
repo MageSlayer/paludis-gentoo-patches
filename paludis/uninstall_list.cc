@@ -330,8 +330,8 @@ namespace
 
             std::shared_ptr<const PackageIDSequence> m(
                     best_only ?
-                    (*env)[selection::BestVersionOnly(generator::Matches(*node.spec(), { }) | filter::InstalledAtRoot(env->root()))] :
-                    (*env)[selection::AllVersionsSorted(generator::Matches(*node.spec(), { }) | filter::InstalledAtRoot(env->root()))]);
+                    (*env)[selection::BestVersionOnly(generator::Matches(*node.spec(), { }) | filter::InstalledAtRoot(env->preferred_root_key()->value()))] :
+                    (*env)[selection::AllVersionsSorted(generator::Matches(*node.spec(), { }) | filter::InstalledAtRoot(env->preferred_root_key()->value()))]);
             for (PackageIDSequence::ConstIterator it = m->begin(), it_end = m->end();
                  it_end != it; ++it)
                 matches->insert(make_named_values<DepTagEntry>(

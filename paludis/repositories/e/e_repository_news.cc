@@ -39,6 +39,7 @@
 #include <paludis/generator.hh>
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
+#include <paludis/metadata_key.hh>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -78,9 +79,9 @@ namespace paludis
             news_directory(EExtraDistributionData::get_instance()->data_from_distribution(
                         *DistributionData::get_instance()->distribution_from_string(
                             e->distribution()))->news_directory()),
-            skip_file(e->root() / news_directory /
+            skip_file(e->preferred_root_key()->value() / news_directory /
                     ("news-" + stringify(e_repository->name()) + ".skip")),
-            unread_file(e->root() / news_directory /
+            unread_file(e->preferred_root_key()->value() / news_directory /
                     ("news-" + stringify(e_repository->name()) + ".unread"))
         {
         }
@@ -175,7 +176,7 @@ ERepositoryNews::update_news() const
                                             eapi.supported()->package_dep_spec_parse_options(),
                                             eapi.supported()->version_spec_options(),
                                             std::shared_ptr<const PackageID>())), { }) |
-                                filter::InstalledAtRoot(_imp->environment->root()))]->empty())
+                                filter::InstalledAtRoot(_imp->environment->preferred_root_key()->value()))]->empty())
                         local_show = true;
                 show &= local_show;
             }

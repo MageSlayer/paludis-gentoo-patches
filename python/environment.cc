@@ -211,16 +211,6 @@ class EnvironmentImplementationWrapper :
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "set_paludis_command");
         }
 
-        virtual const FSEntry root() const
-        {
-            Lock l(get_mutex());
-
-            if (bp::override f = get_override("root"))
-                return f();
-            else
-                throw PythonMethodNotImplemented("EnvironmentImplementation", "root");
-        }
-
         virtual uid_t reduced_uid() const
         {
             Lock l(get_mutex());
@@ -406,6 +396,16 @@ class EnvironmentImplementationWrapper :
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "config_location_key");
         }
 
+        virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > preferred_root_key() const
+        {
+            Lock l(get_mutex());
+
+            if (bp::override f = get_override("preferred_root_key"))
+                return f();
+            else
+                throw PythonMethodNotImplemented("EnvironmentImplementation", "preferred_root_key");
+        }
+
         virtual const Tribool want_choice_enabled(
                 const std::shared_ptr<const PackageID> &,
                 const std::shared_ptr<const Choice> &,
@@ -543,11 +543,6 @@ void expose_environment()
                 "Fetch a named set."
             )
 
-        .add_property("root", &Environment::root,
-                "[ro] string\n"
-                "Our root location for installs."
-            )
-
         .add_property("set_names", &Environment::set_names,
                 "[ro] SetNamesIterable\n"
                 "All known named sets."
@@ -634,11 +629,6 @@ void expose_environment()
         .def("set_paludis_command", bp::pure_virtual(&EnvImp::set_paludis_command),
                 "set_paludis_command(str)\n"
                 "Change the command used to launch paludis (the client)."
-            )
-
-        .def("root", bp::pure_virtual(&EnvImp::root),
-                "root() -> path\n"
-                "Our root location for installs."
             )
 
         .def("reduced_uid", bp::pure_virtual(&EnvImp::reduced_uid),

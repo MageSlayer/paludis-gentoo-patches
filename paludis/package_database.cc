@@ -27,6 +27,7 @@
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
+#include <paludis/metadata_key.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/stringify.hh>
@@ -223,7 +224,8 @@ namespace
 
         bool operator() (const QualifiedPackageName & qpn) const
         {
-            return ! (*_env)[selection::SomeArbitraryVersion(generator::Package(qpn) | filter::InstalledAtRoot(_env->root()))]->empty();
+            return ! (*_env)[selection::SomeArbitraryVersion(generator::Package(qpn) |
+                    filter::InstalledAtRoot(_env->preferred_root_key()->value()))]->empty();
         }
     };
 

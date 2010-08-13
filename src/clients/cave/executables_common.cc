@@ -112,8 +112,8 @@ paludis::cave::executables_common(
                     PackageDepSpec(parse_user_package_dep_spec(
                             param, env.get(),
                             { updso_allow_wildcards },
-                            filter::InstalledAtRoot(env->root()))),
-                    { }) | filter::InstalledAtRoot(env->root()))]);
+                            filter::InstalledAtRoot(env->preferred_root_key()->value()))),
+                    { }) | filter::InstalledAtRoot(env->preferred_root_key()->value()))]);
 
     if (entries->empty())
         throw NoSuchPackageError(param);

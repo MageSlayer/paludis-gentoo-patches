@@ -189,18 +189,6 @@ namespace
 
     /*
      * call-seq:
-     *     root -> String
-     *
-     * Default root location, default is /.
-     */
-    VALUE
-    environment_root(VALUE self)
-    {
-        return rb_str_new2(stringify(value_to_environment(self)->root()).c_str());
-    }
-
-    /*
-     * call-seq:
      *     default_destinations -> Array
      *
      * Default: All repositories that provide RepositoryDestinationInterface and mark themselves
@@ -497,7 +485,6 @@ namespace
         rb_funcall(c_environment, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_method(c_environment, "package_database", RUBY_FUNC_CAST(&environment_package_database), 0);
         rb_define_method(c_environment, "set", RUBY_FUNC_CAST(&environment_set), 1);
-        rb_define_method(c_environment, "root", RUBY_FUNC_CAST(&environment_root), 0);
         rb_define_method(c_environment, "default_destinations", RUBY_FUNC_CAST(&environment_default_destinations), 0);
         rb_define_method(c_environment, "distribution", RUBY_FUNC_CAST(&environment_distribution), 0);
         rb_define_method(c_environment, "accept_license", RUBY_FUNC_CAST(&environment_accept_license), 2);
@@ -508,6 +495,8 @@ namespace
                 RUBY_FUNC_CAST((&EnvironmentKey<MetadataValueKey<std::string> , &Environment::format_key>::fetch)), 0);
         rb_define_method(c_environment, "config_location_key",
                 RUBY_FUNC_CAST((&EnvironmentKey<MetadataValueKey<FSEntry>, &Environment::config_location_key>::fetch)), 0);
+        rb_define_method(c_environment, "preferred_root_key",
+                RUBY_FUNC_CAST((&EnvironmentKey<MetadataValueKey<FSEntry>, &Environment::preferred_root_key>::fetch)), 0);
 
         /*
          * Document-class: Paludis::PaludisEnvironment

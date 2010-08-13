@@ -264,7 +264,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                             eapi->supported()->package_dep_spec_parse_options(),
                             eapi->supported()->version_spec_options(), package_id));
                 std::shared_ptr<const PackageIDSequence> entries((*environment)[selection::AllVersionsSorted(
-                            generator::Matches(spec, { }) | filter::InstalledAtRoot(environment->root()))]);
+                            generator::Matches(spec, { }) | filter::InstalledAtRoot(environment->preferred_root_key()->value()))]);
                 if (eapi->supported()->pipe_commands()->rewrite_virtuals() && (! entries->empty()) &&
                         (*entries->last())->virtual_for_key())
                 {
@@ -305,7 +305,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                             eapi->supported()->package_dep_spec_parse_options(),
                             eapi->supported()->version_spec_options(), package_id));
                 std::shared_ptr<const PackageIDSequence> entries((*environment)[selection::SomeArbitraryVersion(
-                            generator::Matches(spec, { }) | filter::InstalledAtRoot(environment->root()))]);
+                            generator::Matches(spec, { }) | filter::InstalledAtRoot(environment->preferred_root_key()->value()))]);
                 if (entries->empty())
                     return "O1;";
                 else
@@ -329,7 +329,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                             eapi->supported()->package_dep_spec_parse_options(),
                             eapi->supported()->version_spec_options(), package_id));
                 std::shared_ptr<const PackageIDSequence> entries((*environment)[selection::AllVersionsSorted(
-                            generator::Matches(spec, { }) | filter::InstalledAtRoot(environment->root()))]);
+                            generator::Matches(spec, { }) | filter::InstalledAtRoot(environment->preferred_root_key()->value()))]);
                 if (eapi->supported()->pipe_commands()->rewrite_virtuals() && (! entries->empty()))
                 {
                     std::shared_ptr<PackageIDSequence> new_entries(std::make_shared<PackageIDSequence>());

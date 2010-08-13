@@ -28,6 +28,7 @@
 #include <paludis/generator.hh>
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
+#include <paludis/metadata_key.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/iterator_funcs.hh>
@@ -331,7 +332,7 @@ UninstallTask::execute()
             bool remove(true);
             std::shared_ptr<const PackageIDSequence> installed((*_imp->env)[selection::AllVersionsUnsorted(
                         generator::Matches(make_package_dep_spec({ }).package(i->first), { }) |
-                        filter::InstalledAtRoot(_imp->env->root())
+                        filter::InstalledAtRoot(_imp->env->preferred_root_key()->value())
                         )]);
             for (PackageIDSequence::ConstIterator r(installed->begin()), r_end(installed->end()) ;
                     r != r_end && remove ; ++r)

@@ -136,10 +136,10 @@ do_one_executables(
 
     std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(
                 parse_user_package_dep_spec(q, env.get(), UserPackageDepSpecOptions() + updso_allow_wildcards,
-                    filter::InstalledAtRoot(env->root()))));
+                    filter::InstalledAtRoot(env->preferred_root_key()->value()))));
 
     std::shared_ptr<const PackageIDSequence> entries(
-            (*env)[selection::AllVersionsSorted(generator::Matches(*spec, { }) | filter::InstalledAtRoot(env->root()))]);
+            (*env)[selection::AllVersionsSorted(generator::Matches(*spec, { }) | filter::InstalledAtRoot(env->preferred_root_key()->value()))]);
 
     if (entries->empty())
         throw NoSuchPackageError(q);
@@ -195,7 +195,7 @@ do_executables(const std::shared_ptr<Environment> & env)
             {
                 cerr << " Looking for suggestions:" << endl;
 
-                FuzzyCandidatesFinder f(*env, e.name(), filter::InstalledAtRoot(env->root()));
+                FuzzyCandidatesFinder f(*env, e.name(), filter::InstalledAtRoot(env->preferred_root_key()->value()));
 
                 if (f.begin() == f.end())
                     cerr << "No suggestions found." << endl;

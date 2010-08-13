@@ -77,6 +77,7 @@ namespace paludis
 
         std::shared_ptr<LiteralMetadataValueKey<std::string> > format_key;
         std::shared_ptr<LiteralMetadataValueKey<FSEntry> > repository_dir_key;
+        std::shared_ptr<LiteralMetadataValueKey<FSEntry> > preferred_root_key;
 
         Imp(NoConfigEnvironment * const env, const no_config_environment::Params & params);
         void initialise(NoConfigEnvironment * const env);
@@ -164,7 +165,9 @@ Imp<NoConfigEnvironment>::Imp(
     package_database(std::make_shared<PackageDatabase>(env)),
     format_key(std::make_shared<LiteralMetadataValueKey<std::string>>("format", "Format", mkt_significant, "no_config")),
     repository_dir_key(std::make_shared<LiteralMetadataValueKey<FSEntry>>("repository_dir", "Repository dir",
-                mkt_normal, p.repository_dir()))
+                mkt_normal, p.repository_dir())),
+    preferred_root_key(std::make_shared<LiteralMetadataValueKey<FSEntry>>("root", "Root",
+                mkt_normal, FSEntry("/")))
 {
 }
 
@@ -367,6 +370,7 @@ NoConfigEnvironment::NoConfigEnvironment(const no_config_environment::Params & p
 
     add_metadata_key(_imp->format_key);
     add_metadata_key(_imp->repository_dir_key);
+    add_metadata_key(_imp->preferred_root_key);
 }
 
 NoConfigEnvironment::~NoConfigEnvironment()
@@ -535,12 +539,6 @@ NoConfigEnvironment::accept_license(const std::string &, const PackageID &) cons
     return true;
 }
 
-const FSEntry
-NoConfigEnvironment::root() const
-{
-    return FSEntry("/");
-}
-
 HookResult
 NoConfigEnvironment::perform_hook(
         const Hook &,
@@ -571,6 +569,12 @@ const std::shared_ptr<const MetadataValueKey<FSEntry> >
 NoConfigEnvironment::config_location_key() const
 {
     return std::shared_ptr<const MetadataValueKey<FSEntry> >();
+}
+
+const std::shared_ptr<const MetadataValueKey<FSEntry> >
+NoConfigEnvironment::preferred_root_key() const
+{
+    return _imp->preferred_root_key;
 }
 
 const Tribool

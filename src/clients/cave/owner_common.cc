@@ -83,7 +83,7 @@ paludis::cave::owner_common(
     }
 
     std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(generator::All() |
-                filter::InstalledAtRoot(env->root()))]);
+                filter::InstalledAtRoot(env->preferred_root_key()->value()))]);
 
     for (PackageIDSequence::ConstIterator p(ids->begin()), p_end(ids->end()); p != p_end; ++p)
     {

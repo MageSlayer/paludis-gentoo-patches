@@ -127,7 +127,7 @@ AccountsDepKey::pretty_print_flat(const DependencySpecTree::ItemFormatter & f) c
         if (_imp->env)
         {
             if (! (*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(**i, { }) |
-                        filter::InstalledAtRoot(_imp->env->root()))]->empty())
+                        filter::InstalledAtRoot(_imp->env->preferred_root_key()->value()))]->empty())
                 s << f.format(**i, format::Installed());
             else if (! (*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(**i, { }) |
                         filter::SupportsAction<InstallAction>() | filter::NotMasked())]->empty())

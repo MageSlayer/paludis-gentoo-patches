@@ -35,6 +35,7 @@
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
+#include <paludis/metadata_key.hh>
 #include <list>
 #include <vector>
 #include <algorithm>
@@ -245,7 +246,7 @@ namespace
                             << "Line '" << line << "' uses ? operator but no environment is available";
                     else if (! (*params.environment())[selection::SomeArbitraryVersion(
                                 generator::Package(*spec->package_ptr()) |
-                                filter::InstalledAtRoot(params.environment()->root()))]->empty())
+                                filter::InstalledAtRoot(params.environment()->preferred_root_key()->value()))]->empty())
                         result->top()->append(spec);
                 }
                 else
@@ -275,7 +276,7 @@ namespace
                                     .package(*spec->package_ptr())
                                     .slot_requirement(spec->slot_requirement_ptr()),
                                     { }) |
-                                filter::InstalledAtRoot(params.environment()->root()))]->empty())
+                                filter::InstalledAtRoot(params.environment()->preferred_root_key()->value()))]->empty())
                         result->top()->append(spec);
                 }
                 else
@@ -535,7 +536,7 @@ PaludisBashHandler::PaludisBashHandler(const SetFileParams & p) :
 
     std::stringstream s;
     Command cmd(Command("bash '" + stringify(_p.file_name()) + "'")
-            .with_setenv("ROOT", _p.environment() ? stringify(_p.environment()->root()) : "/")
+            .with_setenv("ROOT", _p.environment() ? stringify(_p.environment()->preferred_root_key()->value()) : "/")
             .with_setenv("SET", stringify(_p.file_name()))
             .with_setenv("SET_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
             .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))

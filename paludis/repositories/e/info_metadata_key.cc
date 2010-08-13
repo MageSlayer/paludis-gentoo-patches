@@ -186,7 +186,7 @@ InfoPkgsMetadataKey::need_keys_added() const
                                 eapi->supported()->package_dep_spec_parse_options(),
                                 eapi->supported()->version_spec_options(),
                                 std::shared_ptr<const PackageID>()), { }) |
-                        filter::InstalledAtRoot(_imp->env->root()))]);
+                        filter::InstalledAtRoot(_imp->env->preferred_root_key()->value()))]);
 
             if (q->empty())
                 key = std::make_shared<LiteralMetadataValueKey<std::string>>(i->first, i->first, mkt_normal, "(none)");

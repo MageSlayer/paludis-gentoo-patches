@@ -124,13 +124,13 @@ ContentsCommand::run(
         throw args::DoHelp("contents takes exactly one parameter");
 
     PackageDepSpec spec(parse_user_package_dep_spec(*cmdline.begin_parameters(), env.get(),
-                { }, filter::InstalledAtRoot(env->root())));
+                { }, filter::InstalledAtRoot(env->preferred_root_key()->value())));
 
     std::shared_ptr<const PackageIDSequence> entries(
-            (*env)[selection::AllVersionsSorted(generator::Matches(spec, { }) | filter::InstalledAtRoot(env->root()))]);
+            (*env)[selection::AllVersionsSorted(generator::Matches(spec, { }) | filter::InstalledAtRoot(env->preferred_root_key()->value()))]);
 
     if (entries->empty())
-        nothing_matching_error(env.get(), *cmdline.begin_parameters(), filter::InstalledAtRoot(env->root()));
+        nothing_matching_error(env.get(), *cmdline.begin_parameters(), filter::InstalledAtRoot(env->preferred_root_key()->value()));
 
     const std::shared_ptr<const PackageID> id(*entries->last());
     if (! id->contents_key())

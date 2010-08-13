@@ -144,7 +144,7 @@ namespace
             const std::shared_ptr<const PackageIDSequence> rlist(env[selection::AllVersionsSorted(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec(replacing, &env, { })),
                             { }) |
-                        filter::InstalledAtRoot(env.root()))]);
+                        filter::InstalledAtRoot(env.preferred_root_key()->value()))]);
 
             InstallAction action(make_named_values<InstallActionOptions>(
                         n::destination() = installed_repo,

@@ -78,10 +78,10 @@ namespace
 
         std::shared_ptr<PackageDepSpec> spec(
                 std::make_shared<PackageDepSpec>(parse_user_package_dep_spec(target, env.get(), { },
-                        filter::InstalledAtRoot(env->root()))));
+                        filter::InstalledAtRoot(env->preferred_root_key()->value()))));
 
         std::shared_ptr<const PackageIDSequence> entries(
-                (*env)[selection::AllVersionsUnsorted(generator::Matches(*spec, { }) | filter::InstalledAtRoot(env->root()))]);
+                (*env)[selection::AllVersionsUnsorted(generator::Matches(*spec, { }) | filter::InstalledAtRoot(env->preferred_root_key()->value()))]);
 
         if (entries->empty())
             throw NoSuchPackageError(target);
