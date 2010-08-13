@@ -525,7 +525,7 @@ _cave_resolve_arguments=(
     '*'{--early,-E}'[When given a collection of otherwise equally desirable packages to order, order packages matching the supplied spec first]' \
     '*'{--late,-L}'[When given a collection of otherwise equally desirable packages to order, order packages matching the supplied spec last]' \
     '*'{--preset,-p}'[Preset a given constraint]:Spec: ' \
-    '(--make -m)'{--make,-m}'[Specify what to do with targets]:Make:((install i binaries b chroot c))' \
+    '(--make -m)'{--make,-m}'[Specify what to do with targets]:Make:((auto a install i binaries b chroot c))' \
     '(--make-dependencies -M)'{--make-dependencies,-M}'[Specify what to do with dependencies of targets]:When:((auto runtime r all a none n))' \
     '*'{--via-binary,-b}'[When building a package matching the supplied spec, create a binary package and use that for the install]' \
     '(--dump --no-dump)'{--dump,--no-dump}'[Dump debug output]' \
