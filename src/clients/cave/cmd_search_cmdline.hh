@@ -53,6 +53,9 @@ namespace paludis
             args::StringSetArg a_key;
             args::SwitchArg a_name;
             args::SwitchArg a_description;
+
+            args::ArgsGroup g_key_handling_options;
+            args::SwitchArg a_enabled_only;
         };
     }
 }

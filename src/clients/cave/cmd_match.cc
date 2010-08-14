@@ -149,6 +149,7 @@ namespace
     struct SpecTreeAsString
     {
         std::list<std::string> & texts;
+        const SearchCommandLineMatchOptions & match_options;
 
         void visit(const GenericSpecTree::NodeType<AllDepSpec>::Type & node)
         {
@@ -157,7 +158,8 @@ namespace
 
         void visit(const GenericSpecTree::NodeType<ConditionalDepSpec>::Type & node)
         {
-            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
+            if ((! match_options.a_enabled_only.specified()) || node.spec()->condition_met())
+                std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
         }
 
         void visit(const GenericSpecTree::NodeType<AnyDepSpec>::Type & node)
@@ -219,6 +221,7 @@ namespace
     struct MetadataKeyAsString
     {
         std::list<std::string> & texts;
+        const SearchCommandLineMatchOptions & match_options;
 
         void visit(const MetadataValueKey<std::string> & k)
         {
@@ -280,37 +283,37 @@ namespace
 
         void visit(const MetadataSpecTreeKey<PlainTextSpecTree> & k)
         {
-            SpecTreeAsString m = { texts };
+            SpecTreeAsString m = { texts, match_options };
             k.value()->top()->accept(m);
         }
 
         void visit(const MetadataSpecTreeKey<DependencySpecTree> & k)
         {
-            SpecTreeAsString m = { texts };
+            SpecTreeAsString m = { texts, match_options };
             k.value()->top()->accept(m);
         }
 
         void visit(const MetadataSpecTreeKey<LicenseSpecTree> & k)
         {
-            SpecTreeAsString m = { texts };
+            SpecTreeAsString m = { texts, match_options };
             k.value()->top()->accept(m);
         }
 
         void visit(const MetadataSpecTreeKey<ProvideSpecTree> & k)
         {
-            SpecTreeAsString m = { texts };
+            SpecTreeAsString m = { texts, match_options };
             k.value()->top()->accept(m);
         }
 
         void visit(const MetadataSpecTreeKey<SimpleURISpecTree> & k)
         {
-            SpecTreeAsString m = { texts };
+            SpecTreeAsString m = { texts, match_options };
             k.value()->top()->accept(m);
         }
 
         void visit(const MetadataSpecTreeKey<FetchableURISpecTree> & k)
         {
-            SpecTreeAsString m = { texts };
+            SpecTreeAsString m = { texts, match_options };
             k.value()->top()->accept(m);
         }
 
@@ -403,7 +406,7 @@ MatchCommand::run_hosted(
         if (i == id->end_metadata())
             continue;
 
-        MetadataKeyAsString m = { texts };
+        MetadataKeyAsString m = { texts, match_options };
         (*i)->accept(m);
     }
 

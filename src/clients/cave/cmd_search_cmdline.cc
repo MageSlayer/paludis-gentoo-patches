@@ -52,7 +52,11 @@ SearchCommandLineMatchOptions::SearchCommandLineMatchOptions(args::ArgsHandler *
     a_key(&g_search_key_options, "key", 'k', "Search the named metadata key (e.g. DESCRIPTION). May be specified "
             "multiple times."),
     a_name(&g_search_key_options, "name", 'n', "Search package names.", true),
-    a_description(&g_search_key_options, "description", 'd', "Search package descriptions.", true)
+    a_description(&g_search_key_options, "description", 'd', "Search package descriptions.", true),
+
+    g_key_handling_options(this, "Key Handling Options", "Alter how key values are interpreted."),
+    a_enabled_only(&g_key_handling_options, "enabled-only", 'e', "Only search enabled parts of conditional "
+            "dependency spec trees", true)
 {
 }
 
