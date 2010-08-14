@@ -225,6 +225,12 @@ FindCandidatesCommand::run_hosted(
         step("Searching matches");
 
         std::shared_ptr<Generator> match_generator;
+        std::shared_ptr<Filter> mask_filter;
+
+        if (search_options.a_visible.specified())
+            mask_filter = std::make_shared<filter::NotMasked>();
+        else
+            mask_filter = std::make_shared<filter::All>();
 
         for (args::StringSetArg::ConstIterator k(search_options.a_matching.begin_args()),
                 k_end(search_options.a_matching.end_args()) ;
@@ -241,13 +247,13 @@ FindCandidatesCommand::run_hosted(
         if (search_options.a_all_versions.specified())
         {
             const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsUnsorted(
-                        *match_generator)]);
+                        *match_generator | *mask_filter)]);
             check_candidates(yield, step, ids);
         }
         else
         {
             const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::BestVersionOnly(
-                        *match_generator)]);
+                        *match_generator | *mask_filter)]);
             check_candidates(yield, step, ids);
         }
     }
