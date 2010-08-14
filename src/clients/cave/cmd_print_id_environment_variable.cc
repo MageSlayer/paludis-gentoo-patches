@@ -32,6 +32,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/repository.hh>
 #include <iostream>
+#include <cstdlib>
 
 #include "command_command_line.hh"
 
