@@ -7,7 +7,7 @@ include $(top_srcdir)/misc/common-makefile.am
 
 CLEANFILES += .keep
 MAINTAINERCLEANFILES += Makefile.am
-SUBDIRS = . demos
+SUBDIRS = .
 
 installvarlibpaludisnewsdir = $(localstatedir)/gentoo/news
 

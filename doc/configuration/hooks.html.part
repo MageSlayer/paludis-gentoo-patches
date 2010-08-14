@@ -411,7 +411,7 @@ def hook_run_install_all_post(env, hook_env):
 
     print "* Checking for monkeys..."
 
-    if list(env.package_database.query(Query.Package("nice/monkey"), QueryOrder.WHATEVER)):
+    if list(env[Selection.SomeArbitraryVersion(Generator.Package("nice/monkey"))]):
         print "Found a monkey!"
     else:
         print "No monkeys found"
@@ -471,13 +471,6 @@ used if the <code>Hook</code>'s <code>output_dest</code> member is <code>hod_gra
 <p>Paludis places some of its own hooks in
 <code><em>LIBEXECDIR</em>/hooks/<em>hookname</em></code>. These directories are
 not for end user use.</p>
-
-<h2>Example Hooks</h2>
-
-<p>Paludis ships certain example hooks that many users would find useful, but that
-are not suitably general to be enabled by default -- these live in
-<code>DATADIR/paludis/hooks/demos/</code>. You may also find the default
-hooks useful -- these live in various places in <code>LIBEXECDIR/paludis/hooks/</code>.</p>
 
 <h2>The <code>PALUDIS_CMDLINE</code> Variables</h2>
 

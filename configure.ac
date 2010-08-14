@@ -1638,7 +1638,6 @@ AC_OUTPUT(
 	hooks/Makefile
 	hooks/eselect_env_update.bash
 	hooks/news.hook
-	hooks/demos/Makefile
 	misc/Makefile
 	paludis/Makefile
 	paludis/about.hh
