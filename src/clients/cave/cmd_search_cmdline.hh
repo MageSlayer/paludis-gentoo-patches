@@ -35,6 +35,7 @@ namespace paludis
 
             args::ArgsGroup g_candidate_options;
             args::SwitchArg a_all_versions;
+            args::SwitchArg a_visible;
             args::StringSetArg a_matching;
         };
 

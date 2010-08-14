@@ -186,19 +186,35 @@ FindCandidatesCommand::run_hosted(
         {
             if (search_options.a_all_versions.specified())
             {
-                const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsUnsorted(
-                            generator::Package(*q))]);
-                check_candidates(yield, step, ids);
+                if (search_options.a_visible.specified())
+                {
+                    const auto ids((*env)[selection::AllVersionsUnsorted(generator::Package(*q))]);
+                    check_candidates(yield, step, ids);
+                }
+                else
+                {
+                    const auto ids((*env)[selection::AllVersionsUnsorted(generator::Package(*q) | filter::NotMasked())]);
+                    check_candidates(yield, step, ids);
+                }
             }
             else
             {
                 std::shared_ptr<const PackageIDSequence> ids;
 
                 ids = ((*env)[selection::BestVersionOnly(generator::Package(*q) | filter::SupportsAction<InstallAction>() | filter::NotMasked())]);
-                if (ids->empty())
-                    ids = ((*env)[selection::BestVersionOnly(generator::Package(*q) | filter::SupportsAction<InstallAction>())]);
-                if (ids->empty())
-                    ids = ((*env)[selection::BestVersionOnly(generator::Package(*q))]);
+
+                if (search_options.a_visible.specified())
+                {
+                    if (ids->empty())
+                        ids = ((*env)[selection::BestVersionOnly(generator::Package(*q) | filter::NotMasked())]);
+                }
+                else
+                {
+                    if (ids->empty())
+                        ids = ((*env)[selection::BestVersionOnly(generator::Package(*q) | filter::SupportsAction<InstallAction>())]);
+                    if (ids->empty())
+                        ids = ((*env)[selection::BestVersionOnly(generator::Package(*q))]);
+                }
 
                 check_candidates(yield, step, ids);
             }
