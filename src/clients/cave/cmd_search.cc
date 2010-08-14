@@ -22,8 +22,10 @@
 #include "cmd_find_candidates.hh"
 #include "cmd_match.hh"
 #include "cmd_show.hh"
+
 #include <paludis/args/args.hh>
 #include <paludis/args/do_help.hh>
+
 #include <paludis/name.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
@@ -35,15 +37,18 @@
 #include <paludis/selection.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/action.hh>
+#include <paludis/mask.hh>
+#include <paludis/choice.hh>
+#include <paludis/notifier_callback.hh>
+
 #include <paludis/util/set.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/mutex.hh>
-#include <paludis/action.hh>
-#include <paludis/mask.hh>
-#include <paludis/choice.hh>
-#include <paludis/notifier_callback.hh>
+#include <paludis/util/iterator_funcs.hh>
+
 #include <cstdlib>
 #include <iostream>
 #include <algorithm>
@@ -79,10 +84,12 @@ namespace
 
         SearchCommandLineCandidateOptions search_options;
         SearchCommandLineMatchOptions match_options;
+        SearchCommandLineIndexOptions index_options;
 
         SearchCommandLine() :
             search_options(this),
-            match_options(this)
+            match_options(this),
+            index_options(this)
         {
             add_usage_line("[ --name | --description | --key HOMEPAGE ] pattern ...");
             add_note("'cave search' should only be used when a complex metadata search is required. To see "
@@ -272,6 +279,25 @@ SearchCommand::run(
 
     const std::shared_ptr<Sequence<std::string> > show_args(std::make_shared<Sequence<std::string>>());
 
+    std::string name_description_substring_hint;
+    do
+    {
+        /* cmd_match.cc has similar logic too */
+        if (cmdline.match_options.a_key.specified())
+            break;
+
+        if ((cmdline.match_options.a_type.argument() != "text") && (cmdline.match_options.a_type.argument() != "exact"))
+            break;
+
+        if (cmdline.match_options.a_not.specified())
+            break;
+
+        if ((! cmdline.match_options.a_and.specified()) && (1 != capped_distance(cmdline.begin_parameters(), cmdline.end_parameters(), 2)))
+            break;
+
+        name_description_substring_hint = *cmdline.begin_parameters();
+    } while (false);
+
     {
         DisplayCallback display_callback;
         ScopedNotifierCallback display_callback_holder(env.get(),
@@ -285,7 +311,7 @@ SearchCommand::run(
 
         std::shared_ptr<Set<QualifiedPackageName> > matches(std::make_shared<Set<QualifiedPackageName>>());
         find_candidates_command.run_hosted(env, cmdline.search_options, cmdline.match_options,
-                patterns, std::bind(
+                cmdline.index_options, name_description_substring_hint, std::bind(
                     &found_candidate, env, std::ref(match_command), std::cref(cmdline.match_options),
                     std::placeholders::_1, patterns, std::function<void (const PackageDepSpec &)>(std::bind(
                             &found_match, env, std::ref(matches), std::placeholders::_1

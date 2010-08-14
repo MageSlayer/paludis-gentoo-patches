@@ -37,6 +37,7 @@ CAVE_COMMANDS_HTML = \
 	cave-help.html \
 	cave-import.html \
 	cave-info.html \
+	cave-manage-search-index.html \
 	cave-match.html \
 	cave-owner.html \
 	cave-perform.html \

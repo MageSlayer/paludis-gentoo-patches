@@ -93,6 +93,7 @@ need_syck_check=
 need_gem_check=
 need_libarchive_check=
 need_resolver=
+need_sqlite3_check=
 
 dnl {{{ we can use abi::__cxa_demangle
 AC_MSG_CHECKING([for abi::__cxa_demangle])
@@ -938,6 +939,22 @@ AC_SUBST([ENABLE_XML])
 AM_CONDITIONAL([ENABLE_XML], test "x$ENABLE_XML" = "xyes")
 dnl }}}
 
+dnl {{{ check for whether to build search index things
+AC_MSG_CHECKING([whether to build search index support])
+AC_ARG_ENABLE([xml],
+			  AS_HELP_STRING([--enable-search-index], [Enable search index (needs sqlite3)]),
+			  [ENABLE_SEARCH_INDEX=$enableval
+			   AC_MSG_RESULT([$enableval])],
+			  [ENABLE_SEARCH_INDEX=no
+			   AC_MSG_RESULT([no])])
+if test x"$ENABLE_SEARCH_INDEX" = "xyes" ; then
+	need_sqlite3_check=yes
+	AC_DEFINE([ENABLE_SEARCH_INDEX], [1], [Build search index support])
+fi
+AC_SUBST([ENABLE_SEARCH_INDEX])
+AM_CONDITIONAL([ENABLE_SEARCH_INDEX], test "x$ENABLE_SEARCH_INDEX" = "xyes")
+dnl }}}
+
 dnl {{{ colourschemes
 AC_MSG_CHECKING([whether we like pink])
 AC_ARG_ENABLE([pink],
@@ -1547,6 +1564,19 @@ if test "x$need_gem_check" = "xyes" ; then
 	fi
 fi
 dnl }}}
+
+dnl {{{ sqlite3 check
+NEED_SQLITE3=$need_sqlite3_check
+if test "x$need_sqlite3_check" = "xyes" ; then
+	PKG_CHECK_MODULES(SQLITE3DEPS, [sqlite3], [],
+		[AC_MSG_ERROR([sqlite3 is required if --enable-search-index is used])])
+	AC_SUBST(SQLITE3_CFLAGS)
+	AC_SUBST(SQLITE3_LIBS)
+fi
+AC_SUBST([NEED_SQLITE3])
+AM_CONDITIONAL([NEED_SQLITE3], test "x$NEED_SQLITE3" = "xyes")
+dnl }}}
+
 
 dnl {{{ eselect or eclectic
 AC_MSG_CHECKING([for config framework])

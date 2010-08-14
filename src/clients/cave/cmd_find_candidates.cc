@@ -18,18 +18,15 @@
  */
 
 #include "cmd_find_candidates.hh"
+#include "search_extras_handle.hh"
+
 #include <paludis/args/args.hh>
 #include <paludis/args/do_help.hh>
+
 #include <paludis/name.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/repository.hh>
-#include <paludis/util/set.hh>
-#include <paludis/util/wrapped_forward_iterator.hh>
-#include <paludis/util/wrapped_output_iterator.hh>
-#include <paludis/util/make_shared_copy.hh>
-#include <paludis/util/indirect_iterator-impl.hh>
-#include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/generator.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/filter.hh>
@@ -38,9 +35,18 @@
 #include <paludis/user_dep_spec.hh>
 #include <paludis/package_id.hh>
 #include <paludis/mask.hh>
+
+#include <paludis/util/set.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/wrapped_output_iterator.hh>
+#include <paludis/util/make_shared_copy.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/simple_visitor_cast.hh>
+
 #include <cstdlib>
 #include <iostream>
 #include <algorithm>
+#include <list>
 #include <set>
 
 #include "command_command_line.hh"
@@ -74,10 +80,20 @@ namespace
 
         SearchCommandLineCandidateOptions search_options;
         SearchCommandLineMatchOptions match_options;
+        SearchCommandLineIndexOptions index_options;
+
+        args::ArgsGroup g_hints;
+        args::StringArg a_name_description_substring_hint;
 
         FindCandidatesCommandLine() :
             search_options(this),
-            match_options(this)
+            match_options(this),
+            index_options(this),
+            g_hints(main_options_section(), "Hints", "Hints allow, but do not require, the search to return a "
+                    "reduced set of results"),
+            a_name_description_substring_hint(&g_hints, "name-description-substring", '\0',
+                    "Candidates whose name or description does not include the specified string as a substring "
+                    "may be omitted")
         {
         }
     };
@@ -120,13 +136,11 @@ FindCandidatesCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (cmdline.begin_parameters() == cmdline.end_parameters())
-        throw args::DoHelp("find-candidates requires at least one parameter");
+    if (cmdline.begin_parameters() != cmdline.end_parameters())
+        throw args::DoHelp("find-candidates takes no parameters");
 
-    const std::shared_ptr<Set<std::string> > patterns(std::make_shared<Set<std::string>>());
-    std::copy(cmdline.begin_parameters(), cmdline.end_parameters(), patterns->inserter());
-
-    run_hosted(env, cmdline.search_options, cmdline.match_options, patterns, &print_spec, &no_step);
+    run_hosted(env, cmdline.search_options, cmdline.match_options, cmdline.index_options,
+            cmdline.a_name_description_substring_hint.argument(), &print_spec, &no_step);
 
     return EXIT_SUCCESS;
 }
@@ -140,11 +154,39 @@ FindCandidatesCommand::run_hosted(
         const std::shared_ptr<Environment> & env,
         const SearchCommandLineCandidateOptions & search_options,
         const SearchCommandLineMatchOptions &,
-        const std::shared_ptr<const Set<std::string> > &,
+        const SearchCommandLineIndexOptions & index_options,
+        const std::string & name_description_substring_hint,
         const std::function<void (const PackageDepSpec &)> & yield,
         const std::function<void (const std::string &)> & step)
 {
-    if (! search_options.a_matching.specified())
+    if (index_options.a_index.specified())
+    {
+        step("Searching index");
+
+        CaveSearchExtrasDB * db(SearchExtrasHandle::get_instance()->open_db_function(stringify(index_options.a_index.argument()).c_str()));
+
+        std::list<std::string> specs;
+
+        if (search_options.a_matching.specified())
+        {
+            throw InternalError(PALUDIS_HERE, "not yet");
+        }
+        else
+            SearchExtrasHandle::get_instance()->find_candidates_function(db, specs,
+                    search_options.a_all_versions.specified(),
+                    search_options.a_visible.specified(),
+                    name_description_substring_hint);
+
+        SearchExtrasHandle::get_instance()->cleanup_db_function(db);
+
+        for (auto s(specs.begin()), s_end(specs.end()) ;
+                s != s_end ; ++s)
+        {
+            step("Checking indexed candidates");
+            yield(parse_user_package_dep_spec(*s, env.get(), { }));
+        }
+    }
+    else if (! search_options.a_matching.specified())
     {
         step("Searching repositories");
 

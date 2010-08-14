@@ -92,6 +92,7 @@ paludis-*.*.*.tar.bz2
 /doc/clients/cave-help.html
 /doc/clients/cave-import.html
 /doc/clients/cave-info.html
+/doc/clients/cave-manage-search-index.html
 /doc/clients/cave-match.html
 /doc/clients/cave-owner.html
 /doc/clients/cave-perform.html

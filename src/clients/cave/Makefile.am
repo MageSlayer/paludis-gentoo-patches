@@ -30,6 +30,7 @@ command_MANS = \
 	cave-help.1 \
 	cave-import.1 \
 	cave-info.1 \
+	cave-manage-search-index.1 \
 	cave-match.1 \
 	cave-owner.1 \
 	cave-perform.1 \
@@ -114,6 +115,7 @@ libcave_a_SOURCES = \
 	cmd_help.cc cmd_help.hh \
 	cmd_import.cc cmd_import.hh \
 	cmd_info.cc cmd_info.hh \
+	cmd_manage_search_index.cc cmd_manage_search_index.hh \
 	cmd_match.cc cmd_match.hh \
 	cmd_owner.cc cmd_owner.hh \
 	cmd_perform.cc cmd_perform.hh \
@@ -157,6 +159,7 @@ libcave_a_SOURCES = \
 	format_string.cc format_string.hh \
 	formats.cc formats.hh \
 	script_command.cc script_command.hh \
+	search_extras_handle.cc search_extras_handle.hh \
 	select_format_for_spec.cc select_format_for_spec.hh \
 	owner_common.cc owner_common.hh \
 	resolve_common.cc resolve_common.hh \
@@ -177,12 +180,25 @@ DISTCLEANFILES = $(man_MANS) $(noinst_DATA)
 
 CLEANFILES += .keep
 
-lib_LTLIBRARIES = libcavematchextras_@PALUDIS_PC_SLOT@.la
+lib_LTLIBRARIES =
+
+lib_LTLIBRARIES += libcavematchextras_@PALUDIS_PC_SLOT@.la
 
 libcavematchextras_@PALUDIS_PC_SLOT@_la_SOURCES = match_extras.cc match_extras.hh
 libcavematchextras_@PALUDIS_PC_SLOT@_la_CXXFLAGS = $(AM_CXXFLAGS) @PCRECPPDEPS_CFLAGS@
 libcavematchextras_@PALUDIS_PC_SLOT@_la_LIBADD = @PCRECPPDEPS_LIBS@
 libcavematchextras_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
+
+if ENABLE_SEARCH_INDEX
+
+lib_LTLIBRARIES += libcavesearchextras_@PALUDIS_PC_SLOT@.la
+
+libcavesearchextras_@PALUDIS_PC_SLOT@_la_SOURCES = search_extras.cc search_extras.hh
+libcavesearchextras_@PALUDIS_PC_SLOT@_la_CXXFLAGS = $(AM_CXXFLAGS) @SQLITE3DEPS_CFLAGS@
+libcavesearchextras_@PALUDIS_PC_SLOT@_la_LIBADD = @SQLITE3DEPS_LIBS@
+libcavesearchextras_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
+
+endif
 
 cavecommandsdir = $(libexecdir)/cave/commands
 cavecommands_DATA = .keep

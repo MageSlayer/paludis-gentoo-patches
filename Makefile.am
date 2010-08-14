@@ -14,7 +14,7 @@ DISTCHECK_CONFIGURE_FLAGS = --enable-ruby --enable-ruby-doc --enable-vim \
 	--with-environments=default,portage \
 	--with-clients=default,accerso,appareo,cave,inquisitio,instruo \
 	--with-default-distribution=giant-space-monkey \
-	--enable-htmltidy
+	--enable-htmltidy --enable-search-index
 
 automake-deps-built-hack.tmp : built-sources-subdirs
 	touch $@

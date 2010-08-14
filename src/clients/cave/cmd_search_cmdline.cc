@@ -60,3 +60,12 @@ SearchCommandLineMatchOptions::SearchCommandLineMatchOptions(args::ArgsHandler *
 {
 }
 
+SearchCommandLineIndexOptions::SearchCommandLineIndexOptions(args::ArgsHandler * const h) :
+    ArgsSection(h, "Index Options"),
+    g_index_options(this, "Index Options", "Controls the use of an index. An index may be created using "
+            "cave manage-search-index. Note that strange errors or partial results may occur if the index "
+            "is not up to date."),
+    a_index(&g_index_options, "index", '\0', "Use the specified index file")
+{
+}
+

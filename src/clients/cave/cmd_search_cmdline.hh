@@ -57,6 +57,15 @@ namespace paludis
             args::ArgsGroup g_key_handling_options;
             args::SwitchArg a_enabled_only;
         };
+
+        struct SearchCommandLineIndexOptions :
+            args::ArgsSection
+        {
+            SearchCommandLineIndexOptions(args::ArgsHandler * const);
+
+            args::ArgsGroup g_index_options;
+            args::StringArg a_index;
+        };
     }
 }
 

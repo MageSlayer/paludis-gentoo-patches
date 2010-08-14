@@ -17,20 +17,16 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_SRC_CLIENTS_CAVE_CMD_FIND_CANDIDATES_HH
-#define PALUDIS_GUARD_SRC_CLIENTS_CAVE_CMD_FIND_CANDIDATES_HH 1
+#ifndef PALUDIS_GUARD_SRC_CLIENTS_CAVE_CMD_MANAGE_SEARCH_INDEX_HH
+#define PALUDIS_GUARD_SRC_CLIENTS_CAVE_CMD_MANAGE_SEARCH_INDEX_HH 1
 
 #include "command.hh"
-#include "cmd_search_cmdline.hh"
-#include <paludis/dep_spec-fwd.hh>
-#include <paludis/util/set-fwd.hh>
-#include <functional>
 
 namespace paludis
 {
     namespace cave
     {
-        class PALUDIS_VISIBLE FindCandidatesCommand :
+        class PALUDIS_VISIBLE ManageSearchIndexCommand :
             public Command
         {
             public:
@@ -38,15 +34,6 @@ namespace paludis
                         const std::shared_ptr<Environment> &,
                         const std::shared_ptr<const Sequence<std::string > > & args
                         );
-
-                void run_hosted(
-                        const std::shared_ptr<Environment> &,
-                        const SearchCommandLineCandidateOptions &,
-                        const SearchCommandLineMatchOptions &,
-                        const SearchCommandLineIndexOptions &,
-                        const std::string &,
-                        const std::function<void (const PackageDepSpec &)> &,
-                        const std::function<void (const std::string &)> &);
 
                 std::shared_ptr<args::ArgsHandler> make_doc_cmdline();
         };
