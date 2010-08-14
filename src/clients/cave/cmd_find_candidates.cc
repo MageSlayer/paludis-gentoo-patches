@@ -188,12 +188,12 @@ FindCandidatesCommand::run_hosted(
             {
                 if (search_options.a_visible.specified())
                 {
-                    const auto ids((*env)[selection::AllVersionsUnsorted(generator::Package(*q))]);
+                    const auto ids((*env)[selection::AllVersionsUnsorted(generator::Package(*q) | filter::NotMasked())]);
                     check_candidates(yield, step, ids);
                 }
                 else
                 {
-                    const auto ids((*env)[selection::AllVersionsUnsorted(generator::Package(*q) | filter::NotMasked())]);
+                    const auto ids((*env)[selection::AllVersionsUnsorted(generator::Package(*q))]);
                     check_candidates(yield, step, ids);
                 }
             }
