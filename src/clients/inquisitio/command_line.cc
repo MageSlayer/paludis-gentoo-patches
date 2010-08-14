@@ -85,6 +85,8 @@ CommandLine::CommandLine() :
     add_usage_line("--help");
 
     add_environment_variable("INQUISITIO_OPTIONS", "Default command-line options.");
+
+    add_note("Inquisitio is deprecated. Use 'cave search' instead.");
 }
 
 std::string
@@ -96,17 +98,15 @@ CommandLine::app_name() const
 std::string
 CommandLine::app_synopsis() const
 {
-    return "A search client for Paludis, the other package mangler";
+    return "A deprecated search client for Paludis, the other package mangler";
 }
 
 std::string
 CommandLine::app_description() const
 {
     return
-        "inquisitio is a search client for Paludis. It can find packages based upon a "
-        "number of different criteria including package name, description and homepage, "
-        "and using a number of different match techniques including simple text match, "
-        "approximate match and regular expression.";
+        "inquisitio is a deprecated search client for Paludis. 'cave search' should be "
+        "used instead.";
 }
 
 CommandLine::~CommandLine()

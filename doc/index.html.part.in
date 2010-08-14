@@ -77,11 +77,11 @@ the exheres repository format.</p>
 <p>For users:</p>
 
 <ul>
-    <li><a href="clients/cave.html">cave</a>, the new, improved and not yet entirely feature-complete console package
+    <li><a href="clients/cave.html">cave</a>, the new, improved and modular console package
     management client.</li>
 </ul>
 
-<p>Or for users who prefer to continue using the original clients for now:</p>
+<p>And the old clients, which are being phased out:</p>
 
 <ul>
     <li><a href="clients/paludis.html">paludis</a>, the original console package management client.</li>
