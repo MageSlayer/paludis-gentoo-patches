@@ -3,14 +3,14 @@ include $(top_srcdir)/misc/common-makefile.am
 DISTCLEANFILES = \
 	dep_list_options-se.hh dep_list_options-se.cc \
 	install_task-se.hh install_task-se.cc \
-	uninstall_task-se.hh uninstall_task-se.cc
+	uninstall_list-se.hh uninstall_list-se.cc
 
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
 
 EXTRA_DIST = \
 	dep_list_options-se.hh dep_list_options-se.cc dep_list_options.se \
 	install_task-se.hh install_task-se.cc install_task.se \
-	uninstall_task-se.hh uninstall_task-se.cc uninstall_task.se
+	uninstall_list-se.hh uninstall_list-se.cc uninstall_list.se
 
 BUILT_SOURCES = \
 	dep_list_options-se.hh dep_list_options-se.cc \
