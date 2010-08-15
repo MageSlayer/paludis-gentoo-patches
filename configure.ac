@@ -941,7 +941,7 @@ dnl }}}
 
 dnl {{{ check for whether to build search index things
 AC_MSG_CHECKING([whether to build search index support])
-AC_ARG_ENABLE([xml],
+AC_ARG_ENABLE([search-index],
 			  AS_HELP_STRING([--enable-search-index], [Enable search index (needs sqlite3)]),
 			  [ENABLE_SEARCH_INDEX=$enableval
 			   AC_MSG_RESULT([$enableval])],
