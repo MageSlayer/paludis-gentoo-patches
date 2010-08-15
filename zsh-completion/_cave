@@ -32,6 +32,7 @@ _cave()
     'help:Display help information'
     'import:Import a package from a directory containing its image'
     'info:Display a summary of configuration and package information'
+    'manage-search-index:Manages a search index for use by cave search'
     'match:Determine whether a particular package version has certain properties'
     'owner:Shows package IDs owning a given file'
     'perform:Perform an action upon a package'
@@ -166,7 +167,8 @@ _cave_cmd_find-candidates()
     '*'{--key,-k}'[Search the named metadata key]' \
     '(--name -n --no-name)'{--name,-n,--no-name}'[Search package names]' \
     '(--description -d --no-description)'{--description,-d,--no-description}'[Search package descriptions]' \
-    '(--enabled-only -e --no-enabled-only)'{--enabled-only,-e,--no-enabled-only}'[Only search enabled parts of conditional dependency spec trees]'
+    '(--enabled-only -e --no-enabled-only)'{--enabled-only,-e,--no-enabled-only}'[Only search enabled parts of conditional dependency spec trees]' \
+    '--index[Use the specified index file]:file:_files'
 }
 
 (( ${+functions[_cave_cmd_fix-cache]} )) ||
@@ -227,6 +229,14 @@ _cave_cmd_info()
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
     '*::arg:->cave_commands' && return
+}
+
+(( ${+functions[_cave_cmd_manage-search-index]} )) ||
+_cave_cmd_manage-search-index()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '(--create -c --no-create)'{--create,-c,--no-create}'[Create a new search index. The existing search index is removed if it already exists]:file:_files'
 }
 
 (( ${+functions[_cave_cmd_match]} )) ||
@@ -624,7 +634,8 @@ _cave_cmd_search()
     '*'{--key,-k}'[Search the named metadata key]' \
     '(--name -n --no-name)'{--name,-n,--no-name}'[Search package names]' \
     '(--description -d --no-description)'{--description,-d,--no-description}'[Search package descriptions]' \
-    '(--enabled-only -e --no-enabled-only)'{--enabled-only,-e,--no-enabled-only}'[Only search enabled parts of conditional dependency spec trees]'
+    '(--enabled-only -e --no-enabled-only)'{--enabled-only,-e,--no-enabled-only}'[Only search enabled parts of conditional dependency spec trees]' \
+    '--index[Use the specified index file]:file:_files'
 }
 
 (( ${+functions[_cave_cmd_show]} )) ||
