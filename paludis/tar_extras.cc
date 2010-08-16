@@ -18,11 +18,14 @@
  */
 
 #include <paludis/tar_extras.hh>
+#include <paludis/merger.hh>
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <archive.h>
 #include <archive_entry.h>
+
+using namespace paludis;
 
 struct PaludisTarExtras
 {
@@ -36,13 +39,18 @@ paludis_tar_extras_init(const std::string & f, const std::string & compress)
     auto extras(new PaludisTarExtras);
     extras->archive = archive_write_new();
 
+    if (! extras->archive)
+        throw MergerError("archive_write_new returned null");
+
     if (compress == "bz2")
         archive_write_set_compression_bzip2(extras->archive);
     else
         archive_write_set_compression_none(extras->archive);
 
     archive_write_set_format_gnutar(extras->archive);
-    archive_write_open_filename(extras->archive, f.c_str());
+
+    if (ARCHIVE_OK != archive_write_open_filename(extras->archive, f.c_str()))
+        throw MergerError("archive_write_open_filename failed");
     return extras;
 }
 
@@ -51,6 +59,9 @@ void
 paludis_tar_extras_add_file(PaludisTarExtras * const extras, const std::string & from, const std::string & path)
 {
     struct archive * disk_archive(archive_read_disk_new());
+    if (! disk_archive)
+        throw MergerError("archive_read_disk_new failed");
+
     archive_read_disk_set_standard_lookup(disk_archive);
 
     struct archive_entry * entry(archive_entry_new());
@@ -58,18 +69,25 @@ paludis_tar_extras_add_file(PaludisTarExtras * const extras, const std::string &
     int fd(open(from.c_str(), O_RDONLY));
 
     archive_entry_copy_pathname(entry, path.c_str());
-    archive_read_disk_entry_from_file(disk_archive, entry, fd, 0);
-    archive_write_header(extras->archive, entry);
+    if (ARCHIVE_OK != archive_read_disk_entry_from_file(disk_archive, entry, fd, 0))
+        throw MergerError("archive_read_disk_entry_from_file failed");
+    if (ARCHIVE_OK != archive_write_header(extras->archive, entry))
+        throw MergerError("archive_read_disk_entry_from_file failed");
 
     int bytes_read;
     char buf[4096];
     while ((bytes_read = read(fd, buf, sizeof(buf))) > 0)
-        archive_write_data(extras->archive, buf, bytes_read);
+        if (bytes_read != archive_write_data(extras->archive, buf, bytes_read))
+            throw MergerError("archive_write_data failed");
 
     close(fd);
 
-    archive_write_finish_entry(extras->archive);
-    archive_read_finish(disk_archive);
+    if (ARCHIVE_OK != archive_write_finish_entry(extras->archive))
+        throw MergerError("archive_write_finish_entry failed");
+
+    if (ARCHIVE_OK != archive_read_finish(disk_archive))
+        throw MergerError("archive_read_finish failed");
+
     archive_entry_free(entry);
 }
 
@@ -78,16 +96,22 @@ void
 paludis_tar_extras_add_sym(PaludisTarExtras * const extras, const std::string & from, const std::string & path, const std::string & dest)
 {
     struct archive_entry * entry(archive_entry_new());
+    if (! entry)
+        throw MergerError("archive_entry_new returned null");
 
     struct stat st;
-    lstat(from.c_str(), &st);
+    if (0 != lstat(from.c_str(), &st))
+        throw MergerError("lstat failed");
 
     archive_entry_copy_pathname(entry, path.c_str());
     archive_entry_copy_stat(entry, &st);
     archive_entry_copy_symlink(entry, dest.c_str());
-    archive_write_header(extras->archive, entry);
+    if (ARCHIVE_OK != archive_write_header(extras->archive, entry))
+        throw MergerError("archive_write_header failed");
 
-    archive_write_finish_entry(extras->archive);
+    if (ARCHIVE_OK != archive_write_finish_entry(extras->archive))
+        throw MergerError("archive_write_finish_entry failed");
+
     archive_entry_free(entry);
 }
 
@@ -95,8 +119,10 @@ extern "C"
 void
 paludis_tar_extras_cleanup(PaludisTarExtras * const extras)
 {
-    archive_write_close(extras->archive);
-    archive_write_finish(extras->archive);
+    if (ARCHIVE_OK != archive_write_close(extras->archive))
+        throw MergerError("archive_write_close failed");
+    if (ARCHIVE_OK != archive_write_finish(extras->archive))
+        throw MergerError("archive_write_finish failed");
     delete extras;
 }
 
