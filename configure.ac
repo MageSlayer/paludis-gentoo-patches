@@ -415,6 +415,28 @@ AC_PREPROC_IFELSE([
 	],
 	[AC_MSG_RESULT([no])])
 
+AC_MSG_CHECKING([whether we need -fno-deduce-init-list])
+AC_PREPROC_IFELSE([
+#ifndef __GNUC__
+#  error not gcc
+#endif
+
+#if __GNUC__ != 4
+#  error not gcc 4
+#endif
+
+#if __GNUC_MINOR__ == 4
+#elif __GNUC_MINOR__ == 5 && __GNUC_PATCHLEVEL__ == 0
+#else
+#   error not 4.4 or 4.5.0
+#endif
+],
+	[AC_MSG_RESULT([yes])
+	PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -fno-deduce-init-list"
+	PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -fno-deduce-init-list"
+	],
+	[AC_MSG_RESULT([no])])
+
 PALUDIS_CXXFLAGS_WITHOUT_PEDANTIC=$PALUDIS_CXXFLAGS
 
 AC_MSG_CHECKING([for 'extern template' support])
