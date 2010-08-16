@@ -421,6 +421,8 @@ namespace
                 result.append("\t");
             else if (parser.consume(simple_parser::exact("\\n")))
                 result.append("\n");
+            else if (parser.consume(simple_parser::exact("\\e")))
+                result.append("\033");
             else if (parser.consume(simple_parser::exact("\\") & simple_parser::any_except("") >> s))
                 result.append(s);
             else if ((! k.options()[kvcfo_disallow_variables]) && parser.consume(simple_parser::exact("$")))
@@ -507,7 +509,14 @@ namespace
                     need_single_space_unless_eol = false;
                 }
 
-                result.append(w);
+                if (w == "n")
+                    result.append("\n");
+                else if (w == "t")
+                    result.append("\t");
+                else if (w == "e")
+                    result.append("\033");
+                else
+                    result.append(w);
             }
             else if (parser.consume((simple_parser::any_except("") & *simple_parser::any_except("\\\"$#\n\t ")) >> w))
             {
