@@ -25,41 +25,52 @@
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/stringify.hh>
+#include <map>
+#include <unistd.h>
 
 using namespace paludis;
 using namespace cave;
 
 std::string
 user_config_file_presets(
-        const KeyValueConfigFile &,
+        const KeyValueConfigFile & k,
         const std::string & s)
 {
-    if (s == "red")
-        return "\033[0;31m";
-    else if (s == "bold_red")
-        return "\033[1;31m";
-    else if (s == "green")
-        return "\033[0;32m";
-    else if (s == "bold_green")
-        return "\033[1;32m";
-    else if (s == "yellow")
-        return "\033[0;33m";
-    else if (s == "bold_yellow")
-        return "\033[1;33m";
-    else if (s == "blue")
-        return "\033[0;34m";
-    else if (s == "bold_blue")
-        return "\033[1;34m";
-    else if (s == "pink")
-        return "\033[0;35m";
-    else if (s == "bold_pink")
-        return "\033[1;35m";
-    else if (s == "normal")
-        return "\033[0;0m";
-    else if (s == "bold_normal")
-        return "\033[1m";
+    static std::map<std::string, std::string> colours{
+        { "red",         "\033[0;31m" },
+        { "bold_red",    "\033[1;31m" },
+        { "green",       "\033[0;32m" },
+        { "bold_green",  "\033[1;32m" },
+        { "yellow",      "\033[0;33m" },
+        { "bold_yellow", "\033[1;33m" },
+        { "blue",        "\033[0;34m" },
+        { "bold_blue",   "\033[1;34m" },
+        { "pink",        "\033[0;35m" },
+        { "bold_pink",   "\033[1;35m" },
+        { "normal",      "\033[0;0m" },
+        { "bold_normal", "\033[1m" }
+    };
+
+    static bool want_colours(::isatty(STDOUT_FILENO));
+
+    if (0 == s.compare(0, 8, "colours/"))
+    {
+        auto i(colours.find(s.substr(8)));
+        if (i == colours.end())
+            return "";
+        else
+            return i->second;
+    }
     else
-        return "";
+    {
+        auto i(colours.find(s));
+        if (i == colours.end())
+            return "";
+        else if (want_colours)
+            return k.get("colours/" + s);
+        else
+            return k.get("colourless/" + s);
+    }
 }
 
 namespace paludis
