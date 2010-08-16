@@ -20,6 +20,7 @@
 #include "search_extras_handle.hh"
 
 #include <paludis/util/singleton-impl.hh>
+#include <paludis/util/exception.hh>
 
 #include <paludis/args/do_help.hh>
 
@@ -28,6 +29,8 @@
 #include <string.h>
 #include <dlfcn.h>
 #include <stdint.h>
+
+#include "config.h"
 
 #define STUPID_CAST(type, val) reinterpret_cast<type>(reinterpret_cast<uintptr_t>(val))
 
@@ -44,6 +47,10 @@ SearchExtrasHandle::SearchExtrasHandle() :
     done_adds_function(0),
     find_candidates_function(0)
 {
+#ifndef ENABLE_SEARCH_INDEX
+    throw NotAvailableError("cave was built without support for search indexes");
+#endif
+
     handle = ::dlopen(("libcavesearchextras_" + stringify(PALUDIS_PC_SLOT) + ".so").c_str(), RTLD_NOW | RTLD_GLOBAL);
     if (! handle)
         throw args::DoHelp("Search index creation not available because dlopen said " + stringify(::dlerror()));
