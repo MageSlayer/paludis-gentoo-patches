@@ -18,9 +18,9 @@
  */
 
 #include "cmd_contents.hh"
-#include "exceptions.hh"
+#include "format_user_config.hh"
 #include "formats.hh"
-#include "format_general.hh"
+#include "exceptions.hh"
 #include <paludis/args/args.hh>
 #include <paludis/args/do_help.hh>
 #include <paludis/environment.hh>
@@ -51,6 +51,8 @@ using std::endl;
 
 namespace
 {
+#include "cmd_contents-fmt.hh"
+
     struct ContentsCommandLine :
         CaveCommandCommandLine
     {
@@ -79,23 +81,24 @@ namespace
     {
         std::string visit(const ContentsFileEntry & e) const
         {
-            return format_general_s(f::contents_file(), stringify(e.location_key()->value()));
+            return fuc(fs_file(), fv<'s'>(stringify(e.location_key()->value())));
         }
 
         std::string visit(const ContentsDirEntry & e) const
         {
-            return format_general_s(f::contents_dir(), stringify(e.location_key()->value()));
+            return fuc(fs_dir(), fv<'s'>(stringify(e.location_key()->value())));
         }
 
         std::string visit(const ContentsSymEntry & e) const
         {
-            return format_general_sr(f::contents_sym(), stringify(e.location_key()->value()),
-                    stringify(e.target_key()->value()));
+            return fuc(fs_sym(),
+                    fv<'s'>(stringify(e.location_key()->value())),
+                    fv<'t'>(stringify(e.target_key()->value())));
         }
 
         std::string visit(const ContentsOtherEntry & e) const
         {
-            return format_general_s(f::contents_other(), stringify(e.location_key()->value()));
+            return fuc(fs_other(), fv<'s'>(stringify(e.location_key()->value())));
         }
     };
 

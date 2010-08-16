@@ -641,30 +641,6 @@ paludis::cave::f::sync_repo_tail()
 }
 
 const std::string
-paludis::cave::f::contents_file()
-{
-    return c::bold_blue_or_pink() + "%s" + c::normal();
-}
-
-const std::string
-paludis::cave::f::contents_dir()
-{
-    return c::blue_or_pink() + "%s" + c::normal();
-}
-
-const std::string
-paludis::cave::f::contents_sym()
-{
-    return c::bold_green_or_pink() + "%s" + c::normal() + " -> %r";
-}
-
-const std::string
-paludis::cave::f::contents_other()
-{
-    return c::bold_yellow() + "%s" + c::normal();
-}
-
-const std::string
 paludis::cave::f::owner_id()
 {
     return c::bold_blue_or_pink() + "%s" + c::normal() + "\\n";
