@@ -18,6 +18,7 @@
  */
 
 #include "formats.hh"
+#include "format_user_config.hh"
 #include "config.h"
 
 using namespace paludis;
@@ -26,61 +27,61 @@ using namespace cave;
 const std::string
 paludis::cave::c::bold_blue()
 {
-    return "\033[1;34m";
+    return FormatUserConfigFile::get_instance()->fetch("bold_blue", 0, "");
 }
 
 const std::string
 paludis::cave::c::blue()
 {
-    return "\033[0;34m";
+    return FormatUserConfigFile::get_instance()->fetch("blue", 0, "");
 }
 
 const std::string
 paludis::cave::c::bold_green()
 {
-    return "\033[1;32m";
+    return FormatUserConfigFile::get_instance()->fetch("bold_green", 0, "");
 }
 
 const std::string
 paludis::cave::c::green()
 {
-    return "\033[0;32m";
+    return FormatUserConfigFile::get_instance()->fetch("green", 0, "");
 }
 
 const std::string
 paludis::cave::c::red()
 {
-    return "\033[0;31m";
+    return FormatUserConfigFile::get_instance()->fetch("red", 0, "");
 }
 
 const std::string
 paludis::cave::c::bold_red()
 {
-    return "\033[1;31m";
+    return FormatUserConfigFile::get_instance()->fetch("bold_red", 0, "");
 }
 
 const std::string
 paludis::cave::c::yellow()
 {
-    return "\033[0;33m";
+    return FormatUserConfigFile::get_instance()->fetch("yellow", 0, "");
 }
 
 const std::string
 paludis::cave::c::bold_yellow()
 {
-    return "\033[1;33m";
+    return FormatUserConfigFile::get_instance()->fetch("bold_yellow", 0, "");
 }
 
 const std::string
 paludis::cave::c::pink()
 {
-    return "\033[0;35m";
+    return FormatUserConfigFile::get_instance()->fetch("pink", 0, "");
 }
 
 const std::string
 paludis::cave::c::bold_pink()
 {
-    return "\033[1;35m";
+    return FormatUserConfigFile::get_instance()->fetch("bold_pink", 0, "");
 }
 
 const std::string
@@ -89,7 +90,7 @@ paludis::cave::c::bold_blue_or_pink()
 #if PALUDIS_COLOUR_PINK
     return c::bold_pink();
 #else
-    return "\033[1;34m";
+    return c::bold_blue();
 #endif
 }
 
@@ -99,7 +100,7 @@ paludis::cave::c::blue_or_pink()
 #if PALUDIS_COLOUR_PINK
     return c::pink();
 #else
-    return "\033[0;34m";
+    return c::blue();
 #endif
 }
 
@@ -109,7 +110,7 @@ paludis::cave::c::bold_green_or_pink()
 #if PALUDIS_COLOUR_PINK
     return c::bold_pink();
 #else
-    return "\033[1;32m";
+    return c::bold_green();
 #endif
 }
 
@@ -119,20 +120,20 @@ paludis::cave::c::green_or_pink()
 #if PALUDIS_COLOUR_PINK
     return c::pink();
 #else
-    return "\033[0;32m";
+    return c::green();
 #endif
 }
 
 const std::string
 paludis::cave::c::normal()
 {
-    return "\033[0;0m";
+    return FormatUserConfigFile::get_instance()->fetch("normal", 0, "");
 }
 
 const std::string
 paludis::cave::c::bold_normal()
 {
-    return "\033[1m";
+    return FormatUserConfigFile::get_instance()->fetch("bold_normal", 0, "");
 }
 
 const std::string

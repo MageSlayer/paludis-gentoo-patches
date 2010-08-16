@@ -157,6 +157,7 @@ libcave_a_SOURCES = \
 	format_plain_contents_entry.cc format_plain_contents_entry.hh \
 	format_plain_metadata_key.cc format_plain_metadata_key.hh \
 	format_string.cc format_string.hh \
+	format_user_config.cc format_user_config.hh \
 	formats.cc formats.hh \
 	script_command.cc script_command.hh \
 	search_extras_handle.cc search_extras_handle.hh \
