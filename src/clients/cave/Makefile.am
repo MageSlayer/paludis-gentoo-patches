@@ -37,6 +37,7 @@ command_MANS = \
 	cave-print-categories.1 \
 	cave-print-commands.1 \
 	cave-print-environment-metadata.1 \
+	cave-print-formats.1 \
 	cave-print-id-actions.1 \
 	cave-print-id-contents.1 \
 	cave-print-id-environment-variable.1 \
@@ -128,6 +129,7 @@ libcave_a_SOURCES = \
 	cmd_print_categories.cc cmd_print_categories.hh \
 	cmd_print_commands.cc cmd_print_commands.hh \
 	cmd_print_environment_metadata.cc cmd_print_environment_metadata.hh \
+	cmd_print_formats.cc cmd_print_formats.hh \
 	cmd_print_id_actions.cc cmd_print_id_actions.hh \
 	cmd_print_id_contents.cc cmd_print_id_contents.hh \
 	cmd_print_id_environment_variable.cc cmd_print_id_environment_variable.hh \

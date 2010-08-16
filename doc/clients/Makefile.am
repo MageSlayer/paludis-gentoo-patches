@@ -44,6 +44,7 @@ CAVE_COMMANDS_HTML = \
 	cave-print-categories.html \
 	cave-print-commands.html \
 	cave-print-environment-metadata.html \
+	cave-print-formats.html \
 	cave-print-id-actions.html \
 	cave-print-id-contents.html \
 	cave-print-id-environment-variable.html \

@@ -51,6 +51,7 @@
 #include "cmd_print_categories.hh"
 #include "cmd_print_commands.hh"
 #include "cmd_print_environment_metadata.hh"
+#include "cmd_print_formats.hh"
 #include "cmd_print_id_actions.hh"
 #include "cmd_print_id_contents.hh"
 #include "cmd_print_id_environment_variable.hh"
@@ -159,6 +160,7 @@ CommandFactory::CommandFactory() :
     _imp->handlers.insert(std::make_pair("print-categories", std::bind(&make_command<PrintCategoriesCommand>)));
     _imp->handlers.insert(std::make_pair("print-commands", std::bind(&make_command<PrintCommandsCommand>)));
     _imp->handlers.insert(std::make_pair("print-environment-metadata", std::bind(&make_command<PrintEnvironmentMetadataCommand>)));
+    _imp->handlers.insert(std::make_pair("print-formats", std::bind(&make_command<PrintFormatsCommand>)));
     _imp->handlers.insert(std::make_pair("print-id-actions", std::bind(&make_command<PrintIDActionsCommand>)));
     _imp->handlers.insert(std::make_pair("print-id-contents", std::bind(&make_command<PrintIDContentsCommand>)));
     _imp->handlers.insert(std::make_pair("print-id-environment-variable", std::bind(&make_command<PrintIDEnvironmentVariableCommand>)));
