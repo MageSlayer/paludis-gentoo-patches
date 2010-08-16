@@ -19,7 +19,7 @@
 
 #include "cmd_report.hh"
 #include "colour_formatter.hh"
-#include "format_general.hh"
+#include "format_user_config.hh"
 #include "formats.hh"
 #include "exceptions.hh"
 
@@ -69,6 +69,8 @@ using std::endl;
 
 namespace
 {
+#include "cmd_report-fmt.hh"
+
     struct ReportCommandLine :
         CaveCommandCommandLine
     {
@@ -126,7 +128,7 @@ namespace
     {
         if (! already)
         {
-            cout << format_general_s(f::report_package_id(), stringify(*id));
+            cout << fuc(fs_package_id(), fv<'s'>(stringify(*id)));
             already = true;
         }
     }
@@ -141,7 +143,7 @@ namespace
 
         if (! already_origin)
         {
-            cout << format_general_s(f::report_package_origin(), stringify(*origin_id));
+            cout << fuc(fs_package_origin(), fv<'s'>(stringify(*origin_id)));
             already_origin = true;
         }
     }
@@ -212,7 +214,7 @@ ReportCommand::run(
                 std::string repos;
                 if ((*i)->from_repositories_key())
                     repos = join((*i)->from_repositories_key()->value()->begin(), (*i)->from_repositories_key()->value()->end(), ", ");
-                cout << format_general_s(f::report_package_no_origin(), repos);
+                cout << fuc(fs_package_no_origin(), fv<'s'>(repos));
             }
         }
         else
@@ -220,13 +222,13 @@ ReportCommand::run(
             if (origin->masked())
             {
                 need_heading_origin(done_heading, done_heading_origin, *i, origin);
-                cout << format_general_s(f::report_package_origin_masked(), "");
+                cout << fuc(fs_package_origin_masked());
             }
 
             if (insecurity && match_package_in_set(*env, *insecurity, *origin, { }))
             {
                 need_heading_origin(done_heading, done_heading_origin, *i, origin);
-                cout << format_general_s(f::report_package_origin_insecure(), "");
+                cout << fuc(fs_package_origin_insecure());
             }
         }
 
@@ -241,7 +243,7 @@ ReportCommand::run(
             else
             {
                 need_heading(done_heading, *i);
-                cout << format_general_s(f::report_package_unused(), "");
+                cout << fuc(fs_package_unused());
             }
         }
 

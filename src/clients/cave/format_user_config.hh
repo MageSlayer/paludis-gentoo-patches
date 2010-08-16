@@ -117,10 +117,21 @@ namespace paludis
                 OrderedFormatValuesBase<cs_>(this->map, c)...
             {
             }
+
+            /* just to shut gcc up */
+            OrderedFormatValues(const FormatValues<> &)
+            {
+            }
         };
 
         template <char... cs_>
         struct MakeOrderedFormatValues;
+
+        template <>
+        struct MakeOrderedFormatValues<>
+        {
+            typedef OrderedFormatValues<> Type;
+        };
 
         template <char a_>
         struct MakeOrderedFormatValues<a_>

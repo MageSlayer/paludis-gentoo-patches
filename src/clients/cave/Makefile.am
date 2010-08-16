@@ -146,7 +146,7 @@ libcave_a_SOURCES = \
 	cmd_print_sets.cc cmd_print_sets.hh \
 	cmd_print_sync_protocols.cc cmd_print_sync_protocols.hh \
 	cmd_purge.cc cmd_purge.hh \
-	cmd_report.cc cmd_report.hh \
+	cmd_report.cc cmd_report.hh cmd_report-fmt.hh \
 	cmd_resolve.cc cmd_resolve.hh \
 	cmd_resolve_cmdline.cc cmd_resolve_cmdline.hh \
 	cmd_resolve_display_callback.cc cmd_resolve_display_callback.hh \
@@ -173,9 +173,6 @@ libcave_a_SOURCES = \
 	owner_common.cc owner_common.hh \
 	resolve_common.cc resolve_common.hh \
 	resume_data.cc resume_data.hh
-
-#	cmd_print_sync_protocol_metadata.cc \
-#	cmd_report.cc
 
 TESTS = \
 	continue_on_failure_TEST

@@ -164,13 +164,6 @@ namespace paludis
             const std::string owner_id();
 
             const std::string executables_file();
-
-            const std::string report_package_id();
-            const std::string report_package_no_origin();
-            const std::string report_package_origin();
-            const std::string report_package_origin_masked();
-            const std::string report_package_origin_insecure();
-            const std::string report_package_unused();
         }
     }
 }
