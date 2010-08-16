@@ -18,9 +18,10 @@
  */
 
 #include "cmd_verify.hh"
-#include "exceptions.hh"
-#include "format_general.hh"
+#include "format_user_config.hh"
 #include "formats.hh"
+#include "exceptions.hh"
+
 #include <paludis/args/args.hh>
 #include <paludis/args/do_help.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -57,6 +58,8 @@ using std::endl;
 
 namespace
 {
+#include "cmd_verify-fmt.hh"
+
     struct VerifyCommandLine :
         CaveCommandCommandLine
     {
@@ -103,11 +106,11 @@ namespace
             if (! done_heading)
             {
                 done_heading = true;
-                cout << format_general_s(f::verify_package(), stringify(*id));
+                cout << fuc(fs_package(), fv<'s'>(stringify(*id)));
             }
 
             exit_status |= 1;
-            cout << format_general_sr(f::verify_error(), text, stringify(path));
+            cout << fuc(fs_error(), fv<'t'>(text), fv<'p'>(stringify(path)));
         }
 
         bool check_mtime(const ContentsEntry & e, const FSEntry & f)

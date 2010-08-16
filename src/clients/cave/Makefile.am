@@ -156,7 +156,7 @@ libcave_a_SOURCES = \
 	cmd_sync.cc cmd_sync.hh \
 	cmd_uninstall.cc cmd_uninstall.hh \
 	cmd_update_world.cc cmd_update_world.hh \
-	cmd_verify.cc cmd_verify.hh \
+	cmd_verify.cc cmd_verify.hh cmd_verify-fmt.hh \
 	exceptions.cc exceptions.hh \
 	executables_common.cc executables_common.hh \
 	format_general.cc format_general.hh \
