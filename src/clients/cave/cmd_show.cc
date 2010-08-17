@@ -992,7 +992,7 @@ namespace
             const std::shared_ptr<Environment> & env,
             const PackageDepSpec & s)
     {
-        cout << format_general_s(f::show_package_heading(), stringify(s));
+        cout << fuc(fs_package_heading(), fv<'s'>(stringify(s)));
 
         const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsGroupedBySlot(
                     generator::Matches(s, { }))]);
@@ -1035,7 +1035,7 @@ namespace
         for (std::set<RepositoryName>::const_iterator r(repos.begin()), r_end(repos.end()) ;
                 r != r_end ; ++r)
         {
-            cout << format_general_s(f::show_package_repository(), stringify(*r));
+            cout << fuc(fs_package_repository(), fv<'s'>(stringify(*r)));
             std::string slot_name;
             bool need_space(false);
             for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
@@ -1047,7 +1047,7 @@ namespace
                 if (slot_name != slot_as_string(*i))
                 {
                     if (! slot_name.empty())
-                        cout << format_general_s(f::show_package_slot(), slot_name);
+                        cout << fuc(fs_package_slot(), fv<'s'>(slot_name));
                     slot_name = slot_as_string(*i);
                 }
 
@@ -1056,7 +1056,7 @@ namespace
                 need_space = true;
 
                 if ((*i)->repository()->installed_root_key())
-                    cout << format_general_s(f::show_package_version_installed(), stringify((*i)->canonical_form(idcf_version)));
+                    cout << fuc(fs_package_version_installed(), fv<'s'>(stringify((*i)->canonical_form(idcf_version))));
                 else
                 {
                     std::string rr;
@@ -1068,7 +1068,7 @@ namespace
                         rr = "(" + rr + ")";
 
                     if (! (*i)->masked())
-                        cout << format_general_sr(f::show_package_version_installable(), stringify((*i)->canonical_form(idcf_version)), rr);
+                        cout << fuc(fs_package_version_installable(), fv<'s'>(stringify((*i)->canonical_form(idcf_version))));
                     else
                     {
                         std::string rs;
@@ -1076,18 +1076,18 @@ namespace
                                 m != m_end ; ++m)
                             rs.append(stringify((*m)->key()));
                         rr = rs + rr;
-                        cout << format_general_sr(f::show_package_version_unavailable(), stringify((*i)->canonical_form(idcf_version)), rr);
+                        cout << fuc(fs_package_version_unavailable(), fv<'s'>(stringify((*i)->canonical_form(idcf_version))), fv<'r'>(rr));
                     }
                 }
 
                 if (best_installable && (**i == *best_installable))
-                    cout << format_general_s(f::show_package_best(), "");
+                    cout << fuc(fs_package_best());
             }
 
             if (slot_name.empty())
-                cout << format_general_s(f::show_package_no_slot(), slot_name);
+                cout << fuc(fs_package_no_slot());
             else
-                cout << format_general_s(f::show_package_slot(), slot_name);
+                cout << fuc(fs_package_slot(), fv<'s'>(slot_name));
             cout << endl;
         }
 

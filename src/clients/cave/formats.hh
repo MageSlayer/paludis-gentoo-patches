@@ -47,18 +47,6 @@ namespace paludis
             const std::string bold_normal();
             const std::string normal();
         }
-
-        namespace f
-        {
-            const std::string show_package_heading();
-            const std::string show_package_repository();
-            const std::string show_package_version_installed();
-            const std::string show_package_version_installable();
-            const std::string show_package_version_unavailable();
-            const std::string show_package_best();
-            const std::string show_package_slot();
-            const std::string show_package_no_slot();
-        }
     }
 }
 
