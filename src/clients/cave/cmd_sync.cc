@@ -21,6 +21,7 @@
 #include "exceptions.hh"
 #include "formats.hh"
 #include "format_general.hh"
+#include "format_user_config.hh"
 #include <paludis/package_database.hh>
 #include <paludis/util/action_queue.hh>
 #include <paludis/util/mutex.hh>
@@ -56,6 +57,8 @@ using std::endl;
 
 namespace
 {
+#include "cmd_sync-fmt.hh"
+
     typedef std::set<RepositoryName> Repos;
 
     struct SyncCommandLine :
@@ -149,8 +152,8 @@ namespace
         {
             try
             {
-                cout << format_general_spad(f::sync_repo_starting(), stringify(name), executor->pending(),
-                        executor->active(), executor->done());
+                cout << fuc(fs_repo_starting(), fv<'s'>(stringify(name)), fv<'p'>(stringify(executor->pending())),
+                        fv<'a'>(stringify(executor->active())), fv<'d'>(stringify(executor->done())));
                 output_manager = std::make_shared<StandardOutputManager>();
 
                 if (0 != env->perform_hook(Hook("sync_pre")
@@ -216,8 +219,8 @@ namespace
         {
             if (output_manager)
             {
-                cout << format_general_spad(f::sync_repo_active(), stringify(name), executor->pending(),
-                        executor->active(), executor->done());
+                cout << fuc(fs_repo_active(), fv<'s'>(stringify(name)), fv<'p'>(stringify(executor->pending())),
+                        fv<'a'>(stringify(executor->active())), fv<'d'>(stringify(executor->done())));
                 if (output_manager->want_to_flush())
                 {
                     cout << endl;
@@ -226,8 +229,8 @@ namespace
                     last_output = Timestamp::now();
                 }
                 else if (! cmdline.a_sequential.specified())
-                    cout << format_general_s(f::sync_repo_active_quiet(),
-                            stringify(Timestamp::now().seconds() - last_output.seconds()));
+                    cout << fuc(fs_repo_active_quiet(),
+                            fv<'s'>(stringify(Timestamp::now().seconds() - last_output.seconds())));
 
                 last_flushed = Timestamp::now();
             }
@@ -267,14 +270,14 @@ namespace
                 output_manager->nothing_more_to_come();
 
                 if (skipped)
-                    cout << format_general_spad(f::sync_repo_done_no_syncing_required(), stringify(name),
-                            executor->pending(), executor->active(), executor->done());
+                    cout << fuc(fs_repo_done_no_syncing_required(), fv<'s'>(stringify(name)), fv<'p'>(stringify(executor->pending())),
+                            fv<'a'>(stringify(executor->active())), fv<'d'>(stringify(executor->done())));
                 else if (! success)
-                    cout << format_general_spad(f::sync_repo_done_failure(), stringify(name),
-                            executor->pending(), executor->active(), executor->done());
+                    cout << fuc(fs_repo_done_failure(), fv<'s'>(stringify(name)), fv<'p'>(stringify(executor->pending())),
+                            fv<'a'>(stringify(executor->active())), fv<'d'>(stringify(executor->done())));
                 else
-                    cout << format_general_spad(f::sync_repo_done_success(), stringify(name),
-                            executor->pending(), executor->active(), executor->done());
+                    cout << fuc(fs_repo_done_success(), fv<'s'>(stringify(name)), fv<'p'>(stringify(executor->pending())),
+                            fv<'a'>(stringify(executor->active())), fv<'d'>(stringify(executor->done())));
             }
             catch (const Exception & e)
             {
@@ -314,7 +317,7 @@ namespace
 
         int retcode(0);
 
-        cout << format_general_s(f::sync_heading(), "Sync results");
+        cout << fuc(fs_heading(), fv<'s'>("Sync results"));
         for (std::list<std::shared_ptr<SyncExecutive> >::const_iterator x(executives.begin()),
                 x_end(executives.end()) ;
                 x != x_end ; ++x)
@@ -322,16 +325,16 @@ namespace
             if (! (*x)->success)
             {
                 retcode |= 1;
-                cout << format_general_kv(f::sync_message_failure(), stringify((*x)->name), "failed");
-                cout << format_general_s(f::sync_message_failure_message(), (*x)->error);
+                cout << fuc(fs_message_failure(), fv<'k'>(stringify((*x)->name)), fv<'v'>("failed"));
+                cout << fuc(fs_message_failure_message(), fv<'s'>((*x)->error));
             }
             else
             {
                 (*x)->output_manager->succeeded();
                 if ((*x)->skipped)
-                    cout << format_general_kv(f::sync_message_success(), stringify((*x)->name), "no syncing required");
+                    cout << fuc(fs_message_success(), fv<'k'>(stringify((*x)->name)), fv<'v'>("no syncing required"));
                 else
-                    cout << format_general_kv(f::sync_message_success(), stringify((*x)->name), "success");
+                    cout << fuc(fs_message_success(), fv<'k'>(stringify((*x)->name)), fv<'v'>("success"));
             }
 
             (*x)->output_manager.reset();
@@ -383,14 +386,14 @@ SyncCommand::run(
     if (1 == repos.size())
         cmdline.a_sequential.set_specified(true);
 
-    cout << format_general_s(f::sync_heading(), "Starting sync");
+    cout << fuc(fs_heading(), fv<'s'>("Starting sync"));
 
     if (0 != env->perform_hook(Hook("sync_all_pre")
                 ("TARGETS", join(repos.begin(), repos.end(), " ")),
                 make_null_shared_ptr()).max_exit_status())
         throw SyncFailedError("Sync aborted by hook");
 
-    cout << format_general_s(f::sync_repos_title(), "");
+    cout << fuc(fs_repos_title());
 
     retcode |= sync_these(env, cmdline, repos);
 

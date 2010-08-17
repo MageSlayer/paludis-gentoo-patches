@@ -114,6 +114,8 @@ namespace
             }{
 #include "cmd_report-fmt.hh"
             }{
+#include "cmd_sync-fmt.hh"
+            }{
 #include "cmd_verify-fmt.hh"
             }
         }
