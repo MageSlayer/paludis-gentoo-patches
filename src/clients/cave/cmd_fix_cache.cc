@@ -20,6 +20,7 @@
 #include "cmd_fix_cache.hh"
 #include "formats.hh"
 #include "format_general.hh"
+#include "format_user_config.hh"
 
 #include <paludis/args/args.hh>
 #include <paludis/args/do_help.hh>
@@ -42,6 +43,8 @@ using std::endl;
 
 namespace
 {
+#include "cmd_fix_cache-fmt.hh"
+
     struct FixCacheCommandLine :
         CaveCommandCommandLine
     {
@@ -140,7 +143,7 @@ FixCacheCommand::run(
     for (std::set<RepositoryName>::const_iterator r(repository_names.begin()), r_end(repository_names.end()) ;
             r != r_end; ++r)
     {
-        cout << format_general_s(f::fix_cache_fixing(), stringify(*r));
+        cout << fuc(fs_fixing(), fv<'s'>(stringify(*r)));
         const std::shared_ptr<Repository> repo(env->package_database()->fetch_repository(*r));
         repo->regenerate_cache();
     }

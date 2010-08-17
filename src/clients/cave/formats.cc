@@ -323,12 +323,6 @@ paludis::cave::f::info_heading()
 }
 
 const std::string
-paludis::cave::f::fix_cache_fixing()
-{
-    return "Fixing cache for " + c::blue_or_pink() + "%s" + c::normal() + "...\\n";
-}
-
-const std::string
 paludis::cave::f::colour_formatter_keyword_name_plain()
 {
     return "%s";

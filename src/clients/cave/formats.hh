@@ -98,8 +98,6 @@ namespace paludis
             const std::string info_id_heading();
             const std::string info_heading();
 
-            const std::string fix_cache_fixing();
-
             const std::string colour_formatter_keyword_name_plain();
             const std::string colour_formatter_keyword_name_accepted();
             const std::string colour_formatter_keyword_name_unaccepted();

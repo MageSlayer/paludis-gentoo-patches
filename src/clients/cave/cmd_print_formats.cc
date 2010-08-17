@@ -106,6 +106,8 @@ namespace
             }{
 #include "cmd_executables-fmt.hh"
             }{
+#include "cmd_fix_cache-fmt.hh"
+            }{
 #include "cmd_owner-fmt.hh"
             }{
 #include "cmd_report-fmt.hh"
