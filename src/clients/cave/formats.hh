@@ -68,11 +68,6 @@ namespace paludis
             const std::string show_metadata_continued_value();
             const std::string show_metadata_subsection_raw();
             const std::string show_metadata_subsection_human();
-
-            const std::string show_choice_forced_enabled();
-            const std::string show_choice_enabled();
-            const std::string show_choice_forced_disabled();
-            const std::string show_choice_disabled();
         }
     }
 }

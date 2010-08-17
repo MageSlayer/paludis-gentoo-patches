@@ -611,20 +611,20 @@ namespace
                         if ((*v)->enabled())
                         {
                             if ((*v)->locked())
-                                s << format_general_sr(f::show_choice_forced_enabled(), stringify((*v)->unprefixed_name()),
-                                        added_or_changed_string(*c, *v, maybe_old_id, old_id_is_installed)) << " ";
+                                s << fuc(fs_choice_forced_enabled(), fv<'s'>(stringify((*v)->unprefixed_name())),
+                                        fv<'r'>(added_or_changed_string(*c, *v, maybe_old_id, old_id_is_installed))) << " ";
                             else
-                                s << format_general_sr(f::show_choice_enabled(), stringify((*v)->unprefixed_name()),
-                                        added_or_changed_string(*c, *v, maybe_old_id, old_id_is_installed)) << " ";
+                                s << fuc(fs_choice_enabled(), fv<'s'>(stringify((*v)->unprefixed_name())),
+                                        fv<'r'>(added_or_changed_string(*c, *v, maybe_old_id, old_id_is_installed))) << " ";
                         }
                         else
                         {
                             if ((*v)->locked())
-                                s << format_general_sr(f::show_choice_forced_disabled(), stringify((*v)->unprefixed_name()),
-                                        added_or_changed_string(*c, *v, maybe_old_id, old_id_is_installed)) << " ";
+                                s << fuc(fs_choice_forced_disabled(), fv<'s'>(stringify((*v)->unprefixed_name())),
+                                        fv<'r'>(added_or_changed_string(*c, *v, maybe_old_id, old_id_is_installed))) << " ";
                             else
-                                s << format_general_sr(f::show_choice_disabled(), stringify((*v)->unprefixed_name()),
-                                        added_or_changed_string(*c, *v, maybe_old_id, old_id_is_installed)) << " ";
+                                s << fuc(fs_choice_disabled(), fv<'s'>(stringify((*v)->unprefixed_name())),
+                                        fv<'r'>(added_or_changed_string(*c, *v, maybe_old_id, old_id_is_installed))) << " ";
                         }
                     }
                 }
@@ -680,20 +680,20 @@ namespace
                             {
                                 cout << format_general_rhvib(
                                         (cmdline.a_raw_names.specified() ? f::show_metadata_key_value_raw() : f::show_metadata_key_value_human()),
-                                        format_general_sr(f::show_choice_forced_enabled(), stringify((*v)->name_with_prefix()),
-                                            added_or_changed_string(*c, *v, maybe_old_id, old_id_is_installed)),
-                                        format_general_sr(f::show_choice_forced_enabled(), stringify((*v)->unprefixed_name()),
-                                            added_or_changed_string(*c, *v, maybe_old_id, old_id_is_installed)),
+                                        fuc(fs_choice_forced_enabled(), fv<'s'>(stringify((*v)->name_with_prefix())),
+                                            fv<'r'>(added_or_changed_string(*c, *v, maybe_old_id, old_id_is_installed))),
+                                        fuc(fs_choice_forced_enabled(), fv<'s'>(stringify((*v)->unprefixed_name())),
+                                            fv<'r'>(added_or_changed_string(*c, *v, maybe_old_id, old_id_is_installed))),
                                         (*v)->description(), indent + 2, important);
                             }
                             else
                             {
                                 cout << format_general_rhvib(
                                         (cmdline.a_raw_names.specified() ? f::show_metadata_key_value_raw() : f::show_metadata_key_value_human()),
-                                        format_general_sr(f::show_choice_enabled(), stringify((*v)->name_with_prefix()),
-                                            added_or_changed_string(*c, *v, maybe_old_id, old_id_is_installed)),
-                                        format_general_sr(f::show_choice_enabled(), stringify((*v)->unprefixed_name()),
-                                            added_or_changed_string(*c, *v, maybe_old_id, old_id_is_installed)),
+                                        fuc(fs_choice_enabled(), fv<'s'>(stringify((*v)->name_with_prefix())),
+                                            fv<'r'>(added_or_changed_string(*c, *v, maybe_old_id, old_id_is_installed))),
+                                        fuc(fs_choice_enabled(), fv<'s'>(stringify((*v)->unprefixed_name())),
+                                            fv<'r'>(added_or_changed_string(*c, *v, maybe_old_id, old_id_is_installed))),
                                         (*v)->description(), indent + 2, important);
                             }
                         }
@@ -703,20 +703,20 @@ namespace
                             {
                                 cout << format_general_rhvib(
                                         (cmdline.a_raw_names.specified() ? f::show_metadata_key_value_raw() : f::show_metadata_key_value_human()),
-                                        format_general_sr(f::show_choice_forced_disabled(), stringify((*v)->name_with_prefix()),
-                                            added_or_changed_string(*c, *v, maybe_old_id, old_id_is_installed)),
-                                        format_general_sr(f::show_choice_forced_disabled(), stringify((*v)->unprefixed_name()),
-                                            added_or_changed_string(*c, *v, maybe_old_id, old_id_is_installed)),
+                                        fuc(fs_choice_forced_disabled(), fv<'s'>(stringify((*v)->name_with_prefix())),
+                                            fv<'r'>(added_or_changed_string(*c, *v, maybe_old_id, old_id_is_installed))),
+                                        fuc(fs_choice_forced_disabled(), fv<'s'>(stringify((*v)->unprefixed_name())),
+                                            fv<'r'>(added_or_changed_string(*c, *v, maybe_old_id, old_id_is_installed))),
                                         (*v)->description(), indent + 2, important);
                             }
                             else
                             {
                                 cout << format_general_rhvib(
                                         (cmdline.a_raw_names.specified() ? f::show_metadata_key_value_raw() : f::show_metadata_key_value_human()),
-                                        format_general_sr(f::show_choice_disabled(), stringify((*v)->name_with_prefix()),
-                                            added_or_changed_string(*c, *v, maybe_old_id, old_id_is_installed)),
-                                        format_general_sr(f::show_choice_disabled(), stringify((*v)->unprefixed_name()),
-                                            added_or_changed_string(*c, *v, maybe_old_id, old_id_is_installed)),
+                                        fuc(fs_choice_disabled(), fv<'s'>(stringify((*v)->name_with_prefix())),
+                                            fv<'r'>(added_or_changed_string(*c, *v, maybe_old_id, old_id_is_installed))),
+                                        fuc(fs_choice_disabled(), fv<'s'>(stringify((*v)->unprefixed_name())),
+                                            fv<'r'>(added_or_changed_string(*c, *v, maybe_old_id, old_id_is_installed))),
                                         (*v)->description(), indent + 2, important);
                             }
                         }

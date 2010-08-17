@@ -43,3 +43,15 @@ const auto fs_contents_sym = make_format_string_fetcher("show/contents_sym", 1)
     << param_if<'b'>() << "%{column 30}" << param_endif<'b'>() << param<'r'>() << " -> " << param<'v'>()
     << param_if<'b'>() << "\\n" << param_else<'b'>() << " " << param_endif<'b'>();
 
+const auto fs_choice_forced_enabled = make_format_string_fetcher("show/choice_forced_enabled", 1)
+    << c::green_or_pink() << "(" << param<'s'>() << ")" << c::normal() << param<'r'>();
+
+const auto fs_choice_enabled = make_format_string_fetcher("show/choice_enabled", 1)
+    << c::green_or_pink() << param<'s'>() << c::normal() << param<'r'>();
+
+const auto fs_choice_forced_disabled = make_format_string_fetcher("show/choice_forced_disabled", 1)
+    << c::red() << "(-" << param<'s'>() << ")" << c::normal() << param<'r'>();
+
+const auto fs_choice_disabled = make_format_string_fetcher("show/choice_disabled", 1)
+    << c::red() << "-" << param<'s'>() << c::normal() << param<'r'>();
+
