@@ -91,54 +91,6 @@ namespace paludis
             const std::string show_choice_enabled();
             const std::string show_choice_forced_disabled();
             const std::string show_choice_disabled();
-
-            const std::string colour_formatter_keyword_name_plain();
-            const std::string colour_formatter_keyword_name_accepted();
-            const std::string colour_formatter_keyword_name_unaccepted();
-
-            const std::string colour_formatter_choice_value_plain();
-            const std::string colour_formatter_choice_value_enabled();
-            const std::string colour_formatter_choice_value_disabled();
-            const std::string colour_formatter_choice_value_forced();
-            const std::string colour_formatter_choice_value_masked();
-
-            const std::string colour_formatter_string_plain();
-
-            const std::string colour_formatter_package_id_plain();
-            const std::string colour_formatter_package_id_installed();
-            const std::string colour_formatter_package_id_installable();
-
-            const std::string colour_formatter_license_dep_spec_plain();
-            const std::string colour_formatter_license_dep_spec_accepted();
-            const std::string colour_formatter_license_dep_spec_unaccepted();
-
-            const std::string colour_formatter_conditional_dep_spec_plain();
-            const std::string colour_formatter_conditional_dep_spec_enabled();
-            const std::string colour_formatter_conditional_dep_spec_disabled();
-            const std::string colour_formatter_conditional_dep_spec_forced();
-            const std::string colour_formatter_conditional_dep_spec_masked();
-
-            const std::string colour_formatter_plain_text_dep_spec_plain();
-
-            const std::string colour_formatter_simple_uri_dep_spec_plain();
-
-            const std::string colour_formatter_fetchable_uri_dep_spec_plain();
-
-            const std::string colour_formatter_uri_labels_dep_spec_plain();
-
-            const std::string colour_formatter_package_dep_spec_plain();
-            const std::string colour_formatter_package_dep_spec_installed();
-            const std::string colour_formatter_package_dep_spec_installable();
-
-            const std::string colour_formatter_dependency_labels_dep_spec_plain();
-
-            const std::string colour_formatter_block_dep_spec_plain();
-
-            const std::string colour_formatter_named_set_dep_spec_plain();
-
-            const std::string colour_formatter_fsentry_plain();
-
-            const std::string colour_formatter_indent();
         }
     }
 }

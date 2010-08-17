@@ -106,7 +106,7 @@ noinst_LIBRARIES = libcave.a
 
 # Also update command_MANS above when adding new commands here:
 libcave_a_SOURCES = \
-	colour_formatter.cc colour_formatter.hh \
+	colour_formatter.cc colour_formatter.hh colour_formatter-fmt.hh \
 	command.cc command.hh \
 	command_line.cc command_line.hh \
 	command_command_line.cc command_command_line.hh \

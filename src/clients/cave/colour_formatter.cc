@@ -20,6 +20,7 @@
 #include "colour_formatter.hh"
 #include "formats.hh"
 #include "format_general.hh"
+#include "format_user_config.hh"
 #include <paludis/util/stringify.hh>
 #include <paludis/name.hh>
 #include <paludis/choice.hh>
@@ -32,36 +33,43 @@ ColourFormatter::ColourFormatter(const int initial_indent) :
 {
 }
 
+namespace
+{
+#include "colour_formatter-fmt.hh"
+}
+
 std::string
 ColourFormatter::format(const paludis::ChoiceValue & s, const paludis::format::Plain &) const
 {
-    return format_general_s(f::colour_formatter_choice_value_plain(), stringify(s.name_with_prefix()));
+    return fuc(fs_format_choice_value_plain(), fv<'s'>(stringify(s.name_with_prefix())));
 }
 
 std::string
 ColourFormatter::format(const paludis::ChoiceValue & s, const paludis::format::Enabled &) const
 {
-    return format_general_kv(f::colour_formatter_choice_value_enabled(),
-            stringify(s.unprefixed_name()), s.parameter().empty() ? "" : "=" + s.parameter());
+    return fuc(fs_format_choice_value_enabled(),
+            fv<'k'>(stringify(s.unprefixed_name())),
+            fv<'v'>(s.parameter().empty() ? "" : "=" + s.parameter()));
 }
 
 std::string
 ColourFormatter::format(const paludis::ChoiceValue & s, const paludis::format::Disabled &) const
 {
-    return format_general_s(f::colour_formatter_choice_value_disabled(), stringify(s.unprefixed_name()));
+    return fuc(fs_format_choice_value_disabled(), fv<'s'>(stringify(s.unprefixed_name())));
 }
 
 std::string
 ColourFormatter::format(const paludis::ChoiceValue & s, const paludis::format::Forced &) const
 {
-    return format_general_kv(f::colour_formatter_choice_value_forced(),
-            stringify(s.unprefixed_name()), s.parameter().empty() ? "" : "=" + s.parameter());
+    return fuc(fs_format_choice_value_forced(),
+            fv<'k'>(stringify(s.unprefixed_name())),
+            fv<'v'>(s.parameter().empty() ? "" : "=" + s.parameter()));
 }
 
 std::string
 ColourFormatter::format(const paludis::ChoiceValue & s, const paludis::format::Masked &) const
 {
-    return format_general_s(f::colour_formatter_choice_value_masked(), stringify(s.unprefixed_name()));
+    return fuc(fs_format_choice_value_masked(), fv<'s'>(stringify(s.unprefixed_name())));
 }
 
 std::string
@@ -79,91 +87,91 @@ ColourFormatter::decorate(const paludis::ChoiceValue &, const std::string & f, c
 std::string
 ColourFormatter::format(const KeywordName & s, const format::Plain &) const
 {
-    return format_general_s(f::colour_formatter_keyword_name_plain(), stringify(s));
+    return fuc(fs_format_keyword_name_plain(), fv<'s'>(stringify(s)));
 }
 
 std::string
 ColourFormatter::format(const KeywordName & s, const format::Accepted &) const
 {
-    return format_general_s(f::colour_formatter_keyword_name_accepted(), stringify(s));
+    return fuc(fs_format_keyword_name_accepted(), fv<'s'>(stringify(s)));
 }
 
 std::string
 ColourFormatter::format(const KeywordName & s, const format::Unaccepted &) const
 {
-    return format_general_s(f::colour_formatter_keyword_name_unaccepted(), stringify(s));
+    return fuc(fs_format_keyword_name_unaccepted(), fv<'s'>(stringify(s)));
 }
 
 std::string
 ColourFormatter::format(const std::string & s, const format::Plain &) const
 {
-    return format_general_s(f::colour_formatter_string_plain(), stringify(s));
+    return fuc(fs_format_string_plain(), fv<'s'>(stringify(s)));
 }
 
 std::string
 ColourFormatter::format(const PackageID & s, const format::Plain &) const
 {
-    return format_general_s(f::colour_formatter_package_id_plain(), stringify(s));
+    return fuc(fs_format_package_id_plain(), fv<'s'>(stringify(s)));
 }
 
 std::string
 ColourFormatter::format(const PackageID & s, const format::Installed &) const
 {
-    return format_general_s(f::colour_formatter_package_id_installed(), stringify(s));
+    return fuc(fs_format_package_id_installed(), fv<'s'>(stringify(s)));
 }
 
 std::string
 ColourFormatter::format(const PackageID & s, const format::Installable &) const
 {
-    return format_general_s(f::colour_formatter_package_id_installable(), stringify(s));
+    return fuc(fs_format_package_id_installable(), fv<'s'>(stringify(s)));
 }
 
 std::string
 ColourFormatter::format(const LicenseDepSpec & s, const format::Plain &) const
 {
-    return format_general_s(f::colour_formatter_license_dep_spec_plain(), stringify(s));
+    return fuc(fs_format_license_dep_spec_plain(), fv<'s'>(stringify(s)));
 }
 
 std::string
 ColourFormatter::format(const LicenseDepSpec & s, const format::Accepted &) const
 {
-    return format_general_s(f::colour_formatter_license_dep_spec_accepted(), stringify(s));
+    return fuc(fs_format_license_dep_spec_accepted(), fv<'s'>(stringify(s)));
 }
 
 std::string
 ColourFormatter::format(const LicenseDepSpec & s, const format::Unaccepted &) const
 {
-    return format_general_s(f::colour_formatter_license_dep_spec_unaccepted(), stringify(s));
+    return fuc(fs_format_license_dep_spec_unaccepted(), fv<'s'>(stringify(s)));
 }
 
 std::string
 ColourFormatter::format(const ConditionalDepSpec & s, const format::Plain &) const
 {
-    return format_general_s(f::colour_formatter_conditional_dep_spec_plain(), stringify(s));
+    return fuc(fs_format_conditional_dep_spec_plain(), fv<'s'>(stringify(s)));
 }
 
 std::string
 ColourFormatter::format(const ConditionalDepSpec & s, const format::Enabled &) const
 {
-    return format_general_s(f::colour_formatter_conditional_dep_spec_enabled(), stringify(s));
+    return fuc(fs_format_conditional_dep_spec_enabled(), fv<'s'>(stringify(s)));
 }
 
 std::string
 ColourFormatter::format(const ConditionalDepSpec & s, const format::Disabled &) const
 {
-    return format_general_s(f::colour_formatter_conditional_dep_spec_disabled(), stringify(s));
+    return fuc(fs_format_conditional_dep_spec_disabled(), fv<'s'>(stringify(s)));
 }
 
 std::string
 ColourFormatter::format(const ConditionalDepSpec & s, const format::Forced &) const
 {
-    return format_general_s(f::colour_formatter_conditional_dep_spec_forced(), stringify(s));
+    return fuc(fs_format_conditional_dep_spec_forced(), fv<'s'>(stringify(s)));
 }
 
 std::string
 ColourFormatter::format(const ConditionalDepSpec & s, const format::Masked &) const
 {
-    return format_general_s(f::colour_formatter_conditional_dep_spec_masked(), stringify(s));
+    return fuc(fs_format_conditional_dep_spec_masked(), fv<'s'>(stringify(s)));
 }
 
 std::string
@@ -181,74 +189,74 @@ ColourFormatter::decorate(const ConditionalDepSpec &, const std::string & s, con
 std::string
 ColourFormatter::format(const PlainTextDepSpec & s, const format::Plain &) const
 {
-    return format_general_s(f::colour_formatter_plain_text_dep_spec_plain(), stringify(s));
+    return fuc(fs_format_plain_text_dep_spec_plain(), fv<'s'>(stringify(s)));
 }
 
 std::string
 ColourFormatter::format(const SimpleURIDepSpec & s, const format::Plain &) const
 {
-    return format_general_s(f::colour_formatter_simple_uri_dep_spec_plain(), stringify(s));
+    return fuc(fs_format_simple_uri_dep_spec_plain(), fv<'s'>(stringify(s)));
 }
 
 std::string
 ColourFormatter::format(const FetchableURIDepSpec & s, const format::Plain &) const
 {
-    return format_general_s(f::colour_formatter_fetchable_uri_dep_spec_plain(), stringify(s));
+    return fuc(fs_format_fetchable_uri_dep_spec_plain(), fv<'s'>(stringify(s)));
 }
 
 std::string
 ColourFormatter::format(const URILabelsDepSpec & s, const format::Plain &) const
 {
-    return format_general_s(f::colour_formatter_uri_labels_dep_spec_plain(), stringify(s));
+    return fuc(fs_format_uri_labels_dep_spec_plain(), fv<'s'>(stringify(s)));
 }
 
 std::string
 ColourFormatter::format(const PlainTextLabelDepSpec & s, const format::Plain &) const
 {
-    return format_general_s(f::colour_formatter_uri_labels_dep_spec_plain(), stringify(s));
+    return fuc(fs_format_uri_labels_dep_spec_plain(), fv<'s'>(stringify(s)));
 }
 
 std::string
 ColourFormatter::format(const PackageDepSpec & s, const format::Plain &) const
 {
-    return format_general_s(f::colour_formatter_package_dep_spec_plain(), stringify(s));
+    return fuc(fs_format_package_dep_spec_plain(), fv<'s'>(stringify(s)));
 }
 
 std::string
 ColourFormatter::format(const PackageDepSpec & s, const format::Installed &) const
 {
-    return format_general_s(f::colour_formatter_package_dep_spec_installed(), stringify(s));
+    return fuc(fs_format_package_dep_spec_installed(), fv<'s'>(stringify(s)));
 }
 
 std::string
 ColourFormatter::format(const PackageDepSpec & s, const format::Installable &) const
 {
-    return format_general_s(f::colour_formatter_package_dep_spec_installable(), stringify(s));
+    return fuc(fs_format_package_dep_spec_installable(), fv<'s'>(stringify(s)));
 }
 
 std::string
 ColourFormatter::format(const DependenciesLabelsDepSpec & s, const format::Plain &) const
 {
-    return format_general_s(f::colour_formatter_dependency_labels_dep_spec_plain(), stringify(s));
+    return fuc(fs_format_dependency_labels_dep_spec_plain(), fv<'s'>(stringify(s)));
 }
 
 std::string
 ColourFormatter::format(const BlockDepSpec & s, const format::Plain &) const
 {
-    return format_general_s(f::colour_formatter_block_dep_spec_plain(), stringify(s));
+    return fuc(fs_format_block_dep_spec_plain(), fv<'s'>(stringify(s)));
 }
 
 std::string
 ColourFormatter::format(const NamedSetDepSpec & s, const format::Plain &) const
 {
-    return format_general_s(f::colour_formatter_named_set_dep_spec_plain(), stringify(s));
+    return fuc(fs_format_named_set_dep_spec_plain(), fv<'s'>(stringify(s)));
 }
 
 
 std::string
 ColourFormatter::format(const FSEntry & s, const format::Plain &) const
 {
-    return format_general_s(f::colour_formatter_fsentry_plain(), stringify(s));
+    return fuc(fs_format_fsentry_plain(), fv<'s'>(stringify(s)));
 }
 
 std::string
@@ -260,6 +268,6 @@ ColourFormatter::newline() const
 std::string
 ColourFormatter::indent(const int i) const
 {
-    return format_general_i(f::colour_formatter_indent(), i);
+    return fuc(fs_format_indent(), fv<'i'>(std::string(i, ' ')));
 }
 

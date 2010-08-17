@@ -117,6 +117,8 @@ namespace
 #include "cmd_sync-fmt.hh"
             }{
 #include "cmd_verify-fmt.hh"
+            }{
+#include "colour_formatter-fmt.hh"
             }
         }
     };
