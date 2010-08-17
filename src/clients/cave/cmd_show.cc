@@ -19,7 +19,6 @@
 
 #include "cmd_show.hh"
 #include "colour_formatter.hh"
-#include "format_general.hh"
 #include "formats.hh"
 #include "exceptions.hh"
 #include "select_format_for_spec.hh"

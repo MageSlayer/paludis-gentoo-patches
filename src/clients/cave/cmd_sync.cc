@@ -20,7 +20,6 @@
 #include "cmd_sync.hh"
 #include "exceptions.hh"
 #include "formats.hh"
-#include "format_general.hh"
 #include "format_user_config.hh"
 #include <paludis/package_database.hh>
 #include <paludis/util/action_queue.hh>

@@ -161,7 +161,6 @@ libcave_a_SOURCES = \
 	cmd_verify.cc cmd_verify.hh cmd_verify-fmt.hh \
 	exceptions.cc exceptions.hh \
 	executables_common.cc executables_common.hh \
-	format_general.cc format_general.hh \
 	format_plain_contents_entry.cc format_plain_contents_entry.hh \
 	format_plain_metadata_key.cc format_plain_metadata_key.hh \
 	format_string.cc format_string.hh \

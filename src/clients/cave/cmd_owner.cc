@@ -21,7 +21,6 @@
 #include "cmd_owner.hh"
 #include "command_command_line.hh"
 #include "owner_common.hh"
-#include "format_general.hh"
 #include "formats.hh"
 #include "format_user_config.hh"
 

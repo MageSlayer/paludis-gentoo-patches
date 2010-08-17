@@ -20,7 +20,6 @@
 #include "cmd_info.hh"
 #include "cmd_perform.hh"
 #include "colour_formatter.hh"
-#include "format_general.hh"
 #include "formats.hh"
 #include "exceptions.hh"
 #include "format_user_config.hh"

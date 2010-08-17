@@ -22,7 +22,6 @@
 #include "command_command_line.hh"
 #include "executables_common.hh"
 #include "formats.hh"
-#include "format_general.hh"
 #include "format_user_config.hh"
 
 #include <paludis/args/args.hh>
