@@ -423,6 +423,8 @@ namespace
                 result.append("\n");
             else if (parser.consume(simple_parser::exact("\\e")))
                 result.append("\033");
+            else if (parser.consume(simple_parser::exact("\\a")))
+                result.append("\007");
             else if (parser.consume(simple_parser::exact("\\") & simple_parser::any_except("") >> s))
                 result.append(s);
             else if ((! k.options()[kvcfo_disallow_variables]) && parser.consume(simple_parser::exact("$")))
@@ -515,6 +517,8 @@ namespace
                     result.append("\t");
                 else if (w == "e")
                     result.append("\033");
+                else if (w == "a")
+                    result.append("\007");
                 else
                     result.append(w);
             }
