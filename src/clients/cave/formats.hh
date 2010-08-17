@@ -50,12 +50,6 @@ namespace paludis
 
         namespace f
         {
-            const std::string show_set_heading();
-            const std::string show_set_set();
-            const std::string show_set_spec_installed();
-            const std::string show_set_spec_installable();
-            const std::string show_set_spec_unavailable();
-
             const std::string show_package_heading();
             const std::string show_package_repository();
             const std::string show_package_version_installed();

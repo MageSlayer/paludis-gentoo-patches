@@ -137,36 +137,6 @@ paludis::cave::c::bold_normal()
 }
 
 const std::string
-paludis::cave::f::show_set_heading()
-{
-    return "* " + c::bold_blue_or_pink() + "%s" + c::normal() + "\\n";
-}
-
-const std::string
-paludis::cave::f::show_set_set()
-{
-    return "%i%i%i%i" + c::blue_or_pink() + "%s" + c::normal() + "\\n";
-}
-
-const std::string
-paludis::cave::f::show_set_spec_installed()
-{
-    return "%i%i%i%i" + c::bold_green_or_pink() + "%s" + c::normal() + "\\n";
-}
-
-const std::string
-paludis::cave::f::show_set_spec_installable()
-{
-    return "%i%i%i%i" + c::green_or_pink() + "%s" + c::normal() + "\\n";
-}
-
-const std::string
-paludis::cave::f::show_set_spec_unavailable()
-{
-    return "%i%i%i%i" + c::red() + "%s" + c::normal() + "\\n";
-}
-
-const std::string
 paludis::cave::f::show_metadata_key_value_raw()
 {
     return "    %i%i%i%i%{if b}" + c::bold_normal() + "%{endif}" + "%r" + c::normal() + "%{column 30}%v\\n";

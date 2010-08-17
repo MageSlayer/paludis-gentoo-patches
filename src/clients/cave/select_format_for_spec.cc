@@ -56,6 +56,14 @@ template std::string paludis::cave::select_format_for_spec(
         const std::string & if_unavailable
         );
 
+template FormatString<'i', 's'> paludis::cave::select_format_for_spec(
+        const std::shared_ptr<const Environment> & env,
+        const PackageDepSpec & spec,
+        const FormatString<'i', 's'> & if_installed,
+        const FormatString<'i', 's'> & if_installable,
+        const FormatString<'i', 's'> & if_unavailable
+        );
+
 template FormatString<'s'> paludis::cave::select_format_for_spec(
         const std::shared_ptr<const Environment> & env,
         const PackageDepSpec & spec,

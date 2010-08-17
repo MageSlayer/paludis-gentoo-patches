@@ -159,16 +159,17 @@ namespace
 
         void visit(const SetSpecTree::NodeType<PackageDepSpec>::Type & node)
         {
-            cout << format_general_si(select_format_for_spec(env, *node.spec(),
-                        f::show_set_spec_installed(),
-                        f::show_set_spec_installable(),
-                        f::show_set_spec_unavailable()),
-                    stringify(*node.spec()), indent);
+            cout << fuc(select_format_for_spec(env, *node.spec(),
+                        fs_set_spec_installed(),
+                        fs_set_spec_installable(),
+                        fs_set_spec_unavailable()),
+                    fv<'s'>(stringify(*node.spec())),
+                    fv<'i'>(std::string(indent, ' ')));
         }
 
         void visit(const SetSpecTree::NodeType<NamedSetDepSpec>::Type & node)
         {
-            cout << format_general_si(f::show_set_set(), stringify(*node.spec()), indent);
+            cout << fuc(fs_set_set(), fv<'s'>(stringify(*node.spec())), fv<'i'>(std::string(indent, ' ')));
 
             const std::shared_ptr<const SetSpecTree> set(env->set(node.spec()->name()));
             if (! set)
@@ -192,7 +193,7 @@ namespace
 
     void do_one_set(const std::shared_ptr<Environment> & env, const SetName & s)
     {
-        cout << format_general_s(f::show_set_heading(), stringify(s));
+        cout << fuc(fs_set_heading(), fv<'s'>(stringify(s)));
 
         const std::shared_ptr<const SetSpecTree> set(env->set(s));
         if (! set)
