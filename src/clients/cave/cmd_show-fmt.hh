@@ -55,3 +55,24 @@ const auto fs_choice_forced_disabled = make_format_string_fetcher("show/choice_f
 const auto fs_choice_disabled = make_format_string_fetcher("show/choice_disabled", 1)
     << c::red() << "-" << param<'s'>() << c::normal() << param<'r'>();
 
+const auto fs_metadata_value_raw = make_format_string_fetcher("show/metadata_value_raw", 1)
+    << "    " << param<'i'>() << param<'i'>() << param<'i'>() << param<'i'>()
+    << param_if<'b'>() << c::bold_normal() << param_endif<'b'>() << param<'s'>() << c::normal()
+    << "%{column 30}" << param<'v'>() << "\\n";
+
+const auto fs_metadata_value_human = make_format_string_fetcher("show/metadata_value_human", 1)
+    << "    " << param<'i'>() << param<'i'>() << param<'i'>() << param<'i'>()
+    << param_if<'b'>() << c::bold_normal() << param_endif<'b'>() << param<'s'>() << c::normal()
+    << "%{column 30}" << param<'v'>() << "\\n";
+
+const auto fs_metadata_continued_value = make_format_string_fetcher("show/metadata_continued_value", 1)
+    << "    " << "%{column 30}" << param<'i'>() << param<'i'>() << param<'v'>() << "\\n";
+
+const auto fs_metadata_subsection_human = make_format_string_fetcher("show/metadata_subsection_human", 1)
+    << "    " << param<'i'>() << param<'i'>() << param<'i'>() << param<'i'>()
+    << c::bold_blue_or_pink() << param<'s'>() << c::normal() << "\\n";
+
+const auto fs_metadata_subsection_raw = make_format_string_fetcher("show/metadata_subsection_raw", 1)
+    << "    " << param<'i'>() << param<'i'>() << param<'i'>() << param<'i'>()
+    << c::bold_blue_or_pink() << param<'s'>() << c::normal() << "\\n";
+
