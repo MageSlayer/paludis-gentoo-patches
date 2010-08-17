@@ -315,6 +315,30 @@ namespace paludis
             return FormatParam<c_>();
         }
 
+        template <char c_>
+        struct FormatParamIf
+        {
+            std::string text;
+        };
+
+        template <char c_>
+        FormatParamIf<c_> param_if()
+        {
+            return FormatParamIf<c_>{"%{if " + std::string(1, c_) + "}"};
+        }
+
+        template <char c_>
+        FormatParamIf<c_> param_else()
+        {
+            return FormatParamIf<c_>{"%{else}"};
+        }
+
+        template <char c_>
+        FormatParamIf<c_> param_endif()
+        {
+            return FormatParamIf<c_>{"%{endif}"};
+        }
+
         template <char... cs_>
         MakeFormatStringFetcher<cs_...> operator<< (MakeFormatStringFetcher<cs_...> && f, const std::string & s)
         {
@@ -331,6 +355,16 @@ namespace paludis
                 std::move(f.user_key), f.user_key_version, std::move(f.text)};
             result.text.append("%");
             result.text.append(1, c_);
+            return result;
+        }
+
+        template <char c_, char... cs_>
+        typename MakeDeduplicatedMakeFormatStringFetcher<c_, cs_...>::Type
+        operator<< (MakeFormatStringFetcher<cs_...> && f, const FormatParamIf<c_> & c)
+        {
+            typename MakeDeduplicatedMakeFormatStringFetcher<c_, cs_...>::Type result{
+                std::move(f.user_key), f.user_key_version, std::move(f.text)};
+            result.text.append(c.text);
             return result;
         }
     }

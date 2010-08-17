@@ -71,6 +71,24 @@ namespace
         return "%" + std::string(1, c_);
     }
 
+    template <char c_>
+    std::string param_if()
+    {
+        return "%{if " + std::string(1, c_) + "}";
+    }
+
+    template <char c_>
+    std::string param_else()
+    {
+        return "%{else}";
+    }
+
+    template <char c_>
+    std::string param_endif()
+    {
+        return "%{endif}";
+    }
+
     struct Storer
     {
         std::string user_key;

@@ -30,3 +30,16 @@ const auto fs_set_spec_installable = make_format_string_fetcher("show/set_spec_i
 const auto fs_set_spec_unavailable = make_format_string_fetcher("show/set_spec_unavailable", 1)
     << param<'i'>() << param<'i'>() << param<'i'>() << param<'i'>() << c::bold_red() << param<'s'>() << c::normal() << "\\n";
 
+const auto fs_contents_file = make_format_string_fetcher("show/contents_file", 1)
+    << param_if<'b'>() << "%{column 30}" << param_endif<'b'>() << param<'r'>() << param_if<'b'>() << "\\n" << param_else<'b'>() << " " << param_endif<'b'>();
+
+const auto fs_contents_other = make_format_string_fetcher("show/contents_other", 1)
+    << param_if<'b'>() << "%{column 30}" << param_endif<'b'>() << param<'r'>() << param_if<'b'>() << "\\n" << param_else<'b'>() << " " << param_endif<'b'>();
+
+const auto fs_contents_dir = make_format_string_fetcher("show/contents_dir", 1)
+    << param_if<'b'>() << "%{column 30}" << param_endif<'b'>() << param<'r'>() << param_if<'b'>() << "\\n" << param_else<'b'>() << " " << param_endif<'b'>();
+
+const auto fs_contents_sym = make_format_string_fetcher("show/contents_sym", 1)
+    << param_if<'b'>() << "%{column 30}" << param_endif<'b'>() << param<'r'>() << " -> " << param<'v'>()
+    << param_if<'b'>() << "\\n" << param_else<'b'>() << " " << param_endif<'b'>();
+
