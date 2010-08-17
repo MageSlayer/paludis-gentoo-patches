@@ -206,7 +206,7 @@ namespace
 
     void do_one_wildcard(const std::shared_ptr<Environment> & env, const PackageDepSpec & s)
     {
-        cout << format_general_s(f::show_wildcard_heading(), stringify(s));
+        cout << fuc(fs_wildcard_heading(), fv<'s'>(stringify(s)));
 
         const std::shared_ptr<const PackageIDSequence> names((*env)[selection::BestVersionOnly(generator::Matches(s, { }))]);
         if (names->empty())
@@ -216,12 +216,12 @@ namespace
                 i != i_end ; ++i)
         {
             PackageDepSpec name_spec(make_package_dep_spec({ }).package((*i)->name()));
-            cout << format_general_s(select_format_for_spec(env, name_spec,
-                        f::show_wildcard_spec_installed(),
-                        f::show_wildcard_spec_installable(),
-                        f::show_wildcard_spec_unavailable()
+            cout << fuc(select_format_for_spec(env, name_spec,
+                        fs_wildcard_spec_installed(),
+                        fs_wildcard_spec_installable(),
+                        fs_wildcard_spec_unavailable()
                         ),
-                    stringify(name_spec));
+                    fv<'s'>(stringify(name_spec)));
         }
 
         cout << endl;

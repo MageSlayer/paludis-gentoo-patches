@@ -18,6 +18,7 @@
  */
 
 #include "select_format_for_spec.hh"
+#include "format_user_config.hh"
 #include <paludis/environment.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/fs_entry.hh>
@@ -29,13 +30,14 @@
 using namespace paludis;
 using namespace cave;
 
-std::string
+template <typename T_>
+T_
 paludis::cave::select_format_for_spec(
         const std::shared_ptr<const Environment> & env,
         const PackageDepSpec & spec,
-        const std::string & if_installed,
-        const std::string & if_installable,
-        const std::string & if_unavailable
+        const T_ & if_installed,
+        const T_ & if_installable,
+        const T_ & if_unavailable
         )
 {
     if (! (*env)[selection::SomeArbitraryVersion(generator::Matches(spec, { }) | filter::InstalledAtRoot(FSEntry("/")))]->empty())
@@ -45,4 +47,20 @@ paludis::cave::select_format_for_spec(
         return if_installable;
     return if_unavailable;
 }
+
+template std::string paludis::cave::select_format_for_spec(
+        const std::shared_ptr<const Environment> & env,
+        const PackageDepSpec & spec,
+        const std::string & if_installed,
+        const std::string & if_installable,
+        const std::string & if_unavailable
+        );
+
+template FormatString<'s'> paludis::cave::select_format_for_spec(
+        const std::shared_ptr<const Environment> & env,
+        const PackageDepSpec & spec,
+        const FormatString<'s'> & if_installed,
+        const FormatString<'s'> & if_installable,
+        const FormatString<'s'> & if_unavailable
+        );
 

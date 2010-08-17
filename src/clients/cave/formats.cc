@@ -167,30 +167,6 @@ paludis::cave::f::show_set_spec_unavailable()
 }
 
 const std::string
-paludis::cave::f::show_wildcard_heading()
-{
-    return "* " + c::bold_blue_or_pink() + "%s" + c::normal() + "\\n";
-}
-
-const std::string
-paludis::cave::f::show_wildcard_spec_installed()
-{
-    return "    " + c::green_or_pink() + "%s" + c::normal() + "\\n";
-}
-
-const std::string
-paludis::cave::f::show_wildcard_spec_installable()
-{
-    return "    %s\\n";
-}
-
-const std::string
-paludis::cave::f::show_wildcard_spec_unavailable()
-{
-    return "    " + c::red() + "%s" + c::normal() + "\\n";
-}
-
-const std::string
 paludis::cave::f::show_metadata_key_value_raw()
 {
     return "    %i%i%i%i%{if b}" + c::bold_normal() + "%{endif}" + "%r" + c::normal() + "%{column 30}%v\\n";
