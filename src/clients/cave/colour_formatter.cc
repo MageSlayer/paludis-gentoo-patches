@@ -18,7 +18,7 @@
  */
 
 #include "colour_formatter.hh"
-#include "formats.hh"
+#include "colours.hh"
 #include "format_user_config.hh"
 #include <paludis/util/stringify.hh>
 #include <paludis/name.hh>

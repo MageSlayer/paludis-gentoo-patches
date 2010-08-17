@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "formats.hh"
+#include "colours.hh"
 #include "format_user_config.hh"
 #include "config.h"
 

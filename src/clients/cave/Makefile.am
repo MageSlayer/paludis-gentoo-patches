@@ -159,13 +159,13 @@ libcave_a_SOURCES = \
 	cmd_uninstall.cc cmd_uninstall.hh \
 	cmd_update_world.cc cmd_update_world.hh \
 	cmd_verify.cc cmd_verify.hh cmd_verify-fmt.hh \
+	colours.cc colours.hh \
 	exceptions.cc exceptions.hh \
 	executables_common.cc executables_common.hh \
 	format_plain_contents_entry.cc format_plain_contents_entry.hh \
 	format_plain_metadata_key.cc format_plain_metadata_key.hh \
 	format_string.cc format_string.hh \
 	format_user_config.cc format_user_config.hh \
-	formats.cc formats.hh \
 	script_command.cc script_command.hh \
 	search_extras_handle.cc search_extras_handle.hh \
 	select_format_for_spec.cc select_format_for_spec.hh \

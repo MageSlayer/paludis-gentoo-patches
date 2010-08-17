@@ -21,7 +21,7 @@
 #include "cmd_owner.hh"
 #include "command_command_line.hh"
 #include "owner_common.hh"
-#include "formats.hh"
+#include "colours.hh"
 #include "format_user_config.hh"
 
 #include <paludis/action.hh>

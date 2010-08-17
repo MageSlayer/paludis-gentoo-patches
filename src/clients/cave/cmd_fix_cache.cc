@@ -18,7 +18,7 @@
  */
 
 #include "cmd_fix_cache.hh"
-#include "formats.hh"
+#include "colours.hh"
 #include "format_user_config.hh"
 
 #include <paludis/args/args.hh>

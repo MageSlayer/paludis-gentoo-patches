@@ -22,7 +22,7 @@
 #include "cmd_execute_resolution.hh"
 #include "exceptions.hh"
 #include "command_command_line.hh"
-#include "formats.hh"
+#include "colours.hh"
 #include "colour_formatter.hh"
 #include "resume_data.hh"
 #include <paludis/args/do_help.hh>

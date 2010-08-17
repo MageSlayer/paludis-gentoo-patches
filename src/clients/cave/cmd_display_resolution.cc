@@ -21,7 +21,7 @@
 #include "cmd_resolve_cmdline.hh"
 #include "exceptions.hh"
 #include "command_command_line.hh"
-#include "formats.hh"
+#include "colours.hh"
 #include "colour_formatter.hh"
 #include <paludis/args/do_help.hh>
 #include <paludis/util/safe_ifstream.hh>

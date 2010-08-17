@@ -19,7 +19,7 @@
 
 #include "cmd_contents.hh"
 #include "format_user_config.hh"
-#include "formats.hh"
+#include "colours.hh"
 #include "exceptions.hh"
 #include <paludis/args/args.hh>
 #include <paludis/args/do_help.hh>
