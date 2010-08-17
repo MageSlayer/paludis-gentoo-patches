@@ -24,67 +24,67 @@
 using namespace paludis;
 using namespace cave;
 
-const std::string
+const Colour
 paludis::cave::c::bold_blue()
 {
-    return FormatUserConfigFile::get_instance()->fetch("bold_blue", 0, "");
+    return Colour{"bold_blue"};
 }
 
-const std::string
+const Colour
 paludis::cave::c::blue()
 {
-    return FormatUserConfigFile::get_instance()->fetch("blue", 0, "");
+    return Colour{"blue"};
 }
 
-const std::string
+const Colour
 paludis::cave::c::bold_green()
 {
-    return FormatUserConfigFile::get_instance()->fetch("bold_green", 0, "");
+    return Colour{"bold_green"};
 }
 
-const std::string
+const Colour
 paludis::cave::c::green()
 {
-    return FormatUserConfigFile::get_instance()->fetch("green", 0, "");
+    return Colour{"green"};
 }
 
-const std::string
+const Colour
 paludis::cave::c::red()
 {
-    return FormatUserConfigFile::get_instance()->fetch("red", 0, "");
+    return Colour{"red"};
 }
 
-const std::string
+const Colour
 paludis::cave::c::bold_red()
 {
-    return FormatUserConfigFile::get_instance()->fetch("bold_red", 0, "");
+    return Colour{"bold_red"};
 }
 
-const std::string
+const Colour
 paludis::cave::c::yellow()
 {
-    return FormatUserConfigFile::get_instance()->fetch("yellow", 0, "");
+    return Colour{"yellow"};
 }
 
-const std::string
+const Colour
 paludis::cave::c::bold_yellow()
 {
-    return FormatUserConfigFile::get_instance()->fetch("bold_yellow", 0, "");
+    return Colour{"bold_yellow"};
 }
 
-const std::string
+const Colour
 paludis::cave::c::pink()
 {
-    return FormatUserConfigFile::get_instance()->fetch("pink", 0, "");
+    return Colour{"pink"};
 }
 
-const std::string
+const Colour
 paludis::cave::c::bold_pink()
 {
-    return FormatUserConfigFile::get_instance()->fetch("bold_pink", 0, "");
+    return Colour{"bold_pink"};
 }
 
-const std::string
+const Colour
 paludis::cave::c::bold_blue_or_pink()
 {
 #if PALUDIS_COLOUR_PINK
@@ -94,7 +94,7 @@ paludis::cave::c::bold_blue_or_pink()
 #endif
 }
 
-const std::string
+const Colour
 paludis::cave::c::blue_or_pink()
 {
 #if PALUDIS_COLOUR_PINK
@@ -104,7 +104,7 @@ paludis::cave::c::blue_or_pink()
 #endif
 }
 
-const std::string
+const Colour
 paludis::cave::c::bold_green_or_pink()
 {
 #if PALUDIS_COLOUR_PINK
@@ -114,7 +114,7 @@ paludis::cave::c::bold_green_or_pink()
 #endif
 }
 
-const std::string
+const Colour
 paludis::cave::c::green_or_pink()
 {
 #if PALUDIS_COLOUR_PINK
@@ -124,15 +124,21 @@ paludis::cave::c::green_or_pink()
 #endif
 }
 
-const std::string
+const Colour
 paludis::cave::c::normal()
 {
-    return FormatUserConfigFile::get_instance()->fetch("normal", 0, "");
+    return Colour{"normal"};
 }
 
-const std::string
+const Colour
 paludis::cave::c::bold_normal()
 {
-    return FormatUserConfigFile::get_instance()->fetch("bold_normal", 0, "");
+    return Colour{"bold_normal"};
+}
+
+std::string
+Colour::colour_string() const
+{
+    return FormatUserConfigFile::get_instance()->fetch(name, 0, "");
 }
 

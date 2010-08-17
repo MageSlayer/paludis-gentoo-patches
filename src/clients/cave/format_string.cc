@@ -18,6 +18,7 @@
  */
 
 #include "format_string.hh"
+#include "format_user_config.hh"
 #include <paludis/util/map-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/tokeniser.hh>
@@ -143,6 +144,14 @@ paludis::cave::format_string(
                         if (m->end() == m->find(tokens.at(1).at(0)))
                             throw FormatStringError(f, "{if} parameter '" + tokens.at(1) + "' not a variable");
                         condition_stack.push_front(! m->find(tokens.at(1).at(0))->second.empty());
+                    }
+                    else if ("colour" == tokens.at(0))
+                    {
+                        if (tokens.size() != 2)
+                            throw FormatStringError(f, "{colour} takes one parameter");
+
+                        if (*condition_stack.begin())
+                            result.append(FormatUserConfigFile::get_instance()->fetch(tokens.at(1), 0, ""));
                     }
                     else
                         throw FormatStringError(f, "unknown command '" + tokens.at(0) + "' inside {}");

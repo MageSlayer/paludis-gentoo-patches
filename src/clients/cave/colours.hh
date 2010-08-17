@@ -26,26 +26,33 @@ namespace paludis
 {
     namespace cave
     {
+        struct Colour
+        {
+            std::string name;
+
+            std::string colour_string() const;
+        };
+
         namespace c
         {
-            const std::string bold_blue();
-            const std::string blue();
-            const std::string bold_green();
-            const std::string green();
-            const std::string bold_red();
-            const std::string red();
-            const std::string bold_yellow();
-            const std::string yellow();
-            const std::string bold_pink();
-            const std::string pink();
+            const Colour bold_blue();
+            const Colour blue();
+            const Colour bold_green();
+            const Colour green();
+            const Colour bold_red();
+            const Colour red();
+            const Colour bold_yellow();
+            const Colour yellow();
+            const Colour bold_pink();
+            const Colour pink();
 
-            const std::string bold_blue_or_pink();
-            const std::string blue_or_pink();
-            const std::string bold_green_or_pink();
-            const std::string green_or_pink();
+            const Colour bold_blue_or_pink();
+            const Colour blue_or_pink();
+            const Colour bold_green_or_pink();
+            const Colour green_or_pink();
 
-            const std::string bold_normal();
-            const std::string normal();
+            const Colour bold_normal();
+            const Colour normal();
         }
     }
 }

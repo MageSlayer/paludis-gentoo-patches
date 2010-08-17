@@ -27,6 +27,7 @@
 #include <memory>
 #include <utility>
 #include "format_string.hh"
+#include "colours.hh"
 
 namespace paludis
 {
@@ -346,6 +347,14 @@ namespace paludis
         {
             MakeFormatStringFetcher<cs_...> result{std::move(f.user_key), f.user_key_version, std::move(f.text)};
             result.text.append(s);
+            return result;
+        }
+
+        template <char... cs_>
+        MakeFormatStringFetcher<cs_...> operator<< (MakeFormatStringFetcher<cs_...> && f, const Colour & c)
+        {
+            MakeFormatStringFetcher<cs_...> result{std::move(f.user_key), f.user_key_version, std::move(f.text)};
+            result.text.append("%{colour " + c.name + "}");
             return result;
         }
 

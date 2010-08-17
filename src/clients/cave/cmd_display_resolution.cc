@@ -976,7 +976,7 @@ namespace
 
         for (auto m(decision.origin_id()->begin_masks()), m_end(decision.origin_id()->end_masks()) ;
                 m != m_end ; ++m)
-            (*m)->accept(MaskedByVisitor{c::bold_red(), "    "});
+            (*m)->accept(MaskedByVisitor{c::bold_red().colour_string(), "    "});
     }
 
     struct Totals
@@ -1092,7 +1092,7 @@ namespace
             x = "-" + x;
 
         if (decision.origin_id()->masked() || decision.if_changed_choices())
-            c = c::red();
+            c = c::red().colour_string();
         else
             do
             {
@@ -1100,19 +1100,19 @@ namespace
                 {
                     case dt_install_to_slash:
                         if (decision.if_via_new_binary_in())
-                            c = c::yellow();
+                            c = c::yellow().colour_string();
                         if (maybe_totals)
                             ++maybe_totals->installs_ct_count.insert(std::make_pair(decision.change_type(), 0)).first->second;
                         continue;
 
                     case dt_install_to_chroot:
-                        c = c::blue();
+                        c = c::blue().colour_string();
                         if (maybe_totals)
                             ++maybe_totals->installs_ct_count.insert(std::make_pair(decision.change_type(), 0)).first->second;
                         continue;
 
                     case dt_create_binary:
-                        c = c::green();
+                        c = c::green().colour_string();
                         if (maybe_totals)
                             ++maybe_totals->binary_installs_count;
                         continue;
@@ -1297,13 +1297,13 @@ namespace
         {
             std::string colour;
             if (! u->unmet_constraints()->empty())
-                colour = c::red();
+                colour = c::red().colour_string();
             else if (u->package_id()->masked())
             {
                 if (not_strongly_masked(u->package_id()))
-                    colour = c::bold_red();
+                    colour = c::bold_red().colour_string();
                 else
-                    colour = c::red();
+                    colour = c::red().colour_string();
             }
 
             cout << fuc(fs_unable_unsuitable_id(), fv<'c'>(colour), fv<'i'>(stringify(*u->package_id())));

@@ -409,9 +409,12 @@ InfoCommand::run(
 
     if (cmdline.begin_parameters() == cmdline.end_parameters())
     {
-        cout << c::bold_red() << "No packages were specified on the command line, so detailed information is not" << c::normal() << endl;
-        cout << c::bold_red() << "available. If you are using this information for a bug report, you should pass " << c::normal() << endl;
-        cout << c::bold_red() << "the relevant package names as parameters." << c::normal() << endl;
+        cout << c::bold_red().colour_string() <<
+            "No packages were specified on the command line, so detailed information is not" << c::normal().colour_string() << endl;
+        cout << c::bold_red().colour_string() <<
+            "available. If you are using this information for a bug report, you should pass " << c::normal().colour_string() << endl;
+        cout << c::bold_red().colour_string() <<
+            "the relevant package names as parameters." << c::normal().colour_string() << endl;
         cout << endl;
     }
     else
