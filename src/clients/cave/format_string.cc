@@ -62,6 +62,16 @@ paludis::cave::format_string(
                             result.append("\t");
                         break;
 
+                    case 'a':
+                        if (*condition_stack.begin())
+                            result.append("\a");
+                        break;
+
+                    case 'e':
+                        if (*condition_stack.begin())
+                            result.append("\033");
+                        break;
+
                     default:
                         if (*condition_stack.begin())
                             result.append(stringify(f.at(p)));
