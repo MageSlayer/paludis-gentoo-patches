@@ -115,7 +115,7 @@ libcave_a_SOURCES = \
 	cmd_config.cc cmd_config.hh \
 	cmd_display_resolution.cc cmd_display_resolution.hh \
 	cmd_executables.cc cmd_executables.hh cmd_executables-fmt.hh \
-	cmd_execute_resolution.cc cmd_execute_resolution.hh \
+	cmd_execute_resolution.cc cmd_execute_resolution.hh cmd_execute_resolution-fmt.hh \
 	cmd_find_candidates.cc cmd_find_candidates.hh \
 	cmd_fix_cache.cc cmd_fix_cache.hh cmd_fix_cache-fmt.hh \
 	cmd_fix_linkage.cc cmd_fix_linkage.hh \

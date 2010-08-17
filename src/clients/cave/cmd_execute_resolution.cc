@@ -25,6 +25,7 @@
 #include "colours.hh"
 #include "colour_formatter.hh"
 #include "resume_data.hh"
+#include "format_user_config.hh"
 #include <paludis/args/do_help.hh>
 #include <paludis/args/escape.hh>
 #include <paludis/util/safe_ifstream.hh>
@@ -95,6 +96,8 @@ using std::endl;
 
 namespace
 {
+#include "cmd_execute_resolution-fmt.hh"
+
     struct ExecuteResolutionCommandLine :
         CaveCommandCommandLine
     {
@@ -161,7 +164,7 @@ namespace
         {
             if (erase)
             {
-                cout << endl << "Erasing resume file " << resume_file << "..." << endl;
+                cout << fuc(fs_erasing_resume_file(), fv<'f'>(stringify(resume_file)));
                 resume_file.unlink();
             }
         }
@@ -181,7 +184,7 @@ namespace
                         n::world_specs() = world_specs
                         ));
 
-            cout << endl << "Writing resume information to " << resume_file << "..." << endl;
+            cout << fuc(fs_writing_resume_file(), fv<'f'>(stringify(resume_file)));
             SafeOFStream stream(resume_file);
             Serialiser ser(stream);
             resume_data.serialise(ser);
@@ -296,12 +299,9 @@ namespace
             const std::shared_ptr<const Sequence<PackageDepSpec> > & maybe_replacing_specs,
             const int x, const int y)
     {
-        cout << endl;
-        cout << c::bold_blue() << x << " of " << y << ": Starting " << action << " for "
-            << join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), ", ")
-            << maybe_replacing(env, ids, maybe_replacing_specs)
-            << "..." << c::normal() << endl;
-        cout << endl;
+        cout << fuc(fs_starting_action(), fv<'x'>(stringify(x)), fv<'y'>(stringify(y)),
+                fv<'a'>(action), fv<'i'>(join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), ", ")),
+                fv<'r'>(maybe_replacing(env, ids, maybe_replacing_specs)));
     }
 
     void done_action(
@@ -313,14 +313,13 @@ namespace
     {
         cout << endl;
         if (success)
-            cout << c::bold_green() << "Done " << action << " for "
-                << join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), ", ")
-                << maybe_replacing(env, ids, maybe_replacing_specs) << c::normal() << endl;
+            cout << fuc(fs_done_action(),
+                    fv<'a'>(action), fv<'i'>(join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), ", ")),
+                    fv<'r'>(maybe_replacing(env, ids, maybe_replacing_specs)));
         else
-            cout << c::bold_red() << "Failed " << action << " for "
-                << join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), ", ")
-                << maybe_replacing(env, ids, maybe_replacing_specs) << c::normal() << endl;
-        cout << endl;
+            cout << fuc(fs_failed_action(),
+                    fv<'a'>(action), fv<'i'>(join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), ", ")),
+                    fv<'r'>(maybe_replacing(env, ids, maybe_replacing_specs)));
     }
 
     void set_output_manager(
@@ -587,7 +586,7 @@ namespace
                 if (*a == "world" || *a == "system" || *a == "security"
                         || *a == "everything" || *a == "insecurity"
                         || *a == "installed-packages" || *a == "installed-slots")
-                    cout << "* Special set '" << *a << "' does not belong in world" << endl;
+                    cout << fuc(fs_special_set_world(), fv<'a'>(*a));
                 else
                 {
                     any = true;
@@ -639,9 +638,9 @@ namespace
                 else
                 {
                     if (removes)
-                        cout << "* Not removing '" << spec << "'" << endl;
+                        cout << fuc(fs_not_removing_world(), fv<'a'>(stringify(spec)));
                     else
-                        cout << "* Not adding '" << spec << "'" << endl;
+                        cout << fuc(fs_not_adding_world(), fv<'a'>(stringify(spec)));
                 }
             }
         }
@@ -661,7 +660,7 @@ namespace
         if (cmdline.execution_options.a_preserve_world.specified() || cmdline.execution_options.a_fetch.specified())
             return;
 
-        cout << endl << c::bold_green() << "Updating world" << c::normal() << endl << endl;
+        cout << fuc(fs_updating_world());
 
         update_world(env, cmdline, true);
         update_world(env, cmdline, false);
@@ -1070,10 +1069,8 @@ namespace
     {
         AlreadyDoneVisitor v(env, counts);
         job->accept(v);
-        cout << endl;
-        cout << c::bold_green() << v.x << " of " << v.y << ":  Already " << state << " for "
-            << v.text << "..." << c::normal() << endl;
-        cout << endl;
+        cout << fuc(fs_already_action(), fv<'x'>(stringify(v.x)), fv<'y'>(stringify(v.y)),
+                fv<'s'>(state), fv<'t'>(v.text));
     }
 
     struct MakeJobID
@@ -1349,7 +1346,7 @@ namespace
                     {
                         if (heading != old_heading)
                         {
-                            cout << endl << c::bold_yellow() << heading << c::normal() << endl << endl;
+                            cout << fuc(fs_output_heading(), fv<'h'>(heading));
                             old_heading = heading;
                         }
 
@@ -1359,9 +1356,9 @@ namespace
                 }
                 else
                 {
-                    cout << endl << c::bold_yellow() << heading << c::normal() << endl << endl;
+                    cout << fuc(fs_output_heading(), fv<'h'>(heading));
                     old_heading = "";
-                    cout << "-> (no output for " << (Timestamp::now().seconds() - last_output.seconds()) << " seconds)" << endl;
+                    cout << fuc(fs_no_output(), fv<'n'>(stringify(Timestamp::now().seconds() - last_output.seconds())));
                 }
 
                 last_flushed = Timestamp::now();
@@ -1571,22 +1568,20 @@ namespace
             if (! done_heading)
             {
                 done_heading = true;
-                cout << endl << c::bold_blue() << "Summary:" << c::normal() << endl << endl;
+                cout << fuc(fs_summary_heading());
             }
         }
 
         void visit(const JobActiveState &) const
         {
             need_heading();
-            cout << c::bold_yellow() << "pending:   " << job->accept_returning<std::string>(
-                    SummaryNameVisitor(env)) << c::normal() << endl;
+            cout << fuc(fs_summary_job_pending(), fv<'s'>(job->accept_returning<std::string>(SummaryNameVisitor(env))));
         }
 
         void visit(const JobPendingState &) const
         {
             need_heading();
-            cout << c::bold_yellow() << "pending:   " << job->accept_returning<std::string>(
-                    SummaryNameVisitor(env)) << c::normal() << endl;
+            cout << fuc(fs_summary_job_pending(), fv<'s'>(job->accept_returning<std::string>(SummaryNameVisitor(env))));
         }
 
         void visit(const JobSucceededState & s) const
@@ -1595,16 +1590,14 @@ namespace
                     || (something_failed && ! simple_visitor_cast<const FetchJob>(*job)))
             {
                 need_heading();
-                cout << c::bold_green() << "succeeded: " << job->accept_returning<std::string>(
-                        SummaryNameVisitor(env)) << c::normal() << endl;
+                cout << fuc(fs_summary_job_succeeded(), fv<'s'>(job->accept_returning<std::string>(SummaryNameVisitor(env))));
             }
         }
 
         void visit(const JobFailedState &) const
         {
             need_heading();
-            cout << c::bold_red() << "failed:    " << job->accept_returning<std::string>(
-                    SummaryNameVisitor(env)) << c::normal() << endl;
+            cout << fuc(fs_summary_job_failed(), fv<'s'>(job->accept_returning<std::string>(SummaryNameVisitor(env))));
         }
 
         void visit(const JobSkippedState &) const
@@ -1612,8 +1605,7 @@ namespace
             if (! simple_visitor_cast<const FetchJob>(*job))
             {
                 need_heading();
-                cout << c::bold_yellow() << "skipped:   " << job->accept_returning<std::string>(
-                        SummaryNameVisitor(env)) << c::normal() << endl;
+                cout << fuc(fs_summary_job_skipped(), fv<'s'>(job->accept_returning<std::string>(SummaryNameVisitor(env))));
             }
         }
     };
