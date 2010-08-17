@@ -640,9 +640,3 @@ paludis::cave::f::sync_repo_tail()
     return "    ... %s\\n";
 }
 
-const std::string
-paludis::cave::f::executables_file()
-{
-    return c::bold_blue_or_pink() + "%s" + c::normal() + "\\n";
-}
-

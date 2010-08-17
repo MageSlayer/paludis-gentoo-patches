@@ -23,6 +23,7 @@
 #include "executables_common.hh"
 #include "formats.hh"
 #include "format_general.hh"
+#include "format_user_config.hh"
 
 #include <paludis/args/args.hh>
 #include <paludis/args/do_help.hh>
@@ -44,6 +45,8 @@ using std::endl;
 
 namespace
 {
+#include "cmd_executables-fmt.hh"
+
     struct ExecutablesCommandLine :
         CaveCommandCommandLine
     {
@@ -70,7 +73,7 @@ namespace
 
     void format_fsentry(const FSEntry & f)
     {
-        cout << format_general_s(f::executables_file(), stringify(f));
+        cout << fuc(fs_file(), fv<'s'>(stringify(f)));
     }
 }
 
