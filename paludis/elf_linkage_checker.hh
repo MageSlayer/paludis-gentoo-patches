@@ -32,7 +32,7 @@ namespace paludis
         private paludis::Pimp<ElfLinkageChecker>
     {
         public:
-            ElfLinkageChecker(const paludis::FSEntry &, const std::string &);
+            ElfLinkageChecker(const paludis::FSEntry &, const std::shared_ptr<const Sequence<std::string>> &);
             virtual ~ElfLinkageChecker();
 
             virtual bool check_file(const paludis::FSEntry &) PALUDIS_ATTRIBUTE((warn_unused_result));

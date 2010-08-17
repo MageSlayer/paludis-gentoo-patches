@@ -32,6 +32,7 @@
 #include <paludis/util/mutex.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/sequence.hh>
 #include <paludis/util/member_iterator-impl.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -105,7 +106,7 @@ namespace paludis
     struct Imp<ElfLinkageChecker>
     {
         FSEntry root;
-        std::string library;
+        std::set<std::string> check_libraries;
 
         Mutex mutex;
 
@@ -121,16 +122,17 @@ namespace paludis
         void handle_library(const FSEntry &, const ElfArchitecture &);
         template <typename> bool check_extra_elf(const FSEntry &, std::istream &, std::set<ElfArchitecture> &);
 
-        Imp(const FSEntry & the_root, const std::string & the_library) :
-            root(the_root),
-            library(the_library)
+        Imp(const FSEntry & the_root, const std::shared_ptr<const Sequence<std::string>> & the_libraries) :
+            root(the_root)
         {
+            for (auto it(the_libraries->begin()), it_end(the_libraries->end()); it_end != it; ++it)
+                check_libraries.insert(*it);
         }
     };
 }
 
-ElfLinkageChecker::ElfLinkageChecker(const FSEntry & root, const std::string & library) :
-    Pimp<ElfLinkageChecker>(root, library)
+ElfLinkageChecker::ElfLinkageChecker(const FSEntry & root, const std::shared_ptr<const Sequence<std::string>> & libraries) :
+    Pimp<ElfLinkageChecker>(root, libraries)
 {
 }
 
@@ -175,7 +177,7 @@ Imp<ElfLinkageChecker>::check_elf(const FSEntry & file, std::istream & stream)
 
         Lock l(mutex);
 
-        if (library.empty() && ET_DYN == elf.get_type())
+        if (check_libraries.empty() && ET_DYN == elf.get_type())
             handle_library(file, arch);
 
         for (typename ElfObject<ElfType_>::SectionIterator sec_it(elf.section_begin()),
@@ -192,7 +194,7 @@ Imp<ElfLinkageChecker>::check_elf(const FSEntry & file, std::istream & stream)
                     if (0 != ent_str && "NEEDED" == ent_str->tag_name())
                     {
                         const std::string & req((*ent_str)());
-                        if (library.empty() || library == req)
+                        if (check_libraries.empty() || check_libraries.end() != check_libraries.find(req))
                         {
                             Log::get_instance()->message("reconcilio.broken_linkage_finder.depends", ll_debug, lc_context)
                                 << "File depends on " << req;
@@ -231,7 +233,7 @@ Imp<ElfLinkageChecker>::handle_library(const FSEntry & file, const ElfArchitectu
 void
 ElfLinkageChecker::note_symlink(const FSEntry & link, const FSEntry & target)
 {
-    if (_imp->library.empty())
+    if (_imp->check_libraries.empty())
     {
         Lock l(_imp->mutex);
 
