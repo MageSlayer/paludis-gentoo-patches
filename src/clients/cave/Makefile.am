@@ -154,7 +154,7 @@ libcave_a_SOURCES = \
 	cmd_resume.cc cmd_resume.hh \
 	cmd_search.cc cmd_search.hh \
 	cmd_search_cmdline.cc cmd_search_cmdline.hh \
-	cmd_show.cc cmd_show.hh \
+	cmd_show.cc cmd_show.hh cmd_show-fmt.hh \
 	cmd_sync.cc cmd_sync.hh cmd_sync-fmt.hh \
 	cmd_uninstall.cc cmd_uninstall.hh \
 	cmd_update_world.cc cmd_update_world.hh \

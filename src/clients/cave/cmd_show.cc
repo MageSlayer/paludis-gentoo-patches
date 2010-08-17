@@ -23,6 +23,7 @@
 #include "formats.hh"
 #include "exceptions.hh"
 #include "select_format_for_spec.hh"
+#include "format_user_config.hh"
 #include <paludis/args/args.hh>
 #include <paludis/args/do_help.hh>
 #include <paludis/name.hh>
@@ -63,6 +64,8 @@ using std::endl;
 
 namespace
 {
+#include "cmd_show-fmt.hh"
+
     struct ShowCommandLine :
         CaveCommandCommandLine
     {
@@ -821,7 +824,7 @@ namespace
             const std::shared_ptr<Environment> & env,
             const RepositoryName & s)
     {
-        cout << format_general_s(f::show_repository_heading(), stringify(s));
+        cout << fuc(fs_repository_heading(), fv<'s'>(stringify(s)));
 
         const std::shared_ptr<const Repository> repo(env->package_database()->fetch_repository(s));
         std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator> keys(repo->begin_metadata(), repo->end_metadata());
