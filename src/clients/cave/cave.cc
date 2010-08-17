@@ -33,6 +33,7 @@
 
 #include "command_factory.hh"
 #include "command_line.hh"
+#include "format_user_config.hh"
 
 using namespace paludis;
 using std::endl;
@@ -85,7 +86,14 @@ int main(int argc, char * argv[])
             cave_var = cave_var + " --" + cmdline.a_environment.long_name() + " " + cmdline.a_environment.argument();
         if (cmdline.a_log_level.specified())
             cave_var = cave_var + " --" + cmdline.a_log_level.long_name() + " " + cmdline.a_log_level.argument();
+        if (cmdline.a_colour.specified())
+            cave_var = cave_var + " --" + cmdline.a_colour.long_name() + " " + cmdline.a_colour.argument();
         setenv("CAVE", cave_var.c_str(), 1);
+
+        if (cmdline.a_colour.argument() == "yes")
+            cave::set_want_colours(true);
+        else if (cmdline.a_colour.argument() == "no")
+            cave::set_want_colours(false);
 
         Log::get_instance()->set_program_name(argv[0]);
         Log::get_instance()->set_log_level(cmdline.a_log_level.option());

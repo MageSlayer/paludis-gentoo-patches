@@ -48,6 +48,8 @@ namespace paludis
             args::ArgsGroup g_global_options;
             args::StringArg a_environment;
             args::LogLevelArg a_log_level;
+            args::EnumArg a_colour;
+            args::AliasArg a_color;
             args::SwitchArg a_help;
             args::SwitchArg a_version;
 

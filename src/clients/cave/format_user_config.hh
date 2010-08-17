@@ -32,6 +32,8 @@ namespace paludis
 {
     namespace cave
     {
+        void set_want_colours(const bool v);
+
         class FormatUserConfigFile :
             private Pimp<FormatUserConfigFile>,
             public Singleton<FormatUserConfigFile>

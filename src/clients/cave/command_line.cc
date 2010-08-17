@@ -28,6 +28,14 @@ CaveCommandLine::CaveCommandLine() :
     a_environment(&g_global_options, "environment", 'E',
             "Environment specification (class:suffix, both parts optional)"),
     a_log_level(&g_global_options, "log-level", '\0'),
+    a_colour(&g_global_options, "colour", 'c',
+            "Specify whether to use colour",
+            args::EnumArg::EnumArgOptions
+            ("auto",       'a', "Yes if stdout is connected to a terminal")
+            ("yes",        'y', "Yes")
+            ("no",         'n', "No"),
+            "auto"),
+    a_color(&a_colour, "color", true),
     a_help(&g_global_options, "help", 'h', "display help message", false),
     a_version(&g_global_options, "version", 'v', "display version information", false)
 {

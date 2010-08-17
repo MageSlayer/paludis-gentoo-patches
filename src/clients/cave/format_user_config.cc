@@ -31,45 +31,57 @@
 using namespace paludis;
 using namespace cave;
 
-std::string
-user_config_file_presets(
-        const KeyValueConfigFile & k,
-        const std::string & s)
+namespace
 {
-    static std::map<std::string, std::string> colours{
-        { "red",         "\033[0;31m" },
-        { "bold_red",    "\033[1;31m" },
-        { "green",       "\033[0;32m" },
-        { "bold_green",  "\033[1;32m" },
-        { "yellow",      "\033[0;33m" },
-        { "bold_yellow", "\033[1;33m" },
-        { "blue",        "\033[0;34m" },
-        { "bold_blue",   "\033[1;34m" },
-        { "pink",        "\033[0;35m" },
-        { "bold_pink",   "\033[1;35m" },
-        { "normal",      "\033[0;0m" },
-        { "bold_normal", "\033[1m" }
-    };
-
     static bool want_colours(::isatty(STDOUT_FILENO));
+}
 
-    if (0 == s.compare(0, 8, "colours/"))
+void
+paludis::cave::set_want_colours(const bool v)
+{
+    want_colours = v;
+}
+
+namespace
+{
+    std::string
+    user_config_file_presets(
+            const KeyValueConfigFile & k,
+            const std::string & s)
     {
-        auto i(colours.find(s.substr(8)));
-        if (i == colours.end())
-            return "";
+        static std::map<std::string, std::string> colours{
+            { "red",         "\033[0;31m" },
+            { "bold_red",    "\033[1;31m" },
+            { "green",       "\033[0;32m" },
+            { "bold_green",  "\033[1;32m" },
+            { "yellow",      "\033[0;33m" },
+            { "bold_yellow", "\033[1;33m" },
+            { "blue",        "\033[0;34m" },
+            { "bold_blue",   "\033[1;34m" },
+            { "pink",        "\033[0;35m" },
+            { "bold_pink",   "\033[1;35m" },
+            { "normal",      "\033[0;0m" },
+            { "bold_normal", "\033[1m" }
+        };
+
+        if (0 == s.compare(0, 8, "colours/"))
+        {
+            auto i(colours.find(s.substr(8)));
+            if (i == colours.end())
+                return "";
+            else
+                return i->second;
+        }
         else
-            return i->second;
-    }
-    else
-    {
-        auto i(colours.find(s));
-        if (i == colours.end())
-            return "";
-        else if (want_colours)
-            return k.get("colours/" + s);
-        else
-            return k.get("colourless/" + s);
+        {
+            auto i(colours.find(s));
+            if (i == colours.end())
+                return "";
+            else if (want_colours)
+                return k.get("colours/" + s);
+            else
+                return k.get("colourless/" + s);
+        }
     }
 }
 
