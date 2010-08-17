@@ -121,7 +121,7 @@ libcave_a_SOURCES = \
 	cmd_fix_linkage.cc cmd_fix_linkage.hh \
 	cmd_help.cc cmd_help.hh \
 	cmd_import.cc cmd_import.hh \
-	cmd_info.cc cmd_info.hh \
+	cmd_info.cc cmd_info.hh cmd_info-fmt.hh \
 	cmd_manage_search_index.cc cmd_manage_search_index.hh \
 	cmd_match.cc cmd_match.hh \
 	cmd_owner.cc cmd_owner.hh cmd_owner-fmt.hh \

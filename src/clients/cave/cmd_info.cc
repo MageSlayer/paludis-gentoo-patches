@@ -23,6 +23,8 @@
 #include "format_general.hh"
 #include "formats.hh"
 #include "exceptions.hh"
+#include "format_user_config.hh"
+
 #include <paludis/args/args.hh>
 #include <paludis/args/do_help.hh>
 #include <paludis/name.hh>
@@ -57,6 +59,8 @@ using std::endl;
 
 namespace
 {
+#include "cmd_info-fmt.hh"
+
     struct InfoCommandLine :
         CaveCommandCommandLine
     {
@@ -145,7 +149,7 @@ namespace
 
         void visit(const MetadataSectionKey & k)
         {
-            cout << format_general_his(f::info_metadata_subsection(), k.human_name(), indent, k.human_name());
+            cout << fuc(fs_metadata_subsection(), fv<'i'>(std::string(indent, ' ')), fv<'s'>(k.human_name()));
             std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator> keys(k.begin_metadata(), k.end_metadata());
             for (std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
                     s(keys.begin()), s_end(keys.end()) ; s != s_end ; ++s)
@@ -158,104 +162,103 @@ namespace
         void visit(const MetadataCollectionKey<KeywordNameSet> & k)
         {
             ColourFormatter f(indent);
-            cout << format_general_his(f::info_metadata(), k.human_name(), indent, k.pretty_print_flat(f));
+            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(k.pretty_print_flat(f)));
         }
 
         void visit(const MetadataCollectionKey<Set<std::string> > & k)
         {
             ColourFormatter f(indent);
-            cout << format_general_his(f::info_metadata(), k.human_name(), indent, k.pretty_print_flat(f));
+            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(k.pretty_print_flat(f)));
         }
 
         void visit(const MetadataCollectionKey<Sequence<std::string> > & k)
         {
             ColourFormatter f(indent);
-            cout << format_general_his(f::info_metadata(), k.human_name(), indent, k.pretty_print_flat(f));
+            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(k.pretty_print_flat(f)));
         }
 
         void visit(const MetadataCollectionKey<PackageIDSequence> & k)
         {
             ColourFormatter f(indent);
-            cout << format_general_his(f::info_metadata(), k.human_name(), indent, k.pretty_print_flat(f));
+            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(k.pretty_print_flat(f)));
         }
 
         void visit(const MetadataCollectionKey<FSEntrySequence> & k)
         {
-            ColourFormatter f(indent);
-            cout << format_general_his(f::info_metadata(), k.human_name(), indent,
-                    join(k.value()->begin(), k.value()->end(), "  "));
+            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(
+                        join(k.value()->begin(), k.value()->end(), "  ")));
         }
 
         void visit(const MetadataSpecTreeKey<LicenseSpecTree> & k)
         {
             ColourFormatter f(indent);
-            cout << format_general_his(f::info_metadata(), k.human_name(), indent, k.pretty_print_flat(f));
+            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(k.pretty_print_flat(f)));
         }
 
         void visit(const MetadataSpecTreeKey<SimpleURISpecTree> & k)
         {
             ColourFormatter f(indent);
-            cout << format_general_his(f::info_metadata(), k.human_name(), indent, k.pretty_print_flat(f));
+            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(k.pretty_print_flat(f)));
         }
 
         void visit(const MetadataSpecTreeKey<PlainTextSpecTree> & k)
         {
             ColourFormatter f(indent);
-            cout << format_general_his(f::info_metadata(), k.human_name(), indent, k.pretty_print_flat(f));
+            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(k.pretty_print_flat(f)));
         }
 
         void visit(const MetadataSpecTreeKey<FetchableURISpecTree> & k)
         {
             ColourFormatter f(indent);
-            cout << format_general_his(f::info_metadata(), k.human_name(), indent, k.pretty_print_flat(f));
+            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(k.pretty_print_flat(f)));
         }
 
         void visit(const MetadataSpecTreeKey<ProvideSpecTree> & k)
         {
             ColourFormatter f(indent);
-            cout << format_general_his(f::info_metadata(), k.human_name(), indent, k.pretty_print_flat(f));
+            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(k.pretty_print_flat(f)));
         }
 
         void visit(const MetadataSpecTreeKey<DependencySpecTree> & k)
         {
             ColourFormatter f(indent);
-            cout << format_general_his(f::info_metadata(), k.human_name(), indent, k.pretty_print_flat(f));
+            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(k.pretty_print_flat(f)));
         }
 
         void visit(const MetadataValueKey<std::string> & k)
         {
             ColourFormatter f(indent);
-            cout << format_general_his(f::info_metadata(), k.human_name(), indent, stringify(k.value()));
+            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(stringify(k.value())));
         }
 
         void visit(const MetadataValueKey<SlotName> & k)
         {
             ColourFormatter f(indent);
-            cout << format_general_his(f::info_metadata(), k.human_name(), indent, stringify(k.value()));
+            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(stringify(k.value())));
         }
 
         void visit(const MetadataValueKey<long> & k)
         {
             ColourFormatter f(indent);
-            cout << format_general_his(f::info_metadata(), k.human_name(), indent, stringify(k.value()));
+            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(stringify(k.value())));
         }
 
         void visit(const MetadataValueKey<bool> & k)
         {
             ColourFormatter f(indent);
-            cout << format_general_his(f::info_metadata(), k.human_name(), indent, stringify(k.value()));
+            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(stringify(k.value())));
         }
 
         void visit(const MetadataValueKey<FSEntry> & k)
         {
             ColourFormatter f(indent);
-            cout << format_general_his(f::info_metadata(), k.human_name(), indent, stringify(k.value()));
+            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(stringify(k.value())));
         }
 
         void visit(const MetadataValueKey<std::shared_ptr<const PackageID> > & k)
         {
             ColourFormatter f(indent);
-            cout << format_general_his(f::info_metadata(), k.human_name(), indent, stringify(*k.value()));
+            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(stringify(*k.value())));
         }
 
         void visit(const MetadataValueKey<std::shared_ptr<const Contents> > &)
@@ -272,8 +275,7 @@ namespace
 
         void visit(const MetadataTimeKey & k)
         {
-            ColourFormatter f(indent);
-            cout << format_general_his(f::info_metadata(), k.human_name(), indent, pretty_print_time(k.value().seconds()));
+            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(pretty_print_time(k.value().seconds())));
         }
     };
 
@@ -282,7 +284,7 @@ namespace
             const std::shared_ptr<Environment> &,
             const std::shared_ptr<const Repository> & repo)
     {
-        cout << format_general_s(f::info_repository_heading(), stringify(repo->name()));
+        cout << fuc(fs_repository_heading(), fv<'s'>(stringify(repo->name())));
         std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator> keys(repo->begin_metadata(), repo->end_metadata());
         for (std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
                 k(keys.begin()), k_end(keys.end()) ; k != k_end ; ++k)
@@ -300,7 +302,7 @@ namespace
             const InfoCommandLine & cmdline,
             const std::shared_ptr<Environment> & env)
     {
-        cout << format_general_s(f::info_heading(), "Environment Information");
+        cout << fuc(fs_heading(), fv<'s'>("Environment Information"));
         std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator> keys(env->begin_metadata(), env->end_metadata());
         for (std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
                 k(keys.begin()), k_end(keys.end()) ; k != k_end ; ++k)
@@ -318,7 +320,7 @@ namespace
             const InfoCommandLine & cmdline,
             const std::shared_ptr<Environment> &)
     {
-        cout << format_general_s(f::info_heading(), "Package Manager Information");
+        cout << fuc(fs_heading(), fv<'s'>("Package Manager Information"));
         std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator> keys(AboutMetadata::get_instance()->begin_metadata(),
                 AboutMetadata::get_instance()->end_metadata());
         for (std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
@@ -341,7 +343,7 @@ namespace
         if (! id->supports_action(SupportsActionTest<InfoAction>()))
             return;
 
-        cout << format_general_s(f::info_id_heading(), stringify(*id));
+        cout << fuc(fs_id_heading(), fv<'s'>(stringify(*id)));
 
         std::shared_ptr<Sequence<std::string> > args(std::make_shared<Sequence<std::string>>());
         args->push_back("info");
