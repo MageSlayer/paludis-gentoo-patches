@@ -46,6 +46,91 @@ namespace paludis
                 std::string fetch(const std::string & v, int vi, const std::string & d) const;
         };
 
+        template <char... cs_>
+        struct CharList
+        {
+        };
+
+        template <char... cs_>
+        struct MinElement;
+
+        template <char c_>
+        struct MinElement<c_>
+        {
+            enum { value = c_ };
+        };
+
+        template <char c_, char... cs_>
+        struct MinElement<c_, cs_...>
+        {
+            enum {
+                cs_value = MinElement<cs_...>::value,
+                c_value = c_,
+                value = (cs_value < c_value ? cs_value : c_value)
+            };
+        };
+
+        template <template <char...> class, char, typename>
+        struct MakeFromCharAndCharList;
+
+        template <template <char...> class Result_, char c_, char... cs_>
+        struct MakeFromCharAndCharList<Result_, c_, CharList<cs_...> >
+        {
+            typedef Result_<c_, cs_...> Type;
+        };
+
+        template <template <char...> class, char... cs_>
+        struct Sort;
+
+        template <template <char...> class Result_>
+        struct Sort<Result_>
+        {
+            typedef Result_<> Type;
+        };
+
+        template <template <char...> class Result_, char c_>
+        struct Sort<Result_, c_>
+        {
+            typedef Result_<c_> Type;
+        };
+
+        template <char c_, typename Already_, typename Remainder_>
+        struct Remove;
+
+        template <char c_, char... ca_>
+        struct Remove<c_, CharList<ca_...>, CharList<> >
+        {
+            typedef CharList<ca_...> Type;
+        };
+
+        template <char c_, char... ca_, char ch_, char... cb_>
+        struct Remove<c_, CharList<ca_...>, CharList<ch_, cb_...> >
+        {
+            typedef typename std::conditional<(c_ == ch_),
+                    typename Remove<c_, CharList<ca_...>, CharList<cb_...> >::Type,
+                    typename Remove<c_, CharList<ca_..., ch_>, CharList<cb_...> >::Type
+                >::type Type;
+        };
+
+        template <template <char...> class, typename>
+        struct UnwrapSort;
+
+        template <template <char...> class Result_, char... cs_>
+        struct UnwrapSort<Result_, CharList<cs_...> >
+        {
+            typedef typename Sort<Result_, cs_...>::Type Type;
+        };
+
+        template <template <char...> class Result_, char c_, char... cs_>
+        struct Sort<Result_, c_, cs_...>
+        {
+            typedef typename MakeFromCharAndCharList<
+                Result_,
+                MinElement<c_, cs_...>::value,
+                typename UnwrapSort<CharList, typename Remove<MinElement<c_, cs_...>::value, CharList<>, CharList<c_, cs_...> >::Type>::Type
+                >::Type Type;
+        };
+
         template <char c_>
         struct FormatValue
         {
@@ -125,24 +210,9 @@ namespace paludis
         };
 
         template <char... cs_>
-        struct MakeOrderedFormatValues;
-
-        template <>
-        struct MakeOrderedFormatValues<>
+        struct MakeOrderedFormatValues
         {
-            typedef OrderedFormatValues<> Type;
-        };
-
-        template <char a_>
-        struct MakeOrderedFormatValues<a_>
-        {
-            typedef OrderedFormatValues<a_> Type;
-        };
-
-        template <char a_, char b_>
-        struct MakeOrderedFormatValues<a_, b_>
-        {
-            typedef OrderedFormatValues<(a_ < b_ ? a_ : b_), (a_ < b_ ? b_ : a_)> Type;
+            typedef typename Sort<OrderedFormatValues, cs_...>::Type Type;
         };
 
         template <char... cs_>
@@ -194,18 +264,44 @@ namespace paludis
         }
 
         template <char... cs_>
-        struct MakeMakeFormatStringFetcher;
-
-        template <char a_>
-        struct MakeMakeFormatStringFetcher<a_>
+        struct MakeMakeFormatStringFetcher
         {
-            typedef MakeFormatStringFetcher<a_> Type;
+            typedef typename Sort<MakeFormatStringFetcher, cs_...>::Type Type;
         };
 
-        template <char a_, char b_>
-        struct MakeMakeFormatStringFetcher<a_, b_>
+        template <char c_, char... cs_>
+        struct CharAlreadyInChars;
+
+        template <char c_>
+        struct CharAlreadyInChars<c_>
         {
-            typedef MakeFormatStringFetcher<(a_ < b_ ? a_ : b_), (a_ < b_ ? b_ : a_)> Type;
+            enum { value = false };
+        };
+
+        template <char c_, char h_, char... cs_>
+        struct CharAlreadyInChars<c_, h_, cs_...>
+        {
+            enum { value = c_ == h_ || CharAlreadyInChars<h_, cs_...>::value };
+        };
+
+        template <bool b_, char c_, char... cs_>
+        struct MakeDeduplicatedMakeFormatStringFetcherResult
+        {
+            typedef MakeFormatStringFetcher<cs_...> Type;
+        };
+
+        template <char c_, char... cs_>
+        struct MakeDeduplicatedMakeFormatStringFetcherResult<false, c_, cs_...>
+        {
+            typedef typename MakeMakeFormatStringFetcher<c_, cs_...>::Type Type;
+        };
+
+        template <char c_, char... cs_>
+        struct MakeDeduplicatedMakeFormatStringFetcher
+        {
+            typedef typename MakeDeduplicatedMakeFormatStringFetcherResult<
+                CharAlreadyInChars<c_, cs_...>::value,
+                c_, cs_...>::Type Type;
         };
 
         template <char c_>
@@ -228,10 +324,11 @@ namespace paludis
         }
 
         template <char c_, char... cs_>
-        typename MakeMakeFormatStringFetcher<c_, cs_...>::Type
+        typename MakeDeduplicatedMakeFormatStringFetcher<c_, cs_...>::Type
         operator<< (MakeFormatStringFetcher<cs_...> && f, const FormatParam<c_> &)
         {
-            typename MakeMakeFormatStringFetcher<c_, cs_...>::Type result{std::move(f.user_key), f.user_key_version, std::move(f.text)};
+            typename MakeDeduplicatedMakeFormatStringFetcher<c_, cs_...>::Type result{
+                std::move(f.user_key), f.user_key_version, std::move(f.text)};
             result.text.append("%");
             result.text.append(1, c_);
             return result;
