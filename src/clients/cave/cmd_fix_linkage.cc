@@ -201,15 +201,12 @@ FixLinkageCommand::run(
                  file_it_end(finder->end_broken_files(*pkg_it)); file_it_end != file_it; ++file_it)
         {
             cout << "    " << *file_it;
-            if (libraries->empty())
-            {
-                cout << " (requires "
-                          << join(finder->begin_missing_requirements(*pkg_it, *file_it),
-                                  finder->end_missing_requirements(*pkg_it, *file_it),
-                                  " ") << ")";
-                std::copy(finder->begin_missing_requirements(*pkg_it, *file_it), finder->end_missing_requirements(*pkg_it, *file_it),
-                        std::inserter(broken_files, broken_files.end()));
-            }
+            cout << " (requires "
+                      << join(finder->begin_missing_requirements(*pkg_it, *file_it),
+                              finder->end_missing_requirements(*pkg_it, *file_it),
+                              " ") << ")";
+            std::copy(finder->begin_missing_requirements(*pkg_it, *file_it), finder->end_missing_requirements(*pkg_it, *file_it),
+                    std::inserter(broken_files, broken_files.end()));
             cout << endl;
         }
 
@@ -232,17 +229,16 @@ FixLinkageCommand::run(
         if (libraries->empty())
             cout << endl << "The following broken files are not owned by any installed package:" << endl;
         else
-            cout << endl << "The following files that depend on " << join(libraries->begin(), libraries->end(), ", ") << " are not owned by any installed package:" << endl;
+            cout << endl << "The following files that depend on the specified library(ies) are not owned by any installed package:" << endl;
 
         for (BrokenLinkageFinder::BrokenFileConstIterator file_it(finder->begin_broken_files(orphans)),
                  file_it_end(finder->end_broken_files(orphans)); file_it_end != file_it; ++file_it)
         {
             cout << "    " << *file_it;
-            if (libraries->empty())
-                cout << " (requires "
-                          << join(finder->begin_missing_requirements(orphans, *file_it),
-                                  finder->end_missing_requirements(orphans, *file_it),
-                                  " ") << ")";
+            cout << " (requires "
+                      << join(finder->begin_missing_requirements(orphans, *file_it),
+                              finder->end_missing_requirements(orphans, *file_it),
+                              " ") << ")";
             cout << endl;
         }
     }
