@@ -15,3 +15,16 @@ const auto fs_id_heading = make_format_string_fetcher("info/id_heading", 1)
 const auto fs_heading = make_format_string_fetcher("info/heading", 1)
     << c::blue_or_pink() << param<'s'>() << c::normal() << ":\\n";
 
+const auto fs_contents_file = make_format_string_fetcher("info/contents_file", 1)
+    << param_if<'b'>() << "%{column 30}" << param_endif<'b'>() << param<'r'>() << param_if<'b'>() << "\\n" << param_else<'b'>() << " " << param_endif<'b'>();
+
+const auto fs_contents_other = make_format_string_fetcher("info/contents_other", 1)
+    << param_if<'b'>() << "%{column 30}" << param_endif<'b'>() << param<'r'>() << param_if<'b'>() << "\\n" << param_else<'b'>() << " " << param_endif<'b'>();
+
+const auto fs_contents_dir = make_format_string_fetcher("info/contents_dir", 1)
+    << param_if<'b'>() << "%{column 30}" << param_endif<'b'>() << param<'r'>() << param_if<'b'>() << "\\n" << param_else<'b'>() << " " << param_endif<'b'>();
+
+const auto fs_contents_sym = make_format_string_fetcher("info/contents_sym", 1)
+    << param_if<'b'>() << "%{column 30}" << param_endif<'b'>() << param<'r'>() << " -> " << param<'v'>()
+    << param_if<'b'>() << "\\n" << param_else<'b'>() << " " << param_endif<'b'>();
+

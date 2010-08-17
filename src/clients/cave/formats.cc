@@ -233,30 +233,6 @@ paludis::cave::f::show_package_id_masks_overridden()
 }
 
 const std::string
-paludis::cave::f::show_contents_file()
-{
-    return "%{if b}%{column 30}%{endif}%r%{if b}\\n%{else} %{endif}";
-}
-
-const std::string
-paludis::cave::f::show_contents_other()
-{
-    return "%{if b}%{column 30}%{endif}%r%{if b}\\n%{else} %{endif}";
-}
-
-const std::string
-paludis::cave::f::show_contents_dir()
-{
-    return "%{if b}%{column 30}%{endif}%r%{if b}\\n%{else} %{endif}";
-}
-
-const std::string
-paludis::cave::f::show_contents_sym()
-{
-    return "%{if b}%{column 30}%{endif}%r -> %v%{if b}\\n%{else} %{endif}";
-}
-
-const std::string
 paludis::cave::f::show_choice_forced_enabled()
 {
     return c::green_or_pink() + "(%s)" + c::normal() + "%r";
