@@ -960,7 +960,7 @@ namespace
             const std::shared_ptr<const PackageID> & maybe_old_id,
             const bool old_id_is_installed)
     {
-        cout << format_general_s(f::show_package_id_heading(), stringify(*best));
+        cout << fuc(fs_package_id_heading(), fv<'s'>(stringify(*best)));
         std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator> keys(best->begin_metadata(), best->end_metadata());
         for (std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
                 k(keys.begin()), k_end(keys.end()) ; k != k_end ; ++k)
@@ -972,14 +972,14 @@ namespace
 
         if (best->masked())
         {
-            cout << format_general_s(f::show_package_id_masks(), "Masked");
+            cout << fuc(fs_package_id_masks(), fv<'s'>("Masked"));
             MaskDisplayer d(cmdline, 2);
             std::for_each(indirect_iterator(best->begin_masks()), indirect_iterator(best->end_masks()), accept_visitor(d));
         }
 
         if (best->begin_overridden_masks() != best->end_overridden_masks())
         {
-            cout << format_general_s(f::show_package_id_masks_overridden(), "Overridden Masks");
+            cout << fuc(fs_package_id_masks_overridden(), fv<'s'>("Overridden Masks"));
             MaskDisplayer d(cmdline, 2);
             for (PackageID::OverriddenMasksConstIterator m(best->begin_overridden_masks()), m_end(best->end_overridden_masks()) ;
                     m != m_end ; ++m)

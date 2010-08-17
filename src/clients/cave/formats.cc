@@ -184,21 +184,3 @@ paludis::cave::f::show_package_no_slot()
     return " {no slot}";
 }
 
-const std::string
-paludis::cave::f::show_package_id_heading()
-{
-    return "    " + c::bold_blue_or_pink() + "%s" + c::normal() + "\\n";
-}
-
-const std::string
-paludis::cave::f::show_package_id_masks()
-{
-    return "        " + c::bold_red() + "%s" + c::normal() + "\\n";
-}
-
-const std::string
-paludis::cave::f::show_package_id_masks_overridden()
-{
-    return "        " + c::green_or_pink() + "%s" + c::normal() + "\\n";
-}
-
