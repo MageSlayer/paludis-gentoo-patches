@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006 Ciaran McCreesh
+ * Copyright (c) 2006, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -27,10 +27,10 @@ LogLevelArg::LogLevelArg(ArgsGroup * const grp, const std::string & ln,
         char sh) :
     EnumArg(grp, ln, sh, "Specify the log level",
             EnumArgOptions
-            ("debug",   "Show debug output (noisy)")
-            ("qa",      "Show QA messages and warnings only")
-            ("warning", "Show warnings only")
-            ("silent",  "Suppress all log messages (UNSAFE)"),
+            ("debug",   'd', "Show debug output (noisy)")
+            ("qa",      'q', "Show QA messages and warnings only")
+            ("warning", 'w', "Show warnings only")
+            ("silent",  's', "Suppress all log messages (UNSAFE)"),
             "qa")
 {
 }
