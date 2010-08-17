@@ -23,6 +23,7 @@
 #include "command_command_line.hh"
 #include "colours.hh"
 #include "colour_formatter.hh"
+#include "format_user_config.hh"
 #include <paludis/args/do_help.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/system.hh>
@@ -98,6 +99,8 @@ typedef std::map<std::string, int> AlreadyCycleNotes;
 
 namespace
 {
+#include "cmd_display_resolution-fmt.hh"
+
     struct DisplayResolutionCommandLine :
         CaveCommandCommandLine
     {
@@ -371,15 +374,15 @@ namespace
 
     void display_explanation_constraints(const Constraints & constraints)
     {
-        cout << "    The following constraints were in action:" << endl;
+        cout << fuc(fs_explanation_constraints_header());
         for (Constraints::ConstIterator c(constraints.begin()), c_end(constraints.end()) ;
                 c != c_end ; ++c)
         {
-            cout << "      * " << constraint_as_string(**c) << endl;
-            cout << "        Because of ";
+            cout << fuc(fs_explanation_constraint(), fv<'c'>(constraint_as_string(**c)));
+
             ReasonNameGetter g(true, true);
-            cout << (*c)->reason()->accept_returning<std::pair<std::string, Tribool> >(g).first;
-            cout << endl;
+            cout << fuc(fs_explanation_constraint_reason(), fv<'r'>(
+                        (*c)->reason()->accept_returning<std::pair<std::string, Tribool> >(g).first));
         }
     }
 
@@ -387,61 +390,63 @@ namespace
     {
         void visit(const ExistingNoChangeDecision & d) const
         {
-            cout << "    The decision made was:" << endl;
+            cout << fuc(fs_explanation_decision_heading());
             if (d.taken())
-                cout << "        Use existing ID " << *d.existing_id() << endl;
+                cout << fuc(fs_explanation_decision_existing_taken(), fv<'i'>(stringify(*d.existing_id())));
             else
-                cout << "        Do not take existing ID " << *d.existing_id() << endl;
+                cout << fuc(fs_explanation_decision_existing_untaken(), fv<'i'>(stringify(*d.existing_id())));
         }
 
         void visit(const RemoveDecision & d) const
         {
-            cout << "    The decision made was:" << endl;
+            cout << fuc(fs_explanation_decision_heading());
             if (d.taken())
-                cout << "        Remove existing IDs" << endl;
+                cout << fuc(fs_explanation_decision_remove_taken());
             else
-                cout << "        No not remove existing IDs" << endl;
+                cout << fuc(fs_explanation_decision_remove_untaken());
+
             for (PackageIDSequence::ConstIterator i(d.ids()->begin()), i_end(d.ids()->end()) ;
                     i != i_end ; ++i)
-                cout << "            Remove " << **i << endl;
+                cout << fuc(fs_explanation_decision_remove_id(), fv<'i'>(stringify(**i)));
         }
 
         void visit(const NothingNoChangeDecision &) const
         {
-            cout << "    The decision made was:" << endl;
-            cout << "        Do not do anything" << endl;
+            cout << fuc(fs_explanation_decision_heading());
+            cout << fuc(fs_explanation_decision_nothing());
         }
 
         void visit(const ChangesToMakeDecision & d) const
         {
             if (d.taken())
-                cout << "    The decision made was:" << endl;
+                cout << fuc(fs_explanation_decision_heading());
             else
-                cout << "    The decision made was not to:" << endl;
-            cout << "        Use origin ID " << *d.origin_id();
+                cout << fuc(fs_explanation_decision_untaken_heading());
+
+            cout << fuc(fs_explanation_decision_change_origin(), fv<'i'>(stringify(*d.origin_id())));
             if (d.if_via_new_binary_in())
-                cout << " via binary created in " << *d.if_via_new_binary_in();
-            cout << endl;
-            cout << "        Install to repository " << d.destination()->repository() << endl;
+                cout << fuc(fs_explanation_decision_change_via(), fv<'r'>(stringify(*d.if_via_new_binary_in())));
+            cout << fuc(fs_explanation_decision_change_destination(), fv<'r'>(stringify(d.destination()->repository())));
+
             for (PackageIDSequence::ConstIterator i(d.destination()->replacing()->begin()), i_end(d.destination()->replacing()->end()) ;
                     i != i_end ; ++i)
-                cout << "            Replacing " << **i << endl;
+                cout << fuc(fs_explanation_decision_change_replacing(), fv<'i'>(stringify(**i)));
         }
 
         void visit(const UnableToMakeDecision & d) const
         {
             if (d.taken())
-                cout << "    No decision could be made" << endl;
+                cout << fuc(fs_explanation_decision_unable_taken());
             else
-                cout << "    No decision could be made, but none was necessary" << endl;
+                cout << fuc(fs_explanation_decision_unable_untaken());
         }
 
         void visit(const BreakDecision & d) const
         {
             if (d.taken())
-                cout << "    The decision made was to break " << *d.existing_id() << endl;
+                cout << fuc(fs_explanation_decision_break_taken(), fv<'i'>(stringify(*d.existing_id())));
             else
-                cout << "    The decision made would be to break " << *d.existing_id() << endl;
+                cout << fuc(fs_explanation_decision_break_untaken(), fv<'i'>(stringify(*d.existing_id())));
         }
     };
 
@@ -460,7 +465,7 @@ namespace
         if (cmdline.display_options.a_explain.begin_args() == cmdline.display_options.a_explain.end_args())
             return;
 
-        cout << "Explaining requested decisions:" << endl << endl;
+        cout << fuc(fs_explaining());
 
         for (args::StringSetArg::ConstIterator i(cmdline.display_options.a_explain.begin_args()),
                 i_end(cmdline.display_options.a_explain.end_args()) ;
@@ -477,7 +482,7 @@ namespace
 
                 any = true;
 
-                cout << "For " << (*r)->resolvent() << ":" << endl;
+                cout << fuc(fs_explaining_resolvent(), fv<'r'>(stringify((*r)->resolvent())));
 
                 display_explanation_constraints(*(*r)->constraints());
                 display_explanation_decision(*(*r)->decision());
@@ -509,7 +514,7 @@ namespace
                         + cmdline.display_options.a_show_descriptions.long_name() + "'");
 
             if (show)
-                cout << "    \"" << id->short_description_key()->value() << "\"" << endl;
+                cout << fuc(fs_description(), fv<'s'>(id->short_description_key()->value()));
         }
     }
 
@@ -635,15 +640,10 @@ namespace
         if (changed_s_prefix.first.empty() && unchanged_s_prefix.first.empty())
             return;
 
-        cout << "    ";
         if (! changed_s_prefix.first.empty())
-        {
-            cout << c::bold_red() << "Need changes for: " << c::normal() << changed_s_prefix.first;
-            if (! changed_s_prefix.first.empty())
-                cout << " " << c::bold_normal() << "No changes needed: " << c::normal();
-        }
-
-        cout << unchanged_s_prefix.first << endl;
+            cout << fuc(fs_choices_need_changes(), fv<'c'>(changed_s_prefix.first), fv<'u'>(unchanged_s_prefix.first));
+        else
+            cout << fuc(fs_choices(), fv<'u'>(unchanged_s_prefix.first));
     }
 
     void display_reasons(
@@ -674,16 +674,12 @@ namespace
         if (reasons.empty() && special_reasons.empty())
             return;
 
-        cout << "    Reasons: ";
+        cout << fuc(fs_reasons());
 
         int n_shown(0);
         for (std::set<std::string>::const_iterator r(special_reasons.begin()), r_end(special_reasons.end()) ;
                 r != r_end ; ++r)
-        {
-            if (++n_shown != 1)
-                cout << ", ";
-            cout << c::bold_yellow() << *r << c::normal();
-        }
+            cout << fuc(fs_reason_special(), fv<'c'>(++n_shown != 1 ? ", " : ""), fv<'r'>(*r));
 
         int n_remaining(reasons.size());
         for (std::set<std::string>::const_iterator r(reasons.begin()), r_end(reasons.end()) ;
@@ -691,17 +687,15 @@ namespace
         {
             if (n_shown >= 3 && n_remaining > 1)
             {
-                cout << ", " << n_remaining << " more";
+                cout << fuc(fs_reason_n_more(), fv<'c'>(", "), fv<'n'>(stringify(n_remaining)));
                 break;
             }
 
             --n_remaining;
-            if (++n_shown != 1)
-                cout << ", ";
-            cout << c::yellow() << *r << c::normal();
+            cout << fuc(fs_reason_normal(), fv<'c'>(++n_shown != 1 ? ", " : ""), fv<'r'>(*r));
         }
 
-        cout << endl;
+        cout << fuc(fs_reasons_end());
     }
 
     struct DisplayConfirmationVisitor
@@ -747,14 +741,13 @@ namespace
     {
         const std::shared_ptr<const RequiredConfirmations> r(decision.required_confirmations_if_any());
         if (r && ! r->empty())
-            cout << c::bold_red() << "    Cannot proceed without: " << c::normal() <<
-                join(indirect_iterator(r->begin()), indirect_iterator(r->end()), ", ", stringify_confirmation) << endl;
+            cout << fuc(fs_confirm(), fv<'s'>(join(indirect_iterator(r->begin()), indirect_iterator(r->end()), ", ", stringify_confirmation)));
     }
 
     void display_untaken_change(
             const ChangesToMakeDecision &)
     {
-        cout << c::bold_green() << "    Take using: " << c::normal() << "--take" << endl;
+        cout << fuc(fs_take());
     }
 
     struct IsPurgeVisitor
@@ -803,7 +796,7 @@ namespace
     void display_untaken_remove(
             const RemoveDecision &)
     {
-        cout << c::bold_green() << "    Take using: " << c::normal() << "--purge" << endl;
+        cout << fuc(fs_take_purge());
     }
 
     struct MaskedByKeyVisitor
@@ -812,127 +805,127 @@ namespace
 
         void visit(const MetadataValueKey<std::shared_ptr<const PackageID> > & k)
         {
-            cout << indent << k.human_name() << " " << *k.value() << endl;
+            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(*k.value())));
         }
 
         void visit(const MetadataValueKey<std::string> & k)
         {
-            cout << indent << k.human_name() << " " << k.value() << endl;
+            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.value())));
         }
 
         void visit(const MetadataValueKey<SlotName> & k)
         {
-            cout << indent << k.human_name() << " " << k.value() << endl;
+            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.value())));
         }
 
         void visit(const MetadataValueKey<long> & k)
         {
-            cout << indent << k.human_name() << " " << k.value() << endl;
+            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.value())));
         }
 
         void visit(const MetadataValueKey<bool> & k)
         {
-            cout << indent << k.human_name() << " " << k.value() << endl;
+            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.value())));
         }
 
         void visit(const MetadataSectionKey & k)
         {
-            cout << indent << k.human_name() << endl;
+            cout << fuc(fs_mask_by_valueless(), fv<'i'>(indent), fv<'k'>(k.human_name()));
         }
 
         void visit(const MetadataTimeKey & k)
         {
-            cout << indent << k.human_name() << " " << pretty_print_time(k.value().seconds()) << endl;
+            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(pretty_print_time(k.value().seconds())));
         }
 
         void visit(const MetadataValueKey<std::shared_ptr<const Contents> > & k)
         {
-            cout << indent << k.human_name() << endl;
+            cout << fuc(fs_mask_by_valueless(), fv<'i'>(indent), fv<'k'>(k.human_name()));
         }
 
         void visit(const MetadataValueKey<std::shared_ptr<const RepositoryMaskInfo> > & k)
         {
-            cout << indent << k.value()->mask_file() << endl;
+            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.value()->mask_file())));
             for (Sequence<std::string>::ConstIterator l(k.value()->comment()->begin()), l_end(k.value()->comment()->end()) ;
                     l != l_end ; ++l)
-                cout << indent << *l << endl;
+                cout << fuc(fs_mask_by_repo_line(), fv<'i'>(indent), fv<'s'>(*l));
         }
 
         void visit(const MetadataValueKey<FSEntry> & k)
         {
-            cout << indent << k.human_name() << " " << k.value() << endl;
+            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.value())));
         }
 
         void visit(const MetadataCollectionKey<Set<std::string> > & k)
         {
             ColourFormatter formatter(0);
-            cout << indent << k.human_name() << " " << k.pretty_print_flat(formatter) << endl;
+            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.pretty_print_flat(formatter))));
         }
 
         void visit(const MetadataCollectionKey<Sequence<std::string> > & k)
         {
             ColourFormatter formatter(0);
-            cout << indent << k.human_name() << " " << k.pretty_print_flat(formatter) << endl;
+            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.pretty_print_flat(formatter))));
         }
 
         void visit(const MetadataCollectionKey<FSEntrySequence> & k)
         {
             ColourFormatter formatter(0);
-            cout << indent << k.human_name() << " " << k.pretty_print_flat(formatter) << endl;
+            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.pretty_print_flat(formatter))));
         }
 
         void visit(const MetadataCollectionKey<PackageIDSequence> & k)
         {
             ColourFormatter formatter(0);
-            cout << indent << k.human_name() << " " << k.pretty_print_flat(formatter) << endl;
+            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.pretty_print_flat(formatter))));
         }
 
         void visit(const MetadataSpecTreeKey<FetchableURISpecTree> & k)
         {
             ColourFormatter formatter(0);
-            cout << indent << k.human_name() << " " << k.pretty_print_flat(formatter) << endl;
+            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.pretty_print_flat(formatter))));
         }
 
         void visit(const MetadataSpecTreeKey<SimpleURISpecTree> & k)
         {
             ColourFormatter formatter(0);
-            cout << indent << k.human_name() << " " << k.pretty_print_flat(formatter) << endl;
+            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.pretty_print_flat(formatter))));
         }
 
         void visit(const MetadataSpecTreeKey<LicenseSpecTree> & k)
         {
             ColourFormatter formatter(0);
-            cout << indent << k.human_name() << " " << k.pretty_print_flat(formatter) << endl;
+            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.pretty_print_flat(formatter))));
         }
 
         void visit(const MetadataSpecTreeKey<DependencySpecTree> & k)
         {
             ColourFormatter formatter(0);
-            cout << indent << k.human_name() << " " << k.pretty_print_flat(formatter) << endl;
+            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.pretty_print_flat(formatter))));
         }
 
         void visit(const MetadataCollectionKey<KeywordNameSet> & k)
         {
             ColourFormatter formatter(0);
-            cout << indent << k.human_name() << " " << k.pretty_print_flat(formatter) << endl;
+            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.pretty_print_flat(formatter))));
         }
 
         void visit(const MetadataSpecTreeKey<ProvideSpecTree> & k)
         {
             ColourFormatter formatter(0);
-            cout << indent << k.human_name() << " " << k.pretty_print_flat(formatter) << endl;
+            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.pretty_print_flat(formatter))));
         }
 
         void visit(const MetadataSpecTreeKey<PlainTextSpecTree> & k)
         {
             ColourFormatter formatter(0);
-            cout << indent << k.human_name() << " " << k.pretty_print_flat(formatter) << endl;
+            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.pretty_print_flat(formatter))));
         }
 
         void visit(const MetadataValueKey<std::shared_ptr<const Choices> > & k)
         {
             ColourFormatter formatter(0);
-            cout << indent << k.human_name() << endl;
+            cout << fuc(fs_mask_by_valueless(), fv<'i'>(indent), fv<'k'>(k.human_name()));
         }
     };
 
@@ -943,34 +936,34 @@ namespace
 
         void visit(const UserMask & m) const
         {
-            cout << colour << indent << "Masked by " << c::normal() << m.description() << endl;
+            cout << fuc(fs_masked_by(), fv<'i'>(indent), fv<'c'>(colour), fv<'d'>(m.description()));
         }
 
         void visit(const RepositoryMask & m) const
         {
+            cout << fuc(fs_masked_by(), fv<'i'>(indent), fv<'c'>(colour), fv<'d'>(m.description()));
             MaskedByKeyVisitor v{indent + "    "};
-            cout << colour << indent << "Masked by " << c::normal() << m.description() << endl;
             if (m.mask_key())
                 m.mask_key()->accept(v);
         }
 
         void visit(const UnacceptedMask & m) const
         {
+            cout << fuc(fs_masked_by(), fv<'i'>(indent), fv<'c'>(colour), fv<'d'>(m.description()));
             MaskedByKeyVisitor v{indent + "    "};
-            cout << colour << indent << "Masked by " << c::normal() << m.description() << endl;
             if (m.unaccepted_key())
                 m.unaccepted_key()->accept(v);
         }
 
         void visit(const UnsupportedMask & m) const
         {
-            cout << colour << indent << "Masked by " << c::normal() << m.description() << " (" << m.explanation() << ")" << endl;
+            cout << fuc(fs_masked_by_explanation(), fv<'i'>(indent), fv<'c'>(colour), fv<'d'>(m.description()), fv<'x'>(m.explanation()));
         }
 
         void visit(const AssociationMask & m) const
         {
-            cout << colour << indent << "Masked by " << c::normal() << m.description() <<
-                " (associated package '" << *m.associated_package() << "')" << endl;
+            cout << fuc(fs_masked_by_explanation(), fv<'i'>(indent), fv<'c'>(colour), fv<'d'>(m.description()),
+                    fv<'x'>("associated package '" + stringify(*m.associated_package()) + "'"));
         }
     };
 
@@ -1064,9 +1057,9 @@ namespace
             return;
 
         if (action.overflow)
-            cout << "    More than " << pretty_print_bytes(std::numeric_limits<unsigned long>::max()) << " to download" << endl;
+            cout << fuc(fs_download_megalots(), fv<'i'>(pretty_print_bytes(std::numeric_limits<unsigned long>::max())));
         else
-            cout << "    " << pretty_print_bytes(action.size) << " to download" << endl;
+            cout << fuc(fs_download_amount(), fv<'i'>(pretty_print_bytes(action.size)));
 
         if (action.overflow)
             totals->download_overflow = true;
@@ -1143,19 +1136,19 @@ namespace
             switch (decision.change_type())
             {
                 case ct_new:
-                    cout << c << x.replace(x.find('X'), 1, "n") << c::bold_blue();
+                    cout << fuc(fs_change_type_new(), fv<'c'>(c), fv<'s'>(x.replace(x.find('X'), 1, "n")));
                     continue;
                 case ct_slot_new:
-                    cout << c << x.replace(x.find('X'), 1, "s") << c::bold_blue();
+                    cout << fuc(fs_change_type_slot_new(), fv<'c'>(c), fv<'s'>(x.replace(x.find('X'), 1, "s")));
                     continue;
                 case ct_upgrade:
-                    cout << c << x.replace(x.find('X'), 1, "u") << c::blue();
+                    cout << fuc(fs_change_type_upgrade(), fv<'c'>(c), fv<'s'>(x.replace(x.find('X'), 1, "u")));
                     continue;
                 case ct_reinstall:
-                    cout << c << x.replace(x.find('X'), 1, "r") << c::yellow();
+                    cout << fuc(fs_change_type_reinstall(), fv<'c'>(c), fv<'s'>(x.replace(x.find('X'), 1, "r")));
                     continue;
                 case ct_downgrade:
-                    cout << c << x.replace(x.find('X'), 1, "d") << c::bold_yellow();
+                    cout << fuc(fs_change_type_downgrade(), fv<'c'>(c), fv<'s'>(x.replace(x.find('X'), 1, "d")));
                     continue;
                 case last_ct:
                     break;
@@ -1164,10 +1157,10 @@ namespace
         }
         while (false);
 
-        cout << decision.origin_id()->canonical_form(idcf_no_version);
+        cout << fuc(fs_change_name(), fv<'i'>(decision.origin_id()->canonical_form(idcf_no_version)));
 
         if (! decision.best())
-            cout << c::bold_yellow() << " (not the best version)" << c::normal();
+            cout << fuc(fs_change_not_best());
 
         if ((! decision.destination()->replacing()->empty()) &&
                 (*decision.destination()->replacing()->begin())->from_repositories_key() &&
@@ -1176,42 +1169,41 @@ namespace
                 (*decision.destination()->replacing()->begin())->from_repositories_key()->value()->find(stringify(
                         decision.origin_id()->repository()->name())))
         {
-            cout << c::bold_yellow() << " (formerly from ::" << join(
-                        (*decision.destination()->replacing()->begin())->from_repositories_key()->value()->begin(),
-                        (*decision.destination()->replacing()->begin())->from_repositories_key()->value()->end(),
-                        ", ::") << ")";
+            cout << fuc(fs_change_formerly_from(), fv<'r'>(join(
+                            (*decision.destination()->replacing()->begin())->from_repositories_key()->value()->begin(),
+                            (*decision.destination()->replacing()->begin())->from_repositories_key()->value()->end(),
+                            ", ::")));
         }
 
-        cout << c::normal() << " " << decision.origin_id()->canonical_form(idcf_version) <<
-            " to " << decision.destination()->repository();
+        cout << fuc(fs_change_version(), fv<'v'>(decision.origin_id()->canonical_form(idcf_version)));
+        cout << fuc(fs_change_destination(), fv<'r'>(stringify(decision.destination()->repository())));
 
         if (decision.if_via_new_binary_in())
-            cout << c::normal() << " via binary created in " << c::bold_normal()
-                << *decision.if_via_new_binary_in() << c::normal();
+            cout << fuc(fs_change_via(), fv<'r'>(stringify(*decision.if_via_new_binary_in())));
 
         if (! decision.destination()->replacing()->empty())
         {
-            cout << " replacing ";
+            cout << fuc(fs_change_replacing());
             bool first(true);
             for (PackageIDSequence::ConstIterator i(decision.destination()->replacing()->begin()),
                     i_end(decision.destination()->replacing()->end()) ;
                     i != i_end ; ++i)
             {
+                std::string comma;
                 if (! first)
-                    cout << ", ";
+                    comma = ", ";
                 first = false;
 
-                if ((*i)->name() == decision.origin_id()->name())
-                    cout << (*i)->canonical_form(idcf_version);
-                else
-                    cout << (*i)->canonical_form(idcf_full);
+                cout << fuc(fs_change_replacing_one(), fv<'c'>(comma), fv<'s'>(
+                            (*i)->name() == decision.origin_id()->name() ? (*i)->canonical_form(idcf_version) : (*i)->canonical_form(idcf_full)));
             }
         }
 
         if (-1 != cycle_notes_heading)
-            cout << " " << (unorderable ? c::bold_red() : c::bold_normal()) << "[cycle " << cycle_notes_heading << "]" << c::normal();
+            cout << fuc(unorderable ? fs_cycle_heading_error() : fs_cycle_heading(),
+                    fv<'s'>(stringify(cycle_notes_heading)));
 
-        cout << endl;
+        cout << fuc(fs_change_end());
 
         std::shared_ptr<const PackageID> old_id;
         if (! decision.destination()->replacing()->empty())
@@ -1228,7 +1220,8 @@ namespace
         if (confirmations)
             display_confirmations(decision);
         if (! cycle_notes.empty())
-            cout << "    " << (unorderable ? c::bold_red() : c::bold_normal()) << cycle_notes << c::normal() << endl;
+            cout << fuc(unorderable ? fs_cycle_notes_error() : fs_cycle_notes(),
+                    fv<'s'>(cycle_notes));
     }
 
     void display_one_uninstall(
@@ -1245,33 +1238,37 @@ namespace
             const std::shared_ptr<Totals> & maybe_totals)
     {
         if (untaken)
-            cout << "(<) " << c::bold_green() << decision.resolvent().package() << c::normal() << " ";
+            cout << fuc(fs_uninstall_untaken(), fv<'s'>(stringify(decision.resolvent().package())));
         else
-            cout << "<   " << c::bold_green() << decision.resolvent().package() << c::normal() << " ";
+            cout << fuc(fs_uninstall_taken(), fv<'s'>(stringify(decision.resolvent().package())));
 
         bool first(true);
         for (PackageIDSequence::ConstIterator i(decision.ids()->begin()),
                 i_end(decision.ids()->end()) ;
                 i != i_end ; ++i)
         {
+            std::string comma;
             if (! first)
-                cout << ", ";
+                comma = ", ";
             first = false;
 
-            cout << (*i)->canonical_form(idcf_no_name);
+            cout << fuc(fs_uninstall_version(), fv<'c'>(comma), fv<'v'>(stringify((*i)->canonical_form(idcf_no_name))));
         }
 
         if (-1 != cycle_notes_heading)
-            cout << " " << (unorderable ? c::bold_red() : c::bold_normal()) << "[cycle " << cycle_notes_heading << "]" << c::normal();
+            cout << fuc(unorderable ? fs_cycle_heading_error() : fs_cycle_heading(),
+                    fv<'s'>(stringify(cycle_notes_heading)));
 
-        cout << endl;
+        cout << fuc(fs_uninstall_end());
+
         display_reasons(resolution, more_annotations);
         if (untaken)
             display_untaken_remove(decision);
         if (confirmations)
             display_confirmations(decision);
         if (! cycle_notes.empty())
-            cout << "    " << c::bold_normal() << cycle_notes << c::normal() << endl;
+            cout << fuc(unorderable ? fs_cycle_notes_error() : fs_cycle_notes(),
+                    fv<'s'>(cycle_notes));
 
         if (maybe_totals)
             ++maybe_totals->uninstalls_count;
@@ -1284,16 +1281,16 @@ namespace
             const bool untaken)
     {
         if (untaken)
-            cout << "(!) " << c::red() << resolution->resolvent() << c::normal() << endl;
+            cout << fuc(fs_unable_untaken(), fv<'s'>(stringify(d.resolvent().package())));
         else
-            cout << "!   " << c::bold_red() << resolution->resolvent() << c::normal() << endl;
+            cout << fuc(fs_unable_taken(), fv<'s'>(stringify(d.resolvent().package())));
 
         display_reasons(resolution, true);
 
         if (untaken || d.unsuitable_candidates()->empty())
             return;
 
-        cout << "    Unsuitable candidates:" << endl;
+        cout << fuc(fs_unable_unsuitable_header());
         for (UnsuitableCandidates::ConstIterator u(d.unsuitable_candidates()->begin()),
                 u_end(d.unsuitable_candidates()->end()) ;
                 u != u_end ; ++u)
@@ -1309,7 +1306,8 @@ namespace
                     colour = c::red();
             }
 
-            cout << "      * " << colour << *u->package_id() << c::normal() << endl;
+            cout << fuc(fs_unable_unsuitable_id(), fv<'c'>(colour), fv<'i'>(stringify(*u->package_id())));
+
             for (PackageID::MasksConstIterator m(u->package_id()->begin_masks()),
                     m_end(u->package_id()->end_masks()) ;
                     m != m_end ; ++m)
@@ -1327,7 +1325,7 @@ namespace
                 if (! duplicates.insert(s).second)
                     continue;
 
-                cout << "        Did not meet " << s << endl;
+                cout << fuc(fs_unable_unsuitable_did_not_meet(), fv<'s'>(s));
 
                 if ((*c)->spec().if_package() && (*c)->spec().if_package()->additional_requirements_ptr() &&
                         (! match_package(*env, *(*c)->spec().if_package(), *u->package_id(), { })) &&
@@ -1341,7 +1339,7 @@ namespace
                         if (p.first)
                             continue;
 
-                        cout << "            " << p.second << endl;
+                        cout << fuc(fs_unable_unsuitable_did_not_meet_additional(), fv<'s'>(p.second));
                     }
                 }
             }
@@ -1358,7 +1356,8 @@ namespace
         for (ChoicesToExplain::const_iterator p(choices_to_explain.begin()), p_end(choices_to_explain.end()) ;
                 p != p_end ; ++p)
         {
-            cout << p->first << ":" << endl;
+            cout << fuc(fs_choice_to_explain_prefix(), fv<'s'>(p->first));
+
             for (ChoiceValuesToExplain::const_iterator v(p->second.begin()), v_end(p->second.end()) ;
                     v != v_end ; ++v)
             {
@@ -1375,18 +1374,16 @@ namespace
                     }
 
                 if (all_same)
-                    cout << "    " << std::left << std::setw(30) << (stringify(first_choice_value->unprefixed_name())
-                            + ":") << " " << description << endl;
+                    cout << fuc(fs_choice_to_explain_all_same(), fv<'s'>(stringify(first_choice_value->unprefixed_name())), fv<'d'>(description));
                 else
                 {
-                    cout << "    " << first_choice_value->unprefixed_name() << ":" << endl;
+                    cout << fuc(fs_choice_to_explain_not_all_same(), fv<'s'>(stringify(first_choice_value->unprefixed_name())));
                     for (PackageIDSequence::ConstIterator w(v->second->begin()), w_end(v->second->end()) ;
                             w != w_end ; ++w)
                     {
                         const std::shared_ptr<const ChoiceValue> value(
                                 (*w)->choices_key()->value()->find_by_name_with_prefix(v->first));
-                        cout << "        " << std::left << std::setw(30) <<
-                            ((*w)->canonical_form(idcf_no_version) + ":") << " " << value->description() << endl;
+                        cout << fuc(fs_choice_to_explain_one(), fv<'s'>((*w)->canonical_form(idcf_no_version)), fv<'d'>(value->description()));
                     }
                 }
             }
@@ -1416,12 +1413,13 @@ namespace
             const bool untaken)
     {
         if (untaken)
-            cout << "(X) " << c::bold_red() << decision.resolvent().package() << c::normal() << " ";
+            cout << fuc(fs_break_untaken(), fv<'s'>(stringify(decision.resolvent().package())));
         else
-            cout << "X   " << c::bold_red() << decision.resolvent().package() << c::normal() << " ";
+            cout << fuc(fs_break_taken(), fv<'s'>(stringify(decision.resolvent().package())));
 
-        cout << decision.existing_id()->canonical_form(idcf_no_name) << endl;
-        cout << "    Will be broken by uninstalls:" << endl;
+        cout << fuc(fs_break_id(), fv<'i'>(decision.existing_id()->canonical_form(idcf_no_name)));
+
+        cout << fuc(fs_break_by());
         display_reasons(resolution, more_annotations);
         display_confirmations(decision);
     }
@@ -1529,13 +1527,13 @@ namespace
         Context context("When displaying changes and removes:");
 
         if (untaken)
-            cout << "I did not take the following:" << endl << endl;
+            cout << fuc(fs_display_untaken());
         else if (unconfirmed)
-            cout << "I cannot proceed without being permitted to do the following:" << endl << endl;
+            cout << fuc(fs_display_unconfirmed());
         else if (unorderable)
-            cout << "I cannot provide a legal ordering for the following:" << endl << endl;
+            cout << fuc(fs_display_unorderable());
         else
-            cout << "These are the actions I will take, in order:" << endl << endl;
+            cout << fuc(fs_display_taken());
 
         bool any(false);
         for (typename Decisions_::ConstIterator i(decisions->begin()), i_end(decisions->end()) ;
@@ -1575,9 +1573,9 @@ namespace
         }
 
         if (! any)
-            cout << "(nothing to do)" << endl;
+            cout << fuc(fs_nothing_to_do());
 
-        cout << endl;
+        cout << fuc(fs_display_done());
     }
 
     void display_changes_and_removes(
@@ -1598,7 +1596,7 @@ namespace
         if (totals->installs_ct_count.empty() && 0 == totals->binary_installs_count + totals->uninstalls_count)
             return;
 
-        cout << "Total " ;
+        cout << fuc(fs_totals_start());
         bool need_comma(false);
 
         for (EnumIterator<ChangeType> e, e_end(last_ct) ;
@@ -1608,58 +1606,63 @@ namespace
             if (c == totals->installs_ct_count.end())
                 continue;
 
+            std::string comma, kind;
             if (need_comma)
-                cout << ", ";
+                comma = ", ";
             need_comma = true;
-            cout << c->second;
+
             switch (c->first)
             {
                 case ct_new:
-                    cout << " new installs";
+                    kind = "new installs";
                     break;
 
                 case ct_slot_new:
-                    cout << " new slot installs";
+                    kind = "new slot installs";
                     break;
 
                 case ct_upgrade:
-                    cout << " upgrades";
+                    kind = "upgrades";
                     break;
 
                 case ct_reinstall:
-                    cout << " reinstalls";
+                    kind = "reinstalls";
                     break;
 
                 case ct_downgrade:
-                    cout << " downgrades";
+                    kind = "downgrades";
                     break;
 
                 case last_ct:
                     throw InternalError(PALUDIS_HERE, "bad change_type. huh?");
             }
+
+            cout << fuc(fs_totals_one(), fv<'c'>(comma), fv<'n'>(stringify(c->second)), fv<'k'>(kind));
         }
 
+        std::string comma;
         if (0 != totals->binary_installs_count)
         {
             if (need_comma)
-                cout << ", ";
+                comma = ", ";
             need_comma = true;
-            cout << totals->binary_installs_count << " binaries";
+            cout << fuc(fs_totals_binaries(), fv<'c'>(comma), fv<'n'>(stringify(totals->binary_installs_count)));
         }
 
         if (0 != totals->uninstalls_count)
         {
             if (need_comma)
-                cout << ", ";
+                comma = ", ";
             need_comma = true;
-            cout << totals->uninstalls_count << " uninstalls";
+            cout << fuc(fs_totals_binaries(), fv<'c'>(comma), fv<'n'>(stringify(totals->uninstalls_count)));
         }
 
         if (totals->download_overflow)
-            cout << ", more than " << pretty_print_bytes(std::numeric_limits<unsigned long>::max()) << " to download";
+            cout << fuc(fs_totals_download_megalots(), fv<'n'>(pretty_print_bytes(std::numeric_limits<unsigned long>::max())));
         else if (0 != totals->download_size)
-            cout << ", " << pretty_print_bytes(totals->download_size) << " to download";
-        cout << endl << endl;
+            cout << fuc(fs_totals_download_amount(), fv<'n'>(pretty_print_bytes(totals->download_size)));
+
+        cout << fuc(fs_totals_done());
     }
 
     void display_unorderable_changes_and_removed(
@@ -1696,9 +1699,9 @@ namespace
         Context context("When displaying errors:");
 
         if (untaken)
-            cout << "I encountered the following errors for untaken packages:" << endl << endl;
+            cout << fuc(fs_display_errors_untaken());
         else
-            cout << "I encountered the following errors:" << endl << endl;
+            cout << fuc(fs_display_errors());
 
         bool any(false);
         for (Decisions<UnableToMakeDecision>::ConstIterator i(decisions->begin()),

@@ -122,6 +122,8 @@ namespace
             {
 #include "cmd_contents-fmt.hh"
             }{
+#include "cmd_display_resolution-fmt.hh"
+            }{
 #include "cmd_executables-fmt.hh"
             }{
 #include "cmd_execute_resolution-fmt.hh"
