@@ -20,6 +20,7 @@
 #include "cmd_perform.hh"
 #include "cmd_resolve_cmdline.hh"
 #include "exceptions.hh"
+#include "format_user_config.hh"
 #include <paludis/args/args.hh>
 #include <paludis/args/do_help.hh>
 #include <paludis/name.hh>
@@ -57,6 +58,8 @@ using std::endl;
 
 namespace
 {
+#include "cmd_perform-fmt.hh"
+
     struct PerformCommandLine :
         CaveCommandCommandLine
     {
@@ -239,8 +242,8 @@ namespace
             OutputManagerFromIPCOrEnvironment & output_manager_holder)
     {
         if (cmdline.a_x_of_y.specified() && ! cmdline.a_no_terminal_titles.specified())
-            std::cout << "\x1b]2;" << cmdline.a_x_of_y.argument() << " " << action_name << " "
-                << stringify(*id) << "\x07" << std::flush;
+            cout << fuc(fs_x_of_y_title(), fv<'x'>(cmdline.a_x_of_y.argument()),
+                    fv<'i'>(stringify(*id)), fv<'a'>(action_name), fv<'c'>("")) << std::flush;
 
         if (cmdline.a_hooks.specified())
             if (0 != env->perform_hook(Hook(action_name + "_pre")
@@ -275,8 +278,8 @@ namespace
                 throw ActionAbortedError("Aborted by hook");
 
         if (cmdline.a_x_of_y.specified() && ! cmdline.a_no_terminal_titles.specified())
-            std::cout << "\x1b]2;Completed " << cmdline.a_x_of_y.argument() << " " << action_name << " "
-                << stringify(*id) << "\x07" << std::flush;
+            cout << fuc(fs_x_of_y_title(), fv<'x'>(cmdline.a_x_of_y.argument()),
+                    fv<'i'>(stringify(*id)), fv<'a'>(action_name), fv<'c'>("Completed ")) << std::flush;
     }
 
     bool ignore_nothing(const FSEntry &)
@@ -296,8 +299,8 @@ namespace
         execute(env, cmdline, id, "clean", uninstall_action, output_manager_holder);
 
         if (cmdline.a_x_of_y.specified() && ! cmdline.a_no_terminal_titles.specified())
-            std::cout << "\x1b]2;" << cmdline.a_x_of_y.argument() << " " << action_name << " "
-                << stringify(*id) << "\x07" << std::flush;
+            cout << fuc(fs_x_of_y_title(), fv<'x'>(cmdline.a_x_of_y.argument()),
+                    fv<'i'>(stringify(*id)), fv<'a'>(action_name), fv<'c'>("")) << std::flush;
     }
 
     struct WantInstallPhase

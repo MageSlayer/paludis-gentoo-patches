@@ -130,6 +130,8 @@ namespace
             }{
 #include "cmd_owner-fmt.hh"
             }{
+#include "cmd_perform-fmt.hh"
+            }{
 #include "cmd_report-fmt.hh"
             }{
 #include "cmd_show-fmt.hh"
