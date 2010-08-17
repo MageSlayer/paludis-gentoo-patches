@@ -103,6 +103,7 @@ namespace
         {
 
 #include "cmd_contents-fmt.hh"
+#include "cmd_owner-fmt.hh"
 #include "cmd_report-fmt.hh"
 #include "cmd_verify-fmt.hh"
 

@@ -124,7 +124,7 @@ libcave_a_SOURCES = \
 	cmd_info.cc cmd_info.hh \
 	cmd_manage_search_index.cc cmd_manage_search_index.hh \
 	cmd_match.cc cmd_match.hh \
-	cmd_owner.cc cmd_owner.hh \
+	cmd_owner.cc cmd_owner.hh cmd_owner-fmt.hh \
 	cmd_perform.cc cmd_perform.hh \
 	cmd_print_categories.cc cmd_print_categories.hh \
 	cmd_print_commands.cc cmd_print_commands.hh \

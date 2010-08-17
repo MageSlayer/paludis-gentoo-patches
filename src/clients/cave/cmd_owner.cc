@@ -23,6 +23,7 @@
 #include "owner_common.hh"
 #include "format_general.hh"
 #include "formats.hh"
+#include "format_user_config.hh"
 
 #include <paludis/action.hh>
 #include <paludis/args/args.hh>
@@ -42,6 +43,8 @@ using std::endl;
 
 namespace
 {
+#include "cmd_owner-fmt.hh"
+
     struct OwnerCommandLine :
         CaveCommandCommandLine
     {
@@ -79,7 +82,7 @@ namespace
 
     void format_id(const std::shared_ptr<const PackageID> & id)
     {
-        cout << format_general_s(f::owner_id(), stringify(*id));
+        cout << fuc(fs_id(), fv<'s'>(stringify(*id)));
     }
 }
 
