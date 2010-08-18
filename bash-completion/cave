@@ -134,6 +134,7 @@ __cave_resolve_options="-h --help
         --abort-at-phase
         --skip-until-phase
         --change-phases-for
+        --show-option-descriptions
         --show-descriptions
         -X --explain
         --show-all-jobs --no-show-all-jobs
@@ -167,6 +168,9 @@ __cave_resolve() {
             ;;
         --change-phases-for)
             __cave_compgen "all first last"
+            ;;
+        --show-option-descriptions)
+            __cave_compgen "none new changed all"
             ;;
         --show-descriptions)
             __cave_compgen "none new all"
