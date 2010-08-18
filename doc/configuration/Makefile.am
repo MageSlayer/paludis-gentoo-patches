@@ -21,6 +21,8 @@ CLEANFILES += \
 	general.html.part \
 	keywords.html \
 	keywords.html.part \
+	output.html \
+	output.html.part \
 	packagemask.html \
 	packagemask.html.part \
 	use.html \
@@ -46,6 +48,7 @@ EXTRA_DIST = \
 	specpath.html.part.in \
 	general.html.part.in \
 	keywords.html.part.in \
+	output.html.part.in \
 	packagemask.html.part.in \
 	licenses.html.part.in \
 	mirrors.html.part.in \
@@ -69,6 +72,7 @@ paludisconfigurationhtml_DATA = \
 	keywords.html \
 	packagemask.html \
 	mirrors.html \
+	output.html \
 	bashrc.html \
 	licenses.html \
 	use.html \
@@ -173,6 +177,12 @@ mirrors.html.part : $(srcdir)/mirrors.html.part.in $(srcdir)/paludisenvironmento
 	    -e 's,###PALUDISENVIRONMENTONLY###,,g' \
 	    < $(srcdir)/mirrors.html.part.in > mirrors.html.part
 
+output.html.part : $(srcdir)/output.html.part.in $(srcdir)/paludisenvironmentonly.html.part
+	sed \
+	    -e '/###PALUDISENVIRONMENTONLY###/r $(srcdir)/paludisenvironmentonly.html.part' \
+	    -e 's,###PALUDISENVIRONMENTONLY###,,g' \
+	    < $(srcdir)/output.html.part.in > output.html.part
+
 bashrc.html.part : $(srcdir)/bashrc.html.part.in $(srcdir)/paludisenvironmentonly.html.part
 	sed \
 	    -e '/###PALUDISENVIRONMENTONLY###/r $(srcdir)/paludisenvironmentonly.html.part' \
@@ -214,6 +224,9 @@ packagemask.html : header.html.part packagemask.html.part footer.html.part
 
 mirrors.html : header.html.part mirrors.html.part footer.html.part
 	cat header.html.part mirrors.html.part footer.html.part > $@
+
+output.html : header.html.part output.html.part footer.html.part
+	cat header.html.part output.html.part footer.html.part > $@
 
 bashrc.html : header.html.part bashrc.html.part footer.html.part
 	cat header.html.part bashrc.html.part footer.html.part > $@

@@ -1,0 +1,21 @@
+<!-- vim: set tw=120 ft=html sw=4 sts=4 et : -->
+
+<h1>output.conf</h1>
+
+###PALUDISENVIRONMENTONLY###
+
+<p>The <code>output.conf</code> file controls how Paludis handles output from subcommands such as building and
+installing a package, or syncing a repository.</p>
+
+<p>There are currently two basic settings that can be set in <code>output.conf</code>:</p>
+
+<pre>
+# always_keep_output_logs may be set to 'true' to always keep output logs, even
+# if a build succeeds.
+always_keep_output_logs = false
+
+# quiet may be set to 'true' to show only messages, rather than all output, when
+# carrying out an action.
+quiet = false
+</pre>
+

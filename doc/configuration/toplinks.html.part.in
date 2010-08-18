@@ -22,7 +22,7 @@
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###configuration/sets.html">sets/</a>
+                <a href="###TOPURI###configuration/bashrc.html">bashrc</a>
             </td>
         </tr>
 
@@ -40,7 +40,7 @@
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###configuration/repositories/index.html">repositories/</a>
+                <a href="###TOPURI###configuration/sets.html">sets/</a>
             </td>
         </tr>
 
@@ -58,7 +58,7 @@
             </td>
 
             <td class="currentpage">
-                &nbsp;
+                <a href="###TOPURI###configuration/repositories/index.html">repositories/</a>
             </td>
         </tr>
 
@@ -108,7 +108,7 @@
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###configuration/packagemask.html">package_mask.conf</a>
+                <a href="###TOPURI###configuration/output.html">output.conf</a>
             </td>
 
             <td class="currentpage">
@@ -126,7 +126,7 @@
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###configuration/bashrc.html">bashrc</a>
+                <a href="###TOPURI###configuration/packagemask.html">package_mask.conf</a>
             </td>
 
             <td class="currentpage">
