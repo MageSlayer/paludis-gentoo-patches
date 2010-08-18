@@ -964,7 +964,8 @@ namespace
         for (std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
                 k(keys.begin()), k_end(keys.end()) ; k != k_end ; ++k)
         {
-            InfoDisplayer i(cmdline, 1, ((*k)->type() == mkt_significant), maybe_old_id, old_id_is_installed);
+            bool explicit_key(cmdline.a_key.end_args() != std::find(cmdline.a_key.begin_args(), cmdline.a_key.end_args(), (*k)->raw_name()));
+            InfoDisplayer i(cmdline, 1, ((*k)->type() == mkt_significant) || explicit_key, maybe_old_id, old_id_is_installed);
             if (want_key(cmdline, *k))
                 accept_visitor(i)(**k);
         }
