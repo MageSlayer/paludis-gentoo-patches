@@ -97,7 +97,7 @@ namespace
         std::string value;
     };
 
-    Storer && operator<< (Storer && s, const std::string & t)
+    Storer & operator<< (Storer & s, const std::string & t)
     {
         s.value.append(t);
         return s;
