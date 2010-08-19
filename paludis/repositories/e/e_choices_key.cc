@@ -149,6 +149,9 @@ namespace
                 p = prefixes.insert(std::make_pair(*current_prefix_stack.begin(), Values())).first;
 
             UnprefixedChoiceName n(parse_myoption(node.spec()->text()).first);
+            if (std::string::npos != stringify(n).find(':'))
+                throw MyOptionsError("Flag '" + stringify(n) + "' must not contain a ':'");
+
             Values::iterator v(p->second.find(n));
             if (v == p->second.end())
                 v = p->second.insert(std::make_pair(n, Annotations())).first;
@@ -175,6 +178,9 @@ namespace
 
         void visit(const PlainTextSpecTree::NodeType<PlainTextLabelDepSpec>::Type & node)
         {
+            if (node.spec()->label() == "build_options")
+                throw MyOptionsError("Label 'build_options' is not for package use");
+
             *current_prefix_stack.begin() = ChoicePrefixName(node.spec()->label());
         }
 

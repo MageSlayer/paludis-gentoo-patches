@@ -23,6 +23,11 @@
 using namespace paludis;
 using namespace paludis::erepository;
 
+MyOptionsError::MyOptionsError(const std::string & m) throw () :
+    Exception(m)
+{
+}
+
 std::pair<UnprefixedChoiceName, bool>
 paludis::erepository::parse_myoption(const std::string & s)
 {

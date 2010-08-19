@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_MYOPTION_HH 1
 
 #include <paludis/util/attributes.hh>
+#include <paludis/util/exception.hh>
 #include <paludis/choice-fwd.hh>
 #include <utility>
 #include <string>
@@ -29,6 +30,13 @@ namespace paludis
 {
     namespace erepository
     {
+        class PALUDIS_VISIBLE MyOptionsError :
+            public Exception
+        {
+            public:
+                MyOptionsError(const std::string & message) throw ();
+        };
+
         std::pair<UnprefixedChoiceName, bool> parse_myoption(const std::string &) PALUDIS_VISIBLE PALUDIS_ATTRIBUTE((warn_unused_result));
     }
 }
