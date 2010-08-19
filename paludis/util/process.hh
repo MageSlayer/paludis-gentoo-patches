@@ -31,6 +31,7 @@
 #include <memory>
 #include <initializer_list>
 
+#include <sys/types.h>
 #include <unistd.h>
 
 namespace paludis
@@ -77,6 +78,7 @@ namespace paludis
             Process & setenv(const std::string &, const std::string &);
             Process & chdir(const FSEntry &);
             Process & use_ptys();
+            Process & setuid_setgid(uid_t, gid_t);
     };
 
     class PALUDIS_VISIBLE RunningProcessHandle :

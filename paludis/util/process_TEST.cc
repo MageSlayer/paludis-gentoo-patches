@@ -22,10 +22,11 @@
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <sstream>
+#include <sys/types.h>
+#include <pwd.h>
 
 using namespace paludis;
 using namespace test;
-
 
 namespace test_cases
 {
@@ -208,5 +209,28 @@ namespace test_cases
             TEST_CHECK_EQUAL(test_t_process.run().wait(), 0);
         }
     } test_ptys;
+
+    struct SetuidTest : TestCase
+    {
+        SetuidTest() : TestCase("setuid") { }
+
+        void run()
+        {
+            if (0 != getuid())
+                return;
+
+            std::stringstream stdout_stream;
+            Process whoami_process(ProcessCommand({"sh", "-c", "whoami ; groups"}));
+            whoami_process.capture_stdout(stdout_stream);
+
+            struct passwd * nobody(getpwnam("nobody"));
+            if (nobody)
+            {
+                whoami_process.setuid_setgid(nobody->pw_uid, nobody->pw_gid);
+                TEST_CHECK_EQUAL(whoami_process.run().wait(), 0);
+                TEST_CHECK_EQUAL(stdout_stream.str(), "nobody\nnobody\n");
+            }
+        }
+    } test_setuid;
 }
 

@@ -33,6 +33,8 @@
 #include <cstdlib>
 
 #include <unistd.h>
+#include <grp.h>
+#include <pwd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/select.h>
@@ -211,13 +213,17 @@ namespace paludis
 
         std::map<std::string, std::string> setenvs;
         std::string chdir;
+        uid_t setuid;
+        gid_t setgid;
 
         Imp(ProcessCommand && c) :
             command(std::move(c)),
             need_thread(false),
             use_ptys(false),
             capture_stdout(0),
-            capture_stderr(0)
+            capture_stderr(0),
+            setuid(getuid()),
+            setgid(getgid())
         {
         }
     };
@@ -286,6 +292,28 @@ Process::run()
                 if (-1 == ::chdir(_imp->chdir.c_str()))
                     throw ProcessError("chdir() failed");
 
+            if (_imp->setuid != getuid() || _imp->setgid != getgid())
+            {
+                if (0 != ::setgid(_imp->setgid))
+                    throw ProcessError("setgid() failed");
+
+                int buflen(::sysconf(_SC_GETPW_R_SIZE_MAX));
+                if (-1 == buflen)
+                    buflen = 1 << 16;
+
+                std::unique_ptr<char []> buf(new char[buflen]);
+                struct passwd pw;
+                struct passwd * pw_result(0);
+                if (0 != getpwuid_r(_imp->setuid, &pw, buf.get(), buflen, &pw_result) || 0 == pw_result)
+                    throw ProcessError("getpwuid_r() failed");
+
+                if (0 != ::initgroups(pw_result->pw_name, getgid()))
+                    throw ProcessError("initgroups() failed");
+
+                if (0 != ::setuid(_imp->setuid))
+                    throw ProcessError("setuid() failed");
+            }
+
             _imp->command.exec();
         }
         catch (const ProcessError & e)
@@ -336,6 +364,14 @@ Process &
 Process::use_ptys()
 {
     _imp->use_ptys = true;
+    return *this;
+}
+
+Process &
+Process::setuid_setgid(uid_t u, gid_t g)
+{
+    _imp->setuid = u;
+    _imp->setgid = g;
     return *this;
 }
 
