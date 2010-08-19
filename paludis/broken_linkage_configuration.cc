@@ -34,6 +34,7 @@
 #include <functional>
 #include <iterator>
 #include <vector>
+#include <cctype>
 
 using namespace paludis;
 
@@ -132,6 +133,59 @@ namespace
         Log::get_instance()->message("reconcilio.broken_linkage_finder.config",
                 ll_debug, lc_context) << "Final " << varname << "=\"" <<
             join(vec.begin(), vec.end(),  " ") << "\"";
+    }
+
+    bool
+    char_equals_ci(char a, char b)
+    {
+        return std::tolower(a) == std::tolower(b);
+    }
+
+    bool
+    equals_ci(const std::string & a, const std::string & b)
+    {
+        return a.length() == b.length() && std::equal(a.begin(), a.end(), b.begin(), char_equals_ci);
+    }
+
+    void
+    parse_ld_so_conf(const FSEntry & root, const FSEntry & file, const LineConfigFileOptions & opts, std::vector<std::string> & res)
+    {
+        if (file.is_regular_file_or_symlink_to_regular_file())
+        {
+            LineConfigFile lines(file, opts);
+            for (auto it(lines.begin()), it_end(lines.end()); it_end != it; ++it)
+            {
+                std::vector<std::string> tokens;
+                tokenise_whitespace(*it, std::back_inserter(tokens));
+
+                if ("include" == tokens.at(0))
+                {
+                    for (auto it2(next(tokens.begin())), it2_end(tokens.end()); it2_end != it2; ++it2)
+                    {
+                        FSEntry rel('/' == it2->at(0) ? root : file.dirname());
+                        for (WildcardExpander it3(*it2, rel), it3_end; it3_end != it3; ++it3)
+                        {
+                            Context ctx("When reading included file '" + stringify(rel / *it3) + "':");
+                            parse_ld_so_conf(root, rel / *it3, opts, res);
+                        }
+                    }
+                }
+
+                else if (equals_ci("hwdep", tokens.at(0))) // XXX
+                    Log::get_instance()->message("reconcilio.broken_linkage_finder.etc_ld_so_conf.hwdep", ll_warning, lc_context)
+                        << "'hwdep' line in '" << file << "' is not supported";
+                else if (std::string::npos != it->find('='))
+                    Log::get_instance()->message("reconcilio.broken_linkage_finder.etc_ld_so_conf.equals", ll_warning, lc_context)
+                        << "'=' line in '" << file << "' is not supported";
+
+                else
+                    res.push_back(*it);
+            }
+        }
+
+        else if (file.exists())
+            Log::get_instance()->message("reconcilio.broken_linkage_finder.etc_ld_so_conf.not_a_file", ll_warning, lc_context)
+                << "'" << file << "' exists but is not a regular file";
     }
 }
 
@@ -261,23 +315,20 @@ Imp<BrokenLinkageConfiguration>::load_from_etc_ld_so_conf(const FSEntry & root)
     FSEntry etc_ld_so_conf(root / "etc" / "ld.so.conf");
     Context ctx("When reading '" + stringify(etc_ld_so_conf) + "':");
 
-    if (etc_ld_so_conf.is_regular_file_or_symlink_to_regular_file())
-    {
-        LineConfigFileOptions opts;
-        opts += lcfo_disallow_continuations;
+    LineConfigFileOptions opts;
+    opts += lcfo_disallow_continuations;
+    opts += lcfo_allow_inline_comments;
 
-        LineConfigFile lines(etc_ld_so_conf, opts);
-        if (lines.begin() != lines.end())
-        {
-            Log::get_instance()->message("reconcilio.broken_linkage_finder.got", ll_debug, lc_context)
-                << "Got " << join(lines.begin(), lines.end(), " ");
-            std::copy(lines.begin(), lines.end(), std::back_inserter(search_dirs));
-            std::copy(lines.begin(), lines.end(), std::back_inserter(ld_so_conf));
-        }
+    std::vector<std::string> res;
+    parse_ld_so_conf(root, etc_ld_so_conf, opts, res);
+
+    if (res.begin() != res.end())
+    {
+        Log::get_instance()->message("reconcilio.broken_linkage_finder.got", ll_debug, lc_context)
+                << "Got " << join(res.begin(), res.end(), " ");
+        std::copy(res.begin(), res.end(), std::back_inserter(search_dirs));
+        std::copy(res.begin(), res.end(), std::back_inserter(ld_so_conf));
     }
-    else if (etc_ld_so_conf.exists())
-        Log::get_instance()->message("reconcilio.broken_linkage_finder.etc_ld_so_conf.not_a_file", ll_warning, lc_context)
-            << "'" << etc_ld_so_conf << "' exists but is not a regular file";
 }
 
 void

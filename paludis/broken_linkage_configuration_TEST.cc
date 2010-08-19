@@ -46,9 +46,9 @@ namespace test_cases
             BrokenLinkageConfiguration config(FSEntry::cwd() / "broken_linkage_configuration_TEST_dir");
 
             TEST_CHECK_EQUAL(join(config.begin_search_dirs(), config.end_search_dirs(), " "),
-                             "/alib /barbin /barlib/foo /bazbin /bin /blib /foobin /foolib/bar /lib32 /lib64 /quuxlib /sbin /usr/bin /usr/lib* /usr/sbin");
+                             "/42 /alib /barbin /barlib/foo /bazbin /bin /blib /fhqwhgads1 /fhqwhgads2 /foobin /foolib/bar /hwdp foobar /lib32 /lib64 /quuxlib /qwerty1 /qwerty2 /sbin /uiop1 /uiop2 /usr/bin /usr/lib* /usr/sbin");
             TEST_CHECK_EQUAL(join(config.begin_ld_so_conf(), config.end_ld_so_conf(), " "),
-                             "/barlib/foo /foolib/bar /lib /usr/lib");
+                             "/42 /barlib/foo /fhqwhgads1 /fhqwhgads2 /foolib/bar /lib /qwerty1 /qwerty2 /uiop1 /uiop2 /usr/lib hwdp foobar");
 
             TEST_CHECK(config.dir_is_masked(FSEntry("/meh")));
             TEST_CHECK(config.dir_is_masked(FSEntry("/quuxlib/quux")));
