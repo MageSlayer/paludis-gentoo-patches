@@ -178,5 +178,35 @@ namespace test_cases
             TEST_CHECK_EQUAL(stdout_stream.str(), "/\n");
         }
     } test_chdir;
+
+    struct NoPtyTest : TestCase
+    {
+        NoPtyTest() : TestCase("no pty") { }
+
+        void run()
+        {
+            std::stringstream stdout_stream, stderr_stream;
+            Process test_t_process(ProcessCommand({"test", "-t", "1", "-o", "-t", "2"}));
+            test_t_process.capture_stdout(stdout_stream);
+            test_t_process.capture_stderr(stderr_stream);
+            TEST_CHECK_EQUAL(test_t_process.run().wait(), 1);
+        }
+    } test_no_pty;
+
+    struct PtyTest : TestCase
+    {
+        PtyTest() : TestCase("pty") { }
+
+        void run()
+        {
+            std::stringstream stdout_stream, stderr_stream;
+            Process test_t_process(ProcessCommand({"test", "-t", "1", "-a", "-t", "2"}));
+            test_t_process.capture_stdout(stdout_stream);
+            test_t_process.capture_stderr(stderr_stream);
+            test_t_process.use_ptys();
+
+            TEST_CHECK_EQUAL(test_t_process.run().wait(), 0);
+        }
+    } test_ptys;
 }
 

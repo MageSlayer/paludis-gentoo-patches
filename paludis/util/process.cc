@@ -21,6 +21,7 @@
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/thread.hh>
 #include <paludis/util/pipe.hh>
+#include <paludis/util/pty.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/stringify.hh>
 
@@ -100,10 +101,10 @@ namespace paludis
         Pipe ctl_pipe;
 
         std::ostream * capture_stdout;
-        std::unique_ptr<Pipe> capture_stdout_pipe;
+        std::unique_ptr<Channel> capture_stdout_pipe;
 
         std::ostream * capture_stderr;
-        std::unique_ptr<Pipe> capture_stderr_pipe;
+        std::unique_ptr<Channel> capture_stderr_pipe;
 
         /* must be last, so the thread gets join()ed before its FDs vanish */
         std::unique_ptr<Thread> thread;
@@ -204,6 +205,7 @@ namespace paludis
         ProcessCommand command;
 
         bool need_thread;
+        bool use_ptys;
         std::ostream * capture_stdout;
         std::ostream * capture_stderr;
 
@@ -213,6 +215,7 @@ namespace paludis
         Imp(ProcessCommand && c) :
             command(std::move(c)),
             need_thread(false),
+            use_ptys(false),
             capture_stdout(0),
             capture_stderr(0)
         {
@@ -240,13 +243,19 @@ Process::run()
         if (_imp->capture_stdout)
         {
             thread->capture_stdout = _imp->capture_stdout;
-            thread->capture_stdout_pipe.reset(new Pipe(true));
+            if (_imp->use_ptys)
+                thread->capture_stdout_pipe.reset(new Pty(true));
+            else
+                thread->capture_stdout_pipe.reset(new Pipe(true));
         }
 
         if (_imp->capture_stderr)
         {
             thread->capture_stderr = _imp->capture_stderr;
-            thread->capture_stderr_pipe.reset(new Pipe(true));
+            if (_imp->use_ptys)
+                thread->capture_stderr_pipe.reset(new Pty(true));
+            else
+                thread->capture_stderr_pipe.reset(new Pipe(true));
         }
     }
 
@@ -320,6 +329,13 @@ Process &
 Process::chdir(const FSEntry & f)
 {
     _imp->chdir = stringify(f.realpath_if_exists());
+    return *this;
+}
+
+Process &
+Process::use_ptys()
+{
+    _imp->use_ptys = true;
     return *this;
 }
 

@@ -76,6 +76,7 @@ namespace paludis
             Process & capture_stderr(std::ostream &);
             Process & setenv(const std::string &, const std::string &);
             Process & chdir(const FSEntry &);
+            Process & use_ptys();
     };
 
     class PALUDIS_VISIBLE RunningProcessHandle :
