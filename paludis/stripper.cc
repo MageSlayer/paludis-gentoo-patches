@@ -23,8 +23,8 @@
 #include <paludis/util/dir_iterator.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/system.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/process.hh>
 #include <functional>
 #include <sstream>
 #include <list>
@@ -130,7 +130,10 @@ Stripper::file_type(const FSEntry & f)
     Context context("When finding the file type of '" + stringify(f) + "':");
 
     std::stringstream s;
-    if (0 != run_command(Command("file '" + stringify(f) + "'").with_captured_stdout_stream(&s)))
+
+    Process file_process(ProcessCommand({ "file", stringify(f) }));
+    file_process.capture_stdout(s);
+    if (0 != file_process.run().wait())
         Log::get_instance()->message("strip.identification_failed", ll_warning, lc_context)
             << "Couldn't work out the file type of '" << f << "'";
 
@@ -142,7 +145,11 @@ Stripper::do_strip(const FSEntry & f, const std::string & options)
 {
     Context context("When stripping '" + stringify(f) + "':");
     on_strip(f);
-    if (0 != run_command(Command("strip " + options + " '" + stringify(f) + "'")))
+
+    Process strip_process(options.empty() ?
+            ProcessCommand({ "strip", stringify(f) }) :
+            ProcessCommand({ "strip", options, stringify(f) }));
+    if (0 != strip_process.run().wait())
         Log::get_instance()->message("strip.failure", ll_warning, lc_context) << "Couldn't strip '" << f << "'";
     _imp->stripped_ids.insert(f.lowlevel_id());
 }
@@ -162,9 +169,11 @@ Stripper::do_split(const FSEntry & f, const FSEntry & g)
         std::for_each(to_make.begin(), to_make.end(), std::bind(std::mem_fn(&FSEntry::mkdir), _1, 0755));
     }
 
-    if (0 != run_command(Command("objcopy --only-keep-debug '" + stringify(f) + "' '" + stringify(g) + "'")))
+    Process objcopy_copy_process(ProcessCommand({ "objcopy", "--only-keep-debug", stringify(f), stringify(g) }));
+    Process objcopy_link_process(ProcessCommand({ "objcopy", "--add-gnu-debuglink=" + stringify(f), stringify(g) }));
+    if (0 != objcopy_copy_process.run().wait())
         Log::get_instance()->message("strip.failure", ll_warning, lc_context) << "Couldn't copy debug information for '" << f << "'";
-    else if (0 != run_command(Command("objcopy --add-gnu-debuglink='" + stringify(g) + "' '" + stringify(f) + "'")))
+    else if (0 != objcopy_link_process.run().wait())
         Log::get_instance()->message("strip.failure", ll_warning, lc_context) << "Couldn't add debug link for '" << f << "'";
     else
         FSEntry(g).chmod(g.permissions() & ~(S_IXGRP | S_IXUSR | S_IXOTH | S_IWOTH));
