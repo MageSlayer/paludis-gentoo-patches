@@ -24,7 +24,7 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/timestamp.hh>
 #include <paludis/util/set.hh>
-#include <paludis/util/system.hh>
+#include <paludis/util/process.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/hook.hh>
@@ -122,9 +122,9 @@ namespace test_cases
             TEST_CHECK(output.is_regular_file());
             TEST_CHECK(output.file_size() > 100);
 
-            Command cmd("tar xf ../simple.tar 2>&1");
-            cmd.with_chdir(FSEntry("tar_merger_TEST_dir/simple_extract"));
-            TEST_CHECK_EQUAL(0, run_command(cmd));
+            Process untar_process(ProcessCommand({"sh", "-c", "tar xf ../simple.tar 2>&1"}));
+            untar_process.chdir(FSEntry("tar_merger_TEST_dir/simple_extract"));
+            TEST_CHECK_EQUAL(0, untar_process.run().wait());
 
             TEST_CHECK((FSEntry("tar_merger_TEST_dir") / "simple_extract" / "file").is_regular_file());
             TEST_CHECK_EQUAL((FSEntry("tar_merger_TEST_dir") / "simple_extract" / "file").file_size(),
