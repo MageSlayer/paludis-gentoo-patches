@@ -73,6 +73,7 @@ namespace paludis
 
             Process & capture_stdout(std::ostream &);
             Process & capture_stderr(std::ostream &);
+            Process & setenv(const std::string &, const std::string &);
     };
 
     class PALUDIS_VISIBLE RunningProcessHandle :

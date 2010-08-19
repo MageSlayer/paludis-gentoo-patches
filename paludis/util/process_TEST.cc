@@ -145,5 +145,21 @@ namespace test_cases
             TEST_CHECK(! std::getline(stdout_stream, s));
         }
     } test_grab_stdout_long;
+
+    struct SetenvTest : TestCase
+    {
+        SetenvTest() : TestCase("setenv") { }
+
+        void run()
+        {
+            std::stringstream stdout_stream;
+            Process printenv_process(ProcessCommand({"printenv", "monkey"}));
+            printenv_process.capture_stdout(stdout_stream);
+            printenv_process.setenv("monkey", "in space");
+
+            TEST_CHECK_EQUAL(printenv_process.run().wait(), 0);
+            TEST_CHECK_EQUAL(stdout_stream.str(), "in space\n");
+        }
+    } test_setenv;
 }
 

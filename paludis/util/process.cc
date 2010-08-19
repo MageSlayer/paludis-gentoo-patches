@@ -26,6 +26,8 @@
 #include <functional>
 #include <algorithm>
 #include <vector>
+#include <map>
+#include <cstdlib>
 
 #include <unistd.h>
 #include <sys/types.h>
@@ -203,6 +205,8 @@ namespace paludis
         std::ostream * capture_stdout;
         std::ostream * capture_stderr;
 
+        std::map<std::string, std::string> setenvs;
+
         Imp(ProcessCommand && c) :
             command(std::move(c)),
             need_thread(false),
@@ -262,6 +266,10 @@ Process::run()
                     throw ProcessError("dup2() failed");
             }
 
+            for (auto m(_imp->setenvs.begin()), m_end(_imp->setenvs.end()) ;
+                    m != m_end ; ++m)
+                ::setenv(m->first.c_str(), m->second.c_str(), 1);
+
             _imp->command.exec();
         }
         catch (const ProcessError & e)
@@ -291,6 +299,13 @@ Process::capture_stderr(std::ostream & s)
 {
     _imp->need_thread = true;
     _imp->capture_stderr = &s;
+    return *this;
+}
+
+Process &
+Process::setenv(const std::string & a, const std::string & b)
+{
+    _imp->setenvs.insert(std::make_pair(a, b)).first->second = b;
     return *this;
 }
 
