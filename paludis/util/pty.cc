@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2010 Ciaran McCreesh
  * Copyright (c) 2009 David Leverton
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -40,9 +40,20 @@ PtyError::PtyError(const std::string & our_message) throw () :
 
 Pty::Pty()
 {
+    _init(false);
+}
+
+Pty::Pty(const bool close_exec)
+{
+    _init(close_exec);
+}
+
+void
+Pty::_init(const bool close_exec)
+{
     Context context("When creating pty FDs:");
 
-    _fds[0] = posix_openpt(O_RDWR | O_NOCTTY);
+    _fds[0] = posix_openpt(O_RDWR | O_NOCTTY | (close_exec ? O_CLOEXEC : 0));
     if (-1 == _fds[0])
         throw PtyError("posix_openpt(3) failed (is /dev/pts mounted?): " + std::string(std::strerror(errno)));
     if (-1 == grantpt(_fds[0]))
@@ -69,7 +80,7 @@ Pty::Pty()
             throw PtyError("ptsname_r(3) failed: " + std::string(std::strerror(errno)));
         }
     }
-    _fds[1] = open(&name[0], O_WRONLY | O_NOCTTY);
+    _fds[1] = open(&name[0], O_WRONLY | O_NOCTTY | (close_exec ? O_CLOEXEC : 0));
 #else
     const char * name(ptsname(_fds[0]));
     if (0 == name)
@@ -77,7 +88,7 @@ Pty::Pty()
         close(_fds[0]);
         throw PtyError("ptsname(3) failed: " + std::string(std::strerror(errno)));
     }
-    _fds[1] = open(name, O_WRONLY | O_NOCTTY);
+    _fds[1] = open(name, O_WRONLY | O_NOCTTY | (close_exec ? O_CLOEXEC : 0));
 #endif
 
     if (-1 == _fds[1])
