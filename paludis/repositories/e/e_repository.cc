@@ -84,6 +84,7 @@
 #include <paludis/util/mutex.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/pimp-impl.hh>
+#include <paludis/util/process.hh>
 #include <paludis/util/random.hh>
 #include <paludis/util/rmd160.hh>
 #include <paludis/util/safe_ifstream.hh>
@@ -2793,8 +2794,8 @@ ERepository::merge(const MergeParams & m)
 
     merger.merge();
 
-    Command compress_cmd("bzip2 " + stringify(_imp->params.binary_distdir() / (bin_dist_base + ".tar")));
-    if (0 != run_command(compress_cmd))
+    Process compress_process(ProcessCommand({"bzip2", stringify(_imp->params.binary_distdir() / (bin_dist_base + ".tar")) }));
+    if (0 != compress_process.run().wait())
         throw ActionFailedError("Compressing tarball failed");
 
     FSEntry binary_ebuild_location(layout()->binary_ebuild_location(

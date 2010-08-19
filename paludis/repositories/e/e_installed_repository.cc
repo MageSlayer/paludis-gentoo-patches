@@ -37,6 +37,7 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/safe_ifstream.hh>
+#include <paludis/util/process.hh>
 #include <paludis/action.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
@@ -203,9 +204,10 @@ EInstalledRepository::get_environment_variable(
     else if ((ver_dir / "environment.bz2").is_regular_file_or_symlink_to_regular_file())
     {
         std::stringstream p;
-        Command cmd(Command("bash -c '( bunzip2 < " + stringify(ver_dir / "environment.bz2" ) +
-                    " ; echo echo \\$" + var + " ) | bash -O extglob 2>/dev/null'").with_captured_stdout_stream(&p));
-        int exit_status(run_command(cmd));
+        Process env_process(ProcessCommand({"bash", "-c", "'( bunzip2 < " + stringify(ver_dir / "environment.bz2" ) +
+                    " ; echo echo \\$" + var + " ) | bash -O extglob 2>/dev/null'"}));
+        env_process.capture_stdout(p);
+        int exit_status(env_process.run().wait());
         std::string result(strip_trailing_string(std::string(
                         (std::istreambuf_iterator<char>(p)),
                         std::istreambuf_iterator<char>()), "\n"));
