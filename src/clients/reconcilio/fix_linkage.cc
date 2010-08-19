@@ -50,7 +50,8 @@ do_fix_linkage(const std::shared_ptr<Environment> & env)
 
     std::string library(CommandLine::get_instance()->a_library.argument());
     auto libraries(std::make_shared<Sequence<std::string>>());
-    libraries->push_back(library);
+    if (! library.empty())
+        libraries->push_back(library);
 
     if (library.empty())
         std::cout << "Searching for broken packages... " << std::flush;
