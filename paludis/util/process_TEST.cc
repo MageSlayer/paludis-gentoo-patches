@@ -18,6 +18,7 @@
  */
 
 #include <paludis/util/process.hh>
+#include <paludis/util/fs_entry.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <sstream>
@@ -161,5 +162,21 @@ namespace test_cases
             TEST_CHECK_EQUAL(stdout_stream.str(), "in space\n");
         }
     } test_setenv;
+
+    struct ChdirTest : TestCase
+    {
+        ChdirTest() : TestCase("chdir") { }
+
+        void run()
+        {
+            std::stringstream stdout_stream;
+            Process pwd_process(ProcessCommand({"pwd"}));
+            pwd_process.capture_stdout(stdout_stream);
+            pwd_process.chdir(FSEntry("/"));
+
+            TEST_CHECK_EQUAL(pwd_process.run().wait(), 0);
+            TEST_CHECK_EQUAL(stdout_stream.str(), "/\n");
+        }
+    } test_chdir;
 }
 

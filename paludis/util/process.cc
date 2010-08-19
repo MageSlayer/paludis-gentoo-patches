@@ -21,6 +21,8 @@
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/thread.hh>
 #include <paludis/util/pipe.hh>
+#include <paludis/util/fs_entry.hh>
+#include <paludis/util/stringify.hh>
 
 #include <iostream>
 #include <functional>
@@ -206,6 +208,7 @@ namespace paludis
         std::ostream * capture_stderr;
 
         std::map<std::string, std::string> setenvs;
+        std::string chdir;
 
         Imp(ProcessCommand && c) :
             command(std::move(c)),
@@ -270,6 +273,10 @@ Process::run()
                     m != m_end ; ++m)
                 ::setenv(m->first.c_str(), m->second.c_str(), 1);
 
+            if (! _imp->chdir.empty())
+                if (-1 == ::chdir(_imp->chdir.c_str()))
+                    throw ProcessError("chdir() failed");
+
             _imp->command.exec();
         }
         catch (const ProcessError & e)
@@ -306,6 +313,13 @@ Process &
 Process::setenv(const std::string & a, const std::string & b)
 {
     _imp->setenvs.insert(std::make_pair(a, b)).first->second = b;
+    return *this;
+}
+
+Process &
+Process::chdir(const FSEntry & f)
+{
+    _imp->chdir = stringify(f.realpath_if_exists());
     return *this;
 }
 

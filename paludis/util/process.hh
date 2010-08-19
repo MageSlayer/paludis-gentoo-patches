@@ -24,6 +24,7 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/pimp.hh>
 #include <paludis/util/exception.hh>
+#include <paludis/util/fs_entry-fwd.hh>
 
 #include <string>
 #include <iosfwd>
@@ -74,6 +75,7 @@ namespace paludis
             Process & capture_stdout(std::ostream &);
             Process & capture_stderr(std::ostream &);
             Process & setenv(const std::string &, const std::string &);
+            Process & chdir(const FSEntry &);
     };
 
     class PALUDIS_VISIBLE RunningProcessHandle :
