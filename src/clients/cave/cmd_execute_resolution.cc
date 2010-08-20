@@ -48,6 +48,7 @@
 #include <paludis/util/mutex.hh>
 #include <paludis/util/timestamp.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/process.hh>
 #include <paludis/resolver/resolutions_by_resolvent.hh>
 #include <paludis/resolver/reason.hh>
 #include <paludis/resolver/sanitised_dependencies.hh>
@@ -242,12 +243,11 @@ namespace
                 command = command + " " + args::escape(*a);
 
             IPCInputManager input_manager(env.get(), std::function<void (const std::shared_ptr<OutputManager> &)>());
-            paludis::Command cmd(command);
-            cmd
-                .with_pipe_command_handler("PALUDIS_IPC", input_manager.pipe_command_handler())
-                ;
 
-            retcode = run_command(cmd);
+            Process process(ProcessCommand({ "sh", "-c", command }));
+            process.pipe_command_handler("PALUDIS_IPC", input_manager.pipe_command_handler());
+
+            retcode = process.run().wait();
             const std::shared_ptr<OutputManager> output_manager(input_manager.underlying_output_manager_if_constructed());
             if (output_manager)
             {
@@ -396,12 +396,10 @@ namespace
         IPCInputManager input_manager(env.get(), std::bind(&set_output_manager, std::ref(job_mutex),
                     std::ref(active_state), std::placeholders::_1));
 
-        paludis::Command cmd(command);
-        cmd
-            .with_pipe_command_handler("PALUDIS_IPC", input_manager.pipe_command_handler())
-            ;
+        Process process(ProcessCommand({ "sh", "-c", command }));
+        process.pipe_command_handler("PALUDIS_IPC", input_manager.pipe_command_handler());
 
-        int retcode(run_command(cmd));
+        int retcode(process.run().wait());
         return 0 == retcode;
     }
 
@@ -475,12 +473,10 @@ namespace
 
         IPCInputManager input_manager(env.get(), std::bind(&set_output_manager, std::ref(job_mutex),
                     std::ref(active_state), std::placeholders::_1));
-        paludis::Command cmd(command);
-        cmd
-            .with_pipe_command_handler("PALUDIS_IPC", input_manager.pipe_command_handler())
-            ;
+        Process process(ProcessCommand({ "sh", "-c", command }));
+        process.pipe_command_handler("PALUDIS_IPC", input_manager.pipe_command_handler());
 
-        int retcode(run_command(cmd));
+        int retcode(process.run().wait());
         const std::shared_ptr<OutputManager> output_manager(input_manager.underlying_output_manager_if_constructed());
         return 0 == retcode;
     }
@@ -547,12 +543,11 @@ namespace
 
         IPCInputManager input_manager(env.get(), std::bind(&set_output_manager, std::ref(job_mutex),
                     std::ref(active_state), std::placeholders::_1));
-        paludis::Command cmd(command);
-        cmd
-            .with_pipe_command_handler("PALUDIS_IPC", input_manager.pipe_command_handler())
-            ;
 
-        int retcode(run_command(cmd));
+        Process process(ProcessCommand({ "sh", "-c", command }));
+        process.pipe_command_handler("PALUDIS_IPC", input_manager.pipe_command_handler());
+
+        int retcode(process.run().wait());
         const std::shared_ptr<OutputManager> output_manager(input_manager.underlying_output_manager_if_constructed());
         if (output_manager)
             output_manager->succeeded();
@@ -647,8 +642,8 @@ namespace
 
         if (any)
         {
-            paludis::Command cmd(command);
-            if (0 != run_command(cmd))
+            Process process(ProcessCommand({ "sh", "-c", command }));
+            if (0 != process.run().wait())
                 throw ActionAbortedError("Updating world failed");
         }
     }
