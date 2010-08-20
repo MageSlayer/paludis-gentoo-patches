@@ -232,5 +232,35 @@ namespace test_cases
             }
         }
     } test_setuid;
+
+    struct GrabFDTest : TestCase
+    {
+        GrabFDTest() : TestCase("grab fd") { }
+
+        void run()
+        {
+            std::stringstream fd_stream;
+            Process echo_process(ProcessCommand({"sh", "-c", "echo monkey 1>&$MAGIC_FD"}));
+            echo_process.capture_output_to_fd(fd_stream, -1, "MAGIC_FD");
+
+            TEST_CHECK_EQUAL(echo_process.run().wait(), 0);
+            TEST_CHECK_EQUAL(fd_stream.str(), "monkey\n");
+        }
+    } test_grab_fd;
+
+    struct GrabFDFixedTest : TestCase
+    {
+        GrabFDFixedTest() : TestCase("grab fd fixed") { }
+
+        void run()
+        {
+            std::stringstream fd_stream;
+            Process echo_process(ProcessCommand({"sh", "-c", "echo monkey 1>&5"}));
+            echo_process.capture_output_to_fd(fd_stream, 5, "");
+
+            TEST_CHECK_EQUAL(echo_process.run().wait(), 0);
+            TEST_CHECK_EQUAL(fd_stream.str(), "monkey\n");
+        }
+    } test_grab_fd_fixed;
 }
 

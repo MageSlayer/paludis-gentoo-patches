@@ -96,6 +96,20 @@ ProcessCommand::exec()
     throw ProcessError("execvp failed");
 }
 
+void
+ProcessCommand::echo_command_to(std::ostream & s)
+{
+    for (auto v_begin(_imp->args.begin()), v(v_begin), v_end(_imp->args.end()) ;
+            v != v_end ; ++v)
+    {
+        if (v != v_begin)
+            s << " ";
+        s << *v;
+    }
+
+    s << std::endl;
+}
+
 namespace paludis
 {
     struct RunningProcessThread
@@ -108,13 +122,17 @@ namespace paludis
         std::ostream * capture_stderr;
         std::unique_ptr<Channel> capture_stderr_pipe;
 
+        std::ostream * capture_output_to_fd;
+        std::unique_ptr<Pipe> capture_output_to_fd_pipe;
+
         /* must be last, so the thread gets join()ed before its FDs vanish */
         std::unique_ptr<Thread> thread;
 
         RunningProcessThread() :
             ctl_pipe(true),
             capture_stdout(0),
-            capture_stderr(0)
+            capture_stderr(0),
+            capture_output_to_fd(0)
         {
         }
 
@@ -150,6 +168,12 @@ RunningProcessThread::thread_func()
             max_fd = std::max(max_fd, capture_stderr_pipe->read_fd());
         }
 
+        if (capture_output_to_fd)
+        {
+            FD_SET(capture_output_to_fd_pipe->read_fd(), &read_fds);
+            max_fd = std::max(max_fd, capture_output_to_fd_pipe->read_fd());
+        }
+
         int retval(::pselect(max_fd + 1, &read_fds, &write_fds, 0, 0, 0));
         if (-1 == retval)
             throw ProcessError("pselect() failed");
@@ -174,6 +198,16 @@ RunningProcessThread::thread_func()
                 throw ProcessError("read() capture_stderr_pipe read_fd failed");
             else if (0 != n)
                 capture_stderr->write(buf, n);
+            done_anything = true;
+        }
+
+        if (capture_output_to_fd_pipe && FD_ISSET(capture_output_to_fd_pipe->read_fd(), &read_fds))
+        {
+            int n(::read(capture_output_to_fd_pipe->read_fd(), &buf, sizeof(buf)));
+            if (-1 == n)
+                throw ProcessError("read() capture_output_to_fd_pipe read_fd failed");
+            else if (0 != n)
+                capture_output_to_fd->write(buf, n);
             done_anything = true;
         }
 
@@ -210,11 +244,15 @@ namespace paludis
         bool use_ptys;
         std::ostream * capture_stdout;
         std::ostream * capture_stderr;
+        std::ostream * capture_output_to_fd_stream;
+        int capture_output_to_fd_fd;
+        std::string capture_output_to_fd_env_var;
 
         std::map<std::string, std::string> setenvs;
         std::string chdir;
         uid_t setuid;
         gid_t setgid;
+        std::ostream * echo_command_to;
 
         Imp(ProcessCommand && c) :
             command(std::move(c)),
@@ -222,8 +260,11 @@ namespace paludis
             use_ptys(false),
             capture_stdout(0),
             capture_stderr(0),
+            capture_output_to_fd_stream(0),
+            capture_output_to_fd_fd(-1),
             setuid(getuid()),
-            setgid(getgid())
+            setgid(getgid()),
+            echo_command_to(0)
         {
         }
     };
@@ -241,6 +282,9 @@ Process::~Process()
 RunningProcessHandle
 Process::run()
 {
+    if (_imp->echo_command_to)
+        _imp->command.echo_command_to(*_imp->echo_command_to);
+
     std::unique_ptr<RunningProcessThread> thread;
     if (_imp->need_thread)
     {
@@ -263,6 +307,12 @@ Process::run()
             else
                 thread->capture_stderr_pipe.reset(new Pipe(true));
         }
+
+        if (_imp->capture_output_to_fd_stream)
+        {
+            thread->capture_output_to_fd = _imp->capture_output_to_fd_stream;
+            thread->capture_output_to_fd_pipe.reset(new Pipe(true));
+        }
     }
 
     pid_t child(fork());
@@ -282,6 +332,20 @@ Process::run()
             {
                 if (-1 == ::dup2(thread->capture_stderr_pipe->write_fd(), STDERR_FILENO))
                     throw ProcessError("dup2() failed");
+            }
+
+            if (thread && thread->capture_output_to_fd_pipe)
+            {
+                int fd(_imp->capture_output_to_fd_fd);
+                if (-1 == fd)
+                    fd = ::dup(thread->capture_output_to_fd_pipe->write_fd());
+                else
+                    fd = ::dup2(thread->capture_output_to_fd_pipe->write_fd(), fd);
+
+                if (-1 == fd)
+                    throw ProcessError("dup failed");
+                else if (! _imp->capture_output_to_fd_env_var.empty())
+                    ::setenv(_imp->capture_output_to_fd_env_var.c_str(), stringify(fd).c_str(), 1);
             }
 
             for (auto m(_imp->setenvs.begin()), m_end(_imp->setenvs.end()) ;
@@ -347,6 +411,16 @@ Process::capture_stderr(std::ostream & s)
 }
 
 Process &
+Process::capture_output_to_fd(std::ostream & s, int fd_or_minus_one, const std::string & env_var_with_fd)
+{
+    _imp->need_thread = true;
+    _imp->capture_output_to_fd_stream = &s;
+    _imp->capture_output_to_fd_fd = fd_or_minus_one;
+    _imp->capture_output_to_fd_env_var = env_var_with_fd;
+    return *this;
+}
+
+Process &
 Process::setenv(const std::string & a, const std::string & b)
 {
     _imp->setenvs.insert(std::make_pair(a, b)).first->second = b;
@@ -372,6 +446,13 @@ Process::setuid_setgid(uid_t u, gid_t g)
 {
     _imp->setuid = u;
     _imp->setgid = g;
+    return *this;
+}
+
+Process &
+Process::echo_command_to(std::ostream & s)
+{
+    _imp->echo_command_to = &s;
     return *this;
 }
 

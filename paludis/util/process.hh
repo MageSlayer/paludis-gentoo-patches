@@ -58,6 +58,8 @@ namespace paludis
             ProcessCommand(const ProcessCommand &) = delete;
             ProcessCommand & operator= (const ProcessCommand &) = delete;
 
+            void echo_command_to(std::ostream &);
+
             void exec() PALUDIS_ATTRIBUTE((noreturn));
     };
 
@@ -75,10 +77,12 @@ namespace paludis
 
             Process & capture_stdout(std::ostream &);
             Process & capture_stderr(std::ostream &);
+            Process & capture_output_to_fd(std::ostream &, int fd_or_minus_one, const std::string & env_var_with_fd);
             Process & setenv(const std::string &, const std::string &);
             Process & chdir(const FSEntry &);
             Process & use_ptys();
             Process & setuid_setgid(uid_t, gid_t);
+            Process & echo_command_to(std::ostream &);
     };
 
     class PALUDIS_VISIBLE RunningProcessHandle :
