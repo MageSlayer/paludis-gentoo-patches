@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -25,6 +25,7 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/join.hh>
+#include <paludis/util/process.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/action.hh>
 #include <paludis/repository.hh>
@@ -199,9 +200,9 @@ PasswdAccountsHandler::merge_user(const MergeParams & params)
             home = " -d '" + home + "'";
     } while (false);
 
-    Command cmd("useradd -r " + username + preferred_uid + gecos + primary_group + extra_groups + shell + home);
-    cmd.with_echo_to_stderr();
-    int exit_status(run_command(cmd));
+    Process process(ProcessCommand({ "sh", "-c", "useradd -r " + username + preferred_uid + gecos + primary_group + extra_groups + shell + home }));
+    process.echo_command_to(params.output_manager()->stderr_stream());
+    int exit_status(process.run().wait());
 
     if (0 != exit_status)
         throw ActionFailedError("Install of '" + stringify(*params.package_id()) + "' failed because useradd returned "
@@ -255,9 +256,9 @@ PasswdAccountsHandler::merge_group(const MergeParams & params)
             preferred_gid = " -g '" + preferred_gid + "'";
     } while (false);
 
-    Command cmd("groupadd -r " + groupname + preferred_gid);
-    cmd.with_echo_to_stderr();
-    int exit_status(run_command(cmd));
+    Process process(ProcessCommand({ "sh", "-c", "groupadd -r " + groupname + preferred_gid }));
+    process.echo_command_to(params.output_manager()->stderr_stream());
+    int exit_status(process.run().wait());
 
     if (0 != exit_status)
         throw ActionFailedError("Install of '" + stringify(*params.package_id()) + "' failed because groupadd returned "
