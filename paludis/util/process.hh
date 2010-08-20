@@ -61,6 +61,8 @@ namespace paludis
             ProcessCommand(const ProcessCommand &) = delete;
             ProcessCommand & operator= (const ProcessCommand &) = delete;
 
+            void prepend_args(const std::initializer_list<std::string> &);
+
             void echo_command_to(std::ostream &);
 
             void exec() PALUDIS_ATTRIBUTE((noreturn));
@@ -94,6 +96,9 @@ namespace paludis
 
             Process & prefix_stdout(const std::string &);
             Process & prefix_stderr(const std::string &);
+
+            Process & sandbox();
+            Process & sydbox();
     };
 
     class PALUDIS_VISIBLE RunningProcessHandle :
