@@ -125,6 +125,11 @@ namespace paludis
         std::ostream * capture_output_to_fd;
         std::unique_ptr<Pipe> capture_output_to_fd_pipe;
 
+        ProcessPipeCommandFunction pipe_command_handler;
+        std::unique_ptr<Pipe> pipe_command_handler_command_pipe;
+        std::unique_ptr<Pipe> pipe_command_handler_response_pipe;
+        std::string pipe_command_handler_buffer;
+
         /* must be last, so the thread gets join()ed before its FDs vanish */
         std::unique_ptr<Thread> thread;
 
@@ -174,6 +179,12 @@ RunningProcessThread::thread_func()
             max_fd = std::max(max_fd, capture_output_to_fd_pipe->read_fd());
         }
 
+        if (pipe_command_handler)
+        {
+            FD_SET(pipe_command_handler_command_pipe->read_fd(), &read_fds);
+            max_fd = std::max(max_fd, pipe_command_handler_command_pipe->read_fd());
+        }
+
         int retval(::pselect(max_fd + 1, &read_fds, &write_fds, 0, 0, 0));
         if (-1 == retval)
             throw ProcessError("pselect() failed");
@@ -209,6 +220,43 @@ RunningProcessThread::thread_func()
             else if (0 != n)
                 capture_output_to_fd->write(buf, n);
             done_anything = true;
+        }
+
+        if (pipe_command_handler && FD_ISSET(pipe_command_handler_command_pipe->read_fd(), &read_fds))
+        {
+            int n(::read(pipe_command_handler_command_pipe->read_fd(), &buf, sizeof(buf)));
+            if (-1 == n)
+                throw ProcessError("read() pipe_command_handler_command_pipe read_fd failed");
+            else if (0 != n)
+                pipe_command_handler_buffer.append(buf, n);
+            done_anything = true;
+        }
+
+        while (! pipe_command_handler_buffer.empty())
+        {
+            std::string::size_type n_p(pipe_command_handler_buffer.find('\0'));
+            if (std::string::npos == n_p)
+                break;
+
+            std::string op(pipe_command_handler_buffer.substr(0, n_p));
+            pipe_command_handler_buffer.erase(0, n_p + 1);
+
+            std::string response(pipe_command_handler(op));
+
+            ssize_t n(0);
+            while (! response.empty())
+            {
+                n = write(pipe_command_handler_response_pipe->write_fd(), response.c_str(), response.length());
+                if (-1 == n)
+                    throw ProcessError("write() pipe_command_handler_response_pipe write_fd failed");
+                else
+                    response.erase(0, n);
+            }
+
+            char c(0);
+            n = write(pipe_command_handler_response_pipe->write_fd(), &c, 1);
+            if (1 != n)
+                throw ProcessError("write() pipe_command_handler_response_pipe write_fd failed");
         }
 
         if (done_anything)
@@ -247,6 +295,8 @@ namespace paludis
         std::ostream * capture_output_to_fd_stream;
         int capture_output_to_fd_fd;
         std::string capture_output_to_fd_env_var;
+        ProcessPipeCommandFunction pipe_command_handler;
+        std::string pipe_command_handler_env_var;
         int set_stdin_fd;
 
         std::map<std::string, std::string> setenvs;
@@ -315,6 +365,13 @@ Process::run()
             thread->capture_output_to_fd = _imp->capture_output_to_fd_stream;
             thread->capture_output_to_fd_pipe.reset(new Pipe(true));
         }
+
+        if (_imp->pipe_command_handler)
+        {
+            thread->pipe_command_handler = _imp->pipe_command_handler;
+            thread->pipe_command_handler_command_pipe.reset(new Pipe(true));
+            thread->pipe_command_handler_response_pipe.reset(new Pipe(true));
+        }
     }
 
     pid_t child(fork());
@@ -348,6 +405,23 @@ Process::run()
                     throw ProcessError("dup failed");
                 else if (! _imp->capture_output_to_fd_env_var.empty())
                     ::setenv(_imp->capture_output_to_fd_env_var.c_str(), stringify(fd).c_str(), 1);
+            }
+
+            if (thread && thread->pipe_command_handler)
+            {
+                int read_fd(::dup(thread->pipe_command_handler_response_pipe->read_fd()));
+                if (-1 == read_fd)
+                    throw ProcessError("dup failed");
+
+                int write_fd(::dup(thread->pipe_command_handler_command_pipe->write_fd()));
+                if (-1 == write_fd)
+                    throw ProcessError("dup failed");
+
+                if (! _imp->pipe_command_handler_env_var.empty())
+                {
+                    ::setenv((_imp->pipe_command_handler_env_var + "_READ_FD").c_str(), stringify(read_fd).c_str(), 1);
+                    ::setenv((_imp->pipe_command_handler_env_var + "_WRITE_FD").c_str(), stringify(write_fd).c_str(), 1);
+                }
             }
 
             if (-1 != _imp->set_stdin_fd)
@@ -432,6 +506,15 @@ Process &
 Process::set_stdin_fd(int f)
 {
     _imp->set_stdin_fd = f;
+    return *this;
+}
+
+Process &
+Process::pipe_command_handler(const std::string & v, const ProcessPipeCommandFunction & f)
+{
+    _imp->need_thread = true;
+    _imp->pipe_command_handler = f;
+    _imp->pipe_command_handler_env_var = v;
     return *this;
 }
 

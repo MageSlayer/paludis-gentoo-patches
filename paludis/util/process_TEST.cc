@@ -30,6 +30,23 @@
 using namespace paludis;
 using namespace test;
 
+namespace
+{
+    std::string response_handler(const std::string & s)
+    {
+        if (s == "ONE")
+            return "1";
+        else if (s == "TWO")
+            return "2";
+        else if (s == "THREE")
+            return "3";
+        else if (s == "FOUR")
+            return "4";
+        else
+            return "9";
+    }
+}
+
 namespace test_cases
 {
     struct TrueTest : TestCase
@@ -293,5 +310,44 @@ namespace test_cases
             TEST_CHECK_EQUAL(stdout_stream.str(), "sdrawkcab\n");
         }
     } test_stdin_fd;
+
+    struct PipeCommandTest : TestCase
+    {
+        PipeCommandTest() : TestCase("pipe command") { }
+
+        void run()
+        {
+            {
+                Process one_two_process(ProcessCommand({ "bash", "process_TEST_dir/pipe_test.bash", "ONE", "TWO" }));
+                one_two_process.pipe_command_handler("PALUDIS_PIPE_COMMAND", &response_handler);
+                TEST_CHECK_EQUAL(one_two_process.run().wait(), 12);
+            }
+
+            {
+                Process three_four_process(ProcessCommand({ "bash", "process_TEST_dir/pipe_test.bash", "THREE", "FOUR" }));
+                three_four_process.pipe_command_handler("PALUDIS_PIPE_COMMAND", &response_handler);
+                TEST_CHECK_EQUAL(three_four_process.run().wait(), 34);
+            }
+        }
+    } test_pipe_command;
+
+    struct CapturedPipeCommandTest : TestCase
+    {
+        CapturedPipeCommandTest() : TestCase("captured pipe command") { }
+
+        void run()
+        {
+            std::stringstream stdout_stream;
+            Process one_two_three_process(ProcessCommand({ "bash", "process_TEST_dir/captured_pipe_test.bash", "ONE", "TWO", "THREE" }));
+            one_two_three_process.capture_stdout(stdout_stream);
+            one_two_three_process.pipe_command_handler("PALUDIS_PIPE_COMMAND", &response_handler);
+            TEST_CHECK_EQUAL(one_two_three_process.run().wait(), 13);
+
+            std::string line;
+            TEST_CHECK(std::getline(stdout_stream, line));
+            TEST_CHECK_EQUAL(line, "2");
+            TEST_CHECK(! std::getline(stdout_stream, line));
+        }
+    } test_captured_pipe_command;
 }
 

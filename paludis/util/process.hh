@@ -29,6 +29,7 @@
 #include <string>
 #include <iosfwd>
 #include <memory>
+#include <functional>
 #include <initializer_list>
 
 #include <sys/types.h>
@@ -36,6 +37,8 @@
 
 namespace paludis
 {
+    typedef std::function<std::string (const std::string &)> ProcessPipeCommandFunction;
+
     class PALUDIS_VISIBLE ProcessError :
         public Exception
     {
@@ -79,6 +82,8 @@ namespace paludis
             Process & capture_stderr(std::ostream &);
             Process & capture_output_to_fd(std::ostream &, int fd_or_minus_one, const std::string & env_var_with_fd);
             Process & set_stdin_fd(int);
+            Process & pipe_command_handler(const std::string &, const ProcessPipeCommandFunction &);
+
             Process & setenv(const std::string &, const std::string &);
             Process & chdir(const FSEntry &);
             Process & use_ptys();
