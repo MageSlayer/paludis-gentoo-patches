@@ -381,5 +381,22 @@ namespace test_cases
             TEST_CHECK_EQUAL(stderr_stream.str(), "prefix> monkey\nprefix> in\nprefix> space\n");
         }
     } test_prefix_stderr;
+
+    struct ClearenvTest : TestCase
+    {
+        ClearenvTest() : TestCase("clearenv") { }
+
+        void run()
+        {
+            ::setenv("BANANAS", "IN PYJAMAS", 1);
+            std::stringstream stdout_stream;
+            Process printenv_process(ProcessCommand({"printenv", "BANANAS"}));
+            printenv_process.capture_stdout(stdout_stream);
+            printenv_process.clearenv();
+
+            TEST_CHECK_EQUAL(printenv_process.run().wait(), 1);
+            TEST_CHECK_EQUAL(stdout_stream.str(), "");
+        }
+    } test_clearenv;
 }
 

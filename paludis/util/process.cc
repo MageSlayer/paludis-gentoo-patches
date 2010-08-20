@@ -376,6 +376,7 @@ namespace paludis
         int set_stdin_fd;
 
         std::map<std::string, std::string> setenvs;
+        bool clearenv;
         std::string chdir;
         uid_t setuid;
         gid_t setgid;
@@ -393,6 +394,7 @@ namespace paludis
             capture_output_to_fd_stream(0),
             capture_output_to_fd_fd(-1),
             set_stdin_fd(-1),
+            clearenv(false),
             setuid(getuid()),
             setgid(getgid()),
             echo_command_to(0)
@@ -480,6 +482,26 @@ Process::run()
     {
         try
         {
+            if (_imp->clearenv)
+            {
+                std::map<std::string, std::string> setenvs;
+                for (const char * const * it(environ) ; 0 != *it ; ++it)
+                {
+                    std::string var(*it);
+                    if (std::string::npos != var.find('=') &&
+                            ("PALUDIS_" == var.substr(0, 8) ||
+                             "PATH=" == var.substr(0, 5) ||
+                             "HOME=" == var.substr(0, 5) ||
+                             "LD_LIBRARY_PATH=" == var.substr(0, 16)))
+                        setenvs.insert(std::make_pair(var.substr(0, var.find('=')), var.substr(var.find('=') + 1)));
+                }
+                ::clearenv();
+
+                for (std::map<std::string, std::string>::const_iterator it(setenvs.begin()),
+                        it_end(setenvs.end()) ; it_end != it ; ++it)
+                    ::setenv(it->first.c_str(), it->second.c_str(), 1);
+            }
+
             if (thread && thread->capture_stdout_pipe)
             {
                 if (-1 == ::dup2(thread->capture_stdout_pipe->write_fd(), STDOUT_FILENO))
@@ -621,6 +643,13 @@ Process &
 Process::setenv(const std::string & a, const std::string & b)
 {
     _imp->setenvs.insert(std::make_pair(a, b)).first->second = b;
+    return *this;
+}
+
+Process &
+Process::clearenv()
+{
+    _imp->clearenv = true;
     return *this;
 }
 

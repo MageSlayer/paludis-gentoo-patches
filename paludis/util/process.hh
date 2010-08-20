@@ -85,6 +85,8 @@ namespace paludis
             Process & pipe_command_handler(const std::string &, const ProcessPipeCommandFunction &);
 
             Process & setenv(const std::string &, const std::string &);
+            Process & clearenv();
+
             Process & chdir(const FSEntry &);
             Process & use_ptys();
             Process & setuid_setgid(uid_t, gid_t);
