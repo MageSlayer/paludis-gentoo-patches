@@ -1654,7 +1654,7 @@ namespace
             if (need_comma)
                 comma = ", ";
             need_comma = true;
-            cout << fuc(fs_totals_binaries(), fv<'c'>(comma), fv<'n'>(stringify(totals->uninstalls_count)));
+            cout << fuc(fs_totals_uninstalls(), fv<'c'>(comma), fv<'n'>(stringify(totals->uninstalls_count)));
         }
 
         if (totals->download_overflow)
