@@ -29,6 +29,7 @@
 #include <paludis/repository.hh>
 #include <paludis/about.hh>
 #include <paludis/util/system.hh>
+#include <paludis/util/process.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/log.hh>
@@ -194,62 +195,62 @@ FetchVisitor::visit(const FetchableURISpecTree::NodeType<FetchableURIDepSpec>::T
             {
                 found = true;
 
-                Command cmd(stringify(make_fetcher(*d, protocol)) + " '" + i->first + "' '" +
-                        stringify(_imp->distdir / i->second) + "'");
+                Process fetch_process(ProcessCommand({ stringify(make_fetcher(*d, protocol)),
+                            i->first, stringify(_imp->distdir / i->second) }));
                 if (_imp->userpriv)
-                    cmd.with_uid_gid(_imp->env->reduced_uid(), _imp->env->reduced_gid());
+                    fetch_process.setuid_setgid(_imp->env->reduced_uid(), _imp->env->reduced_gid());
 
                 std::shared_ptr<const FSEntrySequence> syncers_dirs(_imp->env->syncers_dirs());
                 std::shared_ptr<const FSEntrySequence> bashrc_files(_imp->env->bashrc_files());
                 std::shared_ptr<const FSEntrySequence> fetchers_dirs(_imp->env->fetchers_dirs());
                 std::shared_ptr<const FSEntrySequence> hook_dirs(_imp->env->hook_dirs());
 
-                cmd
-                    .with_setenv("P", stringify(_imp->id->name().package()) + "-" +
+                fetch_process
+                    .setenv("P", stringify(_imp->id->name().package()) + "-" +
                             stringify(_imp->id->version().remove_revision()))
-                    .with_setenv("PNV", stringify(_imp->id->name().package()) + "-" +
+                    .setenv("PNV", stringify(_imp->id->name().package()) + "-" +
                             stringify(_imp->id->version().remove_revision()))
-                    .with_setenv("PV", stringify(_imp->id->version().remove_revision()))
-                    .with_setenv("PR", stringify(_imp->id->version().revision_only()))
-                    .with_setenv("PN", stringify(_imp->id->name().package()))
-                    .with_setenv("PVR", stringify(_imp->id->version()))
-                    .with_setenv("PF", stringify(_imp->id->name().package()) + "-" +
+                    .setenv("PV", stringify(_imp->id->version().remove_revision()))
+                    .setenv("PR", stringify(_imp->id->version().revision_only()))
+                    .setenv("PN", stringify(_imp->id->name().package()))
+                    .setenv("PVR", stringify(_imp->id->version()))
+                    .setenv("PF", stringify(_imp->id->name().package()) + "-" +
                             stringify(_imp->id->version()))
-                    .with_setenv("PNVR", stringify(_imp->id->name().package()) + "-" +
+                    .setenv("PNVR", stringify(_imp->id->name().package()) + "-" +
                             stringify(_imp->id->version()))
-                    .with_setenv("CATEGORY", stringify(_imp->id->name().category()))
-                    .with_setenv("REPOSITORY", stringify(_imp->id->repository()->name()))
-                    .with_setenv("EAPI", stringify(_imp->eapi.name()))
-                    .with_setenv("SLOT", "")
-                    .with_setenv("PKGMANAGER", PALUDIS_PACKAGE "-" + stringify(PALUDIS_VERSION_MAJOR) + "." +
+                    .setenv("CATEGORY", stringify(_imp->id->name().category()))
+                    .setenv("REPOSITORY", stringify(_imp->id->repository()->name()))
+                    .setenv("EAPI", stringify(_imp->eapi.name()))
+                    .setenv("SLOT", "")
+                    .setenv("PKGMANAGER", PALUDIS_PACKAGE "-" + stringify(PALUDIS_VERSION_MAJOR) + "." +
                             stringify(PALUDIS_VERSION_MINOR) + "." +
                             stringify(PALUDIS_VERSION_MICRO) +
                             (std::string(PALUDIS_GIT_HEAD).empty() ?
                              std::string("") : "-git-" + std::string(PALUDIS_GIT_HEAD)))
-                    .with_setenv("PALUDIS_CONFIG_DIR", SYSCONFDIR "/paludis/")
-                    .with_setenv("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " "))
-                    .with_setenv("PALUDIS_HOOK_DIRS", join(hook_dirs->begin(), hook_dirs->end(), " "))
-                    .with_setenv("PALUDIS_FETCHERS_DIRS", join(fetchers_dirs->begin(), fetchers_dirs->end(), " "))
-                    .with_setenv("PALUDIS_SYNCERS_DIRS", join(syncers_dirs->begin(), syncers_dirs->end(), " "))
-                    .with_setenv("PALUDIS_COMMAND", _imp->env->paludis_command())
-                    .with_setenv("PALUDIS_REDUCED_GID", stringify(_imp->env->reduced_gid()))
-                    .with_setenv("PALUDIS_REDUCED_UID", stringify(_imp->env->reduced_uid()))
-                    .with_setenv("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
-                    .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"));
+                    .setenv("PALUDIS_CONFIG_DIR", SYSCONFDIR "/paludis/")
+                    .setenv("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " "))
+                    .setenv("PALUDIS_HOOK_DIRS", join(hook_dirs->begin(), hook_dirs->end(), " "))
+                    .setenv("PALUDIS_FETCHERS_DIRS", join(fetchers_dirs->begin(), fetchers_dirs->end(), " "))
+                    .setenv("PALUDIS_SYNCERS_DIRS", join(syncers_dirs->begin(), syncers_dirs->end(), " "))
+                    .setenv("PALUDIS_COMMAND", _imp->env->paludis_command())
+                    .setenv("PALUDIS_REDUCED_GID", stringify(_imp->env->reduced_gid()))
+                    .setenv("PALUDIS_REDUCED_UID", stringify(_imp->env->reduced_uid()))
+                    .setenv("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
+                    .setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"));
 
                 if (_imp->safe_resume)
-                    cmd
-                        .with_setenv("PALUDIS_USE_SAFE_RESUME", "yesplease");
+                    fetch_process
+                        .setenv("PALUDIS_USE_SAFE_RESUME", "yesplease");
 
-                cmd
-                    .with_captured_stderr_stream(&_imp->output_manager->stderr_stream())
-                    .with_captured_stdout_stream(&_imp->output_manager->stdout_stream())
-                    .with_ptys();
+                fetch_process
+                    .capture_stdout(_imp->output_manager->stderr_stream())
+                    .capture_stderr(_imp->output_manager->stdout_stream())
+                    .use_ptys();
 
                 _imp->output_manager->stdout_stream() << "Trying to fetch '" << i->first << "' to '" <<
                     i->second << "'..." << std::endl;
 
-                if (0 != run_command(cmd))
+                if (0 != fetch_process.run().wait())
                     destination.unlink();
                 break;
             }
