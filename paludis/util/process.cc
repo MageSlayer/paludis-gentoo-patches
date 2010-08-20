@@ -24,6 +24,7 @@
 #include <paludis/util/pty.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/safe_ofstream.hh>
 
 #include <iostream>
 #include <functional>
@@ -116,11 +117,18 @@ namespace paludis
     {
         Pipe ctl_pipe;
 
+        std::unique_ptr<SafeOFStream> own_capture_stdout;
+        std::unique_ptr<SafeOFStream> own_capture_stderr;
+
+        std::string prefix_stdout;
         std::ostream * capture_stdout;
         std::unique_ptr<Channel> capture_stdout_pipe;
+        std::string prefix_stdout_buffer;
 
+        std::string prefix_stderr;
         std::ostream * capture_stderr;
         std::unique_ptr<Channel> capture_stderr_pipe;
+        std::string prefix_stderr_buffer;
 
         std::ostream * capture_output_to_fd;
         std::unique_ptr<Pipe> capture_output_to_fd_pipe;
@@ -150,6 +158,7 @@ namespace paludis
 void
 RunningProcessThread::thread_func()
 {
+    bool prefix_stdout_buffer_has_newline(false), prefix_stderr_buffer_has_newline(false);
     bool done(false);
     while (! done)
     {
@@ -198,7 +207,17 @@ RunningProcessThread::thread_func()
             if (-1 == n)
                 throw ProcessError("read() capture_stdout_pipe read_fd failed");
             else if (0 != n)
-                capture_stdout->write(buf, n);
+            {
+                if (prefix_stdout.empty())
+                    capture_stdout->write(buf, n);
+                else
+                {
+                    std::string s(buf, n);
+                    prefix_stdout_buffer.append(s);
+                    if (std::string::npos != s.find('\n'))
+                        prefix_stdout_buffer_has_newline = true;
+                }
+            }
             done_anything = true;
         }
 
@@ -208,7 +227,17 @@ RunningProcessThread::thread_func()
             if (-1 == n)
                 throw ProcessError("read() capture_stderr_pipe read_fd failed");
             else if (0 != n)
-                capture_stderr->write(buf, n);
+            {
+                if (prefix_stderr.empty())
+                    capture_stderr->write(buf, n);
+                else
+                {
+                    std::string s(buf, n);
+                    prefix_stderr_buffer.append(s);
+                    if (std::string::npos != s.find('\n'))
+                        prefix_stderr_buffer_has_newline = true;
+                }
+            }
             done_anything = true;
         }
 
@@ -259,12 +288,59 @@ RunningProcessThread::thread_func()
                 throw ProcessError("write() pipe_command_handler_response_pipe write_fd failed");
         }
 
+        if (prefix_stdout_buffer_has_newline)
+        {
+            while (true)
+            {
+                std::string::size_type p(prefix_stdout_buffer.find('\n'));
+                if (std::string::npos == p)
+                    break;
+
+                capture_stdout->write(prefix_stdout.data(), prefix_stdout.length());
+                capture_stdout->write(prefix_stdout_buffer.data(), p + 1);
+                prefix_stdout_buffer.erase(0, p + 1);
+            }
+
+            prefix_stdout_buffer_has_newline = false;
+        }
+
+        if (prefix_stderr_buffer_has_newline)
+        {
+            while (true)
+            {
+                std::string::size_type p(prefix_stderr_buffer.find('\n'));
+                if (std::string::npos == p)
+                    break;
+
+                capture_stderr->write(prefix_stderr.data(), prefix_stderr.length());
+                capture_stderr->write(prefix_stderr_buffer.data(), p + 1);
+                prefix_stderr_buffer.erase(0, p + 1);
+            }
+
+            prefix_stderr_buffer_has_newline = false;
+        }
+
         if (done_anything)
             continue;
 
         /* don't do this until nothing else has anything to do */
         if (FD_ISSET(ctl_pipe.read_fd(), &read_fds))
         {
+            /* haxx: flush our buffers first */
+            if (! prefix_stdout_buffer.empty())
+            {
+                prefix_stdout_buffer.append("\n");
+                prefix_stdout_buffer_has_newline = true;
+                continue;
+            }
+
+            if (! prefix_stderr_buffer.empty())
+            {
+                prefix_stderr_buffer.append("\n");
+                prefix_stderr_buffer_has_newline = true;
+                continue;
+            }
+
             char c('?');
             if (1 != ::read(ctl_pipe.read_fd(), &c, 1))
                 throw ProcessError("read() on our ctl pipe failed");
@@ -305,6 +381,9 @@ namespace paludis
         gid_t setgid;
         std::ostream * echo_command_to;
 
+        std::string prefix_stdout;
+        std::string prefix_stderr;
+
         Imp(ProcessCommand && c) :
             command(std::move(c)),
             need_thread(false),
@@ -341,6 +420,26 @@ Process::run()
     if (_imp->need_thread)
     {
         thread.reset(new RunningProcessThread{});
+
+        if (! _imp->prefix_stdout.empty())
+        {
+            thread->prefix_stdout = _imp->prefix_stdout;
+            if (! _imp->capture_stdout)
+            {
+                thread->own_capture_stdout.reset(new SafeOFStream(STDOUT_FILENO));
+                _imp->capture_stdout = thread->own_capture_stdout.get();
+            }
+        }
+
+        if (! _imp->prefix_stderr.empty())
+        {
+            thread->prefix_stderr = _imp->prefix_stderr;
+            if (! _imp->capture_stderr)
+            {
+                thread->own_capture_stderr.reset(new SafeOFStream(STDERR_FILENO));
+                _imp->capture_stderr = thread->own_capture_stderr.get();
+            }
+        }
 
         if (_imp->capture_stdout)
         {
@@ -551,6 +650,22 @@ Process &
 Process::echo_command_to(std::ostream & s)
 {
     _imp->echo_command_to = &s;
+    return *this;
+}
+
+Process &
+Process::prefix_stdout(const std::string & s)
+{
+    _imp->need_thread = true;
+    _imp->prefix_stdout = s;
+    return *this;
+}
+
+Process &
+Process::prefix_stderr(const std::string & s)
+{
+    _imp->need_thread = true;
+    _imp->prefix_stderr = s;
     return *this;
 }
 

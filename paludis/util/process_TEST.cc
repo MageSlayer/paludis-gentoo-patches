@@ -349,5 +349,37 @@ namespace test_cases
             TEST_CHECK(! std::getline(stdout_stream, line));
         }
     } test_captured_pipe_command;
+
+    struct PrefixStdoutTest : TestCase
+    {
+        PrefixStdoutTest() : TestCase("prefix stdout") { }
+
+        void run()
+        {
+            std::stringstream stdout_stream;
+            Process echo_process(ProcessCommand({ "sh", "-c", "echo monkey ; echo in ; echo space"}));
+            echo_process.capture_stdout(stdout_stream);
+            echo_process.prefix_stdout("prefix> ");
+
+            TEST_CHECK_EQUAL(echo_process.run().wait(), 0);
+            TEST_CHECK_EQUAL(stdout_stream.str(), "prefix> monkey\nprefix> in\nprefix> space\n");
+        }
+    } test_prefix_stdout;
+
+    struct PrefixStderrTest : TestCase
+    {
+        PrefixStderrTest() : TestCase("prefix stderr") { }
+
+        void run()
+        {
+            std::stringstream stderr_stream;
+            Process echo_process(ProcessCommand({ "sh", "-c", "echo monkey 1>&2 ; echo in 1>&2 ; echo space 1>&2"}));
+            echo_process.capture_stderr(stderr_stream);
+            echo_process.prefix_stderr("prefix> ");
+
+            TEST_CHECK_EQUAL(echo_process.run().wait(), 0);
+            TEST_CHECK_EQUAL(stderr_stream.str(), "prefix> monkey\nprefix> in\nprefix> space\n");
+        }
+    } test_prefix_stderr;
 }
 

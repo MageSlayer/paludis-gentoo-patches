@@ -89,6 +89,9 @@ namespace paludis
             Process & use_ptys();
             Process & setuid_setgid(uid_t, gid_t);
             Process & echo_command_to(std::ostream &);
+
+            Process & prefix_stdout(const std::string &);
+            Process & prefix_stderr(const std::string &);
     };
 
     class PALUDIS_VISIBLE RunningProcessHandle :
