@@ -247,6 +247,7 @@ namespace paludis
         std::ostream * capture_output_to_fd_stream;
         int capture_output_to_fd_fd;
         std::string capture_output_to_fd_env_var;
+        int set_stdin_fd;
 
         std::map<std::string, std::string> setenvs;
         std::string chdir;
@@ -262,6 +263,7 @@ namespace paludis
             capture_stderr(0),
             capture_output_to_fd_stream(0),
             capture_output_to_fd_fd(-1),
+            set_stdin_fd(-1),
             setuid(getuid()),
             setgid(getgid()),
             echo_command_to(0)
@@ -348,6 +350,12 @@ Process::run()
                     ::setenv(_imp->capture_output_to_fd_env_var.c_str(), stringify(fd).c_str(), 1);
             }
 
+            if (-1 != _imp->set_stdin_fd)
+            {
+                if (-1 == ::dup2(_imp->set_stdin_fd, STDIN_FILENO))
+                    throw ProcessError("dup2() failed");
+            }
+
             for (auto m(_imp->setenvs.begin()), m_end(_imp->setenvs.end()) ;
                     m != m_end ; ++m)
                 ::setenv(m->first.c_str(), m->second.c_str(), 1);
@@ -417,6 +425,13 @@ Process::capture_output_to_fd(std::ostream & s, int fd_or_minus_one, const std::
     _imp->capture_output_to_fd_stream = &s;
     _imp->capture_output_to_fd_fd = fd_or_minus_one;
     _imp->capture_output_to_fd_env_var = env_var_with_fd;
+    return *this;
+}
+
+Process &
+Process::set_stdin_fd(int f)
+{
+    _imp->set_stdin_fd = f;
     return *this;
 }
 

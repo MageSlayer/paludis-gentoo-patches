@@ -78,6 +78,7 @@ namespace paludis
             Process & capture_stdout(std::ostream &);
             Process & capture_stderr(std::ostream &);
             Process & capture_output_to_fd(std::ostream &, int fd_or_minus_one, const std::string & env_var_with_fd);
+            Process & set_stdin_fd(int);
             Process & setenv(const std::string &, const std::string &);
             Process & chdir(const FSEntry &);
             Process & use_ptys();

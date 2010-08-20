@@ -19,6 +19,8 @@
 
 #include <paludis/util/process.hh>
 #include <paludis/util/fs_entry.hh>
+#include <paludis/util/pipe.hh>
+#include <paludis/util/safe_ofstream.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <sstream>
@@ -262,5 +264,34 @@ namespace test_cases
             TEST_CHECK_EQUAL(fd_stream.str(), "monkey\n");
         }
     } test_grab_fd_fixed;
+
+    struct StdinFDTest : TestCase
+    {
+        StdinFDTest() : TestCase("stdin fd") { }
+
+        void run()
+        {
+            std::unique_ptr<Pipe> input_pipe(new Pipe(true));
+
+            std::stringstream stdout_stream;
+            Process cat_process(ProcessCommand({"rev"}));
+            cat_process.capture_stdout(stdout_stream);
+            cat_process.set_stdin_fd(input_pipe->read_fd());
+
+            RunningProcessHandle handle(cat_process.run());
+
+            {
+                {
+                    SafeOFStream s(input_pipe->write_fd());
+                    s << "backwards" << std::endl;
+                }
+                TEST_CHECK(0 == ::close(input_pipe->write_fd()));
+                input_pipe->clear_write_fd();
+            }
+
+            TEST_CHECK_EQUAL(handle.wait(), 0);
+            TEST_CHECK_EQUAL(stdout_stream.str(), "sdrawkcab\n");
+        }
+    } test_stdin_fd;
 }
 
