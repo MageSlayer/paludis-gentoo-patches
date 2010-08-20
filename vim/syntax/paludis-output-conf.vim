@@ -44,10 +44,12 @@ syn keyword PaludisOutputConfKnownKey contained
 	    \ child condition_variable if_true if_false if_unset
 	    \ filename keep_on_empty keep_on_success summary_output_manager
 	    \ format_debug format_info format_warn format_error format_log
-	    \ summary_output_message
+	    \ summary_output_message start_command end_command
+	    \ nothing_more_to_come_command succeeded_command
+	    \ stdout_command stderr_command
 
 syn keyword PaludisOutputConfKnownValue contained
-	    \ buffer file format_messages forward_at_finish ipc tee standard
+	    \ buffer file format_messages forward_at_finish ipc tee standard command
 
 syn match PaludisOutputConfVariable contained
             \ /\$\({[^}]\+}\|[a-zA-Z0-9_]\+\)/ skipwhite

@@ -35,6 +35,7 @@
 #include <list>
 
 #include <paludis/buffer_output_manager.hh>
+#include <paludis/command_output_manager.hh>
 #include <paludis/file_output_manager.hh>
 #include <paludis/format_messages_output_manager.hh>
 #include <paludis/forward_at_finish_output_manager.hh>
@@ -95,6 +96,7 @@ OutputManagerFactory::OutputManagerFactory() :
 {
     /* we might want to make this plugin loadable at some point */
     add_manager(BufferOutputManager::factory_managers(), BufferOutputManager::factory_create);
+    add_manager(CommandOutputManager::factory_managers(), CommandOutputManager::factory_create);
     add_manager(FileOutputManager::factory_managers(), FileOutputManager::factory_create);
     add_manager(FormatMessagesOutputManager::factory_managers(), FormatMessagesOutputManager::factory_create);
     add_manager(ForwardAtFinishOutputManager::factory_managers(), ForwardAtFinishOutputManager::factory_create);
