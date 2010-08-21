@@ -37,6 +37,7 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/singleton-impl.hh>
+#include <paludis/util/process.hh>
 #include <paludis/about.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/metadata_key.hh>
@@ -166,29 +167,30 @@ BashHookFile::run(
     Log::get_instance()->message("hook.bash.starting", ll_debug, lc_no_context) << "Starting hook script '" <<
         file_name() << "' for '" << hook.name() << "'";
 
-    Command cmd(Command("bash '" + stringify(file_name()) + "'")
-            .with_setenv("ROOT", stringify(_env->preferred_root_key()->value()))
-            .with_setenv("HOOK", hook.name())
-            .with_setenv("HOOK_FILE", stringify(file_name()))
-            .with_setenv("HOOK_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
-            .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
-            .with_setenv("PALUDIS_REDUCED_GID", stringify(_env->reduced_gid()))
-            .with_setenv("PALUDIS_REDUCED_UID", stringify(_env->reduced_uid()))
-            .with_setenv("PALUDIS_COMMAND", _env->paludis_command()));
+    Process process(ProcessCommand({ "bash", stringify(file_name()) }));
+    process
+        .setenv("ROOT", stringify(_env->preferred_root_key()->value()))
+        .setenv("HOOK", hook.name())
+        .setenv("HOOK_FILE", stringify(file_name()))
+        .setenv("HOOK_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
+        .setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
+        .setenv("PALUDIS_REDUCED_GID", stringify(_env->reduced_gid()))
+        .setenv("PALUDIS_REDUCED_UID", stringify(_env->reduced_uid()))
+        .setenv("PALUDIS_COMMAND", _env->paludis_command());
 
     if (hook.output_dest == hod_stdout && _run_prefixed)
-        cmd
-            .with_stdout_prefix(strip_trailing_string(file_name().basename(), ".bash") + "> ")
-            .with_stderr_prefix(strip_trailing_string(file_name().basename(), ".bash") + "> ");
+        process
+            .prefix_stdout(strip_trailing_string(file_name().basename(), ".bash") + "> ")
+            .prefix_stderr(strip_trailing_string(file_name().basename(), ".bash") + "> ");
 
     for (Hook::ConstIterator x(hook.begin()), x_end(hook.end()) ; x != x_end ; ++x)
-        cmd.with_setenv(x->first, x->second);
+        process.setenv(x->first, x->second);
 
     if (optional_output_manager)
     {
         /* hod_grab can override this later */
-        cmd.with_captured_stdout_stream(&optional_output_manager->stdout_stream());
-        cmd.with_captured_stderr_stream(&optional_output_manager->stderr_stream());
+        process.capture_stdout(optional_output_manager->stdout_stream());
+        process.capture_stderr(optional_output_manager->stderr_stream());
     }
 
     int exit_status(0);
@@ -196,13 +198,13 @@ BashHookFile::run(
     if (hook.output_dest == hod_grab)
     {
         std::stringstream s;
-        cmd.with_captured_stdout_stream(&s);
-        exit_status = run_command(cmd);
+        process.capture_stdout(s);
+        exit_status = process.run().wait();
         output = strip_trailing(std::string((std::istreambuf_iterator<char>(s)), std::istreambuf_iterator<char>()),
                 " \t\n");
     }
     else
-        exit_status = run_command(cmd);
+        exit_status = process.run().wait();
 
     if (0 == exit_status)
         Log::get_instance()->message("hook.bash.success", ll_debug, lc_no_context) << "Hook '" << file_name()
@@ -225,32 +227,32 @@ FancyHookFile::run(const Hook & hook,
     Log::get_instance()->message("hook.fancy.starting", ll_debug, lc_no_context) << "Starting hook script '"
         << file_name() << "' for '" << hook.name() << "'";
 
-    Command cmd(getenv_with_default("PALUDIS_HOOKER_DIR", LIBEXECDIR "/paludis") +
-            "/hooker.bash '" + stringify(file_name()) + "' 'hook_run_" + stringify(hook.name()) + "'");
+    Process process(ProcessCommand({ "sh", "-c", getenv_with_default("PALUDIS_HOOKER_DIR", LIBEXECDIR "/paludis") +
+                "/hooker.bash '" + stringify(file_name()) + "' 'hook_run_" + stringify(hook.name()) + "'" }));
 
-    cmd
-        .with_setenv("ROOT", stringify(_env->preferred_root_key()->value()))
-        .with_setenv("HOOK", hook.name())
-        .with_setenv("HOOK_FILE", stringify(file_name()))
-        .with_setenv("HOOK_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
-        .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
-        .with_setenv("PALUDIS_REDUCED_GID", stringify(_env->reduced_gid()))
-        .with_setenv("PALUDIS_REDUCED_UID", stringify(_env->reduced_uid()))
-        .with_setenv("PALUDIS_COMMAND", _env->paludis_command());
+    process
+        .setenv("ROOT", stringify(_env->preferred_root_key()->value()))
+        .setenv("HOOK", hook.name())
+        .setenv("HOOK_FILE", stringify(file_name()))
+        .setenv("HOOK_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
+        .setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
+        .setenv("PALUDIS_REDUCED_GID", stringify(_env->reduced_gid()))
+        .setenv("PALUDIS_REDUCED_UID", stringify(_env->reduced_uid()))
+        .setenv("PALUDIS_COMMAND", _env->paludis_command());
 
     if (hook.output_dest == hod_stdout && _run_prefixed)
-        cmd
-            .with_stdout_prefix(strip_trailing_string(file_name().basename(), ".hook") + "> ")
-            .with_stderr_prefix(strip_trailing_string(file_name().basename(), ".hook") + "> ");
+        process
+            .prefix_stdout(strip_trailing_string(file_name().basename(), ".hook") + "> ")
+            .prefix_stderr(strip_trailing_string(file_name().basename(), ".hook") + "> ");
 
     for (Hook::ConstIterator x(hook.begin()), x_end(hook.end()) ; x != x_end ; ++x)
-        cmd.with_setenv(x->first, x->second);
+        process.setenv(x->first, x->second);
 
     if (optional_output_manager)
     {
         /* hod_grab can override this later */
-        cmd.with_captured_stdout_stream(&optional_output_manager->stdout_stream());
-        cmd.with_captured_stderr_stream(&optional_output_manager->stderr_stream());
+        process.capture_stdout(optional_output_manager->stdout_stream());
+        process.capture_stderr(optional_output_manager->stderr_stream());
     }
 
     int exit_status(0);
@@ -258,12 +260,13 @@ FancyHookFile::run(const Hook & hook,
     if (hook.output_dest == hod_grab)
     {
         std::stringstream s;
-        exit_status = run_command(cmd.with_captured_stdout_stream(&s));
+        process.capture_stdout(s);
+        exit_status = process.run().wait();
         output = strip_trailing(std::string((std::istreambuf_iterator<char>(s)), std::istreambuf_iterator<char>()),
                 " \t\n");
     }
     else
-        exit_status = run_command(cmd);
+        exit_status = process.run().wait();
 
     if (0 == exit_status)
         Log::get_instance()->message("hook.fancy.success", ll_debug, lc_no_context) << "Hook '" << file_name()
@@ -286,23 +289,24 @@ FancyHookFile::auto_hook_names() const
     Log::get_instance()->message("hook.fancy.starting", ll_debug, lc_no_context) << "Starting hook script '" <<
         file_name() << "' for auto hook names";
 
-    Command cmd(getenv_with_default("PALUDIS_HOOKER_DIR", LIBEXECDIR "/paludis") +
-            "/hooker.bash '" + stringify(file_name()) + "' 'hook_auto_names'");
+    Process process(ProcessCommand({ "sh", "-c", getenv_with_default("PALUDIS_HOOKER_DIR", LIBEXECDIR "/paludis") +
+            "/hooker.bash '" + stringify(file_name()) + "' 'hook_auto_names'" }));
 
-    cmd
-        .with_setenv("ROOT", stringify(_env->preferred_root_key()->value()))
-        .with_setenv("HOOK_FILE", stringify(file_name()))
-        .with_setenv("HOOK_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
-        .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
-        .with_setenv("PALUDIS_REDUCED_GID", stringify(_env->reduced_gid()))
-        .with_setenv("PALUDIS_REDUCED_UID", stringify(_env->reduced_uid()))
-        .with_setenv("PALUDIS_COMMAND", _env->paludis_command());
+    process
+        .setenv("ROOT", stringify(_env->preferred_root_key()->value()))
+        .setenv("HOOK_FILE", stringify(file_name()))
+        .setenv("HOOK_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
+        .setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
+        .setenv("PALUDIS_REDUCED_GID", stringify(_env->reduced_gid()))
+        .setenv("PALUDIS_REDUCED_UID", stringify(_env->reduced_uid()))
+        .setenv("PALUDIS_COMMAND", _env->paludis_command());
 
     int exit_status(0);
     std::string output("");
     {
         std::stringstream s;
-        exit_status = run_command(cmd.with_captured_stdout_stream(&s));
+        process.capture_stdout(s);
+        exit_status = process.run().wait();
         output = strip_trailing(std::string((std::istreambuf_iterator<char>(s)), std::istreambuf_iterator<char>()),
                 " \t\n");
     }
@@ -342,29 +346,28 @@ FancyHookFile::_add_dependency_class(const Hook & hook, DirectedGraph<std::strin
     Log::get_instance()->message("hook.fancy.starting_dependencies", ll_debug, lc_no_context)
         << "Starting hook script '" << file_name() << "' for dependencies of '" << hook.name() << "'";
 
-    Command cmd(getenv_with_default("PALUDIS_HOOKER_DIR", LIBEXECDIR "/paludis") +
+    Process process(ProcessCommand({ "sh", "-c", getenv_with_default("PALUDIS_HOOKER_DIR", LIBEXECDIR "/paludis") +
             "/hooker.bash '" + stringify(file_name()) + "' 'hook_" + (depend ? "depend" : "after") + "_" +
-            stringify(hook.name()) + "'");
+            stringify(hook.name()) + "'" }));
 
-    cmd
-        .with_setenv("ROOT", stringify(_env->preferred_root_key()->value()))
-        .with_setenv("HOOK", hook.name())
-        .with_setenv("HOOK_FILE", stringify(file_name()))
-        .with_setenv("HOOK_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
-        .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
-        .with_setenv("PALUDIS_REDUCED_GID", stringify(_env->reduced_gid()))
-        .with_setenv("PALUDIS_REDUCED_UID", stringify(_env->reduced_uid()))
-        .with_setenv("PALUDIS_COMMAND", _env->paludis_command());
+    process
+        .setenv("ROOT", stringify(_env->preferred_root_key()->value()))
+        .setenv("HOOK", hook.name())
+        .setenv("HOOK_FILE", stringify(file_name()))
+        .setenv("HOOK_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
+        .setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
+        .setenv("PALUDIS_REDUCED_GID", stringify(_env->reduced_gid()))
+        .setenv("PALUDIS_REDUCED_UID", stringify(_env->reduced_uid()))
+        .setenv("PALUDIS_COMMAND", _env->paludis_command());
 
-    cmd.with_stderr_prefix(strip_trailing_string(file_name().basename(), ".bash") + "> ");
+    process.prefix_stderr(strip_trailing_string(file_name().basename(), ".bash") + "> ");
 
     for (Hook::ConstIterator x(hook.begin()), x_end(hook.end()) ; x != x_end ; ++x)
-        cmd.with_setenv(x->first, x->second);
+        process.setenv(x->first, x->second);
 
     std::stringstream s;
-    cmd
-        .with_captured_stdout_stream(&s);
-    int exit_status(run_command(cmd));
+    process.capture_stdout(s);
+    int exit_status(process.run().wait());
 
     std::string deps((std::istreambuf_iterator<char>(s)), std::istreambuf_iterator<char>());
 
