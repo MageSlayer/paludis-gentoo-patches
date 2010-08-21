@@ -32,6 +32,7 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/timestamp.hh>
 #include <paludis/util/accept_visitor.hh>
+#include <paludis/util/process.hh>
 #include <paludis/package_database.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_id.hh>
@@ -317,7 +318,7 @@ do_info(const std::shared_ptr<const Environment> & env)
 
     cout << colour(cl_heading, "System:") << endl;
     cout << "    " << flush;
-    int status(run_command(Command("uname -a")));
+    int status(Process((ProcessCommand("uname -a"))).run().wait());
     if (0 != status)
         Log::get_instance()->message("info.uname.failure", ll_warning, lc_context)
             << "uname -a failed with status " << status;

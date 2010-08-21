@@ -28,6 +28,7 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/timestamp.hh>
+#include <paludis/util/process.hh>
 #include <paludis/repository_factory.hh>
 #include <string>
 #include <set>
@@ -384,9 +385,11 @@ int do_list_sync_protocols(const std::shared_ptr<Environment> & env)
                 s != s_end ; ++s)
         {
             std::cout << "* " << colour(cl_key_name, s->first) << std::endl;
-            if (0 != run_command(Command(s->second + " --help")
-                        .with_setenv("PALUDIS_FETCHERS_DIRS", join(sd->begin(), sd->end(), " "))
-                        .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))))
+            Process process((ProcessCommand(s->second + " --help")));
+            process
+                .setenv("PALUDIS_FETCHERS_DIRS", join(sd->begin(), sd->end(), " "))
+                .setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"));
+            if (0 != process.run().wait())
                 Log::get_instance()->message("paludis.syncer_help.failure", ll_warning, lc_context)
                     << "Syncer help command '" << s->second << " --help' failed";
             std::cout << std::endl;
