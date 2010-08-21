@@ -24,6 +24,7 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/system.hh>
+#include <paludis/util/process.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <functional>
@@ -52,12 +53,14 @@ paludis::paludis_environment::make_bashable_conf(const FSEntry & f, const LineCo
     if (is_file_with_extension(f, ".bash", { }))
     {
         std::stringstream s;
-        Command cmd(Command("bash '" + stringify(f) + "'")
-                .with_setenv("PALUDIS_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
-                .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
-                .with_stderr_prefix(f.basename() + "> ")
-                .with_captured_stdout_stream(&s));
-        int exit_status(run_command(cmd));
+
+        Process process(ProcessCommand({ "bash", stringify(f) }));
+        process
+            .setenv("PALUDIS_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
+            .setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
+            .prefix_stderr(f.basename() + "> ")
+            .capture_stdout(s);
+        int exit_status(process.run().wait());
         result = std::make_shared<LineConfigFile>(s, o);
 
         if (exit_status != 0)
@@ -85,15 +88,16 @@ paludis::paludis_environment::make_bashable_kv_conf(const FSEntry & f,
     if (is_file_with_extension(f, ".bash", { }))
     {
         std::stringstream s;
-        Command cmd(Command("bash '" + stringify(f) + "'")
-                .with_setenv("PALUDIS_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
-                .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
-                .with_stderr_prefix(f.basename() + "> ")
-                .with_captured_stdout_stream(&s));
+        Process process(ProcessCommand({ "bash", stringify(f) }));
+        process
+            .setenv("PALUDIS_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
+            .setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
+            .prefix_stderr(f.basename() + "> ")
+            .capture_stdout(s);
         for (Map<std::string, std::string>::ConstIterator i(predefined_variables->begin()),
                 end(predefined_variables->end()); i != end; ++i)
-            cmd.with_setenv(i->first, i->second);
-        int exit_status(run_command(cmd));
+            process.setenv(i->first, i->second);
+        int exit_status(process.run().wait());
         result = std::make_shared<KeyValueConfigFile>(s, o, &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
 
         if (exit_status != 0)

@@ -48,6 +48,7 @@
 #include <paludis/util/hashes.hh>
 #include <paludis/util/graph-impl.hh>
 #include <paludis/util/member_iterator-impl.hh>
+#include <paludis/util/process.hh>
 
 #include <paludis/distribution.hh>
 #include <paludis/repository_factory.hh>
@@ -256,12 +257,13 @@ namespace paludis
         else if ((FSEntry(config_dir) / "general.bash").exists())
         {
             std::stringstream s;
-            Command cmd(Command("bash '" + stringify(FSEntry(config_dir) / "general.bash") + "'")
-                    .with_setenv("PALUDIS_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
-                    .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
-                    .with_stderr_prefix("general.bash> ")
-                    .with_captured_stdout_stream(&s));
-            int exit_status(run_command(cmd));
+            Process process(ProcessCommand({ "bash", stringify(FSEntry(config_dir) / "general.bash") }));
+            process
+                .setenv("PALUDIS_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
+                .setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
+                .prefix_stderr("general.bash> ")
+                .capture_stdout(s);
+            int exit_status(process.run().wait());
             kv = std::make_shared<KeyValueConfigFile>(
                 s,
                 KeyValueConfigFileOptions(),
@@ -288,19 +290,20 @@ namespace paludis
                 def_predefined,
                 &KeyValueConfigFile::no_transformation);
         }
-        else if ((FSEntry(config_dir) / "general.bash").exists())
+        else if ((FSEntry(config_dir) / "environment.bash").exists())
         {
             Log::get_instance()->message("paludis_environment.general.rename", ll_warning, lc_context)
                 << "The file '" << (FSEntry(config_dir) / "environment.bash") << "' should be renamed to '"
                 << (FSEntry(config_dir) / "general.bash") << "'.";
 
             std::stringstream s;
-            Command cmd(Command("bash '" + stringify(FSEntry(config_dir) / "general.bash") + "'")
-                    .with_setenv("PALUDIS_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
-                    .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
-                    .with_stderr_prefix("general.bash> ")
-                    .with_captured_stdout_stream(&s));
-            int exit_status(run_command(cmd));
+            Process process(ProcessCommand({ "bash", stringify(FSEntry(config_dir) / "environment.bash") }));
+            process
+                .setenv("PALUDIS_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
+                .setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
+                .prefix_stderr("general.bash> ")
+                .capture_stdout(s);
+            int exit_status(process.run().wait());
             kv = std::make_shared<KeyValueConfigFile>(
                 s,
                 KeyValueConfigFileOptions(),
@@ -483,9 +486,10 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
 
     /* check that we can safely use userpriv */
     {
-        Command cmd(Command("ls -ld '" + stringify(local_config_dir) + "'/* >/dev/null 2>/dev/null")
-                .with_uid_gid(reduced_uid(), reduced_gid()));
-        if (0 != run_command(cmd))
+        Process process(ProcessCommand({ "sh", "-c", "ls -ld '" + stringify(local_config_dir) + "'/* >/dev/null 2>/dev/null" }));
+        process
+            .setuid_setgid(reduced_uid(), reduced_gid());
+        if (0 != process.run().wait())
         {
             Log::get_instance()->message("paludis_environment.userpriv.disabled", ll_warning, lc_context)
                 << "Cannot access configuration directory '" << local_config_dir
@@ -532,12 +536,13 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         else if ((local_config_dir / (dist->repository_defaults_filename_part() + ".bash")).exists())
         {
             std::stringstream s;
-            Command cmd(Command("bash '" + stringify(local_config_dir / (dist->repository_defaults_filename_part() + ".bash")) + "'")
-                    .with_setenv("PALUDIS_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
-                    .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
-                    .with_stderr_prefix(dist->repository_defaults_filename_part() + ".bash> ")
-                    .with_captured_stdout_stream(&s));
-            int exit_status(run_command(cmd));
+            Process process(ProcessCommand({ "bash", stringify(local_config_dir / (dist->repository_defaults_filename_part() + ".bash")) + "'" }));
+            process
+                .setenv("PALUDIS_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
+                .setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
+                .prefix_stderr(dist->repository_defaults_filename_part() + ".bash> ")
+                .capture_stdout(s);
+            int exit_status(process.run().wait());
             _imp->predefined_conf_vars_func = std::bind(&from_kv, std::make_shared<KeyValueConfigFile>(
                             s, KeyValueConfigFileOptions(),
                             std::bind(&to_kv_func, _imp->predefined_conf_vars_func, std::placeholders::_1, std::placeholders::_2),
@@ -854,12 +859,13 @@ PaludisConfig::repo_func_from_file(const FSEntry & repo_file)
     if (is_file_with_extension(repo_file, ".bash", { }))
     {
         std::stringstream s;
-        Command cmd(Command("bash '" + stringify(repo_file) + "'")
-                .with_setenv("PALUDIS_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
-                .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
-                .with_stderr_prefix(repo_file.basename() + "> ")
-                .with_captured_stdout_stream(&s));
-        int exit_status(run_command(cmd));
+        Process process(ProcessCommand({ "bash", stringify(repo_file) }));
+        process
+            .setenv("PALUDIS_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
+            .setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
+            .prefix_stderr(repo_file.basename() + "> ")
+            .capture_stdout(s);
+        int exit_status(process.run().wait());
         kv = std::make_shared<KeyValueConfigFile>(s, KeyValueConfigFileOptions(),
                     std::bind(&to_kv_func, _imp->predefined_conf_vars_func, std::placeholders::_1, std::placeholders::_2),
                     &KeyValueConfigFile::no_transformation);
