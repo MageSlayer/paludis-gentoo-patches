@@ -105,6 +105,8 @@ namespace paludis
 
             Process & sandbox();
             Process & sydbox();
+
+            Process & as_main_process();
     };
 
     class PALUDIS_VISIBLE RunningProcessHandle :

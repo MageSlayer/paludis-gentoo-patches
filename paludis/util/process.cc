@@ -471,6 +471,8 @@ namespace paludis
         std::string prefix_stdout;
         std::string prefix_stderr;
 
+        bool as_main_process;
+
         Imp(ProcessCommand && c) :
             command(std::move(c)),
             need_thread(false),
@@ -485,7 +487,8 @@ namespace paludis
             clearenv(false),
             setuid(getuid()),
             setgid(getgid()),
-            echo_command_to(0)
+            echo_command_to(0),
+            as_main_process(false)
         {
         }
     };
@@ -587,10 +590,17 @@ Process::run()
     pid_t child(fork());
     if (-1 == child)
         throw ProcessError("fork() failed");
-    else if (0 == child)
+    else if ((0 == child) ^ _imp->as_main_process)
     {
         try
         {
+            if (_imp->as_main_process)
+            {
+                int status;
+                if (-1 == ::waitpid(child, &status, 0))
+                    throw ProcessError("waitpid() returned -1");
+            }
+
             /* clear any SIGINT or SIGTERM handlers we inherit, and unblock signals */
             struct sigaction act;
             sigemptyset(&act.sa_mask);
@@ -724,13 +734,27 @@ Process::run()
     }
     else
     {
+        if (_imp->as_main_process)
+        {
+            /* Ignore CLD. POSIX may or may not say that if we do this, our child will
+             * not become a zombie. */
+            struct sigaction act;
+            sigemptyset(&act.sa_mask);
+            act.sa_handler = SIG_IGN;
+            act.sa_flags = 0;
+            sigaction(SIGCLD, &act, 0);
+
+            if (0 != fork())
+                _exit(0);
+        }
+
         /* Restore SIGINT and SIGTERM handling */
         if (0 != pthread_sigmask(SIG_UNBLOCK, &intandterm, 0))
             throw ProcessError("pthread_sigmask failed");
 
         if (thread)
             thread->start();
-        return RunningProcessHandle(child, thread);
+        return RunningProcessHandle(_imp->as_main_process ? 0 : child, thread);
     }
 }
 
@@ -845,6 +869,13 @@ Process::prefix_stderr(const std::string & s)
     return *this;
 }
 
+Process &
+Process::as_main_process()
+{
+    _imp->as_main_process = true;
+    return *this;
+}
+
 namespace
 {
     bool check_cmd(const std::string & s)
@@ -940,12 +971,15 @@ RunningProcessHandle::RunningProcessHandle(RunningProcessHandle && other) :
 int
 RunningProcessHandle::wait()
 {
+    bool actually_wait(0 != _imp->pid);
+
     if (-1 == _imp->pid)
         throw ProcessError("Already wait()ed");
 
     int status(0);
-    if (-1 == ::waitpid(_imp->pid, &status, 0))
-        throw ProcessError("waitpid() returned -1");
+    if (actually_wait)
+        if (-1 == ::waitpid(_imp->pid, &status, 0))
+            throw ProcessError("waitpid() returned -1");
     _imp->pid = -1;
 
     if (_imp->thread)
@@ -957,6 +991,9 @@ RunningProcessHandle::wait()
         _imp->thread.reset();
     }
 
-    return (WIFSIGNALED(status) ? WTERMSIG(status) + 128 : WEXITSTATUS(status));
+    if (actually_wait)
+        return (WIFSIGNALED(status) ? WTERMSIG(status) + 128 : WEXITSTATUS(status));
+    else
+        return status;
 }
 
