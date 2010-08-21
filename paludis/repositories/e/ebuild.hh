@@ -23,6 +23,7 @@
 #include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/map-fwd.hh>
+#include <paludis/util/process-fwd.hh>
 #include <paludis/package_database.hh>
 #include <paludis/action-fwd.hh>
 #include <paludis/fs_merger-fwd.hh>
@@ -37,7 +38,6 @@
 namespace paludis
 {
     class Environment;
-    class Command;
     class ERepository;
 
     namespace n
@@ -376,17 +376,17 @@ namespace paludis
                  *
                  * \return Whether the command succeeded.
                  */
-                virtual bool do_run_command(const Command &);
+                virtual bool do_run_command(Process &);
 
                 /**
                  * Add Portage emulation vars.
                  */
-                virtual Command add_portage_vars(const Command &) const;
+                virtual void add_portage_vars(Process &) const;
 
                 /**
                  * Extend the command to be run.
                  */
-                virtual Command extend_command(const Command &) = 0;
+                virtual void extend_command(Process &) = 0;
 
             public:
                 /**
@@ -419,9 +419,9 @@ namespace paludis
             protected:
                 virtual std::string commands() const;
 
-                virtual Command extend_command(const Command &);
+                virtual void extend_command(Process &);
 
-                virtual bool do_run_command(const Command &);
+                virtual bool do_run_command(Process &);
 
                 virtual bool failure();
 
@@ -457,7 +457,7 @@ namespace paludis
 
                 virtual bool failure() PALUDIS_ATTRIBUTE((noreturn));
 
-                virtual Command extend_command(const Command &);
+                virtual void extend_command(Process &);
 
             public:
                 /**
@@ -483,7 +483,7 @@ namespace paludis
 
                 virtual bool failure() PALUDIS_ATTRIBUTE((noreturn));
 
-                virtual Command extend_command(const Command &);
+                virtual void extend_command(Process &);
 
             public:
                 /**
@@ -509,7 +509,7 @@ namespace paludis
 
                 virtual bool failure() PALUDIS_ATTRIBUTE((noreturn));
 
-                virtual Command extend_command(const Command &);
+                virtual void extend_command(Process &);
 
             public:
                 /**
@@ -534,7 +534,7 @@ namespace paludis
 
                 virtual bool failure() PALUDIS_ATTRIBUTE((noreturn));
 
-                virtual Command extend_command(const Command &);
+                virtual void extend_command(Process &);
 
                 virtual std::string ebuild_file() const;
 
@@ -561,7 +561,7 @@ namespace paludis
 
                 virtual bool failure() PALUDIS_ATTRIBUTE((noreturn));
 
-                virtual Command extend_command(const Command &);
+                virtual void extend_command(Process &);
 
                 virtual std::string ebuild_file() const;
 
@@ -588,7 +588,7 @@ namespace paludis
 
                 virtual bool failure();
 
-                virtual Command extend_command(const Command &);
+                virtual void extend_command(Process &);
 
             public:
                 /**
@@ -614,7 +614,7 @@ namespace paludis
 
                 virtual bool failure();
 
-                virtual Command extend_command(const Command &);
+                virtual void extend_command(Process &);
 
             public:
                 /**
@@ -639,7 +639,7 @@ namespace paludis
 
                 virtual bool failure() PALUDIS_ATTRIBUTE((noreturn));
 
-                virtual Command extend_command(const Command &);
+                virtual void extend_command(Process &);
 
                 virtual std::string ebuild_file() const;
 
@@ -750,9 +750,9 @@ namespace paludis
 
                 bool failure();
 
-                bool do_run_command(const Command &);
+                bool do_run_command(Process &);
 
-                Command extend_command(const Command &);
+                virtual void extend_command(Process &);
 
                 void load(const std::shared_ptr<const EbuildID> &);
         };
