@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  * Copyright (c) 2006 Stephen Klimaszewski
  * Copyright (c) 2007 David Leverton
  *
@@ -24,6 +24,7 @@
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/system.hh>
+#include <paludis/util/process.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -91,20 +92,20 @@ DefaultSyncer::sync(const SyncOptions & opts) const
     std::shared_ptr<const FSEntrySequence> fetchers_dirs(_environment->fetchers_dirs());
     std::shared_ptr<const FSEntrySequence> syncers_dirs(_environment->syncers_dirs());
 
-    Command cmd(Command(stringify(_syncer) + " " + opts.options() + " '" + _local + "' '" + _remote + "'")
-            .with_setenv("PALUDIS_ACTION", "sync")
-            .with_setenv("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " "))
-            .with_setenv("PALUDIS_FETCHERS_DIRS", join(fetchers_dirs->begin(), fetchers_dirs->end(), " "))
-            .with_setenv("PALUDIS_SYNCERS_DIRS", join(syncers_dirs->begin(), syncers_dirs->end(), " "))
-            .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
-            .with_setenv("PALUDIS_SYNC_FILTER_FILE", stringify(opts.filter_file())));
+    Process process(ProcessCommand(stringify(_syncer) + " " + opts.options() + " '" + _local + "' '" + _remote + "'"));
 
-    cmd
-        .with_captured_stderr_stream(&opts.output_manager()->stderr_stream())
-        .with_captured_stdout_stream(&opts.output_manager()->stdout_stream())
-        .with_ptys();
+    process
+        .setenv("PALUDIS_ACTION", "sync")
+        .setenv("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " "))
+        .setenv("PALUDIS_FETCHERS_DIRS", join(fetchers_dirs->begin(), fetchers_dirs->end(), " "))
+        .setenv("PALUDIS_SYNCERS_DIRS", join(syncers_dirs->begin(), syncers_dirs->end(), " "))
+        .setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
+        .setenv("PALUDIS_SYNC_FILTER_FILE", stringify(opts.filter_file()))
+        .capture_stderr(opts.output_manager()->stderr_stream())
+        .capture_stdout(opts.output_manager()->stdout_stream())
+        .use_ptys();
 
-    if (run_command(cmd))
+    if (0 != process.run().wait())
         throw SyncFailedError(_local, _remote);
 }
 
