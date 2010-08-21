@@ -38,6 +38,7 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/string_list_stream.hh>
+#include <paludis/util/process.hh>
 #include <paludis/resolver/job_lists.hh>
 #include <paludis/resolver/job.hh>
 #include <paludis/resolver/job_list.hh>
@@ -172,11 +173,13 @@ namespace
                     a != a_end ; ++a)
                 command = command + " " + args::escape(*a);
 
-            paludis::Command cmd(command);
-            cmd
-                .with_input_stream(&ser_stream, -1, "PALUDIS_SERIALISED_RESOLUTION_FD");
+            Process process((ProcessCommand(command)));
+            process
+                .send_input_to_fd(ser_stream, -1, "PALUDIS_SERIALISED_RESOLUTION_FD")
+                .as_main_process();
 
-            become_command(cmd);
+            int retcode(process.run().wait());
+            _exit(retcode);
         }
         else
             return ExecuteResolutionCommand().run(env, args, data->job_lists());
