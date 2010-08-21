@@ -55,6 +55,11 @@ namespace paludis
              **/
             explicit ProcessCommand(const std::initializer_list<std::string> &);
 
+            /**
+             * List of arguments, passed to sh -c.
+             */
+            explicit ProcessCommand(const std::string &);
+
             ProcessCommand(ProcessCommand &&);
             ~ProcessCommand();
 

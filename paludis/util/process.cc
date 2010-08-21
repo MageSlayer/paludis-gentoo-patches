@@ -55,21 +55,28 @@ namespace paludis
     struct Imp<ProcessCommand>
     {
         std::vector<std::string> args;
+        std::string args_string;
 
-        Imp(std::vector<std::string> && i) :
-            args(i)
+        Imp(std::vector<std::string> && i, const std::string & s) :
+            args(i),
+            args_string(s)
         {
         }
     };
 }
 
 ProcessCommand::ProcessCommand(const std::initializer_list<std::string> & i) :
-    Pimp<ProcessCommand>(std::vector<std::string>(i))
+    Pimp<ProcessCommand>(std::vector<std::string>(i), "")
+{
+}
+
+ProcessCommand::ProcessCommand(const std::string & s) :
+    Pimp<ProcessCommand>(std::vector<std::string>(), s)
 {
 }
 
 ProcessCommand::ProcessCommand(ProcessCommand && other) :
-    Pimp<ProcessCommand>(std::move(other._imp->args))
+    Pimp<ProcessCommand>(std::move(other._imp->args), other._imp->args_string)
 {
 }
 
@@ -84,25 +91,47 @@ ProcessCommand::prepend_args(const std::initializer_list<std::string> & l)
 void
 ProcessCommand::exec()
 {
-    if (_imp->args.size() < 1)
-        throw ProcessError("No command specified");
-
-    /* no need to worry about free()ing this lot, since if our execvp fails we
-     * call _exit() shortly afterwards */
-
-    char ** argv(new char * [_imp->args.size() + 1]);
-    argv[_imp->args.size()] = 0;
-    for (auto v_begin(_imp->args.begin()), v(v_begin), v_end(_imp->args.end()) ;
-            v != v_end ; ++v)
+    if (! _imp->args_string.empty())
     {
-        argv[v - v_begin] = new char [v->length() + 1];
-        argv[v - v_begin][v->length()] = '\0';
-        std::copy(v->begin(), v->end(), argv[v - v_begin]);
+        std::string s;
+        for (auto v_begin(_imp->args.begin()), v(v_begin), v_end(_imp->args.end()) ;
+                v != v_end ; ++v)
+        {
+            if (v != v_begin)
+                s.append(" ");
+            s.append(*v);
+        }
+
+        if (! s.empty())
+            s.append(" ");
+        s.append(_imp->args_string);
+
+        execl("/bin/sh", "sh", "-c", s.c_str(), static_cast<char *>(0));
+
+        throw ProcessError("execl failed");
     }
+    else
+    {
+        if (_imp->args.size() < 1)
+            throw ProcessError("No command specified");
 
-    execvp(_imp->args[0].c_str(), argv);
+        /* no need to worry about free()ing this lot, since if our execvp fails we
+         * call _exit() shortly afterwards */
 
-    throw ProcessError("execvp failed");
+        char ** argv(new char * [_imp->args.size() + 1]);
+        argv[_imp->args.size()] = 0;
+        for (auto v_begin(_imp->args.begin()), v(v_begin), v_end(_imp->args.end()) ;
+                v != v_end ; ++v)
+        {
+            argv[v - v_begin] = new char [v->length() + 1];
+            argv[v - v_begin][v->length()] = '\0';
+            std::copy(v->begin(), v->end(), argv[v - v_begin]);
+        }
+
+        execvp(_imp->args[0].c_str(), argv);
+
+        throw ProcessError("execvp failed");
+    }
 }
 
 void

@@ -111,6 +111,21 @@ namespace test_cases
         }
     } test_grab_stdout;
 
+    struct GrabStdoutSingleCommandTest : TestCase
+    {
+        GrabStdoutSingleCommandTest() : TestCase("grab stdout single command") { }
+
+        void run()
+        {
+            std::stringstream stdout_stream;
+            Process echo_process(ProcessCommand("echo giant space monkey"));
+            echo_process.capture_stdout(stdout_stream);
+
+            TEST_CHECK_EQUAL(echo_process.run().wait(), 0);
+            TEST_CHECK_EQUAL(stdout_stream.str(), "giant space monkey\n");
+        }
+    } test_grab_stdout_single_command;
+
     struct GrabStderrTest : TestCase
     {
         GrabStderrTest() : TestCase("grab stderr") { }
