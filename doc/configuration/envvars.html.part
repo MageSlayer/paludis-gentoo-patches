@@ -70,9 +70,6 @@ can be dangerous and may break things; many of these variables exist mainly for 
     <dt><code>PALUDIS_REPOSITORY_SO_DIR</code></dt>
     <dd>Where Paludis looks to find repository .so files.</dd>
 
-    <dt><code>PALUDIS_OUTPUTWRAPPER_DIR</code></dt>
-    <dd>Where Paludis looks to find outputwrapper.</dd>
-
     <dt><code>PALUDIS_DO_NOTHING_SANDBOXY</code></dt>
     <dd>If set to a non-empty string, Paludis will do absolutely nothing involving Sandbox.</dd>
 

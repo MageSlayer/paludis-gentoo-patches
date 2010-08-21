@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -50,9 +50,6 @@ namespace
             dev_null_pid(open("/dev/stderr", O_RDONLY))
         {
             test::set_exception_to_debug_string(&verbose_exception_to_debug_string);
-
-            if (getenv_with_default("PALUDIS_TESTS_KEEP_STDERR", "").empty())
-                set_run_command_stderr_fds(dev_null_pid, -1);
 
             if (getenv_with_default("PALUDIS_TESTS_KEEP_LOG", "").empty())
                 Log::get_instance()->set_log_stream(s);

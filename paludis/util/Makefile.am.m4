@@ -71,12 +71,8 @@ libpaludisutil_@PALUDIS_PC_SLOT@_la_LIBADD = $(PTHREAD_LIBS) $(RT_LIBS)
 
 TESTS = testlist
 
-check_PROGRAMS = $(TESTS) system_TEST_become_child
+check_PROGRAMS = $(TESTS)
 check_SCRIPTS = testscriptlist
-
-system_TEST_become_child_SOURCES = system_TEST_become_child.cc
-system_TEST_become_child_LDADD = \
-	libpaludisutil_@PALUDIS_PC_SLOT@.la
 
 lib_LTLIBRARIES = libpaludisutil_@PALUDIS_PC_SLOT@.la
 
@@ -89,11 +85,6 @@ Makefile.am : Makefile.am.m4 files.m4
 util.hh : util.hh.m4 files.m4
 	$(top_srcdir)/misc/do_m4.bash util.hh
 
-libexecutilsdir = $(libexecdir)/paludis/utils
-libexecutils_PROGRAMS = outputwrapper
-
 libexecpaludisdir = $(libexecdir)/paludis
 libexecpaludis_SCRIPTS = echo_functions.bash
-
-outputwrapper_SOURCES = output_wrapper.cc
 

@@ -452,8 +452,6 @@ paludis-*.*.*.tar.bz2
 /paludis/util/member_iterator_TEST
 /paludis/util/mutex_TEST
 /paludis/util/options_TEST
-/paludis/util/output_wrapper_TEST
-/paludis/util/outputwrapper
 /paludis/util/pretty_print_TEST
 /paludis/util/process_TEST
 /paludis/util/pty_TEST
@@ -472,7 +470,6 @@ paludis-*.*.*.tar.bz2
 /paludis/util/string_list_stream_TEST
 /paludis/util/strip_TEST
 /paludis/util/system_TEST
-/paludis/util/system_TEST_become_child
 /paludis/util/tail_output_stream_TEST
 /paludis/util/thread_TEST
 /paludis/util/thread_pool_TEST

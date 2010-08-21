@@ -77,7 +77,6 @@ LOG_COMPILER = \
 		PALUDIS_NO_XTERM_TITLES="yes" \
 		PALUDIS_OPTIONS="" \
 		PALUDIS_OUTPUT_MANAGERS_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_srcdir)/paludis/environments/paludis/output_managers/`" \
-		PALUDIS_OUTPUTWRAPPER_DIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/`" \
 		PALUDIS_PC_SLOT=@PALUDIS_PC_SLOT@ \
 		PALUDIS_PIPE_COMMAND_READ_FD="" \
 		PALUDIS_PIPE_COMMAND_WRITE_FD="" \
