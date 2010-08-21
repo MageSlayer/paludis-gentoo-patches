@@ -26,6 +26,7 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/process.hh>
 #include <iostream>
 #include <cstdlib>
 
@@ -70,8 +71,9 @@ ScriptCommand::run(
             n != n_end ; ++n)
         arg_str = " " + args::escape(*n);
 
-    paludis::Command cmd(stringify(_imp->executable) + arg_str);
-    become_command(cmd);
+    Process process((ProcessCommand(stringify(_imp->executable) + arg_str)));
+    int retcode(process.run().wait());
+    _exit(retcode);
 
     throw InternalError(PALUDIS_HERE, "become_command failed");
 }
