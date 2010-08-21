@@ -45,6 +45,7 @@
 #include <paludis/util/return_literal_function.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/tribool.hh>
+#include <paludis/util/process.hh>
 
 #include <paludis/args/do_help.hh>
 #include <paludis/args/escape.hh>
@@ -241,11 +242,11 @@ namespace
                     a != a_end ; ++a)
                 command = command + " " + args::escape(*a);
 
-            paludis::Command cmd(command);
-            cmd
-                .with_input_stream(&ser_stream, -1, "PALUDIS_SERIALISED_RESOLUTION_FD");
+            Process process((ProcessCommand(command)));
+            process
+                .send_input_to_fd(ser_stream, -1, "PALUDIS_SERIALISED_RESOLUTION_FD");
 
-            return run_command(cmd);
+            return process.run().wait();
         }
         else
             return DisplayResolutionCommand().run(env, args, resolved);
@@ -316,9 +317,6 @@ namespace
 
         if (program_options.a_execute_resolution_program.specified() || resolution_options.a_execute.specified())
         {
-            /* backgrounding this barfs with become_command. working out why could
-             * be a fun exercise for someone with way too much time on their hands.
-             * */
             StringListStream ser_stream;
             serialise_job_lists(ser_stream, *resolved->job_lists());
 
@@ -341,11 +339,13 @@ namespace
                     a != a_end ; ++a)
                 command = command + " " + args::escape(*a);
 
-            paludis::Command cmd(command);
-            cmd
-                .with_input_stream(&ser_stream, -1, "PALUDIS_SERIALISED_RESOLUTION_FD");
+            Process process((ProcessCommand(command)));
+            process
+                .send_input_to_fd(ser_stream, -1, "PALUDIS_SERIALISED_RESOLUTION_FD")
+                .as_main_process();
 
-            become_command(cmd);
+            int retcode(process.run().wait());
+            _exit(retcode);
         }
         else
             return ExecuteResolutionCommand().run(env, args, resolved->job_lists());
