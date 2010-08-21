@@ -47,6 +47,7 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/extract_host_from_url.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/process.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/syncer.hh>
 #include <paludis/hook.hh>
@@ -349,41 +350,44 @@ CRANRepository::sync(const std::shared_ptr<OutputManager> & output_manager) cons
     std::string cmd("rsync --delete --recursive --progress --exclude \"*.html\" --exclude \"*.INDEX\" '" +
                     _imp->params.sync() + "/src/contrib/Descriptions/' ./");
 
-    Command command1(Command(cmd).with_chdir(_imp->params.location()));
+    Process command1((ProcessCommand(cmd)));
+    command1.chdir(_imp->params.location());
 
     command1
-        .with_captured_stdout_stream(&output_manager->stdout_stream())
-        .with_captured_stderr_stream(&output_manager->stderr_stream())
-        .with_ptys()
+        .capture_stdout(output_manager->stdout_stream())
+        .capture_stderr(output_manager->stderr_stream())
+        .use_ptys()
         ;
 
-    if (0 != run_command(command1))
+    if (0 != command1.run().wait())
         throw SyncFailedError(stringify(_imp->params.location()), _imp->params.sync());
 
     cmd = "rsync --progress '" + _imp->params.sync() + "/src/contrib/PACKAGES' ./";
 
-    Command command2(Command(cmd).with_chdir(_imp->params.location()));
+    Process command2((ProcessCommand(cmd)));
+    command2.chdir(_imp->params.location());
 
     command2
-        .with_captured_stdout_stream(&output_manager->stdout_stream())
-        .with_captured_stderr_stream(&output_manager->stderr_stream())
-        .with_ptys()
+        .capture_stdout(output_manager->stdout_stream())
+        .capture_stderr(output_manager->stderr_stream())
+        .use_ptys()
         ;
 
-    if (0 != run_command(command2))
+    if (0 != command2.run().wait())
         throw SyncFailedError(stringify(_imp->params.location()), _imp->params.sync());
 
     cmd = "rsync --progress '" + _imp->params.sync() + "/CRAN_mirrors.csv' ./";
 
-    Command command3(Command(cmd).with_chdir(_imp->params.location()));
+    Process command3((ProcessCommand(cmd)));
+    command3.chdir(_imp->params.location());
 
     command3
-        .with_captured_stdout_stream(&output_manager->stdout_stream())
-        .with_captured_stderr_stream(&output_manager->stderr_stream())
-        .with_ptys()
+        .capture_stdout(output_manager->stdout_stream())
+        .capture_stderr(output_manager->stderr_stream())
+        .use_ptys()
         ;
 
-    if (0 != run_command(command3))
+    if (0 != command3.run().wait())
         throw SyncFailedError(stringify(_imp->params.location()), _imp->params.sync());
 
     return true;
