@@ -28,6 +28,7 @@
 #include <paludis/util/config_file.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/safe_ofstream.hh>
+#include <paludis/util/process.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/selection.hh>
@@ -535,15 +536,16 @@ PaludisBashHandler::PaludisBashHandler(const SetFileParams & p) :
     _contents = std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>());
 
     std::stringstream s;
-    Command cmd(Command("bash '" + stringify(_p.file_name()) + "'")
-            .with_setenv("ROOT", _p.environment() ? stringify(_p.environment()->preferred_root_key()->value()) : "/")
-            .with_setenv("SET", stringify(_p.file_name()))
-            .with_setenv("SET_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
-            .with_setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
-            .with_setenv("PALUDIS_COMMAND", _p.environment() ? _p.environment()->paludis_command() : "")
-            .with_stderr_prefix(_p.file_name().basename() + "> ")
-            .with_captured_stdout_stream(&s));
-    int exit_status(run_command(cmd));
+    Process process(ProcessCommand({ "bash", stringify(_p.file_name()) }));
+    process
+        .setenv("ROOT", _p.environment() ? stringify(_p.environment()->preferred_root_key()->value()) : "/")
+        .setenv("SET", stringify(_p.file_name()))
+        .setenv("SET_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
+        .setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
+        .setenv("PALUDIS_COMMAND", _p.environment() ? _p.environment()->paludis_command() : "")
+        .prefix_stderr(_p.file_name().basename() + "> ")
+        .capture_stdout(s);
+    int exit_status(process.run().wait());
 
     LineConfigFile ff(s, { lcfo_disallow_continuations, lcfo_disallow_comments, lcfo_no_skip_blank_lines });
     for (LineConfigFile::ConstIterator line(ff.begin()), line_end(ff.end()) ;
