@@ -39,6 +39,7 @@
 #include <grp.h>
 #include <pwd.h>
 #include <signal.h>
+#include <fcntl.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/select.h>
@@ -171,6 +172,9 @@ namespace paludis
         std::ostream * capture_output_to_fd;
         std::unique_ptr<Pipe> capture_output_to_fd_pipe;
 
+        std::istream * send_input_to_fd;
+        std::unique_ptr<Pipe> send_input_to_fd_pipe;
+
         ProcessPipeCommandFunction pipe_command_handler;
         std::unique_ptr<Pipe> pipe_command_handler_command_pipe;
         std::unique_ptr<Pipe> pipe_command_handler_response_pipe;
@@ -183,7 +187,8 @@ namespace paludis
             ctl_pipe(true),
             capture_stdout(0),
             capture_stderr(0),
-            capture_output_to_fd(0)
+            capture_output_to_fd(0),
+            send_input_to_fd(0)
         {
         }
 
@@ -197,6 +202,8 @@ void
 RunningProcessThread::thread_func()
 {
     bool prefix_stdout_buffer_has_newline(false), prefix_stderr_buffer_has_newline(false);
+    std::string input_stream_pending;
+
     bool done(false);
     while (! done)
     {
@@ -224,6 +231,12 @@ RunningProcessThread::thread_func()
         {
             FD_SET(capture_output_to_fd_pipe->read_fd(), &read_fds);
             max_fd = std::max(max_fd, capture_output_to_fd_pipe->read_fd());
+        }
+
+        if (send_input_to_fd)
+        {
+            FD_SET(send_input_to_fd_pipe->write_fd(), &write_fds);
+            max_fd = std::max(max_fd, send_input_to_fd_pipe->write_fd());
         }
 
         if (pipe_command_handler)
@@ -286,6 +299,38 @@ RunningProcessThread::thread_func()
                 throw ProcessError("read() capture_output_to_fd_pipe read_fd failed");
             else if (0 != n)
                 capture_output_to_fd->write(buf, n);
+            done_anything = true;
+        }
+
+        if (send_input_to_fd && FD_ISSET(send_input_to_fd_pipe->write_fd(), &write_fds))
+        {
+            while ((! input_stream_pending.empty()) || send_input_to_fd->good())
+            {
+                if (input_stream_pending.empty() && send_input_to_fd->good())
+                {
+                    send_input_to_fd->read(buf, sizeof(buf));
+                    input_stream_pending.assign(buf, send_input_to_fd->gcount());
+                }
+
+                int w(::write(send_input_to_fd_pipe->write_fd(), input_stream_pending.data(),
+                            input_stream_pending.length()));
+
+                if (0 == w || (-1 == w && (errno == EAGAIN || errno == EWOULDBLOCK)))
+                    break;
+                else if (-1 == w)
+                    throw ProcessError("write() send_input_to_fd_pipe write_fd failed");
+                else
+                    input_stream_pending.erase(0, w);
+            }
+
+            if (input_stream_pending.empty() && ! send_input_to_fd->good())
+            {
+                if (0 != ::close(send_input_to_fd_pipe->write_fd()))
+                    throw ProcessError("close() send_input_to_fd_pipe write_fd failed");
+                send_input_to_fd_pipe->clear_write_fd();
+                send_input_to_fd = 0;
+            }
+
             done_anything = true;
         }
 
@@ -409,6 +454,9 @@ namespace paludis
         std::ostream * capture_output_to_fd_stream;
         int capture_output_to_fd_fd;
         std::string capture_output_to_fd_env_var;
+        std::istream * send_input_to_fd_stream;
+        int send_input_to_fd_fd;
+        std::string send_input_to_fd_env_var;
         ProcessPipeCommandFunction pipe_command_handler;
         std::string pipe_command_handler_env_var;
         int set_stdin_fd;
@@ -431,6 +479,8 @@ namespace paludis
             capture_stderr(0),
             capture_output_to_fd_stream(0),
             capture_output_to_fd_fd(-1),
+            send_input_to_fd_stream(0),
+            send_input_to_fd_fd(-1),
             set_stdin_fd(-1),
             clearenv(false),
             setuid(getuid()),
@@ -503,6 +553,19 @@ Process::run()
         {
             thread->capture_output_to_fd = _imp->capture_output_to_fd_stream;
             thread->capture_output_to_fd_pipe.reset(new Pipe(true));
+        }
+
+        if (_imp->send_input_to_fd_stream)
+        {
+            thread->send_input_to_fd = _imp->send_input_to_fd_stream;
+            thread->send_input_to_fd_pipe.reset(new Pipe(true));
+
+            int arg(::fcntl(thread->send_input_to_fd_pipe->write_fd(), F_GETFL, NULL));
+            if (-1 == arg)
+                throw ProcessError("fcntl(F_GETFL) failed");
+            arg |= O_NONBLOCK;
+            if (-1 == ::fcntl(thread->send_input_to_fd_pipe->write_fd(), F_SETFL, arg))
+                throw ProcessError("fcntl(F_SETFL) failed");
         }
 
         if (_imp->pipe_command_handler)
@@ -582,6 +645,20 @@ Process::run()
                     throw ProcessError("dup failed");
                 else if (! _imp->capture_output_to_fd_env_var.empty())
                     ::setenv(_imp->capture_output_to_fd_env_var.c_str(), stringify(fd).c_str(), 1);
+            }
+
+            if (thread && thread->send_input_to_fd_pipe)
+            {
+                int fd(_imp->send_input_to_fd_fd);
+                if (-1 == fd)
+                    fd = ::dup(thread->send_input_to_fd_pipe->read_fd());
+                else
+                    fd = ::dup2(thread->send_input_to_fd_pipe->read_fd(), fd);
+
+                if (-1 == fd)
+                    throw ProcessError("dup failed");
+                else if (! _imp->send_input_to_fd_env_var.empty())
+                    ::setenv(_imp->send_input_to_fd_env_var.c_str(), stringify(fd).c_str(), 1);
             }
 
             if (thread && thread->pipe_command_handler)
@@ -680,6 +757,16 @@ Process::capture_output_to_fd(std::ostream & s, int fd_or_minus_one, const std::
     _imp->capture_output_to_fd_stream = &s;
     _imp->capture_output_to_fd_fd = fd_or_minus_one;
     _imp->capture_output_to_fd_env_var = env_var_with_fd;
+    return *this;
+}
+
+Process &
+Process::send_input_to_fd(std::istream & s, int fd_or_minus_one, const std::string & env_var_with_fd)
+{
+    _imp->need_thread = true;
+    _imp->send_input_to_fd_stream = &s;
+    _imp->send_input_to_fd_fd = fd_or_minus_one;
+    _imp->send_input_to_fd_env_var = env_var_with_fd;
     return *this;
 }
 

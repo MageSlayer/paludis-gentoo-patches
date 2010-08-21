@@ -88,6 +88,7 @@ namespace paludis
             Process & capture_stdout(std::ostream &);
             Process & capture_stderr(std::ostream &);
             Process & capture_output_to_fd(std::ostream &, int fd_or_minus_one, const std::string & env_var_with_fd);
+            Process & send_input_to_fd(std::istream &, int fd_or_minus_one, const std::string & env_var_with_fd);
             Process & set_stdin_fd(int);
             Process & pipe_command_handler(const std::string &, const ProcessPipeCommandFunction &);
 

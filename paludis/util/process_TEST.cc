@@ -413,5 +413,41 @@ namespace test_cases
             TEST_CHECK_EQUAL(stdout_stream.str(), "");
         }
     } test_clearenv;
+
+    struct SendFDTest : TestCase
+    {
+        SendFDTest() : TestCase("send fd") { }
+
+        void run()
+        {
+            std::stringstream stdout_stream, in_stream;
+            in_stream << "monkey" << std::endl;
+
+            Process cat_process(ProcessCommand({"sh", "-c", "cat <&$MAGIC_FD"}));
+            cat_process.send_input_to_fd(in_stream, -1, "MAGIC_FD");
+            cat_process.capture_stdout(stdout_stream);
+
+            TEST_CHECK_EQUAL(cat_process.run().wait(), 0);
+            TEST_CHECK_EQUAL(stdout_stream.str(), "monkey\n");
+        }
+    } test_send_fd;
+
+    struct SendFDFixedTest : TestCase
+    {
+        SendFDFixedTest() : TestCase("send fd fixed") { }
+
+        void run()
+        {
+            std::stringstream stdout_stream, in_stream;
+            in_stream << "monkey" << std::endl;
+
+            Process cat_process(ProcessCommand({"sh", "-c", "cat <&5"}));
+            cat_process.send_input_to_fd(in_stream, 5, "");
+            cat_process.capture_stdout(stdout_stream);
+
+            TEST_CHECK_EQUAL(cat_process.run().wait(), 0);
+            TEST_CHECK_EQUAL(stdout_stream.str(), "monkey\n");
+        }
+    } test_send_fd_fixed;
 }
 
