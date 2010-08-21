@@ -38,6 +38,7 @@
 #include <unistd.h>
 #include <grp.h>
 #include <pwd.h>
+#include <signal.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/select.h>
@@ -512,6 +513,14 @@ Process::run()
         }
     }
 
+    /* Temporarily disable SIGINT and SIGTERM to this thread */
+    sigset_t intandterm;
+    sigemptyset(&intandterm);
+    sigaddset(&intandterm, SIGINT);
+    sigaddset(&intandterm, SIGTERM);
+    if (0 != pthread_sigmask(SIG_BLOCK, &intandterm, 0))
+        throw ProcessError("pthread_sigmask failed");
+
     pid_t child(fork());
     if (-1 == child)
         throw ProcessError("fork() failed");
@@ -519,6 +528,16 @@ Process::run()
     {
         try
         {
+            /* clear any SIGINT or SIGTERM handlers we inherit, and unblock signals */
+            struct sigaction act;
+            sigemptyset(&act.sa_mask);
+            act.sa_handler = SIG_DFL;
+            act.sa_flags = 0;
+            sigaction(SIGINT,  &act, 0);
+            sigaction(SIGTERM, &act, 0);
+            if (0 != pthread_sigmask(SIG_UNBLOCK, &intandterm, 0))
+                throw ProcessError("pthread_sigmask failed");
+
             if (_imp->clearenv)
             {
                 std::map<std::string, std::string> setenvs;
@@ -628,6 +647,10 @@ Process::run()
     }
     else
     {
+        /* Restore SIGINT and SIGTERM handling */
+        if (0 != pthread_sigmask(SIG_UNBLOCK, &intandterm, 0))
+            throw ProcessError("pthread_sigmask failed");
+
         if (thread)
             thread->start();
         return RunningProcessHandle(child, thread);
