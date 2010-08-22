@@ -180,6 +180,8 @@ namespace paludis
         std::unique_ptr<Pipe> pipe_command_handler_response_pipe;
         std::string pipe_command_handler_buffer;
 
+        bool as_main_process;
+
         /* must be last, so the thread gets join()ed before its FDs vanish */
         std::unique_ptr<Thread> thread;
 
@@ -188,7 +190,8 @@ namespace paludis
             capture_stdout(0),
             capture_stderr(0),
             capture_output_to_fd(0),
-            send_input_to_fd(0)
+            send_input_to_fd(0),
+            as_main_process(false)
         {
         }
 
@@ -201,8 +204,11 @@ namespace paludis
 void
 RunningProcessThread::thread_func()
 {
-    bool prefix_stdout_buffer_has_newline(false), prefix_stderr_buffer_has_newline(false);
+    bool prefix_stdout_buffer_has_newline(false), prefix_stderr_buffer_has_newline(false), want_to_finish(true);
     std::string input_stream_pending;
+
+    if (as_main_process && send_input_to_fd)
+        want_to_finish = false;
 
     bool done(false);
     while (! done)
@@ -212,8 +218,11 @@ RunningProcessThread::thread_func()
         FD_ZERO(&read_fds);
         FD_ZERO(&write_fds);
 
-        FD_SET(ctl_pipe.read_fd(), &read_fds);
-        max_fd = std::max(max_fd, ctl_pipe.read_fd());
+        if (want_to_finish)
+        {
+            FD_SET(ctl_pipe.read_fd(), &read_fds);
+            max_fd = std::max(max_fd, ctl_pipe.read_fd());
+        }
 
         if (capture_stdout_pipe)
         {
@@ -329,6 +338,7 @@ RunningProcessThread::thread_func()
                     throw ProcessError("close() send_input_to_fd_pipe write_fd failed");
                 send_input_to_fd_pipe->clear_write_fd();
                 send_input_to_fd = 0;
+                want_to_finish = true;
             }
 
             done_anything = true;
@@ -513,6 +523,7 @@ Process::run()
     if (_imp->need_thread)
     {
         thread.reset(new RunningProcessThread{});
+        thread->as_main_process = _imp->as_main_process;
 
         if (! _imp->prefix_stdout.empty())
         {
