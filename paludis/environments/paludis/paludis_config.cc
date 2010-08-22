@@ -687,10 +687,10 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
     /* output */
     {
         std::list<FSEntry> files;
-        files.push_back(getenv_with_default("PALUDIS_DEFAULT_OUTPUT_CONF",
-                    SHAREDIR "/paludis/environments/paludis/default_output.conf"));
         files.push_back(local_config_dir / (dist->output_filename_part() + ".conf"));
         files.push_back(local_config_dir / (dist->output_filename_part() + ".bash"));
+        files.push_back(getenv_with_default("PALUDIS_DEFAULT_OUTPUT_CONF",
+                    SHAREDIR "/paludis/environments/paludis/default_output.conf"));
         if ((local_config_dir / (dist->output_filename_part() + ".conf.d")).exists())
         {
             std::remove_copy_if(DirIterator(local_config_dir / (dist->output_filename_part() + ".conf.d")), DirIterator(), std::back_inserter(files),

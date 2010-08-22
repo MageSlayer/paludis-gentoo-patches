@@ -103,9 +103,11 @@ namespace paludis
         RuleList rules;
         Managers managers;
         std::map<std::string, std::string> misc_vars;
+        std::shared_ptr<Map<std::string, std::string> > predefined_variables;
 
         Imp(const PaludisEnvironment * const e) :
-            env(e)
+            env(e),
+            predefined_variables(std::make_shared<Map<std::string, std::string> >())
         {
         }
     };
@@ -331,8 +333,7 @@ OutputConf::add(const FSEntry & filename)
     Context context("When adding source '" + stringify(filename) + "' as an output file:");
 
     std::shared_ptr<KeyValueConfigFile> f(make_bashable_kv_conf(filename,
-                std::make_shared<Map<std::string, std::string>>(),
-                { kvcfo_allow_sections }));
+                _imp->predefined_variables, { kvcfo_allow_sections }));
     if (! f)
         return;
 
@@ -398,6 +399,13 @@ OutputConf::add(const FSEntry & filename)
     for (Managers::const_iterator m(local_managers.begin()), m_end(local_managers.end()) ;
             m != m_end ; ++m)
         _imp->managers[m->first] = m->second;
+
+    for (auto i(f->begin()), i_end(f->end()) ;
+            i != i_end ; ++i)
+    {
+        _imp->predefined_variables->erase(i->first);
+        _imp->predefined_variables->insert(i->first, i->second);
+    }
 }
 
 const std::shared_ptr<OutputManager>
