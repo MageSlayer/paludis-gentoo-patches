@@ -88,3 +88,8 @@ util.hh : util.hh.m4 files.m4
 libexecpaludisdir = $(libexecdir)/paludis
 libexecpaludis_SCRIPTS = echo_functions.bash
 
+libexecutilsdir = $(libexecdir)/paludis/utils
+libexecutils_PROGRAMS = outputwrapper
+
+outputwrapper_SOURCES = output_wrapper.cc
+

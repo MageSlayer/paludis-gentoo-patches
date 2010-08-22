@@ -454,6 +454,7 @@ paludis-*.*.*.tar.bz2
 /paludis/util/member_iterator_TEST
 /paludis/util/mutex_TEST
 /paludis/util/options_TEST
+/paludis/util/outputwrapper
 /paludis/util/pretty_print_TEST
 /paludis/util/process_TEST
 /paludis/util/pty_TEST
