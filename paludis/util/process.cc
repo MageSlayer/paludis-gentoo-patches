@@ -495,7 +495,7 @@ namespace paludis
 }
 
 Process::Process(ProcessCommand && c) :
-    Pimp<Process>(c)
+    Pimp<Process>(std::move(c))
 {
 }
 
@@ -754,7 +754,7 @@ Process::run()
 
         if (thread)
             thread->start();
-        return RunningProcessHandle(_imp->as_main_process ? 0 : child, thread);
+        return RunningProcessHandle(_imp->as_main_process ? 0 : child, std::move(thread));
     }
 }
 
@@ -949,7 +949,7 @@ namespace paludis
 }
 
 RunningProcessHandle::RunningProcessHandle(pid_t p, std::unique_ptr<RunningProcessThread> && t) :
-    Pimp<RunningProcessHandle>(p, t)
+    Pimp<RunningProcessHandle>(p, std::move(t))
 {
 }
 
@@ -963,7 +963,7 @@ RunningProcessHandle::~RunningProcessHandle()
 }
 
 RunningProcessHandle::RunningProcessHandle(RunningProcessHandle && other) :
-    Pimp<RunningProcessHandle>(other._imp->pid, other._imp->thread)
+    Pimp<RunningProcessHandle>(other._imp->pid, std::move(other._imp->thread))
 {
     _imp->pid = -1;
 }
