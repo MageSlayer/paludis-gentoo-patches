@@ -26,23 +26,25 @@ quiet = false
 <p>For more advanced usage, two additional variables allow additional output managers to be specified:
 
 <pre>
-# extra_output_loggers may be used to define additional output managers that
+# extra_output_managers may be used to define additional output managers that
 # handle normal output.
-extra_output_loggers =
+extra_output_managers =
 
-# extra_message_loggers may be used to define additional output managers that
+# extra_message_managers may be used to define additional output managers that
 # handle messages.
-extra_message_loggers =
+extra_message_managers =
 </pre>
 
 <p>For example, if you wish to send messages to syslog, you could use:</p>
 
 <pre>
-extra_message_loggers = my_syslog_messages
+extra_message_managers = my_syslog_messages
 
 [manager my_syslog_messages]
 handler = command
+start_command = echo Starting %{action} %{full_name} | logger -t paludis
+end_command = echo Finished %{action} %{full_name} | logger -t paludis
 stdout_command = logger -t paludis
-stderr_command = logger -t paludis
+stderr_command = cat &gt;/dev/null
 </pre>
 
