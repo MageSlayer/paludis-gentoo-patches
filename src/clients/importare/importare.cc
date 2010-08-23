@@ -86,6 +86,9 @@ main(int argc, char *argv[])
 
     Context context(std::string("In program ") + argv[0] + " " + options + ":");
 
+    Log::get_instance()->message("importare.deprecated", ll_warning, lc_context)
+        << "importare is deprecated. Use 'cave import' instead.";
+
     try
     {
         CommandLine::get_instance()->run(argc, argv, "importare", "IMPORTARE_OPTIONS", "IMPORTARE_CMDLINE");

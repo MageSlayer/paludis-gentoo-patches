@@ -80,6 +80,8 @@ CommandLine::CommandLine() :
             "Packages installed using importare will not be visible to broken ebuilds that illegally access the VDB. "
             "This means that things like 'built_with_use' will not realise that the package is installed.");
 
+    add_note("Importare is deprecated. Use 'cave import' instead.");
+
     add_example(
             "importare --location img/ unpackaged/myapp 1.23",
             "Install the contents of img/ (which could be produced, for example, using 'sudo make DESTDIR=img/ install' "
@@ -107,17 +109,15 @@ CommandLine::app_name() const
 std::string
 CommandLine::app_synopsis() const
 {
-    return "The Paludis unpackaged package installer";
+    return "The deprecated Paludis unpackaged package installer";
 }
 
 std::string
 CommandLine::app_description() const
 {
     return
-        "importare can be used to manage packages where no real package file is available. It "
-        "treats the contents of a named directory as being the content of the package, and uses "
-        "a dummy package name provided on the command line to do the install. Safe merge, unmerge, "
-        "upgrade and replace support is provided, as is content tracking for installed files.";
+        "importare can be used to manage packages where no real package file is available. Importare is "
+        "deprecated; use 'cave import' instead.";
 }
 
 CommandLine::~CommandLine()
