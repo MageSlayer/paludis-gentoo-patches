@@ -81,6 +81,8 @@ CommandLine::CommandLine() :
     add_example(
             "reconcilio --pretend --library 'libXi.so.6",
             "Find and display any packages that need a named library.");
+
+    add_note("Reconcilio is deprecated. Use 'cave search' instead.");
 }
 
 std::string
@@ -92,16 +94,15 @@ CommandLine::app_name() const
 std::string
 CommandLine::app_synopsis() const
 {
-    return "Rebuilds packages with broken linkage.";
+    return "A deprecated client for rebuilding packages with broken linkage.";
 }
 
 std::string
 CommandLine::app_description() const
 {
     return
-        "reconcilio searches for and rebuilds packages that are linked against "
-        "libraries that are not present on the system, or a specific library "
-        "named by the user.";
+        "Reconcilio is a deprecated linkage fixing client for Paludis. 'cave fix-linkage' should "
+        "be used instead.";
 }
 
 CommandLine::~CommandLine()
