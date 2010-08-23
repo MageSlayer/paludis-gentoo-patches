@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -108,8 +108,8 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            SafeOFStream(const int fd);
-            SafeOFStream(const FSEntry &, const int open_flags = -1);
+            explicit SafeOFStream(const int fd);
+            explicit SafeOFStream(const FSEntry &, const int open_flags = -1);
             ~SafeOFStream();
 
             ///\}
