@@ -63,7 +63,7 @@ main(int argc, char *argv[])
     Context context(std::string("In program ") + argv[0] + " " + options + ":");
 
     Log::get_instance()->message("reconcilio.deprecated", ll_warning, lc_context)
-        << "inquisitio is deprecated. Use 'cave fix-linkage' instead.";
+        << "Reconcilio is deprecated. Use 'cave fix-linkage' instead.";
 
     try
     {

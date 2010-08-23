@@ -82,7 +82,7 @@ CommandLine::CommandLine() :
             "reconcilio --pretend --library 'libXi.so.6",
             "Find and display any packages that need a named library.");
 
-    add_note("Reconcilio is deprecated. Use 'cave search' instead.");
+    add_note("Reconcilio is deprecated. Use 'cave fix-linkage' instead.");
 }
 
 std::string
