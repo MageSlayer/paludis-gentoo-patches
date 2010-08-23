@@ -62,6 +62,8 @@
 #include <paludis/resolver/constraint.hh>
 #include <paludis/resolver/resolver_functions.hh>
 #include <paludis/resolver/decisions.hh>
+#include <paludis/resolver/resolution.hh>
+#include <paludis/resolver/resolutions_by_resolvent.hh>
 
 #include <paludis/resolver/allow_choice_changes_helper.hh>
 #include <paludis/resolver/allowed_to_remove_helper.hh>
@@ -268,6 +270,7 @@ namespace
             const std::shared_ptr<const Map<std::string, std::string> > & keys_if_import,
             const std::shared_ptr<const Sequence<std::pair<std::string, std::string> > > & targets,
             const std::shared_ptr<const Sequence<std::string> > & world_specs,
+            const std::shared_ptr<const Sequence<std::string> > & removed_if_dependent_names,
             const bool is_set)
     {
         Context context("When performing chosen resolution:");
@@ -308,6 +311,13 @@ namespace
                 p != p_end ; ++p)
         {
             args->push_back("--world-specs");
+            args->push_back(*p);
+        }
+
+        for (auto p(removed_if_dependent_names->begin()), p_end(removed_if_dependent_names->end()) ;
+                p != p_end ; ++p)
+        {
+            args->push_back("--removed-if-dependent-names");
             args->push_back(*p);
         }
 
@@ -520,6 +530,35 @@ namespace
         else
             throw args::DoHelp("Don't understand argument '" + arg.argument() + "' to '--"
                     + arg.long_name() + "'");
+    }
+
+    std::shared_ptr<const QualifiedPackageName> name_if_dependent_remove(
+            const std::shared_ptr<const Resolution> & resolution)
+    {
+        const RemoveDecision * const remove_decision(simple_visitor_cast<const RemoveDecision>(*resolution->decision()));
+        if (remove_decision)
+            for (auto r(resolution->constraints()->begin()), r_end(resolution->constraints()->end()) ;
+                    r != r_end ; ++r)
+                if (simple_visitor_cast<const DependentReason>(*(*r)->reason()))
+                    return make_shared_copy((*remove_decision->ids()->begin())->name());
+        return make_null_shared_ptr();
+    }
+
+    std::shared_ptr<Sequence<std::string> > get_removed_if_dependent_names(
+            const Environment * const,
+            const std::shared_ptr<const Resolved> & resolved)
+    {
+        auto result(std::make_shared<Sequence<std::string> >());
+        for (auto d(resolved->taken_change_or_remove_decisions()->begin()),
+                d_end(resolved->taken_change_or_remove_decisions()->end()) ;
+                d != d_end ; ++d)
+        {
+            auto n(name_if_dependent_remove(*resolved->resolutions_by_resolvent()->find(d->first->resolvent())));
+            if (n)
+                result->push_back(stringify(*n));
+        }
+
+        return result;
     }
 }
 
@@ -861,6 +900,7 @@ paludis::cave::resolve_common(
                     execution_options, program_options, keys_if_import,
                     purge ? std::make_shared<const Sequence<std::pair<std::string, std::string> > >() : targets_if_not_purge,
                     world_specs_if_not_auto ? world_specs_if_not_auto : targets_cleaned_up,
+                    get_removed_if_dependent_names(env.get(), resolver->resolved()),
                     is_set);
     }
     catch (...)

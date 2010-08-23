@@ -20,13 +20,18 @@
 #include "cmd_update_world.hh"
 #include <paludis/args/args.hh>
 #include <paludis/args/do_help.hh>
-#include <paludis/environment.hh>
-#include <paludis/package_database.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/fs_entry.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/sequence.hh>
+#include <paludis/environment.hh>
+#include <paludis/package_database.hh>
+#include <paludis/generator.hh>
+#include <paludis/selection.hh>
+#include <paludis/filter.hh>
+#include <paludis/filtered_generator.hh>
+#include <paludis/metadata_key.hh>
 #include <iostream>
 #include <cstdlib>
 
@@ -62,6 +67,7 @@ namespace
 
         args::ArgsGroup g_update_options;
         args::SwitchArg a_remove;
+        args::SwitchArg a_if_nothing_left;
         args::SwitchArg a_set;
 
         UpdateWorldCommandLine() :
@@ -70,10 +76,11 @@ namespace
 
             g_update_options(main_options_section(), "Update Options", "Alter how updates are performed."),
             a_remove(&g_update_options, "remove", 'r', "Remove the specified items instead of adding them", true),
+            a_if_nothing_left(&g_update_options, "if-nothing-left", 'l', "Skip any removes where versions remain", true),
             a_set(&g_update_options, "set", 's', "The parameters are set names, not package names", true)
         {
-            add_usage_line("[ --remove ] cat/pkg ...");
-            add_usage_line("[ --remove ] --set setname ...");
+            add_usage_line("[ --remove [ --if-nothing-left ] ] cat/pkg ...");
+            add_usage_line("[ --remove [ --if-nothing-left ] ] --set setname ...");
         }
     };
 }
@@ -123,7 +130,17 @@ UpdateWorldCommand::run(
             name = stringify(q);
 
             if (cmdline.a_remove.specified())
-                result = env->remove_from_world(q);
+            {
+                if (cmdline.a_if_nothing_left.specified())
+                {
+                    auto ids((*env)[selection::SomeArbitraryVersion(generator::Package(q) |
+                                filter::InstalledAtRoot(env->preferred_root_key()->value()))]);
+                    if (ids->empty())
+                        result = env->remove_from_world(q);
+                }
+                else
+                    result = env->remove_from_world(q);
+            }
             else
                 result = env->add_to_world(q);
         }

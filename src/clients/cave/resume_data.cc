@@ -54,9 +54,17 @@ ResumeData::deserialise(Deserialisation & d)
             world_specs->push_back(vv.member<std::string>(stringify(n)));
     }
 
+    std::shared_ptr<Sequence<std::string> > removed_if_dependent_names(std::make_shared<Sequence<std::string>>());
+    {
+        Deserialisator vv(*v.find_remove_member("removed_if_dependent_names"), "c");
+        for (int n(1), n_end(vv.member<int>("count") + 1) ; n != n_end ; ++n)
+            removed_if_dependent_names->push_back(vv.member<std::string>(stringify(n)));
+    }
+
     return make_shared_copy(make_named_values<ResumeData>(
                 n::job_lists() = v.member<std::shared_ptr<JobLists> >("job_lists"),
                 n::preserve_world() = v.member<bool>("preserve_world"),
+                n::removed_if_dependent_names() = removed_if_dependent_names,
                 n::target_set() = v.member<bool>("target_set"),
                 n::targets() = targets,
                 n::world_specs() = world_specs
@@ -69,6 +77,7 @@ ResumeData::serialise(Serialiser & s) const
     s.object("ResumeData@" + stringify(PALUDIS_VERSION))
         .member(SerialiserFlags<serialise::might_be_null>(), "job_lists", job_lists())
         .member(SerialiserFlags<>(), "preserve_world", preserve_world())
+        .member(SerialiserFlags<serialise::might_be_null, serialise::container>(), "removed_if_dependent_names", removed_if_dependent_names())
         .member(SerialiserFlags<>(), "target_set", target_set())
         .member(SerialiserFlags<serialise::might_be_null, serialise::container>(), "targets", targets())
         .member(SerialiserFlags<serialise::might_be_null, serialise::container>(), "world_specs", world_specs())

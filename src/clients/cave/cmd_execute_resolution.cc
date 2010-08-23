@@ -106,6 +106,7 @@ namespace
         args::SwitchArg a_pretend;
         args::SwitchArg a_set;
         args::StringSetArg a_world_specs;
+        args::StringSetArg a_removed_if_dependent_names;
 
         ResolveCommandLineExecutionOptions execution_options;
         ResolveCommandLineProgramOptions program_options;
@@ -116,6 +117,8 @@ namespace
             a_pretend(&g_general_options, "pretend", '\0', "Only carry out the pretend action", false),
             a_set(&g_general_options, "set", '\0', "Our target is a set rather than package specs", false),
             a_world_specs(&g_general_options, "world-specs", '\0', "Use the specified spec or set name for updating world"),
+            a_removed_if_dependent_names(&g_general_options, "removed-if-dependent-names", '\0',
+                    "If nothing is left with the specified name, also remove it from world"),
             execution_options(this),
             program_options(this),
             import_options(this)
@@ -177,9 +180,13 @@ namespace
             std::shared_ptr<Sequence<std::string> > world_specs(std::make_shared<Sequence<std::string>>());
             std::copy(cmdline.a_world_specs.begin_args(), cmdline.a_world_specs.end_args(), world_specs->back_inserter());
 
+            std::shared_ptr<Sequence<std::string> > removed_if_dependent_names(std::make_shared<Sequence<std::string>>());
+            std::copy(cmdline.a_removed_if_dependent_names.begin_args(), cmdline.a_removed_if_dependent_names.end_args(), world_specs->back_inserter());
+
             ResumeData resume_data(make_named_values<ResumeData>(
                         n::job_lists() = lists,
                         n::preserve_world() = cmdline.execution_options.a_preserve_world.specified(),
+                        n::removed_if_dependent_names() = removed_if_dependent_names,
                         n::target_set() = cmdline.a_set.specified(),
                         n::targets() = targets,
                         n::world_specs() = world_specs
@@ -659,6 +666,26 @@ namespace
 
         update_world(env, cmdline, true);
         update_world(env, cmdline, false);
+
+        bool any(false);
+        std::string command(cmdline.program_options.a_update_world_program.argument());
+        if (command.empty())
+            command = "$CAVE update-world --verbose --remove --if-nothing-left ";
+
+        for (args::StringSetArg::ConstIterator a(cmdline.a_removed_if_dependent_names.begin_args()),
+                a_end(cmdline.a_removed_if_dependent_names.end_args()) ;
+                a != a_end ; ++a)
+        {
+            any = true;
+            command.append(" " + stringify(*a));
+        }
+
+        if (any)
+        {
+            Process process(ProcessCommand({ "sh", "-c", command }));
+            if (0 != process.run().wait())
+                throw ActionAbortedError("Updating world failed");
+        }
     }
 
     int execute_pretends(

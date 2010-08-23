@@ -32,6 +32,7 @@ namespace paludis
     {
         typedef Name<struct job_lists_name> job_lists;
         typedef Name<struct preserve_world_name> preserve_world;
+        typedef Name<struct removed_if_dependent_names_name> removed_if_dependent_names;
         typedef Name<struct target_set_name> target_set;
         typedef Name<struct targets_name> targets;
         typedef Name<struct world_specs_name> world_specs;
@@ -43,6 +44,7 @@ namespace paludis
         {
             NamedValue<n::job_lists, std::shared_ptr<resolver::JobLists> > job_lists;
             NamedValue<n::preserve_world, bool> preserve_world;
+            NamedValue<n::removed_if_dependent_names, std::shared_ptr<Sequence<std::string> > > removed_if_dependent_names;
             NamedValue<n::target_set, bool> target_set;
             NamedValue<n::targets, std::shared_ptr<Sequence<std::string> > > targets;
             NamedValue<n::world_specs, std::shared_ptr<Sequence<std::string> > > world_specs;
