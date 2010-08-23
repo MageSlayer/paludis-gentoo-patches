@@ -138,7 +138,7 @@ const auto fs_change_name = make_format_string_fetcher("display-resolution/chang
     << param<'i'>() << c::normal();
 
 const auto fs_change_not_best = make_format_string_fetcher("display-resolution/change_not_best", 1)
-    << c::bold_yellow() << " (not then best version)" << c::normal();
+    << c::bold_yellow() << " (not the best version)" << c::normal();
 
 const auto fs_change_formerly_from = make_format_string_fetcher("display-resolution/change_formerly_from", 1)
     << c::bold_yellow() << " (formerly from " << param<'r'>() << ")" << c::normal();
