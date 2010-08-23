@@ -75,7 +75,7 @@ namespace
         PrintIDEnvironmentVariableCommandLine() :
             g_spec_options(main_options_section(), "Spec Options", "Alter how the supplied spec is used."),
             a_all(&g_spec_options, "all", 'a', "If the spec matches multiple IDs, display all matches.", true),
-            a_best(&g_spec_options, "best", '\0', "If the spec matches multiple IDs, select the best ID rather than giving an error.", true),
+            a_best(&g_spec_options, "best", 'b', "If the spec matches multiple IDs, select the best ID rather than giving an error.", true),
             g_filters(main_options_section(), "Filters", "Filter the output. Each filter may be specified more than once."),
             a_variable_name(&g_filters, "variable-name", '\0', "Show this environment variable. If specified more than once, "
                     "any name match is accepted.  Must be specified at least once."),

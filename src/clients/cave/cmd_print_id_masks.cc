@@ -84,7 +84,7 @@ namespace
         PrintIDMasksCommandLine() :
             g_spec_options(main_options_section(), "Spec Options", "Alter how the supplied spec is used."),
             a_all(&g_spec_options, "all", 'a', "If the spec matches multiple IDs, display all matches.", true),
-            a_best(&g_spec_options, "best", '\0', "If the spec matches multiple IDs, select the best ID rather than giving an error.", true),
+            a_best(&g_spec_options, "best", 'b', "If the spec matches multiple IDs, select the best ID rather than giving an error.", true),
             g_filters(main_options_section(), "Filters", "Filter the output."),
             a_overridden(&g_filters, "overridden", '\0', "Show overridden masks", true),
             a_no_active(&g_filters, "no-active", '\0', "No not show active (non-overridden) masks", true),
