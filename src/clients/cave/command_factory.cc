@@ -36,6 +36,7 @@
 #include "cmd_config.hh"
 #include "cmd_contents.hh"
 #include "cmd_display_resolution.hh"
+#include "cmd_dump_cave_formats_conf.hh"
 #include "cmd_executables.hh"
 #include "cmd_execute_resolution.hh"
 #include "cmd_find_candidates.hh"
@@ -51,7 +52,6 @@
 #include "cmd_print_categories.hh"
 #include "cmd_print_commands.hh"
 #include "cmd_print_environment_metadata.hh"
-#include "cmd_print_formats.hh"
 #include "cmd_print_id_actions.hh"
 #include "cmd_print_id_contents.hh"
 #include "cmd_print_id_environment_variable.hh"
@@ -144,6 +144,7 @@ CommandFactory::CommandFactory() :
     _imp->handlers.insert(std::make_pair("config", std::bind(&make_command<ConfigCommand>)));
     _imp->handlers.insert(std::make_pair("contents", std::bind(&make_command<ContentsCommand>)));
     _imp->handlers.insert(std::make_pair("display-resolution", std::bind(&make_command<DisplayResolutionCommand>)));
+    _imp->handlers.insert(std::make_pair("dump-cave-formats-conf", std::bind(&make_command<DumpCaveFormatsConfCommand>)));
     _imp->handlers.insert(std::make_pair("executables", std::bind(&make_command<ExecutablesCommand>)));
     _imp->handlers.insert(std::make_pair("execute-resolution", std::bind(&make_command<ExecuteResolutionCommand>)));
     _imp->handlers.insert(std::make_pair("find-candidates", std::bind(&make_command<FindCandidatesCommand>)));
@@ -160,7 +161,6 @@ CommandFactory::CommandFactory() :
     _imp->handlers.insert(std::make_pair("print-categories", std::bind(&make_command<PrintCategoriesCommand>)));
     _imp->handlers.insert(std::make_pair("print-commands", std::bind(&make_command<PrintCommandsCommand>)));
     _imp->handlers.insert(std::make_pair("print-environment-metadata", std::bind(&make_command<PrintEnvironmentMetadataCommand>)));
-    _imp->handlers.insert(std::make_pair("print-formats", std::bind(&make_command<PrintFormatsCommand>)));
     _imp->handlers.insert(std::make_pair("print-id-actions", std::bind(&make_command<PrintIDActionsCommand>)));
     _imp->handlers.insert(std::make_pair("print-id-contents", std::bind(&make_command<PrintIDContentsCommand>)));
     _imp->handlers.insert(std::make_pair("print-id-environment-variable", std::bind(&make_command<PrintIDEnvironmentVariableCommand>)));

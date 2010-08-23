@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_SRC_CLIENTS_CAVE_CMD_PRINT_FORMATS_HH
-#define PALUDIS_GUARD_SRC_CLIENTS_CAVE_CMD_PRINT_FORMATS_HH 1
+#ifndef PALUDIS_GUARD_SRC_CLIENTS_CAVE_CMD_DUMP_CAVE_FORMATS_CONF_HH
+#define PALUDIS_GUARD_SRC_CLIENTS_CAVE_CMD_DUMP_CAVE_FORMATS_CONF_HH 1
 
 #include "command.hh"
 
@@ -26,7 +26,7 @@ namespace paludis
 {
     namespace cave
     {
-        class PALUDIS_VISIBLE PrintFormatsCommand :
+        class PALUDIS_VISIBLE DumpCaveFormatsConfCommand :
             public Command
         {
             public:

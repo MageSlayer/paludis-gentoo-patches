@@ -22,6 +22,7 @@ command_MANS = \
 	cave-config.1 \
 	cave-contents.1 \
 	cave-display-resolution.1 \
+	cave-dump-cave-formats-conf.1 \
 	cave-executables.1 \
 	cave-execute-resolution.1 \
 	cave-find-candidates.1 \
@@ -37,7 +38,6 @@ command_MANS = \
 	cave-print-categories.1 \
 	cave-print-commands.1 \
 	cave-print-environment-metadata.1 \
-	cave-print-formats.1 \
 	cave-print-id-actions.1 \
 	cave-print-id-contents.1 \
 	cave-print-id-environment-variable.1 \
@@ -114,6 +114,7 @@ libcave_a_SOURCES = \
 	cmd_contents.cc cmd_contents.hh cmd_contents-fmt.hh \
 	cmd_config.cc cmd_config.hh \
 	cmd_display_resolution.cc cmd_display_resolution.hh cmd_display_resolution-fmt.hh \
+	cmd_dump_cave_formats_conf.cc cmd_dump_cave_formats_conf.hh \
 	cmd_executables.cc cmd_executables.hh cmd_executables-fmt.hh \
 	cmd_execute_resolution.cc cmd_execute_resolution.hh cmd_execute_resolution-fmt.hh \
 	cmd_find_candidates.cc cmd_find_candidates.hh \
@@ -129,7 +130,6 @@ libcave_a_SOURCES = \
 	cmd_print_categories.cc cmd_print_categories.hh \
 	cmd_print_commands.cc cmd_print_commands.hh \
 	cmd_print_environment_metadata.cc cmd_print_environment_metadata.hh \
-	cmd_print_formats.cc cmd_print_formats.hh \
 	cmd_print_id_actions.cc cmd_print_id_actions.hh \
 	cmd_print_id_contents.cc cmd_print_id_contents.hh \
 	cmd_print_id_environment_variable.cc cmd_print_id_environment_variable.hh \

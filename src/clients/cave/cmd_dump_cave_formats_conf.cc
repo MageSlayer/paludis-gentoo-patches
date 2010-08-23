@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "cmd_print_formats.hh"
+#include "cmd_dump_cave_formats_conf.hh"
 #include <paludis/util/stringify.hh>
 #include <paludis/args/args.hh>
 #include <paludis/args/do_help.hh>
@@ -152,26 +152,27 @@ namespace
 
 namespace
 {
-    struct PrintFormatsCommandLine :
+    struct DumpCaveFormatsConfCommandLine :
         CaveCommandCommandLine
     {
         virtual std::string app_name() const
         {
-            return "cave print-formats";
+            return "cave dump-cave-formats-conf";
         }
 
         virtual std::string app_synopsis() const
         {
-            return "Prints a list of known format strings.";
+            return "Output a ~/.cave/formats.conf";
         }
 
         virtual std::string app_description() const
         {
-            return "Prints a list of known format strings. No formatting is used, making the output "
-                "suitable for parsing by scripts.";
+            return "Outputs suitable contents for ~/.cave/formats.conf. This file can be used to "
+                "customise the output format for many cave commands (although not commands designed "
+                "for script use, such as print-*).";
         }
 
-        PrintFormatsCommandLine()
+        DumpCaveFormatsConfCommandLine()
         {
             add_usage_line("");
         }
@@ -179,13 +180,13 @@ namespace
 }
 
 int
-PrintFormatsCommand::run(
+DumpCaveFormatsConfCommand::run(
         const std::shared_ptr<Environment> &,
         const std::shared_ptr<const Sequence<std::string > > & args
         )
 {
-    PrintFormatsCommandLine cmdline;
-    cmdline.run(args, "CAVE", "CAVE_PRINT_FORMATS_OPTIONS", "CAVE_PRINT_FORMATS_CMDLINE");
+    DumpCaveFormatsConfCommandLine cmdline;
+    cmdline.run(args, "CAVE", "CAVE_DUMP_CAVE_FORMATS_CONF_OPTIONS", "CAVE_DUMP_CAVE_FORMATS_CONF_CMDLINE");
 
     if (cmdline.a_help.specified())
     {
@@ -194,7 +195,7 @@ PrintFormatsCommand::run(
     }
 
     if (cmdline.begin_parameters() != cmdline.end_parameters())
-        throw args::DoHelp("print-formats takes no parameters");
+        throw args::DoHelp("dump-cave-formats-conf takes no parameters");
 
     cout << "[colours]"   << endl;
     cout << "red"         << " = " << "\\e[0;31m" << endl;
@@ -238,8 +239,8 @@ PrintFormatsCommand::run(
 }
 
 std::shared_ptr<args::ArgsHandler>
-PrintFormatsCommand::make_doc_cmdline()
+DumpCaveFormatsConfCommand::make_doc_cmdline()
 {
-    return std::make_shared<PrintFormatsCommandLine>();
+    return std::make_shared<DumpCaveFormatsConfCommandLine>();
 }
 
