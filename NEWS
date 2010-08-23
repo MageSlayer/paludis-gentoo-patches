@@ -4,6 +4,54 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the Git log.
 
+0.54.0:
+    * 'cave resolve --remove-if-dependent' will now cause dependent packages to
+      be removed from world, if no versions remain.
+
+    * 'cave resolve --make' now defaults to 'chroot' when the environment's
+      preferred root is not '/'.
+
+    * 'cave display-resolution --show-option-descriptions' now works as
+      documented.
+
+    * 'cave fix-linkage' may take multiple '--library' arguments.
+
+    * New 'cave' subcommands: 'report', 'print-id-environment-variable'.
+
+    * 'cave print-' commands are now consistent in handling '--all' / '-a' and
+      '--best' / '-b'.
+
+    * 'cave show' will now always show keys specified by '-k', even if those
+      keys are internal-only or complex.
+
+    * 'cave search' now takes an optional SQLite index, which can be created
+      using 'cave manage-search-index'.
+
+    * 'cave search' now has a '--visible' option.
+
+    * The 'importare', 'inquisitio' and 'reconcilio' clients are now deprecated
+      in favour of 'cave import, 'cave search' and 'cave fix-linkage'
+      respectively.
+
+    * Output managers and output.conf are now documented features, and a new
+      'command' output manager handler was added.
+
+    * Hooks are now run using an output manager, where appropriate. The API for
+      .so hooks has been changed to allow this.
+
+    * The demo hooks have been removed, since none are particularly useful with
+      'cave'.
+
+    * 'cave' now has a global '--colour' option, and coloured output is disabled
+      by default when outputting to a non-tty.
+
+    * The output format for certain cave commands can now be tinkered with by
+      the user. Use 'cave dump-cave-formats-conf' to create ~/.cave/formats.conf
+      and then edit as desired.
+
+    * The way sub-programs are executed has changed to be somewhat less
+      convoluted.
+
 0.52.3:
     * A bug causing screwiness with soft-blocking EAPI 3 packages where both
       packages installed the same file with an mtime in the distant past has
