@@ -157,7 +157,7 @@ libcave_a_SOURCES = \
 	cmd_show.cc cmd_show.hh cmd_show-fmt.hh \
 	cmd_sync.cc cmd_sync.hh cmd_sync-fmt.hh \
 	cmd_uninstall.cc cmd_uninstall.hh \
-	cmd_update_world.cc cmd_update_world.hh \
+	cmd_update_world.cc cmd_update_world.hh cmd_update_world-fmt.hh \
 	cmd_verify.cc cmd_verify.hh cmd_verify-fmt.hh \
 	colours.cc colours.hh \
 	exceptions.cc exceptions.hh \

@@ -18,6 +18,7 @@
  */
 
 #include "cmd_update_world.hh"
+#include "format_user_config.hh"
 #include <paludis/args/args.hh>
 #include <paludis/args/do_help.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -44,6 +45,8 @@ using std::endl;
 
 namespace
 {
+#include "cmd_update_world-fmt.hh"
+
     struct UpdateWorldCommandLine :
         CaveCommandCommandLine
     {
@@ -150,16 +153,16 @@ UpdateWorldCommand::run(
             if (cmdline.a_remove.specified())
             {
                 if (result)
-                    cout << "* Removed '" << name << "'" << endl;
+                    cout << fuc(fs_removed(), fv<'n'>(stringify(name)));
                 else
-                    cout << "* Did not remove '" << name << "'" << endl;
+                    cout << fuc(fs_did_not_remove(), fv<'n'>(stringify(name)));
             }
             else
             {
                 if (result)
-                    cout << "* Added '" << name << "'" << endl;
+                    cout << fuc(fs_added(), fv<'n'>(stringify(name)));
                 else
-                    cout << "* Did not need to add '" << name << "'" << endl;
+                    cout << fuc(fs_did_not_add(), fv<'n'>(stringify(name)));
             }
         }
     }
