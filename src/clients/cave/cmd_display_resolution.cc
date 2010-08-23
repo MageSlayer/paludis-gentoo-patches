@@ -620,9 +620,9 @@ namespace
                 if (cmdline.display_options.a_show_option_descriptions.argument() == "none")
                     show_description = false;
                 else if (cmdline.display_options.a_show_option_descriptions.argument() == "new")
-                    show_description = ! old_id;
-                else if (cmdline.display_options.a_show_option_descriptions.argument() == "changed")
                     show_description = added || ! old_id;
+                else if (cmdline.display_options.a_show_option_descriptions.argument() == "changed")
+                    show_description = added || changed || ! old_id;
                 else if (cmdline.display_options.a_show_option_descriptions.argument() == "all")
                     show_description = true;
                 else
