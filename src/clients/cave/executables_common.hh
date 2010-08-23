@@ -34,7 +34,9 @@ namespace paludis
         int executables_common(
                 const std::shared_ptr<Environment> & env,
                 const std::string &,
-                const std::function<void (const FSEntry &)> &);
+                const std::function<void (const FSEntry &)> &,
+                const bool all,
+                const bool best);
     }
 }
 

@@ -60,7 +60,14 @@ namespace
                 "No formating is used, making the script suitable for parsing by scripts.";
         }
 
-        PrintIDExecutablesCommandLine()
+        args::ArgsGroup g_spec_options;
+        args::SwitchArg a_all;
+        args::SwitchArg a_best;
+
+        PrintIDExecutablesCommandLine() :
+            g_spec_options(main_options_section(), "Spec Options", "Alter how the supplied spec is used."),
+            a_all(&g_spec_options, "all", 'a', "If the spec matches multiple IDs, display all matches.", true),
+            a_best(&g_spec_options, "best", 'b', "If the spec matches multiple IDs, select the best ID rather than giving an error.", true)
         {
             add_usage_line("spec");
         }
@@ -90,7 +97,8 @@ PrintIDExecutablesCommand::run(
     if (1 != std::distance(cmdline.begin_parameters(), cmdline.end_parameters()))
         throw args::DoHelp("print-id-executables takes exactly one parameter");
 
-    return executables_common(env, *cmdline.begin_parameters(), &print_fsentry);
+    return executables_common(env, *cmdline.begin_parameters(), &print_fsentry, cmdline.a_all.specified(),
+            cmdline.a_best.specified());
 }
 
 std::shared_ptr<args::ArgsHandler>

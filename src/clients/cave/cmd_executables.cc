@@ -94,7 +94,7 @@ ExecutablesCommand::run(
     if (1 != std::distance(cmdline.begin_parameters(), cmdline.end_parameters()))
         throw args::DoHelp("executables takes exactly one parameter");
 
-    return executables_common(env, *cmdline.begin_parameters(), &format_fsentry);
+    return executables_common(env, *cmdline.begin_parameters(), &format_fsentry, true, false);
 }
 
 std::shared_ptr<args::ArgsHandler>

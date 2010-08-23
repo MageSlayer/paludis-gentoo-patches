@@ -19,6 +19,7 @@
  */
 
 #include "executables_common.hh"
+#include "exceptions.hh"
 #include <paludis/contents.hh>
 #include <paludis/environment.hh>
 #include <paludis/filter.hh>
@@ -105,29 +106,34 @@ int
 paludis::cave::executables_common(
         const std::shared_ptr<Environment> & env,
         const std::string & param,
-        const std::function<void (const FSEntry &)> & displayer)
+        const std::function<void (const FSEntry &)> & displayer,
+        const bool all,
+        const bool best)
 {
+    PackageDepSpec spec(parse_user_package_dep_spec(param, env.get(), { updso_allow_wildcards },
+                filter::InstalledAtRoot(env->preferred_root_key()->value())));
+
     std::shared_ptr<const PackageIDSequence> entries(
-            (*env)[selection::AllVersionsSorted(generator::Matches(
-                    PackageDepSpec(parse_user_package_dep_spec(
-                            param, env.get(),
-                            { updso_allow_wildcards },
-                            filter::InstalledAtRoot(env->preferred_root_key()->value()))),
-                    { }) | filter::InstalledAtRoot(env->preferred_root_key()->value()))]);
+            (*env)[selection::AllVersionsSorted(generator::Matches(spec, { }) |
+                filter::InstalledAtRoot(env->preferred_root_key()->value()))]);
 
     if (entries->empty())
         throw NoSuchPackageError(param);
+
+    if ((! best) && (! all) && (next(entries->begin()) != entries->end()))
+        throw BeMoreSpecific(spec, entries);
 
     const std::string path(getenv_or_error("PATH"));
     std::set<std::string> paths;
     tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(path, ":", "", std::inserter(paths, paths.begin()));
     ExecutablesDisplayer ed(paths, displayer);
 
-    for (PackageIDSequence::ConstIterator t(entries->begin()), t_end(entries->end()) ; t != t_end ; ++t)
+    for (auto i(best ? entries->last() : entries->begin()), i_end(entries->end()) ;
+            i != i_end ; ++i)
     {
-        if ((*t)->contents_key())
+        if ((*i)->contents_key())
         {
-            std::shared_ptr<const Contents> contents((*t)->contents_key()->value());
+            std::shared_ptr<const Contents> contents((*i)->contents_key()->value());
             std::for_each(indirect_iterator(contents->begin()), indirect_iterator(contents->end()), accept_visitor(ed));
         }
     }
