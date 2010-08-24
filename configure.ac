@@ -92,6 +92,7 @@ need_pcrecpp_check=
 need_libarchive_check=
 need_resolver=
 need_sqlite3_check=
+need_jansson_check=
 
 dnl {{{ we can use abi::__cxa_demangle
 AC_MSG_CHECKING([for abi::__cxa_demangle])
@@ -1318,7 +1319,7 @@ AC_SUBST([VIM_INSTALL_DIR])
 dnl }}}
 
 dnl {{{ repositories
-m4_define(ALL_REPOSITORIES_m4, [accounts,cran,e,fake,repository,unavailable,unpackaged,unwritten,virtuals])
+m4_define(ALL_REPOSITORIES_m4, [accounts,cran,e,fake,gemcutter,repository,unavailable,unpackaged,unwritten,virtuals])
 ALL_REPOSITORIES=`echo ALL_REPOSITORIES_m4 | tr , ' '`
 DEFAULT_REPOSITORIES="e fake repository unavailable unpackaged unwritten virtuals"
 AC_MSG_CHECKING([which repositories to build...])
@@ -1332,6 +1333,7 @@ AC_ARG_WITH([repositories],
 			  cran            The Comprehensive R Archive Network (unusable)
 			  e               Ebuild, Ebin, Exheres, VDB etc
 			  fake            A fake repository for test cases and adjutrix
+			  gemcutter       Gemcutter for Ruby
 			  repository      Automatic repository config generation (via 'unavailable')
 			  unavailable     Unavailable
 			  unpackaged      Unpackaged (for importare)
@@ -1379,6 +1381,9 @@ AC_DEFINE_UNQUOTED(REPOSITORY_GROUPS_DECLS,
 dnl make sure the code works even if everything's enabled
 REPOSITORY_GROUP_IF(dummy)
 
+if echo $repositories | tr ' ' '\n' | grep '^gemcutter$' >/dev/null ; then
+	need_jansson_check=yes
+fi
 dnl }}}
 
 dnl {{{ environments
@@ -1574,6 +1579,17 @@ AC_SUBST([NEED_SQLITE3])
 AM_CONDITIONAL([NEED_SQLITE3], test "x$NEED_SQLITE3" = "xyes")
 dnl }}}
 
+dnl {{{ jansson check
+NEED_JANSSON=$need_jansson_check
+if test "x$need_jansson_check" = "xyes" ; then
+	PKG_CHECK_MODULES(JANSSONDEPS, [jansson], [],
+		[AC_MSG_ERROR([jansson is required if --with-repositories=gemcutter])])
+	AC_SUBST(JANSSON_CFLAGS)
+	AC_SUBST(JANSSON_LIBS)
+fi
+AC_SUBST([NEED_JANSSON])
+AM_CONDITIONAL([NEED_JANSSON], test "x$NEED_JANSSON" = "xyes")
+dnl }}}
 
 dnl {{{ eselect or eclectic
 AC_MSG_CHECKING([for config framework])
@@ -1700,6 +1716,7 @@ AC_OUTPUT(
 	paludis/repositories/e/ebuild/utils/4/Makefile
 	paludis/repositories/e/ebuild/utils/exheres-0/Makefile
 	paludis/repositories/fake/Makefile
+	paludis/repositories/gemcutter/Makefile
 	paludis/repositories/repository/Makefile
 	paludis/repositories/unavailable/Makefile
 	paludis/repositories/unpackaged/Makefile
