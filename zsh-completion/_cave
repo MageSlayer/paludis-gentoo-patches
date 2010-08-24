@@ -12,10 +12,15 @@ _cave()
 
   _cave_arguments=(
     '(-E --environment)'{-E,--environment}'[Environment specification]:environment specification: '
-    '--log-level[Specify the log level]:log level:((debug\:"Show debug output (noisy)"
-                                                    qa\:"Show QA messages and warnings only (default)"
-                                                    warning\:"Show warnings only"
-                                                    silent\:"Suppress all log messages (UNSAFE)"))'
+    '(--log-level -L)'{--log-level,-L}'[Specify the log level]:log level:((debug\:"Show debug output (noisy)"
+                                                                               d\:"Show debug output (noisy)"
+                                                                              qa\:"Show QA messages and warnings only (default)"
+                                                                               q\:"Show QA messages and warnings only (default)"
+                                                                         warning\:"Show warnings only"
+                                                                               w\:"Show warnings only"
+                                                                          silent\:"Suppress all log messages (UNSAFE)"
+                                                                               s\:"Suppress all log messages (UNSAFE)"))'
+    '(--colour -c)'{--colour,-c}'[Specify whether to use colour]:When:((auto a yes y no n))'
     '(--help -h)'{--help,-h}'[Display help messsage]'
     '(-v --version)'{-v,--version}'[Display version information]'
   )
@@ -23,6 +28,7 @@ _cave()
   _cave_commands=(
     'config:Perform post-install configuration on a package'
     'contents:Display the contents of a package ID'
+    'dump-cave-formats-conf:Output a ~/.cave/formats.conf'
     "display-resolution:Displays a dependency resolution created using \'cave resolve\'"
     'executables:Display executables belonging to an ID'
     "execute-resolution:Executes a dependency resolution created using \'cave resolve\'"
@@ -121,6 +127,13 @@ _cave_cmd_display-resolution()
     '--unpackaged-repository-params[Specifies the parameters used to construct an unpackaged repository]'
 }
 
+(( ${+functions[_cave_cmd_dump-cave-formats-conf]} )) ||
+_cave_cmd_dump-cave-formats-conf()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]'
+}
+
 (( ${+functions[_cave_cmd_executables]} )) ||
 _cave_cmd_executables()
 {
@@ -137,6 +150,7 @@ _cave_cmd_execute-resolution()
     '--pretend[Only carry out the pretend action]' \
     '--set[Our target is a set rather than package specs]' \
     '--world-specs[Use the specified spec or set name for updating world]' \
+    '--removed-if-dependent-names[If nothing is left with the specified name, also remove it from world]' \
     '(--preserve-world -1 --no-preserve-world)'{--preserve-world,-1,--no-preserve-world}'[Do not modify the world set]' \
     '(--continue-on-failure -C)'{--continue-on-failure,-C}'[Whether to continue after an error occurs]:When:((never n if-satisfied s if-independent i always a))' \
     '--resume-file[Write resume information to the specified file]' \
@@ -394,7 +408,7 @@ _cave_cmd_print-id-environment-variable()
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
     '(--all -a --no-all)'{--all,-a,--no-all}'[If the spec matches multiple IDs, display all matches]' \
-    '(--best --no-best)'{--best,--no-best}'[If the spec matches multiple IDs, select the best ID rather than giving an error]' \
+    '(--best -b --no-best)'{--best,-b,--no-best}'[If the spec matches multiple IDs, select the best ID rather than giving an error]' \
     '*--variable-name[Show this environment variable]:environment variable: ' \
     '--format[Select the output format]:format: ' \
     '*:package depspec:_cave_packages' && return 0
@@ -405,6 +419,8 @@ _cave_cmd_print-id-executables()
 {
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '(--all -a --no-all)'{--all,-a,--no-all}'[If the spec matches multiple IDs, display all matches]' \
+    '(--best -b --no-best)'{--best,-b,--no-best}'[If the spec matches multiple IDs, select the best ID rather than giving an error]' \
     '*:package depspec:_cave_packages' && return 0
 }
 
@@ -414,7 +430,7 @@ _cave_cmd_print-id-masks()
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
     '(--all -a --no-all)'{--all,-a,--no-all}'[If the spec matches multiple IDs, display all matches]' \
-    '(--best --no-best)'{--best,--no-best}'[If the spec matches multiple IDs, select the best ID rather than giving an error]' \
+    '(--best -b --no-best)'{--best,-b,--no-best}'[If the spec matches multiple IDs, select the best ID rather than giving an error]' \
     '(--overridden --no-overridden)'{--overridden,--no-overridden}'[Show overridden masks]' \
     '(--no-active --no-no-active)'{--no-active,--no-no-active}'[No not show active (non-overridden) masks]' \
     '--format[Select the output format]:format: ' \
@@ -427,7 +443,7 @@ _cave_cmd_print-id-metadata()
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
     '(--all -a --no-all)'{--all,-a,--no-all}'[If the spec matches multiple IDs, display all matches]' \
-    '(--best --no-best)'{--best,--no-best}'[If the spec matches multiple IDs, select the best ID rather than giving an error]' \
+    '(--best -b --no-best)'{--best,-b,--no-best}'[If the spec matches multiple IDs, select the best ID rather than giving an error]' \
     '*--raw-name[Show only keys with this raw name]:raw name: ' \
     '*--human-name[Show only keys with this human name]:human name: ' \
     '--format[Select the output format]:output format: ' \
@@ -681,6 +697,7 @@ _cave_cmd_update-world()
     '(--help -h)'{--help,-h}'[Display help messsage]' \
     '(--verbose --no-verbose)'{--verbose,--no-verbose}'[Produce verbose output]' \
     '(--remove --no-remove -r)'{--remove,--no-remove,-r}'[Remove the specified items]' \
+    '(--if-nothing-left -l)'{--if-nothing-left,-l}'[Skip any removes where versions remain]' \
     '(--set --no-set -s)'{--set,--no-set,-s}'[Parameters are set names, not package names]' \
     '*:package depspec:_cave_packages' && return 0
 }
