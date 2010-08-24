@@ -184,7 +184,7 @@ namespace
                 const std::shared_ptr<const PackageIDSequence> installed_ids(
                         (*env)[selection::SomeArbitraryVersion(
                             generator::Matches(*dep.spec().if_package(), { }) |
-                            filter::InstalledAtRoot(FSEntry("/")))]);
+                            filter::InstalledAtSlash())]);
                 if (installed_ids->empty())
                     return false;
             }
@@ -293,7 +293,7 @@ InterestInSpecHelper::operator() (
             const std::shared_ptr<const PackageIDSequence> installed_ids(
                     (*_imp->env)[selection::SomeArbitraryVersion(
                         generator::Matches(*dep.spec().if_package(), { }) |
-                        filter::InstalledAtRoot(FSEntry("/")))]);
+                        filter::InstalledAtSlash())]);
             if (! installed_ids->empty())
                 return si_take;
         }

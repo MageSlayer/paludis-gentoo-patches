@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -18,7 +18,7 @@
  */
 
 #include <paludis/util/safe_ifstream.hh>
-#include <paludis/util/fs_entry.hh>
+#include <paludis/util/fs_path.hh>
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
 #include <unistd.h>
@@ -35,7 +35,7 @@ namespace test_cases
 
         void run()
         {
-            SafeIFStream s(FSEntry::cwd() / "safe_ifstream_TEST_dir" / "existing");
+            SafeIFStream s(FSPath::cwd() / "safe_ifstream_TEST_dir" / "existing");
             TEST_CHECK(s);
             std::string t;
             s >> t;
@@ -62,7 +62,7 @@ namespace test_cases
 
         void run()
         {
-            SafeIFStream s(FSEntry::cwd() / "safe_ifstream_TEST_dir" / "existing");
+            SafeIFStream s(FSPath::cwd() / "safe_ifstream_TEST_dir" / "existing");
             TEST_CHECK(s);
             std::string t;
             s >> t;
@@ -79,7 +79,7 @@ namespace test_cases
 
         void run()
         {
-            TEST_CHECK_THROWS(SafeIFStream(FSEntry::cwd() / "safe_ifstream_TEST_dir" / "existing_dir"), SafeIFStreamError);
+            TEST_CHECK_THROWS(SafeIFStream(FSPath::cwd() / "safe_ifstream_TEST_dir" / "existing_dir"), SafeIFStreamError);
         }
     } test_existing_dir;
 
@@ -94,7 +94,7 @@ namespace test_cases
 
         void run()
         {
-            TEST_CHECK_THROWS(SafeIFStream(FSEntry::cwd() / "safe_ifstream_TEST_dir" / "existing_perm"), SafeIFStreamError);
+            TEST_CHECK_THROWS(SafeIFStream(FSPath::cwd() / "safe_ifstream_TEST_dir" / "existing_perm"), SafeIFStreamError);
         }
     } test_existing_perm;
 
@@ -104,7 +104,7 @@ namespace test_cases
 
         void run()
         {
-            TEST_CHECK_THROWS(SafeIFStream(FSEntry::cwd() / "safe_ofstream_TEST_dir" / "noent"), SafeIFStreamError);
+            TEST_CHECK_THROWS(SafeIFStream(FSPath::cwd() / "safe_ofstream_TEST_dir" / "noent"), SafeIFStreamError);
         }
     } test_existing_noent;
 }

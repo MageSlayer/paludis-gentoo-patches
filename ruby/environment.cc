@@ -331,7 +331,7 @@ namespace
         try
         {
             std::string write_cache, master_repository_name;
-            std::shared_ptr<FSEntrySequence> extra_repository_dirs(std::make_shared<FSEntrySequence>());
+            std::shared_ptr<FSPathSequence> extra_repository_dirs(std::make_shared<FSPathSequence>());
             if (1 == argc)
             {
                 write_cache = "/var/empty/";
@@ -356,7 +356,7 @@ namespace
                 for (int i(0) ; i < RARRAY_LEN(argv[3]) ; ++i)
                 {
                     VALUE entry(rb_ary_entry(argv[3], i));
-                    extra_repository_dirs->push_back(stringify(StringValuePtr(entry)));
+                    extra_repository_dirs->push_back(FSPath(stringify(StringValuePtr(entry))));
                 }
             }
             else
@@ -380,7 +380,7 @@ namespace
                             n::extra_repository_dirs() = extra_repository_dirs,
                             n::master_repository_name() = master_repository_name,
                             n::profiles_if_not_auto() = "",
-                            n::repository_dir() = FSEntry(path),
+                            n::repository_dir() = FSPath(path),
                             n::repository_type() = no_config_environment::ncer_auto,
                             n::write_cache() = write_cache
                             )));
@@ -494,9 +494,9 @@ namespace
         rb_define_method(c_environment, "format_key",
                 RUBY_FUNC_CAST((&EnvironmentKey<MetadataValueKey<std::string> , &Environment::format_key>::fetch)), 0);
         rb_define_method(c_environment, "config_location_key",
-                RUBY_FUNC_CAST((&EnvironmentKey<MetadataValueKey<FSEntry>, &Environment::config_location_key>::fetch)), 0);
+                RUBY_FUNC_CAST((&EnvironmentKey<MetadataValueKey<FSPath>, &Environment::config_location_key>::fetch)), 0);
         rb_define_method(c_environment, "preferred_root_key",
-                RUBY_FUNC_CAST((&EnvironmentKey<MetadataValueKey<FSEntry>, &Environment::preferred_root_key>::fetch)), 0);
+                RUBY_FUNC_CAST((&EnvironmentKey<MetadataValueKey<FSPath>, &Environment::preferred_root_key>::fetch)), 0);
 
         /*
          * Document-class: Paludis::PaludisEnvironment

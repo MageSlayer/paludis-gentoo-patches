@@ -67,7 +67,7 @@ IF_PYTHON_SOURCES = \
 	filter.cc \
 	filtered_generator.cc \
 	formatter.cc \
-	fs_entry.cc \
+	fs_path.cc \
 	generator.cc \
 	mask.cc \
 	match_package.cc \

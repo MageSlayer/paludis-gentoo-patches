@@ -25,7 +25,7 @@
 #include <paludis/output_manager_factory.hh>
 #include <paludis/util/set-fwd.hh>
 #include <paludis/util/pimp.hh>
-#include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/util/fs_path-fwd.hh>
 #include <memory>
 #include <functional>
 
@@ -36,7 +36,8 @@ namespace paludis
         public OutputManager
     {
         public:
-            FileOutputManager(const FSEntry &,
+            FileOutputManager(
+                    const FSPath &,
                     const bool keep_on_success,
                     const bool keep_on_empty,
                     const std::shared_ptr<OutputManager> & summary_output_manager,

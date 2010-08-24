@@ -31,11 +31,12 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/cookie.hh>
 #include <paludis/util/set.hh>
-#include <paludis/util/dir_iterator.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/fs_stat.hh>
+#include <paludis/util/fs_iterator.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/distribution.hh>
 #include <paludis/environment.hh>
@@ -67,10 +68,10 @@ namespace paludis
         ExndbamRepositoryParams params;
         mutable NDBAM ndbam;
 
-        std::shared_ptr<const MetadataValueKey<FSEntry> > location_key;
-        std::shared_ptr<const MetadataValueKey<FSEntry> > root_key;
+        std::shared_ptr<const MetadataValueKey<FSPath> > location_key;
+        std::shared_ptr<const MetadataValueKey<FSPath> > root_key;
         std::shared_ptr<const MetadataValueKey<std::string> > format_key;
-        std::shared_ptr<const MetadataValueKey<FSEntry> > builddir_key;
+        std::shared_ptr<const MetadataValueKey<FSPath> > builddir_key;
         std::shared_ptr<const MetadataValueKey<std::string> > eapi_when_unknown_key;
 
         Imp(const ExndbamRepositoryParams & p) :
@@ -78,13 +79,13 @@ namespace paludis
             ndbam(params.location(), &supported_exndbam, "exndbam-1",
                     EAPIData::get_instance()->eapi_from_string(
                         params.eapi_when_unknown())->supported()->version_spec_options()),
-            location_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("location", "location",
+            location_key(std::make_shared<LiteralMetadataValueKey<FSPath> >("location", "location",
                         mkt_significant, params.location())),
-            root_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("root", "root",
+            root_key(std::make_shared<LiteralMetadataValueKey<FSPath> >("root", "root",
                         mkt_normal, params.root())),
             format_key(std::make_shared<LiteralMetadataValueKey<std::string> >("format", "format",
                         mkt_significant, "vdb")),
-            builddir_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("builddir", "builddir",
+            builddir_key(std::make_shared<LiteralMetadataValueKey<FSPath> >("builddir", "builddir",
                         mkt_normal, params.builddir())),
             eapi_when_unknown_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
                         "eapi_when_unknown", "eapi_when_unknown", mkt_normal, params.eapi_when_unknown()))
@@ -272,13 +273,13 @@ ExndbamRepository::format_key() const
     return _imp->format_key;
 }
 
-const std::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSPath> >
 ExndbamRepository::location_key() const
 {
     return _imp->location_key;
 }
 
-const std::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSPath> >
 ExndbamRepository::installed_root_key() const
 {
     return _imp->root_key;
@@ -298,10 +299,11 @@ ExndbamRepository::need_keys_added() const
 namespace
 {
     std::pair<uid_t, gid_t>
-    get_new_ids_or_minus_one(const Environment * const env, const FSEntry & f)
+    get_new_ids_or_minus_one(const Environment * const env, const FSPath & f)
     {
-        uid_t uid = (f.owner() == env->reduced_uid()) ? 0 : -1;
-        gid_t gid = (f.group() == env->reduced_gid()) ? 0 : -1;
+        FSStat f_stat(f);
+        uid_t uid = (f_stat.owner() == env->reduced_uid()) ? 0 : -1;
+        gid_t gid = (f_stat.group() == env->reduced_gid()) ? 0 : -1;
 
         return std::make_pair(uid, gid);
     }
@@ -320,8 +322,8 @@ namespace
         return o;
     }
 
-    bool ignore_merged(const std::shared_ptr<const FSEntrySet> & s,
-            const FSEntry & f)
+    bool ignore_merged(const std::shared_ptr<const FSPathSet> & s,
+            const FSPath & f)
     {
         return s->end() != s->find(f);
     }
@@ -351,25 +353,25 @@ ExndbamRepository::merge(const MergeParams & m)
         }
     }
 
-    FSEntry uid_dir(_imp->params.location());
+    FSPath uid_dir(_imp->params.location());
     if (if_same_name_id)
         uid_dir = if_same_name_id->fs_location_key()->value().dirname();
     else
     {
         std::string uid(stringify(m.package_id()->name().category()) + "---" + stringify(m.package_id()->name().package()));
         uid_dir /= "data";
-        uid_dir.mkdir();
+        uid_dir.mkdir(0755, { fspmkdo_ok_if_exists });
         uid_dir /= uid;
-        uid_dir.mkdir();
+        uid_dir.mkdir(0755, { fspmkdo_ok_if_exists });
     }
 
-    FSEntry target_ver_dir(uid_dir);
+    FSPath target_ver_dir(uid_dir);
     target_ver_dir /= (stringify(m.package_id()->version()) + ":" + stringify(m.package_id()->slot_key()->value()) + ":" + cookie());
 
-    if (target_ver_dir.exists())
+    if (target_ver_dir.stat().exists())
         throw ActionFailedError("Temporary merge directory '" + stringify(target_ver_dir) + "' already exists, probably "
                 "due to a previous failed install. If it is safe to do so, please remove this directory and try again.");
-    target_ver_dir.mkdir();
+    target_ver_dir.mkdir(0755, { });
 
     WriteVDBEntryCommand write_vdb_entry_command(
             make_named_values<WriteVDBEntryParams>(
@@ -416,7 +418,7 @@ ExndbamRepository::merge(const MergeParams & m)
                 n::fix_mtimes_before() = fix_mtimes ?  m.build_start_time() : Timestamp(0, 0),
                 n::get_new_ids_or_minus_one() = std::bind(&get_new_ids_or_minus_one, _imp->params.environment(), std::placeholders::_1),
                 n::image() = m.image_dir(),
-                n::install_under() = FSEntry("/"),
+                n::install_under() = FSPath("/"),
                 n::merged_entries() = m.merged_entries(),
                 n::options() = m.options(),
                 n::output_manager() = m.output_manager(),
@@ -428,9 +430,8 @@ ExndbamRepository::merge(const MergeParams & m)
 
     if (! merger.check())
     {
-        for (DirIterator d(target_ver_dir, { dio_include_dotfiles }), d_end
-                ; d != d_end ; ++d)
-            FSEntry(*d).unlink();
+        for (FSIterator d(target_ver_dir, { fsio_inode_sort, fsio_include_dotfiles }), d_end ; d != d_end ; ++d)
+            d->unlink();
         target_ver_dir.rmdir();
         throw ActionFailedError("Not proceeding with install due to merge sanity check failing");
     }
@@ -489,16 +490,16 @@ ExndbamRepository::perform_uninstall(
 {
     Context context("When uninstalling '" + stringify(*id) + (a.options.is_overwrite() ? "' for an overwrite:" : "':"));
 
-    if (! _imp->params.root().is_directory())
+    if (! _imp->params.root().stat().is_directory())
         throw ActionFailedError("Couldn't uninstall '" + stringify(*id) +
                 "' because root ('" + stringify(_imp->params.root()) + "') is not a directory");
 
     std::shared_ptr<OutputManager> output_manager(a.options.make_output_manager()(a));
 
-    FSEntry ver_dir(id->fs_location_key()->value().realpath());
-    std::shared_ptr<FSEntry> load_env(std::make_shared<FSEntry>(ver_dir / "environment.bz2"));
+    FSPath ver_dir(id->fs_location_key()->value().realpath());
+    std::shared_ptr<FSPath> load_env(std::make_shared<FSPath>(ver_dir / "environment.bz2"));
 
-    std::shared_ptr<FSEntrySequence> eclassdirs(std::make_shared<FSEntrySequence>());
+    auto eclassdirs(std::make_shared<FSPathSequence>());
     eclassdirs->push_back(ver_dir);
 
     EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_uninstall());
@@ -563,7 +564,7 @@ ExndbamRepository::perform_uninstall(
         }
         else
         {
-            FSEntry package_builddir(_imp->params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-uninstall"));
+            FSPath package_builddir(_imp->params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-uninstall"));
             EbuildCommandParams params(
                     make_named_values<EbuildCommandParams>(
                         n::builddir() = _imp->params.builddir(),
@@ -574,7 +575,7 @@ ExndbamRepository::perform_uninstall(
                         n::ebuild_file() = ver_dir / (stringify(id->name().package()) + "-" + stringify(id->version()) + ".ebuild"),
                         n::eclassdirs() = eclassdirs,
                         n::environment() = _imp->params.environment(),
-                        n::exlibsdirs() = std::make_shared<FSEntrySequence>(),
+                        n::exlibsdirs() = std::make_shared<FSPathSequence>(),
                         n::files_dir() = ver_dir,
                         n::maybe_output_manager() = output_manager,
                         n::package_builddir() = package_builddir,
@@ -599,14 +600,14 @@ ExndbamRepository::perform_uninstall(
         }
     }
 
-    for (DirIterator d(ver_dir, { dio_include_dotfiles }), d_end ; d != d_end ; ++d)
-        FSEntry(*d).unlink();
+    for (FSIterator d(ver_dir, { fsio_inode_sort, fsio_include_dotfiles }), d_end ; d != d_end ; ++d)
+        d->unlink();
     ver_dir.rmdir();
 
     _imp->ndbam.remove_entry(id->name(), ver_dir);
 
-    FSEntry pkg_dir(ver_dir.dirname());
-    if (DirIterator() == DirIterator(pkg_dir, { dio_include_dotfiles, dio_inode_sort, dio_first_only }))
+    FSPath pkg_dir(ver_dir.dirname());
+    if (FSIterator() == FSIterator(pkg_dir, { fsio_include_dotfiles, fsio_inode_sort, fsio_first_only }))
     {
         pkg_dir.rmdir();
 

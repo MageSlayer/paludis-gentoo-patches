@@ -26,7 +26,6 @@
 #include <paludis/contents.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/sequence.hh>

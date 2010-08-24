@@ -21,7 +21,6 @@
 #include <paludis/repositories/unpackaged/unpackaged_key.hh>
 #include <paludis/repositories/unpackaged/unpackaged_stripper.hh>
 #include <paludis/util/pimp-impl.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/log.hh>
@@ -29,6 +28,7 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/return_literal_function.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/fs_stat.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
@@ -58,7 +58,7 @@ namespace paludis
         std::shared_ptr<DependenciesLabelSequence> run_dependencies_labels;
 
         const std::shared_ptr<LiteralMetadataValueKey<SlotName> > slot_key;
-        const std::shared_ptr<LiteralMetadataValueKey<FSEntry> > fs_location_key;
+        const std::shared_ptr<LiteralMetadataValueKey<FSPath> > fs_location_key;
         const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_key;
         const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies_key;
         const std::shared_ptr<const MetadataValueKey<std::string> > description_key;
@@ -71,7 +71,7 @@ namespace paludis
                 const VersionSpec & v,
                 const SlotName & s,
                 const RepositoryName & n,
-                const FSEntry & l,
+                const FSPath & l,
                 const std::string & b,
                 const std::string & r,
                 const std::string & d,
@@ -85,7 +85,7 @@ namespace paludis
             build_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
             run_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
             slot_key(std::make_shared<LiteralMetadataValueKey<SlotName> >("slot", "Slot", mkt_internal, s)),
-            fs_location_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("location", "Location", mkt_normal, l)),
+            fs_location_key(std::make_shared<LiteralMetadataValueKey<FSPath> >("location", "Location", mkt_normal, l)),
             build_dependencies_key(std::make_shared<UnpackagedDependencyKey>(env, "build_dependencies", "Build dependencies", mkt_dependencies,
                         build_dependencies_labels, b)),
             run_dependencies_key(std::make_shared<UnpackagedDependencyKey>(env, "run_dependencies", "Run dependencies", mkt_dependencies,
@@ -106,7 +106,7 @@ namespace paludis
 }
 
 UnpackagedID::UnpackagedID(const Environment * const e, const QualifiedPackageName & q,
-        const VersionSpec & v, const SlotName & s, const RepositoryName & n, const FSEntry & l,
+        const VersionSpec & v, const SlotName & s, const RepositoryName & n, const FSPath & l,
         const std::string & b, const std::string & r, const std::string & d, const Tribool ds, const Tribool dw) :
     Pimp<UnpackagedID>(e, q, v, s, n, l, b, r, d, ds, dw, this),
     _imp(Pimp<UnpackagedID>::_imp)
@@ -292,7 +292,7 @@ UnpackagedID::from_repositories_key() const
     return std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >();
 }
 
-const std::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSPath> >
 UnpackagedID::fs_location_key() const
 {
     return _imp->fs_location_key;
@@ -349,11 +349,11 @@ namespace
         return o;
     }
 
-    void installed_this(const FSEntry &)
+    void installed_this(const FSPath &)
     {
     }
 
-    bool ignore_nothing(const FSEntry &)
+    bool ignore_nothing(const FSPath &)
     {
         return false;
     }
@@ -376,9 +376,9 @@ UnpackagedID::perform_action(Action & action) const
     std::shared_ptr<OutputManager> output_manager(install_action->options.make_output_manager()(*install_action));
 
     std::string libdir("lib");
-    FSEntry root(install_action->options.destination()->installed_root_key() ?
+    FSPath root(install_action->options.destination()->installed_root_key() ?
             stringify(install_action->options.destination()->installed_root_key()->value()) : "/");
-    if ((root / "usr" / "lib").is_symbolic_link())
+    if ((root / "usr" / "lib").stat().is_symlink())
     {
         libdir = (root / "usr" / "lib").readlink();
         if (std::string::npos != libdir.find_first_of("./"))
@@ -433,9 +433,9 @@ UnpackagedID::perform_action(Action & action) const
                 (*install_action->options.destination()).destination_interface()->merge(
                         make_named_values<MergeParams>(
                             n::build_start_time() = build_start_time,
-                            n::environment_file() = FSEntry("/dev/null"),
+                            n::environment_file() = FSPath("/dev/null"),
                             n::image_dir() = fs_location_key()->value(),
-                            n::merged_entries() = std::make_shared<FSEntrySet>(),
+                            n::merged_entries() = std::make_shared<FSPathSet>(),
                             n::options() = (MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs)
                                 | extra_merger_options,
                             n::output_manager() = output_manager,

@@ -38,6 +38,7 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/process.hh>
+#include <paludis/util/fs_stat.hh>
 #include <paludis/action.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
@@ -190,18 +191,18 @@ EInstalledRepository::get_environment_variable(
     Context context("When fetching environment variable '" + var + "' for '" +
             stringify(*id) + "':");
 
-    FSEntry ver_dir(id->fs_location_key()->value());
+    FSPath ver_dir(id->fs_location_key()->value());
 
-    if (! ver_dir.is_directory_or_symlink_to_directory())
+    if (! ver_dir.stat().is_directory_or_symlink_to_directory())
         throw ActionFailedError("Could not find Exndbam entry for '" + stringify(*id) + "'");
 
-    if ((ver_dir / var).is_regular_file_or_symlink_to_regular_file())
+    if ((ver_dir / var).stat().is_regular_file_or_symlink_to_regular_file())
     {
         SafeIFStream f(ver_dir / var);
         return strip_trailing_string(
                 std::string((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>()), "\n");
     }
-    else if ((ver_dir / "environment.bz2").is_regular_file_or_symlink_to_regular_file())
+    else if ((ver_dir / "environment.bz2").stat().is_regular_file_or_symlink_to_regular_file())
     {
         std::stringstream p;
         Process env_process(ProcessCommand({"bash", "-c", "'( bunzip2 < " + stringify(ver_dir / "environment.bz2" ) +
@@ -226,18 +227,18 @@ EInstalledRepository::perform_config(
 {
     Context context("When configuring '" + stringify(*id) + "':");
 
-    if (! _imp->params.root().is_directory())
+    if (! _imp->params.root().stat().is_directory())
         throw ActionFailedError("Couldn't configure '" + stringify(*id) +
                 "' because root ('" + stringify(_imp->params.root()) + "') is not a directory");
 
     std::shared_ptr<OutputManager> output_manager(a.options.make_output_manager()(a));
 
-    FSEntry ver_dir(id->fs_location_key()->value());
+    FSPath ver_dir(id->fs_location_key()->value());
 
-    std::shared_ptr<FSEntrySequence> eclassdirs(std::make_shared<FSEntrySequence>());
+    std::shared_ptr<FSPathSequence> eclassdirs(std::make_shared<FSPathSequence>());
     eclassdirs->push_back(ver_dir);
 
-    std::shared_ptr<FSEntry> load_env(std::make_shared<FSEntry>(ver_dir / "environment.bz2"));
+    FSPath load_env(ver_dir / "environment.bz2");
     EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_config());
 
     for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
@@ -252,7 +253,7 @@ EInstalledRepository::perform_config(
                     n::ebuild_file() = ver_dir / (stringify(id->name().package()) + "-" + stringify(id->version()) + ".ebuild"),
                     n::eclassdirs() = eclassdirs,
                     n::environment() = _imp->params.environment(),
-                    n::exlibsdirs() = std::make_shared<FSEntrySequence>(),
+                    n::exlibsdirs() = std::make_shared<FSPathSequence>(),
                     n::files_dir() = ver_dir,
                     n::maybe_output_manager() = output_manager,
                     n::package_builddir() = _imp->params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-config"),
@@ -265,7 +266,7 @@ EInstalledRepository::perform_config(
                 ),
 
                 make_named_values<EbuildConfigCommandParams>(
-                    n::load_environment() = load_env.get()
+                    n::load_environment() = &load_env
                 ));
 
         config_cmd();
@@ -281,18 +282,18 @@ EInstalledRepository::perform_info(
 {
     Context context("When infoing '" + stringify(*id) + "':");
 
-    if (! _imp->params.root().is_directory())
+    if (! _imp->params.root().stat().is_directory())
         throw ActionFailedError("Couldn't info '" + stringify(*id) +
                 "' because root ('" + stringify(_imp->params.root()) + "') is not a directory");
 
     std::shared_ptr<OutputManager> output_manager(a.options.make_output_manager()(a));
 
-    FSEntry ver_dir(id->fs_location_key()->value());
+    FSPath ver_dir(id->fs_location_key()->value());
 
-    std::shared_ptr<FSEntrySequence> eclassdirs(std::make_shared<FSEntrySequence>());
+    auto eclassdirs(std::make_shared<FSPathSequence>());
     eclassdirs->push_back(ver_dir);
 
-    std::shared_ptr<FSEntry> load_env(std::make_shared<FSEntry>(ver_dir / "environment.bz2"));
+    FSPath load_env(ver_dir / "environment.bz2");
 
     EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_info());
 
@@ -361,7 +362,7 @@ EInstalledRepository::perform_info(
                     n::ebuild_file() = ver_dir / (stringify(id->name().package()) + "-" + stringify(id->version()) + ".ebuild"),
                     n::eclassdirs() = eclassdirs,
                     n::environment() = _imp->params.environment(),
-                    n::exlibsdirs() = std::make_shared<FSEntrySequence>(),
+                    n::exlibsdirs() = std::make_shared<FSPathSequence>(),
                     n::files_dir() = ver_dir,
                     n::maybe_output_manager() = output_manager,
                     n::package_builddir() = _imp->params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-info"),
@@ -376,9 +377,9 @@ EInstalledRepository::perform_info(
                 make_named_values<EbuildInfoCommandParams>(
                     n::expand_vars() = std::make_shared<Map<std::string, std::string> >(),
                     n::info_vars() = i ? i : std::make_shared<const Set<std::string> >(),
-                    n::load_environment() = load_env.get(),
-                    n::profiles() = std::make_shared<FSEntrySequence>(),
-                    n::profiles_with_parents() = std::make_shared<FSEntrySequence>(),
+                    n::load_environment() = &load_env,
+                    n::profiles() = std::make_shared<FSPathSequence>(),
+                    n::profiles_with_parents() = std::make_shared<FSPathSequence>(),
                     n::use() = "",
                     n::use_ebuild_file() = false,
                     n::use_expand() = "",

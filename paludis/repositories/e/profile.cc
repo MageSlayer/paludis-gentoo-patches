@@ -41,7 +41,7 @@ namespace
         const Environment * const env,
         const ERepository * const repo,
         const RepositoryName & name,
-        const FSEntrySequence & locations,
+        const FSPathSequence & locations,
         const std::string & a,
         const bool x)
     {
@@ -59,7 +59,7 @@ ProfileFactory::create(
         const Environment * const env,
         const ERepository * const repo,
         const RepositoryName & name,
-        const FSEntrySequence & locations,
+        const FSPathSequence & locations,
         const std::string & a,
         const bool x) const
 {

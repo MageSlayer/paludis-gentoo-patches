@@ -30,7 +30,9 @@
 #include <paludis/package_id.hh>
 #include <paludis/selection.hh>
 #include <paludis/user_dep_spec.hh>
-#include <paludis/util/fs_entry.hh>
+#include <paludis/util/fs_path.hh>
+#include <paludis/util/fs_error.hh>
+#include <paludis/util/fs_stat.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/tokeniser.hh>
@@ -50,19 +52,18 @@ namespace
     {
         private:
             const std::set<std::string> & _paths;
-            const std::function<void (const FSEntry &)> _displayer;
+            const std::function<void (const FSPath &)> _displayer;
 
-            bool is_executable_in_path(const FSEntry & file)
+            bool is_executable_in_path(const FSPath & file)
             {
                 try
                 {
-                    return file.exists() &&
-                        (file.has_permission(fs_ug_owner, fs_perm_execute) ||
-                        file.has_permission(fs_ug_group, fs_perm_execute) ||
-                        file.has_permission(fs_ug_others, fs_perm_execute)) &&
+                    FSStat file_stat(file);
+
+                    return file_stat.exists() && (0 != (file_stat.permissions() & (S_IXUSR | S_IXGRP | S_IXOTH))) &&
                         _paths.end() != _paths.find(stringify(file.dirname()));
                 }
-                catch (const paludis::FSError &)
+                catch (const FSError &)
                 {
                     return false;
                 }
@@ -71,7 +72,7 @@ namespace
         public:
             ExecutablesDisplayer(
                     const std::set<std::string> & p,
-                    const std::function<void (const FSEntry &)> & d) :
+                    const std::function<void (const FSPath &)> & d) :
                 _paths(p),
                 _displayer(d)
             {
@@ -85,8 +86,8 @@ namespace
 
             void visit(const ContentsSymEntry & e)
             {
-                FSEntry symlink(e.location_key()->value());
-                FSEntry real_file(symlink.realpath_if_exists());
+                FSPath symlink(e.location_key()->value());
+                FSPath real_file(symlink.realpath_if_exists());
 
                 if (symlink != real_file && is_executable_in_path(symlink))
                     _displayer(e.location_key()->value());
@@ -106,7 +107,7 @@ int
 paludis::cave::executables_common(
         const std::shared_ptr<Environment> & env,
         const std::string & param,
-        const std::function<void (const FSEntry &)> & displayer,
+        const std::function<void (const FSPath &)> & displayer,
         const bool all,
         const bool best)
 {

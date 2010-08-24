@@ -27,7 +27,6 @@
 #include <paludis/environment.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/pimp-impl.hh>
-#include <paludis/util/dir_iterator.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/is_file_with_extension.hh>
@@ -38,6 +37,7 @@
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/fs_iterator.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/distribution.hh>
 #include <paludis/action.hh>
@@ -69,9 +69,9 @@ namespace paludis
         mutable bool has_category_names;
         mutable bool has_ids;
 
-        std::shared_ptr<const MetadataValueKey<FSEntry> > install_dir_key;
-        std::shared_ptr<const MetadataValueKey<FSEntry> > builddir_key;
-        std::shared_ptr<const MetadataValueKey<FSEntry> > root_key;
+        std::shared_ptr<const MetadataValueKey<FSPath> > install_dir_key;
+        std::shared_ptr<const MetadataValueKey<FSPath> > builddir_key;
+        std::shared_ptr<const MetadataValueKey<FSPath> > root_key;
         std::shared_ptr<const MetadataValueKey<std::string> > format_key;
 
         Imp(const gems::InstalledRepositoryParams p,
@@ -80,11 +80,11 @@ namespace paludis
             params(p),
             has_category_names(false),
             has_ids(false),
-            install_dir_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("install_dir", "install_dir",
+            install_dir_key(std::make_shared<LiteralMetadataValueKey<FSPath> >("install_dir", "install_dir",
                         mkt_normal, params.install_dir())),
-            builddir_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("builddir", "builddir",
+            builddir_key(std::make_shared<LiteralMetadataValueKey<FSPath> >("builddir", "builddir",
                         mkt_normal, params.builddir())),
-            root_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >(
+            root_key(std::make_shared<LiteralMetadataValueKey<FSPath> >(
                         "root", "root", mkt_normal, params.root())),
             format_key(std::make_shared<LiteralMetadataValueKey<std::string> >("format", "format",
                         mkt_significant, "gems"))
@@ -233,7 +233,7 @@ InstalledGemsRepository::need_ids() const
     std::shared_ptr<QualifiedPackageNameSet> pkgs(std::make_shared<QualifiedPackageNameSet>());
     _imp->package_names.insert(std::make_pair(gems, pkgs));
 
-    for (DirIterator d(_imp->params.install_dir() / "specifications"), d_end ; d != d_end ; ++d)
+    for (FSIterator d(_imp->params.install_dir() / "specifications", { }), d_end ; d != d_end ; ++d)
     {
         if (! is_file_with_extension(*d, ".gemspec", { }))
             continue;
@@ -371,13 +371,13 @@ InstalledGemsRepository::format_key() const
     return _imp->format_key;
 }
 
-const std::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSPath> >
 InstalledGemsRepository::location_key() const
 {
     return _imp->install_dir_key;
 }
 
-const std::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSPath> >
 InstalledGemsRepository::installed_root_key() const
 {
     return _imp->root_key;

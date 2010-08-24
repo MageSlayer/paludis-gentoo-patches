@@ -169,8 +169,8 @@ class TestCase_01_PackageID(unittest.TestCase):
         self.assertEquals(iter(self.ipid.from_repositories_key().value()).next(), "origin_test")
 
     def test_30_fs_location_key(self):
-        self.assert_(isinstance(self.ipid.fs_location_key(), MetadataFSEntryKey))
-        self.assert_(isinstance(self.ipid.fs_location_key(), MetadataFSEntryKey))
+        self.assert_(isinstance(self.ipid.fs_location_key(), MetadataFSPathKey))
+        self.assert_(isinstance(self.ipid.fs_location_key(), MetadataFSPathKey))
 
     def test_31_choices_key(self):
         self.assert_(isinstance(self.pid.choices_key().value(), Choices))

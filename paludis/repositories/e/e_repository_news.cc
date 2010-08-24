@@ -23,9 +23,6 @@
 #include <paludis/repositories/e/extra_distribution_data.hh>
 
 #include <paludis/util/config_file.hh>
-#include <paludis/environment.hh>
-#include <paludis/util/dir_iterator.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/pimp-impl.hh>
@@ -33,6 +30,11 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/safe_ofstream.hh>
+#include <paludis/util/fs_path.hh>
+#include <paludis/util/fs_stat.hh>
+#include <paludis/util/fs_iterator.hh>
+
+#include <paludis/environment.hh>
 #include <paludis/distribution.hh>
 #include <paludis/elike_package_dep_spec.hh>
 #include <paludis/selection.hh>
@@ -67,9 +69,9 @@ namespace paludis
         const ERepository * const e_repository;
         const erepository::ERepositoryParams params;
 
-        const FSEntry news_directory;
-        const FSEntry skip_file;
-        const FSEntry unread_file;
+        const FSPath news_directory;
+        const FSPath skip_file;
+        const FSPath unread_file;
 
         Imp(const Environment * const e, const ERepository * const p,
                 const erepository::ERepositoryParams & k) :
@@ -123,12 +125,12 @@ ERepositoryNews::update_news() const
             stringify(_imp->params.newsdir()) + "' for repository '" +
             stringify(_imp->e_repository->name()) + "':");
 
-    if (! _imp->params.newsdir().is_directory_or_symlink_to_directory())
+    if (! _imp->params.newsdir().stat().is_directory_or_symlink_to_directory())
         return;
 
     std::set<std::string> skip;
 
-    if (_imp->skip_file.is_regular_file_or_symlink_to_regular_file())
+    if (_imp->skip_file.stat().is_regular_file_or_symlink_to_regular_file())
     {
         Context local_context("When handling news skip file '" + stringify(
                 _imp->skip_file) + "':");
@@ -136,7 +138,7 @@ ERepositoryNews::update_news() const
         std::copy(s.begin(), s.end(), std::inserter(skip, skip.end()));
     }
 
-    for (DirIterator d(_imp->params.newsdir()), d_end ; d != d_end ; ++d)
+    for (FSIterator d(_imp->params.newsdir(), { }), d_end ; d != d_end ; ++d)
     {
         Context local_context("When handling news entry '" + stringify(*d) + "':");
 
@@ -148,9 +150,9 @@ ERepositoryNews::update_news() const
             return;
         }
 
-        if (! d->is_directory_or_symlink_to_directory())
+        if (! d->stat().is_directory_or_symlink_to_directory())
             continue;
-        if (! (*d / (d->basename() + ".en.txt")).is_regular_file_or_symlink_to_regular_file())
+        if (! (*d / (d->basename() + ".en.txt")).stat().is_regular_file_or_symlink_to_regular_file())
             continue;
 
         if (skip.end() != skip.find(d->basename()))
@@ -198,8 +200,8 @@ ERepositoryNews::update_news() const
                 Context header_context("When checking Display-If-Profile headers:");
 
                 bool local_show(false);
-                std::shared_ptr<const FSEntrySequence> c(_imp->params.profiles());
-                for (FSEntrySequence::ConstIterator p(c->begin()), p_end(c->end()) ; p != p_end ; ++p)
+                std::shared_ptr<const FSPathSequence> c(_imp->params.profiles());
+                for (FSPathSequence::ConstIterator p(c->begin()), p_end(c->end()) ; p != p_end ; ++p)
                 {
                     std::string profile(strip_leading_string(strip_trailing_string(
                                 strip_leading_string(stringify(p->realpath()),
@@ -267,7 +269,7 @@ namespace paludis
     };
 }
 
-NewsFile::NewsFile(const FSEntry & our_filename) :
+NewsFile::NewsFile(const FSPath & our_filename) :
     Pimp<NewsFile>()
 {
     Context context("When parsing GLEP 42 news file '" + stringify(our_filename) + "':");
@@ -389,7 +391,7 @@ NewsFile::end_display_if_profile() const
     return DisplayIfProfileConstIterator(_imp->display_if_profile.end());
 }
 
-NewsError::NewsError(const FSEntry & f, const std::string & m) throw () :
+NewsError::NewsError(const FSPath & f, const std::string & m) throw () :
     Exception("Error in news file '" + stringify(f) + "': " + m)
 {
 }

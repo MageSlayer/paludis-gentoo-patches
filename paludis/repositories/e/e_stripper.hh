@@ -22,7 +22,6 @@
 
 #include <paludis/stripper.hh>
 #include <paludis/package_id-fwd.hh>
-#include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/output_manager-fwd.hh>
 #include <memory>
 
@@ -42,8 +41,8 @@ namespace paludis
     {
         struct EStripperOptions
         {
-            NamedValue<n::debug_dir, FSEntry> debug_dir;
-            NamedValue<n::image_dir, FSEntry> image_dir;
+            NamedValue<n::debug_dir, FSPath> debug_dir;
+            NamedValue<n::image_dir, FSPath> image_dir;
             NamedValue<n::output_manager, std::shared_ptr<OutputManager> > output_manager;
             NamedValue<n::package_id, std::shared_ptr<const PackageID> > package_id;
             NamedValue<n::split, bool> split;
@@ -58,11 +57,11 @@ namespace paludis
                 Pimp<EStripper>::ImpPtr & _imp;
 
             protected:
-                virtual void on_strip(const FSEntry &);
-                virtual void on_split(const FSEntry &, const FSEntry &);
-                virtual void on_enter_dir(const FSEntry &);
-                virtual void on_leave_dir(const FSEntry &);
-                virtual void on_unknown(const FSEntry &);
+                virtual void on_strip(const FSPath &);
+                virtual void on_split(const FSPath &, const FSPath &);
+                virtual void on_enter_dir(const FSPath &);
+                virtual void on_leave_dir(const FSPath &);
+                virtual void on_unknown(const FSPath &);
 
             public:
                 EStripper(const EStripperOptions &);

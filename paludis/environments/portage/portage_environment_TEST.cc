@@ -81,7 +81,7 @@ namespace test_cases
 
         void run()
         {
-            PortageEnvironment env(stringify(FSEntry("portage_environment_TEST_dir/query_use").realpath()));
+            PortageEnvironment env(stringify(FSPath("portage_environment_TEST_dir/query_use").realpath()));
 
             const std::shared_ptr<const PackageID> idx(*env[selection::RequireExactlyOne(
                         generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-x-1",
@@ -116,7 +116,7 @@ namespace test_cases
 
         void run()
         {
-            PortageEnvironment env(stringify(FSEntry("portage_environment_TEST_dir/known_use_expand_names").realpath()));
+            PortageEnvironment env(stringify(FSPath("portage_environment_TEST_dir/known_use_expand_names").realpath()));
 
             const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
@@ -195,7 +195,7 @@ namespace test_cases
         void run()
         {
             TestPortageEnvironment env("portage_environment_TEST_dir/world");
-            FSEntry w(FSEntry::cwd() / "portage_environment_TEST_dir" / "world" / "var" / "lib" / "portage" / "world");
+            FSPath w(FSPath::cwd() / "portage_environment_TEST_dir" / "world" / "var" / "lib" / "portage" / "world");
 
             env.update_config_files_for_package_move(make_package_dep_spec({ })
                     .package(QualifiedPackageName("cat/before")),

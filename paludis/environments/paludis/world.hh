@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_ENVIRONMENTS_PALUDIS_WORLD_HH 1
 
 #include <paludis/util/pimp.hh>
-#include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/util/fs_path-fwd.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/spec_tree.hh>
 #include <paludis/environment-fwd.hh>
@@ -40,7 +40,7 @@ namespace paludis
                 bool _remove_string_from_world(const std::string &) const;
 
             public:
-                World(const Environment * const, const std::shared_ptr<const FSEntry> &);
+                World(const Environment * const, const std::shared_ptr<const FSPath> &);
                 ~World();
 
                 const std::shared_ptr<const SetSpecTree> world_set() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -51,7 +51,7 @@ namespace paludis
                 bool remove_from_world(const SetName &) const;
                 bool remove_from_world(const QualifiedPackageName &) const;
 
-                std::shared_ptr<const FSEntry> location_if_set() const;
+                std::shared_ptr<const FSPath> location_if_set() const;
 
                 void update_config_files_for_package_move(
                         const PackageDepSpec &, const QualifiedPackageName &) const;

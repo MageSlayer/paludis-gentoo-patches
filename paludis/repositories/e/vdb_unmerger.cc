@@ -30,7 +30,6 @@ using namespace paludis;
 #include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
-#include <paludis/util/dir_iterator.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/log.hh>
@@ -42,6 +41,8 @@ using namespace paludis;
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/timestamp.hh>
+#include <paludis/util/fs_stat.hh>
+#include <paludis/util/fs_iterator.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/util/safe_ifstream.hh>
 
@@ -87,7 +88,7 @@ VDBUnmerger::~VDBUnmerger()
 Hook
 VDBUnmerger::extend_hook(const Hook & h) const
 {
-    std::shared_ptr<const FSEntrySequence> bashrc_files(_imp->options.environment()->bashrc_files());
+    std::shared_ptr<const FSPathSequence> bashrc_files(_imp->options.environment()->bashrc_files());
 
     Hook result(Unmerger::extend_hook(h)
         ("CONFIG_PROTECT", _imp->options.config_protect())
@@ -120,7 +121,7 @@ VDBUnmerger::extend_hook(const Hook & h) const
 }
 
 bool
-VDBUnmerger::config_protected(const FSEntry & f) const
+VDBUnmerger::config_protected(const FSPath & f) const
 {
     std::string tidy(make_tidy(f));
 
@@ -145,7 +146,7 @@ VDBUnmerger::config_protected(const FSEntry & f) const
 }
 
 std::string
-VDBUnmerger::make_tidy(const FSEntry & f) const
+VDBUnmerger::make_tidy(const FSPath & f) const
 {
     std::string root_str(stringify(_imp->options.root())), f_str(stringify(f));
     if (root_str == "/")
@@ -219,12 +220,14 @@ namespace
 bool
 VDBUnmerger::check_file(const std::shared_ptr<const ContentsEntry> & e) const
 {
-    const FSEntry f(e->location_key()->value());
-    if (! (_imp->options.root() / f).exists())
+    const FSPath f(e->location_key()->value());
+    const FSPath root_f(_imp->options.root() / f);
+    const FSStat root_f_stat(root_f);
+    if (! root_f_stat.exists())
         display("--- [gone ] " + stringify(f));
-    else if (! (_imp->options.root() / f).is_regular_file())
+    else if (! root_f_stat.is_regular_file())
         display("--- [!type] " + stringify(f));
-    else if ((_imp->options.root() / f).mtim().seconds() != require_key<MetadataTimeKey>(*e, "mtime").value().seconds())
+    else if (root_f_stat.mtim().seconds() != require_key<MetadataTimeKey>(*e, "mtime").value().seconds())
         display("--- [!time] " + stringify(f));
     else
     {
@@ -252,15 +255,17 @@ VDBUnmerger::check_file(const std::shared_ptr<const ContentsEntry> & e) const
 bool
 VDBUnmerger::check_sym(const std::shared_ptr<const ContentsEntry> & e) const
 {
-    const FSEntry f(e->location_key()->value());
+    const FSPath f(e->location_key()->value());
+    const FSPath root_f(_imp->options.root() / f);
+    const FSStat root_f_stat(root_f);
 
-    if (! (_imp->options.root() / f).exists())
+    if (! root_f_stat.exists())
         display("--- [gone ] " + stringify(f));
-    else if (! (_imp->options.root() / f).is_symbolic_link())
+    else if (! root_f_stat.is_symlink())
         display("--- [!type] " + stringify(f));
-    else if ((_imp->options.root() / f).mtim().seconds() != require_key<MetadataTimeKey>(*e, "mtime").value().seconds())
+    else if (root_f_stat.mtim().seconds() != require_key<MetadataTimeKey>(*e, "mtime").value().seconds())
         display("--- [!time] " + stringify(f));
-    else if ((_imp->options.root() / f).readlink() != require_key<MetadataValueKey<std::string> >(*e, "target").value())
+    else if (root_f.readlink() != require_key<MetadataValueKey<std::string> >(*e, "target").value())
         display("--- [!dest] " + stringify(f));
     else
         return true;
@@ -271,9 +276,11 @@ VDBUnmerger::check_sym(const std::shared_ptr<const ContentsEntry> & e) const
 bool
 VDBUnmerger::check_misc(const std::shared_ptr<const ContentsEntry> & e) const
 {
-    const FSEntry f(e->location_key()->value());
+    const FSPath f(e->location_key()->value());
+    const FSPath root_f(_imp->options.root() / f);
+    const FSStat root_f_stat(root_f);
 
-    if (! (_imp->options.root() / f).exists())
+    if (! root_f_stat.exists())
         display("--- [gone ] " + stringify(f));
     return false;
 }
@@ -281,13 +288,15 @@ VDBUnmerger::check_misc(const std::shared_ptr<const ContentsEntry> & e) const
 bool
 VDBUnmerger::check_dir(const std::shared_ptr<const ContentsEntry> & e) const
 {
-    const FSEntry f(e->location_key()->value());
+    const FSPath f(e->location_key()->value());
+    const FSPath root_f(_imp->options.root() / f);
+    const FSStat root_f_stat(root_f);
 
-    if (! (_imp->options.root() / f).exists())
+    if (! root_f_stat.exists())
         display("--- [gone ] " + stringify(f));
-    else if (! (_imp->options.root() / f).is_directory())
+    else if (! root_f_stat.is_directory())
         display("--- [!type] " + stringify(f));
-    else if (DirIterator(_imp->options.root() / f, { dio_include_dotfiles, dio_first_only }) != DirIterator())
+    else if (FSIterator(root_f, { fsio_include_dotfiles, fsio_first_only }) != FSIterator())
         display("--- [!empt] " + stringify(f));
     else
         return true;

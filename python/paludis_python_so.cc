@@ -34,7 +34,7 @@ BOOST_PYTHON_MODULE(paludis)
     expose_version_spec();
     expose_version_operator();
     expose_version_requirements();
-    expose_fs_entry();
+    expose_fs_path();
     expose_contents();
     expose_filter(); /* must be before dep_spec */
     expose_dep_spec();

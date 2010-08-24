@@ -19,7 +19,6 @@
 
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/util/pimp-impl.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/join.hh>
@@ -36,15 +35,15 @@ using namespace paludis;
 namespace paludis
 {
     template <>
-    struct Imp<LiteralMetadataFSEntrySequenceKey>
+    struct Imp<LiteralMetadataFSPathSequenceKey>
     {
         const std::string raw_name;
         const std::string human_name;
         const MetadataKeyType type;
-        const std::shared_ptr<const FSEntrySequence> value;
+        const std::shared_ptr<const FSPathSequence> value;
 
         Imp(const std::string & r, const std::string & h, const MetadataKeyType t,
-                const std::shared_ptr<const FSEntrySequence> & v) :
+                const std::shared_ptr<const FSPathSequence> & v) :
             raw_name(r),
             human_name(h),
             type(t),
@@ -107,52 +106,52 @@ namespace paludis
     };
 }
 
-LiteralMetadataFSEntrySequenceKey::LiteralMetadataFSEntrySequenceKey(const std::string & r, const std::string & h,
-        const MetadataKeyType t, const std::shared_ptr<const FSEntrySequence> & v) :
-    Pimp<LiteralMetadataFSEntrySequenceKey>(r, h, t, v),
-    _imp(Pimp<LiteralMetadataFSEntrySequenceKey>::_imp)
+LiteralMetadataFSPathSequenceKey::LiteralMetadataFSPathSequenceKey(const std::string & r, const std::string & h,
+        const MetadataKeyType t, const std::shared_ptr<const FSPathSequence> & v) :
+    Pimp<LiteralMetadataFSPathSequenceKey>(r, h, t, v),
+    _imp(Pimp<LiteralMetadataFSPathSequenceKey>::_imp)
 {
 }
 
-LiteralMetadataFSEntrySequenceKey::~LiteralMetadataFSEntrySequenceKey()
+LiteralMetadataFSPathSequenceKey::~LiteralMetadataFSPathSequenceKey()
 {
 }
 
-const std::shared_ptr<const FSEntrySequence>
-LiteralMetadataFSEntrySequenceKey::value() const
+const std::shared_ptr<const FSPathSequence>
+LiteralMetadataFSPathSequenceKey::value() const
 {
     return _imp->value;
 }
 
 namespace
 {
-    std::string format_fsentry(const FSEntry & i, const Formatter<FSEntry> & f)
+    std::string format_fsentry(const FSPath & i, const Formatter<FSPath> & f)
     {
         return f.format(i, format::Plain());
     }
 }
 
 std::string
-LiteralMetadataFSEntrySequenceKey::pretty_print_flat(const Formatter<FSEntry> & f) const
+LiteralMetadataFSPathSequenceKey::pretty_print_flat(const Formatter<FSPath> & f) const
 {
     using namespace std::placeholders;
     return join(value()->begin(), value()->end(), " ", std::bind(&format_fsentry, _1, f));
 }
 
 const std::string
-LiteralMetadataFSEntrySequenceKey::human_name() const
+LiteralMetadataFSPathSequenceKey::human_name() const
 {
     return _imp->human_name;
 }
 
 const std::string
-LiteralMetadataFSEntrySequenceKey::raw_name() const
+LiteralMetadataFSPathSequenceKey::raw_name() const
 {
     return _imp->raw_name;
 }
 
 MetadataKeyType
-LiteralMetadataFSEntrySequenceKey::type() const
+LiteralMetadataFSPathSequenceKey::type() const
 {
     return _imp->type;
 }
@@ -395,7 +394,7 @@ LiteralMetadataTimeKey::value() const
     return _imp->value;
 }
 
-template class LiteralMetadataValueKey<FSEntry>;
+template class LiteralMetadataValueKey<FSPath>;
 template class LiteralMetadataValueKey<std::string>;
 template class LiteralMetadataValueKey<SlotName>;
 template class LiteralMetadataValueKey<bool>;

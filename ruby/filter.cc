@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -83,7 +83,7 @@ namespace
         Filter * ptr(0);
         try
         {
-            FSEntry root(StringValuePtr(root_v));
+            FSPath root(StringValuePtr(root_v));
             ptr = new filter::InstalledAtRoot(root);
             VALUE data(Data_Wrap_Struct(self, 0, &Common<Filter>::free, ptr));
             rb_obj_call_init(data, 1, &root_v);

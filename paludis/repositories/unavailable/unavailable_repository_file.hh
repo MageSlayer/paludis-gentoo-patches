@@ -23,7 +23,7 @@
 #include <paludis/repositories/unavailable/unavailable_repository_file-fwd.hh>
 #include <paludis/util/pimp.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
-#include <paludis/util/fs_entry.hh>
+#include <paludis/util/fs_path-fwd.hh>
 
 namespace paludis
 {
@@ -33,10 +33,10 @@ namespace paludis
             private Pimp<UnavailableRepositoryFile>
         {
             private:
-                void _load(const FSEntry &);
+                void _load(const FSPath &);
 
             public:
-                UnavailableRepositoryFile(const FSEntry &);
+                UnavailableRepositoryFile(const FSPath &);
                 ~UnavailableRepositoryFile();
 
                 struct ConstIteratorTag;

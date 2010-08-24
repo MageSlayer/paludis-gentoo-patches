@@ -26,7 +26,6 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/make_named_values.hh>
@@ -89,7 +88,7 @@ main(int argc, char *argv[])
             CommandLine::get_instance()->a_write_cache_dir.set_argument("/var/empty");
 
         if (! CommandLine::get_instance()->a_repository_directory.specified())
-            CommandLine::get_instance()->a_repository_directory.set_argument(stringify(FSEntry::cwd()));
+            CommandLine::get_instance()->a_repository_directory.set_argument(stringify(FSPath::cwd()));
 
         if (CommandLine::get_instance()->a_version.specified())
         {
@@ -106,11 +105,11 @@ main(int argc, char *argv[])
         }
         else
         {
-            std::shared_ptr<FSEntrySequence> extra_repository_dirs(std::make_shared<FSEntrySequence>());
+            std::shared_ptr<FSPathSequence> extra_repository_dirs(std::make_shared<FSPathSequence>());
             for (args::StringSequenceArg::ConstIterator d(CommandLine::get_instance()->a_extra_repository_dir.begin_args()),
                     d_end(CommandLine::get_instance()->a_extra_repository_dir.end_args()) ;
                     d != d_end ; ++d)
-                extra_repository_dirs->push_back(*d);
+                extra_repository_dirs->push_back(FSPath(*d));
 
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("distdir", CommandLine::get_instance()->a_download_directory.argument());
@@ -210,7 +209,7 @@ main(int argc, char *argv[])
 
             std::shared_ptr<SafeOFStream> outf;
             if (CommandLine::get_instance()->a_report_file.specified())
-                outf = std::make_shared<SafeOFStream>(FSEntry(CommandLine::get_instance()->a_report_file.argument()));
+                outf = std::make_shared<SafeOFStream>(FSPath(CommandLine::get_instance()->a_report_file.argument()));
 
             std::ostream & out(outf ? *outf : cout);
 

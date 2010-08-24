@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -18,7 +18,7 @@
  */
 
 #include <paludis/util/safe_ofstream.hh>
-#include <paludis/util/fs_entry.hh>
+#include <paludis/util/fs_path.hh>
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
 #include <unistd.h>
@@ -35,7 +35,7 @@ namespace test_cases
 
         void run()
         {
-            SafeOFStream s(FSEntry::cwd() / "safe_ofstream_TEST_dir" / "new");
+            SafeOFStream s(FSPath::cwd() / "safe_ofstream_TEST_dir" / "new");
             TEST_CHECK(s);
             s << "foo";
             TEST_CHECK(s);
@@ -53,7 +53,7 @@ namespace test_cases
 
         void run()
         {
-            SafeOFStream s(FSEntry::cwd() / "safe_ofstream_TEST_dir" / "existing");
+            SafeOFStream s(FSPath::cwd() / "safe_ofstream_TEST_dir" / "existing");
             TEST_CHECK(s);
             s << "foo";
             TEST_CHECK(s);
@@ -71,7 +71,7 @@ namespace test_cases
 
         void run()
         {
-            SafeOFStream s(FSEntry::cwd() / "safe_ofstream_TEST_dir" / "existing_sym");
+            SafeOFStream s(FSPath::cwd() / "safe_ofstream_TEST_dir" / "existing_sym");
             TEST_CHECK(s);
             s << "foo";
             TEST_CHECK(s);
@@ -89,7 +89,7 @@ namespace test_cases
 
         void run()
         {
-            TEST_CHECK_THROWS(SafeOFStream(FSEntry::cwd() / "safe_ofstream_TEST_dir" / "existing_dir"), SafeOFStreamError);
+            TEST_CHECK_THROWS(SafeOFStream(FSPath::cwd() / "safe_ofstream_TEST_dir" / "existing_dir"), SafeOFStreamError);
         }
 
         bool repeatable() const
@@ -104,7 +104,7 @@ namespace test_cases
 
         void run()
         {
-            TEST_CHECK_THROWS(SafeOFStream(FSEntry::cwd() / "safe_ofstream_TEST_dir" / "existing_perm"), SafeOFStreamError);
+            TEST_CHECK_THROWS(SafeOFStream(FSPath::cwd() / "safe_ofstream_TEST_dir" / "existing_perm"), SafeOFStreamError);
         }
 
         bool skip() const
@@ -127,7 +127,7 @@ namespace test_cases
             bool threw(false);
             try
             {
-                SafeOFStream s(FSEntry("/dev/full"));
+                SafeOFStream s(FSPath("/dev/full"));
                 TEST_CHECK(s);
                 s << "foo";
                 TEST_CHECK(! s);

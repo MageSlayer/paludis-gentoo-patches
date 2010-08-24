@@ -108,15 +108,15 @@ namespace test_cases
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_symlink_rewriting_dir" / "repo"));
-            keys->insert("profiles", stringify(FSEntry::cwd() / "e_repository_TEST_symlink_rewriting_dir" / "repo/profiles/profile"));
+            keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_symlink_rewriting_dir" / "repo"));
+            keys->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_symlink_rewriting_dir" / "repo/profiles/profile"));
             keys->insert("layout", "traditional");
             keys->insert("eapi_when_unknown", "0");
             keys->insert("eapi_when_unspecified", "0");
             keys->insert("profile_eapi", "0");
-            keys->insert("distdir", stringify(FSEntry::cwd() / "e_repository_TEST_symlink_rewriting_dir" / "distdir"));
-            keys->insert("builddir", stringify(FSEntry::cwd() / "e_repository_TEST_symlink_rewriting_dir" / "symlinked_build"));
-            keys->insert("root", stringify(FSEntry(stringify(FSEntry::cwd() / "e_repository_TEST_symlink_rewriting_dir" / "root")).realpath()));
+            keys->insert("distdir", stringify(FSPath::cwd() / "e_repository_TEST_symlink_rewriting_dir" / "distdir"));
+            keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_symlink_rewriting_dir" / "symlinked_build"));
+            keys->insert("root", stringify(FSPath(stringify(FSPath::cwd() / "e_repository_TEST_symlink_rewriting_dir" / "root")).realpath()));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
@@ -125,9 +125,9 @@ namespace test_cases
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
             keys->insert("provides_cache", "/var/empty");
-            keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_symlink_rewriting_dir" / "vdb"));
-            keys->insert("builddir", stringify(FSEntry::cwd() / "e_repository_TEST_symlink_rewriting_dir" / "build"));
-            keys->insert("root", stringify(FSEntry(stringify(FSEntry::cwd() / "e_repository_TEST_symlink_rewriting_dir" / "root")).realpath()));
+            keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_symlink_rewriting_dir" / "vdb"));
+            keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_symlink_rewriting_dir" / "build"));
+            keys->insert("root", stringify(FSPath(stringify(FSPath::cwd() / "e_repository_TEST_symlink_rewriting_dir" / "root")).realpath()));
             std::shared_ptr<Repository> installed_repo(VDBRepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, installed_repo);
@@ -146,7 +146,7 @@ namespace test_cases
             TEST_CHECK(bool(id));
 
             id->perform_action(action);
-            TEST_CHECK_EQUAL(FSEntry(stringify(FSEntry::cwd() / "e_repository_TEST_symlink_rewriting_dir" / "root/bar")).readlink(), "/foo");
+            TEST_CHECK_EQUAL(FSPath(stringify(FSPath::cwd() / "e_repository_TEST_symlink_rewriting_dir" / "root/bar")).readlink(), "/foo");
         }
     } test_e_repository_symlink_rewriting;
 }

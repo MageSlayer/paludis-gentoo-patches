@@ -26,7 +26,7 @@
 #include <paludis/util/singleton.hh>
 #include <paludis/util/sequence-fwd.hh>
 #include <paludis/util/map-fwd.hh>
-#include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/util/fs_path-fwd.hh>
 #include <paludis/choice-fwd.hh>
 #include <memory>
 
@@ -61,7 +61,7 @@ namespace paludis
                 ~MetadataXMLPool();
 
             public:
-                const std::shared_ptr<const MetadataXML> metadata_if_exists(const FSEntry &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::shared_ptr<const MetadataXML> metadata_if_exists(const FSPath &) const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 

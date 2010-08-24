@@ -20,7 +20,6 @@
 #include <python/paludis_python.hh>
 #include <python/exception.hh>
 
-#include <paludis/util/fs_entry.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/filter.hh>
 #include <paludis/generator.hh>

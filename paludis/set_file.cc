@@ -18,7 +18,6 @@
  */
 
 #include <paludis/set_file.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/pimp-impl.hh>
@@ -45,7 +44,7 @@ using namespace paludis;
 
 #include <paludis/set_file-se.cc>
 
-SetFileError::SetFileError(const FSEntry & f, const std::string & m) throw () :
+SetFileError::SetFileError(const FSPath & f, const std::string & m) throw () :
     ConfigurationError("In set file '" + stringify(f) + "': " + m)
 {
 }

@@ -21,17 +21,17 @@
 #include <paludis/repositories/e/layout.hh>
 #include <paludis/repositories/e/traditional_layout.hh>
 #include <paludis/repositories/e/exheres_layout.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/util/map-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/fs_path.hh>
 
 using namespace paludis;
 using namespace paludis::erepository;
 
 template class Singleton<LayoutFactory>;
 
-Layout::Layout(const std::shared_ptr<const FSEntrySequence> & l) :
+Layout::Layout(const std::shared_ptr<const FSPathSequence> & l) :
     _master_repositories_locations(l)
 {
 }
@@ -40,24 +40,24 @@ Layout::~Layout()
 {
 }
 
-const std::shared_ptr<const FSEntrySequence>
+const std::shared_ptr<const FSPathSequence>
 Layout::master_repositories_locations() const
 {
     return _master_repositories_locations;
 }
 
-FSEntry
+FSPath
 Layout::sync_filter_file() const
 {
-    return FSEntry("/dev/null");
+    return FSPath("/dev/null");
 }
 
 namespace
 {
     template <typename T_>
     std::shared_ptr<Layout>
-    make_layout(const ERepository * const n, const FSEntry & b,
-            std::shared_ptr<const FSEntrySequence> f)
+    make_layout(const ERepository * const n, const FSPath & b,
+            std::shared_ptr<const FSPathSequence> f)
     {
         return std::make_shared<T_>(n, b, f);
     }
@@ -71,8 +71,8 @@ const std::shared_ptr<Layout>
 LayoutFactory::create(
         const std::string & s,
         const ERepository * const r,
-        const FSEntry & f,
-        const std::shared_ptr<const FSEntrySequence> & ff) const
+        const FSPath & f,
+        const std::shared_ptr<const FSPathSequence> & ff) const
 {
     if (s == "traditional")
         return make_layout<TraditionalLayout>(r, f, ff);
@@ -81,6 +81,6 @@ LayoutFactory::create(
     throw ConfigurationError("Unrecognised layout '" + s + "'");
 }
 
-template class Map<FSEntry, std::string>;
-template class WrappedForwardIterator<Map<FSEntry, std::string>::ConstIteratorTag, const std::pair<const FSEntry, std::string> >;
+template class Map<FSPath, std::string, FSPathComparator>;
+template class WrappedForwardIterator<Map<FSPath, std::string, FSPathComparator>::ConstIteratorTag, const std::pair<const FSPath, std::string> >;
 

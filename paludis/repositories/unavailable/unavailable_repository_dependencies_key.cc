@@ -19,7 +19,6 @@
 
 #include <paludis/repositories/unavailable/unavailable_repository_dependencies_key.hh>
 #include <paludis/util/pimp-impl.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/return_literal_function.hh>

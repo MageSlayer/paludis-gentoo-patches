@@ -39,9 +39,9 @@ namespace
 
         std::shared_ptr<Map<std::string, std::string> > extra_params(
                 std::make_shared<Map<std::string, std::string>>());
-        FSEntry repository_dir(FSEntry::cwd());
-        std::shared_ptr<FSEntrySequence> extra_repository_dirs(std::make_shared<FSEntrySequence>());
-        FSEntry write_cache("/var/empty");
+        FSPath repository_dir(FSPath::cwd());
+        std::shared_ptr<FSPathSequence> extra_repository_dirs(std::make_shared<FSPathSequence>());
+        FSPath write_cache("/var/empty");
         std::string profile;
         std::string master_repository_name;
         bool disable_metadata_cache(false);
@@ -56,24 +56,24 @@ namespace
         {
             std::string::size_type p(t->find('='));
             if (std::string::npos == p)
-                repository_dir = *t;
+                repository_dir = FSPath(*t);
             else
             {
                 std::string key(t->substr(0, p)), value(t->substr(p + 1));
 
                 if (key == "write-cache")
-                    write_cache = value;
+                    write_cache = FSPath(value);
                 else if (key == "master-repository-name")
                     master_repository_name = value;
                 else if (key == "master-repository-dir")
                     throw ConfigurationError("NoConfigEnvironment key master-repository-dir is no longer "
                             "supported, use master-repository-name and extra-repository-dir");
                 else if (key == "extra-repository-dir")
-                    extra_repository_dirs->push_back(value);
+                    extra_repository_dirs->push_back(FSPath(value));
                 else if (key == "profile")
                     profile = value;
                 else if (key == "repository-dir")
-                    repository_dir = value;
+                    repository_dir = FSPath(value);
                 else if (key == "disable-metadata-cache")
                     disable_metadata_cache = destringify<bool>(value);
                 else if (key == "accept-unstable")

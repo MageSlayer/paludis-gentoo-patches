@@ -18,7 +18,8 @@
  */
 
 #include <paludis/util/config_file.hh>
-#include <paludis/util/fs_entry.hh>
+#include <paludis/util/fs_path.hh>
+#include <paludis/util/fs_stat.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/map.hh>
@@ -138,21 +139,21 @@ namespace test_cases
 
         void run()
         {
-            FSEntry ff("config_file_TEST_dir/config_file");
-            TEST_CHECK(ff.is_regular_file());
+            FSPath ff("config_file_TEST_dir/config_file");
+            TEST_CHECK(ff.stat().is_regular_file());
             LineConfigFile f(ff, { });
             TEST_CHECK_EQUAL(std::distance(f.begin(), f.end()), 1);
             TEST_CHECK_EQUAL(*f.begin(), "I am a fish.");
 
-            FSEntry ff2("config_file_TEST_dir/not_a_config_file");
-            TEST_CHECK(! ff2.exists());
+            FSPath ff2("config_file_TEST_dir/not_a_config_file");
+            TEST_CHECK(! ff2.stat().exists());
             LineConfigFile * f2(0);
             TEST_CHECK_THROWS(f2 = new LineConfigFile(ff2, { }), ConfigFileError);
 
             if (0 != geteuid())
             {
-                FSEntry ff3("config_file_TEST_dir/unreadable_file");
-                TEST_CHECK(ff3.is_regular_file());
+                FSPath ff3("config_file_TEST_dir/unreadable_file");
+                TEST_CHECK(ff3.stat().is_regular_file());
                 LineConfigFile * f3(0);
                 TEST_CHECK_THROWS(f3 = new LineConfigFile(ff3, { }), ConfigFileError);
             }

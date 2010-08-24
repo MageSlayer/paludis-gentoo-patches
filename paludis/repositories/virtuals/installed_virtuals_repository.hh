@@ -51,7 +51,7 @@ namespace paludis
             //\{
 
             InstalledVirtualsRepository(const Environment * const env,
-                    const FSEntry & root);
+                    const FSPath & root);
 
             virtual ~InstalledVirtualsRepository();
 
@@ -115,8 +115,8 @@ namespace paludis
             /* Keys */
 
             virtual const std::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
-            virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > location_key() const;
-            virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<FSPath> > location_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<FSPath> > installed_root_key() const;
             virtual const std::shared_ptr<const MetadataValueKey<std::string> > accept_keywords_key() const;
             virtual const std::shared_ptr<const MetadataValueKey<std::string> > sync_host_key() const;
 

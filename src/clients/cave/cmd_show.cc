@@ -398,7 +398,7 @@ namespace
                     );
         }
 
-        void visit(const MetadataCollectionKey<FSEntrySequence> & k)
+        void visit(const MetadataCollectionKey<FSPathSequence> & k)
         {
             cout << fuc(
                     (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
@@ -576,7 +576,7 @@ namespace
                     );
         }
 
-        void visit(const MetadataValueKey<FSEntry> & k)
+        void visit(const MetadataValueKey<FSPath> & k)
         {
             cout << fuc(
                     (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),

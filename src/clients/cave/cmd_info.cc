@@ -179,7 +179,7 @@ namespace
             cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(k.pretty_print_flat(f)));
         }
 
-        void visit(const MetadataCollectionKey<FSEntrySequence> & k)
+        void visit(const MetadataCollectionKey<FSPathSequence> & k)
         {
             cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(
                         join(k.value()->begin(), k.value()->end(), "  ")));
@@ -245,7 +245,7 @@ namespace
             cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(stringify(k.value())));
         }
 
-        void visit(const MetadataValueKey<FSEntry> & k)
+        void visit(const MetadataValueKey<FSPath> & k)
         {
             ColourFormatter f(indent);
             cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(stringify(k.value())));

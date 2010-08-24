@@ -51,7 +51,7 @@ namespace test_cases
             std::shared_ptr<UnavailableRepository> repo(std::make_shared<UnavailableRepository>(
                         make_named_values<UnavailableRepositoryParams>(
                             n::environment() = &env,
-                            n::location() = FSEntry::cwd() / "unavailable_repository_TEST_dir" / "repo1",
+                            n::location() = FSPath::cwd() / "unavailable_repository_TEST_dir" / "repo1",
                             n::name() = RepositoryName("unavailable"),
                             n::sync() = "",
                             n::sync_options() = ""
@@ -71,7 +71,7 @@ namespace test_cases
             std::shared_ptr<UnavailableRepository> repo(std::make_shared<UnavailableRepository>(
                         make_named_values<UnavailableRepositoryParams>(
                             n::environment() = &env,
-                            n::location() = FSEntry::cwd() / "unavailable_repository_TEST_dir" / "repo2",
+                            n::location() = FSPath::cwd() / "unavailable_repository_TEST_dir" / "repo2",
                             n::name() = RepositoryName("unavailable"),
                             n::sync() = "",
                             n::sync_options() = ""

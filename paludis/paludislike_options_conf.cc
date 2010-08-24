@@ -132,7 +132,7 @@ namespace
 
     const std::shared_ptr<const SetSpecTree> make_set_value(
             const Environment * const env,
-            const FSEntry from,
+            const FSPath & from,
             const SetName name)
     {
         std::shared_ptr<const SetSpecTree> result(env->set(name));
@@ -175,7 +175,7 @@ PaludisLikeOptionsConf::~PaludisLikeOptionsConf()
 }
 
 void
-PaludisLikeOptionsConf::add_file(const FSEntry & f)
+PaludisLikeOptionsConf::add_file(const FSPath & f)
 {
     Context context("When adding '" + stringify(f) + "':");
 

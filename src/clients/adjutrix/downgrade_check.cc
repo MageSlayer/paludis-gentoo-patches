@@ -28,6 +28,7 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/safe_ofstream.hh>
 #include <paludis/util/safe_ifstream.hh>
+#include <paludis/util/fs_stat.hh>
 #include <paludis/package_id.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/generator.hh>
@@ -141,8 +142,8 @@ do_build_downgrade_check_list(NoConfigEnvironment & env)
 {
     int exit_status(0);
 
-    FSEntry output_dir(*CommandLine::get_instance()->begin_parameters());
-    if (! output_dir.mkdir())
+    FSPath output_dir(*CommandLine::get_instance()->begin_parameters());
+    if (! output_dir.mkdir(0755, { fspmkdo_ok_if_exists }))
         throw ConfigurationError("Output directory already exists");
 
     for (int i = 0 ; i < 2 ; ++i)
@@ -162,12 +163,12 @@ do_downgrade_check(NoConfigEnvironment & env)
 {
     int exit_status(0);
 
-    FSEntry before_dir(*CommandLine::get_instance()->begin_parameters());
-    if (! before_dir.is_directory())
+    FSPath before_dir(*CommandLine::get_instance()->begin_parameters());
+    if (! before_dir.stat().is_directory())
         throw ConfigurationError("First input directory is not a directory");
 
-    FSEntry after_dir(*next(CommandLine::get_instance()->begin_parameters()));
-    if (! after_dir.is_directory())
+    FSPath after_dir(*next(CommandLine::get_instance()->begin_parameters()));
+    if (! after_dir.stat().is_directory())
         throw ConfigurationError("Second input directory is not a directory");
 
     std::multimap<std::pair<QualifiedPackageName, std::string>, std::string> results;
@@ -179,7 +180,7 @@ do_downgrade_check(NoConfigEnvironment & env)
         std::string f(b ? "unstable" : "stable");
         f.append(".txt");
 
-        if ((before_dir / f).exists() && (after_dir / f).exists())
+        if ((before_dir / f).stat().exists() && (after_dir / f).stat().exists())
         {
             std::cerr << "Checking " << (b ? "unstable" : "stable") << "..." << std::endl;
 

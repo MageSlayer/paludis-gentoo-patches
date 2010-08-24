@@ -31,6 +31,7 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/fs_stat.hh>
 #include <paludis/standard_output_manager.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/package_id.hh>
@@ -110,19 +111,19 @@ namespace test_cases
         {
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
-            FSEntry root(FSEntry::cwd() / "e_repository_TEST_pbin_dir" / "root");
+            FSPath root(FSPath::cwd() / "e_repository_TEST_pbin_dir" / "root");
 
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_pbin_dir" / ("repo" + base_eapi)));
-            keys->insert("profiles", stringify(FSEntry::cwd() / "e_repository_TEST_pbin_dir" / ("repo" + base_eapi + "/profiles/profile")));
+            keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_pbin_dir" / ("repo" + base_eapi)));
+            keys->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_pbin_dir" / ("repo" + base_eapi + "/profiles/profile")));
             keys->insert("layout", "traditional");
             keys->insert("eapi_when_unknown", "0");
             keys->insert("eapi_when_unspecified", "0");
             keys->insert("profile_eapi", "0");
-            keys->insert("distdir", stringify(FSEntry::cwd() / "e_repository_TEST_pbin_dir" / "distdir"));
-            keys->insert("builddir", stringify(FSEntry::cwd() / "e_repository_TEST_pbin_dir" / "build"));
+            keys->insert("distdir", stringify(FSPath::cwd() / "e_repository_TEST_pbin_dir" / "distdir"));
+            keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_pbin_dir" / "build"));
             keys->insert("root", stringify(root));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
@@ -131,18 +132,18 @@ namespace test_cases
             std::shared_ptr<Map<std::string, std::string> > b_keys(std::make_shared<Map<std::string, std::string>>());
             b_keys->insert("format", "e");
             b_keys->insert("names_cache", "/var/empty");
-            b_keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_pbin_dir" / ("binrepo" + base_eapi)));
-            b_keys->insert("profiles", stringify(FSEntry::cwd() / "e_repository_TEST_pbin_dir" / ("binrepo" + base_eapi + "/profiles/profile")));
+            b_keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_pbin_dir" / ("binrepo" + base_eapi)));
+            b_keys->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_pbin_dir" / ("binrepo" + base_eapi + "/profiles/profile")));
             b_keys->insert("layout", "traditional");
             b_keys->insert("eapi_when_unknown", "0");
             b_keys->insert("eapi_when_unspecified", "0");
             b_keys->insert("profile_eapi", "0");
-            b_keys->insert("distdir", stringify(FSEntry::cwd() / "e_repository_TEST_pbin_dir" / "distdir"));
-            b_keys->insert("binary_distdir", stringify(FSEntry::cwd() / "e_repository_TEST_pbin_dir" / "distdir"));
+            b_keys->insert("distdir", stringify(FSPath::cwd() / "e_repository_TEST_pbin_dir" / "distdir"));
+            b_keys->insert("binary_distdir", stringify(FSPath::cwd() / "e_repository_TEST_pbin_dir" / "distdir"));
             b_keys->insert("binary_keywords_filter", "test");
             b_keys->insert("binary_destination", "true");
             b_keys->insert("master_repository", "repo" + base_eapi);
-            b_keys->insert("builddir", stringify(FSEntry::cwd() / "e_repository_TEST_pbin_dir" / "build"));
+            b_keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_pbin_dir" / "build"));
             b_keys->insert("root", stringify(root));
             std::shared_ptr<Repository> b_repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, b_keys, std::placeholders::_1)));
@@ -152,7 +153,7 @@ namespace test_cases
             v_keys->insert("format", "vdb");
             v_keys->insert("names_cache", "/var/empty");
             v_keys->insert("provides_cache", "/var/empty");
-            v_keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_pbin_dir" / "vdb"));
+            v_keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_pbin_dir" / "vdb"));
             v_keys->insert("root", stringify(root));
             std::shared_ptr<Repository> v_repo(VDBRepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
@@ -176,7 +177,7 @@ namespace test_cases
                 id->perform_action(bin_action);
             }
 
-            TEST_CHECK(! (root / ("installed-" + base_eapi)).exists());
+            TEST_CHECK(! (root / ("installed-" + base_eapi)).stat().exists());
             b_repo->invalidate();
 
             {
@@ -198,7 +199,7 @@ namespace test_cases
                 id->perform_action(install_action);
             }
 
-            TEST_CHECK((root / ("installed-" + base_eapi)).exists());
+            TEST_CHECK((root / ("installed-" + base_eapi)).stat().exists());
         }
     } test_e_repository_install_eapi_pbin_0("0"), test_e_repository_install_eapi_pbin_1("1"),
       test_e_repository_install_eapi_pbin_2("2"), test_e_repository_install_eapi_pbin_3("3"),

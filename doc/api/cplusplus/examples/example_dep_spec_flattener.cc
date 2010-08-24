@@ -44,7 +44,7 @@ int main(int argc, char * argv[])
         /* Fetch package IDs for all installed packages. */
         std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(
                     generator::All() |
-                    filter::InstalledAtRoot(FSEntry("/")))]);
+                    filter::InstalledAtSlash())]);
 
         /* For each ID: */
         for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;

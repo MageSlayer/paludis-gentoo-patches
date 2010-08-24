@@ -26,7 +26,6 @@
 #include <paludis/util/pimp.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/exception.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/singleton.hh>
 #include <paludis/environment.hh>
 #include <paludis/environments/no_config/no_config_environment.hh>

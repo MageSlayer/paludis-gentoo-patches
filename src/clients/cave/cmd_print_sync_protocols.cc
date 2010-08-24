@@ -24,8 +24,8 @@
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/repository.hh>
-#include <paludis/util/dir_iterator.hh>
-#include <paludis/util/fs_entry.hh>
+#include <paludis/util/fs_iterator.hh>
+#include <paludis/util/fs_stat.hh>
 
 #include <cstdlib>
 #include <iostream>
@@ -81,21 +81,21 @@ PrintSyncProtocolsCommand::run(
 
     std::set<std::string> syncers;
 
-    std::shared_ptr<const FSEntrySequence> fes(env->syncers_dirs());
+    std::shared_ptr<const FSPathSequence> fes(env->syncers_dirs());
 
-    for (FSEntrySequence::ConstIterator s(fes->begin()), s_end(fes->end());
+    for (FSPathSequence::ConstIterator s(fes->begin()), s_end(fes->end());
             s != s_end; ++s)
     {
-        FSEntry dir(*s);
+        FSPath dir(*s);
 
-        if (! dir.is_directory())
+        if (! dir.stat().is_directory())
             continue;
 
-        for (DirIterator f(dir), f_end; f != f_end; ++f)
+        for (FSIterator f(dir, { }), f_end; f != f_end; ++f)
         {
             std::string name(f->basename());
 
-            if (f->has_permission(fs_ug_owner, fs_perm_execute) && name.compare(0, 2, "do", 0, 2) == 0)
+            if ((0 != (f->stat().permissions() & S_IXUSR)) && name.compare(0, 2, "do", 0, 2) == 0)
             {
                 name.erase(0, 2);
 

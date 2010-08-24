@@ -20,7 +20,6 @@
 #include <paludis/repositories/accounts/passwd_accounts_handler.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/destringify.hh>

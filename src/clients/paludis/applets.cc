@@ -24,7 +24,6 @@
 #include <iostream>
 #include <paludis/paludis.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/dir_iterator.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/timestamp.hh>
@@ -72,7 +71,7 @@ namespace
             std::cout << k.value() << std::endl;
         }
 
-        void visit(const MetadataValueKey<FSEntry> & k)
+        void visit(const MetadataValueKey<FSPath> & k)
         {
             std::cout << k.value() << std::endl;
         }
@@ -137,7 +136,7 @@ namespace
             std::cout << k.pretty_print_flat(f) << std::endl;
         }
 
-        void visit(const MetadataCollectionKey<FSEntrySequence> & k)
+        void visit(const MetadataCollectionKey<FSPathSequence> & k)
         {
             StringifyFormatter f;
             std::cout << k.pretty_print_flat(f) << std::endl;
@@ -355,19 +354,19 @@ int do_list_sync_protocols(const std::shared_ptr<Environment> & env)
 {
     std::map<std::string, std::string> syncers;
 
-    std::shared_ptr<const FSEntrySequence> sd(env->syncers_dirs());
-    for (FSEntrySequence::ConstIterator d(sd->begin()),
+    std::shared_ptr<const FSPathSequence> sd(env->syncers_dirs());
+    for (FSPathSequence::ConstIterator d(sd->begin()),
             d_end(sd->end()) ; d != d_end ; ++d)
     {
-        FSEntry dir(*d);
-        if (! dir.is_directory())
+        FSPath dir(*d);
+        if (! dir.stat().is_directory())
             continue;
 
-        for (DirIterator f(dir), f_end; f != f_end; ++f)
+        for (FSIterator f(dir, { }), f_end; f != f_end; ++f)
         {
             std::string name(f->basename());
-            if (f->has_permission(fs_ug_owner, fs_perm_execute) &&
-                   0 == name.compare(0, 2, "do", 0, 2))
+            if ((0 != (f->stat().permissions() & S_IXUSR)) &&
+                    0 == name.compare(0, 2, "do", 0, 2))
             {
                 name.erase(0, 2);
                 if (syncers.find(name) == syncers.end())

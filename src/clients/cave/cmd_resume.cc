@@ -39,6 +39,7 @@
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/string_list_stream.hh>
 #include <paludis/util/process.hh>
+#include <paludis/util/fs_stat.hh>
 #include <paludis/resolver/job_lists.hh>
 #include <paludis/resolver/job.hh>
 #include <paludis/resolver/job_list.hh>
@@ -273,8 +274,8 @@ ResumeCommand::run(
 
     std::shared_ptr<ResumeData> data;
     {
-        FSEntry f(cmdline.execution_options.a_resume_file.argument());
-        if (! f.exists())
+        FSPath f(cmdline.execution_options.a_resume_file.argument());
+        if (! f.stat().exists())
             throw args::DoHelp("Resume file '" + stringify(f) + "' does not exist");
         SafeIFStream deser_stream(f);
         Deserialiser deserialiser(env.get(), deser_stream);

@@ -851,7 +851,7 @@ namespace
                 cout << fuc(fs_mask_by_repo_line(), fv<'i'>(indent), fv<'s'>(*l));
         }
 
-        void visit(const MetadataValueKey<FSEntry> & k)
+        void visit(const MetadataValueKey<FSPath> & k)
         {
             cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.value())));
         }
@@ -868,7 +868,7 @@ namespace
             cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.pretty_print_flat(formatter))));
         }
 
-        void visit(const MetadataCollectionKey<FSEntrySequence> & k)
+        void visit(const MetadataCollectionKey<FSPathSequence> & k)
         {
             ColourFormatter formatter(0);
             cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.pretty_print_flat(formatter))));
@@ -981,7 +981,7 @@ namespace
 
     struct Totals
     {
-        std::set<FSEntry> download_files;
+        std::set<FSPath, FSPathComparator> download_files;
         bool download_overflow;
         unsigned long download_size;
 
@@ -1012,7 +1012,7 @@ namespace
         {
         }
 
-        void will_fetch(const FSEntry & destination, const unsigned long size_in_bytes)
+        void will_fetch(const FSPath & destination, const unsigned long size_in_bytes)
         {
             if (totals->download_files.end() != totals->download_files.find(destination))
                 return;

@@ -23,7 +23,6 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/system.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/options.hh>
@@ -33,6 +32,7 @@
 #include <paludis/util/safe_ofstream.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/timestamp.hh>
+#include <paludis/util/fs_stat.hh>
 #include <paludis/hook.hh>
 #include <paludis/package_id.hh>
 #include <paludis/util/md5.hh>
@@ -51,7 +51,7 @@ namespace paludis
     struct Imp<NDBAMMerger>
     {
         NDBAMMergerParams params;
-        FSEntry realroot;
+        FSPath realroot;
         std::shared_ptr<SafeOFStream> contents_file;
 
         std::list<std::string> config_protect;
@@ -92,7 +92,7 @@ NDBAMMerger::~NDBAMMerger()
 Hook
 NDBAMMerger::extend_hook(const Hook & h)
 {
-    std::shared_ptr<const FSEntrySequence> bashrc_files(_imp->params.environment()->bashrc_files());
+    std::shared_ptr<const FSPathSequence> bashrc_files(_imp->params.environment()->bashrc_files());
 
     if (_imp->params.package_id())
     {
@@ -150,21 +150,25 @@ namespace
 }
 
 void
-NDBAMMerger::record_install_file(const FSEntry & src, const FSEntry & dst_dir, const std::string & dst_name, const FSMergerStatusFlags & flags)
+NDBAMMerger::record_install_file(const FSPath & src, const FSPath & dst_dir, const std::string & dst_name, const FSMergerStatusFlags & flags)
 {
     std::string tidy(stringify((dst_dir / dst_name).strip_leading(_imp->realroot))),
             tidy_real(stringify((dst_dir / src.basename()).strip_leading(_imp->realroot)));
-    time_t timestamp((dst_dir / dst_name).mtim().seconds());
 
-    SafeIFStream infile(FSEntry(dst_dir / dst_name));
+    FSPath dst_dir_name(dst_dir / dst_name);
+    FSStat dst_dir_name_stat(dst_dir_name);
+
+    time_t timestamp(dst_dir_name_stat.mtim().seconds());
+
+    SafeIFStream infile(dst_dir_name);
     if (! infile)
-        throw FSMergerError("Cannot read '" + stringify(FSEntry(dst_dir / dst_name)) + "'");
+        throw FSMergerError("Cannot read '" + stringify(dst_dir_name) + "'");
 
     MD5 md5(infile);
 
     std::string line(make_arrows(flags) + " [obj] " + tidy_real);
     if (tidy_real != tidy)
-        line.append(" (" + FSEntry(tidy).basename() + ")");
+        line.append(" (" + FSPath(tidy).basename() + ")");
     display_override(line);
 
     *_imp->contents_file << "type=file";
@@ -175,7 +179,7 @@ NDBAMMerger::record_install_file(const FSEntry & src, const FSEntry & dst_dir, c
 }
 
 void
-NDBAMMerger::record_install_dir(const FSEntry & src, const FSEntry & dst_dir, const FSMergerStatusFlags & flags)
+NDBAMMerger::record_install_dir(const FSPath & src, const FSPath & dst_dir, const FSMergerStatusFlags & flags)
 {
     std::string tidy(stringify((dst_dir / src.basename()).strip_leading(_imp->realroot)));
     display_override(make_arrows(flags) + " [dir] " + tidy);
@@ -184,7 +188,7 @@ NDBAMMerger::record_install_dir(const FSEntry & src, const FSEntry & dst_dir, co
 }
 
 void
-NDBAMMerger::record_install_under_dir(const FSEntry & dst, const FSMergerStatusFlags & flags)
+NDBAMMerger::record_install_under_dir(const FSPath & dst, const FSMergerStatusFlags & flags)
 {
     std::string tidy(stringify(dst.strip_leading(_imp->realroot)));
     display_override(make_arrows(flags) + " [dir] " + tidy);
@@ -193,11 +197,11 @@ NDBAMMerger::record_install_under_dir(const FSEntry & dst, const FSMergerStatusF
 }
 
 void
-NDBAMMerger::record_install_sym(const FSEntry & src, const FSEntry & dst_dir, const FSMergerStatusFlags & flags)
+NDBAMMerger::record_install_sym(const FSPath & src, const FSPath & dst_dir, const FSMergerStatusFlags & flags)
 {
     std::string tidy(stringify((dst_dir / src.basename()).strip_leading(_imp->realroot)));
     std::string target((dst_dir / src.basename()).readlink());
-    Timestamp timestamp((dst_dir / src.basename()).mtim());
+    Timestamp timestamp((dst_dir / src.basename()).stat().mtim());
 
     display_override(make_arrows(flags) + " [sym] " + tidy);
 
@@ -225,7 +229,7 @@ NDBAMMerger::on_warn(bool is_check, const std::string & s)
 }
 
 bool
-NDBAMMerger::config_protected(const FSEntry & src, const FSEntry & dst_dir)
+NDBAMMerger::config_protected(const FSPath & src, const FSPath & dst_dir)
 {
     std::string tidy(stringify((dst_dir / src.basename()).strip_leading(_imp->realroot)));
 
@@ -250,7 +254,7 @@ NDBAMMerger::config_protected(const FSEntry & src, const FSEntry & dst_dir)
 }
 
 std::string
-NDBAMMerger::make_config_protect_name(const FSEntry & src, const FSEntry & dst)
+NDBAMMerger::make_config_protect_name(const FSPath & src, const FSPath & dst)
 {
     std::string result_name(src.basename());
     int n(0);
@@ -262,10 +266,13 @@ NDBAMMerger::make_config_protect_name(const FSEntry & src, const FSEntry & dst)
 
     while (true)
     {
-        if (! (dst / result_name).exists())
+        FSPath dst_result_name(dst / result_name);
+        FSStat dst_result_name_stat(dst_result_name);
+
+        if (! dst_result_name_stat.exists())
             break;
 
-        if ((dst / result_name).is_regular_file_or_symlink_to_regular_file())
+        if (dst_result_name_stat.is_regular_file_or_symlink_to_regular_file())
         {
             SafeIFStream other_md5_file(dst / result_name);
             if (other_md5_file)
@@ -356,7 +363,7 @@ NDBAMMerger::check()
 }
 
 void
-NDBAMMerger::on_enter_dir(bool is_check, const FSEntry)
+NDBAMMerger::on_enter_dir(bool is_check, const FSPath)
 {
     if (! is_check)
         return;

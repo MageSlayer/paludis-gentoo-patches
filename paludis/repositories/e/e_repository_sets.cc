@@ -42,8 +42,6 @@
 #include <paludis/version_requirements.hh>
 
 #include <paludis/util/config_file.hh>
-#include <paludis/util/dir_iterator.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/make_named_values.hh>
@@ -54,6 +52,8 @@
 #include <paludis/util/strip.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/fs_stat.hh>
+#include <paludis/util/fs_iterator.hh>
 
 #include <functional>
 #include <algorithm>
@@ -114,11 +114,11 @@ ERepositorySets::package_set(const SetName & ss) const
 
     std::pair<SetName, SetFileSetOperatorMode> s(find_base_set_name_and_suffix_mode(ss));
 
-    if ((_imp->params.setsdir() / (stringify(s.first) + ".conf")).exists())
+    if ((_imp->params.setsdir() / (stringify(s.first) + ".conf")).stat().exists())
     {
         std::shared_ptr<GeneralSetDepTag> tag(std::make_shared<GeneralSetDepTag>(ss, stringify(_imp->e_repository->name())));
 
-        FSEntry ff(_imp->params.setsdir() / (stringify(s.first) + ".conf"));
+        FSPath ff(_imp->params.setsdir() / (stringify(s.first) + ".conf"));
         Context context("When loading package set '" + stringify(s.first) + "' from '" + stringify(ff) + "':");
 
         SetFile f(make_named_values<SetFileParams>(
@@ -146,21 +146,15 @@ ERepositorySets::sets_list() const
     result->insert(SetName("security"));
     result->insert(SetName("system"));
 
-    if (_imp->params.setsdir().exists())
+    if (_imp->params.setsdir().stat().exists())
     {
         using namespace std::placeholders;
 
-        std::list<FSEntry> repo_sets;
-        std::remove_copy_if(
-                DirIterator(_imp->params.setsdir()),
-                DirIterator(),
-                std::back_inserter(repo_sets),
-                std::bind(std::logical_not<bool>(), std::bind(is_file_with_extension, _1, ".conf", IsFileWithOptions())));
+        for (FSIterator f(_imp->params.setsdir(), { }), f_end ; f != f_end ; ++f)
+        {
+            if (! is_file_with_extension(*f, ".conf", { }))
+                continue;
 
-        std::list<FSEntry>::const_iterator f(repo_sets.begin()),
-            f_end(repo_sets.end());
-
-        for ( ; f != f_end ; ++f)
             try
             {
                 result->insert(SetName(strip_trailing_string(f->basename(), ".conf")));
@@ -170,6 +164,7 @@ ERepositorySets::sets_list() const
                 Log::get_instance()->message("e.sets.failure", ll_warning, lc_context) << "Skipping set '"
                     << *f << "' due to exception '" << e.message() << "' (" << e.what() << ")";
             }
+        }
     }
 
     return result;
@@ -260,20 +255,19 @@ ERepositorySets::security_set(bool insecurity) const
 
     std::shared_ptr<SetSpecTree> security_packages(std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>()));
 
-    if (!_imp->params.securitydir().is_directory_or_symlink_to_directory())
+    if (!_imp->params.securitydir().stat().is_directory_or_symlink_to_directory())
         return security_packages;
 
     std::map<std::string, std::shared_ptr<GLSADepTag> > glsa_tags;
 
-    for (DirIterator f(_imp->params.securitydir()), f_end ; f != f_end; ++f)
+    for (FSIterator f(_imp->params.securitydir(), { }), f_end ; f != f_end; ++f)
     {
         if (! is_file_with_prefix_extension(*f, "glsa-", ".xml", { }))
             continue;
 
         Context local_context("When parsing security advisory '" + stringify(*f) + "':");
 
-        const std::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(
-                    _imp->e_repository->eapi_for_file(*f)));
+        const std::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(_imp->e_repository->eapi_for_file(*f)));
         if (! eapi->supported())
             throw GLSAError("Can't use advisory '" + stringify(*f) +
                     "' because it uses an unsupported EAPI");

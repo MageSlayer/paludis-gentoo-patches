@@ -21,7 +21,6 @@
 #define PALUDIS_GUARD_PALUDIS_MANIFEST2_READER_HH 1
 
 #include <paludis/action.hh>
-#include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <string>
@@ -83,7 +82,7 @@ namespace paludis
             public:
                 ///\name Basic operations
 
-                Manifest2Reader(const FSEntry & f);
+                Manifest2Reader(const FSPath & f);
                 ~Manifest2Reader();
 
                 ///}

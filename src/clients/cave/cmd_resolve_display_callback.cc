@@ -21,6 +21,7 @@
 #include <paludis/notifier_callback.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/pimp-impl.hh>
+#include <paludis/util/fs_stat.hh>
 #include <iostream>
 #include <map>
 #include <unistd.h>
@@ -123,7 +124,7 @@ DisplayCallback::visit(const NotifierCallbackLinkageStepEvent & e) const
         return;
 
     Lock lock(_imp->mutex);
-    if (e.location().is_directory_or_symlink_to_directory())
+    if (e.location().stat().is_directory_or_symlink_to_directory())
         ++_imp->steps.insert(std::make_pair("directories", 0)).first->second;
     else
         ++_imp->steps.insert(std::make_pair("files", 0)).first->second;

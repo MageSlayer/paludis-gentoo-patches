@@ -65,7 +65,7 @@ MirrorsConf::~MirrorsConf()
 }
 
 void
-MirrorsConf::add(const FSEntry & filename)
+MirrorsConf::add(const FSPath & filename)
 {
     Context context("When adding source '" + stringify(filename) + "' as a mirrors file:");
 

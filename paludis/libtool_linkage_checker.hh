@@ -27,18 +27,18 @@ namespace paludis
 {
     class LibtoolLinkageChecker :
         public LinkageChecker,
-        private paludis::Pimp<LibtoolLinkageChecker>
+        private Pimp<LibtoolLinkageChecker>
     {
         public:
-            LibtoolLinkageChecker(const paludis::FSEntry &);
+            LibtoolLinkageChecker(const FSPath &);
             virtual ~LibtoolLinkageChecker();
 
-            virtual bool check_file(const paludis::FSEntry &) PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual void note_symlink(const paludis::FSEntry &, const paludis::FSEntry &);
+            virtual bool check_file(const FSPath &) PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual void note_symlink(const FSPath &, const FSPath &);
 
-            virtual void add_extra_lib_dir(const paludis::FSEntry &);
+            virtual void add_extra_lib_dir(const FSPath &);
             virtual void need_breakage_added(
-                const std::function<void (const paludis::FSEntry &, const std::string &)> &);
+                const std::function<void (const FSPath &, const std::string &)> &);
     };
 }
 

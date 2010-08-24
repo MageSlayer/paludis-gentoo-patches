@@ -27,6 +27,7 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/create_iterator-impl.hh>
 #include <paludis/broken_linkage_finder.hh>
 #include <paludis/package_id.hh>
 #include <paludis/name.hh>
@@ -196,7 +197,7 @@ FixLinkageCommand::run(
 
         cout << "* " << **pkg_it << endl;
 
-        std::set<FSEntry> broken_files;
+        std::set<FSPath, FSPathComparator> broken_files;
         for (BrokenLinkageFinder::BrokenFileConstIterator file_it(finder->begin_broken_files(*pkg_it)),
                  file_it_end(finder->end_broken_files(*pkg_it)); file_it_end != file_it; ++file_it)
         {
@@ -206,7 +207,7 @@ FixLinkageCommand::run(
                               finder->end_missing_requirements(*pkg_it, *file_it),
                               " ") << ")";
             std::copy(finder->begin_missing_requirements(*pkg_it, *file_it), finder->end_missing_requirements(*pkg_it, *file_it),
-                    std::inserter(broken_files, broken_files.end()));
+                    create_inserter<FSPath>(std::inserter(broken_files, broken_files.end())));
             cout << endl;
         }
 

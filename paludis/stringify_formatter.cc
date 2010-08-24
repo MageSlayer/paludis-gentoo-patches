@@ -42,7 +42,7 @@ StringifyFormatter::StringifyFormatter() :
             static_cast<const CanFormat<PlainTextDepSpec> *>(0),
             static_cast<const CanFormat<ConditionalDepSpec> *>(0),
             static_cast<const CanFormat<NamedSetDepSpec> *>(0),
-            static_cast<const CanFormat<FSEntry> *>(0),
+            static_cast<const CanFormat<FSPath> *>(0),
             static_cast<const CanFormat<PackageID> *>(0),
             static_cast<const CanFormat<PlainTextLabelDepSpec> *>(0),
             static_cast<const CanSpace *>(0)
@@ -327,10 +327,10 @@ StringifyFormatter::decorate(const ConditionalDepSpec & s, const std::string & t
 }
 
 std::string
-StringifyFormatter::format(const FSEntry & s, const format::Plain & k) const
+StringifyFormatter::format(const FSPath & s, const format::Plain & k) const
 {
-    if (_imp->f_fsentry)
-        return _imp->f_fsentry->format(s, k);
+    if (_imp->f_fspath)
+        return _imp->f_fspath->format(s, k);
     return stringify(s);
 }
 

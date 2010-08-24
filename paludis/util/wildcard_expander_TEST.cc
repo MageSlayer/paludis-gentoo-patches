@@ -18,7 +18,7 @@
  */
 
 #include <paludis/util/wildcard_expander.hh>
-#include <paludis/util/fs_entry.hh>
+#include <paludis/util/fs_path.hh>
 #include <paludis/util/join.hh>
 
 #include <test/test_runner.hh>
@@ -35,7 +35,7 @@ namespace test_cases
 
         std::string expand(const std::string & pattern)
         {
-            return join(WildcardExpander(pattern, FSEntry::cwd() / "wildcard_expander_TEST_dir"),
+            return join(WildcardExpander(pattern, FSPath::cwd() / "wildcard_expander_TEST_dir"),
                         WildcardExpander(), " ");
         }
 
@@ -57,7 +57,7 @@ namespace test_cases
 
         void run()
         {
-            WildcardExpander it("/foo*bar", FSEntry::cwd() / "wildcard_expander_TEST_dir");
+            WildcardExpander it("/foo*bar", FSPath::cwd() / "wildcard_expander_TEST_dir");
             TEST_CHECK(it == it);
             TEST_CHECK(! (it != it));
             TEST_CHECK(it != WildcardExpander());
@@ -92,7 +92,7 @@ namespace test_cases
             TEST_CHECK(++it3 != WildcardExpander());
             TEST_CHECK(++it3 == WildcardExpander());
 
-            TEST_CHECK_EQUAL(join(WildcardExpander("/foo*bar", FSEntry::cwd() / "wildcard_expander_TEST_dir"),
+            TEST_CHECK_EQUAL(join(WildcardExpander("/foo*bar", FSPath::cwd() / "wildcard_expander_TEST_dir"),
                                   WildcardExpander(), " "),
                              "/fooAbar /fooBbar /fooCbar /fooDbar /fooEbar");
         }

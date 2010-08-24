@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -102,7 +102,7 @@ template class MetadataCollectionKey<KeywordNameSet>;
 template class MetadataCollectionKey<Set<std::string> >;
 template class MetadataCollectionKey<Sequence<std::string> >;
 template class MetadataCollectionKey<PackageIDSequence>;
-template class MetadataCollectionKey<FSEntrySequence>;
+template class MetadataCollectionKey<FSPathSequence>;
 
 template class MetadataSpecTreeKey<LicenseSpecTree>;
 template class MetadataSpecTreeKey<ProvideSpecTree>;
@@ -116,7 +116,7 @@ template class MetadataSpecTreeKey<SimpleURISpecTree>;
 template class MetadataValueKey<std::string>;
 template class MetadataValueKey<long>;
 template class MetadataValueKey<bool>;
-template class MetadataValueKey<FSEntry>;
+template class MetadataValueKey<FSPath>;
 template class MetadataValueKey<SlotName>;
 template class MetadataValueKey<std::shared_ptr<const PackageID> >;
 template class MetadataValueKey<std::shared_ptr<const Contents> >;

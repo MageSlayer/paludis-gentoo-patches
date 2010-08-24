@@ -20,7 +20,6 @@
 #include <paludis/environments/no_config/no_config_environment.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/dir_iterator.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/map-impl.hh>
 #include <paludis/util/set.hh>
@@ -35,6 +34,9 @@
 #include <paludis/util/hashes.hh>
 #include <paludis/util/member_iterator-impl.hh>
 #include <paludis/util/sequence-impl.hh>
+#include <paludis/util/fs_path.hh>
+#include <paludis/util/fs_stat.hh>
+#include <paludis/util/fs_iterator.hh>
 #include <paludis/standard_output_manager.hh>
 #include <paludis/distribution.hh>
 #include <paludis/package_database.hh>
@@ -62,8 +64,8 @@ namespace paludis
     {
         const no_config_environment::Params params;
 
-        const FSEntry top_level_dir;
-        const FSEntry write_cache;
+        const FSPath top_level_dir;
+        const FSPath write_cache;
         bool accept_unstable;
         bool is_vdb;
 
@@ -76,8 +78,8 @@ namespace paludis
         std::shared_ptr<PackageDatabase> package_database;
 
         std::shared_ptr<LiteralMetadataValueKey<std::string> > format_key;
-        std::shared_ptr<LiteralMetadataValueKey<FSEntry> > repository_dir_key;
-        std::shared_ptr<LiteralMetadataValueKey<FSEntry> > preferred_root_key;
+        std::shared_ptr<LiteralMetadataValueKey<FSPath> > repository_dir_key;
+        std::shared_ptr<LiteralMetadataValueKey<FSPath> > preferred_root_key;
 
         Imp(NoConfigEnvironment * const env, const no_config_environment::Params & params);
         void initialise(NoConfigEnvironment * const env);
@@ -88,7 +90,7 @@ namespace paludis
 
 namespace
 {
-    bool is_vdb_repository(const FSEntry & location, no_config_environment::RepositoryType type)
+    bool is_vdb_repository(const FSPath & location, no_config_environment::RepositoryType type)
     {
         switch (type)
         {
@@ -103,10 +105,10 @@ namespace
 
         Context context("When determining repository type at '" + stringify(location) + "':");
 
-        if (! location.is_directory())
+        if (! location.stat().is_directory())
             throw ConfigurationError("Location is not a directory");
 
-        if ((location / "profiles").is_directory())
+        if ((location / "profiles").stat().is_directory())
         {
             Log::get_instance()->message("no_config_environment.ebuild_detected", ll_debug, lc_context)
                 << "Found profiles/, looks like Ebuild format";
@@ -114,18 +116,18 @@ namespace
         }
 
         int outer_count(0);
-        for (DirIterator d(location), d_end ; d != d_end ; ++d)
+        for (FSIterator d(location, { }), d_end ; d != d_end ; ++d)
         {
-            if (! d->is_directory())
+            if (! d->stat().is_directory())
                 continue;
 
             int inner_count(0);
-            for (DirIterator e(*d), e_end ; e != e_end ; ++e)
+            for (FSIterator e(*d, { }), e_end ; e != e_end ; ++e)
             {
-                if (! e->is_directory())
+                if (! e->stat().is_directory())
                     continue;
 
-                if ((*e / "CONTENTS").exists())
+                if ((*e / "CONTENTS").stat().exists())
                 {
                     Log::get_instance()->message("no_config_environment.vdb_detected", ll_debug, lc_context)
                         << "Found '" << stringify(*e) << "/CONTENTS', looks like VDB format";
@@ -164,10 +166,10 @@ Imp<NoConfigEnvironment>::Imp(
     paludis_command("false"),
     package_database(std::make_shared<PackageDatabase>(env)),
     format_key(std::make_shared<LiteralMetadataValueKey<std::string>>("format", "Format", mkt_significant, "no_config")),
-    repository_dir_key(std::make_shared<LiteralMetadataValueKey<FSEntry>>("repository_dir", "Repository dir",
+    repository_dir_key(std::make_shared<LiteralMetadataValueKey<FSPath>>("repository_dir", "Repository dir",
                 mkt_normal, p.repository_dir())),
-    preferred_root_key(std::make_shared<LiteralMetadataValueKey<FSEntry>>("root", "Root",
-                mkt_normal, FSEntry("/")))
+    preferred_root_key(std::make_shared<LiteralMetadataValueKey<FSPath>>("root", "Root",
+                mkt_normal, FSPath("/")))
 {
 }
 
@@ -179,12 +181,12 @@ Imp<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
     if (! is_vdb)
     {
         /* don't assume these're in initialisable order. */
-        std::map<FSEntry, bool> repository_dirs;
+        std::map<FSPath, bool, FSPathComparator> repository_dirs;
         RepositoryName main_repository_name("x");
         bool ignored_one(false);
 
         repository_dirs.insert(std::make_pair(params.repository_dir(), true));
-        for (FSEntrySequence::ConstIterator d(params.extra_repository_dirs()->begin()), d_end(params.extra_repository_dirs()->end()) ;
+        for (FSPathSequence::ConstIterator d(params.extra_repository_dirs()->begin()), d_end(params.extra_repository_dirs()->end()) ;
                 d != d_end ; ++d)
         {
             if (params.repository_dir().realpath() == d->realpath())
@@ -201,7 +203,7 @@ Imp<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
         std::unordered_map<RepositoryName, std::function<std::string (const std::string &)>,
             Hash<RepositoryName> > repo_configs;
 
-        for (std::map<FSEntry, bool>::const_iterator r(repository_dirs.begin()), r_end(repository_dirs.end()) ;
+        for (auto r(repository_dirs.begin()), r_end(repository_dirs.end()) ;
                 r != r_end ; ++r)
         {
             Context local_context("When reading repository at location '" + stringify(r->first) + "':");
@@ -225,7 +227,7 @@ Imp<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
             if (r->second && ! params.master_repository_name().empty())
                 keys->insert("master_repository", params.master_repository_name());
 
-            if ((r->first / "metadata" / "profiles_desc.conf").exists())
+            if ((r->first / "metadata" / "profiles_desc.conf").stat().exists())
                 keys->insert("layout", "exheres");
 
             std::function<std::string (const std::string &)> repo_func(
@@ -377,7 +379,7 @@ NoConfigEnvironment::~NoConfigEnvironment()
 {
 }
 
-FSEntry
+FSPath
 NoConfigEnvironment::main_repository_dir() const
 {
     return _imp->top_level_dir;
@@ -548,10 +550,10 @@ NoConfigEnvironment::perform_hook(
     return make_named_values<HookResult>(n::max_exit_status() = 0, n::output() = "");
 }
 
-std::shared_ptr<const FSEntrySequence>
+std::shared_ptr<const FSPathSequence>
 NoConfigEnvironment::hook_dirs() const
 {
-    return std::make_shared<FSEntrySequence>();
+    return std::make_shared<FSPathSequence>();
 }
 
 void
@@ -565,13 +567,13 @@ NoConfigEnvironment::format_key() const
     return _imp->format_key;
 }
 
-const std::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSPath> >
 NoConfigEnvironment::config_location_key() const
 {
-    return std::shared_ptr<const MetadataValueKey<FSEntry> >();
+    return std::shared_ptr<const MetadataValueKey<FSPath> >();
 }
 
-const std::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSPath> >
 NoConfigEnvironment::preferred_root_key() const
 {
     return _imp->preferred_root_key;
@@ -618,7 +620,7 @@ NoConfigEnvironment::populate_sets() const
 }
 
 const std::shared_ptr<Repository>
-NoConfigEnvironment::repository_from_new_config_file(const FSEntry &)
+NoConfigEnvironment::repository_from_new_config_file(const FSPath &)
 {
     throw InternalError(PALUDIS_HERE, "can't create repositories on the fly for NoConfigEnvironment");
 }

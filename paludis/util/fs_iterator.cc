@@ -18,11 +18,15 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <dirent.h>
-#include <paludis/util/dir_iterator.hh>
+#include <paludis/util/fs_iterator.hh>
+#include <paludis/util/fs_path.hh>
+#include <paludis/util/fs_error.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/exception.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/options.hh>
+
+#include <dirent.h>
 #include <sys/types.h>
 #include <functional>
 #include <set>
@@ -33,20 +37,14 @@
 
 using namespace paludis;
 
-#include <paludis/util/dir_iterator-se.cc>
+#include <paludis/util/fs_iterator-se.cc>
 
-typedef std::multiset<std::pair<ino_t, FSEntry>, std::function<bool (std::pair<ino_t, FSEntry>, std::pair<ino_t, FSEntry>)> > EntrySet;
-template class Pimp<DirIterator>;
+typedef std::multiset<std::pair<ino_t, FSPath>, std::function<bool (std::pair<ino_t, FSPath>, std::pair<ino_t, FSPath>)> > EntrySet;
 
 namespace paludis
 {
-    /**
-     * Imp data for DirIterator.
-     *
-     * \ingroup grpfilesystem
-     */
     template<>
-    struct Imp<DirIterator>
+    struct Imp<FSIterator>
     {
         std::shared_ptr<EntrySet> items;
         EntrySet::iterator iter;
@@ -57,62 +55,49 @@ namespace paludis
         }
     };
 
-    bool compare_inode(const std::pair<ino_t, FSEntry> & a, const std::pair<ino_t, FSEntry> & b)
+    bool compare_inode(const std::pair<ino_t, FSPath> & a, const std::pair<ino_t, FSPath> & b)
     {
         return a.first < b.first;
     }
 
-    bool compare_name(const std::pair<ino_t, FSEntry> & a, const std::pair<ino_t, FSEntry> & b)
+    bool compare_name(const std::pair<ino_t, FSPath> & a, const std::pair<ino_t, FSPath> & b)
     {
-        return a.second < b.second;
+        return FSPathComparator()(a.second, b.second);
     }
 }
 
-DirOpenError::DirOpenError(const FSEntry & location, const int errno_value) throw () :
-    FSError("Error opening directory '" + stringify(location) + "': " + std::strerror(errno_value))
-{
-}
-
-DirIterator::DirIterator(const FSEntry & base, const DirIteratorOptions & options) :
-    Pimp<DirIterator>(std::shared_ptr<EntrySet>())
+FSIterator::FSIterator(const FSPath & base, const FSIteratorOptions & options) :
+    Pimp<FSIterator>(std::shared_ptr<EntrySet>())
 {
     using namespace std::placeholders;
 
-    if (options[dio_inode_sort])
+    if (options[fsio_inode_sort])
         _imp->items = std::make_shared<EntrySet>(&compare_inode);
     else
         _imp->items = std::make_shared<EntrySet>(&compare_name);
 
     DIR * d(opendir(stringify(base).c_str()));
     if (0 == d)
-        throw DirOpenError(base, errno);
+        throw FSError("Error opening directory '" + stringify(base) + "'");
 
     struct dirent * de;
     while (0 != ((de = readdir(d))))
-        if (! options[dio_include_dotfiles])
+        if (! options[fsio_include_dotfiles])
         {
             if ('.' != de->d_name[0])
             {
-#ifdef HAVE_DIRENT_DTYPE
-                FSEntry f(stringify(base / std::string(de->d_name)), de->d_type);
-#else
-                FSEntry f(stringify(base / std::string(de->d_name)), 0);
-#endif
+                FSPath f(stringify(base / std::string(de->d_name)));
                 _imp->items->insert(std::make_pair(de->d_ino, f));
-                if (options[dio_first_only])
+                if (options[fsio_first_only])
                     break;
             }
         }
         else if (! (de->d_name[0] == '.' &&
                     (de->d_name[1] == '\0' || (de->d_name[1] == '.' && de->d_name[2] == '\0'))))
         {
-#ifdef HAVE_DIRENT_DTYPE
-            FSEntry f(stringify(base / std::string(de->d_name)), de->d_type);
-#else
-            FSEntry f(stringify(base / std::string(de->d_name)), 0);
-#endif
+            FSPath f(stringify(base / std::string(de->d_name)));
             _imp->items->insert(std::make_pair(de->d_ino, f));
-            if (options[dio_first_only])
+            if (options[fsio_first_only])
                 break;
         }
 
@@ -121,24 +106,24 @@ DirIterator::DirIterator(const FSEntry & base, const DirIteratorOptions & option
     closedir(d);
 }
 
-DirIterator::DirIterator(const DirIterator & other) :
-    Pimp<DirIterator>(other._imp->items)
+FSIterator::FSIterator(const FSIterator & other) :
+    Pimp<FSIterator>(other._imp->items)
 {
     _imp->iter = other._imp->iter;
 }
 
-DirIterator::DirIterator() :
-    Pimp<DirIterator>(std::shared_ptr<EntrySet>(std::make_shared<EntrySet>(&compare_name)))
+FSIterator::FSIterator() :
+    Pimp<FSIterator>(std::shared_ptr<EntrySet>(std::make_shared<EntrySet>(&compare_name)))
 {
     _imp->iter = _imp->items->end();
 }
 
-DirIterator::~DirIterator()
+FSIterator::~FSIterator()
 {
 }
 
-DirIterator &
-DirIterator::operator= (const DirIterator & other)
+FSIterator &
+FSIterator::operator= (const FSIterator & other)
 {
     if (this != &other)
     {
@@ -148,52 +133,53 @@ DirIterator::operator= (const DirIterator & other)
     return *this;
 }
 
-const FSEntry &
-DirIterator::operator* () const
+const FSPath &
+FSIterator::operator* () const
 {
     return _imp->iter->second;
 }
 
-const FSEntry *
-DirIterator::operator-> () const
+const FSPath *
+FSIterator::operator-> () const
 {
     return &_imp->iter->second;
 }
 
-DirIterator &
-DirIterator::operator++ ()
+FSIterator &
+FSIterator::operator++ ()
 {
     ++_imp->iter;
     return *this;
 }
 
-DirIterator
-DirIterator::operator++ (int)
+FSIterator
+FSIterator::operator++ (int)
 {
-    DirIterator c(*this);
+    FSIterator c(*this);
     _imp->iter++;
     return c;
 }
 
 bool
-DirIterator::operator== (const DirIterator & other) const
+paludis::operator== (const FSIterator & me, const FSIterator & other)
 {
     if (other._imp->iter == other._imp->items->end())
-        return _imp->iter == _imp->items->end();
+        return me._imp->iter == me._imp->items->end();
 
-    if (_imp->iter == _imp->items->end())
+    if (me._imp->iter == me._imp->items->end())
         return other._imp->iter == other._imp->items->end();
 
-    if (other._imp->items != _imp->items)
-        throw InternalError(PALUDIS_HERE,
-                "comparing two different DirIterators.");
+    if (other._imp->items != me._imp->items)
+        throw InternalError(PALUDIS_HERE, "comparing two different FSIterators.");
 
-    return other._imp->iter == _imp->iter;
+    return other._imp->iter == me._imp->iter;
 }
 
 bool
-DirIterator::operator!= (const DirIterator & other) const
+paludis::operator!= (const FSIterator & me, const FSIterator & other)
 {
-    return ! operator== (other);
+    return ! operator== (me, other);
 }
+
+template class Pimp<FSIterator>;
 

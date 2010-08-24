@@ -21,14 +21,14 @@
 #define PALUDIS_GUARD_PALUDIS_UTIL_REALPATH_HH
 
 #include <paludis/util/attributes.hh>
-#include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/util/fs_path-fwd.hh>
 
 namespace paludis
 {
-    FSEntry realpath_with_current_and_root(
-            const FSEntry &, const FSEntry &, const FSEntry &) PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
+    FSPath realpath_with_current_and_root(
+            const FSPath &, const FSPath &, const FSPath &) PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
 
-    FSEntry dereference_with_root(const FSEntry &, const FSEntry &) PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
+    FSPath dereference_with_root(const FSPath &, const FSPath &) PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
 }
 
 #endif

@@ -68,7 +68,7 @@ namespace
         throw InternalError(PALUDIS_HERE, "Can't uninstall '" + stringify(*id) + "'");
     }
 
-    bool ignore_nothing(const FSEntry &)
+    bool ignore_nothing(const FSPath &)
     {
         return false;
     }

@@ -26,7 +26,6 @@
 
 #include <paludis/args/args.hh>
 #include <paludis/args/do_help.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/tokeniser.hh>
@@ -70,7 +69,7 @@ namespace
         }
     };
 
-    void format_fsentry(const FSEntry & f)
+    void format_fsentry(const FSPath & f)
     {
         cout << fuc(fs_file(), fv<'s'>(stringify(f)));
     }

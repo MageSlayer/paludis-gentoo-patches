@@ -534,7 +534,7 @@ namespace
         rb_define_method(c_package_id, "from_repositories_key", RUBY_FUNC_CAST((&KeyValue<MetadataCollectionKey<Set<std::string> >,
                         &PackageID::from_repositories_key>::fetch)), 0);
         rb_define_method(c_package_id, "fs_location_key", RUBY_FUNC_CAST((
-                        &KeyValue<MetadataValueKey<FSEntry>, &PackageID::fs_location_key>::fetch)), 0);
+                        &KeyValue<MetadataValueKey<FSPath>, &PackageID::fs_location_key>::fetch)), 0);
         rb_define_method(c_package_id, "fetches_key", RUBY_FUNC_CAST((
                         &KeyValue<MetadataSpecTreeKey<FetchableURISpecTree>, &PackageID::fetches_key>::fetch)), 0);
         rb_define_method(c_package_id, "choices_key", RUBY_FUNC_CAST((

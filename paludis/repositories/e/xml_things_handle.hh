@@ -24,7 +24,6 @@
 #include <paludis/repositories/e/metadata_xml.hh>
 #include <paludis/util/pimp.hh>
 #include <paludis/util/singleton.hh>
-#include <paludis/util/fs_entry-fwd.hh>
 
 namespace paludis
 {
@@ -42,7 +41,7 @@ namespace paludis
 
             public:
                 typedef std::shared_ptr<GLSA> (* CreateGLSAFromXMLFilePtr) (const std::string &);
-                typedef std::shared_ptr<MetadataXML> (* CreateMetadataXMLFromXMLFilePtr) (const FSEntry &);
+                typedef std::shared_ptr<MetadataXML> (* CreateMetadataXMLFromXMLFilePtr) (const FSPath &);
 
                 CreateGLSAFromXMLFilePtr create_glsa_from_xml_file() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));

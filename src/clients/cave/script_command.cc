@@ -24,9 +24,9 @@
 #include <paludis/args/escape.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/system.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/process.hh>
+#include <paludis/util/fs_path.hh>
 #include <iostream>
 #include <cstdlib>
 
@@ -42,16 +42,16 @@ namespace paludis
     template <>
     struct Imp<ScriptCommand>
     {
-        const FSEntry executable;
+        const FSPath executable;
 
-        Imp(const FSEntry & e) :
+        Imp(const FSPath & e) :
             executable(e)
         {
         }
     };
 }
 
-ScriptCommand::ScriptCommand(const std::string &, const FSEntry & e) :
+ScriptCommand::ScriptCommand(const std::string &, const FSPath & e) :
     Pimp<ScriptCommand>(e)
 {
 }

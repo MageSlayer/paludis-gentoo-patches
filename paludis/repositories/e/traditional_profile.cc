@@ -41,6 +41,9 @@
 #include <paludis/util/hashes.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/map.hh>
+#include <paludis/util/fs_stat.hh>
+#include <paludis/util/fs_error.hh>
+
 #include <paludis/choice.hh>
 #include <paludis/dep_tag.hh>
 #include <paludis/environment.hh>
@@ -106,18 +109,18 @@ namespace paludis
     {
         private:
             void load_environment();
-            void load_profile_directory_recursively(const FSEntry & dir);
-            void load_profile_parent(const FSEntry & dir);
-            void load_profile_make_defaults(const FSEntry & dir);
+            void load_profile_directory_recursively(const FSPath & dir);
+            void load_profile_parent(const FSPath & dir);
+            void load_profile_make_defaults(const FSPath & dir);
 
-            void load_basic_use_file(const FSEntry & file, FlagStatusMap & m);
-            void load_spec_use_file(const EAPI &, const FSEntry & file, PackageFlagStatusMapList & m);
+            void load_basic_use_file(const FSPath & file, FlagStatusMap & m);
+            void load_spec_use_file(const EAPI &, const FSPath & file, PackageFlagStatusMapList & m);
 
             void add_use_expand_to_use();
             void fish_out_use_expand_names();
             void make_vars_from_file_vars();
             void handle_profile_arch_var(const std::string &);
-            void load_special_make_defaults_vars(const FSEntry &);
+            void load_special_make_defaults_vars(const FSPath &);
 
             ProfileFile<LineConfigFile> packages_file;
             ProfileFile<LineConfigFile> virtuals_file;
@@ -132,7 +135,7 @@ namespace paludis
             const Environment * const env;
             const ERepository * const repository;
 
-            std::shared_ptr<FSEntrySequence> profiles_with_parents;
+            std::shared_ptr<FSPathSequence> profiles_with_parents;
 
             ///\}
 
@@ -186,14 +189,14 @@ namespace paludis
             ///\{
 
             Imp(const Environment * const e, const ERepository * const p,
-                    const RepositoryName & name, const FSEntrySequence & dirs,
+                    const RepositoryName & name, const FSPathSequence & dirs,
                     const std::string & arch_var_if_special, const bool profiles_explicitly_set) :
                 packages_file(p),
                 virtuals_file(p),
                 package_mask_file(p),
                 env(e),
                 repository(p),
-                profiles_with_parents(std::make_shared<FSEntrySequence>()),
+                profiles_with_parents(std::make_shared<FSPathSequence>()),
                 system_packages(std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>())),
                 system_tag(std::make_shared<GeneralSetDepTag>(SetName("system"), stringify(name))),
                 virtuals(std::make_shared<Map<QualifiedPackageName, PackageDepSpec>>()),
@@ -210,14 +213,14 @@ namespace paludis
 
                 load_environment();
 
-                for (FSEntrySequence::ConstIterator d(dirs.begin()), d_end(dirs.end()) ;
+                for (FSPathSequence::ConstIterator d(dirs.begin()), d_end(dirs.end()) ;
                         d != d_end ; ++d)
                 {
                     Context subcontext("When using directory '" + stringify(*d) + "':");
 
                     if (profiles_explicitly_set)
                         if (! p->params().ignore_deprecated_profiles())
-                            if ((*d / "deprecated").is_regular_file_or_symlink_to_regular_file())
+                            if ((*d / "deprecated").stat().is_regular_file_or_symlink_to_regular_file())
                                 Log::get_instance()->message("e.profile.deprecated", ll_warning, lc_context) << "Profile directory '" << *d
                                     << "' is deprecated. See the file '" << (*d / "deprecated") << "' for details";
 
@@ -248,19 +251,18 @@ Imp<TraditionalProfile>::load_environment()
 }
 
 void
-Imp<TraditionalProfile>::load_profile_directory_recursively(const FSEntry & dir)
+Imp<TraditionalProfile>::load_profile_directory_recursively(const FSPath & dir)
 {
     Context context("When adding profile directory '" + stringify(dir) + ":");
 
-    if (! dir.is_directory_or_symlink_to_directory())
+    if (! dir.stat().is_directory_or_symlink_to_directory())
     {
         Log::get_instance()->message("e.profile.not_a_directory", ll_warning, lc_context)
             << "Profile component '" << dir << "' is not a directory";
         return;
     }
 
-    const std::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(
-                repository->eapi_for_file(dir / "use.mask")));
+    const std::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(repository->eapi_for_file(dir / "use.mask")));
 
     if (! eapi->supported())
         throw ERepositoryConfigurationError("Can't use profile directory '" + stringify(dir) +
@@ -286,11 +288,11 @@ Imp<TraditionalProfile>::load_profile_directory_recursively(const FSEntry & dir)
 }
 
 void
-Imp<TraditionalProfile>::load_profile_parent(const FSEntry & dir)
+Imp<TraditionalProfile>::load_profile_parent(const FSPath & dir)
 {
     Context context("When handling parent file for profile directory '" + stringify(dir) + ":");
 
-    if (! (dir / "parent").exists())
+    if (! (dir / "parent").stat().exists())
         return;
 
     LineConfigFile file(dir / "parent", { lcfo_disallow_continuations });
@@ -311,7 +313,7 @@ Imp<TraditionalProfile>::load_profile_parent(const FSEntry & dir)
                 continue;
             }
 
-            FSEntry parent_dir(dir);
+            FSPath parent_dir(dir);
             do
             {
                 try
@@ -332,11 +334,11 @@ Imp<TraditionalProfile>::load_profile_parent(const FSEntry & dir)
 }
 
 void
-Imp<TraditionalProfile>::load_profile_make_defaults(const FSEntry & dir)
+Imp<TraditionalProfile>::load_profile_make_defaults(const FSPath & dir)
 {
     Context context("When handling make.defaults file for profile directory '" + stringify(dir) + ":");
 
-    if (! (dir / "make.defaults").exists())
+    if (! (dir / "make.defaults").stat().exists())
         return;
 
     const std::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(
@@ -479,7 +481,7 @@ Imp<TraditionalProfile>::load_profile_make_defaults(const FSEntry & dir)
 }
 
 void
-Imp<TraditionalProfile>::load_special_make_defaults_vars(const FSEntry & dir)
+Imp<TraditionalProfile>::load_special_make_defaults_vars(const FSPath & dir)
 {
     const std::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(
                 repository->eapi_for_file(dir / "make.defaults")));
@@ -660,9 +662,9 @@ Imp<TraditionalProfile>::make_vars_from_file_vars()
 }
 
 void
-Imp<TraditionalProfile>::load_basic_use_file(const FSEntry & file, FlagStatusMap & m)
+Imp<TraditionalProfile>::load_basic_use_file(const FSPath & file, FlagStatusMap & m)
 {
-    if (! file.exists())
+    if (! file.stat().exists())
         return;
 
     Context context("When loading basic use file '" + stringify(file) + ":");
@@ -699,9 +701,9 @@ Imp<TraditionalProfile>::load_basic_use_file(const FSEntry & file, FlagStatusMap
 }
 
 void
-Imp<TraditionalProfile>::load_spec_use_file(const EAPI & eapi, const FSEntry & file, PackageFlagStatusMapList & m)
+Imp<TraditionalProfile>::load_spec_use_file(const EAPI & eapi, const FSPath & file, PackageFlagStatusMapList & m)
 {
-    if (! file.exists())
+    if (! file.stat().exists())
         return;
 
     Context context("When loading specised use file '" + stringify(file) + ":");
@@ -830,7 +832,7 @@ Imp<TraditionalProfile>::handle_profile_arch_var(const std::string & s)
 
 TraditionalProfile::TraditionalProfile(
         const Environment * const env, const ERepository * const p, const RepositoryName & name,
-        const FSEntrySequence & location,
+        const FSPathSequence & location,
         const std::string & arch_var_if_special, const bool x) :
     Pimp<TraditionalProfile>(env, p, name, location, arch_var_if_special, x)
 {
@@ -840,7 +842,7 @@ TraditionalProfile::~TraditionalProfile()
 {
 }
 
-std::shared_ptr<const FSEntrySequence>
+std::shared_ptr<const FSPathSequence>
 TraditionalProfile::profiles_with_parents() const
 {
     return _imp->profiles_with_parents;

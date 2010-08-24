@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -22,8 +22,10 @@
 
 #include <paludis/name-fwd.hh>
 #include <paludis/util/pimp.hh>
-#include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/util/fs_path-fwd.hh>
+#include <paludis/util/fs_stat-fwd.hh>
 #include <memory>
+#include <utility>
 
 namespace paludis
 {
@@ -43,7 +45,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            EclassMtimes(const ERepository *, const std::shared_ptr<const FSEntrySequence> &);
+            EclassMtimes(const ERepository *, const std::shared_ptr<const FSPathSequence> &);
             ~EclassMtimes();
 
             ///\}
@@ -51,12 +53,12 @@ namespace paludis
             /**
              * Fetch the full path of a given eclass.
              */
-            const FSEntry * eclass(const std::string &) const;
+            const std::pair<FSPath, FSStat> * eclass(const std::string &) const;
 
             /**
              * Fetch the full path of a given exlib, on the path of a given package.
              */
-            const FSEntry * exlib(const std::string &, const QualifiedPackageName &) const;
+            const std::pair<FSPath, FSStat> * exlib(const std::string &, const QualifiedPackageName &) const;
     };
 }
 

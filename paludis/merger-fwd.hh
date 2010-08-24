@@ -23,7 +23,6 @@
 #include <iosfwd>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/options-fwd.hh>
-#include <paludis/util/fs_entry-fwd.hh>
 
 namespace paludis
 {

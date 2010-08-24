@@ -22,7 +22,7 @@
 
 #include <paludis/util/pimp.hh>
 #include <paludis/util/singleton.hh>
-#include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/util/fs_path-fwd.hh>
 #include <paludis/util/safe_ifstream-fwd.hh>
 
 namespace paludis
@@ -37,7 +37,7 @@ namespace paludis
 
             public:
                 template <typename H_>
-                const std::string get(const FSEntry & file, SafeIFStream & stream) const;
+                const std::string get(const FSPath & file, SafeIFStream & stream) const;
 
             private:
                 MemoisedHashes();

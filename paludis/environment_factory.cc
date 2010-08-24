@@ -23,8 +23,6 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/member_iterator-impl.hh>
 #include <paludis/util/join.hh>
-#include <paludis/util/fs_entry.hh>
-#include <paludis/util/dir_iterator.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>

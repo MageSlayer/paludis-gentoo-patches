@@ -29,10 +29,11 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/simple_visitor_cast.hh>
-#include <paludis/util/dir_iterator.hh>
+#include <paludis/util/fs_iterator.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/strip.hh>
+#include <paludis/util/fs_stat.hh>
 #include <paludis/name.hh>
 #include <paludis/package_database.hh>
 #include <paludis/metadata_key.hh>
@@ -114,16 +115,16 @@ AccountsRepositoryStore::_load(const std::shared_ptr<const Repository> & repo)
             continue;
         }
 
-        const MetadataValueKey<FSEntry> * k(simple_visitor_cast<const MetadataValueKey<FSEntry> >(**k_iter));
+        const MetadataValueKey<FSPath> * k(simple_visitor_cast<const MetadataValueKey<FSPath> >(**k_iter));
         if (! k)
         {
             Log::get_instance()->message("accounts.bad_key_from_repository", ll_warning, lc_context) <<
-                "Repository " << (*r)->name() << " defines an accounts_repository_data_location key, but it is not an FSEntry key";
+                "Repository " << (*r)->name() << " defines an accounts_repository_data_location key, but it is not an FSPath key";
             continue;
         }
 
-        FSEntry dir(k->value());
-        if (! dir.is_directory_or_symlink_to_directory())
+        FSPath dir(k->value());
+        if (! dir.stat().is_directory_or_symlink_to_directory())
         {
             Log::get_instance()->message("accounts.empty_key_from_repository", ll_warning, lc_context) <<
                 "Repository " << (*r)->name() << " has accounts_repository_data_location " << dir << ", but this is not a directory";
@@ -141,18 +142,20 @@ void
 AccountsRepositoryStore::_load_one(
         const std::shared_ptr<const Repository> & repo,
         const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & from_repo,
-        const FSEntry & dir)
+        const FSPath & dir)
 {
     Context context("When loading accounts from directory '" + stringify(dir) + "':");
 
-    if ((dir / "users").is_directory_or_symlink_to_directory())
-        _load_one_users(repo, from_repo, dir / "users");
+    FSPath users_dir(dir / "users");
+    if (users_dir.stat().is_directory_or_symlink_to_directory())
+        _load_one_users(repo, from_repo, users_dir);
     else
         Log::get_instance()->message("accounts.no_users", ll_debug, lc_context) <<
             "Repository " << repo->name() << " has accounts_repository_data_location " << dir << ", but no users subdirectory";
 
-    if ((dir / "groups").is_directory_or_symlink_to_directory())
-        _load_one_groups(repo, from_repo, dir / "groups");
+    FSPath groups_dir(dir / "groups");
+    if (groups_dir.stat().is_directory_or_symlink_to_directory())
+        _load_one_groups(repo, from_repo, groups_dir);
     else
         Log::get_instance()->message("accounts.no_groups", ll_debug, lc_context) <<
             "Repository " << repo->name() << " has accounts_repository_data_location " << dir << ", but no groups subdirectory";
@@ -163,9 +166,9 @@ void
 AccountsRepositoryStore::_load_one_users(
         const std::shared_ptr<const Repository> & repo,
         const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & from_repo,
-        const FSEntry & dir)
+        const FSPath & dir)
 {
-    for (DirIterator d(dir, { }), d_end ; d != d_end ; ++d)
+    for (FSIterator d(dir, { fsio_inode_sort }), d_end ; d != d_end ; ++d)
         if (is_file_with_extension(*d, ".conf", { }))
             _load_one_user(repo, from_repo, *d);
         else
@@ -177,7 +180,7 @@ void
 AccountsRepositoryStore::_load_one_user(
         const std::shared_ptr<const Repository> & repo,
         const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & from_repo,
-        const FSEntry & filename)
+        const FSPath & filename)
 {
     CategoryNamePart cat("user");
     PackageNamePart pkg(strip_trailing_string(filename.basename(), ".conf"));
@@ -219,9 +222,9 @@ void
 AccountsRepositoryStore::_load_one_groups(
         const std::shared_ptr<const Repository> & repo,
         const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & from_repo,
-        const FSEntry & dir)
+        const FSPath & dir)
 {
-    for (DirIterator d(dir, { }), d_end ; d != d_end ; ++d)
+    for (FSIterator d(dir, { fsio_inode_sort }), d_end ; d != d_end ; ++d)
         if (is_file_with_extension(*d, ".conf", { }))
             _load_one_group(repo, from_repo, *d);
         else
@@ -233,7 +236,7 @@ void
 AccountsRepositoryStore::_load_one_group(
         const std::shared_ptr<const Repository> & repo,
         const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & from_repo,
-        const FSEntry & filename)
+        const FSPath & filename)
 {
     CategoryNamePart cat("group");
     PackageNamePart pkg(strip_trailing_string(filename.basename(), ".conf"));

@@ -73,7 +73,7 @@ int main(int argc, char * argv[])
         /* Fetch package IDs for installed 'sys-apps/paludis'. */
         std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(
                     generator::Package(QualifiedPackageName("sys-apps/paludis")) |
-                    filter::InstalledAtRoot(FSEntry("/")))]);
+                    filter::InstalledAtSlash())]);
 
         /* For each ID: */
         for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;

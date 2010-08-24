@@ -21,7 +21,6 @@
 #define PALUDIS_GUARD_PALUDIS_PALUDIS_REPOSITORIES_CRAN_KEYS_HH 1
 
 #include <paludis/metadata_key.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/sequence.hh>
 

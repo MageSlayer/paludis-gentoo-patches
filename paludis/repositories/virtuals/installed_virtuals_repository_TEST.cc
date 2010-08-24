@@ -34,7 +34,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::shared_ptr<const InstalledVirtualsRepository> r(std::make_shared<InstalledVirtualsRepository>(&env, FSEntry("/")));
+            std::shared_ptr<const InstalledVirtualsRepository> r(std::make_shared<InstalledVirtualsRepository>(&env, FSPath("/")));
         }
     } test_installed_virtuals_repository;
 }

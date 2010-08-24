@@ -49,7 +49,7 @@ namespace paludis
             NamedValue<n::environment, Environment *> environment;
             NamedValue<n::handler, std::string> handler;
             NamedValue<n::name, RepositoryName> name;
-            NamedValue<n::root, FSEntry> root;
+            NamedValue<n::root, FSPath> root;
         };
 
         class PALUDIS_VISIBLE AccountsRepository :
@@ -110,8 +110,8 @@ namespace paludis
                 ///\{
 
                 virtual const std::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
-                virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > location_key() const;
-                virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const;
+                virtual const std::shared_ptr<const MetadataValueKey<FSPath> > location_key() const;
+                virtual const std::shared_ptr<const MetadataValueKey<FSPath> > installed_root_key() const;
                 virtual const std::shared_ptr<const MetadataValueKey<std::string> > accept_keywords_key() const;
                 virtual const std::shared_ptr<const MetadataValueKey<std::string> > sync_host_key() const;
 

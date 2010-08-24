@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_PALUDIS_REPOSITORIES_E_USE_DESC_HH 1
 
 #include <paludis/util/pimp.hh>
-#include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/util/fs_path-fwd.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/choice-fwd.hh>
@@ -29,7 +29,7 @@
 
 namespace paludis
 {
-    typedef std::pair<FSEntry, ChoicePrefixName> UseDescFileInfo;
+    typedef std::pair<FSPath, ChoicePrefixName> UseDescFileInfo;
     typedef Sequence<UseDescFileInfo> UseDescFileInfoSequence;
 
     /**

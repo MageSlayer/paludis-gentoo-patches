@@ -121,7 +121,7 @@ namespace
                 join((*k.value()).comment()->begin(), (*k.value()).comment()->end(), " ");
         }
 
-        void visit(const MetadataValueKey<FSEntry> & k)
+        void visit(const MetadataValueKey<FSPath> & k)
         {
             s << k.value();
         }
@@ -138,7 +138,7 @@ namespace
             s << k.pretty_print_flat(formatter);
         }
 
-        void visit(const MetadataCollectionKey<FSEntrySequence> & k)
+        void visit(const MetadataCollectionKey<FSPathSequence> & k)
         {
             ColourFormatter formatter;
             s << k.pretty_print_flat(formatter);

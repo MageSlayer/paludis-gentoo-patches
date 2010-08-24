@@ -21,7 +21,6 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/destringify.hh>
-#include <paludis/util/dir_iterator.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/log.hh>
@@ -30,6 +29,9 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/safe_ofstream.hh>
 #include <paludis/util/timestamp.hh>
+#include <paludis/util/fs_stat.hh>
+#include <paludis/util/fs_iterator.hh>
+#include <paludis/util/fs_error.hh>
 #include <paludis/ndbam.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
@@ -83,7 +85,7 @@ namespace paludis
     template <>
     struct Imp<NDBAM>
     {
-        const FSEntry location;
+        const FSPath location;
         const VersionSpecOptions version_options;
 
         mutable Mutex category_names_mutex;
@@ -93,7 +95,7 @@ namespace paludis
         mutable Mutex category_names_containing_package_mutex;
         mutable CategoryNamesContainingPackage category_names_containing_package;
 
-        Imp(const FSEntry & l, const VersionSpecOptions & o) :
+        Imp(const FSPath & l, const VersionSpecOptions & o) :
             location(l),
             version_options(o)
         {
@@ -101,14 +103,14 @@ namespace paludis
     };
 }
 
-NDBAM::NDBAM(const FSEntry & l,
+NDBAM::NDBAM(const FSPath & l,
         const std::function<bool (const std::string &)> & check_format,
         const std::string & preferred_format,
         const VersionSpecOptions & version_options) :
     Pimp<NDBAM>(l, version_options)
 {
     Context c("When checking NDBAM layout at '" + stringify(l) + "':");
-    if ((l / "ndbam.conf").exists())
+    if ((l / "ndbam.conf").stat().exists())
     {
         Context cc("When reading '" + stringify(l / "ndbam.conf") + "':");
         KeyValueConfigFile k(l / "ndbam.conf", { }, &KeyValueConfigFile::no_defaults,
@@ -118,16 +120,16 @@ NDBAM::NDBAM(const FSEntry & l,
         if (! check_format(k.get("repository_format")))
             throw ConfigurationError("Unsupported NDBAM repository format '" + k.get("ndbam_format") + "'");
     }
-    else if (DirIterator(l) != DirIterator())
+    else if (FSIterator(l, { fsio_first_only, fsio_inode_sort }) != FSIterator())
         throw ConfigurationError("No NDBAM repository found at '" + stringify(l) +
                 "', and it is not an empty directory");
     else
     {
         Context cc("When creating skeleton NDBAM layout at '" + stringify(l) + "':");
-        (l / "indices").mkdir();
-        (l / "indices" / "categories").mkdir();
-        (l / "indices" / "packages").mkdir();
-        (l / "data").mkdir();
+        (l / "indices").mkdir(0755, { fspmkdo_ok_if_exists });
+        (l / "indices" / "categories").mkdir(0755, { fspmkdo_ok_if_exists });
+        (l / "indices" / "packages").mkdir(0755, { fspmkdo_ok_if_exists });
+        (l / "data").mkdir(0755, { fspmkdo_ok_if_exists });
         SafeOFStream n(l / "ndbam.conf");
         n << "ndbam_format = 1" << std::endl;
         n << "repository_format = " << preferred_format << std::endl;
@@ -148,10 +150,10 @@ NDBAM::category_names()
     {
         Context context("When loading category names for NDBAM at '" + stringify(_imp->location) + "':");
         _imp->category_names = std::make_shared<CategoryNamePartSet>();
-        for (DirIterator d(_imp->location / "indices" / "categories"), d_end ;
+        for (FSIterator d(_imp->location / "indices" / "categories", { }), d_end ;
                 d != d_end ; ++d)
         {
-            if (! d->is_directory_or_symlink_to_directory())
+            if (! d->stat().is_directory_or_symlink_to_directory())
                 continue;
             if ('-' == d->basename().at(0))
                 continue;
@@ -193,10 +195,10 @@ NDBAM::package_names(const CategoryNamePart & c)
     {
         Context context("When loading package names in '" + stringify(c) + "' for NDBAM at '" + stringify(_imp->location) + "':");
         cc.package_names = std::make_shared<QualifiedPackageNameSet>();
-        for (DirIterator d(_imp->location / "indices" / "categories" / stringify(c)), d_end ;
+        for (FSIterator d(_imp->location / "indices" / "categories" / stringify(c), { }), d_end ;
                 d != d_end ; ++d)
         {
-            if (! d->is_directory_or_symlink_to_directory())
+            if (! d->stat().is_directory_or_symlink_to_directory())
                 continue;
             if ('-' == d->basename().at(0))
                 continue;
@@ -229,7 +231,7 @@ NDBAM::has_category_named(const CategoryNamePart & c)
 
     if (! _imp->category_names)
     {
-        if (FSEntry(_imp->location / "indices" / "categories" / stringify(c)).is_directory_or_symlink_to_directory())
+        if (FSPath(_imp->location / "indices" / "categories" / stringify(c)).stat().is_directory_or_symlink_to_directory())
         {
             _imp->category_contents_map.insert(std::make_pair(c, std::make_shared<CategoryContents>()));
             return true;
@@ -260,7 +262,8 @@ NDBAM::has_package_named(const QualifiedPackageName & q)
 
     if (! cc.package_names)
     {
-        if (FSEntry(_imp->location / "indices" / "categories" / stringify(q.category()) / stringify(q.package())).is_directory_or_symlink_to_directory())
+        if (FSPath(_imp->location / "indices" / "categories" /
+                    stringify(q.category()) / stringify(q.package())).stat().is_directory_or_symlink_to_directory())
         {
             cc.package_contents_map.insert(std::make_pair(q, new PackageContents));
             return true;
@@ -306,10 +309,10 @@ NDBAM::entries(const QualifiedPackageName & q)
         pc.entries = std::make_shared<NDBAMEntrySequence>();
         Context context("When loading versions in '" + stringify(q) + "' for NDBAM at '" + stringify(_imp->location) + "':");
         pc.entries = std::make_shared<NDBAMEntrySequence>();
-        for (DirIterator d(_imp->location / "indices" / "categories" / stringify(q.category()) / stringify(q.package())), d_end ;
+        for (FSIterator d(_imp->location / "indices" / "categories" / stringify(q.category()) / stringify(q.package()), { }), d_end ;
                 d != d_end ; ++d)
         {
-            if (! d->is_directory_or_symlink_to_directory())
+            if (! d->stat().is_directory_or_symlink_to_directory())
                 continue;
             if ('-' == d->basename().at(0))
                 continue;
@@ -357,7 +360,7 @@ NDBAM::entries(const QualifiedPackageName & q)
 }
 
 void
-NDBAM::add_entry(const QualifiedPackageName & q, const FSEntry & d)
+NDBAM::add_entry(const QualifiedPackageName & q, const FSPath & d)
 {
     Lock l(_imp->category_names_mutex);
     CategoryContentsMap::iterator cc_i(_imp->category_contents_map.find(q.category()));
@@ -396,9 +399,9 @@ namespace
 {
     struct FSLocationIs
     {
-        FSEntry _d;
+        FSPath _d;
 
-        FSLocationIs(const FSEntry & d) :
+        FSLocationIs(const FSPath & d) :
             _d(d)
         {
         }
@@ -411,7 +414,7 @@ namespace
 }
 
 void
-NDBAM::remove_entry(const QualifiedPackageName & q, const FSEntry & d)
+NDBAM::remove_entry(const QualifiedPackageName & q, const FSPath & d)
 {
     Lock l(_imp->category_names_mutex);
     CategoryContentsMap::iterator cc_i(_imp->category_contents_map.find(q.category()));
@@ -446,8 +449,8 @@ NDBAM::parse_contents(const PackageID & id,
     if (! id.fs_location_key())
         throw InternalError(PALUDIS_HERE, "No id.fs_location_key");
 
-    FSEntry ff(id.fs_location_key()->value() / "contents");
-    if (! ff.is_regular_file_or_symlink_to_regular_file())
+    FSPath ff(id.fs_location_key()->value() / "contents");
+    if (! ff.stat().is_regular_file_or_symlink_to_regular_file())
     {
         Log::get_instance()->message("ndbam.contents.skipping", ll_warning, lc_context)
             << "Contents file '" << ff << "' not a regular file, skipping";
@@ -554,14 +557,14 @@ NDBAM::parse_contents(const PackageID & id,
             }
             time_t mtime(destringify<time_t>(tokens.find("mtime")->second));
 
-            std::shared_ptr<ContentsFileEntry> entry(std::make_shared<ContentsFileEntry>(path));
+            std::shared_ptr<ContentsFileEntry> entry(std::make_shared<ContentsFileEntry>(FSPath(path)));
             entry->add_metadata_key(std::make_shared<LiteralMetadataValueKey<std::string>>("md5", "md5", mkt_normal, md5));
             entry->add_metadata_key(std::make_shared<LiteralMetadataTimeKey>("mtime", "mtime", mkt_normal, Timestamp(mtime, 0)));
             on_file(entry);
         }
         else if ("dir" == type)
         {
-            std::shared_ptr<ContentsDirEntry> entry(std::make_shared<ContentsDirEntry>(path));
+            std::shared_ptr<ContentsDirEntry> entry(std::make_shared<ContentsDirEntry>(FSPath(path)));
             on_dir(entry);
         }
         else if ("sym" == type)
@@ -582,7 +585,7 @@ NDBAM::parse_contents(const PackageID & id,
             }
             time_t mtime(destringify<time_t>(tokens.find("mtime")->second));
 
-            std::shared_ptr<ContentsSymEntry> entry(std::make_shared<ContentsSymEntry>(path, target));
+            std::shared_ptr<ContentsSymEntry> entry(std::make_shared<ContentsSymEntry>(FSPath(path), target));
             entry->add_metadata_key(std::make_shared<LiteralMetadataTimeKey>("mtime", "mtime", mkt_normal, Timestamp(mtime, 0)));
             on_sym(entry);
         }
@@ -608,13 +611,12 @@ NDBAM::category_names_containing_package(const PackageNamePart & p) const
                 "' in NDBAM at '" + stringify(_imp->location) + "':");
 
         cncp.category_names_containing_package = std::make_shared<CategoryNamePartSet>();
-        FSEntry dd(_imp->location / "indices" / "packages" / stringify(p));
-        if (dd.is_directory_or_symlink_to_directory())
+        FSPath dd(_imp->location / "indices" / "packages" / stringify(p));
+        if (dd.stat().is_directory_or_symlink_to_directory())
         {
-            for (DirIterator d(dd), d_end ;
-                    d != d_end ; ++d)
+            for (FSIterator d(dd, { }), d_end ; d != d_end ; ++d)
             {
-                if (! d->is_directory_or_symlink_to_directory())
+                if (! d->stat().is_directory_or_symlink_to_directory())
                     continue;
                 if ('-' == d->basename().at(0))
                     continue;
@@ -645,10 +647,10 @@ NDBAM::deindex(const QualifiedPackageName & q) const
 {
     Context context("When deindexing '" + stringify(q) + "' in NDBAM at '" + stringify(_imp->location) + "':");
 
-    FSEntry cp_index_sym(_imp->location / "indices" / "categories" / stringify(q.category()) / stringify(q.package()));
+    FSPath cp_index_sym(_imp->location / "indices" / "categories" / stringify(q.category()) / stringify(q.package()));
     cp_index_sym.unlink();
 
-    FSEntry pc_index_sym(_imp->location / "indices" / "packages" / stringify(q.package()) / stringify(q.category()));
+    FSPath pc_index_sym(_imp->location / "indices" / "packages" / stringify(q.package()) / stringify(q.category()));
     pc_index_sym.unlink();
 }
 
@@ -658,16 +660,16 @@ NDBAM::index(const QualifiedPackageName & q, const std::string & d) const
     Context context("When indexing '" + stringify(q) + "' to '" + stringify(d) +
             "' in NDBAM at '" + stringify(_imp->location) + "':");
 
-    FSEntry cp_index_sym(_imp->location / "indices" / "categories" / stringify(q.category()));
-    cp_index_sym.mkdir();
+    FSPath cp_index_sym(_imp->location / "indices" / "categories" / stringify(q.category()));
+    cp_index_sym.mkdir(0755, { fspmkdo_ok_if_exists });
     cp_index_sym /= stringify(q.package());
-    if (! cp_index_sym.exists())
+    if (! cp_index_sym.stat().exists())
         cp_index_sym.symlink("../../../data/" + d);
 
-    FSEntry pc_index_sym(_imp->location / "indices" / "packages" / stringify(q.package()));
-    pc_index_sym.mkdir();
+    FSPath pc_index_sym(_imp->location / "indices" / "packages" / stringify(q.package()));
+    pc_index_sym.mkdir(0755, { fspmkdo_ok_if_exists });
     pc_index_sym /= stringify(q.category());
-    if (! pc_index_sym.exists())
+    if (! pc_index_sym.stat().exists())
         pc_index_sym.symlink("../../../data/" + d);
 }
 

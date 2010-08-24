@@ -25,10 +25,12 @@
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/member_iterator-impl.hh>
 #include <paludis/util/tokeniser.hh>
-#include <paludis/util/dir_iterator.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/system.hh>
+#include <paludis/util/fs_iterator.hh>
+#include <paludis/util/fs_path.hh>
+#include <paludis/util/fs_stat.hh>
+
 #include <functional>
 #include <vector>
 #include <map>
@@ -106,7 +108,7 @@ namespace
         return std::make_shared<T_>();
     }
 
-    const std::shared_ptr<ScriptCommand> make_script_command(const std::string & s, const FSEntry & f)
+    const std::shared_ptr<ScriptCommand> make_script_command(const std::string & s, const FSPath & f)
     {
         return std::make_shared<ScriptCommand>(s, f);
     }
@@ -121,14 +123,14 @@ CommandFactory::CommandFactory() :
     for (std::vector<std::string>::const_iterator t(paths.begin()), t_end(paths.end()) ;
             t != t_end ; ++t)
     {
-        FSEntry path(*t);
-        if (! path.exists())
+        FSPath path(*t);
+        if (! path.stat().exists())
             continue;
 
-        for (DirIterator s(path, { dio_inode_sort }), s_end ;
-                s != s_end ; ++s)
+        for (FSIterator s(path, { fsio_inode_sort }), s_end ; s != s_end ; ++s)
         {
-            if (s->is_regular_file_or_symlink_to_regular_file() && s->has_permission(fs_ug_others, fs_perm_execute))
+            FSStat s_star_stat(*s);
+            if (s_star_stat.is_regular_file_or_symlink_to_regular_file() && (0 != (s_star_stat.permissions() & S_IXOTH)))
             {
                 std::string command_name(s->basename());
                 std::string::size_type p(command_name.rfind('.'));

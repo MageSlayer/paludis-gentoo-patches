@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,7 +21,6 @@
 #define PALUDIS_GUARD_PALUDIS_LITERAL_METADATA_KEY_HH 1
 
 #include <paludis/metadata_key.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/pimp.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
@@ -140,32 +139,32 @@ namespace paludis
     };
 
     /**
-     * A LiteralMetadataFSEntrySequenceKey is a MetadataCollectionKey<FSEntrySequence>
+     * A LiteralMetadataFSPathSequenceKey is a MetadataCollectionKey<FSPathSequence>
      * whose value is known at construction time.
      *
      * \ingroup g_literal_metadata_key
      * \since 0.26
      */
-    class PALUDIS_VISIBLE LiteralMetadataFSEntrySequenceKey :
-        public MetadataCollectionKey<FSEntrySequence>,
-        private Pimp<LiteralMetadataFSEntrySequenceKey>
+    class PALUDIS_VISIBLE LiteralMetadataFSPathSequenceKey :
+        public MetadataCollectionKey<FSPathSequence>,
+        private Pimp<LiteralMetadataFSPathSequenceKey>
     {
         private:
-            Pimp<LiteralMetadataFSEntrySequenceKey>::ImpPtr & _imp;
+            Pimp<LiteralMetadataFSPathSequenceKey>::ImpPtr & _imp;
 
         public:
             ///\name Basic operations
             ///\{
 
-            LiteralMetadataFSEntrySequenceKey(const std::string &, const std::string &, const MetadataKeyType,
-                    const std::shared_ptr<const FSEntrySequence> &);
-            ~LiteralMetadataFSEntrySequenceKey();
+            LiteralMetadataFSPathSequenceKey(const std::string &, const std::string &, const MetadataKeyType,
+                    const std::shared_ptr<const FSPathSequence> &);
+            ~LiteralMetadataFSPathSequenceKey();
 
             ///\}
 
-            virtual const std::shared_ptr<const FSEntrySequence> value() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual const std::shared_ptr<const FSPathSequence> value() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::string pretty_print_flat(const Formatter<FSEntry> &) const
+            virtual std::string pretty_print_flat(const Formatter<FSPath> &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));

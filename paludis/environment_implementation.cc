@@ -134,33 +134,33 @@ EnvironmentImplementation::~EnvironmentImplementation()
 }
 
 
-std::shared_ptr<const FSEntrySequence>
+std::shared_ptr<const FSPathSequence>
 EnvironmentImplementation::bashrc_files() const
 {
-    return std::make_shared<FSEntrySequence>();
+    return std::make_shared<FSPathSequence>();
 }
 
-std::shared_ptr<const FSEntrySequence>
+std::shared_ptr<const FSPathSequence>
 EnvironmentImplementation::syncers_dirs() const
 {
-    std::shared_ptr<FSEntrySequence> result(std::make_shared<FSEntrySequence>());
-    result->push_back(FSEntry(DATADIR "/paludis/syncers"));
-    result->push_back(FSEntry(LIBEXECDIR "/paludis/syncers"));
+    std::shared_ptr<FSPathSequence> result(std::make_shared<FSPathSequence>());
+    result->push_back(FSPath(DATADIR "/paludis/syncers"));
+    result->push_back(FSPath(LIBEXECDIR "/paludis/syncers"));
     return result;
 }
 
-std::shared_ptr<const FSEntrySequence>
+std::shared_ptr<const FSPathSequence>
 EnvironmentImplementation::fetchers_dirs() const
 {
-    std::shared_ptr<FSEntrySequence> result(std::make_shared<FSEntrySequence>());
+    std::shared_ptr<FSPathSequence> result(std::make_shared<FSPathSequence>());
     std::string fetchers_dir(getenv_with_default("PALUDIS_FETCHERS_DIR", ""));
     if (fetchers_dir.empty())
     {
-        result->push_back(FSEntry(DATADIR "/paludis/fetchers"));
-        result->push_back(FSEntry(LIBEXECDIR "/paludis/fetchers"));
+        result->push_back(FSPath(DATADIR "/paludis/fetchers"));
+        result->push_back(FSPath(LIBEXECDIR "/paludis/fetchers"));
     }
     else
-        result->push_back(FSEntry(fetchers_dir));
+        result->push_back(FSPath(fetchers_dir));
     return result;
 }
 

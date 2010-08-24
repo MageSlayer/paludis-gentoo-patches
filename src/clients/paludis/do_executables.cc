@@ -18,7 +18,6 @@
  */
 
 #include "do_executables.hh"
-#include "paludis/util/fs_entry-fwd.hh"
 #include "paludis/util/log.hh"
 #include "paludis/util/tokeniser.hh"
 #include <src/output/colour.hh>
@@ -40,19 +39,20 @@ namespace
         private:
             const std::list<std::string> _paths;
 
-            bool is_file_in_path(FSEntry file)
+            bool is_file_in_path(FSPath file)
             {
                 try
                 {
-                    if (file.exists())
+                    FSStat file_stat(file);
+                    if (file_stat.exists())
                     {
-                        if (file.has_permission(fs_ug_others, fs_perm_execute))
+                        if (0 != (file_stat.permissions() & S_IXOTH))
                         {
-                            FSEntry dirname(file.dirname());
+                            FSPath dirname(file.dirname());
                             for (std::list<std::string>::const_iterator it(_paths.begin()),
                                     it_end(_paths.end()); it_end != it; ++it)
                             {
-                                if (dirname == *it)
+                                if (stringify(dirname) == *it)
                                     return true;
                             }
                         }
@@ -92,8 +92,8 @@ namespace
 
             void visit(const ContentsSymEntry & e)
             {
-                FSEntry sym(e.location_key()->value());
-                FSEntry real(sym.realpath_if_exists());
+                FSPath sym(e.location_key()->value());
+                FSPath real(sym.realpath_if_exists());
                 if (sym != real)
                     if (is_file_in_path(sym))
                         cout << "    " << colour(cl_sym, e.location_key()->value()) << endl;

@@ -24,6 +24,7 @@
 #include <paludis/util/pimp.hh>
 #include <paludis/util/graph-fwd.hh>
 #include <paludis/util/sequence-fwd.hh>
+#include <paludis/util/fs_path-fwd.hh>
 #include <paludis/output_manager-fwd.hh>
 #include <memory>
 #include <string>
@@ -40,7 +41,6 @@
 
 namespace paludis
 {
-    class FSEntry;
     class Environment;
     class Hook;
     class HookResult;
@@ -72,7 +72,7 @@ namespace paludis
                     const Hook &,
                     const std::shared_ptr<OutputManager> & optional_output_manager) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-            virtual const FSEntry file_name() const = 0;
+            virtual const FSPath file_name() const = 0;
 
             virtual void add_dependencies(const Hook &, DirectedGraph<std::string, int> &) = 0;
 
@@ -115,7 +115,7 @@ namespace paludis
             /**
              * Add a new hook directory.
              */
-            void add_dir(const FSEntry &, const bool output_prefixed);
+            void add_dir(const FSPath &, const bool output_prefixed);
     };
 }
 

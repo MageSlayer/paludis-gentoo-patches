@@ -23,7 +23,6 @@
 #include <paludis/package_id.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/action-fwd.hh>
-#include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/pimp.hh>
 #include <paludis/output_manager-fwd.hh>
 #include <paludis/ndbam-fwd.hh>
@@ -47,7 +46,7 @@ namespace paludis
 
             public:
                 InstalledUnpackagedID(const Environment * const, const QualifiedPackageName &, const VersionSpec &,
-                        const SlotName &, const RepositoryName &, const FSEntry &, const std::string &, const FSEntry &,
+                        const SlotName &, const RepositoryName &, const FSPath &, const std::string &, const FSPath &,
                         const NDBAM * const);
 
                 ~InstalledUnpackagedID();
@@ -75,7 +74,7 @@ namespace paludis
                 virtual const std::shared_ptr<const MetadataValueKey<std::string> > long_description_key() const;
                 virtual const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Contents> > > contents_key() const;
                 virtual const std::shared_ptr<const MetadataTimeKey> installed_time_key() const;
-                virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > fs_location_key() const;
+                virtual const std::shared_ptr<const MetadataValueKey<FSPath> > fs_location_key() const;
                 virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > behaviours_key() const;
                 virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > from_repositories_key() const;
                 virtual const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Choices> > > choices_key() const;

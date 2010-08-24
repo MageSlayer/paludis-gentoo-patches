@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,7 +21,6 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_GENTOO_E_KEY_HH 1
 
 #include <paludis/metadata_key.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/map-fwd.hh>
 #include <paludis/repositories/e/eapi-fwd.hh>
@@ -289,7 +288,7 @@ namespace paludis
             public:
                 EContentsKey(
                         const std::shared_ptr<const ERepositoryID> &,
-                        const std::string &, const std::string &, const FSEntry &, const MetadataKeyType);
+                        const std::string &, const std::string &, const FSPath &, const MetadataKeyType);
                 ~EContentsKey();
 
                 const std::shared_ptr<const Contents> value() const
@@ -306,7 +305,7 @@ namespace paludis
         {
             public:
                 EMTimeKey(const std::shared_ptr<const ERepositoryID> &,
-                        const std::string &, const std::string &, const FSEntry &, const MetadataKeyType);
+                        const std::string &, const std::string &, const FSPath &, const MetadataKeyType);
                 ~EMTimeKey();
 
                 Timestamp value() const

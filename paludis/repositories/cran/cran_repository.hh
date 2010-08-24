@@ -22,7 +22,6 @@
 #define PALUDIS_GUARD_PALUDIS_CRAN_REPOSITORY_HH 1
 
 #include <paludis/repository.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/pimp.hh>
 #include <paludis/environment-fwd.hh>
 #include <memory>
@@ -58,11 +57,11 @@ namespace paludis
      */
     struct CRANRepositoryParams
     {
-        NamedValue<n::builddir, FSEntry> builddir;
-        NamedValue<n::distdir, FSEntry> distdir;
+        NamedValue<n::builddir, FSPath> builddir;
+        NamedValue<n::distdir, FSPath> distdir;
         NamedValue<n::environment, const Environment *> environment;
-        NamedValue<n::library, FSEntry> library;
-        NamedValue<n::location, FSEntry> location;
+        NamedValue<n::library, FSPath> library;
+        NamedValue<n::location, FSPath> location;
         NamedValue<n::mirror, std::string> mirror;
         NamedValue<n::sync, std::string> sync;
     };
@@ -156,8 +155,8 @@ namespace paludis
             /* Keys */
 
             virtual const std::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
-            virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > location_key() const;
-            virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<FSPath> > location_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<FSPath> > installed_root_key() const;
             virtual const std::shared_ptr<const MetadataValueKey<std::string> > accept_keywords_key() const;
             virtual const std::shared_ptr<const MetadataValueKey<std::string> > sync_host_key() const;
 

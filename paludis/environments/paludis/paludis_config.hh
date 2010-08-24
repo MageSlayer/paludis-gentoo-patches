@@ -28,7 +28,6 @@
 #include <paludis/util/map-fwd.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/util/named_value.hh>
-#include <paludis/util/fs_entry-fwd.hh>
 
 #include <string>
 
@@ -134,14 +133,14 @@ namespace paludis
 
                 RepositoryConstIterator end_repositories() const;
 
-                const std::function<std::string (const std::string &)> repo_func_from_file(const FSEntry &);
+                const std::function<std::string (const std::string &)> repo_func_from_file(const FSPath &);
 
                 ///\}
 
                 /**
                  * Our bashrc files.
                  */
-                std::shared_ptr<const FSEntrySequence> bashrc_files() const;
+                std::shared_ptr<const FSPathSequence> bashrc_files() const;
 
                 /**
                  * The ROOT.

@@ -68,9 +68,9 @@
 #include <paludis/util/config_file.hh>
 #include <paludis/util/create_iterator-impl.hh>
 #include <paludis/util/destringify.hh>
-#include <paludis/util/dir_iterator.hh>
 #include <paludis/util/extract_host_from_url.hh>
-#include <paludis/util/fs_entry.hh>
+#include <paludis/util/fs_stat.hh>
+#include <paludis/util/fs_iterator.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/singleton-impl.hh>
@@ -135,18 +135,18 @@ typedef std::unordered_map<QualifiedPackageName,
 typedef std::unordered_map<std::string, std::shared_ptr<MirrorsSequence> > MirrorMap;
 typedef std::unordered_map<QualifiedPackageName, std::shared_ptr<const PackageDepSpec>, Hash<QualifiedPackageName> > VirtualsMap;
 
-typedef std::map<FSEntry, std::string> EAPIForFileMap;
+typedef std::map<FSPath, std::string, FSPathComparator> EAPIForFileMap;
 
 namespace
 {
-    std::shared_ptr<FSEntrySequence> get_master_locations(
+    std::shared_ptr<FSPathSequence> get_master_locations(
             const std::shared_ptr<const ERepositorySequence> & r)
     {
-        std::shared_ptr<FSEntrySequence> result;
+        std::shared_ptr<FSPathSequence> result;
 
         if (r)
         {
-            result = std::make_shared<FSEntrySequence>();
+            result = std::make_shared<FSPathSequence>();
             for (ERepositorySequence::ConstIterator e(r->begin()), e_end(r->end()) ;
                     e != e_end ; ++e)
                 result->push_back((*e)->location_key()->value());
@@ -220,7 +220,7 @@ namespace paludis
         mutable MirrorMap mirrors;
 
         mutable std::shared_ptr<erepository::Profile> profile_ptr;
-        mutable std::shared_ptr<const FSEntry> main_profile_path;
+        mutable std::shared_ptr<const FSPath> main_profile_path;
 
         mutable std::shared_ptr<ERepositoryNews> news_ptr;
 
@@ -237,21 +237,21 @@ namespace paludis
         std::shared_ptr<const MetadataValueKey<std::string> > format_key;
         std::shared_ptr<const MetadataValueKey<std::string> > layout_key;
         std::shared_ptr<const MetadataValueKey<std::string> > profile_layout_key;
-        std::shared_ptr<const MetadataValueKey<FSEntry> > location_key;
-        std::shared_ptr<const MetadataCollectionKey<FSEntrySequence> > profiles_key;
-        std::shared_ptr<const MetadataValueKey<FSEntry> > cache_key;
-        std::shared_ptr<const MetadataValueKey<FSEntry> > write_cache_key;
+        std::shared_ptr<const MetadataValueKey<FSPath> > location_key;
+        std::shared_ptr<const MetadataCollectionKey<FSPathSequence> > profiles_key;
+        std::shared_ptr<const MetadataValueKey<FSPath> > cache_key;
+        std::shared_ptr<const MetadataValueKey<FSPath> > write_cache_key;
         std::shared_ptr<const MetadataValueKey<std::string> > append_repository_name_to_write_cache_key;
         std::shared_ptr<const MetadataValueKey<std::string> > ignore_deprecated_profiles;
-        std::shared_ptr<const MetadataValueKey<FSEntry> > names_cache_key;
-        std::shared_ptr<const MetadataValueKey<FSEntry> > distdir_key;
-        std::shared_ptr<const MetadataCollectionKey<FSEntrySequence> > eclassdirs_key;
-        std::shared_ptr<const MetadataValueKey<FSEntry> > securitydir_key;
-        std::shared_ptr<const MetadataValueKey<FSEntry> > setsdir_key;
-        std::shared_ptr<const MetadataValueKey<FSEntry> > newsdir_key;
+        std::shared_ptr<const MetadataValueKey<FSPath> > names_cache_key;
+        std::shared_ptr<const MetadataValueKey<FSPath> > distdir_key;
+        std::shared_ptr<const MetadataCollectionKey<FSPathSequence> > eclassdirs_key;
+        std::shared_ptr<const MetadataValueKey<FSPath> > securitydir_key;
+        std::shared_ptr<const MetadataValueKey<FSPath> > setsdir_key;
+        std::shared_ptr<const MetadataValueKey<FSPath> > newsdir_key;
         std::shared_ptr<const MetadataValueKey<std::string> > sync_key;
         std::shared_ptr<const MetadataValueKey<std::string> > sync_options_key;
-        std::shared_ptr<const MetadataValueKey<FSEntry> > builddir_key;
+        std::shared_ptr<const MetadataValueKey<FSPath> > builddir_key;
         std::shared_ptr<const MetadataCollectionKey<Sequence<std::string> > > master_repositories_key;
         std::shared_ptr<const MetadataValueKey<std::string> > eapi_when_unknown_key;
         std::shared_ptr<const MetadataValueKey<std::string> > eapi_when_unspecified_key;
@@ -262,8 +262,8 @@ namespace paludis
         std::shared_ptr<const MetadataValueKey<std::string> > binary_destination_key;
         std::shared_ptr<const MetadataValueKey<std::string> > binary_src_uri_prefix_key;
         std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > binary_keywords_filter;
-        std::shared_ptr<const MetadataValueKey<FSEntry> > accounts_repository_data_location_key;
-        std::shared_ptr<const MetadataValueKey<FSEntry> > e_updates_location_key;
+        std::shared_ptr<const MetadataValueKey<FSPath> > accounts_repository_data_location_key;
+        std::shared_ptr<const MetadataValueKey<FSPath> > e_updates_location_key;
         std::shared_ptr<const MetadataValueKey<std::string> > accept_keywords_key;
         std::shared_ptr<const MetadataValueKey<std::string> > sync_host_key;
         std::list<std::shared_ptr<const MetadataKey> > about_keys;
@@ -289,13 +289,13 @@ namespace paludis
                     mkt_normal, params.layout())),
         profile_layout_key(std::make_shared<LiteralMetadataValueKey<std::string> >("profile_layout", "profile_layout",
                     mkt_normal, params.profile_layout())),
-        location_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("location", "location",
+        location_key(std::make_shared<LiteralMetadataValueKey<FSPath> >("location", "location",
                     mkt_significant, params.location())),
-        profiles_key(std::make_shared<LiteralMetadataFSEntrySequenceKey>(
+        profiles_key(std::make_shared<LiteralMetadataFSPathSequenceKey>(
                     "profiles", "profiles", mkt_normal, params.profiles())),
-        cache_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("cache", "cache",
+        cache_key(std::make_shared<LiteralMetadataValueKey<FSPath> >("cache", "cache",
                     mkt_normal, params.cache())),
-        write_cache_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("write_cache", "write_cache",
+        write_cache_key(std::make_shared<LiteralMetadataValueKey<FSPath> >("write_cache", "write_cache",
                     mkt_normal, params.write_cache())),
         append_repository_name_to_write_cache_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
                     "append_repository_name_to_write_cache", "append_repository_name_to_write_cache",
@@ -303,23 +303,23 @@ namespace paludis
         ignore_deprecated_profiles(std::make_shared<LiteralMetadataValueKey<std::string> >(
                     "ignore_deprecated_profiles", "ignore_deprecated_profiles",
                     mkt_internal, stringify(params.ignore_deprecated_profiles()))),
-        names_cache_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >(
+        names_cache_key(std::make_shared<LiteralMetadataValueKey<FSPath> >(
                     "names_cache", "names_cache", mkt_normal, params.names_cache())),
-        distdir_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >(
+        distdir_key(std::make_shared<LiteralMetadataValueKey<FSPath> >(
                     "distdir", "distdir", mkt_normal, params.distdir())),
-        eclassdirs_key(std::make_shared<LiteralMetadataFSEntrySequenceKey>(
+        eclassdirs_key(std::make_shared<LiteralMetadataFSPathSequenceKey>(
                     "eclassdirs", "eclassdirs", mkt_normal, params.eclassdirs())),
-        securitydir_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >(
+        securitydir_key(std::make_shared<LiteralMetadataValueKey<FSPath> >(
                     "securitydir", "securitydir", mkt_normal, params.securitydir())),
-        setsdir_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >(
+        setsdir_key(std::make_shared<LiteralMetadataValueKey<FSPath> >(
                     "setsdir", "setsdir", mkt_normal, params.setsdir())),
-        newsdir_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >(
+        newsdir_key(std::make_shared<LiteralMetadataValueKey<FSPath> >(
                     "newsdir", "newsdir", mkt_normal, params.newsdir())),
         sync_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
                     "sync", "sync", mkt_normal, params.sync())),
         sync_options_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
                     "sync_options", "sync_options", mkt_normal, params.sync_options())),
-        builddir_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >(
+        builddir_key(std::make_shared<LiteralMetadataValueKey<FSPath> >(
                     "builddir", "builddir", mkt_normal, params.builddir())),
         master_repositories_key(params.master_repositories() ?
                 std::shared_ptr<MetadataCollectionKey<Sequence<std::string> > >(std::make_shared<LiteralMetadataStringSequenceKey>(
@@ -335,15 +335,15 @@ namespace paludis
                     "use_manifest", "use_manifest", mkt_normal, stringify(params.use_manifest()))),
         info_pkgs_key(layout->info_packages_files()->end() != std::find_if(layout->info_packages_files()->begin(),
                     layout->info_packages_files()->end(),
-                    std::bind(std::mem_fn(&FSEntry::is_regular_file_or_symlink_to_regular_file),
-                        std::placeholders::_1)) ?
+                    std::bind(std::mem_fn(&FSStat::is_regular_file_or_symlink_to_regular_file),
+                        std::bind(std::mem_fn(&FSPath::stat), std::placeholders::_1))) ?
                 std::make_shared<InfoPkgsMetadataKey>(params.environment(), layout->info_packages_files(), repo) :
                 std::shared_ptr<InfoPkgsMetadataKey>()
                 ),
         info_vars_key(layout->info_variables_files()->end() != std::find_if(layout->info_variables_files()->begin(),
                     layout->info_variables_files()->end(),
-                    std::bind(std::mem_fn(&FSEntry::is_regular_file_or_symlink_to_regular_file),
-                        std::placeholders::_1)) ?
+                    std::bind(std::mem_fn(&FSStat::is_regular_file_or_symlink_to_regular_file),
+                        std::bind(std::mem_fn(&FSPath::stat), std::placeholders::_1))) ?
                 std::make_shared<InfoVarsMetadataKey>(layout->info_variables_files()) :
                 std::shared_ptr<InfoVarsMetadataKey>()
                 ),
@@ -363,7 +363,7 @@ namespace paludis
 
         master_mtime(0)
     {
-        if ((params.location() / "metadata" / "about.conf").is_regular_file_or_symlink_to_regular_file())
+        if ((params.location() / "metadata" / "about.conf").stat().is_regular_file_or_symlink_to_regular_file())
         {
             Context context("When loading about.conf:");
             KeyValueConfigFile k(params.location() / "metadata" / "about.conf", { },
@@ -385,9 +385,10 @@ namespace paludis
                                 mkt_significant, k.get("homepage")));
         }
 
-        FSEntry mtf(params.location() / "metadata" / "timestamp");
-        if (mtf.exists())
-            master_mtime = mtf.mtim().seconds();
+        FSPath mtf(params.location() / "metadata" / "timestamp");
+        FSStat mtfs(mtf.stat());
+        if (mtfs.exists())
+            master_mtime = mtfs.mtim().seconds();
     }
 
     Imp<ERepository>::~Imp()
@@ -402,23 +403,23 @@ namespace paludis
         if (profile_ptr)
             return;
 
-        std::shared_ptr<const FSEntrySequence> profiles(params.profiles());
+        std::shared_ptr<const FSPathSequence> profiles(params.profiles());
 
         if (params.auto_profiles())
         {
-            FSEntry profiles_desc("/dev/null");
-            for (FSEntrySequence::ConstIterator f(layout->profiles_desc_files()->begin()),
+            FSPath profiles_desc("/dev/null");
+            for (FSPathSequence::ConstIterator f(layout->profiles_desc_files()->begin()),
                     f_end(layout->profiles_desc_files()->end()) ;
                     f != f_end ; ++f)
-                if (f->is_regular_file_or_symlink_to_regular_file())
+                if (f->stat().is_regular_file_or_symlink_to_regular_file())
                     profiles_desc = *f;
 
-            std::shared_ptr<FSEntrySequence> auto_profiles(std::make_shared<FSEntrySequence>());
+            std::shared_ptr<FSPathSequence> auto_profiles(std::make_shared<FSPathSequence>());
 
-            if (profiles_desc == FSEntry("/dev/null"))
+            if (profiles_desc == FSPath("/dev/null"))
             {
-                auto_profiles->push_back(FSEntry("/var/empty"));
-                main_profile_path = std::make_shared<FSEntry>("/var/empty");
+                auto_profiles->push_back(FSPath("/var/empty"));
+                main_profile_path = std::make_shared<FSPath>("/var/empty");
             }
             else
             {
@@ -432,18 +433,18 @@ namespace paludis
                     if (tokens.size() < 3)
                         continue;
 
-                    FSEntry p(profiles_desc.dirname().realpath().dirname() / "profiles" / tokens.at(1));
+                    FSPath p(profiles_desc.dirname().realpath().dirname() / "profiles" / tokens.at(1));
                     auto_profiles->push_back(p);
-                    main_profile_path = std::make_shared<FSEntry>(p);
+                    main_profile_path = std::make_shared<FSPath>(p);
                     break;
                 }
             }
             profiles = auto_profiles;
         }
         else if (params.profiles()->empty())
-            main_profile_path = std::make_shared<FSEntry>("/var/empty");
+            main_profile_path = std::make_shared<FSPath>("/var/empty");
         else
-            main_profile_path = std::make_shared<FSEntry>(*params.profiles()->begin());
+            main_profile_path = std::make_shared<FSPath>(*params.profiles()->begin());
 
         profile_ptr = ProfileFactory::get_instance()->create(
                 params.profile_layout(),
@@ -457,18 +458,18 @@ namespace paludis
 namespace
 {
     RepositoryName
-    fetch_repo_name(const FSEntry & tree_root)
+    fetch_repo_name(const FSPath & tree_root)
     {
         bool illegal(false);
         try
         {
             do
             {
-                FSEntry name_file(tree_root);
+                FSPath name_file(tree_root);
                 name_file /= "profiles";
                 name_file /= "repo_name";
 
-                if (! name_file.is_regular_file())
+                if (! name_file.stat().is_regular_file())
                     break;
 
                 LineConfigFile f(name_file, { lcfo_disallow_comments, lcfo_disallow_continuations, lcfo_no_skip_blank_lines });
@@ -612,7 +613,7 @@ ERepository::repository_masked(const PackageID & id) const
 
         using namespace std::placeholders;
 
-        std::shared_ptr<const FSEntrySequence> repository_mask_files(_imp->layout->repository_mask_files());
+        std::shared_ptr<const FSPathSequence> repository_mask_files(_imp->layout->repository_mask_files());
         ProfileFile<MaskFile> repository_mask_file(this);
         std::for_each(repository_mask_files->begin(), repository_mask_files->end(),
                       std::bind(&ProfileFile<MaskFile>::add_file, std::ref(repository_mask_file), _1));
@@ -671,11 +672,11 @@ ERepository::arch_flags() const
         _imp->arch_flags = std::make_shared<Set<UnprefixedChoiceName>>();
 
         bool found_one(false);
-        std::shared_ptr<const FSEntrySequence> arch_list_files(_imp->layout->arch_list_files());
-        for (FSEntrySequence::ConstIterator p(arch_list_files->begin()), p_end(arch_list_files->end()) ;
+        std::shared_ptr<const FSPathSequence> arch_list_files(_imp->layout->arch_list_files());
+        for (FSPathSequence::ConstIterator p(arch_list_files->begin()), p_end(arch_list_files->end()) ;
                 p != p_end ; ++p)
         {
-            if (! p->exists())
+            if (! p->stat().exists())
                 continue;
 
             LineConfigFile archs(*p, { lcfo_disallow_continuations });
@@ -702,11 +703,11 @@ ERepository::need_mirrors() const
     if (! _imp->has_mirrors)
     {
         bool found_one(false);
-        std::shared_ptr<const FSEntrySequence> mirror_files(_imp->layout->mirror_files());
-        for (FSEntrySequence::ConstIterator p(mirror_files->begin()), p_end(mirror_files->end()) ;
+        std::shared_ptr<const FSPathSequence> mirror_files(_imp->layout->mirror_files());
+        for (FSPathSequence::ConstIterator p(mirror_files->begin()), p_end(mirror_files->end()) ;
                 p != p_end ; ++p)
         {
-            if (p->exists())
+            if (p->stat().exists())
             {
                 LineConfigFile mirrors(*p, { lcfo_disallow_continuations });
                 for (LineConfigFile::ConstIterator line(mirrors.begin()) ; line != mirrors.end() ; ++line)
@@ -800,14 +801,14 @@ ERepository::purge_invalid_cache() const
 {
     Context context("When purging invalid write_cache:");
 
-    FSEntry write_cache(_imp->params.write_cache());
-    if (write_cache == FSEntry("/var/empty"))
+    FSPath write_cache(_imp->params.write_cache());
+    if (write_cache == FSPath("/var/empty"))
         return;
 
     if (_imp->params.append_repository_name_to_write_cache())
         write_cache /= stringify(name());
 
-    if (! write_cache.is_directory_or_symlink_to_directory())
+    if (! write_cache.stat().is_directory_or_symlink_to_directory())
         return;
 
     const std::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(
@@ -815,18 +816,19 @@ ERepository::purge_invalid_cache() const
 
     std::shared_ptr<EclassMtimes> eclass_mtimes(std::make_shared<EclassMtimes>(this, _imp->params.eclassdirs()));
     time_t master_mtime(0);
-    FSEntry master_mtime_file(_imp->params.location() / "metadata" / "timestamp");
-    if (master_mtime_file.exists())
-        master_mtime = master_mtime_file.mtim().seconds();
+    FSPath master_mtime_file(_imp->params.location() / "metadata" / "timestamp");
+    FSStat master_mtime_file_stat(master_mtime_file.stat());
+    if (master_mtime_file_stat.exists())
+        master_mtime = master_mtime_file_stat.mtim().seconds();
 
-    for (DirIterator dc(write_cache, { dio_inode_sort }), dc_end ; dc != dc_end ; ++dc)
+    for (FSIterator dc(write_cache, { fsio_inode_sort }), dc_end ; dc != dc_end ; ++dc)
     {
-        if (! dc->is_directory_or_symlink_to_directory())
+        if (! dc->stat().is_directory_or_symlink_to_directory())
             continue;
 
-        for (DirIterator dp(*dc, { dio_inode_sort }), dp_end ; dp != dp_end ; ++dp)
+        for (FSIterator dp(*dc, { fsio_inode_sort }), dp_end ; dp != dp_end ; ++dp)
         {
-            if (! dp->is_regular_file_or_symlink_to_regular_file())
+            if (! dp->stat().is_regular_file_or_symlink_to_regular_file())
                 continue;
 
             try
@@ -852,7 +854,7 @@ ERepository::purge_invalid_cache() const
                 }
 
                 if (! found)
-                    FSEntry(*dp).unlink();
+                    FSPath(*dp).unlink();
             }
             catch (const Exception & e)
             {
@@ -1075,19 +1077,19 @@ ERepository::some_ids_might_not_be_masked() const
 void
 ERepository::make_manifest(const QualifiedPackageName & qpn)
 {
-    FSEntry package_dir = _imp->layout->package_directory(qpn);
+    FSPath package_dir = _imp->layout->package_directory(qpn);
 
-    FSEntry(package_dir / "Manifest").unlink();
-    SafeOFStream manifest(FSEntry(package_dir / "Manifest"));
+    FSPath(package_dir / "Manifest").unlink();
+    SafeOFStream manifest(FSPath(package_dir / "Manifest"));
     if (! manifest)
         throw ERepositoryConfigurationError("Couldn't open Manifest for writing.");
 
-    std::shared_ptr<Map<FSEntry, std::string> > files = _imp->layout->manifest_files(qpn);
+    auto files(_imp->layout->manifest_files(qpn));
 
-    for (Map<FSEntry, std::string>::ConstIterator f(files->begin()) ;
-            f != files->end() ; ++f)
+    for (auto f(files->begin()) ; f != files->end() ; ++f)
     {
-        FSEntry file(f->first);
+        FSPath file(f->first);
+        FSStat file_stat(file);
         std::string filename = file.basename();
         std::string file_type(f->second);
 
@@ -1100,7 +1102,7 @@ ERepository::make_manifest(const QualifiedPackageName & qpn)
 
         RMD160 rmd160sum(file_stream);
         manifest << file_type << " " << filename << " "
-            << file.file_size() << " RMD160 " << rmd160sum.hexsum();
+            << file.stat().file_size() << " RMD160 " << rmd160sum.hexsum();
 
         file_stream.clear();
         file_stream.seekg(0, std::ios::beg);
@@ -1135,9 +1137,10 @@ ERepository::make_manifest(const QualifiedPackageName & qpn)
                 continue;
             done_files.insert(*d);
 
-            FSEntry f(params().distdir() / *d);
+            FSPath f(params().distdir() / *d);
+            FSStat f_stat(f);
 
-            if (! f.is_regular_file_or_symlink_to_regular_file())
+            if (! f_stat.is_regular_file_or_symlink_to_regular_file())
                 throw MissingDistfileError("Distfile '" + f.basename() + "' does not exist");
 
             SafeIFStream file_stream(f);
@@ -1145,7 +1148,7 @@ ERepository::make_manifest(const QualifiedPackageName & qpn)
             MemoisedHashes * hashes = MemoisedHashes::get_instance();
 
             manifest << "DIST " << f.basename() << " "
-                << f.file_size()
+                << f_stat.file_size()
                 << " RMD160 " << hashes->get<RMD160>(f, file_stream)
                 << " SHA1 " << hashes->get<SHA1>(f, file_stream)
                 << " SHA256 " << hashes->get<SHA256>(f, file_stream)
@@ -1192,16 +1195,16 @@ ERepository::format_key() const
     return _imp->format_key;
 }
 
-const std::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSPath> >
 ERepository::location_key() const
 {
     return _imp->location_key;
 }
 
-const std::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSPath> >
 ERepository::installed_root_key() const
 {
-    return std::shared_ptr<const MetadataValueKey<FSEntry> >();
+    return std::shared_ptr<const MetadataValueKey<FSPath> >();
 }
 
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
@@ -1219,7 +1222,7 @@ ERepository::repository_factory_name(
 
     if (key_function("location").empty())
         throw ERepositoryConfigurationError("Key 'location' unspecified or empty");
-    return fetch_repo_name(FSEntry(key_function("location")));
+    return fetch_repo_name(FSPath(key_function("location")));
 }
 
 std::shared_ptr<Repository>
@@ -1235,8 +1238,8 @@ ERepository::repository_factory_create(
     if ('/' != location.at(0))
         throw ERepositoryConfigurationError("Key 'location' must start with a / (relative paths are not allowed)");
 
-    std::shared_ptr<KeyValueConfigFile> layout_conf((FSEntry(location) / "metadata/layout.conf").exists() ?
-            new KeyValueConfigFile(FSEntry(location) / "metadata/layout.conf", { },
+    std::shared_ptr<KeyValueConfigFile> layout_conf((FSPath(location) / "metadata/layout.conf").stat().exists() ?
+            new KeyValueConfigFile(FSPath(location) / "metadata/layout.conf", { },
                 &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation)
             : 0);
 
@@ -1246,7 +1249,7 @@ ERepository::repository_factory_create(
         if (layout_conf)
         {
             Log::get_instance()->message("e.ebuild.configuration.master_repository", ll_warning, lc_context) << "Key 'master_repository' in '"
-                << f("repo_file") << "' will override '" << (FSEntry(location) / "metadata/layout.conf")
+                << f("repo_file") << "' will override '" << (FSPath(location) / "metadata/layout.conf")
                 << "'. You should probably remove the 'master_repository' setting from your repository config file.";
         }
 
@@ -1297,23 +1300,23 @@ ERepository::repository_factory_create(
             }
             catch (const NoSuchRepositoryError &)
             {
-                throw ERepositoryConfigurationError("According to '" + stringify(FSEntry(location) / "metadata/layout.conf")
+                throw ERepositoryConfigurationError("According to '" + stringify(FSPath(location) / "metadata/layout.conf")
                         + "', the repository specified by '" + f("repo_file") + "' requires repository '" + *t +
                         "', which you do not have available");
             }
         }
     }
 
-    std::shared_ptr<FSEntrySequence> profiles(std::make_shared<FSEntrySequence>());
+    std::shared_ptr<FSPathSequence> profiles(std::make_shared<FSPathSequence>());
     bool profiles_explicitly_set(false), auto_profiles(false);
-    tokenise_whitespace(f("profiles"), create_inserter<FSEntry>(std::back_inserter(*profiles)));
+    tokenise_whitespace(f("profiles"), create_inserter<FSPath>(std::back_inserter(*profiles)));
     if (profiles->empty())
     {
         if (master_repositories)
             std::copy((*master_repositories->begin())->params().profiles()->begin(),
                     (*master_repositories->begin())->params().profiles()->end(), profiles->back_inserter());
-        else if (FSEntry(location).is_directory_or_symlink_to_directory() &&
-                (DirIterator(FSEntry(location)) != DirIterator()))
+        else if (FSPath(location).stat().is_directory_or_symlink_to_directory() &&
+                (FSIterator(FSPath(location), { fsio_inode_sort, fsio_first_only }) != FSIterator()))
         {
             /* only require profiles = if we've definitely been synced. requiring profiles = on
              * unsynced doesn't play nice with layout.conf specifying masters. */
@@ -1325,8 +1328,8 @@ ERepository::repository_factory_create(
     else
         profiles_explicitly_set = true;
 
-    std::shared_ptr<FSEntrySequence> eclassdirs(std::make_shared<FSEntrySequence>());
-    tokenise_whitespace(f("eclassdirs"), create_inserter<FSEntry>(std::back_inserter(*eclassdirs)));
+    std::shared_ptr<FSPathSequence> eclassdirs(std::make_shared<FSPathSequence>());
+    tokenise_whitespace(f("eclassdirs"), create_inserter<FSPath>(std::back_inserter(*eclassdirs)));
     if (eclassdirs->empty())
     {
         if (master_repositories)
@@ -1335,7 +1338,7 @@ ERepository::repository_factory_create(
                     e_end(master_repositories->end()) ; e != e_end ; ++e)
                 std::copy((*e)->params().eclassdirs()->begin(), (*e)->params().eclassdirs()->end(), eclassdirs->back_inserter());
         }
-        eclassdirs->push_back(location + "/eclass");
+        eclassdirs->push_back(FSPath(location + "/eclass"));
     }
 
     std::string distdir(f("distdir"));
@@ -1371,7 +1374,7 @@ ERepository::repository_factory_create(
     if (cache.empty())
     {
         cache = location + "/metadata/cache";
-        if (! FSEntry(cache).exists())
+        if (! FSPath(cache).stat().exists())
             cache = "/var/empty";
     }
 
@@ -1513,9 +1516,9 @@ ERepository::repository_factory_create(
                 n::binary_distdir() = binary_distdir,
                 n::binary_keywords_filter() = binary_keywords_filter,
                 n::binary_uri_prefix() = binary_uri_prefix,
-                n::builddir() = FSEntry(builddir).realpath_if_exists(),
+                n::builddir() = FSPath(builddir).realpath_if_exists(),
                 n::cache() = cache,
-                n::distdir() = FSEntry(distdir).realpath_if_exists(),
+                n::distdir() = FSPath(distdir).realpath_if_exists(),
                 n::eapi_when_unknown() = eapi_when_unknown,
                 n::eapi_when_unspecified() = eapi_when_unspecified,
                 n::eclassdirs() = eclassdirs,
@@ -1523,21 +1526,21 @@ ERepository::repository_factory_create(
                 n::environment() = env,
                 n::ignore_deprecated_profiles() = ignore_deprecated_profiles,
                 n::layout() = layout,
-                n::location() = FSEntry(location).realpath_if_exists(),
+                n::location() = FSPath(location).realpath_if_exists(),
                 n::master_repositories() = master_repositories,
-                n::names_cache() = FSEntry(names_cache).realpath_if_exists(),
-                n::newsdir() = FSEntry(newsdir).realpath_if_exists(),
+                n::names_cache() = FSPath(names_cache).realpath_if_exists(),
+                n::newsdir() = FSPath(newsdir).realpath_if_exists(),
                 n::profile_eapi_when_unspecified() = profile_eapi,
                 n::profile_layout() = profile_layout,
                 n::profiles() = profiles,
                 n::profiles_explicitly_set() = profiles_explicitly_set,
-                n::securitydir() = FSEntry(securitydir).realpath_if_exists(),
-                n::setsdir() = FSEntry(setsdir).realpath_if_exists(),
+                n::securitydir() = FSPath(securitydir).realpath_if_exists(),
+                n::setsdir() = FSPath(setsdir).realpath_if_exists(),
                 n::sync() = sync,
                 n::sync_options() = sync_options,
                 n::use_manifest() = use_manifest,
                 n::write_bin_uri_prefix() = "",
-                n::write_cache() = FSEntry(write_cache).realpath_if_exists()
+                n::write_cache() = FSPath(write_cache).realpath_if_exists()
                     ));
 }
 
@@ -1555,8 +1558,8 @@ ERepository::repository_factory_dependencies(
         if (location.empty())
             throw ERepositoryConfigurationError("Key 'location' not specified or empty");
 
-        std::shared_ptr<KeyValueConfigFile> layout_conf((FSEntry(location) / "metadata/layout.conf").exists() ?
-                new KeyValueConfigFile(FSEntry(location) / "metadata/layout.conf", { },
+        std::shared_ptr<KeyValueConfigFile> layout_conf((FSPath(location) / "metadata/layout.conf").stat().exists() ?
+                new KeyValueConfigFile(FSPath(location) / "metadata/layout.conf", { },
                     &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation)
                 : 0);
 
@@ -1586,15 +1589,15 @@ ERepository::use_desc() const
 }
 
 const std::string
-ERepository::eapi_for_file(const FSEntry & f) const
+ERepository::eapi_for_file(const FSPath & f) const
 {
-    FSEntry dir(f.dirname());
+    FSPath dir(f.dirname());
     Lock lock(_imp->mutexes->eapi_for_file_mutex);
     EAPIForFileMap::const_iterator i(_imp->eapi_for_file_map.find(dir));
     if (i == _imp->eapi_for_file_map.end())
     {
         Context context("When finding the EAPI to use for file '" + stringify(f) + "':");
-        if ((dir / "eapi").is_regular_file_or_symlink_to_regular_file())
+        if ((dir / "eapi").stat().is_regular_file_or_symlink_to_regular_file())
         {
             LineConfigFile file(dir / "eapi", { lcfo_disallow_continuations });
             if (file.begin() == file.end())
@@ -1684,7 +1687,7 @@ namespace
         KeyValueConfigFile file;
 
         Suffixes() :
-            file(FSEntry(getenv_with_default("PALUDIS_SUFFIXES_FILE", DATADIR "/paludis/ebuild_entries_suffixes.conf")),
+            file(FSPath(getenv_with_default("PALUDIS_SUFFIXES_FILE", DATADIR "/paludis/ebuild_entries_suffixes.conf")),
                     { }, &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation)
         {
         }
@@ -1715,7 +1718,7 @@ namespace
 }
 
 const std::shared_ptr<const ERepositoryID>
-ERepository::make_id(const QualifiedPackageName & q, const FSEntry & f) const
+ERepository::make_id(const QualifiedPackageName & q, const FSPath & f) const
 {
     Context context("When creating ID for '" + stringify(q) + "' from '" + stringify(f) + "':");
 
@@ -1877,27 +1880,28 @@ namespace
 namespace
 {
     bool
-    check_userpriv(const FSEntry & f, const Environment * env, bool mandatory)
+    check_userpriv(const FSPath & f, const Environment * env, bool mandatory)
     {
         Context c("When checking permissions on '" + stringify(f) + "' for userpriv:");
 
         if (! getenv_with_default("PALUDIS_BYPASS_USERPRIV_CHECKS", "").empty())
             return false;
 
-        if (f.exists())
+        FSStat f_stat(f);
+        if (f_stat.exists())
         {
-            if (f.group() != env->reduced_gid())
+            if (f_stat.group() != env->reduced_gid())
             {
                 if (mandatory)
-                    throw ConfigurationError("Directory '" + stringify(f) + "' owned by group '" + get_group_name(f.group())
+                    throw ConfigurationError("Directory '" + stringify(f) + "' owned by group '" + get_group_name(f_stat.group())
                             + "', not '" + get_group_name(env->reduced_gid()) + "'");
                 else
                     Log::get_instance()->message("e.ebuild.userpriv_disabled", ll_warning, lc_context) << "Directory '" <<
-                        f << "' owned by group '" << get_group_name(f.group()) << "', not '"
+                        f << "' owned by group '" << get_group_name(f_stat.group()) << "', not '"
                         << get_group_name(env->reduced_gid()) << "', so cannot enable userpriv";
                 return false;
             }
-            else if (! f.has_permission(fs_ug_group, fs_perm_write))
+            else if (0 == (f_stat.permissions() & S_IWGRP))
             {
                 if (mandatory)
                     throw ConfigurationError("Directory '" + stringify(f) + "' does not have group write permission");
@@ -1949,7 +1953,7 @@ ERepository::fetch(const std::shared_ptr<const ERepositoryID> & id,
     }
 
     bool fetch_userpriv_ok(_imp->params.environment()->reduced_gid() != getgid() &&
-            check_userpriv(FSEntry(_imp->params.distdir()), _imp->params.environment(),
+            check_userpriv(FSPath(_imp->params.distdir()), _imp->params.environment(),
                 id->eapi()->supported()->userpriv_cannot_use_root()));
 
     std::string archives, all_archives;
@@ -2040,18 +2044,18 @@ ERepository::fetch(const std::shared_ptr<const ERepositoryID> & id,
             ((! fetch_action.options.ignore_unfetched()) && (! id->eapi()->supported()->ebuild_phases()->ebuild_fetch_extra().empty()))))
     {
         bool userpriv_ok((! userpriv_restrict) && (_imp->params.environment()->reduced_gid() != getgid()) &&
-                check_userpriv(FSEntry(_imp->params.builddir()), _imp->params.environment(),
+                check_userpriv(FSPath(_imp->params.builddir()), _imp->params.environment(),
                     id->eapi()->supported()->userpriv_cannot_use_root()));
         std::string use(make_use(_imp->params.environment(), *id, profile()));
         std::shared_ptr<Map<std::string, std::string> > expand_vars(make_expand(
                     _imp->params.environment(), *id, profile()));
 
-        std::shared_ptr<const FSEntrySequence> exlibsdirs(layout()->exlibsdirs(id->name()));
+        std::shared_ptr<const FSPathSequence> exlibsdirs(layout()->exlibsdirs(id->name()));
 
         EAPIPhases fetch_extra_phases(id->eapi()->supported()->ebuild_phases()->ebuild_fetch_extra());
         if ((! fetch_action.options.ignore_unfetched()) && (fetch_extra_phases.begin_phases() != fetch_extra_phases.end_phases()))
         {
-            FSEntry package_builddir(_imp->params.builddir() / (stringify(id->name().category()) + "-" +
+            FSPath package_builddir(_imp->params.builddir() / (stringify(id->name().category()) + "-" +
                     stringify(id->name().package()) + "-" + stringify(id->version()) + "-fetch_extra"));
 
             for (EAPIPhases::ConstIterator phase(fetch_extra_phases.begin_phases()), phase_end(fetch_extra_phases.end_phases()) ;
@@ -2224,12 +2228,11 @@ namespace
         return o;
     }
 
-    void installed_this(const FSEntry &)
+    void installed_this(const FSPath &)
     {
     }
 
-    bool ignore_merged(const std::shared_ptr<const FSEntrySet> & s,
-            const FSEntry & f)
+    bool ignore_merged(const std::shared_ptr<const FSPathSet> & s, const FSPath & f)
     {
         return s->end() != s->find(f);
     }
@@ -2372,17 +2375,17 @@ ERepository::install(const std::shared_ptr<const ERepositoryID> & id,
     std::shared_ptr<Map<std::string, std::string> > expand_vars(make_expand(
                 _imp->params.environment(), *id, profile()));
 
-    std::shared_ptr<const FSEntrySequence> exlibsdirs(layout()->exlibsdirs(id->name()));
+    std::shared_ptr<const FSPathSequence> exlibsdirs(layout()->exlibsdirs(id->name()));
 
     bool userpriv_ok((! userpriv_restrict) && (_imp->params.environment()->reduced_gid() != getgid()) &&
-            check_userpriv(FSEntry(_imp->params.distdir()),  _imp->params.environment(), id->eapi()->supported()->userpriv_cannot_use_root()) &&
-            check_userpriv(FSEntry(_imp->params.builddir()), _imp->params.environment(), id->eapi()->supported()->userpriv_cannot_use_root()));
+            check_userpriv(FSPath(_imp->params.distdir()),  _imp->params.environment(), id->eapi()->supported()->userpriv_cannot_use_root()) &&
+            check_userpriv(FSPath(_imp->params.builddir()), _imp->params.environment(), id->eapi()->supported()->userpriv_cannot_use_root()));
 
-    FSEntry package_builddir(_imp->params.builddir() / (stringify(id->name().category()) + "-" +
+    FSPath package_builddir(_imp->params.builddir() / (stringify(id->name().category()) + "-" +
             stringify(id->name().package()) + "-" + stringify(id->version())));
 
     std::string used_config_protect;
-    std::shared_ptr<FSEntrySet> merged_entries(std::make_shared<FSEntrySet>());
+    auto merged_entries(std::make_shared<FSPathSet>());
 
     std::shared_ptr<const ChoiceValue> preserve_work_choice(
             id->choices_key()->value()->find_by_name_with_prefix(
@@ -2441,7 +2444,7 @@ ERepository::install(const std::shared_ptr<const ERepositoryID> & id,
             if (preserve_work_choice && preserve_work_choice->enabled())
                 extra_merger_options += mo_nondestructive;
 
-            Timestamp build_start_time(FSEntry(package_builddir / "temp" / "build_start_time").mtim());
+            Timestamp build_start_time(FSPath(package_builddir / "temp" / "build_start_time").stat().mtim());
             (*install_action.options.destination()).destination_interface()->merge(
                     make_named_values<MergeParams>(
                         n::build_start_time() = build_start_time,
@@ -2461,9 +2464,9 @@ ERepository::install(const std::shared_ptr<const ERepositoryID> & id,
             if ((! id->eapi()->supported()->is_pbin()) && (! strip_restrict))
             {
                 std::string libdir("lib");
-                FSEntry root(install_action.options.destination()->installed_root_key() ?
+                FSPath root(install_action.options.destination()->installed_root_key() ?
                         stringify(install_action.options.destination()->installed_root_key()->value()) : "/");
-                if ((root / "usr" / "lib").is_symbolic_link())
+                if ((root / "usr" / "lib").stat().is_symlink())
                 {
                     libdir = (root / "usr" / "lib").readlink();
                     if (std::string::npos != libdir.find_first_of("./"))
@@ -2616,7 +2619,7 @@ ERepository::info(const std::shared_ptr<const ERepositoryID> & id,
                     std::bind(std::equal_to<std::string>(), std::bind(std::mem_fn(&StringDepSpec::text), _1), "nouserpriv"));
     }
     bool userpriv_ok((! userpriv_restrict) && (_imp->params.environment()->reduced_gid() != getgid()) &&
-            check_userpriv(FSEntry(_imp->params.builddir()), _imp->params.environment(), id->eapi()->supported()->userpriv_cannot_use_root()));
+            check_userpriv(FSPath(_imp->params.builddir()), _imp->params.environment(), id->eapi()->supported()->userpriv_cannot_use_root()));
 
     /* make use */
     std::string use(make_use(_imp->params.environment(), *id, profile()));
@@ -2626,7 +2629,7 @@ ERepository::info(const std::shared_ptr<const ERepositoryID> & id,
     std::shared_ptr<Map<std::string, std::string> > expand_vars(make_expand(
                 _imp->params.environment(), *id, profile()));
 
-    std::shared_ptr<const FSEntrySequence> exlibsdirs(layout()->exlibsdirs(id->name()));
+    std::shared_ptr<const FSPathSequence> exlibsdirs(layout()->exlibsdirs(id->name()));
 
     EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_info());
     for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
@@ -2663,7 +2666,7 @@ ERepository::info(const std::shared_ptr<const ERepositoryID> & id,
                 n::expand_vars() = expand_vars,
                 n::info_vars() = info_vars_key() ?
                     info_vars_key()->value() : std::make_shared<const Set<std::string>>(),
-                n::load_environment() = static_cast<const FSEntry *>(0),
+                n::load_environment() = static_cast<const FSPath *>(0),
                 n::profiles() = _imp->params.profiles(),
                 n::profiles_with_parents() = profile()->profiles_with_parents(),
                 n::use() = use,
@@ -2708,9 +2711,9 @@ ERepository::get_environment_variable(
                     std::bind(std::equal_to<std::string>(), std::bind(std::mem_fn(&StringDepSpec::text), _1), "nouserpriv"));
     }
     bool userpriv_ok((! userpriv_restrict) && (_imp->params.environment()->reduced_gid() != getgid()) &&
-            check_userpriv(FSEntry(_imp->params.builddir()), _imp->params.environment(), id->eapi()->supported()->userpriv_cannot_use_root()));
+            check_userpriv(FSPath(_imp->params.builddir()), _imp->params.environment(), id->eapi()->supported()->userpriv_cannot_use_root()));
 
-    std::shared_ptr<const FSEntrySequence> exlibsdirs(layout()->exlibsdirs(id->name()));
+    std::shared_ptr<const FSPathSequence> exlibsdirs(layout()->exlibsdirs(id->name()));
 
     EbuildVariableCommand cmd(make_named_values<EbuildCommandParams>(
             n::builddir() = _imp->params.builddir(),
@@ -2780,12 +2783,12 @@ ERepository::merge(const MergeParams & m)
                 n::environment_file() = m.environment_file(),
                 n::fix_mtimes_before() = fix_mtimes ?  m.build_start_time() : Timestamp(0, 0),
                 n::image() = m.image_dir(),
-                n::install_under() = FSEntry("/"),
+                n::install_under() = FSPath("/"),
                 n::merged_entries() = m.merged_entries(),
                 n::options() = m.options(),
                 n::output_manager() = m.output_manager(),
                 n::package_id() = m.package_id(),
-                n::root() = FSEntry("/"),
+                n::root() = FSPath("/"),
                 n::tar_file() = _imp->params.binary_distdir() / (bin_dist_base + ".tar")
             ));
 
@@ -2798,12 +2801,12 @@ ERepository::merge(const MergeParams & m)
     if (0 != compress_process.run().wait())
         throw ActionFailedError("Compressing tarball failed");
 
-    FSEntry binary_ebuild_location(layout()->binary_ebuild_location(
+    FSPath binary_ebuild_location(layout()->binary_ebuild_location(
                 m.package_id()->name(), m.package_id()->version(),
                 "pbin-1+" + std::static_pointer_cast<const ERepositoryID>(m.package_id())->eapi()->name()));
 
-    binary_ebuild_location.dirname().dirname().mkdir();
-    binary_ebuild_location.dirname().mkdir();
+    binary_ebuild_location.dirname().dirname().mkdir(0755, { fspmkdo_ok_if_exists });
+    binary_ebuild_location.dirname().mkdir(0755, { fspmkdo_ok_if_exists });
 
     std::string binary_keywords;
     if (m.package_id()->keywords_key())
@@ -2840,12 +2843,12 @@ ERepository::merge(const MergeParams & m)
     {
         /* 0.1 replacing 00.1 etc */
         if (is_replace->fs_location_key()->value() != binary_ebuild_location)
-            FSEntry(is_replace->fs_location_key()->value()).unlink();
+            FSPath(is_replace->fs_location_key()->value()).unlink();
 
         do
         {
-            FSEntry cache(_imp->params.write_cache());
-            if (cache == FSEntry("/var/empty"))
+            FSPath cache(_imp->params.write_cache());
+            if (cache == FSPath("/var/empty"))
                 break;
 
             if (_imp->params.append_repository_name_to_write_cache())
@@ -2854,7 +2857,7 @@ ERepository::merge(const MergeParams & m)
             cache /= stringify(is_replace->name().category());
             cache /= (stringify(is_replace->name().package()) + "-" + stringify(is_replace->version()));
 
-            if (cache.is_regular_file_or_symlink_to_regular_file())
+            if (cache.stat().is_regular_file_or_symlink_to_regular_file())
                 cache.unlink();
         }
         while (false);
@@ -2868,7 +2871,7 @@ ERepository::merge(const MergeParams & m)
 }
 
 bool
-ERepository::is_package_file(const QualifiedPackageName & n, const FSEntry & e) const
+ERepository::is_package_file(const QualifiedPackageName & n, const FSPath & e) const
 {
     Context context("When working out whether '" + stringify(e) + "' is a package file for '" + stringify(n) + "':");
 
@@ -2884,7 +2887,7 @@ ERepository::is_package_file(const QualifiedPackageName & n, const FSEntry & e) 
 }
 
 VersionSpec
-ERepository::extract_package_file_version(const QualifiedPackageName & n, const FSEntry & e) const
+ERepository::extract_package_file_version(const QualifiedPackageName & n, const FSPath & e) const
 {
     Context context("When extracting version from '" + stringify(e) + "':");
     std::string::size_type p(e.basename().rfind('.'));
@@ -2926,13 +2929,13 @@ ERepository::pretend(
                     std::bind(std::equal_to<std::string>(), std::bind(std::mem_fn(&StringDepSpec::text), _1), "nouserpriv"));
     }
     bool userpriv_ok((! userpriv_restrict) && (_imp->params.environment()->reduced_gid() != getgid()) &&
-            check_userpriv(FSEntry(_imp->params.builddir()), _imp->params.environment(), id->eapi()->supported()->userpriv_cannot_use_root()));
+            check_userpriv(FSPath(_imp->params.builddir()), _imp->params.environment(), id->eapi()->supported()->userpriv_cannot_use_root()));
 
     std::string use(make_use(_imp->params.environment(), *id, profile()));
     std::shared_ptr<Map<std::string, std::string> > expand_vars(make_expand(
                 _imp->params.environment(), *id, profile()));
 
-    std::shared_ptr<const FSEntrySequence> exlibsdirs(layout()->exlibsdirs(id->name()));
+    std::shared_ptr<const FSPathSequence> exlibsdirs(layout()->exlibsdirs(id->name()));
 
     std::shared_ptr<OutputManager> output_manager;
 
@@ -3053,7 +3056,7 @@ ERepository::pretend(
 }
 
 const std::string
-ERepository::get_package_file_manifest_key(const FSEntry & e, const QualifiedPackageName & q) const
+ERepository::get_package_file_manifest_key(const FSPath & e, const QualifiedPackageName & q) const
 {
     if (! is_package_file(q, e))
         return "";
@@ -3073,7 +3076,7 @@ ERepository::binary_ebuild_name(const QualifiedPackageName & q, const VersionSpe
 }
 
 const std::string
-ERepository::_guess_eapi(const QualifiedPackageName &, const FSEntry & e) const
+ERepository::_guess_eapi(const QualifiedPackageName &, const FSPath & e) const
 {
     std::string::size_type p(e.basename().rfind('.'));
     if (std::string::npos == p)

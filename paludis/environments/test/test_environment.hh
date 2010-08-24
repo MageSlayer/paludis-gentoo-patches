@@ -55,7 +55,7 @@ namespace paludis
             ///\{
 
             TestEnvironment();
-            TestEnvironment(const FSEntry &);
+            TestEnvironment(const FSPath &);
 
             ~TestEnvironment();
 
@@ -93,7 +93,7 @@ namespace paludis
             virtual bool unmasked_by_user(const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::shared_ptr<const FSEntrySequence> hook_dirs() const
+            virtual std::shared_ptr<const FSPathSequence> hook_dirs() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual uid_t reduced_uid() const;
@@ -117,8 +117,8 @@ namespace paludis
             virtual bool remove_from_world(const SetName &) const;
 
             virtual const std::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
-            virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > config_location_key() const;
-            virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > preferred_root_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<FSPath> > config_location_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<FSPath> > preferred_root_key() const;
 
             virtual const Tribool want_choice_enabled(
                     const std::shared_ptr<const PackageID> &,
@@ -146,7 +146,7 @@ namespace paludis
             void set_want_choice_enabled(const ChoicePrefixName &, const UnprefixedChoiceName &, const Tribool);
 
             virtual const std::shared_ptr<Repository> repository_from_new_config_file(
-                    const FSEntry &) PALUDIS_ATTRIBUTE((noreturn));
+                    const FSPath &) PALUDIS_ATTRIBUTE((noreturn));
 
             virtual void update_config_files_for_package_move(
                     const PackageDepSpec &, const QualifiedPackageName &) const;

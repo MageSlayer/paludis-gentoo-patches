@@ -20,7 +20,6 @@
 #include <paludis/repositories/e/manifest2_reader.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/destringify.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/create_iterator-impl.hh>
@@ -29,6 +28,8 @@
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/member_iterator-impl.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/fs_path.hh>
+#include <paludis/util/fs_stat.hh>
 
 #include <list>
 #include <map>
@@ -43,10 +44,10 @@ namespace paludis
     template <>
     struct Imp<Manifest2Reader>
     {
-        FSEntry manifest;
+        FSPath manifest;
         Entries entries;
 
-        Imp(const FSEntry & f) :
+        Imp(const FSPath & f) :
             manifest(f)
         {
         }
@@ -64,10 +65,10 @@ Manifest2Error::Manifest2Error(const std::string & msg) throw () :
 {
 }
 
-Manifest2Reader::Manifest2Reader(const FSEntry & f) :
+Manifest2Reader::Manifest2Reader(const FSPath & f) :
     Pimp<Manifest2Reader>(f)
 {
-    if (! f.exists())
+    if (! f.stat().exists())
         return;
 
     LineConfigFile lines(_imp->manifest, { });

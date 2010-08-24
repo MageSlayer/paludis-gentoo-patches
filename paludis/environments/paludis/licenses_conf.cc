@@ -82,7 +82,7 @@ LicensesConf::~LicensesConf()
 }
 
 void
-LicensesConf::add(const FSEntry & filename)
+LicensesConf::add(const FSPath & filename)
 {
     Context context("When adding source '" + stringify(filename) + "' as a licenses file:");
 

@@ -18,6 +18,7 @@
  */
 
 #include "portage_environment.hh"
+
 #include <paludis/util/log.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/system.hh>
@@ -26,7 +27,6 @@
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/pimp-impl.hh>
-#include <paludis/util/dir_iterator.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/set.hh>
@@ -36,8 +36,12 @@
 #include <paludis/util/config_file.hh>
 #include <paludis/util/tribool.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/standard_output_manager.hh>
 #include <paludis/util/safe_ofstream.hh>
+#include <paludis/util/fs_stat.hh>
+#include <paludis/util/fs_iterator.hh>
+#include <paludis/util/fs_error.hh>
+
+#include <paludis/standard_output_manager.hh>
 #include <paludis/hooker.hh>
 #include <paludis/hook.hh>
 #include <paludis/mask.hh>
@@ -52,12 +56,14 @@
 #include <paludis/repository_factory.hh>
 #include <paludis/choice.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
+
 #include <functional>
 #include <algorithm>
 #include <set>
 #include <map>
 #include <vector>
 #include <list>
+
 #include "config.h"
 
 using namespace paludis;
@@ -78,7 +84,7 @@ namespace paludis
     template<>
     struct Imp<PortageEnvironment>
     {
-        const FSEntry conf_dir;
+        const FSPath conf_dir;
         std::string paludis_command;
 
         std::shared_ptr<KeyValueConfigFile> vars;
@@ -99,22 +105,22 @@ namespace paludis
         mutable Mutex hook_mutex;
         mutable bool done_hooks;
         mutable std::shared_ptr<Hooker> hooker;
-        mutable std::list<FSEntry> hook_dirs;
+        mutable std::list<FSPath> hook_dirs;
 
         int overlay_importance;
 
         std::shared_ptr<PackageDatabase> package_database;
 
-        const FSEntry world_file;
+        const FSPath world_file;
         mutable Mutex world_mutex;
 
         std::shared_ptr<LiteralMetadataValueKey<std::string> > format_key;
-        std::shared_ptr<LiteralMetadataValueKey<FSEntry> > config_location_key;
-        std::shared_ptr<LiteralMetadataValueKey<FSEntry> > world_file_key;
-        std::shared_ptr<LiteralMetadataValueKey<FSEntry> > preferred_root_key;
+        std::shared_ptr<LiteralMetadataValueKey<FSPath> > config_location_key;
+        std::shared_ptr<LiteralMetadataValueKey<FSPath> > world_file_key;
+        std::shared_ptr<LiteralMetadataValueKey<FSPath> > preferred_root_key;
 
         Imp(Environment * const e, const std::string & s) :
-            conf_dir(FSEntry(s.empty() ? "/" : s) / SYSCONFDIR),
+            conf_dir(FSPath(s.empty() ? "/" : s) / SYSCONFDIR),
             paludis_command("paludis"),
             ignore_all_breaks_portage(false),
             done_hooks(false),
@@ -122,18 +128,18 @@ namespace paludis
             package_database(std::make_shared<PackageDatabase>(e)),
             world_file(s + "/var/lib/portage/world"),
             format_key(std::make_shared<LiteralMetadataValueKey<std::string>>("format", "Format", mkt_significant, "portage")),
-            config_location_key(std::make_shared<LiteralMetadataValueKey<FSEntry>>("conf_dir", "Config dir", mkt_normal,
+            config_location_key(std::make_shared<LiteralMetadataValueKey<FSPath>>("conf_dir", "Config dir", mkt_normal,
                         conf_dir)),
-            world_file_key(std::make_shared<LiteralMetadataValueKey<FSEntry>>("world_file", "World file", mkt_normal,
+            world_file_key(std::make_shared<LiteralMetadataValueKey<FSPath>>("world_file", "World file", mkt_normal,
                         world_file))
         {
         }
 
-        void add_one_hook(const FSEntry & r) const
+        void add_one_hook(const FSPath & r) const
         {
             try
             {
-                if (r.is_directory())
+                if (r.stat().is_directory())
                 {
                     Log::get_instance()->message("portage_environment.hooks.add_dir", ll_debug, lc_no_context)
                         << "Adding hook directory '" << r << "'";
@@ -156,7 +162,7 @@ namespace paludis
             if (! done_hooks)
             {
                 if (getenv_with_default("PALUDIS_NO_GLOBAL_HOOKS", "").empty())
-                    add_one_hook(FSEntry(LIBEXECDIR) / "paludis" / "hooks");
+                    add_one_hook(FSPath(LIBEXECDIR) / "paludis" / "hooks");
 
                 done_hooks = true;
             }
@@ -236,16 +242,16 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
         "functionality. Full support for Portage configuration formats is not "
         "guaranteed; issues should be reported via trac.";
 
-    _imp->vars = std::make_shared<KeyValueConfigFile>(FSEntry("/dev/null"), KeyValueConfigFileOptions(),
+    _imp->vars = std::make_shared<KeyValueConfigFile>(FSPath("/dev/null"), KeyValueConfigFileOptions(),
                 &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
     _load_profile((_imp->conf_dir / "make.profile").realpath());
 
-    if ((_imp->conf_dir / "make.globals").exists())
+    if ((_imp->conf_dir / "make.globals").stat().exists())
         _imp->vars = std::make_shared<KeyValueConfigFile>(_imp->conf_dir / "make.globals", KeyValueConfigFileOptions() +
                     kvcfo_disallow_space_inside_unquoted_values + kvcfo_allow_inline_comments + kvcfo_allow_multiple_assigns_per_line,
                     std::bind(&predefined, _imp->vars, std::placeholders::_1, std::placeholders::_2),
                     &do_incremental);
-    if ((_imp->conf_dir / "make.conf").exists())
+    if ((_imp->conf_dir / "make.conf").stat().exists())
         _imp->vars = std::make_shared<KeyValueConfigFile>(_imp->conf_dir / "make.conf", KeyValueConfigFileOptions() +
                     kvcfo_disallow_space_inside_unquoted_values + kvcfo_allow_inline_comments + kvcfo_allow_multiple_assigns_per_line,
                     std::bind(&predefined, _imp->vars, std::placeholders::_1, std::placeholders::_2),
@@ -255,7 +261,7 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
         std::string fixed_root_var(_imp->vars->get("ROOT"));
         if (fixed_root_var.empty())
             fixed_root_var = "/";
-        _imp->preferred_root_key = std::make_shared<LiteralMetadataValueKey<FSEntry>>("root", "Root", mkt_normal, FSEntry(fixed_root_var));
+        _imp->preferred_root_key = std::make_shared<LiteralMetadataValueKey<FSPath>>("root", "Root", mkt_normal, FSPath(fixed_root_var));
     }
 
     /* TODO: load USE etc from env? */
@@ -266,11 +272,11 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
     _add_installed_virtuals_repository();
     if (_imp->vars->get("PORTDIR").empty())
         throw PortageEnvironmentConfigurationError("PORTDIR empty or unset");
-    _add_portdir_repository(FSEntry(_imp->vars->get("PORTDIR")));
+    _add_portdir_repository(FSPath(_imp->vars->get("PORTDIR")));
     _add_vdb_repository();
-    std::list<FSEntry> portdir_overlay;
+    std::list<FSPath> portdir_overlay;
     tokenise_whitespace(_imp->vars->get("PORTDIR_OVERLAY"),
-            create_inserter<FSEntry>(std::back_inserter(portdir_overlay)));
+            create_inserter<FSPath>(std::back_inserter(portdir_overlay)));
     std::for_each(portdir_overlay.begin(), portdir_overlay.end(),
             std::bind(std::mem_fn(&PortageEnvironment::_add_portdir_overlay_repository), this, _1));
 
@@ -319,7 +325,7 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
             m != m_end ; ++m)
         _imp->mirrors.insert(std::make_pair("*", *m + "/distfiles/"));
 
-    if ((_imp->conf_dir / "portage" / "mirrors").exists())
+    if ((_imp->conf_dir / "portage" / "mirrors").stat().exists())
     {
         LineConfigFile m(_imp->conf_dir / "portage" / "mirrors", { lcfo_disallow_continuations });
         for (LineConfigFile::ConstIterator line(m.begin()), line_end(m.end()) ;
@@ -356,18 +362,18 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
 
 template<typename I_>
 void
-PortageEnvironment::_load_atom_file(const FSEntry & f, I_ i, const std::string & def_value, const bool reject_additional)
+PortageEnvironment::_load_atom_file(const FSPath & f, I_ i, const std::string & def_value, const bool reject_additional)
 {
     using namespace std::placeholders;
 
     Context context("When loading '" + stringify(f) + "':");
 
-    if (! f.exists())
+    if (! f.stat().exists())
         return;
 
-    if (f.is_directory())
+    if (f.stat().is_directory())
     {
-        std::for_each(DirIterator(f), DirIterator(), std::bind(
+        std::for_each(FSIterator(f, { }), FSIterator(), std::bind(
                     &PortageEnvironment::_load_atom_file<I_>, this, _1, i, def_value, reject_additional));
     }
     else
@@ -409,18 +415,18 @@ PortageEnvironment::_load_atom_file(const FSEntry & f, I_ i, const std::string &
 
 template<typename I_>
 void
-PortageEnvironment::_load_lined_file(const FSEntry & f, I_ i)
+PortageEnvironment::_load_lined_file(const FSPath & f, I_ i)
 {
     using namespace std::placeholders;
 
     Context context("When loading '" + stringify(f) + "':");
 
-    if (! f.exists())
+    if (! f.stat().exists())
         return;
 
-    if (f.is_directory())
+    if (f.stat().is_directory())
     {
-        std::for_each(DirIterator(f), DirIterator(), std::bind(
+        std::for_each(FSIterator(f, { }), FSIterator(), std::bind(
                     &PortageEnvironment::_load_lined_file<I_>, this, _1, i));
     }
     else
@@ -435,11 +441,11 @@ PortageEnvironment::_load_lined_file(const FSEntry & f, I_ i)
 }
 
 void
-PortageEnvironment::_load_profile(const FSEntry & d)
+PortageEnvironment::_load_profile(const FSPath & d)
 {
     Context context("When loading profile directory '" + stringify(d) + "':");
 
-    if ((d / "parent").exists())
+    if ((d / "parent").stat().exists())
     {
         Context context_local("When loading parent profiles:");
 
@@ -449,7 +455,7 @@ PortageEnvironment::_load_profile(const FSEntry & d)
             _load_profile((d / *line).realpath());
     }
 
-    if ((d / "make.defaults").exists())
+    if ((d / "make.defaults").stat().exists())
         _imp->vars = std::make_shared<KeyValueConfigFile>(d / "make.defaults", KeyValueConfigFileOptions()
                     + kvcfo_disallow_source + kvcfo_disallow_space_inside_unquoted_values + kvcfo_allow_inline_comments + kvcfo_allow_multiple_assigns_per_line,
                     std::bind(&predefined, _imp->vars, std::placeholders::_1, std::placeholders::_2),
@@ -481,21 +487,21 @@ PortageEnvironment::_add_installed_virtuals_repository()
 }
 
 void
-PortageEnvironment::_add_portdir_repository(const FSEntry & portdir)
+PortageEnvironment::_add_portdir_repository(const FSPath & portdir)
 {
     Context context("When creating PORTDIR repository:");
     _add_ebuild_repository(portdir, "", _imp->vars->get("SYNC"), 1);
 }
 
 void
-PortageEnvironment::_add_ebuild_repository(const FSEntry & portdir, const std::string & master,
+PortageEnvironment::_add_ebuild_repository(const FSPath & portdir, const std::string & master,
         const std::string & sync, int importance)
 {
     std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
     keys->insert("root", stringify(preferred_root_key()->value()));
     keys->insert("location", stringify(portdir));
     keys->insert("profiles", stringify((_imp->conf_dir / "make.profile").realpath()) + " " +
-            ((_imp->conf_dir / "portage" / "profile").is_directory() ?
+            ((_imp->conf_dir / "portage" / "profile").stat().is_directory() ?
              stringify(_imp->conf_dir / "portage" / "profile") : ""));
     keys->insert("format", "e");
     keys->insert("names_cache", "/var/empty");
@@ -512,7 +518,7 @@ PortageEnvironment::_add_ebuild_repository(const FSEntry & portdir, const std::s
 }
 
 void
-PortageEnvironment::_add_portdir_overlay_repository(const FSEntry & portdir)
+PortageEnvironment::_add_portdir_overlay_repository(const FSPath & portdir)
 {
     Context context("When creating PORTDIR_OVERLAY repository '" + stringify(portdir) + "':");
     _add_ebuild_repository(portdir, "gentoo", "", ++_imp->overlay_importance);
@@ -722,24 +728,24 @@ PortageEnvironment::perform_hook(
     return _imp->hooker->perform_hook(hook, optional_output_manager);
 }
 
-std::shared_ptr<const FSEntrySequence>
+std::shared_ptr<const FSPathSequence>
 PortageEnvironment::hook_dirs() const
 {
     Lock l(_imp->hook_mutex);
     _imp->need_hook_dirs();
-    std::shared_ptr<FSEntrySequence> result(std::make_shared<FSEntrySequence>());
+    std::shared_ptr<FSPathSequence> result(std::make_shared<FSPathSequence>());
     std::copy(_imp->hook_dirs.begin(), _imp->hook_dirs.end(), result->back_inserter());
     return result;
 }
 
-std::shared_ptr<const FSEntrySequence>
+std::shared_ptr<const FSPathSequence>
 PortageEnvironment::bashrc_files() const
 {
-    std::shared_ptr<FSEntrySequence> result(std::make_shared<FSEntrySequence>());
+    std::shared_ptr<FSPathSequence> result(std::make_shared<FSPathSequence>());
     if (! getenv_with_default("PALUDIS_PORTAGE_BASHRC", "").empty())
-        result->push_back(FSEntry(getenv_with_default("PALUDIS_PORTAGE_BASHRC", "")).realpath());
+        result->push_back(FSPath(getenv_with_default("PALUDIS_PORTAGE_BASHRC", "")).realpath());
     else
-        result->push_back(FSEntry(LIBEXECDIR) / "paludis" / "environments" / "portage" / "bashrc");
+        result->push_back(FSPath(LIBEXECDIR) / "paludis" / "environments" / "portage" / "bashrc");
     result->push_back(_imp->conf_dir / "make.globals");
     result->push_back(_imp->conf_dir / "make.conf");
     return result;
@@ -904,7 +910,7 @@ PortageEnvironment::_add_string_to_world(const std::string & s) const
 
     using namespace std::placeholders;
 
-    if (! _imp->world_file.exists())
+    if (! _imp->world_file.stat().exists())
     {
         try
         {
@@ -942,7 +948,7 @@ PortageEnvironment::_remove_string_from_world(const std::string & s) const
 
     using namespace std::placeholders;
 
-    if (_imp->world_file.exists())
+    if (_imp->world_file.stat().exists())
     {
         SetFile world(make_named_values<SetFileParams>(
                 n::environment() = this,
@@ -979,13 +985,13 @@ PortageEnvironment::format_key() const
     return _imp->format_key;
 }
 
-const std::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSPath> >
 PortageEnvironment::config_location_key() const
 {
     return _imp->config_location_key;
 }
 
-const std::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSPath> >
 PortageEnvironment::preferred_root_key() const
 {
     return _imp->preferred_root_key;
@@ -1001,11 +1007,11 @@ namespace
 {
     std::shared_ptr<const SetSpecTree> make_world_set(
             const Environment * const env,
-            const FSEntry & f)
+            const FSPath & f)
     {
         Context context("When loading world from '" + stringify(f) + "':");
 
-        if (! f.exists())
+        if (! f.stat().exists())
         {
             Log::get_instance()->message("portage_environment.world.does_not_exist", ll_warning, lc_no_context)
                 << "World file '" << f << "' doesn't exist";
@@ -1034,7 +1040,7 @@ PortageEnvironment::populate_sets() const
 }
 
 const std::shared_ptr<Repository>
-PortageEnvironment::repository_from_new_config_file(const FSEntry &)
+PortageEnvironment::repository_from_new_config_file(const FSPath &)
 {
     throw InternalError(PALUDIS_HERE, "can't create repositories on the fly for PortageEnvironment");
 }

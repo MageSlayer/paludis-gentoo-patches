@@ -37,6 +37,8 @@
 #include <paludis/util/hashes.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/fs_stat.hh>
+
 #include <paludis/choice.hh>
 #include <paludis/dep_tag.hh>
 #include <paludis/environment.hh>
@@ -54,7 +56,7 @@ using namespace paludis::erepository;
 namespace
 {
     const std::shared_ptr<const LineConfigFile> make_config_file(
-            const FSEntry & f,
+            const FSPath & f,
             const LineConfigFileOptions & o)
     {
         return std::make_shared<LineConfigFile>(f, o);
@@ -74,7 +76,7 @@ namespace paludis
         const Environment * const env;
         const ERepository * const repository;
 
-        std::shared_ptr<FSEntrySequence> profiles_with_parents;
+        std::shared_ptr<FSPathSequence> profiles_with_parents;
 
         PaludisLikeOptionsConf options_conf;
         EnvironmentVariablesMap environment_variables;
@@ -94,11 +96,11 @@ namespace paludis
         const std::shared_ptr<GeneralSetDepTag> system_tag;
 
         Imp(const Environment * const e, const ERepository * const p,
-                const RepositoryName & name, const FSEntrySequence &,
+                const RepositoryName & name, const FSPathSequence &,
                 const std::string &, const bool) :
             env(e),
             repository(p),
-            profiles_with_parents(std::make_shared<FSEntrySequence>()),
+            profiles_with_parents(std::make_shared<FSPathSequence>()),
             options_conf(make_named_values<PaludisLikeOptionsConfParams>(
                         n::allow_locking() = true,
                         n::environment() = e,
@@ -123,11 +125,11 @@ namespace paludis
 
 ExheresProfile::ExheresProfile(
         const Environment * const env, const ERepository * const p, const RepositoryName & name,
-        const FSEntrySequence & location,
+        const FSPathSequence & location,
         const std::string & arch_var_if_special, const bool x) :
     Pimp<ExheresProfile>(env, p, name, location, arch_var_if_special, x)
 {
-    for (FSEntrySequence::ConstIterator l(location.begin()), l_end(location.end()) ;
+    for (FSPathSequence::ConstIterator l(location.begin()), l_end(location.end()) ;
             l != l_end ; ++l)
         _load_dir(*l);
 
@@ -204,16 +206,16 @@ ExheresProfile::~ExheresProfile()
 }
 
 void
-ExheresProfile::_load_dir(const FSEntry & f)
+ExheresProfile::_load_dir(const FSPath & f)
 {
-    if (! f.is_directory_or_symlink_to_directory())
+    if (! f.stat().is_directory_or_symlink_to_directory())
     {
         Log::get_instance()->message("e.exheres_profile.not_a_directory", ll_warning, lc_context) <<
             "Profile component '" << f << "' is not a directory";
         return;
     }
 
-    if ((f / "parents.conf").exists())
+    if ((f / "parents.conf").stat().exists())
     {
         LineConfigFile file(f / "parents.conf", { });
         for (LineConfigFile::ConstIterator line(file.begin()), line_end(file.end()) ;
@@ -221,16 +223,16 @@ ExheresProfile::_load_dir(const FSEntry & f)
             _load_dir((f / *line).realpath());
     }
 
-    if ((f / "options.conf").exists())
+    if ((f / "options.conf").stat().exists())
         _imp->options_conf.add_file(f / "options.conf");
 
-    if ((f / "package_mask.conf").exists())
+    if ((f / "package_mask.conf").stat().exists())
         _imp->package_mask_file.add_file(f / "package_mask.conf");
 
-    if ((f / "packages").exists())
+    if ((f / "packages").stat().exists())
         _imp->packages_file.add_file(f / "packages");
 
-    if ((f / "make.defaults").exists())
+    if ((f / "make.defaults").stat().exists())
     {
         const std::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(
                     _imp->repository->eapi_for_file(f / "make.defaults")));
@@ -250,7 +252,7 @@ ExheresProfile::_load_dir(const FSEntry & f)
     _imp->profiles_with_parents->push_back(f);
 }
 
-std::shared_ptr<const FSEntrySequence>
+std::shared_ptr<const FSPathSequence>
 ExheresProfile::profiles_with_parents() const
 {
     return _imp->profiles_with_parents;

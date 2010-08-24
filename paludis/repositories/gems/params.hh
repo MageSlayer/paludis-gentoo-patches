@@ -22,7 +22,7 @@
 
 #include <paludis/repositories/gems/params-fwd.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/fs_entry.hh>
+#include <paludis/util/fs_path.hh>
 #include <paludis/util/named_value.hh>
 #include <string>
 
@@ -45,20 +45,20 @@ namespace paludis
     {
         struct RepositoryParams
         {
-            NamedValue<n::builddir, FSEntry> builddir;
+            NamedValue<n::builddir, FSPath> builddir;
             NamedValue<n::environment, Environment *> environment;
-            NamedValue<n::install_dir, FSEntry> install_dir;
-            NamedValue<n::location, FSEntry> location;
+            NamedValue<n::install_dir, FSPath> install_dir;
+            NamedValue<n::location, FSPath> location;
             NamedValue<n::sync, std::string> sync;
             NamedValue<n::sync_options, std::string> sync_options;
         };
 
         struct InstalledRepositoryParams
         {
-            NamedValue<n::builddir, FSEntry> builddir;
+            NamedValue<n::builddir, FSPath> builddir;
             NamedValue<n::environment, Environment *> environment;
-            NamedValue<n::install_dir, FSEntry> install_dir;
-            NamedValue<n::root, FSEntry> root;
+            NamedValue<n::install_dir, FSPath> install_dir;
+            NamedValue<n::root, FSPath> root;
         };
     }
 }

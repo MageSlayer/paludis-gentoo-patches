@@ -18,7 +18,6 @@
  */
 
 #include <paludis/repositories/unpackaged/unpackaged_stripper.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/output_manager.hh>
@@ -58,31 +57,31 @@ UnpackagedStripper::~UnpackagedStripper()
 }
 
 void
-UnpackagedStripper::on_strip(const FSEntry & f)
+UnpackagedStripper::on_strip(const FSPath & f)
 {
     _imp->options.output_manager()->stdout_stream() << "str " << f.strip_leading(_imp->options.image_dir()) << std::endl;
 }
 
 void
-UnpackagedStripper::on_split(const FSEntry & f, const FSEntry & g)
+UnpackagedStripper::on_split(const FSPath & f, const FSPath & g)
 {
     _imp->options.output_manager()->stdout_stream() << "spl " << f.strip_leading(_imp->options.image_dir()) <<
         " -> " << g.strip_leading(_imp->options.image_dir()) << std::endl;
 }
 
 void
-UnpackagedStripper::on_unknown(const FSEntry & f)
+UnpackagedStripper::on_unknown(const FSPath & f)
 {
     _imp->options.output_manager()->stdout_stream() << "--- " << f.strip_leading(_imp->options.image_dir()) << std::endl;
 }
 
 void
-UnpackagedStripper::on_enter_dir(const FSEntry &)
+UnpackagedStripper::on_enter_dir(const FSPath &)
 {
 }
 
 void
-UnpackagedStripper::on_leave_dir(const FSEntry &)
+UnpackagedStripper::on_leave_dir(const FSPath &)
 {
 }
 

@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_PALUDIS_ENVIRONMENTS_PALUDIS_LICENSES_CONF_HH 1
 
 #include <paludis/util/pimp.hh>
-#include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/util/fs_path-fwd.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 
@@ -55,7 +55,7 @@ namespace paludis
                 /**
                  * Add another file.
                  */
-                void add(const FSEntry &);
+                void add(const FSPath &);
 
                 /**
                  * Query a particular license.

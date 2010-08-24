@@ -56,7 +56,7 @@ namespace paludis
      */
     struct SyncOptions
     {
-        NamedValue<n::filter_file, FSEntry> filter_file;
+        NamedValue<n::filter_file, FSPath> filter_file;
         NamedValue<n::options, std::string> options;
 
         /**

@@ -28,7 +28,6 @@
 #include <paludis/metadata_key-fwd.hh>
 #include <paludis/choice-fwd.hh>
 #include <paludis/spec_tree-fwd.hh>
-#include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/tribool.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/util/map-fwd.hh>
@@ -47,7 +46,7 @@ namespace paludis
             public:
                 virtual ~Profile() = 0;
 
-                virtual std::shared_ptr<const FSEntrySequence> profiles_with_parents() const
+                virtual std::shared_ptr<const FSPathSequence> profiles_with_parents() const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
                 virtual bool use_masked(
@@ -114,7 +113,7 @@ namespace paludis
                         const Environment * const,
                         const ERepository * const,
                         const RepositoryName &,
-                        const FSEntrySequence &,
+                        const FSPathSequence &,
                         const std::string & arch_var_if_special,
                         const bool profiles_explicitly_set)
                     const PALUDIS_ATTRIBUTE((warn_unused_result));

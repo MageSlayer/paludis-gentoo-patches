@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -19,6 +19,9 @@
 
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/fs_path.hh>
+#include <paludis/util/fs_stat.hh>
+#include <paludis/util/options.hh>
 #include <ostream>
 
 using namespace paludis;
@@ -26,13 +29,13 @@ using namespace paludis;
 #include <paludis/util/is_file_with_extension-se.cc>
 
 bool
-paludis::is_file_with_extension(const FSEntry & f, const std::string & s, const IsFileWithOptions & o)
+paludis::is_file_with_extension(const FSPath & f, const std::string & s, const IsFileWithOptions & o)
 {
     return is_file_with_prefix_extension(f, "", s, o);
 }
 
 bool
-paludis::is_file_with_prefix_extension(const FSEntry & f, const std::string & prefix,
+paludis::is_file_with_prefix_extension(const FSPath & f, const std::string & prefix,
         const std::string & ext, const IsFileWithOptions & o)
 {
     const std::string filename(f.basename());
@@ -45,6 +48,7 @@ paludis::is_file_with_prefix_extension(const FSEntry & f, const std::string & pr
     if (0 != filename.compare(0, prefix.length(), prefix))
         return false;
 
-    return f.is_regular_file() || ((! o[ifwo_no_follow_symlinks]) && f.exists() && f.realpath().is_regular_file());
+    FSStat f_stat(f);
+    return f_stat.is_regular_file() || ((! o[ifwo_no_follow_symlinks]) && f_stat.exists() && f.realpath().stat().is_regular_file());
 }
 

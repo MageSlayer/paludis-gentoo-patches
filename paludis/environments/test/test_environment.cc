@@ -52,28 +52,28 @@ namespace paludis
         std::shared_ptr<PackageDatabase> package_database;
         std::string paludis_command;
         std::unordered_map<std::string, Tribool> override_want_choice_enabled;
-        FSEntry root;
+        FSPath root;
         Sets sets;
-        std::shared_ptr<LiteralMetadataValueKey<FSEntry> > preferred_root_key;
+        std::shared_ptr<LiteralMetadataValueKey<FSPath> > preferred_root_key;
 
-        Imp(Environment * const e, const FSEntry & r) :
+        Imp(Environment * const e, const FSPath & r) :
             package_database(std::make_shared<PackageDatabase>(e)),
             paludis_command(""),
             root(r),
-            preferred_root_key(std::make_shared<LiteralMetadataValueKey<FSEntry>>("root", "Root", mkt_normal, root))
+            preferred_root_key(std::make_shared<LiteralMetadataValueKey<FSPath>>("root", "Root", mkt_normal, root))
         {
         }
     };
 }
 
 TestEnvironment::TestEnvironment() :
-    Pimp<TestEnvironment>(this, FSEntry("/")),
+    Pimp<TestEnvironment>(this, FSPath("/")),
     _imp(Pimp<TestEnvironment>::_imp)
 {
     add_metadata_key(_imp->preferred_root_key);
 }
 
-TestEnvironment::TestEnvironment(const FSEntry & r) :
+TestEnvironment::TestEnvironment(const FSPath & r) :
     Pimp<TestEnvironment>(this, r),
     _imp(Pimp<TestEnvironment>::_imp)
 {
@@ -168,10 +168,10 @@ TestEnvironment::perform_hook(
     return make_named_values<HookResult>(n::max_exit_status() = 0, n::output() = "");
 }
 
-std::shared_ptr<const FSEntrySequence>
+std::shared_ptr<const FSPathSequence>
 TestEnvironment::hook_dirs() const
 {
-    return std::make_shared<FSEntrySequence>();
+    return std::make_shared<FSPathSequence>();
 }
 
 const std::shared_ptr<const Mask>
@@ -227,13 +227,13 @@ TestEnvironment::format_key() const
     return std::shared_ptr<const MetadataValueKey<std::string> >();
 }
 
-const std::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSPath> >
 TestEnvironment::config_location_key() const
 {
-    return std::shared_ptr<const MetadataValueKey<FSEntry> >();
+    return std::shared_ptr<const MetadataValueKey<FSPath> >();
 }
 
-const std::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSPath> >
 TestEnvironment::preferred_root_key() const
 {
     return _imp->preferred_root_key;
@@ -305,7 +305,7 @@ TestEnvironment::populate_sets() const
 }
 
 const std::shared_ptr<Repository>
-TestEnvironment::repository_from_new_config_file(const FSEntry &)
+TestEnvironment::repository_from_new_config_file(const FSPath &)
 {
     throw InternalError(PALUDIS_HERE, "can't create repositories on the fly for TestEnvironment");
 }

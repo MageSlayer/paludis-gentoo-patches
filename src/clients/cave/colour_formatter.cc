@@ -253,7 +253,7 @@ ColourFormatter::format(const NamedSetDepSpec & s, const format::Plain &) const
 
 
 std::string
-ColourFormatter::format(const FSEntry & s, const format::Plain &) const
+ColourFormatter::format(const FSPath & s, const format::Plain &) const
 {
     return fuc(fs_format_fsentry_plain(), fv<'s'>(stringify(s)));
 }

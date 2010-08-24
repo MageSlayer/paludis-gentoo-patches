@@ -26,7 +26,7 @@
 #include <paludis/util/pimp.hh>
 #include <paludis/util/options-fwd.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
-#include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/util/fs_path-fwd.hh>
 
 #include <iosfwd>
 #include <string>
@@ -82,7 +82,7 @@ namespace paludis
      * Base class for configuration files.
      *
      * Data is read in from a ConfigFile::Source instance, which can be created from
-     * an FSEntry, a std::istream or a string.
+     * an FSPath, a std::istream or a string.
      *
      * \see KeyValueConfigFile
      * \see LineConfigFile
@@ -107,7 +107,7 @@ namespace paludis
                     ///\name Basic operations
                     ///\{
 
-                    Source(const FSEntry &);
+                    Source(const FSPath &);
                     Source(const std::string &);
                     Source(std::istream &);
 

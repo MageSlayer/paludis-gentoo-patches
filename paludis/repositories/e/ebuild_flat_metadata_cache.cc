@@ -28,6 +28,8 @@
 #include <paludis/util/safe_ofstream.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/timestamp.hh>
+#include <paludis/util/fs_stat.hh>
+#include <paludis/util/fs_error.hh>
 #include <paludis/repositories/e/dep_spec_pretty_printer.hh>
 #include <paludis/repositories/e/dep_parser.hh>
 #include <paludis/repositories/e/dependencies_rewriter.hh>
@@ -54,17 +56,21 @@ namespace paludis
     struct Imp<EbuildFlatMetadataCache>
     {
         const Environment * const env;
-        FSEntry & filename;
-        const FSEntry & ebuild;
+        const FSPath filename;
+        const FSStat filename_stat;
+        const FSPath ebuild;
+        const FSStat ebuild_stat;
         std::time_t master_mtime;
         std::shared_ptr<const EclassMtimes> eclass_mtimes;
         bool silent;
 
-        Imp(const Environment * const e, FSEntry & f, const FSEntry & eb,
+        Imp(const Environment * const e, const FSPath & f, const FSPath & eb,
                 std::time_t m, const std::shared_ptr<const EclassMtimes> em, bool s) :
             env(e),
             filename(f),
+            filename_stat(filename.stat()),
             ebuild(eb),
+            ebuild_stat(ebuild.stat()),
             master_mtime(m),
             eclass_mtimes(em),
             silent(s)
@@ -107,11 +113,11 @@ namespace
             }
 
             {
-                std::time_t cache_time(std::max(_imp->master_mtime, _imp->filename.mtim().seconds()));
-                bool ok(_imp->ebuild.mtim().seconds() <= cache_time);
+                std::time_t cache_time(std::max(_imp->master_mtime, _imp->filename.stat().mtim().seconds()));
+                bool ok(_imp->ebuild_stat.mtim().seconds() <= cache_time);
                 if (! ok)
                     Log::get_instance()->message("e.cache.flat_list.mtime", ll_debug, lc_context)
-                        << "ebuild has mtime " << _imp->ebuild.mtim().seconds() << ", but expected at most " << cache_time;
+                        << "ebuild has mtime " << _imp->ebuild_stat.mtim().seconds() << ", but expected at most " << cache_time;
 
                 if (ok && "0" != id->guessed_eapi_name())
                 {
@@ -124,14 +130,14 @@ namespace
                 {
                     std::set<std::string> tokens;
                     tokenise_whitespace(lines[m.inherited()->flat_list_index()], std::inserter(tokens, tokens.begin()));
-                    FSEntry eclassdir((id->repository()->location_key()->value() / "eclass").realpath_if_exists());
+                    FSPath eclassdir((id->repository()->location_key()->value() / "eclass").realpath_if_exists());
                     for (std::set<std::string>::const_iterator it(tokens.begin()),
                              it_end(tokens.end()); it_end != it; ++it)
                     {
-                        const FSEntry * eclass(_imp->eclass_mtimes->eclass(*it));
+                        const std::pair<FSPath, FSStat> * eclass(_imp->eclass_mtimes->eclass(*it));
                         if (eclass)
                             Log::get_instance()->message("e.cache.flat_list.eclass.path", ll_debug, lc_context)
-                                << "Cache-requested eclass '" << *it << "' maps to '" << *eclass << "'";
+                                << "Cache-requested eclass '" << *it << "' maps to '" << eclass->first << "'";
 
                         if (! eclass)
                         {
@@ -140,19 +146,19 @@ namespace
                             ok = false;
                         }
 
-                        else if (eclass->dirname() != eclassdir)
+                        else if (eclass->first.dirname() != eclassdir)
                         {
                             Log::get_instance()->message("e.cache.flat_list.eclass.wrong_location", ll_debug, lc_context)
                                 << "Cache-requested eclass '" << *it << "' was found at '"
-                                << eclass->dirname() << "', but expected '" << eclassdir << "'";
+                                << eclass->first.dirname() << "', but expected '" << eclassdir << "'";
                             ok = false;
                         }
 
-                        else if (eclass->mtim().seconds() > cache_time)
+                        else if (eclass->second.mtim().seconds() > cache_time)
                         {
                             Log::get_instance()->message("e.cache.flat_list.eclass.wrong_mtime", ll_debug, lc_context)
                                 << "Cache-requested eclass '" << *it << "' has mtime "
-                                << eclass->mtim().seconds() << ", but expected at most " << cache_time;
+                                << eclass->second.mtim().seconds() << ", but expected at most " << cache_time;
                             ok = false;
                         }
 
@@ -295,8 +301,8 @@ namespace
     }
 }
 
-EbuildFlatMetadataCache::EbuildFlatMetadataCache(const Environment * const v, FSEntry & f,
-        const FSEntry & e, std::time_t t, const std::shared_ptr<const EclassMtimes> & m, bool s) :
+EbuildFlatMetadataCache::EbuildFlatMetadataCache(const Environment * const v, const FSPath & f,
+        const FSPath & e, std::time_t t, const std::shared_ptr<const EclassMtimes> & m, bool s) :
     Pimp<EbuildFlatMetadataCache>(v, f, e, t, m, s)
 {
 }
@@ -312,7 +318,7 @@ EbuildFlatMetadataCache::load(const std::shared_ptr<const EbuildID> & id, const 
 
     Context context("When loading version metadata from '" + stringify(_imp->filename) + "':");
 
-    if (! _imp->filename.exists())
+    if (! _imp->filename_stat.exists())
     {
         Log::get_instance()->message("e.cache.failure", _imp->silent ? ll_debug : ll_warning, lc_no_context)
                 << "Couldn't use the cache file at '" << _imp->filename << "': " << std::strerror(errno);
@@ -370,11 +376,11 @@ EbuildFlatMetadataCache::load(const std::shared_ptr<const EbuildID> & id, const 
 
             {
                 std::map<std::string, std::string>::const_iterator mtime_it(keys.find("_mtime_"));
-                std::time_t cache_time(keys.end() == mtime_it ? _imp->filename.mtim().seconds() : destringify<std::time_t>(mtime_it->second));
-                bool ok(_imp->ebuild.mtim().seconds() == cache_time);
+                std::time_t cache_time(keys.end() == mtime_it ? _imp->filename_stat.mtim().seconds() : destringify<std::time_t>(mtime_it->second));
+                bool ok(_imp->ebuild_stat.mtim().seconds() == cache_time);
                 if (! ok)
                     Log::get_instance()->message("e.cache.flat_hash.mtime", ll_debug, lc_context)
-                        << "ebuild has mtime " << _imp->ebuild.mtim().seconds() << ", but expected " << cache_time;
+                        << "ebuild has mtime " << _imp->ebuild_stat.mtim().seconds() << ", but expected " << cache_time;
 
                 if (ok) {
                     std::string cache_guessed(keys["_guessed_eapi_"]);
@@ -392,7 +398,7 @@ EbuildFlatMetadataCache::load(const std::shared_ptr<const EbuildID> & id, const 
                 {
                     std::vector<std::string> eclasses;
                     tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(keys["_eclasses_"], "\t", "", std::back_inserter(eclasses));
-                    FSEntry eclassdir((id->repository()->location_key()->value() / "eclass").realpath_if_exists());
+                    FSPath eclassdir((id->repository()->location_key()->value() / "eclass").realpath_if_exists());
                     for (std::vector<std::string>::const_iterator it(eclasses.begin()),
                              it_end(eclasses.end()); it_end != it; ++it)
                     {
@@ -404,7 +410,7 @@ EbuildFlatMetadataCache::load(const std::shared_ptr<const EbuildID> & id, const 
                                 << "_eclasses_ entry is incomplete";
                             return false;
                         }
-                        FSEntry eclass_dir(std::string::npos != it->find('/') ? *(it++) : eclassdir);
+                        FSPath eclass_dir(std::string::npos != it->find('/') ? FSPath(*it++) : eclassdir);
                         if (eclasses.end() == it)
                         {
                             Log::get_instance()->message("e.cache.flat_hash.eclass.truncated", ll_warning, lc_context)
@@ -413,10 +419,10 @@ EbuildFlatMetadataCache::load(const std::shared_ptr<const EbuildID> & id, const 
                         }
                         std::time_t eclass_mtime(destringify<std::time_t>(*it));
 
-                        const FSEntry * eclass(_imp->eclass_mtimes->eclass(eclass_name));
+                        auto eclass(_imp->eclass_mtimes->eclass(eclass_name));
                         if (eclass)
                             Log::get_instance()->message("e.cache.flat_hash.eclass.path", ll_debug, lc_context)
-                                << "Cache-requested eclass '" << eclass_name << "' maps to '" << *eclass << "'";
+                                << "Cache-requested eclass '" << eclass_name << "' maps to '" << eclass->first << "'";
 
                         if (! eclass)
                         {
@@ -425,19 +431,19 @@ EbuildFlatMetadataCache::load(const std::shared_ptr<const EbuildID> & id, const 
                             ok = false;
                         }
 
-                        else if (eclass->dirname() != eclass_dir)
+                        else if (eclass->first.dirname() != eclass_dir)
                         {
                             Log::get_instance()->message("e.cache.flat_hash.eclass.wrong_location", ll_debug, lc_context)
                                 << "Cache-requested eclass '" << eclass_name << "' was found at '"
-                                << eclass->dirname() << "', but expected '" << eclass_dir << "'";
+                                << eclass->first.dirname() << "', but expected '" << eclass_dir << "'";
                             ok = false;
                         }
 
-                        else if (eclass->mtim().seconds() != eclass_mtime)
+                        else if (eclass->second.mtim().seconds() != eclass_mtime)
                         {
                             Log::get_instance()->message("e.cache.flat_hash.eclass.wrong_mtime", ll_debug, lc_context)
                                 << "Cache-requested eclass '" << eclass_name << "' has mtime "
-                                << eclass->mtim().seconds() << ", but expected " << eclass_mtime;
+                                << eclass->second.mtim().seconds() << ", but expected " << eclass_mtime;
                             ok = false;
                         }
 
@@ -461,7 +467,7 @@ EbuildFlatMetadataCache::load(const std::shared_ptr<const EbuildID> & id, const 
                                 << "_exlibs_ entry is incomplete";
                             return false;
                         }
-                        FSEntry exlib_dir(*it);
+                        FSPath exlib_dir(*it);
                         if (exlibs.end() == ++it)
                         {
                             Log::get_instance()->message("e.cache.flat_hash.exlibs.truncated", ll_warning, lc_context)
@@ -470,10 +476,10 @@ EbuildFlatMetadataCache::load(const std::shared_ptr<const EbuildID> & id, const 
                         }
                         std::time_t exlib_mtime(destringify<std::time_t>(*it));
 
-                        const FSEntry * exlib(_imp->eclass_mtimes->exlib(exlib_name, id->name()));
+                        auto exlib(_imp->eclass_mtimes->exlib(exlib_name, id->name()));
                         if (exlib)
                             Log::get_instance()->message("e.cache.flat_hash.exlib.path", ll_debug, lc_context)
-                                << "Cache-requested exlib '" << exlib_name << "' maps to '" << *exlib << "'";
+                                << "Cache-requested exlib '" << exlib_name << "' maps to '" << exlib->first << "'";
 
                         if (! exlib)
                         {
@@ -482,19 +488,19 @@ EbuildFlatMetadataCache::load(const std::shared_ptr<const EbuildID> & id, const 
                             ok = false;
                         }
 
-                        else if (exlib->dirname() != exlib_dir)
+                        else if (exlib->first.dirname() != exlib_dir)
                         {
                             Log::get_instance()->message("e.cache.flat_hash.exlib.wrong_location", ll_debug, lc_context)
                                 << "Cache-requested exlib '" << exlib_name << "' was found at '"
-                                << exlib->dirname() << "', but expected '" << exlib_dir << "'";
+                                << exlib->first.dirname() << "', but expected '" << exlib_dir << "'";
                             ok = false;
                         }
 
-                        else if (exlib->mtim().seconds() != exlib_mtime)
+                        else if (exlib->second.mtim().seconds() != exlib_mtime)
                         {
                             Log::get_instance()->message("e.cache.flat_hash.exlib.wrong_mtime", ll_debug, lc_context)
                                 << "Cache-requested exlib '" << exlib_name << "' has mtime "
-                                << exlib->mtim().seconds() << ", but expected " << exlib_mtime;
+                                << exlib->second.mtim().seconds() << ", but expected " << exlib_mtime;
                             ok = false;
                         }
 
@@ -682,11 +688,12 @@ EbuildFlatMetadataCache::save(const std::shared_ptr<const EbuildID> & id)
 
     try
     {
-        FSEntry cat_dir(_imp->filename.dirname());
-        FSEntry repo_dir(cat_dir.dirname());
-        FSEntry main_dir(repo_dir.dirname());
+        FSPath cat_dir(_imp->filename.dirname());
+        FSPath repo_dir(cat_dir.dirname());
+        FSPath main_dir(repo_dir.dirname());
+        FSStat main_dir_stat(main_dir);
 
-        if (! main_dir.exists())
+        if (! main_dir_stat.exists())
         {
             Log::get_instance()->message("e.cache.save.no_dir", ll_warning, lc_no_context) << "Directory '"
                 << main_dir << "' does not exist, so cannot save cache file '" << _imp->filename << "' "
@@ -694,11 +701,11 @@ EbuildFlatMetadataCache::save(const std::shared_ptr<const EbuildID> & id)
             return;
         }
 
-        if (repo_dir.mkdir(main_dir.permissions()))
-            repo_dir.chmod(main_dir.permissions());
+        if (repo_dir.mkdir(main_dir_stat.permissions(), { fspmkdo_ok_if_exists }))
+            repo_dir.chmod(main_dir_stat.permissions());
 
-        if (cat_dir.mkdir(main_dir.permissions()))
-            cat_dir.chmod(main_dir.permissions());
+        if (cat_dir.mkdir(main_dir_stat.permissions(), { fspmkdo_ok_if_exists }))
+            cat_dir.chmod(main_dir_stat.permissions());
     }
     catch (const FSError & e)
     {
@@ -714,7 +721,7 @@ EbuildFlatMetadataCache::save(const std::shared_ptr<const EbuildID> & id)
     }
 
     std::ostringstream cache;
-    write_kv(cache, "_mtime_", _imp->ebuild.mtim().seconds());
+    write_kv(cache, "_mtime_", _imp->ebuild_stat.mtim().seconds());
     write_kv(cache, "_guessed_eapi_", id->guessed_eapi_name());
 
     if (id->eapi()->supported()->ebuild_options()->support_eclasses() && id->inherited_key())
@@ -723,12 +730,12 @@ EbuildFlatMetadataCache::save(const std::shared_ptr<const EbuildID> & id)
         for (Set<std::string>::ConstIterator it(id->inherited_key()->value()->begin()),
                  it_end(id->inherited_key()->value()->end()); it_end != it; ++it)
         {
-            const FSEntry * eclass(_imp->eclass_mtimes->eclass(*it));
+            auto eclass(_imp->eclass_mtimes->eclass(*it));
             if (! eclass)
                 throw InternalError(PALUDIS_HERE, "eclass '" + *it + "' disappeared?");
             eclasses.push_back(*it);
-            eclasses.push_back(stringify(eclass->dirname()));
-            eclasses.push_back(stringify(eclass->mtim().seconds()));
+            eclasses.push_back(stringify(eclass->first.dirname()));
+            eclasses.push_back(stringify(eclass->second.mtim().seconds()));
         }
         write_kv(cache, "_eclasses_", join(eclasses.begin(), eclasses.end(), "\t"));
     }
@@ -739,12 +746,12 @@ EbuildFlatMetadataCache::save(const std::shared_ptr<const EbuildID> & id)
         for (Set<std::string>::ConstIterator it(id->inherited_key()->value()->begin()),
                  it_end(id->inherited_key()->value()->end()); it_end != it; ++it)
         {
-            const FSEntry * exlib(_imp->eclass_mtimes->exlib(*it, id->name()));
+            auto exlib(_imp->eclass_mtimes->exlib(*it, id->name()));
             if (! exlib)
                 throw InternalError(PALUDIS_HERE, "exlib '" + *it + "' for '" + stringify(id->name()) + "' disappeared?");
             exlibs.push_back(*it);
-            exlibs.push_back(stringify(exlib->dirname()));
-            exlibs.push_back(stringify(exlib->mtim().seconds()));
+            exlibs.push_back(stringify(exlib->first.dirname()));
+            exlibs.push_back(stringify(exlib->second.mtim().seconds()));
         }
         write_kv(cache, "_exlibs_", join(exlibs.begin(), exlibs.end(), "\t"));
     }
@@ -868,7 +875,7 @@ EbuildFlatMetadataCache::save(const std::shared_ptr<const EbuildID> & id)
             SafeOFStream cache_file(_imp->filename);
             cache_file << cache.str();
         }
-        _imp->filename.utime(Timestamp(_imp->ebuild.mtim().seconds(), 0));
+        _imp->filename.utime(Timestamp(_imp->ebuild_stat.mtim().seconds(), 0));
     }
     catch (const SafeOFStreamError & e)
     {

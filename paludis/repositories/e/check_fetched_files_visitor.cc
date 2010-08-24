@@ -31,7 +31,7 @@
 #include <paludis/action.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/pimp-impl.hh>
-#include <paludis/util/fs_entry.hh>
+#include <paludis/util/fs_stat.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/save.hh>
@@ -61,7 +61,7 @@ namespace paludis
     {
         const Environment * const env;
         const std::shared_ptr<const PackageID> id;
-        const FSEntry distdir;
+        const FSPath distdir;
         const bool check_unneeded;
         const bool exclude_unmirrorable;
         const bool ignore_unfetched;
@@ -79,10 +79,10 @@ namespace paludis
         Imp(
                 const Environment * const e,
                 const std::shared_ptr<const PackageID> & i,
-                const FSEntry & d,
+                const FSPath & d,
                 const bool c,
                 const bool n,
-                const FSEntry & m2,
+                const FSPath & m2,
                 const UseManifest um,
                 const std::shared_ptr<OutputManager> & md,
                 const bool x,
@@ -109,10 +109,10 @@ namespace paludis
 CheckFetchedFilesVisitor::CheckFetchedFilesVisitor(
         const Environment * const e,
         const std::shared_ptr<const PackageID> & i,
-        const FSEntry & d,
+        const FSPath & d,
         const bool c,
         const bool n,
-        const FSEntry & m2,
+        const FSPath & m2,
         const UseManifest um,
         const std::shared_ptr<OutputManager> & md,
         const bool x,
@@ -189,7 +189,7 @@ CheckFetchedFilesVisitor::visit(const FetchableURISpecTree::NodeType<URILabelsDe
 }
 
 bool
-CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
+CheckFetchedFilesVisitor::check_distfile_manifest(const FSPath & distfile)
 {
     if (_imp->m2r->begin() == _imp->m2r->end())
     {
@@ -225,10 +225,12 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSEntry & distfile)
             continue;
         found = true;
 
+        FSStat distfile_stat(distfile);
+
         Log::get_instance()->message("e.manifest.size", ll_debug, lc_context)
-            << "Actual size = " << distfile.file_size()
+            << "Actual size = " << distfile_stat.file_size()
             << "; Manifest file size = " << m->size();
-        if (distfile.file_size() != m->size())
+        if (distfile_stat.file_size() != m->size())
         {
             Log::get_instance()->message("e.manifest.no_size", ll_debug, lc_context)
                 << "Malformed Manifest: no file size found";
@@ -375,7 +377,8 @@ CheckFetchedFilesVisitor::visit(const FetchableURISpecTree::NodeType<FetchableUR
 
     _imp->output_manager->stdout_stream() << "Checking '" << node.spec()->filename() << "'... " << std::flush;
 
-    if (! (_imp->distdir / node.spec()->filename()).is_regular_file())
+    FSStat distfile_stat(_imp->distdir / node.spec()->filename());
+    if (! distfile_stat.is_regular_file())
     {
         if (_imp->in_nofetch)
         {
@@ -408,7 +411,7 @@ CheckFetchedFilesVisitor::visit(const FetchableURISpecTree::NodeType<FetchableUR
         else
             _imp->output_manager->stdout_stream() << "not fetched yet";
     }
-    else if (0 == (_imp->distdir / node.spec()->filename()).file_size())
+    else if (0 == distfile_stat.file_size())
     {
         Log::get_instance()->message("e.check_fetched_files.empty", ll_debug, lc_context) << "Empty file for '" << node.spec()->filename() << "'";
         _imp->output_manager->stdout_stream() << "empty file";

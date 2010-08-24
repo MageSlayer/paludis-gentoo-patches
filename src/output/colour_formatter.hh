@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -23,7 +23,7 @@
 #include <paludis/formatter.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
-#include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/util/fs_path-fwd.hh>
 
 class ColourFormatter :
     public paludis::CanFormat<paludis::ChoiceValue>,
@@ -39,7 +39,7 @@ class ColourFormatter :
     public paludis::CanFormat<paludis::FetchableURIDepSpec>,
     public paludis::CanFormat<paludis::LicenseDepSpec>,
     public paludis::CanFormat<paludis::NamedSetDepSpec>,
-    public paludis::CanFormat<paludis::FSEntry>,
+    public paludis::CanFormat<paludis::FSPath>,
     public paludis::CanFormat<paludis::PackageID>,
     public paludis::CanFormat<std::string>,
     public paludis::CanSpace
@@ -91,7 +91,7 @@ class ColourFormatter :
 
         std::string format(const paludis::BlockDepSpec &, const paludis::format::Plain &) const;
 
-        std::string format(const paludis::FSEntry &, const paludis::format::Plain &) const;
+        std::string format(const paludis::FSPath &, const paludis::format::Plain &) const;
 
         std::string format(const paludis::PackageID &, const paludis::format::Plain &) const;
         std::string format(const paludis::PackageID &, const paludis::format::Installed &) const;

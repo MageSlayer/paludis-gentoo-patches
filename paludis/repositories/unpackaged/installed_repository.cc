@@ -26,7 +26,6 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/set.hh>
-#include <paludis/util/dir_iterator.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/cookie.hh>
 #include <paludis/util/simple_visitor_cast.hh>
@@ -35,6 +34,8 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/safe_ofstream.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/fs_iterator.hh>
+#include <paludis/util/fs_stat.hh>
 #include <paludis/stringify_formatter.hh>
 #include <paludis/action.hh>
 #include <paludis/environment.hh>
@@ -70,16 +71,16 @@ namespace paludis
         const InstalledUnpackagedRepositoryParams params;
         mutable NDBAM ndbam;
 
-        std::shared_ptr<const MetadataValueKey<FSEntry> > location_key;
-        std::shared_ptr<const MetadataValueKey<FSEntry> > root_key;
+        std::shared_ptr<const MetadataValueKey<FSPath> > location_key;
+        std::shared_ptr<const MetadataValueKey<FSPath> > root_key;
         std::shared_ptr<const MetadataValueKey<std::string> > format_key;
 
         Imp(const InstalledUnpackagedRepositoryParams & p) :
             params(p),
             ndbam(p.location(), &supported_installed_unpackaged, "installed_unpackaged-1", user_version_spec_options()),
-            location_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("location", "location",
+            location_key(std::make_shared<LiteralMetadataValueKey<FSPath> >("location", "location",
                         mkt_significant, params.location())),
-            root_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("root", "root",
+            root_key(std::make_shared<LiteralMetadataValueKey<FSPath> >("root", "root",
                         mkt_normal, params.root())),
             format_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
                         "format", "format", mkt_significant, "installed_unpackaged"))
@@ -230,19 +231,21 @@ InstalledUnpackagedRepository::is_unimportant() const
 namespace
 {
     std::pair<uid_t, gid_t>
-    get_new_ids_or_minus_one(const Environment * const env, const int rewrite_ids_over_to_root, const FSEntry & f)
+    get_new_ids_or_minus_one(const Environment * const env, const int rewrite_ids_over_to_root, const FSPath & f)
     {
         uid_t uid;
         gid_t gid;
 
-        if (f.owner() == env->reduced_uid() || (rewrite_ids_over_to_root != -1
-                    && f.owner() > static_cast<unsigned int>(rewrite_ids_over_to_root)))
+        FSStat f_stat(f);
+
+        if (f_stat.owner() == env->reduced_uid() || (rewrite_ids_over_to_root != -1
+                    && f_stat.owner() > static_cast<unsigned int>(rewrite_ids_over_to_root)))
             uid = 0;
         else
             uid = -1;
 
-        if (f.group() == env->reduced_gid() || (rewrite_ids_over_to_root != -1
-                    && f.group() > static_cast<unsigned int>(rewrite_ids_over_to_root)))
+        if (f_stat.group() == env->reduced_gid() || (rewrite_ids_over_to_root != -1
+                    && f_stat.group() > static_cast<unsigned int>(rewrite_ids_over_to_root)))
             gid = 0;
         else
             gid = -1;
@@ -271,14 +274,14 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
     if (! is_suitable_destination_for(*m.package_id()))
         throw ActionFailedError("Not a suitable destination for '" + stringify(*m.package_id()) + "'");
 
-    FSEntry install_under("/");
+    FSPath install_under("/");
     {
         Repository::MetadataConstIterator k(m.package_id()->repository()->find_metadata("install_under"));
         if (k == m.package_id()->repository()->end_metadata())
             throw ActionFailedError("Could not fetch install_under key from owning repository");
-        const MetadataValueKey<FSEntry> * kk(simple_visitor_cast<const MetadataValueKey<FSEntry> >(**k));
+        const MetadataValueKey<FSPath> * kk(simple_visitor_cast<const MetadataValueKey<FSPath> >(**k));
         if (! kk)
-            throw ActionFailedError("Fetched install_under key but did not get an FSEntry key from owning repository");
+            throw ActionFailedError("Fetched install_under key but did not get an FSPath key from owning repository");
         install_under = kk->value();
     }
 
@@ -308,25 +311,25 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
         }
     }
 
-    FSEntry uid_dir(_imp->params.location());
+    FSPath uid_dir(_imp->params.location());
     if (if_same_name_id)
         uid_dir = if_same_name_id->fs_location_key()->value().dirname();
     else
     {
         std::string uid(stringify(m.package_id()->name().category()) + "---" + stringify(m.package_id()->name().package()));
         uid_dir /= "data";
-        uid_dir.mkdir();
+        uid_dir.mkdir(0755, { fspmkdo_ok_if_exists });
         uid_dir /= uid;
-        uid_dir.mkdir();
+        uid_dir.mkdir(0755, { fspmkdo_ok_if_exists });
     }
 
-    FSEntry target_ver_dir(uid_dir);
+    FSPath target_ver_dir(uid_dir);
     target_ver_dir /= (stringify(m.package_id()->version()) + ":" + stringify(m.package_id()->slot_key()->value()) + ":" + cookie());
 
-    if (target_ver_dir.exists())
+    if (target_ver_dir.stat().exists())
         throw ActionFailedError("Temporary merge directory '" + stringify(target_ver_dir) + "' already exists, probably "
                 "due to a previous failed install. If it is safe to do so, please remove this directory and try again.");
-    target_ver_dir.mkdir();
+    target_ver_dir.mkdir(0755, { });
 
     {
         SafeOFStream source_repository_file(target_ver_dir / "source_repository");
@@ -364,7 +367,7 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
                         _imp->params.environment(), rewrite_ids_over_to_root, _1),
                 n::image() = m.image_dir(),
                 n::install_under() = install_under,
-                n::merged_entries() = std::make_shared<FSEntrySet>(),
+                n::merged_entries() = std::make_shared<FSPathSet>(),
                 n::options() = m.options(),
                 n::output_manager() = m.output_manager(),
                 n::package_id() = m.package_id(),
@@ -373,8 +376,8 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
 
     if (! merger.check())
     {
-        for (DirIterator d(target_ver_dir, { dio_include_dotfiles }), d_end ; d != d_end ; ++d)
-            FSEntry(*d).unlink();
+        for (FSIterator d(target_ver_dir, { fsio_include_dotfiles, fsio_inode_sort }), d_end ; d != d_end ; ++d)
+            d->unlink();
         target_ver_dir.rmdir();
         throw ActionFailedError("Not proceeding with install due to merge sanity check failing");
     }
@@ -438,13 +441,13 @@ InstalledUnpackagedRepository::format_key() const
     return _imp->format_key;
 }
 
-const std::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSPath> >
 InstalledUnpackagedRepository::location_key() const
 {
     return _imp->location_key;
 }
 
-const std::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSPath> >
 InstalledUnpackagedRepository::installed_root_key() const
 {
     return _imp->root_key;

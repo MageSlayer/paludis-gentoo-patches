@@ -75,9 +75,9 @@ namespace
                 cout << indent << left << setw(30) << "    Value:" << " " << key.value() << endl;
             }
 
-            void visit(const MetadataValueKey<FSEntry> & key)
+            void visit(const MetadataValueKey<FSPath> & key)
             {
-                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataValueKey<FSEntry>" << endl;
+                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataValueKey<FSPath>" << endl;
                 cout << indent << left << setw(30) << "    Value:" << " " << key.value() << endl;
             }
 
@@ -193,9 +193,9 @@ namespace
                 cout << indent << left << setw(30) << "    Value:" << " " << join(key.value()->begin(), key.value()->end(), " ") << endl;
             }
 
-            void visit(const MetadataCollectionKey<FSEntrySequence> & key)
+            void visit(const MetadataCollectionKey<FSPathSequence> & key)
             {
-                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataCollectionKey<FSEntrySequence>" << endl;
+                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataCollectionKey<FSPathSequence>" << endl;
                 cout << indent << left << setw(30) << "    Value:" << " " << join(key.value()->begin(), key.value()->end(), " ") << endl;
             }
 

@@ -34,7 +34,6 @@
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/options.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/additional_package_dep_spec_requirement.hh>
 #include <paludis/dep_spec_data.hh>
@@ -688,7 +687,7 @@ PackageDepSpec::from_repository_ptr() const
     return _imp->data->from_repository_ptr();
 }
 
-std::shared_ptr<const FSEntry>
+std::shared_ptr<const FSPath>
 PackageDepSpec::installed_at_path_ptr() const
 {
     return _imp->data->installed_at_path_ptr();

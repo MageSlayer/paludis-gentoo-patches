@@ -25,7 +25,6 @@
 #include <paludis/util/pimp.hh>
 #include <paludis/util/singleton.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
-#include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/no_type.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/repository-fwd.hh>

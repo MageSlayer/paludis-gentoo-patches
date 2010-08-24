@@ -60,9 +60,9 @@ namespace paludis
         mutable bool has_category_names;
         mutable bool has_ids;
 
-        std::shared_ptr<const MetadataValueKey<FSEntry> > location_key;
-        std::shared_ptr<const MetadataValueKey<FSEntry> > install_dir_key;
-        std::shared_ptr<const MetadataValueKey<FSEntry> > builddir_key;
+        std::shared_ptr<const MetadataValueKey<FSPath> > location_key;
+        std::shared_ptr<const MetadataValueKey<FSPath> > install_dir_key;
+        std::shared_ptr<const MetadataValueKey<FSPath> > builddir_key;
         std::shared_ptr<const MetadataValueKey<std::string> > sync_key;
         std::shared_ptr<const MetadataValueKey<std::string> > sync_options_key;
         std::shared_ptr<const MetadataValueKey<std::string> > format_key;
@@ -72,11 +72,11 @@ namespace paludis
             big_nasty_mutex(m),
             has_category_names(false),
             has_ids(false),
-            location_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("location", "location",
+            location_key(std::make_shared<LiteralMetadataValueKey<FSPath> >("location", "location",
                         mkt_significant, params.location())),
-            install_dir_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("install_dir", "install_dir",
+            install_dir_key(std::make_shared<LiteralMetadataValueKey<FSPath> >("install_dir", "install_dir",
                         mkt_normal, params.install_dir())),
-            builddir_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("builddir", "builddir",
+            builddir_key(std::make_shared<LiteralMetadataValueKey<FSPath> >("builddir", "builddir",
                         mkt_normal, params.builddir())),
             sync_key(std::make_shared<LiteralMetadataValueKey<std::string> >("sync", "sync",
                         mkt_normal, params.sync())),
@@ -348,16 +348,16 @@ GemsRepository::format_key() const
     return _imp->format_key;
 }
 
-const std::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSPath> >
 GemsRepository::location_key() const
 {
     return _imp->location_key;
 }
 
-const std::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSPath> >
 GemsRepository::installed_root_key() const
 {
-    return std::shared_ptr<const MetadataValueKey<FSEntry> >();
+    return std::shared_ptr<const MetadataValueKey<FSPath> >();
 }
 
 std::shared_ptr<Repository>

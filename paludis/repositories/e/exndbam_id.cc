@@ -89,7 +89,7 @@ namespace
 ExndbamID::ExndbamID(const QualifiedPackageName & q, const VersionSpec & v,
         const Environment * const e,
         const std::shared_ptr<const Repository> & r,
-        const FSEntry & f, const NDBAM * const n) :
+        const FSPath & f, const NDBAM * const n) :
     EInstalledRepositoryID(q, v, e, r, f),
     _ndbam(n)
 {

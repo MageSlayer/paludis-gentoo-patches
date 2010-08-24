@@ -21,7 +21,6 @@
 #include <paludis/environments/paludis/paludis_environment.hh>
 #include <paludis/environments/paludis/bashable_conf.hh>
 #include <paludis/util/pimp-impl.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/tribool.hh>
 #include <paludis/paludislike_options_conf.hh>
@@ -60,7 +59,7 @@ UseConf::~UseConf()
 }
 
 void
-UseConf::add(const FSEntry & filename)
+UseConf::add(const FSPath & filename)
 {
     Context context("When adding source '" + stringify(filename) + "' as a use file:");
 

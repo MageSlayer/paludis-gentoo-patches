@@ -37,8 +37,6 @@
 #include <paludis/repositories/cran/cran_dep_parser.hh>
 #include <paludis/repositories/cran/cran_installed_repository.hh>
 #include <paludis/repositories/cran/package_dep_spec.hh>
-#include <paludis/util/dir_iterator.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/log.hh>
@@ -75,8 +73,8 @@ namespace paludis
         Imp(const CRANInstalledRepositoryParams &);
         ~Imp();
 
-        std::shared_ptr<const MetadataValueKey<FSEntry> > location_key;
-        std::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key;
+        std::shared_ptr<const MetadataValueKey<FSPath> > location_key;
+        std::shared_ptr<const MetadataValueKey<FSPath> > installed_root_key;
         std::shared_ptr<const MetadataValueKey<std::string> > format_key;
     };
 }
@@ -84,8 +82,8 @@ namespace paludis
 Imp<CRANInstalledRepository>::Imp(const CRANInstalledRepositoryParams & p) :
     params(p),
     has_ids(false),
-    location_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("location", "location", mkt_significant, params.location())),
-    installed_root_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("root", "root", mkt_normal, params.root())),
+    location_key(std::make_shared<LiteralMetadataValueKey<FSPath> >("location", "location", mkt_significant, params.location())),
+    installed_root_key(std::make_shared<LiteralMetadataValueKey<FSPath> >("root", "root", mkt_normal, params.root())),
     format_key(std::make_shared<LiteralMetadataValueKey<std::string> >("format", "format", mkt_significant, "installed_cran"))
 {
 }
@@ -109,7 +107,7 @@ Imp<CRANInstalledRepository>::need_ids() const
             if (! d->is_directory())
                 continue;
 
-            FSEntry f(FSEntry(stringify(*d)) / "DESCRIPTION");
+            FSPath f(FSPath(stringify(*d)) / "DESCRIPTION");
             if (! f.is_regular_file())
                 continue;
 
@@ -123,7 +121,7 @@ Imp<CRANInstalledRepository>::need_ids() const
             metadata.insert(std::make_pair(std::make_pair(q, VersionSpec(desc.version)), desc.metadata));
         }
 
-        if (! FSEntry(location / "paludis" / "bundles").is_directory())
+        if (! FSPath(location / "paludis" / "bundles").is_directory())
             return;
 
         // Load Bundle Metadata
@@ -274,7 +272,7 @@ CRANInstalledRepository::do_contents(const Package ID & id) const
 
     std::string pn = stringify(q.package());
     CRANDescription::normalise_name(pn);
-    FSEntry f(_imp->location / "paludis" / pn / "CONTENTS");
+    FSPath f(_imp->location / "paludis" / pn / "CONTENTS");
     if (! f.is_regular_file())
     {
         Log::get_instance()->message(ll_warning, lc_no_context, "CONTENTS lookup failed for request for' " +
@@ -357,7 +355,7 @@ CRANInstalledRepository::do_installed_time(const QualifiedPackageName & q,
         {
             std::string pn(stringify(q.package()));
             CRANDescription::normalise_name(pn);
-            FSEntry f(_imp->location / "paludis" / pn / "CONTENTS");
+            FSPath f(_imp->location / "paludis" / pn / "CONTENTS");
             try
             {
                 r->installed_time = f.mtime();
@@ -435,7 +433,7 @@ CRANInstalledRepository::do_uninstall(const QualifiedPackageName & q, const Vers
                 stringify(v) + "' because its location ('" + stringify(_imp->location) + "') is not a directory");
 
     std::shared_ptr<const VersionMetadata> vm(do_version_metadata(q, v));
-    std::shared_ptr<const FSEntryCollection> bashrc_files(_imp->env->bashrc_files());
+    std::shared_ptr<const FSPath> bashrc_files(_imp->env->bashrc_files());
 
     Command cmd(Command(LIBEXECDIR "/paludis/cran.bash unmerge")
             .with_setenv("PN", vm->cran_interface->package())
@@ -560,13 +558,13 @@ CRANInstalledRepository::format_key() const
     return _imp->format_key;
 }
 
-const std::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSPath> >
 CRANInstalledRepository::location_key() const
 {
     return _imp->location_key;
 }
 
-const std::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSPath> >
 CRANInstalledRepository::installed_root_key() const
 {
     return _imp->installed_root_key;

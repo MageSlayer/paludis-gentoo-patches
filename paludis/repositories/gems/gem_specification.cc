@@ -55,10 +55,10 @@ namespace paludis
         std::shared_ptr<LiteralMetadataValueKey<std::string> > summary_key;
         std::shared_ptr<LiteralMetadataValueKey<std::string> > authors_key;
         std::shared_ptr<LiteralMetadataValueKey<std::string> > rubyforge_project_key;
-        std::shared_ptr<LiteralMetadataValueKey<FSEntry> > fs_location_key;
+        std::shared_ptr<LiteralMetadataValueKey<FSPath> > fs_location_key;
         std::shared_ptr<LiteralMetadataValueKey<SlotName> > slot_key;
 
-        std::shared_ptr<const FSEntry> load_from_file;
+        std::shared_ptr<const FSPath> load_from_file;
 
         const Environment * const environment;
         const std::shared_ptr<const Repository> repository;
@@ -266,14 +266,14 @@ GemSpecification::GemSpecification(const Environment * const e,
 
 
 GemSpecification::GemSpecification(const Environment * const e, const std::shared_ptr<const Repository> & r,
-        const PackageNamePart & q, const VersionSpec & v, const FSEntry & f) :
+        const PackageNamePart & q, const VersionSpec & v, const FSPath & f) :
     Pimp<GemSpecification>(e, r),
     _imp(Pimp<GemSpecification>::_imp)
 {
     _imp->name_part = stringify(q);
     _imp->version = stringify(v);
-    _imp->load_from_file = std::make_shared<FSEntry>(f);
-    _imp->fs_location_key = std::make_shared<LiteralMetadataValueKey<FSEntry> >("GEM", "Gem Location", mkt_internal, f);
+    _imp->load_from_file = std::make_shared<FSPath>(f);
+    _imp->fs_location_key = std::make_shared<LiteralMetadataValueKey<FSPath> >("GEM", "Gem Location", mkt_internal, f);
     add_metadata_key(_imp->fs_location_key);
     _imp->slot_key = std::make_shared<LiteralMetadataValueKey<SlotName>>("SLOT", "Slot", mkt_internal, SlotName(stringify(v)));
     add_metadata_key(_imp->slot_key);
@@ -409,7 +409,7 @@ GemSpecification::long_description_key() const
     return _imp->description_key;
 }
 
-const std::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSPath> >
 GemSpecification::fs_location_key() const
 {
     return _imp->fs_location_key;

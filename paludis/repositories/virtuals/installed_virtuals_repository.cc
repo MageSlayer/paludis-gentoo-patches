@@ -25,7 +25,6 @@
 #include <paludis/package_database.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/action.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
@@ -52,21 +51,21 @@ namespace paludis
     struct Imp<InstalledVirtualsRepository>
     {
         const Environment * const env;
-        const FSEntry root;
+        const FSPath root;
 
         const std::shared_ptr<Mutex> ids_mutex;
         mutable IDMap ids;
         mutable bool has_ids;
 
-        std::shared_ptr<const MetadataValueKey<FSEntry> > root_key;
+        std::shared_ptr<const MetadataValueKey<FSPath> > root_key;
         std::shared_ptr<const MetadataValueKey<std::string> > format_key;
 
-        Imp(const Environment * const e, const FSEntry & r, std::shared_ptr<Mutex> m = std::make_shared<Mutex>()) :
+        Imp(const Environment * const e, const FSPath & r, std::shared_ptr<Mutex> m = std::make_shared<Mutex>()) :
             env(e),
             root(r),
             ids_mutex(m),
             has_ids(false),
-            root_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >(
+            root_key(std::make_shared<LiteralMetadataValueKey<FSPath> >(
                         "root", "root", mkt_normal, root)),
             format_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
                         "format", "format", mkt_significant, "installed_virtuals"))
@@ -94,9 +93,9 @@ namespace
     };
 
     RepositoryName
-    make_name(const FSEntry & r)
+    make_name(const FSPath & r)
     {
-        if (FSEntry("/") == r)
+        if (FSPath("/") == r)
             return RepositoryName("installed-virtuals");
         else
         {
@@ -108,7 +107,7 @@ namespace
 }
 
 InstalledVirtualsRepository::InstalledVirtualsRepository(const Environment * const env,
-        const FSEntry & r) :
+        const FSPath & r) :
     Repository(env, RepositoryName(make_name(r)), make_named_values<RepositoryCapabilities>(
                 n::destination_interface() = static_cast<RepositoryDestinationInterface *>(this),
                 n::environment_variable_interface() = static_cast<RepositoryEnvironmentVariableInterface *>(0),
@@ -319,13 +318,13 @@ InstalledVirtualsRepository::format_key() const
     return _imp->format_key;
 }
 
-const std::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSPath> >
 InstalledVirtualsRepository::location_key() const
 {
-    return std::shared_ptr<const MetadataValueKey<FSEntry> >();
+    return std::shared_ptr<const MetadataValueKey<FSPath> >();
 }
 
-const std::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSPath> >
 InstalledVirtualsRepository::installed_root_key() const
 {
     return _imp->root_key;
@@ -341,7 +340,7 @@ InstalledVirtualsRepository::repository_factory_name(
         const Environment * const,
         const std::function<std::string (const std::string &)> & f)
 {
-    return make_name(FSEntry(f("root")));
+    return make_name(FSPath(f("root")));
 }
 
 std::shared_ptr<Repository>
@@ -352,7 +351,7 @@ InstalledVirtualsRepository::repository_factory_create(
     if (f("root").empty())
         throw ConfigurationError("Key 'root' unspecified or empty");
 
-    return std::make_shared<InstalledVirtualsRepository>(env, f("root"));
+    return std::make_shared<InstalledVirtualsRepository>(env, FSPath(f("root")));
 }
 
 std::shared_ptr<const RepositoryNameSet>

@@ -24,7 +24,7 @@
 #include <paludis/action-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/pimp.hh>
-#include <paludis/util/fs_entry.hh>
+#include <paludis/util/fs_path.hh>
 #include <paludis/util/named_value.hh>
 
 namespace paludis
@@ -39,8 +39,8 @@ namespace paludis
 
     struct StripperOptions
     {
-        NamedValue<n::debug_dir, FSEntry> debug_dir;
-        NamedValue<n::image_dir, FSEntry> image_dir;
+        NamedValue<n::debug_dir, FSPath> debug_dir;
+        NamedValue<n::image_dir, FSPath> image_dir;
         NamedValue<n::split, bool> split;
         NamedValue<n::strip, bool> strip;
     };
@@ -49,19 +49,19 @@ namespace paludis
         private Pimp<Stripper>
     {
         protected:
-            virtual void on_enter_dir(const FSEntry &) = 0;
-            virtual void on_leave_dir(const FSEntry &) = 0;
+            virtual void on_enter_dir(const FSPath &) = 0;
+            virtual void on_leave_dir(const FSPath &) = 0;
 
-            virtual void on_strip(const FSEntry &) = 0;
-            virtual void on_split(const FSEntry &, const FSEntry &) = 0;
-            virtual void on_unknown(const FSEntry &) = 0;
+            virtual void on_strip(const FSPath &) = 0;
+            virtual void on_split(const FSPath &, const FSPath &) = 0;
+            virtual void on_unknown(const FSPath &) = 0;
 
-            virtual void do_dir_recursive(const FSEntry &);
+            virtual void do_dir_recursive(const FSPath &);
 
-            virtual std::string file_type(const FSEntry &);
+            virtual std::string file_type(const FSPath &);
 
-            virtual void do_split(const FSEntry &, const FSEntry &);
-            virtual void do_strip(const FSEntry &, const std::string &);
+            virtual void do_split(const FSPath &, const FSPath &);
+            virtual void do_strip(const FSPath &, const std::string &);
 
         public:
             ///\name Basic operations

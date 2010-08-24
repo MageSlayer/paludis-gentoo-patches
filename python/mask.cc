@@ -30,7 +30,7 @@ namespace bp = boost::python;
 namespace
 {
     std::shared_ptr<RepositoryMaskInfo>  make_repository_mask_info(
-            const std::shared_ptr<const Sequence<std::string> > & s, const FSEntry & f)
+            const std::shared_ptr<const Sequence<std::string> > & s, const FSPath & f)
     {
         return std::make_shared<RepositoryMaskInfo>(make_named_values<RepositoryMaskInfo>(
                         n::comment() = s,
@@ -303,8 +303,8 @@ void expose_mask()
             )
 
         .add_property("mask_file",
-                &named_values_getter<RepositoryMaskInfo, n::mask_file, FSEntry, &RepositoryMaskInfo::mask_file>,
-                &named_values_setter<RepositoryMaskInfo, n::mask_file, FSEntry, &RepositoryMaskInfo::mask_file>,
+                &named_values_getter<RepositoryMaskInfo, n::mask_file, FSPath, &RepositoryMaskInfo::mask_file>,
+                &named_values_setter<RepositoryMaskInfo, n::mask_file, FSPath, &RepositoryMaskInfo::mask_file>,
                 "[ro] str\n"
                 "Holds the file whence the mask originates."
                 )

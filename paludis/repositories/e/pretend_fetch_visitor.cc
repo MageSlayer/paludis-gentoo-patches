@@ -20,17 +20,20 @@
 #include <paludis/repositories/e/pretend_fetch_visitor.hh>
 #include <paludis/repositories/e/e_repository_id.hh>
 #include <paludis/repositories/e/manifest2_reader.hh>
+
 #include <paludis/dep_spec.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_id.hh>
 #include <paludis/action.hh>
 #include <paludis/metadata_key.hh>
+
 #include <paludis/util/pimp-impl.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
+#include <paludis/util/fs_stat.hh>
+
 #include <algorithm>
 #include <list>
 #include <set>
@@ -46,7 +49,7 @@ namespace paludis
         const Environment * const env;
         const std::shared_ptr<const PackageID> id;
         const EAPI & eapi;
-        const FSEntry distdir;
+        const FSPath distdir;
         const bool fetch_unneeded;
         std::shared_ptr<const URILabel> default_label;
         PretendFetchAction & action;
@@ -59,7 +62,7 @@ namespace paludis
                 const Environment * const e,
                 const std::shared_ptr<const PackageID> & i,
                 const EAPI & p,
-                const FSEntry & d,
+                const FSPath & d,
                 const bool f,
                 const std::shared_ptr<const URILabel> & n,
                 PretendFetchAction & a) :
@@ -81,7 +84,7 @@ PretendFetchVisitor::PretendFetchVisitor(
         const Environment * const e,
         const std::shared_ptr<const PackageID> & i,
         const EAPI & p,
-        const FSEntry & d,
+        const FSPath & d,
         const bool f,
         const std::shared_ptr<const URILabel> & n,
         PretendFetchAction & a) :
@@ -126,8 +129,8 @@ PretendFetchVisitor::visit(const FetchableURISpecTree::NodeType<FetchableURIDepS
     if (! _imp->already_done.insert(node.spec()->filename()).second)
         return;
 
-    FSEntry destination(_imp->distdir / node.spec()->filename());
-    if (destination.exists())
+    FSPath destination(_imp->distdir / node.spec()->filename());
+    if (destination.stat().exists())
         return;
 
     Manifest2Reader::ConstIterator m(_imp->manifest.find("DIST", node.spec()->filename()));

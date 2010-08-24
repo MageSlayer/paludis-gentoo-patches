@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,27 +17,23 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_UTIL_DIR_ITERATOR_FWD_HH
-#define PALUDIS_GUARD_PALUDIS_UTIL_DIR_ITERATOR_FWD_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_UTIL_FS_ITERATOR_FWD_HH
+#define PALUDIS_GUARD_PALUDIS_UTIL_FS_ITERATOR_FWD_HH 1
 
-#include <paludis/util/attributes.hh>
 #include <paludis/util/options-fwd.hh>
+#include <paludis/util/attributes.hh>
 #include <iosfwd>
 
 namespace paludis
 {
-#include <paludis/util/dir_iterator-se.hh>
+    struct FSIterator;
 
-    /**
-     * Options for a DirIterator.
-     *
-     * \see DirIteratorOption
-     * \see DirIterator
-     */
-    typedef Options<DirIteratorOption> DirIteratorOptions;
+#include <paludis/util/fs_iterator-se.hh>
 
-    class DirOpenError;
-    class DirIterator;
+    typedef Options<FSIteratorOption> FSIteratorOptions;
+
+    bool operator== (const FSIterator &, const FSIterator &) PALUDIS_VISIBLE;
+    bool operator!= (const FSIterator &, const FSIterator &) PALUDIS_VISIBLE;
 }
 
 #endif

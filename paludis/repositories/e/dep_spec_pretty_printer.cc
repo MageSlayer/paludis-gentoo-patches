@@ -25,7 +25,6 @@
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/indirect_iterator-impl.hh>

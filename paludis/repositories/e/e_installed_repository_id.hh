@@ -23,7 +23,6 @@
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/environment-fwd.hh>
-#include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/repositories/e/e_repository_id.hh>
 
 namespace paludis
@@ -45,7 +44,7 @@ namespace paludis
                 EInstalledRepositoryID(const QualifiedPackageName &, const VersionSpec &,
                         const Environment * const,
                         const std::shared_ptr<const Repository> &,
-                        const FSEntry & file);
+                        const FSPath & file);
 
             public:
                 ~EInstalledRepositoryID();
@@ -77,7 +76,7 @@ namespace paludis
                 virtual const std::shared_ptr<const MetadataTimeKey> installed_time_key() const;
                 virtual const std::shared_ptr<const MetadataCollectionKey<PackageIDSequence> > contains_key() const;
                 virtual const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > > contained_in_key() const;
-                virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > fs_location_key() const;
+                virtual const std::shared_ptr<const MetadataValueKey<FSPath> > fs_location_key() const;
                 virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > from_repositories_key() const;
 
                 virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_use_key() const;

@@ -22,7 +22,6 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_UNPACKAGED_NDBAM_UNMERGER_HH 1
 
 #include <paludis/util/pimp.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/output_manager-fwd.hh>
 #include <paludis/unmerger.hh>
 #include <paludis/environment-fwd.hh>
@@ -50,13 +49,13 @@ namespace paludis
     {
         NamedValue<n::config_protect, std::string> config_protect;
         NamedValue<n::config_protect_mask, std::string> config_protect_mask;
-        NamedValue<n::contents_file, FSEntry> contents_file;
+        NamedValue<n::contents_file, FSPath> contents_file;
         NamedValue<n::environment, const Environment *> environment;
-        NamedValue<n::ignore, const std::function<bool (const FSEntry &)> > ignore;
+        NamedValue<n::ignore, const std::function<bool (const FSPath &)> > ignore;
         NamedValue<n::ndbam, const NDBAM *> ndbam;
         NamedValue<n::output_manager, std::shared_ptr<OutputManager> > output_manager;
         NamedValue<n::package_id, std::shared_ptr<const PackageID> > package_id;
-        NamedValue<n::root, FSEntry> root;
+        NamedValue<n::root, FSPath> root;
     };
 
     class PALUDIS_VISIBLE NDBAMUnmergerError :
@@ -84,8 +83,8 @@ namespace paludis
             void _add_sym(const std::shared_ptr<const ContentsEntry> &);
 
         protected:
-            bool config_protected(const FSEntry &) const;
-            std::string make_tidy(const FSEntry &) const;
+            bool config_protected(const FSPath &) const;
+            std::string make_tidy(const FSPath &) const;
 
             void populate_unmerge_set();
 

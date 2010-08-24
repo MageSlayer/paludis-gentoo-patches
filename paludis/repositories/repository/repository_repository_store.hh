@@ -22,7 +22,6 @@
 
 #include <paludis/repositories/repository/repository_repository-fwd.hh>
 #include <paludis/util/pimp.hh>
-#include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/environment-fwd.hh>

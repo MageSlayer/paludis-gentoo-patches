@@ -21,7 +21,8 @@
 #define PALUDIS_GUARD_PALUDIS_UTIL_WILDCARD_EXPANDER_HH
 
 #include <paludis/util/attributes.hh>
-#include <paludis/util/fs_entry.hh>
+#include <paludis/util/fs_path.hh>
+#include <paludis/util/fs_error.hh>
 #include <paludis/util/operators.hh>
 #include <paludis/util/pimp.hh>
 
@@ -37,12 +38,12 @@ namespace paludis
     };
 
     class PALUDIS_VISIBLE WildcardExpander :
-        public std::iterator<std::forward_iterator_tag, const FSEntry>,
+        public std::iterator<std::forward_iterator_tag, const FSPath>,
         public equality_operators::HasEqualityOperators,
         private Pimp<WildcardExpander>
     {
         public:
-            WildcardExpander(const std::string &, const FSEntry & = FSEntry("/"));
+            WildcardExpander(const std::string &, const FSPath & = FSPath("/"));
             WildcardExpander();
             WildcardExpander(const WildcardExpander &);
 
@@ -50,8 +51,8 @@ namespace paludis
 
             WildcardExpander & operator= (const WildcardExpander &);
 
-            const FSEntry & operator* () const PALUDIS_ATTRIBUTE((warn_unused_result));
-            const FSEntry * operator-> () const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const FSPath & operator* () const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const FSPath * operator-> () const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             WildcardExpander & operator++ ();
             WildcardExpander operator++ (int);

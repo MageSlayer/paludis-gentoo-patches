@@ -24,8 +24,6 @@
 #include <paludis/hook.hh>
 #include <paludis/package_database.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/dir_iterator.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/pimp-impl.hh>
@@ -38,6 +36,8 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/util/process.hh>
+#include <paludis/util/fs_iterator.hh>
+#include <paludis/util/fs_stat.hh>
 #include <paludis/about.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/metadata_key.hh>
@@ -64,12 +64,12 @@ namespace
         public HookFile
     {
         private:
-            const FSEntry _file_name;
+            const FSPath _file_name;
             const bool _run_prefixed;
             const Environment * const _env;
 
         public:
-            BashHookFile(const FSEntry & f, const bool r, const Environment * const e) :
+            BashHookFile(const FSPath & f, const bool r, const Environment * const e) :
                 _file_name(f),
                 _run_prefixed(r),
                 _env(e)
@@ -80,7 +80,7 @@ namespace
                     const Hook &,
                     const std::shared_ptr<OutputManager> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const FSEntry file_name() const
+            virtual const FSPath file_name() const
             {
                 return _file_name;
             }
@@ -99,14 +99,14 @@ namespace
         public HookFile
     {
         private:
-            const FSEntry _file_name;
+            const FSPath _file_name;
             const bool _run_prefixed;
             const Environment * const _env;
 
             void _add_dependency_class(const Hook &, DirectedGraph<std::string, int> &, bool);
 
         public:
-            FancyHookFile(const FSEntry & f, const bool r, const Environment * const e) :
+            FancyHookFile(const FSPath & f, const bool r, const Environment * const e) :
                 _file_name(f),
                 _run_prefixed(r),
                 _env(e)
@@ -117,7 +117,7 @@ namespace
                     const Hook &,
                     const std::shared_ptr<OutputManager> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const FSEntry file_name() const
+            virtual const FSPath file_name() const
             {
                 return _file_name;
             }
@@ -131,7 +131,7 @@ namespace
         public HookFile
     {
         private:
-            const FSEntry _file_name;
+            const FSPath _file_name;
             const Environment * const _env;
 
             void * _dl;
@@ -140,13 +140,13 @@ namespace
             const std::shared_ptr<const Sequence<std::string > > (*_auto_hook_names)(const Environment *);
 
         public:
-            SoHookFile(const FSEntry &, const bool, const Environment * const);
+            SoHookFile(const FSPath &, const bool, const Environment * const);
 
             virtual HookResult run(
                     const Hook &,
                     const std::shared_ptr<OutputManager> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const FSEntry file_name() const
+            virtual const FSPath file_name() const
             {
                 return _file_name;
             }
@@ -397,7 +397,7 @@ FancyHookFile::_add_dependency_class(const Hook & hook, DirectedGraph<std::strin
             << "Hook dependencies for '" << file_name() << "' returned failure '" << exit_status << "'";
 }
 
-SoHookFile::SoHookFile(const FSEntry & f, const bool, const Environment * const e) :
+SoHookFile::SoHookFile(const FSPath & f, const bool, const Environment * const e) :
     _file_name(f),
     _env(e),
     _dl(0),
@@ -470,7 +470,7 @@ namespace paludis
     struct Imp<Hooker>
     {
         const Environment * const env;
-        std::list<std::pair<FSEntry, bool> > dirs;
+        std::list<std::pair<FSPath, bool> > dirs;
 
         mutable Mutex hook_files_mutex;
         mutable std::map<std::string, std::shared_ptr<Sequence<std::shared_ptr<HookFile> > > > hook_files;
@@ -493,14 +493,14 @@ namespace paludis
 
             Context context("When loading auto hooks:");
 
-            for (std::list<std::pair<FSEntry, bool> >::const_iterator d(dirs.begin()), d_end(dirs.end()) ;
+            for (std::list<std::pair<FSPath, bool> >::const_iterator d(dirs.begin()), d_end(dirs.end()) ;
                     d != d_end ; ++d)
             {
-                FSEntry d_a(d->first / "auto");
-                if (! d_a.is_directory())
+                FSPath d_a(d->first / "auto");
+                if (! d_a.stat().is_directory())
                     continue;
 
-                for (DirIterator e(d_a), e_end ; e != e_end ; ++e)
+                for (FSIterator e(d_a, { }), e_end ; e != e_end ; ++e)
                 {
                     std::shared_ptr<HookFile> hook_file;
                     std::string name;
@@ -544,7 +544,7 @@ Hooker::~Hooker()
 }
 
 void
-Hooker::add_dir(const FSEntry & dir, const bool v)
+Hooker::add_dir(const FSPath & dir, const bool v)
 {
     Lock l(_imp->hook_files_mutex);
     _imp->hook_files.clear();
@@ -559,7 +559,7 @@ namespace
     {
         Mutex mutex;
         void * handle;
-        std::shared_ptr<HookFile> (* create_py_hook_file_handle)(const FSEntry &,
+        std::shared_ptr<HookFile> (* create_py_hook_file_handle)(const FSPath &,
                 const bool, const Environment * const);
 
 
@@ -594,13 +594,13 @@ Hooker::_find_hooks(const Hook & hook) const
     }
 
     /* named subdirectories */
-    for (std::list<std::pair<FSEntry, bool> >::const_iterator d(_imp->dirs.begin()), d_end(_imp->dirs.end()) ;
+    for (std::list<std::pair<FSPath, bool> >::const_iterator d(_imp->dirs.begin()), d_end(_imp->dirs.end()) ;
             d != d_end ; ++d)
     {
-        if (! (d->first / hook.name()).is_directory())
+        if (! (d->first / hook.name()).stat().is_directory())
             continue;
 
-        for (DirIterator e(d->first / hook.name()), e_end ; e != e_end ; ++e)
+        for (FSIterator e(d->first / hook.name(), { }), e_end ; e != e_end ; ++e)
         {
             if (ignore_hooks.find(e->basename()) != ignore_hooks.end())
                 continue;
@@ -645,7 +645,7 @@ Hooker::_find_hooks(const Hook & hook) const
                         {
                             PyHookFileHandle::get_instance()->create_py_hook_file_handle =
                                 reinterpret_cast<std::shared_ptr<HookFile> (*)(
-                                        const FSEntry &, const bool, const Environment * const)>(
+                                        const FSPath &, const bool, const Environment * const)>(
                                             reinterpret_cast<uintptr_t>(dlsym(
                                                     PyHookFileHandle::get_instance()->handle, "create_py_hook_file")));
                             if (PyHookFileHandle::get_instance()->create_py_hook_file_handle)
@@ -798,7 +798,7 @@ Hooker::perform_hook(
                 case hod_stdout:
                     for (Sequence<std::shared_ptr<HookFile> >::ConstIterator f(h->second->begin()),
                             f_end(h->second->end()) ; f != f_end ; ++f)
-                        if ((*f)->file_name().is_regular_file_or_symlink_to_regular_file())
+                        if ((*f)->file_name().stat().is_regular_file_or_symlink_to_regular_file())
                             result.max_exit_status() = std::max(result.max_exit_status(), (*f)->run(hook, optional_output_manager).max_exit_status());
                         else
                             Log::get_instance()->message("hook.not_regular_file", ll_warning, lc_context) << "Hook file '" <<
@@ -809,7 +809,7 @@ Hooker::perform_hook(
                     for (Sequence<std::shared_ptr<HookFile> >::ConstIterator f(h->second->begin()),
                             f_end(h->second->end()) ; f != f_end ; ++f)
                     {
-                        if (! (*f)->file_name().is_regular_file_or_symlink_to_regular_file())
+                        if (! (*f)->file_name().stat().is_regular_file_or_symlink_to_regular_file())
                         {
                             Log::get_instance()->message("hook.not_regular_file", ll_warning, lc_context) << "Hook file '" <<
                                 (*f)->file_name() << "' is not a regular file or has been removed";

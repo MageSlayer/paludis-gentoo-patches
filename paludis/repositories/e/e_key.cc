@@ -30,7 +30,6 @@
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/tokeniser.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/join.hh>
@@ -43,6 +42,8 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/timestamp.hh>
+#include <paludis/util/fs_stat.hh>
+#include <paludis/util/fs_error.hh>
 
 #include <paludis/contents.hh>
 #include <paludis/repository.hh>
@@ -943,7 +944,7 @@ namespace paludis
     struct Imp<EContentsKey>
     {
         const std::shared_ptr<const ERepositoryID> id;
-        const FSEntry filename;
+        const FSPath filename;
         mutable Mutex value_mutex;
         mutable std::shared_ptr<Contents> value;
 
@@ -951,7 +952,7 @@ namespace paludis
         const std::string human_name;
         const MetadataKeyType type;
 
-        Imp(const std::shared_ptr<const ERepositoryID> & i, const FSEntry & v,
+        Imp(const std::shared_ptr<const ERepositoryID> & i, const FSPath & v,
                 const std::string & r, const std::string & h, const MetadataKeyType & t) :
             id(i),
             filename(v),
@@ -964,7 +965,7 @@ namespace paludis
 }
 
 EContentsKey::EContentsKey(const std::shared_ptr<const ERepositoryID> & id,
-        const std::string & r, const std::string & h, const FSEntry & v, const MetadataKeyType t) :
+        const std::string & r, const std::string & h, const FSPath & v, const MetadataKeyType t) :
     Pimp<EContentsKey>(id, v, r, h, t)
 {
 }
@@ -985,8 +986,8 @@ EContentsKey::value() const
 
     _imp->value = std::make_shared<Contents>();
 
-    FSEntry f(_imp->filename);
-    if (! f.is_regular_file_or_symlink_to_regular_file())
+    FSPath f(_imp->filename);
+    if (! f.stat().is_regular_file_or_symlink_to_regular_file())
     {
         Log::get_instance()->message("e.contents.not_a_file", ll_warning, lc_context) << "CONTENTS lookup failed for request for '" <<
                 *_imp->id << "' using '" << _imp->filename << "'";
@@ -1011,7 +1012,7 @@ EContentsKey::value() const
 
         if ("obj" == tokens.at(0))
         {
-            std::shared_ptr<ContentsEntry> e(std::make_shared<ContentsFileEntry>(tokens.at(1)));
+            std::shared_ptr<ContentsEntry> e(std::make_shared<ContentsFileEntry>(FSPath(tokens.at(1))));
             e->add_metadata_key(std::make_shared<LiteralMetadataTimeKey>("mtime", "mtime", mkt_normal,
                             Timestamp(destringify<time_t>(tokens.at(3)), 0)));
             e->add_metadata_key(std::make_shared<LiteralMetadataValueKey<std::string>>("md5", "md5", mkt_normal, tokens.at(2)));
@@ -1019,18 +1020,18 @@ EContentsKey::value() const
         }
         else if ("dir" == tokens.at(0))
         {
-            std::shared_ptr<ContentsEntry> e(std::make_shared<ContentsDirEntry>(tokens.at(1)));
+            std::shared_ptr<ContentsEntry> e(std::make_shared<ContentsDirEntry>(FSPath(tokens.at(1))));
             _imp->value->add(e);
         }
         else if ("sym" == tokens.at(0))
         {
-            std::shared_ptr<ContentsEntry> e(std::make_shared<ContentsSymEntry>(tokens.at(1), tokens.at(2)));
+            std::shared_ptr<ContentsEntry> e(std::make_shared<ContentsSymEntry>(FSPath(tokens.at(1)), tokens.at(2)));
             e->add_metadata_key(std::make_shared<LiteralMetadataTimeKey>("mtime", "mtime", mkt_normal,
                             Timestamp(destringify<time_t>(tokens.at(3)), 0)));
             _imp->value->add(e);
         }
         else if ("misc" == tokens.at(0) || "fif" == tokens.at(0) || "dev" == tokens.at(0))
-            _imp->value->add(std::shared_ptr<ContentsEntry>(std::make_shared<ContentsOtherEntry>(tokens.at(1))));
+            _imp->value->add(std::shared_ptr<ContentsEntry>(std::make_shared<ContentsOtherEntry>(FSPath(tokens.at(1)))));
         else
             Log::get_instance()->message("e.contents.unknown", ll_warning, lc_context) << "CONTENTS has unsupported entry type '" <<
                 tokens.at(0) << "', skipping";
@@ -1063,7 +1064,7 @@ namespace paludis
     struct Imp<EMTimeKey>
     {
         const std::shared_ptr<const ERepositoryID> id;
-        const FSEntry filename;
+        const FSPath filename;
         mutable Mutex value_mutex;
         mutable std::shared_ptr<Timestamp> value;
 
@@ -1071,7 +1072,7 @@ namespace paludis
         const std::string human_name;
         const MetadataKeyType type;
 
-        Imp(const std::shared_ptr<const ERepositoryID> & i, const FSEntry & v,
+        Imp(const std::shared_ptr<const ERepositoryID> & i, const FSPath & v,
                 const std::string & r, const std::string & h, const MetadataKeyType t) :
             id(i),
             filename(v),
@@ -1084,7 +1085,7 @@ namespace paludis
 }
 
 EMTimeKey::EMTimeKey(const std::shared_ptr<const ERepositoryID> & id,
-        const std::string & r, const std::string & h, const FSEntry & v, const MetadataKeyType t) :
+        const std::string & r, const std::string & h, const FSPath & v, const MetadataKeyType t) :
     Pimp<EMTimeKey>(id, v, r, h, t)
 {
 }
@@ -1105,7 +1106,7 @@ EMTimeKey::value() const
 
     try
     {
-        *_imp->value = _imp->filename.mtim();
+        *_imp->value = _imp->filename.stat().mtim();
     }
     catch (const FSError & e)
     {

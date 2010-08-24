@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -26,7 +26,6 @@
 #include <paludis/spec_tree.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/repositories/e/eapi-fwd.hh>
-#include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/pimp.hh>
 
 namespace paludis
@@ -41,7 +40,7 @@ namespace paludis
                         const Environment * const,
                         const std::shared_ptr<const PackageID> &,
                         const EAPI & eapi,
-                        const FSEntry & distdir,
+                        const FSPath & distdir,
                         const bool fetch_unneeded,
                         const std::shared_ptr<const URILabel> & initial_label,
                         PretendFetchAction & action);

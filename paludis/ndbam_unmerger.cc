@@ -27,7 +27,6 @@
 #include <paludis/hook.hh>
 #include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
-#include <paludis/util/dir_iterator.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/pimp-impl.hh>
@@ -40,6 +39,8 @@
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/timestamp.hh>
+#include <paludis/util/fs_stat.hh>
+#include <paludis/util/fs_iterator.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/metadata_key.hh>
 #include <functional>
@@ -87,7 +88,7 @@ NDBAMUnmerger::~NDBAMUnmerger()
 Hook
 NDBAMUnmerger::extend_hook(const Hook & h) const
 {
-    std::shared_ptr<const FSEntrySequence> bashrc_files(_imp->options.environment()->bashrc_files());
+    std::shared_ptr<const FSPathSequence> bashrc_files(_imp->options.environment()->bashrc_files());
 
     Hook result(Unmerger::extend_hook(h)
         ("CONFIG_PROTECT", _imp->options.config_protect())
@@ -120,7 +121,7 @@ NDBAMUnmerger::extend_hook(const Hook & h) const
 }
 
 bool
-NDBAMUnmerger::config_protected(const FSEntry & f) const
+NDBAMUnmerger::config_protected(const FSPath & f) const
 {
     std::string tidy(make_tidy(f));
 
@@ -145,7 +146,7 @@ NDBAMUnmerger::config_protected(const FSEntry & f) const
 }
 
 std::string
-NDBAMUnmerger::make_tidy(const FSEntry & f) const
+NDBAMUnmerger::make_tidy(const FSPath & f) const
 {
     std::string root_str(stringify(_imp->options.root())), f_str(stringify(f));
     if (root_str == "/")
@@ -204,26 +205,27 @@ namespace
 bool
 NDBAMUnmerger::check_file(const std::shared_ptr<const ContentsEntry> & e) const
 {
-    const FSEntry f(e->location_key()->value());
+    const FSPath f(e->location_key()->value());
+    const FSPath root_f(_imp->options.root() / f);
+    const FSStat root_f_stat(root_f);
 
-    if (! (_imp->options.root() / f).exists())
+    if (! root_f_stat.exists())
         display("--- [gone ] " + stringify(f));
-    else if (! (_imp->options.root() / f).is_regular_file())
+    else if (! root_f_stat.is_regular_file())
         display("--- [!type] " + stringify(f));
-    else if ((_imp->options.root() / f).mtim().seconds() != require_key<MetadataTimeKey>(*e, "mtime").value().seconds())
+    else if (root_f_stat.mtim().seconds() != require_key<MetadataTimeKey>(*e, "mtime").value().seconds())
         display("--- [!time] " + stringify(f));
     else
     {
-        SafeIFStream md5_file(_imp->options.root() / f);
+        SafeIFStream md5_file(root_f);
         if (! md5_file)
         {
-            Log::get_instance()->message("ndbam.unmerger.md5_failed", ll_warning, lc_no_context) << "Cannot get md5 for '" <<
-                (_imp->options.root() / f) << "'";
+            Log::get_instance()->message("ndbam.unmerger.md5_failed", ll_warning, lc_no_context) << "Cannot get md5 for '" << root_f << "'";
             display("--- [!md5?] " + stringify(f));
         }
         else if (MD5(md5_file).hexsum() != require_key<MetadataValueKey<std::string> >(*e, "md5").value())
             display("--- [!md5 ] " + stringify(f));
-        else if (config_protected(_imp->options.root() / f))
+        else if (config_protected(root_f))
             display("--- [cfgpr] " + stringify(f));
         else
             return true;
@@ -235,15 +237,17 @@ NDBAMUnmerger::check_file(const std::shared_ptr<const ContentsEntry> & e) const
 bool
 NDBAMUnmerger::check_sym(const std::shared_ptr<const ContentsEntry> & e) const
 {
-    const FSEntry f(e->location_key()->value());
+    const FSPath f(e->location_key()->value());
+    const FSPath root_f(_imp->options.root() / f);
+    const FSStat root_f_stat(root_f);
 
-    if (! (_imp->options.root() / f).exists())
+    if (! root_f_stat.exists())
         display("--- [gone ] " + stringify(f));
-    else if (! (_imp->options.root() / f).is_symbolic_link())
+    else if (! root_f_stat.is_symlink())
         display("--- [!type] " + stringify(f));
-    else if ((_imp->options.root() / f).mtim().seconds() != require_key<MetadataTimeKey>(*e, "mtime").value().seconds())
+    else if (root_f_stat.mtim().seconds() != require_key<MetadataTimeKey>(*e, "mtime").value().seconds())
         display("--- [!time] " + stringify(f));
-    else if ((_imp->options.root() / f).readlink() != require_key<MetadataValueKey<std::string> >(*e, "target").value())
+    else if (root_f.readlink() != require_key<MetadataValueKey<std::string> >(*e, "target").value())
         display("--- [!dest] " + stringify(f));
     else
         return true;
@@ -260,13 +264,15 @@ NDBAMUnmerger::check_misc(const std::shared_ptr<const ContentsEntry> &) const
 bool
 NDBAMUnmerger::check_dir(const std::shared_ptr<const ContentsEntry> & e) const
 {
-    const FSEntry f(e->location_key()->value());
+    const FSPath f(e->location_key()->value());
+    const FSPath root_f(_imp->options.root() / f);
+    const FSStat root_f_stat(root_f);
 
-    if (! (_imp->options.root() / f).exists())
+    if (! root_f_stat.exists())
         display("--- [gone ] " + stringify(f));
-    else if (! (_imp->options.root() / f).is_directory())
+    else if (! root_f_stat.is_directory())
         display("--- [!type] " + stringify(f));
-    else if (DirIterator(_imp->options.root() / f, { dio_include_dotfiles, dio_first_only }) != DirIterator())
+    else if (FSIterator(root_f, { fsio_include_dotfiles, fsio_first_only }) != FSIterator())
         display("--- [!empt] " + stringify(f));
     else
         return true;

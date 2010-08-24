@@ -22,9 +22,9 @@
 
 #include <paludis/merger-fwd.hh>
 #include <paludis/util/named_value.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/timestamp.hh>
+#include <paludis/util/fs_path.hh>
 #include <paludis/hook-fwd.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/merger_entry_type.hh>
@@ -58,14 +58,14 @@ namespace paludis
     {
         NamedValue<n::environment, Environment *> environment;
         NamedValue<n::fix_mtimes_before, Timestamp> fix_mtimes_before;
-        NamedValue<n::get_new_ids_or_minus_one, std::function<std::pair<uid_t, gid_t> (const FSEntry &)> > get_new_ids_or_minus_one;
-        NamedValue<n::image, FSEntry> image;
-        NamedValue<n::install_under, FSEntry> install_under;
+        NamedValue<n::get_new_ids_or_minus_one, std::function<std::pair<uid_t, gid_t> (const FSPath &)> > get_new_ids_or_minus_one;
+        NamedValue<n::image, FSPath> image;
+        NamedValue<n::install_under, FSPath> install_under;
         NamedValue<n::maybe_output_manager, std::shared_ptr<OutputManager> > maybe_output_manager;
-        NamedValue<n::merged_entries, std::shared_ptr<FSEntrySet> > merged_entries;
+        NamedValue<n::merged_entries, std::shared_ptr<FSPathSet> > merged_entries;
         NamedValue<n::no_chown, bool> no_chown;
         NamedValue<n::options, MergerOptions> options;
-        NamedValue<n::root, FSEntry> root;
+        NamedValue<n::root, FSPath> root;
     };
 
     class PALUDIS_VISIBLE MergerError :
@@ -79,11 +79,11 @@ namespace paludis
         private Pimp<Merger>
     {
         protected:
-            bool symlink_needs_rewriting(const FSEntry &);
-            void rewrite_symlink_as_needed(const FSEntry &, const FSEntry &);
+            bool symlink_needs_rewriting(const FSPath &);
+            void rewrite_symlink_as_needed(const FSPath &, const FSPath &);
             void set_skipped_dir(const bool);
-            void do_ownership_fixes_recursive(const FSEntry &);
-            bool fixed_ownership_for(const FSEntry &);
+            void do_ownership_fixes_recursive(const FSPath &);
+            bool fixed_ownership_for(const FSPath &);
 
             /**
              * Allows subclasses to extend hook calls.
@@ -98,22 +98,22 @@ namespace paludis
             /**
              * Handle a directory, recursively.
              */
-            virtual void do_dir_recursive(bool is_check, const FSEntry &, const FSEntry &);
+            virtual void do_dir_recursive(bool is_check, const FSPath &, const FSPath &);
 
             /**
              * Determine the entry type of a filesystem entry.
              */
-            virtual EntryType entry_type(const FSEntry &);
+            virtual EntryType entry_type(const FSPath &);
 
             /**
              * Allows subclasses to perform behaviour when entering a directory.
              */
-            virtual void on_enter_dir(bool is_check, const FSEntry);
+            virtual void on_enter_dir(bool is_check, const FSPath);
 
             /**
              * Allows subclasses to perform behaviour when leaving a directory.
              */
-            virtual void on_leave_dir(bool is_check, const FSEntry);
+            virtual void on_leave_dir(bool is_check, const FSPath);
 
             /**
              * Allows subclasses to perform behaviour when everything has been
@@ -133,18 +133,18 @@ namespace paludis
 
             virtual void display_override(const std::string &) const = 0;
 
-            virtual void on_misc(bool is_check, const FSEntry &, const FSEntry &);
-            virtual void on_file(bool is_check, const FSEntry &, const FSEntry &);
-            virtual void on_dir(bool is_check, const FSEntry &, const FSEntry &);
-            virtual void on_sym(bool is_check, const FSEntry &, const FSEntry &);
+            virtual void on_misc(bool is_check, const FSPath &, const FSPath &);
+            virtual void on_file(bool is_check, const FSPath &, const FSPath &);
+            virtual void on_dir(bool is_check, const FSPath &, const FSPath &);
+            virtual void on_sym(bool is_check, const FSPath &, const FSPath &);
 
-            virtual void on_file_main(bool is_check, const FSEntry &, const FSEntry &) = 0;
-            virtual void on_dir_main(bool is_check, const FSEntry &, const FSEntry &) = 0;
-            virtual void on_sym_main(bool is_check, const FSEntry &, const FSEntry &) = 0;
+            virtual void on_file_main(bool is_check, const FSPath &, const FSPath &) = 0;
+            virtual void on_dir_main(bool is_check, const FSPath &, const FSPath &) = 0;
+            virtual void on_sym_main(bool is_check, const FSPath &, const FSPath &) = 0;
 
             virtual void prepare_install_under() = 0;
 
-            virtual FSEntry canonicalise_root_path(const FSEntry &) = 0;
+            virtual FSPath canonicalise_root_path(const FSPath &) = 0;
 
         public:
             explicit Merger(const MergerParams &);

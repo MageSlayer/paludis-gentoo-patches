@@ -256,7 +256,7 @@ std::shared_ptr<const SecurityContext> MatchPathCon::match(const std::string & p
     return p;
 }
 
-int paludis::setfilecon(const paludis::FSEntry & path, const std::shared_ptr<const SecurityContext> & con)
+int paludis::setfilecon(const FSPath & path, const std::shared_ptr<const SecurityContext> & con)
 {
     return libselinux.setfilecon(stringify(path).c_str(), con->_imp->_context);
 }

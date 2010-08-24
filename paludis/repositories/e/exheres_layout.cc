@@ -23,8 +23,6 @@
 #include <paludis/util/config_file.hh>
 #include <paludis/package_id.hh>
 #include <paludis/package_database.hh>
-#include <paludis/util/dir_iterator.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/log.hh>
@@ -39,6 +37,8 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/fs_iterator.hh>
+#include <paludis/util/fs_stat.hh>
 #include <paludis/choice.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <unordered_map>
@@ -59,7 +59,7 @@ namespace paludis
     struct Imp<ExheresLayout>
     {
         const ERepository * const repository;
-        const FSEntry tree_root;
+        const FSPath tree_root;
 
         mutable Mutex big_nasty_mutex;
 
@@ -70,38 +70,38 @@ namespace paludis
 
         mutable std::shared_ptr<CategoryNamePartSet> category_names_collection;
 
-        std::shared_ptr<FSEntrySequence> arch_list_files;
-        std::shared_ptr<FSEntrySequence> repository_mask_files;
-        std::shared_ptr<FSEntrySequence> profiles_desc_files;
-        std::shared_ptr<FSEntrySequence> mirror_files;
-        std::shared_ptr<FSEntrySequence> info_variables_files;
-        std::shared_ptr<FSEntrySequence> info_packages_files;
+        std::shared_ptr<FSPathSequence> arch_list_files;
+        std::shared_ptr<FSPathSequence> repository_mask_files;
+        std::shared_ptr<FSPathSequence> profiles_desc_files;
+        std::shared_ptr<FSPathSequence> mirror_files;
+        std::shared_ptr<FSPathSequence> info_variables_files;
+        std::shared_ptr<FSPathSequence> info_packages_files;
         std::shared_ptr<UseDescFileInfoSequence> use_desc_files;
 
-        Imp(const ERepository * const n, const FSEntry & t) :
+        Imp(const ERepository * const n, const FSPath & t) :
             repository(n),
             tree_root(t),
             has_category_names(false),
-            arch_list_files(std::make_shared<FSEntrySequence>()),
-            repository_mask_files(std::make_shared<FSEntrySequence>()),
-            profiles_desc_files(std::make_shared<FSEntrySequence>()),
-            mirror_files(std::make_shared<FSEntrySequence>()),
-            info_variables_files(std::make_shared<FSEntrySequence>()),
-            info_packages_files(std::make_shared<FSEntrySequence>()),
+            arch_list_files(std::make_shared<FSPathSequence>()),
+            repository_mask_files(std::make_shared<FSPathSequence>()),
+            profiles_desc_files(std::make_shared<FSPathSequence>()),
+            mirror_files(std::make_shared<FSPathSequence>()),
+            info_variables_files(std::make_shared<FSPathSequence>()),
+            info_packages_files(std::make_shared<FSPathSequence>()),
             use_desc_files(std::make_shared<UseDescFileInfoSequence>())
         {
         }
     };
 }
 
-ExheresLayout::ExheresLayout(const ERepository * const r, const FSEntry & tree_root,
-        const std::shared_ptr<const FSEntrySequence> & f) :
+ExheresLayout::ExheresLayout(const ERepository * const r, const FSPath & tree_root,
+        const std::shared_ptr<const FSPathSequence> & f) :
     Layout(f),
     Pimp<ExheresLayout>(r, tree_root)
 {
     if (master_repositories_locations())
     {
-        for (FSEntrySequence::ConstIterator l(master_repositories_locations()->begin()), l_end(master_repositories_locations()->end()) ;
+        for (FSPathSequence::ConstIterator l(master_repositories_locations()->begin()), l_end(master_repositories_locations()->end()) ;
                 l != l_end ; ++l)
         {
             /* don't also follow our masters' masters. Otherwise things like masters = arbor x11 will
@@ -112,10 +112,10 @@ ExheresLayout::ExheresLayout(const ERepository * const r, const FSEntry & tree_r
             _imp->mirror_files->push_back(*l / "metadata" / "mirrors.conf");
             _imp->info_variables_files->push_back(*l / "metadata" / "info" / "variables.conf");
 
-            FSEntry descs(*l / "metadata" / "options" / "descriptions");
-            if (descs.is_directory_or_symlink_to_directory())
+            FSPath descs(*l / "metadata" / "options" / "descriptions");
+            if (descs.stat().is_directory_or_symlink_to_directory())
             {
-                for (DirIterator d(descs), d_end ; d != d_end ; ++d)
+                for (FSIterator d(descs, { }), d_end ; d != d_end ; ++d)
                 {
                     if (! is_file_with_extension(*d, ".conf", { }))
                         continue;
@@ -137,10 +137,10 @@ ExheresLayout::ExheresLayout(const ERepository * const r, const FSEntry & tree_r
     _imp->info_variables_files->push_back(_imp->tree_root / "metadata" / "info" / "variables.conf");
     _imp->info_packages_files->push_back(_imp->tree_root / "metadata" / "info" / "packages.conf");
 
-    FSEntry descs(_imp->tree_root / "metadata" / "options" / "descriptions");
-    if (descs.is_directory_or_symlink_to_directory())
+    FSPath descs(_imp->tree_root / "metadata" / "options" / "descriptions");
+    if (descs.stat().is_directory_or_symlink_to_directory())
     {
-        for (DirIterator d(descs), d_end ; d != d_end ; ++d)
+        for (FSIterator d(descs, { }), d_end ; d != d_end ; ++d)
         {
             if (! is_file_with_extension(*d, ".conf", { }))
                 continue;
@@ -158,7 +158,7 @@ ExheresLayout::~ExheresLayout()
 {
 }
 
-FSEntry
+FSPath
 ExheresLayout::categories_file() const
 {
     return _imp->tree_root / "metadata" / "categories.conf";
@@ -178,17 +178,17 @@ ExheresLayout::need_category_names() const
 
     bool found_one(false);
 
-    std::list<FSEntry> cats_list;
+    std::list<FSPath> cats_list;
     if (_imp->repository->params().master_repositories())
         for (ERepositorySequence::ConstIterator e(_imp->repository->params().master_repositories()->begin()),
                 e_end(_imp->repository->params().master_repositories()->end()) ; e != e_end ; ++e)
         cats_list.push_back((*e)->layout()->categories_file());
     cats_list.push_back(categories_file());
 
-    for (std::list<FSEntry>::const_iterator i(cats_list.begin()), i_end(cats_list.end()) ;
+    for (std::list<FSPath>::const_iterator i(cats_list.begin()), i_end(cats_list.end()) ;
             i != i_end ; ++i)
     {
-        if (! i->exists())
+        if (! i->stat().exists())
             continue;
 
         LineConfigFile cats(*i, { });
@@ -233,9 +233,9 @@ ExheresLayout::need_package_ids(const QualifiedPackageName & n) const
 
     std::shared_ptr<PackageIDSequence> v(std::make_shared<PackageIDSequence>());
 
-    FSEntry path(_imp->tree_root / "packages" / stringify(n.category()) / stringify(n.package()));
+    FSPath path(_imp->tree_root / "packages" / stringify(n.category()) / stringify(n.package()));
 
-    for (DirIterator e(path), e_end ; e != e_end ; ++e)
+    for (FSIterator e(path, { }), e_end ; e != e_end ; ++e)
     {
         if (! _imp->repository->is_package_file(n, *e))
             continue;
@@ -304,11 +304,11 @@ ExheresLayout::has_package_named(const QualifiedPackageName & q) const
         if (_imp->package_names.find(q) != _imp->package_names.end())
             return true;
 
-        FSEntry fs(_imp->tree_root);
+        FSPath fs(_imp->tree_root);
         fs /= "packages";
         fs /= stringify(q.category());
         fs /= stringify(q.package());
-        if (! fs.is_directory_or_symlink_to_directory())
+        if (! fs.stat().is_directory_or_symlink_to_directory())
             return false;
         _imp->package_names.insert(std::make_pair(q, false));
         return true;
@@ -361,12 +361,12 @@ ExheresLayout::package_names(const CategoryNamePart & c) const
     if (_imp->category_names.end() == _imp->category_names.find(c))
         return std::make_shared<QualifiedPackageNameSet>();
 
-    if ((_imp->tree_root / "packages" / stringify(c)).is_directory_or_symlink_to_directory())
-        for (DirIterator d(_imp->tree_root / "packages" / stringify(c)), d_end ; d != d_end ; ++d)
+    if ((_imp->tree_root / "packages" / stringify(c)).stat().is_directory_or_symlink_to_directory())
+        for (FSIterator d(_imp->tree_root / "packages" / stringify(c), { }), d_end ; d != d_end ; ++d)
         {
             try
             {
-                if (! d->is_directory_or_symlink_to_directory())
+                if (! d->stat().is_directory_or_symlink_to_directory())
                     continue;
 
                 if (d->basename() == "CVS")
@@ -410,49 +410,49 @@ ExheresLayout::package_ids(const QualifiedPackageName & n) const
         return std::make_shared<PackageIDSequence>();
 }
 
-const std::shared_ptr<const FSEntrySequence>
+const std::shared_ptr<const FSPathSequence>
 ExheresLayout::info_packages_files() const
 {
     return _imp->info_packages_files;
 }
 
-const std::shared_ptr<const FSEntrySequence>
+const std::shared_ptr<const FSPathSequence>
 ExheresLayout::info_variables_files() const
 {
     return _imp->info_variables_files;
 }
 
-FSEntry
+FSPath
 ExheresLayout::package_directory(const QualifiedPackageName & qpn) const
 {
     return _imp->tree_root / "packages" / stringify(qpn.category()) / stringify(qpn.package());
 }
 
-FSEntry
+FSPath
 ExheresLayout::category_directory(const CategoryNamePart & cat) const
 {
     return _imp->tree_root / "packages" / stringify(cat);
 }
 
-std::shared_ptr<const FSEntrySequence>
+std::shared_ptr<const FSPathSequence>
 ExheresLayout::arch_list_files() const
 {
     return _imp->arch_list_files;
 }
 
-std::shared_ptr<const FSEntrySequence>
+std::shared_ptr<const FSPathSequence>
 ExheresLayout::repository_mask_files() const
 {
     return _imp->repository_mask_files;
 }
 
-std::shared_ptr<const FSEntrySequence>
+std::shared_ptr<const FSPathSequence>
 ExheresLayout::profiles_desc_files() const
 {
     return _imp->profiles_desc_files;
 }
 
-std::shared_ptr<const FSEntrySequence>
+std::shared_ptr<const FSPathSequence>
 ExheresLayout::mirror_files() const
 {
     return _imp->mirror_files;
@@ -464,7 +464,7 @@ ExheresLayout::use_desc_files() const
     return _imp->use_desc_files;
 }
 
-FSEntry
+FSPath
 ExheresLayout::profiles_base_dir() const
 {
     if (master_repositories_locations() && ! master_repositories_locations()->empty())
@@ -473,34 +473,34 @@ ExheresLayout::profiles_base_dir() const
         return _imp->tree_root / "profiles";
 }
 
-std::shared_ptr<const FSEntrySequence>
+std::shared_ptr<const FSPathSequence>
 ExheresLayout::exlibsdirs(const QualifiedPackageName & q) const
 {
-    std::shared_ptr<FSEntrySequence> result(std::make_shared<FSEntrySequence>());
+    std::shared_ptr<FSPathSequence> result(std::make_shared<FSPathSequence>());
 
-    std::shared_ptr<const FSEntrySequence> global(exlibsdirs_global());
+    std::shared_ptr<const FSPathSequence> global(exlibsdirs_global());
     std::copy(global->begin(), global->end(), result->back_inserter());
 
-    std::shared_ptr<const FSEntrySequence> category(exlibsdirs_category(q.category()));
+    std::shared_ptr<const FSPathSequence> category(exlibsdirs_category(q.category()));
     std::copy(category->begin(), category->end(), result->back_inserter());
 
-    std::shared_ptr<const FSEntrySequence> package(exlibsdirs_package(q));
+    std::shared_ptr<const FSPathSequence> package(exlibsdirs_package(q));
     std::copy(package->begin(), package->end(), result->back_inserter());
 
     return result;
 }
 
-std::shared_ptr<const FSEntrySequence>
+std::shared_ptr<const FSPathSequence>
 ExheresLayout::exlibsdirs_global() const
 {
-    std::shared_ptr<FSEntrySequence> result(std::make_shared<FSEntrySequence>());
+    std::shared_ptr<FSPathSequence> result(std::make_shared<FSPathSequence>());
 
     if (_imp->repository->params().master_repositories())
     {
         for (ERepositorySequence::ConstIterator e(_imp->repository->params().master_repositories()->begin()),
                 e_end(_imp->repository->params().master_repositories()->end()) ; e != e_end ; ++e)
         {
-            std::shared_ptr<const FSEntrySequence> master((*e)->layout()->exlibsdirs_global());
+            std::shared_ptr<const FSPathSequence> master((*e)->layout()->exlibsdirs_global());
             std::copy(master->begin(), master->end(), result->back_inserter());
         }
     }
@@ -509,17 +509,17 @@ ExheresLayout::exlibsdirs_global() const
     return result;
 }
 
-std::shared_ptr<const FSEntrySequence>
+std::shared_ptr<const FSPathSequence>
 ExheresLayout::exlibsdirs_category(const CategoryNamePart & c) const
 {
-    std::shared_ptr<FSEntrySequence> result(std::make_shared<FSEntrySequence>());
+    std::shared_ptr<FSPathSequence> result(std::make_shared<FSPathSequence>());
 
     if (_imp->repository->params().master_repositories())
     {
         for (ERepositorySequence::ConstIterator e(_imp->repository->params().master_repositories()->begin()),
                 e_end(_imp->repository->params().master_repositories()->end()) ; e != e_end ; ++e)
         {
-            std::shared_ptr<const FSEntrySequence> master((*e)->layout()->exlibsdirs_category(c));
+            std::shared_ptr<const FSPathSequence> master((*e)->layout()->exlibsdirs_category(c));
             std::copy(master->begin(), master->end(), result->back_inserter());
         }
     }
@@ -528,17 +528,17 @@ ExheresLayout::exlibsdirs_category(const CategoryNamePart & c) const
     return result;
 }
 
-std::shared_ptr<const FSEntrySequence>
+std::shared_ptr<const FSPathSequence>
 ExheresLayout::exlibsdirs_package(const QualifiedPackageName & q) const
 {
-    std::shared_ptr<FSEntrySequence> result(std::make_shared<FSEntrySequence>());
+    std::shared_ptr<FSPathSequence> result(std::make_shared<FSPathSequence>());
 
     if (_imp->repository->params().master_repositories())
     {
         for (ERepositorySequence::ConstIterator e(_imp->repository->params().master_repositories()->begin()),
                 e_end(_imp->repository->params().master_repositories()->end()) ; e != e_end ; ++e)
         {
-            std::shared_ptr<const FSEntrySequence> master((*e)->layout()->exlibsdirs_package(q));
+            std::shared_ptr<const FSPathSequence> master((*e)->layout()->exlibsdirs_package(q));
             std::copy(master->begin(), master->end(), result->back_inserter());
         }
     }
@@ -547,17 +547,17 @@ ExheresLayout::exlibsdirs_package(const QualifiedPackageName & q) const
     return result;
 }
 
-std::shared_ptr<const FSEntrySequence>
+std::shared_ptr<const FSPathSequence>
 ExheresLayout::licenses_dirs() const
 {
-    std::shared_ptr<FSEntrySequence> result(std::make_shared<FSEntrySequence>());
+    std::shared_ptr<FSPathSequence> result(std::make_shared<FSPathSequence>());
 
     if (_imp->repository->params().master_repositories())
     {
         for (ERepositorySequence::ConstIterator e(_imp->repository->params().master_repositories()->begin()),
                 e_end(_imp->repository->params().master_repositories()->end()) ; e != e_end ; ++e)
         {
-            std::shared_ptr<const FSEntrySequence> master((*e)->layout()->licenses_dirs());
+            std::shared_ptr<const FSPathSequence> master((*e)->layout()->licenses_dirs());
             std::copy(master->begin(), master->end(), result->back_inserter());
         }
     }
@@ -568,26 +568,26 @@ ExheresLayout::licenses_dirs() const
 
 namespace
 {
-    void aux_files_helper(const FSEntry & d,
-            std::shared_ptr<Map<FSEntry, std::string> > & m,
+    void aux_files_helper(const FSPath & d,
+            std::shared_ptr<Map<FSPath, std::string, FSPathComparator> > & m,
             const QualifiedPackageName & qpn)
     {
-        if (! d.exists())
+        if (! d.stat().exists())
             return;
 
-        std::list<FSEntry> files((DirIterator(d)),
-                DirIterator());
-        for (std::list<FSEntry>::iterator f(files.begin()) ;
+        std::list<FSPath> files((FSIterator(d, { })), FSIterator());
+        for (std::list<FSPath>::iterator f(files.begin()) ;
                 f != files.end() ; ++f)
         {
-            if (f->is_directory())
+            FSStat f_stat(f->stat());
+            if (f_stat.is_directory())
             {
                 if ("CVS" != f->basename())
                     aux_files_helper((*f), m, qpn);
             }
             else
             {
-                if (! f->is_regular_file())
+                if (! f_stat.is_regular_file())
                     continue;
                 if (is_file_with_prefix_extension((*f),
                             ("digest-"+stringify(qpn.package())), "",
@@ -599,18 +599,18 @@ namespace
     }
 }
 
-std::shared_ptr<Map<FSEntry, std::string> >
+std::shared_ptr<Map<FSPath, std::string, FSPathComparator> >
 ExheresLayout::manifest_files(const QualifiedPackageName & qpn) const
 {
-    std::shared_ptr<Map<FSEntry, std::string> > result(std::make_shared<Map<FSEntry, std::string>>());
-    FSEntry package_dir = _imp->repository->layout()->package_directory(qpn);
+    auto result(std::make_shared<Map<FSPath, std::string, FSPathComparator>>());
+    FSPath package_dir = _imp->repository->layout()->package_directory(qpn);
 
-    std::list<FSEntry> package_files((DirIterator(package_dir)),
-            DirIterator());
-    for (std::list<FSEntry>::iterator f(package_files.begin()) ;
+    std::list<FSPath> package_files((FSIterator(package_dir, { })), FSIterator());
+    for (std::list<FSPath>::iterator f(package_files.begin()) ;
             f != package_files.end() ; ++f)
     {
-        if (! (*f).is_regular_file() || ((*f).basename() == "Manifest") )
+        FSStat f_stat(f->stat());
+        if (! f_stat.is_regular_file() || ((*f).basename() == "Manifest") )
             continue;
 
         std::string file_type("MISC");
@@ -636,24 +636,24 @@ ExheresLayout::invalidate_masks()
             (*it2)->invalidate_masks();
 }
 
-FSEntry
+FSPath
 ExheresLayout::binary_ebuild_location(const QualifiedPackageName & q, const VersionSpec & v,
         const std::string & eapi) const
 {
     return package_directory(q) / _imp->repository->binary_ebuild_name(q, v, eapi);
 }
 
-std::shared_ptr<MetadataValueKey<FSEntry> >
+std::shared_ptr<MetadataValueKey<FSPath> >
 ExheresLayout::accounts_repository_data_location_key() const
 {
-    if ((_imp->tree_root / "metadata" / "accounts").exists())
-        return std::make_shared<LiteralMetadataValueKey<FSEntry>>("accounts_repository_data_location",
+    if ((_imp->tree_root / "metadata" / "accounts").stat().exists())
+        return std::make_shared<LiteralMetadataValueKey<FSPath>>("accounts_repository_data_location",
                     "AccountsRepository data location", mkt_internal, _imp->tree_root / "metadata" / "accounts");
     else
         return make_null_shared_ptr();
 }
 
-std::shared_ptr<MetadataValueKey<FSEntry> >
+std::shared_ptr<MetadataValueKey<FSPath> >
 ExheresLayout::e_updates_location_key() const
 {
     return make_null_shared_ptr();

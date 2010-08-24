@@ -149,10 +149,10 @@ EbuildCommand::operator() ()
     process.pipe_command_handler("PALUDIS_PIPE_COMMAND", std::bind(&pipe_command_handler, params.environment(),
                 params.package_id(), _1, params.maybe_output_manager()));
 
-    std::shared_ptr<const FSEntrySequence> syncers_dirs(params.environment()->syncers_dirs());
-    std::shared_ptr<const FSEntrySequence> bashrc_files(params.environment()->bashrc_files());
-    std::shared_ptr<const FSEntrySequence> fetchers_dirs(params.environment()->fetchers_dirs());
-    std::shared_ptr<const FSEntrySequence> hook_dirs(params.environment()->hook_dirs());
+    std::shared_ptr<const FSPathSequence> syncers_dirs(params.environment()->syncers_dirs());
+    std::shared_ptr<const FSPathSequence> bashrc_files(params.environment()->bashrc_files());
+    std::shared_ptr<const FSPathSequence> fetchers_dirs(params.environment()->fetchers_dirs());
+    std::shared_ptr<const FSPathSequence> hook_dirs(params.environment()->hook_dirs());
 
     process
         .setenv("PV", stringify(params.package_id()->version().remove_revision()))
@@ -974,10 +974,10 @@ WriteVDBEntryCommand::operator() ()
             stringify(params.output_directory()) + "' '" +
             stringify(params.environment_file()) + "'");
 
-    std::shared_ptr<const FSEntrySequence> syncers_dirs(params.environment()->syncers_dirs());
-    std::shared_ptr<const FSEntrySequence> bashrc_files(params.environment()->bashrc_files());
-    std::shared_ptr<const FSEntrySequence> fetchers_dirs(params.environment()->fetchers_dirs());
-    std::shared_ptr<const FSEntrySequence> hook_dirs(params.environment()->hook_dirs());
+    std::shared_ptr<const FSPathSequence> syncers_dirs(params.environment()->syncers_dirs());
+    std::shared_ptr<const FSPathSequence> bashrc_files(params.environment()->bashrc_files());
+    std::shared_ptr<const FSPathSequence> fetchers_dirs(params.environment()->fetchers_dirs());
+    std::shared_ptr<const FSPathSequence> hook_dirs(params.environment()->hook_dirs());
 
     Process process((ProcessCommand(ebuild_cmd)));
 
@@ -1192,10 +1192,10 @@ WriteBinaryEbuildCommand::operator() ()
             stringify(params.environment_file()) + "' '" +
             stringify(params.image()) + "'");
 
-    std::shared_ptr<const FSEntrySequence> syncers_dirs(params.environment()->syncers_dirs());
-    std::shared_ptr<const FSEntrySequence> bashrc_files(params.environment()->bashrc_files());
-    std::shared_ptr<const FSEntrySequence> fetchers_dirs(params.environment()->fetchers_dirs());
-    std::shared_ptr<const FSEntrySequence> hook_dirs(params.environment()->hook_dirs());
+    std::shared_ptr<const FSPathSequence> syncers_dirs(params.environment()->syncers_dirs());
+    std::shared_ptr<const FSPathSequence> bashrc_files(params.environment()->bashrc_files());
+    std::shared_ptr<const FSPathSequence> fetchers_dirs(params.environment()->fetchers_dirs());
+    std::shared_ptr<const FSPathSequence> hook_dirs(params.environment()->hook_dirs());
 
     Process process((ProcessCommand(ebuild_cmd)));
 

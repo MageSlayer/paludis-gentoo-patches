@@ -115,7 +115,7 @@ namespace
             cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.value() << endl;
         }
 
-        void visit(const MetadataValueKey<FSEntry> & k)
+        void visit(const MetadataValueKey<FSPath> & k)
         {
             cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.value() << endl;
         }
@@ -177,7 +177,7 @@ namespace
             cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.pretty_print_flat(f) << endl;
         }
 
-        void visit(const MetadataCollectionKey<FSEntrySequence> & k)
+        void visit(const MetadataCollectionKey<FSPathSequence> & k)
         {
             ColourFormatter f;
             cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.pretty_print_flat(f) << endl;

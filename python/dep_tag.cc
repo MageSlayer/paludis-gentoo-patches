@@ -130,7 +130,7 @@ void expose_dep_tag()
         (
          "GLSADepTag",
          "DepTag subclass for GLSAs.",
-         bp::init<const std::string &, const std::string &, const FSEntry &>("__init__(id_str, glsa_title_str, glsa_file_str)")
+         bp::init<const std::string &, const std::string &, const FSPath &>("__init__(id_str, glsa_title_str, glsa_file_str)")
         )
         .add_property("glsa_title", &GLSADepTag::glsa_title,
                 "Our GLSA title (for example, 'Yet another PHP remote access hole')"

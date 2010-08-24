@@ -64,7 +64,7 @@ namespace paludis
     };
 }
 
-UnwrittenRepositoryFile::UnwrittenRepositoryFile(const FSEntry & f) :
+UnwrittenRepositoryFile::UnwrittenRepositoryFile(const FSPath & f) :
     Pimp<UnwrittenRepositoryFile>()
 {
     _load(f);
@@ -171,7 +171,7 @@ namespace
 }
 
 void
-UnwrittenRepositoryFile::_load(const FSEntry & f)
+UnwrittenRepositoryFile::_load(const FSPath & f)
 {
     SafeIFStream file(f);
 

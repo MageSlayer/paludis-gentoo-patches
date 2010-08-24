@@ -59,7 +59,7 @@ namespace paludis
     };
 }
 
-UnavailableRepositoryFile::UnavailableRepositoryFile(const FSEntry & f) :
+UnavailableRepositoryFile::UnavailableRepositoryFile(const FSPath & f) :
     Pimp<UnavailableRepositoryFile>()
 {
     _load(f);
@@ -82,7 +82,7 @@ UnavailableRepositoryFile::end() const
 }
 
 void
-UnavailableRepositoryFile::_load(const FSEntry & f)
+UnavailableRepositoryFile::_load(const FSPath & f)
 {
     SafeIFStream file(f);
 

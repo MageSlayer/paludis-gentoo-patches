@@ -329,7 +329,7 @@ namespace
             {
             }
 
-            void visit(const MetadataCollectionKey<FSEntrySequence> & k)
+            void visit(const MetadataCollectionKey<FSPathSequence> & k)
             {
                 if (k.type() == type)
                 {
@@ -692,7 +692,7 @@ namespace
                 }
             }
 
-            void visit(const MetadataValueKey<FSEntry> & k)
+            void visit(const MetadataValueKey<FSPath> & k)
             {
                 if (k.type() == type)
                 {

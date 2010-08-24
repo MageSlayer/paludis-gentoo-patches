@@ -25,7 +25,7 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/pimp.hh>
 #include <paludis/util/set-fwd.hh>
-#include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/util/fs_path-fwd.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/package_id-fwd.hh>
@@ -167,7 +167,7 @@ namespace paludis
             public Filter
         {
             public:
-                InstalledAtRoot(const FSEntry &);
+                InstalledAtRoot(const FSPath &);
         };
 
         /**

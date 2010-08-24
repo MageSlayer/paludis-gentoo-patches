@@ -19,6 +19,7 @@
 
 #include <paludis/repositories/e/vdb_id.hh>
 #include <paludis/repositories/e/e_key.hh>
+#include <paludis/util/fs_path.hh>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -26,7 +27,7 @@ using namespace paludis::erepository;
 VDBID::VDBID(const QualifiedPackageName & q, const VersionSpec & v,
         const Environment * const e,
         const std::shared_ptr<const Repository> & r,
-        const FSEntry & f) :
+        const FSPath & f) :
     EInstalledRepositoryID(q, v, e, r, f)
 {
 }

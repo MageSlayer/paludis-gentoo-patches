@@ -142,7 +142,7 @@ namespace test_cases
     struct SupportsInstalledAtRootFilterTestCase : FilterTestCaseBase
     {
         SupportsInstalledAtRootFilterTestCase() :
-            FilterTestCaseBase("installed at root /", filter::InstalledAtRoot(FSEntry("/")))
+            FilterTestCaseBase("installed at root /", filter::InstalledAtRoot(FSPath("/")))
         {
         }
 
@@ -156,7 +156,7 @@ namespace test_cases
     struct SupportsInstalledAtRootOtherFilterTestCase : FilterTestCaseBase
     {
         SupportsInstalledAtRootOtherFilterTestCase() :
-            FilterTestCaseBase("installed at root /blah", filter::InstalledAtRoot(FSEntry("/blah")))
+            FilterTestCaseBase("installed at root /blah", filter::InstalledAtRoot(FSPath("/blah")))
         {
         }
 

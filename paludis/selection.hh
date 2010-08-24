@@ -26,7 +26,6 @@
 #include <paludis/filter-fwd.hh>
 #include <paludis/generator-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
-#include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/pimp.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/name-fwd.hh>

@@ -643,9 +643,9 @@ namespace
         rb_define_method(c_repository, "format_key",
                 RUBY_FUNC_CAST((&RepositoryKey<MetadataValueKey<std::string> , &Repository::format_key>::fetch)), 0);
         rb_define_method(c_repository, "location_key",
-                RUBY_FUNC_CAST((&RepositoryKey<MetadataValueKey<FSEntry>, &Repository::location_key>::fetch)), 0);
+                RUBY_FUNC_CAST((&RepositoryKey<MetadataValueKey<FSPath>, &Repository::location_key>::fetch)), 0);
         rb_define_method(c_repository, "installed_root_key",
-                RUBY_FUNC_CAST((&RepositoryKey<MetadataValueKey<FSEntry>, &Repository::installed_root_key>::fetch)), 0);
+                RUBY_FUNC_CAST((&RepositoryKey<MetadataValueKey<FSPath>, &Repository::installed_root_key>::fetch)), 0);
         rb_define_method(c_repository, "get_environment_variable", RUBY_FUNC_CAST(&repository_get_environment_variable), 2);
         rb_define_method(c_repository, "accept_keywords_key",
                 RUBY_FUNC_CAST((&RepositoryKey<MetadataValueKey<std::string> , &Repository::accept_keywords_key>::fetch)), 0);

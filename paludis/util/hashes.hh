@@ -22,7 +22,7 @@
 
 #include <paludis/util/attributes.hh>
 #include <paludis/util/wrapped_value-fwd.hh>
-#include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/util/fs_path-fwd.hh>
 #include <cstddef>
 #include <utility>
 #include <string>
@@ -69,9 +69,9 @@ namespace paludis
     };
 
     template <>
-    struct PALUDIS_VISIBLE Hash<FSEntry>
+    struct PALUDIS_VISIBLE Hash<FSPath>
     {
-        std::size_t operator() (const FSEntry &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+        std::size_t operator() (const FSPath &) const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     template <typename T_, typename U_>

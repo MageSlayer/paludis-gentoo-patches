@@ -41,7 +41,7 @@
 #include <paludis/user_dep_spec.hh>
 #include <paludis/notifier_callback.hh>
 
-#include <paludis/util/fs_entry.hh>
+#include <paludis/util/fs_error.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/mutex.hh>
@@ -57,10 +57,12 @@
 #include <paludis/util/destringify.hh>
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/util/accept_visitor.hh>
+#include <paludis/util/fs_stat.hh>
 
 #include <set>
 #include <iterator>
 #include <algorithm>
+#include <ctime>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -76,7 +78,7 @@ namespace paludis
         const VersionSpec version;
         const Environment * const environment;
         const std::shared_ptr<const ERepository> repository;
-        const FSEntry ebuild;
+        const FSPath ebuild;
         mutable std::shared_ptr<const EAPI> eapi;
         const std::string guessed_eapi;
         const time_t master_mtime;
@@ -85,7 +87,7 @@ namespace paludis
         mutable bool has_masks;
 
         mutable std::shared_ptr<const ESlotKey> slot;
-        mutable std::shared_ptr<const LiteralMetadataValueKey<FSEntry> > fs_location;
+        mutable std::shared_ptr<const LiteralMetadataValueKey<FSPath> > fs_location;
         mutable std::shared_ptr<const LiteralMetadataValueKey<std::string> > short_description;
         mutable std::shared_ptr<const LiteralMetadataValueKey<std::string> > long_description;
         mutable std::shared_ptr<const LiteralMetadataValueKey<std::string> > captured_stdout_key;
@@ -129,7 +131,7 @@ namespace paludis
 
         Imp(const QualifiedPackageName & q, const VersionSpec & v,
                 const Environment * const e,
-                const std::shared_ptr<const ERepository> r, const FSEntry & f, const std::string & g,
+                const std::shared_ptr<const ERepository> r, const FSPath & f, const std::string & g,
                 const time_t t, const std::shared_ptr<const EclassMtimes> & m) :
             name(q),
             version(v),
@@ -164,7 +166,7 @@ namespace paludis
 EbuildID::EbuildID(const QualifiedPackageName & q, const VersionSpec & v,
         const Environment * const e,
         const std::shared_ptr<const ERepository> & r,
-        const FSEntry & f,
+        const FSPath & f,
         const std::string & g,
         const time_t t,
         const std::shared_ptr<const EclassMtimes> & m) :
@@ -207,18 +209,18 @@ EbuildID::need_keys_added() const
     // fs_location key could have been loaded by the ::fs_location_key() already.
     if (! _imp->fs_location)
     {
-        _imp->fs_location = std::make_shared<LiteralMetadataValueKey<FSEntry> >("EBUILD", "Ebuild Location",
+        _imp->fs_location = std::make_shared<LiteralMetadataValueKey<FSPath> >("EBUILD", "Ebuild Location",
                     mkt_internal, _imp->ebuild);
         add_metadata_key(_imp->fs_location);
     }
 
     Context context("When generating metadata for ID '" + canonical_form(idcf_full) + "':");
 
-    FSEntry cache_file(_imp->repository->params().cache());
+    FSPath cache_file(_imp->repository->params().cache());
     cache_file /= stringify(name().category());
     cache_file /= stringify(name().package()) + "-" + stringify(version());
 
-    FSEntry write_cache_file(_imp->repository->params().write_cache());
+    FSPath write_cache_file(_imp->repository->params().write_cache());
     if (_imp->repository->params().append_repository_name_to_write_cache())
         write_cache_file /= stringify(repository()->name());
     write_cache_file /= stringify(name().category());
@@ -238,7 +240,7 @@ EbuildID::need_keys_added() const
                 write_cache_file, _imp->ebuild, _imp->master_mtime, _imp->eclass_mtimes, true);
         if (write_metadata_cache.load(shared_from_this(), false))
             ok = true;
-        else if (write_cache_file.exists())
+        else if (write_cache_file.stat().exists())
         {
             try
             {
@@ -863,7 +865,7 @@ EbuildID::defined_phases_key() const
     return _imp->defined_phases;
 }
 
-const std::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSPath> >
 EbuildID::fs_location_key() const
 {
     Lock l(_imp->mutex);
@@ -871,7 +873,7 @@ EbuildID::fs_location_key() const
     // Avoid loading whole metadata
     if (! _imp->fs_location)
     {
-        _imp->fs_location = std::make_shared<LiteralMetadataValueKey<FSEntry> >("EBUILD", "Ebuild Location", mkt_internal, _imp->ebuild);
+        _imp->fs_location = std::make_shared<LiteralMetadataValueKey<FSPath> >("EBUILD", "Ebuild Location", mkt_internal, _imp->ebuild);
         add_metadata_key(_imp->fs_location);
     }
 
@@ -1557,13 +1559,13 @@ EbuildID::add_build_options(const std::shared_ptr<Choices> & choices) const
 void
 EbuildID::purge_invalid_cache() const
 {
-    FSEntry write_cache_file(_imp->repository->params().write_cache());
+    FSPath write_cache_file(_imp->repository->params().write_cache());
     if (_imp->repository->params().append_repository_name_to_write_cache())
         write_cache_file /= stringify(repository()->name());
     write_cache_file /= stringify(name().category());
     write_cache_file /= stringify(name().package()) + "-" + stringify(version());
 
-    if (write_cache_file.exists())
+    if (write_cache_file.stat().exists())
     {
         if (_imp->repository->params().write_cache().basename() != "empty")
         {

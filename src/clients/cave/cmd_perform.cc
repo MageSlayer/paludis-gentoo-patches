@@ -282,7 +282,7 @@ namespace
                     fv<'i'>(stringify(*id)), fv<'a'>(action_name), fv<'c'>("Completed ")) << std::flush;
     }
 
-    bool ignore_nothing(const FSEntry &)
+    bool ignore_nothing(const FSPath &)
     {
         return false;
     }
@@ -359,7 +359,7 @@ namespace
     struct OurPretendFetchAction :
         PretendFetchAction
     {
-        std::set<FSEntry> already_downloaded;
+        std::set<FSPath, FSPathComparator> already_downloaded;
         unsigned long size;
         bool overflow;
 
@@ -370,7 +370,7 @@ namespace
         {
         }
 
-        void will_fetch(const FSEntry & destination, const unsigned long size_in_bytes)
+        void will_fetch(const FSPath & destination, const unsigned long size_in_bytes)
         {
             if (already_downloaded.end() != already_downloaded.find(destination))
                 return;

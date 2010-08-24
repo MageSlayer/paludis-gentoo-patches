@@ -105,19 +105,19 @@ namespace
             TestEnvironment env;
             env.set_paludis_command("/bin/false");
 
-            FSEntry root(FSEntry::cwd() / "depend_rdepend_TEST_dir" / "root");
+            FSPath root(FSPath::cwd() / "depend_rdepend_TEST_dir" / "root");
 
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", stringify(FSEntry::cwd() / "depend_rdepend_TEST_dir" / "repo"));
-            keys->insert("profiles", stringify(FSEntry::cwd() / "depend_rdepend_TEST_dir" / "repo/profiles/profile"));
+            keys->insert("location", stringify(FSPath::cwd() / "depend_rdepend_TEST_dir" / "repo"));
+            keys->insert("profiles", stringify(FSPath::cwd() / "depend_rdepend_TEST_dir" / "repo/profiles/profile"));
             keys->insert("layout", "traditional");
             keys->insert("eapi_when_unknown", "0");
             keys->insert("eapi_when_unspecified", "0");
             keys->insert("profile_eapi", "0");
-            keys->insert("distdir", stringify(FSEntry::cwd() / "depend_rdepend_TEST_dir" / "distdir"));
-            keys->insert("builddir", stringify(FSEntry::cwd() / "depend_rdepend_TEST_dir" / "build"));
+            keys->insert("distdir", stringify(FSPath::cwd() / "depend_rdepend_TEST_dir" / "distdir"));
+            keys->insert("builddir", stringify(FSPath::cwd() / "depend_rdepend_TEST_dir" / "build"));
             keys->insert("root", stringify(root));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
@@ -127,7 +127,7 @@ namespace
             v_keys->insert("format", "vdb");
             v_keys->insert("names_cache", "/var/empty");
             v_keys->insert("provides_cache", "/var/empty");
-            v_keys->insert("location", stringify(FSEntry::cwd() / "depend_rdepend_TEST_dir" / "vdb"));
+            v_keys->insert("location", stringify(FSPath::cwd() / "depend_rdepend_TEST_dir" / "vdb"));
             v_keys->insert("root", stringify(root));
             std::shared_ptr<Repository> v_repo(VDBRepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));

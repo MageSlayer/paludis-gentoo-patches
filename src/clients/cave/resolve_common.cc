@@ -516,7 +516,7 @@ namespace
     {
         if (arg.argument() == "auto")
         {
-            if (env->preferred_root_key()->value() == FSEntry("/"))
+            if (env->preferred_root_key()->value() == FSPath("/"))
                 return dt_install_to_slash;
             else
                 return dt_install_to_chroot;

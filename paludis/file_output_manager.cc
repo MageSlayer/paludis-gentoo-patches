@@ -24,7 +24,8 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/destringify.hh>
-#include <paludis/util/fs_entry.hh>
+#include <paludis/util/fs_path.hh>
+#include <paludis/util/fs_stat.hh>
 #include <paludis/util/stringify.hh>
 
 using namespace paludis;
@@ -34,7 +35,7 @@ namespace paludis
     template <>
     struct Imp<FileOutputManager>
     {
-        FSEntry filename;
+        FSPath filename;
         std::shared_ptr<SafeOFStream> stream;
         const bool keep_on_success, keep_on_empty;
         const std::shared_ptr<OutputManager> summary_output_manager;
@@ -43,7 +44,7 @@ namespace paludis
         bool succeeded, unlinked, nothing_more_to_come;
 
         Imp(
-                const FSEntry & o,
+                const FSPath & o,
                 const bool k,
                 const bool l,
                 const std::shared_ptr<OutputManager> & m,
@@ -63,7 +64,7 @@ namespace paludis
     };
 }
 
-FileOutputManager::FileOutputManager(const FSEntry & o, const bool k, const bool l,
+FileOutputManager::FileOutputManager(const FSPath & o, const bool k, const bool l,
         const std::shared_ptr<OutputManager> & m, const std::string & s) :
     Pimp<FileOutputManager>(o, k, l, m, s)
 {
@@ -136,8 +137,9 @@ FileOutputManager::nothing_more_to_come()
 
     if (! _imp->keep_on_empty)
     {
-        FSEntry filename_now(stringify(_imp->filename));
-        if (filename_now.exists() && 0 == filename_now.file_size())
+        FSPath filename_now(stringify(_imp->filename));
+        FSStat filename_now_stat(filename_now);
+        if (filename_now_stat.exists() && 0 == filename_now_stat.file_size())
         {
             filename_now.unlink();
             _imp->unlinked = true;
@@ -181,7 +183,7 @@ FileOutputManager::factory_create(
 
     summary_output_message_s = replace_vars_func(summary_output_message_s, std::make_shared<Map<std::string, std::string>>());
 
-    return std::make_shared<FileOutputManager>(FSEntry(filename_s),
+    return std::make_shared<FileOutputManager>(FSPath(filename_s),
                 destringify<bool>(keep_on_success_s), destringify<bool>(keep_on_empty_s),
                 summary_output_manager, summary_output_message_s);
 }

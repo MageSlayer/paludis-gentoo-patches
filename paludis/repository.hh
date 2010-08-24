@@ -28,7 +28,7 @@
 #include <paludis/package_id-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/exception.hh>
-#include <paludis/util/fs_entry.hh>
+#include <paludis/util/fs_path.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/named_value.hh>
@@ -143,14 +143,14 @@ namespace paludis
          */
         NamedValue<n::build_start_time, Timestamp> build_start_time;
 
-        NamedValue<n::environment_file, FSEntry> environment_file;
-        NamedValue<n::image_dir, FSEntry> image_dir;
+        NamedValue<n::environment_file, FSPath> environment_file;
+        NamedValue<n::image_dir, FSPath> image_dir;
 
         /**
          * We record things we merged here.
          * \since 0.41
          */
-        NamedValue<n::merged_entries, std::shared_ptr<FSEntrySet> > merged_entries;
+        NamedValue<n::merged_entries, std::shared_ptr<FSPathSet> > merged_entries;
 
         NamedValue<n::options, MergerOptions> options;
         NamedValue<n::output_manager, std::shared_ptr<OutputManager> > output_manager;
@@ -294,7 +294,7 @@ namespace paludis
              * our repository's data, the format of which depends on the value of
              * format_key.
              */
-            virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > location_key() const = 0;
+            virtual const std::shared_ptr<const MetadataValueKey<FSPath> > location_key() const = 0;
 
             /**
              * The installed_root_key, if non-zero, specifies that we contain installed
@@ -303,7 +303,7 @@ namespace paludis
              * This key is currently used in various places to determine whether a repository is
              * an 'installed' repository or not.
              */
-            virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const = 0;
+            virtual const std::shared_ptr<const MetadataValueKey<FSPath> > installed_root_key() const = 0;
 
             /**
              * The accept_keywords_key belonging to a NoConfigEnvironment's

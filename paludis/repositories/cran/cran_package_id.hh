@@ -22,7 +22,6 @@
 #define PALUDIS_GUARD_PALUDIS_CRAN_PACKAGE_ID_HH 1
 
 #include <paludis/package_id.hh>
-#include <paludis/util/fs_entry.hh>
 
 namespace paludis
 {
@@ -45,7 +44,7 @@ namespace paludis
 
             public:
                 CRANPackageID(const Environment * const, const std::shared_ptr<const CRANRepository> &,
-                        const FSEntry &);
+                        const FSPath &);
                 CRANPackageID(const Environment * const, const std::shared_ptr<const CRANRepository> &,
                         const CRANPackageID * const, const std::string &);
                 ~CRANPackageID();
@@ -75,7 +74,7 @@ namespace paludis
                 virtual const std::shared_ptr<const MetadataTimeKey> installed_time_key() const;
                 virtual const std::shared_ptr<const MetadataCollectionKey<PackageIDSequence> > contains_key() const;
                 virtual const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > > contained_in_key() const;
-                virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > fs_location_key() const;
+                virtual const std::shared_ptr<const MetadataValueKey<FSPath> > fs_location_key() const;
                 virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > behaviours_key() const;
                 virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > from_repositories_key() const;
  

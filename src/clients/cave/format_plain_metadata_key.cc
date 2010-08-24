@@ -68,7 +68,7 @@ namespace
             s << *k.value();
         }
 
-        void visit(const MetadataValueKey<FSEntry> & k)
+        void visit(const MetadataValueKey<FSPath> & k)
         {
             s << k.value();
         }
@@ -129,7 +129,7 @@ namespace
             s << k.pretty_print_flat(f);
         }
 
-        void visit(const MetadataCollectionKey<FSEntrySequence> & k)
+        void visit(const MetadataCollectionKey<FSPathSequence> & k)
         {
             StringifyFormatter f;
             s << k.pretty_print_flat(f);

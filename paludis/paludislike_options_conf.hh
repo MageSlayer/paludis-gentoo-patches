@@ -26,7 +26,7 @@
 #include <paludis/util/named_value.hh>
 #include <paludis/util/tribool-fwd.hh>
 #include <paludis/util/set-fwd.hh>
-#include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/util/fs_path-fwd.hh>
 #include <paludis/util/config_file-fwd.hh>
 #include <paludis/choice-fwd.hh>
 #include <paludis/package_id-fwd.hh>
@@ -44,7 +44,7 @@ namespace paludis
     }
 
     /**
-     * Turn an FSEntry into a config file for PaludisLikeOptionsConf.
+     * Turn an FSPath into a config file for PaludisLikeOptionsConf.
      *
      * This might need to deal with weird things like bash config files, so we
      * leave it up to the caller to specify how it works.
@@ -53,7 +53,7 @@ namespace paludis
      */
     typedef std::function<
         const std::shared_ptr<const LineConfigFile> (
-                const FSEntry &,
+                const FSPath &,
                 const LineConfigFileOptions &)
         > PaludisLikeOptionsConfMakeConfigFileFunction;
 
@@ -84,7 +84,7 @@ namespace paludis
             PaludisLikeOptionsConf(const PaludisLikeOptionsConfParams &);
             ~PaludisLikeOptionsConf();
 
-            void add_file(const FSEntry &);
+            void add_file(const FSPath &);
 
             const std::pair<Tribool, bool> want_choice_enabled_locked(
                     const std::shared_ptr<const PackageID> &,

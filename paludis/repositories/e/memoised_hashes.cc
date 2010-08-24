@@ -23,12 +23,13 @@
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/util/safe_ifstream.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/rmd160.hh>
 #include <paludis/util/sha1.hh>
 #include <paludis/util/sha256.hh>
 #include <paludis/util/md5.hh>
 #include <paludis/util/timestamp.hh>
+#include <paludis/util/fs_path.hh>
+#include <paludis/util/fs_stat.hh>
 
 #include <map>
 
@@ -96,10 +97,10 @@ namespace
 
 template <typename H_>
 const std::string
-MemoisedHashes::get(const FSEntry & file, SafeIFStream & stream) const
+MemoisedHashes::get(const FSPath & file, SafeIFStream & stream) const
 {
     std::pair<std::string, int> key(stringify(file), HashIDs<H_>::id);
-    Timestamp mtime(file.mtim());
+    Timestamp mtime(file.stat().mtim());
 
     Lock l(_imp->mutex);
 
@@ -121,10 +122,10 @@ MemoisedHashes::get(const FSEntry & file, SafeIFStream & stream) const
     return i->second.second;
 }
 
-template const std::string MemoisedHashes::get<RMD160>(const FSEntry &, SafeIFStream &) const;
-template const std::string MemoisedHashes::get<SHA1>(const FSEntry &, SafeIFStream &) const;
-template const std::string MemoisedHashes::get<SHA256>(const FSEntry &, SafeIFStream &) const;
-template const std::string MemoisedHashes::get<MD5>(const FSEntry &, SafeIFStream &) const;
+template const std::string MemoisedHashes::get<RMD160>(const FSPath &, SafeIFStream &) const;
+template const std::string MemoisedHashes::get<SHA1>(const FSPath &, SafeIFStream &) const;
+template const std::string MemoisedHashes::get<SHA256>(const FSPath &, SafeIFStream &) const;
+template const std::string MemoisedHashes::get<MD5>(const FSPath &, SafeIFStream &) const;
 
 template class Pimp<MemoisedHashes>;
 template class Singleton<MemoisedHashes>;

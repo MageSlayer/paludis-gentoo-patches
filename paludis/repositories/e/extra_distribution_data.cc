@@ -60,7 +60,7 @@ namespace paludis
                             n::default_profile_layout() = k->get("default_profile_layout"),
                             n::default_provides_cache() = k->get("default_provides_cache"),
                             n::default_write_cache() = k->get("default_write_cache"),
-                            n::news_directory() = FSEntry(k->get("news_directory")),
+                            n::news_directory() = FSPath(k->get("news_directory")),
                             n::qa_category_dir_checks() = make_set(k->get("qa_category_dir_checks")),
                             n::qa_eclass_file_contents_checks() = make_set(k->get("qa_eclass_file_contents_checks")),
                             n::qa_package_dir_checks() = make_set(k->get("qa_package_dir_checks")),

@@ -27,6 +27,7 @@
 #include <paludis/util/process.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/fs_stat.hh>
 #include <paludis/hook.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
@@ -39,7 +40,7 @@ using namespace test;
 namespace
 {
     std::pair<uid_t, gid_t>
-    get_new_ids_or_minus_one(const FSEntry &)
+    get_new_ids_or_minus_one(const FSPath &)
     {
         return std::make_pair(-1, -1);
     }
@@ -71,11 +72,11 @@ namespace
         {
         }
 
-        void track_install_file(const FSEntry &, const FSEntry &)
+        void track_install_file(const FSPath &, const FSPath &)
         {
         }
 
-        void track_install_sym(const FSEntry &, const FSEntry &)
+        void track_install_sym(const FSPath &, const FSPath &)
         {
         }
     };
@@ -96,7 +97,7 @@ namespace test_cases
 
         void run()
         {
-            auto output(FSEntry("tar_merger_TEST_dir") / "simple.tar");
+            auto output(FSPath("tar_merger_TEST_dir") / "simple.tar");
 
             TestEnvironment env;
             TestTarMerger merger(make_named_values<TarMergerParams>(
@@ -104,42 +105,42 @@ namespace test_cases
                         n::environment() = &env,
                         n::fix_mtimes_before() = Timestamp(0, 0),
                         n::get_new_ids_or_minus_one() = &get_new_ids_or_minus_one,
-                        n::image() = FSEntry("tar_merger_TEST_dir") / "simple",
-                        n::install_under() = FSEntry("/"),
+                        n::image() = FSPath("tar_merger_TEST_dir") / "simple",
+                        n::install_under() = FSPath("/"),
                         n::maybe_output_manager() = make_null_shared_ptr(),
-                        n::merged_entries() = std::make_shared<FSEntrySet>(),
+                        n::merged_entries() = std::make_shared<FSPathSet>(),
                         n::no_chown() = true,
                         n::options() = MergerOptions(),
-                        n::root() = FSEntry("/"),
+                        n::root() = FSPath("/"),
                         n::tar_file() = output
                         ));
 
-            TEST_CHECK(! output.is_regular_file());
+            TEST_CHECK(! output.stat().is_regular_file());
 
             merger.merge();
-            output = FSEntry(stringify(output));
+            output = FSPath(stringify(output));
 
-            TEST_CHECK(output.is_regular_file());
-            TEST_CHECK(output.file_size() > 100);
+            TEST_CHECK(output.stat().is_regular_file());
+            TEST_CHECK(output.stat().file_size() > 100);
 
             Process untar_process(ProcessCommand({"sh", "-c", "tar xf ../simple.tar 2>&1"}));
-            untar_process.chdir(FSEntry("tar_merger_TEST_dir/simple_extract"));
+            untar_process.chdir(FSPath("tar_merger_TEST_dir/simple_extract"));
             TEST_CHECK_EQUAL(0, untar_process.run().wait());
 
-            TEST_CHECK((FSEntry("tar_merger_TEST_dir") / "simple_extract" / "file").is_regular_file());
-            TEST_CHECK_EQUAL((FSEntry("tar_merger_TEST_dir") / "simple_extract" / "file").file_size(),
-                    (FSEntry("tar_merger_TEST_dir") / "simple" / "file").file_size());
+            TEST_CHECK((FSPath("tar_merger_TEST_dir") / "simple_extract" / "file").stat().is_regular_file());
+            TEST_CHECK_EQUAL((FSPath("tar_merger_TEST_dir") / "simple_extract" / "file").stat().file_size(),
+                    (FSPath("tar_merger_TEST_dir") / "simple" / "file").stat().file_size());
 
-            TEST_CHECK((FSEntry("tar_merger_TEST_dir") / "simple_extract" / "subdir" / "another").is_regular_file());
+            TEST_CHECK((FSPath("tar_merger_TEST_dir") / "simple_extract" / "subdir" / "another").stat().is_regular_file());
 
-            TEST_CHECK((FSEntry("tar_merger_TEST_dir") / "simple_extract" / "subdir" / "subsubdir" / "script").is_regular_file());
-            TEST_CHECK((FSEntry("tar_merger_TEST_dir") / "simple_extract" / "subdir" / "subsubdir" / "script").has_permission(fs_ug_owner, fs_perm_execute));
+            TEST_CHECK((FSPath("tar_merger_TEST_dir") / "simple_extract" / "subdir" / "subsubdir" / "script").stat().is_regular_file());
+            TEST_CHECK(0 != ((FSPath("tar_merger_TEST_dir") / "simple_extract" / "subdir" / "subsubdir" / "script").stat().permissions() & S_IXUSR));
 
-            TEST_CHECK((FSEntry("tar_merger_TEST_dir") / "simple_extract" / "goodsym").is_symbolic_link());
-            TEST_CHECK((FSEntry("tar_merger_TEST_dir") / "simple_extract" / "goodsym").readlink() == "file");
+            TEST_CHECK((FSPath("tar_merger_TEST_dir") / "simple_extract" / "goodsym").stat().is_symlink());
+            TEST_CHECK((FSPath("tar_merger_TEST_dir") / "simple_extract" / "goodsym").readlink() == "file");
 
-            TEST_CHECK((FSEntry("tar_merger_TEST_dir") / "simple_extract" / "badsym").is_symbolic_link());
-            TEST_CHECK((FSEntry("tar_merger_TEST_dir") / "simple_extract" / "badsym").readlink() == "nothing");
+            TEST_CHECK((FSPath("tar_merger_TEST_dir") / "simple_extract" / "badsym").stat().is_symlink());
+            TEST_CHECK((FSPath("tar_merger_TEST_dir") / "simple_extract" / "badsym").readlink() == "nothing");
         }
     } test_simple_tar_merger;
 
@@ -151,7 +152,7 @@ namespace test_cases
 
         void run()
         {
-            auto output(FSEntry("tar_merger_TEST_dir") / "simple.tar");
+            auto output(FSPath("tar_merger_TEST_dir") / "simple.tar");
 
             TestEnvironment env;
             TestTarMerger merger(make_named_values<TarMergerParams>(
@@ -159,17 +160,17 @@ namespace test_cases
                         n::environment() = &env,
                         n::fix_mtimes_before() = Timestamp(0, 0),
                         n::get_new_ids_or_minus_one() = &get_new_ids_or_minus_one,
-                        n::image() = FSEntry("tar_merger_TEST_dir") / "simple",
-                        n::install_under() = FSEntry("/"),
+                        n::image() = FSPath("tar_merger_TEST_dir") / "simple",
+                        n::install_under() = FSPath("/"),
                         n::maybe_output_manager() = make_null_shared_ptr(),
-                        n::merged_entries() = std::make_shared<FSEntrySet>(),
+                        n::merged_entries() = std::make_shared<FSPathSet>(),
                         n::no_chown() = true,
                         n::options() = MergerOptions(),
-                        n::root() = FSEntry("/"),
+                        n::root() = FSPath("/"),
                         n::tar_file() = output
                         ));
 
-            TEST_CHECK(! output.is_regular_file());
+            TEST_CHECK(! output.stat().is_regular_file());
 
             TEST_CHECK_THROWS(merger.merge(), NotAvailableError);
         }

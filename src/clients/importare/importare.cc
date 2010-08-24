@@ -193,12 +193,12 @@ main(int argc, char *argv[])
         std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
         keys->insert("location", stringify(
                     CommandLine::get_instance()->a_location.specified() ?
-                    FSEntry(CommandLine::get_instance()->a_location.argument()) :
-                    FSEntry::cwd()));
+                    FSPath(CommandLine::get_instance()->a_location.argument()) :
+                    FSPath::cwd()));
         keys->insert("install_under", stringify(
                     CommandLine::get_instance()->a_install_under.specified() ?
-                    FSEntry(CommandLine::get_instance()->a_install_under.argument()) :
-                    FSEntry("/")));
+                    FSPath(CommandLine::get_instance()->a_install_under.argument()) :
+                    FSPath("/")));
         keys->insert("rewrite_ids_over_to_root", stringify(
                     CommandLine::get_instance()->a_rewrite_ids_over_to_root.specified() ?
                     CommandLine::get_instance()->a_rewrite_ids_over_to_root.argument() : -1));

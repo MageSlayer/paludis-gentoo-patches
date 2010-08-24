@@ -44,11 +44,11 @@ namespace paludis
 
         struct ExndbamRepositoryParams
         {
-            NamedValue<n::builddir, FSEntry> builddir;
+            NamedValue<n::builddir, FSPath> builddir;
             NamedValue<n::eapi_when_unknown, std::string> eapi_when_unknown;
             NamedValue<n::environment, Environment *> environment;
-            NamedValue<n::location, FSEntry> location;
-            NamedValue<n::root, FSEntry> root;
+            NamedValue<n::location, FSPath> location;
+            NamedValue<n::root, FSPath> root;
         };
     }
 
@@ -113,8 +113,8 @@ namespace paludis
             /* Keys */
 
             virtual const std::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
-            virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > location_key() const;
-            virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<FSPath> > location_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<FSPath> > installed_root_key() const;
             virtual const std::shared_ptr<const MetadataValueKey<std::string> > accept_keywords_key() const;
             virtual const std::shared_ptr<const MetadataValueKey<std::string> > sync_host_key() const;
 

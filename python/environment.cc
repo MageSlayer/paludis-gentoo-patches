@@ -131,7 +131,7 @@ class EnvironmentImplementationWrapper :
             return _db;
         }
 
-        virtual std::shared_ptr<const FSEntrySequence> bashrc_files() const
+        virtual std::shared_ptr<const FSPathSequence> bashrc_files() const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             Lock l(get_mutex());
@@ -141,13 +141,13 @@ class EnvironmentImplementationWrapper :
             return EnvironmentImplementation::bashrc_files();
         }
 
-        std::shared_ptr<const FSEntrySequence> default_bashrc_files() const
+        std::shared_ptr<const FSPathSequence> default_bashrc_files() const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             return EnvironmentImplementation::bashrc_files();
         }
 
-        virtual std::shared_ptr<const FSEntrySequence> syncers_dirs() const
+        virtual std::shared_ptr<const FSPathSequence> syncers_dirs() const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             Lock l(get_mutex());
@@ -157,13 +157,13 @@ class EnvironmentImplementationWrapper :
             return EnvironmentImplementation::syncers_dirs();
         }
 
-        std::shared_ptr<const FSEntrySequence> default_syncers_dirs() const
+        std::shared_ptr<const FSPathSequence> default_syncers_dirs() const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             return EnvironmentImplementation::syncers_dirs();
         }
 
-        virtual std::shared_ptr<const FSEntrySequence> fetchers_dirs() const
+        virtual std::shared_ptr<const FSPathSequence> fetchers_dirs() const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             Lock l(get_mutex());
@@ -173,13 +173,13 @@ class EnvironmentImplementationWrapper :
             return EnvironmentImplementation::fetchers_dirs();
         }
 
-        std::shared_ptr<const FSEntrySequence> default_fetchers_dirs() const
+        std::shared_ptr<const FSPathSequence> default_fetchers_dirs() const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             return EnvironmentImplementation::fetchers_dirs();
         }
 
-        virtual std::shared_ptr<const FSEntrySequence> hook_dirs() const
+        virtual std::shared_ptr<const FSPathSequence> hook_dirs() const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             Lock l(get_mutex());
@@ -386,7 +386,7 @@ class EnvironmentImplementationWrapper :
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "format_key");
         }
 
-        virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > config_location_key() const
+        virtual const std::shared_ptr<const MetadataValueKey<FSPath> > config_location_key() const
         {
             Lock l(get_mutex());
 
@@ -396,7 +396,7 @@ class EnvironmentImplementationWrapper :
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "config_location_key");
         }
 
-        virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > preferred_root_key() const
+        virtual const std::shared_ptr<const MetadataValueKey<FSPath> > preferred_root_key() const
         {
             Lock l(get_mutex());
 
@@ -439,7 +439,7 @@ class EnvironmentImplementationWrapper :
         }
 
         virtual const std::shared_ptr<Repository> repository_from_new_config_file(
-                const FSEntry &)
+                const FSPath &)
         {
             throw PythonMethodNotImplemented("EnvironmentImplementation", "repository_from_new_config_file");
         }
@@ -454,8 +454,8 @@ class EnvironmentImplementationWrapper :
 struct NoConfigEnvironmentWrapper :
     NoConfigEnvironment
 {
-    NoConfigEnvironmentWrapper(const FSEntry & env_dir, const FSEntry & cache_dir,
-            const std::string & master_repo_name, const std::shared_ptr<const FSEntrySequence> & extra_repository_dirs
+    NoConfigEnvironmentWrapper(const FSPath & env_dir, const FSPath & cache_dir,
+            const std::string & master_repo_name, const std::shared_ptr<const FSPathSequence> & extra_repository_dirs
             ) :
         NoConfigEnvironment(make_named_values<no_config_environment::Params>(
                     n::accept_unstable() = false,
@@ -699,10 +699,10 @@ void expose_environment()
         (
          "NoConfigEnvironment",
          "An environment that uses a single repository, with no user configuration.",
-         bp::init<const FSEntry &, const FSEntry &, const std::string &, const std::shared_ptr<const FSEntrySequence> &>(
+         bp::init<const FSPath &, const FSPath &, const std::string &, const std::shared_ptr<const FSPathSequence> &>(
              (bp::arg("environment_dir"), bp::arg("write_cache_dir")="/var/empty",
               bp::arg("master_repository_name")="",
-              bp::arg("extra_repository_dirs") = std::make_shared<FSEntrySequence>()),
+              bp::arg("extra_repository_dirs") = std::make_shared<FSPathSequence>()),
              "__init__(environment_dir, write_cache_dir=\"/var/empty\", "
              "master_repository_name=\"\", extra_repository_dirs=[])"
              )

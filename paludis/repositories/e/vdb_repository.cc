@@ -58,10 +58,8 @@
 #include <paludis/partially_made_package_dep_spec.hh>
 
 #include <paludis/util/accept_visitor.hh>
-#include <paludis/util/dir_iterator.hh>
 #include <paludis/util/fast_unique_copy.hh>
 #include <paludis/util/mutex.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/set.hh>
@@ -80,6 +78,8 @@
 #include <paludis/util/safe_ofstream.hh>
 #include <paludis/util/timestamp.hh>
 #include <paludis/util/destringify.hh>
+#include <paludis/util/fs_stat.hh>
+#include <paludis/util/fs_iterator.hh>
 
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/create_iterator-impl.hh>
@@ -94,6 +94,7 @@
 #include <iostream>
 #include <cstring>
 #include <cerrno>
+#include <ctime>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -123,12 +124,12 @@ namespace paludis
         Imp(const VDBRepository * const, const VDBRepositoryParams &, std::shared_ptr<Mutex> = std::make_shared<Mutex>());
         ~Imp();
 
-        std::shared_ptr<const MetadataValueKey<FSEntry> > location_key;
-        std::shared_ptr<const MetadataValueKey<FSEntry> > root_key;
+        std::shared_ptr<const MetadataValueKey<FSPath> > location_key;
+        std::shared_ptr<const MetadataValueKey<FSPath> > root_key;
         std::shared_ptr<const MetadataValueKey<std::string> > format_key;
-        std::shared_ptr<const MetadataValueKey<FSEntry> > provides_cache_key;
-        std::shared_ptr<const MetadataValueKey<FSEntry> > names_cache_key;
-        std::shared_ptr<const MetadataValueKey<FSEntry> > builddir_key;
+        std::shared_ptr<const MetadataValueKey<FSPath> > provides_cache_key;
+        std::shared_ptr<const MetadataValueKey<FSPath> > names_cache_key;
+        std::shared_ptr<const MetadataValueKey<FSPath> > builddir_key;
         std::shared_ptr<const MetadataValueKey<std::string> > eapi_when_unknown_key;
     };
 
@@ -140,17 +141,17 @@ namespace paludis
         tried_provides_cache(false),
         used_provides_cache(false),
         names_cache(std::make_shared<RepositoryNameCache>(p.names_cache(), r)),
-        location_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("location", "location",
+        location_key(std::make_shared<LiteralMetadataValueKey<FSPath> >("location", "location",
                     mkt_significant, params.location())),
-        root_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("root", "root",
+        root_key(std::make_shared<LiteralMetadataValueKey<FSPath> >("root", "root",
                     mkt_normal, params.root())),
         format_key(std::make_shared<LiteralMetadataValueKey<std::string> >("format", "format",
                     mkt_significant, "vdb")),
-        provides_cache_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("provides_cache", "provides_cache",
+        provides_cache_key(std::make_shared<LiteralMetadataValueKey<FSPath> >("provides_cache", "provides_cache",
                     mkt_normal, params.provides_cache())),
-        names_cache_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("names_cache", "names_cache",
+        names_cache_key(std::make_shared<LiteralMetadataValueKey<FSPath> >("names_cache", "names_cache",
                     mkt_normal, params.names_cache())),
-        builddir_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("builddir", "builddir",
+        builddir_key(std::make_shared<LiteralMetadataValueKey<FSPath> >("builddir", "builddir",
                     mkt_normal, params.builddir())),
         eapi_when_unknown_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
                     "eapi_when_unknown", "eapi_when_unknown", mkt_normal, params.eapi_when_unknown()))
@@ -398,8 +399,7 @@ VDBRepositoryKeyReadError::VDBRepositoryKeyReadError(
 
 namespace
 {
-    bool ignore_merged(const std::shared_ptr<const FSEntrySet> & s,
-            const FSEntry & f)
+    bool ignore_merged(const std::shared_ptr<const FSPathSet> & s, const FSPath & f)
     {
         return s->end() != s->find(f);
     }
@@ -412,7 +412,7 @@ VDBRepository::perform_uninstall(
 {
     Context context("When uninstalling '" + stringify(*id) + (a.options.is_overwrite() ? "' for an overwrite:" : "':"));
 
-    if (! _imp->params.root().is_directory())
+    if (! _imp->params.root().stat().is_directory())
         throw ActionFailedError("Couldn't uninstall '" + stringify(*id) +
                 "' because root ('" + stringify(_imp->params.root()) + "') is not a directory");
 
@@ -420,14 +420,14 @@ VDBRepository::perform_uninstall(
 
     std::string reinstalling_str(a.options.is_overwrite() ? "-reinstalling-" : "");
 
-    std::shared_ptr<FSEntrySequence> eclassdirs(std::make_shared<FSEntrySequence>());
-    eclassdirs->push_back(FSEntry(_imp->params.location() / stringify(id->name().category()) /
+    std::shared_ptr<FSPathSequence> eclassdirs(std::make_shared<FSPathSequence>());
+    eclassdirs->push_back(FSPath(_imp->params.location() / stringify(id->name().category()) /
                 (reinstalling_str + stringify(id->name().package()) + "-" + stringify(id->version()))));
 
-    FSEntry pkg_dir(_imp->params.location() / stringify(id->name().category()) / (reinstalling_str +
+    FSPath pkg_dir(_imp->params.location() / stringify(id->name().category()) / (reinstalling_str +
                 stringify(id->name().package()) + "-" + stringify(id->version())));
 
-    std::shared_ptr<FSEntry> load_env(std::make_shared<FSEntry>(pkg_dir / "environment.bz2"));
+    std::shared_ptr<FSPath> load_env(std::make_shared<FSPath>(pkg_dir / "environment.bz2"));
 
     EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_uninstall());
     for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
@@ -487,7 +487,7 @@ VDBRepository::perform_uninstall(
         }
         else
         {
-            FSEntry package_builddir(_imp->params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-uninstall"));
+            FSPath package_builddir(_imp->params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-uninstall"));
             EbuildCommandParams params(make_named_values<EbuildCommandParams>(
                     n::builddir() = _imp->params.builddir(),
                     n::clearenv() = phase->option("clearenv"),
@@ -497,7 +497,7 @@ VDBRepository::perform_uninstall(
                     n::ebuild_file() = pkg_dir / (stringify(id->name().package()) + "-" + stringify(id->version()) + ".ebuild"),
                     n::eclassdirs() = eclassdirs,
                     n::environment() = _imp->params.environment(),
-                    n::exlibsdirs() = std::make_shared<FSEntrySequence>(),
+                    n::exlibsdirs() = std::make_shared<FSPathSequence>(),
                     n::files_dir() = pkg_dir,
                     n::maybe_output_manager() = output_manager,
                     n::package_builddir() = package_builddir,
@@ -522,8 +522,8 @@ VDBRepository::perform_uninstall(
     }
 
     /* remove vdb entry */
-    for (DirIterator d(pkg_dir, { dio_include_dotfiles }), d_end ; d != d_end ; ++d)
-        FSEntry(*d).unlink();
+    for (FSIterator d(pkg_dir, { fsio_include_dotfiles, fsio_inode_sort }), d_end ; d != d_end ; ++d)
+        d->unlink();
     pkg_dir.rmdir();
 
     {
@@ -621,12 +621,12 @@ VDBRepository::load_provided_using_cache() const
     Lock l(*_imp->big_nasty_mutex);
     _imp->tried_provides_cache = true;
 
-    if (_imp->params.provides_cache() == FSEntry("/var/empty"))
+    if (_imp->params.provides_cache() == FSPath("/var/empty"))
         return false;
 
     Context context("When loading VDB PROVIDEs map using '" + stringify(_imp->params.provides_cache()) + "':");
 
-    if (! _imp->params.provides_cache().is_regular_file())
+    if (! _imp->params.provides_cache().stat().is_regular_file())
     {
         Log::get_instance()->message("e.vdb.provides_cache.not_regular_file", ll_warning, lc_no_context)
             << "Provides cache at '" << _imp->params.provides_cache() << "' is not a regular file. Perhaps you need to regenerate "
@@ -788,7 +788,7 @@ VDBRepository::write_provides_cache() const
 {
     Context context("When saving provides cache to '" + stringify(_imp->params.provides_cache()) + "':");
 
-    if (! _imp->params.provides_cache().dirname().exists())
+    if (! _imp->params.provides_cache().dirname().stat().exists())
     {
         Log::get_instance()->message("e.vdb.provides.no_dir", ll_warning, lc_no_context) << "Directory '"
             << _imp->params.provides_cache().dirname() << "' does not exist, so cannot save cache file '"
@@ -838,13 +838,13 @@ VDBRepository::regenerate_provides_cache() const
 
     using namespace std::placeholders;
 
-    if (_imp->params.provides_cache() == FSEntry("/var/empty"))
+    if (_imp->params.provides_cache() == FSPath("/var/empty"))
         return;
 
     Context context("When generating VDB repository provides cache at '"
             + stringify(_imp->params.provides_cache()) + "':");
 
-    FSEntry(_imp->params.provides_cache()).unlink();
+    FSPath(_imp->params.provides_cache()).unlink();
 
     load_provided_the_slow_way();
     write_provides_cache();
@@ -892,14 +892,14 @@ VDBRepository::merge(const MergeParams & m)
 
     std::shared_ptr<const ERepositoryID> is_replace(package_id_if_exists(m.package_id()->name(), m.package_id()->version()));
 
-    FSEntry tmp_vdb_dir(_imp->params.location());
-    if (! tmp_vdb_dir.exists())
-        tmp_vdb_dir.mkdir();
+    FSPath tmp_vdb_dir(_imp->params.location());
+    if (! tmp_vdb_dir.stat().exists())
+        tmp_vdb_dir.mkdir(0755, { });
     tmp_vdb_dir /= stringify(m.package_id()->name().category());
-    if (! tmp_vdb_dir.exists())
-        tmp_vdb_dir.mkdir();
+    if (! tmp_vdb_dir.stat().exists())
+        tmp_vdb_dir.mkdir(0755, { });
     tmp_vdb_dir /= ("-checking-" + stringify(m.package_id()->name().package()) + "-" + stringify(m.package_id()->version()));
-    tmp_vdb_dir.mkdir();
+    tmp_vdb_dir.mkdir(0755, { });
 
     WriteVDBEntryCommand write_vdb_entry_command(
             make_named_values<WriteVDBEntryParams>(
@@ -932,7 +932,7 @@ VDBRepository::merge(const MergeParams & m)
     {
     }
 
-    FSEntry vdb_dir(_imp->params.location());
+    FSPath vdb_dir(_imp->params.location());
     vdb_dir /= stringify(m.package_id()->name().category());
     vdb_dir /= (stringify(m.package_id()->name().package()) + "-" + stringify(m.package_id()->version()));
 
@@ -958,8 +958,8 @@ VDBRepository::merge(const MergeParams & m)
 
     if (! merger.check())
     {
-        for (DirIterator d(tmp_vdb_dir, { dio_include_dotfiles }), d_end ; d != d_end ; ++d)
-            FSEntry(*d).unlink();
+        for (FSIterator d(tmp_vdb_dir, { fsio_include_dotfiles, fsio_inode_sort }), d_end ; d != d_end ; ++d)
+            d->unlink();
         tmp_vdb_dir.rmdir();
         throw ActionFailedError("Not proceeding with install due to merge sanity check failing");
     }
@@ -971,11 +971,11 @@ VDBRepository::merge(const MergeParams & m)
             throw InternalError(PALUDIS_HERE, "No contents key in " + stringify(*is_replace) + ". How did that happen?");
         is_replace->contents_key()->value();
 
-        FSEntry old_vdb_dir(_imp->params.location());
+        FSPath old_vdb_dir(_imp->params.location());
         old_vdb_dir /= stringify(is_replace->name().category());
         old_vdb_dir /= (stringify(is_replace->name().package()) + "-" + stringify(is_replace->version()));
 
-        if ((old_vdb_dir.dirname() / ("-reinstalling-" + old_vdb_dir.basename())).exists())
+        if ((old_vdb_dir.dirname() / ("-reinstalling-" + old_vdb_dir.basename())).stat().exists())
             throw ActionFailedError("Directory '" + stringify(old_vdb_dir.dirname() /
                         ("-reinstalling-" + old_vdb_dir.basename())) + "' already exists, probably due to "
                     "a previous failed upgrade. If it is safe to do so, remove this directory and try "
@@ -1065,10 +1065,10 @@ VDBRepository::need_category_names() const
 
     Context context("When loading category names from '" + stringify(_imp->params.location()) + "':");
 
-    for (DirIterator d(_imp->params.location(), { dio_inode_sort }), d_end ; d != d_end ; ++d)
+    for (FSIterator d(_imp->params.location(), { fsio_inode_sort }), d_end ; d != d_end ; ++d)
         try
         {
-            if (d->is_directory_or_symlink_to_directory())
+            if (d->stat().is_directory_or_symlink_to_directory())
                 _imp->categories.insert(std::make_pair(CategoryNamePart(d->basename()),
                             std::shared_ptr<QualifiedPackageNameSet>()));
         }
@@ -1098,10 +1098,10 @@ VDBRepository::need_package_ids(const CategoryNamePart & c) const
 
     std::shared_ptr<QualifiedPackageNameSet> q(std::make_shared<QualifiedPackageNameSet>());
 
-    for (DirIterator d(_imp->params.location() / stringify(c), { dio_inode_sort }), d_end ; d != d_end ; ++d)
+    for (FSIterator d(_imp->params.location() / stringify(c), { fsio_inode_sort }), d_end ; d != d_end ; ++d)
         try
         {
-            if (d->is_directory_or_symlink_to_directory())
+            if (d->stat().is_directory_or_symlink_to_directory())
             {
                 std::string s(d->basename());
                 if (std::string::npos == s.rfind('-'))
@@ -1130,7 +1130,7 @@ VDBRepository::need_package_ids(const CategoryNamePart & c) const
 }
 
 const std::shared_ptr<const ERepositoryID>
-VDBRepository::make_id(const QualifiedPackageName & q, const VersionSpec & v, const FSEntry & f) const
+VDBRepository::make_id(const QualifiedPackageName & q, const VersionSpec & v, const FSPath & f) const
 {
     Lock l(*_imp->big_nasty_mutex);
 
@@ -1170,13 +1170,13 @@ VDBRepository::format_key() const
     return _imp->format_key;
 }
 
-const std::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSPath> >
 VDBRepository::location_key() const
 {
     return _imp->location_key;
 }
 
-const std::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSPath> >
 VDBRepository::installed_root_key() const
 {
     return _imp->root_key;
@@ -1286,7 +1286,7 @@ namespace
     };
 
     bool rewrite_dependencies(
-            const FSEntry & f,
+            const FSPath & f,
             const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > & key,
             const DepRewrites & rewrites)
     {
@@ -1316,10 +1316,10 @@ VDBRepository::perform_updates()
     typedef std::list<std::pair<std::shared_ptr<const PackageID>, SlotName> > SlotMoves;
     SlotMoves slot_moves;
 
-    std::map<FSEntry, std::time_t> cache_contents;
-    FSEntry cache_dir(_imp->params.location() / ".cache");
-    FSEntry cache_file(cache_dir / "updates_time_cache");
-    if (cache_file.is_regular_file_or_symlink_to_regular_file())
+    std::map<FSPath, std::time_t, FSPathComparator> cache_contents;
+    FSPath cache_dir(_imp->params.location() / ".cache");
+    FSPath cache_file(cache_dir / "updates_time_cache");
+    if (cache_file.stat().is_regular_file_or_symlink_to_regular_file())
     {
         Context ctx2("When reading update file timestamps from '" + stringify(cache_file) + "':");
         LineConfigFile f(cache_file, { lcfo_preserve_whitespace });
@@ -1336,7 +1336,7 @@ VDBRepository::perform_updates()
             }
             try
             {
-                cache_contents.insert(std::make_pair(FSEntry(line->substr(tab + 1)), destringify<std::time_t>(line->substr(0, tab))));
+                cache_contents.insert(std::make_pair(FSPath(line->substr(tab + 1)), destringify<std::time_t>(line->substr(0, tab))));
             }
             catch (const DestringifyError &)
             {
@@ -1348,7 +1348,7 @@ VDBRepository::perform_updates()
 
     std::cout << std::endl << "Checking for updates (package moves etc):" << std::endl;
 
-    std::map<FSEntry, std::time_t> update_timestamps;
+    std::map<FSPath, std::time_t, FSPathComparator> update_timestamps;
     for (PackageDatabase::RepositoryConstIterator r(_imp->params.environment()->package_database()->begin_repositories()),
             r_end(_imp->params.environment()->package_database()->end_repositories()) ;
             r != r_end ; ++r)
@@ -1371,33 +1371,33 @@ VDBRepository::perform_updates()
                 continue;
             }
 
-            const MetadataValueKey<FSEntry> * k(simple_visitor_cast<const MetadataValueKey<FSEntry> >(**k_iter));
+            const MetadataValueKey<FSPath> * k(simple_visitor_cast<const MetadataValueKey<FSPath> >(**k_iter));
             if (! k)
             {
                 Log::get_instance()->message("e.vdb.udpates.bad_key", ll_warning, lc_context) <<
-                    "Repository " << (*r)->name() << " defines an e_updates_location key, but it is not an FSEntry key";
+                    "Repository " << (*r)->name() << " defines an e_updates_location key, but it is not an FSPath key";
                 continue;
             }
 
-            FSEntry dir(k->value());
-            if (! dir.is_directory_or_symlink_to_directory())
+            FSPath dir(k->value());
+            if (! dir.stat().is_directory_or_symlink_to_directory())
             {
                 Log::get_instance()->message("e.vdb.updates.bad_key", ll_warning, lc_context) <<
                     "Repository " << (*r)->name() << " has e_updates_location " << dir << ", but this is not a directory";
                 continue;
             }
 
-            for (DirIterator d(k->value(), { }), d_end ;
-                    d != d_end ; ++d)
+            for (FSIterator d(k->value(), { }), d_end ; d != d_end ; ++d)
             {
                 Context context_3("When performing updates from '" + stringify(*d) + "':");
 
-                if (! d->is_regular_file_or_symlink_to_regular_file())
+                FSStat d_stat(*d);
+                if (! d_stat.is_regular_file_or_symlink_to_regular_file())
                     continue;
 
-                update_timestamps.insert(std::make_pair(*d, d->mtim().seconds()));
-                std::map<FSEntry, std::time_t>::const_iterator last_checked(cache_contents.find(*d));
-                if (cache_contents.end() != last_checked && d->mtim().seconds() <= last_checked->second)
+                update_timestamps.insert(std::make_pair(*d, d_stat.mtim().seconds()));
+                std::map<FSPath, std::time_t, FSPathComparator>::const_iterator last_checked(cache_contents.find(*d));
+                if (cache_contents.end() != last_checked && d_stat.mtim().seconds() <= last_checked->second)
                 {
                     Log::get_instance()->message("e.vdb.updates.ignoring", ll_debug, lc_context) <<
                         "Ignoring " << *d << " because it hasn't changed";
@@ -1494,13 +1494,13 @@ VDBRepository::perform_updates()
             {
                 std::cout << "    " << *m->first << " to " << m->second << std::endl;
 
-                FSEntry target_cat_dir(_imp->params.location() / stringify(m->second.category()));
-                target_cat_dir.mkdir();
+                FSPath target_cat_dir(_imp->params.location() / stringify(m->second.category()));
+                target_cat_dir.mkdir(0755, { fspmkdo_ok_if_exists });
 
-                FSEntry from_dir(m->first->fs_location_key()->value());
-                FSEntry to_dir(target_cat_dir / ((stringify(m->second.package()) + "-" + stringify(m->first->version()))));
+                FSPath from_dir(m->first->fs_location_key()->value());
+                FSPath to_dir(target_cat_dir / ((stringify(m->second.package()) + "-" + stringify(m->first->version()))));
 
-                if (to_dir.exists())
+                if (to_dir.stat().exists())
                 {
                     /* Uh oh. It's possible to install both a package and its renamed version. */
                     Log::get_instance()->message("e.vdb.updates.collision", ll_warning, lc_context) <<
@@ -1533,12 +1533,11 @@ VDBRepository::perform_updates()
 
                     if (newpf != oldpf)
                     {
-                        for (DirIterator it(to_dir, { dio_inode_sort }),
-                                 it_end; it_end != it; ++it)
+                        for (FSIterator it(to_dir, { fsio_inode_sort }), it_end; it_end != it; ++it)
                         {
                             std::string::size_type lastdot(it->basename().rfind('.'));
                             if (std::string::npos != lastdot && 0 == it->basename().compare(0, lastdot, oldpf, 0, oldpf.length()))
-                                FSEntry(*it).rename(to_dir / (newpf + it->basename().substr(lastdot)));
+                                it->rename(to_dir / (newpf + it->basename().substr(lastdot)));
                         }
                     }
                 }
@@ -1562,11 +1561,11 @@ VDBRepository::perform_updates()
         {
             invalidate();
 
-            if (_imp->params.provides_cache() != FSEntry("/var/empty"))
-                if (_imp->params.provides_cache().is_regular_file_or_symlink_to_regular_file())
+            if (_imp->params.provides_cache() != FSPath("/var/empty"))
+                if (_imp->params.provides_cache().stat().is_regular_file_or_symlink_to_regular_file())
                 {
                     std::cout << std::endl << "Invalidating provides cache following updates" << std::endl;
-                    FSEntry(_imp->params.provides_cache()).unlink();
+                    _imp->params.provides_cache().unlink();
                     regenerate_provides_cache();
                 }
 
@@ -1610,9 +1609,9 @@ VDBRepository::perform_updates()
 
         if (! failed)
         {
-            cache_dir.mkdir();
+            cache_dir.mkdir(0755, { fspmkdo_ok_if_exists });
             SafeOFStream cache_file_f(cache_file);
-            for (std::map<FSEntry, std::time_t>::const_iterator it(update_timestamps.begin()),
+            for (std::map<FSPath, std::time_t, FSPathComparator>::const_iterator it(update_timestamps.begin()),
                      it_end(update_timestamps.end()); it_end != it; ++it)
                 cache_file_f << it->second << '\t' << it->first << std::endl;
         }

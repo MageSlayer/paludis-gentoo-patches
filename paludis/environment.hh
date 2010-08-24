@@ -22,7 +22,6 @@
 
 #include <paludis/environment-fwd.hh>
 #include <paludis/util/options-fwd.hh>
-#include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/tribool-fwd.hh>
 #include <paludis/util/simple_visitor.hh>
 #include <paludis/output_manager-fwd.hh>
@@ -258,7 +257,7 @@ namespace paludis
              * \since 0.48
              */
             virtual const std::shared_ptr<Repository> repository_from_new_config_file(
-                    const FSEntry &) PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+                    const FSPath &) PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}
 
@@ -269,25 +268,25 @@ namespace paludis
              * Return a collection of bashrc files to be used by the various components
              * that are implemented in bash.
              */
-            virtual std::shared_ptr<const FSEntrySequence> bashrc_files() const
+            virtual std::shared_ptr<const FSPathSequence> bashrc_files() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
              * Return directories to search for syncer scripts.
              */
-            virtual std::shared_ptr<const FSEntrySequence> syncers_dirs() const
+            virtual std::shared_ptr<const FSPathSequence> syncers_dirs() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
              * Return directories to search for fetcher scripts.
              */
-            virtual std::shared_ptr<const FSEntrySequence> fetchers_dirs() const
+            virtual std::shared_ptr<const FSPathSequence> fetchers_dirs() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
              * Return directories to search for hooks.
              */
-            virtual std::shared_ptr<const FSEntrySequence> hook_dirs() const
+            virtual std::shared_ptr<const FSPathSequence> hook_dirs() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
@@ -462,7 +461,7 @@ namespace paludis
              *
              * \since 0.54
              */
-            virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > preferred_root_key() const = 0;
+            virtual const std::shared_ptr<const MetadataValueKey<FSPath> > preferred_root_key() const = 0;
 
             /**
              * The format_key, if non-zero, holds our environment's format. Environment
@@ -475,7 +474,7 @@ namespace paludis
              * The config_location_key, if non-zero, specifies the location of the configuration file or directory,
              * the contents of which depends on the format returned by format_key.
              */
-            virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > config_location_key() const = 0;
+            virtual const std::shared_ptr<const MetadataValueKey<FSPath> > config_location_key() const = 0;
 
             ///\}
 

@@ -397,7 +397,7 @@ const std::shared_ptr<const PackageIDSequence>
 Decider::_collect_staying(const std::shared_ptr<const ChangeByResolventSequence> & going_away) const
 {
     const std::shared_ptr<const PackageIDSequence> existing((*_imp->env)[selection::AllVersionsUnsorted(
-                generator::All() | filter::InstalledAtRoot(FSEntry("/")))]);
+                generator::All() | filter::InstalledAtSlash())]);
 
     const std::shared_ptr<PackageIDSequence> result(std::make_shared<PackageIDSequence>());
     for (PackageIDSequence::ConstIterator x(existing->begin()), x_end(existing->end()) ;
@@ -1324,7 +1324,7 @@ Decider::find_any_score(
     {
         const std::shared_ptr<const PackageIDSequence> installed_ids((*_imp->env)[selection::BestVersionOnly(
                     generator::Matches(spec, { }) |
-                    filter::InstalledAtRoot(FSEntry("/")))]);
+                    filter::InstalledAtSlash())]);
         if (! installed_ids->empty() ^ is_block)
             return std::make_pair(acs_already_installed, operator_bias);
     }
@@ -1334,7 +1334,7 @@ Decider::find_any_score(
     {
         const std::shared_ptr<const PackageIDSequence> installed_ids((*_imp->env)[selection::BestVersionOnly(
                     generator::Matches(spec, { mpo_ignore_additional_requirements }) |
-                    filter::InstalledAtRoot(FSEntry("/")))]);
+                    filter::InstalledAtSlash())]);
         if (! installed_ids->empty())
             return std::make_pair(acs_wrong_options_installed, operator_bias);
     }
@@ -1378,7 +1378,7 @@ Decider::find_any_score(
     {
         const std::shared_ptr<const PackageIDSequence> installed_ids((*_imp->env)[selection::BestVersionOnly(
                     generator::Matches(spec, { }) |
-                    filter::InstalledAtRoot(FSEntry("/")))]);
+                    filter::InstalledAtSlash())]);
         if (! installed_ids->empty())
             return std::make_pair(acs_blocks_installed, operator_bias);
     }
@@ -2091,7 +2091,7 @@ Decider::_already_met(const SanitisedDependency & dep) const
                     *dep.spec().if_package() :
                     dep.spec().if_block()->blocking(),
                     { }) |
-                filter::InstalledAtRoot(FSEntry("/")))]);
+                filter::InstalledAtSlash())]);
     if (installed_ids->empty())
         return bool(dep.spec().if_block());
     else

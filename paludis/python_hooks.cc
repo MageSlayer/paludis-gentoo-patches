@@ -5,7 +5,6 @@
 #include <paludis/hooker.hh>
 #include <paludis/hook.hh>
 #include <paludis/environment.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/graph-impl.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/stringify.hh>
@@ -22,7 +21,7 @@ namespace bp = boost::python;
 
 extern "C"
 {
-    std::shared_ptr<HookFile> create_py_hook_file(const FSEntry &, const bool, const Environment * const)
+    std::shared_ptr<HookFile> create_py_hook_file(const FSPath &, const bool, const Environment * const)
         PALUDIS_VISIBLE;
 }
 
@@ -38,7 +37,7 @@ namespace
             static bp::dict _output_wrapper_namespace;
             static bp::object _format_exception;
 
-            const FSEntry _file_name;
+            const FSPath _file_name;
             const Environment * const _env;
             const bool _run_prefixed;
             bool _loaded;
@@ -61,11 +60,11 @@ namespace
             void _add_dependency_class(const Hook &, DirectedGraph<std::string, int> &, bool);
 
         public:
-            PyHookFile(const FSEntry &, const bool, const Environment * const);
+            PyHookFile(const FSPath &, const bool, const Environment * const);
 
             virtual HookResult run(const Hook &, const std::shared_ptr<OutputManager> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const FSEntry file_name() const
+            virtual const FSPath file_name() const
             {
                 return _file_name;
             }
@@ -84,7 +83,7 @@ namespace
     bp::object PyHookFile::_format_exception;
 }
 
-PyHookFile::PyHookFile(const FSEntry & f, const bool r, const Environment * const e) :
+PyHookFile::PyHookFile(const FSPath & f, const bool r, const Environment * const e) :
     _file_name(f),
     _env(e),
     _run_prefixed(r),
@@ -438,7 +437,7 @@ PyHookFile::_get_traceback() const
 }
 
 std::shared_ptr<HookFile>
-create_py_hook_file(const FSEntry & f, const bool b, const Environment * const e)
+create_py_hook_file(const FSPath & f, const bool b, const Environment * const e)
 {
     return std::make_shared<PyHookFile>(f, b, e);
 }

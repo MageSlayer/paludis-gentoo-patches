@@ -22,7 +22,7 @@
 
 #include <paludis/util/pimp.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
-#include <paludis/util/fs_entry.hh>
+#include <paludis/util/fs_path-fwd.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/metadata_key-fwd.hh>
 #include <paludis/name.hh>
@@ -65,10 +65,10 @@ namespace paludis
             private Pimp<UnwrittenRepositoryFile>
         {
             private:
-                void _load(const FSEntry &);
+                void _load(const FSPath &);
 
             public:
-                UnwrittenRepositoryFile(const FSEntry &);
+                UnwrittenRepositoryFile(const FSPath &);
                 ~UnwrittenRepositoryFile();
 
                 struct ConstIteratorTag;

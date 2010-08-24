@@ -32,6 +32,7 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/return_literal_function.hh>
+#include <paludis/util/fs_stat.hh>
 #include <paludis/standard_output_manager.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/package_id.hh>
@@ -102,9 +103,9 @@ namespace test_cases
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo1"));
-            keys->insert("profiles", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo1/profiles/profile"));
-            keys->insert("builddir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "build"));
+            keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo1"));
+            keys->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo1/profiles/profile"));
+            keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
             TEST_CHECK_STRINGIFY_EQUAL(repo->name(), "test-repo-1");
@@ -122,9 +123,9 @@ namespace test_cases
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo2"));
-            keys->insert("profiles", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo2/profiles/profile"));
-            keys->insert("builddir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "build"));
+            keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo2"));
+            keys->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo2/profiles/profile"));
+            keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
             TEST_CHECK_STRINGIFY_EQUAL(repo->name(), "x-repo2");
@@ -142,9 +143,9 @@ namespace test_cases
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo3"));
-            keys->insert("profiles", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo3/profiles/profile"));
-            keys->insert("builddir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "build"));
+            keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo3"));
+            keys->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo3/profiles/profile"));
+            keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
             TEST_CHECK_STRINGIFY_EQUAL(repo->name(), "x-repo3");
@@ -162,9 +163,9 @@ namespace test_cases
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo1"));
-            keys->insert("profiles", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo1/profiles/profile"));
-            keys->insert("builddir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "build"));
+            keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo1"));
+            keys->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo1/profiles/profile"));
+            keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
 
@@ -191,9 +192,9 @@ namespace test_cases
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo1"));
-            keys->insert("profiles", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo1/profiles/profile"));
-            keys->insert("builddir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "build"));
+            keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo1"));
+            keys->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo1/profiles/profile"));
+            keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
 
@@ -222,9 +223,9 @@ namespace test_cases
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo4"));
-            keys->insert("profiles", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo4/profiles/profile"));
-            keys->insert("builddir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "build"));
+            keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo4"));
+            keys->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo4/profiles/profile"));
+            keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
 
@@ -259,9 +260,9 @@ namespace test_cases
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo4"));
-            keys->insert("profiles", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo4/profiles/profile"));
-            keys->insert("builddir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "build"));
+            keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo4"));
+            keys->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo4/profiles/profile"));
+            keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
 
@@ -300,9 +301,9 @@ namespace test_cases
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo4"));
-            keys->insert("profiles", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo4/profiles/profile"));
-            keys->insert("builddir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "build"));
+            keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo4"));
+            keys->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo4/profiles/profile"));
+            keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
 
@@ -350,9 +351,9 @@ namespace test_cases
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo5"));
-            keys->insert("profiles", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo5/profiles/profile"));
-            keys->insert("builddir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "build"));
+            keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo5"));
+            keys->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo5/profiles/profile"));
+            keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
 
@@ -383,9 +384,9 @@ namespace test_cases
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo4"));
-            keys->insert("profiles", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo4/profiles/profile"));
-            keys->insert("builddir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "build"));
+            keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo4"));
+            keys->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo4/profiles/profile"));
+            keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
 
@@ -428,9 +429,9 @@ namespace test_cases
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo8"));
-            keys->insert("profiles", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo8/profiles/profile"));
-            keys->insert("builddir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "build"));
+            keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo8"));
+            keys->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo8/profiles/profile"));
+            keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
 
@@ -480,10 +481,10 @@ namespace test_cases
                 std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
                 keys->insert("format", "e");
                 keys->insert("names_cache", "/var/empty");
-                keys->insert("write_cache", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo7/metadata/cache"));
-                keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo7"));
-                keys->insert("profiles", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo7/profiles/profile"));
-                keys->insert("builddir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "build"));
+                keys->insert("write_cache", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo7/metadata/cache"));
+                keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo7"));
+                keys->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo7/profiles/profile"));
+                keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "build"));
                 std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                             std::bind(from_keys, keys, std::placeholders::_1)));
                 env.package_database()->add_repository(1, repo);
@@ -562,9 +563,9 @@ namespace test_cases
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo7"));
-            keys->insert("profiles", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo7/profiles/profile"));
-            keys->insert("builddir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "build"));
+            keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo7"));
+            keys->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo7/profiles/profile"));
+            keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
@@ -606,9 +607,9 @@ namespace test_cases
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo9"));
-            keys->insert("profiles", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo9/profiles/child"));
-            keys->insert("builddir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "build"));
+            keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo9"));
+            keys->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo9/profiles/child"));
+            keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "build"));
             std::shared_ptr<ERepository> repo(std::static_pointer_cast<ERepository>(ERepository::repository_factory_create(&env,
                             std::bind(from_keys, keys, std::placeholders::_1))));
             env.package_database()->add_repository(1, repo);
@@ -687,9 +688,9 @@ namespace test_cases
             std::shared_ptr<Map<std::string, std::string> > keys18(std::make_shared<Map<std::string, std::string>>());
             keys18->insert("format", "e");
             keys18->insert("names_cache", "/var/empty");
-            keys18->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo18"));
-            keys18->insert("profiles", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo18/profiles/profile"));
-            keys18->insert("builddir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "build"));
+            keys18->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo18"));
+            keys18->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo18/profiles/profile"));
+            keys18->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo18(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys18, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo18);
@@ -697,9 +698,9 @@ namespace test_cases
             std::shared_ptr<Map<std::string, std::string> > keys19(std::make_shared<Map<std::string, std::string>>());
             keys19->insert("format", "e");
             keys19->insert("names_cache", "/var/empty");
-            keys19->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo19"));
+            keys19->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo19"));
             keys19->insert("master_repository", "test-repo-18");
-            keys19->insert("builddir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "build"));
+            keys19->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo19(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys19, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo19);
@@ -743,9 +744,9 @@ namespace test_cases
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo10"));
-            keys->insert("profiles", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo10/profiles/profile/subprofile"));
-            keys->insert("builddir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "build"));
+            keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo10"));
+            keys->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo10/profiles/profile/subprofile"));
+            keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
@@ -778,9 +779,9 @@ namespace test_cases
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo15"));
-            keys->insert("profiles", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo15/profiles/profile"));
-            keys->insert("builddir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "build"));
+            keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo15"));
+            keys->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo15/profiles/profile"));
+            keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "build"));
             std::shared_ptr<ERepository> repo(std::static_pointer_cast<ERepository>(ERepository::repository_factory_create(&env,
                             std::bind(from_keys, keys, std::placeholders::_1))));
             env.package_database()->add_repository(1, repo);
@@ -820,9 +821,9 @@ namespace test_cases
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo15"));
-            keys->insert("profiles", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo15/profiles/profile/subprofile"));
-            keys->insert("builddir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "build"));
+            keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo15"));
+            keys->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo15/profiles/profile/subprofile"));
+            keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "build"));
             std::shared_ptr<ERepository> repo(std::static_pointer_cast<ERepository>(ERepository::repository_factory_create(&env,
                             std::bind(from_keys, keys, std::placeholders::_1))));
             env.package_database()->add_repository(1, repo);
@@ -868,16 +869,16 @@ namespace test_cases
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo11"));
-            keys->insert("profiles", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo11/profiles/profile"));
-            keys->insert("builddir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "build"));
+            keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo11"));
+            keys->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo11/profiles/profile"));
+            keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "build"));
             std::shared_ptr<ERepository> repo(std::static_pointer_cast<ERepository>(ERepository::repository_factory_create(&env,
                             std::bind(from_keys, keys, std::placeholders::_1))));
             repo->make_manifest(QualifiedPackageName("category/package"));
 
             std::multiset<std::string> made_manifest, reference_manifest;
-            SafeIFStream made_manifest_stream(FSEntry("e_repository_TEST_dir/repo11/category/package/Manifest")),
-                reference_manifest_stream(FSEntry("e_repository_TEST_dir/repo11/Manifest_correct"));
+            SafeIFStream made_manifest_stream(FSPath("e_repository_TEST_dir/repo11/category/package/Manifest")),
+                reference_manifest_stream(FSPath("e_repository_TEST_dir/repo11/Manifest_correct"));
 
             std::string line;
 
@@ -913,14 +914,14 @@ namespace test_cases
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "exheres");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo12"));
-            keys->insert("profiles", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo12/profiles/profile"));
+            keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo12"));
+            keys->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo12/profiles/profile"));
             keys->insert("layout", "exheres");
             keys->insert("eapi_when_unknown", "exheres-0");
             keys->insert("eapi_when_unspecified", "exheres-0");
             keys->insert("profile_eapi", "exheres-0");
-            keys->insert("distdir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "distdir"));
-            keys->insert("builddir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "build"));
+            keys->insert("distdir", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "distdir"));
+            keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(1, repo);
@@ -953,31 +954,31 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("cat/fetched-files",
                                         &env, { })), { }))]->last());
                 TEST_CHECK(bool(fetched_files_id));
-                TEST_CHECK((FSEntry("e_repository_TEST_dir") / "distdir" / "already-fetched.txt").is_regular_file());
+                TEST_CHECK((FSPath("e_repository_TEST_dir") / "distdir" / "already-fetched.txt").stat().is_regular_file());
                 fetched_files_id->perform_action(action);
-                TEST_CHECK((FSEntry("e_repository_TEST_dir") / "distdir" / "already-fetched.txt").is_regular_file());
+                TEST_CHECK((FSPath("e_repository_TEST_dir") / "distdir" / "already-fetched.txt").stat().is_regular_file());
             }
 
             {
                 TestMessageSuffix suffix("fetchable files", true);
-                TEST_CHECK(! (FSEntry("e_repository_TEST_dir") / "distdir" / "fetchable-1.txt").is_regular_file());
+                TEST_CHECK(! (FSPath("e_repository_TEST_dir") / "distdir" / "fetchable-1.txt").stat().is_regular_file());
                 const std::shared_ptr<const PackageID> fetchable_files_id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("cat/fetchable-files",
                                         &env, { })), { }))]->last());
                 TEST_CHECK(bool(fetchable_files_id));
                 fetchable_files_id->perform_action(action);
-                TEST_CHECK((FSEntry("e_repository_TEST_dir") / "distdir" / "fetchable-1.txt").is_regular_file());
+                TEST_CHECK((FSPath("e_repository_TEST_dir") / "distdir" / "fetchable-1.txt").stat().is_regular_file());
             }
 
             {
                 TestMessageSuffix suffix("arrow files", true);
-                TEST_CHECK(! (FSEntry("e_repository_TEST_dir") / "distdir" / "arrowed.txt").is_regular_file());
+                TEST_CHECK(! (FSPath("e_repository_TEST_dir") / "distdir" / "arrowed.txt").stat().is_regular_file());
                 const std::shared_ptr<const PackageID> arrow_files_id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("cat/arrow-files",
                                         &env, { })), { }))]->last());
                 TEST_CHECK(bool(arrow_files_id));
                 arrow_files_id->perform_action(action);
-                TEST_CHECK((FSEntry("e_repository_TEST_dir") / "distdir" / "arrowed.txt").is_regular_file());
+                TEST_CHECK((FSPath("e_repository_TEST_dir") / "distdir" / "arrowed.txt").stat().is_regular_file());
             }
 
             {
@@ -1026,9 +1027,9 @@ namespace test_cases
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("location", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo11"));
-            keys->insert("profiles", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "repo11/profiles/profile"));
-            keys->insert("builddir", stringify(FSEntry::cwd() / "e_repository_TEST_dir" / "build"));
+            keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo11"));
+            keys->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo11/profiles/profile"));
+            keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "build"));
             std::shared_ptr<ERepository> repo(std::static_pointer_cast<ERepository>(ERepository::repository_factory_create(&env,
                             std::bind(from_keys, keys, std::placeholders::_1))));
             env.package_database()->add_repository(1, repo);

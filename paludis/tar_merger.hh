@@ -55,15 +55,15 @@ namespace paludis
         NamedValue<n::compression, TarMergerCompression> compression;
         NamedValue<n::environment, Environment *> environment;
         NamedValue<n::fix_mtimes_before, Timestamp> fix_mtimes_before;
-        NamedValue<n::get_new_ids_or_minus_one, std::function<std::pair<uid_t, gid_t> (const FSEntry &)> > get_new_ids_or_minus_one;
-        NamedValue<n::image, FSEntry> image;
-        NamedValue<n::install_under, FSEntry> install_under;
+        NamedValue<n::get_new_ids_or_minus_one, std::function<std::pair<uid_t, gid_t> (const FSPath &)> > get_new_ids_or_minus_one;
+        NamedValue<n::image, FSPath> image;
+        NamedValue<n::install_under, FSPath> install_under;
         NamedValue<n::maybe_output_manager, std::shared_ptr<OutputManager> > maybe_output_manager;
-        NamedValue<n::merged_entries, std::shared_ptr<FSEntrySet> > merged_entries;
+        NamedValue<n::merged_entries, std::shared_ptr<FSPathSet> > merged_entries;
         NamedValue<n::no_chown, bool> no_chown;
         NamedValue<n::options, MergerOptions> options;
-        NamedValue<n::root, FSEntry> root;
-        NamedValue<n::tar_file, FSEntry> tar_file;
+        NamedValue<n::root, FSPath> root;
+        NamedValue<n::tar_file, FSPath> tar_file;
     };
 
     class PALUDIS_VISIBLE TarMerger :
@@ -74,20 +74,20 @@ namespace paludis
             Pimp<TarMerger>::ImpPtr & _imp;
 
         protected:
-            virtual FSEntry canonicalise_root_path(const FSEntry & f);
+            virtual FSPath canonicalise_root_path(const FSPath & f);
 
-            virtual void add_file(const FSEntry &, const FSEntry &);
+            virtual void add_file(const FSPath &, const FSPath &);
 
-            virtual void track_install_file(const FSEntry &, const FSEntry &) = 0;
-            virtual void track_install_sym(const FSEntry &, const FSEntry &) = 0;
+            virtual void track_install_file(const FSPath &, const FSPath &) = 0;
+            virtual void track_install_sym(const FSPath &, const FSPath &) = 0;
 
         public:
             TarMerger(const TarMergerParams &);
             ~TarMerger();
 
-            virtual void on_file_main(bool is_check, const FSEntry &, const FSEntry &);
-            virtual void on_dir_main(bool is_check, const FSEntry &, const FSEntry &);
-            virtual void on_sym_main(bool is_check, const FSEntry &, const FSEntry &);
+            virtual void on_file_main(bool is_check, const FSPath &, const FSPath &);
+            virtual void on_dir_main(bool is_check, const FSPath &, const FSPath &);
+            virtual void on_sym_main(bool is_check, const FSPath &, const FSPath &);
 
             virtual void prepare_install_under();
 

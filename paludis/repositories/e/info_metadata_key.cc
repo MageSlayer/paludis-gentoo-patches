@@ -20,8 +20,8 @@
 #include <paludis/repositories/e/info_metadata_key.hh>
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/e_repository.hh>
+
 #include <paludis/util/pimp-impl.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/stringify.hh>
@@ -31,6 +31,8 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/join.hh>
+#include <paludis/util/fs_stat.hh>
+
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/selection.hh>
 #include <paludis/generator.hh>
@@ -40,6 +42,7 @@
 #include <paludis/environment.hh>
 #include <paludis/package_id.hh>
 #include <paludis/formatter.hh>
+
 #include <map>
 #include <algorithm>
 #include <functional>
@@ -52,12 +55,12 @@ namespace paludis
     template <>
     struct Imp<InfoVarsMetadataKey>
     {
-        const std::shared_ptr<const FSEntrySequence> locations;
+        const std::shared_ptr<const FSPathSequence> locations;
 
         mutable Mutex mutex;
         mutable std::shared_ptr<Set<std::string> > value;
 
-        Imp(const std::shared_ptr<const FSEntrySequence> & l) :
+        Imp(const std::shared_ptr<const FSPathSequence> & l) :
             locations(l)
         {
         }
@@ -67,13 +70,13 @@ namespace paludis
     struct Imp<InfoPkgsMetadataKey>
     {
         const Environment * const env;
-        const std::shared_ptr<const FSEntrySequence> locations;
+        const std::shared_ptr<const FSPathSequence> locations;
         const ERepository * const e_repository;
 
         mutable Mutex mutex;
         mutable bool added;
 
-        Imp(const Environment * const e, const std::shared_ptr<const FSEntrySequence> & l,
+        Imp(const Environment * const e, const std::shared_ptr<const FSPathSequence> & l,
                 const ERepository * const r) :
             env(e),
             locations(l),
@@ -84,7 +87,7 @@ namespace paludis
     };
 }
 
-InfoVarsMetadataKey::InfoVarsMetadataKey(const std::shared_ptr<const FSEntrySequence> & f) :
+InfoVarsMetadataKey::InfoVarsMetadataKey(const std::shared_ptr<const FSPathSequence> & f) :
     Pimp<InfoVarsMetadataKey>(f)
 {
 }
@@ -102,12 +105,12 @@ InfoVarsMetadataKey::value() const
         return _imp->value;
     _imp->value = std::make_shared<Set<std::string>>();
 
-    for (FSEntrySequence::ConstIterator location(_imp->locations->begin()), location_end(_imp->locations->end()) ;
+    for (FSPathSequence::ConstIterator location(_imp->locations->begin()), location_end(_imp->locations->end()) ;
             location != location_end ; ++location)
     {
         Context context("When loading info variables file '" + stringify(*location) + "':");
 
-        if (location->is_regular_file_or_symlink_to_regular_file())
+        if (location->stat().is_regular_file_or_symlink_to_regular_file())
         {
             LineConfigFile f(*location, { lcfo_disallow_continuations });
             for (LineConfigFile::ConstIterator line(f.begin()), line_end(f.end()) ;
@@ -138,7 +141,7 @@ InfoVarsMetadataKey::type() const
 }
 
 InfoPkgsMetadataKey::InfoPkgsMetadataKey(const Environment * const e,
-        const std::shared_ptr<const FSEntrySequence> & f,
+        const std::shared_ptr<const FSPathSequence> & f,
         const ERepository * const r) :
     Pimp<InfoPkgsMetadataKey>(e, f, r),
     _imp(Pimp<InfoPkgsMetadataKey>::_imp)
@@ -157,13 +160,13 @@ InfoPkgsMetadataKey::need_keys_added() const
         return;
 
     std::map<std::string, std::string> info_pkgs;
-    for (FSEntrySequence::ConstIterator location(_imp->locations->begin()), location_end(_imp->locations->end()) ;
+    for (FSPathSequence::ConstIterator location(_imp->locations->begin()), location_end(_imp->locations->end()) ;
             location != location_end ; ++location)
     {
         Context context("When loading info packages file '" + stringify(*location) + "':");
         _imp->added = true;
 
-        if (location->is_regular_file_or_symlink_to_regular_file())
+        if (location->stat().is_regular_file_or_symlink_to_regular_file())
         {
             std::string eapi(_imp->e_repository->eapi_for_file(*location));
             LineConfigFile p(*location, { lcfo_disallow_continuations });

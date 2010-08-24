@@ -19,7 +19,7 @@
 
 #include <paludis/stripper.hh>
 #include <paludis/environments/test/test_environment.hh>
-#include <paludis/util/fs_entry.hh>
+#include <paludis/util/fs_stat.hh>
 #include <paludis/util/make_named_values.hh>
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
@@ -32,24 +32,24 @@ namespace
     struct TestStripper :
         Stripper
     {
-        virtual void on_enter_dir(const FSEntry &)
+        virtual void on_enter_dir(const FSPath &)
         {
         }
 
-        virtual void on_leave_dir(const FSEntry &)
+        virtual void on_leave_dir(const FSPath &)
         {
         }
 
 
-        virtual void on_strip(const FSEntry &)
+        virtual void on_strip(const FSPath &)
         {
         }
 
-        virtual void on_split(const FSEntry &, const FSEntry &)
+        virtual void on_split(const FSPath &, const FSPath &)
         {
         }
 
-        virtual void on_unknown(const FSEntry &)
+        virtual void on_unknown(const FSPath &)
         {
         }
 
@@ -69,14 +69,14 @@ namespace test_cases
         void run()
         {
             TestStripper s(make_named_values<StripperOptions>(
-                        n::debug_dir() = FSEntry("stripper_TEST_dir/image").realpath() / "usr" / "lib" / "debug",
-                        n::image_dir() = FSEntry("stripper_TEST_dir/image").realpath(),
+                        n::debug_dir() = FSPath("stripper_TEST_dir/image").realpath() / "usr" / "lib" / "debug",
+                        n::image_dir() = FSPath("stripper_TEST_dir/image").realpath(),
                         n::split() = true,
                         n::strip() = true
                     ));
             s.strip();
 
-            TEST_CHECK(FSEntry("stripper_TEST_dir/image/usr/lib/debug/usr/bin/stripper_TEST_binary.debug").is_regular_file());
+            TEST_CHECK(FSPath("stripper_TEST_dir/image/usr/lib/debug/usr/bin/stripper_TEST_binary.debug").stat().is_regular_file());
         }
 
         bool repeatable() const

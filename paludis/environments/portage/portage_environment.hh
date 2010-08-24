@@ -61,20 +61,20 @@ namespace paludis
         private:
             Pimp<PortageEnvironment>::ImpPtr & _imp;
 
-            void _load_profile(const FSEntry &);
+            void _load_profile(const FSPath &);
             void _add_virtuals_repository();
             void _add_installed_virtuals_repository();
-            void _add_portdir_repository(const FSEntry &);
-            void _add_portdir_overlay_repository(const FSEntry &);
-            void _add_ebuild_repository(const FSEntry &, const std::string &,
+            void _add_portdir_repository(const FSPath &);
+            void _add_portdir_overlay_repository(const FSPath &);
+            void _add_ebuild_repository(const FSPath &, const std::string &,
                     const std::string &, int importance);
             void _add_vdb_repository();
 
             template<typename I_>
-            void _load_lined_file(const FSEntry &, I_);
+            void _load_lined_file(const FSPath &, I_);
 
             template<typename I_>
-            void _load_atom_file(const FSEntry &, I_, const std::string &, const bool);
+            void _load_atom_file(const FSPath &, I_, const std::string &, const bool);
 
             bool _add_string_to_world(const std::string &) const;
             bool _remove_string_from_world(const std::string &) const;
@@ -112,10 +112,10 @@ namespace paludis
                     ) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::shared_ptr<const FSEntrySequence> bashrc_files() const
+            virtual std::shared_ptr<const FSPathSequence> bashrc_files() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::shared_ptr<const FSEntrySequence> hook_dirs() const
+            virtual std::shared_ptr<const FSPathSequence> hook_dirs() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual std::shared_ptr<const MirrorsSequence> mirrors(const std::string &) const
@@ -165,14 +165,14 @@ namespace paludis
             virtual bool remove_from_world(const SetName &) const;
 
             virtual const std::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
-            virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > config_location_key() const;
-            virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > preferred_root_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<FSPath> > config_location_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<FSPath> > preferred_root_key() const;
 
             virtual const std::shared_ptr<OutputManager> create_output_manager(
                     const CreateOutputManagerInfo &) const;
 
             virtual const std::shared_ptr<Repository> repository_from_new_config_file(
-                    const FSEntry &) PALUDIS_ATTRIBUTE((noreturn));
+                    const FSPath &) PALUDIS_ATTRIBUTE((noreturn));
 
             virtual void update_config_files_for_package_move(
                     const PackageDepSpec &, const QualifiedPackageName &) const;

@@ -22,7 +22,7 @@
 
 #include "command.hh"
 #include <paludis/util/pimp.hh>
-#include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/util/fs_path-fwd.hh>
 
 namespace paludis
 {
@@ -33,7 +33,7 @@ namespace paludis
             public Command
         {
             public:
-                ScriptCommand(const std::string &, const FSEntry &);
+                ScriptCommand(const std::string &, const FSPath &);
                 ~ScriptCommand();
 
                 int run(

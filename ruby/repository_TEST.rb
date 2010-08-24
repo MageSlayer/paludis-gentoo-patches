@@ -386,7 +386,7 @@ module Paludis
 
         def test_installed_root_key
             assert_nil repo.installed_root_key
-            assert_kind_of MetadataFSEntryKey, installed_repo.installed_root_key
+            assert_kind_of MetadataFSPathKey, installed_repo.installed_root_key
             assert_equal '/', installed_repo.installed_root_key.value
         end
 

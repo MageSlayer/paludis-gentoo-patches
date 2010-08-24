@@ -25,7 +25,6 @@
 #include <paludis/formatter.hh>
 #include <paludis/dep_label.hh>
 #include <paludis/environment.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/timestamp.hh>
@@ -92,9 +91,9 @@ class MetadataKeySptrToPythonVisitor
             obj = bp::object(std::static_pointer_cast<const MetadataValueKey<std::shared_ptr<const RepositoryMaskInfo> > >(_m_ptr));
         }
 
-        void visit(const MetadataValueKey<FSEntry> & k)
+        void visit(const MetadataValueKey<FSPath> & k)
         {
-            obj = bp::object(std::static_pointer_cast<const MetadataValueKey<FSEntry> >(_m_ptr));
+            obj = bp::object(std::static_pointer_cast<const MetadataValueKey<FSPath> >(_m_ptr));
         }
 
         void visit(const MetadataCollectionKey<KeywordNameSet> & k)
@@ -112,9 +111,9 @@ class MetadataKeySptrToPythonVisitor
             obj = bp::object(std::static_pointer_cast<const MetadataCollectionKey<Sequence<std::string> > >(_m_ptr));
         }
 
-        void visit(const MetadataCollectionKey<FSEntrySequence> & k)
+        void visit(const MetadataCollectionKey<FSPathSequence> & k)
         {
-            obj = bp::object(std::static_pointer_cast<const MetadataCollectionKey<FSEntrySequence> >(_m_ptr));
+            obj = bp::object(std::static_pointer_cast<const MetadataCollectionKey<FSPathSequence> >(_m_ptr));
         }
 
         void visit(const MetadataSpecTreeKey<LicenseSpecTree> & k)
@@ -525,11 +524,11 @@ struct MetadataChoicesKeyWrapper :
     }
 };
 
-struct MetadataFSEntryKeyWrapper :
-    MetadataValueKey<FSEntry> ,
-    bp::wrapper<MetadataValueKey<FSEntry> >
+struct MetadataFSPathKeyWrapper :
+    MetadataValueKey<FSPath> ,
+    bp::wrapper<MetadataValueKey<FSPath> >
 {
-    virtual const FSEntry value() const
+    virtual const FSPath value() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         Lock l(get_mutex());
@@ -537,7 +536,7 @@ struct MetadataFSEntryKeyWrapper :
         if (bp::override f = get_override("value"))
             return f();
         else
-            throw PythonMethodNotImplemented("MetadataValueKey<FSEntry> ", "value");
+            throw PythonMethodNotImplemented("MetadataValueKey<FSPath> ", "value");
     }
 
     virtual const std::string raw_name() const
@@ -547,7 +546,7 @@ struct MetadataFSEntryKeyWrapper :
         if (bp::override f = get_override("raw_name"))
             return f();
         else
-            throw PythonMethodNotImplemented("MetadataFSEntryKey", "raw_name");
+            throw PythonMethodNotImplemented("MetadataFSPathKey", "raw_name");
     }
 
     virtual const std::string human_name() const
@@ -557,7 +556,7 @@ struct MetadataFSEntryKeyWrapper :
         if (bp::override f = get_override("human_name"))
             return f();
         else
-            throw PythonMethodNotImplemented("MetadataFSEntryKey", "human_name");
+            throw PythonMethodNotImplemented("MetadataFSPathKey", "human_name");
     }
 
     virtual MetadataKeyType type() const
@@ -567,7 +566,7 @@ struct MetadataFSEntryKeyWrapper :
         if (bp::override f = get_override("type"))
             return f();
         else
-            throw PythonMethodNotImplemented("MetadataFSEntryKey", "type");
+            throw PythonMethodNotImplemented("MetadataFSPathKey", "type");
     }
 };
 
@@ -1258,24 +1257,24 @@ void expose_metadata_key()
         ;
 
     /**
-     * MetadataFSEntryKey
+     * MetadataFSPathKey
      */
-    bp::register_ptr_to_python<std::shared_ptr<const MetadataValueKey<FSEntry> > >();
-    bp::implicitly_convertible<std::shared_ptr<MetadataFSEntryKeyWrapper>,
+    bp::register_ptr_to_python<std::shared_ptr<const MetadataValueKey<FSPath> > >();
+    bp::implicitly_convertible<std::shared_ptr<MetadataFSPathKeyWrapper>,
             std::shared_ptr<MetadataKey> >();
-    bp::class_<MetadataFSEntryKeyWrapper, std::shared_ptr<MetadataFSEntryKeyWrapper>,
+    bp::class_<MetadataFSPathKeyWrapper, std::shared_ptr<MetadataFSPathKeyWrapper>,
             bp::bases<MetadataKey>, boost::noncopyable>
         (
-         "MetadataFSEntryKey",
-         "A MetadataFSEntryKey is a MetadataKey that has an string(FSEntry) as its value.\n\n"
+         "MetadataFSPathKey",
+         "A MetadataFSPathKey is a MetadataKey that has an string(FSPath) as its value.\n\n"
 
          "This class can be subclassed in Python.",
          bp::init<>(
              "__init__()"
              )
         )
-        .def("value", bp::pure_virtual(&MetadataValueKey<FSEntry> ::value),
-                "value() -> FSEntry\n"
+        .def("value", bp::pure_virtual(&MetadataValueKey<FSPath> ::value),
+                "value() -> FSPath\n"
                 "Fetch our value."
                 )
         ;
@@ -1392,7 +1391,7 @@ void expose_metadata_key()
      */
     class_set_key<KeywordNameSet>("KeywordNameIterable");
     class_set_key<Set<std::string> >("StringIterable");
-    class_set_key<FSEntrySequence>("FSEntryIterable");
+    class_set_key<FSPathSequence>("FSPathIterable");
     class_set_key<PackageIDSequence>("PackageIDIterable");
 
     /**

@@ -26,11 +26,9 @@
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/repositories/cran/cran_package_id.hh>
 #include <paludis/repositories/cran/cran_repository.hh>
-#include <paludis/util/dir_iterator.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/options.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/map.hh>
@@ -48,6 +46,7 @@
 #include <paludis/util/extract_host_from_url.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/process.hh>
+#include <paludis/util/fs_iterator.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/syncer.hh>
 #include <paludis/hook.hh>
@@ -77,11 +76,11 @@ namespace paludis
         Imp(const CRANRepositoryParams &, const std::shared_ptr<Mutex> &);
         ~Imp();
 
-        std::shared_ptr<const MetadataValueKey<FSEntry> > location_key;
-        std::shared_ptr<const MetadataValueKey<FSEntry> > distdir_key;
+        std::shared_ptr<const MetadataValueKey<FSPath> > location_key;
+        std::shared_ptr<const MetadataValueKey<FSPath> > distdir_key;
         std::shared_ptr<const MetadataValueKey<std::string> > format_key;
-        std::shared_ptr<const MetadataValueKey<FSEntry> > builddir_key;
-        std::shared_ptr<const MetadataValueKey<FSEntry> > library_key;
+        std::shared_ptr<const MetadataValueKey<FSPath> > builddir_key;
+        std::shared_ptr<const MetadataValueKey<FSPath> > library_key;
         std::shared_ptr<const MetadataValueKey<std::string> > sync_key;
         std::shared_ptr<const MetadataValueKey<std::string> > sync_host_key;
     };
@@ -91,11 +90,11 @@ Imp<CRANRepository>::Imp(const CRANRepositoryParams & p, const std::shared_ptr<M
     params(p),
     big_nasty_mutex(m),
     has_ids(false),
-    location_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("location", "location", mkt_significant, params.location())),
-    distdir_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("distdir", "distdir", mkt_normal, params.distdir())),
+    location_key(std::make_shared<LiteralMetadataValueKey<FSPath> >("location", "location", mkt_significant, params.location())),
+    distdir_key(std::make_shared<LiteralMetadataValueKey<FSPath> >("distdir", "distdir", mkt_normal, params.distdir())),
     format_key(std::make_shared<LiteralMetadataValueKey<std::string> >("format", "format", mkt_significant, "cran")),
-    builddir_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("builddir", "builddir", mkt_normal, params.builddir())),
-    library_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("library", "library", mkt_normal, params.library())),
+    builddir_key(std::make_shared<LiteralMetadataValueKey<FSPath> >("builddir", "builddir", mkt_normal, params.builddir())),
+    library_key(std::make_shared<LiteralMetadataValueKey<FSPath> >("library", "library", mkt_normal, params.library())),
     sync_key(std::make_shared<LiteralMetadataValueKey<std::string> >("sync", "sync", mkt_normal, params.sync())),
     sync_host_key(std::make_shared<LiteralMetadataValueKey<std::string> >("sync_host", "sync_host", mkt_internal, extract_host_from_url(params.sync())))
 {
@@ -220,7 +219,7 @@ CRANRepository::need_ids() const
 
     Context context("When loading IDs for " + stringify(name()) + ":");
 
-    for (DirIterator d(_imp->params.location()), d_end ; d != d_end ; ++d)
+    for (FSIterator d(_imp->params.location(), { fsio_inode_sort }), d_end ; d != d_end ; ++d)
         if (is_file_with_extension(*d, ".DESCRIPTION", { }))
         {
             std::shared_ptr<cranrepository::CRANPackageID> id(std::make_shared<cranrepository::CRANPackageID>(_imp->params.environment(),
@@ -244,7 +243,7 @@ CRANRepository::need_ids() const
 RepositoryName
 CRANRepository::fetch_repo_name(const std::string & location)
 {
-    std::string modified_location(FSEntry(location).basename());
+    std::string modified_location(FSPath(location).basename());
     std::replace(modified_location.begin(), modified_location.end(), '/', '-');
     if (modified_location == "cran")
         return RepositoryName("cran");
@@ -283,8 +282,8 @@ CRANRepository::do_install(const std::shared_ptr<const PackageID> & id_uncasted,
     if (o.fetch_only)
         return;
 
-    FSEntry image(_imp->params.buildroot / stringify(id->native_package()) / "image");
-    FSEntry workdir(_imp->params.buildroot / stringify(id->native_package()) / "work");
+    FSPath image(_imp->params.buildroot / stringify(id->native_package()) / "image");
+    FSPath workdir(_imp->params.buildroot / stringify(id->native_package()) / "work");
 
     if (! o.destination)
         throw PackageInstallActionError("Can't merge '" + stringify(*id) + "' because no destination was provided.");
@@ -310,7 +309,7 @@ CRANRepository::do_install(const std::shared_ptr<const PackageID> & id_uncasted,
         throw PackageInstallActionError("Couldn't install '" + stringify(*id) + "' to '" +
                 stringify(image) + "'");
 
-    MergeOptions m(id, image, FSEntry("/dev/null"));
+    MergeOptions m(id, image, FSPath("/dev/null"));
 
     if (! o.destination->destination_interface)
         throw PackageInstallActionError("Couldn't install '" + stringify(*id) + "' to '" +
@@ -543,16 +542,16 @@ CRANRepository::format_key() const
     return _imp->format_key;
 }
 
-const std::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSPath> >
 CRANRepository::location_key() const
 {
     return _imp->location_key;
 }
 
-const std::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSPath> >
 CRANRepository::installed_root_key() const
 {
-    return std::shared_ptr<const MetadataValueKey<FSEntry> >();
+    return std::shared_ptr<const MetadataValueKey<FSPath> >();
 }
 
 const std::shared_ptr<const MetadataValueKey<std::string> >

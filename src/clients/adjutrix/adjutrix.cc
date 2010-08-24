@@ -32,7 +32,7 @@
 #include <paludis/about.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/fs_entry.hh>
+#include <paludis/util/fs_stat.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/environments/no_config/no_config_environment.hh>
@@ -47,29 +47,29 @@ using std::endl;
 
 namespace
 {
-    FSEntry
+    FSPath
     get_location_and_add_filters()
     {
         Context context("When determining tree location:");
 
         if (CommandLine::get_instance()->a_repository_directory.specified())
-            return FSEntry(CommandLine::get_instance()->a_repository_directory.argument());
+            return FSPath(CommandLine::get_instance()->a_repository_directory.argument());
 
-        if ((FSEntry::cwd() / "profiles").is_directory())
-            return FSEntry::cwd();
-        if ((FSEntry::cwd().dirname() / "profiles").is_directory())
+        if ((FSPath::cwd() / "profiles").stat().is_directory())
+            return FSPath::cwd();
+        if ((FSPath::cwd().dirname() / "profiles").stat().is_directory())
         {
-            CommandLine::get_instance()->a_category.add_argument(FSEntry::cwd().basename());
+            CommandLine::get_instance()->a_category.add_argument(FSPath::cwd().basename());
             CommandLine::get_instance()->a_category.set_specified(true);
-            return FSEntry::cwd().dirname();
+            return FSPath::cwd().dirname();
         }
-        if ((FSEntry::cwd().dirname().dirname() / "profiles").is_directory())
+        if ((FSPath::cwd().dirname().dirname() / "profiles").stat().is_directory())
         {
-            CommandLine::get_instance()->a_package.add_argument(FSEntry::cwd().basename());
+            CommandLine::get_instance()->a_package.add_argument(FSPath::cwd().basename());
             CommandLine::get_instance()->a_package.set_specified(true);
-            CommandLine::get_instance()->a_category.add_argument(FSEntry::cwd().dirname().basename());
+            CommandLine::get_instance()->a_category.add_argument(FSPath::cwd().dirname().basename());
             CommandLine::get_instance()->a_category.set_specified(true);
-            return FSEntry::cwd().dirname().dirname();
+            return FSPath::cwd().dirname().dirname();
         }
 
         throw ConfigurationError("Cannot find tree location (try specifying --repository-dir)");
@@ -130,11 +130,11 @@ main(int argc, char *argv[])
         if (! CommandLine::get_instance()->a_write_cache_dir.specified())
             CommandLine::get_instance()->a_write_cache_dir.set_argument("/var/empty");
 
-        std::shared_ptr<FSEntrySequence> extra_repository_dirs(std::make_shared<FSEntrySequence>());
+        std::shared_ptr<FSPathSequence> extra_repository_dirs(std::make_shared<FSPathSequence>());
         for (args::StringSequenceArg::ConstIterator d(CommandLine::get_instance()->a_extra_repository_dir.begin_args()),
                 d_end(CommandLine::get_instance()->a_extra_repository_dir.end_args()) ;
                 d != d_end ; ++d)
-            extra_repository_dirs->push_back(*d);
+            extra_repository_dirs->push_back(FSPath(*d));
 
         NoConfigEnvironment env(make_named_values<no_config_environment::Params>(
                     n::accept_unstable() = CommandLine::get_instance()->a_unstable.specified(),

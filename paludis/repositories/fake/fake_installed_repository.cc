@@ -18,7 +18,6 @@
  */
 
 #include "fake_installed_repository.hh"
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/make_named_values.hh>
@@ -42,15 +41,15 @@ namespace paludis
     struct Imp<FakeInstalledRepository>
     {
         std::shared_ptr<const MetadataValueKey<std::string> > format_key;
-        std::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key;
+        std::shared_ptr<const MetadataValueKey<FSPath> > installed_root_key;
         const bool supports_uninstall;
         const bool is_suitable_destination;
 
         Imp(const bool s, const bool b) :
             format_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
                         "format", "format", mkt_significant, "installed_fake")),
-            installed_root_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >(
-                        "installed_root", "installed_root", mkt_normal, FSEntry("/"))),
+            installed_root_key(std::make_shared<LiteralMetadataValueKey<FSPath> >(
+                        "installed_root", "installed_root", mkt_normal, FSPath("/"))),
             supports_uninstall(s),
             is_suitable_destination(b)
         {
@@ -209,13 +208,13 @@ FakeInstalledRepository::format_key() const
     return _imp->format_key;
 }
 
-const std::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSPath> >
 FakeInstalledRepository::location_key() const
 {
-    return std::shared_ptr<const MetadataValueKey<FSEntry> >();
+    return std::shared_ptr<const MetadataValueKey<FSPath> >();
 }
 
-const std::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSPath> >
 FakeInstalledRepository::installed_root_key() const
 {
     return _imp->installed_root_key;

@@ -23,7 +23,7 @@
 #include <paludis/ndbam-fwd.hh>
 #include <paludis/util/pimp.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/fs_entry.hh>
+#include <paludis/util/fs_path.hh>
 #include <paludis/util/sequence-fwd.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/named_value.hh>
@@ -48,7 +48,7 @@ namespace paludis
 
     struct NDBAMEntry
     {
-        NamedValue<n::fs_location, FSEntry> fs_location;
+        NamedValue<n::fs_location, FSPath> fs_location;
         NamedValue<n::magic, std::string> magic;
         NamedValue<n::mutex, std::shared_ptr<Mutex> > mutex;
         NamedValue<n::name, QualifiedPackageName> name;
@@ -78,7 +78,7 @@ namespace paludis
              *
              * \param version_options \since 0.38
              */
-            NDBAM(const FSEntry &,
+            NDBAM(const FSPath &,
                     const std::function<bool (const std::string &)> & check_format,
                     const std::string & preferred_format, const VersionSpecOptions & version_options);
             ~NDBAM();
@@ -108,8 +108,8 @@ namespace paludis
             std::shared_ptr<NDBAMEntrySequence> entries(const QualifiedPackageName &)
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            void add_entry(const QualifiedPackageName &, const FSEntry &);
-            void remove_entry(const QualifiedPackageName &, const FSEntry &);
+            void add_entry(const QualifiedPackageName &, const FSPath &);
+            void remove_entry(const QualifiedPackageName &, const FSPath &);
 
             ///\}
 

@@ -48,16 +48,16 @@ namespace paludis
         struct PbinMergerParams
         {
             NamedValue<n::environment, Environment *> environment;
-            NamedValue<n::environment_file, FSEntry> environment_file;
+            NamedValue<n::environment_file, FSPath> environment_file;
             NamedValue<n::fix_mtimes_before, Timestamp> fix_mtimes_before;
-            NamedValue<n::image, FSEntry> image;
-            NamedValue<n::install_under, FSEntry> install_under;
-            NamedValue<n::merged_entries, std::shared_ptr<FSEntrySet> > merged_entries;
+            NamedValue<n::image, FSPath> image;
+            NamedValue<n::install_under, FSPath> install_under;
+            NamedValue<n::merged_entries, std::shared_ptr<FSPathSet> > merged_entries;
             NamedValue<n::options, MergerOptions> options;
             NamedValue<n::output_manager, std::shared_ptr<OutputManager> > output_manager;
             NamedValue<n::package_id, std::shared_ptr<const PackageID> > package_id;
-            NamedValue<n::root, FSEntry> root;
-            NamedValue<n::tar_file, FSEntry> tar_file;
+            NamedValue<n::root, FSPath> root;
+            NamedValue<n::tar_file, FSPath> tar_file;
         };
 
         class PALUDIS_VISIBLE PbinMerger :
@@ -72,12 +72,12 @@ namespace paludis
                 virtual void on_warn(bool is_check, const std::string &);
                 virtual void display_override(const std::string &) const;
 
-                virtual void on_enter_dir(bool is_check, const FSEntry);
+                virtual void on_enter_dir(bool is_check, const FSPath);
 
                 virtual void on_done_merge();
 
-                virtual void track_install_file(const FSEntry &, const FSEntry &);
-                virtual void track_install_sym(const FSEntry &, const FSEntry &);
+                virtual void track_install_file(const FSPath &, const FSPath &);
+                virtual void track_install_sym(const FSPath &, const FSPath &);
 
             public:
                 PbinMerger(const PbinMergerParams &);

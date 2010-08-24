@@ -38,11 +38,11 @@
 #include <paludis/user_dep_spec.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/repository_factory.hh>
+#include <paludis/standard_output_manager.hh>
 
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/system.hh>
-#include <paludis/util/dir_iterator.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/save.hh>
@@ -55,7 +55,9 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/tribool.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/standard_output_manager.hh>
+#include <paludis/util/fs_stat.hh>
+#include <paludis/util/fs_iterator.hh>
+#include <paludis/util/fs_error.hh>
 
 #include <functional>
 #include <algorithm>
@@ -73,7 +75,7 @@ namespace paludis
         mutable Mutex hook_mutex;
         mutable bool done_hooks;
         mutable std::shared_ptr<Hooker> hooker;
-        mutable std::list<std::pair<FSEntry, bool> > hook_dirs;
+        mutable std::list<std::pair<FSPath, bool> > hook_dirs;
 
         std::shared_ptr<PaludisConfig> config;
         std::string paludis_command;
@@ -84,9 +86,9 @@ namespace paludis
         mutable std::map<SetName, std::shared_ptr<const SetSpecTree> > sets;
 
         std::shared_ptr<LiteralMetadataValueKey<std::string> > format_key;
-        std::shared_ptr<LiteralMetadataValueKey<FSEntry> > config_location_key;
-        std::shared_ptr<LiteralMetadataValueKey<FSEntry> > world_file_key;
-        std::shared_ptr<LiteralMetadataValueKey<FSEntry> > preferred_root_key;
+        std::shared_ptr<LiteralMetadataValueKey<FSPath> > config_location_key;
+        std::shared_ptr<LiteralMetadataValueKey<FSPath> > world_file_key;
+        std::shared_ptr<LiteralMetadataValueKey<FSPath> > preferred_root_key;
 
         Imp(PaludisEnvironment * const e, std::shared_ptr<PaludisConfig> c) :
             done_hooks(false),
@@ -94,21 +96,21 @@ namespace paludis
             paludis_command("paludis"),
             package_database(std::make_shared<PackageDatabase>(e)),
             format_key(std::make_shared<LiteralMetadataValueKey<std::string>>("format", "Format", mkt_significant, "paludis")),
-            config_location_key(std::make_shared<LiteralMetadataValueKey<FSEntry>>("conf_dir", "Config dir", mkt_normal,
-                        config->config_dir())),
-            world_file_key(config->world()->location_if_set() ? std::make_shared<LiteralMetadataValueKey<FSEntry>>("world_file", "World file", mkt_normal,
+            config_location_key(std::make_shared<LiteralMetadataValueKey<FSPath>>("conf_dir", "Config dir", mkt_normal,
+                        FSPath(config->config_dir()))),
+            world_file_key(config->world()->location_if_set() ? std::make_shared<LiteralMetadataValueKey<FSPath>>("world_file", "World file", mkt_normal,
                             *config->world()->location_if_set())
-                    : std::shared_ptr<LiteralMetadataValueKey<FSEntry> >()),
-            preferred_root_key(std::make_shared<LiteralMetadataValueKey<FSEntry>>("root", "Root", mkt_normal,
-                        config->root()))
+                    : std::shared_ptr<LiteralMetadataValueKey<FSPath> >()),
+            preferred_root_key(std::make_shared<LiteralMetadataValueKey<FSPath>>("root", "Root", mkt_normal,
+                        FSPath(config->root())))
         {
         }
 
-        void add_one_hook(const FSEntry & r, const bool v) const
+        void add_one_hook(const FSPath & r, const bool v) const
         {
             try
             {
-                if (r.is_directory())
+                if (r.stat().is_directory())
                 {
                     Log::get_instance()->message("paludis_environment.hooks.add_dir", ll_debug, lc_no_context)
                         << "Adding hook directory '" << r << "'";
@@ -126,16 +128,16 @@ namespace paludis
             }
         }
 
-        void need_hook_dirs(const FSEntry & c) const
+        void need_hook_dirs(const FSPath & c) const
         {
             if (! done_hooks)
             {
                 add_one_hook(c / "hooks", true);
                 if (getenv_with_default("PALUDIS_NO_GLOBAL_HOOKS", "").empty())
                 {
-                    add_one_hook(FSEntry(LIBEXECDIR) / "paludis" / "hooks", false);
-                    add_one_hook(FSEntry(DATADIR) / "paludis" / "hooks", true);
-                    add_one_hook(FSEntry(LIBDIR) / "paludis" / "hooks", true);
+                    add_one_hook(FSPath(LIBEXECDIR) / "paludis" / "hooks", false);
+                    add_one_hook(FSPath(DATADIR) / "paludis" / "hooks", true);
+                    add_one_hook(FSPath(LIBDIR) / "paludis" / "hooks", true);
                 }
                 done_hooks = true;
             }
@@ -192,7 +194,7 @@ PaludisEnvironment::unmasked_by_user(const PackageID & d) const
     return _imp->config->package_unmask_conf()->query(d);
 }
 
-std::shared_ptr<const FSEntrySequence>
+std::shared_ptr<const FSPathSequence>
 PaludisEnvironment::bashrc_files() const
 {
     return _imp->config->bashrc_files();
@@ -219,9 +221,9 @@ PaludisEnvironment::perform_hook(
 
     if (! _imp->hooker)
     {
-        _imp->need_hook_dirs(_imp->config->config_dir());
+        _imp->need_hook_dirs(FSPath(_imp->config->config_dir()));
         _imp->hooker = std::make_shared<Hooker>(this);
-        for (std::list<std::pair<FSEntry, bool> >::const_iterator h(_imp->hook_dirs.begin()),
+        for (std::list<std::pair<FSPath, bool> >::const_iterator h(_imp->hook_dirs.begin()),
                 h_end(_imp->hook_dirs.end()) ; h != h_end ; ++h)
             _imp->hooker->add_dir(h->first, h->second);
     }
@@ -229,46 +231,46 @@ PaludisEnvironment::perform_hook(
     return _imp->hooker->perform_hook(hook, optional_output_manager);
 }
 
-std::shared_ptr<const FSEntrySequence>
+std::shared_ptr<const FSPathSequence>
 PaludisEnvironment::hook_dirs() const
 {
     Lock lock(_imp->hook_mutex);
 
-    _imp->need_hook_dirs(_imp->config->config_dir());
+    _imp->need_hook_dirs(FSPath(_imp->config->config_dir()));
 
-    std::shared_ptr<FSEntrySequence> result(std::make_shared<FSEntrySequence>());
+    std::shared_ptr<FSPathSequence> result(std::make_shared<FSPathSequence>());
     std::transform(_imp->hook_dirs.begin(), _imp->hook_dirs.end(), result->back_inserter(),
-            std::mem_fn(&std::pair<FSEntry, bool>::first));
+            std::mem_fn(&std::pair<FSPath, bool>::first));
 
     return result;
 }
 
-std::shared_ptr<const FSEntrySequence>
+std::shared_ptr<const FSPathSequence>
 PaludisEnvironment::fetchers_dirs() const
 {
-    std::shared_ptr<FSEntrySequence> result(std::make_shared<FSEntrySequence>());
+    std::shared_ptr<FSPathSequence> result(std::make_shared<FSPathSequence>());
 
-    result->push_back(FSEntry(_imp->config->config_dir()) / "fetchers");
+    result->push_back(FSPath(_imp->config->config_dir()) / "fetchers");
 
     if (getenv_with_default("PALUDIS_NO_GLOBAL_FETCHERS", "").empty())
     {
-        std::shared_ptr<const FSEntrySequence> r(EnvironmentImplementation::fetchers_dirs());
+        std::shared_ptr<const FSPathSequence> r(EnvironmentImplementation::fetchers_dirs());
         std::copy(r->begin(), r->end(), result->back_inserter());
     }
 
     return result;
 }
 
-std::shared_ptr<const FSEntrySequence>
+std::shared_ptr<const FSPathSequence>
 PaludisEnvironment::syncers_dirs() const
 {
-    std::shared_ptr<FSEntrySequence> result(std::make_shared<FSEntrySequence>());
+    std::shared_ptr<FSPathSequence> result(std::make_shared<FSPathSequence>());
 
-    result->push_back(FSEntry(_imp->config->config_dir()) / "syncers");
+    result->push_back(FSPath(_imp->config->config_dir()) / "syncers");
 
     if (getenv_with_default("PALUDIS_NO_GLOBAL_SYNCERS", "").empty())
     {
-        std::shared_ptr<const FSEntrySequence> r(EnvironmentImplementation::syncers_dirs());
+        std::shared_ptr<const FSPathSequence> r(EnvironmentImplementation::syncers_dirs());
         std::copy(r->begin(), r->end(), result->back_inserter());
     }
 
@@ -443,13 +445,13 @@ PaludisEnvironment::format_key() const
     return _imp->format_key;
 }
 
-const std::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSPath> >
 PaludisEnvironment::config_location_key() const
 {
     return _imp->config_location_key;
 }
 
-const std::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSPath> >
 PaludisEnvironment::preferred_root_key() const
 {
     return _imp->preferred_root_key;
@@ -499,7 +501,7 @@ namespace
 
     std::shared_ptr<const SetSpecTree> make_set(
             const Environment * const env,
-            const FSEntry & f,
+            const FSPath & f,
             const SetName & n,
             SetFileSetOperatorMode mode,
             SetFileType type)
@@ -527,14 +529,13 @@ PaludisEnvironment::populate_sets() const
     Lock lock(_imp->sets_mutex);
     add_set(SetName("world"), SetName("world::environment"), std::bind(&make_world_set, _imp->config->world()), true);
 
-    FSEntry sets_dir(FSEntry(_imp->config->config_dir()) / "sets");
+    FSPath sets_dir(FSPath(_imp->config->config_dir()) / "sets");
     Context context("When looking in sets directory '" + stringify(sets_dir) + "':");
 
-    if (! sets_dir.exists())
+    if (! sets_dir.stat().exists())
         return;
 
-    for (DirIterator d(sets_dir, { dio_inode_sort }), d_end ;
-            d != d_end ; ++d)
+    for (FSIterator d(sets_dir, { fsio_inode_sort }), d_end ; d != d_end ; ++d)
     {
         if (is_file_with_extension(*d, ".bash", { }))
         {
@@ -556,7 +557,7 @@ PaludisEnvironment::populate_sets() const
 }
 
 const std::shared_ptr<Repository>
-PaludisEnvironment::repository_from_new_config_file(const FSEntry & f)
+PaludisEnvironment::repository_from_new_config_file(const FSPath & f)
 {
     const std::function<std::string (const std::string &)> repo_func(_imp->config->repo_func_from_file(f));
     if (! repo_func)

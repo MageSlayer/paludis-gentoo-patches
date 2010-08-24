@@ -281,7 +281,7 @@ paludis_xml_things_create_glsa_from_xml_file(const std::string & filename)
 }
 
 std::shared_ptr<erepository::MetadataXML>
-paludis_xml_things_create_metadata_xml_from_xml_file(const FSEntry & filename)
+paludis_xml_things_create_metadata_xml_from_xml_file(const FSPath & filename)
 {
     std::shared_ptr<erepository::MetadataXML> result(std::make_shared<erepository::MetadataXML>(
                 make_named_values<erepository::MetadataXML>(

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -23,7 +23,7 @@
 #include <paludis/repositories/e/eapi-fwd.hh>
 #include <paludis/util/pimp.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/fs_entry.hh>
+#include <paludis/util/fs_path.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/mask-fwd.hh>
 #include <type_traits>
@@ -50,7 +50,7 @@ namespace paludis
                 /**
                  * Add a file.
                  */
-                void add_file(const FSEntry &);
+                void add_file(const FSPath &);
 
                 ///\name Iterate over our profile lines.
                 ///\{

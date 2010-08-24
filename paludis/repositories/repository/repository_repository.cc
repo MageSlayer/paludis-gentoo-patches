@@ -30,6 +30,7 @@
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/safe_ofstream.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/fs_stat.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/action.hh>
 #include <paludis/syncer.hh>
@@ -61,7 +62,7 @@ namespace paludis
         const std::shared_ptr<LiteralMetadataValueKey<std::string> > format_key;
         const std::shared_ptr<LiteralMetadataValueKey<std::string> > config_filename_key;
         const std::shared_ptr<LiteralMetadataValueKey<std::string> > config_template_key;
-        const std::shared_ptr<LiteralMetadataValueKey<FSEntry> > installed_root_key;
+        const std::shared_ptr<LiteralMetadataValueKey<FSPath> > installed_root_key;
 
         const ActiveObjectPtr<DeferredConstructionPtr<
             std::shared_ptr<RepositoryRepositoryStore> > > store;
@@ -74,7 +75,7 @@ namespace paludis
                         "config_filename", "config_filename", mkt_normal, params.config_filename())),
             config_template_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
                         "config_template", "config_template", mkt_normal, params.config_template())),
-            installed_root_key(std::make_shared<LiteralMetadataValueKey<FSEntry>>("root", "root", mkt_normal, p.root())),
+            installed_root_key(std::make_shared<LiteralMetadataValueKey<FSPath>>("root", "root", mkt_normal, p.root())),
             store(DeferredConstructionPtr<std::shared_ptr<RepositoryRepositoryStore> > (
                         std::bind(&make_store, repo, std::cref(params))))
         {
@@ -142,13 +143,13 @@ RepositoryRepository::format_key() const
     return _imp->format_key;
 }
 
-const std::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSPath> >
 RepositoryRepository::location_key() const
 {
     return make_null_shared_ptr();
 }
 
-const std::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSPath> >
 RepositoryRepository::installed_root_key() const
 {
     return _imp->installed_root_key;
@@ -455,12 +456,12 @@ RepositoryRepository::merge(const MergeParams & m)
     config_template = replace_vars(config_template, repo_sync, repo_format, repo_name);
     config_filename = replace_vars(config_filename, repo_sync, repo_format, repo_name);
 
-    FSEntry config_template_file(config_template);
-    if (! config_template_file.is_regular_file_or_symlink_to_regular_file())
+    FSPath config_template_file(config_template);
+    if (! config_template_file.stat().is_regular_file_or_symlink_to_regular_file())
         throw ConfigurationError("config_template '" + stringify(config_template_file) + "' is not a regular file");
 
-    FSEntry config_filename_file(config_filename);
-    if (config_filename_file.exists())
+    FSPath config_filename_file(config_filename);
+    if (config_filename_file.stat().exists())
         throw ConfigurationError("config_filename '" + stringify(config_filename_file) + "' already exists");
 
     try

@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_PALUDIS_ENVIRONMENTS_PALUDIS_USE_CONF_HH 1
 
 #include <paludis/util/pimp.hh>
-#include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/util/fs_path-fwd.hh>
 #include <paludis/util/tribool-fwd.hh>
 #include <paludis/choice-fwd.hh>
 #include <paludis/name-fwd.hh>
@@ -57,7 +57,7 @@ namespace paludis
                 /**
                  * Add another file.
                  */
-                void add(const FSEntry &);
+                void add(const FSPath &);
 
                 const Tribool want_choice_enabled(
                         const std::shared_ptr<const PackageID> &,

@@ -36,9 +36,9 @@ namespace paludis
     {
         struct EInstalledRepositoryParams
         {
-            NamedValue<n::builddir, FSEntry> builddir;
+            NamedValue<n::builddir, FSPath> builddir;
             NamedValue<n::environment, Environment *> environment;
-            NamedValue<n::root, FSEntry> root;
+            NamedValue<n::root, FSPath> root;
         };
 
         class EInstalledRepository :

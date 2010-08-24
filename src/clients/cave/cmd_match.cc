@@ -228,7 +228,7 @@ namespace
             texts.push_back(stringify(k.value()));
         }
 
-        void visit(const MetadataValueKey<FSEntry> & k)
+        void visit(const MetadataValueKey<FSPath> & k)
         {
             texts.push_back(stringify(k.value()));
         }
@@ -317,9 +317,9 @@ namespace
             k.value()->top()->accept(m);
         }
 
-        void visit(const MetadataCollectionKey<Sequence<FSEntry> > & k)
+        void visit(const MetadataCollectionKey<Sequence<FSPath> > & k)
         {
-            std::transform(k.value()->begin(), k.value()->end(), std::back_inserter(texts), &stringify<FSEntry>);
+            std::transform(k.value()->begin(), k.value()->end(), std::back_inserter(texts), &stringify<FSPath>);
         }
 
         void visit(const MetadataCollectionKey<Sequence<std::string> > & k)

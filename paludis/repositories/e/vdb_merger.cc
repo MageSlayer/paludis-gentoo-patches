@@ -25,7 +25,7 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/sequence.hh>
-#include <paludis/util/fs_entry.hh>
+#include <paludis/util/fs_stat.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/make_named_values.hh>
@@ -51,7 +51,7 @@ namespace paludis
     struct Imp<VDBMerger>
     {
         VDBMergerParams params;
-        FSEntry realroot;
+        FSPath realroot;
         std::shared_ptr<SafeOFStream> contents_file;
 
         std::list<std::string> config_protect;
@@ -70,10 +70,11 @@ namespace paludis
 namespace
 {
     std::pair<uid_t, gid_t>
-    get_new_ids_or_minus_one(const Environment * const env, const FSEntry & f)
+    get_new_ids_or_minus_one(const Environment * const env, const FSPath & f)
     {
-        uid_t uid = (f.owner() == env->reduced_uid()) ? 0 : -1;
-        gid_t gid = (f.group() == env->reduced_gid()) ? 0 : -1;
+        FSStat f_stat(f.stat());
+        uid_t uid = (f_stat.owner() == env->reduced_uid()) ? 0 : -1;
+        gid_t gid = (f_stat.group() == env->reduced_gid()) ? 0 : -1;
 
         return std::make_pair(uid, gid);
     }
@@ -85,7 +86,7 @@ VDBMerger::VDBMerger(const VDBMergerParams & p) :
                 n::fix_mtimes_before() = p.fix_mtimes_before(),
                 n::get_new_ids_or_minus_one() = std::bind(&get_new_ids_or_minus_one, p.environment(), std::placeholders::_1),
                 n::image() = p.image(),
-                n::install_under() = FSEntry("/"),
+                n::install_under() = FSPath("/"),
                 n::maybe_output_manager() = p.output_manager(),
                 n::merged_entries() = p.merged_entries(),
                 n::no_chown() = ! getenv_with_default("PALUDIS_NO_CHOWN", "").empty(),
@@ -104,7 +105,7 @@ VDBMerger::~VDBMerger()
 Hook
 VDBMerger::extend_hook(const Hook & h)
 {
-    std::shared_ptr<const FSEntrySequence> bashrc_files(_imp->params.environment()->bashrc_files());
+    std::shared_ptr<const FSPathSequence> bashrc_files(_imp->params.environment()->bashrc_files());
 
     if (_imp->params.package_id())
     {
@@ -137,28 +138,28 @@ VDBMerger::extend_hook(const Hook & h)
 }
 
 void
-VDBMerger::record_install_file(const FSEntry & src, const FSEntry & dst_dir, const std::string & dst_name, const FSMergerStatusFlags & flags)
+VDBMerger::record_install_file(const FSPath & src, const FSPath & dst_dir, const std::string & dst_name, const FSMergerStatusFlags & flags)
 {
     std::string tidy(stringify((dst_dir / dst_name).strip_leading(_imp->realroot))),
             tidy_real(stringify((dst_dir / src.basename()).strip_leading(_imp->realroot)));
-    Timestamp timestamp((dst_dir / dst_name).mtim());
+    Timestamp timestamp((dst_dir / dst_name).stat().mtim());
 
-    SafeIFStream infile(FSEntry(dst_dir / dst_name));
+    SafeIFStream infile(FSPath(dst_dir / dst_name));
     if (! infile)
-        throw FSMergerError("Cannot read '" + stringify(FSEntry(dst_dir / dst_name)) + "'");
+        throw FSMergerError("Cannot read '" + stringify(FSPath(dst_dir / dst_name)) + "'");
 
     MD5 md5(infile);
 
     std::string line(make_arrows(flags) + " [obj] " + tidy_real);
     if (tidy_real != tidy)
-        line.append(" (" + FSEntry(tidy).basename() + ")");
+        line.append(" (" + FSPath(tidy).basename() + ")");
     display_override(line);
 
     *_imp->contents_file << "obj " << tidy_real << " " << md5.hexsum() << " " << timestamp.seconds() << std::endl;
 }
 
 void
-VDBMerger::record_install_dir(const FSEntry & src, const FSEntry & dst_dir, const FSMergerStatusFlags & flags)
+VDBMerger::record_install_dir(const FSPath & src, const FSPath & dst_dir, const FSMergerStatusFlags & flags)
 {
     std::string tidy(stringify((dst_dir / src.basename()).strip_leading(_imp->realroot)));
     display_override(make_arrows(flags) + " [dir] " + tidy);
@@ -167,7 +168,7 @@ VDBMerger::record_install_dir(const FSEntry & src, const FSEntry & dst_dir, cons
 }
 
 void
-VDBMerger::record_install_under_dir(const FSEntry & dst_dir, const FSMergerStatusFlags & flags)
+VDBMerger::record_install_under_dir(const FSPath & dst_dir, const FSMergerStatusFlags & flags)
 {
     std::string tidy(stringify(dst_dir.strip_leading(_imp->realroot)));
     display_override(make_arrows(flags) + " [dir] " + tidy);
@@ -176,11 +177,11 @@ VDBMerger::record_install_under_dir(const FSEntry & dst_dir, const FSMergerStatu
 }
 
 void
-VDBMerger::record_install_sym(const FSEntry & src, const FSEntry & dst_dir, const FSMergerStatusFlags & flags)
+VDBMerger::record_install_sym(const FSPath & src, const FSPath & dst_dir, const FSMergerStatusFlags & flags)
 {
     std::string tidy(stringify((dst_dir / src.basename()).strip_leading(_imp->realroot)));
     std::string target((dst_dir / src.basename()).readlink());
-    Timestamp timestamp((dst_dir / src.basename()).mtim());
+    Timestamp timestamp((dst_dir / src.basename()).stat().mtim());
 
     display_override(make_arrows(flags) + " [sym] " + tidy);
 
@@ -206,7 +207,7 @@ VDBMerger::on_warn(bool is_check, const std::string & s)
 }
 
 bool
-VDBMerger::config_protected(const FSEntry & src, const FSEntry & dst_dir)
+VDBMerger::config_protected(const FSPath & src, const FSPath & dst_dir)
 {
     std::string tidy(stringify((dst_dir / src.basename()).strip_leading(_imp->realroot)));
 
@@ -231,7 +232,7 @@ VDBMerger::config_protected(const FSEntry & src, const FSEntry & dst_dir)
 }
 
 std::string
-VDBMerger::make_config_protect_name(const FSEntry & src, const FSEntry & dst)
+VDBMerger::make_config_protect_name(const FSPath & src, const FSPath & dst)
 {
     std::string result_name(src.basename());
     int n(0);
@@ -243,10 +244,12 @@ VDBMerger::make_config_protect_name(const FSEntry & src, const FSEntry & dst)
 
     while (true)
     {
-        if (! (dst / result_name).exists())
+        FSPath dst_result_name(dst / result_name);
+        FSStat dst_result_name_stat(dst_result_name);
+        if (! dst_result_name_stat.exists())
             break;
 
-        if ((dst / result_name).is_regular_file_or_symlink_to_regular_file())
+        if (dst_result_name_stat.is_regular_file_or_symlink_to_regular_file())
         {
             try
             {
@@ -286,7 +289,7 @@ VDBMerger::check()
 }
 
 void
-VDBMerger::on_enter_dir(bool is_check, const FSEntry)
+VDBMerger::on_enter_dir(bool is_check, const FSPath)
 {
     if (! is_check)
         return;
@@ -295,7 +298,7 @@ VDBMerger::on_enter_dir(bool is_check, const FSEntry)
 }
 
 void
-VDBMerger::on_file(bool is_check, const FSEntry & src, const FSEntry & dst)
+VDBMerger::on_file(bool is_check, const FSPath & src, const FSPath & dst)
 {
     if (is_check && std::string::npos != src.basename().find('\n'))
         throw FSMergerError("File '" + stringify(src) + "' contains a newline in its name, which cannot be stored by VDB");
@@ -303,7 +306,7 @@ VDBMerger::on_file(bool is_check, const FSEntry & src, const FSEntry & dst)
 }
 
 void
-VDBMerger::on_dir(bool is_check, const FSEntry & src, const FSEntry & dst)
+VDBMerger::on_dir(bool is_check, const FSPath & src, const FSPath & dst)
 {
     if (is_check && std::string::npos != src.basename().find('\n'))
         throw FSMergerError("Directory '" + stringify(src) + "' contains a newline in its name, which cannot be stored by VDB");
@@ -311,7 +314,7 @@ VDBMerger::on_dir(bool is_check, const FSEntry & src, const FSEntry & dst)
 }
 
 void
-VDBMerger::on_sym(bool is_check, const FSEntry & src, const FSEntry & dst)
+VDBMerger::on_sym(bool is_check, const FSPath & src, const FSPath & dst)
 {
     if (is_check)
     {

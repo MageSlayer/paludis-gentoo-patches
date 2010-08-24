@@ -19,12 +19,12 @@
 
 #include <paludis/environments/paludis/world.hh>
 #include <paludis/util/pimp-impl.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/safe_ofstream.hh>
+#include <paludis/util/fs_stat.hh>
 #include <paludis/set_file.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/dep_tag.hh>
@@ -40,10 +40,10 @@ namespace paludis
     struct Imp<World>
     {
         const Environment * const env;
-        const std::shared_ptr<const FSEntry> maybe_world_file;
+        const std::shared_ptr<const FSPath> maybe_world_file;
         mutable Mutex mutex;
 
-        Imp(const Environment * const e, const std::shared_ptr<const FSEntry> & m) :
+        Imp(const Environment * const e, const std::shared_ptr<const FSPath> & m) :
             env(e),
             maybe_world_file(m)
         {
@@ -51,7 +51,7 @@ namespace paludis
     };
 }
 
-World::World(const Environment * const e, const std::shared_ptr<const FSEntry> & f) :
+World::World(const Environment * const e, const std::shared_ptr<const FSPath> & f) :
     Pimp<World>(e, f)
 {
 }
@@ -102,7 +102,7 @@ World::_add_string_to_world(const std::string & n) const
 
     Context context("When adding '" + n + "' to world file '" + stringify(*_imp->maybe_world_file) + "':");
 
-    if (! _imp->maybe_world_file->exists())
+    if (! _imp->maybe_world_file->stat().exists())
     {
         try
         {
@@ -147,7 +147,7 @@ World::_remove_string_from_world(const std::string & n) const
 
     Context context("When removing '" + n + "' from world file '" + stringify(*_imp->maybe_world_file) + "':");
 
-    if (_imp->maybe_world_file->exists())
+    if (_imp->maybe_world_file->stat().exists())
     {
         SetFile world(make_named_values<SetFileParams>(
                 n::environment() = _imp->env,
@@ -181,7 +181,7 @@ World::world_set() const
 
     if (_imp->maybe_world_file)
     {
-        if (_imp->maybe_world_file->exists())
+        if (_imp->maybe_world_file->stat().exists())
         {
             SetFile world(make_named_values<SetFileParams>(
                     n::environment() = _imp->env,
@@ -201,7 +201,7 @@ World::world_set() const
     return std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>());
 }
 
-std::shared_ptr<const FSEntry>
+std::shared_ptr<const FSPath>
 World::location_if_set() const
 {
     return _imp->maybe_world_file;

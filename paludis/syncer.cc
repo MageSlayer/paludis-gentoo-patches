@@ -21,7 +21,7 @@
 
 #include "syncer.hh"
 #include <paludis/environment.hh>
-#include <paludis/util/fs_entry.hh>
+#include <paludis/util/fs_stat.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/process.hh>
@@ -65,14 +65,15 @@ DefaultSyncer::DefaultSyncer(const SyncerParams & params) :
     Log::get_instance()->message("syncer.protocol", ll_debug, lc_context) << "looking for syncer protocol '"
         + stringify(format) << "'";
 
-    std::shared_ptr<const FSEntrySequence> syncer_dirs(_environment->syncers_dirs());
-    FSEntry syncer("/var/empty");
+    std::shared_ptr<const FSPathSequence> syncer_dirs(_environment->syncers_dirs());
+    FSPath syncer("/var/empty");
     bool ok(false);
-    for (FSEntrySequence::ConstIterator d(syncer_dirs->begin()), d_end(syncer_dirs->end()) ;
+    for (auto d(syncer_dirs->begin()), d_end(syncer_dirs->end()) ;
             d != d_end && ! ok; ++d)
     {
-        syncer = FSEntry(*d) / ("do" + format);
-        if (syncer.exists() && syncer.has_permission(fs_ug_owner, fs_perm_execute))
+        syncer = FSPath(*d) / ("do" + format);
+        FSStat syncer_stat(syncer);
+        if (syncer_stat.exists() && 0 != (syncer_stat.permissions() & S_IXUSR))
             ok = true;
 
         Log::get_instance()->message("syncer.trying_file", ll_debug, lc_no_context)
@@ -88,9 +89,9 @@ DefaultSyncer::DefaultSyncer(const SyncerParams & params) :
 void
 DefaultSyncer::sync(const SyncOptions & opts) const
 {
-    std::shared_ptr<const FSEntrySequence> bashrc_files(_environment->bashrc_files());
-    std::shared_ptr<const FSEntrySequence> fetchers_dirs(_environment->fetchers_dirs());
-    std::shared_ptr<const FSEntrySequence> syncers_dirs(_environment->syncers_dirs());
+    std::shared_ptr<const FSPathSequence> bashrc_files(_environment->bashrc_files());
+    std::shared_ptr<const FSPathSequence> fetchers_dirs(_environment->fetchers_dirs());
+    std::shared_ptr<const FSPathSequence> syncers_dirs(_environment->syncers_dirs());
 
     Process process(ProcessCommand(stringify(_syncer) + " " + opts.options() + " '" + _local + "' '" + _remote + "'"));
 

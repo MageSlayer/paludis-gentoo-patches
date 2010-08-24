@@ -19,7 +19,7 @@
 
 #include <paludis/repositories/e/pbin_merger.hh>
 #include <paludis/util/pimp-impl.hh>
-#include <paludis/util/fs_entry.hh>
+#include <paludis/util/fs_stat.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/join.hh>
@@ -51,10 +51,11 @@ namespace paludis
 namespace
 {
     std::pair<uid_t, gid_t>
-    get_new_ids_or_minus_one(const Environment * const env, const FSEntry & f)
+    get_new_ids_or_minus_one(const Environment * const env, const FSPath & f)
     {
-        uid_t uid = (f.owner() == env->reduced_uid()) ? 0 : -1;
-        gid_t gid = (f.group() == env->reduced_gid()) ? 0 : -1;
+        FSStat f_stat(f);
+        uid_t uid = (f_stat.owner() == env->reduced_uid()) ? 0 : -1;
+        gid_t gid = (f_stat.group() == env->reduced_gid()) ? 0 : -1;
 
         return std::make_pair(uid, gid);
     }
@@ -68,7 +69,7 @@ PbinMerger::PbinMerger(const PbinMergerParams & p) :
                 n::fix_mtimes_before() = p.fix_mtimes_before(),
                 n::get_new_ids_or_minus_one() = std::bind(&get_new_ids_or_minus_one, p.environment(), std::placeholders::_1),
                 n::image() = p.image(),
-                n::install_under() = FSEntry("/"),
+                n::install_under() = FSPath("/"),
                 n::maybe_output_manager() = p.output_manager(),
                 n::merged_entries() = p.merged_entries(),
                 n::no_chown() = ! getenv_with_default("PALUDIS_NO_CHOWN", "").empty(),
@@ -85,7 +86,7 @@ PbinMerger::~PbinMerger() = default;
 Hook
 PbinMerger::extend_hook(const Hook & h)
 {
-    std::shared_ptr<const FSEntrySequence> bashrc_files(_imp->params.environment()->bashrc_files());
+    std::shared_ptr<const FSPathSequence> bashrc_files(_imp->params.environment()->bashrc_files());
 
     if (_imp->params.package_id())
     {
@@ -148,7 +149,7 @@ PbinMerger::check()
 }
 
 void
-PbinMerger::on_enter_dir(bool is_check, const FSEntry)
+PbinMerger::on_enter_dir(bool is_check, const FSPath)
 {
     if (! is_check)
         return;
@@ -165,17 +166,17 @@ PbinMerger::display_override(const std::string & message) const
 void
 PbinMerger::on_done_merge()
 {
-    add_file(_imp->params.environment_file(), FSEntry("/PBIN/environment"));
+    add_file(_imp->params.environment_file(), FSPath("/PBIN/environment"));
 }
 
 void
-PbinMerger::track_install_file(const FSEntry &, const FSEntry & dst)
+PbinMerger::track_install_file(const FSPath &, const FSPath & dst)
 {
     display_override(">>> [obj] " + stringify(dst));
 }
 
 void
-PbinMerger::track_install_sym(const FSEntry &, const FSEntry & dst)
+PbinMerger::track_install_sym(const FSPath &, const FSPath & dst)
 {
     display_override(">>> [sym] " + stringify(dst));
 }

@@ -21,7 +21,6 @@
 #include "fix_linkage.hh"
 #include "install.hh"
 
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/sequence.hh>

@@ -55,7 +55,7 @@ namespace paludis
         const CanFormat<PlainTextDepSpec> * const f_plain;
         const CanFormat<ConditionalDepSpec> * const f_use_dep;
         const CanFormat<NamedSetDepSpec> * const f_named;
-        const CanFormat<FSEntry> * const f_fsentry;
+        const CanFormat<FSPath> * const f_fspath;
         const CanFormat<PackageID> * const f_package_id;
         const CanFormat<PlainTextLabelDepSpec> * const f_plain_label;
         const CanSpace * const f_space;
@@ -74,7 +74,7 @@ namespace paludis
                 const CanFormat<PlainTextDepSpec> * const f_plain_v,
                 const CanFormat<ConditionalDepSpec> * const f_use_dep_v,
                 const CanFormat<NamedSetDepSpec> * const f_named_v,
-                const CanFormat<FSEntry> * const f_fsentry_v,
+                const CanFormat<FSPath> * const f_fspath_v,
                 const CanFormat<PackageID> * const f_package_id_v,
                 const CanFormat<PlainTextLabelDepSpec> * const f_plain_label_v,
                 const CanSpace * const f_space_v
@@ -92,7 +92,7 @@ namespace paludis
             f_plain(f_plain_v),
             f_use_dep(f_use_dep_v),
             f_named(f_named_v),
-            f_fsentry(f_fsentry_v),
+            f_fspath(f_fspath_v),
             f_package_id(f_package_id_v),
             f_plain_label(f_plain_label_v),
             f_space(f_space_v)
@@ -208,7 +208,7 @@ namespace paludis
         PlainTextDepSpec>::get(&t),
         StringifyFormatterGetForwarder<std::is_convertible<T_ *, CanFormat<ConditionalDepSpec> *>::value, ConditionalDepSpec>::get(&t),
         StringifyFormatterGetForwarder<std::is_convertible<T_ *, CanFormat<NamedSetDepSpec> *>::value, NamedSetDepSpec>::get(&t),
-        StringifyFormatterGetForwarder<std::is_convertible<T_ *, CanFormat<FSEntry> *>::value, FSEntry>::get(&t),
+        StringifyFormatterGetForwarder<std::is_convertible<T_ *, CanFormat<FSPath> *>::value, FSPath>::get(&t),
         StringifyFormatterGetForwarder<std::is_convertible<T_ *, CanFormat<PackageID> *>::value, PackageID>::get(&t),
         StringifyFormatterGetForwarder<std::is_convertible<T_ *, CanFormat<PlainTextLabelDepSpec> *>::value, PlainTextLabelDepSpec>::get(&t),
         StringifyFormatterGetSpaceForwarder<std::is_convertible<T_ *, CanSpace *>::value>::get(&t)

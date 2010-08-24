@@ -26,7 +26,7 @@
 #include <paludis/util/operators.hh>
 #include <paludis/util/pimp.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
-#include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/util/fs_path-fwd.hh>
 
 #include <paludis/action-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
@@ -304,7 +304,7 @@ namespace paludis
              * location (for example, the ebuild file or VDB directory) that
              * best describes the location of a PackageID.
              */
-            virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > fs_location_key() const = 0;
+            virtual const std::shared_ptr<const MetadataValueKey<FSPath> > fs_location_key() const = 0;
 
             /**
              * The choices_key, if non-zero, contains zero or more

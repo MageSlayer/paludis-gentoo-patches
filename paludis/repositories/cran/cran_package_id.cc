@@ -34,6 +34,7 @@
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/return_literal_function.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/fs_stat.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
@@ -63,7 +64,7 @@ namespace paludis
         QualifiedPackageName name;
         VersionSpec version;
 
-        std::shared_ptr<LiteralMetadataValueKey<FSEntry> > fs_location_key;
+        std::shared_ptr<LiteralMetadataValueKey<FSPath> > fs_location_key;
         std::shared_ptr<LiteralMetadataValueKey<std::string> > url_key;
         std::shared_ptr<LiteralMetadataValueKey<std::string> > short_description_key;
         std::shared_ptr<LiteralMetadataValueKey<std::string> > long_description_key;
@@ -77,7 +78,7 @@ namespace paludis
         std::shared_ptr<DependenciesLabelSequence> depends_labels;
 
         Imp(const Environment * const e,
-                const std::shared_ptr<const CRANRepository> & r, const FSEntry & f) :
+                const std::shared_ptr<const CRANRepository> & r, const FSPath & f) :
             env(e),
             repository(r),
             cran_repository(r),
@@ -107,20 +108,20 @@ namespace paludis
     };
 }
 
-CRANPackageID::CRANPackageID(const Environment * const env, const std::shared_ptr<const CRANRepository> & r, const FSEntry & f) :
+CRANPackageID::CRANPackageID(const Environment * const env, const std::shared_ptr<const CRANRepository> & r, const FSPath & f) :
     Pimp<CRANPackageID>(env, r, f),
     _imp(Pimp<CRANPackageID>::_imp)
 {
     Context context("When parsing file '" + stringify(f) + "' to create a CRAN Package ID:");
 
-    if (! f.is_regular_file())
+    if (! f.stat().is_regular_file())
     {
         add_mask(std::make_shared<BrokenMask>('B', "Broken", "DESCRIPTION file not a file"));
         Log::get_instance()->message("cran.id.not_a_file", ll_warning, lc_context) << "Unexpected irregular file: '" << stringify(f) << "'";
         return;
     }
 
-    _imp->fs_location_key = std::make_shared<LiteralMetadataValueKey<FSEntry> >("DescriptionFileLocation", "Description File Location",
+    _imp->fs_location_key = std::make_shared<LiteralMetadataValueKey<FSPath> >("DescriptionFileLocation", "Description File Location",
                 mkt_internal, f);
     add_metadata_key(_imp->fs_location_key);
 
@@ -540,7 +541,7 @@ CRANPackageID::contained_in_key() const
     return _imp->contained_in_key;
 }
 
-const std::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSPath> >
 CRANPackageID::fs_location_key() const
 {
     return _imp->fs_location_key;

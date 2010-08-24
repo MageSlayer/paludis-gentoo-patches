@@ -24,6 +24,7 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/fs_stat.hh>
 #include <paludis/standard_output_manager.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
@@ -52,7 +53,7 @@ namespace
                 return FSMerger::check();
             }
 
-            void on_enter_dir(bool, const FSEntry)
+            void on_enter_dir(bool, const FSPath)
             {
             }
     };
@@ -62,7 +63,7 @@ namespace
     {
         public:
 
-            FSEntry root_dir;
+            FSPath root_dir;
             std::string target;
             TestEnvironment env;
             VDBMergerNoDisplay merger;
@@ -76,16 +77,16 @@ namespace
 
             VDBMergerTest(const std::string & what) :
                 TestCase("merge '" + what + "' test"),
-                root_dir(FSEntry::cwd() / "vdb_merger_TEST_dir" / what / "root"),
+                root_dir(FSPath::cwd() / "vdb_merger_TEST_dir" / what / "root"),
                 target(what),
                 merger(make_named_values<VDBMergerParams>(
                             n::config_protect() = "/protected_file /protected_dir",
                             n::config_protect_mask() = "/protected_dir/unprotected_file /protected_dir/unprotected_dir",
-                            n::contents_file() = FSEntry::cwd() / "vdb_merger_TEST_dir/CONTENTS" / what,
+                            n::contents_file() = FSPath::cwd() / "vdb_merger_TEST_dir/CONTENTS" / what,
                             n::environment() = &env,
                             n::fix_mtimes_before() = Timestamp(0, 0),
-                            n::image() = FSEntry::cwd() / "vdb_merger_TEST_dir" / what / "image",
-                            n::merged_entries() = std::make_shared<FSEntrySet>(),
+                            n::image() = FSPath::cwd() / "vdb_merger_TEST_dir" / what / "image",
+                            n::merged_entries() = std::make_shared<FSPathSet>(),
                             n::options() = MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs,
                             n::output_manager() = std::make_shared<StandardOutputManager>(),
                             n::package_id() = std::shared_ptr<PackageID>(),
@@ -102,9 +103,9 @@ namespace test_cases
     {
         VDBMergerTestConfigProtect() : VDBMergerTest("config_protect") { }
 
-        static std::string file_contents(const FSEntry & f)
+        static std::string file_contents(const FSPath & f)
         {
-            if (! f.is_regular_file())
+            if (! f.stat().is_regular_file())
                 return "";
 
             try
@@ -124,50 +125,50 @@ namespace test_cases
         void run()
         {
             TEST_CHECK_EQUAL(file_contents(root_dir / "protected_file"), "bar");
-            TEST_CHECK(! (root_dir / "._cfg0000_protected_file").exists());
+            TEST_CHECK(! (root_dir / "._cfg0000_protected_file").stat().exists());
             TEST_CHECK_EQUAL(file_contents(root_dir / "unprotected_file"), "bar");
-            TEST_CHECK(! (root_dir / "._cfg0000_unprotected_file").exists());
+            TEST_CHECK(! (root_dir / "._cfg0000_unprotected_file").stat().exists());
             TEST_CHECK_EQUAL(file_contents(root_dir / "protected_file_not_really"), "bar");
-            TEST_CHECK(! (root_dir / "._cfg0000_protected_file_not_really").exists());
+            TEST_CHECK(! (root_dir / "._cfg0000_protected_file_not_really").stat().exists());
 
             TEST_CHECK_EQUAL(file_contents(root_dir / "protected_dir/protected_file"), "bar");
-            TEST_CHECK(! (root_dir / "protected_dir/._cfg0000_protected_file").exists());
+            TEST_CHECK(! (root_dir / "protected_dir/._cfg0000_protected_file").stat().exists());
             TEST_CHECK_EQUAL(file_contents(root_dir / "protected_dir/unprotected_file"), "bar");
-            TEST_CHECK(! (root_dir / "protected_dir/._cfg0000_unprotected_file").exists());
+            TEST_CHECK(! (root_dir / "protected_dir/._cfg0000_unprotected_file").stat().exists());
             TEST_CHECK_EQUAL(file_contents(root_dir / "protected_dir/unprotected_file_not_really"), "bar");
-            TEST_CHECK(! (root_dir / "protected_dir/._cfg0000_unprotected_file_not_really").exists());
+            TEST_CHECK(! (root_dir / "protected_dir/._cfg0000_unprotected_file_not_really").stat().exists());
 
             TEST_CHECK_EQUAL(file_contents(root_dir / "protected_dir/protected_file_already_needs_update"), "bar");
             TEST_CHECK_EQUAL(file_contents(root_dir / "protected_dir/._cfg0000_protected_file_already_needs_update"), "baz");
-            TEST_CHECK(! (root_dir / "protected_dir/._cfg0001_protected_file_already_needs_update").exists());
+            TEST_CHECK(! (root_dir / "protected_dir/._cfg0001_protected_file_already_needs_update").stat().exists());
             TEST_CHECK_EQUAL(file_contents(root_dir / "protected_dir/unchanged_protected_file"), "foo");
-            TEST_CHECK(! (root_dir / "protected_dir/._cfg0000_unchanged_protected_file").exists());
+            TEST_CHECK(! (root_dir / "protected_dir/._cfg0000_unchanged_protected_file").stat().exists());
             TEST_CHECK_EQUAL(file_contents(root_dir / "protected_dir/protected_file_same_as_existing_update"), "bar");
             TEST_CHECK_EQUAL(file_contents(root_dir / "protected_dir/._cfg0000_protected_file_same_as_existing_update"), "foo");
-            TEST_CHECK(! (root_dir / "protected_dir/._cfg0001_protected_file_same_as_existing_update").exists());
+            TEST_CHECK(! (root_dir / "protected_dir/._cfg0001_protected_file_same_as_existing_update").stat().exists());
 
             TEST_CHECK_EQUAL(file_contents(root_dir / "protected_dir/unprotected_dir/unprotected_file"), "bar");
-            TEST_CHECK(! (root_dir / "protected_dir/unprotected_dir/._cfg0000_unprotected_file").exists());
+            TEST_CHECK(! (root_dir / "protected_dir/unprotected_dir/._cfg0000_unprotected_file").stat().exists());
 
             TEST_CHECK_EQUAL(file_contents(root_dir / "protected_dir/unprotected_dir_not_really/protected_file"), "bar");
-            TEST_CHECK(! (root_dir / "protected_dir/unprotected_dir_not_really/._cfg0000_protected_file").exists());
+            TEST_CHECK(! (root_dir / "protected_dir/unprotected_dir_not_really/._cfg0000_protected_file").stat().exists());
 
             TEST_CHECK_EQUAL(file_contents(root_dir / "protected_dir_not_really/unprotected_file"), "bar");
-            TEST_CHECK(! (root_dir / "protected_dir_not_really/._cfg0000_unprotected_file").exists());
+            TEST_CHECK(! (root_dir / "protected_dir_not_really/._cfg0000_unprotected_file").stat().exists());
 
             merger.merge();
 
             TEST_CHECK_EQUAL(file_contents(root_dir / "protected_file"), "bar");
             TEST_CHECK_EQUAL(file_contents(root_dir / "._cfg0000_protected_file"), "foo");
             TEST_CHECK_EQUAL(file_contents(root_dir / "unprotected_file"), "foo");
-            TEST_CHECK(! (root_dir / "._cfg0000_unprotected_file").exists());
+            TEST_CHECK(! (root_dir / "._cfg0000_unprotected_file").stat().exists());
             TEST_CHECK_EQUAL(file_contents(root_dir / "protected_file_not_really"), "foo");
-            TEST_CHECK(! (root_dir / "._cfg0000_protected_file_not_really").exists());
+            TEST_CHECK(! (root_dir / "._cfg0000_protected_file_not_really").stat().exists());
 
             TEST_CHECK_EQUAL(file_contents(root_dir / "protected_dir/protected_file"), "bar");
             TEST_CHECK_EQUAL(file_contents(root_dir / "protected_dir/._cfg0000_protected_file"), "foo");
             TEST_CHECK_EQUAL(file_contents(root_dir / "protected_dir/unprotected_file"), "foo");
-            TEST_CHECK(! (root_dir / "protected_dir/._cfg0000_unprotected_file").exists());
+            TEST_CHECK(! (root_dir / "protected_dir/._cfg0000_unprotected_file").stat().exists());
             TEST_CHECK_EQUAL(file_contents(root_dir / "protected_dir/unprotected_file_not_really"), "bar");
             TEST_CHECK_EQUAL(file_contents(root_dir / "protected_dir/._cfg0000_unprotected_file_not_really"), "foo");
 
@@ -175,19 +176,19 @@ namespace test_cases
             TEST_CHECK_EQUAL(file_contents(root_dir / "protected_dir/._cfg0000_protected_file_already_needs_update"), "baz");
             TEST_CHECK_EQUAL(file_contents(root_dir / "protected_dir/._cfg0001_protected_file_already_needs_update"), "foo");
             TEST_CHECK_EQUAL(file_contents(root_dir / "protected_dir/unchanged_protected_file"), "foo");
-            TEST_CHECK(! (root_dir / "protected_dir/._cfg0000_unchanged_protected_file").exists());
+            TEST_CHECK(! (root_dir / "protected_dir/._cfg0000_unchanged_protected_file").stat().exists());
             TEST_CHECK_EQUAL(file_contents(root_dir / "protected_dir/protected_file_same_as_existing_update"), "bar");
             TEST_CHECK_EQUAL(file_contents(root_dir / "protected_dir/._cfg0000_protected_file_same_as_existing_update"), "foo");
-            TEST_CHECK(! (root_dir / "protected_dir/._cfg0001_protected_file_same_as_existing_update").exists());
+            TEST_CHECK(! (root_dir / "protected_dir/._cfg0001_protected_file_same_as_existing_update").stat().exists());
 
             TEST_CHECK_EQUAL(file_contents(root_dir / "protected_dir/unprotected_dir/unprotected_file"), "foo");
-            TEST_CHECK(! (root_dir / "protected_dir/unprotected_dir/._cfg0000_unprotected_file").exists());
+            TEST_CHECK(! (root_dir / "protected_dir/unprotected_dir/._cfg0000_unprotected_file").stat().exists());
 
             TEST_CHECK_EQUAL(file_contents(root_dir / "protected_dir/unprotected_dir_not_really/protected_file"), "bar");
             TEST_CHECK_EQUAL(file_contents(root_dir / "protected_dir/unprotected_dir_not_really/._cfg0000_protected_file"), "foo");
 
             TEST_CHECK_EQUAL(file_contents(root_dir / "protected_dir_not_really/unprotected_file"), "foo");
-            TEST_CHECK(! (root_dir / "protected_dir_not_really/._cfg0000_unprotected_file").exists());
+            TEST_CHECK(! (root_dir / "protected_dir_not_really/._cfg0000_unprotected_file").stat().exists());
         }
     } test_vdb_merger_config_protect;
 

@@ -20,7 +20,6 @@
 #include <paludis/repositories/unpackaged/unpackaged_key.hh>
 #include <paludis/repositories/unpackaged/unpackaged_id.hh>
 #include <paludis/util/pimp-impl.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/make_named_values.hh>

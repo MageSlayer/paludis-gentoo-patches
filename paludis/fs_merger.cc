@@ -19,7 +19,6 @@
  */
 
 #include <paludis/fs_merger.hh>
-#include <paludis/util/dir_iterator.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/fd_holder.hh>
 #include <paludis/util/log.hh>
@@ -30,6 +29,9 @@
 #include <paludis/util/timestamp.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/fs_stat.hh>
+#include <paludis/util/fs_iterator.hh>
+#include <paludis/util/fs_error.hh>
 #include <paludis/selinux/security_context.hh>
 #include <paludis/environment.hh>
 #include <paludis/hook.hh>
@@ -124,14 +126,14 @@ FSMerger::prepare_install_under()
     Context context("When preparing install_under directory '" + stringify(_imp->params.install_under()) + "' under root '"
             + stringify(_imp->params.root()) + "':");
 
-    std::list<FSEntry> dd;
-    for (FSEntry d(_imp->params.root().realpath() / _imp->params.install_under()), d_end(_imp->params.root().realpath()) ;
+    std::list<FSPath> dd;
+    for (FSPath d(_imp->params.root().realpath() / _imp->params.install_under()), d_end(_imp->params.root().realpath()) ;
             d != d_end ; d = d.dirname())
         dd.push_front(d);
-    for (std::list<FSEntry>::iterator d(dd.begin()), d_end(dd.end()) ; d != d_end ; ++d)
-        if (! d->exists())
+    for (std::list<FSPath>::iterator d(dd.begin()), d_end(dd.end()) ; d != d_end ; ++d)
+        if (! d->stat().exists())
         {
-            d->mkdir();
+            d->mkdir(0755, { });
             track_install_under_dir(*d, FSMergerStatusFlags());
         }
         else
@@ -139,7 +141,7 @@ FSMerger::prepare_install_under()
 }
 
 void
-FSMerger::on_file_over_nothing(bool is_check, const FSEntry & src, const FSEntry & dst)
+FSMerger::on_file_over_nothing(bool is_check, const FSPath & src, const FSPath & dst)
 {
     if (is_check)
         return;
@@ -148,7 +150,7 @@ FSMerger::on_file_over_nothing(bool is_check, const FSEntry & src, const FSEntry
 }
 
 void
-FSMerger::on_file_over_file(bool is_check, const FSEntry & src, const FSEntry & dst)
+FSMerger::on_file_over_file(bool is_check, const FSPath & src, const FSPath & dst)
 {
     if (is_check)
         return;
@@ -163,14 +165,14 @@ FSMerger::on_file_over_file(bool is_check, const FSEntry & src, const FSEntry & 
 }
 
 void
-FSMerger::on_file_over_dir(bool is_check, const FSEntry & src, const FSEntry & dst)
+FSMerger::on_file_over_dir(bool is_check, const FSPath & src, const FSPath & dst)
 {
     on_error(is_check, "Cannot overwrite directory '" + stringify(dst / src.basename()) + "' with file '"
             + stringify(src) + "'");
 }
 
 void
-FSMerger::on_file_over_sym(bool is_check, const FSEntry & src, const FSEntry & dst)
+FSMerger::on_file_over_sym(bool is_check, const FSPath & src, const FSPath & dst)
 {
     if (is_check)
         return;
@@ -179,7 +181,7 @@ FSMerger::on_file_over_sym(bool is_check, const FSEntry & src, const FSEntry & d
 }
 
 void
-FSMerger::on_file_over_misc(bool is_check, const FSEntry & src, const FSEntry & dst)
+FSMerger::on_file_over_misc(bool is_check, const FSPath & src, const FSPath & dst)
 {
     if (is_check)
         return;
@@ -188,7 +190,7 @@ FSMerger::on_file_over_misc(bool is_check, const FSEntry & src, const FSEntry & 
 }
 
 void
-FSMerger::on_dir_over_nothing(bool is_check, const FSEntry & src, const FSEntry & dst)
+FSMerger::on_dir_over_nothing(bool is_check, const FSPath & src, const FSPath & dst)
 {
     if (is_check)
         return;
@@ -197,14 +199,14 @@ FSMerger::on_dir_over_nothing(bool is_check, const FSEntry & src, const FSEntry 
 }
 
 void
-FSMerger::on_dir_over_file(bool is_check, const FSEntry & src, const FSEntry & dst)
+FSMerger::on_dir_over_file(bool is_check, const FSPath & src, const FSPath & dst)
 {
     on_error(is_check, "Cannot overwrite file '" + stringify(dst / src.basename()) + "' with directory '"
             + stringify(src) + "'");
 }
 
 void
-FSMerger::on_dir_over_dir(bool is_check, const FSEntry & src, const FSEntry & dst)
+FSMerger::on_dir_over_dir(bool is_check, const FSPath & src, const FSPath & dst)
 {
     if (is_check)
         return;
@@ -213,7 +215,7 @@ FSMerger::on_dir_over_dir(bool is_check, const FSEntry & src, const FSEntry & ds
 }
 
 void
-FSMerger::on_dir_over_sym(bool is_check, const FSEntry & src, const FSEntry & dst)
+FSMerger::on_dir_over_sym(bool is_check, const FSPath & src, const FSPath & dst)
 {
     EntryType m;
     try
@@ -238,7 +240,7 @@ FSMerger::on_dir_over_sym(bool is_check, const FSEntry & src, const FSEntry & ds
 }
 
 void
-FSMerger::on_dir_over_misc(bool is_check, const FSEntry & src, const FSEntry & dst)
+FSMerger::on_dir_over_misc(bool is_check, const FSPath & src, const FSPath & dst)
 {
     if (is_check)
         return;
@@ -248,7 +250,7 @@ FSMerger::on_dir_over_misc(bool is_check, const FSEntry & src, const FSEntry & d
 }
 
 void
-FSMerger::on_sym_over_nothing(bool is_check, const FSEntry & src, const FSEntry & dst)
+FSMerger::on_sym_over_nothing(bool is_check, const FSPath & src, const FSPath & dst)
 {
     if (is_check)
         return;
@@ -257,7 +259,7 @@ FSMerger::on_sym_over_nothing(bool is_check, const FSEntry & src, const FSEntry 
 }
 
 void
-FSMerger::on_sym_over_file(bool is_check, const FSEntry & src, const FSEntry & dst)
+FSMerger::on_sym_over_file(bool is_check, const FSPath & src, const FSPath & dst)
 {
     if (is_check)
         return;
@@ -267,14 +269,14 @@ FSMerger::on_sym_over_file(bool is_check, const FSEntry & src, const FSEntry & d
 }
 
 void
-FSMerger::on_sym_over_dir(bool is_check, const FSEntry & src, const FSEntry & dst)
+FSMerger::on_sym_over_dir(bool is_check, const FSPath & src, const FSPath & dst)
 {
     on_error(is_check, "Cannot overwrite directory '" + stringify(dst / src.basename()) + "' with symlink '"
             + stringify(src) + "'");
 }
 
 void
-FSMerger::on_sym_over_sym(bool is_check, const FSEntry & src, const FSEntry & dst)
+FSMerger::on_sym_over_sym(bool is_check, const FSPath & src, const FSPath & dst)
 {
     if (is_check)
         return;
@@ -284,7 +286,7 @@ FSMerger::on_sym_over_sym(bool is_check, const FSEntry & src, const FSEntry & ds
 }
 
 void
-FSMerger::on_sym_over_misc(bool is_check, const FSEntry & src, const FSEntry & dst)
+FSMerger::on_sym_over_misc(bool is_check, const FSPath & src, const FSPath & dst)
 {
     if (is_check)
         return;
@@ -294,16 +296,19 @@ FSMerger::on_sym_over_misc(bool is_check, const FSEntry & src, const FSEntry & d
 }
 
 FSMergerStatusFlags
-FSMerger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::string & dst_name)
+FSMerger::install_file(const FSPath & src, const FSPath & dst_dir, const std::string & dst_name)
 {
     Context context("When installing file '" + stringify(src) + "' to '" + stringify(dst_dir) + "' with protection '"
             + stringify(dst_name) + "':");
     FSMergerStatusFlags result;
 
-    FSEntry dst(dst_dir / (stringify(dst_name) + "|paludis-midmerge"));
-    FSEntry dst_real(dst_dir / dst_name);
+    FSStat src_stat(src);
 
-    if (dst_real.is_regular_file())
+    FSPath dst(dst_dir / (stringify(dst_name) + "|paludis-midmerge"));
+    FSPath dst_real(dst_dir / dst_name);
+    FSStat dst_real_stat(dst_real);
+
+    if (dst_real_stat.is_regular_file())
         dst_real.chmod(0);
 
     if (0 != _imp->params.environment()->perform_hook(extend_hook(
@@ -315,16 +320,15 @@ FSMerger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::
         Log::get_instance()->message("merger.file.pre_hooks.failure", ll_warning, lc_context) <<
                 "Merge of '" << src << "' to '" << dst_dir << "' pre hooks returned non-zero";
 
-    std::shared_ptr<const SecurityContext> secctx(MatchPathCon::get_instance()->match(stringify(dst_real), src.permissions()));
+    std::shared_ptr<const SecurityContext> secctx(MatchPathCon::get_instance()->match(stringify(dst_real), src_stat.permissions()));
     FSCreateCon createcon(secctx);
     if (0 != paludis::setfilecon(src, secctx))
         throw FSMergerError("Could not set SELinux context on '"
                 + stringify(src) + "': " + stringify(::strerror(errno)));
 
-    mode_t src_perms(src.permissions());
+    mode_t src_perms(src_stat.permissions());
     if (0 != (src_perms & (S_ISVTX | S_ISUID | S_ISGID)))
         result += msi_setid_bits;
-
 
     bool do_copy(false);
 
@@ -333,10 +337,10 @@ FSMerger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::
     {
         result += msi_rename;
 
-        bool touch(_imp->merged_ids.end() == _imp->merged_ids.find(src.lowlevel_id()));
-        _imp->merged_ids.insert(make_pair(src.lowlevel_id(), stringify(dst_real)));
+        bool touch(_imp->merged_ids.end() == _imp->merged_ids.find(src_stat.lowlevel_id()));
+        _imp->merged_ids.insert(make_pair(src_stat.lowlevel_id(), stringify(dst_real)));
 
-        FSEntry d(stringify(dst_real));
+        FSPath d(stringify(dst_real));
         if (touch && ! _imp->params.options()[mo_preserve_mtimes])
             if (! d.utime(Timestamp::now()))
                 throw FSMergerError("utime(" + stringify(dst_real) + ", 0) failed: " + stringify(::strerror(errno)));
@@ -347,8 +351,7 @@ FSMerger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::
     else
     {
         do_copy = true;
-        std::pair<MergedMap::const_iterator, MergedMap::const_iterator> ii(
-                _imp->merged_ids.equal_range(src.lowlevel_id()));
+        std::pair<MergedMap::const_iterator, MergedMap::const_iterator> ii(_imp->merged_ids.equal_range(src_stat.lowlevel_id()));
         for (MergedMap::const_iterator i = ii.first ; i != ii.second ; ++i)
         {
             if (0 == ::link(i->second.c_str(), stringify(dst).c_str()))
@@ -379,7 +382,7 @@ FSMerger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::
             throw FSMergerError("Cannot write '" + stringify(dst) + "': " + stringify(::strerror(errno)));
 
         if (! _imp->params.no_chown())
-            if (0 != ::fchown(output_fd, src.owner(), src.group()))
+            if (0 != ::fchown(output_fd, src_stat.owner(), src_stat.group()))
                 throw FSMergerError("Cannot fchown '" + stringify(dst) + "': " + stringify(::strerror(errno)));
 
         /* set*id bits */
@@ -398,7 +401,7 @@ FSMerger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::
         /* might need to copy mtime */
         if (_imp->params.options()[mo_preserve_mtimes])
         {
-            Timestamp timestamp(src.mtim());
+            Timestamp timestamp(src_stat.mtim());
             struct timespec ts[2];
             ts[0] = ts[1] = timestamp.as_timespec();
             if (0 != ::futimens(output_fd, ts))
@@ -409,7 +412,7 @@ FSMerger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::
             throw FSMergerError(
                     "rename(" + stringify(dst) + ", " + stringify(dst_real) + ") failed: " + stringify(::strerror(errno)));
 
-        _imp->merged_ids.insert(make_pair(src.lowlevel_id(), stringify(dst_real)));
+        _imp->merged_ids.insert(make_pair(src_stat.lowlevel_id(), stringify(dst_real)));
     }
 
     if (fixed_ownership_for(src))
@@ -428,9 +431,9 @@ FSMerger::install_file(const FSEntry & src, const FSEntry & dst_dir, const std::
 }
 
 void
-FSMerger::track_renamed_dir_recursive(const FSEntry & dst)
+FSMerger::track_renamed_dir_recursive(const FSPath & dst)
 {
-    for (DirIterator d(dst, { dio_include_dotfiles, dio_inode_sort }), d_end ; d != d_end ; ++d)
+    for (FSIterator d(dst, { fsio_include_dotfiles, fsio_inode_sort }), d_end ; d != d_end ; ++d)
     {
         FSMergerStatusFlags merged_how;
         if (fixed_ownership_for(_imp->params.image() / *d))
@@ -441,16 +444,17 @@ FSMerger::track_renamed_dir_recursive(const FSEntry & dst)
             case et_sym:
                 rewrite_symlink_as_needed(*d, dst);
                 track_install_sym(*d, dst, merged_how + msi_parent_rename);
-                _imp->merged_ids.insert(make_pair(d->lowlevel_id(), stringify(*d)));
+                _imp->merged_ids.insert(make_pair(d->stat().lowlevel_id(), stringify(*d)));
                 continue;
 
             case et_file:
                 {
-                    bool touch(_imp->merged_ids.end() == _imp->merged_ids.find(d->lowlevel_id()));
-                    _imp->merged_ids.insert(make_pair(d->lowlevel_id(), stringify(*d)));
+                    FSStat d_star_stat(*d);
+                    bool touch(_imp->merged_ids.end() == _imp->merged_ids.find(d_star_stat.lowlevel_id()));
+                    _imp->merged_ids.insert(make_pair(d_star_stat.lowlevel_id(), stringify(*d)));
 
                     if (touch && ! _imp->params.options()[mo_preserve_mtimes])
-                        if (! FSEntry(*d).utime(Timestamp::now()))
+                        if (! d->utime(Timestamp::now()))
                             throw FSMergerError("utime(" + stringify(*d) + ", 0) failed: " + stringify(::strerror(errno)));
                     track_install_file(*d, dst, stringify(d->basename()), merged_how + msi_parent_rename);
                 }
@@ -475,27 +479,30 @@ FSMerger::track_renamed_dir_recursive(const FSEntry & dst)
 }
 
 void
-FSMerger::relabel_dir_recursive(const FSEntry & src, const FSEntry & dst)
+FSMerger::relabel_dir_recursive(const FSPath & src, const FSPath & dst)
 {
-    for (DirIterator d(src, { dio_include_dotfiles, dio_inode_sort }), d_end ; d != d_end ; ++d)
+    for (FSIterator d(src, { fsio_include_dotfiles, fsio_inode_sort }), d_end ; d != d_end ; ++d)
     {
-        mode_t mode(d->permissions());
+        FSStat d_star_stat(*d);
+
+        mode_t mode(d_star_stat.permissions());
         std::shared_ptr<const SecurityContext> secctx(
                 MatchPathCon::get_instance()->match(stringify(dst / d->basename()), mode));
         if (0 != paludis::setfilecon(*d, secctx))
             throw FSMergerError("Could not set SELinux context on '"
                     + stringify(*d) + "' : " + stringify(::strerror(errno)));
-        if (d->is_directory())
+        if (d_star_stat.is_directory())
             relabel_dir_recursive(*d, dst / d->basename());
     }
 }
 
 FSMergerStatusFlags
-FSMerger::install_dir(const FSEntry & src, const FSEntry & dst_dir)
+FSMerger::install_dir(const FSPath & src, const FSPath & dst_dir)
 {
     Context context("When installing dir '" + stringify(src) + "' to '" + stringify(dst_dir) + "':");
 
     FSMergerStatusFlags result;
+    FSStat src_stat(src);
 
     if (0 != _imp->params.environment()->perform_hook(extend_hook(
                          Hook("merger_install_dir_pre")
@@ -505,11 +512,11 @@ FSMerger::install_dir(const FSEntry & src, const FSEntry & dst_dir)
         Log::get_instance()->message("merger.dir.pre_hooks.failure", ll_warning, lc_context)
             << "Merge of '" << src << "' to '" << dst_dir << "' pre hooks returned non-zero";
 
-    mode_t mode(src.permissions());
+    mode_t mode(src_stat.permissions());
     if (0 != (mode & (S_ISVTX | S_ISUID | S_ISGID)))
         result += msi_setid_bits;
 
-    FSEntry dst(dst_dir / src.basename());
+    FSPath dst(dst_dir / src.basename());
     std::shared_ptr<const SecurityContext> secctx(MatchPathCon::get_instance()->match(stringify(dst), mode));
     FSCreateCon createcon(secctx);
     if (0 != paludis::setfilecon(src, secctx))
@@ -531,7 +538,7 @@ FSMerger::install_dir(const FSEntry & src, const FSEntry & dst_dir)
         Log::get_instance()->message("merger.dir.rename_failed", ll_debug, lc_context) <<
             "rename failed. Falling back to recursive copy.";
 
-        dst.mkdir(mode);
+        dst.mkdir(mode, { fspmkdo_ok_if_exists });
         FDHolder dst_fd(::open(stringify(dst).c_str(), O_RDONLY));
         struct stat sb;
         if (-1 == dst_fd)
@@ -543,7 +550,7 @@ FSMerger::install_dir(const FSEntry & src, const FSEntry & dst_dir)
         if ( !S_ISDIR(sb.st_mode))
             throw FSMergerError("The directory that we just created is not a directory anymore");
         if (! _imp->params.no_chown())
-            if (-1 == ::fchown(dst_fd, src.owner(), src.group()))
+            if (-1 == ::fchown(dst_fd, src_stat.owner(), src_stat.group()))
                 throw FSMergerError("Could not fchown the directory '" + stringify(dst) + "' that we just created: "
                         + stringify(::strerror(errno)));
         /* pick up set*id bits */
@@ -566,13 +573,14 @@ FSMerger::install_dir(const FSEntry & src, const FSEntry & dst_dir)
 }
 
 FSMergerStatusFlags
-FSMerger::install_sym(const FSEntry & src, const FSEntry & dst_dir)
+FSMerger::install_sym(const FSPath & src, const FSPath & dst_dir)
 {
     Context context("When installing sym '" + stringify(src) + "' to '" + stringify(dst_dir) + "':");
 
     FSMergerStatusFlags result;
 
-    FSEntry dst(dst_dir / src.basename());
+    FSPath dst(dst_dir / src.basename());
+    FSStat src_stat(src);
 
     if (0 != _imp->params.environment()->perform_hook(extend_hook(
                          Hook("merger_install_sym_pre")
@@ -582,14 +590,14 @@ FSMerger::install_sym(const FSEntry & src, const FSEntry & dst_dir)
         Log::get_instance()->message("merger.sym.pre_hooks.failure", ll_warning, lc_context)
             << "Merge of '" << src << "' to '" << dst_dir << "' pre hooks returned non-zero";
 
-    if (0 != (src.permissions() & (S_ISVTX | S_ISUID | S_ISGID)))
+    if (0 != (src_stat.permissions() & (S_ISVTX | S_ISUID | S_ISGID)))
         result += msi_setid_bits;
 
     bool do_sym(true);
 
     FSCreateCon createcon(MatchPathCon::get_instance()->match(stringify(dst), S_IFLNK));
     std::pair<MergedMap::const_iterator, MergedMap::const_iterator> ii(
-            _imp->merged_ids.equal_range(src.lowlevel_id()));
+            _imp->merged_ids.equal_range(src_stat.lowlevel_id()));
     for (MergedMap::const_iterator i = ii.first ; i != ii.second ; ++i)
     {
         if (0 == ::link(i->second.c_str(), stringify(dst).c_str()))
@@ -608,12 +616,12 @@ FSMerger::install_sym(const FSEntry & src, const FSEntry & dst_dir)
         if (0 != ::symlink(stringify(src.readlink()).c_str(), stringify(dst).c_str()))
             throw FSMergerError("Couldn't create symlink at '" + stringify(dst) + "': "
                     + stringify(::strerror(errno)));
-        _imp->merged_ids.insert(make_pair(src.lowlevel_id(), stringify(dst)));
+        _imp->merged_ids.insert(make_pair(src_stat.lowlevel_id(), stringify(dst)));
     }
 
     if (! _imp->params.no_chown())
     {
-        dst.lchown(src.owner(), src.group());
+        dst.lchown(src_stat.owner(), src_stat.group());
         if (fixed_ownership_for(src))
             result += msi_fixed_ownership;
     }
@@ -630,7 +638,7 @@ FSMerger::install_sym(const FSEntry & src, const FSEntry & dst_dir)
 }
 
 void
-FSMerger::unlink_file(FSEntry d)
+FSMerger::unlink_file(FSPath d)
 {
     if (0 != _imp->params.environment()->perform_hook(extend_hook(
                          Hook("merger_unlink_file_pre")
@@ -651,7 +659,7 @@ FSMerger::unlink_file(FSEntry d)
 }
 
 void
-FSMerger::unlink_sym(FSEntry d)
+FSMerger::unlink_sym(FSPath d)
 {
     if (0 != _imp->params.environment()->perform_hook(extend_hook(
                          Hook("merger_unlink_sym_pre")
@@ -671,7 +679,7 @@ FSMerger::unlink_sym(FSEntry d)
 }
 
 void
-FSMerger::unlink_dir(FSEntry d)
+FSMerger::unlink_dir(FSPath d)
 {
     if (0 != _imp->params.environment()->perform_hook(extend_hook(
                          Hook("merger_unlink_dir_pre")
@@ -691,7 +699,7 @@ FSMerger::unlink_dir(FSEntry d)
 }
 
 void
-FSMerger::unlink_misc(FSEntry d)
+FSMerger::unlink_misc(FSPath d)
 {
     if (0 != _imp->params.environment()->perform_hook(extend_hook(
                          Hook("merger_unlink_misc_pre")
@@ -721,7 +729,7 @@ FSMerger::extend_hook(const Hook & h)
 #ifdef HAVE_XATTRS
 
 void
-FSMerger::try_to_copy_xattrs(const FSEntry & src, int dst_fd, FSMergerStatusFlags & flags)
+FSMerger::try_to_copy_xattrs(const FSPath & src, int dst_fd, FSMergerStatusFlags & flags)
 {
     FDHolder src_fd(::open(stringify(src).c_str(), O_RDONLY));
 
@@ -799,42 +807,42 @@ FSMerger::try_to_copy_xattrs(const FSEntry & src, int dst_fd, FSMergerStatusFlag
 #else
 
 void
-FSMerger::try_to_copy_xattrs(const FSEntry &, int, FSMergerStatusFlags &)
+FSMerger::try_to_copy_xattrs(const FSPath &, int, FSMergerStatusFlags &)
 {
 }
 
 #endif
 
 void
-FSMerger::track_install_file(const FSEntry & src, const FSEntry & dst_dir, const std::string & dst_name, const FSMergerStatusFlags & flags)
+FSMerger::track_install_file(const FSPath & src, const FSPath & dst_dir, const std::string & dst_name, const FSMergerStatusFlags & flags)
 {
     _imp->params.merged_entries()->insert(dst_dir / dst_name);
     record_install_file(src, dst_dir, dst_name, flags);
 }
 
 void
-FSMerger::track_install_dir(const FSEntry & src, const FSEntry & dst_dir, const FSMergerStatusFlags & flags)
+FSMerger::track_install_dir(const FSPath & src, const FSPath & dst_dir, const FSMergerStatusFlags & flags)
 {
     _imp->params.merged_entries()->insert(dst_dir / src.basename());
     record_install_dir(src, dst_dir, flags);
 }
 
 void
-FSMerger::track_install_under_dir(const FSEntry & dst, const FSMergerStatusFlags & flags)
+FSMerger::track_install_under_dir(const FSPath & dst, const FSMergerStatusFlags & flags)
 {
     _imp->params.merged_entries()->insert(dst);
     record_install_under_dir(dst, flags);
 }
 
 void
-FSMerger::track_install_sym(const FSEntry & src, const FSEntry & dst_dir, const FSMergerStatusFlags & flags)
+FSMerger::track_install_sym(const FSPath & src, const FSPath & dst_dir, const FSMergerStatusFlags & flags)
 {
     _imp->params.merged_entries()->insert(dst_dir / src.basename());
     record_install_sym(src, dst_dir, flags);
 }
 
 void
-FSMerger::on_file_main(bool is_check, const FSEntry & src, const FSEntry & dst)
+FSMerger::on_file_main(bool is_check, const FSPath & src, const FSPath & dst)
 {
     EntryType m(entry_type(dst / src.basename()));
 
@@ -871,7 +879,7 @@ FSMerger::on_file_main(bool is_check, const FSEntry & src, const FSEntry & dst)
 }
 
 void
-FSMerger::on_dir_main(bool is_check, const FSEntry & src, const FSEntry & dst)
+FSMerger::on_dir_main(bool is_check, const FSPath & src, const FSPath & dst)
 {
     EntryType m(entry_type(dst / src.basename()));
 
@@ -909,7 +917,7 @@ FSMerger::on_dir_main(bool is_check, const FSEntry & src, const FSEntry & dst)
 }
 
 void
-FSMerger::on_sym_main(bool is_check, const FSEntry & src, const FSEntry & dst)
+FSMerger::on_sym_main(bool is_check, const FSPath & src, const FSPath & dst)
 {
     EntryType m(entry_type(dst / src.basename()));
 
@@ -945,16 +953,18 @@ FSMerger::on_sym_main(bool is_check, const FSEntry & src, const FSEntry & dst)
     } while (false);
 }
 
-FSEntry
-FSMerger::canonicalise_root_path(const FSEntry & f)
+FSPath
+FSMerger::canonicalise_root_path(const FSPath & f)
 {
     return f.realpath();
 }
 
 void
-FSMerger::do_dir_recursive(bool is_check, const FSEntry & src, const FSEntry & dst)
+FSMerger::do_dir_recursive(bool is_check, const FSPath & src, const FSPath & dst)
 {
-    if ((! is_check) && (! dst.is_directory()))
+    FSStat dst_stat(dst);
+
+    if ((! is_check) && (! dst_stat.is_directory()))
         throw MergerError("Destination directory '" + stringify(dst) + "' is not a directory");
 
     Merger::do_dir_recursive(is_check, src, dst);

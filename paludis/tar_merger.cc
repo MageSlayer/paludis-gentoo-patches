@@ -113,7 +113,7 @@ TarMerger::TarMerger(const TarMergerParams & p) :
                 n::fix_mtimes_before() = p.fix_mtimes_before(),
                 n::get_new_ids_or_minus_one() = p.get_new_ids_or_minus_one(),
                 n::image() = p.image(),
-                n::install_under() = FSEntry("/"),
+                n::install_under() = FSPath("/"),
                 n::maybe_output_manager() = p.maybe_output_manager(),
                 n::merged_entries() = p.merged_entries(),
                 n::no_chown() = p.no_chown(),
@@ -127,7 +127,7 @@ TarMerger::TarMerger(const TarMergerParams & p) :
 TarMerger::~TarMerger() = default;
 
 void
-TarMerger::on_file_main(bool is_check, const FSEntry & src, const FSEntry & dst)
+TarMerger::on_file_main(bool is_check, const FSPath & src, const FSPath & dst)
 {
     if (is_check)
         return;
@@ -136,19 +136,19 @@ TarMerger::on_file_main(bool is_check, const FSEntry & src, const FSEntry & dst)
 }
 
 void
-TarMerger::add_file(const FSEntry & src, const FSEntry & dst)
+TarMerger::add_file(const FSPath & src, const FSPath & dst)
 {
     track_install_file(src, dst);
     (*TarMergerHandle::get_instance()->add_file)(_imp->tar, stringify(src), strip_leading(stringify(dst), "/"));
 }
 
 void
-TarMerger::on_dir_main(bool, const FSEntry &, const FSEntry &)
+TarMerger::on_dir_main(bool, const FSPath &, const FSPath &)
 {
 }
 
 void
-TarMerger::on_sym_main(bool is_check, const FSEntry & src, const FSEntry & dst)
+TarMerger::on_sym_main(bool is_check, const FSPath & src, const FSPath & dst)
 {
     if (is_check)
         return;
@@ -200,8 +200,8 @@ TarMerger::merge()
     }
 }
 
-FSEntry
-TarMerger::canonicalise_root_path(const FSEntry & f)
+FSPath
+TarMerger::canonicalise_root_path(const FSPath & f)
 {
     return f;
 }

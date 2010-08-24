@@ -50,8 +50,8 @@ namespace paludis
             NamedValue<n::build_dependencies, std::string> build_dependencies;
             NamedValue<n::description, std::string> description;
             NamedValue<n::environment, Environment *> environment;
-            NamedValue<n::install_under, FSEntry> install_under;
-            NamedValue<n::location, FSEntry> location;
+            NamedValue<n::install_under, FSPath> install_under;
+            NamedValue<n::location, FSPath> location;
             NamedValue<n::name, QualifiedPackageName> name;
             NamedValue<n::preserve_work, Tribool> preserve_work;
             NamedValue<n::rewrite_ids_over_to_root, int> rewrite_ids_over_to_root;
@@ -114,8 +114,8 @@ namespace paludis
             /* Keys */
 
             virtual const std::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
-            virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > location_key() const;
-            virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<FSPath> > location_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<FSPath> > installed_root_key() const;
             virtual const std::shared_ptr<const MetadataValueKey<std::string> > accept_keywords_key() const;
             virtual const std::shared_ptr<const MetadataValueKey<std::string> > sync_host_key() const;
 

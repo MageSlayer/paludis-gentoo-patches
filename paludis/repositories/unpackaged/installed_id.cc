@@ -23,9 +23,7 @@
 #include <paludis/ndbam_unmerger.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/system.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/dir_iterator.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_named_values.hh>
@@ -35,6 +33,8 @@
 #include <paludis/util/timestamp.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/singleton-impl.hh>
+#include <paludis/util/fs_iterator.hh>
+#include <paludis/util/fs_stat.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
@@ -74,19 +74,19 @@ namespace
         return f.format(i, format::Plain());
     }
 
-    class InstalledUnpackagedFSEntryKey :
-        public MetadataValueKey<FSEntry>
+    class InstalledUnpackagedFSPathKey :
+        public MetadataValueKey<FSPath>
     {
         private:
-            const FSEntry _location;
+            const FSPath _location;
 
         public:
-            InstalledUnpackagedFSEntryKey(const FSEntry & l) :
+            InstalledUnpackagedFSPathKey(const FSPath & l) :
                 _location(l)
             {
             }
 
-            const FSEntry value() const
+            const FSPath value() const
             {
                 return _location;
             }
@@ -106,21 +106,6 @@ namespace
                 return mkt_internal;
             }
     };
-
-    void create_file(Contents & c, const FSEntry & f)
-    {
-        c.add(std::make_shared<ContentsFileEntry>(stringify(f)));
-    }
-
-    void create_dir(Contents & c, const FSEntry & f)
-    {
-        c.add(std::make_shared<ContentsDirEntry>(stringify(f)));
-    }
-
-    void create_sym(Contents & c, const FSEntry & f, const FSEntry & t)
-    {
-        c.add(std::make_shared<ContentsSymEntry>(stringify(f), stringify(t)));
-    }
 
     class InstalledUnpackagedContentsKey :
         public MetadataValueKey<std::shared_ptr<const Contents> >
@@ -177,8 +162,8 @@ namespace
             const Timestamp _time;
 
         public:
-            InstalledUnpackagedTimeKey(const FSEntry & f) :
-                _time(f.mtim())
+            InstalledUnpackagedTimeKey(const FSPath & f) :
+                _time(f.stat().mtim())
             {
             }
 
@@ -209,14 +194,14 @@ namespace
         private:
             mutable std::shared_ptr<const std::string> _v;
             mutable Mutex _mutex;
-            const FSEntry _f;
+            const FSPath _f;
 
             const std::string _raw_name;
             const std::string _human_name;
             const MetadataKeyType _type;
 
         public:
-            InstalledUnpackagedStringKey(const std::string & r, const std::string & h, const FSEntry & f, const MetadataKeyType t) :
+            InstalledUnpackagedStringKey(const std::string & r, const std::string & h, const FSPath & f, const MetadataKeyType t) :
                 _f(f),
                 _raw_name(r),
                 _human_name(h),
@@ -259,7 +244,7 @@ namespace
         private:
             mutable std::shared_ptr<Set<std::string> > _v;
             mutable Mutex _mutex;
-            FSEntrySequence _f;
+            FSPathSequence _f;
 
             const std::string _raw_name;
             const std::string _human_name;
@@ -273,7 +258,7 @@ namespace
             {
             }
 
-            void add_source(const FSEntry & f)
+            void add_source(const FSPath & f)
             {
                 _f.push_back(f);
             }
@@ -285,7 +270,7 @@ namespace
                     return _v;
 
                 _v = std::make_shared<Set<std::string>>();
-                for (FSEntrySequence::ConstIterator a(_f.begin()), a_end(_f.end()) ;
+                for (FSPathSequence::ConstIterator a(_f.begin()), a_end(_f.end()) ;
                         a != a_end ; ++a)
                 {
                     SafeIFStream f(*a);
@@ -324,7 +309,7 @@ namespace
             const Environment * const _env;
             mutable std::shared_ptr<const DependencySpecTree> _v;
             mutable Mutex _mutex;
-            const FSEntry _f;
+            const FSPath _f;
             const std::shared_ptr<const DependenciesLabelSequence> _labels;
 
             const std::string _raw_name;
@@ -333,7 +318,7 @@ namespace
 
         public:
             InstalledUnpackagedDependencyKey(const Environment * const e,
-                    const std::string & r, const std::string & h, const FSEntry & f,
+                    const std::string & r, const std::string & h, const FSPath & f,
                     const std::shared_ptr<const DependenciesLabelSequence> & l, const MetadataKeyType t) :
                 _env(e),
                 _f(f),
@@ -405,14 +390,14 @@ namespace paludis
         const QualifiedPackageName name;
         const VersionSpec version;
         const RepositoryName repository_name;
-        const FSEntry root;
+        const FSPath root;
         const NDBAM * const ndbam;
 
         std::shared_ptr<DependenciesLabelSequence> build_dependencies_labels;
         std::shared_ptr<DependenciesLabelSequence> run_dependencies_labels;
 
         std::shared_ptr<LiteralMetadataValueKey<SlotName> > slot_key;
-        std::shared_ptr<InstalledUnpackagedFSEntryKey> fs_location_key;
+        std::shared_ptr<InstalledUnpackagedFSPathKey> fs_location_key;
         std::shared_ptr<InstalledUnpackagedContentsKey> contents_key;
         std::shared_ptr<InstalledUnpackagedTimeKey> installed_time_key;
         std::shared_ptr<InstalledUnpackagedStringSetKey> from_repositories_key;
@@ -428,8 +413,8 @@ namespace paludis
                 const VersionSpec & v,
                 const SlotName & s,
                 const RepositoryName & r,
-                const FSEntry & l,
-                const FSEntry & ro,
+                const FSPath & l,
+                const FSPath & ro,
                 const NDBAM * const d) :
             env(e),
             name(q),
@@ -440,7 +425,7 @@ namespace paludis
             build_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
             run_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
             slot_key(std::make_shared<LiteralMetadataValueKey<SlotName> >("slot", "Slot", mkt_internal, s)),
-            fs_location_key(std::make_shared<InstalledUnpackagedFSEntryKey>(l)),
+            fs_location_key(std::make_shared<InstalledUnpackagedFSPathKey>(l)),
             behaviours_key(InstalledUnpackagedIDBehaviours::get_instance()->behaviours_key)
         {
             build_dependencies_labels->push_back(std::make_shared<DependenciesBuildLabel>("build_dependencies",
@@ -448,7 +433,7 @@ namespace paludis
             run_dependencies_labels->push_back(std::make_shared<DependenciesRunLabel>("run_dependencies",
                             return_literal_function(true)));
 
-            if ((l / "contents").exists())
+            if ((l / "contents").stat().exists())
             {
                 contents_key = std::make_shared<InstalledUnpackagedContentsKey>(id, d);
                 installed_time_key = std::make_shared<InstalledUnpackagedTimeKey>(l / "contents");
@@ -456,20 +441,20 @@ namespace paludis
 
             from_repositories_key = std::make_shared<InstalledUnpackagedStringSetKey>("source_repository",
                         "Source repository", mkt_normal);
-            if ((l / "source_repository").exists())
+            if ((l / "source_repository").stat().exists())
                 from_repositories_key->add_source(l / "source_repository");
-            if ((l / "binary_repository").exists())
+            if ((l / "binary_repository").stat().exists())
                 from_repositories_key->add_source(l / "binary_repository");
 
-            if ((l / "description").exists())
+            if ((l / "description").stat().exists())
                 description_key = std::make_shared<InstalledUnpackagedStringKey>("description", "Description", l / "description", mkt_significant);
 
-            if ((l / "build_dependencies").exists())
+            if ((l / "build_dependencies").stat().exists())
                 build_dependencies_key = std::make_shared<InstalledUnpackagedDependencyKey>(env,
                             "build_dependencies", "Build dependencies", l / "build_dependencies",
                             build_dependencies_labels, mkt_dependencies);
 
-            if ((l / "run_dependencies").exists())
+            if ((l / "run_dependencies").stat().exists())
                 run_dependencies_key = std::make_shared<InstalledUnpackagedDependencyKey>(env,
                             "run_dependencies", "Run dependencies", l / "run_dependencies",
                             run_dependencies_labels, mkt_dependencies);
@@ -478,8 +463,8 @@ namespace paludis
 }
 
 InstalledUnpackagedID::InstalledUnpackagedID(const Environment * const e, const QualifiedPackageName & q,
-        const VersionSpec & v, const SlotName & s, const RepositoryName & n, const FSEntry & l,
-        const std::string &, const FSEntry & ro, const NDBAM * const d) :
+        const VersionSpec & v, const SlotName & s, const RepositoryName & n, const FSPath & l,
+        const std::string &, const FSPath & ro, const NDBAM * const d) :
     Pimp<InstalledUnpackagedID>(e, this, q, v, s, n, l, ro, d),
     _imp(Pimp<InstalledUnpackagedID>::_imp)
 {
@@ -669,7 +654,7 @@ InstalledUnpackagedID::from_repositories_key() const
     return _imp->from_repositories_key;
 }
 
-const std::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSPath> >
 InstalledUnpackagedID::fs_location_key() const
 {
     return _imp->fs_location_key;
@@ -844,7 +829,7 @@ InstalledUnpackagedID::extra_hash_value() const
 
 namespace
 {
-    bool ignore_nothing(const FSEntry &)
+    bool ignore_nothing(const FSPath &)
     {
         return false;
     }
@@ -870,11 +855,11 @@ InstalledUnpackagedID::uninstall(const bool replace,
             }
     }
 
-    if (! _imp->root.is_directory())
+    if (! _imp->root.stat().is_directory())
         throw ActionFailedError("Couldn't uninstall '" + stringify(*this) +
                 "' because root ('" + stringify(_imp->root) + "') is not a directory");
 
-    FSEntry ver_dir(fs_location_key()->value());
+    FSPath ver_dir(fs_location_key()->value());
 
     NDBAMUnmerger unmerger(
             make_named_values<NDBAMUnmergerOptions>(
@@ -891,13 +876,13 @@ InstalledUnpackagedID::uninstall(const bool replace,
 
     unmerger.unmerge();
 
-    for (DirIterator d(ver_dir, { dio_include_dotfiles }), d_end ; d != d_end ; ++d)
-        FSEntry(*d).unlink();
+    for (FSIterator d(ver_dir, { fsio_include_dotfiles, fsio_inode_sort }), d_end ; d != d_end ; ++d)
+        d->unlink();
     ver_dir.rmdir();
 
     if (last)
     {
-        FSEntry pkg_dir(fs_location_key()->value().dirname());
+        FSPath pkg_dir(fs_location_key()->value().dirname());
         pkg_dir.rmdir();
 
         std::static_pointer_cast<const InstalledUnpackagedRepository>(repository())->deindex(name());

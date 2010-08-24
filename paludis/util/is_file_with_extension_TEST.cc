@@ -19,6 +19,9 @@
 
 #include <algorithm>
 #include <paludis/util/is_file_with_extension.hh>
+#include <paludis/util/fs_path.hh>
+#include <paludis/util/fs_stat.hh>
+#include <paludis/util/options.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <vector>
@@ -43,10 +46,10 @@ namespace test_cases
 
         void run()
         {
-            FSEntry c("teh.foo");
-            FSEntry d("is_file_with_extension_TEST_file.goat");
+            FSPath c("teh.foo");
+            FSPath d("is_file_with_extension_TEST_file.goat");
 
-            TEST_CHECK(d.exists());
+            TEST_CHECK(d.stat().exists());
 
             TEST_CHECK(! is_file_with_extension(c, "foo", { }));
             TEST_CHECK(! is_file_with_extension(d, "foo", { }));
@@ -66,10 +69,10 @@ namespace test_cases
 
         void run()
         {
-            FSEntry d("teh.foo");
-            FSEntry e("is_file_with_extension_TEST_file.goat");
+            FSPath d("teh.foo");
+            FSPath e("is_file_with_extension_TEST_file.goat");
 
-            TEST_CHECK(e.exists());
+            TEST_CHECK(e.stat().exists());
 
             TEST_CHECK(! is_file_with_prefix_extension(d, "teh", "foo", { }));
             TEST_CHECK(! is_file_with_prefix_extension(e, "teh", "foo", { }));

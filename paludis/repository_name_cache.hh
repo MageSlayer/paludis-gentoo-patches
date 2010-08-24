@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORY_NAME_CACHE_HH 1
 
 #include <paludis/util/pimp.hh>
+#include <paludis/util/fs_path-fwd.hh>
 #include <paludis/name.hh>
 #include <memory>
 
@@ -37,7 +38,6 @@
 
 namespace paludis
 {
-    class FSEntry;
     class Repository;
 
     /**
@@ -55,7 +55,7 @@ namespace paludis
             ///\{
 
             RepositoryNameCache(
-                    const FSEntry & location,
+                    const FSPath & location,
                     const Repository * const repo);
 
             virtual ~RepositoryNameCache();

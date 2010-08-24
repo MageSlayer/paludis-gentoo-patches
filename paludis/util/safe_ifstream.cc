@@ -94,9 +94,16 @@ SafeIFStreamBase::SafeIFStreamBase(const int f) :
 {
 }
 
+SafeIFStream::SafeIFStream(const int f) :
+    SafeIFStreamBase(f),
+    std::istream(&buf),
+    _close(false)
+{
+}
+
 namespace
 {
-    int open_fsentry(const FSEntry & e)
+    int open_path(const FSPath & e)
     {
         Context context("When opening '" + stringify(e) + "' for read:");
 
@@ -108,15 +115,8 @@ namespace
     }
 }
 
-SafeIFStream::SafeIFStream(const int f) :
-    SafeIFStreamBase(f),
-    std::istream(&buf),
-    _close(false)
-{
-}
-
-SafeIFStream::SafeIFStream(const FSEntry & e) :
-    SafeIFStreamBase(open_fsentry(e)),
+SafeIFStream::SafeIFStream(const FSPath & e) :
+    SafeIFStreamBase(open_path(e)),
     std::istream(&buf),
     _close(true)
 {
@@ -132,5 +132,4 @@ SafeIFStreamError::SafeIFStreamError(const std::string & s) throw () :
     Exception(s)
 {
 }
-
 

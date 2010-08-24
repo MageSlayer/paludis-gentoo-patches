@@ -20,7 +20,6 @@
 #include <paludis/distribution-impl.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/destringify.hh>
-#include <paludis/util/dir_iterator.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/make_named_values.hh>
@@ -29,6 +28,7 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/system.hh>
+#include <paludis/util/fs_iterator.hh>
 #include <unordered_map>
 
 using namespace paludis;
@@ -53,7 +53,7 @@ namespace paludis
         {
             Context c("When loading distribution data:");
 
-            for (DirIterator d(getenv_with_default("PALUDIS_DISTRIBUTIONS_DIR", DATADIR "/paludis/distributions")), d_end ;
+            for (FSIterator d(FSPath(getenv_with_default("PALUDIS_DISTRIBUTIONS_DIR", DATADIR "/paludis/distributions")), { }), d_end ;
                     d != d_end ; ++d)
             {
                 if (! is_file_with_extension(*d, ".conf", { }))
@@ -69,7 +69,7 @@ namespace paludis
                                         n::concept_license() = k.get("concept_license"),
                                         n::concept_use() = k.get("concept_use"),
                                         n::default_environment() = k.get("default_environment"),
-                                        n::extra_data_dir() = FSEntry(strip_trailing_string(stringify(d->realpath()), ".conf")),
+                                        n::extra_data_dir() = FSPath(strip_trailing_string(stringify(d->realpath()), ".conf")),
                                         n::fallback_environment() = k.get("fallback_environment"),
                                         n::name() = strip_trailing_string(d->basename(), ".conf"),
                                         n::paludis_package() = k.get("paludis_package"),

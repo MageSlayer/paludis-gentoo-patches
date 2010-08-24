@@ -32,16 +32,16 @@ namespace paludis
     template <>
     struct Imp<ContentsEntry>
     {
-        const std::shared_ptr<const MetadataValueKey<FSEntry> > location_key;
+        const std::shared_ptr<const MetadataValueKey<FSPath> > location_key;
 
-        Imp(const FSEntry & n) :
-            location_key(std::make_shared<LiteralMetadataValueKey<FSEntry>>("location", "location", mkt_significant, n))
+        Imp(const FSPath & n) :
+            location_key(std::make_shared<LiteralMetadataValueKey<FSPath>>("location", "location", mkt_significant, n))
         {
         }
     };
 }
 
-ContentsEntry::ContentsEntry(const FSEntry & n) :
+ContentsEntry::ContentsEntry(const FSPath & n) :
     Pimp<ContentsEntry>(n),
     _imp(Pimp<ContentsEntry>::_imp)
 {
@@ -57,23 +57,23 @@ ContentsEntry::need_keys_added() const
 {
 }
 
-const std::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSPath> >
 ContentsEntry::location_key() const
 {
     return _imp->location_key;
 }
 
-ContentsFileEntry::ContentsFileEntry(const FSEntry & our_name) :
+ContentsFileEntry::ContentsFileEntry(const FSPath & our_name) :
     ContentsEntry(our_name)
 {
 }
 
-ContentsDirEntry::ContentsDirEntry(const FSEntry & our_name) :
+ContentsDirEntry::ContentsDirEntry(const FSPath & our_name) :
     ContentsEntry(our_name)
 {
 }
 
-ContentsOtherEntry::ContentsOtherEntry(const FSEntry & our_name) :
+ContentsOtherEntry::ContentsOtherEntry(const FSPath & our_name) :
     ContentsEntry(our_name)
 {
 }
@@ -92,7 +92,7 @@ namespace paludis
     };
 }
 
-ContentsSymEntry::ContentsSymEntry(const FSEntry & our_name, const std::string & our_target) :
+ContentsSymEntry::ContentsSymEntry(const FSPath & our_name, const std::string & our_target) :
     Pimp<ContentsSymEntry>(our_target),
     ContentsEntry(our_name),
     _imp(Pimp<ContentsSymEntry>::_imp)

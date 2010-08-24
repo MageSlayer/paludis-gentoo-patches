@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# vim: set sw=4 sts=4 et ft=sh :
+
+make_enum_FSIteratorOption()
+{
+    prefix fsio
+
+    key fsio_include_dotfiles   "Skip files whose name start with a dot"
+    key fsio_inode_sort         "Return items sorted by inode number"
+    key fsio_first_only         "Return the first item only"
+
+    doxygen_comment << "END"
+        /**
+         * Options for an FSIterator.
+         *
+         * \see FSIterator
+         * \see FSIteratorOptions
+         * \ingroup g_fs
+         */
+END
+}

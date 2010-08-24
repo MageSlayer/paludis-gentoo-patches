@@ -231,14 +231,14 @@ namespace
                 if (req.length() >= 2 && '?' == req.at(req.length() - 2))
                     reqs.installable_to_path(make_named_values<InstallableToPath>(
                                 n::include_masked() = true,
-                                n::path() = FSEntry(req.substr(0, req.length() - 2))));
+                                n::path() = FSPath(req.substr(0, req.length() - 2))));
                 else
                     reqs.installable_to_path(make_named_values<InstallableToPath>(
                                 n::include_masked() = false,
-                                n::path() = FSEntry(req.substr(0, req.length() - 1))));
+                                n::path() = FSPath(req.substr(0, req.length() - 1))));
             }
             else
-                reqs.installed_at_path(req);
+                reqs.installed_at_path(FSPath(req));
         }
         else
         {
@@ -528,7 +528,7 @@ namespace
             return pattern == stringify(k.value());
         }
 
-        bool visit(const MetadataValueKey<FSEntry> & k) const
+        bool visit(const MetadataValueKey<FSPath> & k) const
         {
             return pattern == stringify(k.value());
         }
@@ -676,7 +676,7 @@ namespace
             return false;
         }
 
-        bool visit(const MetadataCollectionKey<FSEntrySequence> & s) const
+        bool visit(const MetadataCollectionKey<FSPathSequence> & s) const
         {
             switch (op)
             {

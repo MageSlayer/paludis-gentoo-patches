@@ -28,6 +28,7 @@
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/options.hh>
+#include <paludis/util/fs_stat.hh>
 #include <paludis/mask.hh>
 #include <list>
 #include <set>
@@ -114,11 +115,11 @@ namespace paludis
 
 template <typename F_>
 void
-ProfileFile<F_>::add_file(const FSEntry & f)
+ProfileFile<F_>::add_file(const FSPath & f)
 {
     Context context("When adding profile configuration file '" + stringify(f) + "':");
 
-    if (! f.exists())
+    if (! f.stat().exists())
         return;
 
     const std::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(

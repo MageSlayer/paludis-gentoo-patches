@@ -20,7 +20,6 @@
 #include <paludis/util/wildcard_expander.hh>
 
 #include <paludis/util/exception.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <memory>
@@ -37,16 +36,16 @@ namespace paludis
     template <>
     struct Imp<WildcardExpander>
     {
-        std::shared_ptr<std::vector<FSEntry> > files;
-        std::vector<FSEntry>::const_iterator it;
+        std::shared_ptr<std::vector<FSPath> > files;
+        std::vector<FSPath>::const_iterator it;
 
         Imp() :
-            files(std::make_shared<std::vector<FSEntry>>())
+            files(std::make_shared<std::vector<FSPath>>())
         {
         }
 
-        Imp(const std::shared_ptr<std::vector<FSEntry> > & the_files,
-                       std::vector<FSEntry>::const_iterator the_it) :
+        Imp(const std::shared_ptr<std::vector<FSPath> > & the_files,
+                       std::vector<FSPath>::const_iterator the_it) :
             files(the_files),
             it(the_it)
         {
@@ -107,7 +106,7 @@ namespace
     }
 }
 
-WildcardExpander::WildcardExpander(const std::string & pattern, const paludis::FSEntry & root) :
+WildcardExpander::WildcardExpander(const std::string & pattern, const FSPath & root) :
     Pimp<WildcardExpander>()
 {
     // GLOB_NOCHECK seems to be buggy in glibc 2.5: fails
@@ -117,9 +116,9 @@ WildcardExpander::WildcardExpander(const std::string & pattern, const paludis::F
     Glob g(stringify(root / pattern), 0);
     if (0 < g->gl_pathc)
         for (unsigned i = 0; i < g->gl_pathc; ++i)
-            _imp->files->push_back(FSEntry(g->gl_pathv[i]).strip_leading(root));
+            _imp->files->push_back(FSPath(g->gl_pathv[i]).strip_leading(root));
     else
-        _imp->files->push_back(FSEntry("/") / pattern);
+        _imp->files->push_back(FSPath("/") / pattern);
 
     _imp->it = _imp->files->begin();
 }
@@ -147,13 +146,13 @@ WildcardExpander::operator= (const WildcardExpander & other)
     return *this;
 }
 
-const FSEntry &
+const FSPath &
 WildcardExpander::operator* () const
 {
     return *_imp->it;
 }
 
-const FSEntry *
+const FSPath *
 WildcardExpander::operator-> () const
 {
     return &*_imp->it;

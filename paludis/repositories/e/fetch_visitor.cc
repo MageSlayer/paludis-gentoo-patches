@@ -31,12 +31,13 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/process.hh>
 #include <paludis/util/pimp-impl.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
+#include <paludis/util/fs_path.hh>
+#include <paludis/util/fs_stat.hh>
 #include <paludis/output_manager.hh>
 #include <algorithm>
 #include <list>
@@ -52,7 +53,7 @@ namespace paludis
         const Environment * const env;
         const std::shared_ptr<const PackageID> id;
         const EAPI & eapi;
-        const FSEntry distdir;
+        const FSPath distdir;
         const bool fetch_unneeded;
         const bool userpriv;
         const std::string mirrors_name;
@@ -67,7 +68,7 @@ namespace paludis
                 const Environment * const e,
                 const std::shared_ptr<const PackageID> & i,
                 const EAPI & p,
-                const FSEntry & d,
+                const FSPath & d,
                 const bool f,
                 const bool u,
                 const std::string & m,
@@ -96,7 +97,7 @@ FetchVisitor::FetchVisitor(
         const Environment * const e,
         const std::shared_ptr<const PackageID> & i,
         const EAPI & p,
-        const FSEntry & d,
+        const FSPath & d,
         const bool f,
         const bool u,
         const std::string & m,
@@ -141,7 +142,7 @@ FetchVisitor::visit(const FetchableURISpecTree::NodeType<URILabelsDepSpec>::Type
 
 namespace
 {
-    FSEntry make_fetcher(const FSEntry & d, const std::string & x)
+    FSPath make_fetcher(const FSPath & d, const std::string & x)
     {
         std::string lower_x;
         std::transform(x.begin(), x.end(), std::back_inserter(lower_x), &::tolower);
@@ -165,11 +166,12 @@ FetchVisitor::visit(const FetchableURISpecTree::NodeType<FetchableURIDepSpec>::T
     {
         Context local_context("When fetching URI '" + stringify(i->first) + "' to '" + stringify(i->second) + ":");
 
-        FSEntry destination(_imp->distdir / node.spec()->filename());
+        FSPath destination(_imp->distdir / node.spec()->filename());
 
-        if (destination.exists())
+        FSStat destination_stat(destination);
+        if (destination_stat.exists())
         {
-            if (0 == destination.file_size())
+            if (0 == destination_stat.file_size())
                 destination.unlink();
             else
                 return;
@@ -187,11 +189,11 @@ FetchVisitor::visit(const FetchableURISpecTree::NodeType<FetchableURIDepSpec>::T
             continue;
         }
 
-        const std::shared_ptr<const FSEntrySequence> fetch_dirs(_imp->env->fetchers_dirs());
+        const std::shared_ptr<const FSPathSequence> fetch_dirs(_imp->env->fetchers_dirs());
         bool found(false);
-        for (FSEntrySequence::ConstIterator d(fetch_dirs->begin()), d_end(fetch_dirs->end()) ;
+        for (FSPathSequence::ConstIterator d(fetch_dirs->begin()), d_end(fetch_dirs->end()) ;
                 d != d_end ; ++d)
-            if (make_fetcher(*d, protocol).exists())
+            if (make_fetcher(*d, protocol).stat().exists())
             {
                 found = true;
 
@@ -200,10 +202,10 @@ FetchVisitor::visit(const FetchableURISpecTree::NodeType<FetchableURIDepSpec>::T
                 if (_imp->userpriv)
                     fetch_process.setuid_setgid(_imp->env->reduced_uid(), _imp->env->reduced_gid());
 
-                std::shared_ptr<const FSEntrySequence> syncers_dirs(_imp->env->syncers_dirs());
-                std::shared_ptr<const FSEntrySequence> bashrc_files(_imp->env->bashrc_files());
-                std::shared_ptr<const FSEntrySequence> fetchers_dirs(_imp->env->fetchers_dirs());
-                std::shared_ptr<const FSEntrySequence> hook_dirs(_imp->env->hook_dirs());
+                std::shared_ptr<const FSPathSequence> syncers_dirs(_imp->env->syncers_dirs());
+                std::shared_ptr<const FSPathSequence> bashrc_files(_imp->env->bashrc_files());
+                std::shared_ptr<const FSPathSequence> fetchers_dirs(_imp->env->fetchers_dirs());
+                std::shared_ptr<const FSPathSequence> hook_dirs(_imp->env->hook_dirs());
 
                 fetch_process
                     .setenv("P", stringify(_imp->id->name().package()) + "-" +

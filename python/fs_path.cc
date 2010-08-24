@@ -21,14 +21,15 @@
 #include <python/exception.hh>
 #include <python/iterable.hh>
 
-#include <paludis/util/fs_entry.hh>
+#include <paludis/util/fs_path.hh>
+#include <paludis/util/fs_error.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 
 using namespace paludis;
 using namespace paludis::python;
 namespace bp = boost::python;
 
-void expose_fs_entry()
+void expose_fs_path()
 {
     /**
      * Exceptions
@@ -38,18 +39,19 @@ void expose_fs_entry()
          "Generic filesystem error class.");
 
     /**
-     * FSEntry
+     * FSPath
      */
-    bp::implicitly_convertible<std::string, FSEntry>();
-    bp::to_python_converter<FSEntry, to_string<FSEntry> >();
+    bp::implicitly_convertible<std::string, FSPath>();
+    bp::to_python_converter<FSPath, to_string<FSPath> >();
 
     /**
-     * FSEntryIterable
+     * FSPathIterable
      */
-    class_iterable<FSEntrySequence>
+    class_iterable<FSPathSequence>
         (
-         "FSEntryIterable",
-         "Iterable of FSEntry",
+         "FSPathIterable",
+         "Iterable of FSPath",
          true
         );
 }
+

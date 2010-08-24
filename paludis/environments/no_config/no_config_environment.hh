@@ -21,7 +21,6 @@
 #define PALUDIS_GUARD_PALUDIS_ENVIRONMENT_NO_CONFIG_NO_CONFIG_ENVIRONMENT_HH 1
 
 #include <paludis/environment_implementation.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/pimp.hh>
 #include <paludis/util/map-fwd.hh>
 
@@ -58,7 +57,7 @@ namespace paludis
             NamedValue<n::disable_metadata_cache, bool> disable_metadata_cache;
             NamedValue<n::extra_accept_keywords, std::string> extra_accept_keywords;
             NamedValue<n::extra_params, std::shared_ptr<Map<std::string, std::string> > > extra_params;
-            NamedValue<n::extra_repository_dirs, std::shared_ptr<const FSEntrySequence> > extra_repository_dirs;
+            NamedValue<n::extra_repository_dirs, std::shared_ptr<const FSPathSequence> > extra_repository_dirs;
             NamedValue<n::master_repository_name, std::string> master_repository_name;
 
             /**
@@ -70,9 +69,9 @@ namespace paludis
              */
             NamedValue<n::profiles_if_not_auto, std::string> profiles_if_not_auto;
 
-            NamedValue<n::repository_dir, FSEntry> repository_dir;
+            NamedValue<n::repository_dir, FSPath> repository_dir;
             NamedValue<n::repository_type, no_config_environment::RepositoryType> repository_type;
-            NamedValue<n::write_cache, FSEntry> write_cache;
+            NamedValue<n::write_cache, FSPath> write_cache;
         };
     }
 
@@ -110,7 +109,7 @@ namespace paludis
             /**
              * What is our top level directory for our main repository?
              */
-            FSEntry main_repository_dir() const;
+            FSPath main_repository_dir() const;
 
             /**
              * Should we accept unstable keywords?
@@ -190,7 +189,7 @@ namespace paludis
             virtual bool unmasked_by_user(const PackageID &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::shared_ptr<const FSEntrySequence> hook_dirs() const
+            virtual std::shared_ptr<const FSPathSequence> hook_dirs() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual uid_t reduced_uid() const;
@@ -214,14 +213,14 @@ namespace paludis
             virtual bool remove_from_world(const SetName &) const;
 
             virtual const std::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
-            virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > config_location_key() const;
-            virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > preferred_root_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<FSPath> > config_location_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<FSPath> > preferred_root_key() const;
 
             virtual const std::shared_ptr<OutputManager> create_output_manager(
                     const CreateOutputManagerInfo &) const;
 
             virtual const std::shared_ptr<Repository> repository_from_new_config_file(
-                    const FSEntry &) PALUDIS_ATTRIBUTE((noreturn));
+                    const FSPath &) PALUDIS_ATTRIBUTE((noreturn));
 
             virtual void update_config_files_for_package_move(
                     const PackageDepSpec &, const QualifiedPackageName &) const;

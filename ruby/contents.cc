@@ -174,7 +174,7 @@ namespace
                 if (1 == argc)
                 {
                     ptr = new std::shared_ptr<const ContentsEntry>(std::make_shared<A_>(
-                                FSEntry(StringValuePtr(argv[0]))));
+                                FSPath(StringValuePtr(argv[0]))));
                 }
                 else
                 {
@@ -200,7 +200,7 @@ namespace
             if (2 == argc)
             {
                 ptr = new std::shared_ptr<const ContentsEntry>(std::make_shared<ContentsSymEntry>(
-                            FSEntry(StringValuePtr(argv[0])), StringValuePtr(argv[1])));
+                            FSPath(StringValuePtr(argv[0])), StringValuePtr(argv[1])));
             }
             else
             {

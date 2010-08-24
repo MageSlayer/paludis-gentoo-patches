@@ -22,15 +22,14 @@
 #include <paludis/repositories/unwritten/unwritten_id.hh>
 #include <paludis/repositories/unwritten/unwritten_mask.hh>
 #include <paludis/util/pimp-impl.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/dir_iterator.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/fs_iterator.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/literal_metadata_key.hh>
@@ -73,7 +72,7 @@ namespace paludis
 UnwrittenRepositoryStore::UnwrittenRepositoryStore(
         const Environment * const env,
         const UnwrittenRepository * const repo,
-        const FSEntry & f) :
+        const FSPath & f) :
     Pimp<UnwrittenRepositoryStore>(repo)
 {
     _populate(env, f);
@@ -84,17 +83,17 @@ UnwrittenRepositoryStore::~UnwrittenRepositoryStore()
 }
 
 void
-UnwrittenRepositoryStore::_populate(const Environment * const env, const FSEntry & f)
+UnwrittenRepositoryStore::_populate(const Environment * const env, const FSPath & f)
 {
     Context context("When populating UnwrittenRepository from directory '" + stringify(f) + "':");
 
     using namespace std::placeholders;
-    std::for_each(DirIterator(f), DirIterator(), std::bind(
+    std::for_each(FSIterator(f, { fsio_inode_sort }), FSIterator(), std::bind(
                 &UnwrittenRepositoryStore::_populate_one, this, env, _1));
 }
 
 void
-UnwrittenRepositoryStore::_populate_one(const Environment * const env, const FSEntry & f)
+UnwrittenRepositoryStore::_populate_one(const Environment * const env, const FSPath & f)
 {
     if (! is_file_with_extension(f, ".conf", { }))
         return;

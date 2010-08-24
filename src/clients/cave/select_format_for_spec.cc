@@ -21,7 +21,6 @@
 #include "format_user_config.hh"
 #include <paludis/environment.hh>
 #include <paludis/util/sequence.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/selection.hh>
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
@@ -40,7 +39,7 @@ paludis::cave::select_format_for_spec(
         const T_ & if_unavailable
         )
 {
-    if (! (*env)[selection::SomeArbitraryVersion(generator::Matches(spec, { }) | filter::InstalledAtRoot(FSEntry("/")))]->empty())
+    if (! (*env)[selection::SomeArbitraryVersion(generator::Matches(spec, { }) | filter::InstalledAtSlash())]->empty())
         return if_installed;
     if (! (*env)[selection::SomeArbitraryVersion(generator::Matches(spec, { }) | filter::SupportsAction<InstallAction>()
                 | filter::NotMasked())]->empty())

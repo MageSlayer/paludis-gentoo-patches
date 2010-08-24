@@ -42,7 +42,7 @@ int main(int argc, char * argv[])
         /* Fetch all installed packages. */
         std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(
                     generator::All() |
-                    filter::InstalledAtRoot(FSEntry("/")))]);
+                    filter::InstalledAtSlash())]);
 
         /* Fetch the 'system' and 'world' sets. Ordinarily we should check for
          * zero pointers here, but these two sets will always exist. */

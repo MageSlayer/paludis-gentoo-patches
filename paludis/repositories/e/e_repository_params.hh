@@ -20,8 +20,9 @@
 #ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_E_REPOSITORY_PARAMS_HH
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_E_REPOSITORY_PARAMS_HH 1
 
-#include <paludis/util/fs_entry.hh>
+#include <paludis/util/fs_path.hh>
 #include <paludis/util/named_value.hh>
+#include <memory>
 
 /** \file
  * Declaration for the ERepositoryParams class.
@@ -81,34 +82,34 @@ namespace paludis
             NamedValue<n::append_repository_name_to_write_cache, bool> append_repository_name_to_write_cache;
             NamedValue<n::auto_profiles, bool> auto_profiles;
             NamedValue<n::binary_destination, bool> binary_destination;
-            NamedValue<n::binary_distdir, FSEntry> binary_distdir;
+            NamedValue<n::binary_distdir, FSPath> binary_distdir;
             NamedValue<n::binary_keywords_filter, std::string> binary_keywords_filter;
             NamedValue<n::binary_uri_prefix, std::string> binary_uri_prefix;
-            NamedValue<n::builddir, FSEntry> builddir;
-            NamedValue<n::cache, FSEntry> cache;
-            NamedValue<n::distdir, FSEntry> distdir;
+            NamedValue<n::builddir, FSPath> builddir;
+            NamedValue<n::cache, FSPath> cache;
+            NamedValue<n::distdir, FSPath> distdir;
             NamedValue<n::eapi_when_unknown, std::string> eapi_when_unknown;
             NamedValue<n::eapi_when_unspecified, std::string> eapi_when_unspecified;
-            NamedValue<n::eclassdirs, std::shared_ptr<const FSEntrySequence> > eclassdirs;
+            NamedValue<n::eclassdirs, std::shared_ptr<const FSPathSequence> > eclassdirs;
             NamedValue<n::entry_format, std::string> entry_format;
             NamedValue<n::environment, Environment *> environment;
             NamedValue<n::ignore_deprecated_profiles, bool> ignore_deprecated_profiles;
             NamedValue<n::layout, std::string> layout;
-            NamedValue<n::location, FSEntry> location;
+            NamedValue<n::location, FSPath> location;
             NamedValue<n::master_repositories, std::shared_ptr<const ERepositorySequence> > master_repositories;
-            NamedValue<n::names_cache, FSEntry> names_cache;
-            NamedValue<n::newsdir, FSEntry> newsdir;
+            NamedValue<n::names_cache, FSPath> names_cache;
+            NamedValue<n::newsdir, FSPath> newsdir;
             NamedValue<n::profile_eapi_when_unspecified, std::string> profile_eapi_when_unspecified;
             NamedValue<n::profile_layout, std::string> profile_layout;
-            NamedValue<n::profiles, std::shared_ptr<const FSEntrySequence> > profiles;
+            NamedValue<n::profiles, std::shared_ptr<const FSPathSequence> > profiles;
             NamedValue<n::profiles_explicitly_set, bool> profiles_explicitly_set;
-            NamedValue<n::securitydir, FSEntry> securitydir;
-            NamedValue<n::setsdir, FSEntry> setsdir;
+            NamedValue<n::securitydir, FSPath> securitydir;
+            NamedValue<n::setsdir, FSPath> setsdir;
             NamedValue<n::sync, std::string> sync;
             NamedValue<n::sync_options, std::string> sync_options;
             NamedValue<n::use_manifest, erepository::UseManifest> use_manifest;
             NamedValue<n::write_bin_uri_prefix, std::string> write_bin_uri_prefix;
-            NamedValue<n::write_cache, FSEntry> write_cache;
+            NamedValue<n::write_cache, FSPath> write_cache;
         };
     }
 

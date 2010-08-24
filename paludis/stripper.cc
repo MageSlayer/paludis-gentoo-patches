@@ -19,12 +19,13 @@
 
 #include <paludis/stripper.hh>
 #include <paludis/util/pimp-impl.hh>
-#include <paludis/util/fs_entry.hh>
-#include <paludis/util/dir_iterator.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/process.hh>
+#include <paludis/util/fs_iterator.hh>
+#include <paludis/util/fs_stat.hh>
+#include <paludis/util/options.hh>
 #include <functional>
 #include <sstream>
 #include <list>
@@ -72,7 +73,7 @@ Stripper::strip()
 }
 
 void
-Stripper::do_dir_recursive(const FSEntry & f)
+Stripper::do_dir_recursive(const FSPath & f)
 {
     Context context("When stripping inside '" + stringify(f) + "':");
 
@@ -81,31 +82,30 @@ Stripper::do_dir_recursive(const FSEntry & f)
 
     on_enter_dir(f);
 
-    for (DirIterator d(f, { dio_include_dotfiles, dio_inode_sort }), d_end ; d != d_end ; ++d)
+    for (FSIterator d(f, { fsio_include_dotfiles, fsio_inode_sort }), d_end ; d != d_end ; ++d)
     {
-        if (d->is_symbolic_link())
+        FSStat d_stat(*d);
+
+        if (d_stat.is_symlink())
             continue;
-        if (_imp->stripped_ids.end() != _imp->stripped_ids.find(d->lowlevel_id()))
+        if (_imp->stripped_ids.end() != _imp->stripped_ids.find(d_stat.lowlevel_id()))
             continue;
 
-        if (d->is_directory())
+        if (d_stat.is_directory())
             do_dir_recursive(*d);
 
-        else if (d->is_regular_file())
+        else if (d_stat.is_regular_file())
         {
-            if (d->has_permission(fs_ug_owner, fs_perm_execute) ||
-                    d->has_permission(fs_ug_group, fs_perm_execute) ||
-                    d->has_permission(fs_ug_others, fs_perm_execute) ||
+            if ((0 != (d_stat.permissions() & (S_IXUSR | S_IXGRP | S_IXOTH))) ||
                     (std::string::npos != d->basename().find(".so.")) ||
-                    (d->basename() != strip_trailing_string(d->basename(), ".so"))
-                    )
+                    (d->basename() != strip_trailing_string(d->basename(), ".so")))
             {
                 std::string t(file_type(*d));
                 if (std::string::npos != t.find("SB executable") || std::string::npos != t.find("SB shared object"))
                 {
                     if (_imp->options.split())
                     {
-                        FSEntry target(_imp->options.debug_dir() / d->strip_leading(_imp->options.image_dir()));
+                        FSPath target(_imp->options.debug_dir() / d->strip_leading(_imp->options.image_dir()));
                         target = target.dirname() / (target.basename() + ".debug");
                         do_split(*d, target);
                     }
@@ -125,7 +125,7 @@ Stripper::do_dir_recursive(const FSEntry & f)
 }
 
 std::string
-Stripper::file_type(const FSEntry & f)
+Stripper::file_type(const FSPath & f)
 {
     Context context("When finding the file type of '" + stringify(f) + "':");
 
@@ -141,7 +141,7 @@ Stripper::file_type(const FSEntry & f)
 }
 
 void
-Stripper::do_strip(const FSEntry & f, const std::string & options)
+Stripper::do_strip(const FSPath & f, const std::string & options)
 {
     Context context("When stripping '" + stringify(f) + "':");
     on_strip(f);
@@ -151,22 +151,22 @@ Stripper::do_strip(const FSEntry & f, const std::string & options)
             ProcessCommand({ "strip", options, stringify(f) }));
     if (0 != strip_process.run().wait())
         Log::get_instance()->message("strip.failure", ll_warning, lc_context) << "Couldn't strip '" << f << "'";
-    _imp->stripped_ids.insert(f.lowlevel_id());
+    _imp->stripped_ids.insert(f.stat().lowlevel_id());
 }
 
 void
-Stripper::do_split(const FSEntry & f, const FSEntry & g)
+Stripper::do_split(const FSPath & f, const FSPath & g)
 {
     Context context("When splitting '" + stringify(f) + "' to '" + stringify(g) + "':");
     on_split(f, g);
 
     {
-        std::list<FSEntry> to_make;
-        for (FSEntry d(g.dirname()) ; (! d.exists()) && (d != _imp->options.image_dir()) ; d = d.dirname())
+        std::list<FSPath> to_make;
+        for (FSPath d(g.dirname()) ; (! d.stat().exists()) && (d != _imp->options.image_dir()) ; d = d.dirname())
             to_make.push_front(d);
 
         using namespace std::placeholders;
-        std::for_each(to_make.begin(), to_make.end(), std::bind(std::mem_fn(&FSEntry::mkdir), _1, 0755));
+        std::for_each(to_make.begin(), to_make.end(), std::bind(std::mem_fn(&FSPath::mkdir), _1, 0755, FSPathMkdirOptions() + fspmkdo_ok_if_exists));
     }
 
     Process objcopy_copy_process(ProcessCommand({ "objcopy", "--only-keep-debug", stringify(f), stringify(g) }));
@@ -176,6 +176,6 @@ Stripper::do_split(const FSEntry & f, const FSEntry & g)
     else if (0 != objcopy_link_process.run().wait())
         Log::get_instance()->message("strip.failure", ll_warning, lc_context) << "Couldn't add debug link for '" << f << "'";
     else
-        FSEntry(g).chmod(g.permissions() & ~(S_IXGRP | S_IXUSR | S_IXOTH | S_IWOTH));
+        g.chmod(g.stat().permissions() & ~(S_IXGRP | S_IXUSR | S_IXOTH | S_IWOTH));
 }
 

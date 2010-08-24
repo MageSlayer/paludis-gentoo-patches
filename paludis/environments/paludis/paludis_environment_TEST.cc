@@ -19,7 +19,6 @@
 
 #include "paludis_environment.hh"
 #include "paludis_config.hh"
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -58,7 +57,7 @@ namespace test_cases
 
         void run()
         {
-            setenv("PALUDIS_HOME", stringify(FSEntry::cwd() / "paludis_environment_TEST_dir" / "home1").c_str(), 1);
+            setenv("PALUDIS_HOME", stringify(FSPath::cwd() / "paludis_environment_TEST_dir" / "home1").c_str(), 1);
             unsetenv("PALUDIS_SKIP_CONFIG");
 
             std::shared_ptr<Environment> env(std::make_shared<PaludisEnvironment>(""));
@@ -91,7 +90,7 @@ namespace test_cases
 
         void run()
         {
-            setenv("PALUDIS_HOME", stringify(FSEntry::cwd() / "paludis_environment_TEST_dir" / "home5").c_str(), 1);
+            setenv("PALUDIS_HOME", stringify(FSPath::cwd() / "paludis_environment_TEST_dir" / "home5").c_str(), 1);
             unsetenv("PALUDIS_SKIP_CONFIG");
 
             std::shared_ptr<Environment> env(std::make_shared<PaludisEnvironment>(""));
@@ -117,7 +116,7 @@ namespace test_cases
 
         void run()
         {
-            setenv("PALUDIS_HOME", stringify(FSEntry::cwd() / "paludis_environment_TEST_dir" / "home2").c_str(), 1);
+            setenv("PALUDIS_HOME", stringify(FSPath::cwd() / "paludis_environment_TEST_dir" / "home2").c_str(), 1);
             unsetenv("PALUDIS_SKIP_CONFIG");
 
             std::shared_ptr<Environment> env(std::make_shared<PaludisEnvironment>(""));
@@ -150,7 +149,7 @@ namespace test_cases
 
         void run()
         {
-            setenv("PALUDIS_HOME", stringify(FSEntry::cwd() / "paludis_environment_TEST_dir" / "home3").c_str(), 1);
+            setenv("PALUDIS_HOME", stringify(FSPath::cwd() / "paludis_environment_TEST_dir" / "home3").c_str(), 1);
             unsetenv("PALUDIS_SKIP_CONFIG");
 
             std::shared_ptr<Environment> env(std::make_shared<PaludisEnvironment>(""));
@@ -183,7 +182,7 @@ namespace test_cases
 
         void run()
         {
-            setenv("PALUDIS_HOME", stringify(FSEntry::cwd() / "paludis_environment_TEST_dir" / "home4").c_str(), 1);
+            setenv("PALUDIS_HOME", stringify(FSPath::cwd() / "paludis_environment_TEST_dir" / "home4").c_str(), 1);
             unsetenv("PALUDIS_SKIP_CONFIG");
 
             std::shared_ptr<Environment> env(std::make_shared<PaludisEnvironment>(""));

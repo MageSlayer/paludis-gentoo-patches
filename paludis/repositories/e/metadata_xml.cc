@@ -23,9 +23,10 @@
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/util/map-impl.hh>
 #include <paludis/util/mutex.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/fs_path.hh>
+#include <paludis/util/fs_stat.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/choice.hh>
 #include <unordered_map>
@@ -33,7 +34,7 @@
 using namespace paludis;
 using namespace paludis::erepository;
 
-typedef std::unordered_map<FSEntry, std::shared_ptr<MetadataXML>, Hash<FSEntry> > Store;
+typedef std::unordered_map<FSPath, std::shared_ptr<MetadataXML>, Hash<FSPath> > Store;
 
 namespace paludis
 {
@@ -55,11 +56,11 @@ MetadataXMLPool::~MetadataXMLPool()
 }
 
 const std::shared_ptr<const MetadataXML>
-MetadataXMLPool::metadata_if_exists(const FSEntry & f) const
+MetadataXMLPool::metadata_if_exists(const FSPath & f) const
 {
     Context context("When handling metadata.xml file '" + stringify(f) + "':");
 
-    FSEntry f_real(f.realpath_if_exists());
+    FSPath f_real(f.realpath_if_exists());
     Lock lock(_imp->mutex);
     Store::const_iterator i(_imp->store.find(f_real));
     if (i != _imp->store.end())
@@ -67,7 +68,7 @@ MetadataXMLPool::metadata_if_exists(const FSEntry & f) const
     else
     {
         std::shared_ptr<MetadataXML> metadata_xml;
-        if (f_real.is_regular_file_or_symlink_to_regular_file())
+        if (f_real.stat().is_regular_file_or_symlink_to_regular_file())
         {
             try
             {

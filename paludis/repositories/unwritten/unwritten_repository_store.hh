@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_UNWRITTEN_UNWRITTEN_REPOSITORY_STORE_HH 1
 
 #include <paludis/util/pimp.hh>
-#include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/util/fs_path-fwd.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/environment-fwd.hh>
@@ -37,14 +37,14 @@ namespace paludis
             private Pimp<UnwrittenRepositoryStore>
         {
             private:
-                void _populate_one(const Environment * const env, const FSEntry & f);
-                void _populate(const Environment * const env, const FSEntry & f);
+                void _populate_one(const Environment * const env, const FSPath & f);
+                void _populate(const Environment * const env, const FSPath & f);
 
             public:
                 UnwrittenRepositoryStore(
                         const Environment * const,
                         const UnwrittenRepository * const,
-                        const FSEntry &);
+                        const FSPath &);
                 ~UnwrittenRepositoryStore();
 
                 bool has_category_named(const CategoryNamePart &) const

@@ -25,6 +25,7 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/sequence.hh>
+#include <paludis/util/fs_stat.hh>
 #include <paludis/standard_output_manager.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/package_database.hh>
@@ -51,7 +52,7 @@ namespace
             return mm->second;
     }
 
-    bool ignore_nothing(const FSEntry &)
+    bool ignore_nothing(const FSPath &)
     {
         return false;
     }
@@ -86,7 +87,7 @@ namespace
     {
         public:
             const std::string what;
-            FSEntry root_dir;
+            FSPath root_dir;
             std::string target;
             TestEnvironment env;
             std::shared_ptr<Repository> repo;
@@ -116,8 +117,8 @@ namespace
                 keys->insert("format", "vdb");
                 keys->insert("names_cache", "/var/empty");
                 keys->insert("provides_cache", "/var/empty");
-                keys->insert("location", stringify(FSEntry::cwd() / "vdb_unmerger_TEST_dir" / "repo"));
-                keys->insert("builddir", stringify(FSEntry::cwd() / "vdb_unmerger_TEST_dir" / "build"));
+                keys->insert("location", stringify(FSPath::cwd() / "vdb_unmerger_TEST_dir" / "repo"));
+                keys->insert("builddir", stringify(FSPath::cwd() / "vdb_unmerger_TEST_dir" / "build"));
                 repo = VDBRepository::repository_factory_create(&env, std::bind(from_keys, keys, std::placeholders::_1));
                 env.package_database()->add_repository(0, repo);
 
@@ -146,11 +147,11 @@ namespace test_cases
 
         void main_run()
         {
-            TEST_CHECK((root_dir / target).is_regular_file());
+            TEST_CHECK((root_dir / target).stat().is_regular_file());
 
             unmerger->unmerge();
 
-            TEST_CHECK(! (root_dir / target).exists());
+            TEST_CHECK(! (root_dir / target).stat().exists());
         }
     } test_vdb_unmerger_file_ok;
 
@@ -160,11 +161,11 @@ namespace test_cases
 
         void main_run()
         {
-            TEST_CHECK((root_dir / target).is_regular_file());
+            TEST_CHECK((root_dir / target).stat().is_regular_file());
 
             unmerger->unmerge();
 
-            TEST_CHECK(! (root_dir / target).exists());
+            TEST_CHECK(! (root_dir / target).stat().exists());
         }
     } test_vdb_unmerger_file_with_spaces;
 
@@ -174,11 +175,11 @@ namespace test_cases
 
         void main_run()
         {
-            TEST_CHECK((root_dir / target).is_regular_file());
+            TEST_CHECK((root_dir / target).stat().is_regular_file());
 
             unmerger->unmerge();
 
-            TEST_CHECK(! (root_dir / target).exists());
+            TEST_CHECK(! (root_dir / target).stat().exists());
         }
     } test_vdb_unmerger_file_with_lots_of_spaces;
 
@@ -188,11 +189,11 @@ namespace test_cases
 
         void main_run()
         {
-            TEST_CHECK((root_dir / target).is_regular_file());
+            TEST_CHECK((root_dir / target).stat().is_regular_file());
 
             unmerger->unmerge();
 
-            TEST_CHECK(! (root_dir / target).exists());
+            TEST_CHECK(! (root_dir / target).stat().exists());
         }
     } test_vdb_unmerger_file_with_trailing_space;
 
@@ -202,11 +203,11 @@ namespace test_cases
 
         void main_run()
         {
-            TEST_CHECK((root_dir / target).is_directory());
+            TEST_CHECK((root_dir / target).stat().is_directory());
 
             unmerger->unmerge();
 
-            TEST_CHECK((root_dir / target).is_directory());
+            TEST_CHECK((root_dir / target).stat().is_directory());
         }
     } test_vdb_unmerger_file_bad_type;
 
@@ -216,11 +217,11 @@ namespace test_cases
 
         void main_run()
         {
-            TEST_CHECK((root_dir / target).is_regular_file());
+            TEST_CHECK((root_dir / target).stat().is_regular_file());
 
             unmerger->unmerge();
 
-            TEST_CHECK((root_dir / target).is_regular_file());
+            TEST_CHECK((root_dir / target).stat().is_regular_file());
         }
     } test_vdb_unmerger_file_bad_md5sum;
 
@@ -230,11 +231,11 @@ namespace test_cases
 
         void main_run()
         {
-            TEST_CHECK((root_dir / target).is_regular_file());
+            TEST_CHECK((root_dir / target).stat().is_regular_file());
 
             unmerger->unmerge();
 
-            TEST_CHECK((root_dir / target).is_regular_file());
+            TEST_CHECK((root_dir / target).stat().is_regular_file());
         }
     } test_vdb_unmerger_file_bad_mtime;
 
@@ -254,11 +255,11 @@ namespace test_cases
 
         void main_run()
         {
-            TEST_CHECK((root_dir / target).is_directory());
+            TEST_CHECK((root_dir / target).stat().is_directory());
 
             unmerger->unmerge();
 
-            TEST_CHECK(! (root_dir / target).exists());
+            TEST_CHECK(! (root_dir / target).stat().exists());
         }
     } test_vdb_unmerger_dir_ok;
 
@@ -268,11 +269,11 @@ namespace test_cases
 
         void main_run()
         {
-            TEST_CHECK((root_dir / target).is_directory());
+            TEST_CHECK((root_dir / target).stat().is_directory());
 
             unmerger->unmerge();
 
-            TEST_CHECK(! (root_dir / target).exists());
+            TEST_CHECK(! (root_dir / target).stat().exists());
         }
     } test_vdb_unmerger_dir_with_spaces;
 
@@ -282,11 +283,11 @@ namespace test_cases
 
         void main_run()
         {
-            TEST_CHECK((root_dir / target).is_directory());
+            TEST_CHECK((root_dir / target).stat().is_directory());
 
             unmerger->unmerge();
 
-            TEST_CHECK(! (root_dir / target).exists());
+            TEST_CHECK(! (root_dir / target).stat().exists());
         }
     } test_vdb_unmerger_dir_with_lots_of_spaces;
 
@@ -296,11 +297,11 @@ namespace test_cases
 
         void main_run()
         {
-            TEST_CHECK((root_dir / target).is_regular_file());
+            TEST_CHECK((root_dir / target).stat().is_regular_file());
 
             unmerger->unmerge();
 
-            TEST_CHECK((root_dir / target).is_regular_file());
+            TEST_CHECK((root_dir / target).stat().is_regular_file());
         }
     } test_vdb_unmerger_dir_bad_type;
 
@@ -310,11 +311,11 @@ namespace test_cases
 
         void main_run()
         {
-            TEST_CHECK((root_dir / target).is_directory());
+            TEST_CHECK((root_dir / target).stat().is_directory());
 
             unmerger->unmerge();
 
-            TEST_CHECK((root_dir / target).is_directory());
+            TEST_CHECK((root_dir / target).stat().is_directory());
         }
     } test_vdb_unmerger_dir_not_empty;
 
@@ -324,11 +325,11 @@ namespace test_cases
 
         void main_run()
         {
-            TEST_CHECK((root_dir / target).is_symbolic_link());
+            TEST_CHECK((root_dir / target).stat().is_symlink());
 
             unmerger->unmerge();
 
-            TEST_CHECK(! (root_dir / target).exists());
+            TEST_CHECK(! (root_dir / target).stat().exists());
         }
     } test_vdb_unmerger_sym_ok;
 
@@ -338,11 +339,11 @@ namespace test_cases
 
         void main_run()
         {
-            TEST_CHECK((root_dir / target).is_symbolic_link());
+            TEST_CHECK((root_dir / target).stat().is_symlink());
 
             unmerger->unmerge();
 
-            TEST_CHECK(! (root_dir / target).exists());
+            TEST_CHECK(! (root_dir / target).stat().exists());
         }
     } test_vdb_unmerger_sym_with_spaces;
 
@@ -352,11 +353,11 @@ namespace test_cases
 
         void main_run()
         {
-            TEST_CHECK((root_dir / target).is_symbolic_link());
+            TEST_CHECK((root_dir / target).stat().is_symlink());
 
             unmerger->unmerge();
 
-            TEST_CHECK(! (root_dir / target).exists());
+            TEST_CHECK(! (root_dir / target).stat().exists());
         }
     } test_vdb_unmerger_sym_with_lots_of_spaces;
 
@@ -366,11 +367,11 @@ namespace test_cases
 
         void main_run()
         {
-            TEST_CHECK((root_dir / target).is_symbolic_link());
+            TEST_CHECK((root_dir / target).stat().is_symlink());
 
             unmerger->unmerge();
 
-            TEST_CHECK(! (root_dir / target).exists());
+            TEST_CHECK(! (root_dir / target).stat().exists());
         }
     } test_vdb_unmerger_sym_with_many_arrows;
 
@@ -380,11 +381,11 @@ namespace test_cases
 
         void main_run()
         {
-            TEST_CHECK((root_dir / target).is_regular_file());
+            TEST_CHECK((root_dir / target).stat().is_regular_file());
 
             unmerger->unmerge();
 
-            TEST_CHECK((root_dir / target).is_regular_file());
+            TEST_CHECK((root_dir / target).stat().is_regular_file());
         }
     } test_vdb_unmerger_sym_bad_type;
 
@@ -394,12 +395,12 @@ namespace test_cases
 
         void main_run()
         {
-            TEST_CHECK((root_dir / target).is_symbolic_link());
-            TEST_CHECK(! (root_dir / "sym_dst_bad").exists());
+            TEST_CHECK((root_dir / target).stat().is_symlink());
+            TEST_CHECK(! (root_dir / "sym_dst_bad").stat().exists());
 
             unmerger->unmerge();
 
-            TEST_CHECK((root_dir / target).is_symbolic_link());
+            TEST_CHECK((root_dir / target).stat().is_symlink());
         }
     } test_vdb_unmerger_sym_bad_dst;
 
@@ -409,11 +410,11 @@ namespace test_cases
 
         void main_run()
         {
-            TEST_CHECK((root_dir / target).is_symbolic_link());
+            TEST_CHECK((root_dir / target).stat().is_symlink());
 
             unmerger->unmerge();
 
-            TEST_CHECK((root_dir / target).is_symbolic_link());
+            TEST_CHECK((root_dir / target).stat().is_symlink());
 
         }
     } test_vdb_unmerger_sym_bad_mtime;
@@ -424,11 +425,11 @@ namespace test_cases
 
         void main_run()
         {
-            TEST_CHECK((root_dir / target).is_symbolic_link());
+            TEST_CHECK((root_dir / target).stat().is_symlink());
 
             unmerger->unmerge();
 
-            TEST_CHECK((root_dir / target).is_symbolic_link());
+            TEST_CHECK((root_dir / target).stat().is_symlink());
         }
     } test_vdb_unmerger_sym_bad_entry_1;
 
@@ -438,11 +439,11 @@ namespace test_cases
 
         void main_run()
         {
-            TEST_CHECK((root_dir / target).is_symbolic_link());
+            TEST_CHECK((root_dir / target).stat().is_symlink());
 
             unmerger->unmerge();
 
-            TEST_CHECK((root_dir / target).is_symbolic_link());
+            TEST_CHECK((root_dir / target).stat().is_symlink());
         }
     } test_vdb_unmerger_sym_bad_entry_2;
 
@@ -452,35 +453,35 @@ namespace test_cases
 
         void main_run()
         {
-            TEST_CHECK((root_dir / "protected_file").is_regular_file());
-            TEST_CHECK((root_dir / "unprotected_file").is_regular_file());
-            TEST_CHECK((root_dir / "protected_file_not_really").is_regular_file());
+            TEST_CHECK((root_dir / "protected_file").stat().is_regular_file());
+            TEST_CHECK((root_dir / "unprotected_file").stat().is_regular_file());
+            TEST_CHECK((root_dir / "protected_file_not_really").stat().is_regular_file());
 
-            TEST_CHECK((root_dir / "protected_dir/protected_file").is_regular_file());
-            TEST_CHECK((root_dir / "protected_dir/unprotected_file").is_regular_file());
-            TEST_CHECK((root_dir / "protected_dir/unprotected_file_not_really").is_regular_file());
+            TEST_CHECK((root_dir / "protected_dir/protected_file").stat().is_regular_file());
+            TEST_CHECK((root_dir / "protected_dir/unprotected_file").stat().is_regular_file());
+            TEST_CHECK((root_dir / "protected_dir/unprotected_file_not_really").stat().is_regular_file());
 
-            TEST_CHECK((root_dir / "protected_dir/unprotected_dir/unprotected_file").is_regular_file());
+            TEST_CHECK((root_dir / "protected_dir/unprotected_dir/unprotected_file").stat().is_regular_file());
 
-            TEST_CHECK((root_dir / "protected_dir/unprotected_dir_not_really/protected_file").is_regular_file());
+            TEST_CHECK((root_dir / "protected_dir/unprotected_dir_not_really/protected_file").stat().is_regular_file());
 
-            TEST_CHECK((root_dir / "protected_dir_not_really/unprotected_file").is_regular_file());
+            TEST_CHECK((root_dir / "protected_dir_not_really/unprotected_file").stat().is_regular_file());
 
             unmerger->unmerge();
 
-            TEST_CHECK((root_dir / "protected_file").exists());
-            TEST_CHECK(! (root_dir / "unprotected_file").exists());
-            TEST_CHECK(! (root_dir / "protected_file_not_really").exists());
+            TEST_CHECK((root_dir / "protected_file").stat().exists());
+            TEST_CHECK(! (root_dir / "unprotected_file").stat().exists());
+            TEST_CHECK(! (root_dir / "protected_file_not_really").stat().exists());
 
-            TEST_CHECK((root_dir / "protected_dir/protected_file").exists());
-            TEST_CHECK(! (root_dir / "protected_dir/unprotected_file").exists());
-            TEST_CHECK((root_dir / "protected_dir/unprotected_file_not_really").exists());
+            TEST_CHECK((root_dir / "protected_dir/protected_file").stat().exists());
+            TEST_CHECK(! (root_dir / "protected_dir/unprotected_file").stat().exists());
+            TEST_CHECK((root_dir / "protected_dir/unprotected_file_not_really").stat().exists());
 
-            TEST_CHECK(! (root_dir / "protected_dir/unprotected_dir/unprotected_file").exists());
+            TEST_CHECK(! (root_dir / "protected_dir/unprotected_dir/unprotected_file").stat().exists());
 
-            TEST_CHECK((root_dir / "protected_dir/unprotected_dir_not_really/protected_file").exists());
+            TEST_CHECK((root_dir / "protected_dir/unprotected_dir_not_really/protected_file").stat().exists());
 
-            TEST_CHECK(! (root_dir / "protected_dir_not_really/unprotected_file").exists());
+            TEST_CHECK(! (root_dir / "protected_dir_not_really/unprotected_file").stat().exists());
         }
     } test_vdb_unmerger_config_protect;
 }

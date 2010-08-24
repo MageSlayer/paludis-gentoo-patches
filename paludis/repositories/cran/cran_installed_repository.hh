@@ -24,7 +24,6 @@
 #include <paludis/repository.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/pimp.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/map-fwd.hh>
 
 /** \file
@@ -52,8 +51,8 @@ namespace paludis
     struct CRANInstalledRepositoryParams
     {
         NamedValue<n::environment, const Environment *> environment;
-        NamedValue<n::location, FSEntry> location;
-        NamedValue<n::root, FSEntry> root;
+        NamedValue<n::location, FSPath> location;
+        NamedValue<n::root, FSPath> root;
     };
 
     /**
@@ -153,8 +152,8 @@ namespace paludis
             /* Keys */
 
             virtual const std::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
-            virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > location_key() const;
-            virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<FSPath> > location_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<FSPath> > installed_root_key() const;
             virtual const std::shared_ptr<const MetadataValueKey<std::string> > accept_keywords_key() const;
             virtual const std::shared_ptr<const MetadataValueKey<std::string> > sync_host_key() const;
 

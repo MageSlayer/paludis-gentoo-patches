@@ -136,7 +136,7 @@ namespace
         try
         {
             ptr = new std::shared_ptr<const DepTag>(std::make_shared<GLSADepTag>(StringValuePtr(argv[0]), StringValuePtr(argv[1]),
-                        FSEntry(StringValuePtr(argv[2]))));
+                        FSPath(StringValuePtr(argv[2]))));
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::shared_ptr<const DepTag> >::free, ptr));
             rb_obj_call_init(tdata, argc, argv);
             return tdata;
@@ -240,8 +240,8 @@ namespace
      *
      * Fetch our GLSA file.
      */
-    template <typename T_, const FSEntry (T_::* m_) () const>
-    struct DepTagFSEntryThings
+    template <typename T_, const FSPath (T_::* m_) () const>
+    struct DepTagFSPathThings
     {
         static VALUE
         fetch(VALUE self)
@@ -286,7 +286,7 @@ namespace
         rb_define_singleton_method(c_glsa_dep_tag, "new", RUBY_FUNC_CAST(&glsa_dep_tag_new), -1);
         rb_define_method(c_glsa_dep_tag, "glsa_title", RUBY_FUNC_CAST((&DepTagThings<GLSADepTag,
                         &GLSADepTag::glsa_title>::fetch)), 0);
-        rb_define_method(c_glsa_dep_tag, "glsa_file", RUBY_FUNC_CAST((&DepTagFSEntryThings<GLSADepTag,
+        rb_define_method(c_glsa_dep_tag, "glsa_file", RUBY_FUNC_CAST((&DepTagFSPathThings<GLSADepTag,
                         &GLSADepTag::glsa_file>::fetch)), 0);
 
         /*

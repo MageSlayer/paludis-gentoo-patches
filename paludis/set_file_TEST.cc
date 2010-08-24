@@ -19,7 +19,6 @@
 
 #include <paludis/set_file.hh>
 #include <paludis/environments/test/test_environment.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
@@ -74,7 +73,7 @@ namespace test_cases
 
             SetFile f(make_named_values<SetFileParams>(
                         n::environment() = static_cast<Environment *>(0),
-                        n::file_name() = FSEntry("set_file_TEST_dir/simple1"),
+                        n::file_name() = FSPath("set_file_TEST_dir/simple1"),
                         n::parser() = std::bind(&parse_user_package_dep_spec, _1, &env, UserPackageDepSpecOptions(), filter::All()),
                         n::set_operator_mode() = sfsmo_natural,
                         n::tag() = std::shared_ptr<DepTag>(),
@@ -98,7 +97,7 @@ namespace test_cases
             f.rewrite();
 
             {
-                SafeIFStream ff(FSEntry("set_file_TEST_dir/simple1"));
+                SafeIFStream ff(FSPath("set_file_TEST_dir/simple1"));
                 TEST_CHECK(ff);
                 std::string g((std::istreambuf_iterator<char>(ff)), std::istreambuf_iterator<char>());
                 TEST_CHECK_EQUAL(g, "# this is a comment\n\nfoo/bar\n>=bar/baz-1.23\n\n# the end\nmoo/oink\n");
@@ -116,7 +115,7 @@ namespace test_cases
             f.rewrite();
 
             {
-                SafeIFStream ff(FSEntry("set_file_TEST_dir/simple1"));
+                SafeIFStream ff(FSPath("set_file_TEST_dir/simple1"));
                 TEST_CHECK(ff);
                 std::string g((std::istreambuf_iterator<char>(ff)), std::istreambuf_iterator<char>());
                 TEST_CHECK_EQUAL(g, "# this is a comment\n\nfoo/bar\n\n# the end\nmoo/oink\n");
@@ -141,7 +140,7 @@ namespace test_cases
 
             SetFile f(make_named_values<SetFileParams>(
                         n::environment() = static_cast<Environment *>(0),
-                        n::file_name() = FSEntry("set_file_TEST_dir/paludisconf1"),
+                        n::file_name() = FSPath("set_file_TEST_dir/paludisconf1"),
                         n::parser() = std::bind(&parse_user_package_dep_spec, _1, &env, UserPackageDepSpecOptions(), filter::All()),
                         n::set_operator_mode() = sfsmo_natural,
                         n::tag() = std::shared_ptr<DepTag>(),
@@ -167,7 +166,7 @@ namespace test_cases
             f.rewrite();
 
             {
-                SafeIFStream ff(FSEntry("set_file_TEST_dir/paludisconf1"));
+                SafeIFStream ff(FSPath("set_file_TEST_dir/paludisconf1"));
                 TEST_CHECK(ff);
                 std::string g((std::istreambuf_iterator<char>(ff)), std::istreambuf_iterator<char>());
                 TEST_CHECK_EQUAL(g, "# this is a comment\n\n? foo/bar\n* >=bar/baz-1.23\n\n* set\n? settee\n\n# the end\n* moo/oink\n* couch\n");
@@ -186,7 +185,7 @@ namespace test_cases
             f.rewrite();
 
             {
-                SafeIFStream ff(FSEntry("set_file_TEST_dir/paludisconf1"));
+                SafeIFStream ff(FSPath("set_file_TEST_dir/paludisconf1"));
                 TEST_CHECK(ff);
                 std::string g((std::istreambuf_iterator<char>(ff)), std::istreambuf_iterator<char>());
                 TEST_CHECK_EQUAL(g, "# this is a comment\n\n? foo/bar\n\n? settee\n\n# the end\n* moo/oink\n* couch\n");
@@ -211,7 +210,7 @@ namespace test_cases
 
             SetFile f(make_named_values<SetFileParams>(
                         n::environment() = static_cast<Environment *>(0),
-                        n::file_name() = FSEntry("set_file_TEST_dir/override"),
+                        n::file_name() = FSPath("set_file_TEST_dir/override"),
                         n::parser() = std::bind(&parse_user_package_dep_spec, _1, &env, UserPackageDepSpecOptions(), filter::All()),
                         n::set_operator_mode() = sfsmo_natural,
                         n::tag() = std::shared_ptr<DepTag>(),
@@ -226,7 +225,7 @@ namespace test_cases
 
             SetFile fstar(make_named_values<SetFileParams>(
                         n::environment() = static_cast<Environment *>(0),
-                        n::file_name() = FSEntry("set_file_TEST_dir/override"),
+                        n::file_name() = FSPath("set_file_TEST_dir/override"),
                         n::parser() = std::bind(&parse_user_package_dep_spec, _1, &env, UserPackageDepSpecOptions(), filter::All()),
                         n::set_operator_mode() = sfsmo_star,
                         n::tag() = std::shared_ptr<DepTag>(),

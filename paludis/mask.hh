@@ -25,7 +25,7 @@
 #include <paludis/package_id-fwd.hh>
 #include <paludis/util/simple_visitor.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/fs_entry.hh>
+#include <paludis/util/fs_path.hh>
 #include <paludis/util/sequence-fwd.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/util/type_list.hh>
@@ -65,7 +65,7 @@ namespace paludis
     struct RepositoryMaskInfo
     {
         NamedValue<n::comment, std::shared_ptr<const Sequence<std::string> > > comment;
-        NamedValue<n::mask_file, FSEntry> mask_file;
+        NamedValue<n::mask_file, FSPath> mask_file;
     };
 
     /**

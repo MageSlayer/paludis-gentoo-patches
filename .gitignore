@@ -444,6 +444,9 @@ paludis-*.*.*.tar.bz2
 /paludis/util/fast_unique_copy_TEST
 /paludis/util/forward_parallel_for_each_TEST
 /paludis/util/fs_entry_TEST
+/paludis/util/fs_iterator_TEST
+/paludis/util/fs_path_TEST
+/paludis/util/fs_stat_TEST
 /paludis/util/graph_TEST
 /paludis/util/indirect_iterator_TEST
 /paludis/util/is_file_with_extension_TEST

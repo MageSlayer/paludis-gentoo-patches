@@ -22,7 +22,6 @@
 
 #include <paludis/util/pimp.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/mask-fwd.hh>
@@ -45,7 +44,7 @@ namespace paludis
                 ///\name Basic operations
                 ///\{
 
-                MaskFile(const FSEntry &, const LineConfigFileOptions &);
+                MaskFile(const FSPath &, const LineConfigFileOptions &);
                 ~MaskFile();
 
                 ///\}

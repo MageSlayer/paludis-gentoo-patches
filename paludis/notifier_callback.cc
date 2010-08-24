@@ -46,12 +46,12 @@ NotifierCallbackResolverStageEvent::stage() const
     return _stage;
 }
 
-NotifierCallbackLinkageStepEvent::NotifierCallbackLinkageStepEvent(const FSEntry & r) :
+NotifierCallbackLinkageStepEvent::NotifierCallbackLinkageStepEvent(const FSPath & r) :
     _location(r)
 {
 }
 
-const FSEntry
+const FSPath
 NotifierCallbackLinkageStepEvent::location() const
 {
     return _location;

@@ -21,7 +21,6 @@
 #include <paludis/util/realpath.hh>
 #include <paludis/util/wildcard_expander.hh>
 #include <paludis/util/config_file.hh>
-#include <paludis/util/dir_iterator.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/options.hh>
@@ -30,6 +29,10 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/create_iterator-impl.hh>
+#include <paludis/util/fs_iterator.hh>
+#include <paludis/util/fs_path.hh>
+#include <paludis/util/fs_stat.hh>
 #include <algorithm>
 #include <functional>
 #include <iterator>
@@ -44,29 +47,29 @@ namespace paludis
     struct Imp<BrokenLinkageConfiguration>
     {
         std::vector<std::string> ld_library_mask;
-        std::vector<FSEntry> search_dirs;
-        std::vector<FSEntry> search_dirs_mask;
-        std::vector<FSEntry> ld_so_conf;
+        std::vector<FSPath> search_dirs;
+        std::vector<FSPath> search_dirs_mask;
+        std::vector<FSPath> ld_so_conf;
 
         void load_from_environment();
-        void load_from_etc_revdep_rebuild(const FSEntry &);
-        void load_from_etc_profile_env(const FSEntry &);
-        void load_from_etc_ld_so_conf(const FSEntry &);
+        void load_from_etc_revdep_rebuild(const FSPath &);
+        void load_from_etc_profile_env(const FSPath &);
+        void load_from_etc_ld_so_conf(const FSPath &);
         void add_defaults();
     };
 
     template <>
     struct WrappedForwardIteratorTraits<BrokenLinkageConfiguration::DirsIteratorTag>
     {
-        typedef std::vector<FSEntry>::const_iterator UnderlyingIterator;
+        typedef std::vector<FSPath>::const_iterator UnderlyingIterator;
     };
 }
 
 namespace
 {
-    struct IsGarbageFile : std::unary_function<const FSEntry &, bool>
+    struct IsGarbageFile : std::unary_function<const FSPath &, bool>
     {
-        bool operator() (const FSEntry & file)
+        bool operator() (const FSPath & file)
         {
             std::string basename(file.basename());
             return '#' == basename[0] || '~' == basename[basename.length() - 1];
@@ -83,7 +86,7 @@ namespace
         {
             Log::get_instance()->message("reconcilio.broken_linkage_finder.config", ll_debug, lc_context)
                 << "Got " << varname << "=\"" + str << "\"";
-            tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(str, ":", "", std::back_inserter(vec));
+            tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(str, ":", "", create_inserter<T_>(std::back_inserter(vec)));
         }
     }
 
@@ -97,21 +100,21 @@ namespace
         {
             Log::get_instance()->message("reconcilio.broken_linkage_finder.config", ll_debug, lc_context)
                 << "Got " << varname << "=\"" << str << "\"";
-            tokenise_whitespace(str, std::back_inserter(vec));
+            tokenise_whitespace(str, create_inserter<T_>(std::back_inserter(vec)));
         }
     }
 
     inline void
-    do_wildcards(std::vector<std::string> &, const FSEntry &)
+    do_wildcards(std::vector<std::string> &, const FSPath &)
     {
     }
 
     inline void
-    do_wildcards(std::vector<FSEntry> & vec, const FSEntry & root)
+    do_wildcards(std::vector<FSPath> & vec, const FSPath & root)
     {
-        std::vector<FSEntry> scratch;
+        std::vector<FSPath> scratch;
 
-        for (std::vector<FSEntry>::const_iterator it(vec.begin()), it_end(vec.end()); it_end != it; ++it)
+        for (std::vector<FSPath>::const_iterator it(vec.begin()), it_end(vec.end()); it_end != it; ++it)
             std::copy(WildcardExpander(stringify(*it), root), WildcardExpander(),
                       std::back_inserter(scratch));
 
@@ -119,15 +122,15 @@ namespace
         swap(vec, scratch);
     }
 
-    template <typename T_>
+    template <typename T_, typename C_>
     void
-    cleanup(const std::string & varname, std::vector<T_> & vec, const FSEntry & root)
+    cleanup(const std::string & varname, std::vector<T_> & vec, const FSPath & root, const C_ & comparator)
     {
         vec.erase(std::find(vec.begin(), vec.end(), T_("-*")), vec.end());
 
         do_wildcards(vec, root);
 
-        std::sort(vec.begin(), vec.end());
+        std::sort(vec.begin(), vec.end(), comparator);
         vec.erase(std::unique(vec.begin(), vec.end()), vec.end());
 
         Log::get_instance()->message("reconcilio.broken_linkage_finder.config",
@@ -148,9 +151,11 @@ namespace
     }
 
     void
-    parse_ld_so_conf(const FSEntry & root, const FSEntry & file, const LineConfigFileOptions & opts, std::vector<std::string> & res)
+    parse_ld_so_conf(const FSPath & root, const FSPath & file, const LineConfigFileOptions & opts, std::vector<std::string> & res)
     {
-        if (file.is_regular_file_or_symlink_to_regular_file())
+        FSStat file_stat(file);
+
+        if (file_stat.is_regular_file_or_symlink_to_regular_file())
         {
             LineConfigFile lines(file, opts);
             for (auto it(lines.begin()), it_end(lines.end()); it_end != it; ++it)
@@ -162,7 +167,7 @@ namespace
                 {
                     for (auto it2(next(tokens.begin())), it2_end(tokens.end()); it2_end != it2; ++it2)
                     {
-                        FSEntry rel('/' == it2->at(0) ? root : file.dirname());
+                        FSPath rel('/' == it2->at(0) ? root : file.dirname());
                         for (WildcardExpander it3(*it2, rel), it3_end; it3_end != it3; ++it3)
                         {
                             Context ctx("When reading included file '" + stringify(rel / *it3) + "':");
@@ -183,13 +188,13 @@ namespace
             }
         }
 
-        else if (file.exists())
+        else if (file_stat.exists())
             Log::get_instance()->message("reconcilio.broken_linkage_finder.etc_ld_so_conf.not_a_file", ll_warning, lc_context)
                 << "'" << file << "' exists but is not a regular file";
     }
 }
 
-BrokenLinkageConfiguration::BrokenLinkageConfiguration(const FSEntry & root) :
+BrokenLinkageConfiguration::BrokenLinkageConfiguration(const FSPath & root) :
     Pimp<BrokenLinkageConfiguration>()
 {
     Context ctx("When loading broken linkage checker configuration for '" + stringify(root) + "':");
@@ -200,12 +205,12 @@ BrokenLinkageConfiguration::BrokenLinkageConfiguration(const FSEntry & root) :
     _imp->load_from_etc_ld_so_conf(root);
     _imp->add_defaults();
 
-    cleanup("LD_LIBRARY_MASK",  _imp->ld_library_mask,  root);
-    cleanup("SEARCH_DIRS",      _imp->search_dirs,      root);
-    cleanup("SEARCH_DIRS_MASK", _imp->search_dirs_mask, root);
+    cleanup("LD_LIBRARY_MASK",  _imp->ld_library_mask,  root, std::less<std::string>());
+    cleanup("SEARCH_DIRS",      _imp->search_dirs,      root, FSPathComparator());
+    cleanup("SEARCH_DIRS_MASK", _imp->search_dirs_mask, root, FSPathComparator());
 
     // don't need the extra cleanup here
-    std::sort(_imp->ld_so_conf.begin(), _imp->ld_so_conf.end());
+    std::sort(_imp->ld_so_conf.begin(), _imp->ld_so_conf.end(), FSPathComparator());
     _imp->ld_so_conf.erase(std::unique(_imp->ld_so_conf.begin(), _imp->ld_so_conf.end()),
                            _imp->ld_so_conf.end());
     Log::get_instance()->message("reconcilio.broken_linkage_finder.config",
@@ -233,32 +238,31 @@ Imp<BrokenLinkageConfiguration>::load_from_environment()
 }
 
 void
-Imp<BrokenLinkageConfiguration>::load_from_etc_revdep_rebuild(const FSEntry & root)
+Imp<BrokenLinkageConfiguration>::load_from_etc_revdep_rebuild(const FSPath & root)
 {
     using namespace std::placeholders;
 
-    FSEntry etc_revdep_rebuild(root / "etc" / "revdep-rebuild");
+    FSPath etc_revdep_rebuild(root / "etc" / "revdep-rebuild");
+    FSStat etc_revdep_rebuild_stat(etc_revdep_rebuild);
     Context ctx("When reading '" + stringify(etc_revdep_rebuild) + "':");
 
-    if (etc_revdep_rebuild.is_directory_or_symlink_to_directory())
+    if (etc_revdep_rebuild_stat.is_directory_or_symlink_to_directory())
     {
-        std::vector<FSEntry> conf_files = std::vector<FSEntry>(
-            DirIterator(etc_revdep_rebuild), DirIterator());
-        conf_files.erase(std::remove_if(conf_files.begin(), conf_files.end(),
-                                        IsGarbageFile()),
+        std::vector<FSPath> conf_files = std::vector<FSPath>(FSIterator(etc_revdep_rebuild, { }), FSIterator());
+        conf_files.erase(std::remove_if(conf_files.begin(), conf_files.end(), IsGarbageFile()),
                          conf_files.end());
-        std::sort(conf_files.begin(), conf_files.end());
+        std::sort(conf_files.begin(), conf_files.end(), FSPathComparator());
 
         KeyValueConfigFileOptions opts;
         opts += kvcfo_disallow_space_around_equals;
         opts += kvcfo_disallow_space_inside_unquoted_values;
 
-        for (std::vector<FSEntry>::iterator it(conf_files.begin()),
+        for (std::vector<FSPath>::iterator it(conf_files.begin()),
                  it_end(conf_files.end()); it_end != it; ++it)
         {
             Context ctx_file("When reading '" + stringify(*it) + "':");
 
-            if (it->is_regular_file_or_symlink_to_regular_file())
+            if (it->stat().is_regular_file_or_symlink_to_regular_file())
             {
                 KeyValueConfigFile kvs(*it, opts,
                         &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
@@ -275,20 +279,21 @@ Imp<BrokenLinkageConfiguration>::load_from_etc_revdep_rebuild(const FSEntry & ro
                     << "'" << *it << "' is not a regular file";
         }
     }
-    else if (etc_revdep_rebuild.exists())
+    else if (etc_revdep_rebuild_stat.exists())
         Log::get_instance()->message("reconcilio.broken_linkage_finder.etc_revdep_rebuild.not_a_directory", ll_warning, lc_context)
             << "'" << etc_revdep_rebuild << "' exists but is not a directory";
 }
 
 void
-Imp<BrokenLinkageConfiguration>::load_from_etc_profile_env(const FSEntry & root)
+Imp<BrokenLinkageConfiguration>::load_from_etc_profile_env(const FSPath & root)
 {
     using namespace std::placeholders;
 
-    FSEntry etc_profile_env(root / "etc" / "profile.env");
+    FSPath etc_profile_env(root / "etc" / "profile.env");
+    FSStat etc_profile_env_stat(etc_profile_env);
     Context ctx("When reading '" + stringify(etc_profile_env) + "':");
 
-    if (etc_profile_env.is_regular_file_or_symlink_to_regular_file())
+    if (etc_profile_env_stat.is_regular_file_or_symlink_to_regular_file())
     {
         KeyValueConfigFileOptions opts;
         opts += kvcfo_disallow_space_around_equals;
@@ -304,15 +309,15 @@ Imp<BrokenLinkageConfiguration>::load_from_etc_profile_env(const FSEntry & root)
         from_colon_string(fromfile, "PATH",     search_dirs);
         from_colon_string(fromfile, "ROOTPATH", search_dirs);
     }
-    else if (etc_profile_env.exists())
+    else if (etc_profile_env_stat.exists())
         Log::get_instance()->message("reconcilio.broken_linkage_finder.etc_profile_env.not_a_file", ll_warning, lc_context)
             << "'" << etc_profile_env << "' exists but is not a regular file";
 }
 
 void
-Imp<BrokenLinkageConfiguration>::load_from_etc_ld_so_conf(const FSEntry & root)
+Imp<BrokenLinkageConfiguration>::load_from_etc_ld_so_conf(const FSPath & root)
 {
-    FSEntry etc_ld_so_conf(root / "etc" / "ld.so.conf");
+    FSPath etc_ld_so_conf(root / "etc" / "ld.so.conf");
     Context ctx("When reading '" + stringify(etc_ld_so_conf) + "':");
 
     LineConfigFileOptions opts;
@@ -326,8 +331,8 @@ Imp<BrokenLinkageConfiguration>::load_from_etc_ld_so_conf(const FSEntry & root)
     {
         Log::get_instance()->message("reconcilio.broken_linkage_finder.got", ll_debug, lc_context)
                 << "Got " << join(res.begin(), res.end(), " ");
-        std::copy(res.begin(), res.end(), std::back_inserter(search_dirs));
-        std::copy(res.begin(), res.end(), std::back_inserter(ld_so_conf));
+        std::copy(res.begin(), res.end(), create_inserter<FSPath>(std::back_inserter(search_dirs)));
+        std::copy(res.begin(), res.end(), create_inserter<FSPath>(std::back_inserter(ld_so_conf)));
     }
 }
 
@@ -352,17 +357,17 @@ Imp<BrokenLinkageConfiguration>::add_defaults()
     Log::get_instance()->message("reconcilio.broken_linkage_finder.config", ll_debug, lc_context)
         << "Got SEARCH_DIRS=\"" << default_search_dirs << "\"";
     tokenise_whitespace(
-            default_search_dirs, std::back_inserter(search_dirs));
+            default_search_dirs, create_inserter<FSPath>(std::back_inserter(search_dirs)));
 
     Log::get_instance()->message("reconcilio.broken_linkage_finder.config", ll_debug, lc_context)
         << "Got SEARCH_DIRS_MASK=\"" << default_search_dirs_mask << "\"";
     tokenise_whitespace(
-            default_search_dirs_mask, std::back_inserter(search_dirs_mask));
+            default_search_dirs_mask, create_inserter<FSPath>(std::back_inserter(search_dirs_mask)));
 
     Log::get_instance()->message("reconcilio.broken_linkage_finder.config", ll_debug, lc_context)
         << "Default ld.so.conf contents is \"" << default_ld_so_conf << "\"";
     tokenise_whitespace(
-            default_ld_so_conf, std::back_inserter(ld_so_conf));
+            default_ld_so_conf, create_inserter<FSPath>(std::back_inserter(ld_so_conf)));
 }
 
 BrokenLinkageConfiguration::DirsIterator
@@ -390,9 +395,9 @@ BrokenLinkageConfiguration::end_ld_so_conf() const
 }
 
 bool
-BrokenLinkageConfiguration::dir_is_masked(const FSEntry & dir) const
+BrokenLinkageConfiguration::dir_is_masked(const FSPath & dir) const
 {
-    return std::binary_search(_imp->search_dirs_mask.begin(), _imp->search_dirs_mask.end(), dir);
+    return std::binary_search(_imp->search_dirs_mask.begin(), _imp->search_dirs_mask.end(), dir, FSPathComparator());
 }
 
 bool
@@ -401,5 +406,5 @@ BrokenLinkageConfiguration::lib_is_masked(const std::string & lib) const
     return std::binary_search(_imp->ld_library_mask.begin(), _imp->ld_library_mask.end(), lib);
 }
 
-template class WrappedForwardIterator<BrokenLinkageConfiguration::DirsIteratorTag, const paludis::FSEntry>;
+template class WrappedForwardIterator<BrokenLinkageConfiguration::DirsIteratorTag, const FSPath>;
 

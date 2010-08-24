@@ -48,7 +48,7 @@ namespace paludis
         struct UnavailableRepositoryParams
         {
             NamedValue<n::environment, Environment *> environment;
-            NamedValue<n::location, FSEntry> location;
+            NamedValue<n::location, FSPath> location;
             NamedValue<n::name, RepositoryName> name;
             NamedValue<n::sync, std::string> sync;
             NamedValue<n::sync_options, std::string> sync_options;
@@ -76,8 +76,8 @@ namespace paludis
                 virtual const bool is_unimportant() const;
 
                 virtual const std::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
-                virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > location_key() const;
-                virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const;
+                virtual const std::shared_ptr<const MetadataValueKey<FSPath> > location_key() const;
+                virtual const std::shared_ptr<const MetadataValueKey<FSPath> > installed_root_key() const;
                 virtual const std::shared_ptr<const MetadataValueKey<std::string> > accept_keywords_key() const;
                 virtual const std::shared_ptr<const MetadataValueKey<std::string> > sync_host_key() const;
 

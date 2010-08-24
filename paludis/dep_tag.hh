@@ -40,7 +40,7 @@
 #include <paludis/util/simple_visitor.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/named_value.hh>
-#include <paludis/util/fs_entry.hh>
+#include <paludis/util/fs_path.hh>
 #include <paludis/util/operators.hh>
 #include <paludis/util/type_list.hh>
 #include <paludis/util/singleton.hh>
@@ -201,13 +201,13 @@ namespace paludis
         private:
             const std::string _id;
             const std::string _glsa_title;
-            const FSEntry _glsa_file;
+            const FSPath _glsa_file;
 
         public:
             ///\name Basic operations
             ///\{
 
-            GLSADepTag(const std::string & id, const std::string & glsa_title, const FSEntry&);
+            GLSADepTag(const std::string & id, const std::string & glsa_title, const FSPath &);
             ~GLSADepTag();
 
             ///\}
@@ -222,7 +222,7 @@ namespace paludis
             /**
              * The full path to the glsa announcement file.
              */
-            const FSEntry glsa_file() const;
+            const FSPath glsa_file() const;
 
             /**
              * Fetch our GLSA title (for example, 'Yet another PHP remote access

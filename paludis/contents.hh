@@ -25,7 +25,7 @@
 #include <paludis/util/pimp.hh>
 #include <paludis/util/type_list.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
-#include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/util/fs_path-fwd.hh>
 #include <paludis/metadata_key_holder.hh>
 #include <memory>
 #include <string>
@@ -66,7 +66,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            ContentsEntry(const FSEntry & path);
+            ContentsEntry(const FSPath & path);
             virtual ~ContentsEntry() = 0;
 
             ///\}
@@ -91,7 +91,7 @@ namespace paludis
              *
              * \since 0.36
              */
-            const std::shared_ptr<const MetadataValueKey<FSEntry> > location_key() const;
+            const std::shared_ptr<const MetadataValueKey<FSPath> > location_key() const;
 
             ///\}
 
@@ -112,7 +112,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            ContentsFileEntry(const FSEntry &);
+            ContentsFileEntry(const FSPath &);
 
             ///\}
     };
@@ -131,7 +131,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            ContentsDirEntry(const FSEntry &);
+            ContentsDirEntry(const FSPath &);
 
             ///\}
     };
@@ -151,7 +151,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            ContentsOtherEntry(const FSEntry &);
+            ContentsOtherEntry(const FSPath &);
 
             ///\}
     };
@@ -174,7 +174,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            ContentsSymEntry(const FSEntry &, const std::string & target);
+            ContentsSymEntry(const FSPath &, const std::string & target);
             ~ContentsSymEntry();
 
             ///\}

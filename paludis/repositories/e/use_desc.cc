@@ -20,8 +20,6 @@
 #include "use_desc.hh"
 #include <paludis/name.hh>
 #include <paludis/package_id.hh>
-#include <paludis/util/fs_entry.hh>
-#include <paludis/util/dir_iterator.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/stringify.hh>
@@ -30,6 +28,9 @@
 #include <paludis/util/config_file.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/sequence-impl.hh>
+#include <paludis/util/fs_stat.hh>
+#include <paludis/util/fs_path.hh>
+#include <paludis/util/options.hh>
 #include <paludis/choice.hh>
 #include <unordered_map>
 
@@ -47,9 +48,9 @@ namespace paludis
         std::unordered_map<QualifiedPackageName, UseDescs, Hash<QualifiedPackageName> > local_descs;
         UseDescs global_descs;
 
-        void add(const FSEntry & f, const ChoicePrefixName & prefix)
+        void add(const FSPath & f, const ChoicePrefixName & prefix)
         {
-            if (f.is_regular_file_or_symlink_to_regular_file())
+            if (f.stat().is_regular_file_or_symlink_to_regular_file())
             {
                 LineConfigFile ff(f, { lcfo_disallow_continuations });
                 for (LineConfigFile::ConstIterator line(ff.begin()), line_end(ff.end()) ;

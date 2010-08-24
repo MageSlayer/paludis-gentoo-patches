@@ -205,10 +205,10 @@ UnwrittenID::contained_in_key() const
     return std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > >();
 }
 
-const std::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSPath> >
 UnwrittenID::fs_location_key() const
 {
-    return std::shared_ptr<const MetadataValueKey<FSEntry> >();
+    return std::shared_ptr<const MetadataValueKey<FSPath> >();
 }
 
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >

@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_SRC_CLIENTS_CAVE_COLOUR_FORMATTER_HH 1
 
 #include <paludis/util/attributes.hh>
-#include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/util/fs_path-fwd.hh>
 #include <paludis/formatter.hh>
 
 namespace paludis
@@ -44,7 +44,7 @@ namespace paludis
             public CanFormat<NamedSetDepSpec>,
             public CanFormat<PlainTextLabelDepSpec>,
             public CanFormat<ChoiceValue>,
-            public CanFormat<FSEntry>,
+            public CanFormat<FSPath>,
             public CanSpace
         {
             private:
@@ -103,7 +103,7 @@ namespace paludis
 
                 std::string format(const NamedSetDepSpec &, const format::Plain &) const;
 
-                std::string format(const FSEntry &, const format::Plain &) const;
+                std::string format(const FSPath &, const format::Plain &) const;
 
                 std::string newline() const;
                 std::string indent(const int) const;

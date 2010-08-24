@@ -21,7 +21,7 @@
 
 #include <paludis/util/realpath.hh>
 #include <paludis/util/config_file.hh>
-#include <paludis/util/fs_entry.hh>
+#include <paludis/util/fs_path.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/options.hh>
@@ -29,6 +29,8 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/safe_ifstream.hh>
+#include <paludis/util/fs_stat.hh>
+#include <paludis/util/fs_error.hh>
 
 #include <algorithm>
 #include <cstring>
@@ -38,20 +40,20 @@
 
 using namespace paludis;
 
-typedef std::vector<std::pair<FSEntry, std::string> > Breakage;
+typedef std::vector<std::pair<FSPath, std::string> > Breakage;
 
 namespace paludis
 {
     template <>
     struct Imp<LibtoolLinkageChecker>
     {
-        FSEntry root;
+        FSPath root;
 
         Mutex mutex;
 
         Breakage breakage;
 
-        Imp(const FSEntry & the_root) :
+        Imp(const FSPath & the_root) :
             root(the_root)
         {
         }
@@ -69,7 +71,7 @@ namespace
     };
 }
 
-LibtoolLinkageChecker::LibtoolLinkageChecker(const FSEntry & root) :
+LibtoolLinkageChecker::LibtoolLinkageChecker(const FSPath & root) :
     Pimp<LibtoolLinkageChecker>(root)
 {
 }
@@ -79,7 +81,7 @@ LibtoolLinkageChecker::~LibtoolLinkageChecker()
 }
 
 bool
-LibtoolLinkageChecker::check_file(const FSEntry & file)
+LibtoolLinkageChecker::check_file(const FSPath & file)
 {
     std::string basename(file.basename());
     if (! (3 <= basename.length() &&
@@ -121,8 +123,8 @@ LibtoolLinkageChecker::check_file(const FSEntry & file)
     {
         try
         {
-            FSEntry dep(_imp->root / *it);
-            if (! dereference_with_root(dep, _imp->root).is_regular_file())
+            FSPath dep(_imp->root / *it);
+            if (! dereference_with_root(dep, _imp->root).stat().is_regular_file())
             {
                 Log::get_instance()->message("reconcilio.broken_linkage_finder.dependency_missing",
                     ll_debug, lc_context) << "Dependency '" << *it <<
@@ -147,18 +149,18 @@ LibtoolLinkageChecker::check_file(const FSEntry & file)
 }
 
 void
-LibtoolLinkageChecker::note_symlink(const FSEntry &, const FSEntry &)
+LibtoolLinkageChecker::note_symlink(const FSPath &, const FSPath &)
 {
 }
 
 void
-LibtoolLinkageChecker::add_extra_lib_dir(const FSEntry &)
+LibtoolLinkageChecker::add_extra_lib_dir(const FSPath &)
 {
 }
 
 void
 LibtoolLinkageChecker::need_breakage_added(
-    const std::function<void (const FSEntry &, const std::string &)> & callback)
+    const std::function<void (const FSPath &, const std::string &)> & callback)
 {
     for (Breakage::const_iterator it(_imp->breakage.begin()), it_end(_imp->breakage.end()); it_end != it; ++it)
         callback(it->first, it->second);

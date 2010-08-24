@@ -19,7 +19,6 @@
 
 #include <paludis/environments/paludis/world.hh>
 #include <paludis/environments/test/test_environment.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/options.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
@@ -39,7 +38,7 @@ namespace test_cases
 
         void run()
         {
-            std::shared_ptr<FSEntry> w(std::make_shared<FSEntry>(FSEntry::cwd() / "world_TEST_dir" / "world"));
+            std::shared_ptr<FSPath> w(std::make_shared<FSPath>(FSPath::cwd() / "world_TEST_dir" / "world"));
 
             {
                 TestEnvironment env;

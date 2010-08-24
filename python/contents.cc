@@ -19,7 +19,7 @@
 
 #include <python/paludis_python.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
-#include <paludis/util/fs_entry.hh>
+#include <paludis/util/fs_path.hh>
 #include <paludis/contents.hh>
 
 using namespace paludis;
@@ -80,7 +80,7 @@ void expose_contents()
         (
          "ContentsFileEntry",
          "A file contents entry.",
-         bp::init<const FSEntry &>("__init__(location)")
+         bp::init<const FSPath &>("__init__(location)")
         );
 
     /**
@@ -90,7 +90,7 @@ void expose_contents()
         (
          "ContentsDirEntry",
          "A directory contents entry.",
-         bp::init<const FSEntry &>("__init__(location)")
+         bp::init<const FSPath &>("__init__(location)")
         );
 
     /**
@@ -100,7 +100,7 @@ void expose_contents()
         (
          "ContentsOtherEntry",
          "An 'other' contents entry.",
-         bp::init<const FSEntry &>("__init__(location)")
+         bp::init<const FSPath &>("__init__(location)")
         );
 
     /**
@@ -110,7 +110,7 @@ void expose_contents()
         (
          "ContentsSymEntry",
          "A sym contents entry.",
-         bp::init<const FSEntry &, const std::string &>("__init__(location, target_string)")
+         bp::init<const FSPath &, const std::string &>("__init__(location, target_string)")
         )
 
         .def("target_key", &ContentsSymEntry::target_key,

@@ -175,7 +175,7 @@ namespace
             return make_null_shared_ptr();
         }
 
-        virtual std::shared_ptr<const FSEntry> installed_at_path_ptr() const
+        virtual std::shared_ptr<const FSPath> installed_at_path_ptr() const
         {
             return make_null_shared_ptr();
         }

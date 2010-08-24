@@ -2,7 +2,7 @@
 
 /*
  * Copyright (c) 2007, 2008 Richard Brown
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -152,7 +152,7 @@ namespace
                     new std::shared_ptr<const MetadataKey>(mm));
         }
 
-        void visit(const MetadataValueKey<FSEntry> &)
+        void visit(const MetadataValueKey<FSPath> &)
         {
             value = Data_Wrap_Struct(c_metadata_fsentry_key, 0, &Common<std::shared_ptr<const MetadataKey> >::free,
                     new std::shared_ptr<const MetadataKey>(mm));
@@ -188,7 +188,7 @@ namespace
                     new std::shared_ptr<const MetadataKey>(mm));
         }
 
-        void visit(const MetadataCollectionKey<FSEntrySequence> &)
+        void visit(const MetadataCollectionKey<FSPathSequence> &)
         {
             value = Data_Wrap_Struct(c_metadata_fsentry_sequence_key, 0, &Common<std::shared_ptr<const MetadataKey> >::free,
                     new std::shared_ptr<const MetadataKey>(mm));
@@ -348,7 +348,7 @@ namespace
         {
             std::shared_ptr<const MetadataKey> * self_ptr;
             Data_Get_Struct(self, std::shared_ptr<const MetadataKey>, self_ptr);
-            return rb_str_new2(stringify((std::static_pointer_cast<const MetadataValueKey<FSEntry> >(*self_ptr))->value()).c_str());
+            return rb_str_new2(stringify((std::static_pointer_cast<const MetadataValueKey<FSPath> >(*self_ptr))->value()).c_str());
         }
         catch (const std::exception & e)
         {
@@ -700,11 +700,11 @@ namespace
         rb_define_method(c_metadata_size_key, "value", RUBY_FUNC_CAST(&metadata_size_key_value), 0);
 
         /*
-         * Document-class: Paludis::MetadataFSEntryKey
+         * Document-class: Paludis::MetadataFSPathKey
          *
-         * Metadata class for FSEntry.
+         * Metadata class for FSPath.
          */
-        c_metadata_fsentry_key = rb_define_class_under(paludis_module(), "MetadataFSEntryKey", c_metadata_key);
+        c_metadata_fsentry_key = rb_define_class_under(paludis_module(), "MetadataFSPathKey", c_metadata_key);
         rb_define_method(c_metadata_fsentry_key, "value", RUBY_FUNC_CAST(&metadata_fsentry_key_value), 0);
 
         /*
@@ -756,12 +756,12 @@ namespace
         rb_define_method(c_metadata_package_id_sequence_key, "value", RUBY_FUNC_CAST((&SetValue<PackageIDSequence>::fetch)), 0);
 
         /*
-         * Document-class: Paludis::MetadataFSEntrySequenceKey
+         * Document-class: Paludis::MetadataFSPathSequenceKey
          *
          * Metadata class for filesystem sequences.
          */
-        c_metadata_fsentry_sequence_key = rb_define_class_under(paludis_module(), "MetadataFSEntrySequenceKey", c_metadata_key);
-        rb_define_method(c_metadata_fsentry_sequence_key, "value", RUBY_FUNC_CAST((&SetValue<FSEntrySequence>::fetch)), 0);
+        c_metadata_fsentry_sequence_key = rb_define_class_under(paludis_module(), "MetadataFSPathSequenceKey", c_metadata_key);
+        rb_define_method(c_metadata_fsentry_sequence_key, "value", RUBY_FUNC_CAST((&SetValue<FSPathSequence>::fetch)), 0);
 
         /*
          * Document-class: Paludis::MetadataStringSetKey

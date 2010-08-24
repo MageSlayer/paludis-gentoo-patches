@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_ENVIRONMENTS_PALUDIS_OUTPUT_CONF_HH 1
 
 #include <paludis/util/pimp.hh>
-#include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/util/fs_path-fwd.hh>
 #include <paludis/output_manager-fwd.hh>
 #include <paludis/create_output_manager_info-fwd.hh>
 #include <memory>
@@ -50,7 +50,7 @@ namespace paludis
                 /**
                  * Add another file.
                  */
-                void add(const FSEntry &);
+                void add(const FSPath &);
 
                 const std::shared_ptr<OutputManager> create_output_manager(
                         const CreateOutputManagerInfo &) const;

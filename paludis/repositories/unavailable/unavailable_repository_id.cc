@@ -197,7 +197,7 @@ namespace
         return o;
     }
 
-    bool ignore_nothing(const FSEntry &)
+    bool ignore_nothing(const FSPath &)
     {
         return false;
     }
@@ -227,9 +227,9 @@ UnavailableRepositoryID::perform_action(Action & action) const
                 (*install_action->options.destination()).destination_interface()->merge(
                         make_named_values<MergeParams>(
                             n::build_start_time() = build_start_time,
-                            n::environment_file() = FSEntry("/dev/null"),
-                            n::image_dir() = FSEntry("/dev/null"),
-                            n::merged_entries() = std::make_shared<FSEntrySet>(),
+                            n::environment_file() = FSPath("/dev/null"),
+                            n::image_dir() = FSPath("/dev/null"),
+                            n::merged_entries() = std::make_shared<FSPathSet>(),
                             n::options() = MergerOptions(),
                             n::output_manager() = output_manager,
                             n::package_id() = shared_from_this(),
@@ -300,10 +300,10 @@ UnavailableRepositoryID::contained_in_key() const
     return std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > >();
 }
 
-const std::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSPath> >
 UnavailableRepositoryID::fs_location_key() const
 {
-    return std::shared_ptr<const MetadataValueKey<FSEntry> >();
+    return std::shared_ptr<const MetadataValueKey<FSPath> >();
 }
 
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >

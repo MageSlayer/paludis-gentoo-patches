@@ -20,7 +20,6 @@
 #include "key_extractor.hh"
 #include "matcher.hh"
 #include <paludis/util/pimp-impl.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/join.hh>
@@ -240,7 +239,7 @@ namespace
             {
             }
 
-            void visit(const MetadataValueKey<FSEntry> & s)
+            void visit(const MetadataValueKey<FSPath> & s)
             {
                 result = _m(stringify(s.value()));
             }
@@ -310,7 +309,7 @@ namespace
                             std::bind(&Matcher::operator(), std::cref(_m), _1));
             }
 
-            void visit(const MetadataCollectionKey<FSEntrySequence> & s)
+            void visit(const MetadataCollectionKey<FSPathSequence> & s)
             {
                 using namespace std::placeholders;
 
@@ -318,7 +317,7 @@ namespace
                     result = _m(join(s.value()->begin(), s.value()->end(), " "));
                 else
                     result = s.value()->end() != std::find_if(s.value()->begin(), s.value()->end(),
-                            std::bind(&Matcher::operator(), std::cref(_m), std::bind(&stringify<FSEntry>, _1)));
+                            std::bind(&Matcher::operator(), std::cref(_m), std::bind(&stringify<FSPath>, _1)));
             }
 
             void visit(const MetadataCollectionKey<PackageIDSequence> & s)

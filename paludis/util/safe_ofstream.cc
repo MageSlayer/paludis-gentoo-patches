@@ -56,9 +56,16 @@ SafeOFStreamBase::SafeOFStreamBase(const int f) :
 {
 }
 
+SafeOFStream::SafeOFStream(const int f) :
+    SafeOFStreamBase(f),
+    std::ostream(&buf),
+    _close(false)
+{
+}
+
 namespace
 {
-    int check_open_fsentry(const FSEntry & e, int open_flags)
+    int check_open_path(const FSPath & e, int open_flags)
     {
         Context context("When opening '" + stringify(e) + "' for write:");
 
@@ -73,15 +80,8 @@ namespace
     }
 }
 
-SafeOFStream::SafeOFStream(const int f) :
-    SafeOFStreamBase(f),
-    std::ostream(&buf),
-    _close(false)
-{
-}
-
-SafeOFStream::SafeOFStream(const FSEntry & e, const int open_flags) :
-    SafeOFStreamBase(check_open_fsentry(e, open_flags)),
+SafeOFStream::SafeOFStream(const FSPath & p, const int open_flags) :
+    SafeOFStreamBase(check_open_path(p, open_flags)),
     std::ostream(&buf),
     _close(true)
 {

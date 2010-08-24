@@ -24,10 +24,10 @@
 #include <paludis/name.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/sequence.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/hashes.hh>
+#include <paludis/util/fs_stat.hh>
 #include <unordered_map>
 
 using namespace paludis;
@@ -36,28 +36,28 @@ namespace
 {
     struct Cache
     {
-        std::shared_ptr<const FSEntrySequence> dirs;
-        std::unordered_map<std::string, FSEntry, Hash<std::string> > files;
+        std::shared_ptr<const FSPathSequence> dirs;
+        std::unordered_map<std::string, std::pair<FSPath, FSStat>, Hash<std::string> > files;
 
-        Cache(const std::shared_ptr<const FSEntrySequence> & d) :
+        Cache(const std::shared_ptr<const FSPathSequence> & d) :
             dirs(d)
         {
         }
     };
 
-    const FSEntry *
+    const std::pair<FSPath, FSStat> *
     lookup(const std::string & e, Cache & c)
     {
-        std::unordered_map<std::string, FSEntry, Hash<std::string> >::const_iterator i(c.files.find(e));
+        auto i(c.files.find(e));
         if (i != c.files.end())
             return & i->second;
 
-        for (FSEntrySequence::ReverseConstIterator d(c.dirs->rbegin()),
+        for (FSPathSequence::ReverseConstIterator d(c.dirs->rbegin()),
                  d_end(c.dirs->rend()) ; d != d_end ; ++d)
         {
-            FSEntry f(*d / e);
-            if (f.exists())
-                return & c.files.insert(std::make_pair(e, f.realpath())).first->second;
+            FSPath f(*d / e);
+            if (f.stat().exists())
+                return & c.files.insert(std::make_pair(e, std::make_pair(f.realpath(), f.stat()))).first->second;
         }
 
         return 0;
@@ -74,7 +74,7 @@ namespace paludis
         mutable std::unordered_map<QualifiedPackageName, Cache, Hash<QualifiedPackageName> > exlibs;
         mutable Mutex mutex;
 
-        Imp(const ERepository * r, const std::shared_ptr<const FSEntrySequence> & d) :
+        Imp(const ERepository * r, const std::shared_ptr<const FSPathSequence> & d) :
             repo(r),
             eclasses(d)
         {
@@ -82,7 +82,7 @@ namespace paludis
     };
 }
 
-EclassMtimes::EclassMtimes(const ERepository * r, const std::shared_ptr<const FSEntrySequence> & d) :
+EclassMtimes::EclassMtimes(const ERepository * r, const std::shared_ptr<const FSPathSequence> & d) :
     Pimp<EclassMtimes>(r, d)
 {
 }
@@ -91,14 +91,14 @@ EclassMtimes::~EclassMtimes()
 {
 }
 
-const FSEntry *
+const std::pair<FSPath, FSStat> *
 EclassMtimes::eclass(const std::string & e) const
 {
     Lock l(_imp->mutex);
     return lookup(e + ".eclass", _imp->eclasses);
 }
 
-const FSEntry *
+const std::pair<FSPath, FSStat> *
 EclassMtimes::exlib(const std::string & e, const QualifiedPackageName & qpn) const
 {
     Lock l(_imp->mutex);

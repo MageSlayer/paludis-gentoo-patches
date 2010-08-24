@@ -232,7 +232,7 @@ UninstallTask::add_unused()
 
 namespace
 {
-    bool ignore_nothing(const FSEntry &)
+    bool ignore_nothing(const FSPath &)
     {
         return false;
     }

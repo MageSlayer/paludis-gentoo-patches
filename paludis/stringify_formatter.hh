@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -25,7 +25,7 @@
 #include <paludis/name.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/util/pimp.hh>
-#include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/util/fs_path-fwd.hh>
 
 /** \file
  * Declarations for the StringifyFormatter class.
@@ -72,7 +72,7 @@ namespace paludis
         public CanFormat<LicenseDepSpec>,
         public CanFormat<ConditionalDepSpec>,
         public CanFormat<NamedSetDepSpec>,
-        public CanFormat<FSEntry>,
+        public CanFormat<FSPath>,
         public CanFormat<PackageID>,
         public CanFormat<PlainTextLabelDepSpec>,
         public CanSpace
@@ -140,7 +140,7 @@ namespace paludis
             virtual std::string decorate(const ConditionalDepSpec &, const std::string &, const format::Changed &) const;
             virtual std::string decorate(const ConditionalDepSpec &, const std::string &, const format::Added &) const;
 
-            virtual std::string format(const FSEntry &, const format::Plain &) const;
+            virtual std::string format(const FSPath &, const format::Plain &) const;
 
             virtual std::string format(const PackageID &, const format::Plain &) const;
             virtual std::string format(const PackageID &, const format::Installed &) const;

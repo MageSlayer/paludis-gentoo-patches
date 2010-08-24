@@ -328,7 +328,7 @@ namespace
 }
 
 void
-OutputConf::add(const FSEntry & filename)
+OutputConf::add(const FSPath & filename)
 {
     Context context("When adding source '" + stringify(filename) + "' as an output file:");
 

@@ -22,7 +22,6 @@
 
 #include <paludis/partially_made_package_dep_spec-fwd.hh>
 #include <paludis/util/pimp.hh>
-#include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/dep_spec.hh>
 
@@ -81,7 +80,7 @@ namespace paludis
              *
              * \since 0.32
              */
-            PartiallyMadePackageDepSpec & installed_at_path(const FSEntry &);
+            PartiallyMadePackageDepSpec & installed_at_path(const FSPath &);
 
             /**
              * Set our installable-to-path requirement, return ourself.

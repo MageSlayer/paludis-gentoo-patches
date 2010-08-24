@@ -21,7 +21,7 @@
 #ifndef PALUDIS_GUARD_SRC_CLIENTS_CAVE_EXECUTABLES_COMMON_HH
 #define PALUDIS_GUARD_SRC_CLIENTS_CAVE_EXECUTABLES_COMMON_HH 1
 
-#include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/util/fs_path-fwd.hh>
 #include <paludis/environment-fwd.hh>
 #include <string>
 #include <functional>
@@ -34,7 +34,7 @@ namespace paludis
         int executables_common(
                 const std::shared_ptr<Environment> & env,
                 const std::string &,
-                const std::function<void (const FSEntry &)> &,
+                const std::function<void (const FSPath &)> &,
                 const bool all,
                 const bool best);
     }

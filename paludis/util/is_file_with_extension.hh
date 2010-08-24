@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,8 +20,10 @@
 #ifndef PALUDIS_GUARD_PALUDIS_IS_FILE_WITH_EXTENSION_HH
 #define PALUDIS_GUARD_PALUDIS_IS_FILE_WITH_EXTENSION_HH 1
 
-#include <paludis/util/fs_entry.hh>
-#include <paludis/util/options.hh>
+#include <paludis/util/fs_path-fwd.hh>
+#include <paludis/util/options-fwd.hh>
+#include <paludis/util/exception.hh>
+#include <paludis/util/stringify.hh>
 #include <functional>
 #include <string>
 
@@ -51,23 +53,23 @@ namespace paludis
     typedef Options<IsFileWithOption> IsFileWithOptions;
 
     /**
-     * Return whether an FSEntry is a file with a given extension.
+     * Return whether an FSPath is a file with a given extension.
      *
      * \see is_file_with_prefix_extension()
      *
      * \ingroup g_fs
      */
-    bool is_file_with_extension(const FSEntry &, const std::string &, const IsFileWithOptions &) PALUDIS_VISIBLE;
+    bool is_file_with_extension(const FSPath &, const std::string &, const IsFileWithOptions &) PALUDIS_VISIBLE;
 
     /**
-     * Return whether an FSEntry is a file with a given prefix and a given
+     * Return whether an FSPath is a file with a given prefix and a given
      * extension prefix.
      *
      * \see is_file_with_extension()
      *
      * \ingroup g_fs
      */
-    bool is_file_with_prefix_extension(const FSEntry &, const std::string &, const std::string &, const IsFileWithOptions &) PALUDIS_VISIBLE;
+    bool is_file_with_prefix_extension(const FSPath &, const std::string &, const std::string &, const IsFileWithOptions &) PALUDIS_VISIBLE;
 }
 
 #endif

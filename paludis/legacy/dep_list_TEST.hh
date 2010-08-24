@@ -24,7 +24,6 @@
 #include <paludis/legacy/dep_list_exceptions.hh>
 #include <paludis/repositories/fake/fake_repository.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/user_dep_spec.hh>

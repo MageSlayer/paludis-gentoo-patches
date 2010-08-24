@@ -18,29 +18,31 @@
  */
 
 #include <paludis/util/realpath.hh>
-#include <paludis/util/fs_entry.hh>
+#include <paludis/util/fs_path.hh>
+#include <paludis/util/fs_stat.hh>
+#include <paludis/util/fs_error.hh>
 #include <paludis/util/stringify.hh>
 
 using namespace paludis;
 
 namespace
 {
-    FSEntry
+    FSPath
     do_realpath_with_current_and_root(
-        const FSEntry & file, const FSEntry & current, const FSEntry & root,
-        const FSEntry & orig_file, const FSEntry & orig_current, unsigned & symlinks)
+        const FSPath & file, const FSPath & current, const FSPath & root,
+        const FSPath & orig_file, const FSPath & orig_current, unsigned & symlinks)
     {
         if (symlinks >= 40)
             throw FSError("Too many symlinks encountered while canonicalising '" + stringify(orig_file) +
                           "' relative to '" + stringify(orig_current) + "' with root '" + stringify(root) + "'");
 
-        FSEntry cur(current);
+        FSPath cur(current);
 
         std::string file_str(stringify(file));
         if ('/' == file_str[0])
         {
             file_str.erase(0, 1);
-            cur = FSEntry("/");
+            cur = FSPath("/");
         }
 
         while (! file_str.empty())
@@ -67,9 +69,9 @@ namespace
                 continue;
             }
 
-            FSEntry full(root / cur / component);
-            if (full.is_symbolic_link())
-                cur = do_realpath_with_current_and_root(FSEntry(full.readlink()), cur, root, orig_file, orig_current, ++symlinks);
+            FSPath full(root / cur / component);
+            if (full.stat().is_symlink())
+                cur = do_realpath_with_current_and_root(FSPath(full.readlink()), cur, root, orig_file, orig_current, ++symlinks);
             else
                 cur = cur / component;
         }
@@ -78,18 +80,18 @@ namespace
     }
 }
 
-FSEntry
-paludis::realpath_with_current_and_root(const FSEntry & file, const FSEntry & current, const FSEntry & root)
+FSPath
+paludis::realpath_with_current_and_root(const FSPath & file, const FSPath & current, const FSPath & root)
 {
     unsigned symlinks(0);
     return do_realpath_with_current_and_root(file, current, root, file, current, symlinks);
 }
 
-FSEntry
-paludis::dereference_with_root(const FSEntry & file, const FSEntry & root)
+FSPath
+paludis::dereference_with_root(const FSPath & file, const FSPath & root)
 {
-    if (file.is_symbolic_link())
-        return root / realpath_with_current_and_root(FSEntry(file.readlink()), file.dirname().strip_leading(root), root);
+    if (file.stat().is_symlink())
+        return root / realpath_with_current_and_root(FSPath(file.readlink()), file.dirname().strip_leading(root), root);
     else
         return file;
 }

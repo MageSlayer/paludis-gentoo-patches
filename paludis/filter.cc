@@ -31,7 +31,6 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/action_names.hh>
 
 using namespace paludis;
@@ -207,10 +206,10 @@ namespace
     struct InstalledAtFilterHandler :
         AllFilterHandlerBase
     {
-        const FSEntry root;
+        const FSPath root;
         const bool equal;
 
-        InstalledAtFilterHandler(const FSEntry & r, const bool e) :
+        InstalledAtFilterHandler(const FSPath & r, const bool e) :
             root(r),
             equal(e)
         {
@@ -445,18 +444,18 @@ filter::NotMasked::NotMasked() :
 {
 }
 
-filter::InstalledAtRoot::InstalledAtRoot(const FSEntry & r) :
+filter::InstalledAtRoot::InstalledAtRoot(const FSPath & r) :
     Filter(std::make_shared<InstalledAtFilterHandler>(r, true))
 {
 }
 
 filter::InstalledAtSlash::InstalledAtSlash() :
-    Filter(std::make_shared<InstalledAtFilterHandler>(FSEntry("/"), true))
+    Filter(std::make_shared<InstalledAtFilterHandler>(FSPath("/"), true))
 {
 }
 
 filter::InstalledAtNotSlash::InstalledAtNotSlash() :
-    Filter(std::make_shared<InstalledAtFilterHandler>(FSEntry("/"), false))
+    Filter(std::make_shared<InstalledAtFilterHandler>(FSPath("/"), false))
 {
 }
 

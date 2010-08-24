@@ -20,7 +20,6 @@
 #include <paludis/repositories/repository/repository_repository_store.hh>
 #include <paludis/repositories/repository/repository_id.hh>
 #include <paludis/util/pimp-impl.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>

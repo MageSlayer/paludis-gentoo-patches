@@ -80,7 +80,7 @@ namespace paludis
 
         const std::shared_ptr<LiteralMetadataValueKey<std::string> > format_key;
         const std::shared_ptr<LiteralMetadataValueKey<std::string> > handler_key;
-        const std::shared_ptr<LiteralMetadataValueKey<FSEntry> > installed_root_key;
+        const std::shared_ptr<LiteralMetadataValueKey<FSPath> > installed_root_key;
 
         const ActiveObjectPtr<DeferredConstructionPtr<std::shared_ptr<AccountsRepositoryStore> > > store;
 
@@ -97,7 +97,7 @@ namespace paludis
             handler_if_installed(make_handler(p.handler())),
             format_key(std::make_shared<LiteralMetadataValueKey<std::string> >("format", "format", mkt_significant, "installed-accounts")),
             handler_key(std::make_shared<LiteralMetadataValueKey<std::string> >("handler", "handler", mkt_normal, p.handler())),
-            installed_root_key(std::make_shared<LiteralMetadataValueKey<FSEntry>>("root", "root", mkt_normal, p.root())),
+            installed_root_key(std::make_shared<LiteralMetadataValueKey<FSPath>>("root", "root", mkt_normal, p.root())),
             store(DeferredConstructionPtr<std::shared_ptr<AccountsRepositoryStore> > (
                         std::bind(&make_installed_store, repo, std::cref(*params_if_installed))))
         {
@@ -205,7 +205,7 @@ AccountsRepository::repository_factory_installed_create(
                 n::environment() = env,
                 n::handler() = handler,
                 n::name() = RepositoryName(name_str),
-                n::root() = FSEntry(root_str)
+                n::root() = FSPath(root_str)
                 ));
 }
 
@@ -253,13 +253,13 @@ AccountsRepository::format_key() const
     return _imp->format_key;
 }
 
-const std::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSPath> >
 AccountsRepository::location_key() const
 {
     return make_null_shared_ptr();
 }
 
-const std::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSPath> >
 AccountsRepository::installed_root_key() const
 {
     return _imp->installed_root_key;

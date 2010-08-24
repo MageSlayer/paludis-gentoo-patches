@@ -269,12 +269,12 @@ ImportCommand::run(
     std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
     keys->insert("location", stringify(
                 cmdline.a_location.specified() ?
-                FSEntry(cmdline.a_location.argument()) :
-                FSEntry::cwd()));
+                FSPath(cmdline.a_location.argument()) :
+                FSPath::cwd()));
     keys->insert("install_under", stringify(
                 cmdline.a_install_under.specified() ?
-                FSEntry(cmdline.a_install_under.argument()) :
-                FSEntry("/")));
+                FSPath(cmdline.a_install_under.argument()) :
+                FSPath("/")));
     keys->insert("rewrite_ids_over_to_root", stringify(
                 cmdline.a_rewrite_ids_over_to_root.specified() ?
                 cmdline.a_rewrite_ids_over_to_root.argument() : -1));

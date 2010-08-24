@@ -21,7 +21,7 @@
 #include "format_string.hh"
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/map.hh>
-#include <paludis/util/fs_entry.hh>
+#include <paludis/util/fs_path.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/contents.hh>
 #include <paludis/metadata_key.hh>
@@ -56,11 +56,11 @@ namespace
         }
     };
 
-    int number_of_parents(const FSEntry & f)
+    int number_of_parents(const FSPath & f)
     {
-        FSEntry ff(f);
+        FSPath ff(f);
         int result(0);
-        while (((ff = ff.dirname())) != FSEntry("/"))
+        while (((ff = ff.dirname())) != FSPath("/"))
             ++result;
         return result;
     }

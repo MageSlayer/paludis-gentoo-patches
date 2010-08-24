@@ -22,7 +22,7 @@
 
 #include <paludis/repositories/unavailable/unavailable_repository-fwd.hh>
 #include <paludis/util/pimp.hh>
-#include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/util/fs_path-fwd.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/environment-fwd.hh>
@@ -36,14 +36,14 @@ namespace paludis
             private Pimp<UnavailableRepositoryStore>
         {
             private:
-                void _populate(const Environment * const env, const FSEntry & f);
-                void _populate_one(const Environment * const env, const FSEntry & f);
+                void _populate(const Environment * const env, const FSPath & f);
+                void _populate_one(const Environment * const env, const FSPath & f);
 
             public:
                 UnavailableRepositoryStore(
                         const Environment * const,
                         const UnavailableRepository * const,
-                        const FSEntry &);
+                        const FSPath &);
                 ~UnavailableRepositoryStore();
 
                 bool has_category_named(const CategoryNamePart &) const

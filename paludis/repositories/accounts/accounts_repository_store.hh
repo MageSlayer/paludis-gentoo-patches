@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_ACCOUNTS_ACCOUNTS_REPOSITORY_STORE_HH 1
 
 #include <paludis/util/pimp.hh>
-#include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/util/fs_path-fwd.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/environment-fwd.hh>
@@ -44,27 +44,27 @@ namespace paludis
                 void _load_one(
                         const std::shared_ptr<const Repository> & repo,
                         const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & from_repo,
-                        const FSEntry & dir);
+                        const FSPath & dir);
 
                 void _load_one_users(
                         const std::shared_ptr<const Repository> & repo,
                         const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & from_repo,
-                        const FSEntry & dir);
+                        const FSPath & dir);
 
                 void _load_one_user(
                         const std::shared_ptr<const Repository> & repo,
                         const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & from_repo,
-                        const FSEntry & file);
+                        const FSPath & file);
 
                 void _load_one_groups(
                         const std::shared_ptr<const Repository> & repo,
                         const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & from_repo,
-                        const FSEntry & dir);
+                        const FSPath & dir);
 
                 void _load_one_group(
                         const std::shared_ptr<const Repository> & repo,
                         const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & from_repo,
-                        const FSEntry & file);
+                        const FSPath & file);
 
             public:
                 AccountsRepositoryStore(

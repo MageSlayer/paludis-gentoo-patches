@@ -20,7 +20,6 @@
 #include "repository_name_cache.hh"
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/repositories/fake/fake_repository.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/set.hh>
@@ -47,7 +46,7 @@ namespace test_cases
                             )));
             env.package_database()->add_repository(10, repo);
 
-            RepositoryNameCache cache(FSEntry("/var/empty"), repo.get());
+            RepositoryNameCache cache(FSPath("/var/empty"), repo.get());
             TEST_CHECK(! cache.usable());
         }
     } test_names_cache_empty;
@@ -65,7 +64,7 @@ namespace test_cases
                             )));
             env.package_database()->add_repository(10, repo);
 
-            RepositoryNameCache cache(FSEntry("repository_name_cache_TEST_dir/not_generated"), repo.get());
+            RepositoryNameCache cache(FSPath("repository_name_cache_TEST_dir/not_generated"), repo.get());
             TEST_CHECK(cache.usable());
             TEST_CHECK(! cache.category_names_containing_package(PackageNamePart("foo")));
             TEST_CHECK(! cache.usable());
@@ -85,7 +84,7 @@ namespace test_cases
                             )));
             env.package_database()->add_repository(10, repo);
 
-            RepositoryNameCache cache(FSEntry("repository_name_cache_TEST_dir/not_existing"), repo.get());
+            RepositoryNameCache cache(FSPath("repository_name_cache_TEST_dir/not_existing"), repo.get());
             TEST_CHECK(cache.usable());
             TEST_CHECK(! cache.category_names_containing_package(PackageNamePart("foo")));
             TEST_CHECK(! cache.usable());
@@ -105,7 +104,7 @@ namespace test_cases
                             )));
             env.package_database()->add_repository(10, repo);
 
-            RepositoryNameCache cache(FSEntry("repository_name_cache_TEST_dir/old_format"), repo.get());
+            RepositoryNameCache cache(FSPath("repository_name_cache_TEST_dir/old_format"), repo.get());
             TEST_CHECK(cache.usable());
             TEST_CHECK(! cache.category_names_containing_package(PackageNamePart("foo")));
             TEST_CHECK(! cache.usable());
@@ -125,7 +124,7 @@ namespace test_cases
                             )));
             env.package_database()->add_repository(10, repo);
 
-            RepositoryNameCache cache(FSEntry("repository_name_cache_TEST_dir/bad_repo"), repo.get());
+            RepositoryNameCache cache(FSPath("repository_name_cache_TEST_dir/bad_repo"), repo.get());
             TEST_CHECK(cache.usable());
             TEST_CHECK(! cache.category_names_containing_package(PackageNamePart("foo")));
             TEST_CHECK(! cache.usable());
@@ -145,7 +144,7 @@ namespace test_cases
                             )));
             env.package_database()->add_repository(10, repo);
 
-            RepositoryNameCache cache(FSEntry("repository_name_cache_TEST_dir/good_repo"), repo.get());
+            RepositoryNameCache cache(FSPath("repository_name_cache_TEST_dir/good_repo"), repo.get());
             TEST_CHECK(cache.usable());
 
             std::shared_ptr<const CategoryNamePartSet> foo(cache.category_names_containing_package(PackageNamePart("foo")));
@@ -173,7 +172,7 @@ namespace test_cases
                             )));
             env.package_database()->add_repository(10, repo);
 
-            RepositoryNameCache cache(FSEntry("repository_name_cache_TEST_dir/generated"), repo.get());
+            RepositoryNameCache cache(FSPath("repository_name_cache_TEST_dir/generated"), repo.get());
             repo->add_package(QualifiedPackageName("bar/foo"));
             repo->add_package(QualifiedPackageName("baz/foo"));
 

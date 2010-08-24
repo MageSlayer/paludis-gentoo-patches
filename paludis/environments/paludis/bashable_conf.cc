@@ -19,7 +19,6 @@
 
 #include "bashable_conf.hh"
 #include <paludis/util/config_file.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/log.hh>
@@ -27,6 +26,8 @@
 #include <paludis/util/process.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/options.hh>
+#include <paludis/util/fs_path.hh>
 #include <functional>
 
 using namespace paludis;
@@ -44,7 +45,7 @@ std::string defined_vars_to_kv_func(
 }
 
 std::shared_ptr<LineConfigFile>
-paludis::paludis_environment::make_bashable_conf(const FSEntry & f, const LineConfigFileOptions & o)
+paludis::paludis_environment::make_bashable_conf(const FSPath & f, const LineConfigFileOptions & o)
 {
     Context context("When making a config file out of '" + stringify(f) + "':");
 
@@ -77,7 +78,7 @@ paludis::paludis_environment::make_bashable_conf(const FSEntry & f, const LineCo
 }
 
 std::shared_ptr<KeyValueConfigFile>
-paludis::paludis_environment::make_bashable_kv_conf(const FSEntry & f,
+paludis::paludis_environment::make_bashable_kv_conf(const FSPath & f,
         const std::shared_ptr<const Map<std::string, std::string> > & predefined_variables,
         const KeyValueConfigFileOptions & o)
 {

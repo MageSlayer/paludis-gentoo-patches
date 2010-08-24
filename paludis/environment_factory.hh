@@ -24,7 +24,6 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/pimp.hh>
 #include <paludis/util/set-fwd.hh>
-#include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/no_type.hh>
 #include <paludis/util/singleton.hh>
 #include <paludis/environment-fwd.hh>

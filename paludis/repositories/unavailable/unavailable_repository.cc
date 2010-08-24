@@ -53,7 +53,7 @@ namespace paludis
         const UnavailableRepositoryParams params;
 
         const std::shared_ptr<LiteralMetadataValueKey<std::string> > format_key;
-        const std::shared_ptr<LiteralMetadataValueKey<FSEntry> > location_key;
+        const std::shared_ptr<LiteralMetadataValueKey<FSPath> > location_key;
         const std::shared_ptr<LiteralMetadataValueKey<std::string> > sync_key;
         const std::shared_ptr<LiteralMetadataValueKey<std::string> > sync_options_key;
         const std::shared_ptr<LiteralMetadataValueKey<std::string> > sync_host_key;
@@ -65,7 +65,7 @@ namespace paludis
             params(p),
             format_key(std::make_shared<LiteralMetadataValueKey<std::string> >("format", "format",
                         mkt_significant, "unavailable")),
-            location_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("location", "location",
+            location_key(std::make_shared<LiteralMetadataValueKey<FSPath> >("location", "location",
                         mkt_significant, params.location())),
             sync_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
                         "sync", "sync", mkt_normal, params.sync())),
@@ -140,16 +140,16 @@ UnavailableRepository::format_key() const
     return _imp->format_key;
 }
 
-const std::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSPath> >
 UnavailableRepository::location_key() const
 {
     return _imp->location_key;
 }
 
-const std::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSPath> >
 UnavailableRepository::installed_root_key() const
 {
-    return std::shared_ptr<const MetadataValueKey<FSEntry> >();
+    return std::shared_ptr<const MetadataValueKey<FSPath> >();
 }
 
 void
@@ -281,7 +281,7 @@ UnavailableRepository::sync(const std::shared_ptr<OutputManager> & output_manage
                     n::remote() = *s
                     ));
         SyncOptions opts(make_named_values<SyncOptions>(
-                    n::filter_file() = FSEntry("/dev/null"),
+                    n::filter_file() = FSPath("/dev/null"),
                     n::options() = _imp->params.sync_options(),
                     n::output_manager() = output_manager
                     ));

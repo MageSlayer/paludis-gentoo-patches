@@ -26,7 +26,6 @@
 #include <paludis/util/elf_symbol_section.hh>
 
 #include <paludis/util/realpath.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/mutex.hh>
@@ -37,6 +36,8 @@
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/safe_ifstream.hh>
+#include <paludis/util/fs_path.hh>
+#include <paludis/util/fs_stat.hh>
 
 #include <algorithm>
 #include <cerrno>
@@ -97,32 +98,32 @@ namespace
     }
 }
 
-typedef std::multimap<FSEntry, FSEntry> Symlinks;
-typedef std::map<ElfArchitecture, std::map<std::string, std::vector<FSEntry> > > Needed;
+typedef std::multimap<FSPath, FSPath, FSPathComparator> Symlinks;
+typedef std::map<ElfArchitecture, std::map<std::string, std::vector<FSPath> > > Needed;
 
 namespace paludis
 {
     template <>
     struct Imp<ElfLinkageChecker>
     {
-        FSEntry root;
+        FSPath root;
         std::set<std::string> check_libraries;
 
         Mutex mutex;
 
-        std::map<FSEntry, ElfArchitecture> seen;
+        std::map<FSPath, ElfArchitecture, FSPathComparator> seen;
         Symlinks symlinks;
 
         std::map<ElfArchitecture, std::vector<std::string> > libraries;
         Needed needed;
 
-        std::vector<FSEntry> extra_lib_dirs;
+        std::vector<FSPath> extra_lib_dirs;
 
-        template <typename> bool check_elf(const FSEntry &, std::istream &);
-        void handle_library(const FSEntry &, const ElfArchitecture &);
-        template <typename> bool check_extra_elf(const FSEntry &, std::istream &, std::set<ElfArchitecture> &);
+        template <typename> bool check_elf(const FSPath &, std::istream &);
+        void handle_library(const FSPath &, const ElfArchitecture &);
+        template <typename> bool check_extra_elf(const FSPath &, std::istream &, std::set<ElfArchitecture> &);
 
-        Imp(const FSEntry & the_root, const std::shared_ptr<const Sequence<std::string>> & the_libraries) :
+        Imp(const FSPath & the_root, const std::shared_ptr<const Sequence<std::string>> & the_libraries) :
             root(the_root)
         {
             for (auto it(the_libraries->begin()), it_end(the_libraries->end()); it_end != it; ++it)
@@ -131,7 +132,7 @@ namespace paludis
     };
 }
 
-ElfLinkageChecker::ElfLinkageChecker(const FSEntry & root, const std::shared_ptr<const Sequence<std::string>> & libraries) :
+ElfLinkageChecker::ElfLinkageChecker(const FSPath & root, const std::shared_ptr<const Sequence<std::string>> & libraries) :
     Pimp<ElfLinkageChecker>(root, libraries)
 {
 }
@@ -141,12 +142,12 @@ ElfLinkageChecker::~ElfLinkageChecker()
 }
 
 bool
-ElfLinkageChecker::check_file(const FSEntry & file)
+ElfLinkageChecker::check_file(const FSPath & file)
 {
     std::string basename(file.basename());
     if (! (std::string::npos != basename.find(".so.") ||
            (3 <= basename.length() && ".so" == basename.substr(basename.length() - 3)) ||
-           file.has_permission(fs_ug_owner, fs_perm_execute)))
+           (0 != (file.stat().permissions() & S_IXUSR))))
         return false;
 
     SafeIFStream stream(file);
@@ -155,7 +156,7 @@ ElfLinkageChecker::check_file(const FSEntry & file)
 
 template <typename ElfType_>
 bool
-Imp<ElfLinkageChecker>::check_elf(const FSEntry & file, std::istream & stream)
+Imp<ElfLinkageChecker>::check_elf(const FSPath & file, std::istream & stream)
 {
     if (! ElfObject<ElfType_>::is_valid_elf(stream))
         return false;
@@ -214,7 +215,7 @@ Imp<ElfLinkageChecker>::check_elf(const FSEntry & file, std::istream & stream)
 }
 
 void
-Imp<ElfLinkageChecker>::handle_library(const FSEntry & file, const ElfArchitecture & arch)
+Imp<ElfLinkageChecker>::handle_library(const FSPath & file, const ElfArchitecture & arch)
 {
     seen.insert(std::make_pair(file, arch));
     std::pair<Symlinks::const_iterator, Symlinks::const_iterator> range(symlinks.equal_range(file));
@@ -226,18 +227,18 @@ Imp<ElfLinkageChecker>::handle_library(const FSEntry & file, const ElfArchitectu
                 ll_debug, lc_context) << "Known symlinks are " <<
             join(second_iterator(range.first), second_iterator(range.second), " ");
         std::transform(second_iterator(range.first), second_iterator(range.second),
-                       std::back_inserter(libraries[arch]), std::mem_fn(&FSEntry::basename));
+                       std::back_inserter(libraries[arch]), std::mem_fn(&FSPath::basename));
     }
 }
 
 void
-ElfLinkageChecker::note_symlink(const FSEntry & link, const FSEntry & target)
+ElfLinkageChecker::note_symlink(const FSPath & link, const FSPath & target)
 {
     if (_imp->check_libraries.empty())
     {
         Lock l(_imp->mutex);
 
-        std::map<FSEntry, ElfArchitecture>::const_iterator it(_imp->seen.find(target));
+        std::map<FSPath, ElfArchitecture, FSPathComparator>::const_iterator it(_imp->seen.find(target));
         if (_imp->seen.end() != it)
         {
             Log::get_instance()->message("reconcilio.broken_linkage_finder.note_symlink", ll_debug, lc_context)
@@ -250,14 +251,14 @@ ElfLinkageChecker::note_symlink(const FSEntry & link, const FSEntry & target)
 }
 
 void
-ElfLinkageChecker::add_extra_lib_dir(const FSEntry & dir)
+ElfLinkageChecker::add_extra_lib_dir(const FSPath & dir)
 {
     _imp->extra_lib_dirs.push_back(dir);
 }
 
 void
 ElfLinkageChecker::need_breakage_added(
-    const std::function<void (const FSEntry &, const std::string &)> & callback)
+    const std::function<void (const FSPath &, const std::string &)> & callback)
 {
     using namespace std::placeholders;
 
@@ -284,7 +285,7 @@ ElfLinkageChecker::need_breakage_added(
             all_missing[*it].insert(arch_it->first);
     }
 
-    for (std::vector<FSEntry>::const_iterator dir_it(_imp->extra_lib_dirs.begin()),
+    for (std::vector<FSPath>::const_iterator dir_it(_imp->extra_lib_dirs.begin()),
              dir_it_end(_imp->extra_lib_dirs.end()); dir_it_end != dir_it; ++dir_it)
     {
         Context ctx("When searching for missing libraries in '" + stringify(*dir_it) + "':");
@@ -295,8 +296,8 @@ ElfLinkageChecker::need_breakage_added(
             if (missing_it->second.empty())
                 continue;
 
-            FSEntry file(dereference_with_root(*dir_it / missing_it->first, _imp->root));
-            if (! file.is_regular_file())
+            FSPath file(dereference_with_root(*dir_it / missing_it->first, _imp->root));
+            if (! file.stat().is_regular_file())
             {
                 Log::get_instance()->message("reconcilio.broken_linkage_finder.missing", ll_debug, lc_context)
                     << "'" << file << "' is missing or not a regular file";
@@ -333,7 +334,7 @@ ElfLinkageChecker::need_breakage_added(
 
 template <typename ElfType_>
 bool
-Imp<ElfLinkageChecker>::check_extra_elf(const FSEntry & file, std::istream & stream, std::set<ElfArchitecture> & arches)
+Imp<ElfLinkageChecker>::check_extra_elf(const FSPath & file, std::istream & stream, std::set<ElfArchitecture> & arches)
 {
     if (! ElfObject<ElfType_>::is_valid_elf(stream))
         return false;

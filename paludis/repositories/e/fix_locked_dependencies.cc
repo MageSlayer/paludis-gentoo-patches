@@ -22,7 +22,6 @@
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
@@ -109,7 +108,7 @@ namespace
                     break;
 
                 std::shared_ptr<const PackageIDSequence> matches((*env)[selection::AllVersionsSorted(
-                            generator::Matches(*node.spec(), { }) | filter::InstalledAtRoot(FSEntry("/")))]);
+                            generator::Matches(*node.spec(), { }) | filter::InstalledAtSlash())]);
                 if (matches->empty())
                     break;
 

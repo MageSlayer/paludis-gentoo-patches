@@ -27,7 +27,6 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/pimp.hh>
 #include <paludis/util/exception.hh>
-#include <paludis/util/fs_entry-fwd.hh>
 #include <string>
 
 namespace paludis
@@ -76,7 +75,7 @@ namespace paludis
 
                 GemSpecification(const Environment * const e, const std::shared_ptr<const Repository> &, const yaml::Node &);
                 GemSpecification(const Environment * const e, const std::shared_ptr<const Repository> &, const PackageNamePart &,
-                        const VersionSpec &, const FSEntry &);
+                        const VersionSpec &, const FSPath &);
 
                 ~GemSpecification();
 
@@ -106,7 +105,7 @@ namespace paludis
                 virtual const std::shared_ptr<const MetadataCollectionKey<PackageIDSequence> > contains_key() const;
                 virtual const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > > contained_in_key() const;
 
-                virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > fs_location_key() const;
+                virtual const std::shared_ptr<const MetadataValueKey<FSPath> > fs_location_key() const;
                 virtual const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Contents> > > contents_key() const;
                 virtual const std::shared_ptr<const MetadataTimeKey> installed_time_key() const;
                 virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > from_repositories_key() const;

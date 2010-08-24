@@ -400,7 +400,7 @@ module Paludis
         def test_config_location_key
             assert_respond_to env, :config_location_key
             assert_not_nil env.config_location_key
-            assert_kind_of MetadataFSEntryKey, env.config_location_key
+            assert_kind_of MetadataFSPathKey, env.config_location_key
             assert_equal Dir.getwd().to_s + "/environment_TEST_dir/home/.paludis", env.config_location_key.value
 
             assert_respond_to ncenv, :config_location_key

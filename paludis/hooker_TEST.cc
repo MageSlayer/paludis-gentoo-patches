@@ -21,7 +21,6 @@
 #include <paludis/hooker.hh>
 #include <paludis/hook.hh>
 #include <paludis/environments/test/test_environment.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
@@ -44,7 +43,7 @@ namespace test_cases
             Hooker hooker(&env);
             HookResult result(make_named_values<HookResult>(n::max_exit_status() = 0, n::output() = ""));
 
-            hooker.add_dir(FSEntry("hooker_TEST_dir/"), false);
+            hooker.add_dir(FSPath("hooker_TEST_dir/"), false);
 #ifdef ENABLE_PYTHON_HOOKS
             result = hooker.perform_hook(Hook("py_hook"),
                     make_null_shared_ptr());
@@ -79,15 +78,15 @@ namespace test_cases
             TestEnvironment env;
             Hooker hooker(&env);
 
-            FSEntry("hooker_TEST_dir/ordering.out").unlink();
+            FSPath("hooker_TEST_dir/ordering.out").unlink();
 
-            hooker.add_dir(FSEntry("hooker_TEST_dir/"), false);
+            hooker.add_dir(FSPath("hooker_TEST_dir/"), false);
             HookResult result(hooker.perform_hook(Hook("ordering"),
                         make_null_shared_ptr()));
             TEST_CHECK_EQUAL(result.max_exit_status(), 0);
             TEST_CHECK_EQUAL(result.output(), "");
 
-            SafeIFStream f(FSEntry("hooker_TEST_dir/ordering.out"));
+            SafeIFStream f(FSPath("hooker_TEST_dir/ordering.out"));
             std::string line((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 
 #ifdef ENABLE_PYTHON_HOOKS
@@ -108,15 +107,15 @@ namespace test_cases
             TestEnvironment env;
             Hooker hooker(&env);
 
-            FSEntry("hooker_TEST_dir/bad_hooks.out").unlink();
+            FSPath("hooker_TEST_dir/bad_hooks.out").unlink();
 
-            hooker.add_dir(FSEntry("hooker_TEST_dir/"), false);
+            hooker.add_dir(FSPath("hooker_TEST_dir/"), false);
             HookResult result(hooker.perform_hook(Hook("bad_hooks"),
                         make_null_shared_ptr()));
             TEST_CHECK_EQUAL(result.max_exit_status(), 123);
             TEST_CHECK_EQUAL(result.output(), "");
 
-            SafeIFStream f(FSEntry("hooker_TEST_dir/bad_hooks.out"));
+            SafeIFStream f(FSPath("hooker_TEST_dir/bad_hooks.out"));
             std::string line((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 
             TEST_CHECK_EQUAL(line, "one\nthree\n");
@@ -132,15 +131,15 @@ namespace test_cases
             TestEnvironment env;
             Hooker hooker(&env);
 
-            FSEntry("hooker_TEST_dir/cycles.out").unlink();
+            FSPath("hooker_TEST_dir/cycles.out").unlink();
 
-            hooker.add_dir(FSEntry("hooker_TEST_dir/"), false);
+            hooker.add_dir(FSPath("hooker_TEST_dir/"), false);
             HookResult result(hooker.perform_hook(Hook("cycles"),
                         make_null_shared_ptr()));
             TEST_CHECK_EQUAL(result.max_exit_status(), 0);
             TEST_CHECK_EQUAL(result.output(), "");
 
-            SafeIFStream f(FSEntry("hooker_TEST_dir/cycles.out"));
+            SafeIFStream f(FSPath("hooker_TEST_dir/cycles.out"));
             std::string line((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 
             TEST_CHECK_EQUAL(line, "b\na\ng\nf\ni\n");
@@ -157,9 +156,9 @@ namespace test_cases
             Hooker hooker(&env);
             HookResult result(make_named_values<HookResult>(n::max_exit_status() = 0, n::output() = ""));
 
-            FSEntry("hooker_TEST_dir/several_output.out").unlink();
+            FSPath("hooker_TEST_dir/several_output.out").unlink();
 
-            hooker.add_dir(FSEntry("hooker_TEST_dir/"), false);
+            hooker.add_dir(FSPath("hooker_TEST_dir/"), false);
 
             result = hooker.perform_hook(Hook("simple_hook_output")
                     .grab_output(Hook::AllowedOutputValues()("foo")),
@@ -211,7 +210,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(result.output(), "");
             TEST_CHECK_EQUAL(result.max_exit_status(), 0);
 
-            SafeIFStream f(FSEntry("hooker_TEST_dir/several_output.out"));
+            SafeIFStream f(FSPath("hooker_TEST_dir/several_output.out"));
             std::string line((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 
             TEST_CHECK_EQUAL(line, "one\none\none\ntwo\none\ntwo\nthree\n");
@@ -228,9 +227,9 @@ namespace test_cases
             TestEnvironment env;
             Hooker hooker(&env);
 
-            FSEntry("hooker_TEST_dir/several_output_bad.out").unlink();
+            FSPath("hooker_TEST_dir/several_output_bad.out").unlink();
 
-            hooker.add_dir(FSEntry("hooker_TEST_dir/"), false);
+            hooker.add_dir(FSPath("hooker_TEST_dir/"), false);
 
             HookResult result(hooker.perform_hook(Hook("several_hooks_output_bad")
                         .grab_output(Hook::AllowedOutputValues()),
@@ -238,7 +237,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(result.output(), "two");
             TEST_CHECK_EQUAL(result.max_exit_status(), 99);
 
-            SafeIFStream f(FSEntry("hooker_TEST_dir/several_output_bad.out"));
+            SafeIFStream f(FSPath("hooker_TEST_dir/several_output_bad.out"));
             std::string line((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 
             TEST_CHECK_EQUAL(line, "one\ntwo\nthree\n");

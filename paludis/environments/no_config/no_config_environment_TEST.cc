@@ -21,7 +21,6 @@
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
 #include <paludis/util/sequence.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/make_named_values.hh>
 
 using namespace test;
@@ -40,12 +39,12 @@ namespace test_cases
                         n::disable_metadata_cache() = false,
                         n::extra_accept_keywords() = "",
                         n::extra_params() = std::shared_ptr<Map<std::string, std::string> >(),
-                        n::extra_repository_dirs() = std::make_shared<FSEntrySequence>(),
+                        n::extra_repository_dirs() = std::make_shared<FSPathSequence>(),
                         n::master_repository_name() = "",
                         n::profiles_if_not_auto() = "",
-                        n::repository_dir() = FSEntry("no_config_environment_TEST_dir/repo"),
+                        n::repository_dir() = FSPath("no_config_environment_TEST_dir/repo"),
                         n::repository_type() = no_config_environment::ncer_auto,
-                        n::write_cache() = FSEntry("/var/empty")
+                        n::write_cache() = FSPath("/var/empty")
                     ));
 
             TEST_CHECK(bool(e.package_database()));

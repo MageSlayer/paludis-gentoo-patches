@@ -111,7 +111,7 @@ ConsoleInstallTask::ConsoleInstallTask(Environment * const env,
     _download_size(0),
     _download_size_overflow(false),
     _all_tags(std::make_shared<Set<DepTagEntry, DepTagEntryComparator>>()),
-    _already_downloaded(std::make_shared<Set<FSEntry>>()),
+    _already_downloaded(std::make_shared<Set<FSPath, FSPathComparator>>()),
     _resolution_finished(false)
 {
     std::fill_n(_counts, static_cast<int>(last_count), 0);
@@ -1290,11 +1290,11 @@ namespace
     struct FindDistfilesSize :
         PretendFetchAction
     {
-        std::shared_ptr<Set<FSEntry> > already_downloaded;
+        std::shared_ptr<Set<FSPath, FSPathComparator> > already_downloaded;
         unsigned long size;
         bool overflow;
 
-        FindDistfilesSize(const FetchActionOptions & o, const std::shared_ptr<Set<FSEntry> > & a) :
+        FindDistfilesSize(const FetchActionOptions & o, const std::shared_ptr<Set<FSPath, FSPathComparator> > & a) :
             PretendFetchAction(o),
             already_downloaded(a),
             size(0),
@@ -1302,7 +1302,7 @@ namespace
         {
         }
 
-        void will_fetch(const FSEntry & destination, const unsigned long size_in_bytes)
+        void will_fetch(const FSPath & destination, const unsigned long size_in_bytes)
         {
             if (already_downloaded->end() != already_downloaded->find(destination))
                 return;

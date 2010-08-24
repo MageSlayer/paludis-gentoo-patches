@@ -22,7 +22,7 @@
 
 #include <paludis/util/pimp.hh>
 #include <paludis/util/exception.hh>
-#include <paludis/util/fs_entry.hh>
+#include <paludis/util/fs_path.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/name.hh>
@@ -69,7 +69,7 @@ namespace paludis
     struct SetFileParams
     {
         NamedValue<n::environment, const Environment *> environment;
-        NamedValue<n::file_name, FSEntry> file_name;
+        NamedValue<n::file_name, FSPath> file_name;
         NamedValue<n::parser, std::function<PackageDepSpec (const std::string &)> > parser;
         NamedValue<n::set_operator_mode, SetFileSetOperatorMode> set_operator_mode;
         NamedValue<n::tag, std::shared_ptr<const DepTag> > tag;
@@ -91,7 +91,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            SetFileError(const FSEntry &, const std::string &) throw ();
+            SetFileError(const FSPath &, const std::string &) throw ();
 
             ///\}
     };

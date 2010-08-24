@@ -24,7 +24,7 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/singleton.hh>
 #include <paludis/util/pimp.hh>
-#include <paludis/util/fs_entry.hh>
+#include <paludis/util/fs_path.hh>
 
 /** \file
  * Declarations for SecurityContext and associated classes.
@@ -85,7 +85,7 @@ namespace paludis
             friend std::ostream& paludis::operator<<(std::ostream&, const SecurityContext &);
             friend class paludis::FSCreateCon;
             friend class paludis::MatchPathCon;
-            friend int paludis::setfilecon(const paludis::FSEntry &, const std::shared_ptr<const SecurityContext> &);
+            friend int paludis::setfilecon(const FSPath &, const std::shared_ptr<const SecurityContext> &);
 
             /**
              * Returns a SecurityContext referring to the current process's context
@@ -173,7 +173,7 @@ namespace paludis
      *
      * \ingroup grplibpaludisselinux
      */
-    int setfilecon(const FSEntry & file, const std::shared_ptr<const SecurityContext> & con) PALUDIS_VISIBLE;
+    int setfilecon(const FSPath & file, const std::shared_ptr<const SecurityContext> & con) PALUDIS_VISIBLE;
 
     /**
      * Whether SELinux is enabled. Ideally, you are not using this function.

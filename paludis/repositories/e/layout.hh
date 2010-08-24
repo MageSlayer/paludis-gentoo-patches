@@ -25,7 +25,7 @@
 #include <paludis/version_spec-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/util/fs_path-fwd.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/map-fwd.hh>
 #include <paludis/util/singleton.hh>
@@ -48,13 +48,13 @@ namespace paludis
         class PALUDIS_VISIBLE Layout
         {
             private:
-                const std::shared_ptr<const FSEntrySequence> _master_repositories_locations;
+                const std::shared_ptr<const FSPathSequence> _master_repositories_locations;
 
             protected:
                 ///\name Basic operations
                 ///\{
 
-                Layout(const std::shared_ptr<const FSEntrySequence> & master_repositories_locations);
+                Layout(const std::shared_ptr<const FSPathSequence> & master_repositories_locations);
 
                 ///\}
 
@@ -69,7 +69,7 @@ namespace paludis
                 ///\name Configuration information
                 ///\{
 
-                const std::shared_ptr<const FSEntrySequence> master_repositories_locations() const;
+                const std::shared_ptr<const FSPathSequence> master_repositories_locations() const;
 
                 ///\}
 
@@ -82,7 +82,7 @@ namespace paludis
                 virtual bool has_package_named(const QualifiedPackageName &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-                virtual FSEntry categories_file() const
+                virtual FSPath categories_file() const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
                 virtual std::shared_ptr<const CategoryNamePartSet> category_names() const
@@ -96,65 +96,65 @@ namespace paludis
                         const QualifiedPackageName &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-                virtual const std::shared_ptr<const FSEntrySequence> info_packages_files() const
+                virtual const std::shared_ptr<const FSPathSequence> info_packages_files() const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-                virtual const std::shared_ptr<const FSEntrySequence> info_variables_files() const
+                virtual const std::shared_ptr<const FSPathSequence> info_variables_files() const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-                virtual FSEntry package_directory(const QualifiedPackageName &) const
+                virtual FSPath package_directory(const QualifiedPackageName &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-                virtual FSEntry category_directory(const CategoryNamePart &) const
+                virtual FSPath category_directory(const CategoryNamePart &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-                virtual FSEntry binary_ebuild_location(const QualifiedPackageName &, const VersionSpec &,
+                virtual FSPath binary_ebuild_location(const QualifiedPackageName &, const VersionSpec &,
                         const std::string & eapi) const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-                virtual std::shared_ptr<const FSEntrySequence> arch_list_files() const
+                virtual std::shared_ptr<const FSPathSequence> arch_list_files() const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-                virtual std::shared_ptr<const FSEntrySequence> repository_mask_files() const
+                virtual std::shared_ptr<const FSPathSequence> repository_mask_files() const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-                virtual std::shared_ptr<const FSEntrySequence> profiles_desc_files() const
+                virtual std::shared_ptr<const FSPathSequence> profiles_desc_files() const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-                virtual std::shared_ptr<const FSEntrySequence> mirror_files() const
+                virtual std::shared_ptr<const FSPathSequence> mirror_files() const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
                 virtual std::shared_ptr<const UseDescFileInfoSequence> use_desc_files() const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-                virtual FSEntry profiles_base_dir() const
+                virtual FSPath profiles_base_dir() const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-                virtual std::shared_ptr<const FSEntrySequence> exlibsdirs(const QualifiedPackageName &) const
+                virtual std::shared_ptr<const FSPathSequence> exlibsdirs(const QualifiedPackageName &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-                virtual std::shared_ptr<const FSEntrySequence> exlibsdirs_global() const
+                virtual std::shared_ptr<const FSPathSequence> exlibsdirs_global() const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-                virtual std::shared_ptr<const FSEntrySequence> exlibsdirs_category(const CategoryNamePart &) const
+                virtual std::shared_ptr<const FSPathSequence> exlibsdirs_category(const CategoryNamePart &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-                virtual std::shared_ptr<const FSEntrySequence> exlibsdirs_package(const QualifiedPackageName &) const
+                virtual std::shared_ptr<const FSPathSequence> exlibsdirs_package(const QualifiedPackageName &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-                virtual std::shared_ptr<const FSEntrySequence> licenses_dirs() const
+                virtual std::shared_ptr<const FSPathSequence> licenses_dirs() const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-                virtual std::shared_ptr<Map<FSEntry, std::string> > manifest_files(const QualifiedPackageName &) const
+                virtual std::shared_ptr<Map<FSPath, std::string, FSPathComparator> > manifest_files(const QualifiedPackageName &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-                virtual std::shared_ptr<MetadataValueKey<FSEntry> > accounts_repository_data_location_key() const
+                virtual std::shared_ptr<MetadataValueKey<FSPath> > accounts_repository_data_location_key() const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-                virtual std::shared_ptr<MetadataValueKey<FSEntry> > e_updates_location_key() const
+                virtual std::shared_ptr<MetadataValueKey<FSPath> > e_updates_location_key() const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-                virtual FSEntry sync_filter_file() const;
+                virtual FSPath sync_filter_file() const;
 
                 virtual void invalidate_masks() = 0;
 
@@ -178,8 +178,8 @@ namespace paludis
                 const std::shared_ptr<Layout> create(
                         const std::string &,
                         const ERepository * const,
-                        const FSEntry &,
-                        const std::shared_ptr<const FSEntrySequence> &)
+                        const FSPath &,
+                        const std::shared_ptr<const FSPathSequence> &)
                     const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }

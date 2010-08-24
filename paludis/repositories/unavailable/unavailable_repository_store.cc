@@ -24,9 +24,7 @@
 #include <paludis/repositories/unavailable/unavailable_repository_dependencies_key.hh>
 #include <paludis/repositories/unavailable/unavailable_mask.hh>
 #include <paludis/util/pimp-impl.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/dir_iterator.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/hashes.hh>
@@ -34,6 +32,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/fs_iterator.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/literal_metadata_key.hh>
@@ -78,7 +77,7 @@ namespace paludis
 UnavailableRepositoryStore::UnavailableRepositoryStore(
         const Environment * const env,
         const UnavailableRepository * const repo,
-        const FSEntry & f) :
+        const FSPath & f) :
     Pimp<UnavailableRepositoryStore>(repo)
 {
     _populate(env, f);
@@ -89,17 +88,17 @@ UnavailableRepositoryStore::~UnavailableRepositoryStore()
 }
 
 void
-UnavailableRepositoryStore::_populate(const Environment * const env, const FSEntry & f)
+UnavailableRepositoryStore::_populate(const Environment * const env, const FSPath & f)
 {
     Context context("When populating UnavailableRepository from directory '" + stringify(f) + "':");
 
     using namespace std::placeholders;
-    std::for_each(DirIterator(f), DirIterator(), std::bind(
+    std::for_each(FSIterator(f, { fsio_inode_sort }), FSIterator(), std::bind(
                 &UnavailableRepositoryStore::_populate_one, this, env, _1));
 }
 
 void
-UnavailableRepositoryStore::_populate_one(const Environment * const env, const FSEntry & f)
+UnavailableRepositoryStore::_populate_one(const Environment * const env, const FSPath & f)
 {
     if (! is_file_with_extension(f, ".repository", { }))
         return;

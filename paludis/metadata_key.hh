@@ -31,7 +31,7 @@
 #include <paludis/formatter-fwd.hh>
 #include <paludis/metadata_key_holder.hh>
 #include <paludis/choice-fwd.hh>
-#include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/util/fs_path-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/remove_shared_ptr.hh>
 #include <paludis/util/simple_visitor.hh>
@@ -89,7 +89,7 @@ namespace paludis
                 MetadataCollectionKey<Set<std::string> >,
                 MetadataCollectionKey<Sequence<std::string> >,
                 MetadataCollectionKey<PackageIDSequence>,
-                MetadataCollectionKey<FSEntrySequence>,
+                MetadataCollectionKey<FSPathSequence>,
                 MetadataSpecTreeKey<DependencySpecTree>,
                 MetadataSpecTreeKey<LicenseSpecTree>,
                 MetadataSpecTreeKey<FetchableURISpecTree>,
@@ -99,7 +99,7 @@ namespace paludis
                 MetadataValueKey<std::string>,
                 MetadataValueKey<long>,
                 MetadataValueKey<bool>,
-                MetadataValueKey<FSEntry>,
+                MetadataValueKey<FSPath>,
                 MetadataValueKey<SlotName>,
                 MetadataValueKey<std::shared_ptr<const PackageID> >,
                 MetadataValueKey<std::shared_ptr<const Contents> >,

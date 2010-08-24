@@ -23,7 +23,6 @@
 #include <paludis/repository.hh>
 #include <paludis/package_database.hh>
 #include <paludis/mask-fwd.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/pimp.hh>
 #include <paludis/repositories/e/e_repository_params.hh>
 #include <paludis/repositories/e/e_repository_id.hh>
@@ -64,7 +63,7 @@ namespace paludis
 
             void need_mirrors() const;
 
-            const std::string _guess_eapi(const QualifiedPackageName &, const FSEntry & e) const;
+            const std::string _guess_eapi(const QualifiedPackageName &, const FSPath & e) const;
 
         protected:
             virtual void need_keys_added() const;
@@ -170,8 +169,8 @@ namespace paludis
             /* Keys */
 
             virtual const std::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
-            virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > location_key() const;
-            virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<FSPath> > location_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<FSPath> > installed_root_key() const;
             virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > info_vars_key() const;
             virtual const std::shared_ptr<const MetadataValueKey<std::string> > accept_keywords_key() const;
             virtual const std::shared_ptr<const MetadataValueKey<std::string> > sync_host_key() const;
@@ -196,7 +195,7 @@ namespace paludis
             const std::shared_ptr<const Set<UnprefixedChoiceName> > arch_flags() const PALUDIS_ATTRIBUTE((warn_unused_result));
             const std::shared_ptr<const UseDesc> use_desc() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            const std::string eapi_for_file(const FSEntry &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string eapi_for_file(const FSPath &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\name Set methods
             ///\{
@@ -208,14 +207,14 @@ namespace paludis
             ///\name Entries
             ///\{
 
-            bool is_package_file(const QualifiedPackageName &, const FSEntry &) const
+            bool is_package_file(const QualifiedPackageName &, const FSPath &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            VersionSpec extract_package_file_version(const QualifiedPackageName &, const FSEntry &) const
+            VersionSpec extract_package_file_version(const QualifiedPackageName &, const FSPath &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             const std::shared_ptr<const erepository::ERepositoryID> make_id(
-                    const QualifiedPackageName &, const FSEntry &) const
+                    const QualifiedPackageName &, const FSPath &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             void fetch(const std::shared_ptr<const erepository::ERepositoryID> &,
@@ -233,7 +232,7 @@ namespace paludis
             void info(const std::shared_ptr<const erepository::ERepositoryID> &,
                     const InfoAction &) const;
 
-            const std::string get_package_file_manifest_key(const FSEntry &, const QualifiedPackageName &) const;
+            const std::string get_package_file_manifest_key(const FSPath &, const QualifiedPackageName &) const;
 
             const std::string binary_ebuild_name(const QualifiedPackageName &, const VersionSpec &, const std::string &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));

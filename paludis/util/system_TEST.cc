@@ -18,7 +18,6 @@
  */
 
 #include <paludis/util/system.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/thread_pool.hh>
 #include <test/test_framework.hh>

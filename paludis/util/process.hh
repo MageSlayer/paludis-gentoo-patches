@@ -24,7 +24,7 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/pimp.hh>
 #include <paludis/util/exception.hh>
-#include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/util/fs_path-fwd.hh>
 
 #include <string>
 #include <iosfwd>
@@ -95,7 +95,7 @@ namespace paludis
             Process & setenv(const std::string &, const std::string &);
             Process & clearenv();
 
-            Process & chdir(const FSEntry &);
+            Process & chdir(const FSPath &);
             Process & use_ptys();
             Process & setuid_setgid(uid_t, gid_t);
             Process & echo_command_to(std::ostream &);

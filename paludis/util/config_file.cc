@@ -20,7 +20,7 @@
 
 #include <paludis/util/config_file.hh>
 #include <paludis/util/exception.hh>
-#include <paludis/util/fs_entry.hh>
+#include <paludis/util/fs_path.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/pimp-impl.hh>
@@ -73,7 +73,7 @@ namespace paludis
         std::string filename;
         std::shared_ptr<const std::string> text;
 
-        Imp(const FSEntry & f) :
+        Imp(const FSPath & f) :
             filename(stringify(f))
         {
             try
@@ -109,7 +109,7 @@ namespace paludis
     };
 }
 
-ConfigFile::Source::Source(const FSEntry & f) :
+ConfigFile::Source::Source(const FSPath & f) :
     Pimp<ConfigFile::Source>(f)
 {
 }
@@ -640,7 +640,7 @@ KeyValueConfigFile::KeyValueConfigFile(
             }
 
             Context local_context("When following 'source '" + filename + "' statement:");
-            KeyValueConfigFile kv(FSEntry(filename), o,
+            KeyValueConfigFile kv(FSPath(filename), o,
                     std::bind(&default_from_kv, std::cref(*this), std::placeholders::_1, std::placeholders::_2), i);
             for (KeyValueConfigFile::ConstIterator k(kv.begin()), k_end(kv.end()) ;
                     k != k_end ; ++k)

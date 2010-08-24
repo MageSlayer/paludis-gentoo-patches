@@ -109,7 +109,7 @@ namespace paludis
             unsigned long _download_size;
             bool _download_size_overflow;
             std::shared_ptr<Set<DepTagEntry, DepTagEntryComparator> > _all_tags;
-            std::shared_ptr<Set<FSEntry> > _already_downloaded;
+            std::shared_ptr<Set<FSPath, FSPathComparator> > _already_downloaded;
             ChoiceDescriptions _choice_descriptions;
 
             bool _resolution_finished;

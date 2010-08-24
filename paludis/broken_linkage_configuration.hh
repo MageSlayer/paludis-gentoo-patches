@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_BROKEN_LINKAGE_CONFIGURATION_HH 1
 
 #include <paludis/util/attributes.hh>
-#include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/util/fs_path-fwd.hh>
 #include <paludis/util/pimp.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 
@@ -33,24 +33,24 @@ namespace paludis
         private Pimp<BrokenLinkageConfiguration>
     {
         public:
-            BrokenLinkageConfiguration(const FSEntry &);
+            BrokenLinkageConfiguration(const FSPath &);
             ~BrokenLinkageConfiguration();
 
             BrokenLinkageConfiguration(const BrokenLinkageConfiguration &) = delete;
             BrokenLinkageConfiguration & operator= (const BrokenLinkageConfiguration &) = delete;
 
             struct DirsIteratorTag;
-            typedef WrappedForwardIterator<DirsIteratorTag, const FSEntry> DirsIterator;
+            typedef WrappedForwardIterator<DirsIteratorTag, const FSPath> DirsIterator;
             DirsIterator begin_search_dirs() const PALUDIS_ATTRIBUTE((warn_unused_result));
             DirsIterator end_search_dirs() const PALUDIS_ATTRIBUTE((warn_unused_result));
             DirsIterator begin_ld_so_conf() const PALUDIS_ATTRIBUTE((warn_unused_result));
             DirsIterator end_ld_so_conf() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            bool dir_is_masked(const FSEntry &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool dir_is_masked(const FSPath &) const PALUDIS_ATTRIBUTE((warn_unused_result));
             bool lib_is_masked(const std::string &) const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
-    extern template class WrappedForwardIterator<BrokenLinkageConfiguration::DirsIteratorTag, const FSEntry>;
+    extern template class WrappedForwardIterator<BrokenLinkageConfiguration::DirsIteratorTag, const FSPath>;
 }
 
 #endif

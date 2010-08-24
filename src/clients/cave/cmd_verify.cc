@@ -31,6 +31,7 @@
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/md5.hh>
+#include <paludis/util/fs_stat.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/repository.hh>
@@ -101,7 +102,7 @@ namespace
         {
         }
 
-        void message(const FSEntry & path, const std::string & text)
+        void message(const FSPath & path, const std::string & text)
         {
             if (! done_heading)
             {
@@ -113,7 +114,7 @@ namespace
             cout << fuc(fs_error(), fv<'t'>(text), fv<'p'>(stringify(path)));
         }
 
-        bool check_mtime(const ContentsEntry & e, const FSEntry & f)
+        bool check_mtime(const ContentsEntry & e, const FSPath & p, const FSStat & f)
         {
             ContentsEntry::MetadataConstIterator k(e.find_metadata("mtime"));
             if (e.end_metadata() != k)
@@ -121,7 +122,7 @@ namespace
                 const MetadataTimeKey * kk(simple_visitor_cast<const MetadataTimeKey>(**k));
                 if (kk && (kk->value().seconds() != f.mtim().seconds()))
                 {
-                    message(f, "Modification time changed");
+                    message(p, "Modification time changed");
                     return false;
                 }
             }
@@ -129,7 +130,7 @@ namespace
             return true;
         }
 
-        bool check_md5(const ContentsEntry & e, const FSEntry & f)
+        bool check_md5(const ContentsEntry & e, const FSPath & f)
         {
             ContentsEntry::MetadataConstIterator k(e.find_metadata("md5"));
             if (e.end_metadata() != k)
@@ -152,32 +153,35 @@ namespace
 
         void visit(const ContentsFileEntry & e)
         {
-            FSEntry f(e.location_key()->value());
-            if (! f.exists())
+            FSPath f(e.location_key()->value());
+            FSStat f_stat(f);
+            if (! f_stat.exists())
                 message(f, "Does not exist");
-            else if (! f.is_regular_file())
+            else if (! f_stat.is_regular_file())
                 message(f, "Not a regular file");
             else
-                check_mtime(e, f) && check_md5(e, f);
+                check_mtime(e, f, f_stat) && check_md5(e, f);
         }
 
         void visit(const ContentsSymEntry & e)
         {
-            FSEntry f(e.location_key()->value());
-            if (! f.exists())
+            FSPath f(e.location_key()->value());
+            FSStat f_stat(f);
+            if (! f_stat.exists())
                 message(f, "Does not exist");
-            else if (! f.is_symbolic_link())
+            else if (! f_stat.is_symlink())
                 message(f, "Not a symbolic link");
             else
-                check_mtime(e, f);
+                check_mtime(e, f, f_stat);
         }
 
         void visit(const ContentsDirEntry & e)
         {
-            FSEntry f(e.location_key()->value());
-            if (! f.exists())
+            FSPath f(e.location_key()->value());
+            FSStat f_stat(f);
+            if (! f_stat.exists())
                 message(f, "Does not exist");
-            else if (! f.is_directory())
+            else if (! f_stat.is_directory())
                 message(f, "Not a directory");
         }
 

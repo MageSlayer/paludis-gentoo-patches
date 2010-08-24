@@ -331,7 +331,7 @@ InstalledAccountsID::from_repositories_key() const
     return make_null_shared_ptr();
 }
 
-const std::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSPath> >
 InstalledAccountsID::fs_location_key() const
 {
     return make_null_shared_ptr();

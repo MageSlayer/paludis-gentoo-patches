@@ -33,6 +33,7 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/fs_stat.hh>
 #include <paludis/standard_output_manager.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
@@ -78,8 +79,8 @@ namespace test_cases
                             n::build_dependencies() = "",
                             n::description() = "",
                             n::environment() = &env,
-                            n::install_under() = FSEntry("/"),
-                            n::location() = FSEntry("unpackaged_repository_TEST_dir/pkg"),
+                            n::install_under() = FSPath("/"),
+                            n::location() = FSPath("unpackaged_repository_TEST_dir/pkg"),
                             n::name() = QualifiedPackageName("cat/pkg"),
                             n::preserve_work() = indeterminate,
                             n::rewrite_ids_over_to_root() = -1,
@@ -110,8 +111,8 @@ namespace test_cases
                             n::build_dependencies() = "",
                             n::description() = "",
                             n::environment() = &env,
-                            n::install_under() = FSEntry("/"),
-                            n::location() = FSEntry("unpackaged_repository_TEST_dir/pkg"),
+                            n::install_under() = FSPath("/"),
+                            n::location() = FSPath("unpackaged_repository_TEST_dir/pkg"),
                             n::name() = QualifiedPackageName("cat/pkg"),
                             n::preserve_work() = indeterminate,
                             n::rewrite_ids_over_to_root() = -1,
@@ -130,7 +131,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(id->name(), QualifiedPackageName("cat/pkg"));
             TEST_CHECK_EQUAL(id->repository()->name(), RepositoryName("unpackaged"));
             TEST_CHECK(bool(id->fs_location_key()));
-            TEST_CHECK_EQUAL(id->fs_location_key()->value(), FSEntry("unpackaged_repository_TEST_dir/pkg"));
+            TEST_CHECK_EQUAL(id->fs_location_key()->value(), FSPath("unpackaged_repository_TEST_dir/pkg"));
         }
     } test_metadata;
 
@@ -147,8 +148,8 @@ namespace test_cases
                             n::build_dependencies() = "",
                             n::description() = "",
                             n::environment() = &env,
-                            n::install_under() = FSEntry("/"),
-                            n::location() = FSEntry("unpackaged_repository_TEST_dir/pkg"),
+                            n::install_under() = FSPath("/"),
+                            n::location() = FSPath("unpackaged_repository_TEST_dir/pkg"),
                             n::name() = QualifiedPackageName("cat/pkg"),
                             n::preserve_work() = indeterminate,
                             n::rewrite_ids_over_to_root() = -1,
@@ -179,8 +180,8 @@ namespace test_cases
                             n::build_dependencies() = "",
                             n::description() = "",
                             n::environment() = &env,
-                            n::install_under() = FSEntry("/"),
-                            n::location() = FSEntry("unpackaged_repository_TEST_dir/pkg"),
+                            n::install_under() = FSPath("/"),
+                            n::location() = FSPath("unpackaged_repository_TEST_dir/pkg"),
                             n::name() = QualifiedPackageName("cat/pkg"),
                             n::preserve_work() = indeterminate,
                             n::rewrite_ids_over_to_root() = -1,
@@ -222,8 +223,8 @@ namespace test_cases
                             n::build_dependencies() = "",
                             n::description() = "",
                             n::environment() = &env,
-                            n::install_under() = FSEntry("/"),
-                            n::location() = FSEntry("unpackaged_repository_TEST_dir/pkg"),
+                            n::install_under() = FSPath("/"),
+                            n::location() = FSPath("unpackaged_repository_TEST_dir/pkg"),
                             n::name() = QualifiedPackageName("cat/pkg"),
                             n::preserve_work() = indeterminate,
                             n::rewrite_ids_over_to_root() = -1,
@@ -238,12 +239,12 @@ namespace test_cases
                         RepositoryName("installed-unpackaged"),
                         make_named_values<unpackaged_repositories::InstalledUnpackagedRepositoryParams>(
                             n::environment() = &env,
-                            n::location() = FSEntry("unpackaged_repository_TEST_dir/installed"),
-                            n::root() = FSEntry("unpackaged_repository_TEST_dir/root")
+                            n::location() = FSPath("unpackaged_repository_TEST_dir/installed"),
+                            n::root() = FSPath("unpackaged_repository_TEST_dir/root")
                         )));
             env.package_database()->add_repository(0, installed_repo);
 
-            TEST_CHECK(! FSEntry("unpackaged_repository_TEST_dir/root/first").is_regular_file());
+            TEST_CHECK(! FSPath("unpackaged_repository_TEST_dir/root/first").stat().is_regular_file());
 
             const std::shared_ptr<const PackageID> id(
                     *env[selection::RequireExactlyOne(generator::All())]->begin());
@@ -257,7 +258,7 @@ namespace test_cases
                     ));
             id->perform_action(action);
 
-            TEST_CHECK(FSEntry("unpackaged_repository_TEST_dir/root/first").is_regular_file());
+            TEST_CHECK(FSPath("unpackaged_repository_TEST_dir/root/first").stat().is_regular_file());
         }
 
         bool repeatable() const
@@ -280,8 +281,8 @@ namespace test_cases
                             n::build_dependencies() = "",
                             n::description() = "",
                             n::environment() = &env,
-                            n::install_under() = FSEntry("/magic/pixie"),
-                            n::location() = FSEntry("unpackaged_repository_TEST_dir/under_pkg"),
+                            n::install_under() = FSPath("/magic/pixie"),
+                            n::location() = FSPath("unpackaged_repository_TEST_dir/under_pkg"),
                             n::name() = QualifiedPackageName("cat/pkg"),
                             n::preserve_work() = indeterminate,
                             n::rewrite_ids_over_to_root() = -1,
@@ -296,12 +297,12 @@ namespace test_cases
                         RepositoryName("installed-unpackaged"),
                         make_named_values<unpackaged_repositories::InstalledUnpackagedRepositoryParams>(
                             n::environment() = &env,
-                            n::location() = FSEntry("unpackaged_repository_TEST_dir/under_installed"),
-                            n::root() = FSEntry("unpackaged_repository_TEST_dir/under_root")
+                            n::location() = FSPath("unpackaged_repository_TEST_dir/under_installed"),
+                            n::root() = FSPath("unpackaged_repository_TEST_dir/under_root")
                         )));
             env.package_database()->add_repository(0, installed_repo);
 
-            TEST_CHECK(! FSEntry("unpackaged_repository_TEST_dir/under_root/magic/pixie/first").is_regular_file());
+            TEST_CHECK(! FSPath("unpackaged_repository_TEST_dir/under_root/magic/pixie/first").stat().is_regular_file());
 
             const std::shared_ptr<const PackageID> id(
                     *env[selection::RequireExactlyOne(generator::All())]->begin());
@@ -315,7 +316,7 @@ namespace test_cases
                     ));
             id->perform_action(action);
 
-            TEST_CHECK(FSEntry("unpackaged_repository_TEST_dir/under_root/magic/pixie/first").is_regular_file());
+            TEST_CHECK(FSPath("unpackaged_repository_TEST_dir/under_root/magic/pixie/first").stat().is_regular_file());
         }
 
         bool repeatable() const

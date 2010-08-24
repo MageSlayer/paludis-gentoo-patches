@@ -18,7 +18,7 @@
  */
 
 #include <paludis/util/process.hh>
-#include <paludis/util/fs_entry.hh>
+#include <paludis/util/fs_path.hh>
 #include <paludis/util/pipe.hh>
 #include <paludis/util/safe_ofstream.hh>
 #include <test/test_framework.hh>
@@ -207,7 +207,7 @@ namespace test_cases
             std::stringstream stdout_stream;
             Process pwd_process(ProcessCommand({"pwd"}));
             pwd_process.capture_stdout(stdout_stream);
-            pwd_process.chdir(FSEntry("/"));
+            pwd_process.chdir(FSPath("/"));
 
             TEST_CHECK_EQUAL(pwd_process.run().wait(), 0);
             TEST_CHECK_EQUAL(stdout_stream.str(), "/\n");

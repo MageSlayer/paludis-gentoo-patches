@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# vim: set sw=4 sts=4 et ft=sh :
+
+make_enum_FSPathMkdirOption()
+{
+    prefix fspmkdo
+
+    key fspmkdo_ok_if_exists    "It's ok if we already exist and are a directory"
+
+    doxygen_comment << "END"
+        /**
+         * Options for FSPath::mkdir.
+         *
+         * \see FSPath::mkdir
+         * \see FSPathMkdirOptions
+         * \ingroup g_fs
+         */
+END
+}

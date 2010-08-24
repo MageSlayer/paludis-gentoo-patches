@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_BROKEN_LINKAGE_FINDER_LINKAGE_CHECKER_HH
 
 #include <paludis/broken_linkage_finder.hh>
-#include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/util/fs_path-fwd.hh>
 #include <paludis/util/set-fwd.hh>
 
 #include <paludis/package_id-fwd.hh>
@@ -40,12 +40,12 @@ namespace paludis
             LinkageChecker(const LinkageChecker &) = delete;
             LinkageChecker & operator= (const LinkageChecker &) = delete;
 
-            virtual bool check_file(const paludis::FSEntry &) PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-            virtual void note_symlink(const paludis::FSEntry &, const paludis::FSEntry &) = 0;
+            virtual bool check_file(const FSPath &) PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+            virtual void note_symlink(const FSPath &, const FSPath &) = 0;
 
-            virtual void add_extra_lib_dir(const paludis::FSEntry &) = 0;
+            virtual void add_extra_lib_dir(const FSPath &) = 0;
             virtual void need_breakage_added(
-                const std::function<void (const paludis::FSEntry &, const std::string &)> &) = 0;
+                const std::function<void (const FSPath &, const std::string &)> &) = 0;
 
     };
 }

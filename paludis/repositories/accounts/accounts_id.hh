@@ -49,7 +49,7 @@ namespace paludis
                 AccountsID(const Environment * const,
                         const QualifiedPackageName &, const std::shared_ptr<const Repository> &,
                         const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > &,
-                        const FSEntry &, const bool is_user, const bool masked);
+                        const FSPath &, const bool is_user, const bool masked);
                 ~AccountsID();
 
                 virtual const std::string canonical_form(const PackageIDCanonicalForm) const;
@@ -79,7 +79,7 @@ namespace paludis
                 virtual const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Contents> > > contents_key() const;
                 virtual const std::shared_ptr<const MetadataTimeKey> installed_time_key() const;
                 virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > from_repositories_key() const;
-                virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > fs_location_key() const;
+                virtual const std::shared_ptr<const MetadataValueKey<FSPath> > fs_location_key() const;
                 virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > behaviours_key() const;
                 virtual const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Choices> > > choices_key() const;
                 virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > dependencies_key() const;

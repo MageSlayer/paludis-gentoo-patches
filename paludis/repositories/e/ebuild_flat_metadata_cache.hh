@@ -22,7 +22,6 @@
 
 #include <paludis/repositories/e/ebuild.hh>
 #include <paludis/repositories/e/ebuild_id.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/repositories/e/eclass_mtimes.hh>
 #include <paludis/util/pimp.hh>
 
@@ -46,7 +45,7 @@ namespace paludis
                 ///\name Basic operations
                 ///\{
 
-                EbuildFlatMetadataCache(const Environment * const, FSEntry & filename, const FSEntry & ebuild,
+                EbuildFlatMetadataCache(const Environment * const, const FSPath & filename, const FSPath & ebuild,
                         time_t master_mtime, const std::shared_ptr<const EclassMtimes> & eclass_mtimes, bool silent);
                 ~EbuildFlatMetadataCache();
 

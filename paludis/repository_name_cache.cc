@@ -19,11 +19,9 @@
 
 #include "repository_name_cache.hh"
 #include <paludis/repository.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/set.hh>
-#include <paludis/util/dir_iterator.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -31,6 +29,9 @@
 #include <paludis/util/hashes.hh>
 #include <paludis/util/safe_ofstream.hh>
 #include <paludis/util/safe_ifstream.hh>
+#include <paludis/util/fs_iterator.hh>
+#include <paludis/util/fs_stat.hh>
+#include <paludis/util/fs_error.hh>
 #include <unordered_map>
 #include <memory>
 #include <set>
@@ -49,15 +50,15 @@ namespace paludis
         mutable Mutex mutex;
 
         mutable bool usable;
-        mutable FSEntry location;
+        mutable FSPath location;
         const Repository * const repo;
 
         mutable NameCacheMap name_cache_map;
         mutable bool checked_name_cache_map;
 
-        Imp(const FSEntry & l, const Repository * const r) :
-            usable(l != FSEntry("/var/empty")),
-            location(l == FSEntry("/var/empty") ? l : l / stringify(r->name())),
+        Imp(const FSPath & l, const Repository * const r) :
+            usable(l != FSPath("/var/empty")),
+            location(l == FSPath("/var/empty") ? l : l / stringify(r->name())),
             repo(r),
             checked_name_cache_map(false)
         {
@@ -73,7 +74,7 @@ Imp<RepositoryNameCache>::find(const PackageNamePart & p) const
 {
     NameCacheMap::iterator r(name_cache_map.find(p));
 
-    location = FSEntry(stringify(location));
+    location = FSPath(stringify(location));
 
     if (name_cache_map.end() == r)
     {
@@ -81,7 +82,7 @@ Imp<RepositoryNameCache>::find(const PackageNamePart & p) const
 
         if (! checked_name_cache_map)
         {
-            if (location.is_directory() && (location / "_VERSION_").exists())
+            if (location.stat().is_directory() && (location / "_VERSION_").stat().exists())
             {
                 SafeIFStream vvf(location / "_VERSION_");
                 std::string line;
@@ -106,7 +107,7 @@ Imp<RepositoryNameCache>::find(const PackageNamePart & p) const
                 }
                 checked_name_cache_map = true;
             }
-            else if ((location.dirname() / "_VERSION_").exists())
+            else if ((location.dirname() / "_VERSION_").stat().exists())
             {
                 Log::get_instance()->message("repository.names_cache.old", ll_warning, lc_context)
                     << "Names cache for '" << repo->name() << "' does not exist at '" << location
@@ -130,8 +131,8 @@ Imp<RepositoryNameCache>::find(const PackageNamePart & p) const
             }
         }
 
-        FSEntry ff(location / stringify(p));
-        if (ff.exists())
+        FSPath ff(location / stringify(p));
+        if (ff.stat().exists())
         {
             SafeIFStream f(ff);
             std::string line;
@@ -146,8 +147,8 @@ Imp<RepositoryNameCache>::find(const PackageNamePart & p) const
 void
 Imp<RepositoryNameCache>::update(const PackageNamePart & p, NameCacheMap::iterator r)
 {
-    FSEntry ff(location / stringify(p));
-    if (r->second.empty() && ff.exists())
+    FSPath ff(location / stringify(p));
+    if (r->second.empty() && ff.stat().exists())
     {
         try
         {
@@ -178,7 +179,7 @@ Imp<RepositoryNameCache>::update(const PackageNamePart & p, NameCacheMap::iterat
 }
 
 RepositoryNameCache::RepositoryNameCache(
-        const FSEntry & location,
+        const FSPath & location,
         const Repository * const repo) :
     Pimp<RepositoryNameCache>(location, repo)
 {
@@ -212,24 +213,25 @@ RepositoryNameCache::regenerate_cache() const
 {
     Lock l(_imp->mutex);
 
-    if (_imp->location == FSEntry("/var/empty"))
+    if (_imp->location == FSPath("/var/empty"))
         return;
 
     Context context("When generating repository names cache at '"
             + stringify(_imp->location) + "':");
 
-    if (_imp->location.is_directory())
-        for (DirIterator i(_imp->location, { dio_inode_sort }), i_end ; i != i_end ; ++i)
-            FSEntry(*i).unlink();
+    if (_imp->location.stat().is_directory())
+        for (FSIterator i(_imp->location, { fsio_inode_sort }), i_end ; i != i_end ; ++i)
+            i->unlink();
 
-    FSEntry main_cache_dir(_imp->location.dirname());
-    if (! main_cache_dir.exists())
+    FSPath main_cache_dir(_imp->location.dirname());
+    FSStat main_cache_dir_stat(main_cache_dir);
+    if (! main_cache_dir_stat.exists())
         Log::get_instance()->message("repository.names_cache.no_dir", ll_warning, lc_context)
             << "Names cache directory '" << main_cache_dir << "' does not exist "
             << "(see the faq for why this directory will not be created automatically)";
 
-    if (FSEntry(_imp->location).mkdir(main_cache_dir.permissions()))
-        FSEntry(_imp->location).chmod(main_cache_dir.permissions());
+    if (_imp->location.mkdir(main_cache_dir_stat.permissions(), { fspmkdo_ok_if_exists }))
+        _imp->location.chmod(main_cache_dir_stat.permissions());
 
     std::unordered_map<std::string, std::string, Hash<std::string> > m;
 

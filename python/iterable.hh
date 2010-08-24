@@ -25,6 +25,7 @@
 
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/fs_path.hh>
 #include <type_traits>
 
 namespace paludis
@@ -35,6 +36,12 @@ namespace paludis
         struct IsConvertible
         {
             static const bool value = std::is_convertible<From_, To_>::value;
+        };
+
+        template <>
+        struct IsConvertible<std::string, FSPath>
+        {
+            static const bool value = true;
         };
 
         template <typename From_, typename Tag_>

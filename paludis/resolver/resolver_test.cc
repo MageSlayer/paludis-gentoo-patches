@@ -33,7 +33,6 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/accept_visitor.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/set-impl.hh>
@@ -126,14 +125,14 @@ ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s,
     std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
     keys->insert("format", "e");
     keys->insert("names_cache", "/var/empty");
-    keys->insert("location", stringify(FSEntry::cwd() / ("resolver_TEST_" + t + "_dir") / "repo"));
-    keys->insert("profiles", stringify(FSEntry::cwd() / ("resolver_TEST_" + t + "_dir") / "repo/profiles/profile"));
+    keys->insert("location", stringify(FSPath::cwd() / ("resolver_TEST_" + t + "_dir") / "repo"));
+    keys->insert("profiles", stringify(FSPath::cwd() / ("resolver_TEST_" + t + "_dir") / "repo/profiles/profile"));
     keys->insert("layout", l);
     keys->insert("eapi_when_unknown", e);
     keys->insert("eapi_when_unspecified", e);
     keys->insert("profile_eapi", e);
-    keys->insert("distdir", stringify(FSEntry::cwd() / ("resolver_TEST_" + t + "_dir") / "distdir"));
-    keys->insert("builddir", stringify(FSEntry::cwd() / ("resolver_TEST_" + t + "_dir") / "build"));
+    keys->insert("distdir", stringify(FSPath::cwd() / ("resolver_TEST_" + t + "_dir") / "distdir"));
+    keys->insert("builddir", stringify(FSPath::cwd() / ("resolver_TEST_" + t + "_dir") / "build"));
     repo = RepositoryFactory::get_instance()->create(&env,
             std::bind(from_keys, keys, std::placeholders::_1));
     env.package_database()->add_repository(1, repo);
@@ -142,8 +141,8 @@ ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s,
     keys->insert("format", "vdb");
     keys->insert("names_cache", "/var/empty");
     keys->insert("provides_cache", "/var/empty");
-    keys->insert("location", stringify(FSEntry::cwd() / ("resolver_TEST_" + t + "_dir") / "installed"));
-    keys->insert("builddir", stringify(FSEntry::cwd() / ("resolver_TEST_" + t + "_dir") / "build"));
+    keys->insert("location", stringify(FSPath::cwd() / ("resolver_TEST_" + t + "_dir") / "installed"));
+    keys->insert("builddir", stringify(FSPath::cwd() / ("resolver_TEST_" + t + "_dir") / "build"));
     inst_repo = RepositoryFactory::get_instance()->create(&env,
             std::bind(from_keys, keys, std::placeholders::_1));
     env.package_database()->add_repository(1, inst_repo);

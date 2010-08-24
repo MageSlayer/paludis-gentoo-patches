@@ -26,9 +26,7 @@
 #include <paludis/util/named_value.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/set-impl.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/system.hh>
-#include <paludis/util/dir_iterator.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/about.hh>
 #include <unordered_map>

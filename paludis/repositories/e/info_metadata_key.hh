@@ -5,7 +5,6 @@
 
 #include <paludis/metadata_key.hh>
 #include <paludis/environment-fwd.hh>
-#include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/pimp.hh>
 
@@ -27,7 +26,7 @@ namespace paludis
 
             public:
                 InfoPkgsMetadataKey(const Environment * const e,
-                        const std::shared_ptr<const FSEntrySequence> & f,
+                        const std::shared_ptr<const FSPathSequence> & f,
                         const ERepository * const);
                 ~InfoPkgsMetadataKey();
 
@@ -41,7 +40,7 @@ namespace paludis
             private Pimp<InfoVarsMetadataKey>
         {
             public:
-                InfoVarsMetadataKey(const std::shared_ptr<const FSEntrySequence> &);
+                InfoVarsMetadataKey(const std::shared_ptr<const FSPathSequence> &);
                 ~InfoVarsMetadataKey();
 
                 const std::shared_ptr<const Set<std::string> > value() const;

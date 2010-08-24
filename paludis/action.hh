@@ -29,7 +29,7 @@
 #include <paludis/util/pimp.hh>
 #include <paludis/util/sequence-fwd.hh>
 #include <paludis/util/named_value.hh>
-#include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/util/fs_path-fwd.hh>
 #include <paludis/util/options.hh>
 #include <paludis/output_manager-fwd.hh>
 #include <paludis/util/type_list.hh>
@@ -198,9 +198,10 @@ namespace paludis
         /**
          * Sometimes we never want to unmerge certain files.
          *
-         * \since 0,38
+         * \since 0.38
+         * \since 0.55 uses FSPath
          */
-        NamedValue<n::ignore_for_unmerge, std::function<bool (const FSEntry &)> > ignore_for_unmerge;
+        NamedValue<n::ignore_for_unmerge, std::function<bool (const FSPath &)> > ignore_for_unmerge;
 
         /**
          * Some repositories need to do special handlings for direct overwrites
@@ -442,7 +443,7 @@ namespace paludis
             const FetchActionOptions & options;
 
             /// Signal that we will fetch a particular file.
-            virtual void will_fetch(const FSEntry & destination, const unsigned long size_in_bytes) = 0;
+            virtual void will_fetch(const FSPath & destination, const unsigned long size_in_bytes) = 0;
 
             virtual const std::string simple_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
 

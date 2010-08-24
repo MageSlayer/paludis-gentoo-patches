@@ -33,7 +33,6 @@
 namespace paludis
 {
     class Environment;
-    class FSEntry;
     class ERepository;
 
     /**
@@ -65,7 +64,7 @@ namespace paludis
         public Exception
     {
         public:
-            NewsError(const FSEntry &, const std::string &) throw ();
+            NewsError(const FSPath &, const std::string &) throw ();
     };
 
     /**
@@ -84,7 +83,7 @@ namespace paludis
             /**
              * Constructor, from a filename.
              */
-            NewsFile(const FSEntry & filename);
+            NewsFile(const FSPath & filename);
 
             ~NewsFile();
 

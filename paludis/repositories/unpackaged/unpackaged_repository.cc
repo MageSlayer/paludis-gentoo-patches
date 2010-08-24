@@ -48,8 +48,8 @@ namespace paludis
         std::shared_ptr<QualifiedPackageNameSet> package_names;
         std::shared_ptr<CategoryNamePartSet> category_names;
 
-        std::shared_ptr<const MetadataValueKey<FSEntry> > location_key;
-        std::shared_ptr<const MetadataValueKey<FSEntry> > install_under_key;
+        std::shared_ptr<const MetadataValueKey<FSPath> > location_key;
+        std::shared_ptr<const MetadataValueKey<FSPath> > install_under_key;
         std::shared_ptr<const MetadataValueKey<long> > rewrite_ids_over_to_root_key;
         std::shared_ptr<const MetadataValueKey<std::string> > name_key;
         std::shared_ptr<const MetadataValueKey<std::string> > slot_key;
@@ -66,9 +66,9 @@ namespace paludis
             ids(std::make_shared<PackageIDSequence>()),
             package_names(std::make_shared<QualifiedPackageNameSet>()),
             category_names(std::make_shared<CategoryNamePartSet>()),
-            location_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("location", "location",
+            location_key(std::make_shared<LiteralMetadataValueKey<FSPath> >("location", "location",
                         mkt_significant, params.location())),
-            install_under_key(std::make_shared<LiteralMetadataValueKey<FSEntry> >("install_under", "install_under",
+            install_under_key(std::make_shared<LiteralMetadataValueKey<FSPath> >("install_under", "install_under",
                         mkt_significant, params.install_under())),
             rewrite_ids_over_to_root_key(std::make_shared<LiteralMetadataValueKey<long> >("rewrite_ids_over_to_root", "rewrite_ids_over_to_root",
                         mkt_normal, params.rewrite_ids_over_to_root())),
@@ -204,16 +204,16 @@ UnpackagedRepository::format_key() const
     return _imp->format_key;
 }
 
-const std::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSPath> >
 UnpackagedRepository::location_key() const
 {
     return _imp->location_key;
 }
 
-const std::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSPath> >
 UnpackagedRepository::installed_root_key() const
 {
-    return std::shared_ptr<const MetadataValueKey<FSEntry> >();
+    return std::shared_ptr<const MetadataValueKey<FSPath> >();
 }
 
 std::shared_ptr<Repository>

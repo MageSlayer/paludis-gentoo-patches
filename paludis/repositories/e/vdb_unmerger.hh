@@ -23,7 +23,6 @@
 
 #include <paludis/repository.hh>
 #include <paludis/util/pimp.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/unmerger.hh>
 
 namespace paludis
@@ -53,10 +52,10 @@ namespace paludis
         NamedValue<n::config_protect, std::string> config_protect;
         NamedValue<n::config_protect_mask, std::string> config_protect_mask;
         NamedValue<n::environment, Environment *> environment;
-        NamedValue<n::ignore, const std::function<bool (const FSEntry &)> > ignore;
+        NamedValue<n::ignore, const std::function<bool (const FSPath &)> > ignore;
         NamedValue<n::output_manager, std::shared_ptr<OutputManager> > output_manager;
         NamedValue<n::package_id, std::shared_ptr<const PackageID> > package_id;
-        NamedValue<n::root, FSEntry> root;
+        NamedValue<n::root, FSPath> root;
     };
 
     /**
@@ -92,8 +91,8 @@ namespace paludis
             Imp<VDBUnmerger> * _imp;
 
         protected:
-            bool config_protected(const FSEntry &) const;
-            std::string make_tidy(const FSEntry &) const;
+            bool config_protected(const FSPath &) const;
+            std::string make_tidy(const FSPath &) const;
 
             void populate_unmerge_set();
 

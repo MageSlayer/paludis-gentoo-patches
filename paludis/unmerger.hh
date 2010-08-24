@@ -22,7 +22,7 @@
 #define PALUDIS_GUARD_PALUDIS_MERGER_UNMERGER_HH 1
 
 #include <paludis/util/exception.hh>
-#include <paludis/util/fs_entry.hh>
+#include <paludis/util/fs_path.hh>
 #include <paludis/util/pimp.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/merger_entry_type.hh>
@@ -64,9 +64,9 @@ namespace paludis
     struct UnmergerOptions
     {
         NamedValue<n::environment, const Environment *> environment;
-        NamedValue<n::ignore, const std::function<bool (const FSEntry &)> > ignore;
+        NamedValue<n::ignore, const std::function<bool (const FSPath &)> > ignore;
         NamedValue<n::maybe_output_manager, std::shared_ptr<OutputManager> > maybe_output_manager;
-        NamedValue<n::root, FSEntry> root;
+        NamedValue<n::root, FSPath> root;
     };
 
     /**
@@ -143,10 +143,10 @@ namespace paludis
             ///\name Unlink operations
             ///\{
 
-            virtual void unlink_file(FSEntry, const std::shared_ptr<const ContentsEntry> &) const;
-            virtual void unlink_dir(FSEntry, const std::shared_ptr<const ContentsEntry> &) const;
-            virtual void unlink_sym(FSEntry, const std::shared_ptr<const ContentsEntry> &) const;
-            virtual void unlink_misc(FSEntry, const std::shared_ptr<const ContentsEntry> &) const;
+            virtual void unlink_file(FSPath, const std::shared_ptr<const ContentsEntry> &) const;
+            virtual void unlink_dir(FSPath, const std::shared_ptr<const ContentsEntry> &) const;
+            virtual void unlink_sym(FSPath, const std::shared_ptr<const ContentsEntry> &) const;
+            virtual void unlink_misc(FSPath, const std::shared_ptr<const ContentsEntry> &) const;
 
             ///\}
 

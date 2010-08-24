@@ -29,18 +29,18 @@ namespace paludis
 {
     class ElfLinkageChecker :
         public LinkageChecker,
-        private paludis::Pimp<ElfLinkageChecker>
+        private Pimp<ElfLinkageChecker>
     {
         public:
-            ElfLinkageChecker(const paludis::FSEntry &, const std::shared_ptr<const Sequence<std::string>> &);
+            ElfLinkageChecker(const FSPath &, const std::shared_ptr<const Sequence<std::string>> &);
             virtual ~ElfLinkageChecker();
 
-            virtual bool check_file(const paludis::FSEntry &) PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual void note_symlink(const paludis::FSEntry &, const paludis::FSEntry &);
+            virtual bool check_file(const FSPath &) PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual void note_symlink(const FSPath &, const FSPath &);
 
-            virtual void add_extra_lib_dir(const paludis::FSEntry &);
+            virtual void add_extra_lib_dir(const FSPath &);
             virtual void need_breakage_added(
-                const std::function<void (const paludis::FSEntry &, const std::string &)> &);
+                const std::function<void (const FSPath &, const std::string &)> &);
     };
 }
 

@@ -20,11 +20,12 @@
 #include <paludis/merger.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/exception.hh>
-#include <paludis/util/dir_iterator.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/timestamp.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/fs_iterator.hh>
+#include <paludis/util/fs_stat.hh>
 #include <paludis/selinux/security_context.hh>
 #include <paludis/environment.hh>
 #include <paludis/hook.hh>
@@ -48,7 +49,7 @@ namespace paludis
         bool result;
         bool skip_dir;
 
-        std::set<FSEntry> fixed_entries;
+        std::set<FSPath, FSPathComparator> fixed_entries;
 
         Imp(const MergerParams & p) :
             params(p),
@@ -138,17 +139,17 @@ Merger::make_check_fail()
 }
 
 void
-Merger::do_dir_recursive(bool is_check, const FSEntry & src, const FSEntry & dst)
+Merger::do_dir_recursive(bool is_check, const FSPath & src, const FSPath & dst)
 {
     Context context("When " + stringify(is_check ? "checking" : "performing") + " merge from '" +
             stringify(src) + "' to '" + stringify(dst) + "':");
 
-    if (! src.is_directory())
+    if (! src.stat().is_directory())
         throw MergerError("Source directory '" + stringify(src) + "' is not a directory");
 
     on_enter_dir(is_check, src);
 
-    DirIterator d(src, { dio_include_dotfiles, dio_inode_sort }), d_end;
+    FSIterator d(src, { fsio_include_dotfiles, fsio_inode_sort }), d_end;
 
     if (is_check && d == d_end && dst != _imp->params.root().realpath())
     {
@@ -200,37 +201,39 @@ Merger::do_dir_recursive(bool is_check, const FSEntry & src, const FSEntry & dst
 }
 
 void
-Merger::on_enter_dir(bool, const FSEntry)
+Merger::on_enter_dir(bool, const FSPath)
 {
 }
 
 void
-Merger::on_leave_dir(bool, const FSEntry)
+Merger::on_leave_dir(bool, const FSPath)
 {
 }
 
 EntryType
-Merger::entry_type(const FSEntry & f)
+Merger::entry_type(const FSPath & f)
 {
     Context context("When checking type of '" + stringify(f) + "':");
 
-    if (! f.exists())
+    FSStat f_stat(f);
+
+    if (! f_stat.exists())
         return et_nothing;
 
-    if (f.is_symbolic_link())
+    if (f_stat.is_symlink())
         return et_sym;
 
-    if (f.is_regular_file())
+    if (f_stat.is_regular_file())
         return et_file;
 
-    if (f.is_directory())
+    if (f_stat.is_directory())
         return et_dir;
 
     return et_misc;
 }
 
 void
-Merger::on_file(bool is_check, const FSEntry & src, const FSEntry & dst)
+Merger::on_file(bool is_check, const FSPath & src, const FSPath & dst)
 {
     Context context("When handling file '" + stringify(src) + "' to '" + stringify(dst) + "':");
 
@@ -262,10 +265,11 @@ Merger::on_file(bool is_check, const FSEntry & src, const FSEntry & dst)
         }
     }
 
-    if (is_check && src.mtim() < _imp->params.fix_mtimes_before())
-        FSEntry(src).utime(_imp->params.fix_mtimes_before());
+    FSStat src_stat(src);
+    if (is_check && src_stat.mtim() < _imp->params.fix_mtimes_before())
+        src.utime(_imp->params.fix_mtimes_before());
 
-    on_file_main(is_check, FSEntry(stringify(src)), dst);
+    on_file_main(is_check, FSPath(stringify(src)), dst);
 
     if (is_check &&
         0 != _imp->params.environment()->perform_hook(extend_hook(
@@ -277,7 +281,7 @@ Merger::on_file(bool is_check, const FSEntry & src, const FSEntry & dst)
 }
 
 void
-Merger::on_dir(bool is_check, const FSEntry & src, const FSEntry & dst)
+Merger::on_dir(bool is_check, const FSPath & src, const FSPath & dst)
 {
     Context context("When handling dir '" + stringify(src) + "' to '" + stringify(dst) + "':");
 
@@ -322,7 +326,7 @@ Merger::on_dir(bool is_check, const FSEntry & src, const FSEntry & dst)
 }
 
 void
-Merger::on_sym(bool is_check, const FSEntry & src, const FSEntry & dst)
+Merger::on_sym(bool is_check, const FSPath & src, const FSPath & dst)
 {
     Context context("When handling sym '" + stringify(src) + "' to '" + stringify(dst) + "':");
 
@@ -363,7 +367,7 @@ Merger::on_sym(bool is_check, const FSEntry & src, const FSEntry & dst)
             rewrite_symlink_as_needed(src, dst);
     }
 
-    on_sym_main(is_check, FSEntry(stringify(src)), dst);
+    on_sym_main(is_check, FSPath(stringify(src)), dst);
 
     if (is_check &&
         0 != _imp->params.environment()->perform_hook(extend_hook(
@@ -375,7 +379,7 @@ Merger::on_sym(bool is_check, const FSEntry & src, const FSEntry & dst)
 }
 
 void
-Merger::on_misc(bool is_check, const FSEntry & src, const FSEntry & dst)
+Merger::on_misc(bool is_check, const FSPath & src, const FSPath & dst)
 {
     Context context("When handling misc '" + stringify(src) + "' to '" + stringify(dst) + "':");
 
@@ -384,7 +388,7 @@ Merger::on_misc(bool is_check, const FSEntry & src, const FSEntry & dst)
 }
 
 bool
-Merger::symlink_needs_rewriting(const FSEntry & sym)
+Merger::symlink_needs_rewriting(const FSPath & sym)
 {
     std::string target(sym.readlink());
     std::string real_image(stringify(_imp->params.image().realpath()));
@@ -399,19 +403,20 @@ Merger::set_skipped_dir(const bool value)
 }
 
 void
-Merger::do_ownership_fixes_recursive(const FSEntry & dir)
+Merger::do_ownership_fixes_recursive(const FSPath & dir)
 {
-    for (DirIterator d(dir, { dio_include_dotfiles, dio_inode_sort }), d_end ; d != d_end ; ++d)
+    for (FSIterator d(dir, { fsio_include_dotfiles, fsio_inode_sort }), d_end ; d != d_end ; ++d)
     {
         std::pair<uid_t, gid_t> new_ids(_imp->params.get_new_ids_or_minus_one()(*d));
         if (uid_t(-1) != new_ids.first || gid_t(-1) != new_ids.second)
         {
-            FSEntry f(*d);
+            FSPath f(*d);
+            FSStat f_stat(f);
             f.lchown(new_ids.first, new_ids.second);
 
             if (et_sym != entry_type(*d))
             {
-                mode_t mode(f.permissions());
+                mode_t mode(f_stat.permissions());
 
                 if (et_dir == entry_type(*d))
                 {
@@ -452,7 +457,7 @@ Merger::do_ownership_fixes_recursive(const FSEntry & dir)
 }
 
 bool
-Merger::fixed_ownership_for(const FSEntry & f)
+Merger::fixed_ownership_for(const FSPath & f)
 {
     return _imp->fixed_entries.end() != _imp->fixed_entries.find(f);
 }
@@ -463,21 +468,21 @@ Merger::on_done_merge()
 }
 
 void
-Merger::rewrite_symlink_as_needed(const FSEntry & src, const FSEntry & dst_dir)
+Merger::rewrite_symlink_as_needed(const FSPath & src, const FSPath & dst_dir)
 {
     if (! symlink_needs_rewriting(src))
         return;
 
     FSCreateCon createcon(MatchPathCon::get_instance()->match(stringify(dst_dir / src.basename()), S_IFLNK));
 
-    FSEntry real_image(_imp->params.image().realpath());
-    FSEntry dst(src.readlink());
+    FSPath real_image(_imp->params.image().realpath());
+    FSPath dst(src.readlink());
     std::string fixed_dst(stringify(dst.strip_leading(real_image)));
 
     Log::get_instance()->message("merger.rewriting_symlink", ll_qa, lc_context) << "Rewriting bad symlink: "
             << src << " -> " << dst << " to " << fixed_dst;
 
-    FSEntry s(src);
+    FSPath s(src);
     s.unlink();
     s.symlink(fixed_dst);
 }

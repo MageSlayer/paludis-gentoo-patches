@@ -36,7 +36,7 @@ paludis::resolver::collect_installed(
         )
 {
     const std::shared_ptr<const PackageIDSequence> q((*env)[selection::AllVersionsUnsorted(
-                generator::All() | filter::InstalledAtRoot(FSEntry("/")))]);
+                generator::All() | filter::InstalledAtSlash())]);
     const std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
     std::copy(q->begin(), q->end(), result->inserter());

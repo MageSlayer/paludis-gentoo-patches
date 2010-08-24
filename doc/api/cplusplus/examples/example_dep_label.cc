@@ -154,7 +154,7 @@ int main(int argc, char * argv[])
         /* Fetch package IDs for all installed packages. */
         std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsUnsorted(
                     generator::All() |
-                    filter::InstalledAtRoot(FSEntry("/")))]);
+                    filter::InstalledAtSlash())]);
 
         /* Store a map from distfile name to whether it is fetch restricted. */
         ResultsMap results;

@@ -21,7 +21,6 @@
 #define PALUDIS_GUARD_PALUDIS_FS_MERGER_HH 1
 
 #include <paludis/fs_merger-fwd.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/named_value.hh>
@@ -82,9 +81,9 @@ namespace paludis
          */
         NamedValue<n::fix_mtimes_before, Timestamp> fix_mtimes_before;
 
-        NamedValue<n::get_new_ids_or_minus_one, std::function<std::pair<uid_t, gid_t> (const FSEntry &)> > get_new_ids_or_minus_one;
-        NamedValue<n::image, FSEntry> image;
-        NamedValue<n::install_under, FSEntry> install_under;
+        NamedValue<n::get_new_ids_or_minus_one, std::function<std::pair<uid_t, gid_t> (const FSPath &)> > get_new_ids_or_minus_one;
+        NamedValue<n::image, FSPath> image;
+        NamedValue<n::install_under, FSPath> install_under;
 
         NamedValue<n::maybe_output_manager, std::shared_ptr<OutputManager> > maybe_output_manager;
 
@@ -93,11 +92,11 @@ namespace paludis
          *
          * \since 0.41
          */
-        NamedValue<n::merged_entries, std::shared_ptr<FSEntrySet> > merged_entries;
+        NamedValue<n::merged_entries, std::shared_ptr<FSPathSet> > merged_entries;
 
         NamedValue<n::no_chown, bool> no_chown;
         NamedValue<n::options, MergerOptions> options;
-        NamedValue<n::root, FSEntry> root;
+        NamedValue<n::root, FSPath> root;
     };
 
     /**
@@ -132,9 +131,9 @@ namespace paludis
         public Merger
     {
         private:
-            void track_renamed_dir_recursive(const FSEntry &);
-            void relabel_dir_recursive(const FSEntry &, const FSEntry &);
-            void try_to_copy_xattrs(const FSEntry &, int, FSMergerStatusFlags &);
+            void track_renamed_dir_recursive(const FSPath &);
+            void relabel_dir_recursive(const FSPath &, const FSPath &);
+            void try_to_copy_xattrs(const FSPath &, int, FSMergerStatusFlags &);
 
             Pimp<FSMerger>::ImpPtr & _imp;
 
@@ -151,65 +150,65 @@ namespace paludis
             ///\name Track and record merges
             ///\{
 
-            void track_install_file(const FSEntry &, const FSEntry &, const std::string &, const FSMergerStatusFlags &);
-            void track_install_dir(const FSEntry &, const FSEntry &, const FSMergerStatusFlags &);
-            void track_install_under_dir(const FSEntry &, const FSMergerStatusFlags &);
-            void track_install_sym(const FSEntry &, const FSEntry &, const FSMergerStatusFlags &);
+            void track_install_file(const FSPath &, const FSPath &, const std::string &, const FSMergerStatusFlags &);
+            void track_install_dir(const FSPath &, const FSPath &, const FSMergerStatusFlags &);
+            void track_install_under_dir(const FSPath &, const FSMergerStatusFlags &);
+            void track_install_sym(const FSPath &, const FSPath &, const FSMergerStatusFlags &);
 
             ///\}
 
             ///\name Handle filesystem entry things
             ///\{
 
-            virtual void on_file_main(bool is_check, const FSEntry & src, const FSEntry & dst);
-            virtual void on_file_over_nothing(bool is_check, const FSEntry &, const FSEntry &);
-            virtual void on_file_over_file(bool is_check, const FSEntry &, const FSEntry &);
-            virtual void on_file_over_dir(bool is_check, const FSEntry &, const FSEntry &);
-            virtual void on_file_over_sym(bool is_check, const FSEntry &, const FSEntry &);
-            virtual void on_file_over_misc(bool is_check, const FSEntry &, const FSEntry &);
+            virtual void on_file_main(bool is_check, const FSPath & src, const FSPath & dst);
+            virtual void on_file_over_nothing(bool is_check, const FSPath &, const FSPath &);
+            virtual void on_file_over_file(bool is_check, const FSPath &, const FSPath &);
+            virtual void on_file_over_dir(bool is_check, const FSPath &, const FSPath &);
+            virtual void on_file_over_sym(bool is_check, const FSPath &, const FSPath &);
+            virtual void on_file_over_misc(bool is_check, const FSPath &, const FSPath &);
 
-            virtual FSMergerStatusFlags install_file(const FSEntry &, const FSEntry &, const std::string &) PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual void unlink_file(FSEntry);
-            virtual void record_install_file(const FSEntry &, const FSEntry &, const std::string &, const FSMergerStatusFlags &) = 0;
+            virtual FSMergerStatusFlags install_file(const FSPath &, const FSPath &, const std::string &) PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual void unlink_file(FSPath);
+            virtual void record_install_file(const FSPath &, const FSPath &, const std::string &, const FSMergerStatusFlags &) = 0;
 
-            virtual void on_dir_main(bool is_check, const FSEntry & src, const FSEntry & dst);
-            virtual void on_dir_over_nothing(bool is_check, const FSEntry &, const FSEntry &);
-            virtual void on_dir_over_file(bool is_check, const FSEntry &, const FSEntry &);
-            virtual void on_dir_over_dir(bool is_check, const FSEntry &, const FSEntry &);
-            virtual void on_dir_over_sym(bool is_check, const FSEntry &, const FSEntry &);
-            virtual void on_dir_over_misc(bool is_check, const FSEntry &, const FSEntry &);
+            virtual void on_dir_main(bool is_check, const FSPath & src, const FSPath & dst);
+            virtual void on_dir_over_nothing(bool is_check, const FSPath &, const FSPath &);
+            virtual void on_dir_over_file(bool is_check, const FSPath &, const FSPath &);
+            virtual void on_dir_over_dir(bool is_check, const FSPath &, const FSPath &);
+            virtual void on_dir_over_sym(bool is_check, const FSPath &, const FSPath &);
+            virtual void on_dir_over_misc(bool is_check, const FSPath &, const FSPath &);
 
-            virtual FSMergerStatusFlags install_dir(const FSEntry &, const FSEntry &) PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual void unlink_dir(FSEntry);
-            virtual void record_install_dir(const FSEntry &, const FSEntry &, const FSMergerStatusFlags &) = 0;
-            virtual void record_install_under_dir(const FSEntry &, const FSMergerStatusFlags &) = 0;
+            virtual FSMergerStatusFlags install_dir(const FSPath &, const FSPath &) PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual void unlink_dir(FSPath);
+            virtual void record_install_dir(const FSPath &, const FSPath &, const FSMergerStatusFlags &) = 0;
+            virtual void record_install_under_dir(const FSPath &, const FSMergerStatusFlags &) = 0;
 
-            virtual void on_sym_main(bool is_check, const FSEntry & src, const FSEntry & dst);
-            virtual void on_sym_over_nothing(bool is_check, const FSEntry &, const FSEntry &);
-            virtual void on_sym_over_file(bool is_check, const FSEntry &, const FSEntry &);
-            virtual void on_sym_over_dir(bool is_check, const FSEntry &, const FSEntry &);
-            virtual void on_sym_over_sym(bool is_check, const FSEntry &, const FSEntry &);
-            virtual void on_sym_over_misc(bool is_check, const FSEntry &, const FSEntry &);
+            virtual void on_sym_main(bool is_check, const FSPath & src, const FSPath & dst);
+            virtual void on_sym_over_nothing(bool is_check, const FSPath &, const FSPath &);
+            virtual void on_sym_over_file(bool is_check, const FSPath &, const FSPath &);
+            virtual void on_sym_over_dir(bool is_check, const FSPath &, const FSPath &);
+            virtual void on_sym_over_sym(bool is_check, const FSPath &, const FSPath &);
+            virtual void on_sym_over_misc(bool is_check, const FSPath &, const FSPath &);
 
-            virtual FSMergerStatusFlags install_sym(const FSEntry &, const FSEntry &) PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual void unlink_sym(FSEntry);
-            virtual void record_install_sym(const FSEntry &, const FSEntry &, const FSMergerStatusFlags &) = 0;
+            virtual FSMergerStatusFlags install_sym(const FSPath &, const FSPath &) PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual void unlink_sym(FSPath);
+            virtual void record_install_sym(const FSPath &, const FSPath &, const FSMergerStatusFlags &) = 0;
 
-            virtual void unlink_misc(FSEntry);
+            virtual void unlink_misc(FSPath);
 
             virtual void prepare_install_under();
 
-            virtual FSEntry canonicalise_root_path(const FSEntry & f);
+            virtual FSPath canonicalise_root_path(const FSPath & f);
 
-            virtual void do_dir_recursive(bool is_check, const FSEntry &, const FSEntry &);
+            virtual void do_dir_recursive(bool is_check, const FSPath &, const FSPath &);
 
             ///\}
 
             ///\name Configuration protection
             ///\{
 
-            virtual bool config_protected(const FSEntry &, const FSEntry &) = 0;
-            virtual std::string make_config_protect_name(const FSEntry &, const FSEntry &) = 0;
+            virtual bool config_protected(const FSPath &, const FSPath &) = 0;
+            virtual std::string make_config_protect_name(const FSPath &, const FSPath &) = 0;
 
             ///\}
 

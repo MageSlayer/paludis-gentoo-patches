@@ -25,7 +25,6 @@
 #include <paludis/action-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/pimp.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/map.hh>
 #include <paludis/repositories/e/e_repository_id.hh>
 #include <memory>
@@ -54,14 +53,14 @@ namespace paludis
     {
         struct VDBRepositoryParams
         {
-            NamedValue<n::builddir, FSEntry> builddir;
+            NamedValue<n::builddir, FSPath> builddir;
             NamedValue<n::eapi_when_unknown, std::string> eapi_when_unknown;
             NamedValue<n::environment, Environment *> environment;
-            NamedValue<n::location, FSEntry> location;
+            NamedValue<n::location, FSPath> location;
             NamedValue<n::name, RepositoryName> name;
-            NamedValue<n::names_cache, FSEntry> names_cache;
-            NamedValue<n::provides_cache, FSEntry> provides_cache;
-            NamedValue<n::root, FSEntry> root;
+            NamedValue<n::names_cache, FSPath> names_cache;
+            NamedValue<n::provides_cache, FSPath> provides_cache;
+            NamedValue<n::root, FSPath> root;
         };
     }
 
@@ -98,7 +97,7 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             const std::shared_ptr<const erepository::ERepositoryID> make_id(const QualifiedPackageName &, const VersionSpec &,
-                    const FSEntry &) const
+                    const FSPath &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
         protected:
@@ -161,8 +160,8 @@ namespace paludis
 
             /* Keys */
             virtual const std::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
-            virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > location_key() const;
-            virtual const std::shared_ptr<const MetadataValueKey<FSEntry> > installed_root_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<FSPath> > location_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<FSPath> > installed_root_key() const;
             virtual const std::shared_ptr<const MetadataValueKey<std::string> > accept_keywords_key() const;
             virtual const std::shared_ptr<const MetadataValueKey<std::string> > sync_host_key() const;
 

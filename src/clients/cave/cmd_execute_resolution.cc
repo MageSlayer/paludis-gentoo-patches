@@ -161,7 +161,7 @@ namespace
         if (! cmdline.execution_options.a_resume_file.specified())
             return;
 
-        FSEntry resume_file(cmdline.execution_options.a_resume_file.argument());
+        FSPath resume_file(cmdline.execution_options.a_resume_file.argument());
         bool success(lists->execute_job_list()->end() == std::find_if(lists->execute_job_list()->begin(),
                     lists->execute_job_list()->end(), NotASuccess()));
         if (success)

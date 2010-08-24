@@ -22,7 +22,7 @@
 
 #include <paludis/dep_spec_data-fwd.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/util/fs_path-fwd.hh>
 #include <paludis/changed_choices-fwd.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/version_operator-fwd.hh>
@@ -148,7 +148,7 @@ namespace paludis
              *
              * \since 0.32
              */
-            virtual std::shared_ptr<const FSEntry> installed_at_path_ptr() const = 0;
+            virtual std::shared_ptr<const FSPath> installed_at_path_ptr() const = 0;
 
             /**
              * Fetch the installable-to-path requirement (may be a zero pointer).

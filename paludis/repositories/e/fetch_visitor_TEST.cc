@@ -25,6 +25,7 @@
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/fs_stat.hh>
 #include <paludis/standard_output_manager.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/package_database.hh>
@@ -71,20 +72,20 @@ namespace test_cases
             env.package_database()->add_repository(1, repo);
             std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
-            TEST_CHECK(FSEntry("fetch_visitor_TEST_dir/in/input1").exists());
-            TEST_CHECK(! FSEntry("fetch_visitor_TEST_dir/out/input1").exists());
+            TEST_CHECK(FSPath("fetch_visitor_TEST_dir/in/input1").stat().exists());
+            TEST_CHECK(! FSPath("fetch_visitor_TEST_dir/out/input1").stat().exists());
 
             const std::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string("exheres-0"));
             FetchVisitor v(&env, *env[selection::RequireExactlyOne(
                         generator::Matches(parse_user_package_dep_spec("=cat/pkg-1",
                                 &env, { }), { }))]->begin(),
-                    *eapi, FSEntry("fetch_visitor_TEST_dir/out"),
+                    *eapi, FSPath("fetch_visitor_TEST_dir/out"),
                     false, false, "test", std::make_shared<URIListedThenMirrorsLabel>("listed-then-mirrors"), false,
                     std::make_shared<StandardOutputManager>(), get_mirrors_fn);
-            parse_fetchable_uri("file:///" + stringify(FSEntry("fetch_visitor_TEST_dir/in/input1").realpath()), &env, id, *eapi)->top()->accept(v);
+            parse_fetchable_uri("file:///" + stringify(FSPath("fetch_visitor_TEST_dir/in/input1").realpath()), &env, id, *eapi)->top()->accept(v);
 
-            TEST_CHECK(FSEntry("fetch_visitor_TEST_dir/out/input1").is_regular_file());
-            SafeIFStream f(FSEntry("fetch_visitor_TEST_dir/out/input1"));
+            TEST_CHECK(FSPath("fetch_visitor_TEST_dir/out/input1").stat().is_regular_file());
+            SafeIFStream f(FSPath("fetch_visitor_TEST_dir/out/input1"));
             TEST_CHECK(f);
             std::string s((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
             TEST_CHECK_EQUAL(s, "contents of one\n");

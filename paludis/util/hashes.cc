@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -18,7 +18,6 @@
  */
 
 #include <paludis/util/hashes.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/stringify.hh>
 #include <string>
 #include <functional>
@@ -32,7 +31,7 @@ Hash<std::string>::operator() (const std::string & s) const
 }
 
 std::size_t
-Hash<FSEntry>::operator() (const FSEntry & s) const
+Hash<FSPath>::operator() (const FSPath & s) const
 {
     return std::hash<std::string>()(stringify(s));
 }

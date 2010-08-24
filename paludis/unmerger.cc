@@ -23,6 +23,7 @@
 #include <paludis/hook.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/fs_stat.hh>
 #include <paludis/contents.hh>
 #include <paludis/metadata_key.hh>
 #include <sys/types.h>
@@ -85,7 +86,7 @@ Unmerger::unmerge()
 
     for (UnmergeEntriesIterator  i(_imp->unmerge_entries.rbegin()), i_end(_imp->unmerge_entries.rend()) ; i != i_end ; ++i)
     {
-        FSEntry f(i->first);
+        FSPath f(i->first);
         switch (i->second.first)
         {
             case et_dir:
@@ -122,7 +123,7 @@ Unmerger::unmerge()
 void
 Unmerger::unmerge_file(const std::shared_ptr<const ContentsEntry> & e) const
 {
-    FSEntry f_real(_imp->options.root() / e->location_key()->value());
+    FSPath f_real(_imp->options.root() / e->location_key()->value());
 
     HookResult hr(_imp->options.environment()->perform_hook(extend_hook(
                     Hook("unmerger_unlink_file_override")
@@ -139,7 +140,7 @@ Unmerger::unmerge_file(const std::shared_ptr<const ContentsEntry> & e) const
         display("<<< [force] " + stringify(e->location_key()->value()));
         unlink_file(f_real, e);
     }
-    else if (_imp->options.ignore()(f_real))
+    else if (_imp->options.ignore()(FSPath(stringify(f_real))))
         display("--- [ignor] " + stringify(e->location_key()->value()));
     else if (check_file(e))
     {
@@ -151,7 +152,7 @@ Unmerger::unmerge_file(const std::shared_ptr<const ContentsEntry> & e) const
 void
 Unmerger::unmerge_sym(const std::shared_ptr<const ContentsEntry> & e) const
 {
-    FSEntry f_real(_imp->options.root() / e->location_key()->value());
+    FSPath f_real(_imp->options.root() / e->location_key()->value());
 
     HookResult hr(_imp->options.environment()->perform_hook(extend_hook(
                     Hook("unmerger_unlink_sym_override")
@@ -168,7 +169,7 @@ Unmerger::unmerge_sym(const std::shared_ptr<const ContentsEntry> & e) const
         display("<<< [force] " + stringify(e->location_key()->value()));
         unlink_sym(f_real, e);
     }
-    else if (_imp->options.ignore()(f_real))
+    else if (_imp->options.ignore()(FSPath(stringify(f_real))))
         display("--- [ignor] " + stringify(e->location_key()->value()));
     else if (check_sym(e))
     {
@@ -180,7 +181,7 @@ Unmerger::unmerge_sym(const std::shared_ptr<const ContentsEntry> & e) const
 void
 Unmerger::unmerge_dir(const std::shared_ptr<const ContentsEntry> & e) const
 {
-    FSEntry f_real(_imp->options.root() / e->location_key()->value());
+    FSPath f_real(_imp->options.root() / e->location_key()->value());
 
     HookResult hr(_imp->options.environment()->perform_hook(extend_hook(
                     Hook("unmerger_unlink_dir_override")
@@ -192,7 +193,7 @@ Unmerger::unmerge_dir(const std::shared_ptr<const ContentsEntry> & e) const
         throw UnmergerError("Unmerge of '" + stringify(e->location_key()->value()) + "' aborted by hook");
     else if (hr.output() == "skip")
         display("--- [skip ] " + stringify(e->location_key()->value()));
-    else if (_imp->options.ignore()(f_real))
+    else if (_imp->options.ignore()(FSPath(stringify(f_real))))
         display("--- [ignor] " + stringify(e->location_key()->value()));
     else if (check_dir(e))
     {
@@ -204,7 +205,7 @@ Unmerger::unmerge_dir(const std::shared_ptr<const ContentsEntry> & e) const
 void
 Unmerger::unmerge_misc(const std::shared_ptr<const ContentsEntry> & e) const
 {
-    FSEntry f_real(_imp->options.root() / e->location_key()->value());
+    FSPath f_real(_imp->options.root() / e->location_key()->value());
 
     HookResult hr(_imp->options.environment()->perform_hook(extend_hook(
                     Hook("unmerger_unlink_misc_override")
@@ -221,7 +222,7 @@ Unmerger::unmerge_misc(const std::shared_ptr<const ContentsEntry> & e) const
         display("<<< [force] " + stringify(e->location_key()->value()));
         unlink_misc(f_real, e);
     }
-    else if (_imp->options.ignore()(f_real))
+    else if (_imp->options.ignore()(FSPath(stringify(f_real))))
         display("--- [ignor] " + stringify(e->location_key()->value()));
     else if (check_misc(e))
     {
@@ -231,7 +232,7 @@ Unmerger::unmerge_misc(const std::shared_ptr<const ContentsEntry> & e) const
 }
 
 void
-Unmerger::unlink_file(FSEntry f, const std::shared_ptr<const ContentsEntry> & e) const
+Unmerger::unlink_file(FSPath f, const std::shared_ptr<const ContentsEntry> & e) const
 {
     if (0 != _imp->options.environment()->perform_hook(extend_hook(
                          Hook("unmerger_unlink_file_pre")
@@ -239,9 +240,10 @@ Unmerger::unlink_file(FSEntry f, const std::shared_ptr<const ContentsEntry> & e)
                 _imp->options.maybe_output_manager()).max_exit_status())
         throw UnmergerError("Unmerge of '" + stringify(e->location_key()->value()) + "' aborted by hook");
 
-    if (f.is_regular_file())
+    FSStat f_stat(f);
+    if (f_stat.is_regular_file())
     {
-        mode_t mode(f.permissions());
+        mode_t mode(f_stat.permissions());
         if ((mode & S_ISUID) || (mode & S_ISGID))
         {
             mode &= 0400;
@@ -259,7 +261,7 @@ Unmerger::unlink_file(FSEntry f, const std::shared_ptr<const ContentsEntry> & e)
 }
 
 void
-Unmerger::unlink_sym(FSEntry f, const std::shared_ptr<const ContentsEntry> & e) const
+Unmerger::unlink_sym(FSPath f, const std::shared_ptr<const ContentsEntry> & e) const
 {
     if (0 != _imp->options.environment()->perform_hook(extend_hook(
                          Hook("unmerger_unlink_sym_pre")
@@ -277,7 +279,7 @@ Unmerger::unlink_sym(FSEntry f, const std::shared_ptr<const ContentsEntry> & e) 
 }
 
 void
-Unmerger::unlink_dir(FSEntry f, const std::shared_ptr<const ContentsEntry> & e) const
+Unmerger::unlink_dir(FSPath f, const std::shared_ptr<const ContentsEntry> & e) const
 {
     if (0 != _imp->options.environment()->perform_hook(extend_hook(
                          Hook("unmerger_unlink_dir_pre")
@@ -295,7 +297,7 @@ Unmerger::unlink_dir(FSEntry f, const std::shared_ptr<const ContentsEntry> & e) 
 }
 
 void
-Unmerger::unlink_misc(FSEntry f, const std::shared_ptr<const ContentsEntry> & e) const
+Unmerger::unlink_misc(FSPath f, const std::shared_ptr<const ContentsEntry> & e) const
 {
     if (0 != _imp->options.environment()->perform_hook(extend_hook(
                          Hook("unmerger_unlink_misc_pre")

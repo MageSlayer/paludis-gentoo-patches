@@ -392,9 +392,9 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                 Repository::MetadataConstIterator key(repo->find_metadata("location"));
                 if (repo->end_metadata() == key)
                     return "Einstalled repository has no location key";
-                if (! simple_visitor_cast<const MetadataValueKey<FSEntry> >(**key))
-                    return "Einstalled repository location key is not a MetadataValueKey<FSEntry> ";
-                return "O0;" + stringify(simple_visitor_cast<const MetadataValueKey<FSEntry> >(**key)->value());
+                if (! simple_visitor_cast<const MetadataValueKey<FSPath> >(**key))
+                    return "Einstalled repository location key is not a MetadataValueKey<FSPath> ";
+                return "O0;" + stringify(simple_visitor_cast<const MetadataValueKey<FSPath> >(**key)->value());
             }
         }
         else if (tokens[0] == "OPTIONQ")

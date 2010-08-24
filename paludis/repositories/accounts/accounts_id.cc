@@ -73,7 +73,7 @@ namespace paludis
         const VersionSpec version;
         const std::shared_ptr<const Repository> repository;
 
-        const std::shared_ptr<const LiteralMetadataValueKey<FSEntry> > fs_location_key;
+        const std::shared_ptr<const LiteralMetadataValueKey<FSPath> > fs_location_key;
         const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > from_repositories_key;
         const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > behaviours_key;
         const std::shared_ptr<const AccountsInstalledMask> mask;
@@ -99,12 +99,12 @@ namespace paludis
         Imp(const Environment * const e,
                 const QualifiedPackageName & q, const std::shared_ptr<const Repository> & r,
                 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & f,
-                const FSEntry & l, const bool u, const bool m) :
+                const FSPath & l, const bool u, const bool m) :
             env(e),
             name(q),
             version("0", { }),
             repository(r),
-            fs_location_key(std::make_shared<LiteralMetadataValueKey<FSEntry>>("location", "Location", mkt_internal, l)),
+            fs_location_key(std::make_shared<LiteralMetadataValueKey<FSPath>>("location", "Location", mkt_internal, l)),
             from_repositories_key(f),
             behaviours_key(AccountsIDBehaviours::get_instance()->behaviours_key),
             mask(m ? std::make_shared<AccountsInstalledMask>() : make_null_shared_ptr()),
@@ -118,7 +118,7 @@ namespace paludis
 
 AccountsID::AccountsID(const Environment * const e,
         const QualifiedPackageName & q, const std::shared_ptr<const Repository> & r,
-        const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & f, const FSEntry & l,
+        const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & f, const FSPath & l,
         const bool u, const bool m) :
     Pimp<AccountsID>(e, q, r, f, l, u, m),
     _imp(Pimp<AccountsID>::_imp)
@@ -418,7 +418,7 @@ AccountsID::from_repositories_key() const
     return _imp->from_repositories_key;
 }
 
-const std::shared_ptr<const MetadataValueKey<FSEntry> >
+const std::shared_ptr<const MetadataValueKey<FSPath> >
 AccountsID::fs_location_key() const
 {
     return _imp->fs_location_key;
@@ -478,7 +478,7 @@ namespace
         s = v;
     }
 
-    bool ignore_nothing(const FSEntry &)
+    bool ignore_nothing(const FSPath &)
     {
         return false;
     }
@@ -510,9 +510,9 @@ AccountsID::perform_action(Action & action) const
                 (*install_action->options.destination()).destination_interface()->merge(
                         make_named_values<MergeParams>(
                             n::build_start_time() = build_start_time,
-                            n::environment_file() = FSEntry("/dev/null"),
+                            n::environment_file() = FSPath("/dev/null"),
                             n::image_dir() = fs_location_key()->value(),
-                            n::merged_entries() = std::make_shared<FSEntrySet>(),
+                            n::merged_entries() = std::make_shared<FSPathSet>(),
                             n::options() = MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs,
                             n::output_manager() = output_manager,
                             n::package_id() = shared_from_this(),

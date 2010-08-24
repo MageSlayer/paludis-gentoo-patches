@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -23,7 +23,6 @@
 #include <paludis/repositories/e/e_repository_params.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/pimp.hh>
-#include <paludis/util/fs_entry-fwd.hh>
 #include <paludis/output_manager-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/spec_tree.hh>
@@ -40,16 +39,16 @@ namespace paludis
             private Pimp<CheckFetchedFilesVisitor>
         {
             private:
-                bool check_distfile_manifest(const FSEntry & distfile);
+                bool check_distfile_manifest(const FSPath & distfile);
 
             public:
                 CheckFetchedFilesVisitor(
                         const Environment * const,
                         const std::shared_ptr<const PackageID> &,
-                        const FSEntry & distdir,
+                        const FSPath & distdir,
                         const bool check_unneeded,
                         const bool fetch_restrict,
-                        const FSEntry & m2,
+                        const FSPath & m2,
                         const UseManifest um,
                         const std::shared_ptr<OutputManager> & output_manager,
                         const bool exclude_unmirrorable,

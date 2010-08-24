@@ -56,7 +56,7 @@ namespace
         std::shared_ptr<const RepositoryName> in_repository;
         std::shared_ptr<const RepositoryName> from_repository;
         std::shared_ptr<const InstallableToRepository> installable_to_repository;
-        std::shared_ptr<const FSEntry> installed_at_path;
+        std::shared_ptr<const FSPath> installed_at_path;
         std::shared_ptr<const InstallableToPath> installable_to_path;
         std::shared_ptr<AdditionalPackageDepSpecRequirements> additional_requirements;
         std::shared_ptr<const MetadataSectionKey> annotations;
@@ -325,7 +325,7 @@ namespace
             return from_repository;
         }
 
-        virtual std::shared_ptr<const FSEntry> installed_at_path_ptr() const
+        virtual std::shared_ptr<const FSPath> installed_at_path_ptr() const
         {
             return installed_at_path;
         }
@@ -431,9 +431,9 @@ PartiallyMadePackageDepSpec::installable_to_repository(const InstallableToReposi
 }
 
 PartiallyMadePackageDepSpec &
-PartiallyMadePackageDepSpec::installed_at_path(const FSEntry & s)
+PartiallyMadePackageDepSpec::installed_at_path(const FSPath & s)
 {
-    _imp->data->installed_at_path = std::make_shared<FSEntry>(s);
+    _imp->data->installed_at_path = std::make_shared<FSPath>(s);
     return *this;
 }
 

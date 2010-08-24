@@ -55,7 +55,7 @@ namespace paludis
                 /**
                  * Add another file.
                  */
-                void add(const FSEntry &);
+                void add(const FSPath &);
 
                 /**
                  * Query a mirror.

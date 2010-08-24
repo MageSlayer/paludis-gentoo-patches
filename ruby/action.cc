@@ -700,7 +700,7 @@ namespace
         return pretend_action_options_to_value(std::static_pointer_cast<PretendAction>(*p)->options);
     }
 
-    bool ignore_nothing(const FSEntry &)
+    bool ignore_nothing(const FSPath &)
     {
         return false;
     }

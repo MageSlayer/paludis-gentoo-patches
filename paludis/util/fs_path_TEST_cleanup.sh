@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # vim: set ft=sh sw=4 sts=4 et :
 
-if [ -d dir_iterator_TEST_dir ] ; then
-    rm -fr dir_iterator_TEST_dir
+if [ -d fs_path_TEST_dir ] ; then
+    rm -fr fs_path_TEST_dir
 else
     true
 fi

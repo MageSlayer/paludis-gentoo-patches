@@ -23,7 +23,6 @@
 
 #include <paludis/args/args.hh>
 #include <paludis/args/do_help.hh>
-#include <paludis/util/fs_entry.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/tokeniser.hh>
@@ -73,7 +72,7 @@ namespace
         }
     };
 
-    void print_fsentry(const FSEntry & e)
+    void print_fsentry(const FSPath & e)
     {
         cout << e << endl;
     }

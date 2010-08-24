@@ -246,7 +246,7 @@ ManageSearchIndexCommand::run(
     if (! cmdline.a_create.specified())
         throw args::DoHelp("exactly one action must be specified");
 
-    FSEntry index_file(*cmdline.begin_parameters());
+    FSPath index_file(*cmdline.begin_parameters());
     index_file.unlink();
 
     {

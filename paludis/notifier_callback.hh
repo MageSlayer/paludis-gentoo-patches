@@ -24,7 +24,7 @@
 #include <paludis/util/pimp.hh>
 #include <paludis/util/simple_visitor.hh>
 #include <paludis/util/type_list.hh>
-#include <paludis/util/fs_entry.hh>
+#include <paludis/util/fs_path.hh>
 #include <paludis/name.hh>
 #include <paludis/environment-fwd.hh>
 
@@ -76,12 +76,12 @@ namespace paludis
         public ImplementAcceptMethods<NotifierCallbackEvent, NotifierCallbackLinkageStepEvent>
     {
         private:
-            const FSEntry _location;
+            const FSPath _location;
 
         public:
-            NotifierCallbackLinkageStepEvent(const FSEntry &);
+            NotifierCallbackLinkageStepEvent(const FSPath &);
 
-            const FSEntry location() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const FSPath location() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     class PALUDIS_VISIBLE ScopedNotifierCallback :

@@ -20,7 +20,8 @@
 #include "format_user_config.hh"
 #include <paludis/util/config_file.hh>
 #include <paludis/util/system.hh>
-#include <paludis/util/fs_entry.hh>
+#include <paludis/util/fs_path.hh>
+#include <paludis/util/fs_stat.hh>
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/options.hh>
@@ -90,12 +91,12 @@ namespace paludis
     template <>
     struct Imp<FormatUserConfigFile>
     {
-        FSEntry path;
+        FSPath path;
         KeyValueConfigFile conf;
 
         Imp() :
             path(getenv_with_default("CAVE_FORMATS_CONF", getenv_with_default("HOME", "/") + "/.cave/formats.conf")),
-            conf(path.exists() ? ConfigFile::Source(path) : ConfigFile::Source(""),
+            conf(path.stat().exists() ? ConfigFile::Source(path) : ConfigFile::Source(""),
                     { kvcfo_allow_sections, kvcfo_preserve_whitespace },
                     &user_config_file_presets,
                     &KeyValueConfigFile::no_transformation)

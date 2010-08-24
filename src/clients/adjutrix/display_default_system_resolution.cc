@@ -24,7 +24,6 @@
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/tokeniser.hh>
-#include <paludis/util/dir_iterator.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/strip.hh>

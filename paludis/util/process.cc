@@ -22,7 +22,7 @@
 #include <paludis/util/thread.hh>
 #include <paludis/util/pipe.hh>
 #include <paludis/util/pty.hh>
-#include <paludis/util/fs_entry.hh>
+#include <paludis/util/fs_path.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/safe_ofstream.hh>
 #include <paludis/util/log.hh>
@@ -836,7 +836,7 @@ Process::clearenv()
 }
 
 Process &
-Process::chdir(const FSEntry & f)
+Process::chdir(const FSPath & f)
 {
     _imp->chdir = stringify(f.realpath_if_exists());
     return *this;

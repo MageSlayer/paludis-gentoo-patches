@@ -73,7 +73,7 @@ PackageMaskConf::~PackageMaskConf()
 }
 
 void
-PackageMaskConf::add(const FSEntry & filename)
+PackageMaskConf::add(const FSPath & filename)
 {
     Context context("When adding source '" + stringify(filename) + "' as a package mask or unmask file:");
 

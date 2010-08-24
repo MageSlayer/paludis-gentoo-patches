@@ -22,7 +22,7 @@
 
 #include <paludis/util/attributes.hh>
 #include <paludis/util/exception.hh>
-#include <paludis/util/fs_entry-fwd.hh>
+#include <paludis/util/fs_path-fwd.hh>
 #include <ostream>
 
 /** \file
@@ -109,7 +109,7 @@ namespace paludis
             ///\{
 
             explicit SafeOFStream(const int fd);
-            explicit SafeOFStream(const FSEntry &, const int open_flags = -1);
+            explicit SafeOFStream(const FSPath &, const int open_flags = -1);
             ~SafeOFStream();
 
             ///\}

@@ -24,7 +24,7 @@
 #include <paludis/util/clone.hh>
 #include <paludis/util/pimp.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
-#include <paludis/util/fs_entry.hh>
+#include <paludis/util/fs_path.hh>
 #include <paludis/util/named_value.hh>
 
 #include <paludis/changed_choices-fwd.hh>
@@ -275,7 +275,7 @@ namespace paludis
     struct InstallableToPath
     {
         NamedValue<n::include_masked, bool> include_masked;
-        NamedValue<n::path, FSEntry> path;
+        NamedValue<n::path, FSPath> path;
     };
 
     /**
@@ -385,7 +385,7 @@ namespace paludis
              *
              * \since 0.32
              */
-            std::shared_ptr<const FSEntry> installed_at_path_ptr() const;
+            std::shared_ptr<const FSPath> installed_at_path_ptr() const;
 
             /**
              * Fetch the installable-to-path requirement (may be a zero pointer).

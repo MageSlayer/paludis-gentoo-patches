@@ -83,7 +83,7 @@ KeywordsConf::~KeywordsConf()
 }
 
 void
-KeywordsConf::add(const FSEntry & filename)
+KeywordsConf::add(const FSPath & filename)
 {
     Context context("When adding source '" + stringify(filename) + "' as a keywords file:");
 

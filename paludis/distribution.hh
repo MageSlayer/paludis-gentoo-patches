@@ -25,7 +25,7 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/pimp.hh>
 #include <paludis/util/named_value.hh>
-#include <paludis/util/fs_entry.hh>
+#include <paludis/util/fs_path.hh>
 #include <paludis/util/singleton.hh>
 #include <memory>
 
@@ -72,7 +72,7 @@ namespace paludis
         NamedValue<n::concept_license, std::string> concept_license;
         NamedValue<n::concept_use, std::string> concept_use;
         NamedValue<n::default_environment, std::string> default_environment;
-        NamedValue<n::extra_data_dir, FSEntry> extra_data_dir;
+        NamedValue<n::extra_data_dir, FSPath> extra_data_dir;
         NamedValue<n::fallback_environment, std::string> fallback_environment;
         NamedValue<n::name, std::string> name;
         NamedValue<n::paludis_package, std::string> paludis_package;
