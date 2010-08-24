@@ -89,8 +89,6 @@ dnl }}}
 
 need_xml_check=
 need_pcrecpp_check=
-need_syck_check=
-need_gem_check=
 need_libarchive_check=
 need_resolver=
 need_sqlite3_check=
@@ -1320,7 +1318,7 @@ AC_SUBST([VIM_INSTALL_DIR])
 dnl }}}
 
 dnl {{{ repositories
-m4_define(ALL_REPOSITORIES_m4, [accounts,cran,e,fake,gems,repository,unavailable,unpackaged,unwritten,virtuals])
+m4_define(ALL_REPOSITORIES_m4, [accounts,cran,e,fake,repository,unavailable,unpackaged,unwritten,virtuals])
 ALL_REPOSITORIES=`echo ALL_REPOSITORIES_m4 | tr , ' '`
 DEFAULT_REPOSITORIES="e fake repository unavailable unpackaged unwritten virtuals"
 AC_MSG_CHECKING([which repositories to build...])
@@ -1334,7 +1332,6 @@ AC_ARG_WITH([repositories],
 			  cran            The Comprehensive R Archive Network (unusable)
 			  e               Ebuild, Ebin, Exheres, VDB etc
 			  fake            A fake repository for test cases and adjutrix
-			  gems            Ruby gems (unusable)
 			  repository      Automatic repository config generation (via 'unavailable')
 			  unavailable     Unavailable
 			  unpackaged      Unpackaged (for importare)
@@ -1565,28 +1562,6 @@ int main(int, char **)
 fi
 dnl }}}
 
-dnl {{{ syck check
-if test "x$need_syck_check" = "xyes" ; then
-	AC_MSG_CHECKING([for syck])
-	AC_PREPROC_IFELSE([
-#include <syck.h>
-],
-	[AC_MSG_RESULT([yes])],
-	[AC_MSG_ERROR([syck is required for gems repositories])])
-fi
-dnl }}}
-
-dnl {{{ gem check
-if test "x$need_gem_check" = "xyes" ; then
-	AC_MSG_CHECKING([for gem])
-	if gem -v 1>/dev/null 2>/dev/null ; then
-		AC_MSG_RESULT([yes])
-	else
-		AC_MSG_ERROR([gem (http://rubygems.org/) is required for gems repositories])
-	fi
-fi
-dnl }}}
-
 dnl {{{ sqlite3 check
 NEED_SQLITE3=$need_sqlite3_check
 if test "x$need_sqlite3_check" = "xyes" ; then
@@ -1725,7 +1700,6 @@ AC_OUTPUT(
 	paludis/repositories/e/ebuild/utils/4/Makefile
 	paludis/repositories/e/ebuild/utils/exheres-0/Makefile
 	paludis/repositories/fake/Makefile
-	paludis/repositories/gems/Makefile
 	paludis/repositories/repository/Makefile
 	paludis/repositories/unavailable/Makefile
 	paludis/repositories/unpackaged/Makefile
