@@ -7,7 +7,6 @@
     <li><a href="different.html#features">No <code>FEATURES</code> Equivalent</a></li>
     <li><a href="different.html#emptytree_usechanged">No <code>--emptytree</code> Equivalent or No <code>--newuse</code>
         Equivalent</a></li>
-    <li><a href="different.html#elog">ELOG Equivalent</a></li>
     <li><a href="different.html#mkdir">No Automatic Directory Creation</a></li>
     <li><a href="different.html#revdep_rebuild">Revdep-rebuild Equivalent</a></li>
     <li><a href="different.html#layman">Alternatives to Layman</a></li>
@@ -63,18 +62,6 @@ a rather ugly way of handling things. We do have equivalents to most values:</p>
 <h2 id="emptytree_usechanged">No <code>--emptytree</code> Equivalent or No <code>--newuse</code> Equivalent</h2>
 
 <p>The option <code>--dl-reinstall</code> handles both these cases.</p>
-
-<h2 id="elog">ELOG Equivalent</h2>
-
-<p>Paludis ships with a demo hook showing how to get a summary of messages after
-all packages have been installed. It can be found in
-<code>SHAREDIR/paludis/hooks/demos/elog.bash</code>. See <a
-    href="../configuration/hooks.html">the hooks documentation</a> for more information about
-hooks.</p>
-
-<p>This hook is not enabled by default because it is highly annoying. If you use
-repositories that don't use elog to spam pointless messages about revdep-rebuild,
-the demo hook may be of use.</p>
 
 <h2 id="mkdir">No Automatic Directory Creation</h2>
 
