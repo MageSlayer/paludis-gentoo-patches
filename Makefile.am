@@ -10,7 +10,7 @@ DISTCHECK_CONFIGURE_FLAGS = --enable-ruby --enable-ruby-doc --enable-vim \
 	--enable-python --enable-python-doc --enable-xml \
 	--with-ruby-install-dir='$${DESTDIR}$${prefix}/ruby_dir' \
 	--with-hacked-log-dir='$${DESTDIR}$${prefix}/log_dir' \
-	--with-repositories=default,accounts \
+	--with-repositories=default,accounts,gemcutter \
 	--with-environments=default,portage \
 	--with-clients=default,accerso,appareo,cave,inquisitio,instruo \
 	--with-default-distribution=giant-space-monkey \
