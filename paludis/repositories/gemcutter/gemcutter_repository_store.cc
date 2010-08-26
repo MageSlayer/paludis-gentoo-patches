@@ -110,7 +110,7 @@ GemcutterRepositoryStore::_populate()
     {
         Log::get_instance()->message("gemcutter_repository.not_available", ll_warning, lc_context)
             << "Not loading '" << all_gems << "' for ::" << stringify(_imp->repo->name()) << " due to "
-            << "exception '" << e.message() << "' (" << e.what() << ")";
+            << "exception '" << e.backtrace(": ") << ": " << e.message() << "' (" << e.what() << ")";
 
         _imp->categories->clear();
         _imp->package_names.clear();

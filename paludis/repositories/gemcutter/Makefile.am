@@ -12,14 +12,18 @@ DEFS= \
 noinst_LTLIBRARIES = libpaludisgemcutterrepository.la
 
 noinst_HEADERS = \
+	gemcutter_dependencies_key.hh \
 	gemcutter_id.hh gemcutter_id-fwd.hh \
 	gemcutter_repository.hh gemcutter_repository-fwd.hh \
 	gemcutter_repository_store.hh \
+	gemcutter_uri_key.hh \
 	json_common.hh json_common-fwd.hh \
 	json_things_handle.hh json_things_handle-fwd.hh
 
 libpaludisgemcutterrepository_la_SOURCES = \
+	gemcutter_dependencies_key.cc \
 	gemcutter_id.cc \
+	gemcutter_uri_key.cc \
 	gemcutter_repository.cc \
 	gemcutter_repository_store.cc \
 	json_common.cc \

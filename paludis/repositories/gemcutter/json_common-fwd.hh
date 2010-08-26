@@ -27,7 +27,10 @@ namespace paludis
     namespace gemcutter_repository
     {
         class JSONError;
+
         class GemJSONInfo;
+        class GemJSONDependency;
+        class GemJSONDependencies;
 
         typedef std::function<void (const GemJSONInfo &)> ParsedOneGemCallback;
     }

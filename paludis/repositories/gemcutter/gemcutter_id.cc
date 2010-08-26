@@ -19,6 +19,8 @@
 
 #include <paludis/repositories/gemcutter/gemcutter_id.hh>
 #include <paludis/repositories/gemcutter/gemcutter_repository.hh>
+#include <paludis/repositories/gemcutter/gemcutter_uri_key.hh>
+#include <paludis/repositories/gemcutter/gemcutter_dependencies_key.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/simple_visitor_cast.hh>
@@ -32,11 +34,88 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/action.hh>
-#include <paludis/unchoices_key.hh>
 #include <paludis/user_dep_spec.hh>
 
 using namespace paludis;
 using namespace paludis::gemcutter_repository;
+
+namespace
+{
+    std::shared_ptr<LiteralMetadataValueKey<std::string> > make_string_key(
+            const std::string & r, const std::string & h, const MetadataKeyType t, const std::string & v)
+    {
+        if (v.empty())
+            return make_null_shared_ptr();
+        else
+            return std::make_shared<LiteralMetadataValueKey<std::string> >(r, h, t, v);
+    }
+
+    std::shared_ptr<GemcutterURIKey> make_uri(
+            const std::string * const r, const std::string * const h, const MetadataKeyType t, const std::string & v)
+    {
+        if (v.empty())
+            return make_null_shared_ptr();
+        else
+            return std::make_shared<GemcutterURIKey>(r, h, t, v);
+    }
+
+    std::shared_ptr<GemcutterDependenciesKey> make_dependencies(
+            const Environment * const e,
+            const std::string * const r, const std::string * const h, const MetadataKeyType t,
+            const std::shared_ptr<const GemJSONDependencies> & dd,
+            const std::shared_ptr<const GemJSONDependencies> & dr)
+    {
+        return std::make_shared<GemcutterDependenciesKey>(e, r, h, t, dd, dr);
+    }
+
+    struct GemcutterIDStrings :
+        Singleton<GemcutterIDStrings>
+    {
+        const std::string bug_tracker_uri_raw;
+        const std::string bug_tracker_uri_human;
+
+        const std::string gem_uri_raw;
+        const std::string gem_uri_human;
+
+        const std::string homepage_uri_raw;
+        const std::string homepage_uri_human;
+
+        const std::string mailing_list_uri_raw;
+        const std::string mailing_list_uri_human;
+
+        const std::string project_uri_raw;
+        const std::string project_uri_human;
+
+        const std::string source_code_uri_raw;
+        const std::string source_code_uri_human;
+
+        const std::string wiki_uri_raw;
+        const std::string wiki_uri_human;
+
+        const std::string dependencies_raw;
+        const std::string dependencies_human;
+
+        GemcutterIDStrings() :
+            bug_tracker_uri_raw("bug_tracker_uri"),
+            bug_tracker_uri_human("Bug tracker URI"),
+            gem_uri_raw("gem_uri"),
+            gem_uri_human("Gem URI"),
+            homepage_uri_raw("homepage_uri"),
+            homepage_uri_human("Homepage"),
+            mailing_list_uri_raw("mailing_list_uri"),
+            mailing_list_uri_human("Mailing list URI"),
+            project_uri_raw("project_uri"),
+            project_uri_human("Project URI"),
+            source_code_uri_raw("source_code_uri"),
+            source_code_uri_human("Sourcecode URI"),
+            wiki_uri_raw("wiki_uri"),
+            wiki_uri_human("Wiki URI"),
+            dependencies_raw("dependencies"),
+            dependencies_human("Dependencies")
+        {
+        }
+    };
+}
 
 namespace paludis
 {
@@ -48,11 +127,69 @@ namespace paludis
         const VersionSpec version;
         const GemcutterRepository * const repo;
 
+        std::shared_ptr<LiteralMetadataValueKey<SlotName> > slot_key;
+        std::shared_ptr<LiteralMetadataValueKey<std::string> > authors_key;
+        std::shared_ptr<LiteralMetadataValueKey<std::string> > info_key;
+        std::shared_ptr<GemcutterURIKey> bug_tracker_uri_key;
+        std::shared_ptr<GemcutterURIKey> gem_uri_key;
+        std::shared_ptr<GemcutterURIKey> homepage_uri_key;
+        std::shared_ptr<GemcutterURIKey> mailing_list_uri_key;
+        std::shared_ptr<GemcutterURIKey> project_uri_key;
+        std::shared_ptr<GemcutterURIKey> source_code_uri_key;
+        std::shared_ptr<GemcutterURIKey> wiki_uri_key;
+        std::shared_ptr<GemcutterDependenciesKey> dependencies_key;
+
         Imp(const GemcutterIDParams & e) :
             env(e.environment()),
             name(CategoryNamePart("gem"), PackageNamePart(e.info().name())),
             version(e.info().version(), { }),
-            repo(e.repository())
+            repo(e.repository()),
+            slot_key(std::make_shared<LiteralMetadataValueKey<SlotName> >("slot", "Slot", mkt_internal, SlotName(e.info().version()))),
+            authors_key(make_string_key("authors", "Authors", mkt_author, e.info().authors())),
+            info_key(make_string_key("info", "Info", mkt_significant, e.info().info())),
+            bug_tracker_uri_key(make_uri(
+                        &GemcutterIDStrings::get_instance()->bug_tracker_uri_raw,
+                        &GemcutterIDStrings::get_instance()->bug_tracker_uri_human,
+                        mkt_normal,
+                        e.info().bug_tracker_uri())),
+            gem_uri_key(make_uri(
+                        &GemcutterIDStrings::get_instance()->gem_uri_raw,
+                        &GemcutterIDStrings::get_instance()->gem_uri_human,
+                        mkt_normal,
+                        e.info().gem_uri())),
+            homepage_uri_key(make_uri(
+                        &GemcutterIDStrings::get_instance()->homepage_uri_raw,
+                        &GemcutterIDStrings::get_instance()->homepage_uri_human,
+                        mkt_significant,
+                        e.info().homepage_uri())),
+            mailing_list_uri_key(make_uri(
+                        &GemcutterIDStrings::get_instance()->mailing_list_uri_raw,
+                        &GemcutterIDStrings::get_instance()->mailing_list_uri_human,
+                        mkt_normal,
+                        e.info().mailing_list_uri())),
+            project_uri_key(make_uri(
+                        &GemcutterIDStrings::get_instance()->project_uri_raw,
+                        &GemcutterIDStrings::get_instance()->project_uri_human,
+                        mkt_normal,
+                        e.info().project_uri())),
+            source_code_uri_key(make_uri(
+                        &GemcutterIDStrings::get_instance()->source_code_uri_raw,
+                        &GemcutterIDStrings::get_instance()->source_code_uri_human,
+                        mkt_normal,
+                        e.info().source_code_uri())),
+            wiki_uri_key(make_uri(
+                        &GemcutterIDStrings::get_instance()->wiki_uri_raw,
+                        &GemcutterIDStrings::get_instance()->wiki_uri_human,
+                        mkt_normal,
+                        e.info().wiki_uri())),
+            dependencies_key(make_dependencies(
+                        env,
+                        &GemcutterIDStrings::get_instance()->dependencies_raw,
+                        &GemcutterIDStrings::get_instance()->dependencies_human,
+                        mkt_dependencies,
+                        e.info().development_dependencies(),
+                        e.info().runtime_dependencies()
+                        ))
         {
         }
     };
@@ -62,6 +199,28 @@ GemcutterID::GemcutterID(const GemcutterIDParams & entry) :
     Pimp<GemcutterID>(entry),
     _imp(Pimp<GemcutterID>::_imp)
 {
+    add_metadata_key(_imp->slot_key);
+
+    if (_imp->authors_key)
+        add_metadata_key(_imp->authors_key);
+    if (_imp->info_key)
+        add_metadata_key(_imp->info_key);
+    if (_imp->bug_tracker_uri_key)
+        add_metadata_key(_imp->bug_tracker_uri_key);
+    if (_imp->gem_uri_key)
+        add_metadata_key(_imp->gem_uri_key);
+    if (_imp->homepage_uri_key)
+        add_metadata_key(_imp->homepage_uri_key);
+    if (_imp->mailing_list_uri_key)
+        add_metadata_key(_imp->mailing_list_uri_key);
+    if (_imp->project_uri_key)
+        add_metadata_key(_imp->project_uri_key);
+    if (_imp->source_code_uri_key)
+        add_metadata_key(_imp->source_code_uri_key);
+    if (_imp->wiki_uri_key)
+        add_metadata_key(_imp->wiki_uri_key);
+    if (_imp->dependencies_key)
+        add_metadata_key(_imp->dependencies_key);
 }
 
 GemcutterID::~GemcutterID()
@@ -204,7 +363,7 @@ GemcutterID::provide_key() const
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 GemcutterID::dependencies_key() const
 {
-    return std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+    return _imp->dependencies_key;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
@@ -234,7 +393,7 @@ GemcutterID::suggested_dependencies_key() const
 const std::shared_ptr<const MetadataValueKey<std::string> >
 GemcutterID::short_description_key() const
 {
-    return make_null_shared_ptr();
+    return _imp->info_key;
 }
 
 const std::shared_ptr<const MetadataValueKey<std::string> >
@@ -252,7 +411,7 @@ GemcutterID::fetches_key() const
 const std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
 GemcutterID::homepage_key() const
 {
-    return std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >();
+    return _imp->homepage_uri_key;
 }
 
 const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Contents> > >
@@ -282,7 +441,7 @@ GemcutterID::choices_key() const
 const std::shared_ptr<const MetadataValueKey<SlotName> >
 GemcutterID::slot_key() const
 {
-    return make_null_shared_ptr();
+    return _imp->slot_key;
 }
 
 template class Pimp<GemcutterID>;
