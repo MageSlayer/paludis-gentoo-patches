@@ -20,7 +20,7 @@ syn region PaludisOutputConfComment start=/^\s*#/ end=/$/
 syn region PaludisOutputConfKey start=/^\(\s*[^#]\)\@=/ end=/=\@=/
 	    \ contains=PaludisOutputConfKnownKey
 
-syn match PaludisOutputConfEquals /=/ skipwhite
+syn match PaludisOutputConfEquals /?\?=/ skipwhite
 	    \ nextgroup=PaludisOutputConfValue
 
 syn region PaludisOutputConfValue contained start=// end=/$/
@@ -46,7 +46,9 @@ syn keyword PaludisOutputConfKnownKey contained
 	    \ format_debug format_info format_warn format_error format_log
 	    \ summary_output_message start_command end_command
 	    \ nothing_more_to_come_command succeeded_command
-	    \ stdout_command stderr_command
+	    \ stdout_command stderr_command extra_message_managers
+	    \ extra_output_managers log_path always_keep_output_logs
+	    \ quiet
 
 syn keyword PaludisOutputConfKnownValue contained
 	    \ buffer file format_messages forward_at_finish ipc tee standard command
