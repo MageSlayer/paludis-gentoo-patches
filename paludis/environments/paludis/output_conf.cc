@@ -398,7 +398,7 @@ OutputConf::add(const FSPath & filename)
 
     for (Managers::const_iterator m(local_managers.begin()), m_end(local_managers.end()) ;
             m != m_end ; ++m)
-        _imp->managers[m->first] = m->second;
+        _imp->managers.insert(std::make_pair(m->first, m->second));
 
     for (auto i(f->begin()), i_end(f->end()) ;
             i != i_end ; ++i)
