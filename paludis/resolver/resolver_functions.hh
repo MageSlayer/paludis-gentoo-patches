@@ -55,6 +55,7 @@ namespace paludis
         typedef Name<struct get_constraints_for_dependent_fn_name> get_constraints_for_dependent_fn;
         typedef Name<struct get_constraints_for_purge_fn_name> get_constraints_for_purge_fn;
         typedef Name<struct get_constraints_for_via_binary_fn_name> get_constraints_for_via_binary_fn;
+        typedef Name<struct get_destination_types_for_blocker_fn_name> get_destination_types_for_blocker_fn;
         typedef Name<struct get_destination_types_for_error_fn_name> get_destination_types_for_error_fn;
         typedef Name<struct get_initial_constraints_for_fn_name> get_initial_constraints_for_fn;
         typedef Name<struct get_resolvents_for_fn_name> get_resolvents_for_fn;
@@ -113,6 +114,11 @@ namespace paludis
                 const std::shared_ptr<const Resolution> &,
                 const std::shared_ptr<const Resolution> &
                 )> GetConstraintsForViaBinaryFunction;
+
+        typedef std::function<DestinationTypes (
+                const BlockDepSpec &,
+                const std::shared_ptr<const Reason> &
+                )> GetDestinationTypesForBlockerFunction;
 
         typedef std::function<DestinationTypes (
                 const PackageDepSpec &,
@@ -177,6 +183,7 @@ namespace paludis
             NamedValue<n::get_constraints_for_dependent_fn, GetConstraintsForDependentFunction> get_constraints_for_dependent_fn;
             NamedValue<n::get_constraints_for_purge_fn, GetConstraintsForPurgeFunction> get_constraints_for_purge_fn;
             NamedValue<n::get_constraints_for_via_binary_fn, GetConstraintsForViaBinaryFunction> get_constraints_for_via_binary_fn;
+            NamedValue<n::get_destination_types_for_blocker_fn, GetDestinationTypesForBlockerFunction> get_destination_types_for_blocker_fn;
             NamedValue<n::get_destination_types_for_error_fn, GetDestinationTypesForErrorFunction> get_destination_types_for_error_fn;
             NamedValue<n::get_initial_constraints_for_fn, GetInitialConstraintsForFunction> get_initial_constraints_for_fn;
             NamedValue<n::get_resolvents_for_fn, GetResolventsForFunction> get_resolvents_for_fn;

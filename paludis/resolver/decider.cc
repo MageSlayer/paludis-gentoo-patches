@@ -660,7 +660,7 @@ Decider::_make_constraints_from_blocker(
 {
     const std::shared_ptr<ConstraintSequence> result(std::make_shared<ConstraintSequence>());
 
-    DestinationTypes destination_types(_get_destination_types_for_blocker(spec));
+    DestinationTypes destination_types(_get_destination_types_for_blocker(spec, reason));
     for (EnumIterator<DestinationType> t, t_end(last_dt) ; t != t_end ; ++t)
         if (destination_types[*t])
             result->push_back(std::make_shared<Constraint>(make_named_values<Constraint>(
@@ -1186,7 +1186,7 @@ Decider::_add_dependencies_if_necessary(
         if (s->spec().if_package())
             resolvents = _get_resolvents_for(*s->spec().if_package(), reason);
         else
-            resolvents = _get_resolvents_for_blocker(*s->spec().if_block());
+            resolvents = _get_resolvents_for_blocker(*s->spec().if_block(), reason);
 
         if (resolvents->empty())
         {
@@ -1419,7 +1419,8 @@ namespace
 }
 
 const std::shared_ptr<const Resolvents>
-Decider::_get_resolvents_for_blocker(const BlockDepSpec & spec) const
+Decider::_get_resolvents_for_blocker(const BlockDepSpec & spec,
+        const std::shared_ptr<const Reason> & reason) const
 {
     Context context("When finding slots for '" + stringify(spec) + "':");
 
@@ -1430,7 +1431,7 @@ Decider::_get_resolvents_for_blocker(const BlockDepSpec & spec) const
         exact_slot = spec.blocking().slot_requirement_ptr()->accept_returning<std::shared_ptr<SlotName> >(f);
     }
 
-    DestinationTypes destination_types(_get_destination_types_for_blocker(spec));
+    DestinationTypes destination_types(_get_destination_types_for_blocker(spec, reason));
     std::shared_ptr<Resolvents> result(std::make_shared<Resolvents>());
     if (exact_slot)
     {
@@ -1454,9 +1455,10 @@ Decider::_get_resolvents_for_blocker(const BlockDepSpec & spec) const
 }
 
 const DestinationTypes
-Decider::_get_destination_types_for_blocker(const BlockDepSpec &) const
+Decider::_get_destination_types_for_blocker(const BlockDepSpec & spec,
+        const std::shared_ptr<const Reason> & reason) const
 {
-    return DestinationTypes() + dt_install_to_slash;
+    return _imp->fns.get_destination_types_for_blocker_fn()(spec, reason);
 }
 
 const std::shared_ptr<const Resolvents>
@@ -1975,7 +1977,7 @@ Decider::add_target_with_reason(const PackageOrBlockDepSpec & spec, const std::s
         if (spec.if_package())
             resolvents = _get_resolvents_for(*spec.if_package(), reason);
         else
-            resolvents = _get_resolvents_for_blocker(*spec.if_block());
+            resolvents = _get_resolvents_for_blocker(*spec.if_block(), reason);
 
         if (resolvents->empty())
         {

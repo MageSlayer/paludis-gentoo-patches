@@ -74,6 +74,7 @@
 #include <paludis/resolver/get_constraints_for_dependent_helper.hh>
 #include <paludis/resolver/get_constraints_for_purge_helper.hh>
 #include <paludis/resolver/get_constraints_for_via_binary_helper.hh>
+#include <paludis/resolver/get_destination_types_for_blocker_helper.hh>
 #include <paludis/resolver/get_destination_types_for_error_helper.hh>
 #include <paludis/resolver/get_initial_constraints_for_helper.hh>
 #include <paludis/resolver/get_resolvents_for_helper.hh>
@@ -633,6 +634,9 @@ paludis::cave::resolve_common(
 
     GetConstraintsForViaBinaryHelper get_constraints_for_via_binary_helper(env.get());
 
+    GetDestinationTypesForBlockerHelper get_destination_types_for_blocker_helper(env.get());
+    get_destination_types_for_blocker_helper.set_target_destination_type(destination_type_from_arg(env.get(), resolution_options.a_make));
+
     GetDestinationTypesForErrorHelper get_destination_types_for_error_helper(env.get());
     get_destination_types_for_error_helper.set_target_destination_type(destination_type_from_arg(env.get(), resolution_options.a_make));
 
@@ -823,6 +827,7 @@ paludis::cave::resolve_common(
                 n::get_constraints_for_dependent_fn() = std::cref(get_constraints_for_dependent_helper),
                 n::get_constraints_for_purge_fn() = std::cref(get_constraints_for_purge_helper),
                 n::get_constraints_for_via_binary_fn() = std::cref(get_constraints_for_via_binary_helper),
+                n::get_destination_types_for_blocker_fn() = std::cref(get_destination_types_for_blocker_helper),
                 n::get_destination_types_for_error_fn() = std::cref(get_destination_types_for_error_helper),
                 n::get_initial_constraints_for_fn() = std::cref(get_initial_constraints_for_helper),
                 n::get_resolvents_for_fn() = std::cref(get_resolvents_for_helper),

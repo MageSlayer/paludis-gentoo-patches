@@ -54,6 +54,7 @@ noinst_HEADERS = \
 	get_constraints_for_dependent_helper.hh get_constraints_for_dependent_helper-fwd.hh \
 	get_constraints_for_purge_helper.hh get_constraints_for_purge_helper-fwd.hh \
 	get_constraints_for_via_binary_helper.hh get_constraints_for_via_binary_helper-fwd.hh \
+	get_destination_types_for_blocker_helper.hh get_destination_types_for_blocker_helper-fwd.hh \
 	get_destination_types_for_error_helper.hh get_destination_types_for_error_helper-fwd.hh \
 	get_initial_constraints_for_helper.hh get_initial_constraints_for_helper-fwd.hh \
 	get_resolvents_for_helper.hh get_resolvents_for_helper-fwd.hh \
@@ -120,6 +121,7 @@ libpaludisresolver_a_SOURCES = \
 	get_constraints_for_dependent_helper.cc \
 	get_constraints_for_purge_helper.cc \
 	get_constraints_for_via_binary_helper.cc \
+	get_destination_types_for_blocker_helper.cc \
 	get_destination_types_for_error_helper.cc \
 	get_initial_constraints_for_helper.cc \
 	get_resolvents_for_helper.cc \

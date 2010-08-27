@@ -44,6 +44,7 @@
 #include <paludis/resolver/get_constraints_for_dependent_helper.hh>
 #include <paludis/resolver/get_constraints_for_purge_helper.hh>
 #include <paludis/resolver/get_constraints_for_via_binary_helper.hh>
+#include <paludis/resolver/get_destination_types_for_blocker_helper.hh>
 #include <paludis/resolver/get_destination_types_for_error_helper.hh>
 #include <paludis/resolver/get_initial_constraints_for_helper.hh>
 #include <paludis/resolver/get_resolvents_for_helper.hh>
@@ -98,6 +99,7 @@ namespace paludis
                 GetConstraintsForDependentHelper get_constraints_for_dependent_helper;
                 GetConstraintsForPurgeHelper get_constraints_for_purge_helper;
                 GetConstraintsForViaBinaryHelper get_constraints_for_via_binary_helper;
+                GetDestinationTypesForBlockerHelper get_destination_types_for_blocker_helper;
                 GetDestinationTypesForErrorHelper get_destination_types_for_error_helper;
                 GetInitialConstraintsForHelper get_initial_constraints_for_helper;
                 GetResolventsForHelper get_resolvents_for_helper;
