@@ -333,7 +333,7 @@ OutputConf::add(const FSPath & filename)
     Context context("When adding source '" + stringify(filename) + "' as an output file:");
 
     std::shared_ptr<KeyValueConfigFile> f(make_bashable_kv_conf(filename,
-                _imp->predefined_variables, { kvcfo_allow_sections }));
+                _imp->predefined_variables, { kvcfo_allow_sections, kvcfo_allow_fancy_assigns }));
     if (! f)
         return;
 
