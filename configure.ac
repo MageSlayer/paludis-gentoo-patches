@@ -186,6 +186,26 @@ if test "x$have_dirent_dtype" = "xyes"; then
 fi
 dnl }}}
 
+dnl {{{ check for fallocate
+AC_MSG_CHECKING([for fallocate])
+AC_COMPILE_IFELSE([
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <linux/falloc.h>
+int main(int, char **)
+{
+	fallocate(0, FALLOC_FL_KEEP_SIZE, 0, 100);
+}
+],
+	[have_fallocate=yes],
+	[have_fallocate=no])
+AC_MSG_RESULT([$have_fallocate])
+if test "x$have_fallocate" = "xyes"; then
+    AC_DEFINE([HAVE_FALLOCATE], [1], [Use fallocate])
+fi
+dnl }}}
+
 dnl {{{ check for cxxflags
 if test x = x"$LET_ME_RICE"
 then

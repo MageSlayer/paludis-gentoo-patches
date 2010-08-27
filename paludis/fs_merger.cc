@@ -47,8 +47,13 @@
 #include <unordered_map>
 
 #include "config.h"
+
 #ifdef HAVE_XATTRS
 #  include <sys/xattr.h>
+#endif
+
+#ifdef HAVE_FALLOCATE
+#  include <linux/falloc.h>
 #endif
 
 using namespace paludis;
@@ -389,6 +394,24 @@ FSMerger::install_file(const FSPath & src, const FSPath & dst_dir, const std::st
         if (0 != ::fchmod(output_fd, src_perms))
             throw FSMergerError("Cannot fchmod '" + stringify(dst) + "': " + stringify(::strerror(errno)));
         try_to_copy_xattrs(src, output_fd, result);
+
+#ifdef HAVE_FALLOCATE
+        if (0 != ::fallocate(output_fd, FALLOC_FL_KEEP_SIZE, 0, src_stat.file_size()))
+            switch (errno)
+            {
+                case EOPNOTSUPP:
+                case ENOSYS:
+                    break;
+
+                case ENOSPC:
+                    throw FSMergerError("fallocate '" + stringify(dst) + "' returned " + stringify(::strerror(errno)));
+
+                default:
+                    Log::get_instance()->message("merger.file.fallocate_failed", ll_debug, lc_context) <<
+                        "fallocate '" + stringify(dst) + "' returned " + stringify(::strerror(errno));
+                    break;
+            }
+#endif
 
         char buf[4096];
         ssize_t count;
