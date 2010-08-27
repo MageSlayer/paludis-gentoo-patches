@@ -26,6 +26,7 @@ syn match PaludisOutputConfEquals /?\?=/ skipwhite
 syn region PaludisOutputConfValue contained start=// end=/$/
 	    \ contains=PaludisOutputConfString,PaludisOutputConfUnquoted,
 	    \    PaludisOutputConfContinuation,PaludisOutputConfVariable,
+	    \    PaludisOutputConfEnvVariable,
 	    \    PaludisOutputConfMacro,PaludisOutputConfKnownValue
 	    \ skipwhite
 
@@ -35,7 +36,8 @@ syn match PaludisOutputConfContinuation contained /\\$/
 syn match PaludisOutputConfUnquoted contained /[^ \t$%"'\\]\+/ skipwhite
 
 syn region PaludisOutputConfString contained start=/"/ end=/"/
-	    \ contains=PaludisOutputConfVariable,PaludisOutputConfMacro
+	    \ contains=PaludisOutputConfVariable,PaludisOutputConfMacro,
+	    \    PaludisOutputConfEnvVariable
 	    \ skipwhite
 
 syn keyword PaludisOutputConfKnownKey contained
@@ -54,7 +56,10 @@ syn keyword PaludisOutputConfKnownValue contained
 	    \ buffer file format_messages forward_at_finish ipc tee standard command
 
 syn match PaludisOutputConfVariable contained
-            \ /\$\({[^}]\+}\|[a-zA-Z0-9_]\+\)/ skipwhite
+            \ /\$\({[^{}]\+}\|\(ENV{\)\@![a-zA-Z0-9_]\+\)/ skipwhite
+
+syn match PaludisOutputConfEnvVariable contained
+            \ /\$\({ENV{[^{}]\+}}\|ENV{[a-zA-Z0-9_]\+}\)/ skipwhite
 
 syn match PaludisOutputConfMacro contained
             \ /%\({[^}]*}\|[a-zA-Z0-9_]\*\)/ skipwhite
@@ -70,6 +75,7 @@ hi def link PaludisOutputConfKnownValue                  Special
 hi def link PaludisOutputConfString                      String
 hi def link PaludisOutputConfUnquoted                    Constant
 hi def link PaludisOutputConfVariable                    Identifier
+hi def link PaludisOutputConfEnvVariable                 Statement
 hi def link PaludisOutputConfMacro                       Macro
 hi def link PaludisOutputConfContinuation                Preproc
 hi def link PaludisOutputConfComment                     Comment

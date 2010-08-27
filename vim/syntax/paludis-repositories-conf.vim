@@ -26,6 +26,7 @@ syn match PaludisRepositoriesConfEquals /=/ skipwhite
 syn region PaludisRepositoriesConfValue contained start=// end=/$/
 	    \ contains=PaludisRepositoriesConfString,PaludisRepositoriesConfUnquoted,
 	    \    PaludisRepositoriesConfContinuation,PaludisRepositoriesConfVariable,
+	    \    PaludisRepositoriesConfEnvVariable,
 	    \    PaludisRepositoriesConfBadTemplateVariable,PaludisRepositoriesConfMacro,
 	    \    PaludisRepositoriesConfBadMacro,PaludisRepositoriesConfKnownValue
 	    \ skipwhite
@@ -36,7 +37,8 @@ syn match PaludisRepositoriesConfContinuation contained /\\$/
 syn match PaludisRepositoriesConfUnquoted contained /[^ \t$%"'\\]\+/ skipwhite
 
 syn region PaludisRepositoriesConfString contained start=/"/ end=/"/
-	    \ contains=PaludisRepositoriesConfVariable,PaludisRepositoriesConfBadTemplateVariable,
+	    \ contains=PaludisRepositoriesConfVariable,PaludisRepositoriesConfEnvVariable,
+	    \    PaludisRepositoriesConfBadTemplateVariable,
 	    \    PaludisRepositoriesConfMacro,PaludisRepositoriesConfBadMacro
 	    \ skipwhite
 
@@ -56,7 +58,10 @@ syn keyword PaludisRepositoriesConfKnownValue contained
 	    \ use require ignore
 
 syn match PaludisRepositoriesConfVariable contained
-            \ /\$\({\(repository_template\)\@![^}]\+}\|\(repository_template\)\@![a-zA-Z0-9_]\+\)/ skipwhite
+            \ /\$\({\(repository_template\)\@![^{}]\+}\|\(repository_template\|ENV{\)\@![a-zA-Z0-9_]\+\)/ skipwhite
+
+syn match PaludisRepositoriesConfEnvVariable contained
+            \ /\$\({ENV{[^{}]\+}}\|ENV{[a-zA-Z0-9_]\+}\)/ skipwhite
 
 syn match PaludisRepositoriesConfBadTemplateVariable contained
             \ /\$\({repository_template[^}]*}\|repository_template[a-zA-Z0-9_]*\)/ skipwhite
@@ -73,6 +78,7 @@ hi def link PaludisRepositoriesConfKnownValue                  Keyword
 hi def link PaludisRepositoriesConfString                      String
 hi def link PaludisRepositoriesConfUnquoted                    Constant
 hi def link PaludisRepositoriesConfVariable                    Identifier
+hi def link PaludisRepositoriesConfEnvVariable                 Statement
 hi def link PaludisRepositoriesConfBadTemplateVariable         Error
 hi def link PaludisRepositoriesConfMacro                       Macro
 hi def link PaludisRepositoriesConfBadMacro                    Error
