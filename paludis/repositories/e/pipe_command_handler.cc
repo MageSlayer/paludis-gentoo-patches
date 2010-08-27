@@ -210,9 +210,18 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
             }
             else
             {
-                Log::get_instance()->message("e.child.message", destringify<LogLevel>(tokens[2]), lc_context)
-                    << join(next(next(next(tokens.begin()))), tokens.end(), " ");
-                return "O0;";
+                if (tokens[2] == "status")
+                {
+                    if (maybe_output_manager)
+                        maybe_output_manager->message(mt_status, join(next(next(next(tokens.begin()))), tokens.end(), " "));
+                    return "O0;";
+                }
+                else
+                {
+                    Log::get_instance()->message("e.child.message", destringify<LogLevel>(tokens[2]), lc_context)
+                        << join(next(next(next(tokens.begin()))), tokens.end(), " ");
+                    return "O0;";
+                }
             }
         }
         else if (tokens[0] == "MESSAGE")
