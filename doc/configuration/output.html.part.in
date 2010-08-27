@@ -57,6 +57,10 @@ stderr_command = cat &gt;/dev/null
 <pre>
 extra_output_managers = my_log_stderr
 
+[manager my_log_stderr]
+handler = tee
+stderr_children = my_log_stderr_file
+
 [manager my_log_stderr_file]
 handler = file
 filename = ${root}/var/tmp/paludis/%{time}-%{action}-%{full_name}.stderr
