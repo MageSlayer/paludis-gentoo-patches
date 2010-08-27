@@ -5,13 +5,21 @@ make_enum_FSIteratorOption()
 {
     prefix fsio
 
-    key fsio_include_dotfiles   "Skip files whose name start with a dot"
-    key fsio_inode_sort         "Return items sorted by inode number"
-    key fsio_first_only         "Return the first item only"
+    key fsio_include_dotfiles          "Skip files whose name start with a dot"
+    key fsio_inode_sort                "Return items sorted by inode number"
+    key fsio_first_only                "Return the first item only"
+
+    key fsio_want_directories          "\since 0.54.1 We want directories"
+    key fsio_want_regular_files        "\since 0.54.1 We want regular files"
+    key fsio_deref_symlinks_for_wants  "\since 0.54.1 Dereference symlinks when determining wants"
 
     doxygen_comment << "END"
         /**
          * Options for an FSIterator.
+         *
+         * If no fsio_want_ options are specified, all entries are always
+         * returned. Otherwise, entries will be skipped if their type is not
+         * any of the fsio_want_ types.
          *
          * \see FSIterator
          * \see FSIteratorOptions

@@ -362,13 +362,11 @@ ExheresLayout::package_names(const CategoryNamePart & c) const
         return std::make_shared<QualifiedPackageNameSet>();
 
     if ((_imp->tree_root / "packages" / stringify(c)).stat().is_directory_or_symlink_to_directory())
-        for (FSIterator d(_imp->tree_root / "packages" / stringify(c), { }), d_end ; d != d_end ; ++d)
+        for (FSIterator d(_imp->tree_root / "packages" / stringify(c), { fsio_want_directories, fsio_deref_symlinks_for_wants }), d_end ;
+                d != d_end ; ++d)
         {
             try
             {
-                if (! d->stat().is_directory_or_symlink_to_directory())
-                    continue;
-
                 if (d->basename() == "CVS")
                     continue;
 

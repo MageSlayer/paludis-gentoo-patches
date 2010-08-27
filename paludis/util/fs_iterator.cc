@@ -21,10 +21,12 @@
 #include <paludis/util/fs_iterator.hh>
 #include <paludis/util/fs_path.hh>
 #include <paludis/util/fs_error.hh>
+#include <paludis/util/fs_stat.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/options.hh>
+#include <paludis/util/tribool.hh>
 
 #include <dirent.h>
 #include <sys/types.h>
@@ -80,26 +82,90 @@ FSIterator::FSIterator(const FSPath & base, const FSIteratorOptions & options) :
     if (0 == d)
         throw FSError("Error opening directory '" + stringify(base) + "'");
 
+    bool have_any_special_wants(options[fsio_want_directories] || options[fsio_want_regular_files]);
+
     struct dirent * de;
+    bool done(false);
     while (0 != ((de = readdir(d))))
+    {
+        if (done)
+            break;
+
+        bool want(false);
+
         if (! options[fsio_include_dotfiles])
         {
             if ('.' != de->d_name[0])
-            {
-                FSPath f(stringify(base / std::string(de->d_name)));
-                _imp->items->insert(std::make_pair(de->d_ino, f));
-                if (options[fsio_first_only])
-                    break;
-            }
+                want = true;
         }
         else if (! (de->d_name[0] == '.' &&
                     (de->d_name[1] == '\0' || (de->d_name[1] == '.' && de->d_name[2] == '\0'))))
+            want = true;
+
+        if (want)
         {
             FSPath f(stringify(base / std::string(de->d_name)));
-            _imp->items->insert(std::make_pair(de->d_ino, f));
-            if (options[fsio_first_only])
-                break;
+
+            if (have_any_special_wants)
+            {
+                Tribool still_want(indeterminate);
+
+#ifdef HAVE_DIRENT_DTYPE
+                if (DT_UNKNOWN != de->d_type)
+                {
+                    int s(DTTOIF(de->d_type));
+
+                    if (S_ISLNK(s))
+                    {
+                        if (! options[fsio_deref_symlinks_for_wants])
+                            still_want = false;
+                    }
+                    else if (S_ISREG(s))
+                        still_want = options[fsio_want_regular_files];
+                    else if (S_ISDIR(s))
+                        still_want = options[fsio_want_directories];
+                    else
+                        still_want = false;
+                }
+#endif
+
+                if (still_want.is_indeterminate())
+                {
+                    FSStat f_stat(f);
+
+                    if (f_stat.is_regular_file())
+                        still_want = options[fsio_want_regular_files];
+                    else if (f_stat.is_directory())
+                        still_want = options[fsio_want_directories];
+                    else if (f_stat.is_symlink())
+                    {
+                        if (options[fsio_deref_symlinks_for_wants])
+                        {
+                            if (f_stat.is_regular_file_or_symlink_to_regular_file())
+                                still_want = options[fsio_want_regular_files];
+                            else if (f_stat.is_directory_or_symlink_to_directory())
+                                still_want = options[fsio_want_directories];
+                            else
+                                still_want = false;
+                        }
+                        else
+                            still_want = false;
+                    }
+                    else
+                        still_want = false;
+                }
+
+                want = still_want.is_true();
+            }
+
+            if (want)
+            {
+                _imp->items->insert(std::make_pair(de->d_ino, f));
+                if (options[fsio_first_only])
+                    done = true;
+            }
         }
+    }
 
     _imp->iter = _imp->items->begin();
 

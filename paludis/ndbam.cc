@@ -150,11 +150,9 @@ NDBAM::category_names()
     {
         Context context("When loading category names for NDBAM at '" + stringify(_imp->location) + "':");
         _imp->category_names = std::make_shared<CategoryNamePartSet>();
-        for (FSIterator d(_imp->location / "indices" / "categories", { }), d_end ;
+        for (FSIterator d(_imp->location / "indices" / "categories", { fsio_want_directories, fsio_deref_symlinks_for_wants }), d_end ;
                 d != d_end ; ++d)
         {
-            if (! d->stat().is_directory_or_symlink_to_directory())
-                continue;
             if ('-' == d->basename().at(0))
                 continue;
 
@@ -195,11 +193,9 @@ NDBAM::package_names(const CategoryNamePart & c)
     {
         Context context("When loading package names in '" + stringify(c) + "' for NDBAM at '" + stringify(_imp->location) + "':");
         cc.package_names = std::make_shared<QualifiedPackageNameSet>();
-        for (FSIterator d(_imp->location / "indices" / "categories" / stringify(c), { }), d_end ;
+        for (FSIterator d(_imp->location / "indices" / "categories" / stringify(c), { fsio_want_directories, fsio_deref_symlinks_for_wants }), d_end ;
                 d != d_end ; ++d)
         {
-            if (! d->stat().is_directory_or_symlink_to_directory())
-                continue;
             if ('-' == d->basename().at(0))
                 continue;
 
@@ -309,11 +305,10 @@ NDBAM::entries(const QualifiedPackageName & q)
         pc.entries = std::make_shared<NDBAMEntrySequence>();
         Context context("When loading versions in '" + stringify(q) + "' for NDBAM at '" + stringify(_imp->location) + "':");
         pc.entries = std::make_shared<NDBAMEntrySequence>();
-        for (FSIterator d(_imp->location / "indices" / "categories" / stringify(q.category()) / stringify(q.package()), { }), d_end ;
+        for (FSIterator d(_imp->location / "indices" / "categories" / stringify(q.category()) / stringify(q.package()),
+                    { fsio_want_directories, fsio_deref_symlinks_for_wants }), d_end ;
                 d != d_end ; ++d)
         {
-            if (! d->stat().is_directory_or_symlink_to_directory())
-                continue;
             if ('-' == d->basename().at(0))
                 continue;
 
@@ -614,10 +609,8 @@ NDBAM::category_names_containing_package(const PackageNamePart & p) const
         FSPath dd(_imp->location / "indices" / "packages" / stringify(p));
         if (dd.stat().is_directory_or_symlink_to_directory())
         {
-            for (FSIterator d(dd, { }), d_end ; d != d_end ; ++d)
+            for (FSIterator d(dd, { fsio_want_directories, fsio_deref_symlinks_for_wants }), d_end ; d != d_end ; ++d)
             {
-                if (! d->stat().is_directory_or_symlink_to_directory())
-                    continue;
                 if ('-' == d->basename().at(0))
                     continue;
 

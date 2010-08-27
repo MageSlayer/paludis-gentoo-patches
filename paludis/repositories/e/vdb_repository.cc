@@ -1065,12 +1065,11 @@ VDBRepository::need_category_names() const
 
     Context context("When loading category names from '" + stringify(_imp->params.location()) + "':");
 
-    for (FSIterator d(_imp->params.location(), { fsio_inode_sort }), d_end ; d != d_end ; ++d)
+    for (FSIterator d(_imp->params.location(), { fsio_inode_sort, fsio_want_directories, fsio_deref_symlinks_for_wants }), d_end ; d != d_end ; ++d)
         try
         {
-            if (d->stat().is_directory_or_symlink_to_directory())
-                _imp->categories.insert(std::make_pair(CategoryNamePart(d->basename()),
-                            std::shared_ptr<QualifiedPackageNameSet>()));
+            _imp->categories.insert(std::make_pair(CategoryNamePart(d->basename()),
+                        std::shared_ptr<QualifiedPackageNameSet>()));
         }
         catch (const InternalError &)
         {
@@ -1098,23 +1097,21 @@ VDBRepository::need_package_ids(const CategoryNamePart & c) const
 
     std::shared_ptr<QualifiedPackageNameSet> q(std::make_shared<QualifiedPackageNameSet>());
 
-    for (FSIterator d(_imp->params.location() / stringify(c), { fsio_inode_sort }), d_end ; d != d_end ; ++d)
+    for (FSIterator d(_imp->params.location() / stringify(c), { fsio_inode_sort, fsio_want_directories, fsio_deref_symlinks_for_wants }), d_end ;
+            d != d_end ; ++d)
         try
         {
-            if (d->stat().is_directory_or_symlink_to_directory())
-            {
-                std::string s(d->basename());
-                if (std::string::npos == s.rfind('-'))
-                    continue;
+            std::string s(d->basename());
+            if (std::string::npos == s.rfind('-'))
+                continue;
 
-                PackageDepSpec p(parse_user_package_dep_spec("=" + stringify(c) + "/" + s,
-                            _imp->params.environment(), { }));
-                q->insert(*p.package_ptr());
-                IDMap::iterator i(_imp->ids.find(*p.package_ptr()));
-                if (_imp->ids.end() == i)
-                    i = _imp->ids.insert(std::make_pair(*p.package_ptr(), std::make_shared<PackageIDSequence>())).first;
-                i->second->push_back(make_id(*p.package_ptr(), p.version_requirements_ptr()->begin()->version_spec(), *d));
-            }
+            PackageDepSpec p(parse_user_package_dep_spec("=" + stringify(c) + "/" + s,
+                        _imp->params.environment(), { }));
+            q->insert(*p.package_ptr());
+            IDMap::iterator i(_imp->ids.find(*p.package_ptr()));
+            if (_imp->ids.end() == i)
+                i = _imp->ids.insert(std::make_pair(*p.package_ptr(), std::make_shared<PackageIDSequence>())).first;
+            i->second->push_back(make_id(*p.package_ptr(), p.version_requirements_ptr()->begin()->version_spec(), *d));
         }
         catch (const InternalError &)
         {
@@ -1387,14 +1384,11 @@ VDBRepository::perform_updates()
                 continue;
             }
 
-            for (FSIterator d(k->value(), { }), d_end ; d != d_end ; ++d)
+            for (FSIterator d(k->value(), { fsio_want_directories, fsio_deref_symlinks_for_wants }), d_end ; d != d_end ; ++d)
             {
                 Context context_3("When performing updates from '" + stringify(*d) + "':");
 
                 FSStat d_stat(*d);
-                if (! d_stat.is_regular_file_or_symlink_to_regular_file())
-                    continue;
-
                 update_timestamps.insert(std::make_pair(*d, d_stat.mtim().seconds()));
                 std::map<FSPath, std::time_t, FSPathComparator>::const_iterator last_checked(cache_contents.find(*d));
                 if (cache_contents.end() != last_checked && d_stat.mtim().seconds() <= last_checked->second)

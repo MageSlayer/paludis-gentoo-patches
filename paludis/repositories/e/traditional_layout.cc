@@ -207,11 +207,8 @@ TraditionalLayout::need_category_names() const
     {
         Log::get_instance()->message("e.traditional_layout.categories.no_file", ll_qa, lc_context)
             << "No categories file for repository at '" << _imp->tree_root << "', faking it";
-        for (FSIterator d(_imp->tree_root, { fsio_inode_sort }), d_end ; d != d_end ; ++d)
+        for (FSIterator d(_imp->tree_root, { fsio_inode_sort, fsio_deref_symlinks_for_wants, fsio_want_directories }), d_end ; d != d_end ; ++d)
         {
-            if (! d->stat().is_directory_or_symlink_to_directory())
-                continue;
-
             std::string n(d->basename());
             if (n == "CVS" || n == "distfiles" || n == "scripts" || n == "eclass" || n == "licenses"
                     || n == "packages")
@@ -373,13 +370,10 @@ TraditionalLayout::package_names(const CategoryNamePart & c) const
         return std::make_shared<QualifiedPackageNameSet>();
 
     if ((_imp->tree_root / stringify(c)).stat().is_directory_or_symlink_to_directory())
-        for (FSIterator d(_imp->tree_root / stringify(c), { fsio_inode_sort }), d_end ; d != d_end ; ++d)
+        for (FSIterator d(_imp->tree_root / stringify(c), { fsio_inode_sort, fsio_deref_symlinks_for_wants, fsio_want_directories }), d_end ; d != d_end ; ++d)
         {
             try
             {
-                if (! d->stat().is_directory_or_symlink_to_directory())
-                    continue;
-
                 if (d->basename() == "CVS")
                    continue;
 
@@ -616,11 +610,11 @@ TraditionalLayout::manifest_files(const QualifiedPackageName & qpn) const
     auto result(std::make_shared<Map<FSPath, std::string, FSPathComparator>>());
     FSPath package_dir = _imp->repository->layout()->package_directory(qpn);
 
-    std::list<FSPath> package_files((FSIterator(package_dir, { fsio_inode_sort })), FSIterator());
+    std::list<FSPath> package_files((FSIterator(package_dir, { fsio_inode_sort, fsio_want_regular_files })), FSIterator());
     for (std::list<FSPath>::iterator f(package_files.begin()) ;
             f != package_files.end() ; ++f)
     {
-        if (! f->stat().is_regular_file() || ((*f).basename() == "Manifest") )
+        if ((*f).basename() == "Manifest")
             continue;
 
         std::string file_type("MISC");

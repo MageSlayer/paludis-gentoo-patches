@@ -116,17 +116,11 @@ namespace
         }
 
         int outer_count(0);
-        for (FSIterator d(location, { }), d_end ; d != d_end ; ++d)
+        for (FSIterator d(location, { fsio_want_directories }), d_end ; d != d_end ; ++d)
         {
-            if (! d->stat().is_directory())
-                continue;
-
             int inner_count(0);
-            for (FSIterator e(*d, { }), e_end ; e != e_end ; ++e)
+            for (FSIterator e(*d, { fsio_want_directories }), e_end ; e != e_end ; ++e)
             {
-                if (! e->stat().is_directory())
-                    continue;
-
                 if ((*e / "CONTENTS").stat().exists())
                 {
                     Log::get_instance()->message("no_config_environment.vdb_detected", ll_debug, lc_context)

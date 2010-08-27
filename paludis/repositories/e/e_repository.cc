@@ -821,16 +821,10 @@ ERepository::purge_invalid_cache() const
     if (master_mtime_file_stat.exists())
         master_mtime = master_mtime_file_stat.mtim().seconds();
 
-    for (FSIterator dc(write_cache, { fsio_inode_sort }), dc_end ; dc != dc_end ; ++dc)
+    for (FSIterator dc(write_cache, { fsio_inode_sort, fsio_want_directories, fsio_deref_symlinks_for_wants }), dc_end ; dc != dc_end ; ++dc)
     {
-        if (! dc->stat().is_directory_or_symlink_to_directory())
-            continue;
-
-        for (FSIterator dp(*dc, { fsio_inode_sort }), dp_end ; dp != dp_end ; ++dp)
+        for (FSIterator dp(*dc, { fsio_inode_sort, fsio_want_regular_files, fsio_deref_symlinks_for_wants }), dp_end ; dp != dp_end ; ++dp)
         {
-            if (! dp->stat().is_regular_file_or_symlink_to_regular_file())
-                continue;
-
             try
             {
                 CategoryNamePart cnp(dc->basename());
