@@ -46,6 +46,16 @@ namespace paludis
                     const std::string & format_warn,
                     const std::string & format_error,
                     const std::string & format_log,
+                    const FormatMessagesOutputManagerFormatFunction &) PALUDIS_ATTRIBUTE((deprecated));
+
+            FormatMessagesOutputManager(
+                    const std::shared_ptr<OutputManager> & child,
+                    const std::string & format_debug,
+                    const std::string & format_info,
+                    const std::string & format_warn,
+                    const std::string & format_error,
+                    const std::string & format_log,
+                    const std::string & format_status,
                     const FormatMessagesOutputManagerFormatFunction &);
 
             ~FormatMessagesOutputManager();

@@ -40,6 +40,7 @@ namespace paludis
         const std::string format_warn;
         const std::string format_error;
         const std::string format_log;
+        const std::string format_status;
 
         const FormatMessagesOutputManagerFormatFunction format_func;
 
@@ -50,6 +51,7 @@ namespace paludis
                 const std::string & w,
                 const std::string & e,
                 const std::string & l,
+                const std::string & s,
                 const FormatMessagesOutputManagerFormatFunction & f
                 ) :
             child(c),
@@ -58,6 +60,7 @@ namespace paludis
             format_warn(w),
             format_error(e),
             format_log(l),
+            format_status(s),
             format_func(f)
         {
         }
@@ -72,7 +75,20 @@ FormatMessagesOutputManager::FormatMessagesOutputManager(
         const std::string & format_error,
         const std::string & format_log,
         const FormatMessagesOutputManagerFormatFunction & f) :
-    Pimp<FormatMessagesOutputManager>(child, format_debug, format_info, format_warn, format_error, format_log, f)
+    Pimp<FormatMessagesOutputManager>(child, format_debug, format_info, format_warn, format_error, format_log, "", f)
+{
+}
+
+FormatMessagesOutputManager::FormatMessagesOutputManager(
+        const std::shared_ptr<OutputManager> & child,
+        const std::string & format_debug,
+        const std::string & format_info,
+        const std::string & format_warn,
+        const std::string & format_error,
+        const std::string & format_log,
+        const std::string & format_status,
+        const FormatMessagesOutputManagerFormatFunction & f) :
+    Pimp<FormatMessagesOutputManager>(child, format_debug, format_info, format_warn, format_error, format_log, format_status, f)
 {
 }
 
@@ -113,8 +129,11 @@ FormatMessagesOutputManager::message(const MessageType t, const std::string & s)
         case mt_log:
             f = _imp->format_log;
             break;
+        case mt_status:
+            f = _imp->format_status;
+            break;
 
-        default:
+        case last_mt:
             break;
     }
 
@@ -181,7 +200,8 @@ FormatMessagesOutputManager::factory_create(
         format_info_s(key_func("format_info")),
         format_warn_s(key_func("format_warn")),
         format_error_s(key_func("format_error")),
-        format_log_s(key_func("format_log"));
+        format_log_s(key_func("format_log")),
+        format_status_s(key_func("format_status"));
 
     std::shared_ptr<OutputManager> child(create_child_function(child_s));
 
@@ -189,7 +209,7 @@ FormatMessagesOutputManager::factory_create(
                 &format_message, replace_vars_func, std::placeholders::_1, std::placeholders::_2));
 
     return std::make_shared<FormatMessagesOutputManager>(
-                child, format_debug_s, format_info_s, format_warn_s, format_error_s, format_log_s, format_func);
+                child, format_debug_s, format_info_s, format_warn_s, format_error_s, format_log_s, format_status_s, format_func);
 }
 
 template class Pimp<FormatMessagesOutputManager>;
