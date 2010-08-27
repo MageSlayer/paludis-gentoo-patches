@@ -4,6 +4,32 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the Git log.
 
+0.54.1:
+    * User-defined cave commands are now passed all command line arguments
+      correctly.
+
+    * 'cave show' now has '--description-keys', and 'cave search' uses this
+      where appropriate.
+
+    * Paludis key=value configuration files can now use '$ENV{FOO}' to refer to
+      an environment variable.
+
+    * output.conf can now set log_path, and user defined output managers will
+      now override builtin output managers with the same name.
+
+    * When running in 'quiet' mode, status messages are now shown.
+
+    * Warning and error messages are now shown at the end, along with info and
+      log messages.
+
+    * The 'tee' output manager handler now has 'stdout_children' and
+      'stderr_children' for only forwarding stdout or stderr.
+
+    * Where supported, 'fallocate' is now used when merging files.
+
+    * Where supported, dirent->d_type is now used to reduce the number of stat()
+      calls that are made.
+
 0.54.0:
     * 'cave resolve --remove-if-dependent' will now cause dependent packages to
       be removed from world, if no versions remain.
