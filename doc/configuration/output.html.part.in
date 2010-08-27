@@ -11,7 +11,7 @@ installing a package, or syncing a repository. The basic configuration is set in
 <code>$SHAREDIR/environments/paludis/default_output.conf</code>, and additional configuration can be specified by the
 user in <code>output.conf</code> in the normal configuration directory.</p>
 
-<p>There are currently two basic settings that can be set in <code>output.conf</code>:</p>
+<p>There are currently a few basic settings that can be set in <code>output.conf</code>:</p>
 
 <pre>
 # always_keep_output_logs may be set to 'true' to always keep output logs, even
@@ -21,6 +21,10 @@ always_keep_output_logs = false
 # quiet may be set to 'true' to show only messages, rather than all output, when
 # carrying out an action.
 quiet = false
+
+# log_path can be set to change where log files are saved. It defaults to
+# ${root}/var/log/paludis .
+log_path = ${root}/var/log/paludis
 </pre>
 
 <p>For more advanced usage, two additional variables allow additional output managers to be specified:
