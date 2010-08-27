@@ -4,6 +4,12 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the Git log.
 
+0.54.2:
+    * Upgrading from older versions to 0.54.1 would produce strange errors. This
+      does not happen for 0.54.2.
+
+    * Blockers and uninstalls for chroots are now handled.
+
 0.54.1:
     * User-defined cave commands are now passed all command line arguments
       correctly.
