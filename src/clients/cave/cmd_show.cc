@@ -95,6 +95,7 @@ namespace
         args::SwitchArg a_internal_keys;
         args::SwitchArg a_significant_keys_only;
         args::StringSetArg a_key;
+        args::SwitchArg a_description_keys;
 
         args::ArgsGroup g_display_options;
         args::SwitchArg a_flat;
@@ -121,6 +122,8 @@ namespace
                     "Show only keys marked as 'significant'", true),
             a_key(&g_key_options, "key", 'k',
                     "Show keys with the given name, regardless of other options. May be specified multiple times."),
+            a_description_keys(&g_key_options, "description-keys", 'd',
+                    "Show description keys, regardless of other options.", true),
             g_display_options(main_options_section(), "Display Options", "Controls the output format."),
             a_flat(&g_display_options, "flat", 'f',
                     "Do not spread key values over multiple lines", true),
@@ -275,8 +278,17 @@ namespace
 
     bool want_key(
             const ShowCommandLine & cmdline,
-            const std::shared_ptr<const MetadataKey> & key)
+            const std::shared_ptr<const MetadataKey> & key,
+            const std::shared_ptr<const PackageID> & maybe_id)
     {
+        if (cmdline.a_description_keys.specified() && maybe_id)
+        {
+            if (maybe_id->short_description_key() && maybe_id->short_description_key()->raw_name() == key->raw_name())
+                return true;
+            if (maybe_id->long_description_key() && maybe_id->long_description_key()->raw_name() == key->raw_name())
+                return true;
+        }
+
         if (cmdline.a_key.end_args() != std::find(cmdline.a_key.begin_args(), cmdline.a_key.end_args(), key->raw_name()))
             return true;
 
@@ -320,14 +332,17 @@ namespace
         const ShowCommandLine & cmdline;
         const int indent;
         const bool important;
+        const std::shared_ptr<const PackageID> maybe_current_id;
         const std::shared_ptr<const PackageID> maybe_old_id;
         const bool old_id_is_installed;
 
         InfoDisplayer(const ShowCommandLine & c, const int i, const bool m,
+                const std::shared_ptr<const PackageID> & k,
                 const std::shared_ptr<const PackageID> & o, const bool b) :
             cmdline(c),
             indent(i),
             important(m),
+            maybe_current_id(k),
             maybe_old_id(o),
             old_id_is_installed(b)
         {
@@ -344,8 +359,8 @@ namespace
             for (std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
                     s(keys.begin()), s_end(keys.end()) ; s != s_end ; ++s)
             {
-                InfoDisplayer i(cmdline, indent + 1, ((*s)->type() == mkt_significant), maybe_old_id, old_id_is_installed);
-                if (want_key(cmdline, *s))
+                InfoDisplayer i(cmdline, indent + 1, ((*s)->type() == mkt_significant), maybe_current_id, maybe_old_id, old_id_is_installed);
+                if (want_key(cmdline, *s, maybe_current_id))
                     accept_visitor(i)(**s);
             }
         }
@@ -865,7 +880,7 @@ namespace
         {
             if (m.unaccepted_key())
             {
-                InfoDisplayer i(cmdline, indent, false, make_null_shared_ptr(), false);
+                InfoDisplayer i(cmdline, indent, false, make_null_shared_ptr(), make_null_shared_ptr(), false);
                 m.unaccepted_key()->accept(i);
             }
             else
@@ -917,7 +932,7 @@ namespace
         {
             if (m.mask_key())
             {
-                InfoDisplayer i(cmdline, indent, false, make_null_shared_ptr(), false);
+                InfoDisplayer i(cmdline, indent, false, make_null_shared_ptr(), make_null_shared_ptr(), false);
                 m.mask_key()->accept(i);
             }
             else
@@ -945,8 +960,8 @@ namespace
         for (std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
                 k(keys.begin()), k_end(keys.end()) ; k != k_end ; ++k)
         {
-            InfoDisplayer i(cmdline, 0, ((*k)->type() == mkt_significant), make_null_shared_ptr(), false);
-            if (want_key(cmdline, *k))
+            InfoDisplayer i(cmdline, 0, ((*k)->type() == mkt_significant), make_null_shared_ptr(), make_null_shared_ptr(), false);
+            if (want_key(cmdline, *k, make_null_shared_ptr()))
                 accept_visitor(i)(**k);
         }
         cout << endl;
@@ -965,8 +980,8 @@ namespace
                 k(keys.begin()), k_end(keys.end()) ; k != k_end ; ++k)
         {
             bool explicit_key(cmdline.a_key.end_args() != std::find(cmdline.a_key.begin_args(), cmdline.a_key.end_args(), (*k)->raw_name()));
-            InfoDisplayer i(cmdline, 1, ((*k)->type() == mkt_significant) || explicit_key, maybe_old_id, old_id_is_installed);
-            if (want_key(cmdline, *k))
+            InfoDisplayer i(cmdline, 1, ((*k)->type() == mkt_significant) || explicit_key, best, maybe_old_id, old_id_is_installed);
+            if (want_key(cmdline, *k, best))
                 accept_visitor(i)(**k);
         }
 
