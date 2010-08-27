@@ -338,6 +338,12 @@ SearchCommand::run(
         show_args->push_back(*k);
     }
 
+    /* also in cmd_match.cc */
+    bool default_names_and_descriptions((! cmdline.match_options.a_name.specified()) &&
+            (! cmdline.match_options.a_description.specified()) && (! cmdline.match_options.a_key.specified()));
+    if (default_names_and_descriptions || cmdline.match_options.a_description.specified())
+        show_args->push_back("--description-keys");
+
     ShowCommand show_command;
     return show_command.run(env, show_args);
 }

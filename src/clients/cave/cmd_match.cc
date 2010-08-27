@@ -384,6 +384,7 @@ MatchCommand::run_hosted(
 
     std::list<std::string> texts;
 
+    /* also in cmd_search.cc */
     bool default_names_and_descriptions((! match_options.a_name.specified()) &&
             (! match_options.a_description.specified()) && (! match_options.a_key.specified()));
 
