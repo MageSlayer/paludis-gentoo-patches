@@ -28,6 +28,7 @@
 #include <paludis/util/simple_parser.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/safe_ifstream.hh>
+#include <paludis/util/system.hh>
 
 #include <istream>
 #include <list>
@@ -358,7 +359,7 @@ namespace
         PALUDIS_ATTRIBUTE((warn_unused_result));
     bool parse_unquoted_value(const KeyValueConfigFile & k, const ConfigFile::Source & sr, SimpleParser & parser, std::string & result)
         PALUDIS_ATTRIBUTE((warn_unused_result));
-    bool parse_variable(const KeyValueConfigFile & k, const ConfigFile::Source & sr, SimpleParser & parser, std::string & var)
+    bool parse_variable(const KeyValueConfigFile & k, const ConfigFile::Source & sr, SimpleParser & parser, std::string & var, bool &)
         PALUDIS_ATTRIBUTE((warn_unused_result));
 
     bool parse_value(const KeyValueConfigFile & k, const ConfigFile::Source & sr, SimpleParser & parser, std::string & result)
@@ -430,9 +431,13 @@ namespace
             else if ((! k.options()[kvcfo_disallow_variables]) && parser.consume(simple_parser::exact("$")))
             {
                 std::string var;
-                if (! parse_variable(k, sr, parser, var))
+                bool is_env;
+                if (! parse_variable(k, sr, parser, var, is_env))
                     throw ConfigFileError(sr.filename(), "Bad variable at line " + stringify(parser.current_line_number()));
-                result.append(k.get(var));
+                if (is_env)
+                    result.append(getenv_with_default(var, ""));
+                else
+                    result.append(k.get(var));
             }
             else if (parser.consume(simple_parser::exact("\"")))
                 break;
@@ -445,16 +450,33 @@ namespace
         return true;
     }
 
-    bool parse_variable(const KeyValueConfigFile &, const ConfigFile::Source &, SimpleParser & parser, std::string & var)
+    bool parse_variable(const KeyValueConfigFile & k, const ConfigFile::Source &, SimpleParser & parser, std::string & var, bool & is_env)
     {
         const std::string var_name_chars(
                 "abcdefghijklmnopqrstuvwxyz"
                 "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                 "0123456789_"
                 );
-        return
-            parser.consume(simple_parser::exact("{") & +simple_parser::any_of(var_name_chars) >> var & simple_parser::exact("}")) ||
-            parser.consume(+simple_parser::any_of(var_name_chars) >> var);
+
+        if (k.options()[kvcfo_allow_env])
+        {
+            is_env = true;
+
+            if (parser.consume(simple_parser::exact("{ENV{") & +simple_parser::any_of(var_name_chars) >> var & simple_parser::exact("}}")))
+                return true;
+            if (parser.consume(simple_parser::exact("ENV{") & +simple_parser::any_of(var_name_chars) >> var & simple_parser::exact("}")))
+                return true;
+        }
+
+        is_env = false;
+
+        if (parser.consume(simple_parser::exact("{") & +simple_parser::any_of(var_name_chars) >> var & simple_parser::exact("}")))
+            return true;
+
+        if (parser.consume(+simple_parser::any_of(var_name_chars) >> var))
+            return true;
+
+        return false;
     }
 
     bool parse_unquoted_value(const KeyValueConfigFile & k, const ConfigFile::Source & sr, SimpleParser & parser, std::string & result)
@@ -495,9 +517,13 @@ namespace
                 }
 
                 std::string var;
-                if (! parse_variable(k, sr, parser, var))
+                bool is_env;
+                if (! parse_variable(k, sr, parser, var, is_env))
                     throw ConfigFileError(sr.filename(), "Bad variable at line " + stringify(parser.current_line_number()));
-                result.append(k.get(var));
+                if (is_env)
+                    result.append(getenv_with_default(var, ""));
+                else
+                    result.append(k.get(var));
             }
             else if ((! k.options()[kvcfo_disallow_continuations]) && parser.consume(simple_parser::exact("\\\n")))
             {

@@ -526,5 +526,26 @@ namespace test_cases
             TEST_CHECK_EQUAL(ff.get("b"), "B");
         }
     } test_key_value_config_file_fancy_assigns;
+
+    struct KeyValueConfigFileEnvVarsTest : TestCase
+    {
+        KeyValueConfigFileEnvVarsTest() : TestCase("key value config env vars") { }
+
+        void run()
+        {
+            ::setenv("A_VAR", "AAAARGH", 1);
+            ::setenv("B_VAR", "BRRRRGH", 1);
+
+            std::stringstream d_s;
+            d_s << "a = ${ENV{A_VAR}}" << std::endl;
+            d_s << "b = ${ENV{B_VAR}}" << std::endl;
+            KeyValueConfigFile ff(d_s, { kvcfo_allow_env },
+                    &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
+
+            TEST_CHECK_EQUAL(std::distance(ff.begin(), ff.end()), 2);
+            TEST_CHECK_EQUAL(ff.get("a"), "AAAARGH");
+            TEST_CHECK_EQUAL(ff.get("b"), "BRRRRGH");
+        }
+    } test_key_value_config_file_env_vars;
 }
 

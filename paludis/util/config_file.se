@@ -41,6 +41,7 @@ make_enum_KeyValueConfigFileOption()
     key kvcfo_allow_multiple_assigns_per_line        "Allow A='b' B='c' (and unquoted if kvcfo_disallow_space_inside_unquoted_values). \since 0.28"
     key kvcfo_allow_sections                         "Allow [sections] \since 0.44"
     key kvcfo_allow_fancy_assigns                    "Allow ?= assignments \since 0.54.1"
+    key kvcfo_allow_env                              "Allow \${ENV{blah}} \since 0.54.1"
 
     doxygen_comment << "END"
         /**
