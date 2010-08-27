@@ -52,3 +52,26 @@ stdout_command = logger -t paludis
 stderr_command = cat &gt;/dev/null
 </pre>
 
+<p>To keep logs of stderr output, you could use:</p>
+
+<pre>
+extra_output_managers = my_log_stderr
+
+[manager my_log_stderr_file]
+handler = file
+filename = ${root}/var/tmp/paludis/%{time}-%{action}-%{full_name}.stderr
+keep_on_empty = false
+keep_on_success = true
+summary_output_manager = format_messages_standard
+summary_output_message = Stderr: ${filename}
+</pre>
+
+<p>You can also override default output managers. To really confuse everyone, you could use:</p>
+
+<pre>
+[manager standard]
+handler = command
+stdout_command = tr -d '\e' | rev
+stderr_command = tr -d '\e' | rev
+</pre>
+
