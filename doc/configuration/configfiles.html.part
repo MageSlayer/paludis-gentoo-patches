@@ -11,8 +11,8 @@ backslash are continuations.</p>
 <h2>Key=Value Files</h2>
 
 <p>Some configuration files use a key=value format. Keys are typically case sensitive. Variable expansion of previously
-set variables is supported via <code>$var</code> or <code>${var}</code>. Quoting with single or double quotes is usually
-supported but not usually required.</p>
+set variables is supported via <code>$var</code> or <code>${var}</code>, and environment variables may be obtained using
+<code>${ENV{NAME}}</code>. Quoting with single or double quotes is usually supported but not usually required.</p>
 
 <h2>Bash Files</h2>
 

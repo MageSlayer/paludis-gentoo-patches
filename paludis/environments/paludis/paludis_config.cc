@@ -251,7 +251,7 @@ namespace paludis
         {
             kv = std::make_shared<KeyValueConfigFile>(
                     FSPath(config_dir) / "general.conf",
-                    KeyValueConfigFileOptions(),
+                    KeyValueConfigFileOptions() + kvcfo_allow_env,
                     def_predefined,
                     &KeyValueConfigFile::no_transformation);
         }
@@ -267,7 +267,7 @@ namespace paludis
             int exit_status(process.run().wait());
             kv = std::make_shared<KeyValueConfigFile>(
                 s,
-                KeyValueConfigFileOptions(),
+                KeyValueConfigFileOptions() + kvcfo_allow_env,
                 def_predefined,
                 &KeyValueConfigFile::no_transformation);
 
@@ -287,7 +287,7 @@ namespace paludis
 
             kv = std::make_shared<KeyValueConfigFile>(
                 FSPath(config_dir) / "environment.conf",
-                KeyValueConfigFileOptions(),
+                KeyValueConfigFileOptions() + kvcfo_allow_env,
                 def_predefined,
                 &KeyValueConfigFile::no_transformation);
         }
@@ -307,7 +307,7 @@ namespace paludis
             int exit_status(process.run().wait());
             kv = std::make_shared<KeyValueConfigFile>(
                 s,
-                KeyValueConfigFileOptions(),
+                KeyValueConfigFileOptions() + kvcfo_allow_env,
                 def_predefined,
                 &KeyValueConfigFile::no_transformation);
 
@@ -446,7 +446,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
     {
         specpath = std::make_shared<KeyValueConfigFile>(
             local_config_dir / "specpath.conf",
-            KeyValueConfigFileOptions(),
+            KeyValueConfigFileOptions() + kvcfo_allow_env,
             def_predefined,
             &KeyValueConfigFile::no_transformation);
     }
@@ -455,7 +455,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         std::istringstream strm;
         specpath = std::make_shared<KeyValueConfigFile>(
             strm,
-            KeyValueConfigFileOptions(),
+            KeyValueConfigFileOptions() + kvcfo_allow_env,
             def_predefined,
             &KeyValueConfigFile::no_transformation);
     }
@@ -529,7 +529,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         if ((local_config_dir / (dist->repository_defaults_filename_part() + ".conf")).stat().exists())
         {
             _imp->predefined_conf_vars_func = std::bind(&from_kv, std::make_shared<KeyValueConfigFile>(
-                            local_config_dir / (dist->repository_defaults_filename_part() + ".conf"), KeyValueConfigFileOptions(),
+                            local_config_dir / (dist->repository_defaults_filename_part() + ".conf"), KeyValueConfigFileOptions() + kvcfo_allow_env,
                             std::bind(&to_kv_func, _imp->predefined_conf_vars_func, std::placeholders::_1, std::placeholders::_2),
                             &KeyValueConfigFile::no_transformation),
                     std::placeholders::_1);
@@ -545,7 +545,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
                 .capture_stdout(s);
             int exit_status(process.run().wait());
             _imp->predefined_conf_vars_func = std::bind(&from_kv, std::make_shared<KeyValueConfigFile>(
-                            s, KeyValueConfigFileOptions(),
+                            s, KeyValueConfigFileOptions() + kvcfo_allow_env,
                             std::bind(&to_kv_func, _imp->predefined_conf_vars_func, std::placeholders::_1, std::placeholders::_2),
                             &KeyValueConfigFile::no_transformation),
                     std::placeholders::_1);
@@ -867,7 +867,7 @@ PaludisConfig::repo_func_from_file(const FSPath & repo_file)
             .prefix_stderr(repo_file.basename() + "> ")
             .capture_stdout(s);
         int exit_status(process.run().wait());
-        kv = std::make_shared<KeyValueConfigFile>(s, KeyValueConfigFileOptions(),
+        kv = std::make_shared<KeyValueConfigFile>(s, KeyValueConfigFileOptions() + kvcfo_allow_env,
                     std::bind(&to_kv_func, _imp->predefined_conf_vars_func, std::placeholders::_1, std::placeholders::_2),
                     &KeyValueConfigFile::no_transformation);
 
@@ -879,7 +879,7 @@ PaludisConfig::repo_func_from_file(const FSPath & repo_file)
         }
     }
     else
-        kv = std::make_shared<KeyValueConfigFile>(repo_file, KeyValueConfigFileOptions(),
+        kv = std::make_shared<KeyValueConfigFile>(repo_file, KeyValueConfigFileOptions() + kvcfo_allow_env,
                 std::bind(&to_kv_func, _imp->predefined_conf_vars_func, std::placeholders::_1, std::placeholders::_2),
                 &KeyValueConfigFile::no_transformation);
 
