@@ -701,7 +701,7 @@ KeyValueConfigFile::KeyValueConfigFile(
         /* is it superman? */
         std::string key, value;
 
-        if (! parser.consume(+simple_parser::any_except(" \t\n$#\"'=\\") >> key))
+        if (! parser.consume(+simple_parser::any_except(" \t\n$#\"'=\\?") >> key))
             throw ConfigFileError(sr.filename(), "Couldn't find a key in line " + stringify(parser.current_line_number()));
 
         while (! parser.eof())
@@ -718,8 +718,14 @@ KeyValueConfigFile::KeyValueConfigFile(
                 break;
         }
 
-        if (! parser.consume(simple_parser::exact("=")))
+        bool question_assign(false);
+        if (parser.consume(simple_parser::exact("?=")))
+            question_assign = true;
+        else if (! parser.consume(simple_parser::exact("=")))
             throw ConfigFileError(sr.filename(), "Expected an = at line " + stringify(parser.current_line_number()));
+
+        if (question_assign && ! _imp->options[kvcfo_allow_fancy_assigns])
+            throw ConfigFileError(sr.filename(), "Not allowed to use ?= on line " + stringify(parser.current_line_number()));
 
         while (! parser.eof())
         {
@@ -769,7 +775,13 @@ KeyValueConfigFile::KeyValueConfigFile(
         }
 
         key = _imp->active_key_prefix + key;
-        _imp->values[key] = transformation_function()(*this, key, get(key), value);
+
+        bool want(true);
+        if (question_assign && ! get(key).empty())
+            want = false;
+
+        if (want)
+            _imp->values[key] = transformation_function()(*this, key, get(key), value);
     }
 
     _imp->active_key_prefix = "";

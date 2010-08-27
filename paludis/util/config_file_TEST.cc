@@ -507,5 +507,24 @@ namespace test_cases
             TEST_CHECK_EQUAL(ff.get("var/a"), "b x d");
         }
     } test_key_value_config_file_sections;
+
+    struct KeyValueConfigFileFancyAssignsTest : TestCase
+    {
+        KeyValueConfigFileFancyAssignsTest() : TestCase("key value config fancy assigns") { }
+
+        void run()
+        {
+            std::stringstream d_s;
+            d_s << "a = A" << std::endl;
+            d_s << "a ?= X" << std::endl;
+            d_s << "b ?= B" << std::endl;
+            KeyValueConfigFile ff(d_s, { kvcfo_allow_sections, kvcfo_allow_fancy_assigns },
+                    &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
+
+            TEST_CHECK_EQUAL(std::distance(ff.begin(), ff.end()), 2);
+            TEST_CHECK_EQUAL(ff.get("a"), "A");
+            TEST_CHECK_EQUAL(ff.get("b"), "B");
+        }
+    } test_key_value_config_file_fancy_assigns;
 }
 
