@@ -38,7 +38,14 @@ namespace paludis
         public:
             TeeOutputManager(
                     const std::shared_ptr<const OutputManagerSequence> &,
+                    const std::shared_ptr<const OutputManagerSequence> &) PALUDIS_ATTRIBUTE((deprecated));
+
+            TeeOutputManager(
+                    const std::shared_ptr<const OutputManagerSequence> &,
+                    const std::shared_ptr<const OutputManagerSequence> &,
+                    const std::shared_ptr<const OutputManagerSequence> &,
                     const std::shared_ptr<const OutputManagerSequence> &);
+
             ~TeeOutputManager();
 
             virtual std::ostream & stdout_stream() PALUDIS_ATTRIBUTE((warn_unused_result));

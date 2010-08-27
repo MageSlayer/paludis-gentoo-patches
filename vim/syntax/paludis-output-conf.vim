@@ -50,7 +50,7 @@ syn keyword PaludisOutputConfKnownKey contained
 	    \ nothing_more_to_come_command succeeded_command
 	    \ stdout_command stderr_command extra_message_managers
 	    \ extra_output_managers log_path always_keep_output_logs
-	    \ quiet
+	    \ quiet stdout_children stderr_children
 
 syn keyword PaludisOutputConfKnownValue contained
 	    \ buffer file format_messages forward_at_finish ipc tee standard command
