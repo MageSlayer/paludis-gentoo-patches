@@ -25,6 +25,7 @@ ebuild_notice()
 ebuild_section()
 {
     echo -ne "${COLOUR_PINK}===${COLOUR_NORMAL} "
-    paludis_pipe_command LOG "$EAPI" "status" "${COLOUR_PINK}===${COLOUR_NORMAL} $@" >/dev/null
+    [[ ${PALUDIS_PIPE_COMMANDS_STATUS_SUPPORTED} == "yes" ]] && \
+        paludis_pipe_command LOG "$EAPI" "status" "${COLOUR_PINK}===${COLOUR_NORMAL} $@" >/dev/null
     echo "$@"
 }

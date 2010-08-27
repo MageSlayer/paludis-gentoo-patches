@@ -258,6 +258,7 @@ EbuildCommand::operator() ()
         .setenv("PALUDIS_EBUILD_PHASE_VAR",
                 params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_ebuild_phase())
         .setenv("PALUDIS_PIPE_COMMANDS_SUPPORTED", "yes")
+        .setenv("PALUDIS_PIPE_COMMANDS_STATUS_SUPPORTED", "yes")
         .setenv("PALUDIS_PIPE_COMMAND_DELIM", "\2")
         .setenv("PALUDIS_SHELL_OPTIONS",
                 params.package_id()->eapi()->supported()->ebuild_options()->shell_options())
@@ -1010,6 +1011,8 @@ WriteVDBEntryCommand::operator() ()
                 params.package_id()->eapi()->supported()->ebuild_options()->ebuild_module_suffixes())
         .setenv("PALUDIS_EBUILD_PHASE_VAR",
                 params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_ebuild_phase())
+        .setenv("PALUDIS_PIPE_COMMANDS_SUPPORTED", "yes")
+        .setenv("PALUDIS_PIPE_COMMANDS_STATUS_SUPPORTED", "yes")
         .pipe_command_handler("PALUDIS_PIPE_COMMAND", std::bind(&pipe_command_handler, params.environment(),
                     params.package_id(), _1, params.maybe_output_manager()));
 
@@ -1233,6 +1236,8 @@ WriteBinaryEbuildCommand::operator() ()
                 params.package_id()->eapi()->supported()->ebuild_options()->ebuild_module_suffixes())
         .setenv("PALUDIS_EBUILD_PHASE_VAR",
                 params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_ebuild_phase())
+        .setenv("PALUDIS_PIPE_COMMANDS_SUPPORTED", "yes")
+        .setenv("PALUDIS_PIPE_COMMANDS_STATUS_SUPPORTED", "yes")
         .pipe_command_handler("PALUDIS_PIPE_COMMAND", std::bind(&pipe_command_handler, params.environment(),
                     params.package_id(), _1, params.maybe_output_manager()));
 
