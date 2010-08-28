@@ -22,6 +22,7 @@
 #include "resolve_common.hh"
 #include "exceptions.hh"
 
+#include <paludis/args/do_help.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/user_dep_spec.hh>
@@ -100,6 +101,9 @@ PurgeCommand::run(
         cout << cmdline;
         return EXIT_SUCCESS;
     }
+
+    if (cmdline.begin_parameters() != cmdline.end_parameters())
+        throw args::DoHelp("purge takes no parameters");
 
     cmdline.resolution_options->apply_shortcuts();
     cmdline.resolution_options->verify(env);
