@@ -31,10 +31,12 @@
 #include <paludis/util/wrapped_output_iterator-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 
+#include <cstdio>
 #include <string>
 #include <climits>
 #include <cstdlib>
 #include <cstring>
+#include <errno.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <fcntl.h>

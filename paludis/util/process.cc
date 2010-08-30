@@ -35,6 +35,7 @@
 #include <map>
 #include <cstdlib>
 
+#include <errno.h>
 #include <unistd.h>
 #include <grp.h>
 #include <pwd.h>
