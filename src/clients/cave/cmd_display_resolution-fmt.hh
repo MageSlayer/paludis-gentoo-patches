@@ -186,10 +186,10 @@ const auto fs_uninstall_end = make_format_string_fetcher("display-resolution/uni
     << "\\n";
 
 const auto fs_unable_untaken = make_format_string_fetcher("display-resolution/unable_untaken", 1)
-    << "(!) " << c::red() << param<'s'>() << c::normal() << " ";
+    << "(!) " << c::red() << param<'s'>() << c::normal() << "\\n";
 
 const auto fs_unable_taken = make_format_string_fetcher("display-resolution/unable_taken", 1)
-    << "!   " << c::bold_red() << param<'s'>() << c::normal() << " ";
+    << "!   " << c::bold_red() << param<'s'>() << c::normal() << "\\n";
 
 const auto fs_unable_unsuitable_header = make_format_string_fetcher("display-resolution/unable_unsuitable_header", 1)
     << "    Unsuitable candidates:" << "\\n";
