@@ -150,6 +150,20 @@ namespace paludis
             args::StringSetArg a_explain;
         };
 
+        struct ResolveCommandLineGraphJobsOptions :
+            args::ArgsSection
+        {
+            ResolveCommandLineGraphJobsOptions(args::ArgsHandler * const);
+
+            args::ArgsGroup g_graph_jobs_options;
+            args::StringArg a_graph_jobs_basename;
+            args::StringArg a_graph_jobs_format;
+
+            args::ArgsGroup g_graph_jobs_format_options;
+            args::SwitchArg a_graph_jobs_all_arrows;
+            args::SwitchArg a_graph_jobs_full_names;
+        };
+
         struct ResolveCommandLineProgramOptions :
             args::ArgsSection
         {
@@ -157,9 +171,11 @@ namespace paludis
 
             args::ArgsGroup g_program_options;
             args::StringArg a_display_resolution_program;
+            args::StringArg a_graph_jobs_program;
             args::StringArg a_execute_resolution_program;
             args::StringArg a_perform_program;
             args::StringArg a_update_world_program;
+            args::StringArg a_graph_program;
         };
 
         struct ResolveCommandLineImportOptions :

@@ -35,6 +35,7 @@ CAVE_COMMANDS_HTML = \
 	cave-find-candidates.html \
 	cave-fix-cache.html \
 	cave-fix-linkage.html \
+	cave-graph-jobs.html \
 	cave-help.html \
 	cave-import.html \
 	cave-info.html \

@@ -22,6 +22,7 @@
 #include "cmd_resolve_dump.hh"
 #include "cmd_display_resolution.hh"
 #include "cmd_execute_resolution.hh"
+#include "cmd_graph_jobs.hh"
 #include "exceptions.hh"
 #include "command_command_line.hh"
 
@@ -253,6 +254,82 @@ namespace
         }
         else
             return DisplayResolutionCommand().run(env, args, resolved);
+    }
+
+    int graph_jobs(
+            const std::shared_ptr<Environment> & env,
+            const std::shared_ptr<const Resolved> & resolved,
+            const ResolveCommandLineResolutionOptions &,
+            const ResolveCommandLineGraphJobsOptions & graph_jobs_options,
+            const ResolveCommandLineProgramOptions & program_options,
+            const std::shared_ptr<const Map<std::string, std::string> > & keys_if_import,
+            const std::shared_ptr<const Sequence<std::pair<std::string, std::string> > > & targets)
+    {
+        Context context("When graphing jobs:");
+
+        if (! graph_jobs_options.a_graph_jobs_basename.specified())
+            return 0;
+
+        StringListStream ser_stream;
+        Thread ser_thread(std::bind(&serialise_resolved,
+                    std::ref(ser_stream),
+                    std::cref(*resolved)));
+
+        std::shared_ptr<Sequence<std::string> > args(std::make_shared<Sequence<std::string>>());
+
+        for (args::ArgsSection::GroupsConstIterator g(graph_jobs_options.begin()), g_end(graph_jobs_options.end()) ;
+                g != g_end ; ++g)
+        {
+            for (args::ArgsGroup::ConstIterator o(g->begin()), o_end(g->end()) ;
+                    o != o_end ; ++o)
+                if ((*o)->specified())
+                {
+                    const std::shared_ptr<const Sequence<std::string> > f((*o)->forwardable_args());
+                    std::copy(f->begin(), f->end(), args->back_inserter());
+                }
+        }
+
+        for (args::ArgsSection::GroupsConstIterator g(program_options.begin()), g_end(program_options.end()) ;
+                g != g_end ; ++g)
+        {
+            for (args::ArgsGroup::ConstIterator o(g->begin()), o_end(g->end()) ;
+                    o != o_end ; ++o)
+                if ((*o)->specified())
+                {
+                    const std::shared_ptr<const Sequence<std::string> > f((*o)->forwardable_args());
+                    std::copy(f->begin(), f->end(), args->back_inserter());
+                }
+        }
+
+        for (Sequence<std::pair<std::string, std::string> >::ConstIterator p(targets->begin()), p_end(targets->end()) ;
+                p != p_end ; ++p)
+            args->push_back(p->first);
+
+        if (program_options.a_graph_jobs_program.specified())
+        {
+            std::string command(program_options.a_graph_jobs_program.argument());
+
+            if (keys_if_import)
+                for (Map<std::string, std::string>::ConstIterator k(keys_if_import->begin()),
+                        k_end(keys_if_import->end()) ;
+                        k != k_end ; ++k)
+                {
+                    args->push_back("--unpackaged-repository-params");
+                    args->push_back(k->first + "=" + k->second);
+                }
+
+            for (Sequence<std::string>::ConstIterator a(args->begin()), a_end(args->end()) ;
+                    a != a_end ; ++a)
+                command = command + " " + args::escape(*a);
+
+            Process process((ProcessCommand(command)));
+            process
+                .send_input_to_fd(ser_stream, -1, "PALUDIS_SERIALISED_RESOLUTION_FD");
+
+            return process.run().wait();
+        }
+        else
+            return GraphJobsCommand().run(env, args, resolved);
     }
 
     void serialise_job_lists(StringListStream & ser_stream, const JobLists & job_lists)
@@ -569,6 +646,7 @@ paludis::cave::resolve_common(
         const ResolveCommandLineResolutionOptions & resolution_options,
         const ResolveCommandLineExecutionOptions & execution_options,
         const ResolveCommandLineDisplayOptions & display_options,
+        const ResolveCommandLineGraphJobsOptions & graph_jobs_options,
         const ResolveCommandLineProgramOptions & program_options,
         const std::shared_ptr<const Map<std::string, std::string> > & keys_if_import,
         const std::shared_ptr<const Sequence<std::pair<std::string, std::string> > > & targets_if_not_purge,
@@ -889,6 +967,10 @@ paludis::cave::resolve_common(
 
         retcode |= display_resolution(env, resolver->resolved(), resolution_options,
                 display_options, program_options, keys_if_import,
+                purge ? std::make_shared<const Sequence<std::pair<std::string, std::string> > >() : targets_if_not_purge);
+
+        retcode |= graph_jobs(env, resolver->resolved(), resolution_options,
+                graph_jobs_options, program_options, keys_if_import,
                 purge ? std::make_shared<const Sequence<std::pair<std::string, std::string> > >() : targets_if_not_purge);
 
         if (! resolver->resolved()->taken_unable_to_make_decisions()->empty())

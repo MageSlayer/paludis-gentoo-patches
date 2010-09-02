@@ -35,6 +35,7 @@ namespace paludis
                 const ResolveCommandLineResolutionOptions & resolution_options,
                 const ResolveCommandLineExecutionOptions & execution_options,
                 const ResolveCommandLineDisplayOptions & display_options,
+                const ResolveCommandLineGraphJobsOptions & graph_jobs_options,
                 const ResolveCommandLineProgramOptions & program_options,
                 const std::shared_ptr<const Map<std::string, std::string> > & keys_if_import,
                 const std::shared_ptr<const Sequence<std::pair<std::string, std::string> > > & targets_if_not_purge,

@@ -51,12 +51,14 @@ namespace
         std::shared_ptr<ResolveCommandLineResolutionOptions> resolution_options;
         std::shared_ptr<ResolveCommandLineExecutionOptions> execution_options;
         std::shared_ptr<ResolveCommandLineDisplayOptions> display_options;
+        std::shared_ptr<ResolveCommandLineGraphJobsOptions> graph_jobs_options;
         std::shared_ptr<ResolveCommandLineProgramOptions> program_options;
 
         PurgeCommandLine(const bool for_docs) :
             resolution_options(for_docs ? make_null_shared_ptr() : std::make_shared<ResolveCommandLineResolutionOptions>(this)),
             execution_options(for_docs ? make_null_shared_ptr() : std::make_shared<ResolveCommandLineExecutionOptions>(this)),
             display_options(for_docs ? make_null_shared_ptr() : std::make_shared<ResolveCommandLineDisplayOptions>(this)),
+            graph_jobs_options(for_docs ? make_null_shared_ptr() : std::make_shared<ResolveCommandLineGraphJobsOptions>(this)),
             program_options(for_docs ? make_null_shared_ptr() : std::make_shared<ResolveCommandLineProgramOptions>(this))
         {
             add_usage_line("[ -x|--execute ]");
@@ -112,7 +114,7 @@ PurgeCommand::run(
     cmdline.resolution_options->a_purge.add_argument("*/*");
 
     return resolve_common(env, *cmdline.resolution_options, *cmdline.execution_options, *cmdline.display_options,
-            *cmdline.program_options, make_null_shared_ptr(), make_null_shared_ptr(), make_null_shared_ptr(), true);
+            *cmdline.graph_jobs_options, *cmdline.program_options, make_null_shared_ptr(), make_null_shared_ptr(), make_null_shared_ptr(), true);
 }
 
 std::shared_ptr<args::ArgsHandler>

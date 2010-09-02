@@ -304,6 +304,26 @@ ResolveCommandLineDisplayOptions::ResolveCommandLineDisplayOptions(args::ArgsHan
 {
 }
 
+ResolveCommandLineGraphJobsOptions::ResolveCommandLineGraphJobsOptions(args::ArgsHandler * const h) :
+    ArgsSection(h, "Graph Jobs Options"),
+    g_graph_jobs_options(this, "Graph Jobs Options", "Options relating to creating graphs for jobs. If "
+            "--graph-jobs-basename is specified, a Graphviz graph will be created for the jobs in the resolution."),
+    a_graph_jobs_basename(&g_graph_jobs_options, "graph-jobs-basename", '\0', "Specify the basename (filename without "
+            "extension) to be used when creating job graphs. If unspecified, no jobs graph will be created."),
+    a_graph_jobs_format(&g_graph_jobs_options, "graph-jobs-format", '\0', "Specifies the desired output format for "
+            "the Graphviz graph. The argument must be a valid value for the '-T' option for Graphviz. Also determines "
+            "the file extension of the generated graph. If unspecified, only a raw graph file will be created, and it "
+            "will not be processed using Graphviz."),
+
+    g_graph_jobs_format_options(this, "Graph Jobs Format Options", "Options relating to the format of created graphs."),
+    a_graph_jobs_all_arrows(&g_graph_jobs_format_options, "graph-jobs-all-arrows", '\0', "Show all arrows. By default "
+            "dependencies required only for if-independent are not shown, since for non-trivial resolutions "
+            "Graphviz will otherwise require obscene amounts of memory.", true),
+    a_graph_jobs_full_names(&g_graph_jobs_format_options, "graph-jobs-full-names", '\0', "Show full names for graph "
+            "jobs.", true)
+{
+}
+
 ResolveCommandLineExecutionOptions::ResolveCommandLineExecutionOptions(args::ArgsHandler * const h) :
     ArgsSection(h, "Execution Options"),
 
@@ -356,13 +376,18 @@ ResolveCommandLineProgramOptions::ResolveCommandLineProgramOptions(args::ArgsHan
             "instead of spawning a new process."),
     a_display_resolution_program(&g_program_options, "display-resolution-program", '\0', "The program used to display "
             "the resolution. Defaults to '$CAVE display-resolution'."),
+    a_graph_jobs_program(&g_program_options, "graph-jobs-resolution-program", '\0', "The program used to graph "
+            "jobs. Defaults to '$CAVE graph-jobs'."),
     a_execute_resolution_program(&g_program_options, "execute-resolution-program", '\0', "The program used to execute "
             "the resolution. Defaults to '$CAVE execute-resolution'."),
     a_perform_program(&g_program_options, "perform-program", '\0', "The program used to perform "
             "actions. Defaults to '$CAVE perform'."),
     a_update_world_program(&g_program_options, "update-world-program", '\0', "The program used to perform "
-            "world updates. Defaults to '$CAVE update-world'.")
+            "world updates. Defaults to '$CAVE update-world'."),
+    a_graph_program(&g_program_options, "graph-program", '\0', "The program used to create Graphviz graphs. "
+            "Defaults to 'dot'.")
 {
+    a_graph_jobs_program.set_argument("dot");
 }
 
 ResolveCommandLineImportOptions::ResolveCommandLineImportOptions(args::ArgsHandler * const h) :

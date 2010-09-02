@@ -144,12 +144,14 @@ namespace
         ResolveCommandLineResolutionOptions resolution_options;
         ResolveCommandLineExecutionOptions execution_options;
         ResolveCommandLineDisplayOptions display_options;
+        ResolveCommandLineGraphJobsOptions graph_jobs_options;
         ResolveCommandLineProgramOptions program_options;
 
         OptionsForResolve() :
             resolution_options(this),
             execution_options(this),
             display_options(this),
+            graph_jobs_options(this),
             program_options(this)
         {
         }
@@ -311,6 +313,7 @@ ImportCommand::run(
             resolve_cmdline.resolution_options,
             resolve_cmdline.execution_options,
             resolve_cmdline.display_options,
+            resolve_cmdline.graph_jobs_options,
             resolve_cmdline.program_options,
             keys, targets, world_specs, false);
 }

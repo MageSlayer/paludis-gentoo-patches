@@ -17,7 +17,10 @@ bin_PROGRAMS = cave
 
 noinst_PROGRAMS = man-cave
 
-# Also update doc/clients/Makefile.am when adding here:
+# When adding commands, you need to add to both command_MANS and
+# libcave_a_SOURCES. You should also update command_factory.cc,
+# doc/clients/Makefile.am and .gitignore.
+
 command_MANS = \
 	cave-config.1 \
 	cave-contents.1 \
@@ -28,6 +31,7 @@ command_MANS = \
 	cave-find-candidates.1 \
 	cave-fix-cache.1 \
 	cave-fix-linkage.1 \
+	cave-graph-jobs.1 \
 	cave-help.1 \
 	cave-import.1 \
 	cave-info.1 \
@@ -104,7 +108,7 @@ man_cave_LDADD = \
 
 noinst_LIBRARIES = libcave.a
 
-# Also update command_MANS above when adding new commands here:
+# See note above for adding commands
 libcave_a_SOURCES = \
 	colour_formatter.cc colour_formatter.hh colour_formatter-fmt.hh \
 	command.cc command.hh \
@@ -120,6 +124,7 @@ libcave_a_SOURCES = \
 	cmd_find_candidates.cc cmd_find_candidates.hh \
 	cmd_fix_cache.cc cmd_fix_cache.hh cmd_fix_cache-fmt.hh \
 	cmd_fix_linkage.cc cmd_fix_linkage.hh \
+	cmd_graph_jobs.cc cmd_graph_jobs.hh \
 	cmd_help.cc cmd_help.hh \
 	cmd_import.cc cmd_import.hh \
 	cmd_info.cc cmd_info.hh cmd_info-fmt.hh \

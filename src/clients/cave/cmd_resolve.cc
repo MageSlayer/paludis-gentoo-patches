@@ -39,12 +39,14 @@ namespace
         ResolveCommandLineResolutionOptions resolution_options;
         ResolveCommandLineExecutionOptions execution_options;
         ResolveCommandLineDisplayOptions display_options;
+        ResolveCommandLineGraphJobsOptions graph_jobs_options;
         ResolveCommandLineProgramOptions program_options;
 
         ResolveCommandLine() :
             resolution_options(this),
             execution_options(this),
             display_options(this),
+            graph_jobs_options(this),
             program_options(this)
         {
             add_usage_line("[ -x|--execute ] [ -z|--lazy or -c|--complete or -e|--everything ] spec ...");
@@ -102,7 +104,7 @@ ResolveCommand::run(
         targets->push_back(std::make_pair(*p, ""));
 
     return resolve_common(env, cmdline.resolution_options, cmdline.execution_options, cmdline.display_options,
-            cmdline.program_options, make_null_shared_ptr(), targets, make_null_shared_ptr(), false);
+            cmdline.graph_jobs_options, cmdline.program_options, make_null_shared_ptr(), targets, make_null_shared_ptr(), false);
 }
 
 std::shared_ptr<args::ArgsHandler>
