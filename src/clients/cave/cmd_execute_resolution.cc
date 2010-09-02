@@ -1184,6 +1184,7 @@ namespace
     {
         const std::shared_ptr<Environment> env;
         const ExecuteResolutionCommandLine & cmdline;
+        const Executor & executor;
         const int n_fetch_jobs;
         const std::shared_ptr<ExecuteJob> job;
         const std::shared_ptr<JobLists> lists;
@@ -1203,6 +1204,7 @@ namespace
         ExecuteJobExecutive(
                 const std::shared_ptr<Environment> & e,
                 const ExecuteResolutionCommandLine & c,
+                const Executor & x,
                 const int n,
                 const std::shared_ptr<ExecuteJob> & j,
                 const std::shared_ptr<JobLists> & l,
@@ -1213,6 +1215,7 @@ namespace
                 std::string & h) :
             env(e),
             cmdline(c),
+            executor(x),
             n_fetch_jobs(n),
             job(j),
             lists(l),
@@ -1378,9 +1381,12 @@ namespace
                 }
                 else
                 {
-                    cout << fuc(fs_output_heading(), fv<'h'>(heading));
-                    old_heading = "";
-                    cout << fuc(fs_no_output(), fv<'n'>(stringify(Timestamp::now().seconds() - last_output.seconds())));
+                    if ((force) || (executor.active() != 1))
+                    {
+                        cout << fuc(fs_output_heading(), fv<'h'>(heading));
+                        old_heading = "";
+                        cout << fuc(fs_no_output(), fv<'n'>(stringify(Timestamp::now().seconds() - last_output.seconds())));
+                    }
                 }
 
                 last_flushed = Timestamp::now();
@@ -1475,7 +1481,7 @@ namespace
         for (JobList<ExecuteJob>::ConstIterator c(lists->execute_job_list()->begin()),
                 c_end(lists->execute_job_list()->end()) ;
                 c != c_end ; ++c)
-            executor.add(std::make_shared<ExecuteJobExecutive>(env, cmdline, n_fetch_jobs, *c, lists, require_if, retcode_mutex,
+            executor.add(std::make_shared<ExecuteJobExecutive>(env, cmdline, executor, n_fetch_jobs, *c, lists, require_if, retcode_mutex,
                             retcode, counts, old_heading));
 
         executor.execute();
