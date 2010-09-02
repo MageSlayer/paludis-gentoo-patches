@@ -257,7 +257,7 @@ UnavailableRepository::some_ids_might_support_action(const SupportsActionTestBas
 bool
 UnavailableRepository::some_ids_might_not_be_masked() const
 {
-    return false;
+    return true;
 }
 
 bool
