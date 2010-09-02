@@ -90,6 +90,13 @@ JobList<Job_>::fetch(const JobNumber n) const
 }
 
 template <typename Job_>
+JobNumber
+JobList<Job_>::number(const ConstIterator & i) const
+{
+    return i.template underlying_iterator<typename WrappedForwardIteratorTraits<ConstIteratorTag>::UnderlyingIterator>() - _imp->list.begin();
+}
+
+template <typename Job_>
 const std::shared_ptr<JobList<Job_> >
 JobList<Job_>::deserialise(Deserialisation & d)
 {

@@ -55,6 +55,8 @@ namespace paludis
                 ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 ConstIterator fetch(const JobNumber) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
+                JobNumber number(const ConstIterator &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
                 static const std::shared_ptr<JobList<Job_> > deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
                 void serialise(Serialiser &) const;
         };
