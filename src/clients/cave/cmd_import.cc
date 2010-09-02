@@ -112,8 +112,8 @@ namespace
                     "Specify whether to avoid carrying out destructive merge actions (e.g. using rename() rather than copying)",
                     args::EnumArg::EnumArgOptions
                     ("config",       'c',   "Use build_options: preserve_work from user configuration")
-                    ("always",       'a',   "Allow desructive merges, regardless of user configuration")
-                    ("never",        'n',   "Do not merge destructively, regardless of user configuration"),
+                    ("always",       'a',   "Do not merge destructively, regardless of user configuration")
+                    ("never",        'n',   "Allow desructive merges, regardless of user configuration"),
                     "config"),
 
             g_metadata_options(main_options_section(), "Metadata Options",
