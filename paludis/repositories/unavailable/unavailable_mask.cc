@@ -58,3 +58,21 @@ NoConfigurationInformationMask::explanation() const
     return "Not enough information is available to configure this repository automatically";
 }
 
+char
+AlreadyConfiguredMask::key() const
+{
+    return 'A';
+}
+
+const std::string
+AlreadyConfiguredMask::description() const
+{
+    return "already configured";
+}
+
+const std::string
+AlreadyConfiguredMask::explanation() const
+{
+    return "This repository is already configured";
+}
+

@@ -107,12 +107,7 @@ UnavailableRepositoryStore::_populate_one(const Environment * const env, const F
 
     UnavailableRepositoryFile file(f);
 
-    if (env->package_database()->has_repository_named(RepositoryName(file.repo_name())))
-    {
-        Log::get_instance()->message("unavailable_repository.file.present", ll_debug, lc_context)
-            << "Skipping file '" << f << "' due to present repo_name '" << file.repo_name() << "'";
-        return;
-    }
+    bool has_repo(env->package_database()->has_repository_named(RepositoryName(file.repo_name())));
 
     if (! _imp->seen_repo_names.insert(file.repo_name()).second)
     {
@@ -136,6 +131,7 @@ UnavailableRepositoryStore::_populate_one(const Environment * const env, const F
         repository_sync = std::make_shared<LiteralMetadataValueKey<std::string>>(
                 "REPOSITORY_SYNC", "Repository sync", mkt_normal, file.sync());
 
+    if (! has_repo)
     {
         std::shared_ptr<Mask> mask(std::make_shared<UnavailableMask>());
         std::shared_ptr<Set<std::string> > from_repositories_set(std::make_shared<Set<std::string>>());
@@ -190,12 +186,16 @@ UnavailableRepositoryStore::_populate_one(const Environment * const env, const F
 
     if (file.autoconfigurable())
     {
-        const std::shared_ptr<NoConfigurationInformationMask> no_configuration_mask(std::make_shared<NoConfigurationInformationMask>());
+        std::shared_ptr<Mask> mask;
         std::shared_ptr<UnavailableRepositoryDependenciesKey> deps;
         if (! file.dependencies().empty())
             deps = std::make_shared<UnavailableRepositoryDependenciesKey>(env, "dependencies", "Dependencies", mkt_dependencies,
                         file.dependencies());
 
+        if (has_repo)
+            mask = std::make_shared<AlreadyConfiguredMask>();
+        else if (! (repository_sync && repository_format))
+            mask = std::make_shared<NoConfigurationInformationMask>();
         const std::shared_ptr<UnavailableRepositoryID> id(std::make_shared<UnavailableRepositoryID>(
                     make_named_values<UnavailableRepositoryIDParams>(
                         n::dependencies() = deps,
@@ -203,8 +203,7 @@ UnavailableRepositoryStore::_populate_one(const Environment * const env, const F
                         n::environment() = env,
                         n::format() = repository_format,
                         n::homepage() = repository_homepage,
-                        n::mask() = repository_sync && repository_format ?
-                            make_null_shared_ptr() : no_configuration_mask,
+                        n::mask() = mask,
                         n::name() = CategoryNamePart("repository") + PackageNamePart(file.repo_name()),
                         n::repository() = _imp->repo,
                         n::sync() = repository_sync

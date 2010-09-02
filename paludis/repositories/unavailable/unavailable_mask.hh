@@ -43,6 +43,15 @@ namespace paludis
                 virtual char key() const;
                 virtual const std::string description() const;
         };
+
+        class AlreadyConfiguredMask :
+            public UnsupportedMask
+        {
+            public:
+                virtual const std::string explanation() const;
+                virtual char key() const;
+                virtual const std::string description() const;
+        };
     }
 }
 

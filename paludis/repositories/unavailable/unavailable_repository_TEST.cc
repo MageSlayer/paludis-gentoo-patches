@@ -117,6 +117,7 @@ namespace test_cases
                     "cat-one/pkg-one-3:0::unavailable (in ::foo) "
                     "cat-one/pkg-two-1:1::unavailable (in ::foo) "
                     "cat-one/pkg-two-2:2::unavailable (in ::foo) "
+                    "repository/bar-0::unavailable "
                     "repository/foo-0::unavailable"
                     );
         }
