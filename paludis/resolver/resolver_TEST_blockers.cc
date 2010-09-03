@@ -189,7 +189,7 @@ namespace test_cases
             std::shared_ptr<const Resolved> resolved(get_resolved(BlockDepSpec(
                             "!target/target",
                             parse_user_package_dep_spec("target/target", &env, { }),
-                            false)));
+                            bk_weak)));
 
             check_resolved(resolved,
                     n::taken_change_or_remove_decisions() = exists ? make_shared_copy(DecisionChecks()

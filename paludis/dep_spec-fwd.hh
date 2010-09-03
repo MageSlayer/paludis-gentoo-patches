@@ -32,6 +32,9 @@
 
 namespace paludis
 {
+
+#include <paludis/dep_spec-se.hh>
+
     class DepSpec;
     class PackageDepSpec;
     class PlainTextDepSpec;

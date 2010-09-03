@@ -45,6 +45,7 @@ namespace
     static VALUE c_dep_spec;
     static VALUE c_string_dep_spec;
 
+    static VALUE c_block_kind;
     static VALUE c_block_dep_spec;
     static VALUE c_dependencies_labels_dep_spec;
     static VALUE c_fetchable_uri_dep_spec;
@@ -465,14 +466,18 @@ namespace
     }
 
     VALUE
-    block_dep_spec_new(VALUE self, VALUE str, VALUE spec, VALUE strong)
+    block_dep_spec_new(VALUE self, VALUE str, VALUE spec, VALUE kind)
     {
         std::shared_ptr<const WrappedSpecBase> * ptr(0);
         try
         {
+            int l = NUM2INT(kind);
+            if (l < 0 || l >= last_bk)
+                rb_raise(rb_eTypeError, "BlockDepSpec expects a valid BlockKind as the third parameter");
+
             std::shared_ptr<const PackageDepSpec> pkg(value_to_package_dep_spec(spec));
             ptr = new std::shared_ptr<const WrappedSpecBase>(std::make_shared<WrappedSpec<BlockDepSpec>>(
-                        std::make_shared<BlockDepSpec>(StringValuePtr(str), *pkg, value_to_bool(strong))));
+                        std::make_shared<BlockDepSpec>(StringValuePtr(str), *pkg, static_cast<BlockKind>(l))));
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::shared_ptr<const WrappedSpecBase> >::free, ptr));
             rb_obj_call_init(tdata, 3, &str);
             return tdata;
@@ -1272,6 +1277,18 @@ namespace
         rb_define_method(c_plain_text_label_dep_spec, "initialize", RUBY_FUNC_CAST(&dep_spec_init_1), 1);
         VALUE (* plain_text_dep_label_spec_to_s) (VALUE) = &dep_spec_to_s<PlainTextLabelDepSpec>;
         rb_define_method(c_plain_text_label_dep_spec, "to_s", RUBY_FUNC_CAST(plain_text_dep_label_spec_to_s), 0);
+
+        /*
+         * Document-module: Paludis::BlockKind
+         *
+         * The kind of a BlockDepSpec
+         */
+        c_block_kind = rb_define_module_under(paludis_module(), "BlockKind");
+        for (BlockKind l(static_cast<BlockKind>(0)), l_end(last_bk) ; l != l_end ;
+                l = static_cast<BlockKind>(static_cast<int>(l) + 1))
+            rb_define_const(c_block_kind, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
+
+        // cc_enum_special<paludis/dep_spec.hh, BlockKind, c_block_kind>
 
         /*
          * Document-class: Paludis::BlockDepSpec

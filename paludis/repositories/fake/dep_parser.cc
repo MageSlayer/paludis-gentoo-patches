@@ -73,7 +73,7 @@ namespace
                                 + epdso_allow_use_deps + epdso_allow_ranged_deps + epdso_allow_tilde_greater_deps
                                 + epdso_strict_parsing,
                                 user_version_spec_options(),
-                                id), false));
+                                id), bk_weak));
         }
         else
             package_dep_spec_string_handler<T_>(h, s, id);

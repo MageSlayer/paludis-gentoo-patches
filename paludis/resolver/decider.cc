@@ -1033,7 +1033,7 @@ Decider::_make_constraint_for_preloading(
         result->spec().if_block() = std::make_shared<BlockDepSpec>(
                     "!" + stringify(s),
                     s,
-                    result->spec().if_block()->strong());
+                    result->spec().if_block()->block_kind());
     }
 
     return result;

@@ -260,8 +260,22 @@ namespace
             {
                 bool normal(true);
                 if (r.sanitised_dependency().spec().if_block())
-                    if (! r.sanitised_dependency().spec().if_block()->strong())
-                        normal = false;
+                    switch (r.sanitised_dependency().spec().if_block()->block_kind())
+                    {
+                        case bk_weak:
+                        case bk_uninstall_blocked_after:
+                            normal = false;
+                            break;
+
+                        case bk_strong:
+                        case bk_manual:
+                        case bk_upgrade_blocked_before:
+                        case bk_uninstall_blocked_before:
+                            break;
+
+                        case last_bk:
+                            break;
+                    }
 
                 NAGIndex from(make_named_values<NAGIndex>(
                             n::resolvent() = r.from_resolvent(),

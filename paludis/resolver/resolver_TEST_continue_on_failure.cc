@@ -169,7 +169,7 @@ namespace test_cases
             std::shared_ptr<const Resolved> resolved(get_resolved(BlockDepSpec(
                             "!continue-on-failure-uninstall/target",
                             parse_user_package_dep_spec("continue-on-failure-uninstall/target", &env, { }),
-                            false)));
+                            bk_weak)));
 
             check_resolved(resolved,
                     n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()

@@ -123,7 +123,7 @@ namespace
                             eapi.supported()->package_dep_spec_parse_options(),
                             eapi.supported()->version_spec_options(),
                             id),
-                        strong));
+                        strong ? bk_strong : bk_weak));
             h.begin()->item()->append(spec);
             annotations_go_here(spec);
         }
