@@ -170,7 +170,7 @@ Stripper::do_split(const FSPath & f, const FSPath & g)
     }
 
     Process objcopy_copy_process(ProcessCommand({ "objcopy", "--only-keep-debug", stringify(f), stringify(g) }));
-    Process objcopy_link_process(ProcessCommand({ "objcopy", "--add-gnu-debuglink=" + stringify(f), stringify(g) }));
+    Process objcopy_link_process(ProcessCommand({ "objcopy", "--add-gnu-debuglink=" + stringify(g), stringify(f) }));
     if (0 != objcopy_copy_process.run().wait())
         Log::get_instance()->message("strip.failure", ll_warning, lc_context) << "Couldn't copy debug information for '" << f << "'";
     else if (0 != objcopy_link_process.run().wait())
