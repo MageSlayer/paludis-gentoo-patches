@@ -317,8 +317,8 @@ when 'add'
 
         puts
         puts "You should now run:"
-        print "  paludis"
+        print "  cave"
         print " -E #{$envspec}" unless $envspec.empty?
-        print " -s x-#{overlay_name} \n"
+        print " sync x-#{overlay_name} \n"
     end
 end
