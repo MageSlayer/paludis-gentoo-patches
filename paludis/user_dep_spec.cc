@@ -760,7 +760,20 @@ UserKeyRequirement::requirement_met(const Environment * const, const ChangedChoi
 
     const MetadataKey * key(0);
 
-    if ((! _imp->key.empty()) && (_imp->key.at(0) == '$'))
+    if (0 == _imp->key.compare(0, 3, "::$"))
+    {
+        if (_imp->key == "::$format")
+            key = id.repository()->format_key().get();
+        else if (_imp->key == "::$location")
+            key = id.repository()->location_key().get();
+        else if (_imp->key == "::$installed_root")
+            key = id.repository()->installed_root_key().get();
+        else if (_imp->key == "::$accept_keywords")
+            key = id.repository()->accept_keywords_key().get();
+        else if (_imp->key == "::$sync_host")
+            key = id.repository()->sync_host_key().get();
+    }
+    else if (0 == _imp->key.compare(0, 1, "$"))
     {
         if (_imp->key == "$behaviours")
             key = id.behaviours_key().get();
@@ -804,6 +817,12 @@ UserKeyRequirement::requirement_met(const Environment * const, const ChangedChoi
             key = id.suggested_dependencies_key().get();
         else if (_imp->key == "$virtual_for")
             key = id.virtual_for_key().get();
+    }
+    else if (0 == _imp->key.compare(0, 2, "::"))
+    {
+        Repository::MetadataConstIterator m(id.repository()->find_metadata(_imp->key.substr(2)));
+        if (m != id.repository()->end_metadata())
+            key = m->get();
     }
     else
     {
