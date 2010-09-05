@@ -1179,7 +1179,7 @@ Decider::_add_dependencies_if_necessary(
         }
 
         const std::shared_ptr<DependencyReason> reason(std::make_shared<DependencyReason>(
-                    package_id, changed_choices, our_resolution->resolvent(), *s, _already_met(*s)));
+                    package_id, changed_choices, our_resolution->resolvent(), *s, _already_met(s->spec())));
 
         std::shared_ptr<const Resolvents> resolvents;
 
@@ -1340,7 +1340,7 @@ Decider::find_any_score(
     }
 
     const std::shared_ptr<DependencyReason> reason(std::make_shared<DependencyReason>(
-                our_id, make_null_shared_ptr(), our_resolution->resolvent(), dep, _already_met(dep)));
+                our_id, make_null_shared_ptr(), our_resolution->resolvent(), dep, _already_met(dep.spec())));
     const std::shared_ptr<const Resolvents> resolvents(_get_resolvents_for(spec, reason));
 
     /* next: will already be installing */
@@ -2086,19 +2086,16 @@ Decider::resolve()
 }
 
 bool
-Decider::_already_met(const SanitisedDependency & dep) const
+Decider::_already_met(const PackageOrBlockDepSpec & spec) const
 {
     const std::shared_ptr<const PackageIDSequence> installed_ids((*_imp->env)[selection::AllVersionsUnsorted(
-                generator::Matches(dep.spec().if_package() ?
-                    *dep.spec().if_package() :
-                    dep.spec().if_block()->blocking(),
-                    { }) |
+                generator::Matches(spec.if_package() ?  *spec.if_package() : spec.if_block()->blocking(), { }) |
                 filter::InstalledAtSlash())]);
     if (installed_ids->empty())
-        return bool(dep.spec().if_block());
+        return bool(spec.if_block());
     else
     {
-        if (dep.spec().if_block())
+        if (spec.if_block())
             return false;
 
         if (installed_ids->end() == std::find_if(installed_ids->begin(), installed_ids->end(),
