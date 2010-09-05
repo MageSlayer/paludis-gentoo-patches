@@ -230,6 +230,9 @@ namespace test_cases
 
             PackageDepSpec q(parse_user_package_dep_spec("foo/bar[.foo?]", &env, { }));
             check_spec(q, "foo/bar", "", "", "", "", "", "", "", "[.foo?]");
+
+            PackageDepSpec r(parse_user_package_dep_spec("foo/bar[.$short_description=value]", &env, { }));
+            check_spec(r, "foo/bar", "", "", "", "", "", "", "", "[.$short_description=value]");
         }
     } test_user_package_dep_spec;
 
@@ -479,6 +482,11 @@ namespace test_cases
 
             PackageDepSpec n(parse_user_package_dep_spec("cat/pkg1[.SPOON?]", &env, { }));
             TEST_CHECK(! match_package(env, n, *pkg1, { }));
+
+            PackageDepSpec o(parse_user_package_dep_spec("cat/pkg1[.$keywords<~a]", &env, { }));
+            TEST_CHECK(match_package(env, o, *pkg1, { }));
+            TEST_CHECK(match_package(env, o, *pkg2, { }));
+            TEST_CHECK(! match_package(env, o, *pkg3, { }));
         }
     } test_user_package_dep_spec_user_key_req;
 }

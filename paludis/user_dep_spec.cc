@@ -758,8 +758,61 @@ UserKeyRequirement::requirement_met(const Environment * const, const ChangedChoi
 {
     Context context("When working out whether '" + stringify(id) + "' matches " + as_raw_string() + ":");
 
-    PackageID::MetadataConstIterator m(id.find_metadata(_imp->key));
-    if (m == id.end_metadata())
+    const MetadataKey * key(0);
+
+    if ((! _imp->key.empty()) && (_imp->key.at(0) == '$'))
+    {
+        if (_imp->key == "$behaviours")
+            key = id.behaviours_key().get();
+        else if (_imp->key == "$build_dependencies")
+            key = id.build_dependencies_key().get();
+        else if (_imp->key == "$choices")
+            key = id.choices_key().get();
+        else if (_imp->key == "$contained_in")
+            key = id.contained_in_key().get();
+        else if (_imp->key == "$contains")
+            key = id.contains_key().get();
+        else if (_imp->key == "$contents")
+            key = id.contents_key().get();
+        else if (_imp->key == "$dependencies")
+            key = id.dependencies_key().get();
+        else if (_imp->key == "$fetches")
+            key = id.fetches_key().get();
+        else if (_imp->key == "$from_repositories")
+            key = id.from_repositories_key().get();
+        else if (_imp->key == "$fs_location")
+            key = id.fs_location_key().get();
+        else if (_imp->key == "$homepage")
+            key = id.homepage_key().get();
+        else if (_imp->key == "$installed_time")
+            key = id.installed_time_key().get();
+        else if (_imp->key == "$keywords")
+            key = id.keywords_key().get();
+        else if (_imp->key == "$long_description")
+            key = id.long_description_key().get();
+        else if (_imp->key == "$post_dependencies")
+            key = id.post_dependencies_key().get();
+        else if (_imp->key == "$provide")
+            key = id.provide_key().get();
+        else if (_imp->key == "$run_dependencies")
+            key = id.run_dependencies_key().get();
+        else if (_imp->key == "$short_description")
+            key = id.short_description_key().get();
+        else if (_imp->key == "$slot")
+            key = id.slot_key().get();
+        else if (_imp->key == "$suggested_dependencies")
+            key = id.suggested_dependencies_key().get();
+        else if (_imp->key == "$virtual_for")
+            key = id.virtual_for_key().get();
+    }
+    else
+    {
+        PackageID::MetadataConstIterator m(id.find_metadata(_imp->key));
+        if (m != id.end_metadata())
+            key = m->get();
+    }
+
+    if (! key)
         return std::make_pair(false, as_human_string());
 
     if (_imp->op == '?')
@@ -767,23 +820,29 @@ UserKeyRequirement::requirement_met(const Environment * const, const ChangedChoi
     else
     {
         KeyComparator c(_imp->value, _imp->op);
-        return std::make_pair((*m)->accept_returning<bool>(c), as_human_string());
+        return std::make_pair(key->accept_returning<bool>(c), as_human_string());
     }
 }
 
 const std::string
 UserKeyRequirement::as_human_string() const
 {
+    std::string key_str;
+    if ((! _imp->key.empty()) && (_imp->key.at(0) == '$'))
+        key_str = "with role '" + _imp->key.substr(1) + "'";
+    else
+        key_str = "'" + _imp->key + "'";
+
     switch (_imp->op)
     {
         case '=':
-            return "Key '" + _imp->key + "' has simple string value '" + _imp->value + "'";
+            return "Key " + key_str + " has simple string value '" + _imp->value + "'";
         case '<':
-            return "Key '" + _imp->key + "' contains or is less than '" + _imp->value + "'";
+            return "Key " + key_str + " contains or is less than '" + _imp->value + "'";
         case '>':
-            return "Key '" + _imp->key + "' is greater than '" + _imp->value + "'";
+            return "Key " + key_str + " is greater than '" + _imp->value + "'";
         case '?':
-            return "Key '" + _imp->key + "' exists";
+            return "Key " + key_str + " exists";
     }
 
     throw InternalError(PALUDIS_HERE, "unknown op");
