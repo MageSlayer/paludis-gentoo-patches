@@ -356,13 +356,16 @@ namespace paludis
 
         Imp(const std::string & s)
         {
-            std::string::size_type p(s.find_first_of("=<>"));
+            std::string::size_type p(s.find_first_of("=<>?"));
             if (std::string::npos == p)
-                throw PackageDepSpecError("Expected an =, a < or a > inside '[." + s + "]'");
+                throw PackageDepSpecError("Expected an =, a <, a > or a ? inside '[." + s + "]'");
 
             key = s.substr(0, p);
             value = s.substr(p + 1);
             op = s.at(p);
+
+            if (op == '?' && ! value.empty())
+                throw PackageDepSpecError("Operator '?' takes no value inside '[." + s + "]'");
         }
     };
 }
@@ -759,8 +762,13 @@ UserKeyRequirement::requirement_met(const Environment * const, const ChangedChoi
     if (m == id.end_metadata())
         return std::make_pair(false, as_human_string());
 
-    KeyComparator c(_imp->value, _imp->op);
-    return std::make_pair((*m)->accept_returning<bool>(c), as_human_string());
+    if (_imp->op == '?')
+        return std::make_pair(true, as_human_string());
+    else
+    {
+        KeyComparator c(_imp->value, _imp->op);
+        return std::make_pair((*m)->accept_returning<bool>(c), as_human_string());
+    }
 }
 
 const std::string
@@ -774,6 +782,8 @@ UserKeyRequirement::as_human_string() const
             return "Key '" + _imp->key + "' contains or is less than '" + _imp->value + "'";
         case '>':
             return "Key '" + _imp->key + "' is greater than '" + _imp->value + "'";
+        case '?':
+            return "Key '" + _imp->key + "' exists";
     }
 
     throw InternalError(PALUDIS_HERE, "unknown op");

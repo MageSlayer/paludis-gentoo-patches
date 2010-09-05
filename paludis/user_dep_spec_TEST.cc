@@ -225,6 +225,11 @@ namespace test_cases
 
             PackageDepSpec p(parse_user_package_dep_spec("foo/bar[.key=value]", &env, { }));
             check_spec(p, "foo/bar", "", "", "", "", "", "", "", "[.key=value]");
+
+            TEST_CHECK_THROWS(parse_user_package_dep_spec("=foo/bar[.foo?q]", &env, { }), PackageDepSpecError);
+
+            PackageDepSpec q(parse_user_package_dep_spec("foo/bar[.foo?]", &env, { }));
+            check_spec(q, "foo/bar", "", "", "", "", "", "", "", "[.foo?]");
         }
     } test_user_package_dep_spec;
 
@@ -468,6 +473,12 @@ namespace test_cases
 
             PackageDepSpec l(parse_user_package_dep_spec("cat/pkg1[.HITCHHIKER>41]", &env, { }));
             TEST_CHECK(match_package(env, l, *pkg1, { }));
+
+            PackageDepSpec m(parse_user_package_dep_spec("cat/pkg1[.HITCHHIKER?]", &env, { }));
+            TEST_CHECK(match_package(env, m, *pkg1, { }));
+
+            PackageDepSpec n(parse_user_package_dep_spec("cat/pkg1[.SPOON?]", &env, { }));
+            TEST_CHECK(! match_package(env, n, *pkg1, { }));
         }
     } test_user_package_dep_spec_user_key_req;
 }
