@@ -243,11 +243,11 @@ namespace
     std::shared_ptr<const EAPIAnnotations> make_annotations(const KeyValueConfigFile & k)
     {
         return std::make_shared<EAPIAnnotations>(make_named_values<EAPIAnnotations>(
-                    n::blocker_resolution() = k.get("blocker_resolution"),
-                    n::blocker_resolution_manual() = k.get("blocker_resolution_manual"),
-                    n::blocker_resolution_uninstall_blocked_after() = k.get("blocker_resolution_uninstall_blocked_after"),
-                    n::blocker_resolution_uninstall_blocked_before() = k.get("blocker_resolution_uninstall_blocked_before"),
-                    n::blocker_resolution_upgrade_blocked_before() = k.get("blocker_resolution_upgrade_blocked_before"),
+                    n::blocker_resolution() = k.get("annotations_blocker_resolution"),
+                    n::blocker_resolution_manual() = k.get("annotations_blocker_resolution_manual"),
+                    n::blocker_resolution_uninstall_blocked_after() = k.get("annotations_blocker_resolution_uninstall_blocked_after"),
+                    n::blocker_resolution_uninstall_blocked_before() = k.get("annotations_blocker_resolution_uninstall_blocked_before"),
+                    n::blocker_resolution_upgrade_blocked_before() = k.get("annotations_blocker_resolution_upgrade_blocked_before"),
                     n::myoptions_description() = k.get("annotations_myoptions_description"),
                     n::myoptions_number_selected() = k.get("annotations_myoptions_number_selected"),
                     n::myoptions_number_selected_at_least_one() = k.get("annotations_myoptions_number_selected_at_least_one"),
