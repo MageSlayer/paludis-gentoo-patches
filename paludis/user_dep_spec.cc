@@ -356,13 +356,16 @@ namespace paludis
 
         Imp(const std::string & s)
         {
-            std::string::size_type p(s.find_first_of("=<>"));
+            std::string::size_type p(s.find_first_of("=<>?"));
             if (std::string::npos == p)
-                throw PackageDepSpecError("Expected an =, a < or a > inside '[." + s + "]'");
+                throw PackageDepSpecError("Expected an =, a <, a > or a ? inside '[." + s + "]'");
 
             key = s.substr(0, p);
             value = s.substr(p + 1);
             op = s.at(p);
+
+            if (op == '?' && ! value.empty())
+                throw PackageDepSpecError("Operator '?' takes no value inside '[." + s + "]'");
         }
     };
 }
@@ -755,25 +758,110 @@ UserKeyRequirement::requirement_met(const Environment * const, const ChangedChoi
 {
     Context context("When working out whether '" + stringify(id) + "' matches " + as_raw_string() + ":");
 
-    PackageID::MetadataConstIterator m(id.find_metadata(_imp->key));
-    if (m == id.end_metadata())
+    const MetadataKey * key(0);
+
+    if (0 == _imp->key.compare(0, 3, "::$"))
+    {
+        if (_imp->key == "::$format")
+            key = id.repository()->format_key().get();
+        else if (_imp->key == "::$location")
+            key = id.repository()->location_key().get();
+        else if (_imp->key == "::$installed_root")
+            key = id.repository()->installed_root_key().get();
+        else if (_imp->key == "::$accept_keywords")
+            key = id.repository()->accept_keywords_key().get();
+        else if (_imp->key == "::$sync_host")
+            key = id.repository()->sync_host_key().get();
+    }
+    else if (0 == _imp->key.compare(0, 1, "$"))
+    {
+        if (_imp->key == "$behaviours")
+            key = id.behaviours_key().get();
+        else if (_imp->key == "$build_dependencies")
+            key = id.build_dependencies_key().get();
+        else if (_imp->key == "$choices")
+            key = id.choices_key().get();
+        else if (_imp->key == "$contained_in")
+            key = id.contained_in_key().get();
+        else if (_imp->key == "$contains")
+            key = id.contains_key().get();
+        else if (_imp->key == "$contents")
+            key = id.contents_key().get();
+        else if (_imp->key == "$dependencies")
+            key = id.dependencies_key().get();
+        else if (_imp->key == "$fetches")
+            key = id.fetches_key().get();
+        else if (_imp->key == "$from_repositories")
+            key = id.from_repositories_key().get();
+        else if (_imp->key == "$fs_location")
+            key = id.fs_location_key().get();
+        else if (_imp->key == "$homepage")
+            key = id.homepage_key().get();
+        else if (_imp->key == "$installed_time")
+            key = id.installed_time_key().get();
+        else if (_imp->key == "$keywords")
+            key = id.keywords_key().get();
+        else if (_imp->key == "$long_description")
+            key = id.long_description_key().get();
+        else if (_imp->key == "$post_dependencies")
+            key = id.post_dependencies_key().get();
+        else if (_imp->key == "$provide")
+            key = id.provide_key().get();
+        else if (_imp->key == "$run_dependencies")
+            key = id.run_dependencies_key().get();
+        else if (_imp->key == "$short_description")
+            key = id.short_description_key().get();
+        else if (_imp->key == "$slot")
+            key = id.slot_key().get();
+        else if (_imp->key == "$suggested_dependencies")
+            key = id.suggested_dependencies_key().get();
+        else if (_imp->key == "$virtual_for")
+            key = id.virtual_for_key().get();
+    }
+    else if (0 == _imp->key.compare(0, 2, "::"))
+    {
+        Repository::MetadataConstIterator m(id.repository()->find_metadata(_imp->key.substr(2)));
+        if (m != id.repository()->end_metadata())
+            key = m->get();
+    }
+    else
+    {
+        PackageID::MetadataConstIterator m(id.find_metadata(_imp->key));
+        if (m != id.end_metadata())
+            key = m->get();
+    }
+
+    if (! key)
         return std::make_pair(false, as_human_string());
 
-    KeyComparator c(_imp->value, _imp->op);
-    return std::make_pair((*m)->accept_returning<bool>(c), as_human_string());
+    if (_imp->op == '?')
+        return std::make_pair(true, as_human_string());
+    else
+    {
+        KeyComparator c(_imp->value, _imp->op);
+        return std::make_pair(key->accept_returning<bool>(c), as_human_string());
+    }
 }
 
 const std::string
 UserKeyRequirement::as_human_string() const
 {
+    std::string key_str;
+    if ((! _imp->key.empty()) && (_imp->key.at(0) == '$'))
+        key_str = "with role '" + _imp->key.substr(1) + "'";
+    else
+        key_str = "'" + _imp->key + "'";
+
     switch (_imp->op)
     {
         case '=':
-            return "Key '" + _imp->key + "' has simple string value '" + _imp->value + "'";
+            return "Key " + key_str + " has simple string value '" + _imp->value + "'";
         case '<':
-            return "Key '" + _imp->key + "' contains or is less than '" + _imp->value + "'";
+            return "Key " + key_str + " contains or is less than '" + _imp->value + "'";
         case '>':
-            return "Key '" + _imp->key + "' is greater than '" + _imp->value + "'";
+            return "Key " + key_str + " is greater than '" + _imp->value + "'";
+        case '?':
+            return "Key " + key_str + " exists";
     }
 
     throw InternalError(PALUDIS_HERE, "unknown op");
