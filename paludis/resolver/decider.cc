@@ -662,13 +662,34 @@ Decider::_make_constraints_from_blocker(
 {
     const std::shared_ptr<ConstraintSequence> result(std::make_shared<ConstraintSequence>());
 
+    bool nothing_is_fine_too(true), force_unable(false);
+    switch (spec.block_kind())
+    {
+        case bk_weak:
+        case bk_strong:
+        case bk_uninstall_blocked_before:
+        case bk_uninstall_blocked_after:
+            break;
+
+        case bk_manual:
+            force_unable = true;
+            break;
+
+        case bk_upgrade_blocked_before:
+            nothing_is_fine_too = ! _already_met(spec);
+            break;
+
+        case last_bk:
+            break;
+    }
+
     DestinationTypes destination_types(_get_destination_types_for_blocker(spec, reason));
     for (EnumIterator<DestinationType> t, t_end(last_dt) ; t != t_end ; ++t)
         if (destination_types[*t])
             result->push_back(std::make_shared<Constraint>(make_named_values<Constraint>(
                                 n::destination_type() = *t,
-                                n::force_unable() = false,
-                                n::nothing_is_fine_too() = true,
+                                n::force_unable() = force_unable,
+                                n::nothing_is_fine_too() = nothing_is_fine_too,
                                 n::reason() = reason,
                                 n::spec() = spec,
                                 n::untaken() = false,
