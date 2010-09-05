@@ -779,6 +779,51 @@ namespace
     }
 }
 
+namespace
+{
+    typedef std::tuple<std::string, std::string, std::string> DepLabelsIndex;
+
+    struct DepLabelsStore :
+        Singleton<DepLabelsStore>
+    {
+        Mutex mutex;
+        std::map<DepLabelsIndex, std::shared_ptr<DependenciesLabel> > store;
+
+        std::shared_ptr<DependenciesLabel> make(const std::string & class_name, const std::string & text)
+        {
+            if (class_name == "DependenciesBuildLabel")
+                return std::make_shared<DependenciesBuildLabel>(text, return_literal_function(true));
+            else if (class_name == "DependenciesRunLabel")
+                return std::make_shared<DependenciesRunLabel>(text, return_literal_function(true));
+            else if (class_name == "DependenciesPostLabel")
+                return std::make_shared<DependenciesPostLabel>(text, return_literal_function(true));
+            else if (class_name == "DependenciesInstallLabel")
+                return std::make_shared<DependenciesInstallLabel>(text, return_literal_function(true));
+            else if (class_name == "DependenciesCompileAgainstLabel")
+                return std::make_shared<DependenciesCompileAgainstLabel>(text, return_literal_function(true));
+            else if (class_name == "DependenciesFetchLabel")
+                return std::make_shared<DependenciesFetchLabel>(text, return_literal_function(true));
+            else if (class_name == "DependenciesSuggestionLabel")
+                return std::make_shared<DependenciesSuggestionLabel>(text, return_literal_function(true));
+            else if (class_name == "DependenciesRecommendationLabel")
+                return std::make_shared<DependenciesRecommendationLabel>(text, return_literal_function(true));
+            else
+                throw EDepParseError(text, "Label '" + text + "' maps to unknown class '" + class_name + "'");
+        }
+
+        std::shared_ptr<DependenciesLabel> get(const std::string & eapi_name, const std::string & class_name, const std::string & text)
+        {
+            Lock lock(mutex);
+            DepLabelsIndex x{eapi_name, class_name, text};
+
+            auto i(store.find(x));
+            if (i == store.end())
+                i = store.insert(std::make_pair(x, make(class_name, text))).first;
+            return i->second;
+        }
+    };
+}
+
 std::shared_ptr<DependenciesLabelsDepSpec>
 paludis::erepository::parse_dependency_label(
         const std::shared_ptr<const PackageID> & id,
@@ -817,23 +862,7 @@ paludis::erepository::parse_dependency_label(
             c.erase(p);
         }
 
-        if (c == "DependenciesBuildLabel")
-            l->add_label(std::make_shared<DependenciesBuildLabel>(*it, return_literal_function(true)));
-        else if (c == "DependenciesRunLabel")
-            l->add_label(std::make_shared<DependenciesRunLabel>(*it, return_literal_function(true)));
-        else if (c == "DependenciesPostLabel")
-            l->add_label(std::make_shared<DependenciesPostLabel>(*it, return_literal_function(true)));
-        else if (c == "DependenciesInstallLabel")
-            l->add_label(std::make_shared<DependenciesInstallLabel>(*it, return_literal_function(true)));
-        else if (c == "DependenciesCompileAgainstLabel")
-            l->add_label(std::make_shared<DependenciesCompileAgainstLabel>(*it, return_literal_function(true)));
-        else if (c == "DependenciesFetchLabel")
-            l->add_label(std::make_shared<DependenciesFetchLabel>(*it, return_literal_function(true)));
-        else if (c == "DependenciesSuggestionLabel")
-            l->add_label(std::make_shared<DependenciesSuggestionLabel>(*it, return_literal_function(true)));
-        else if (c == "DependenciesRecommendationLabel")
-            l->add_label(std::make_shared<DependenciesRecommendationLabel>(*it, return_literal_function(true)));
-        else if (c == "DependenciesTestLabel")
+        if (c == "DependenciesTestLabel")
         {
             if (cc.empty())
                 l->add_label(std::make_shared<DependenciesTestLabel>(*it, return_literal_function(true)));
@@ -848,7 +877,7 @@ paludis::erepository::parse_dependency_label(
             l->add_label(std::make_shared<DependenciesBuildLabel>(*it, return_literal_function(true)));
         }
         else
-            throw EDepParseError(s, "Label '" + *it + "' maps to unknown class '" + c + "'");
+            l->add_label(DepLabelsStore::get_instance()->get(e.name(), c, *it));
     }
 
     return l;
