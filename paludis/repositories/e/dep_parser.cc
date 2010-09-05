@@ -29,6 +29,8 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/mutex.hh>
+#include <paludis/util/singleton-impl.hh>
 #include <paludis/elike_annotations.hh>
 #include <paludis/elike_dep_parser.hh>
 #include <paludis/elike_conditional_dep_spec.hh>
@@ -41,6 +43,7 @@
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/action.hh>
 #include <paludis/choice.hh>
+#include <map>
 #include <list>
 #include <set>
 #include <ostream>
@@ -672,6 +675,47 @@ paludis::erepository::parse_myoptions(const std::string & s,
     return top;
 }
 
+namespace
+{
+    typedef std::tuple<std::string, std::string, std::string> URILabelsIndex;
+
+    struct URILabelsStore :
+        Singleton<URILabelsStore>
+    {
+        Mutex mutex;
+        std::map<URILabelsIndex, std::shared_ptr<URILabel> > store;
+
+        std::shared_ptr<URILabel> make(const std::string & class_name, const std::string & text)
+        {
+            if (class_name == "URIMirrorsThenListedLabel")
+                return std::make_shared<URIMirrorsThenListedLabel>(text);
+            else if (class_name == "URIMirrorsOnlyLabel")
+                return std::make_shared<URIMirrorsOnlyLabel>(text);
+            else if (class_name == "URIListedOnlyLabel")
+                return std::make_shared<URIListedOnlyLabel>(text);
+            else if (class_name == "URIListedThenMirrorsLabel")
+                return std::make_shared<URIListedThenMirrorsLabel>(text);
+            else if (class_name == "URILocalMirrorsOnlyLabel")
+                return std::make_shared<URILocalMirrorsOnlyLabel>(text);
+            else if (class_name == "URIManualOnlyLabel")
+                return std::make_shared<URIManualOnlyLabel>(text);
+            else
+                throw EDepParseError(text, "Label '" + text + "' maps to unknown class '" + class_name + "'");
+        }
+
+        std::shared_ptr<URILabel> get(const std::string & eapi_name, const std::string & class_name, const std::string & text)
+        {
+            Lock lock(mutex);
+            URILabelsIndex x{eapi_name, class_name, text};
+
+            auto i(store.find(x));
+            if (i == store.end())
+                i = store.insert(std::make_pair(x, make(class_name, text))).first;
+            return i->second;
+        }
+    };
+}
+
 std::shared_ptr<URILabelsDepSpec>
 paludis::erepository::parse_uri_label(const std::string & s, const EAPI & e)
 {
@@ -685,21 +729,7 @@ paludis::erepository::parse_uri_label(const std::string & s, const EAPI & e)
         throw EDepParseError(s, "Unknown label");
 
     std::shared_ptr<URILabelsDepSpec> l(std::make_shared<URILabelsDepSpec>());
-
-    if (c == "URIMirrorsThenListedLabel")
-        l->add_label(std::make_shared<URIMirrorsThenListedLabel>(s.substr(0, s.length() - 1)));
-    else if (c == "URIMirrorsOnlyLabel")
-        l->add_label(std::make_shared<URIMirrorsOnlyLabel>(s.substr(0, s.length() - 1)));
-    else if (c == "URIListedOnlyLabel")
-        l->add_label(std::make_shared<URIListedOnlyLabel>(s.substr(0, s.length() - 1)));
-    else if (c == "URIListedThenMirrorsLabel")
-        l->add_label(std::make_shared<URIListedThenMirrorsLabel>(s.substr(0, s.length() - 1)));
-    else if (c == "URILocalMirrorsOnlyLabel")
-        l->add_label(std::make_shared<URILocalMirrorsOnlyLabel>(s.substr(0, s.length() - 1)));
-    else if (c == "URIManualOnlyLabel")
-        l->add_label(std::make_shared<URIManualOnlyLabel>(s.substr(0, s.length() - 1)));
-    else
-        throw EDepParseError(s, "Label '" + s + "' maps to unknown class '" + c + "'");
+    l->add_label(URILabelsStore::get_instance()->get(e.name(), c, s.substr(0, s.length() - 1)));
 
     return l;
 }
