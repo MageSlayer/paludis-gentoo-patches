@@ -126,7 +126,7 @@ namespace test_cases
             std::shared_ptr<const Resolved> resolved(get_resolved(BlockDepSpec(
                             "!star-slot-purges/target:1",
                             parse_user_package_dep_spec("star-slot-purges/target:1", &env, { }),
-                            false)));
+                            bk_weak)));
 
             check_resolved(resolved,
                     n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()

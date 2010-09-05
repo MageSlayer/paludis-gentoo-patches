@@ -39,6 +39,11 @@ namespace paludis
     {
         typedef Name<struct annotations_name> annotations;
         typedef Name<struct binary_from_env_variables_name> binary_from_env_variables;
+        typedef Name<struct blocker_resolution_name> blocker_resolution;
+        typedef Name<struct blocker_resolution_manual_name> blocker_resolution_manual;
+        typedef Name<struct blocker_resolution_uninstall_blocked_after_name> blocker_resolution_uninstall_blocked_after;
+        typedef Name<struct blocker_resolution_uninstall_blocked_before_name> blocker_resolution_uninstall_blocked_before;
+        typedef Name<struct blocker_resolution_upgrade_blocked_before_name> blocker_resolution_upgrade_blocked_before;
         typedef Name<struct bracket_merged_variables_name> bracket_merged_variables;
         typedef Name<struct bracket_merged_variables_annotatable_name> bracket_merged_variables_annotatable;
         typedef Name<struct bracket_merged_variables_annotation_name> bracket_merged_variables_annotation;
@@ -448,6 +453,11 @@ namespace paludis
 
         struct EAPIAnnotations
         {
+            NamedValue<n::blocker_resolution, std::string> blocker_resolution;
+            NamedValue<n::blocker_resolution_manual, std::string> blocker_resolution_manual;
+            NamedValue<n::blocker_resolution_uninstall_blocked_after, std::string> blocker_resolution_uninstall_blocked_after;
+            NamedValue<n::blocker_resolution_uninstall_blocked_before, std::string> blocker_resolution_uninstall_blocked_before;
+            NamedValue<n::blocker_resolution_upgrade_blocked_before, std::string> blocker_resolution_upgrade_blocked_before;
             NamedValue<n::myoptions_description, std::string> myoptions_description;
             NamedValue<n::myoptions_number_selected, std::string> myoptions_number_selected;
             NamedValue<n::myoptions_number_selected_at_least_one, std::string> myoptions_number_selected_at_least_one;

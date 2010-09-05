@@ -84,9 +84,10 @@ GetConstraintsForPurgeHelper::operator() (
 
     result->push_back(std::make_shared<Constraint>(make_named_values<Constraint>(
                     n::destination_type() = dt_install_to_slash,
+                    n::force_unable() = false,
                     n::nothing_is_fine_too() = true,
                     n::reason() = reason,
-                    n::spec() = BlockDepSpec("!" + stringify(spec), spec, false),
+                    n::spec() = BlockDepSpec("!" + stringify(spec), spec, bk_weak),
                     n::untaken() = ! _imp->purge_specs.match_any(_imp->env, id, { }),
                     n::use_existing() = ue_if_possible
                     )));

@@ -189,7 +189,7 @@ namespace test_cases
             std::shared_ptr<const Resolved> resolved(get_resolved(BlockDepSpec(
                             "!target/target",
                             parse_user_package_dep_spec("target/target", &env, { }),
-                            false)));
+                            bk_weak)));
 
             check_resolved(resolved,
                     n::taken_change_or_remove_decisions() = exists ? make_shared_copy(DecisionChecks()
@@ -415,5 +415,132 @@ namespace test_cases
       test_self_block_x_1_w(-1,  1, false), test_self_block_x_1_s(-1,  1, true),
       test_self_block_0_1_w( 0,  1, false), test_self_block_0_1_s( 0,  1, true),
       test_self_block_1_1_w( 1,  1, false), test_self_block_1_1_s( 1,  1, true);
+
+    struct UninstallBlockedAfter : ResolverBlockersTestCase
+    {
+        UninstallBlockedAfter() :
+            ResolverBlockersTestCase("uninstall blocked after")
+        {
+            install("uninstall-blocked-after", "dep", "1");
+            allowed_to_remove_helper.add_allowed_to_remove_spec(parse_user_package_dep_spec("uninstall-blocked-after/dep", &env, { }));
+        }
+
+        void run()
+        {
+            std::shared_ptr<const Resolved> resolved(get_resolved("uninstall-blocked-after/target"));
+
+            check_resolved(resolved,
+                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .change(QualifiedPackageName("uninstall-blocked-after/target"))
+                        .remove(QualifiedPackageName("uninstall-blocked-after/dep"))
+                        .finished()),
+                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished())
+                    );
+        }
+    } test_uninstall_blocked_after;
+
+    struct UninstallBlockedBefore : ResolverBlockersTestCase
+    {
+        UninstallBlockedBefore() :
+            ResolverBlockersTestCase("uninstall blocked before")
+        {
+            install("uninstall-blocked-before", "dep", "1");
+            allowed_to_remove_helper.add_allowed_to_remove_spec(parse_user_package_dep_spec("uninstall-blocked-before/dep", &env, { }));
+        }
+
+        void run()
+        {
+            std::shared_ptr<const Resolved> resolved(get_resolved("uninstall-blocked-before/target"));
+
+            check_resolved(resolved,
+                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .remove(QualifiedPackageName("uninstall-blocked-before/dep"))
+                        .change(QualifiedPackageName("uninstall-blocked-before/target"))
+                        .finished()),
+                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished())
+                    );
+        }
+    } test_uninstall_blocked_before;
+
+    struct UpgradeBlockedBefore : ResolverBlockersTestCase
+    {
+        UpgradeBlockedBefore() :
+            ResolverBlockersTestCase("upgrade blocked before")
+        {
+            install("upgrade-blocked-before", "dep", "1");
+            allowed_to_remove_helper.add_allowed_to_remove_spec(parse_user_package_dep_spec("upgrade-blocked-before/dep", &env, { }));
+        }
+
+        void run()
+        {
+            std::shared_ptr<const Resolved> resolved(get_resolved("upgrade-blocked-before/target"));
+
+            check_resolved(resolved,
+                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .change(QualifiedPackageName("upgrade-blocked-before/dep"))
+                        .change(QualifiedPackageName("upgrade-blocked-before/target"))
+                        .finished()),
+                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished())
+                    );
+        }
+    } test_upgrade_blocked_before;
+
+    struct Manual : ResolverBlockersTestCase
+    {
+        Manual() :
+            ResolverBlockersTestCase("manual")
+        {
+            install("manual", "dep", "1");
+        }
+
+        void run()
+        {
+            std::shared_ptr<const Resolved> resolved(get_resolved("manual/target"));
+
+            check_resolved(resolved,
+                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .change(QualifiedPackageName("manual/target"))
+                        .finished()),
+                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .unable(QualifiedPackageName("manual/dep"))
+                        .finished()),
+                    n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished())
+                    );
+        }
+    } test_manual;
 }
 

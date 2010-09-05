@@ -438,17 +438,17 @@ PythonSimpleURIDepSpec::PythonSimpleURIDepSpec(const SimpleURIDepSpec & d) :
 {
 }
 
-PythonBlockDepSpec::PythonBlockDepSpec(const std::string & t, const std::shared_ptr<const PythonPackageDepSpec> & a, const bool s) :
+PythonBlockDepSpec::PythonBlockDepSpec(const std::string & t, const std::shared_ptr<const PythonPackageDepSpec> & a, const BlockKind s) :
     PythonStringDepSpec(t),
     _spec(a),
-    _strong(s)
+    _kind(s)
 {
 }
 
 PythonBlockDepSpec::PythonBlockDepSpec(const BlockDepSpec & d) :
     PythonStringDepSpec(d.text()),
     _spec(std::make_shared<PythonPackageDepSpec>(d.blocking())),
-    _strong(d.strong())
+    _kind(d.block_kind())
 {
 }
 
@@ -458,10 +458,10 @@ PythonBlockDepSpec::blocking() const
     return _spec;
 }
 
-bool
-PythonBlockDepSpec::strong() const
+BlockKind
+PythonBlockDepSpec::block_kind() const
 {
-    return _strong;
+    return _kind;
 }
 
 PythonFetchableURIDepSpec::PythonFetchableURIDepSpec(const std::string & s) :
@@ -924,7 +924,7 @@ template <typename H_>
 void
 SpecTreeFromPython<H_>::real_visit(const PythonBlockDepSpec & d)
 {
-    _add_to->append(std::make_shared<BlockDepSpec>(d.text(), *d.blocking(), d.strong()));
+    _add_to->append(std::make_shared<BlockDepSpec>(d.text(), *d.blocking(), d.block_kind()));
 }
 
 template <typename H_>
@@ -1044,6 +1044,9 @@ void expose_dep_spec()
      */
     enum_auto("UserPackageDepSpecOption", last_updso,
             "Options for parse_user_package_dep_spec.");
+
+    enum_auto("BlockKind", last_bk,
+            "Options for BlockDepSpec.");
 
     /**
      * Options
@@ -1332,15 +1335,15 @@ void expose_dep_spec()
          "BlockDepSpec",
          "A BlockDepSpec represents a block on a package name (for example, 'app-editors/vim'), \n"
          "possibly with associated version and SLOT restrictions.",
-         bp::init<std::string, std::shared_ptr<const PythonPackageDepSpec>, bool>("__init__(string, PackageDepSpec, bool)")
+         bp::init<std::string, std::shared_ptr<const PythonPackageDepSpec>, BlockKind>("__init__(string, PackageDepSpec, BlockKind)")
         )
         .add_property("blocking", &PythonBlockDepSpec::blocking,
                 "[ro] PackageDepSpec\n"
                 "The spec we're blocking."
                 )
 
-        .add_property("strong", &PythonBlockDepSpec::strong,
-                "[ro] bool\n"
+        .add_property("block_kind", &PythonBlockDepSpec::block_kind,
+                "[ro] BlockKind\n"
                 "Are we a strong block?"
                 )
 

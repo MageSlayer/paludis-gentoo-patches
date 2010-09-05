@@ -209,5 +209,89 @@ END
     done
 done
 
+# uninstall-blocked-after
+echo 'uninstall-blocked-after' >> metadata/categories.conf
+
+mkdir -p 'packages/uninstall-blocked-after/target'
+cat <<END > packages/uninstall-blocked-after/target/target-1.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES="
+    ( !uninstall-blocked-after/dep[=1] [[ resolution = uninstall-blocked-after ]] )
+    "
+END
+
+mkdir -p 'packages/upgrade-blocked-after/dep'
+cat <<END > packages/uninstall-blocked-after/dep/dep-2.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES=""
+END
+
+# uninstall-blocked-before
+echo 'uninstall-blocked-before' >> metadata/categories.conf
+
+mkdir -p 'packages/uninstall-blocked-before/target'
+cat <<END > packages/uninstall-blocked-before/target/target-1.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES="
+    ( !uninstall-blocked-before/dep[=1] [[ resolution = uninstall-blocked-before ]] )
+    "
+END
+
+mkdir -p 'packages/upgrade-blocked-before/dep'
+cat <<END > packages/uninstall-blocked-before/dep/dep-2.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES=""
+END
+
+# upgrade-blocked-before
+echo 'upgrade-blocked-before' >> metadata/categories.conf
+
+mkdir -p 'packages/upgrade-blocked-before/target'
+cat <<END > packages/upgrade-blocked-before/target/target-1.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES="
+    ( !upgrade-blocked-before/dep[=1] [[ resolution = upgrade-blocked-before ]] )
+    "
+END
+
+mkdir -p 'packages/upgrade-blocked-before/dep'
+cat <<END > packages/upgrade-blocked-before/dep/dep-2.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES=""
+END
+
+# manual
+echo 'manual' >> metadata/categories.conf
+
+mkdir -p 'packages/manual/target'
+cat <<END > packages/manual/target/target-1.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES="
+    ( !manual/dep[=1] [[ resolution = manual ]] )
+    "
+END
+
+mkdir -p 'packages/manual/dep'
+cat <<END > packages/manual/dep/dep-2.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES=""
+END
+
 cd ..
 

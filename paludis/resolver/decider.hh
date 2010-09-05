@@ -240,7 +240,7 @@ namespace paludis
                         const std::shared_ptr<const PackageID> &,
                         const bool existing) const;
 
-                bool _already_met(const SanitisedDependency &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                bool _already_met(const PackageOrBlockDepSpec &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 bool _installed_but_allowed_to_remove(
                         const std::shared_ptr<const Resolution> &) const PALUDIS_ATTRIBUTE((warn_unused_result));

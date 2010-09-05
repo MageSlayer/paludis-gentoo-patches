@@ -100,6 +100,7 @@ GetInitialConstraintsForHelper::add_preset_spec(const PackageDepSpec & spec)
 
             const std::shared_ptr<Constraint> constraint(std::make_shared<Constraint>(make_named_values<Constraint>(
                             n::destination_type() = r.destination_type(),
+                            n::force_unable() = false,
                             n::nothing_is_fine_too() = true,
                             n::reason() = reason,
                             n::spec() = spec,
@@ -252,6 +253,7 @@ GetInitialConstraintsForHelper::_make_initial_constraints_for(
     {
         result->add(std::make_shared<Constraint>(make_named_values<Constraint>(
                         n::destination_type() = resolvent.destination_type(),
+                        n::force_unable() = false,
                         n::nothing_is_fine_too() = true,
                         n::reason() = std::make_shared<PresetReason>("is scm", make_null_shared_ptr()),
                         n::spec() = make_package_dep_spec({ }).package(resolvent.package()),

@@ -71,7 +71,7 @@ namespace test_cases
             std::shared_ptr<PackageDepSpec> c(std::static_pointer_cast<PackageDepSpec>(a.clone()));
             TEST_CHECK_STRINGIFY_EQUAL(a, *c);
 
-            BlockDepSpec d("!" + stringify(*c), *c, false);
+            BlockDepSpec d("!" + stringify(*c), *c, bk_weak);
             std::shared_ptr<BlockDepSpec> e(std::static_pointer_cast<BlockDepSpec>(d.clone()));
             TEST_CHECK_STRINGIFY_EQUAL(d.blocking(), e->blocking());
         }

@@ -140,7 +140,7 @@ namespace
                 {
                     seen_packages = true;
                     PackageDepSpec s(parse_user_package_dep_spec(p->first.substr(1), env.get(), { }));
-                    BlockDepSpec bs("!" + stringify(s), s, false);
+                    BlockDepSpec bs("!" + stringify(s), s, bk_weak);
                     result->push_back(stringify(bs));
                     resolver->add_target(bs, p->second);
                 }

@@ -595,7 +595,7 @@ namespace paludis
     {
         private:
             PackageDepSpec _spec;
-            bool _strong;
+            BlockKind _kind;
 
         protected:
             virtual void need_keys_added() const;
@@ -605,9 +605,9 @@ namespace paludis
             ///\{
 
             /**
-             * \since 0.41
+             * \since 0.55
              */
-            BlockDepSpec(const std::string & text, const PackageDepSpec & spec, const bool strong);
+            BlockDepSpec(const std::string & text, const PackageDepSpec & spec, const BlockKind);
 
             BlockDepSpec(const BlockDepSpec &);
 
@@ -621,11 +621,18 @@ namespace paludis
             const PackageDepSpec blocking() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
-             * Fetch whether we're a strong blocker.
+             * Fetch our blocker strength.
              *
-             * \since 0.41
+             * \since 0.55
              */
-            bool strong() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            BlockKind block_kind() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /**
+             * Change our blocker strength.
+             *
+             * \since 0.55
+             */
+            void set_block_kind(const BlockKind);
 
             virtual std::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };

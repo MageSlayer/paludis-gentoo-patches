@@ -610,6 +610,7 @@ Decider::_make_constraints_from_target(
         const std::shared_ptr<ConstraintSequence> result(std::make_shared<ConstraintSequence>());
         result->push_back(std::make_shared<Constraint>(make_named_values<Constraint>(
                             n::destination_type() = resolution->resolvent().destination_type(),
+                            n::force_unable() = false,
                             n::nothing_is_fine_too() = existing.second,
                             n::reason() = reason,
                             n::spec() = spec,
@@ -638,6 +639,7 @@ Decider::_make_constraints_from_dependency(
         const std::shared_ptr<ConstraintSequence> result(std::make_shared<ConstraintSequence>());
         result->push_back(std::make_shared<Constraint>(make_named_values<Constraint>(
                             n::destination_type() = resolution->resolvent().destination_type(),
+                            n::force_unable() = false,
                             n::nothing_is_fine_too() = existing.second,
                             n::reason() = reason,
                             n::spec() = *dep.spec().if_package(),
@@ -660,12 +662,34 @@ Decider::_make_constraints_from_blocker(
 {
     const std::shared_ptr<ConstraintSequence> result(std::make_shared<ConstraintSequence>());
 
+    bool nothing_is_fine_too(true), force_unable(false);
+    switch (spec.block_kind())
+    {
+        case bk_weak:
+        case bk_strong:
+        case bk_uninstall_blocked_before:
+        case bk_uninstall_blocked_after:
+            break;
+
+        case bk_manual:
+            force_unable = true;
+            break;
+
+        case bk_upgrade_blocked_before:
+            nothing_is_fine_too = ! _already_met(spec);
+            break;
+
+        case last_bk:
+            break;
+    }
+
     DestinationTypes destination_types(_get_destination_types_for_blocker(spec, reason));
     for (EnumIterator<DestinationType> t, t_end(last_dt) ; t != t_end ; ++t)
         if (destination_types[*t])
             result->push_back(std::make_shared<Constraint>(make_named_values<Constraint>(
                                 n::destination_type() = *t,
-                                n::nothing_is_fine_too() = true,
+                                n::force_unable() = force_unable,
+                                n::nothing_is_fine_too() = nothing_is_fine_too,
                                 n::reason() = reason,
                                 n::spec() = spec,
                                 n::untaken() = false,
@@ -707,6 +731,9 @@ namespace
         bool ok(const std::shared_ptr<const PackageID> & chosen_id,
                 const std::shared_ptr<const ChangedChoices> & changed_choices) const
         {
+            if (constraint.force_unable())
+                return false;
+
             if (constraint.spec().if_package())
             {
                 if (! match_package_with_maybe_changes(*env, *constraint.spec().if_package(),
@@ -745,6 +772,9 @@ namespace
 
         bool visit(const RemoveDecision &) const
         {
+            if (constraint.force_unable())
+                return false;
+
             return constraint.nothing_is_fine_too();
         }
 
@@ -1033,7 +1063,7 @@ Decider::_make_constraint_for_preloading(
         result->spec().if_block() = std::make_shared<BlockDepSpec>(
                     "!" + stringify(s),
                     s,
-                    result->spec().if_block()->strong());
+                    result->spec().if_block()->block_kind());
     }
 
     return result;
@@ -1179,7 +1209,7 @@ Decider::_add_dependencies_if_necessary(
         }
 
         const std::shared_ptr<DependencyReason> reason(std::make_shared<DependencyReason>(
-                    package_id, changed_choices, our_resolution->resolvent(), *s, _already_met(*s)));
+                    package_id, changed_choices, our_resolution->resolvent(), *s, _already_met(s->spec())));
 
         std::shared_ptr<const Resolvents> resolvents;
 
@@ -1340,7 +1370,7 @@ Decider::find_any_score(
     }
 
     const std::shared_ptr<DependencyReason> reason(std::make_shared<DependencyReason>(
-                our_id, make_null_shared_ptr(), our_resolution->resolvent(), dep, _already_met(dep)));
+                our_id, make_null_shared_ptr(), our_resolution->resolvent(), dep, _already_met(dep.spec())));
     const std::shared_ptr<const Resolvents> resolvents(_get_resolvents_for(spec, reason));
 
     /* next: will already be installing */
@@ -1511,6 +1541,9 @@ Decider::_try_to_find_decision_for(
         const bool try_masked_this_time,
         const bool try_removes_if_allowed) const
 {
+    if (resolution->constraints()->any_force_unable())
+        return make_null_shared_ptr();
+
     const std::shared_ptr<const PackageID> existing_id(_find_existing_id_for(resolution));
 
     std::shared_ptr<const PackageID> installable_id;
@@ -2086,19 +2119,16 @@ Decider::resolve()
 }
 
 bool
-Decider::_already_met(const SanitisedDependency & dep) const
+Decider::_already_met(const PackageOrBlockDepSpec & spec) const
 {
     const std::shared_ptr<const PackageIDSequence> installed_ids((*_imp->env)[selection::AllVersionsUnsorted(
-                generator::Matches(dep.spec().if_package() ?
-                    *dep.spec().if_package() :
-                    dep.spec().if_block()->blocking(),
-                    { }) |
+                generator::Matches(spec.if_package() ?  *spec.if_package() : spec.if_block()->blocking(), { }) |
                 filter::InstalledAtSlash())]);
     if (installed_ids->empty())
-        return bool(dep.spec().if_block());
+        return bool(spec.if_block());
     else
     {
-        if (dep.spec().if_block())
+        if (spec.if_block())
             return false;
 
         if (installed_ids->end() == std::find_if(installed_ids->begin(), installed_ids->end(),
@@ -2361,6 +2391,7 @@ namespace
             std::shared_ptr<ConstraintSequence> result(std::make_shared<ConstraintSequence>());
             result->push_back(make_shared_copy(make_named_values<Constraint>(
                             n::destination_type() = destination_type,
+                            n::force_unable() = false,
                             n::nothing_is_fine_too() = true,
                             n::reason() = std::make_shared<LikeOtherDestinationTypeReason>(
                                     resolvent,
