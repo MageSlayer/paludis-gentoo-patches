@@ -27,6 +27,8 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/return_literal_function.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/elike_annotations.hh>
 #include <paludis/elike_dep_parser.hh>
 #include <paludis/elike_conditional_dep_spec.hh>
@@ -77,6 +79,30 @@ namespace
         typedef std::function<void (const std::shared_ptr<DepSpec> &)> AnnotationsGoHere;
     };
 
+    template <>
+    struct ParseStackTypes<DependencySpecTree>
+    {
+        struct Item
+        {
+            NamedValue<n::item, std::shared_ptr<DependencySpecTree::BasicInnerNode> > item;
+            NamedValue<n::spec, std::shared_ptr<DepSpec> > spec;
+        };
+
+        typedef std::list<Item> Stack;
+        typedef std::function<void (const std::shared_ptr<DepSpec> &, const std::shared_ptr<BlockDepSpec> &)> AnnotationsGoHere;
+    };
+
+    template <typename T_>
+    void call_annotations_go_here(const T_ & f, const std::shared_ptr<DepSpec> & spec)
+    {
+        f(spec);
+    }
+
+    void call_annotations_go_here(const ParseStackTypes<DependencySpecTree>::AnnotationsGoHere & f, const std::shared_ptr<DepSpec> & spec)
+    {
+        f(spec, make_null_shared_ptr());
+    }
+
     template <typename T_>
     void package_dep_spec_string_handler(
             const typename ParseStackTypes<T_>::Stack & h,
@@ -89,7 +115,7 @@ namespace
                     parse_elike_package_dep_spec(s, eapi.supported()->package_dep_spec_parse_options(),
                         eapi.supported()->version_spec_options(), id)));
         h.begin()->item()->append(spec);
-        annotations_go_here(spec);
+        call_annotations_go_here(annotations_go_here, spec);
     }
 
     template <typename T_>
@@ -125,7 +151,7 @@ namespace
                             id),
                         strong ? bk_strong : bk_weak));
             h.begin()->item()->append(spec);
-            annotations_go_here(spec);
+            annotations_go_here(spec, spec);
         }
         else
             package_dep_spec_string_handler<T_>(h, annotations_go_here, s, eapi, id);
@@ -221,7 +247,7 @@ namespace
     {
         std::shared_ptr<DependenciesLabelsDepSpec> spec(parse_dependency_label(id, s, eapi));
         h.begin()->item()->append(spec);
-        annotations_go_here(spec);
+        annotations_go_here(spec, make_null_shared_ptr());
     }
 
     template <typename T_>
@@ -280,7 +306,7 @@ namespace
             const typename ParseStackTypes<T_>::AnnotationsGoHere & annotations_go_here,
             const std::string & s)
     {
-        annotations_go_here(stack.begin()->spec());
+        call_annotations_go_here(annotations_go_here, stack.begin()->spec());
         stack.pop_front();
         if (stack.empty())
             throw EDepParseError(s, "Too many ')'s");
@@ -303,15 +329,61 @@ namespace
     {
     }
 
-    void set_annotations(std::shared_ptr<DepSpec> & spec, const std::shared_ptr<const Map<std::string, std::string> > & m)
+    void set_annotations(
+            std::shared_ptr<DepSpec> & spec,
+            const std::shared_ptr<const Map<std::string, std::string> > & m)
     {
         std::shared_ptr<ELikeAnnotations> key(std::make_shared<ELikeAnnotations>(m));
         spec->set_annotations_key(key);
     }
 
+    void set_annotations_block(
+            const EAPI & eapi,
+            std::shared_ptr<DepSpec> & spec,
+            std::shared_ptr<BlockDepSpec> & if_block_spec,
+            const std::shared_ptr<const Map<std::string, std::string> > & m)
+    {
+        std::shared_ptr<ELikeAnnotations> key(std::make_shared<ELikeAnnotations>(m));
+        spec->set_annotations_key(key);
+
+        if (if_block_spec && (! eapi.supported()->annotations()->blocker_resolution().empty())
+                && if_block_spec->annotations_key())
+        {
+            auto a(if_block_spec->annotations_key()->find_metadata(eapi.supported()->annotations()->blocker_resolution()));
+            if (a != if_block_spec->annotations_key()->end_metadata())
+            {
+                auto k(simple_visitor_cast<const MetadataValueKey<std::string> >(**a));
+                if (! k)
+                    throw EDepParseError(stringify(*if_block_spec), "Annotation key for blocker resolution not a string");
+
+                if (k->value().empty())
+                {
+                }
+                else if (k->value() == eapi.supported()->annotations()->blocker_resolution_manual())
+                    if_block_spec->set_block_kind(bk_manual);
+                else if (k->value() == eapi.supported()->annotations()->blocker_resolution_uninstall_blocked_after())
+                    if_block_spec->set_block_kind(bk_uninstall_blocked_after);
+                else if (k->value() == eapi.supported()->annotations()->blocker_resolution_uninstall_blocked_before())
+                    if_block_spec->set_block_kind(bk_uninstall_blocked_before);
+                else if (k->value() == eapi.supported()->annotations()->blocker_resolution_upgrade_blocked_before())
+                    if_block_spec->set_block_kind(bk_upgrade_blocked_before);
+                else
+                    throw EDepParseError(stringify(*if_block_spec), "Unknown value '" + k->value() + "' for annotation '" + k->raw_name() + "'");
+            }
+        }
+    }
+
     void set_thing_to_annotate(std::shared_ptr<DepSpec> & spec, const std::shared_ptr<DepSpec> & s)
     {
         spec = s;
+    }
+
+    void set_thing_to_annotate_maybe_block(
+            std::shared_ptr<DepSpec> & spec, const std::shared_ptr<DepSpec> & s,
+            std::shared_ptr<BlockDepSpec> & block, const std::shared_ptr<BlockDepSpec> & b)
+    {
+        spec = s;
+        block = b;
     }
 }
 
@@ -324,6 +396,7 @@ paludis::erepository::parse_depend(const std::string & s,
     ParseStackTypes<DependencySpecTree>::Stack stack;
     std::shared_ptr<AllDepSpec> spec(std::make_shared<AllDepSpec>());
     std::shared_ptr<DepSpec> thing_to_annotate(spec);
+    std::shared_ptr<BlockDepSpec> thing_to_annotate_if_block;
     std::shared_ptr<DependencySpecTree> top(std::make_shared<DependencySpecTree>(spec));
     stack.push_front(make_named_values<ParseStackTypes<DependencySpecTree>::Item>(
                 n::item() = top->top(),
@@ -333,22 +406,23 @@ paludis::erepository::parse_depend(const std::string & s,
     ELikeDepParserCallbacks callbacks(
             make_named_values<ELikeDepParserCallbacks>(
                 n::on_all() = std::bind(&any_all_handler<DependencySpecTree, AllDepSpec>, std::ref(stack)),
-                n::on_annotations() = std::bind(&set_annotations, std::ref(thing_to_annotate), _1),
+                n::on_annotations() = std::bind(&set_annotations_block, std::cref(eapi), std::ref(thing_to_annotate),
+                    std::ref(thing_to_annotate_if_block), _1),
                 n::on_any() = std::bind(&any_all_handler<DependencySpecTree, AnyDepSpec>, std::ref(stack)),
                 n::on_arrow() = std::bind(&arrows_not_allowed_handler, s, _1, _2),
                 n::on_error() = std::bind(&error_handler, s, _1),
                 n::on_label() = std::bind(&dependency_label_handler<DependencySpecTree>,
                     std::ref(stack),
                     ParseStackTypes<DependencySpecTree>::AnnotationsGoHere(std::bind(
-                            &set_thing_to_annotate, std::ref(thing_to_annotate), _1)),
+                            &set_thing_to_annotate_maybe_block, std::ref(thing_to_annotate), _1, std::ref(thing_to_annotate_if_block), _2)),
                     id, _1, std::cref(eapi)),
                 n::on_pop() = std::bind(&pop_handler<DependencySpecTree>, std::ref(stack),
                     ParseStackTypes<DependencySpecTree>::AnnotationsGoHere(std::bind(
-                            &set_thing_to_annotate, std::ref(thing_to_annotate), _1)), s),
+                            &set_thing_to_annotate_maybe_block, std::ref(thing_to_annotate), _1, std::ref(thing_to_annotate_if_block), _2)), s),
                 n::on_should_be_empty() = std::bind(&should_be_empty_handler<DependencySpecTree>, std::ref(stack), s),
                 n::on_string() = std::bind(&package_or_block_dep_spec_string_handler<DependencySpecTree>, std::ref(stack),
                     ParseStackTypes<DependencySpecTree>::AnnotationsGoHere(std::bind(
-                            &set_thing_to_annotate, std::ref(thing_to_annotate), _1)), _1, eapi, id),
+                            &set_thing_to_annotate_maybe_block, std::ref(thing_to_annotate), _1, std::ref(thing_to_annotate_if_block), _2)), _1, eapi, id),
                 n::on_use() = std::bind(&use_handler<DependencySpecTree>, std::ref(stack), _1, env, id, std::cref(eapi)),
                 n::on_use_under_any() = std::bind(&use_under_any_handler, s, std::cref(eapi))
             ));
@@ -386,7 +460,7 @@ paludis::erepository::parse_provide(const std::string & s,
                             &set_thing_to_annotate, std::ref(thing_to_annotate), _1)), s),
                 n::on_should_be_empty() = std::bind(&should_be_empty_handler<ProvideSpecTree>, std::ref(stack), s),
                 n::on_string() = std::bind(&package_dep_spec_string_handler<ProvideSpecTree>, std::ref(stack),
-                    ParseStackTypes<DependencySpecTree>::AnnotationsGoHere(std::bind(
+                    ParseStackTypes<ProvideSpecTree>::AnnotationsGoHere(std::bind(
                             &set_thing_to_annotate, std::ref(thing_to_annotate), _1)), _1, std::cref(eapi), id),
                 n::on_use() = std::bind(&use_handler<ProvideSpecTree>, std::ref(stack), _1, env, id, std::cref(eapi)),
                 n::on_use_under_any() = std::bind(&use_under_any_handler, s, std::cref(eapi))
@@ -464,7 +538,7 @@ paludis::erepository::parse_simple_uri(const std::string & s,
                 n::on_error() = std::bind(&error_handler, s, _1),
                 n::on_label() = std::bind(&labels_not_allowed_handler, s, _1),
                 n::on_pop() = std::bind(&pop_handler<SimpleURISpecTree>, std::ref(stack),
-                    ParseStackTypes<DependencySpecTree>::AnnotationsGoHere(std::bind(
+                    ParseStackTypes<SimpleURISpecTree>::AnnotationsGoHere(std::bind(
                             &set_thing_to_annotate, std::ref(thing_to_annotate), _1)), s),
                 n::on_should_be_empty() = std::bind(&should_be_empty_handler<SimpleURISpecTree>, std::ref(stack), s),
                 n::on_string() = std::bind(&simple_uri_handler<SimpleURISpecTree>, std::ref(stack),
@@ -503,7 +577,7 @@ paludis::erepository::parse_license(const std::string & s,
                 n::on_error() = std::bind(&error_handler, s, _1),
                 n::on_label() = std::bind(&labels_not_allowed_handler, s, _1),
                 n::on_pop() = std::bind(&pop_handler<LicenseSpecTree>, std::ref(stack),
-                    ParseStackTypes<DependencySpecTree>::AnnotationsGoHere(std::bind(
+                    ParseStackTypes<LicenseSpecTree>::AnnotationsGoHere(std::bind(
                             &set_thing_to_annotate, std::ref(thing_to_annotate), _1)), s),
                 n::on_should_be_empty() = std::bind(&should_be_empty_handler<LicenseSpecTree>, std::ref(stack), s),
                 n::on_string() = std::bind(&license_handler<LicenseSpecTree>, std::ref(stack),
