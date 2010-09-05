@@ -544,7 +544,7 @@ namespace
             if ((*k)->hidden())
                 continue;
 
-            bool shown_prefix(false);
+            bool shown_prefix_changed(false), shown_prefix_unchanged(false);
             for (Choice::ConstIterator i((*k)->begin()), i_end((*k)->end()) ;
                     i != i_end ; ++i)
             {
@@ -556,6 +556,7 @@ namespace
                     changed_state = changed_choices->overridden_value((*i)->name_with_prefix());
 
                 auto & s_prefix(changed_state.is_indeterminate() ? unchanged_s_prefix : changed_s_prefix);
+                auto & shown_prefix(changed_state.is_indeterminate() ? shown_prefix_unchanged : shown_prefix_changed);
 
                 if (! shown_prefix)
                 {
