@@ -36,6 +36,7 @@ namespace paludis
     namespace n
     {
         typedef Name<struct destination_type_name> destination_type;
+        typedef Name<struct force_unable_name> force_unable;
         typedef Name<struct nothing_is_fine_too_name> nothing_is_fine_too;
         typedef Name<struct reason_name> reason;
         typedef Name<struct spec_name> spec;
@@ -48,6 +49,7 @@ namespace paludis
         struct Constraint
         {
             NamedValue<n::destination_type, DestinationType> destination_type;
+            NamedValue<n::force_unable, bool> force_unable;
             NamedValue<n::nothing_is_fine_too, bool> nothing_is_fine_too;
             NamedValue<n::reason, std::shared_ptr<const Reason> > reason;
             NamedValue<n::spec, PackageOrBlockDepSpec> spec;
@@ -69,6 +71,7 @@ namespace paludis
 
                 bool nothing_is_fine_too() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 bool all_untaken() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                bool any_force_unable() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 UseExisting strictest_use_existing() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 void add(const std::shared_ptr<const Constraint> &);

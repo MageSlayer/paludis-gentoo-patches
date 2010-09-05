@@ -41,13 +41,15 @@ namespace paludis
         UseExisting strictest_use_existing;
         bool nothing_is_fine_too;
         bool all_untaken;
+        bool any_force_unable;
 
         Sequence<std::shared_ptr<const Constraint> > constraints;
 
         Imp() :
             strictest_use_existing(static_cast<UseExisting>(last_ue - 1)),
             nothing_is_fine_too(true),
-            all_untaken(true)
+            all_untaken(true),
+            any_force_unable(false)
         {
         }
     };
@@ -72,6 +74,12 @@ bool
 Constraints::all_untaken() const
 {
     return _imp->all_untaken;
+}
+
+bool
+Constraints::any_force_unable() const
+{
+    return _imp->any_force_unable;
 }
 
 bool
@@ -105,6 +113,7 @@ Constraints::add(const std::shared_ptr<const Constraint> & c)
     _imp->strictest_use_existing = std::min(_imp->strictest_use_existing, c->use_existing());
     _imp->nothing_is_fine_too = _imp->nothing_is_fine_too && c->nothing_is_fine_too();
     _imp->all_untaken = _imp->all_untaken && c->untaken();
+    _imp->any_force_unable = _imp->any_force_unable || c->force_unable();
 }
 
 bool
@@ -137,6 +146,7 @@ Constraint::serialise(Serialiser & s) const
 {
     s.object("Constraint")
         .member(SerialiserFlags<>(), "destination_type", stringify(destination_type()))
+        .member(SerialiserFlags<>(), "force_unable", stringify(force_unable()))
         .member(SerialiserFlags<>(), "nothing_is_fine_too", nothing_is_fine_too())
         .member(SerialiserFlags<serialise::might_be_null>(), "reason", reason())
         .member(SerialiserFlags<>(), "spec", spec())
@@ -203,6 +213,7 @@ Constraint::deserialise(Deserialisation & d)
 
     return std::make_shared<Constraint>(make_named_values<Constraint>(
                     n::destination_type() = destringify<DestinationType>(v.member<std::string>("destination_type")),
+                    n::force_unable() = v.member<bool>("force_unable"),
                     n::nothing_is_fine_too() = v.member<bool>("nothing_is_fine_too"),
                     n::reason() = reason,
                     n::spec() = PackageOrBlockDepSpec::deserialise(*v.find_remove_member("spec"),

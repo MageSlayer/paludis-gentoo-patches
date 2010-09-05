@@ -610,6 +610,7 @@ Decider::_make_constraints_from_target(
         const std::shared_ptr<ConstraintSequence> result(std::make_shared<ConstraintSequence>());
         result->push_back(std::make_shared<Constraint>(make_named_values<Constraint>(
                             n::destination_type() = resolution->resolvent().destination_type(),
+                            n::force_unable() = false,
                             n::nothing_is_fine_too() = existing.second,
                             n::reason() = reason,
                             n::spec() = spec,
@@ -638,6 +639,7 @@ Decider::_make_constraints_from_dependency(
         const std::shared_ptr<ConstraintSequence> result(std::make_shared<ConstraintSequence>());
         result->push_back(std::make_shared<Constraint>(make_named_values<Constraint>(
                             n::destination_type() = resolution->resolvent().destination_type(),
+                            n::force_unable() = false,
                             n::nothing_is_fine_too() = existing.second,
                             n::reason() = reason,
                             n::spec() = *dep.spec().if_package(),
@@ -665,6 +667,7 @@ Decider::_make_constraints_from_blocker(
         if (destination_types[*t])
             result->push_back(std::make_shared<Constraint>(make_named_values<Constraint>(
                                 n::destination_type() = *t,
+                                n::force_unable() = false,
                                 n::nothing_is_fine_too() = true,
                                 n::reason() = reason,
                                 n::spec() = spec,
@@ -707,6 +710,9 @@ namespace
         bool ok(const std::shared_ptr<const PackageID> & chosen_id,
                 const std::shared_ptr<const ChangedChoices> & changed_choices) const
         {
+            if (constraint.force_unable())
+                return false;
+
             if (constraint.spec().if_package())
             {
                 if (! match_package_with_maybe_changes(*env, *constraint.spec().if_package(),
@@ -745,6 +751,9 @@ namespace
 
         bool visit(const RemoveDecision &) const
         {
+            if (constraint.force_unable())
+                return false;
+
             return constraint.nothing_is_fine_too();
         }
 
@@ -1511,6 +1520,9 @@ Decider::_try_to_find_decision_for(
         const bool try_masked_this_time,
         const bool try_removes_if_allowed) const
 {
+    if (resolution->constraints()->any_force_unable())
+        return make_null_shared_ptr();
+
     const std::shared_ptr<const PackageID> existing_id(_find_existing_id_for(resolution));
 
     std::shared_ptr<const PackageID> installable_id;
@@ -2358,6 +2370,7 @@ namespace
             std::shared_ptr<ConstraintSequence> result(std::make_shared<ConstraintSequence>());
             result->push_back(make_shared_copy(make_named_values<Constraint>(
                             n::destination_type() = destination_type,
+                            n::force_unable() = false,
                             n::nothing_is_fine_too() = true,
                             n::reason() = std::make_shared<LikeOtherDestinationTypeReason>(
                                     resolvent,
