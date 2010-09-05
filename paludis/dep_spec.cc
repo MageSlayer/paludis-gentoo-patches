@@ -458,6 +458,12 @@ BlockDepSpec::block_kind() const
     return _kind;
 }
 
+void
+BlockDepSpec::set_block_kind(const BlockKind k)
+{
+    _kind = k;
+}
+
 std::shared_ptr<DepSpec>
 BlockDepSpec::clone() const
 {

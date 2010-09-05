@@ -627,6 +627,13 @@ namespace paludis
              */
             BlockKind block_kind() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
+            /**
+             * Change our blocker strength.
+             *
+             * \since 0.55
+             */
+            void set_block_kind(const BlockKind);
+
             virtual std::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
