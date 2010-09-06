@@ -115,8 +115,27 @@ namespace
         void visit(const InstallJob & job) const
         {
             output_stream << "label=\"" << short_spec(job.origin_id_spec(), full) << " -> " << job.destination_repository_name() << "\"";
-            output_stream << "shape=box, ";
-            output_stream << "fillcolor=royalblue, ";
+            switch (job.destination_type())
+            {
+                case dt_install_to_slash:
+                    output_stream << "shape=box, ";
+                    output_stream << "fillcolor=royalblue, ";
+                    break;
+
+                case dt_create_binary:
+                    output_stream << "shape=octagon, ";
+                    output_stream << "fillcolor=aquamarine3, ";
+                    break;
+
+                case dt_install_to_chroot:
+                    output_stream << "shape=septagon, ";
+                    output_stream << "fillcolor=steelblue, ";
+                    break;
+
+                case last_dt:
+                    break;
+            }
+
             output_stream << "style=filled";
         }
 
