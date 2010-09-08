@@ -387,7 +387,7 @@ ResolveCommandLineProgramOptions::ResolveCommandLineProgramOptions(args::ArgsHan
     a_graph_program(&g_program_options, "graph-program", '\0', "The program used to create Graphviz graphs. "
             "Defaults to 'dot'.")
 {
-    a_graph_jobs_program.set_argument("dot");
+    a_graph_program.set_argument("dot");
 }
 
 ResolveCommandLineImportOptions::ResolveCommandLineImportOptions(args::ArgsHandler * const h) :
