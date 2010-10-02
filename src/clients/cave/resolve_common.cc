@@ -96,6 +96,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/package_database.hh>
 
 #include <algorithm>
 #include <iostream>
@@ -638,6 +639,15 @@ namespace
 
         return result;
     }
+
+    QualifiedPackageName disambiguate_if_necessary(const Environment * const env,
+            const std::string & s)
+    {
+        if (std::string::npos != s.find('/'))
+            return QualifiedPackageName(s);
+        else
+            return env->package_database()->fetch_unique_qualified_package_name(PackageNamePart(s));
+    }
 }
 
 int
@@ -829,11 +839,11 @@ paludis::cave::resolve_common(
     for (args::StringSetArg::ConstIterator i(resolution_options.a_favour.begin_args()),
             i_end(resolution_options.a_favour.end_args()) ;
             i != i_end ; ++i)
-        prefer_or_avoid_helper.add_prefer_name(QualifiedPackageName(*i));
+        prefer_or_avoid_helper.add_prefer_name(disambiguate_if_necessary(env.get(), *i));
     for (args::StringSetArg::ConstIterator i(resolution_options.a_avoid.begin_args()),
             i_end(resolution_options.a_avoid.end_args()) ;
             i != i_end ; ++i)
-        prefer_or_avoid_helper.add_avoid_name(QualifiedPackageName(*i));
+        prefer_or_avoid_helper.add_avoid_name(disambiguate_if_necessary(env.get(), *i));
 
     RemoveIfDependentHelper remove_if_dependent_helper(env.get());
     for (args::StringSetArg::ConstIterator i(resolution_options.a_remove_if_dependent.begin_args()),
