@@ -93,7 +93,7 @@ namespace
                     "%k for mask key, %d for mask description, %r for associated key's raw name, "
                     "%= for an = sign if %r is not blank, %h for associated key's human name, "
                     "%v for associated key or id's value or any additional explanation, "
-                    "%( and %) for ( and ) if the mask is overridden, %o for the reason a mask is overridden"
+                    "%( and %) for ( and ) if the mask is overridden, %o for the reason a mask is overridden, "
                     "\\n for newline, \\t for tab. Default is '%(%k %d %r%=%v%) %o\\n'.")
         {
             a_format.set_argument("%(%k %d %r%=%v%) %o\\n");
