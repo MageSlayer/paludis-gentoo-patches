@@ -184,11 +184,10 @@ TESTS = \
 EXTRA_DIST = \
 	$(man_MANS) \
 	$(TESTS) \
-	continue_on_failure_TEST_setup.sh continue_on_failure_TEST_cleanup.sh
+	continue_on_failure_TEST_setup.sh continue_on_failure_TEST_cleanup.sh \
+	moo
 
 DISTCLEANFILES = $(man_MANS) $(noinst_DATA)
-
-CLEANFILES += .keep
 
 lib_LTLIBRARIES =
 
@@ -211,8 +210,5 @@ libcavesearchextras_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CU
 endif
 
 cavecommandsdir = $(libexecdir)/cave/commands
-cavecommands_DATA = .keep
-
-.keep :
-	touch $@
+cavecommands_SCRIPTS = moo
 
