@@ -60,11 +60,15 @@ int
 paludis::cave::owner_common(
         const std::shared_ptr<Environment> & env,
         const std::string & match,
-        const std::string & query,
+        const std::string & q,
         const std::function<void (const std::shared_ptr<const PackageID> &)> & callback)
 {
     bool found(false);
     std::function<bool (const std::string &, const std::shared_ptr<const ContentsEntry> &)> handler;
+    std::string query(q);
+
+    if (query.length() >= 2 && '/' == query.at(query.length() - 1))
+        query.erase(query.length() - 1);
 
     if ("full" == match)
         handler = handle_full;
