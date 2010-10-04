@@ -48,6 +48,7 @@ command_MANS = \
 	cave-print-id-executables.1 \
 	cave-print-id-masks.1 \
 	cave-print-id-metadata.1 \
+	cave-print-id-size.1 \
 	cave-print-ids.1 \
 	cave-print-owners.1 \
 	cave-print-packages.1 \
@@ -64,6 +65,7 @@ command_MANS = \
 	cave-resume.1 \
 	cave-search.1 \
 	cave-show.1 \
+	cave-size.1 \
 	cave-sync.1 \
 	cave-uninstall.1 \
 	cave-update-world.1 \
@@ -142,6 +144,7 @@ libcave_a_SOURCES = \
 	cmd_print_id_executables.cc cmd_print_id_executables.hh \
 	cmd_print_id_masks.cc cmd_print_id_masks.hh \
 	cmd_print_id_metadata.cc cmd_print_id_metadata.hh \
+	cmd_print_id_size.cc cmd_print_id_size.hh \
 	cmd_print_ids.cc cmd_print_ids.hh \
 	cmd_print_owners.cc cmd_print_owners.hh \
 	cmd_print_packages.cc cmd_print_packages.hh \
@@ -162,6 +165,7 @@ libcave_a_SOURCES = \
 	cmd_search.cc cmd_search.hh \
 	cmd_search_cmdline.cc cmd_search_cmdline.hh \
 	cmd_show.cc cmd_show.hh cmd_show-fmt.hh \
+	cmd_size.cc cmd_size.hh \
 	cmd_sync.cc cmd_sync.hh cmd_sync-fmt.hh \
 	cmd_uninstall.cc cmd_uninstall.hh \
 	cmd_update_world.cc cmd_update_world.hh cmd_update_world-fmt.hh \
@@ -178,7 +182,8 @@ libcave_a_SOURCES = \
 	select_format_for_spec.cc select_format_for_spec.hh \
 	owner_common.cc owner_common.hh \
 	resolve_common.cc resolve_common.hh \
-	resume_data.cc resume_data.hh
+	resume_data.cc resume_data.hh \
+	size_common.cc size_common.hh
 
 TESTS = \
 	continue_on_failure_TEST

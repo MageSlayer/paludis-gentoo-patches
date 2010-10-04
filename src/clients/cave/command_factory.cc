@@ -61,6 +61,7 @@
 #include "cmd_print_id_executables.hh"
 #include "cmd_print_id_masks.hh"
 #include "cmd_print_id_metadata.hh"
+#include "cmd_print_id_size.hh"
 #include "cmd_print_ids.hh"
 #include "cmd_print_owners.hh"
 #include "cmd_print_packages.hh"
@@ -77,6 +78,7 @@
 #include "cmd_resume.hh"
 #include "cmd_search.hh"
 #include "cmd_show.hh"
+#include "cmd_size.hh"
 #include "cmd_sync.hh"
 #include "cmd_uninstall.hh"
 #include "cmd_update_world.hh"
@@ -172,6 +174,7 @@ CommandFactory::CommandFactory() :
     _imp->handlers.insert(std::make_pair("print-id-executables", std::bind(&make_command<PrintIDExecutablesCommand>)));
     _imp->handlers.insert(std::make_pair("print-id-masks", std::bind(&make_command<PrintIDMasksCommand>)));
     _imp->handlers.insert(std::make_pair("print-id-metadata", std::bind(&make_command<PrintIDMetadataCommand>)));
+    _imp->handlers.insert(std::make_pair("print-id-size", std::bind(&make_command<PrintIDSizeCommand>)));
     _imp->handlers.insert(std::make_pair("print-ids", std::bind(&make_command<PrintIDsCommand>)));
     _imp->handlers.insert(std::make_pair("print-owners", std::bind(&make_command<PrintOwnersCommand>)));
     _imp->handlers.insert(std::make_pair("print-packages", std::bind(&make_command<PrintPackagesCommand>)));
@@ -187,6 +190,7 @@ CommandFactory::CommandFactory() :
     _imp->handlers.insert(std::make_pair("resume", std::bind(&make_command<ResumeCommand>)));
     _imp->handlers.insert(std::make_pair("search", std::bind(&make_command<SearchCommand>)));
     _imp->handlers.insert(std::make_pair("show", std::bind(&make_command<ShowCommand>)));
+    _imp->handlers.insert(std::make_pair("size", std::bind(&make_command<SizeCommand>)));
     _imp->handlers.insert(std::make_pair("sync", std::bind(&make_command<SyncCommand>)));
     _imp->handlers.insert(std::make_pair("uninstall", std::bind(&make_command<UninstallCommand>)));
     _imp->handlers.insert(std::make_pair("update-world", std::bind(&make_command<UpdateWorldCommand>)));

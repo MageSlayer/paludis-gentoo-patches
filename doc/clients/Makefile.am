@@ -52,6 +52,7 @@ CAVE_COMMANDS_HTML = \
 	cave-print-id-executables.html \
 	cave-print-id-masks.html \
 	cave-print-id-metadata.html \
+	cave-print-id-size.html \
 	cave-print-ids.html \
 	cave-print-owners.html \
 	cave-print-packages.html \
@@ -67,6 +68,7 @@ CAVE_COMMANDS_HTML = \
 	cave-resume.html \
 	cave-search.html \
 	cave-show.html \
+	cave-size.html \
 	cave-sync.html \
 	cave-uninstall.html \
 	cave-update-world.html \
