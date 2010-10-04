@@ -69,6 +69,7 @@
 #include "cmd_print_repository_metadata.hh"
 #include "cmd_print_set.hh"
 #include "cmd_print_sets.hh"
+#include "cmd_print_spec.hh"
 #include "cmd_print_sync_protocols.hh"
 #include "cmd_purge.hh"
 #include "cmd_report.hh"
@@ -179,6 +180,7 @@ CommandFactory::CommandFactory() :
     _imp->handlers.insert(std::make_pair("print-repository-metadata", std::bind(&make_command<PrintRepositoryMetadataCommand>)));
     _imp->handlers.insert(std::make_pair("print-set", std::bind(&make_command<PrintSetCommand>)));
     _imp->handlers.insert(std::make_pair("print-sets", std::bind(&make_command<PrintSetsCommand>)));
+    _imp->handlers.insert(std::make_pair("print-spec", std::bind(&make_command<PrintSpecCommand>)));
     _imp->handlers.insert(std::make_pair("print-sync-protocols", std::bind(&make_command<PrintSyncProtocolsCommand>)));
     _imp->handlers.insert(std::make_pair("report", std::bind(&make_command<ReportCommand>)));
     _imp->handlers.insert(std::make_pair("resolve", std::bind(&make_command<ResolveCommand>)));
