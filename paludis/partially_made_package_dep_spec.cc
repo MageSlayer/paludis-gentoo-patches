@@ -403,9 +403,23 @@ PartiallyMadePackageDepSpec::package(const QualifiedPackageName & name)
 }
 
 PartiallyMadePackageDepSpec &
+PartiallyMadePackageDepSpec::clear_package()
+{
+    _imp->data->package.reset();
+    return *this;
+}
+
+PartiallyMadePackageDepSpec &
 PartiallyMadePackageDepSpec::slot_requirement(const std::shared_ptr<const SlotRequirement> & s)
 {
     _imp->data->slot = s;
+    return *this;
+}
+
+PartiallyMadePackageDepSpec &
+PartiallyMadePackageDepSpec::clear_slot_requirement()
+{
+    _imp->data->slot.reset();
     return *this;
 }
 
@@ -417,9 +431,23 @@ PartiallyMadePackageDepSpec::in_repository(const RepositoryName & s)
 }
 
 PartiallyMadePackageDepSpec &
+PartiallyMadePackageDepSpec::clear_in_repository()
+{
+    _imp->data->in_repository.reset();
+    return *this;
+}
+
+PartiallyMadePackageDepSpec &
 PartiallyMadePackageDepSpec::from_repository(const RepositoryName & s)
 {
     _imp->data->from_repository = std::make_shared<RepositoryName>(s);
+    return *this;
+}
+
+PartiallyMadePackageDepSpec &
+PartiallyMadePackageDepSpec::clear_from_repository()
+{
+    _imp->data->from_repository.reset();
     return *this;
 }
 
@@ -431,9 +459,23 @@ PartiallyMadePackageDepSpec::installable_to_repository(const InstallableToReposi
 }
 
 PartiallyMadePackageDepSpec &
+PartiallyMadePackageDepSpec::clear_installable_to_repository()
+{
+    _imp->data->installable_to_repository.reset();
+    return *this;
+}
+
+PartiallyMadePackageDepSpec &
 PartiallyMadePackageDepSpec::installed_at_path(const FSPath & s)
 {
     _imp->data->installed_at_path = std::make_shared<FSPath>(s);
+    return *this;
+}
+
+PartiallyMadePackageDepSpec &
+PartiallyMadePackageDepSpec::clear_installed_at_path()
+{
+    _imp->data->installed_at_path.reset();
     return *this;
 }
 
@@ -445,9 +487,23 @@ PartiallyMadePackageDepSpec::installable_to_path(const InstallableToPath & s)
 }
 
 PartiallyMadePackageDepSpec &
+PartiallyMadePackageDepSpec::clear_installable_to_path()
+{
+    _imp->data->installable_to_path.reset();
+    return *this;
+}
+
+PartiallyMadePackageDepSpec &
 PartiallyMadePackageDepSpec::package_name_part(const PackageNamePart & part)
 {
     _imp->data->package_name_part = std::make_shared<PackageNamePart>(part);
+    return *this;
+}
+
+PartiallyMadePackageDepSpec &
+PartiallyMadePackageDepSpec::clear_package_name_part()
+{
+    _imp->data->package_name_part.reset();
     return *this;
 }
 
@@ -459,11 +515,25 @@ PartiallyMadePackageDepSpec::category_name_part(const CategoryNamePart & part)
 }
 
 PartiallyMadePackageDepSpec &
+PartiallyMadePackageDepSpec::clear_category_name_part()
+{
+    _imp->data->category_name_part.reset();
+    return *this;
+}
+
+PartiallyMadePackageDepSpec &
 PartiallyMadePackageDepSpec::version_requirement(const VersionRequirement & req)
 {
     if (! _imp->data->version_requirements)
         _imp->data->version_requirements = std::make_shared<VersionRequirements>();
     _imp->data->version_requirements->push_back(req);
+    return *this;
+}
+
+PartiallyMadePackageDepSpec &
+PartiallyMadePackageDepSpec::clear_version_requirements()
+{
+    _imp->data->version_requirements.reset();
     return *this;
 }
 

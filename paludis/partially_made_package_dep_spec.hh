@@ -54,9 +54,23 @@ namespace paludis
             PartiallyMadePackageDepSpec & package(const QualifiedPackageName &);
 
             /**
+             * Clear our package requirements, return ourself.
+             *
+             * \since 0.55
+             */
+            PartiallyMadePackageDepSpec & clear_package();
+
+            /**
              * Set our slot requirements, return ourself.
              */
             PartiallyMadePackageDepSpec & slot_requirement(const std::shared_ptr<const SlotRequirement> &);
+
+            /**
+             * Clear our slot requirements, return ourself.
+             *
+             * \since 0.55
+             */
+            PartiallyMadePackageDepSpec & clear_slot_requirement();
 
             /**
              * Set our in-repository requirement, return ourself.
@@ -64,9 +78,23 @@ namespace paludis
             PartiallyMadePackageDepSpec & in_repository(const RepositoryName &);
 
             /**
+             * Clear our in-repository requirement, return ourself.
+             *
+             * \since 0.55
+             */
+            PartiallyMadePackageDepSpec & clear_in_repository();
+
+            /**
              * Set our from-repository requirement, return ourself.
              */
             PartiallyMadePackageDepSpec & from_repository(const RepositoryName &);
+
+            /**
+             * Clear our from-repository requirement, return ourself.
+             *
+             * \since 0.55
+             */
+            PartiallyMadePackageDepSpec & clear_from_repository();
 
             /**
              * Set our installable-to-repository requirement, return ourself.
@@ -76,11 +104,25 @@ namespace paludis
             PartiallyMadePackageDepSpec & installable_to_repository(const InstallableToRepository &);
 
             /**
+             * Clear our installable-to-repository requirement, return ourself.
+             *
+             * \since 0.55
+             */
+            PartiallyMadePackageDepSpec & clear_installable_to_repository();
+
+            /**
              * Set our installed-at-path requirement, return ourself.
              *
              * \since 0.32
              */
             PartiallyMadePackageDepSpec & installed_at_path(const FSPath &);
+
+            /**
+             * Clear our installed-at-path requirement, return ourself.
+             *
+             * \since 0.55
+             */
+            PartiallyMadePackageDepSpec & clear_installed_at_path();
 
             /**
              * Set our installable-to-path requirement, return ourself.
@@ -90,9 +132,23 @@ namespace paludis
             PartiallyMadePackageDepSpec & installable_to_path(const InstallableToPath &);
 
             /**
+             * Clear our installable-to-path requirement, return ourself.
+             *
+             * \since 0.55
+             */
+            PartiallyMadePackageDepSpec & clear_installable_to_path();
+
+            /**
              * Set our package name part requirements, return ourself.
              */
             PartiallyMadePackageDepSpec & package_name_part(const PackageNamePart &);
+
+            /**
+             * Clear our package name part requirements, return ourself.
+             *
+             * \since 0.55
+             */
+            PartiallyMadePackageDepSpec & clear_package_name_part();
 
             /**
              * Set our category name part requirements, return ourself.
@@ -100,9 +156,23 @@ namespace paludis
             PartiallyMadePackageDepSpec & category_name_part(const CategoryNamePart &);
 
             /**
+             * Clear our category name part requirements, return ourself.
+             *
+             * \since 0.55
+             */
+            PartiallyMadePackageDepSpec & clear_category_name_part();
+
+            /**
              * Add a version requirement, return ourself.
              */
             PartiallyMadePackageDepSpec & version_requirement(const VersionRequirement &);
+
+            /**
+             * Clear all version requirement, return ourself.
+             *
+             * \since 0.55
+             */
+            PartiallyMadePackageDepSpec & clear_version_requirements();
 
             /**
              * Set our version requirements mode, return ourself.
