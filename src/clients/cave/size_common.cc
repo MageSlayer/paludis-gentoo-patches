@@ -76,7 +76,7 @@ namespace
                 return stat.file_size();
             else
             {
-                Log::get_instance()->message("cave.size.muissing", ll_warning, lc_context) << "Couldn't get size for '"
+                Log::get_instance()->message("cave.size.missing", ll_warning, lc_context) << "Couldn't get size for '"
                     << path << "'";
                 return 0;
             }
