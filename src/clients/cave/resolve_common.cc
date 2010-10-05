@@ -983,14 +983,16 @@ paludis::cave::resolve_common(
                 graph_jobs_options, program_options, keys_if_import,
                 purge ? std::make_shared<const Sequence<std::pair<std::string, std::string> > >() : targets_if_not_purge);
 
-        if (! resolver->resolved()->taken_unable_to_make_decisions()->empty())
-            retcode |= 1;
+        if (! resolution_options.a_ignore_unable_decisions.specified())
+            if (! resolver->resolved()->taken_unable_to_make_decisions()->empty())
+                retcode |= 1;
 
         if (! resolver->resolved()->taken_unconfirmed_decisions()->empty())
             retcode |= 2;
 
-        if (! resolver->resolved()->taken_unorderable_decisions()->empty())
-            retcode |= 4;
+        if (! resolution_options.a_ignore_unorderable_jobs.specified())
+            if (! resolver->resolved()->taken_unorderable_decisions()->empty())
+                retcode |= 4;
 
         if (0 == retcode)
             return perform_resolution(env, resolver->resolved(), resolution_options,

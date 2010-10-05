@@ -106,6 +106,10 @@ namespace paludis
 //            args::SwitchArg a_query_decisions;
 //            args::SwitchArg a_query_order;
 
+            args::ArgsGroup g_error_ignoring_options;
+            args::SwitchArg a_ignore_unable_decisions;
+            args::SwitchArg a_ignore_unorderable_jobs;
+
             args::ArgsGroup g_dump_options;
             args::SwitchArg a_dump;
             args::SwitchArg a_dump_restarts;

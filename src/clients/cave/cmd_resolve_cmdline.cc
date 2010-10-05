@@ -269,6 +269,15 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
 //            "resolvent", true),
 //    a_query_order(&g_query_options, "query-order", '\0', "Prompt for which jobs to order", true),
 
+    g_error_ignoring_options(this, "Error-ignoring Options", "Allow certain kinds of resolution errors to be ignored. "
+            "Highly dangerous; using these options will very likely result in your system becoming impressively or "
+            "subtly broken. Note that errors will still be shown, but the resolution will be allowed to proceed to "
+            "execution anyway."),
+    a_ignore_unable_decisions(&g_error_ignoring_options, "ignore-unable-decisions", '\0', "Ignore any resolvent for which "
+            "we were unable to make a decision. Specifying this will break your system.", true),
+    a_ignore_unorderable_jobs(&g_error_ignoring_options, "ignore-unorderable-jobs", '\0', "Ignore any job we were unable to "
+            "order. Specifying this will break your system.", true),
+
     g_dump_options(this, "Dump Options", "Dump the resolver's state to stdout after completion, or when an "
             "error occurs. For debugging purposes; produces rather a lot of noise."),
     a_dump(&g_dump_options, "dump", '\0', "Dump debug output", true),
