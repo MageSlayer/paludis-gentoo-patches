@@ -1288,10 +1288,17 @@ namespace
 
         display_reasons(resolution, true);
 
-        if (untaken || d.unsuitable_candidates()->empty())
+        if (untaken)
             return;
 
         cout << fuc(fs_unable_unsuitable_header());
+
+        if (d.unsuitable_candidates()->empty())
+        {
+            cout << fuc(fs_unable_unsuitable_nothing(), fv<'r'>(stringify(resolution->resolvent())));
+            return;
+        }
+
         for (UnsuitableCandidates::ConstIterator u(d.unsuitable_candidates()->begin()),
                 u_end(d.unsuitable_candidates()->end()) ;
                 u != u_end ; ++u)

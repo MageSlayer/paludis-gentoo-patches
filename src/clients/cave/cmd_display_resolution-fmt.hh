@@ -194,6 +194,9 @@ const auto fs_unable_taken = make_format_string_fetcher("display-resolution/unab
 const auto fs_unable_unsuitable_header = make_format_string_fetcher("display-resolution/unable_unsuitable_header", 1)
     << "    Unsuitable candidates:" << "\\n";
 
+const auto fs_unable_unsuitable_nothing = make_format_string_fetcher("display-resolution/unable_unsuitable_nothing", 1)
+    << "      * Found no packages for resolvent " << param<'r'>() << "\\n";
+
 const auto fs_unable_unsuitable_id = make_format_string_fetcher("display-resolution/unable_unsuitable_id", 1)
     << "      * " << param<'c'>() << param<'i'>() << c::normal() << "\\n";
 
