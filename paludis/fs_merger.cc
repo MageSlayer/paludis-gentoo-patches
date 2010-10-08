@@ -390,11 +390,6 @@ FSMerger::install_file(const FSPath & src, const FSPath & dst_dir, const std::st
             if (0 != ::fchown(output_fd, src_stat.owner(), src_stat.group()))
                 throw FSMergerError("Cannot fchown '" + stringify(dst) + "': " + stringify(::strerror(errno)));
 
-        /* set*id bits */
-        if (0 != ::fchmod(output_fd, src_perms))
-            throw FSMergerError("Cannot fchmod '" + stringify(dst) + "': " + stringify(::strerror(errno)));
-        try_to_copy_xattrs(src, output_fd, result);
-
 #ifdef HAVE_FALLOCATE
         if (0 != ::fallocate(output_fd, FALLOC_FL_KEEP_SIZE, 0, src_stat.file_size()))
             switch (errno)
@@ -412,6 +407,11 @@ FSMerger::install_file(const FSPath & src, const FSPath & dst_dir, const std::st
                     break;
             }
 #endif
+
+        /* set*id bits, after fallocate because xfs is weird */
+        if (0 != ::fchmod(output_fd, src_perms))
+            throw FSMergerError("Cannot fchmod '" + stringify(dst) + "': " + stringify(::strerror(errno)));
+        try_to_copy_xattrs(src, output_fd, result);
 
         char buf[4096];
         ssize_t count;
