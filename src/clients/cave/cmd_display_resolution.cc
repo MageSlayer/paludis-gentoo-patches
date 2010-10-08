@@ -170,9 +170,10 @@ namespace
 
         std::pair<std::string, Tribool> annotate(
                 const std::shared_ptr<const MetadataSectionKey> & key,
-                const std::pair<std::string, Tribool> unannotated) const
+                const std::pair<std::string, Tribool> unannotated,
+                const bool annotate_regardless) const
         {
-            if ((! key) || (! more_annotations))
+            if ((! key) || ((! annotate_regardless) && (! more_annotations)))
                 return unannotated;
 
             std::pair<std::string, Tribool> result(unannotated);
@@ -193,7 +194,7 @@ namespace
                 return annotate(r.sanitised_dependency().spec().if_block()->annotations_key(),
                         std::make_pair(stringify(*r.sanitised_dependency().spec().if_block())
                             + " from " + (verbose ? stringify(*r.from_id()) : stringify(r.from_id()->name())),
-                            true));
+                            false), true);
             else
             {
                 if (verbose)
@@ -209,11 +210,11 @@ namespace
                                 + (r.sanitised_dependency().active_dependency_labels_as_string().empty() ? "" :
                                     ", labelled '" + r.sanitised_dependency().active_dependency_labels_as_string() + "'")
                                 + as,
-                                false));
+                                false), false);
                 }
                 else
                     return annotate(r.sanitised_dependency().spec().if_package()->annotations_key(),
-                            std::make_pair(stringify(r.from_id()->name()), false));
+                            std::make_pair(stringify(r.from_id()->name()), false), false);
             }
         }
 
