@@ -205,8 +205,8 @@ EInstalledRepository::get_environment_variable(
     else if ((ver_dir / "environment.bz2").stat().is_regular_file_or_symlink_to_regular_file())
     {
         std::stringstream p;
-        Process env_process(ProcessCommand({"bash", "-c", "'( bunzip2 < " + stringify(ver_dir / "environment.bz2" ) +
-                    " ; echo echo \\$" + var + " ) | bash -O extglob 2>/dev/null'"}));
+        Process env_process(ProcessCommand({"bash", "-c", "( bunzip2 < " + stringify(ver_dir / "environment.bz2" ) +
+                    " ; echo echo \\$" + var + " ) | bash -O extglob 2>/dev/null"}));
         env_process.capture_stdout(p);
         int exit_status(env_process.run().wait());
         std::string result(strip_trailing_string(std::string(
