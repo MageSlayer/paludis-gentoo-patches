@@ -133,7 +133,7 @@ namespace test_cases
         void run()
         {
             std::stringstream stderr_stream;
-            Process echo_process(ProcessCommand({"sh", "-c", "echo monkey 1>&2"}));
+            Process echo_process(ProcessCommand({"bash", "-c", "echo monkey 1>&2"}));
             echo_process.capture_stderr(stderr_stream);
 
             TEST_CHECK_EQUAL(echo_process.run().wait(), 0);
@@ -148,7 +148,7 @@ namespace test_cases
         void run()
         {
             std::stringstream stdout_stream, stderr_stream;
-            Process echo_process(ProcessCommand({"sh", "-c", "echo monkey 1>&2 ; echo chimp"}));
+            Process echo_process(ProcessCommand({"bash", "-c", "echo monkey 1>&2 ; echo chimp"}));
             echo_process.capture_stdout(stdout_stream);
             echo_process.capture_stderr(stderr_stream);
 
@@ -254,7 +254,7 @@ namespace test_cases
                 return;
 
             std::stringstream stdout_stream;
-            Process whoami_process(ProcessCommand({"sh", "-c", "whoami ; groups"}));
+            Process whoami_process(ProcessCommand({"bash", "-c", "whoami ; groups"}));
             whoami_process.capture_stdout(stdout_stream);
 
             struct passwd * nobody(getpwnam("nobody"));
@@ -274,7 +274,7 @@ namespace test_cases
         void run()
         {
             std::stringstream fd_stream;
-            Process echo_process(ProcessCommand({"sh", "-c", "echo monkey 1>&$MAGIC_FD"}));
+            Process echo_process(ProcessCommand({"bash", "-c", "echo monkey 1>&$MAGIC_FD"}));
             echo_process.capture_output_to_fd(fd_stream, -1, "MAGIC_FD");
 
             TEST_CHECK_EQUAL(echo_process.run().wait(), 0);
@@ -289,7 +289,7 @@ namespace test_cases
         void run()
         {
             std::stringstream fd_stream;
-            Process echo_process(ProcessCommand({"sh", "-c", "echo monkey 1>&5"}));
+            Process echo_process(ProcessCommand({"bash", "-c", "echo monkey 1>&5"}));
             echo_process.capture_output_to_fd(fd_stream, 5, "");
 
             TEST_CHECK_EQUAL(echo_process.run().wait(), 0);
@@ -372,7 +372,7 @@ namespace test_cases
         void run()
         {
             std::stringstream stdout_stream;
-            Process echo_process(ProcessCommand({ "sh", "-c", "echo monkey ; echo in ; echo space"}));
+            Process echo_process(ProcessCommand({ "bash", "-c", "echo monkey ; echo in ; echo space"}));
             echo_process.capture_stdout(stdout_stream);
             echo_process.prefix_stdout("prefix> ");
 
@@ -388,7 +388,7 @@ namespace test_cases
         void run()
         {
             std::stringstream stderr_stream;
-            Process echo_process(ProcessCommand({ "sh", "-c", "echo monkey 1>&2 ; echo in 1>&2 ; echo space 1>&2"}));
+            Process echo_process(ProcessCommand({ "bash", "-c", "echo monkey 1>&2 ; echo in 1>&2 ; echo space 1>&2"}));
             echo_process.capture_stderr(stderr_stream);
             echo_process.prefix_stderr("prefix> ");
 
@@ -423,7 +423,7 @@ namespace test_cases
             std::stringstream stdout_stream, in_stream;
             in_stream << "monkey" << std::endl;
 
-            Process cat_process(ProcessCommand({"sh", "-c", "cat <&$MAGIC_FD"}));
+            Process cat_process(ProcessCommand({"bash", "-c", "cat <&$MAGIC_FD"}));
             cat_process.send_input_to_fd(in_stream, -1, "MAGIC_FD");
             cat_process.capture_stdout(stdout_stream);
 
@@ -441,7 +441,7 @@ namespace test_cases
             std::stringstream stdout_stream, in_stream;
             in_stream << "monkey" << std::endl;
 
-            Process cat_process(ProcessCommand({"sh", "-c", "cat <&5"}));
+            Process cat_process(ProcessCommand({"bash", "-c", "cat <&5"}));
             cat_process.send_input_to_fd(in_stream, 5, "");
             cat_process.capture_stdout(stdout_stream);
 
