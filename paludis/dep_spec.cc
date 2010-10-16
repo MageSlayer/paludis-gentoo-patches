@@ -266,6 +266,7 @@ BlockDepSpec::BlockDepSpec(const BlockDepSpec & other) :
     _spec(other._spec),
     _kind(other._kind)
 {
+    set_annotations_key(other.annotations_key());
 }
 
 std::ostream &
