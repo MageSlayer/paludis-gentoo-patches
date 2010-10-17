@@ -67,6 +67,7 @@ command_MANS = \
 	cave-show.1 \
 	cave-size.1 \
 	cave-sync.1 \
+	cave-sync-protocol-options.1 \
 	cave-uninstall.1 \
 	cave-update-world.1 \
 	cave-verify.1
@@ -167,6 +168,7 @@ libcave_a_SOURCES = \
 	cmd_show.cc cmd_show.hh cmd_show-fmt.hh \
 	cmd_size.cc cmd_size.hh \
 	cmd_sync.cc cmd_sync.hh cmd_sync-fmt.hh \
+	cmd_sync_protocol_options.cc cmd_sync_protocol_options.hh \
 	cmd_uninstall.cc cmd_uninstall.hh \
 	cmd_update_world.cc cmd_update_world.hh cmd_update_world-fmt.hh \
 	cmd_verify.cc cmd_verify.hh cmd_verify-fmt.hh \

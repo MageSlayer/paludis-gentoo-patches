@@ -70,6 +70,7 @@ CAVE_COMMANDS_HTML = \
 	cave-show.html \
 	cave-size.html \
 	cave-sync.html \
+	cave-sync-protocol-options.html \
 	cave-uninstall.html \
 	cave-update-world.html \
 	cave-verify.html

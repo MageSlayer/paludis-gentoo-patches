@@ -126,6 +126,7 @@ paludis-*.*.*.tar.bz2
 /doc/clients/cave-show.html
 /doc/clients/cave-size.html
 /doc/clients/cave-sync.html
+/doc/clients/cave-sync-protocol-options.html
 /doc/clients/cave-uninstall.html
 /doc/clients/cave-update-world.html
 /doc/clients/cave-verify.html

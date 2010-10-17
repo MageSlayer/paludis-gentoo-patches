@@ -80,6 +80,7 @@
 #include "cmd_show.hh"
 #include "cmd_size.hh"
 #include "cmd_sync.hh"
+#include "cmd_sync_protocol_options.hh"
 #include "cmd_uninstall.hh"
 #include "cmd_update_world.hh"
 #include "cmd_verify.hh"
@@ -192,6 +193,7 @@ CommandFactory::CommandFactory() :
     _imp->handlers.insert(std::make_pair("show", std::bind(&make_command<ShowCommand>)));
     _imp->handlers.insert(std::make_pair("size", std::bind(&make_command<SizeCommand>)));
     _imp->handlers.insert(std::make_pair("sync", std::bind(&make_command<SyncCommand>)));
+    _imp->handlers.insert(std::make_pair("sync-protocol-options", std::bind(&make_command<SyncProtocolOptionsCommand>)));
     _imp->handlers.insert(std::make_pair("uninstall", std::bind(&make_command<UninstallCommand>)));
     _imp->handlers.insert(std::make_pair("update-world", std::bind(&make_command<UpdateWorldCommand>)));
     _imp->handlers.insert(std::make_pair("verify", std::bind(&make_command<VerifyCommand>)));
