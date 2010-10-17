@@ -75,7 +75,7 @@ WrappedValueTraits<ChoicePrefixNameTag>::validate(const std::string & s)
         if (s[0] >= 'A' && s[0] <= 'Z')
             return false;
 
-        if (std::string::npos != s.find(" \t\r\n()"))
+        if (std::string::npos != s.find(" \t\r\n()#"))
             return false;
     }
 
@@ -108,7 +108,7 @@ WrappedValueTraits<ChoiceNameWithPrefixTag>::validate(const std::string & s)
             return false;
     };
 
-    if (std::string::npos != s.find(" \t\r\n()"))
+    if (std::string::npos != s.find(" \t\r\n()#"))
         return false;
 
     return true;
@@ -142,7 +142,7 @@ WrappedValueTraits<UnprefixedChoiceNameTag>::validate(const std::string & s)
             break;
     };
 
-    if (std::string::npos != s.find(" \t\r\n()"))
+    if (std::string::npos != s.find(" \t\r\n()#"))
         return false;
 
     return true;
