@@ -147,7 +147,7 @@ const auto fs_change_version = make_format_string_fetcher("display-resolution/ch
     << " " << param<'v'>();
 
 const auto fs_change_destination = make_format_string_fetcher("display-resolution/change_destination", 1)
-    << " " << param<'r'>();
+    << " to ::" << param<'r'>();
 
 const auto fs_change_via = make_format_string_fetcher("display-resolution/change_via", 1)
     << " via binary created in " << c::bold_normal() << param<'r'>() << c::normal();
