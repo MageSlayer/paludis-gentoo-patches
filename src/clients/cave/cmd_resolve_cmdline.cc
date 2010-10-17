@@ -259,6 +259,15 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
             "create a binary package and use that for the install. May be specified multiple times. If this option "
             "is not specified, a package will be built multiple times for multiple destinations"),
 #endif
+    a_dependencies_to_slash(&g_destination_options, "dependencies-to-slash", '/', "Specify what to do with "
+            "dependencies for the / filesystem when not working on /. By default, all dependencies are installed "
+            "to /.",
+            args::EnumArg::EnumArgOptions
+            ("all",                   'a',  "Send all dependencies to /")
+            ("runtime",               'r',  "Send only runtime dependencies to /")
+            ("build",                 'b',  "Send only build dependencies to /")
+            ("none",                  'n',  "Don't send dependencies to / at all"),
+            "all"),
 
 //    g_query_options(this, "Query Options", "Query the user interactively when making decisions. "
 //            "If only --query is specified, prompt for everything. Otherwise, prompt only for the specified decisions."),

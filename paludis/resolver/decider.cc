@@ -1211,22 +1211,18 @@ Decider::_add_dependencies_if_necessary(
         const std::shared_ptr<DependencyReason> reason(std::make_shared<DependencyReason>(
                     package_id, changed_choices, our_resolution->resolvent(), *s, _already_met(s->spec())));
 
+        /* empty resolvents is always ok for blockers, since blocking on things
+         * that don't exist is fine */
+        bool empty_is_ok(s->spec().if_block());
         std::shared_ptr<const Resolvents> resolvents;
 
         if (s->spec().if_package())
-            resolvents = _get_resolvents_for(*s->spec().if_package(), reason);
+            std::tie(resolvents, empty_is_ok) = _get_resolvents_for(*s->spec().if_package(), reason);
         else
             resolvents = _get_resolvents_for_blocker(*s->spec().if_block(), reason);
 
-        if (resolvents->empty())
-        {
-            if (s->spec().if_package())
-                resolvents = _get_error_resolvents_for(*s->spec().if_package(), reason);
-            else
-            {
-                /* blocking on something that doesn't exist is fine */
-            }
-        }
+        if ((! empty_is_ok) && resolvents->empty())
+            resolvents = _get_error_resolvents_for(*s->spec().if_package(), reason);
 
         for (Resolvents::ConstIterator r(resolvents->begin()), r_end(resolvents->end()) ;
                 r != r_end ; ++r)
@@ -1371,7 +1367,7 @@ Decider::find_any_score(
 
     const std::shared_ptr<DependencyReason> reason(std::make_shared<DependencyReason>(
                 our_id, make_null_shared_ptr(), our_resolution->resolvent(), dep, _already_met(dep.spec())));
-    const std::shared_ptr<const Resolvents> resolvents(_get_resolvents_for(spec, reason));
+    const std::shared_ptr<const Resolvents> resolvents(_get_resolvents_for(spec, reason).first);
 
     /* next: will already be installing */
     if (! is_block)
@@ -1491,7 +1487,7 @@ Decider::_get_destination_types_for_blocker(const BlockDepSpec & spec,
     return _imp->fns.get_destination_types_for_blocker_fn()(spec, reason);
 }
 
-const std::shared_ptr<const Resolvents>
+const std::pair<std::shared_ptr<const Resolvents>, bool>
 Decider::_get_resolvents_for(
         const PackageDepSpec & spec,
         const std::shared_ptr<const Reason> & reason) const
@@ -2005,22 +2001,18 @@ Decider::add_target_with_reason(const PackageOrBlockDepSpec & spec, const std::s
     }
     else
     {
+        /* empty resolvents is always ok for blockers, since blocking on things
+         * that don't exist is fine */
+        bool empty_is_ok(spec.if_block());
         std::shared_ptr<const Resolvents> resolvents;
 
         if (spec.if_package())
-            resolvents = _get_resolvents_for(*spec.if_package(), reason);
+            std::tie(resolvents, empty_is_ok) = _get_resolvents_for(*spec.if_package(), reason);
         else
             resolvents = _get_resolvents_for_blocker(*spec.if_block(), reason);
 
-        if (resolvents->empty())
-        {
-            if (spec.if_package())
-                resolvents = _get_error_resolvents_for(*spec.if_package(), reason);
-            else
-            {
-                /* blocking on something that doesn't exist is fine */
-            }
-        }
+        if ((! empty_is_ok) && resolvents->empty())
+            resolvents = _get_error_resolvents_for(*spec.if_package(), reason);
 
         for (Resolvents::ConstIterator r(resolvents->begin()), r_end(resolvents->end()) ;
                 r != r_end ; ++r)

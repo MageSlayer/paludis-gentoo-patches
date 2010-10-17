@@ -49,10 +49,13 @@ namespace paludis
                 void set_want_target_dependencies(const bool);
                 void set_want_target_runtime_dependencies(const bool);
 
+                void set_want_dependencies_on_slash(const bool);
+                void set_want_runtime_dependencies_on_slash(const bool);
+
                 void set_slots(const bool best, const bool installed, const bool fallback);
                 void set_target_slots(const bool best, const bool installed, const bool fallback);
 
-                std::shared_ptr<Resolvents> operator() (
+                std::pair<std::shared_ptr<Resolvents>, bool> operator() (
                         const PackageDepSpec &,
                         const std::shared_ptr<const SlotName> &,
                         const std::shared_ptr<const Reason> &) const;

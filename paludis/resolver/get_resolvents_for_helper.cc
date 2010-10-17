@@ -53,6 +53,9 @@ namespace paludis
         bool want_target_dependencies;
         bool want_target_runtime_dependencies;
 
+        bool want_dependencies_on_slash;
+        bool want_runtime_dependencies_on_slash;
+
         bool want_best_slot_for_targets;
         bool want_installed_slots_for_targets;
         bool fallback_to_other_slots_for_targets;
@@ -66,6 +69,8 @@ namespace paludis
             target_destination_type(dt_install_to_slash),
             want_target_dependencies(true),
             want_target_runtime_dependencies(true),
+            want_dependencies_on_slash(true),
+            want_runtime_dependencies_on_slash(true),
             want_best_slot_for_targets(true),
             want_installed_slots_for_targets(true),
             fallback_to_other_slots_for_targets(false),
@@ -103,6 +108,18 @@ GetResolventsForHelper::set_want_target_runtime_dependencies(const bool b)
 }
 
 void
+GetResolventsForHelper::set_want_dependencies_on_slash(const bool b)
+{
+    _imp->want_dependencies_on_slash = b;
+}
+
+void
+GetResolventsForHelper::set_want_runtime_dependencies_on_slash(const bool b)
+{
+    _imp->want_runtime_dependencies_on_slash = b;
+}
+
+void
 GetResolventsForHelper::set_slots(const bool best, const bool installed, const bool fallback)
 {
     _imp->want_best_slot_otherwise = best;
@@ -125,6 +142,8 @@ namespace
         const DestinationType target_destination_type;
         const bool want_target_dependencies;
         const bool want_target_runtime_dependencies;
+        const bool want_dependencies_on_slash;
+        const bool want_runtime_dependencies_on_slash;
         const std::shared_ptr<const PackageID> package_id;
 
         DestinationTypes visit(const TargetReason &) const
@@ -149,7 +168,7 @@ namespace
 
         DestinationTypes visit(const DependencyReason & dep) const
         {
-            DestinationTypes extras;
+            DestinationTypes extras, slash;
 
             switch (target_destination_type)
             {
@@ -194,7 +213,17 @@ namespace
                     throw InternalError(PALUDIS_HERE, "unhandled dt");
             }
 
-            return extras + dt_install_to_slash;
+            if (want_runtime_dependencies_on_slash ^ want_dependencies_on_slash)
+            {
+                if (want_dependencies_on_slash && ! is_run_or_post_dep(dep.sanitised_dependency()))
+                    slash += dt_install_to_slash;
+                if (want_runtime_dependencies_on_slash && is_run_or_post_dep(dep.sanitised_dependency()))
+                    slash += dt_install_to_slash;
+            }
+            else if (want_runtime_dependencies_on_slash || want_dependencies_on_slash)
+                slash += dt_install_to_slash;
+
+            return extras | slash;
         }
 
         DestinationTypes visit(const PresetReason &) const
@@ -219,15 +248,18 @@ namespace
             const DestinationType target_destination_type,
             const bool want_target_dependencies,
             const bool want_target_runtime_dependencies,
+            const bool want_dependencies_on_slash,
+            const bool want_runtime_dependencies_on_slash,
             const std::shared_ptr<const PackageID> & package_id,
             const std::shared_ptr<const Reason> & reason)
     {
-        DestinationTypesFinder f{target_destination_type, want_target_dependencies, want_target_runtime_dependencies, package_id};
+        DestinationTypesFinder f{target_destination_type, want_target_dependencies, want_target_runtime_dependencies,
+            want_dependencies_on_slash, want_runtime_dependencies_on_slash, package_id};
         return reason->accept_returning<DestinationTypes>(f);
     }
 }
 
-std::shared_ptr<Resolvents>
+std::pair<std::shared_ptr<Resolvents>, bool>
 GetResolventsForHelper::operator() (
         const PackageDepSpec & spec,
         const std::shared_ptr<const SlotName> & maybe_slot,
@@ -284,15 +316,27 @@ GetResolventsForHelper::operator() (
     else if (want_installed)
         std::copy(installed_ids->begin(), installed_ids->end(), result_ids->back_inserter());
 
-    std::shared_ptr<Resolvents> result(std::make_shared<Resolvents>());
-    for (PackageIDSequence::ConstIterator i(result_ids->begin()), i_end(result_ids->end()) ;
-            i != i_end ; ++i)
+    std::pair<std::shared_ptr<Resolvents>, bool> result(std::make_shared<Resolvents>(), false);
+
+    if (! result_ids->empty())
     {
-        DestinationTypes destination_types(get_destination_types_for_fn(_imp->env, spec,
-                    _imp->target_destination_type, _imp->want_target_dependencies, _imp->want_target_runtime_dependencies, *i, reason));
-        for (EnumIterator<DestinationType> t, t_end(last_dt) ; t != t_end ; ++t)
-            if (destination_types[*t])
-                result->push_back(Resolvent(*i, *t));
+        result.second = true;
+
+        for (PackageIDSequence::ConstIterator i(result_ids->begin()), i_end(result_ids->end()) ;
+                i != i_end ; ++i)
+        {
+            DestinationTypes destination_types(get_destination_types_for_fn(_imp->env, spec,
+                        _imp->target_destination_type, _imp->want_target_dependencies, _imp->want_target_runtime_dependencies,
+                        _imp->want_dependencies_on_slash, _imp->want_runtime_dependencies_on_slash, *i, reason));
+
+            if (destination_types.any())
+            {
+                result.second = false;
+                for (EnumIterator<DestinationType> t, t_end(last_dt) ; t != t_end ; ++t)
+                    if (destination_types[*t])
+                        result.first->push_back(Resolvent(*i, *t));
+            }
+        }
     }
 
     return result;

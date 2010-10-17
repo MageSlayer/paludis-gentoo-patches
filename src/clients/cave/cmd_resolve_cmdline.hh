@@ -99,6 +99,7 @@ namespace paludis
 #ifdef ENABLE_PBINS
             args::StringSetArg a_via_binary;
 #endif
+            args::EnumArg a_dependencies_to_slash;
 
 //            args::ArgsGroup g_query_options;
 //            args::SwitchArg a_query;

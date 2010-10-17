@@ -788,6 +788,30 @@ paludis::cave::resolve_common(
         throw args::DoHelp("Don't understand argument '" + resolution_options.a_slots.argument() + "' to '--"
                 + resolution_options.a_slots.long_name() + "'");
 
+    if (resolution_options.a_dependencies_to_slash.argument() == "all")
+    {
+        get_resolvents_for_helper.set_want_dependencies_on_slash(true);
+        get_resolvents_for_helper.set_want_runtime_dependencies_on_slash(true);
+    }
+    else if (resolution_options.a_dependencies_to_slash.argument() == "runtime")
+    {
+        get_resolvents_for_helper.set_want_dependencies_on_slash(false);
+        get_resolvents_for_helper.set_want_runtime_dependencies_on_slash(true);
+    }
+    else if (resolution_options.a_dependencies_to_slash.argument() == "build")
+    {
+        get_resolvents_for_helper.set_want_dependencies_on_slash(true);
+        get_resolvents_for_helper.set_want_runtime_dependencies_on_slash(false);
+    }
+    else if (resolution_options.a_dependencies_to_slash.argument() == "none")
+    {
+        get_resolvents_for_helper.set_want_dependencies_on_slash(false);
+        get_resolvents_for_helper.set_want_runtime_dependencies_on_slash(false);
+    }
+    else
+        throw args::DoHelp("Don't understand argument '" + resolution_options.a_dependencies_to_slash.argument() + "' to '--"
+                + resolution_options.a_dependencies_to_slash.long_name() + "'");
+
     if (resolution_options.a_target_slots.argument() == "best-or-installed")
         get_resolvents_for_helper.set_target_slots(true, false, true);
     else if (resolution_options.a_target_slots.argument() == "installed-or-best")
