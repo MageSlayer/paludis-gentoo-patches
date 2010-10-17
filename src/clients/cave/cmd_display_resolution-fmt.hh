@@ -61,7 +61,7 @@ const auto fs_explaining = make_format_string_fetcher("display-resolution/explai
     << "Explaining requested decisions:" << "\\n\\n";
 
 const auto fs_explaining_resolvent = make_format_string_fetcher("display-resolution/explaining_resolvent", 1)
-    << "For:" << param<'r'>() << "\\n";
+    << "For " << param<'r'>() << ":\\n";
 
 const auto fs_description = make_format_string_fetcher("display-resolution/description", 1)
     << "    \"" << param<'s'>() << "\"" << "\\n";
