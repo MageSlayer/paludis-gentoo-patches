@@ -37,7 +37,7 @@ if test -d "${GIT_DIR:-${ac_top_srcdir:-./}/.git}" ; then
 		GITHEAD=${GITHEAD}-dirty
 	fi
 else
-	GITVERSION=
+	GITHEAD=
 fi
 AC_MSG_CHECKING([for git head])
 AC_ARG_WITH([git-head],
