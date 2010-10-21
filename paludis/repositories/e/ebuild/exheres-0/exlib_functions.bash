@@ -130,7 +130,9 @@ myexparam()
         fi
     fi
 
-    ${bool} && ! has "${!v}" true false && die "exparam ${1%%=*} for exlib ${CURRENT_EXLIB} must be 'true' or 'false'"
+    if ${bool} && ! has "${!v}" true false; then
+        die "exparam ${1%%=*} for ${CURRENT_EXLIB}.exlib must be 'true' or 'false'"
+    fi
 }
 
 require()
