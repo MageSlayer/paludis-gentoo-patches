@@ -91,6 +91,7 @@ namespace
         args::EnumArg a_type;
 
         args::ArgsGroup g_key_options;
+        args::SwitchArg a_no_keys;
         args::SwitchArg a_complex_keys;
         args::SwitchArg a_internal_keys;
         args::SwitchArg a_significant_keys_only;
@@ -114,6 +115,8 @@ namespace
                     ("package",            'p', "Treat the objects as an unwildcarded package spec, showing all matches for wildcards"),
                     "auto"),
             g_key_options(main_options_section(), "Key Options", "Control which keys are shown."),
+            a_no_keys(&g_key_options, "no-keys", 'n',
+                    "Do not show any metadata keys", true),
             a_complex_keys(&g_key_options, "complex-keys", 'c',
                     "Show complex keys", true),
             a_internal_keys(&g_key_options, "internal-keys", 'i',
@@ -298,7 +301,7 @@ namespace
         if (key->type() != mkt_significant && cmdline.a_significant_keys_only.specified())
             return false;
 
-        return true;
+        return ! cmdline.a_no_keys.specified();
     }
 
     std::string added_or_changed_string(
