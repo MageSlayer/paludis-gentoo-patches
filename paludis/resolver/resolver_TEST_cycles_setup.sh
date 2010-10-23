@@ -186,7 +186,7 @@ SLOT="0"
 DEPENDENCIES="${r}: ${cat}/dep[=1]"
 END
 
-    done
+done
 
 # cycle-deps
 echo 'cycle-deps' >> metadata/categories.conf
