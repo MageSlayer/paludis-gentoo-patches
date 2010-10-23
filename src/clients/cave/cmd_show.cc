@@ -101,8 +101,11 @@ namespace
         args::ArgsGroup g_display_options;
         args::SwitchArg a_flat;
         args::SwitchArg a_raw_names;
+
+        args::ArgsGroup g_version_options;
         args::SwitchArg a_one_version;
         args::SwitchArg a_no_versions;
+        args::SwitchArg a_repository_at_a_time;
 
         ShowCommandLine() :
             g_object_options(main_options_section(), "Object Options", "Alter how objects are interpreted."),
@@ -132,11 +135,15 @@ namespace
                     "Do not spread key values over multiple lines", true),
             a_raw_names(&g_display_options, "raw-names", 'r',
                     "Display raw rather than human readable key names", true),
-            a_one_version(&g_display_options, "one-version", '1',
-                    "Display only a single version of any package, rather than all installed and the "
-                    "best installable package", true),
-            a_no_versions(&g_display_options, "no-versions", '0',
-                    "Don't display any version-specific information", true)
+            g_version_options(main_options_section(), "Version Options", "Controls for which versions "
+                    "detailed information is shown when displaying packages. By default all installed "
+                    "versions and the best installable version are shown."),
+            a_one_version(&g_version_options, "one-version", '1',
+                    "Display only a single version of any package.", true),
+            a_no_versions(&g_version_options, "no-versions", '0',
+                    "Don't display any version-specific information", true),
+            a_repository_at_a_time(&g_version_options, "repository-at-a-time", 'R',
+                    "Group versions by repository, and then show details for each individual repository", true)
         {
             add_usage_line("spec ...");
         }
@@ -155,16 +162,18 @@ namespace
         const std::shared_ptr<const Environment> env;
         int indent;
         std::set<SetName> recursing_sets;
+        std::ostream & out;
 
-        SetDisplayer(const std::shared_ptr<const Environment> & e, const int i) :
+        SetDisplayer(const std::shared_ptr<const Environment> & e, const int i, std::ostream & o) :
             env(e),
-            indent(i)
+            indent(i),
+            out(o)
         {
         }
 
         void visit(const SetSpecTree::NodeType<PackageDepSpec>::Type & node)
         {
-            cout << fuc(select_format_for_spec(env, *node.spec(),
+            out << fuc(select_format_for_spec(env, *node.spec(),
                         fs_set_spec_installed(),
                         fs_set_spec_installable(),
                         fs_set_spec_unavailable()),
@@ -174,7 +183,7 @@ namespace
 
         void visit(const SetSpecTree::NodeType<NamedSetDepSpec>::Type & node)
         {
-            cout << fuc(fs_set_set(), fv<'s'>(stringify(*node.spec())), fv<'i'>(std::string(indent, ' ')));
+            out << fuc(fs_set_set(), fv<'s'>(stringify(*node.spec())), fv<'i'>(std::string(indent, ' ')));
 
             const std::shared_ptr<const SetSpecTree> set(env->set(node.spec()->name()));
             if (! set)
@@ -204,7 +213,7 @@ namespace
         if (! set)
             throw NoSuchSetError(stringify(s));
 
-        SetDisplayer d(env, 1);
+        SetDisplayer d(env, 1, cout);
         set->top()->accept(d);
 
         cout << endl;
@@ -338,22 +347,25 @@ namespace
         const std::shared_ptr<const PackageID> maybe_current_id;
         const std::shared_ptr<const PackageID> maybe_old_id;
         const bool old_id_is_installed;
+        std::ostream & out;
 
         InfoDisplayer(const ShowCommandLine & c, const int i, const bool m,
                 const std::shared_ptr<const PackageID> & k,
-                const std::shared_ptr<const PackageID> & o, const bool b) :
+                const std::shared_ptr<const PackageID> & o, const bool b,
+                std::ostream & ou) :
             cmdline(c),
             indent(i),
             important(m),
             maybe_current_id(k),
             maybe_old_id(o),
-            old_id_is_installed(b)
+            old_id_is_installed(b),
+            out(ou)
         {
         }
 
         void visit(const MetadataSectionKey & k)
         {
-            cout << fuc(
+            out << fuc(
                     (cmdline.a_raw_names.specified() ? fs_metadata_subsection_raw() : fs_metadata_subsection_human()),
                     fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                     fv<'i'>(std::string(indent, ' ')));
@@ -362,7 +374,7 @@ namespace
             for (std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
                     s(keys.begin()), s_end(keys.end()) ; s != s_end ; ++s)
             {
-                InfoDisplayer i(cmdline, indent + 1, ((*s)->type() == mkt_significant), maybe_current_id, maybe_old_id, old_id_is_installed);
+                InfoDisplayer i(cmdline, indent + 1, ((*s)->type() == mkt_significant), maybe_current_id, maybe_old_id, old_id_is_installed, out);
                 if (want_key(cmdline, *s, maybe_current_id))
                     accept_visitor(i)(**s);
             }
@@ -371,7 +383,7 @@ namespace
         void visit(const MetadataCollectionKey<KeywordNameSet> & k)
         {
             ColourFormatter f(indent);
-            cout << fuc(
+            out << fuc(
                     (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                     fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                     fv<'v'>(k.pretty_print_flat(f)),
@@ -383,7 +395,7 @@ namespace
         void visit(const MetadataCollectionKey<Set<std::string> > & k)
         {
             ColourFormatter f(indent);
-            cout << fuc(
+            out << fuc(
                     (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                     fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                     fv<'v'>(k.pretty_print_flat(f)),
@@ -395,7 +407,7 @@ namespace
         void visit(const MetadataCollectionKey<Sequence<std::string> > & k)
         {
             ColourFormatter f(indent);
-            cout << fuc(
+            out << fuc(
                     (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                     fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                     fv<'v'>(k.pretty_print_flat(f)),
@@ -407,7 +419,7 @@ namespace
         void visit(const MetadataCollectionKey<PackageIDSequence> & k)
         {
             ColourFormatter f(indent);
-            cout << fuc(
+            out << fuc(
                     (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                     fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                     fv<'v'>(k.pretty_print_flat(f)),
@@ -418,7 +430,7 @@ namespace
 
         void visit(const MetadataCollectionKey<FSPathSequence> & k)
         {
-            cout << fuc(
+            out << fuc(
                     (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                     fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                     fv<'v'>(join(k.value()->begin(), k.value()->end(), ", ")),
@@ -430,7 +442,7 @@ namespace
         void visit(const MetadataSpecTreeKey<LicenseSpecTree> & k)
         {
             ColourFormatter f(indent);
-            cout << fuc(
+            out << fuc(
                     (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                     fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                     fv<'v'>(k.pretty_print_flat(f)),
@@ -444,7 +456,7 @@ namespace
             if (cmdline.a_complex_keys.specified() || important)
             {
                 ColourFormatter f(indent);
-                cout << fuc(
+                out << fuc(
                         (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                         fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                         fv<'v'>(k.pretty_print_flat(f)),
@@ -460,7 +472,7 @@ namespace
             {
                 ColourFormatter f(indent);
                 if (cmdline.a_flat.specified())
-                    cout << fuc(
+                    out << fuc(
                             (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                             fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                             fv<'v'>(k.pretty_print_flat(f)),
@@ -469,14 +481,14 @@ namespace
                             );
                 else
                 {
-                    cout << fuc(
+                    out << fuc(
                             (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                             fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                             fv<'v'>(""),
                             fv<'i'>(std::string(indent, ' ')),
                             fv<'b'>(important ? "true" : "")
                             );
-                    cout << k.pretty_print(f);
+                    out << k.pretty_print(f);
                 }
             }
         }
@@ -487,7 +499,7 @@ namespace
             {
                 ColourFormatter f(indent);
                 if (cmdline.a_flat.specified())
-                    cout << fuc(
+                    out << fuc(
                             (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                             fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                             fv<'v'>(k.pretty_print_flat(f)),
@@ -496,14 +508,14 @@ namespace
                             );
                 else
                 {
-                    cout << fuc(
+                    out << fuc(
                             (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                             fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                             fv<'v'>(""),
                             fv<'i'>(std::string(indent, ' ')),
                             fv<'b'>(important ? "true" : "")
                             );
-                    cout << k.pretty_print(f);
+                    out << k.pretty_print(f);
                 }
             }
         }
@@ -513,7 +525,7 @@ namespace
             if (cmdline.a_complex_keys.specified() || important)
             {
                 ColourFormatter f(indent);
-                cout << fuc(
+                out << fuc(
                         (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                         fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                         fv<'v'>(k.pretty_print_flat(f)),
@@ -529,7 +541,7 @@ namespace
             {
                 ColourFormatter f(indent);
                 if (cmdline.a_flat.specified())
-                    cout << fuc(
+                    out << fuc(
                             (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                             fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                             fv<'v'>(k.pretty_print_flat(f)),
@@ -538,21 +550,21 @@ namespace
                             );
                 else
                 {
-                    cout << fuc(
+                    out << fuc(
                             (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                             fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                             fv<'v'>(""),
                             fv<'i'>(std::string(indent, ' ')),
                             fv<'b'>(important ? "true" : "")
                             );
-                    cout << k.pretty_print(f);
+                    out << k.pretty_print(f);
                 }
             }
         }
 
         void visit(const MetadataValueKey<std::string> & k)
         {
-            cout << fuc(
+            out << fuc(
                     (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                     fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                     fv<'v'>(stringify(k.value())),
@@ -563,7 +575,7 @@ namespace
 
         void visit(const MetadataValueKey<SlotName> & k)
         {
-            cout << fuc(
+            out << fuc(
                     (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                     fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                     fv<'v'>(stringify(k.value())),
@@ -574,7 +586,7 @@ namespace
 
         void visit(const MetadataValueKey<long> & k)
         {
-            cout << fuc(
+            out << fuc(
                     (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                     fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                     fv<'v'>(stringify(k.value())),
@@ -585,7 +597,7 @@ namespace
 
         void visit(const MetadataValueKey<bool> & k)
         {
-            cout << fuc(
+            out << fuc(
                     (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                     fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                     fv<'v'>(stringify(k.value())),
@@ -596,7 +608,7 @@ namespace
 
         void visit(const MetadataValueKey<FSPath> & k)
         {
-            cout << fuc(
+            out << fuc(
                     (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                     fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                     fv<'v'>(stringify(k.value())),
@@ -607,7 +619,7 @@ namespace
 
         void visit(const MetadataValueKey<std::shared_ptr<const PackageID> > & k)
         {
-            cout << fuc(
+            out << fuc(
                     (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                     fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                     fv<'v'>(stringify(*k.value())),
@@ -625,7 +637,7 @@ namespace
                     ContentsDisplayer d(0);
                     std::for_each(indirect_iterator(k.value()->begin()),
                             indirect_iterator(k.value()->end()), accept_visitor(d));
-                    cout << fuc(
+                    out << fuc(
                             (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                             fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                             fv<'v'>(d.s.str()),
@@ -638,14 +650,14 @@ namespace
                     ContentsDisplayer d(indent);
                     std::for_each(indirect_iterator(k.value()->begin()),
                             indirect_iterator(k.value()->end()), accept_visitor(d));
-                    cout << fuc(
+                    out << fuc(
                             (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                             fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                             fv<'v'>(""),
                             fv<'i'>(std::string(indent, ' ')),
                             fv<'b'>(important ? "true" : "")
                             );
-                    cout << d.s.str();
+                    out << d.s.str();
                 }
             }
         }
@@ -713,7 +725,7 @@ namespace
                     }
                 }
 
-                cout << fuc(
+                out << fuc(
                         (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                         fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                         fv<'v'>(s.str()),
@@ -723,7 +735,7 @@ namespace
             }
             else
             {
-                cout << fuc(
+                out << fuc(
                         (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                         fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                         fv<'v'>(""),
@@ -754,7 +766,7 @@ namespace
                             continue;
                     }
 
-                    cout << fuc(
+                    out << fuc(
                             (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                             fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                             fv<'v'>(""),
@@ -773,7 +785,7 @@ namespace
                         {
                             if ((*v)->locked())
                             {
-                                cout << fuc(
+                                out << fuc(
                                         (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                                         fv<'s'>(cmdline.a_raw_names.specified() ?
                                             fuc(fs_choice_forced_enabled(), fv<'s'>(stringify((*v)->name_with_prefix())),
@@ -787,7 +799,7 @@ namespace
                             }
                             else
                             {
-                                cout << fuc(
+                                out << fuc(
                                         (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                                         fv<'s'>(cmdline.a_raw_names.specified() ?
                                             fuc(fs_choice_enabled(), fv<'s'>(stringify((*v)->name_with_prefix())),
@@ -804,7 +816,7 @@ namespace
                         {
                             if ((*v)->locked())
                             {
-                                cout << fuc(
+                                out << fuc(
                                         (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                                         fv<'s'>(cmdline.a_raw_names.specified() ?
                                             fuc(fs_choice_forced_disabled(), fv<'s'>(stringify((*v)->name_with_prefix())),
@@ -818,7 +830,7 @@ namespace
                             }
                             else
                             {
-                                cout << fuc(
+                                out << fuc(
                                         (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                                         fv<'s'>(cmdline.a_raw_names.specified() ?
                                             fuc(fs_choice_disabled(), fv<'s'>(stringify((*v)->name_with_prefix())),
@@ -840,7 +852,7 @@ namespace
         {
             if (k.value())
             {
-                cout << fuc(
+                out << fuc(
                         (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                         fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                         fv<'v'>(stringify(k.value()->mask_file())),
@@ -849,7 +861,7 @@ namespace
                         );
                 for (Sequence<std::string>::ConstIterator i(k.value()->comment()->begin()), i_end(k.value()->comment()->end()) ;
                         i != i_end ; ++i)
-                    cout << fuc(fs_metadata_continued_value(),
+                    out << fuc(fs_metadata_continued_value(),
                             fv<'v'>(*i),
                             fv<'i'>("")
                             );
@@ -858,7 +870,7 @@ namespace
 
         void visit(const MetadataTimeKey & k)
         {
-            cout << fuc(
+            out << fuc(
                     (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                     fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                     fv<'v'>(pretty_print_time(k.value().seconds())),
@@ -872,10 +884,12 @@ namespace
     {
         const ShowCommandLine & cmdline;
         const int indent;
+        std::ostream & out;
 
-        MaskDisplayer(const ShowCommandLine & c, const int i) :
+        MaskDisplayer(const ShowCommandLine & c, const int i, std::ostream & o) :
             cmdline(c),
-            indent(i)
+            indent(i),
+            out(o)
         {
         }
 
@@ -883,12 +897,12 @@ namespace
         {
             if (m.unaccepted_key())
             {
-                InfoDisplayer i(cmdline, indent, false, make_null_shared_ptr(), make_null_shared_ptr(), false);
+                InfoDisplayer i(cmdline, indent, false, make_null_shared_ptr(), make_null_shared_ptr(), false, out);
                 m.unaccepted_key()->accept(i);
             }
             else
             {
-                cout << fuc(
+                out << fuc(
                         (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                         fv<'s'>("Masked"),
                         fv<'v'>("by " + m.description()),
@@ -900,7 +914,7 @@ namespace
 
         void visit(const UnsupportedMask & m)
         {
-            cout << fuc(
+            out << fuc(
                     (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                     fv<'s'>(cmdline.a_raw_names.specified() ? stringify(m.key()) : m.description()),
                     fv<'v'>(m.explanation()),
@@ -911,7 +925,7 @@ namespace
 
         void visit(const AssociationMask & m)
         {
-            cout << fuc(
+            out << fuc(
                     (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                     fv<'s'>(cmdline.a_raw_names.specified() ? stringify(m.key()) : "by " + m.description()),
                     fv<'v'>(stringify(*m.associated_package())),
@@ -922,7 +936,7 @@ namespace
 
         void visit(const UserMask & m)
         {
-            cout << fuc(
+            out << fuc(
                     (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                     fv<'s'>(cmdline.a_raw_names.specified() ? stringify(m.key()) : "by " + m.description()),
                     fv<'v'>(""),
@@ -935,12 +949,12 @@ namespace
         {
             if (m.mask_key())
             {
-                InfoDisplayer i(cmdline, indent, false, make_null_shared_ptr(), make_null_shared_ptr(), false);
+                InfoDisplayer i(cmdline, indent, false, make_null_shared_ptr(), make_null_shared_ptr(), false, out);
                 m.mask_key()->accept(i);
             }
             else
             {
-                cout << fuc(
+                out << fuc(
                         (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                         fv<'s'>(cmdline.a_raw_names.specified() ? stringify(m.key()) : "by " + m.description()),
                         fv<'v'>(""),
@@ -963,7 +977,7 @@ namespace
         for (std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
                 k(keys.begin()), k_end(keys.end()) ; k != k_end ; ++k)
         {
-            InfoDisplayer i(cmdline, 0, ((*k)->type() == mkt_significant), make_null_shared_ptr(), make_null_shared_ptr(), false);
+            InfoDisplayer i(cmdline, 0, ((*k)->type() == mkt_significant), make_null_shared_ptr(), make_null_shared_ptr(), false, cout);
             if (want_key(cmdline, *k, make_null_shared_ptr()))
                 accept_visitor(i)(**k);
         }
@@ -975,48 +989,46 @@ namespace
             const std::shared_ptr<Environment> &,
             const std::shared_ptr<const PackageID> & best,
             const std::shared_ptr<const PackageID> & maybe_old_id,
-            const bool old_id_is_installed)
+            const bool old_id_is_installed,
+            std::ostream & out)
     {
-        cout << fuc(fs_package_id_heading(), fv<'s'>(stringify(*best)));
+        out << fuc(fs_package_id_heading(), fv<'s'>(stringify(*best)));
         std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator> keys(best->begin_metadata(), best->end_metadata());
         for (std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
                 k(keys.begin()), k_end(keys.end()) ; k != k_end ; ++k)
         {
             bool explicit_key(cmdline.a_key.end_args() != std::find(cmdline.a_key.begin_args(), cmdline.a_key.end_args(), (*k)->raw_name()));
-            InfoDisplayer i(cmdline, 1, ((*k)->type() == mkt_significant) || explicit_key, best, maybe_old_id, old_id_is_installed);
+            InfoDisplayer i(cmdline, 1, ((*k)->type() == mkt_significant) || explicit_key, best, maybe_old_id, old_id_is_installed, out);
             if (want_key(cmdline, *k, best))
                 accept_visitor(i)(**k);
         }
 
         if (best->masked())
         {
-            cout << fuc(fs_package_id_masks(), fv<'s'>("Masked"));
-            MaskDisplayer d(cmdline, 2);
+            out << fuc(fs_package_id_masks(), fv<'s'>("Masked"));
+            MaskDisplayer d(cmdline, 2, out);
             std::for_each(indirect_iterator(best->begin_masks()), indirect_iterator(best->end_masks()), accept_visitor(d));
         }
 
         if (best->begin_overridden_masks() != best->end_overridden_masks())
         {
-            cout << fuc(fs_package_id_masks_overridden(), fv<'s'>("Overridden Masks"));
-            MaskDisplayer d(cmdline, 2);
+            out << fuc(fs_package_id_masks_overridden(), fv<'s'>("Overridden Masks"));
+            MaskDisplayer d(cmdline, 2, out);
             for (PackageID::OverriddenMasksConstIterator m(best->begin_overridden_masks()), m_end(best->end_overridden_masks()) ;
                     m != m_end ; ++m)
                 (*m)->mask()->accept(d);
         }
     }
 
-    void do_one_package(
+    void do_one_package_with_ids(
             const ShowCommandLine & cmdline,
             const std::shared_ptr<Environment> & env,
-            const PackageDepSpec & s)
+            const PackageDepSpec &,
+            const std::shared_ptr<const PackageIDSequence> & ids,
+            std::ostream & header_out,
+            std::ostream & rest_out
+            )
     {
-        cout << fuc(fs_package_heading(), fv<'s'>(stringify(s)));
-
-        const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsGroupedBySlot(
-                    generator::Matches(s, { }))]);
-        if (ids->empty())
-            throw NothingMatching(s);
-
         std::shared_ptr<const PackageID> best_installable, best_weak_masked_installable, best_masked_installable, best_not_installed;
         std::shared_ptr<PackageIDSequence> all_installed(std::make_shared<PackageIDSequence>());
         std::set<RepositoryName> repos;
@@ -1053,7 +1065,7 @@ namespace
         for (std::set<RepositoryName>::const_iterator r(repos.begin()), r_end(repos.end()) ;
                 r != r_end ; ++r)
         {
-            cout << fuc(fs_package_repository(), fv<'s'>(stringify(*r)));
+            header_out << fuc(fs_package_repository(), fv<'s'>(stringify(*r)));
             std::string slot_name;
             bool need_space(false);
             for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
@@ -1065,16 +1077,16 @@ namespace
                 if (slot_name != slot_as_string(*i))
                 {
                     if (! slot_name.empty())
-                        cout << fuc(fs_package_slot(), fv<'s'>(slot_name));
+                        header_out << fuc(fs_package_slot(), fv<'s'>(slot_name));
                     slot_name = slot_as_string(*i);
                 }
 
                 if (need_space)
-                    cout << " ";
+                    header_out << " ";
                 need_space = true;
 
                 if ((*i)->repository()->installed_root_key())
-                    cout << fuc(fs_package_version_installed(), fv<'s'>(stringify((*i)->canonical_form(idcf_version))));
+                    header_out << fuc(fs_package_version_installed(), fv<'s'>(stringify((*i)->canonical_form(idcf_version))));
                 else
                 {
                     std::string rr;
@@ -1086,7 +1098,7 @@ namespace
                         rr = "(" + rr + ")";
 
                     if (! (*i)->masked())
-                        cout << fuc(fs_package_version_installable(), fv<'s'>(stringify((*i)->canonical_form(idcf_version))));
+                        header_out << fuc(fs_package_version_installable(), fv<'s'>(stringify((*i)->canonical_form(idcf_version))));
                     else
                     {
                         std::string rs;
@@ -1094,19 +1106,19 @@ namespace
                                 m != m_end ; ++m)
                             rs.append(stringify((*m)->key()));
                         rr = rs + rr;
-                        cout << fuc(fs_package_version_unavailable(), fv<'s'>(stringify((*i)->canonical_form(idcf_version))), fv<'r'>(rr));
+                        header_out << fuc(fs_package_version_unavailable(), fv<'s'>(stringify((*i)->canonical_form(idcf_version))), fv<'r'>(rr));
                     }
                 }
 
                 if (best_installable && (**i == *best_installable))
-                    cout << fuc(fs_package_best());
+                    header_out << fuc(fs_package_best());
             }
 
             if (slot_name.empty())
-                cout << fuc(fs_package_no_slot());
+                header_out << fuc(fs_package_no_slot());
             else
-                cout << fuc(fs_package_slot(), fv<'s'>(slot_name));
-            cout << endl;
+                header_out << fuc(fs_package_slot(), fv<'s'>(slot_name));
+            header_out << endl;
         }
 
         if (cmdline.a_no_versions.specified())
@@ -1115,18 +1127,55 @@ namespace
         else if (cmdline.a_one_version.specified())
         {
             if (best_installable)
-                do_one_package_id(cmdline, env, best_installable, all_installed->empty() ? make_null_shared_ptr() : *all_installed->rbegin(), true);
+                do_one_package_id(cmdline, env, best_installable, all_installed->empty() ? make_null_shared_ptr() : *all_installed->rbegin(),
+                        true, rest_out);
             else if (! all_installed->empty())
-                do_one_package_id(cmdline, env, *all_installed->rbegin(), best_installable, false);
+                do_one_package_id(cmdline, env, *all_installed->rbegin(), best_installable,
+                        false, rest_out);
         }
         else
         {
             for (PackageIDSequence::ConstIterator i(all_installed->begin()), i_end(all_installed->end()) ;
                     i != i_end ; ++i)
-                do_one_package_id(cmdline, env, *i, best_installable, false);
+                do_one_package_id(cmdline, env, *i, best_installable, false, rest_out);
             if (best_installable)
-                do_one_package_id(cmdline, env, best_installable, all_installed->empty() ? make_null_shared_ptr() : *all_installed->rbegin(), true);
+                do_one_package_id(cmdline, env, best_installable, all_installed->empty() ? make_null_shared_ptr() : *all_installed->rbegin(),
+                        true, rest_out);
         }
+    }
+
+    void do_one_package(
+            const ShowCommandLine & cmdline,
+            const std::shared_ptr<Environment> & env,
+            const PackageDepSpec & s)
+    {
+        cout << fuc(fs_package_heading(), fv<'s'>(stringify(s)));
+
+        auto ids((*env)[selection::AllVersionsGroupedBySlot(generator::Matches(s, { }))]);
+        if (ids->empty())
+            throw NothingMatching(s);
+
+        if (cmdline.a_repository_at_a_time.specified())
+        {
+            std::set<RepositoryName> repos;
+            for (auto i(ids->begin()), i_end(ids->end()) ; i != i_end ; ++i)
+                repos.insert((*i)->repository()->name());
+
+            std::stringstream rest_out;
+
+            for (auto r(repos.begin()), r_end(repos.end()) ; r != r_end ; ++r)
+            {
+                auto r_ids((*env)[selection::AllVersionsGroupedBySlot(generator::Matches(
+                                PartiallyMadePackageDepSpec(s).in_repository(*r), { }))]);
+                if (! r_ids->empty())
+                    do_one_package_with_ids(cmdline, env, s, r_ids, cout, rest_out);
+            }
+
+            std::copy((std::istreambuf_iterator<char>(rest_out)), std::istreambuf_iterator<char>(),
+                    std::ostreambuf_iterator<char>(cout));
+        }
+        else
+            do_one_package_with_ids(cmdline, env, s, ids, cout, cout);
 
         cout << endl;
     }
