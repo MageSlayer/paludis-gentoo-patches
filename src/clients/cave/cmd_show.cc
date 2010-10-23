@@ -104,6 +104,7 @@ namespace
 
         args::ArgsGroup g_version_options;
         args::SwitchArg a_one_version;
+        args::SwitchArg a_all_versions;
         args::SwitchArg a_no_versions;
         args::SwitchArg a_repository_at_a_time;
 
@@ -140,6 +141,8 @@ namespace
                     "versions and the best installable version are shown."),
             a_one_version(&g_version_options, "one-version", '1',
                     "Display only a single version of any package.", true),
+            a_all_versions(&g_version_options, "all-versions", 'a',
+                    "Display all versions of packages.", true),
             a_no_versions(&g_version_options, "no-versions", '0',
                     "Don't display any version-specific information", true),
             a_repository_at_a_time(&g_version_options, "repository-at-a-time", 'R',
@@ -1030,27 +1033,32 @@ namespace
             )
     {
         std::shared_ptr<const PackageID> best_installable, best_weak_masked_installable, best_masked_installable, best_not_installed;
-        std::shared_ptr<PackageIDSequence> all_installed(std::make_shared<PackageIDSequence>());
+        std::shared_ptr<PackageIDSequence> all_installed(std::make_shared<PackageIDSequence>()), all_not_installed(std::make_shared<PackageIDSequence>());
         std::set<RepositoryName> repos;
         for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                 i != i_end ; ++i)
         {
             if ((*i)->repository()->installed_root_key())
                 all_installed->push_back(*i);
-            else if ((*i)->supports_action(SupportsActionTest<InstallAction>()))
+            else
             {
-                if ((*i)->masked())
+                all_not_installed->push_back(*i);
+
+                if ((*i)->supports_action(SupportsActionTest<InstallAction>()))
                 {
-                    if (not_strongly_masked(*i))
-                        best_weak_masked_installable = *i;
+                    if ((*i)->masked())
+                    {
+                        if (not_strongly_masked(*i))
+                            best_weak_masked_installable = *i;
+                        else
+                            best_masked_installable = *i;
+                    }
                     else
-                        best_masked_installable = *i;
+                        best_installable = *i;
                 }
                 else
-                    best_installable = *i;
+                    best_not_installed = *i;
             }
-            else
-                best_not_installed = *i;
 
             repos.insert((*i)->repository()->name());
         }
@@ -1132,6 +1140,16 @@ namespace
             else if (! all_installed->empty())
                 do_one_package_id(cmdline, env, *all_installed->rbegin(), best_installable,
                         false, rest_out);
+        }
+        else if (cmdline.a_all_versions.specified())
+        {
+            for (PackageIDSequence::ConstIterator i(all_installed->begin()), i_end(all_installed->end()) ;
+                    i != i_end ; ++i)
+                do_one_package_id(cmdline, env, *i, best_installable, false, rest_out);
+
+            for (PackageIDSequence::ConstIterator i(all_not_installed->begin()), i_end(all_not_installed->end()) ;
+                    i != i_end ; ++i)
+                do_one_package_id(cmdline, env, *i, all_installed->empty() ? make_null_shared_ptr() : *all_installed->rbegin(), true, rest_out);
         }
         else
         {
