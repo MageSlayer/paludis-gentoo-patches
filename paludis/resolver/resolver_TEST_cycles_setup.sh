@@ -255,5 +255,32 @@ SLOT="0"
 DEPENDENCIES="build: cycle-deps/dep-c"
 END
 
+# build-against-block
+echo 'build-against-block' >> metadata/categories.conf
+
+mkdir -p 'packages/build-against-block/target'
+cat <<END > packages/build-against-block/target/target-1.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES="build-against-block/dep-a"
+END
+
+mkdir -p 'packages/build-against-block/dep-a'
+cat <<END > packages/build-against-block/dep-a/dep-a-2.exheres-0
+SUMMARY="dep"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES="build+run: !build-against-block/dep-b[<2] build-against-block/dep-b[~2]"
+END
+
+mkdir -p 'packages/build-against-block/dep-b'
+cat <<END > packages/build-against-block/dep-b/dep-b-2.exheres-0
+SUMMARY="dep"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES="!build-against-block/dep-a[<2]"
+END
+
 cd ..
 

@@ -365,5 +365,36 @@ namespace test_cases
                     );
         }
     } test_cycle_deps;
+
+    struct TestBuildAgainstBlock : ResolverCyclesTestCase
+    {
+        TestBuildAgainstBlock() :
+            ResolverCyclesTestCase("build against block")
+        {
+        }
+
+        void run()
+        {
+            std::shared_ptr<const Resolved> resolved(get_resolved("build-against-block/target"));
+
+            check_resolved(resolved,
+                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .change(QualifiedPackageName("build-against-block/dep-b"))
+                        .change(QualifiedPackageName("build-against-block/dep-a"))
+                        .change(QualifiedPackageName("build-against-block/target"))
+                        .finished()),
+                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished())
+                    );
+        }
+    } test_build_against_block;
 }
 

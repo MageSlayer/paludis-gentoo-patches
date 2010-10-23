@@ -470,7 +470,9 @@ NAGEdgeProperties &
 NAGEdgeProperties::operator|= (const NAGEdgeProperties & other)
 {
     build() |= other.build();
+    build_all_met() &= other.build_all_met();
     run() |= other.run();
+    run_all_met() &= other.run_all_met();
     return *this;
 }
 
