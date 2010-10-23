@@ -672,7 +672,7 @@ Decider::_make_constraints_from_blocker(
             break;
 
         case bk_manual:
-            force_unable = true;
+            force_unable = ! _already_met(spec);
             break;
 
         case bk_upgrade_blocked_before:
