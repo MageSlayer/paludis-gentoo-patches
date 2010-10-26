@@ -7,8 +7,10 @@ case $(uname -s) in
     ;;
 
     Linux)
-    stat -c '%Y' "$@"
-    exit $?
+    mtime=$(stat -c '%Y' "$@")
+    ret=$?
+    echo ${mtime%%.*}
+    exit $ret
     ;;
 
     *)
