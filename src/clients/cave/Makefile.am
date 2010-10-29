@@ -32,6 +32,7 @@ command_MANS = \
 	cave-fix-cache.1 \
 	cave-fix-linkage.1 \
 	cave-graph-jobs.1 \
+	cave-has-version.1 \
 	cave-help.1 \
 	cave-import.1 \
 	cave-info.1 \
@@ -39,6 +40,7 @@ command_MANS = \
 	cave-match.1 \
 	cave-owner.1 \
 	cave-perform.1 \
+	cave-print-best-version.1 \
 	cave-print-categories.1 \
 	cave-print-commands.1 \
 	cave-print-environment-metadata.1 \
@@ -129,6 +131,7 @@ libcave_a_SOURCES = \
 	cmd_fix_cache.cc cmd_fix_cache.hh cmd_fix_cache-fmt.hh \
 	cmd_fix_linkage.cc cmd_fix_linkage.hh \
 	cmd_graph_jobs.cc cmd_graph_jobs.hh \
+	cmd_has_version.cc cmd_has_version.hh \
 	cmd_help.cc cmd_help.hh \
 	cmd_import.cc cmd_import.hh \
 	cmd_info.cc cmd_info.hh cmd_info-fmt.hh \
@@ -136,6 +139,7 @@ libcave_a_SOURCES = \
 	cmd_match.cc cmd_match.hh \
 	cmd_owner.cc cmd_owner.hh cmd_owner-fmt.hh \
 	cmd_perform.cc cmd_perform.hh cmd_perform-fmt.hh \
+	cmd_print_best_version.cc cmd_print_best_version.hh \
 	cmd_print_categories.cc cmd_print_categories.hh \
 	cmd_print_commands.cc cmd_print_commands.hh \
 	cmd_print_environment_metadata.cc cmd_print_environment_metadata.hh \

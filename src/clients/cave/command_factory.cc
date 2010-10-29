@@ -45,6 +45,7 @@
 #include "cmd_fix_cache.hh"
 #include "cmd_fix_linkage.hh"
 #include "cmd_graph_jobs.hh"
+#include "cmd_has_version.hh"
 #include "cmd_help.hh"
 #include "cmd_import.hh"
 #include "cmd_info.hh"
@@ -52,6 +53,7 @@
 #include "cmd_match.hh"
 #include "cmd_owner.hh"
 #include "cmd_perform.hh"
+#include "cmd_print_best_version.hh"
 #include "cmd_print_categories.hh"
 #include "cmd_print_commands.hh"
 #include "cmd_print_environment_metadata.hh"
@@ -158,6 +160,7 @@ CommandFactory::CommandFactory() :
     _imp->handlers.insert(std::make_pair("fix-cache", std::bind(&make_command<FixCacheCommand>)));
     _imp->handlers.insert(std::make_pair("fix-linkage", std::bind(&make_command<FixLinkageCommand>)));
     _imp->handlers.insert(std::make_pair("graph-jobs", std::bind(&make_command<GraphJobsCommand>)));
+    _imp->handlers.insert(std::make_pair("has-version", std::bind(&make_command<HasVersionCommand>)));
     _imp->handlers.insert(std::make_pair("help", std::bind(&make_command<HelpCommand>)));
     _imp->handlers.insert(std::make_pair("import", std::bind(&make_command<ImportCommand>)));
     _imp->handlers.insert(std::make_pair("info", std::bind(&make_command<InfoCommand>)));
@@ -166,6 +169,7 @@ CommandFactory::CommandFactory() :
     _imp->handlers.insert(std::make_pair("owner", std::bind(&make_command<OwnerCommand>)));
     _imp->handlers.insert(std::make_pair("perform", std::bind(&make_command<PerformCommand>)));
     _imp->handlers.insert(std::make_pair("purge", std::bind(&make_command<PurgeCommand>)));
+    _imp->handlers.insert(std::make_pair("print-best-version", std::bind(&make_command<PrintBestVersionCommand>)));
     _imp->handlers.insert(std::make_pair("print-categories", std::bind(&make_command<PrintCategoriesCommand>)));
     _imp->handlers.insert(std::make_pair("print-commands", std::bind(&make_command<PrintCommandsCommand>)));
     _imp->handlers.insert(std::make_pair("print-environment-metadata", std::bind(&make_command<PrintEnvironmentMetadataCommand>)));

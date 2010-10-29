@@ -36,6 +36,7 @@ CAVE_COMMANDS_HTML = \
 	cave-fix-cache.html \
 	cave-fix-linkage.html \
 	cave-graph-jobs.html \
+	cave-has-version.html \
 	cave-help.html \
 	cave-import.html \
 	cave-info.html \
@@ -43,6 +44,7 @@ CAVE_COMMANDS_HTML = \
 	cave-match.html \
 	cave-owner.html \
 	cave-perform.html \
+	cave-print-best-version.html \
 	cave-print-categories.html \
 	cave-print-commands.html \
 	cave-print-environment-metadata.html \
