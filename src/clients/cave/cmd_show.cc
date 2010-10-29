@@ -771,7 +771,7 @@ namespace
 
                     out << fuc(
                             (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
-                            fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
+                            fv<'s'>(cmdline.a_raw_names.specified() ? (*c)->raw_name() : (*c)->human_name()),
                             fv<'v'>(""),
                             fv<'i'>(std::string(indent + 1, ' ')),
                             fv<'b'>(important ? "true" : "")
