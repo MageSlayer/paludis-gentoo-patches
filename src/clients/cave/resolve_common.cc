@@ -135,10 +135,13 @@ namespace
             if (p->first.empty())
                 continue;
 
+            std::string p_suggesion(p->first);
             try
             {
+
                 if ('!' == p->first.at(0))
                 {
+                    p_suggesion.erase(0, 1);
                     seen_packages = true;
                     PackageDepSpec s(parse_user_package_dep_spec(p->first.substr(1), env.get(), { }));
                     BlockDepSpec bs("!" + stringify(s), s, bk_weak);
@@ -162,6 +165,10 @@ namespace
                 resolver->add_target(SetName(p->first), p->second);
                 result->push_back(p->first);
                 seen_sets = true;
+            }
+            catch (const NoSuchPackageError &)
+            {
+                nothing_matching_error(env.get(), p_suggesion, filter::All());
             }
         }
 
