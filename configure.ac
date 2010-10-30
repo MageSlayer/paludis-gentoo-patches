@@ -281,7 +281,7 @@ int main(int, char **)
 	struct timespec t;
 	clock_gettime(CLOCK_REALTIME, &t);
 }
-],
+	],
 	[
 		AC_MSG_RESULT([-lrt])
 		RT_LIBS="-lrt"
@@ -481,12 +481,12 @@ void f()
 	B<int> t;
 	t.f();
 }
-],
+	 ],
 		[AC_MSG_RESULT([yes])],
 		[AC_MSG_RESULT([no, your compiler is weird])
 		 AC_MSG_ERROR([your compiler supports 'extern template' in a very broken manner])
 		])
-	 ],
+	],
 	[AC_MSG_RESULT([no])
 	 AC_MSG_ERROR([your compiler does not support 'extern template'])
 	])
@@ -679,7 +679,7 @@ int main(int, char **)
 {
 	static_assert(false, "works");
 }
-],
+	 ],
 	 [AC_MSG_RESULT([no])
 	  AC_MSG_ERROR([your compiler's static_assert is broken (try GCC 4.4+)])
 	 ],
@@ -1243,14 +1243,14 @@ if test "x$enable_python" = "xyes" ; then
 	AC_LINK_IFELSE([
 #include <boost/python.hpp>
 int main() { boost::python::throw_error_already_set(); return 0; }
-],
+	],
 		[BOOST_PYTHON_LIB="-lboost_python"
 		AC_MSG_RESULT([$BOOST_PYTHON_LIB])],
 		[LIBS="$save_LIBS -lboost_python-mt -lpython$PYTHON_VERSION"
 		AC_LINK_IFELSE([
 #include <boost/python.hpp>
 int main() { boost::python::throw_error_already_set(); return 0; }
-],
+		],
 			[BOOST_PYTHON_LIB="-lboost_python-mt"
 			AC_MSG_RESULT([$BOOST_PYTHON_LIB])],
 			[AC_MSG_RESULT([not found])
@@ -1568,7 +1568,7 @@ if test "x$need_libarchive_check" = "xyes" ; then
 	AC_MSG_CHECKING([for libarchive])
 	AC_PREPROC_IFELSE([
 #include <archive.h>
-],
+	],
 	[AC_MSG_RESULT([yes])],
 	[AC_MSG_ERROR([libarchive is required for pbins])])
 
@@ -1581,7 +1581,7 @@ int main(int, char **)
 	struct archive * archive;
     archive_write_set_format_gnutar(archive);
 }
-],
+	],
 	[AC_MSG_RESULT([yes])],
 	[AC_MSG_ERROR([a more recent libarchive than the one you have is required for pbins])])
 fi
