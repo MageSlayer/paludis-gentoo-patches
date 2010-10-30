@@ -96,7 +96,7 @@ need_jansson_check=
 
 dnl {{{ we can use abi::__cxa_demangle
 AC_MSG_CHECKING([for abi::__cxa_demangle])
-AC_COMPILE_IFELSE([
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([
 #include <cxxabi.h>
 int main(int, char **)
 {
@@ -104,7 +104,7 @@ int main(int, char **)
     char * const name(abi::__cxa_demangle(
                 "_ZN7paludis21CategoryNamePartErrorE", 0, 0, &status));
 }
-],
+])],
 	[have_cxa_demangle=yes],
 	[have_cxa_demangle=no])
 AC_MSG_RESULT([$have_cxa_demangle])
@@ -140,7 +140,7 @@ dnl }}}
 
 dnl {{{ check for listxattrf etc
 AC_MSG_CHECKING([for f*xattr function family])
-AC_COMPILE_IFELSE([
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([
 #include <sys/xattr.h>
 
 int main(int, char **)
@@ -149,7 +149,7 @@ int main(int, char **)
 	fgetxattr(0, 0, 0, 0);
 	fsetxattr(0, 0, 0, 0, 0);
 }
-],
+])],
 	[AC_MSG_RESULT([yes])
 	 HAVE_XATTRS=yes],
 	[AC_MSG_RESULT([no])
@@ -169,7 +169,7 @@ dnl }}}
 
 dnl {{{ check for dirent.d_type
 AC_MSG_CHECKING([for dirent.d_type])
-AC_COMPILE_IFELSE([
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([
 #include <sys/types.h>
 #include <dirent.h>
 int main(int, char **)
@@ -177,7 +177,7 @@ int main(int, char **)
 	struct dirent dent;
 	dent.d_type = DT_LNK;
 }
-],
+])],
 	[have_dirent_dtype=yes],
 	[have_dirent_dtype=no])
 AC_MSG_RESULT([$have_dirent_dtype])
@@ -188,7 +188,7 @@ dnl }}}
 
 dnl {{{ check for fallocate
 AC_MSG_CHECKING([for fallocate])
-AC_COMPILE_IFELSE([
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/types.h>
@@ -197,7 +197,7 @@ int main(int, char **)
 {
 	fallocate(0, FALLOC_FL_KEEP_SIZE, 0, 100);
 }
-],
+])],
 	[have_fallocate=yes],
 	[have_fallocate=no])
 AC_MSG_RESULT([$have_fallocate])
@@ -225,13 +225,13 @@ fi
 PTHREAD_LIBS=""
 RT_LIBS=""
 AC_MSG_CHECKING([for compiler __thread support])
-AC_COMPILE_IFELSE([
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([
 int main(int, char **)
 {
 	static __thread int x(0);
 	return x;
 }
-],
+])],
 [AC_MSG_RESULT([yes])],
 [AC_MSG_RESULT([no])
 AC_MSG_ERROR([Your compiler doesn't support __thread])])
@@ -241,7 +241,7 @@ save_CXXFLAGS=$CXXFLAGS
 save_LDFLAGS=$LDFLAGS
 CXXFLAGS="$CXXFLAGS -pthread"
 LDFLAGS="$LDFLAGS -pthread -lpthread"
-AC_LINK_IFELSE([
+AC_LINK_IFELSE([AC_LANG_SOURCE([
 #include <pthread.h>
 int main(int, char **)
 {
@@ -249,7 +249,7 @@ int main(int, char **)
 	pthread_mutexattr_init(&attr);
 	return 0;
 }
-],
+])],
 [AC_MSG_RESULT([yes])],
 [AC_MSG_RESULT([no])
 AC_MSG_ERROR([don't know how to enable pthreads for your compiler])])
@@ -261,7 +261,7 @@ PTHREAD_LIBS="-pthread -lpthread"
 PALUDIS_PC_LIBS="${PALUDIS_PC_LIBS} -pthread -lpthread"
 
 AC_MSG_CHECKING([how to get clock_gettime])
-AC_LINK_IFELSE([
+AC_LINK_IFELSE([AC_LANG_SOURCE([
 #include <time.h>
 #include <sys/time.h>
 int main(int, char **)
@@ -269,11 +269,11 @@ int main(int, char **)
 	struct timespec t;
 	clock_gettime(CLOCK_REALTIME, &t);
 }
-],
+])],
 	[AC_MSG_RESULT([already have it])],
 	[save_LIBS=$LIBS
 	LIBS="-lrt $LIBS"
-	AC_LINK_IFELSE([
+	AC_LINK_IFELSE([AC_LANG_SOURCE([
 #include <time.h>
 #include <sys/time.h>
 int main(int, char **)
@@ -281,7 +281,7 @@ int main(int, char **)
 	struct timespec t;
 	clock_gettime(CLOCK_REALTIME, &t);
 }
-	],
+	])],
 	[
 		AC_MSG_RESULT([-lrt])
 		RT_LIBS="-lrt"
@@ -307,18 +307,18 @@ PALUDIS_CXXFLAGS_WITHOUT_PEDANTIC=
 PALUDIS_CXXFLAGS_NO_STRICT_ALIASING=
 PALUDIS_CXXFLAGS_VISIBILITY=
 AC_MSG_CHECKING([whether our compiler is iccy])
-AC_PREPROC_IFELSE([
+AC_PREPROC_IFELSE([AC_LANG_SOURCE([
 #ifndef __ICC
 #error nope
 #endif
-],
+])],
 	[cxx_compiler_icc=yes],
 	[cxx_compiler_icc=no])
 AC_MSG_RESULT([${cxx_compiler_icc}])
 AC_DEFUN([CHECK_CXXFLAG], [
 	save_CXXFLAGS=$CXXFLAGS
 	CXXFLAGS="$CXXFLAGS $PALUDIS_CXXFLAGS $1 -Werror"
-	AC_COMPILE_IFELSE([
+	AC_COMPILE_IFELSE([AC_LANG_SOURCE([
 #include <string>
 #include <iostream>
 template <typename T_> struct S { };
@@ -327,7 +327,7 @@ int main(int, char **)
 	std::string s("test");
 	std::cout << s << std::endl;
 }
-	],
+	])],
 	[cxxflag_success=yes],
 	[cxxflag_success=no])
 	CXXFLAGS="$save_CXXFLAGS"
@@ -396,7 +396,7 @@ fi
 AC_MSG_RESULT([${cxxflags_message}])
 
 AC_MSG_CHECKING([whether we want -Wno-non-virtual-dtor to work around compiler silliness])
-AC_PREPROC_IFELSE([
+AC_PREPROC_IFELSE([AC_LANG_SOURCE([
 #ifndef __GNUC__
 #  error not gcc
 #endif
@@ -408,14 +408,14 @@ AC_PREPROC_IFELSE([
 #if __GNUC_MINOR__ != 1
 #  error not gcc 4.1
 #endif
-],
+])],
 	[AC_MSG_RESULT([yes])
 	PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -Wno-non-virtual-dtor"
 	],
 	[AC_MSG_RESULT([no])])
 
 AC_MSG_CHECKING([whether we want -std=gnu++0x])
-AC_PREPROC_IFELSE([
+AC_PREPROC_IFELSE([AC_LANG_SOURCE([
 #ifndef __GNUC__
 #  error not gcc
 #endif
@@ -427,7 +427,7 @@ AC_PREPROC_IFELSE([
 #if __GNUC_MINOR__ != 4 && __GNUC_MINOR__ != 5 && __GNUC_MINOR__ != 6
 #  error not gcc 4.4 or 4.5
 #endif
-],
+])],
 	[AC_MSG_RESULT([yes])
 	PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -std=gnu++0x"
 	PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -std=gnu++0x"
@@ -435,7 +435,7 @@ AC_PREPROC_IFELSE([
 	[AC_MSG_RESULT([no])])
 
 AC_MSG_CHECKING([whether we need -fno-deduce-init-list])
-AC_PREPROC_IFELSE([
+AC_PREPROC_IFELSE([AC_LANG_SOURCE([
 #ifndef __GNUC__
 #  error not gcc
 #endif
@@ -449,7 +449,7 @@ AC_PREPROC_IFELSE([
 #else
 #   error not 4.4 or 4.5.0
 #endif
-],
+])],
 	[AC_MSG_RESULT([yes])
 	PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -fno-deduce-init-list"
 	PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -fno-deduce-init-list"
@@ -459,7 +459,7 @@ AC_PREPROC_IFELSE([
 PALUDIS_CXXFLAGS_WITHOUT_PEDANTIC=$PALUDIS_CXXFLAGS
 
 AC_MSG_CHECKING([for 'extern template' support])
-AC_COMPILE_IFELSE([
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([
 template <typename T_> class S
 {
 	private:
@@ -467,10 +467,10 @@ template <typename T_> class S
 };
 extern template struct S<int>;
 template struct S<int>;
-],
+])],
 	[AC_MSG_RESULT([yes])
 	 AC_MSG_CHECKING([whether c++0x 'extern template' works as we expect])
-	 AC_COMPILE_IFELSE([
+	 AC_COMPILE_IFELSE([AC_LANG_SOURCE([
 template <typename T_> struct B
 {
 	T_ f();
@@ -481,7 +481,7 @@ void f()
 	B<int> t;
 	t.f();
 }
-	 ],
+	 ])],
 		[AC_MSG_RESULT([yes])],
 		[AC_MSG_RESULT([no, your compiler is weird])
 		 AC_MSG_ERROR([your compiler supports 'extern template' in a very broken manner])
@@ -497,10 +497,10 @@ if test "x${cxx_compiler_icc}" = "xyes" ; then
 else
 	save_CXXFLAGS=$CXXFLAGS
 	CXXFLAGS="$CXXFLAGS -pedantic"
-	AC_COMPILE_IFELSE([
+	AC_COMPILE_IFELSE([AC_LANG_SOURCE([
 template <typename T_> struct S { };
 extern template struct S<int>;
-	],
+	])],
 	[AC_MSG_RESULT([yes])
 	 CHECK_CXXFLAG([-pedantic])],
     [AC_MSG_RESULT([no])])
@@ -523,7 +523,7 @@ dnl }}}
 
 dnl {{{ check for partial specialisation of template classes
 AC_MSG_CHECKING([for compiler support for partial specialisation of template classes])
-AC_COMPILE_IFELSE([
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([
 template <typename T_>
 struct S
 {
@@ -545,7 +545,7 @@ int main(int, char **)
 {
     return S<int &>::s + S<const int &>::t;
 }
-],
+])],
 	[AC_MSG_RESULT([yes])],
 	[
 	 AC_MSG_RESULT([no])
@@ -555,7 +555,7 @@ dnl }}}
 
 dnl {{{ check for basic_string and string::find_last_not_of
 AC_MSG_CHECKING([for a sufficiently standard std::basic_string<>])
-AC_COMPILE_IFELSE([
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([
 #include <string>
 int main(int, char **)
 {
@@ -563,7 +563,7 @@ int main(int, char **)
 	std::basic_string<int> t;
 	return std::string::npos != s.find_last_not_of("abcde") ? 0 : 1;
 }
-],
+])],
 	[AC_MSG_RESULT([yes])],
 	[
 	 AC_MSG_RESULT([no])
@@ -573,13 +573,13 @@ dnl }}}
 
 dnl {{{ check for limits
 AC_MSG_CHECKING([for a usable std::numeric_limits])
-AC_COMPILE_IFELSE([
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([
 #include <limits>
 int main(int, char **)
 {
 	return std::numeric_limits<unsigned>::digits >> 3;
 }
-],
+])],
 	[AC_MSG_RESULT([yes])],
 	[
 	 AC_MSG_RESULT([no])
@@ -589,7 +589,7 @@ dnl }}}
 
 dnl {{{ check for broken std::set<>::const_reverse_iterator
 AC_MSG_CHECKING([for a usable std::set<>::const_reverse_iterator])
-AC_COMPILE_IFELSE([
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([
 #include <set>
 int main(int, char **)
 {
@@ -598,7 +598,7 @@ int main(int, char **)
 	std::set<int>::const_reverse_iterator i;
 	return *i;
 }
-],
+])],
 	[AC_MSG_RESULT([yes])],
 	[
 	 AC_MSG_RESULT([no])
@@ -608,7 +608,7 @@ dnl }}}
 
 dnl {{{ check for -O3 / extern template breakage
 AC_MSG_CHECKING([whether your compiler tries to inline extern template things])
-AC_COMPILE_IFELSE([
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([
 template <typename> struct F;
 template <typename X_> struct T
 {
@@ -628,7 +628,7 @@ int main(int, char **)
 	T<int> f;
 	f.f();
 }
-],
+])],
 	[AC_MSG_RESULT([no])],
 	[AC_MSG_RESULT([yes])
 	 AC_MSG_ERROR([Your compiler is b0rked (GCC bug 39242? Try -O2 or -fno-inline-functions)])])
@@ -636,7 +636,7 @@ dnl }}}
 
 dnl {{{ check for namespace aliasing
 AC_MSG_CHECKING([whether your compiler has referencing issues])
-AC_COMPILE_IFELSE([
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([
 namespace n
 {
 	int x = 0;
@@ -644,7 +644,7 @@ namespace n
 }
 
 using n::r_x;
-],
+])],
 	[AC_MSG_RESULT([no])],
 	[AC_MSG_RESULT([yes])
 	 AC_MSG_ERROR([Your compiler is b0rked (GCC bug 31899?)])])
@@ -652,11 +652,11 @@ dnl }}}
 
 dnl {{{ check whether we do explicit instantiation of fully specialised templates
 AC_MSG_CHECKING([whether we should explicitly instantiate fully specialised templates])
-AC_COMPILE_IFELSE([
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([
 template <typename T_> struct S;
 template <> struct S<int> { };
 template class S<int>;
-],
+])],
 	[AC_MSG_RESULT([yes])],
 	[AC_MSG_RESULT([no])
 	 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_NO_EXPLICIT_FULLY_SPECIALISED=1"
@@ -666,20 +666,20 @@ dnl }}}
 
 dnl {{{ check for static_assert
 AC_MSG_CHECKING([for compiler support for static_assert])
-AC_COMPILE_IFELSE([
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([
 int main(int, char **)
 {
 	static_assert(true, "works");
 }
-],
+])],
 	[AC_MSG_RESULT([yes])
 	 AC_MSG_CHECKING([whether static_assert works])
-	 AC_COMPILE_IFELSE([
+	 AC_COMPILE_IFELSE([AC_LANG_SOURCE([
 int main(int, char **)
 {
 	static_assert(false, "works");
 }
-	 ],
+	 ])],
 	 [AC_MSG_RESULT([no])
 	  AC_MSG_ERROR([your compiler's static_assert is broken (try GCC 4.4+)])
 	 ],
@@ -691,14 +691,14 @@ dnl }}}
 
 dnl {{{ check for hashes
 AC_MSG_CHECKING([for hashed associative containers])
-AC_COMPILE_IFELSE([
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([
 #include <unordered_map>
 int main(int, char **)
 {
 	std::unordered_map<int, int> m;
 	m.insert(std::make_pair(1, 2));
 }
-],
+])],
 	[AC_MSG_RESULT([std::unordered_map])],
 	[AC_MSG_RESULT([no])
 	 AC_MSG_ERROR([Your compiler doesn't support unordered containers])])
@@ -706,7 +706,7 @@ dnl }}}
 
 dnl {{{ shared pointers
 AC_MSG_CHECKING([for std::shared_ptr<>])
-AC_COMPILE_IFELSE([
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([
 #include <memory>
 int main(int, char **)
 {
@@ -714,7 +714,7 @@ int main(int, char **)
 	x = std::make_shared<int>(20);
 	return *x;
 }
-],
+])],
 	[AC_MSG_RESULT([yes])],
 	[AC_MSG_RESULT([no])
 	 AC_MSG_ERROR([Your compiler doesn't support shared pointers])])
@@ -722,14 +722,14 @@ dnl }}}
 
 dnl {{{ type traits
 AC_MSG_CHECKING([for std::remove_pointer<>])
-AC_COMPILE_IFELSE([
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([
 #include <type_traits>
 int main(int, char **)
 {
 	std::remove_pointer<int *>::type x(10);
 	return x;
 }
-],
+])],
 	[AC_MSG_RESULT([yes])],
 	[AC_MSG_RESULT([no])
 	 AC_MSG_ERROR([Your compiler doesn't support type traits])])
@@ -737,7 +737,7 @@ dnl }}}
 
 dnl {{{ binders
 AC_MSG_CHECKING([for std::bind<>])
-AC_COMPILE_IFELSE([
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([
 #include <functional>
 #include <functional>
 #include <algorithm>
@@ -756,7 +756,7 @@ int main(int, char **)
 	std::for_each(l.begin(), l.end(),
 		std::bind(std::mem_fn(&S::x), &s, _1));
 }
-],
+])],
 	[AC_MSG_RESULT([yes])],
 	[AC_MSG_RESULT([no])
 	 AC_MSG_ERROR([Your compiler doesn't support functional])])
@@ -764,7 +764,7 @@ dnl }}}
 
 dnl {{{ std::next
 AC_MSG_CHECKING([for std::next])
-AC_COMPILE_IFELSE([
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([
 #include <algorithm>
 #include <iterator>
 #include <list>
@@ -773,7 +773,7 @@ int main(int, char **)
 	std::list<int> x;
 	next(x.begin());
 }
-],
+])],
 	[AC_MSG_RESULT([yes])
 	 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_HAVE_STD_NEXT=1"
 	 PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_HAVE_STD_NEXT=1"
@@ -784,13 +784,13 @@ dnl }}}
 
 dnl {{{ c++0x default and deleted functions
 AC_MSG_CHECKING([for c++0x default and deleted functions])
-AC_COMPILE_IFELSE([
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([
 struct S
 {
 	S() = default;
 	S & operator= (const S &) = delete;
 };
-],
+])],
 	[AC_MSG_RESULT([yes])],
 	[AC_MSG_RESULT([no])
 	 AC_MSG_ERROR([your compiler does not support c++0x default and deleted functions])
@@ -799,12 +799,12 @@ dnl }}}
 
 dnl {{{ c++0x variadic templates
 AC_MSG_CHECKING([for c++0x variadic templates])
-AC_COMPILE_IFELSE([
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([
 template <typename... T_>
 void f(const T_ & ... a)
 {
 }
-],
+])],
 	[AC_MSG_RESULT([yes])],
 	[AC_MSG_RESULT([no])
 	 AC_MSG_ERROR([your compiler does not support c++0x variadic templates])
@@ -813,14 +813,14 @@ dnl }}}
 
 dnl {{{ c++0x auto
 AC_MSG_CHECKING([for c++0x auto])
-AC_COMPILE_IFELSE([
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([
 #include <string>
 std::string f(int);
 int main(int, char **)
 {
 	auto x = f(1);
 }
-],
+])],
 	[AC_MSG_RESULT([yes])],
 	[AC_MSG_RESULT([no])
 	 AC_MSG_ERROR([your compiler does not support c++0x auto])
@@ -829,12 +829,12 @@ dnl }}}
 
 dnl {{{ c++0x rvalue references
 AC_MSG_CHECKING([for c++0x rvalue references])
-AC_COMPILE_IFELSE([
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([
 int f(int && a)
 {
 	return a;
 }
-],
+])],
 	[AC_MSG_RESULT([yes])],
 	[AC_MSG_RESULT([no])
 	 AC_MSG_ERROR([your compiler does not support c++0x rvalue references])
@@ -843,9 +843,9 @@ dnl }}}
 
 dnl {{{ c++0x enum classes
 AC_MSG_CHECKING([for c++0x enum class support])
-AC_COMPILE_IFELSE([
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([
 enum class C : long { c };
-],
+])],
 	[AC_MSG_RESULT([yes])
 	 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_HAVE_ENUM_CLASS=1"
 	 PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_HAVE_ENUM_CLASS=1"
@@ -1169,13 +1169,13 @@ if test "x$enable_python" = "xyes" ; then
 	AC_SUBST([PYTHON_INSTALL_DIR])
 
 	AC_MSG_CHECKING([whether your gcc is new enough to enable Python])
-	AC_PREPROC_IFELSE([
+	AC_PREPROC_IFELSE([AC_LANG_SOURCE([
 #ifdef __GNUC__
 #  if __GNUC__ < 4
 #    error too old
 #  endif
 #endif
-	],
+	])],
 	[AC_MSG_RESULT([yes])],
 	[AC_MSG_RESULT([no])]
 	 AC_MSG_ERROR([Your gcc is too old for Python support]))
@@ -1194,9 +1194,9 @@ if test "x$enable_python" = "xyes" ; then
 	AC_MSG_CHECKING([for Python.h])
 	save_CXXFLAGS="$CXXFLAGS"
 	CXXFLAGS="$CXXFLAGS -I$PYTHON_INCLUDE_DIR"
-	AC_COMPILE_IFELSE([
+	AC_COMPILE_IFELSE([AC_LANG_SOURCE([
 	#include <Python.h>
-	],
+	])],
 		[AC_MSG_RESULT([yes])],
 		[AC_MSG_RESULT([no])
 		AC_MSG_ERROR([Python.h not found in $PYTHON_INCLUDE_DIR])])
@@ -1218,14 +1218,14 @@ if test "x$enable_python" = "xyes" ; then
 	AC_MSG_CHECKING([for boost.python])
 	save_CXXFLAGS="$CXXFLAGS"
 	CXXFLAGS="$CXXFLAGS -I$PYTHON_INCLUDE_DIR"
-	AC_COMPILE_IFELSE([
+	AC_COMPILE_IFELSE([AC_LANG_SOURCE([
 	#include <boost/python.hpp>
 	struct Foo {};
 	BOOST_PYTHON_MODULE(foo)
 	{
 		boost::python::class_<Foo> ("Foo");
 	}
-	],
+	])],
 		[AC_MSG_RESULT([yes])],
 		[AC_MSG_RESULT([no])
 		AC_MSG_ERROR([boost.python (http://www.boost.org/libs/python/doc/) is required. If you think you have boost.python, \
@@ -1240,17 +1240,17 @@ if test "x$enable_python" = "xyes" ; then
 	save_LIBS="$LIBS"
 	CXXFLAGS="$CXXFLAGS -I$PYTHON_INCLUDE_DIR"
 	LIBS="$LIBS -lboost_python -lpython$PYTHON_VERSION"
-	AC_LINK_IFELSE([
+	AC_LINK_IFELSE([AC_LANG_SOURCE([
 #include <boost/python.hpp>
 int main() { boost::python::throw_error_already_set(); return 0; }
-	],
+	])],
 		[BOOST_PYTHON_LIB="-lboost_python"
 		AC_MSG_RESULT([$BOOST_PYTHON_LIB])],
 		[LIBS="$save_LIBS -lboost_python-mt -lpython$PYTHON_VERSION"
-		AC_LINK_IFELSE([
+		AC_LINK_IFELSE([AC_LANG_SOURCE([
 #include <boost/python.hpp>
 int main() { boost::python::throw_error_already_set(); return 0; }
-		],
+		])],
 			[BOOST_PYTHON_LIB="-lboost_python-mt"
 			AC_MSG_RESULT([$BOOST_PYTHON_LIB])],
 			[AC_MSG_RESULT([not found])
@@ -1566,14 +1566,14 @@ dnl }}}
 dnl {{{ libarchive
 if test "x$need_libarchive_check" = "xyes" ; then
 	AC_MSG_CHECKING([for libarchive])
-	AC_PREPROC_IFELSE([
+	AC_PREPROC_IFELSE([AC_LANG_SOURCE([
 #include <archive.h>
-	],
+	])],
 	[AC_MSG_RESULT([yes])],
 	[AC_MSG_ERROR([libarchive is required for pbins])])
 
 	AC_MSG_CHECKING([whether your libarchive is new enough])
-	AC_COMPILE_IFELSE([
+	AC_COMPILE_IFELSE([AC_LANG_SOURCE([
 #include <archive.h>
 
 int main(int, char **)
@@ -1581,7 +1581,7 @@ int main(int, char **)
 	struct archive * archive;
     archive_write_set_format_gnutar(archive);
 }
-	],
+	])],
 	[AC_MSG_RESULT([yes])],
 	[AC_MSG_ERROR([a more recent libarchive than the one you have is required for pbins])])
 fi
