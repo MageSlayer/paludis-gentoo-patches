@@ -148,6 +148,11 @@ namespace paludis
                 std::string root() const;
 
                 /**
+                 * The system root.
+                 */
+                std::string system_root() const;
+
+                /**
                  * Whether it's ok to unmask things that break Portage, regardless of the reason.
                  */
                 bool accept_all_breaks_portage() const;

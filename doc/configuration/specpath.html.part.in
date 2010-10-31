@@ -33,5 +33,9 @@ from the commandline given in --environment(-E). Recognised keys are as follows:
     <dt><code>config-suffix</code></dt>
     <dd>If set, Paludis will instead look in <code>${root}/SYSCONFDIR/paludis-suffix</code> for configuration files. By
     default, no configuration suffix is used under root.</dd>
+
+    <dt><code>system_root</code></dt>
+    <dd>If set, Paludis will use this value for the root for resolving dependencies. Defaults to <code>/</code>, and
+    should not be changed except under exceptional circumstances.</dd>
 </dl>
 

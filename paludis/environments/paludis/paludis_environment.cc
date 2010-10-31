@@ -105,7 +105,7 @@ namespace paludis
             preferred_root_key(std::make_shared<LiteralMetadataValueKey<FSPath>>("root", "Root", mkt_normal,
                         FSPath(config->root()))),
             system_root_key(std::make_shared<LiteralMetadataValueKey<FSPath>>("system_root", "System Root", mkt_normal,
-                        FSPath("/")))
+                        FSPath(config->system_root())))
         {
         }
 

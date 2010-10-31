@@ -169,6 +169,7 @@ namespace paludis
 
         std::string paludis_command;
         std::string root;
+        std::string system_root;
         std::string config_dir;
         mutable Mutex distribution_mutex;
         mutable std::string distribution;
@@ -177,6 +178,7 @@ namespace paludis
         Repos repos;
         std::function<std::string (const std::string &)> predefined_conf_vars_func;
         std::string root_prefix;
+        std::string system_root_prefix;
 
         std::shared_ptr<KeywordsConf> keywords_conf;
         std::shared_ptr<UseConf> use_conf;
@@ -365,7 +367,6 @@ namespace paludis
                 << (FSPath(config_dir) / "general.conf")
                 << ". Any attempted updates to world will not be saved.";
         world = std::make_shared<World>(env, world_file);
-
         has_general_conf = true;
     }
 
@@ -463,6 +464,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
     if (specpath)
     {
         _imp->root_prefix = specpath->get("root");
+        _imp->system_root_prefix = specpath->get("system_root");
         local_config_suffix = specpath->get("config-suffix");
 
         if (! local_config_suffix.empty())
@@ -479,6 +481,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
     }
 
     _imp->root = _imp->root_prefix.empty() ? "/" : _imp->root_prefix;
+    _imp->system_root = _imp->system_root_prefix.empty() ? "/" : _imp->system_root_prefix;
     _imp->config_dir = stringify(local_config_dir);
 
     const std::shared_ptr<const PaludisDistribution> dist(
@@ -913,6 +916,12 @@ std::string
 PaludisConfig::root() const
 {
     return _imp->root;
+}
+
+std::string
+PaludisConfig::system_root() const
+{
+    return _imp->system_root;
 }
 
 std::string
