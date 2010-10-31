@@ -271,7 +271,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
 
                 Filter root((filter::All()));
                 if (tokens[2] == "--slash")
-                    root = filter::InstalledAtSlash();
+                    root = filter::InstalledAtRoot(environment->system_root_key()->value());
                 else if (tokens[2] == "--root")
                     root = filter::InstalledAtRoot(environment->preferred_root_key()->value());
                 else
@@ -320,7 +320,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
 
                 Filter root((filter::All()));
                 if (tokens[2] == "--slash")
-                    root = filter::InstalledAtSlash();
+                    root = filter::InstalledAtRoot(environment->system_root_key()->value());
                 else if (tokens[2] == "--root")
                     root = filter::InstalledAtRoot(environment->preferred_root_key()->value());
                 else
