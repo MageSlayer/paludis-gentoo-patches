@@ -83,15 +83,18 @@ namespace
 }
 
 FilteredGenerator
-paludis::resolver::destination_filtered_generator(const DestinationType t, const Generator & g)
+paludis::resolver::destination_filtered_generator(
+        const Environment * const env,
+        const DestinationType t,
+        const Generator & g)
 {
     switch (t)
     {
         case dt_install_to_slash:
-            return g | filter::InstalledAtSlash();
+            return g | filter::InstalledAtRoot(env->system_root_key()->value());
 
         case dt_install_to_chroot:
-            return g | filter::InstalledAtNotSlash();
+            return g | filter::InstalledNotAtRoot(env->system_root_key()->value());
 
         case dt_create_binary:
             return g & BinaryDestinationGenerator();

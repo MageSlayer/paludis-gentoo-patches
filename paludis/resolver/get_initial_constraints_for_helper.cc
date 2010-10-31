@@ -143,26 +143,6 @@ GetInitialConstraintsForHelper::operator() (const Resolvent & resolvent) const
 
 namespace
 {
-    Filter make_destination_filter_fn(const Resolvent & resolvent)
-    {
-        switch (resolvent.destination_type())
-        {
-            case dt_install_to_slash:
-                return filter::InstalledAtSlash();
-
-            case dt_install_to_chroot:
-                return filter::InstalledAtNotSlash();
-
-            case dt_create_binary:
-                throw InternalError(PALUDIS_HERE, "no dt_create_binary yet");
-
-            case last_dt:
-                break;
-        }
-
-        throw InternalError(PALUDIS_HERE, "unhandled dt");
-    }
-
     bool is_scm_name(const QualifiedPackageName & n)
     {
         std::string pkg(stringify(n.package()));
@@ -214,7 +194,7 @@ namespace
         Context context("When working out whether '" + stringify(q) + "' has installed SCM packages:");
 
         const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsUnsorted(
-                    destination_filtered_generator(q.destination_type(), generator::Package(q.package())) |
+                    destination_filtered_generator(env, q.destination_type(), generator::Package(q.package())) |
                     make_slot_filter(q)
                     )]);
 

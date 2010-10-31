@@ -25,6 +25,7 @@
 #include <paludis/package_id-fwd.hh>
 #include <paludis/generator-fwd.hh>
 #include <paludis/filtered_generator-fwd.hh>
+#include <paludis/environment-fwd.hh>
 
 namespace paludis
 {
@@ -33,7 +34,10 @@ namespace paludis
         bool can_make_binary_for(const std::shared_ptr<const PackageID> & id) PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
         bool can_chroot(const std::shared_ptr<const PackageID> & id) PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
 
-        FilteredGenerator destination_filtered_generator(const DestinationType, const Generator &) PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
+        FilteredGenerator destination_filtered_generator(
+                const Environment * const,
+                const DestinationType,
+                const Generator &) PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
     }
 }
 

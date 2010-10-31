@@ -64,7 +64,7 @@ MakeDestinationFilteredGeneratorHelper::operator() (
         const Generator & g,
         const std::shared_ptr<const Resolution> & r) const
 {
-    return destination_filtered_generator(r->resolvent().destination_type(), g);
+    return destination_filtered_generator(_imp->env, r->resolvent().destination_type(), g);
 }
 
 template class Pimp<MakeDestinationFilteredGeneratorHelper>;

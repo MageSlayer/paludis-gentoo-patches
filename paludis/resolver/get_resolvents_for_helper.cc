@@ -36,6 +36,7 @@
 #include <paludis/filter.hh>
 #include <paludis/selection.hh>
 #include <paludis/package_id.hh>
+#include <paludis/metadata_key.hh>
 #include <algorithm>
 
 using namespace paludis;
@@ -280,7 +281,8 @@ GetResolventsForHelper::operator() (
     auto installed_ids((*_imp->env)[selection::BestVersionInEachSlot(
                 generator::Matches(spec, { }) |
                 (_imp->target_destination_type == dt_install_to_chroot ?
-                 Filter(filter::InstalledAtNotSlash()) : Filter(filter::InstalledAtSlash())))]);
+                 Filter(filter::InstalledNotAtRoot(_imp->env->system_root_key()->value())) :
+                 Filter(filter::InstalledAtRoot(_imp->env->system_root_key()->value()))))]);
 
     auto target(is_target(reason));
     auto want_installed(target ? _imp->want_installed_slots_for_targets : _imp->want_installed_slots_otherwise);

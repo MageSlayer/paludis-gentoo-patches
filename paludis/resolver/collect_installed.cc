@@ -25,6 +25,7 @@
 #include <paludis/filtered_generator.hh>
 #include <paludis/filter.hh>
 #include <paludis/environment.hh>
+#include <paludis/metadata_key.hh>
 #include <algorithm>
 
 using namespace paludis;
@@ -36,7 +37,7 @@ paludis::resolver::collect_installed(
         )
 {
     const std::shared_ptr<const PackageIDSequence> q((*env)[selection::AllVersionsUnsorted(
-                generator::All() | filter::InstalledAtSlash())]);
+                generator::All() | filter::InstalledAtRoot(env->system_root_key()->value()))]);
     const std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
     std::copy(q->begin(), q->end(), result->inserter());

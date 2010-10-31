@@ -35,6 +35,7 @@
 #include <paludis/filtered_generator.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_dep_spec_collection.hh>
+#include <paludis/metadata_key.hh>
 #include <list>
 
 using namespace paludis;
@@ -184,7 +185,7 @@ namespace
                 const std::shared_ptr<const PackageIDSequence> installed_ids(
                         (*env)[selection::SomeArbitraryVersion(
                             generator::Matches(*dep.spec().if_package(), { }) |
-                            filter::InstalledAtSlash())]);
+                            filter::InstalledAtRoot(env->system_root_key()->value()))]);
                 if (installed_ids->empty())
                     return false;
             }
@@ -293,7 +294,7 @@ InterestInSpecHelper::operator() (
             const std::shared_ptr<const PackageIDSequence> installed_ids(
                     (*_imp->env)[selection::SomeArbitraryVersion(
                         generator::Matches(*dep.spec().if_package(), { }) |
-                        filter::InstalledAtSlash())]);
+                        filter::InstalledAtRoot(_imp->env->system_root_key()->value()))]);
             if (! installed_ids->empty())
                 return si_take;
         }

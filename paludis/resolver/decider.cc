@@ -397,7 +397,7 @@ const std::shared_ptr<const PackageIDSequence>
 Decider::_collect_staying(const std::shared_ptr<const ChangeByResolventSequence> & going_away) const
 {
     const std::shared_ptr<const PackageIDSequence> existing((*_imp->env)[selection::AllVersionsUnsorted(
-                generator::All() | filter::InstalledAtSlash())]);
+                generator::All() | filter::InstalledAtRoot(_imp->env->system_root_key()->value()))]);
 
     const std::shared_ptr<PackageIDSequence> result(std::make_shared<PackageIDSequence>());
     for (PackageIDSequence::ConstIterator x(existing->begin()), x_end(existing->end()) ;
@@ -1350,7 +1350,7 @@ Decider::find_any_score(
     {
         const std::shared_ptr<const PackageIDSequence> installed_ids((*_imp->env)[selection::BestVersionOnly(
                     generator::Matches(spec, { }) |
-                    filter::InstalledAtSlash())]);
+                    filter::InstalledAtRoot(_imp->env->system_root_key()->value()))]);
         if (! installed_ids->empty() ^ is_block)
             return std::make_pair(acs_already_installed, operator_bias);
     }
@@ -1360,7 +1360,7 @@ Decider::find_any_score(
     {
         const std::shared_ptr<const PackageIDSequence> installed_ids((*_imp->env)[selection::BestVersionOnly(
                     generator::Matches(spec, { mpo_ignore_additional_requirements }) |
-                    filter::InstalledAtSlash())]);
+                    filter::InstalledAtRoot(_imp->env->system_root_key()->value()))]);
         if (! installed_ids->empty())
             return std::make_pair(acs_wrong_options_installed, operator_bias);
     }
@@ -1404,7 +1404,7 @@ Decider::find_any_score(
     {
         const std::shared_ptr<const PackageIDSequence> installed_ids((*_imp->env)[selection::BestVersionOnly(
                     generator::Matches(spec, { }) |
-                    filter::InstalledAtSlash())]);
+                    filter::InstalledAtRoot(_imp->env->system_root_key()->value()))]);
         if (! installed_ids->empty())
             return std::make_pair(acs_blocks_installed, operator_bias);
     }
@@ -2115,7 +2115,7 @@ Decider::_already_met(const PackageOrBlockDepSpec & spec) const
 {
     const std::shared_ptr<const PackageIDSequence> installed_ids((*_imp->env)[selection::AllVersionsUnsorted(
                 generator::Matches(spec.if_package() ?  *spec.if_package() : spec.if_block()->blocking(), { }) |
-                filter::InstalledAtSlash())]);
+                filter::InstalledAtRoot(_imp->env->system_root_key()->value()))]);
     if (installed_ids->empty())
         return bool(spec.if_block());
     else

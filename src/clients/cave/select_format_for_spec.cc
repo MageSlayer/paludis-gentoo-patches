@@ -25,6 +25,7 @@
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/generator.hh>
+#include <paludis/metadata_key.hh>
 
 using namespace paludis;
 using namespace cave;
@@ -39,7 +40,7 @@ paludis::cave::select_format_for_spec(
         const T_ & if_unavailable
         )
 {
-    if (! (*env)[selection::SomeArbitraryVersion(generator::Matches(spec, { }) | filter::InstalledAtSlash())]->empty())
+    if (! (*env)[selection::SomeArbitraryVersion(generator::Matches(spec, { }) | filter::InstalledAtRoot(env->system_root_key()->value()))]->empty())
         return if_installed;
     if (! (*env)[selection::SomeArbitraryVersion(generator::Matches(spec, { }) | filter::SupportsAction<InstallAction>()
                 | filter::NotMasked())]->empty())

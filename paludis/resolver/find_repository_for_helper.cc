@@ -81,12 +81,12 @@ FindRepositoryForHelper::operator() (
         switch (resolution->resolvent().destination_type())
         {
             case dt_install_to_slash:
-                if ((! (*r)->installed_root_key()) || ((*r)->installed_root_key()->value() != FSPath("/")))
+                if ((! (*r)->installed_root_key()) || ((*r)->installed_root_key()->value() != _imp->env->system_root_key()->value()))
                     continue;
                 break;
 
             case dt_install_to_chroot:
-                if ((! (*r)->installed_root_key()) || ((*r)->installed_root_key()->value() == FSPath("/")))
+                if ((! (*r)->installed_root_key()) || ((*r)->installed_root_key()->value() == _imp->env->system_root_key()->value()))
                     continue;
                 break;
 
