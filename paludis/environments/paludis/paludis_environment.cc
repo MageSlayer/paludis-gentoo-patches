@@ -89,6 +89,7 @@ namespace paludis
         std::shared_ptr<LiteralMetadataValueKey<FSPath> > config_location_key;
         std::shared_ptr<LiteralMetadataValueKey<FSPath> > world_file_key;
         std::shared_ptr<LiteralMetadataValueKey<FSPath> > preferred_root_key;
+        std::shared_ptr<LiteralMetadataValueKey<FSPath> > system_root_key;
 
         Imp(PaludisEnvironment * const e, std::shared_ptr<PaludisConfig> c) :
             done_hooks(false),
@@ -102,7 +103,9 @@ namespace paludis
                             *config->world()->location_if_set())
                     : std::shared_ptr<LiteralMetadataValueKey<FSPath> >()),
             preferred_root_key(std::make_shared<LiteralMetadataValueKey<FSPath>>("root", "Root", mkt_normal,
-                        FSPath(config->root())))
+                        FSPath(config->root()))),
+            system_root_key(std::make_shared<LiteralMetadataValueKey<FSPath>>("system_root", "System Root", mkt_normal,
+                        FSPath("/")))
         {
         }
 
@@ -162,6 +165,7 @@ PaludisEnvironment::PaludisEnvironment(const std::string & s) :
     if (_imp->world_file_key)
         add_metadata_key(_imp->world_file_key);
     add_metadata_key(_imp->preferred_root_key);
+    add_metadata_key(_imp->system_root_key);
 }
 
 PaludisEnvironment::~PaludisEnvironment()
@@ -455,6 +459,12 @@ const std::shared_ptr<const MetadataValueKey<FSPath> >
 PaludisEnvironment::preferred_root_key() const
 {
     return _imp->preferred_root_key;
+}
+
+const std::shared_ptr<const MetadataValueKey<FSPath> >
+PaludisEnvironment::system_root_key() const
+{
+    return _imp->system_root_key;
 }
 
 const Tribool

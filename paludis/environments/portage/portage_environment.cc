@@ -118,6 +118,7 @@ namespace paludis
         std::shared_ptr<LiteralMetadataValueKey<FSPath> > config_location_key;
         std::shared_ptr<LiteralMetadataValueKey<FSPath> > world_file_key;
         std::shared_ptr<LiteralMetadataValueKey<FSPath> > preferred_root_key;
+        std::shared_ptr<LiteralMetadataValueKey<FSPath> > system_root_key;
 
         Imp(Environment * const e, const std::string & s) :
             conf_dir(FSPath(s.empty() ? "/" : s) / SYSCONFDIR),
@@ -262,6 +263,7 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
         if (fixed_root_var.empty())
             fixed_root_var = "/";
         _imp->preferred_root_key = std::make_shared<LiteralMetadataValueKey<FSPath>>("root", "Root", mkt_normal, FSPath(fixed_root_var));
+        _imp->system_root_key = std::make_shared<LiteralMetadataValueKey<FSPath>>("system_root", "System Root", mkt_normal, FSPath("/"));
     }
 
     /* TODO: load USE etc from env? */
@@ -358,6 +360,7 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
     add_metadata_key(_imp->config_location_key);
     add_metadata_key(_imp->world_file_key);
     add_metadata_key(_imp->preferred_root_key);
+    add_metadata_key(_imp->system_root_key);
 }
 
 template<typename I_>
@@ -995,6 +998,12 @@ const std::shared_ptr<const MetadataValueKey<FSPath> >
 PortageEnvironment::preferred_root_key() const
 {
     return _imp->preferred_root_key;
+}
+
+const std::shared_ptr<const MetadataValueKey<FSPath> >
+PortageEnvironment::system_root_key() const
+{
+    return _imp->system_root_key;
 }
 
 const std::shared_ptr<OutputManager>

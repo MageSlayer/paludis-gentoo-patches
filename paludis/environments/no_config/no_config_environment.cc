@@ -80,6 +80,7 @@ namespace paludis
         std::shared_ptr<LiteralMetadataValueKey<std::string> > format_key;
         std::shared_ptr<LiteralMetadataValueKey<FSPath> > repository_dir_key;
         std::shared_ptr<LiteralMetadataValueKey<FSPath> > preferred_root_key;
+        std::shared_ptr<LiteralMetadataValueKey<FSPath> > system_root_key;
 
         Imp(NoConfigEnvironment * const env, const no_config_environment::Params & params);
         void initialise(NoConfigEnvironment * const env);
@@ -163,6 +164,8 @@ Imp<NoConfigEnvironment>::Imp(
     repository_dir_key(std::make_shared<LiteralMetadataValueKey<FSPath>>("repository_dir", "Repository dir",
                 mkt_normal, p.repository_dir())),
     preferred_root_key(std::make_shared<LiteralMetadataValueKey<FSPath>>("root", "Root",
+                mkt_normal, FSPath("/"))),
+    system_root_key(std::make_shared<LiteralMetadataValueKey<FSPath>>("system_root", "System Root",
                 mkt_normal, FSPath("/")))
 {
 }
@@ -367,6 +370,7 @@ NoConfigEnvironment::NoConfigEnvironment(const no_config_environment::Params & p
     add_metadata_key(_imp->format_key);
     add_metadata_key(_imp->repository_dir_key);
     add_metadata_key(_imp->preferred_root_key);
+    add_metadata_key(_imp->system_root_key);
 }
 
 NoConfigEnvironment::~NoConfigEnvironment()
@@ -571,6 +575,12 @@ const std::shared_ptr<const MetadataValueKey<FSPath> >
 NoConfigEnvironment::preferred_root_key() const
 {
     return _imp->preferred_root_key;
+}
+
+const std::shared_ptr<const MetadataValueKey<FSPath> >
+NoConfigEnvironment::system_root_key() const
+{
+    return _imp->system_root_key;
 }
 
 const Tribool

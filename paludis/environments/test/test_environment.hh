@@ -119,6 +119,7 @@ namespace paludis
             virtual const std::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
             virtual const std::shared_ptr<const MetadataValueKey<FSPath> > config_location_key() const;
             virtual const std::shared_ptr<const MetadataValueKey<FSPath> > preferred_root_key() const;
+            virtual const std::shared_ptr<const MetadataValueKey<FSPath> > system_root_key() const;
 
             virtual const Tribool want_choice_enabled(
                     const std::shared_ptr<const PackageID> &,

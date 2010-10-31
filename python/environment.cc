@@ -406,6 +406,16 @@ class EnvironmentImplementationWrapper :
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "preferred_root_key");
         }
 
+        virtual const std::shared_ptr<const MetadataValueKey<FSPath> > system_root_key() const
+        {
+            Lock l(get_mutex());
+
+            if (bp::override f = get_override("system_root_key"))
+                return f();
+            else
+                throw PythonMethodNotImplemented("EnvironmentImplementation", "system_root_key");
+        }
+
         virtual const Tribool want_choice_enabled(
                 const std::shared_ptr<const PackageID> &,
                 const std::shared_ptr<const Choice> &,

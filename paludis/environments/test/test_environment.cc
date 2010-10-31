@@ -55,12 +55,14 @@ namespace paludis
         FSPath root;
         Sets sets;
         std::shared_ptr<LiteralMetadataValueKey<FSPath> > preferred_root_key;
+        std::shared_ptr<LiteralMetadataValueKey<FSPath> > system_root_key;
 
         Imp(Environment * const e, const FSPath & r) :
             package_database(std::make_shared<PackageDatabase>(e)),
             paludis_command(""),
             root(r),
-            preferred_root_key(std::make_shared<LiteralMetadataValueKey<FSPath>>("root", "Root", mkt_normal, root))
+            preferred_root_key(std::make_shared<LiteralMetadataValueKey<FSPath>>("root", "Root", mkt_normal, root)),
+            system_root_key(std::make_shared<LiteralMetadataValueKey<FSPath>>("system_root", "System Root", mkt_normal, FSPath("/")))
         {
         }
     };
@@ -71,6 +73,7 @@ TestEnvironment::TestEnvironment() :
     _imp(Pimp<TestEnvironment>::_imp)
 {
     add_metadata_key(_imp->preferred_root_key);
+    add_metadata_key(_imp->system_root_key);
 }
 
 TestEnvironment::TestEnvironment(const FSPath & r) :
@@ -78,6 +81,7 @@ TestEnvironment::TestEnvironment(const FSPath & r) :
     _imp(Pimp<TestEnvironment>::_imp)
 {
     add_metadata_key(_imp->preferred_root_key);
+    add_metadata_key(_imp->system_root_key);
 }
 
 TestEnvironment::~TestEnvironment()
@@ -237,6 +241,12 @@ const std::shared_ptr<const MetadataValueKey<FSPath> >
 TestEnvironment::preferred_root_key() const
 {
     return _imp->preferred_root_key;
+}
+
+const std::shared_ptr<const MetadataValueKey<FSPath> >
+TestEnvironment::system_root_key() const
+{
+    return _imp->system_root_key;
 }
 
 const Tribool

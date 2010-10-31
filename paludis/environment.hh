@@ -464,6 +464,15 @@ namespace paludis
             virtual const std::shared_ptr<const MetadataValueKey<FSPath> > preferred_root_key() const = 0;
 
             /**
+             * The system_root_key, which must not be null, specifies the
+             * filesystem root for dependencies etc. This is usually "/",
+             * unless something funky is going on.
+             *
+             * \since 0.55
+             */
+            virtual const std::shared_ptr<const MetadataValueKey<FSPath> > system_root_key() const = 0;
+
+            /**
              * The format_key, if non-zero, holds our environment's format. Environment
              * implementations should not return zero here, but clients should still
              * check.
