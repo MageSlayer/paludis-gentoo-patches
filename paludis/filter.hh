@@ -171,6 +171,19 @@ namespace paludis
         };
 
         /**
+         * A Filter which accepts only PackageID instances that are installed but
+         * not in a particular root.
+         *
+         * \ingroup g_selections
+         */
+        class PALUDIS_VISIBLE InstalledNotAtRoot :
+            public Filter
+        {
+            public:
+                InstalledNotAtRoot(const FSPath &);
+        };
+
+        /**
          * A Filter which accepts only PackageID instances that are installed to
          * the / fs.
          *

@@ -449,6 +449,11 @@ filter::InstalledAtRoot::InstalledAtRoot(const FSPath & r) :
 {
 }
 
+filter::InstalledNotAtRoot::InstalledNotAtRoot(const FSPath & r) :
+    Filter(std::make_shared<InstalledAtFilterHandler>(r, false))
+{
+}
+
 filter::InstalledAtSlash::InstalledAtSlash() :
     Filter(std::make_shared<InstalledAtFilterHandler>(FSPath("/"), true))
 {
