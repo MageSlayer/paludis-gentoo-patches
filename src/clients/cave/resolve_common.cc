@@ -973,6 +973,7 @@ paludis::cave::resolve_common(
             ScopedNotifierCallback display_callback_holder(env.get(),
                     NotifierCallbackFunction(std::cref(display_callback)));
 
+            bool first(true);
             while (true)
             {
                 try
@@ -983,6 +984,25 @@ paludis::cave::resolve_common(
                         targets_cleaned_up = std::make_shared<Sequence<std::string>>();
                     } else
                         targets_cleaned_up = add_resolver_targets(env, resolver, resolution_options, targets_if_not_purge, is_set);
+
+                    if (first)
+                    {
+                        if (targets_cleaned_up)
+                            for (auto t(targets_cleaned_up->begin()), t_end(targets_cleaned_up->end()) ;
+                                    t != t_end ; ++t)
+                                if ('!' != t->at(0) && std::string::npos != t->find('/'))
+                                {
+                                    PackageDepSpec ts(parse_user_package_dep_spec(*t, env.get(), { }));
+                                    if (ts.version_requirements_ptr() && ! ts.version_requirements_ptr()->empty())
+                                    {
+                                        confirm_helper.add_permit_downgrade_spec(ts);
+                                        confirm_helper.add_permit_old_version_spec(ts);
+                                    }
+                                }
+
+                        first = false;
+                    }
+
                     resolver->resolve();
                     break;
                 }
