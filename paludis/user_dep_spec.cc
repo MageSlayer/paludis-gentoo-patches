@@ -40,6 +40,7 @@
 #include <paludis/util/timestamp.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/accept_visitor.hh>
+#include <paludis/util/tribool.hh>
 #include <algorithm>
 
 using namespace paludis;
@@ -873,7 +874,7 @@ UserKeyRequirement::as_raw_string() const
     return "[." + _imp->key + std::string(1, _imp->op) + _imp->value + "]";
 }
 
-bool
+Tribool
 UserKeyRequirement::accumulate_changes_to_make_met(
         const Environment * const,
         const ChangedChoices * const,

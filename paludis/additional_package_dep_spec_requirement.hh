@@ -23,6 +23,7 @@
 #include <paludis/additional_package_dep_spec_requirement-fwd.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/tribool-fwd.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/changed_choices-fwd.hh>
 #include <paludis/package_id-fwd.hh>
@@ -70,9 +71,13 @@ namespace paludis
              * Verifies that the ID has the appropriate choice, and that that
              * choice isn't locked.
              *
+             * Returns true for changes made, false for not possible,
+             * indeterminate for nothing needs changing.
+             *
              * \since 0.51
+             * \since 0.55 returns Tribool
              */
-            virtual bool accumulate_changes_to_make_met(
+            virtual Tribool accumulate_changes_to_make_met(
                     const Environment * const,
                     const ChangedChoices * const maybe_changes_to_owner,
                     const std::shared_ptr<const PackageID> &,

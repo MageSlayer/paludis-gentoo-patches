@@ -1895,8 +1895,8 @@ Decider::_find_id_for_from(
                     for (auto a((*c)->spec().if_package()->additional_requirements_ptr()->begin()),
                             a_end((*c)->spec().if_package()->additional_requirements_ptr()->end()) ;
                             a != a_end ; ++a)
-                        if (! (*a)->accumulate_changes_to_make_met(_imp->env,
-                                    get_changed_choices_for(*c).get(), *i, *changed_choices))
+                        if ((*a)->accumulate_changes_to_make_met(_imp->env,
+                                    get_changed_choices_for(*c).get(), *i, *changed_choices).is_false())
                         {
                             ok = false;
                             break;

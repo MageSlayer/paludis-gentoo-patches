@@ -211,14 +211,14 @@ namespace
                 return result;
             }
 
-            bool accumulate_changes_to_make_met(
+            Tribool accumulate_changes_to_make_met(
                     const Environment * const env,
                     const ChangedChoices * const maybe_changes_to_owner,
                     const std::shared_ptr<const PackageID> & id,
                     ChangedChoices & changed_choices) const
             {
                 if (requirement_met(env, maybe_changes_to_owner, *id, &changed_choices).first)
-                    return true;
+                    return indeterminate;
 
                 if (_flags.length() >= 2 && ":*" == _flags.substr(_flags.length() - 2))
                 {
@@ -548,18 +548,24 @@ namespace
                 _reqs.push_back(req);
             }
 
-            virtual bool accumulate_changes_to_make_met(
+            virtual Tribool accumulate_changes_to_make_met(
                     const Environment * const env,
                     const ChangedChoices * const maybe_changes_to_owner,
                     const std::shared_ptr<const PackageID> & id,
                     ChangedChoices & changed_choices) const
             {
+                Tribool result(indeterminate);
                 for (auto r(_reqs.begin()), r_end(_reqs.end()) ;
                         r != r_end ; ++r)
-                    if (! (*r)->accumulate_changes_to_make_met(env, maybe_changes_to_owner, id, changed_choices))
+                {
+                    auto b((*r)->accumulate_changes_to_make_met(env, maybe_changes_to_owner, id, changed_choices));
+                    if (b.is_false())
                         return false;
+                    else if (b.is_true())
+                        result = true;
+                }
 
-                return true;
+                return result;
             }
     };
 
