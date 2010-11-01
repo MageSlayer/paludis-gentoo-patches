@@ -74,8 +74,20 @@ const auto fs_choices_need_changes = make_format_string_fetcher("display-resolut
 const auto fs_choices = make_format_string_fetcher("display-resolution/choices", 1)
     << "    " << param<'u'>() << "\\n";
 
-const auto fs_reasons = make_format_string_fetcher("display-resolution/reasons", 1)
-    << "    Reasons: ";
+const auto fs_reasons_start = make_format_string_fetcher("display-resolution/reasons_start", 1)
+    << "    ";
+
+const auto fs_reasons = make_format_string_fetcher("display-resolution/reasons", 2)
+    << "Reasons: ";
+
+const auto fs_changes_reasons_start = make_format_string_fetcher("display-resolution/changes_reasons_start", 1)
+    << c::bold_red() << "Reasons requiring changes: " << c::normal();
+
+const auto fs_changes_reasons_end = make_format_string_fetcher("display-resolution/changes_reasons_end", 1)
+    << " ";
+
+const auto fs_reason_changes = make_format_string_fetcher("display-resolution/reason_changes", 1)
+    << param<'c'>() << c::bold_yellow() << param<'r'>() << c::normal();
 
 const auto fs_reason_special = make_format_string_fetcher("display-resolution/reason_special", 1)
     << param<'c'>() << c::bold_yellow() << param<'r'>() << c::normal();

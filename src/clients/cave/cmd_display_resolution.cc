@@ -651,10 +651,23 @@ namespace
 
     void display_reasons(
             const std::shared_ptr<const Resolution> & resolution,
+            const std::shared_ptr<const WhyChangedChoices> & maybe_changed_choices,
             const bool more_annotations
             )
     {
-        std::set<std::string> reasons, special_reasons;
+        std::set<std::string> reasons, special_reasons, changes_reasons;
+
+        if (maybe_changed_choices)
+            for (auto c(maybe_changed_choices->reasons()->begin()), c_end(maybe_changed_choices->reasons()->end()) ;
+                    c != c_end ; ++c)
+            {
+                ReasonNameGetter g(false, more_annotations);
+                std::pair<std::string, Tribool> r((*c)->accept_returning<std::pair<std::string, Tribool> >(g));
+                if (r.first.empty())
+                    continue;
+                changes_reasons.insert(r.first);
+            }
+
         for (Constraints::ConstIterator c(resolution->constraints()->begin()),
                 c_end(resolution->constraints()->end()) ;
                 c != c_end ; ++c)
@@ -670,16 +683,36 @@ namespace
                 reasons.insert(r.first);
         }
 
+        for (std::set<std::string>::const_iterator r(changes_reasons.begin()), r_end(changes_reasons.end()) ;
+                r != r_end ; ++r)
+        {
+            special_reasons.erase(*r);
+            reasons.erase(*r);
+        }
+
         for (std::set<std::string>::const_iterator r(special_reasons.begin()), r_end(special_reasons.end()) ;
                 r != r_end ; ++r)
             reasons.erase(*r);
 
-        if (reasons.empty() && special_reasons.empty())
+        if (reasons.empty() && special_reasons.empty() && changes_reasons.empty())
             return;
 
-        cout << fuc(fs_reasons());
+        cout << fuc(fs_reasons_start());
 
         int n_shown(0);
+
+        if (! changes_reasons.empty())
+        {
+            cout << fuc(fs_changes_reasons_start());
+            for (std::set<std::string>::const_iterator r(changes_reasons.begin()), r_end(changes_reasons.end()) ;
+                    r != r_end ; ++r)
+                cout << fuc(fs_reason_changes(), fv<'c'>(++n_shown != 1 ? ", " : ""), fv<'r'>(*r));
+            cout << fuc(fs_changes_reasons_end());
+        }
+
+        cout << fuc(fs_reasons());
+        n_shown = 0;
+
         for (std::set<std::string>::const_iterator r(special_reasons.begin()), r_end(special_reasons.end()) ;
                 r != r_end ; ++r)
             cout << fuc(fs_reason_special(), fv<'c'>(++n_shown != 1 ? ", " : ""), fv<'r'>(*r));
@@ -1214,7 +1247,7 @@ namespace
 
         display_one_description(env, cmdline, decision.origin_id(), ! old_id);
         display_choices(env, cmdline, decision.origin_id(), decision.if_changed_choices(), old_id, choices_to_explain);
-        display_reasons(resolution, more_annotations);
+        display_reasons(resolution, decision.if_changed_choices(), more_annotations);
         display_masks(env, decision);
         if (maybe_totals)
             display_downloads(env, cmdline, decision.origin_id(), maybe_totals);
@@ -1264,7 +1297,7 @@ namespace
 
         cout << fuc(fs_uninstall_end());
 
-        display_reasons(resolution, more_annotations);
+        display_reasons(resolution, make_null_shared_ptr(), more_annotations);
         if (untaken)
             display_untaken_remove(decision);
         if (confirmations)
@@ -1288,7 +1321,7 @@ namespace
         else
             cout << fuc(fs_unable_taken(), fv<'s'>(stringify(d.resolvent().package())));
 
-        display_reasons(resolution, true);
+        display_reasons(resolution, make_null_shared_ptr(), true);
 
         if (untaken)
             return;
@@ -1430,7 +1463,7 @@ namespace
         cout << fuc(fs_break_id(), fv<'i'>(decision.existing_id()->canonical_form(idcf_no_name)));
 
         cout << fuc(fs_break_by());
-        display_reasons(resolution, more_annotations);
+        display_reasons(resolution, make_null_shared_ptr(), more_annotations);
         display_confirmations(decision);
     }
 
