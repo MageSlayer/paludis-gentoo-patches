@@ -38,6 +38,7 @@
 #include <paludis/resolver/package_or_block_dep_spec-fwd.hh>
 #include <paludis/resolver/resolutions_by_resolvent-fwd.hh>
 #include <paludis/resolver/change_by_resolvent-fwd.hh>
+#include <paludis/resolver/why_changed_choices-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/pimp.hh>
 #include <paludis/util/tribool-fwd.hh>
@@ -57,7 +58,7 @@ namespace paludis
             private Pimp<Decider>
         {
             private:
-                typedef std::tuple<std::shared_ptr<const PackageID>, std::shared_ptr<const ChangedChoices>, bool> FoundID;
+                typedef std::tuple<std::shared_ptr<const PackageID>, std::shared_ptr<const WhyChangedChoices>, bool> FoundID;
 
                 const std::shared_ptr<Resolution> _create_resolution_for_resolvent(const Resolvent &) const;
                 const std::shared_ptr<Resolution> _resolution_for_resolvent(const Resolvent &, const Tribool);

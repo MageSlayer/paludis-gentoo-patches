@@ -57,6 +57,7 @@
 #include <paludis/resolver/orderer_notes.hh>
 #include <paludis/resolver/change_by_resolvent.hh>
 #include <paludis/resolver/match_qpns.hh>
+#include <paludis/resolver/why_changed_choices.hh>
 #include <paludis/package_id.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/metadata_key.hh>
@@ -523,7 +524,7 @@ namespace
             const std::shared_ptr<Environment> &,
             const DisplayResolutionCommandLine & cmdline,
             const std::shared_ptr<const PackageID> & id,
-            const std::shared_ptr<const ChangedChoices> & changed_choices,
+            const std::shared_ptr<const WhyChangedChoices> & changed_choices,
             const std::shared_ptr<const PackageID> & old_id,
             ChoicesToExplain & choices_to_explain
             )
@@ -554,7 +555,7 @@ namespace
 
                 Tribool changed_state(indeterminate);
                 if (changed_choices)
-                    changed_state = changed_choices->overridden_value((*i)->name_with_prefix());
+                    changed_state = changed_choices->changed_choices()->overridden_value((*i)->name_with_prefix());
 
                 auto & s_prefix(changed_state.is_indeterminate() ? unchanged_s_prefix : changed_s_prefix);
                 auto & shown_prefix(changed_state.is_indeterminate() ? shown_prefix_unchanged : shown_prefix_changed);

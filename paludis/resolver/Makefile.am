@@ -92,7 +92,8 @@ noinst_HEADERS = \
 	strongly_connected_component.hh strongly_connected_component-fwd.hh \
 	suggest_restart.hh suggest_restart-fwd.hh \
 	unsuitable_candidates.hh unsuitable_candidates-fwd.hh \
-	use_existing.hh use_existing-fwd.hh use_existing-se.hh
+	use_existing.hh use_existing-fwd.hh use_existing-se.hh \
+	why_changed_choices.hh why_changed_choices-fwd.hh
 
 libpaludisresolver_a_SOURCES = \
 	accumulate_deps_and_provides.cc \
@@ -159,7 +160,8 @@ libpaludisresolver_a_SOURCES = \
 	strongly_connected_component.cc \
 	suggest_restart.cc \
 	unsuitable_candidates.cc \
-	use_existing.cc
+	use_existing.cc \
+	why_changed_choices.cc
 
 if ENABLE_VIRTUALS_REPOSITORY
 virtuals_tests = resolver_TEST_virtuals

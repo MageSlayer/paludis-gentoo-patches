@@ -23,6 +23,8 @@
 #include <paludis/resolver/change_by_resolvent.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/pimp-impl.hh>
+#include <paludis/util/sequence-impl.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/serialise-impl.hh>
 #include <paludis/changed_choices.hh>
 
@@ -477,4 +479,7 @@ template class Pimp<PresetReason>;
 template class Pimp<WasUsedByReason>;
 template class Pimp<LikeOtherDestinationTypeReason>;
 template class Pimp<ViaBinaryReason>;
+
+template class Sequence<std::shared_ptr<const Reason> >;
+template class WrappedForwardIterator<Reasons::ConstIteratorTag, const std::shared_ptr<const Reason> >;
 

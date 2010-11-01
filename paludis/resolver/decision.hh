@@ -26,6 +26,7 @@
 #include <paludis/resolver/change_type-fwd.hh>
 #include <paludis/resolver/resolvent-fwd.hh>
 #include <paludis/resolver/required_confirmations-fwd.hh>
+#include <paludis/resolver/why_changed_choices-fwd.hh>
 #include <paludis/util/pimp.hh>
 #include <paludis/util/simple_visitor.hh>
 #include <paludis/util/type_list.hh>
@@ -152,7 +153,7 @@ namespace paludis
                 ChangesToMakeDecision(
                         const Resolvent &,
                         const std::shared_ptr<const PackageID> &,
-                        const std::shared_ptr<const ChangedChoices> &,
+                        const std::shared_ptr<const WhyChangedChoices> &,
                         const bool best,
                         const ChangeType,
                         const bool taken,
@@ -170,7 +171,7 @@ namespace paludis
                 const std::shared_ptr<const PackageID> origin_id() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                const std::shared_ptr<const ChangedChoices> if_changed_choices() const
+                const std::shared_ptr<const WhyChangedChoices> if_changed_choices() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 const std::shared_ptr<const RepositoryName> if_via_new_binary_in() const

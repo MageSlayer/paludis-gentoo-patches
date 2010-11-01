@@ -22,6 +22,7 @@
 #include <paludis/resolver/unsuitable_candidates.hh>
 #include <paludis/resolver/resolvent.hh>
 #include <paludis/resolver/required_confirmations.hh>
+#include <paludis/resolver/why_changed_choices.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/stringify.hh>
@@ -122,7 +123,7 @@ ChangesToMakeDecision::deserialise(Deserialisation & d)
     std::shared_ptr<ChangesToMakeDecision> result(std::make_shared<ChangesToMakeDecision>(
                 v.member<Resolvent>("resolvent"),
                 v.member<std::shared_ptr<const PackageID> >("origin_id"),
-                v.member<std::shared_ptr<const ChangedChoices> >("if_changed_choices"),
+                v.member<std::shared_ptr<const WhyChangedChoices> >("if_changed_choices"),
                 v.member<bool>("best"),
                 destringify<ChangeType>(v.member<std::string>("change_type")),
                 v.member<bool>("taken"),
@@ -331,7 +332,7 @@ namespace paludis
     {
         const Resolvent resolvent;
         const std::shared_ptr<const PackageID> origin_id;
-        const std::shared_ptr<const ChangedChoices> changed_choices;
+        const std::shared_ptr<const WhyChangedChoices> changed_choices;
         const bool best;
         ChangeType change_type;
         const bool taken;
@@ -342,7 +343,7 @@ namespace paludis
         Imp(
                 const Resolvent & l,
                 const std::shared_ptr<const PackageID> & o,
-                const std::shared_ptr<const ChangedChoices> & h,
+                const std::shared_ptr<const WhyChangedChoices> & h,
                 const bool b,
                 const ChangeType c,
                 const bool t,
@@ -362,7 +363,7 @@ namespace paludis
 ChangesToMakeDecision::ChangesToMakeDecision(
         const Resolvent & r,
         const std::shared_ptr<const PackageID> & o,
-        const std::shared_ptr<const ChangedChoices> & h,
+        const std::shared_ptr<const WhyChangedChoices> & h,
         const bool b,
         const ChangeType c,
         const bool t,
@@ -408,7 +409,7 @@ ChangesToMakeDecision::origin_id() const
     return _imp->origin_id;
 }
 
-const std::shared_ptr<const ChangedChoices>
+const std::shared_ptr<const WhyChangedChoices>
 ChangesToMakeDecision::if_changed_choices() const
 {
     return _imp->changed_choices;

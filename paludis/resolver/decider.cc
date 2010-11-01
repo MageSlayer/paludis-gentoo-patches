@@ -36,6 +36,7 @@
 #include <paludis/resolver/collect_installed.hh>
 #include <paludis/resolver/collect_purges.hh>
 #include <paludis/resolver/accumulate_deps_and_provides.hh>
+#include <paludis/resolver/why_changed_choices.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_named_values.hh>
@@ -752,7 +753,8 @@ namespace
 
         bool visit(const ChangesToMakeDecision & decision) const
         {
-            return ok(decision.origin_id(), decision.if_changed_choices());
+            return ok(decision.origin_id(),
+                    decision.if_changed_choices() ? decision.if_changed_choices()->changed_choices() : make_null_shared_ptr());
         }
 
         bool visit(const ExistingNoChangeDecision & decision) const
@@ -902,7 +904,7 @@ namespace
     {
         const std::shared_ptr<const ChangedChoices> visit(const ChangesToMakeDecision & d) const
         {
-            return d.if_changed_choices();
+            return d.if_changed_choices() ? d.if_changed_choices()->changed_choices() : make_null_shared_ptr();
         }
 
         const std::shared_ptr<const ChangedChoices> visit(const ExistingNoChangeDecision &) const
@@ -1160,7 +1162,8 @@ namespace
         const std::pair<std::shared_ptr<const PackageID>, std::shared_ptr<const ChangedChoices> > visit(const ChangesToMakeDecision & decision) const
         {
             if (decision.taken())
-                return std::make_pair(decision.origin_id(), decision.if_changed_choices());
+                return std::make_pair(decision.origin_id(),
+                        decision.if_changed_choices() ? decision.if_changed_choices()->changed_choices() : make_null_shared_ptr());
             else
                 return std::make_pair(make_null_shared_ptr(), make_null_shared_ptr());
         }
@@ -1543,7 +1546,7 @@ Decider::_try_to_find_decision_for(
     const std::shared_ptr<const PackageID> existing_id(_find_existing_id_for(resolution));
 
     std::shared_ptr<const PackageID> installable_id;
-    std::shared_ptr<const ChangedChoices> changed_choices;
+    std::shared_ptr<const WhyChangedChoices> changed_choices;
     bool best;
     std::tie(installable_id, changed_choices, best) = _find_installable_id_for(resolution, try_option_changes_this_time, try_masked_this_time);
 
@@ -1865,7 +1868,10 @@ Decider::_find_id_for_from(
 
         if (ok)
         {
-            std::shared_ptr<ChangedChoices> changed_choices(std::make_shared<ChangedChoices>());
+            auto why_changed_choices(std::make_shared<WhyChangedChoices>(WhyChangedChoices(make_named_values<WhyChangedChoices>(
+                                n::changed_choices() = std::make_shared<ChangedChoices>(),
+                                n::reasons() = std::make_shared<Reasons>()
+                                ))));
             if (trying_changing_choices)
             {
                 for (Constraints::ConstIterator c(resolution->constraints()->begin()),
@@ -1895,12 +1901,17 @@ Decider::_find_id_for_from(
                     for (auto a((*c)->spec().if_package()->additional_requirements_ptr()->begin()),
                             a_end((*c)->spec().if_package()->additional_requirements_ptr()->end()) ;
                             a != a_end ; ++a)
-                        if ((*a)->accumulate_changes_to_make_met(_imp->env,
-                                    get_changed_choices_for(*c).get(), *i, *changed_choices).is_false())
+                    {
+                        auto b((*a)->accumulate_changes_to_make_met(_imp->env,
+                                    get_changed_choices_for(*c).get(), *i, *why_changed_choices->changed_choices()));
+                        if (b.is_false())
                         {
                             ok = false;
                             break;
                         }
+                        else if (b.is_true())
+                            why_changed_choices->reasons()->push_back((*c)->reason());
+                    }
                 }
             }
 
@@ -1915,14 +1926,16 @@ Decider::_find_id_for_from(
 
                 if ((*c)->spec().if_package())
                     ok = ok && match_package_with_maybe_changes(*_imp->env, *(*c)->spec().if_package(),
-                            get_changed_choices_for(*c).get(), **i, changed_choices.get(), { });
+                            get_changed_choices_for(*c).get(), **i, why_changed_choices->changed_choices().get(), { });
                 else
                     ok = ok && ! match_package_with_maybe_changes(*_imp->env, (*c)->spec().if_block()->blocking(),
-                            get_changed_choices_for(*c).get(), **i, changed_choices.get(), { });
+                            get_changed_choices_for(*c).get(), **i, why_changed_choices->changed_choices().get(), { });
             }
 
             if (ok)
-                return FoundID(*i, changed_choices->empty() ? make_null_shared_ptr() : changed_choices, (*i)->version() == best_version->version());
+                return FoundID(*i,
+                        why_changed_choices->changed_choices()->empty() ? make_null_shared_ptr() : why_changed_choices,
+                        (*i)->version() == best_version->version());
         }
     }
 
