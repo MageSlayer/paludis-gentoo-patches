@@ -710,7 +710,8 @@ namespace
             cout << fuc(fs_changes_reasons_end());
         }
 
-        cout << fuc(fs_reasons());
+        if ((! special_reasons.empty()) || (! reasons.empty()))
+            cout << fuc(fs_reasons());
         n_shown = 0;
 
         for (std::set<std::string>::const_iterator r(special_reasons.begin()), r_end(special_reasons.end()) ;
