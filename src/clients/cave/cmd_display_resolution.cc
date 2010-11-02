@@ -214,8 +214,16 @@ namespace
                                 false), false);
                 }
                 else
+                {
+                    std::string ts;
+                    const auto & cs(*r.sanitised_dependency().active_dependency_labels_classifier());
+                    if (cs.includes_buildish && ! cs.includes_non_post_runish && ! cs.includes_post &&
+                            ! cs.includes_non_test_buildish)
+                        ts = " (test)";
+
                     return annotate(r.sanitised_dependency().spec().if_package()->annotations_key(),
-                            std::make_pair(stringify(r.from_id()->name()), false), false);
+                            std::make_pair(stringify(r.from_id()->name()) + ts, false), false);
+                }
             }
         }
 
