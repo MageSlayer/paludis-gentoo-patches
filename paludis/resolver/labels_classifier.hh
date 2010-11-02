@@ -22,6 +22,7 @@
 
 #include <paludis/resolver/labels_classifier-fwd.hh>
 #include <paludis/dep_label-fwd.hh>
+#include <paludis/serialise-fwd.hh>
 
 namespace paludis
 {
@@ -37,6 +38,7 @@ namespace paludis
             bool includes_compile_against;
             bool includes_fetch;
             bool includes_non_post_runish;
+            bool includes_non_test_buildish;
             bool includes_post;
             bool includes_postish;
 
@@ -53,6 +55,11 @@ namespace paludis
             void visit(const DependenciesRunLabel &);
             void visit(const DependenciesSuggestionLabel &);
             void visit(const DependenciesTestLabel &);
+
+            void serialise(Serialiser &) const;
+
+            static const std::shared_ptr<LabelsClassifier> deserialise(
+                    Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 }

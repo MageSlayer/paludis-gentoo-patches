@@ -24,6 +24,7 @@
 #include <paludis/resolver/decider-fwd.hh>
 #include <paludis/resolver/resolution-fwd.hh>
 #include <paludis/resolver/package_or_block_dep_spec.hh>
+#include <paludis/resolver/labels_classifier.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/dep_label-fwd.hh>
 #include <paludis/dep_spec.hh>
@@ -37,6 +38,7 @@ namespace paludis
     {
         typedef Name<struct active_dependency_labels_name> active_dependency_labels;
         typedef Name<struct active_dependency_labels_as_string_name> active_dependency_labels_as_string;
+        typedef Name<struct active_dependency_labels_classifier_name> active_dependency_labels_classifier;
         typedef Name<struct metadata_key_human_name_name> metadata_key_human_name;
         typedef Name<struct metadata_key_raw_name_name> metadata_key_raw_name;
         typedef Name<struct original_specs_as_string_name> original_specs_as_string;
@@ -49,6 +51,7 @@ namespace paludis
         {
             NamedValue<n::active_dependency_labels, std::shared_ptr<const DependenciesLabelSequence> > active_dependency_labels;
             NamedValue<n::active_dependency_labels_as_string, std::string> active_dependency_labels_as_string;
+            NamedValue<n::active_dependency_labels_classifier, std::shared_ptr<const LabelsClassifier> > active_dependency_labels_classifier;
             NamedValue<n::metadata_key_human_name, std::string> metadata_key_human_name;
             NamedValue<n::metadata_key_raw_name, std::string> metadata_key_raw_name;
             NamedValue<n::original_specs_as_string, std::string> original_specs_as_string;

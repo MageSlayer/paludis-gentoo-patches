@@ -353,14 +353,19 @@ namespace
         SanitisedDependency make_sanitised(const PackageOrBlockDepSpec & spec)
         {
             std::stringstream adl;
+            auto classifier(std::make_shared<LabelsClassifier>());
             for (DependenciesLabelSequence::ConstIterator i((*labels_stack.begin())->begin()),
                     i_end((*labels_stack.begin())->end()) ;
                     i != i_end ; ++i)
+            {
                 adl << (adl.str().empty() ? "" : ", ") << stringify(**i);
+                (*i)->accept(*classifier);
+            }
 
             return make_named_values<SanitisedDependency>(
                     n::active_dependency_labels() = *labels_stack.begin(),
                     n::active_dependency_labels_as_string() = adl.str(),
+                    n::active_dependency_labels_classifier() = classifier,
                     n::metadata_key_human_name() = human_name,
                     n::metadata_key_raw_name() = raw_name,
                     n::original_specs_as_string() = original_specs_as_string,
@@ -521,6 +526,7 @@ SanitisedDependency::serialise(Serialiser & s) const
 {
     s.object("SanitisedDependency")
         .member(SerialiserFlags<>(), "active_dependency_labels_as_string", active_dependency_labels_as_string())
+        .member(SerialiserFlags<serialise::might_be_null>(), "active_dependency_labels_classifier", active_dependency_labels_classifier())
         .member(SerialiserFlags<>(), "metadata_key_human_name", metadata_key_human_name())
         .member(SerialiserFlags<>(), "metadata_key_raw_name", metadata_key_raw_name())
         .member(SerialiserFlags<>(), "original_specs_as_string", original_specs_as_string())
@@ -538,6 +544,7 @@ SanitisedDependency::deserialise(Deserialisation & d, const std::shared_ptr<cons
     return make_named_values<SanitisedDependency>(
             n::active_dependency_labels() = make_null_shared_ptr(),
             n::active_dependency_labels_as_string() = v.member<std::string>("active_dependency_labels_as_string"),
+            n::active_dependency_labels_classifier() = v.member<std::shared_ptr<LabelsClassifier> >("active_dependency_labels_classifier"),
             n::metadata_key_human_name() = v.member<std::string>("metadata_key_human_name"),
             n::metadata_key_raw_name() = v.member<std::string>("metadata_key_raw_name"),
             n::original_specs_as_string() = v.member<std::string>("original_specs_as_string"),

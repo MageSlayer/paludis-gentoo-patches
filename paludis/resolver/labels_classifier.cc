@@ -23,6 +23,7 @@
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/dep_label.hh>
+#include <paludis/serialise-impl.hh>
 #include <algorithm>
 
 using namespace paludis;
@@ -34,6 +35,7 @@ LabelsClassifier::LabelsClassifier() :
     includes_compile_against(false),
     includes_fetch(false),
     includes_non_post_runish(false),
+    includes_non_test_buildish(false),
     includes_post(false),
     includes_postish(false),
     is_recommendation(false),
@@ -49,6 +51,7 @@ LabelsClassifier::visit(const DependenciesBuildLabel & l)
     {
         is_requirement = true;
         includes_buildish = true;
+        includes_non_test_buildish = true;
         any_enabled = true;
     }
 }
@@ -71,6 +74,7 @@ LabelsClassifier::visit(const DependenciesFetchLabel & l)
     {
         is_requirement = true;
         includes_buildish = true;
+        includes_non_test_buildish = true;
         includes_fetch = true;
         any_enabled = true;
     }
@@ -105,6 +109,7 @@ LabelsClassifier::visit(const DependenciesInstallLabel & l)
     {
         is_requirement = true;
         includes_buildish = true;
+        includes_non_test_buildish = true;
         any_enabled = true;
     }
 }
@@ -117,6 +122,7 @@ LabelsClassifier::visit(const DependenciesCompileAgainstLabel & l)
         is_requirement = true;
         includes_non_post_runish = true;
         includes_buildish = true;
+        includes_non_test_buildish = true;
         any_enabled = true;
     }
 }
@@ -141,6 +147,45 @@ LabelsClassifier::visit(const DependenciesSuggestionLabel & l)
         includes_postish = true;
         any_enabled = true;
     }
+}
+
+void
+LabelsClassifier::serialise(Serialiser & s) const
+{
+    s.object("LabelsClassifier")
+        .member(SerialiserFlags<>(), "any_enabled", any_enabled)
+        .member(SerialiserFlags<>(), "includes_buildish", includes_buildish)
+        .member(SerialiserFlags<>(), "includes_compile_against", includes_compile_against)
+        .member(SerialiserFlags<>(), "includes_fetch", includes_fetch)
+        .member(SerialiserFlags<>(), "includes_non_post_runish", includes_non_post_runish)
+        .member(SerialiserFlags<>(), "includes_non_test_buildish", includes_non_test_buildish)
+        .member(SerialiserFlags<>(), "includes_post", includes_post)
+        .member(SerialiserFlags<>(), "includes_postish", includes_postish)
+        .member(SerialiserFlags<>(), "is_recommendation", is_recommendation)
+        .member(SerialiserFlags<>(), "is_requirement", is_requirement)
+        .member(SerialiserFlags<>(), "is_suggestion", is_suggestion)
+        ;
+}
+
+const std::shared_ptr<LabelsClassifier>
+LabelsClassifier::deserialise(
+        Deserialisation & d)
+{
+    Deserialisator v(d, "LabelsClassifier");
+    auto result(std::make_shared<LabelsClassifier>());
+    result->any_enabled = v.member<bool>("any_enabled");
+    result->includes_buildish = v.member<bool>("includes_buildish");
+    result->includes_compile_against = v.member<bool>("includes_compile_against");
+    result->includes_fetch = v.member<bool>("includes_fetch");
+    result->includes_non_post_runish = v.member<bool>("includes_non_post_runish");
+    result->includes_non_test_buildish = v.member<bool>("includes_non_test_buildish");
+    result->includes_post = v.member<bool>("includes_post");
+    result->includes_postish = v.member<bool>("includes_postish");
+    result->is_recommendation = v.member<bool>("is_recommendation");
+    result->is_requirement = v.member<bool>("is_requirement");
+    result->is_suggestion = v.member<bool>("is_suggestion");
+
+    return result;
 }
 
 bool
