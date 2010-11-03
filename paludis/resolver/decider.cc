@@ -1753,7 +1753,8 @@ Decider::_cannot_decide_for(
     if (existing_id)
         unsuitable_candidates->push_back(_make_unsuitable_candidate(resolution, existing_id, true));
 
-    const std::shared_ptr<const PackageIDSequence> installable_ids(_find_installable_id_candidates_for(resolution, true, false));
+    const std::shared_ptr<const PackageIDSequence> installable_ids(_find_installable_id_candidates_for(
+                resolution->resolvent().package(), make_slot_filter(resolution->resolvent()), true, false));
     for (PackageIDSequence::ConstIterator i(installable_ids->begin()), i_end(installable_ids->end()) ;
             i != i_end ; ++i)
         unsuitable_candidates->push_back(_make_unsuitable_candidate(resolution, *i, false));
@@ -1821,15 +1822,16 @@ Decider::_installed_ids(const std::shared_ptr<const Resolution> & resolution) co
 
 const std::shared_ptr<const PackageIDSequence>
 Decider::_find_installable_id_candidates_for(
-        const std::shared_ptr<const Resolution> & resolution,
+        const QualifiedPackageName & package,
+        const Filter & slot_filter,
         const bool include_errors,
         const bool include_unmaskable) const
 {
     return (*_imp->env)[selection::AllVersionsSorted(
-            _make_origin_filtered_generator(generator::Package(resolution->resolvent().package())) |
-            make_slot_filter(resolution->resolvent()) |
+            _make_origin_filtered_generator(generator::Package(package)) |
+            slot_filter |
             filter::SupportsAction<InstallAction>() |
-            (include_errors ? filter::All() : include_unmaskable ? _make_unmaskable_filter(resolution->resolvent().package()) : filter::NotMasked())
+            (include_errors ? filter::All() : include_unmaskable ? _make_unmaskable_filter(package) : filter::NotMasked())
             )];
 }
 
@@ -1838,7 +1840,9 @@ Decider::_find_installable_id_for(const std::shared_ptr<const Resolution> & reso
         const bool include_option_changes,
         const bool include_unmaskable) const
 {
-    return _find_id_for_from(resolution, _find_installable_id_candidates_for(resolution, false, include_unmaskable), include_option_changes, false);
+    return _find_id_for_from(resolution, _find_installable_id_candidates_for(
+                resolution->resolvent().package(), make_slot_filter(resolution->resolvent()), false, include_unmaskable),
+            include_option_changes, false);
 }
 
 const Decider::FoundID

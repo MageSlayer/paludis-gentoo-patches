@@ -218,7 +218,8 @@ namespace paludis
                 const std::shared_ptr<const PackageID> _find_existing_id_for(
                         const std::shared_ptr<const Resolution> &) const;
                 const std::shared_ptr<const PackageIDSequence> _find_installable_id_candidates_for(
-                        const std::shared_ptr<const Resolution> &,
+                        const QualifiedPackageName &,
+                        const Filter &,
                         const bool include_errors,
                         const bool include_unmaskable) const;
                 const FoundID _find_installable_id_for(
