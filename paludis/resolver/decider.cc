@@ -1533,6 +1533,15 @@ Decider::_get_error_resolvents_for(
                         ),
                     *t);
 
+            auto ids(_find_installable_id_candidates_for(*spec.package_ptr(), filter::All(), true, true));
+            if (! ids->empty())
+                resolvent.slot() = make_named_values<SlotNameOrNull>(
+                        n::name_or_null() = (*ids->rbegin())->slot_key() ?
+                            make_shared_copy((*ids->rbegin())->slot_key()->value()) :
+                            make_null_shared_ptr(),
+                        n::null_means_unknown() = true
+                        );
+
             result->push_back(resolvent);
         }
     return result;
