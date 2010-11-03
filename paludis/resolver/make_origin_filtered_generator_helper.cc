@@ -96,9 +96,7 @@ namespace
 }
 
 FilteredGenerator
-MakeOriginFilteredGeneratorHelper::operator() (
-        const Generator & g,
-        const std::shared_ptr<const Resolution> &) const
+MakeOriginFilteredGeneratorHelper::operator() (const Generator & g) const
 {
     if (_imp->making_binaries)
         return g | BinaryableFilter();

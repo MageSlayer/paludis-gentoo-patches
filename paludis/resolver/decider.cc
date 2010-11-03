@@ -499,10 +499,9 @@ Decider::_make_destination_filtered_generator(const Generator & g,
 }
 
 FilteredGenerator
-Decider::_make_origin_filtered_generator(const Generator & g,
-        const std::shared_ptr<const Resolution> & resolution) const
+Decider::_make_origin_filtered_generator(const Generator & g) const
 {
-    return _imp->fns.make_origin_filtered_generator_fn()(g, resolution);
+    return _imp->fns.make_origin_filtered_generator_fn()(g);
 }
 
 Filter
@@ -1827,7 +1826,7 @@ Decider::_find_installable_id_candidates_for(
         const bool include_unmaskable) const
 {
     return (*_imp->env)[selection::AllVersionsSorted(
-            _make_origin_filtered_generator(generator::Package(resolution->resolvent().package()), resolution) |
+            _make_origin_filtered_generator(generator::Package(resolution->resolvent().package())) |
             make_slot_filter(resolution->resolvent()) |
             filter::SupportsAction<InstallAction>() |
             (include_errors ? filter::All() : include_unmaskable ? _make_unmaskable_filter(resolution) : filter::NotMasked())

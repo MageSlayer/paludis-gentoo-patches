@@ -152,8 +152,7 @@ namespace paludis
                 )> MakeDestinationFilteredGeneratorFunction;
 
         typedef std::function<FilteredGenerator (
-                const Generator &,
-                const std::shared_ptr<const Resolution> &
+                const Generator &
                 )> MakeOriginFilteredGeneratorFunction;
 
         typedef std::function<Filter (

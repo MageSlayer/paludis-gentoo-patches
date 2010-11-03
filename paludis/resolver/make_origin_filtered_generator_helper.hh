@@ -43,9 +43,7 @@ namespace paludis
 
                 void set_making_binaries(const bool);
 
-                FilteredGenerator operator() (
-                        const Generator &,
-                        const std::shared_ptr<const Resolution> &) const;
+                FilteredGenerator operator() (const Generator &) const;
         };
     }
 
