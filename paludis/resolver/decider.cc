@@ -505,9 +505,9 @@ Decider::_make_origin_filtered_generator(const Generator & g) const
 }
 
 Filter
-Decider::_make_unmaskable_filter(const std::shared_ptr<const Resolution> & resolution) const
+Decider::_make_unmaskable_filter(const QualifiedPackageName & n) const
 {
-    return _imp->fns.make_unmaskable_filter_fn()(resolution);
+    return _imp->fns.make_unmaskable_filter_fn()(n);
 }
 
 bool
@@ -1829,7 +1829,7 @@ Decider::_find_installable_id_candidates_for(
             _make_origin_filtered_generator(generator::Package(resolution->resolvent().package())) |
             make_slot_filter(resolution->resolvent()) |
             filter::SupportsAction<InstallAction>() |
-            (include_errors ? filter::All() : include_unmaskable ? _make_unmaskable_filter(resolution) : filter::NotMasked())
+            (include_errors ? filter::All() : include_unmaskable ? _make_unmaskable_filter(resolution->resolvent().package()) : filter::NotMasked())
             )];
 }
 

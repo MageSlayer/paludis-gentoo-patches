@@ -26,6 +26,7 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/filter-fwd.hh>
+#include <paludis/name-fwd.hh>
 #include <memory>
 
 namespace paludis
@@ -41,7 +42,7 @@ namespace paludis
 
                 void set_override_masks(const bool);
 
-                Filter operator() (const std::shared_ptr<const Resolution> &) const;
+                Filter operator() (const QualifiedPackageName &) const;
         };
     }
 

@@ -156,7 +156,7 @@ namespace paludis
                 )> MakeOriginFilteredGeneratorFunction;
 
         typedef std::function<Filter (
-                const std::shared_ptr<const Resolution> &
+                const QualifiedPackageName &
                 )> MakeUnmaskableFilterFunction;
 
         typedef std::function<Tribool (

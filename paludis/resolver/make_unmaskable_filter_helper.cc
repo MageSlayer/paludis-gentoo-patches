@@ -98,7 +98,7 @@ namespace
 
 Filter
 MakeUnmaskableFilterHelper::operator() (
-        const std::shared_ptr<const Resolution> &) const
+        const QualifiedPackageName &) const
 {
     if (_imp->override_masks)
         return UnmaskableFilter();
