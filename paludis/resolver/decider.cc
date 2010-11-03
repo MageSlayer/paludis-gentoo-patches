@@ -1527,7 +1527,15 @@ Decider::_get_error_resolvents_for(
     DestinationTypes destination_types(_get_destination_types_for_error(spec, reason));
     for (EnumIterator<DestinationType> t, t_end(last_dt) ; t != t_end ; ++t)
         if (destination_types[*t])
-            result->push_back(Resolvent(spec, true, *t));
+        {
+            Resolvent resolvent(spec, make_named_values<SlotNameOrNull>(
+                        n::name_or_null() = make_null_shared_ptr(),
+                        n::null_means_unknown() = true
+                        ),
+                    *t);
+
+            result->push_back(resolvent);
+        }
     return result;
 }
 

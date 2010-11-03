@@ -54,8 +54,8 @@ namespace paludis
             Resolvent(const QualifiedPackageName &, const SlotName &, const DestinationType);
             Resolvent(const QualifiedPackageName &, const SlotNameOrNull &, const DestinationType);
 
-            Resolvent(const PackageDepSpec &, const bool, const DestinationType);
             Resolvent(const PackageDepSpec &, const SlotName &, const DestinationType);
+            Resolvent(const PackageDepSpec &, const SlotNameOrNull &, const DestinationType);
 
             Resolvent(const std::shared_ptr<const PackageID> &, const DestinationType);
 

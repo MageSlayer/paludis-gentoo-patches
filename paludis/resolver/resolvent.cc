@@ -93,14 +93,11 @@ Resolvent::Resolvent(
 
 Resolvent::Resolvent(
         const PackageDepSpec & spec,
-        const bool b,
+        const SlotNameOrNull & s,
         const DestinationType t) :
     destination_type(n::destination_type() = t),
     package(n::package() = *spec.package_ptr()),
-    slot(make_named_values<SlotNameOrNull>(
-                n::name_or_null() = make_null_shared_ptr(),
-                n::null_means_unknown() = b
-                ))
+    slot(s)
 {
 }
 
