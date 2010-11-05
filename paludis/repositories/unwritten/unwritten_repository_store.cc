@@ -102,7 +102,9 @@ UnwrittenRepositoryStore::_populate_one(const Environment * const env, const FSP
 
     UnwrittenRepositoryFile file(f);
 
-    std::shared_ptr<Mask> mask(std::make_shared<UnwrittenMask>());
+    std::shared_ptr<Mask> mask(file.is_graveyard() ?
+            std::shared_ptr<Mask>(std::make_shared<GraveyardMask>()) :
+            std::shared_ptr<Mask>(std::make_shared<UnwrittenMask>()));
 
     QualifiedPackageName old_name("x/x");
     std::shared_ptr<QualifiedPackageNameSet> pkgs;
@@ -135,12 +137,15 @@ UnwrittenRepositoryStore::_populate_one(const Environment * const env, const FSP
                             n::added_by() = (*i).added_by(),
                             n::bug_ids() = (*i).bug_ids(),
                             n::comment() = (*i).comment(),
+                            n::commit_id() = (*i).commit_id(),
                             n::description() = (*i).description(),
                             n::environment() = env,
                             n::homepage() = (*i).homepage(),
                             n::mask() = mask,
                             n::name() = (*i).name(),
                             n::remote_ids() = (*i).remote_ids(),
+                            n::removed_by() = (*i).removed_by(),
+                            n::removed_from() = (*i).removed_from(),
                             n::repository() = _imp->repo,
                             n::slot() = (*i).slot(),
                             n::version() = (*i).version()

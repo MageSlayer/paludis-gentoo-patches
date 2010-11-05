@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -38,5 +38,23 @@ const std::string
 UnwrittenMask::explanation() const
 {
     return "Package has not been written yet";
+}
+
+char
+GraveyardMask::key() const
+{
+    return 'G';
+}
+
+const std::string
+GraveyardMask::description() const
+{
+    return "graveyard";
+}
+
+const std::string
+GraveyardMask::explanation() const
+{
+    return "Package has been deleted";
 }
 

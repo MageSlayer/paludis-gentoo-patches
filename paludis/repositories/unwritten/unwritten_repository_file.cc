@@ -55,6 +55,12 @@ namespace paludis
     struct Imp<UnwrittenRepositoryFile>
     {
         Entries entries;
+        bool is_graveyard;
+
+        Imp() :
+            is_graveyard(false)
+        {
+        }
     };
 
     template <>
@@ -197,6 +203,16 @@ UnwrittenRepositoryFile::_load(const FSPath & f)
                     throw UnwrittenRepositoryConfigurationError(
                             "Unsupported format '" + value + "' in '" + stringify(f) + "'");
             }
+            else if (key == "role")
+            {
+                if (value == "graveyard")
+                    _imp->is_graveyard = true;
+                else if (value == "unwritten")
+                    _imp->is_graveyard = false;
+                else
+                    Log::get_instance()->message("unwritten_repository.file.unknown_key", ll_warning, lc_context)
+                        << "Ignoring unknown key value '" << value << "' for key '" << key << "'";
+            }
             else
                 Log::get_instance()->message("unwritten_repository.file.unknown_key", ll_warning, lc_context)
                     << "Ignoring unknown key '" << key << "' with value '" << value << "'";
@@ -293,10 +309,13 @@ UnwrittenRepositoryFile::_load(const FSPath & f)
                                 n::added_by() = std::shared_ptr<const MetadataValueKey<std::string> >(),
                                 n::bug_ids() = std::shared_ptr<const MetadataCollectionKey<Sequence<std::string> > >(),
                                 n::comment() = std::shared_ptr<const MetadataValueKey<std::string> >(),
+                                n::commit_id() = std::shared_ptr<const MetadataValueKey<std::string> >(),
                                 n::description() = std::shared_ptr<const MetadataValueKey<std::string> >(),
                                 n::homepage() = std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >(),
                                 n::name() = category + package,
                                 n::remote_ids() = std::shared_ptr<const MetadataCollectionKey<Sequence<std::string> > >(),
+                                n::removed_by() = std::shared_ptr<const MetadataValueKey<std::string> >(),
+                                n::removed_from() = std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >(),
                                 n::slot() = slot,
                                 n::version() = version
                                 ));
@@ -316,8 +335,18 @@ UnwrittenRepositoryFile::_load(const FSPath & f)
             }
             else if (token == "comment")
                 entry->comment() = std::make_shared<LiteralMetadataValueKey<std::string>>("comment", "Comment", mkt_normal, token2);
+            else if (token == "commit-id")
+                entry->commit_id() = std::make_shared<LiteralMetadataValueKey<std::string>>("commit-id", "Commit ID", mkt_normal, token2);
             else if (token == "added-by")
                 entry->added_by() = std::make_shared<LiteralMetadataValueKey<std::string>>("added-by", "Added by", mkt_author, token2);
+            else if (token == "removed-by")
+                entry->removed_by() = std::make_shared<LiteralMetadataValueKey<std::string>>("removed-by", "Removed by", mkt_author, token2);
+            else if (token == "removed-from")
+            {
+                auto t2s(std::make_shared<Set<std::string> >());
+                t2s->insert(token2);
+                entry->removed_from() = std::make_shared<LiteralMetadataStringSetKey>("removed-from", "Removed from", mkt_author, t2s);
+            }
             else if (token == "bug-ids")
             {
                 std::shared_ptr<Sequence<std::string> > seq(std::make_shared<Sequence<std::string>>());
@@ -349,6 +378,12 @@ UnwrittenRepositoryFile::_load(const FSPath & f)
 
     if (entry)
         _imp->entries.push_back(*entry);
+}
+
+bool
+UnwrittenRepositoryFile::is_graveyard() const
+{
+    return _imp->is_graveyard;
 }
 
 template class Pimp<UnwrittenRepositoryFile>;

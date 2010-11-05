@@ -36,10 +36,13 @@ namespace paludis
         typedef Name<struct added_by_name> added_by;
         typedef Name<struct bug_ids_name> bug_ids;
         typedef Name<struct comment_name> comment;
+        typedef Name<struct commit_id_name> commit_id;
         typedef Name<struct description_name> description;
         typedef Name<struct homepage_name> homepage;
         typedef Name<struct name_name> name;
         typedef Name<struct remote_ids_name> remote_ids;
+        typedef Name<struct removed_by_name> removed_by;
+        typedef Name<struct removed_from_name> removed_from;
         typedef Name<struct slot_name> slot;
         typedef Name<struct version_name> version;
     }
@@ -53,10 +56,13 @@ namespace paludis
             NamedValue<n::added_by, std::shared_ptr<const MetadataValueKey<std::string> > > added_by;
             NamedValue<n::bug_ids, std::shared_ptr<const MetadataCollectionKey<Sequence<std::string> > > > bug_ids;
             NamedValue<n::comment, std::shared_ptr<const MetadataValueKey<std::string> > > comment;
+            NamedValue<n::commit_id, std::shared_ptr<const MetadataValueKey<std::string> > > commit_id;
             NamedValue<n::description, std::shared_ptr<const MetadataValueKey<std::string> > > description;
             NamedValue<n::homepage, std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > > homepage;
             NamedValue<n::name, QualifiedPackageName> name;
             NamedValue<n::remote_ids, std::shared_ptr<const MetadataCollectionKey<Sequence<std::string> > > > remote_ids;
+            NamedValue<n::removed_by, std::shared_ptr<const MetadataValueKey<std::string> > > removed_by;
+            NamedValue<n::removed_from, std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > > removed_from;
             NamedValue<n::slot, std::shared_ptr<const MetadataValueKey<SlotName> > > slot;
             NamedValue<n::version, VersionSpec> version;
         };
@@ -75,6 +81,8 @@ namespace paludis
                 typedef WrappedForwardIterator<ConstIteratorTag, const UnwrittenRepositoryFileEntry> ConstIterator;
                 ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                bool is_graveyard() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 

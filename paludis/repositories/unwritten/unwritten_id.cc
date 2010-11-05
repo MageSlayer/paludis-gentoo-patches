@@ -52,6 +52,9 @@ namespace paludis
         const std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > homepage_key;
         const std::shared_ptr<const MetadataCollectionKey<Sequence<std::string> > > bug_ids_key;
         const std::shared_ptr<const MetadataCollectionKey<Sequence<std::string> > > remote_ids_key;
+        const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > removed_from_key;
+        const std::shared_ptr<const MetadataValueKey<std::string> > removed_by_key;
+        const std::shared_ptr<const MetadataValueKey<std::string> > commit_id_key;
         const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Choices> > > choices_key;
         const std::shared_ptr<const Mask> mask;
 
@@ -68,6 +71,9 @@ namespace paludis
             homepage_key(e.homepage()),
             bug_ids_key(e.bug_ids()),
             remote_ids_key(e.remote_ids()),
+            removed_from_key(e.removed_from()),
+            removed_by_key(e.removed_by()),
+            commit_id_key(e.commit_id()),
             choices_key(unchoices_key()),
             mask(e.mask())
         {
@@ -93,6 +99,12 @@ UnwrittenID::UnwrittenID(const UnwrittenIDParams & entry) :
         add_metadata_key(_imp->bug_ids_key);
     if (_imp->remote_ids_key)
         add_metadata_key(_imp->remote_ids_key);
+    if (_imp->removed_from_key)
+        add_metadata_key(_imp->removed_from_key);
+    if (_imp->removed_by_key)
+        add_metadata_key(_imp->removed_by_key);
+    if (_imp->commit_id_key)
+        add_metadata_key(_imp->commit_id_key);
     add_mask(_imp->mask);
 }
 
@@ -310,7 +322,7 @@ UnwrittenID::installed_time_key() const
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 UnwrittenID::from_repositories_key() const
 {
-    return std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >();
+    return _imp->removed_from_key;
 }
 
 const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Choices> > >
