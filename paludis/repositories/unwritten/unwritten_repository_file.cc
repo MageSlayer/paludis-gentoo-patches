@@ -55,12 +55,6 @@ namespace paludis
     struct Imp<UnwrittenRepositoryFile>
     {
         Entries entries;
-        bool is_graveyard;
-
-        Imp() :
-            is_graveyard(false)
-        {
-        }
     };
 
     template <>
@@ -202,16 +196,6 @@ UnwrittenRepositoryFile::_load(const FSPath & f)
                 if (value != "unwritten-1")
                     throw UnwrittenRepositoryConfigurationError(
                             "Unsupported format '" + value + "' in '" + stringify(f) + "'");
-            }
-            else if (key == "role")
-            {
-                if (value == "graveyard")
-                    _imp->is_graveyard = true;
-                else if (value == "unwritten")
-                    _imp->is_graveyard = false;
-                else
-                    Log::get_instance()->message("unwritten_repository.file.unknown_key", ll_warning, lc_context)
-                        << "Ignoring unknown key value '" << value << "' for key '" << key << "'";
             }
             else
                 Log::get_instance()->message("unwritten_repository.file.unknown_key", ll_warning, lc_context)
@@ -378,12 +362,6 @@ UnwrittenRepositoryFile::_load(const FSPath & f)
 
     if (entry)
         _imp->entries.push_back(*entry);
-}
-
-bool
-UnwrittenRepositoryFile::is_graveyard() const
-{
-    return _imp->is_graveyard;
 }
 
 template class Pimp<UnwrittenRepositoryFile>;

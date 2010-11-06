@@ -339,7 +339,10 @@ UnwrittenRepository::repository_factory_name(
         const std::function<std::string (const std::string &)> & f)
 {
     if (f("name").empty())
-        return RepositoryName("unwritten");
+    {
+        UnwrittenRepositoryInformation info(UnwrittenRepositoryStore::repository_information(FSPath(f("location"))));
+        return RepositoryName(info.name());
+    }
     else
         return RepositoryName(f("name"));
 }

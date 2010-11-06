@@ -81,8 +81,6 @@ namespace paludis
                 typedef WrappedForwardIterator<ConstIteratorTag, const UnwrittenRepositoryFileEntry> ConstIterator;
                 ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                bool is_graveyard() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 

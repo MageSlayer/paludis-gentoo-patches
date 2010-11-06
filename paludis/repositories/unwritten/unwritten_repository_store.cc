@@ -30,6 +30,8 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/fs_iterator.hh>
+#include <paludis/util/fs_stat.hh>
+#include <paludis/util/config_file.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/literal_metadata_key.hh>
@@ -61,9 +63,13 @@ namespace paludis
         mutable PackageNames package_names;
         mutable IDs ids;
 
+        std::string entry_suffix;
+        bool is_graveyard;
+
         Imp(const UnwrittenRepository * const r) :
             repo(r),
-            categories(std::make_shared<CategoryNamePartSet>())
+            categories(std::make_shared<CategoryNamePartSet>()),
+            is_graveyard(false)
         {
         }
     };
@@ -75,6 +81,18 @@ UnwrittenRepositoryStore::UnwrittenRepositoryStore(
         const FSPath & f) :
     Pimp<UnwrittenRepositoryStore>(repo)
 {
+    UnwrittenRepositoryInformation info(repository_information(f));
+    _imp->entry_suffix = info.entry_suffix();
+
+    if (info.role() == "unwritten")
+    {
+    }
+    else if (info.role() == "graveyard")
+        _imp->is_graveyard = true;
+    else
+        Log::get_instance()->message("unwritten_repository.unknown_role", ll_warning, lc_context)
+            << "Role '" << info.role() << "' unknown for '" << f << "'";
+
     _populate(env, f);
 }
 
@@ -95,14 +113,14 @@ UnwrittenRepositoryStore::_populate(const Environment * const env, const FSPath 
 void
 UnwrittenRepositoryStore::_populate_one(const Environment * const env, const FSPath & f)
 {
-    if (! is_file_with_extension(f, ".conf", { }))
+    if (! is_file_with_extension(f, _imp->entry_suffix, { }))
         return;
 
     Context context("When populating UnwrittenRepository from file '" + stringify(f) + "':");
 
     UnwrittenRepositoryFile file(f);
 
-    std::shared_ptr<Mask> mask(file.is_graveyard() ?
+    std::shared_ptr<Mask> mask(_imp->is_graveyard ?
             std::shared_ptr<Mask>(std::make_shared<GraveyardMask>()) :
             std::shared_ptr<Mask>(std::make_shared<UnwrittenMask>()));
 
@@ -199,6 +217,35 @@ UnwrittenRepositoryStore::package_ids(const QualifiedPackageName & p) const
         return std::make_shared<PackageIDSequence>();
     else
         return i->second;
+}
+
+UnwrittenRepositoryInformation
+UnwrittenRepositoryStore::repository_information(const FSPath & p)
+{
+    UnwrittenRepositoryInformation result(make_named_values<UnwrittenRepositoryInformation>(
+                n::entry_suffix() = ".conf",
+                n::name() = p.basename(),
+                n::role() = "unwritten"
+                ));
+
+    if ((p / "repository.conf").stat().exists())
+    {
+        KeyValueConfigFile file(p / "repository.conf", { },
+                &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
+
+        if (! file.get("entry_suffix").empty())
+            result.entry_suffix() = "." + file.get("entry_suffix");
+        else
+            result.entry_suffix() = ".unwritten";
+
+        if (! file.get("name").empty())
+            result.name() = file.get("name");
+
+        if (! file.get("role").empty())
+            result.role() = file.get("role");
+    }
+
+    return result;
 }
 
 template class Pimp<unwritten_repository::UnwrittenRepositoryStore>;

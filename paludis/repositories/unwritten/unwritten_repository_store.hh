@@ -22,6 +22,7 @@
 
 #include <paludis/util/pimp.hh>
 #include <paludis/util/fs_path-fwd.hh>
+#include <paludis/util/named_value.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/environment-fwd.hh>
@@ -29,9 +30,23 @@
 
 namespace paludis
 {
+    namespace n
+    {
+        typedef Name<struct entry_suffix_name> entry_suffix;
+        typedef Name<struct name_name> name;
+        typedef Name<struct role_name> role;
+    }
+
     namespace unwritten_repository
     {
         struct UnwrittenRepository;
+
+        struct UnwrittenRepositoryInformation
+        {
+            NamedValue<n::entry_suffix, std::string> entry_suffix;
+            NamedValue<n::name, std::string> name;
+            NamedValue<n::role, std::string> role;
+        };
 
         class PALUDIS_VISIBLE UnwrittenRepositoryStore :
             private Pimp<UnwrittenRepositoryStore>
@@ -64,6 +79,9 @@ namespace paludis
 
                 std::shared_ptr<const PackageIDSequence> package_ids(
                         const QualifiedPackageName & p) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                static UnwrittenRepositoryInformation repository_information(
+                        const FSPath &) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 
