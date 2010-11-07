@@ -67,6 +67,15 @@ namespace paludis
 
             ///\}
 
+            ///\name Standard library typedefs
+            ///\{
+
+            typedef std::pair<const K_, V_> value_type;
+            typedef std::pair<const K_, V_> & reference;
+            typedef const reference & const_reference;
+
+            ///\}
+
             ///\name Iteration
             ///\{
 
