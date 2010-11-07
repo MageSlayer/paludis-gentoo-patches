@@ -1564,6 +1564,7 @@ fi
 dnl }}}
 
 dnl {{{ libarchive
+libarchive_does_gnutar=no
 if test "x$need_libarchive_check" = "xyes" ; then
 	AC_MSG_CHECKING([for libarchive])
 	AC_PREPROC_IFELSE([AC_LANG_SOURCE([
@@ -1572,7 +1573,7 @@ if test "x$need_libarchive_check" = "xyes" ; then
 	[AC_MSG_RESULT([yes])],
 	[AC_MSG_ERROR([libarchive is required for pbins])])
 
-	AC_MSG_CHECKING([whether your libarchive is new enough])
+	AC_MSG_CHECKING([whether your libarchive does gnutar])
 	AC_COMPILE_IFELSE([AC_LANG_SOURCE([
 #include <archive.h>
 
@@ -1582,9 +1583,14 @@ int main(int, char **)
     archive_write_set_format_gnutar(archive);
 }
 	])],
-	[AC_MSG_RESULT([yes])],
-	[AC_MSG_ERROR([a more recent libarchive than the one you have is required for pbins])])
+	[
+	 AC_MSG_RESULT([yes])
+	 libarchive_does_gnutar=yes
+	 AC_DEFINE([LIBARCHIVE_DOES_GNUTAR], [1], [libarchive does gnutar])
+	],
+	[AC_MSG_RESULT([no])])
 fi
+AM_CONDITIONAL([LIBARCHIVE_DOES_GNUTAR], test "x$libarchive_does_gnutar" = "xyes")
 dnl }}}
 
 dnl {{{ sqlite3 check

@@ -124,7 +124,7 @@ main()
 
     make_binary_ebuild \
         "${ebuildfile}" \
-        "${PALUDIS_BINARY_URI_PREFIX}""$(basename ${bindistfile} ).tar.bz2" \
+        "${PALUDIS_BINARY_URI_PREFIX}""$(basename ${bindistfile} )${PALUDIS_BINARY_URI_EXTENSION:-.tar.bz2}" \
         "${PALUDIS_BINARY_KEYWORDS}"
 
     ebuild_section "Finished writing binary"

@@ -1232,6 +1232,7 @@ WriteBinaryEbuildCommand::operator() ()
                     + params.package_id()->eapi()->exported_name())->supported()->ebuild_metadata_variables()->keywords()->name())
         .setenv("PALUDIS_BINARY_DISTDIR_VARIABLE", EAPIData::get_instance()->eapi_from_string("pbin-1+"
                     + params.package_id()->eapi()->exported_name())->supported()->ebuild_environment_variables()->env_distdir())
+        .setenv("PALUDIS_BINARY_URI_EXTENSION", params.binary_uri_extension())
         .setenv("PALUDIS_EBUILD_MODULE_SUFFIXES",
                 params.package_id()->eapi()->supported()->ebuild_options()->ebuild_module_suffixes())
         .setenv("PALUDIS_EBUILD_PHASE_VAR",

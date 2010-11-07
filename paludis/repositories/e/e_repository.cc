@@ -139,6 +139,12 @@ typedef std::map<FSPath, std::string, FSPathComparator> EAPIForFileMap;
 
 namespace
 {
+#ifdef LIBARCHIVE_DOES_GNUTAR
+    const std::string pbin_tar_extension = ".tar";
+#else
+    const std::string pbin_tar_extension = ".pax";
+#endif
+
     std::shared_ptr<FSPathSequence> get_master_locations(
             const std::shared_ptr<const ERepositorySequence> & r)
     {
@@ -2783,7 +2789,7 @@ ERepository::merge(const MergeParams & m)
                 n::output_manager() = m.output_manager(),
                 n::package_id() = m.package_id(),
                 n::root() = FSPath("/"),
-                n::tar_file() = _imp->params.binary_distdir() / (bin_dist_base + ".tar")
+                n::tar_file() = _imp->params.binary_distdir() / (bin_dist_base + pbin_tar_extension)
             ));
 
     if (! merger.check())
@@ -2791,7 +2797,7 @@ ERepository::merge(const MergeParams & m)
 
     merger.merge();
 
-    Process compress_process(ProcessCommand({"bzip2", stringify(_imp->params.binary_distdir() / (bin_dist_base + ".tar")) }));
+    Process compress_process(ProcessCommand({"bzip2", stringify(_imp->params.binary_distdir() / (bin_dist_base + pbin_tar_extension)) }));
     if (0 != compress_process.run().wait())
         throw ActionFailedError("Compressing tarball failed");
 
@@ -2821,6 +2827,7 @@ ERepository::merge(const MergeParams & m)
                 n::binary_distdir() = _imp->params.binary_distdir(),
                 n::binary_ebuild_location() = binary_ebuild_location,
                 n::binary_keywords() = binary_keywords,
+                n::binary_uri_extension() = pbin_tar_extension + ".bz2",
                 n::builddir() = _imp->params.builddir(),
                 n::destination_repository() = this,
                 n::environment() = _imp->params.environment(),

@@ -25,6 +25,8 @@
 #include <archive.h>
 #include <archive_entry.h>
 
+#include "config.h"
+
 using namespace paludis;
 
 struct PaludisTarExtras
@@ -47,7 +49,11 @@ paludis_tar_extras_init(const std::string & f, const std::string & compress)
     else
         archive_write_set_compression_none(extras->archive);
 
+#ifdef LIBARCHIVE_DOES_GNUTAR
     archive_write_set_format_gnutar(extras->archive);
+#else
+    archive_write_set_format_pax(extras->archive);
+#endif
 
     if (ARCHIVE_OK != archive_write_open_filename(extras->archive, f.c_str()))
         throw MergerError("archive_write_open_filename failed");
