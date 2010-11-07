@@ -146,6 +146,11 @@ namespace
             throw args::DoHelp("Unknown algoritm '" + algorithm + "'");
     }
 
+    std::string stringify_string_pair(const std::pair<const std::string, std::string> & s)
+    {
+        return s.first + "=" + s.second;
+    }
+
     struct SpecTreeAsString
     {
         std::list<std::string> & texts;
@@ -330,6 +335,11 @@ namespace
         void visit(const MetadataCollectionKey<Set<std::string> > & k)
         {
             std::transform(k.value()->begin(), k.value()->end(), std::back_inserter(texts), &stringify<std::string>);
+        }
+
+        void visit(const MetadataCollectionKey<Map<std::string, std::string> > & k)
+        {
+            std::transform(k.value()->begin(), k.value()->end(), std::back_inserter(texts), stringify_string_pair);
         }
 
         void visit(const MetadataCollectionKey<Set<KeywordName> > & k)

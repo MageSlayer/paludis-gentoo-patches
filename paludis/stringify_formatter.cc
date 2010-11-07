@@ -30,6 +30,7 @@ using namespace paludis;
 StringifyFormatter::StringifyFormatter() :
     Pimp<StringifyFormatter>(
             static_cast<const CanFormat<std::string> *>(0),
+            static_cast<const CanFormat<std::pair<const std::string, std::string> > *>(0),
             static_cast<const CanFormat<ChoiceValue> *>(0),
             static_cast<const CanFormat<KeywordName> *>(0),
             static_cast<const CanFormat<PackageDepSpec> *>(0),
@@ -60,6 +61,14 @@ StringifyFormatter::format(const std::string & s, const format::Plain & k) const
     if (_imp->f_str)
         return _imp->f_str->format(s, k);
     return s;
+}
+
+std::string
+StringifyFormatter::format(const std::pair<const std::string, std::string> & s, const format::Plain & k) const
+{
+    if (_imp->f_str)
+        return _imp->f_str_str->format(s, k);
+    return s.first + "=" + s.second;
 }
 
 std::string

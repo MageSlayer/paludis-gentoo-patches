@@ -32,6 +32,11 @@ namespace
 {
     void show_key(const MetadataKey & key, const std::string & indent = "");
 
+    std::string stringify_string_pair(const std::pair<const std::string, std::string> & s)
+    {
+        return s.first + "=" + s.second;
+    }
+
     /* We use this visitor to display extra information about a MetadataKey,
      * depending upon its type. */
     class MetadataKeyInformationVisitor
@@ -185,6 +190,13 @@ namespace
             {
                 cout << indent << left << setw(30) << "    Class:" << " " << "MetadataCollectionKey<Set<std::string> >" << endl;
                 cout << indent << left << setw(30) << "    Value:" << " " << join(key.value()->begin(), key.value()->end(), " ") << endl;
+            }
+
+            void visit(const MetadataCollectionKey<Map<std::string, std::string> > & key)
+            {
+                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataCollectionKey<Map<std::string, std::string> >" << endl;
+                cout << indent << left << setw(30) << "    Value:" << " " << join(
+                        key.value()->begin(), key.value()->end(), " ", stringify_string_pair) << endl;
             }
 
             void visit(const MetadataCollectionKey<Sequence<std::string> > & key)

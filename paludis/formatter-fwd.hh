@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -45,7 +45,12 @@ namespace paludis
         typename T12_ = NoType<12u>,
         typename T13_ = NoType<13u>,
         typename T14_ = NoType<14u>,
-        typename T15_ = NoType<15u>
+        typename T15_ = NoType<15u>,
+        typename T16_ = NoType<16u>,
+        typename T17_ = NoType<17u>,
+        typename T18_ = NoType<18u>,
+        typename T19_ = NoType<19u>,
+        typename T20_ = NoType<20u>
         >
     class Formatter;
 }

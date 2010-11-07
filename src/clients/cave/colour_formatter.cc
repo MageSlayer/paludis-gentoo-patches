@@ -108,6 +108,12 @@ ColourFormatter::format(const std::string & s, const format::Plain &) const
 }
 
 std::string
+ColourFormatter::format(const std::pair<const std::string, std::string> & s, const format::Plain &) const
+{
+    return fuc(fs_format_string_string_plain(), fv<'k'>(stringify(s.first)), fv<'v'>(stringify(s.second)));
+}
+
+std::string
 ColourFormatter::format(const PackageID & s, const format::Plain &) const
 {
     return fuc(fs_format_package_id_plain(), fv<'s'>(stringify(s)));

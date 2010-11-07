@@ -183,6 +183,12 @@ ColourFormatter::format(const std::string & f, const format::Plain &) const
 }
 
 std::string
+ColourFormatter::format(const std::pair<const std::string, std::string> & f, const format::Plain &) const
+{
+    return stringify(f.first) + "=" + stringify(f.second);
+}
+
+std::string
 ColourFormatter::format(const PlainTextLabelDepSpec & f, const format::Plain &) const
 {
     return stringify(f);

@@ -738,6 +738,11 @@ namespace
             return false;
         }
 
+        bool visit(const MetadataCollectionKey<Map<std::string, std::string> > &) const
+        {
+            return false;
+        }
+
         bool visit(const MetadataCollectionKey<KeywordNameSet> & s) const
         {
             switch (op)

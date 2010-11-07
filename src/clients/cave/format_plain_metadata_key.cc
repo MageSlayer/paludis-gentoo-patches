@@ -153,6 +153,12 @@ namespace
             s << k.pretty_print_flat(f);
         }
 
+        void visit(const MetadataCollectionKey<Map<std::string, std::string> > & k)
+        {
+            StringifyFormatter f;
+            s << k.pretty_print_flat(f);
+        }
+
         void visit(const MetadataCollectionKey<KeywordNameSet> & k)
         {
             StringifyFormatter f;

@@ -907,6 +907,12 @@ namespace
             cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.pretty_print_flat(formatter))));
         }
 
+        void visit(const MetadataCollectionKey<Map<std::string, std::string> > & k)
+        {
+            ColourFormatter formatter(0);
+            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.pretty_print_flat(formatter))));
+        }
+
         void visit(const MetadataCollectionKey<Sequence<std::string> > & k)
         {
             ColourFormatter formatter(0);

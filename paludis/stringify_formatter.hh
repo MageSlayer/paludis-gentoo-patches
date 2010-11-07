@@ -60,6 +60,7 @@ namespace paludis
     class PALUDIS_VISIBLE StringifyFormatter :
         private Pimp<StringifyFormatter>,
         public CanFormat<std::string>,
+        public CanFormat<std::pair<const std::string, std::string> >,
         public CanFormat<ChoiceValue>,
         public CanFormat<KeywordName>,
         public CanFormat<PackageDepSpec>,
@@ -97,6 +98,8 @@ namespace paludis
             ///\}
 
             virtual std::string format(const std::string &, const format::Plain &) const;
+
+            virtual std::string format(const std::pair<const std::string, std::string> &, const format::Plain &) const;
 
             virtual std::string format(const ChoiceValue &, const format::Enabled &) const;
             virtual std::string format(const ChoiceValue &, const format::Disabled &) const;

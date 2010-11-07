@@ -106,6 +106,11 @@ class MetadataKeySptrToPythonVisitor
             obj = bp::object(std::static_pointer_cast<const MetadataCollectionKey<Set<std::string> > >(_m_ptr));
         }
 
+        void visit(const MetadataCollectionKey<Map<std::string, std::string> > & k)
+        {
+            obj = bp::object(std::static_pointer_cast<const MetadataCollectionKey<Map<std::string, std::string> > >(_m_ptr));
+        }
+
         void visit(const MetadataCollectionKey<Sequence<std::string> > & k)
         {
             obj = bp::object(std::static_pointer_cast<const MetadataCollectionKey<Sequence<std::string> > >(_m_ptr));

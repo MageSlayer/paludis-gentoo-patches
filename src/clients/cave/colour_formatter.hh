@@ -31,6 +31,7 @@ namespace paludis
         class PALUDIS_VISIBLE ColourFormatter :
             public CanFormat<KeywordName>,
             public CanFormat<std::string>,
+            public CanFormat<std::pair<const std::string, std::string> >,
             public CanFormat<PackageID>,
             public CanFormat<LicenseDepSpec>,
             public CanFormat<ConditionalDepSpec>,
@@ -66,6 +67,8 @@ namespace paludis
                 std::string format(const KeywordName &, const format::Unaccepted &) const;
 
                 std::string format(const std::string &, const format::Plain &) const;
+
+                std::string format(const std::pair<const std::string, std::string> &, const format::Plain &) const;
 
                 std::string format(const PackageID &, const format::Plain &) const;
                 std::string format(const PackageID &, const format::Installed &) const;

@@ -181,6 +181,11 @@ namespace
             }
     };
 
+    std::string stringify_string_pair(const std::pair<const std::string, std::string> & s)
+    {
+        return s.first + "=" + s.second;
+    }
+
     class KeyVisitor
     {
         private:
@@ -296,6 +301,17 @@ namespace
                 else
                     result = s.value()->end() != std::find_if(s.value()->begin(), s.value()->end(),
                             std::bind(&Matcher::operator(), std::cref(_m), _1));
+            }
+
+            void visit(const MetadataCollectionKey<Map<std::string, std::string> > & s)
+            {
+                using namespace std::placeholders;
+
+                if (_flatten)
+                    result = _m(join(s.value()->begin(), s.value()->end(), " ", stringify_string_pair));
+                else
+                    result = s.value()->end() != std::find_if(s.value()->begin(), s.value()->end(),
+                            std::bind(&Matcher::operator(), std::cref(_m), std::bind(&stringify_string_pair, _1)));
             }
 
             void visit(const MetadataCollectionKey<Sequence<std::string> > & s)

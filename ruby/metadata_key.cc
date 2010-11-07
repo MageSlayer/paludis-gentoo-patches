@@ -45,6 +45,7 @@ namespace
     static VALUE c_metadata_repository_mask_info_key;
     static VALUE c_metadata_keyword_name_set_key;
     static VALUE c_metadata_string_set_key;
+    static VALUE c_metadata_string_string_map_key;
     static VALUE c_metadata_string_sequence_key;
     static VALUE c_metadata_package_id_sequence_key;
     static VALUE c_metadata_fsentry_key;
@@ -179,6 +180,12 @@ namespace
         void visit(const MetadataCollectionKey<Set<std::string> > &)
         {
             value = Data_Wrap_Struct(c_metadata_string_set_key, 0, &Common<std::shared_ptr<const MetadataKey> >::free,
+                    new std::shared_ptr<const MetadataKey>(mm));
+        }
+
+        void visit(const MetadataCollectionKey<Map<std::string, std::string> > &)
+        {
+            value = Data_Wrap_Struct(c_metadata_string_string_map_key, 0, &Common<std::shared_ptr<const MetadataKey> >::free,
                     new std::shared_ptr<const MetadataKey>(mm));
         }
 
@@ -770,6 +777,13 @@ namespace
          */
         c_metadata_string_set_key = rb_define_class_under(paludis_module(), "MetadataStringSetKey", c_metadata_key);
         rb_define_method(c_metadata_string_set_key, "value", RUBY_FUNC_CAST((&SetValue<Set<std::string> >::fetch)), 0);
+
+        /*
+         * Document-class: Paludis::MetadataStringStringMapKey
+         *
+         * Metadata class for String to String maps.
+         */
+        c_metadata_string_string_map_key = rb_define_class_under(paludis_module(), "MetadataStringStringMapKey", c_metadata_key);
 
         /*
          * Document-class: Paludis::MetadataStringSequenceKey

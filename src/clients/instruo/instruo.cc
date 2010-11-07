@@ -147,6 +147,11 @@ namespace
             const std::shared_ptr<const Set<std::string> > & PALUDIS_ATTRIBUTE((unused)) s(k.value());
         }
 
+        void visit(const MetadataCollectionKey<Map<std::string, std::string> > & k)
+        {
+            const std::shared_ptr<const Map<std::string, std::string> > & PALUDIS_ATTRIBUTE((unused)) s(k.value());
+        }
+
         void visit(const MetadataCollectionKey<Sequence<std::string> > & k)
         {
             const std::shared_ptr<const Sequence<std::string> > & PALUDIS_ATTRIBUTE((unused)) s(k.value());

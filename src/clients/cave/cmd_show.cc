@@ -407,6 +407,18 @@ namespace
                     );
         }
 
+        void visit(const MetadataCollectionKey<Map<std::string, std::string> > & k)
+        {
+            ColourFormatter f(indent);
+            out << fuc(
+                    (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
+                    fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
+                    fv<'v'>(k.pretty_print_flat(f)),
+                    fv<'i'>(std::string(indent, ' ')),
+                    fv<'b'>(important ? "true" : "")
+                    );
+        }
+
         void visit(const MetadataCollectionKey<Sequence<std::string> > & k)
         {
             ColourFormatter f(indent);

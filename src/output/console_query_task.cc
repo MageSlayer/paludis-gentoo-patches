@@ -365,6 +365,24 @@ namespace
                 }
             }
 
+            void visit(const MetadataCollectionKey<Map<std::string, std::string> > & k)
+            {
+                if (k.type() == type)
+                {
+                    ColourFormatter formatter;
+                    if (task->want_raw())
+                    {
+                        task->output_left_column(k.raw_name() + ":", in);
+                        task->output_right_column(k.pretty_print_flat(formatter));
+                    }
+                    else
+                    {
+                        task->output_left_column(k.human_name() + ":", in);
+                        task->output_right_column(k.pretty_print_flat(formatter));
+                    }
+                }
+            }
+
             void visit(const MetadataCollectionKey<Sequence<std::string> > & k)
             {
                 if (k.type() == type)

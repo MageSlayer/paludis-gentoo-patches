@@ -38,6 +38,7 @@
 #include <paludis/util/type_list.hh>
 #include <paludis/util/timestamp-fwd.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/map.hh>
 #include <type_traits>
 #include <string>
 
@@ -90,6 +91,7 @@ namespace paludis
                 MetadataCollectionKey<Sequence<std::string> >,
                 MetadataCollectionKey<PackageIDSequence>,
                 MetadataCollectionKey<FSPathSequence>,
+                MetadataCollectionKey<Map<std::string, std::string> >,
                 MetadataSpecTreeKey<DependencySpecTree>,
                 MetadataSpecTreeKey<LicenseSpecTree>,
                 MetadataSpecTreeKey<FetchableURISpecTree>,
@@ -277,7 +279,7 @@ namespace paludis
     };
 
     /**
-     * A MetadataCollectionKey is a MetadataKey that holds a Set of some kind of item
+     * A MetadataCollectionKey is a MetadataKey that holds a container of some kind of item
      * as its value.
      *
      * \ingroup g_metadata_key

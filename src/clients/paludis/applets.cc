@@ -160,6 +160,12 @@ namespace
             std::cout << k.pretty_print_flat(f) << std::endl;
         }
 
+        void visit(const MetadataCollectionKey<Map<std::string, std::string> > & k)
+        {
+            StringifyFormatter f;
+            std::cout << k.pretty_print_flat(f) << std::endl;
+        }
+
         void visit(const MetadataCollectionKey<Sequence<std::string> > & k)
         {
             StringifyFormatter f;

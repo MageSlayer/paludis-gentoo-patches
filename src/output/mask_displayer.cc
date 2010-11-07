@@ -132,6 +132,12 @@ namespace
             s << k.pretty_print_flat(formatter);
         }
 
+        void visit(const MetadataCollectionKey<Map<std::string, std::string> > & k)
+        {
+            ColourFormatter formatter;
+            s << k.pretty_print_flat(formatter);
+        }
+
         void visit(const MetadataCollectionKey<Sequence<std::string> > & k)
         {
             ColourFormatter formatter;

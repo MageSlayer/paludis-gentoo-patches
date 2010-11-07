@@ -42,6 +42,7 @@ class ColourFormatter :
     public paludis::CanFormat<paludis::FSPath>,
     public paludis::CanFormat<paludis::PackageID>,
     public paludis::CanFormat<std::string>,
+    public paludis::CanFormat<std::pair<const std::string, std::string> >,
     public paludis::CanSpace
 {
     public:
@@ -76,6 +77,8 @@ class ColourFormatter :
         std::string format(const paludis::KeywordName &, const paludis::format::Unaccepted &) const;
 
         std::string format(const std::string &, const paludis::format::Plain &) const;
+
+        std::string format(const std::pair<const std::string, std::string> &, const paludis::format::Plain &) const;
 
         std::string format(const paludis::PlainTextLabelDepSpec &, const paludis::format::Plain &) const;
 

@@ -43,6 +43,7 @@ namespace paludis
     struct Imp<StringifyFormatter>
     {
         const CanFormat<std::string> * const f_str;
+        const CanFormat<std::pair<const std::string, std::string> > * const f_str_str;
         const CanFormat<ChoiceValue> * const f_conf;
         const CanFormat<KeywordName> * const f_keyword;
         const CanFormat<PackageDepSpec> * const f_package;
@@ -62,6 +63,7 @@ namespace paludis
 
         Imp(
                 const CanFormat<std::string> * const f_str_v,
+                const CanFormat<std::pair<const std::string, std::string> > * const f_str_str_v,
                 const CanFormat<ChoiceValue> * const f_conf_v,
                 const CanFormat<KeywordName> * const f_keyword_v,
                 const CanFormat<PackageDepSpec> * const f_package_v,
@@ -80,6 +82,7 @@ namespace paludis
                 const CanSpace * const f_space_v
                 ) :
             f_str(f_str_v),
+            f_str_str(f_str_str_v),
             f_conf(f_conf_v),
             f_keyword(f_keyword_v),
             f_package(f_package_v),
@@ -184,6 +187,7 @@ namespace paludis
     StringifyFormatter::StringifyFormatter(const T_ & t) :
         Pimp<StringifyFormatter>(
                 StringifyFormatterGetForwarder<std::is_convertible<T_ *, CanFormat<std::string> *>::value, std::string>::get(&t),
+                StringifyFormatterGetForwarder<std::is_convertible<T_ *, CanFormat<std::pair<const std::string, std::string> > *>::value, std::pair<const std::string, std::string> >::get(&t),
                 StringifyFormatterGetForwarder<std::is_convertible<T_ *, CanFormat<ChoiceValue> *>::value, ChoiceValue>::get(&t),
                 StringifyFormatterGetForwarder<std::is_convertible<T_ *, CanFormat<KeywordName> *>::value, KeywordName>::get(&t),
                 StringifyFormatterGetForwarder<std::is_convertible<T_ *, CanFormat<PackageDepSpec> *>::value, PackageDepSpec>::get(&t),

@@ -101,6 +101,7 @@ MetadataSpecTreeKey<DependencySpecTree>::~MetadataSpecTreeKey()
 template class MetadataCollectionKey<KeywordNameSet>;
 template class MetadataCollectionKey<Set<std::string> >;
 template class MetadataCollectionKey<Sequence<std::string> >;
+template class MetadataCollectionKey<Map<std::string, std::string> >;
 template class MetadataCollectionKey<PackageIDSequence>;
 template class MetadataCollectionKey<FSPathSequence>;
 
