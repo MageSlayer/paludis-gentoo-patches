@@ -307,7 +307,9 @@ UnpackagedRepository::perform_hook(const Hook &, const std::shared_ptr<OutputMan
 }
 
 bool
-UnpackagedRepository::sync(const std::shared_ptr<OutputManager> &) const
+UnpackagedRepository::sync(
+        const std::string &,
+        const std::shared_ptr<OutputManager> &) const
 {
     return false;
 }
@@ -318,7 +320,7 @@ UnpackagedRepository::accept_keywords_key() const
     return make_null_shared_ptr();
 }
 
-const std::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > >
 UnpackagedRepository::sync_host_key() const
 {
     return make_null_shared_ptr();

@@ -285,7 +285,7 @@ ExndbamRepository::installed_root_key() const
     return _imp->root_key;
 }
 
-const std::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > >
 ExndbamRepository::sync_host_key() const
 {
     return make_null_shared_ptr();

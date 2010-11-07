@@ -271,7 +271,8 @@ namespace paludis
         std::shared_ptr<const MetadataValueKey<FSPath> > accounts_repository_data_location_key;
         std::shared_ptr<const MetadataValueKey<FSPath> > e_updates_location_key;
         std::shared_ptr<const MetadataValueKey<std::string> > accept_keywords_key;
-        std::shared_ptr<const MetadataValueKey<std::string> > sync_host_key;
+        std::shared_ptr<Map<std::string, std::string> > sync_hosts;
+        std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > > sync_host_key;
         std::list<std::shared_ptr<const MetadataKey> > about_keys;
 
         std::shared_ptr<EclassMtimes> eclass_mtimes;
@@ -364,9 +365,9 @@ namespace paludis
                     make_binary_keywords_filter(params.binary_keywords_filter()))),
         accounts_repository_data_location_key(layout->accounts_repository_data_location_key()),
         e_updates_location_key(layout->e_updates_location_key()),
-        sync_host_key(std::make_shared<LiteralMetadataValueKey<std::string> >("sync_host", "sync_host", mkt_internal, extract_host_from_url(params.sync()))),
+        sync_hosts(std::make_shared<Map<std::string, std::string> >()),
+        sync_host_key(std::make_shared<LiteralMetadataStringStringMapKey>("sync_host", "sync_host", mkt_internal, sync_hosts)),
         eclass_mtimes(std::make_shared<EclassMtimes>(r, params.eclassdirs())),
-
         master_mtime(0)
     {
         if ((params.location() / "metadata" / "about.conf").stat().is_regular_file_or_symlink_to_regular_file())
@@ -395,6 +396,8 @@ namespace paludis
         FSStat mtfs(mtf.stat());
         if (mtfs.exists())
             master_mtime = mtfs.mtim().seconds();
+
+        sync_hosts->insert("", extract_host_from_url(params.sync()));
     }
 
     Imp<ERepository>::~Imp()
@@ -752,11 +755,13 @@ ERepository::need_mirrors() const
 }
 
 bool
-ERepository::sync(const std::shared_ptr<OutputManager> & output_manager) const
+ERepository::sync(
+        const std::string & suffix,
+        const std::shared_ptr<OutputManager> & output_manager) const
 {
     Context context("When syncing repository '" + stringify(name()) + "':");
 
-    if (_imp->params.sync().empty())
+    if (_imp->params.sync().empty() || ! suffix.empty())
         return false;
 
     std::list<std::string> sync_list;
@@ -1673,7 +1678,7 @@ ERepository::accept_keywords_key() const
     return _imp->accept_keywords_key;
 }
 
-const std::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > >
 ERepository::sync_host_key() const
 {
     return _imp->sync_host_key;

@@ -110,7 +110,7 @@ namespace paludis
 
             virtual bool some_ids_might_not_be_masked() const;
 
-            virtual bool sync(const std::shared_ptr<OutputManager> &) const;
+            virtual bool sync(const std::string &, const std::shared_ptr<OutputManager> &) const;
 
             /* Keys */
 
@@ -118,7 +118,7 @@ namespace paludis
             virtual const std::shared_ptr<const MetadataValueKey<FSPath> > location_key() const;
             virtual const std::shared_ptr<const MetadataValueKey<FSPath> > installed_root_key() const;
             virtual const std::shared_ptr<const MetadataValueKey<std::string> > accept_keywords_key() const;
-            virtual const std::shared_ptr<const MetadataValueKey<std::string> > sync_host_key() const;
+            virtual const std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > > sync_host_key() const;
 
             /* RepositoryDestinationInterface */
 

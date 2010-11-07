@@ -472,7 +472,9 @@ VirtualsRepository::perform_hook(const Hook &, const std::shared_ptr<OutputManag
 }
 
 bool
-VirtualsRepository::sync(const std::shared_ptr<OutputManager> &) const
+VirtualsRepository::sync(
+        const std::string &,
+        const std::shared_ptr<OutputManager> &) const
 {
     return false;
 }
@@ -483,7 +485,7 @@ VirtualsRepository::accept_keywords_key() const
     return make_null_shared_ptr();
 }
 
-const std::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > >
 VirtualsRepository::sync_host_key() const
 {
     return make_null_shared_ptr();

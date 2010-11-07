@@ -399,7 +399,7 @@ EInstalledRepository::populate_sets() const
 }
 
 bool
-EInstalledRepository::sync(const std::shared_ptr<OutputManager> &) const
+EInstalledRepository::sync(const std::string &, const std::shared_ptr<OutputManager> &) const
 {
     return false;
 }

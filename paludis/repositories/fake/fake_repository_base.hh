@@ -117,7 +117,7 @@ namespace paludis
             virtual bool has_category_named(const CategoryNamePart &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool sync(const std::shared_ptr<OutputManager> &) const;
+            virtual bool sync(const std::string &, const std::shared_ptr<OutputManager> &) const;
 
             ///\name Set methods
             ///\{

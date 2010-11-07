@@ -71,6 +71,24 @@ namespace paludis
     };
 
     template <>
+    struct Imp<LiteralMetadataStringStringMapKey>
+    {
+        const std::string raw_name;
+        const std::string human_name;
+        const MetadataKeyType type;
+        const std::shared_ptr<const Map<std::string, std::string> > value;
+
+        Imp(const std::string & r, const std::string & h, const MetadataKeyType t,
+                const std::shared_ptr<const Map<std::string, std::string> > & v) :
+            raw_name(r),
+            human_name(h),
+            type(t),
+            value(v)
+        {
+        }
+    };
+
+    template <>
     struct Imp<LiteralMetadataStringSequenceKey>
     {
         const std::string raw_name;
@@ -173,6 +191,23 @@ LiteralMetadataStringSetKey::value() const
     return _imp->value;
 }
 
+LiteralMetadataStringStringMapKey::LiteralMetadataStringStringMapKey(const std::string & r, const std::string & h,
+        const MetadataKeyType t, const std::shared_ptr<const Map<std::string, std::string> > & v) :
+    Pimp<LiteralMetadataStringStringMapKey>(r, h, t, v),
+    _imp(Pimp<LiteralMetadataStringStringMapKey>::_imp)
+{
+}
+
+LiteralMetadataStringStringMapKey::~LiteralMetadataStringStringMapKey()
+{
+}
+
+const std::shared_ptr<const Map<std::string, std::string> >
+LiteralMetadataStringStringMapKey::value() const
+{
+    return _imp->value;
+}
+
 LiteralMetadataStringSequenceKey::LiteralMetadataStringSequenceKey(const std::string & r, const std::string & h,
         const MetadataKeyType t, const std::shared_ptr<const Sequence<std::string> > & v) :
     Pimp<LiteralMetadataStringSequenceKey>(r, h, t, v),
@@ -214,6 +249,11 @@ namespace
     {
         return f.format(i, format::Plain());
     }
+
+    std::string format_string_string(const std::pair<const std::string, std::string> & i, const Formatter<std::pair<const std::string, std::string> > & f)
+    {
+        return f.format(i, format::Plain());
+    }
 }
 
 std::string
@@ -221,6 +261,13 @@ LiteralMetadataStringSetKey::pretty_print_flat(const Formatter<std::string> & f)
 {
     using namespace std::placeholders;
     return join(value()->begin(), value()->end(), " ", std::bind(&format_string, _1, f));
+}
+
+std::string
+LiteralMetadataStringStringMapKey::pretty_print_flat(const Formatter<std::pair<const std::string, std::string> > & f) const
+{
+    using namespace std::placeholders;
+    return join(value()->begin(), value()->end(), " ", std::bind(&format_string_string, _1, f));
 }
 
 std::string
@@ -244,6 +291,24 @@ LiteralMetadataStringSetKey::raw_name() const
 
 MetadataKeyType
 LiteralMetadataStringSetKey::type() const
+{
+    return _imp->type;
+}
+
+const std::string
+LiteralMetadataStringStringMapKey::human_name() const
+{
+    return _imp->human_name;
+}
+
+const std::string
+LiteralMetadataStringStringMapKey::raw_name() const
+{
+    return _imp->raw_name;
+}
+
+MetadataKeyType
+LiteralMetadataStringStringMapKey::type() const
 {
     return _imp->type;
 }

@@ -80,7 +80,7 @@ namespace paludis
                 virtual const std::shared_ptr<const MetadataValueKey<FSPath> > location_key() const;
                 virtual const std::shared_ptr<const MetadataValueKey<FSPath> > installed_root_key() const;
                 virtual const std::shared_ptr<const MetadataValueKey<std::string> > accept_keywords_key() const;
-                virtual const std::shared_ptr<const MetadataValueKey<std::string> > sync_host_key() const;
+                virtual const std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > > sync_host_key() const;
 
                 virtual bool has_category_named(const CategoryNamePart & c) const;
                 virtual bool has_package_named(const QualifiedPackageName & q) const;
@@ -97,7 +97,7 @@ namespace paludis
                 virtual void invalidate();
                 virtual void invalidate_masks();
 
-                virtual bool sync(const std::shared_ptr<OutputManager> &) const;
+                virtual bool sync(const std::string &, const std::shared_ptr<OutputManager> &) const;
 
                 virtual bool is_suitable_destination_for(const PackageID &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));

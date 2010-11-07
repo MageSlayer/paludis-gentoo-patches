@@ -257,7 +257,7 @@ FakeInstalledRepository::accept_keywords_key() const
     return make_null_shared_ptr();
 }
 
-const std::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > >
 FakeInstalledRepository::sync_host_key() const
 {
     return make_null_shared_ptr();

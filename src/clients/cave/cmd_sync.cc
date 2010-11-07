@@ -131,8 +131,8 @@ namespace
                 return "";
 
             const std::shared_ptr<const Repository> r(env->package_database()->fetch_repository(name));
-            if (r->sync_host_key())
-                return r->sync_host_key()->value();
+            if (r->sync_host_key() && r->sync_host_key()->value()->end() != r->sync_host_key()->value()->find(""))
+                return r->sync_host_key()->value()->find("")->second;
             else
                 return "";
         }
@@ -193,7 +193,7 @@ namespace
             {
                 const std::shared_ptr<Repository> repo(env->package_database()->fetch_repository(name));
 
-                if (! repo->sync(output_manager))
+                if (! repo->sync("", output_manager))
                     skipped = true;
                 success = true;
             }

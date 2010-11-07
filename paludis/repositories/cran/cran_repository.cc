@@ -82,7 +82,8 @@ namespace paludis
         std::shared_ptr<const MetadataValueKey<FSPath> > builddir_key;
         std::shared_ptr<const MetadataValueKey<FSPath> > library_key;
         std::shared_ptr<const MetadataValueKey<std::string> > sync_key;
-        std::shared_ptr<const MetadataValueKey<std::string> > sync_host_key;
+        std::shared_ptr<Map<std::string, std::string> > sync_hosts;
+        std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > > sync_host_key;
     };
 }
 
@@ -96,8 +97,10 @@ Imp<CRANRepository>::Imp(const CRANRepositoryParams & p, const std::shared_ptr<M
     builddir_key(std::make_shared<LiteralMetadataValueKey<FSPath> >("builddir", "builddir", mkt_normal, params.builddir())),
     library_key(std::make_shared<LiteralMetadataValueKey<FSPath> >("library", "library", mkt_normal, params.library())),
     sync_key(std::make_shared<LiteralMetadataValueKey<std::string> >("sync", "sync", mkt_normal, params.sync())),
-    sync_host_key(std::make_shared<LiteralMetadataValueKey<std::string> >("sync_host", "sync_host", mkt_internal, extract_host_from_url(params.sync())))
+    sync_hosts(std::make_shared<Map<std::string, std::string> >()),
+    sync_host_key(std::make_shared<LiteralMetadataStringStringMapKey>("sync_host", "sync_host", mkt_internal, sync_hosts))
 {
+    sync_hosts->insert("", extract_host_from_url(params.sync()));
 }
 
 Imp<CRANRepository>::~Imp()
@@ -341,8 +344,13 @@ CRANRepository::do_install(const std::shared_ptr<const PackageID> & id_uncasted,
 #endif
 
 bool
-CRANRepository::sync(const std::shared_ptr<OutputManager> & output_manager) const
+CRANRepository::sync(
+        const std::string & suffix,
+        const std::shared_ptr<OutputManager> & output_manager) const
 {
+    if (! suffix.empty())
+        return false;
+
     Context context("When syncing repository '" + stringify(name()) + "':");
     Lock l(*_imp->big_nasty_mutex);
 
@@ -554,7 +562,7 @@ CRANRepository::installed_root_key() const
     return std::shared_ptr<const MetadataValueKey<FSPath> >();
 }
 
-const std::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > >
 CRANRepository::sync_host_key() const
 {
     return _imp->sync_host_key;

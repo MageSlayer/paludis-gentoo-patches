@@ -121,7 +121,7 @@ namespace
                 std::shared_ptr<const Repository> rr(env->package_database()->fetch_repository(r));
                 CreateOutputManagerForRepositorySyncInfo info(rr->name(), oe_exclusive, ClientOutputFeatures());
                 std::shared_ptr<OutputManager> output_manager(env->create_output_manager(info));
-                if (rr->sync(output_manager))
+                if (rr->sync("", output_manager))
                 {
                     Lock l(mutex);
                     task->on_sync_succeed(r);

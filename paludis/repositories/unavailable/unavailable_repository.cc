@@ -56,7 +56,8 @@ namespace paludis
         const std::shared_ptr<LiteralMetadataValueKey<FSPath> > location_key;
         const std::shared_ptr<LiteralMetadataValueKey<std::string> > sync_key;
         const std::shared_ptr<LiteralMetadataValueKey<std::string> > sync_options_key;
-        const std::shared_ptr<LiteralMetadataValueKey<std::string> > sync_host_key;
+        const std::shared_ptr<Map<std::string, std::string> > sync_hosts;
+        const std::shared_ptr<LiteralMetadataStringStringMapKey> sync_host_key;
 
         const ActiveObjectPtr<DeferredConstructionPtr<
             std::shared_ptr<UnavailableRepositoryStore> > > store;
@@ -71,10 +72,12 @@ namespace paludis
                         "sync", "sync", mkt_normal, params.sync())),
             sync_options_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
                         "sync_options", "sync_options", mkt_normal, params.sync_options())),
-            sync_host_key(std::make_shared<LiteralMetadataValueKey<std::string> >("sync_host", "sync_host", mkt_internal, extract_host_from_url(params.sync()))),
+            sync_hosts(std::make_shared<Map<std::string, std::string> >()),
+            sync_host_key(std::make_shared<LiteralMetadataStringStringMapKey>("sync_host", "sync_host", mkt_internal, sync_hosts)),
             store(DeferredConstructionPtr<std::shared_ptr<UnavailableRepositoryStore> > (
                         std::bind(&make_store, repo, std::cref(params))))
         {
+            sync_hosts->insert("", extract_host_from_url(params.sync()));
         }
     };
 }
@@ -261,11 +264,13 @@ UnavailableRepository::some_ids_might_not_be_masked() const
 }
 
 bool
-UnavailableRepository::sync(const std::shared_ptr<OutputManager> & output_manager) const
+UnavailableRepository::sync(
+        const std::string & suffix,
+        const std::shared_ptr<OutputManager> & output_manager) const
 {
     Context context("When syncing repository '" + stringify(name()) + "':");
 
-    if (_imp->params.sync().empty())
+    if (_imp->params.sync().empty() || ! suffix.empty())
         return false;
 
     std::list<std::string> sync_list;
@@ -369,7 +374,7 @@ UnavailableRepository::accept_keywords_key() const
     return make_null_shared_ptr();
 }
 
-const std::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > >
 UnavailableRepository::sync_host_key() const
 {
     return _imp->sync_host_key;

@@ -209,7 +209,9 @@ FakeRepositoryBase::perform_hook(const Hook &, const std::shared_ptr<OutputManag
 }
 
 bool
-FakeRepositoryBase::sync(const std::shared_ptr<OutputManager> &) const
+FakeRepositoryBase::sync(
+        const std::string &,
+        const std::shared_ptr<OutputManager> &) const
 {
     return false;
 }

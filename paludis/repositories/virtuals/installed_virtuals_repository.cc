@@ -394,7 +394,9 @@ InstalledVirtualsRepository::populate_sets() const
 }
 
 bool
-InstalledVirtualsRepository::sync(const std::shared_ptr<OutputManager> &) const
+InstalledVirtualsRepository::sync(
+        const std::string &,
+        const std::shared_ptr<OutputManager> &) const
 {
     return false;
 }
@@ -405,7 +407,7 @@ InstalledVirtualsRepository::accept_keywords_key() const
     return make_null_shared_ptr();
 }
 
-const std::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > >
 InstalledVirtualsRepository::sync_host_key() const
 {
     return make_null_shared_ptr();

@@ -88,7 +88,9 @@ namespace paludis
                         const std::shared_ptr<OutputManager> &)
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual bool sync(const std::shared_ptr<OutputManager> &) const;
+                virtual bool sync(
+                        const std::string &,
+                        const std::shared_ptr<OutputManager> &) const;
 
                 ///\name For use by EInstalledRepositoryID
                 ///\{

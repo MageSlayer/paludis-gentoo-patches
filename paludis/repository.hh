@@ -34,6 +34,7 @@
 #include <paludis/util/named_value.hh>
 #include <paludis/util/timestamp.hh>
 #include <paludis/util/singleton.hh>
+#include <paludis/util/map-fwd.hh>
 #include <paludis/output_manager-fwd.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/metadata_key-fwd.hh>
@@ -317,15 +318,16 @@ namespace paludis
             virtual const std::shared_ptr<const MetadataValueKey<std::string> > accept_keywords_key() const = 0;
 
             /**
-             * The sync_host_key, if present, should have a value containing
-             * the host against which a sync will be performed.
+             * The sync_host_key, if present, should have value containing
+             * the host against which a sync will be performed for each suffix.
              *
              * This is used to avoid starting multiple parallel syncs against
              * the same host.
              *
              * \since 0.44
+             * \since 0.55 is a Map<std::string, std::string>.
              */
-            virtual const std::shared_ptr<const MetadataValueKey<std::string> > sync_host_key() const = 0;
+            virtual const std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > > sync_host_key() const = 0;
 
             ///\}
 
@@ -437,8 +439,11 @@ namespace paludis
              *
              * \return True if we synced successfully, false if we skipped sync.
              * \since 0.42 (previously in an interface)
+             * \since 0.55 takes a suffix
              */
-            virtual bool sync(const std::shared_ptr<OutputManager> &) const = 0;
+            virtual bool sync(
+                    const std::string & suffix,
+                    const std::shared_ptr<OutputManager> &) const = 0;
 
             /**
              * Allow the Repository to drop any memory-cached metadata and

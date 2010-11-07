@@ -265,7 +265,7 @@ AccountsRepository::installed_root_key() const
     return _imp->installed_root_key;
 }
 
-const std::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > >
 AccountsRepository::sync_host_key() const
 {
     return make_null_shared_ptr();
@@ -449,7 +449,9 @@ AccountsRepository::perform_hook(
 }
 
 bool
-AccountsRepository::sync(const std::shared_ptr<OutputManager> &) const
+AccountsRepository::sync(
+        const std::string &,
+        const std::shared_ptr<OutputManager> &) const
 {
     return false;
 }

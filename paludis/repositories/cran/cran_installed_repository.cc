@@ -570,7 +570,7 @@ CRANInstalledRepository::installed_root_key() const
     return _imp->installed_root_key;
 }
 
-const std::shared_ptr<const MetadataValueKey<std::string> >
+const std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > >
 CRANInstalledRepository::sync_host_key() const
 {
     return make_null_shared_ptr();
@@ -591,7 +591,9 @@ CRANInstalledRepository::perform_hook(
 }
 
 bool
-CRANInstalledRepository::sync(const std::shared_ptr<OutputManager> &) const
+CRANInstalledRepository::sync(
+        const std::string &,
+        const std::shared_ptr<OutputManager> &) const
 {
     return false;
 }

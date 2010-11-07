@@ -270,6 +270,40 @@ namespace paludis
             virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
+
+    /**
+     * A LiteralMetadataStringStringMapKey is a MetadataCollectionKey<Set<std::string> >
+     * whose value is known at construction time.
+     *
+     * \ingroup g_literal_metadata_key
+     * \since 0.55
+     */
+    class PALUDIS_VISIBLE LiteralMetadataStringStringMapKey :
+        public MetadataCollectionKey<Map<std::string, std::string> >,
+        private Pimp<LiteralMetadataStringStringMapKey>
+    {
+        private:
+            Pimp<LiteralMetadataStringStringMapKey>::ImpPtr & _imp;
+
+        public:
+            ///\name Basic operations
+            ///\{
+
+            LiteralMetadataStringStringMapKey(const std::string &, const std::string &, const MetadataKeyType,
+                    const std::shared_ptr<const Map<std::string, std::string> > &);
+            ~LiteralMetadataStringStringMapKey();
+
+            ///\}
+
+            virtual const std::shared_ptr<const Map<std::string, std::string> > value() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual std::string pretty_print_flat(const Formatter<std::pair<const std::string, std::string> > &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
+    };
 }
 
 #endif
