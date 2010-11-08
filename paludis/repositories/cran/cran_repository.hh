@@ -63,7 +63,7 @@ namespace paludis
         NamedValue<n::library, FSPath> library;
         NamedValue<n::location, FSPath> location;
         NamedValue<n::mirror, std::string> mirror;
-        NamedValue<n::sync, std::string> sync;
+        NamedValue<n::sync, std::shared_ptr<Map<std::string, std::string> > > sync;
     };
 
     /**

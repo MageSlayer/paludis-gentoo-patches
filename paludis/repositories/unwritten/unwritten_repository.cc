@@ -54,8 +54,8 @@ namespace paludis
 
         const std::shared_ptr<LiteralMetadataValueKey<std::string> > format_key;
         const std::shared_ptr<LiteralMetadataValueKey<FSPath> > location_key;
-        const std::shared_ptr<LiteralMetadataValueKey<std::string> > sync_key;
-        const std::shared_ptr<LiteralMetadataValueKey<std::string> > sync_options_key;
+        const std::shared_ptr<LiteralMetadataStringStringMapKey> sync_key;
+        const std::shared_ptr<LiteralMetadataStringStringMapKey> sync_options_key;
         const std::shared_ptr<Map<std::string, std::string> > sync_hosts;
         const std::shared_ptr<LiteralMetadataStringStringMapKey> sync_host_key;
 
@@ -68,16 +68,18 @@ namespace paludis
                         mkt_significant, "unwritten")),
             location_key(std::make_shared<LiteralMetadataValueKey<FSPath> >("location", "location",
                         mkt_significant, params.location())),
-            sync_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
+            sync_key(std::make_shared<LiteralMetadataStringStringMapKey>(
                         "sync", "sync", mkt_normal, params.sync())),
-            sync_options_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
+            sync_options_key(std::make_shared<LiteralMetadataStringStringMapKey>(
                         "sync_options", "sync_options", mkt_normal, params.sync_options())),
             sync_hosts(std::make_shared<Map<std::string, std::string> >()),
             sync_host_key(std::make_shared<LiteralMetadataStringStringMapKey>("sync_host", "sync_host", mkt_internal, sync_hosts)),
             store(DeferredConstructionPtr<std::shared_ptr<UnwrittenRepositoryStore> > (
                         std::bind(&make_store, repo, std::cref(params))))
         {
-            sync_hosts->insert("", extract_host_from_url(params.sync()));
+            for (auto i(params.sync()->begin()), i_end(params.sync()->end()) ;
+                    i != i_end ; ++i)
+                sync_hosts->insert(i->first, extract_host_from_url(i->second));
         }
     };
 }
@@ -270,11 +272,17 @@ UnwrittenRepository::sync(
 {
     Context context("When syncing repository '" + stringify(name()) + "':");
 
-    if (_imp->params.sync().empty() || ! suffix.empty())
+    std::string sync_uri, sync_options;
+    if (_imp->params.sync()->end() != _imp->params.sync()->find(suffix))
+        sync_uri = _imp->params.sync()->find(suffix)->second;
+    if (sync_uri.empty())
         return false;
 
+    if (_imp->params.sync_options()->end() != _imp->params.sync_options()->find(suffix))
+        sync_options = _imp->params.sync_options()->find(suffix)->second;
+
     std::list<std::string> sync_list;
-    tokenise_whitespace(_imp->params.sync(), std::back_inserter(sync_list));
+    tokenise_whitespace(sync_uri, std::back_inserter(sync_list));
 
     bool ok(false);
     for (std::list<std::string>::const_iterator s(sync_list.begin()),
@@ -287,7 +295,7 @@ UnwrittenRepository::sync(
                     ));
         SyncOptions opts(make_named_values<SyncOptions>(
                     n::filter_file() = FSPath("/dev/null"),
-                    n::options() = _imp->params.sync_options(),
+                    n::options() = sync_options,
                     n::output_manager() = output_manager
                     ));
         try
@@ -304,7 +312,7 @@ UnwrittenRepository::sync(
     }
 
     if (! ok)
-        throw SyncFailedError(stringify(_imp->params.location()), _imp->params.sync());
+        throw SyncFailedError(stringify(_imp->params.location()), sync_uri);
 
     return true;
 }
@@ -324,9 +332,11 @@ UnwrittenRepository::repository_factory_create(
     if (location.empty())
         throw UnwrittenRepositoryConfigurationError("Key 'location' not specified or empty");
 
-    std::string sync(f("sync"));
+    auto sync(std::make_shared<Map<std::string, std::string> >());
+    sync->insert("", f("sync"));
 
-    std::string sync_options(f("sync_options"));
+    auto sync_options(std::make_shared<Map<std::string, std::string> >());
+    sync_options->insert("", f("sync_options"));
 
     return std::make_shared<UnwrittenRepository>(
             make_named_values<UnwrittenRepositoryParams>(

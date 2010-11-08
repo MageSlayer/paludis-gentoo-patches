@@ -50,8 +50,8 @@ namespace paludis
             NamedValue<n::environment, Environment *> environment;
             NamedValue<n::location, FSPath> location;
             NamedValue<n::name, RepositoryName> name;
-            NamedValue<n::sync, std::string> sync;
-            NamedValue<n::sync_options, std::string> sync_options;
+            NamedValue<n::sync, std::shared_ptr<Map<std::string, std::string> > > sync;
+            NamedValue<n::sync_options, std::shared_ptr<Map<std::string, std::string> > > sync_options;
         };
 
         class PALUDIS_VISIBLE UnavailableRepository :

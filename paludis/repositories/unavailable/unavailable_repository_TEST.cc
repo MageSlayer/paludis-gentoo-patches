@@ -25,6 +25,7 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/map.hh>
 #include <paludis/generator.hh>
 #include <paludis/selection.hh>
 #include <paludis/filtered_generator.hh>
@@ -53,8 +54,8 @@ namespace test_cases
                             n::environment() = &env,
                             n::location() = FSPath::cwd() / "unavailable_repository_TEST_dir" / "repo1",
                             n::name() = RepositoryName("unavailable"),
-                            n::sync() = "",
-                            n::sync_options() = ""
+                            n::sync() = std::make_shared<Map<std::string, std::string> >(),
+                            n::sync_options() = std::make_shared<Map<std::string, std::string> >()
                         )));
             env.package_database()->add_repository(1, repo);
             TEST_CHECK_STRINGIFY_EQUAL(repo->name(), "unavailable");
@@ -73,8 +74,8 @@ namespace test_cases
                             n::environment() = &env,
                             n::location() = FSPath::cwd() / "unavailable_repository_TEST_dir" / "repo2",
                             n::name() = RepositoryName("unavailable"),
-                            n::sync() = "",
-                            n::sync_options() = ""
+                            n::sync() = std::make_shared<Map<std::string, std::string> >(),
+                            n::sync_options() = std::make_shared<Map<std::string, std::string> >()
                         )));
             env.package_database()->add_repository(1, repo);
             TEST_CHECK_STRINGIFY_EQUAL(repo->name(), "unavailable");

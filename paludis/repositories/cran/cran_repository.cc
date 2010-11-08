@@ -81,7 +81,7 @@ namespace paludis
         std::shared_ptr<const MetadataValueKey<std::string> > format_key;
         std::shared_ptr<const MetadataValueKey<FSPath> > builddir_key;
         std::shared_ptr<const MetadataValueKey<FSPath> > library_key;
-        std::shared_ptr<const MetadataValueKey<std::string> > sync_key;
+        std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > > sync_key;
         std::shared_ptr<Map<std::string, std::string> > sync_hosts;
         std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > > sync_host_key;
     };
@@ -96,11 +96,13 @@ Imp<CRANRepository>::Imp(const CRANRepositoryParams & p, const std::shared_ptr<M
     format_key(std::make_shared<LiteralMetadataValueKey<std::string> >("format", "format", mkt_significant, "cran")),
     builddir_key(std::make_shared<LiteralMetadataValueKey<FSPath> >("builddir", "builddir", mkt_normal, params.builddir())),
     library_key(std::make_shared<LiteralMetadataValueKey<FSPath> >("library", "library", mkt_normal, params.library())),
-    sync_key(std::make_shared<LiteralMetadataValueKey<std::string> >("sync", "sync", mkt_normal, params.sync())),
+    sync_key(std::make_shared<LiteralMetadataStringStringMapKey>("sync", "sync", mkt_normal, params.sync())),
     sync_hosts(std::make_shared<Map<std::string, std::string> >()),
     sync_host_key(std::make_shared<LiteralMetadataStringStringMapKey>("sync_host", "sync_host", mkt_internal, sync_hosts))
 {
-    sync_hosts->insert("", extract_host_from_url(params.sync()));
+    for (auto i(params.sync()->begin()), i_end(params.sync()->end()) ;
+            i != i_end ; ++i)
+        sync_hosts->insert(i->first, extract_host_from_url(i->second));
 }
 
 Imp<CRANRepository>::~Imp()
@@ -348,14 +350,18 @@ CRANRepository::sync(
         const std::string & suffix,
         const std::shared_ptr<OutputManager> & output_manager) const
 {
-    if (! suffix.empty())
+    std::string sync_uri;
+    if (_imp->params.sync()->end() != _imp->params.sync()->find(suffix))
+        sync_uri = _imp->params.sync()->find(suffix)->second;
+
+    if (sync_uri.empty())
         return false;
 
     Context context("When syncing repository '" + stringify(name()) + "':");
     Lock l(*_imp->big_nasty_mutex);
 
     std::string cmd("rsync --delete --recursive --progress --exclude \"*.html\" --exclude \"*.INDEX\" '" +
-                    _imp->params.sync() + "/src/contrib/Descriptions/' ./");
+                    sync_uri + "/src/contrib/Descriptions/' ./");
 
     Process command1((ProcessCommand(cmd)));
     command1.chdir(_imp->params.location());
@@ -367,9 +373,9 @@ CRANRepository::sync(
         ;
 
     if (0 != command1.run().wait())
-        throw SyncFailedError(stringify(_imp->params.location()), _imp->params.sync());
+        throw SyncFailedError(stringify(_imp->params.location()), sync_uri);
 
-    cmd = "rsync --progress '" + _imp->params.sync() + "/src/contrib/PACKAGES' ./";
+    cmd = "rsync --progress '" + sync_uri + "/src/contrib/PACKAGES' ./";
 
     Process command2((ProcessCommand(cmd)));
     command2.chdir(_imp->params.location());
@@ -381,9 +387,9 @@ CRANRepository::sync(
         ;
 
     if (0 != command2.run().wait())
-        throw SyncFailedError(stringify(_imp->params.location()), _imp->params.sync());
+        throw SyncFailedError(stringify(_imp->params.location()), sync_uri);
 
-    cmd = "rsync --progress '" + _imp->params.sync() + "/CRAN_mirrors.csv' ./";
+    cmd = "rsync --progress '" + sync_uri + "/CRAN_mirrors.csv' ./";
 
     Process command3((ProcessCommand(cmd)));
     command3.chdir(_imp->params.location());
@@ -395,7 +401,7 @@ CRANRepository::sync(
         ;
 
     if (0 != command3.run().wait())
-        throw SyncFailedError(stringify(_imp->params.location()), _imp->params.sync());
+        throw SyncFailedError(stringify(_imp->params.location()), sync_uri);
 
     return true;
 }
@@ -423,9 +429,11 @@ CRANRepository::repository_factory_create(
     if (mirror.empty())
         mirror = "http://cran.r-project.org/";
 
-    std::string sync(f("sync"));
-    if (sync.empty())
-        sync = "rsync://cran.r-project.org/CRAN";
+    auto sync(std::make_shared<Map<std::string, std::string> >());
+    std::string empty_sync(f("sync"));
+    if (empty_sync.empty())
+        empty_sync = "rsync://cran.r-project.org/CRAN";
+    sync->insert("", empty_sync);
 
     std::string builddir(f("builddir"));
     if (builddir.empty())

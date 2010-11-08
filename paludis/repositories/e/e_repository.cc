@@ -255,8 +255,8 @@ namespace paludis
         std::shared_ptr<const MetadataValueKey<FSPath> > securitydir_key;
         std::shared_ptr<const MetadataValueKey<FSPath> > setsdir_key;
         std::shared_ptr<const MetadataValueKey<FSPath> > newsdir_key;
-        std::shared_ptr<const MetadataValueKey<std::string> > sync_key;
-        std::shared_ptr<const MetadataValueKey<std::string> > sync_options_key;
+        std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > > sync_key;
+        std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > > sync_options_key;
         std::shared_ptr<const MetadataValueKey<FSPath> > builddir_key;
         std::shared_ptr<const MetadataCollectionKey<Sequence<std::string> > > master_repositories_key;
         std::shared_ptr<const MetadataValueKey<std::string> > eapi_when_unknown_key;
@@ -322,9 +322,9 @@ namespace paludis
                     "setsdir", "setsdir", mkt_normal, params.setsdir())),
         newsdir_key(std::make_shared<LiteralMetadataValueKey<FSPath> >(
                     "newsdir", "newsdir", mkt_normal, params.newsdir())),
-        sync_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
+        sync_key(std::make_shared<LiteralMetadataStringStringMapKey>(
                     "sync", "sync", mkt_normal, params.sync())),
-        sync_options_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
+        sync_options_key(std::make_shared<LiteralMetadataStringStringMapKey>(
                     "sync_options", "sync_options", mkt_normal, params.sync_options())),
         builddir_key(std::make_shared<LiteralMetadataValueKey<FSPath> >(
                     "builddir", "builddir", mkt_normal, params.builddir())),
@@ -365,7 +365,7 @@ namespace paludis
                     make_binary_keywords_filter(params.binary_keywords_filter()))),
         accounts_repository_data_location_key(layout->accounts_repository_data_location_key()),
         e_updates_location_key(layout->e_updates_location_key()),
-        sync_hosts(std::make_shared<Map<std::string, std::string> >()),
+        sync_hosts(params.sync()),
         sync_host_key(std::make_shared<LiteralMetadataStringStringMapKey>("sync_host", "sync_host", mkt_internal, sync_hosts)),
         eclass_mtimes(std::make_shared<EclassMtimes>(r, params.eclassdirs())),
         master_mtime(0)
@@ -396,8 +396,6 @@ namespace paludis
         FSStat mtfs(mtf.stat());
         if (mtfs.exists())
             master_mtime = mtfs.mtim().seconds();
-
-        sync_hosts->insert("", extract_host_from_url(params.sync()));
     }
 
     Imp<ERepository>::~Imp()
@@ -761,11 +759,17 @@ ERepository::sync(
 {
     Context context("When syncing repository '" + stringify(name()) + "':");
 
-    if (_imp->params.sync().empty() || ! suffix.empty())
+    std::string sync_uri, sync_options;
+    if (_imp->params.sync()->end() != _imp->params.sync()->find(suffix))
+        sync_uri = _imp->params.sync()->find(suffix)->second;
+    if (sync_uri.empty())
         return false;
 
+    if (_imp->params.sync_options()->end() != _imp->params.sync_options()->find(suffix))
+        sync_options = _imp->params.sync_options()->find(suffix)->second;
+
     std::list<std::string> sync_list;
-    tokenise_whitespace(_imp->params.sync(), std::back_inserter(sync_list));
+    tokenise_whitespace(sync_uri, std::back_inserter(sync_list));
 
     bool ok(false);
     for (std::list<std::string>::const_iterator s(sync_list.begin()),
@@ -778,7 +782,7 @@ ERepository::sync(
                 ));
         SyncOptions opts(make_named_values<SyncOptions>(
                     n::filter_file() = _imp->layout->sync_filter_file(),
-                    n::options() = _imp->params.sync_options(),
+                    n::options() = sync_options,
                     n::output_manager() = output_manager
                 ));
         try
@@ -795,7 +799,7 @@ ERepository::sync(
     }
 
     if (! ok)
-        throw SyncFailedError(stringify(_imp->params.location()), _imp->params.sync());
+        throw SyncFailedError(stringify(_imp->params.location()), sync_uri);
 
     return true;
 }
@@ -1447,9 +1451,11 @@ ERepository::repository_factory_create(
         }
     }
 
-    std::string sync(f("sync"));
+    auto sync(std::make_shared<Map<std::string, std::string> >());
+    sync->insert("", f("sync"));
 
-    std::string sync_options(f("sync_options"));
+    auto sync_options(std::make_shared<Map<std::string, std::string> >());
+    sync_options->insert("", f("sync_options"));
 
     std::string builddir(f("builddir"));
     if (builddir.empty())

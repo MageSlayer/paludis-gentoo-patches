@@ -22,6 +22,7 @@
 
 #include <paludis/util/fs_path.hh>
 #include <paludis/util/named_value.hh>
+#include <paludis/util/map-fwd.hh>
 #include <memory>
 
 /** \file
@@ -105,8 +106,8 @@ namespace paludis
             NamedValue<n::profiles_explicitly_set, bool> profiles_explicitly_set;
             NamedValue<n::securitydir, FSPath> securitydir;
             NamedValue<n::setsdir, FSPath> setsdir;
-            NamedValue<n::sync, std::string> sync;
-            NamedValue<n::sync_options, std::string> sync_options;
+            NamedValue<n::sync, std::shared_ptr<Map<std::string, std::string> > > sync;
+            NamedValue<n::sync_options, std::shared_ptr<Map<std::string, std::string> > > sync_options;
             NamedValue<n::use_manifest, erepository::UseManifest> use_manifest;
             NamedValue<n::write_bin_uri_prefix, std::string> write_bin_uri_prefix;
             NamedValue<n::write_cache, FSPath> write_cache;
