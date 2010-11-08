@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # vim: set sw=4 sts=4 et :
 
-# Copyright (c) 2008 Ciaran McCreesh
+# Copyright (c) 2008, 2010 Ciaran McCreesh
 #
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General
@@ -18,8 +18,15 @@
 
 builtin_installbin()
 {
-    echo tar jvxpf "${!PALUDIS_BINARY_DISTDIR_VARIABLE}"/${!PALUDIS_ARCHIVES_VAR} -C "${IMAGE}"/ --exclude PBIN 1>&2
-    tar jvxpf "${!PALUDIS_BINARY_DISTDIR_VARIABLE}"/${!PALUDIS_ARCHIVES_VAR} -C "${IMAGE}"/ --exclude PBIN || die "Couldn't extract image"
+    if [[ ${!PALUDIS_ARCHIVES_VAR%.tar.bz2} != ${!PALUDIS_ARCHIVES_VAR} ]] ; then
+        echo tar jvxpf "${!PALUDIS_BINARY_DISTDIR_VARIABLE}"/${!PALUDIS_ARCHIVES_VAR} -C "${IMAGE}"/ --exclude PBIN 1>&2
+        tar jvxpf "${!PALUDIS_BINARY_DISTDIR_VARIABLE}"/${!PALUDIS_ARCHIVES_VAR} -C "${IMAGE}"/ --exclude PBIN || die "Couldn't extract image"
+    elif [[ ${!PALUDIS_ARCHIVES_VAR%.pax.bz2} != ${!PALUDIS_ARCHIVES_VAR} ]] ; then
+        echo unpaxinate img "${!PALUDIS_BINARY_DISTDIR_VARIABLE}"/${!PALUDIS_ARCHIVES_VAR} "${IMAGE}" 1>&2
+        unpaxinate img "${!PALUDIS_BINARY_DISTDIR_VARIABLE}"/${!PALUDIS_ARCHIVES_VAR} "${IMAGE}" || die "Couldn't extract image"
+    else
+        die "Unrecognised extension for '${!PALUDIS_ARCHIVES_VAR}'"
+    fi
 }
 
 generic_internal_installbin()

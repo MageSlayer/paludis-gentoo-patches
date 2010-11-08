@@ -339,6 +339,7 @@ paludis-*.*.*.tar.bz2
 /paludis/repositories/e/ebuild/utils/prepman
 /paludis/repositories/e/ebuild/utils/prepstrip
 /paludis/repositories/e/ebuild/utils/print_exports
+/paludis/repositories/e/ebuild/utils/unpaxinate
 /paludis/repositories/e/exndbam_repository_TEST
 /paludis/repositories/e/fetch_visitor_TEST
 /paludis/repositories/e/fix_locked_dependencies_TEST

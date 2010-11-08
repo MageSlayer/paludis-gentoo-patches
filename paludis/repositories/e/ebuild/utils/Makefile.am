@@ -61,6 +61,16 @@ libexecbin_PROGRAMS = \
 	print_exports \
 	locked_pipe_command
 
+if ENABLE_PBINS
+libexecbin_PROGRAMS += \
+	unpaxinate
+
+unpaxinate_SOURCES = unpaxinate.cc
+unpaxinate_CXXFLAGS = $(AM_CXXFLAGS)
+unpaxinate_LDADD = -larchive
+
+endif
+
 print_exports_SOURCES = print_exports.cc
 locked_pipe_command_SOURCES = locked_pipe_command.cc
 

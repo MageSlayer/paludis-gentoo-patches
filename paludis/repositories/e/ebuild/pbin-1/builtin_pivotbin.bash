@@ -21,8 +21,16 @@ builtin_pivotbin()
     [[ ! -d "${!PALUDIS_TEMP_DIR_VAR}" ]] && die "Can't use \${${PALUDIS_TEMP_DIR_VAR}}=${!PALUDIS_TEMP_DIR_VAR}"
 
     ebuild_section "Extracting package environment"
-    echo tar jxvf "${!PALUDIS_BINARY_DISTDIR_VARIABLE}"/${!PALUDIS_ARCHIVES_VAR} -C "${!PALUDIS_TEMP_DIR_VAR}" --strip-components 1 PBIN/environment 1>&2
-    tar jxvf "${!PALUDIS_BINARY_DISTDIR_VARIABLE}"/${!PALUDIS_ARCHIVES_VAR} -C "${!PALUDIS_TEMP_DIR_VAR}" --strip-components 1 PBIN/environment || die "Couldn't extract env"
+
+    if [[ ${!PALUDIS_ARCHIVES_VAR%.tar.bz2} != ${!PALUDIS_ARCHIVES_VAR} ]] ; then
+        echo tar jxvf "${!PALUDIS_BINARY_DISTDIR_VARIABLE}"/${!PALUDIS_ARCHIVES_VAR} -C "${!PALUDIS_TEMP_DIR_VAR}" --strip-components 1 PBIN/environment 1>&2
+        tar jxvf "${!PALUDIS_BINARY_DISTDIR_VARIABLE}"/${!PALUDIS_ARCHIVES_VAR} -C "${!PALUDIS_TEMP_DIR_VAR}" --strip-components 1 PBIN/environment || die "Couldn't extract env"
+    elif [[ ${!PALUDIS_ARCHIVES_VAR%.pax.bz2} != ${!PALUDIS_ARCHIVES_VAR} ]] ; then
+        echo unpaxinate env "${!PALUDIS_BINARY_DISTDIR_VARIABLE}"/${!PALUDIS_ARCHIVES_VAR} "${!PALUDIS_TEMP_DIR_VAR}"  1>&2
+        unpaxinate env "${!PALUDIS_BINARY_DISTDIR_VARIABLE}"/${!PALUDIS_ARCHIVES_VAR} "${!PALUDIS_TEMP_DIR_VAR}" || die "Couldn't extract env"
+    else
+        die "Unrecognised extension for '${!PALUDIS_ARCHIVES_VAR}'"
+    fi
 
     ebuild_section "Switching to package environment"
     export BINARY_REPOSITORY="${REPOSITORY}"
