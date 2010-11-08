@@ -66,6 +66,9 @@ namespace
         args::ArgsGroup g_job_options;
         args::SwitchArg a_sequential;
 
+        args::ArgsGroup g_sync_options;
+        args::StringArg a_suffix;
+
         virtual std::string app_name() const
         {
             return "cave sync";
@@ -84,7 +87,10 @@ namespace
 
         SyncCommandLine() :
             g_job_options(main_options_section(), "Job Options", "Job options."),
-            a_sequential(&g_job_options, "sequential", '\0', "Only perform one sync at a time.", false)
+            a_sequential(&g_job_options, "sequential", '\0', "Only perform one sync at a time.", false),
+
+            g_sync_options(main_options_section(), "Sync Options", "Sync options."),
+            a_suffix(&g_sync_options, "suffix", 's', "Use the specified suffix for syncing.")
         {
             add_usage_line("[ --sequential ] [repository ...]");
         }
@@ -131,8 +137,8 @@ namespace
                 return "";
 
             const std::shared_ptr<const Repository> r(env->package_database()->fetch_repository(name));
-            if (r->sync_host_key() && r->sync_host_key()->value()->end() != r->sync_host_key()->value()->find(""))
-                return r->sync_host_key()->value()->find("")->second;
+            if (r->sync_host_key() && r->sync_host_key()->value()->end() != r->sync_host_key()->value()->find(cmdline.a_suffix.argument()))
+                return r->sync_host_key()->value()->find(cmdline.a_suffix.argument())->second;
             else
                 return "";
         }
@@ -193,7 +199,7 @@ namespace
             {
                 const std::shared_ptr<Repository> repo(env->package_database()->fetch_repository(name));
 
-                if (! repo->sync("", output_manager))
+                if (! repo->sync(cmdline.a_suffix.argument(), output_manager))
                     skipped = true;
                 success = true;
             }
