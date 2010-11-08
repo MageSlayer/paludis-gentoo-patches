@@ -1452,10 +1452,37 @@ ERepository::repository_factory_create(
     }
 
     auto sync(std::make_shared<Map<std::string, std::string> >());
-    sync->insert("", f("sync"));
+    std::vector<std::string> sync_tokens;
+    tokenise_whitespace(f("sync"), std::back_inserter(sync_tokens));
+    std::string suffix;
+    for (auto t(sync_tokens.begin()), t_end(sync_tokens.end()) ;
+            t != t_end ; ++t)
+        if ((! t->empty()) && (':' == t->at(t->length() - 1)))
+            suffix = t->substr(0, t->length() - 1);
+        else
+        {
+            std::string v;
+            if (sync->end() != sync->find(suffix))
+                v = sync->find(suffix)->second + " ";
+            sync->erase(suffix);
+            sync->insert(suffix, v + *t);
+        }
 
     auto sync_options(std::make_shared<Map<std::string, std::string> >());
-    sync_options->insert("", f("sync_options"));
+    std::vector<std::string> sync_options_tokens;
+    tokenise_whitespace(f("sync_options"), std::back_inserter(sync_options_tokens));
+    for (auto t(sync_options_tokens.begin()), t_end(sync_options_tokens.end()) ;
+            t != t_end ; ++t)
+        if ((! t->empty()) && (':' == t->at(t->length() - 1)))
+            suffix = t->substr(0, t->length() - 1);
+        else
+        {
+            std::string v;
+            if (sync_options->end() != sync_options->find(suffix))
+                v = sync_options->find(suffix)->second + " ";
+            sync_options->erase(suffix);
+            sync_options->insert(suffix, v);
+        }
 
     std::string builddir(f("builddir"));
     if (builddir.empty())

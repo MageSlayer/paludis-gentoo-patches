@@ -16,10 +16,13 @@ for <code>unwritten</code> format repositories:</p>
     <dd>The name of the repository. Defaults to <code>unwritten</code>.</dd>
 
     <dt><code>sync</code></dt>
-    <dd>How to sync the repository. See <a href="../syncers.html">Syncers</a> for supported formats.</dd>
+    <dd>How to sync the repository. See <a href="../syncers.html">Syncers</a> for supported formats. Optional if the
+    repository does not need to be synced. Different sync URIs to use when a different suffix is requested may be
+    specified, e.g. <code>sync = git+http://host/path local: git+file:///path</code>.</dd>
 
     <dt><code>sync_options</code></dt>
-    <dd>Any options to be passed to the syncer. Optional.</dd>
+    <dd>Any options to be passed to the syncer. Optional. Options for suffixes are specified using the same format as
+    for <code>sync</code>.</dd>
 </dl>
 
 <h2>Reference Configurations</h2>
