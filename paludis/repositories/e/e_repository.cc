@@ -1482,7 +1482,7 @@ ERepository::repository_factory_create(
             if (sync_options->end() != sync_options->find(suffix))
                 v = sync_options->find(suffix)->second + " ";
             sync_options->erase(suffix);
-            sync_options->insert(suffix, v);
+            sync_options->insert(suffix, v + *t);
         }
 
     std::string builddir(f("builddir"));
