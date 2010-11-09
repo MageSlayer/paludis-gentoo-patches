@@ -34,7 +34,10 @@ namespace
 
     std::string stringify_string_pair(const std::pair<const std::string, std::string> & s)
     {
-        return s.first + "=" + s.second;
+        if (s.first.empty())
+            return s.second;
+        else
+            return s.first + "=" + s.second;
     }
 
     /* We use this visitor to display extra information about a MetadataKey,

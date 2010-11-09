@@ -110,7 +110,8 @@ ColourFormatter::format(const std::string & s, const format::Plain &) const
 std::string
 ColourFormatter::format(const std::pair<const std::string, std::string> & s, const format::Plain &) const
 {
-    return fuc(fs_format_string_string_plain(), fv<'k'>(stringify(s.first)), fv<'v'>(stringify(s.second)));
+    return fuc(fs_format_string_string_plain(), fv<'k'>(stringify(s.first)), fv<'v'>(stringify(s.second)),
+            fv<'e'>(s.first.empty() ? "" : "="));
 }
 
 std::string

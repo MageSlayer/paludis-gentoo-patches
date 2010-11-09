@@ -12,8 +12,8 @@ const auto fs_format_keyword_name_unaccepted = make_format_string_fetcher("forma
 const auto fs_format_string_plain = make_format_string_fetcher("format-string/plain", 1)
     << param<'s'>();
 
-const auto fs_format_string_string_plain = make_format_string_fetcher("format-string-string/plain", 1)
-    << param<'k'>() << "=" << param<'v'>();
+const auto fs_format_string_string_plain = make_format_string_fetcher("format-string-string/plain", 2)
+    << param<'k'>() << param<'e'>() << param<'v'>();
 
 const auto fs_format_package_id_plain = make_format_string_fetcher("format-package-id/plain", 1)
     << param<'s'>();
