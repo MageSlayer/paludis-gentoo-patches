@@ -1471,6 +1471,7 @@ ERepository::repository_factory_create(
     auto sync_options(std::make_shared<Map<std::string, std::string> >());
     std::vector<std::string> sync_options_tokens;
     tokenise_whitespace(f("sync_options"), std::back_inserter(sync_options_tokens));
+    suffix = "";
     for (auto t(sync_options_tokens.begin()), t_end(sync_options_tokens.end()) ;
             t != t_end ; ++t)
         if ((! t->empty()) && (':' == t->at(t->length() - 1)))
