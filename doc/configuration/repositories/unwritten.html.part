@@ -3,7 +3,8 @@
 <h1>unwritten Repository Format</h1>
 
 <p>The <code>unwritten</code> repository format is used by Exherbo to keep track of packages that have not yet been
-written. It is not used by Gentoo and derived distributions.</p>
+written and packages that used to exist but that have now been deleted ('graveyard'). It is not used by Gentoo and
+derived distributions.</p>
 
 <p>As well as the <a href="index.html">general keys supported for all repositories</a>, the following keys have meaning
 for <code>unwritten</code> format repositories:</p>
@@ -29,7 +30,7 @@ for <code>unwritten</code> format repositories:</p>
 
 <h3>Exherbo</h3>
 
-<p>The following lists all officially unwritten repositories:</p>
+<p>The following lists all officially unwritten packages:</p>
 
 <pre>
 format = unwritten
@@ -38,4 +39,12 @@ sync = git://git.exherbo.org/unwritten.git
 importance = -100
 </pre>
 
+<p>The following lists all officially deleted packages:</p>
+
+<pre>
+format = unwritten
+location = /var/db/paludis/repositories/graveyard
+sync = git://git.exherbo.org/graveyard.git
+importance = -90
+</pre>
 
