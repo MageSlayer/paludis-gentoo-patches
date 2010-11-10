@@ -93,7 +93,8 @@ UnwrittenRepositoryStore::UnwrittenRepositoryStore(
         Log::get_instance()->message("unwritten_repository.unknown_role", ll_warning, lc_context)
             << "Role '" << info.role() << "' unknown for '" << f << "'";
 
-    _populate(env, f);
+    if (f.stat().exists())
+        _populate(env, f);
 }
 
 UnwrittenRepositoryStore::~UnwrittenRepositoryStore()
