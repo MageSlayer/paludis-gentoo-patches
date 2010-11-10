@@ -27,6 +27,7 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/extract_host_from_url.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/fs_stat.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/action.hh>
 #include <paludis/syncer.hh>
@@ -325,13 +326,21 @@ UnwrittenRepository::repository_factory_create(
 {
     Context context("When making unwritten repository from repo_file '" + f("repo_file") + "':");
 
-    std::string name_str(f("name"));
-    if (name_str.empty())
-        name_str = "unwritten";
-
     std::string location(f("location"));
     if (location.empty())
         throw UnwrittenRepositoryConfigurationError("Key 'location' not specified or empty");
+
+    FSPath location_path(location);
+
+    std::string name_str(f("name"));
+    if (name_str.empty() && location_path.stat().exists())
+    {
+        auto info(UnwrittenRepositoryStore::repository_information(location_path));
+        name_str = info.name();
+    }
+
+    if (name_str.empty())
+        name_str = "x-" + FSPath(f("location")).basename();
 
     auto sync(std::make_shared<Map<std::string, std::string> >());
     std::vector<std::string> sync_tokens;
