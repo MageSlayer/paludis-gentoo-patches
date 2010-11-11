@@ -1524,7 +1524,7 @@ AC_ARG_ENABLE([pbins],
 			  [ENABLE_PBINS=no
 			   enable_pbins=no])
 AC_MSG_RESULT([$ENABLE_PBINS])
-AC_SUBST([ENABLE_VISIBILITY])
+AC_SUBST([ENABLE_PBINS])
 AM_CONDITIONAL([ENABLE_PBINS], test "x$enable_pbins" = "xyes")
 if test x"$ENABLE_PBINS" = "xyes" ; then
 	AC_DEFINE([ENABLE_PBINS], [1], [Build pbin support])
