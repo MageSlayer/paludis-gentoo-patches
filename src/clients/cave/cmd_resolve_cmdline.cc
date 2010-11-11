@@ -234,31 +234,22 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
             args::EnumArg::EnumArgOptions
             ("auto",                  'a', "'install', or 'chroot' if the preferred root is not /")
             ("install",               'i', "Install targets to /")
-#ifdef ENABLE_PBINS
             ("binaries",              'b', "Create binary packages for targets")
-#endif
             ("chroot",                'c', "Install targets to a chroot"),
             "auto"),
     a_make_dependencies(&g_destination_options, "make-dependencies", 'M', "Specify what to do with dependencies of "
             "targets. Only useful when '--make' is not set to 'install', since dependencies on / are considered "
             "specially.",
             args::EnumArg::EnumArgOptions
-#ifdef ENABLE_PBINS
             ("auto",                  '\0', "Select appropriate behaviour based upon --make. For 'install', 'all', and "
                                             "for 'binaries' and 'chroot', 'runtime'.")
-#else
-            ("auto",                  '\0', "Select appropriate behaviour based upon --make. For 'install', 'all', and "
-                                            "for 'chroot', 'runtime'.")
-#endif
             ("runtime",               'r',  "Only care about runtime dependencies")
             ("all",                   'a',  "Care about all dependencies")
             ("none",                  'n',  "Don't care about dependencies at all"),
             "auto"),
-#ifdef ENABLE_PBINS
     a_via_binary(&g_destination_options, "via-binary", 'b', "When building a package matching the supplied spec, "
             "create a binary package and use that for the install. May be specified multiple times. If this option "
             "is not specified, a package will be built multiple times for multiple destinations"),
-#endif
     a_dependencies_to_slash(&g_destination_options, "dependencies-to-slash", '/', "Specify what to do with "
             "dependencies for the / filesystem when not working on /. By default, all dependencies are installed "
             "to /.",

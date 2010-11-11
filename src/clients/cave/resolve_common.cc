@@ -682,12 +682,10 @@ paludis::cave::resolve_common(
         allowed_to_remove_helper.add_allowed_to_remove_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
 
     AlwaysViaBinaryHelper always_via_binary_helper(env.get());
-#ifdef ENABLE_PBINS
     for (args::StringSetArg::ConstIterator i(resolution_options.a_via_binary.begin_args()),
             i_end(resolution_options.a_via_binary.end_args()) ;
             i != i_end ; ++i)
         always_via_binary_helper.add_always_via_binary_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
-#endif
 
     CanUseHelper can_use_helper(env.get());
     for (args::StringSetArg::ConstIterator i(resolution_options.a_not_usable.begin_args()),
