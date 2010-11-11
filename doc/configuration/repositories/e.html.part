@@ -93,5 +93,21 @@ for <code>e</code> format repositories:</p>
     <dt><code>use_manifest</code></dt>
     <dd>Whether to use Manifest2. Valid values are <code>use</code>, <code>require</code> or <code>ignore</code>.
     Optional.</dd>
+
+    <dt><code>binary_destination</code></dt>
+    <dd>If set to <code>true</code>, this repository is treated as a destination when creating binary packages.</dd>
+
+    <dt><code>binary_uri_prefix</code></dt>
+    <dd>When writing URIs for the binary tarball, the value of this setting is prepended to the tarball name. Typically
+    this setting can be ignored for local-only binary packages, and should be set to something like
+    <code>http://yourserver/bindistdir/</code> or <code>mirror://yourreponame/</code> for binary repositories that are
+    to be distributed.</dd>
+
+    <dt><code>binary_distdir</code></dt>
+    <dd>Controls where binary package tarballs are written.</dd>
+
+    <dt><code>binary_keywords_filter</code></dt>
+    <dd>When deciding upon keywords for a binary package, the keywords of the origin package are unioned with the
+    keywords in this setting. A typical value is <code>amd64 ~amd64</code>.</dd>
 </dl>
 
