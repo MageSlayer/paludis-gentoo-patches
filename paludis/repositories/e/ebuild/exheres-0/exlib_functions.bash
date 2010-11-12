@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # vim: set sw=4 sts=4 et :
 
-# Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+# Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
 # Copyright (c) 2009 Bo Ørsted Andresen
 #
 # This file is part of the Paludis package manager. Paludis is free software;
@@ -26,7 +26,8 @@ export_exlib_phases()
         if [[ "${e}" == builtin_* ]] || ! has "${e}" ${PALUDIS_EBUILD_FUNCTIONS}; then
             die "$e should not be in export_exlib_phases for ${CURRENT_EXLIB}"
         fi
-        eval "${e}() { ${CURRENT_EXLIB}_${e} \"\$@\" ; }"
+        eval "${e}() { type -t ${CURRENT_EXLIB}_${e} >/dev/null || \
+            die \"exported phase function ${CURRENT_EXLIB}_${e} does not exist\" ; ${CURRENT_EXLIB}_${e} \"\$@\" ; }"
     done
 }
 
