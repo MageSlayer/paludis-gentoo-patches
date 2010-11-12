@@ -47,7 +47,9 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
     g_execution_options(this, "Execution Options", "Control execution."),
     a_execute(&g_execution_options, "execute", 'x', "Execute the suggested actions", true),
 
-    g_convenience_options(this, "Convenience Options", "Broad behaviour options."),
+    g_convenience_options(this, "Convenience Options", "Broad behaviour options. These options are simply "
+            "a convenient way of selecting common groups of other options; see individual option descriptions "
+            "for exact details."),
     a_lazy(&g_convenience_options, "lazy", 'z', "Do as little work as possible.", true),
     a_complete(&g_convenience_options, "complete", 'c', "Do all optional work.", true),
     a_everything(&g_convenience_options, "everything", 'e', "Do all optional work, and also reinstall", true),
@@ -105,7 +107,8 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
             ("never",                 'n', "Never")
             ("if-transient",          't', "Only if the installed package is transient "
                                            "(e.g. from 'importare')")
-            ("if-same",               's', "If it is the same as the proposed replacement")
+            ("if-same",               's', "If it is the same as the proposed replacement (that is, if it has the same "
+             "version, and no non-special use flags or choices have had their values changed)")
             ("if-same-version",       'v', "If it is the same version as the proposed replacement")
             ("if-possible",           'p', "If possible"),
 
@@ -117,8 +120,8 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
             ("never",                 'n', "Never")
             ("if-transient",          't', "Only if the installed package is transient "
                                            "(e.g. from 'importare') (default if --everything)")
-            ("if-same",               's', "If it is the same as the proposed replacement "
-                                           "(default if --complete)")
+            ("if-same",               's', "If it is the same as the proposed replacement (that is, if it has the same "
+             "version, and no non-special use flags or choices have had their values changed) (default if --complete)")
             ("if-same-version",       'v', "If it is the same version as the proposed replacement")
             ("if-possible",           'p', "If possible"),
 
