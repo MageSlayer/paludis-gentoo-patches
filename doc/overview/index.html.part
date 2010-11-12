@@ -6,6 +6,7 @@
     <li><a href="features.html">Features</a>: an overview of Paludis, and how it differs from its predecessor,
     Portage.</li>
     <li><a href="gettingstarted.html">Getting started</a>: where to begin.</li>
+    <li><a href="pbins.html">Pbins</a>: how to work with binary packages.</li>
     <li><a href="contact.html">Contact</a>: how to get in touch.</li>
 </ul>
 

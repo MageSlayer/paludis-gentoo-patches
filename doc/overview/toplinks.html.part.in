@@ -34,7 +34,7 @@
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###overview/contact.html">Contact</a>
+                <a href="###TOPURI###overview/pbins.html">Pbins</a>
             </td>
         </tr>
 
@@ -44,7 +44,7 @@
             </td>
 
             <td class="currentpage">
-                &nbsp;
+                <a href="###TOPURI###overview/contact.html">Contact</a>
             </td>
         </tr>
 

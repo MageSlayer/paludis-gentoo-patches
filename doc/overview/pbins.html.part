@@ -1,0 +1,92 @@
+<!-- vim: set tw=120 ft=html sw=4 sts=4 et : -->
+
+<h1>Pbins</h1>
+
+<div class="note">
+    <p>Binary package support is currently extremely experimental. <strong>Be sure to read this entire document
+        carefully</strong> and be aware that you will encounter bugs, some of which <strong>may leave your system
+        unbootable or broken beyond repair</strong>.</p>
+</div>
+
+<h2>Format Overview</h2>
+
+<p>Paludis uses its own format for binary packages built from ebuild or exhereses. This format is known as 'pbin'. It is
+not in any way compatible with Portage's tbz2 packages, which we consider to be too broken to be worth handling.</p>
+
+<p>A pbin comes in two parts. First, there is the pbin file itself, which is a small file containing metadata
+information. Second, there is the tarball containing the content of the package, along with environment information to
+allow pre- and post-install functions to be run as if the package were being installed from source.</p>
+
+<p>pbin files should be considered to be more or less like an ebuild or exheres -- in particular, they are kept in a
+repository, which can be shared and synced using the normal mechanisms. There is nothing special about repositories that
+contain binary packages, and it is in principle possible to mix binary and source packages within an individual
+repository (although doing so is a bad idea).</p>
+
+<p>Similarly, the content tarball is treated just like source tarballs for ebuilds and exhereses. It is stored in a
+distfiles directory rather than in the repository, and can be fetched from a remote location (which might be mirrored)
+when it is required.</p>
+
+<p>Using a binary repository is just like using a normal ebuild or exheres repository, and does not require any special
+configuration. The <code>importance</code> setting may be of interest here, however -- using a high importance for a
+binary repository will result in packages in that repository being preferred, whilst using a low importance will result
+in binaries only being used when necessary or explicitly requested.</p>
+
+<h2>Notes on <code>libarchive</code></h2>
+
+<p>We use <a href="http://code.google.com/p/libarchive/">libarchive</a> to create binary packages. At the time of
+writing (libarchive 2.8.4), this is causing a number of issues (but not as many as using anything else would do...). In
+particular:</p>
+
+<ul>
+    <li>It is strongly recommended that <strong>libarchive be built without support for extended attributes
+        (xattrs)</strong>. Some users have found that binary packages cannot be created when extended attribute support
+    is enabled (error messages like <code>archive_read_disk_entry_from_file failed</code>).</li>
+
+    <li>Current releases of libarchive do not support GNU's tar extensions (although svn master does). However, without
+    extensions, tar is effectively useless. Thus, if the version of ilbarchive installed when Paludis is built does not
+    have GNU tar support, we use POSIX pax format when creating tarballs, and we use the <code>.pax</code> extension
+    rather than <code>.tar</code> to make this clear. Unfortunately, <strong>GNU tar doesn't particularly like PAX
+        tarballs</strong>, and will moan like crazy and not properly extract files built this way. Thus, if you intend
+    to extract pbin tarballs by hand (e.g. to rescue a completely broken system), you must either use OpenBSD's
+    <code>pax</code> to do the extracting, or use a libarchive release that does not yet exist.</li>
+</ul>
+
+<h2>Creating Binary Repositories</h2>
+
+<p>If one wishes to <em>create</em> binary packages, either for local use or for distribution, then some additional
+configuration is required. In general:</p>
+
+<ul>
+    <li>Create a new, empty repository, exactly as you would for an overlay containing ebuilds or a supplementary
+    repository containing exhereses. Give it a name, like <code>fred-bin</code>. Configure Paludis to use this
+    repository as normal.</li>
+
+    <li>In addition, specify keys like the following in the configuration file (see <a
+        href="../configuration/repositories/e.html">the e repository documentation</a> for full details):
+    <pre>binary_destination = true
+binary_distdir = ${distdir}
+binary_keywords_filter = amd64 ~amd64</pre>
+    </li>
+
+    <li>If your binary repository is intended for non-local use, you may wish to use a different directory for
+    <code>binary_distdir</code>, to make distributing generated tarballs simpler. In this case, you should also specify
+    <code>binary_uri_prefix = http://yourserver/wherever</code> (or <code>mirror://yourname/</code> and then also set up
+    a <code>thirdpartymirrors</code> (Gentoo) or <code>mirrors.conf</code> (Exherbo) as part of your repository.</li>
+</ul>
+
+<h2>Creating Binary Packages</h2>
+
+<p>Creating binary packages is done for two reasons.</p>
+
+<ul>
+    <li>Creating binary packages may be a direct goal, either for local use or for publishing. In this case, <code>cave
+        resolve --make binaries</code> can be used. The <code>--make-dependencies</code> option will likely also be of
+    interest.</li>
+    <li>Creating binary packages may be a desired side effect, either to avoid building a package twice to install to
+    slash and a chroot, or just to have something around for possible use when installing a package normally. In this
+    case, <code>cave resolve --via-binary</code> is a more appropriate solution.</li>
+</ul>
+
+<p>Creating binaries using the old <code>paludis</code> client is not recommended, since it is not aware of the
+subtleties of dependencies with binary packages.</p>
+

@@ -9,6 +9,7 @@ CLEANFILES += \
 	features.html \
 	gettingstarted.html \
 	contact.html \
+	pbins.html \
 	index.html
 
 EXTRA_DIST = \
@@ -16,6 +17,7 @@ EXTRA_DIST = \
 	index.html.part \
 	features.html.part \
 	gettingstarted.html.part \
+	pbins.html.part \
 	contact.html.part
 
 paludisoverviewhtmldir = $(htmldir)/overview
@@ -24,7 +26,8 @@ paludisoverviewhtml_DATA = \
 	index.html \
 	features.html \
 	gettingstarted.html \
-	contact.html
+	contact.html \
+	pbins.html
 
 if HAVE_HTMLTIDY
 
@@ -44,6 +47,9 @@ features.html : header.html.part $(srcdir)/features.html.part footer.html.part
 
 contact.html : header.html.part $(srcdir)/contact.html.part footer.html.part
 	cat header.html.part $(srcdir)/contact.html.part footer.html.part > $@
+
+pbins.html : header.html.part $(srcdir)/pbins.html.part footer.html.part
+	cat header.html.part $(srcdir)/pbins.html.part footer.html.part > $@
 
 header.html.part : $(srcdir)/../header.html.part.in toplinks.html.part
 	sed \
