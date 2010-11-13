@@ -50,6 +50,15 @@ TeeOutputStreamBuf::overflow(int_type c)
     return c;
 }
 
+int
+TeeOutputStreamBuf::sync()
+{
+    for (std::list<std::ostream *>::iterator i(_imp->streams.begin()), i_end(_imp->streams.end()) ;
+            i != i_end ; ++i)
+        **i << std::flush;
+    return 0;
+}
+
 std::streamsize
 TeeOutputStreamBuf::xsputn(const char * s, std::streamsize num)
 {

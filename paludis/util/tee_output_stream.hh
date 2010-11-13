@@ -35,6 +35,8 @@ namespace paludis
             virtual int_type
             overflow(int_type c);
 
+            virtual int sync();
+
             virtual std::streamsize
             xsputn(const char * s, std::streamsize num);
 
