@@ -122,7 +122,7 @@ namespace
             a_no_keys(&g_key_options, "no-keys", 'n',
                     "Do not show any metadata keys", true),
             a_complex_keys(&g_key_options, "complex-keys", 'c',
-                    "Show complex keys", true),
+                    "Show complex keys (e.g. dependencies, downloads)", true),
             a_internal_keys(&g_key_options, "internal-keys", 'i',
                     "Show keys marked as 'internal-only'", true),
             a_significant_keys_only(&g_key_options, "significant-keys-only", 's',
