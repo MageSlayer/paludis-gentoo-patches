@@ -254,9 +254,20 @@ IPCInputManager::_pipe_command_handler(const std::string & s)
             if (_imp->output_manager)
                 return "Ealready constructed";
 
-            _imp->output_manager = _imp->env->create_output_manager(*i);
-            if (_imp->on_create)
-                _imp->on_create(_imp->output_manager);
+            try
+            {
+                _imp->output_manager = _imp->env->create_output_manager(*i);
+                if (_imp->on_create)
+                    _imp->on_create(_imp->output_manager);
+            }
+            catch (const Exception & e)
+            {
+                _imp->output_manager.reset(new StandardOutputManager);
+                if (_imp->on_create)
+                    _imp->on_create(_imp->output_manager);
+
+                return "Egot exception '" + e.message() + "' (" + e.what() + ") when creating output manager";
+            }
         }
 
         _imp->copy_thread = std::make_shared<Thread>(std::bind(&IPCInputManager::_copy_thread, this));
