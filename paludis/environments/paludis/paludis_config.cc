@@ -64,6 +64,7 @@
 
 #include <ctype.h>
 #include <sys/types.h>
+#include <grp.h>
 #include <pwd.h>
 
 #include "config.h"
@@ -501,6 +502,30 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
                 "configuration directories and files should be world readable.";
             _imp->reduced_uid = std::make_shared<uid_t>(getuid());
             _imp->reduced_gid = std::make_shared<gid_t>(getgid());
+        }
+
+        FSPath tty_0("/dev/pts/0");
+        bool tty_ok(true);
+        if (tty_0.stat().exists())
+        {
+            FSStat tty_0_stat(tty_0);
+            ::gid_t gids[100];
+
+            int g(100);
+            if ((g = ::getgrouplist(reduced_username().c_str(), reduced_gid(), gids, &g)) != -1)
+                tty_ok = (gids + g != std::find(gids, gids + g, tty_0_stat.group()));
+            else
+                tty_ok = false;
+        }
+        else
+            tty_ok = false;
+
+        if (! tty_ok)
+        {
+            Log::get_instance()->message("paludis_environment.userpriv.tty", ll_warning, lc_context)
+                << "Cannot verify that we have sufficient permissions to use PTYs properly "
+                "using userpriv. Strange breakages may occur. You should ensure that the '"
+                << reduced_username() << "' user is in the group to which /dev/pts/0 belongs";
         }
 
         if (dist->mandatory_userpriv() && ((0 == *_imp->reduced_uid || 0 == *_imp->reduced_gid)))
