@@ -199,7 +199,7 @@ namespace
             const FSPath & dst)
     {
         Process process(ProcessCommand({ cmdline.program_options.a_graph_program.argument(),
-                    "-T", cmdline.program_options.a_graph_program.argument(),
+                    "-T", cmdline.graph_jobs_options.a_graph_jobs_format.argument(),
                     stringify(src), "-o", stringify(dst)
                     }));
 
