@@ -123,6 +123,7 @@ namespace
             }
             catch (const ActionFailedError & e)
             {
+                bool incremented_success(false);
                 for (Sequence<FetchActionFailure>::ConstIterator f(failures->begin()),
                         f_end(failures->end()) ;
                         f != f_end ; ++f)
@@ -141,7 +142,11 @@ namespace
                     if (! f->failed_integrity_checks().empty())
                     {
                         if (CommandLine::get_instance()->a_override.specified())
-                            ++success;
+                        {
+                            if (! incremented_success)
+                                ++success;
+                            incremented_success = true;
+                        }
                         else
                         {
                             no_conflict_with_manifest = false;
