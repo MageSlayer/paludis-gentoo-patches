@@ -174,14 +174,15 @@ namespace
                         continue;
 
                 output_stream << "    job" << execute_job_list->number(j) << " -> job" << r->job_number() << " [ ";
-                if (r->required_if()[jri_fetching])
-                    output_stream << " color=cadetblue";
-                else if (r->required_if()[jri_require_always])
+                if (r->required_if()[jri_require_always])
                     output_stream << " color=crimson";
                 else if (r->required_if()[jri_require_for_satisfied])
                     output_stream << " color=indianred";
                 else if (r->required_if()[jri_require_for_independent])
                     output_stream << " color=lightpink";
+
+                if (! r->required_if()[jri_fetching])
+                    output_stream << " style=dotted";
 
                 output_stream << " ]" << endl;
             }
