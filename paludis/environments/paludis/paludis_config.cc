@@ -505,10 +505,10 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         }
 
         FSPath tty_0("/dev/pts/0");
+        FSStat tty_0_stat(tty_0);
         bool tty_ok(true);
-        if (tty_0.stat().exists())
+        if (tty_0_stat.exists())
         {
-            FSStat tty_0_stat(tty_0);
             ::gid_t gids[100];
 
             int g(100);
