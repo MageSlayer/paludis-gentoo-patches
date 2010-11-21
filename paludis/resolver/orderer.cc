@@ -177,6 +177,7 @@ namespace
 
                 resolved->nag()->add_edge(done_index, fetched_index,
                         make_named_values<NAGEdgeProperties>(
+                            n::always() = false,
                             n::build() = true,
                             n::build_all_met() = false,
                             n::run() = false,
@@ -291,6 +292,7 @@ namespace
                 {
                     nag->add_edge(from, to,
                             make_named_values<NAGEdgeProperties>(
+                                n::always() = false,
                                 n::build() = classifier.includes_buildish,
                                 n::build_all_met() = r.already_met() || ! classifier.includes_buildish,
                                 n::run() = classifier.includes_non_post_runish,
@@ -301,6 +303,7 @@ namespace
                 {
                     nag->add_edge(to, from,
                             make_named_values<NAGEdgeProperties>(
+                                n::always() = false,
                                 n::build() = false,
                                 n::build_all_met() = true,
                                 n::run() = false,
@@ -360,6 +363,7 @@ namespace
 
             nag->add_edge(from, to,
                     make_named_values<NAGEdgeProperties>(
+                        n::always() = false,
                         n::build() = false,
                         n::build_all_met() = true,
                         n::run() = false,
@@ -389,6 +393,7 @@ namespace
 
                 nag->add_edge(from, to,
                         make_named_values<NAGEdgeProperties>(
+                            n::always() = false,
                             n::build() = false,
                             n::build_all_met() = true,
                             n::run() = false,
@@ -576,6 +581,7 @@ Orderer::_add_binary_cleverness(const std::shared_ptr<const Resolution> & resolu
 
         _imp->resolved->nag()->add_edge(from, to,
                 make_named_values<NAGEdgeProperties>(
+                    n::always() = true,
                     n::build() = true,
                     n::build_all_met() = false,
                     n::run() = false,
@@ -651,6 +657,7 @@ Orderer::_order_sub_ssccs(
                     if (sub_scc->nodes()->end() != sub_scc->nodes()->find(e->first))
                         if ((! e->second.build_all_met()) || (! e->second.run_all_met()))
                             scc_nag_without_met_deps.add_edge(*r, e->first, make_named_values<NAGEdgeProperties>(
+                                        n::always() = e->second.always(),
                                         n::build() = e->second.build() && ! e->second.build_all_met(),
                                         n::build_all_met() = e->second.build_all_met(),
                                         n::run() = e->second.run() && ! e->second.run_all_met(),
@@ -716,6 +723,16 @@ namespace
                         requirements->push_back(make_named_values<JobRequirement>(
                                     n::job_number() = n->second,
                                     n::required_if() = basic_required_ifs + jri_require_for_satisfied
+                                    ));
+                }
+
+                if (e->second.always())
+                {
+                    ChangeOrRemoveJobNumbers::const_iterator n(change_or_remove_job_numbers.find(e->first));
+                    if (n != change_or_remove_job_numbers.end())
+                        requirements->push_back(make_named_values<JobRequirement>(
+                                    n::job_number() = n->second,
+                                    n::required_if() = basic_required_ifs + jri_require_always
                                     ));
                 }
             }

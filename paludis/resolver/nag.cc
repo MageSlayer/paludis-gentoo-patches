@@ -469,6 +469,7 @@ NAG::deserialise(Deserialisation & d)
 NAGEdgeProperties &
 NAGEdgeProperties::operator|= (const NAGEdgeProperties & other)
 {
+    always() |= other.always();
     build() |= other.build();
     build_all_met() &= other.build_all_met();
     run() |= other.run();
@@ -480,6 +481,7 @@ void
 NAGEdgeProperties::serialise(Serialiser & s) const
 {
     s.object("NAGEdgeProperties")
+        .member(SerialiserFlags<>(), "always", always())
         .member(SerialiserFlags<>(), "build", build())
         .member(SerialiserFlags<>(), "build_all_met", build_all_met())
         .member(SerialiserFlags<>(), "run", run())
@@ -493,6 +495,7 @@ NAGEdgeProperties::deserialise(Deserialisation & d)
     Deserialisator v(d, "NAGEdgeProperties");
 
     return make_named_values<NAGEdgeProperties>(
+            n::always() = v.member<bool>("always"),
             n::build() = v.member<bool>("build"),
             n::build_all_met() = v.member<bool>("build_all_met"),
             n::run() = v.member<bool>("run"),

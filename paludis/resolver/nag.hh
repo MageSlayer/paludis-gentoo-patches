@@ -34,6 +34,7 @@ namespace paludis
 {
     namespace n
     {
+        typedef Name<struct always_name> always;
         typedef Name<struct build_name> build;
         typedef Name<struct build_all_met_name> build_all_met;
         typedef Name<struct resolvent_name> resolvent;
@@ -57,6 +58,7 @@ namespace paludis
 
         struct NAGEdgeProperties
         {
+            NamedValue<n::always, bool> always;
             NamedValue<n::build, bool> build;
             NamedValue<n::build_all_met, bool> build_all_met;
             NamedValue<n::run, bool> run;
