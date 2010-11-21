@@ -61,6 +61,7 @@ command_MANS = \
 	cave-print-sets.1 \
 	cave-print-spec.1 \
 	cave-print-sync-protocols.1 \
+	cave-print-unused-distfiles.1 \
 	cave-purge.1 \
 	cave-report.1 \
 	cave-resolve.1 \
@@ -160,6 +161,7 @@ libcave_a_SOURCES = \
 	cmd_print_sets.cc cmd_print_sets.hh \
 	cmd_print_spec.cc cmd_print_spec.hh \
 	cmd_print_sync_protocols.cc cmd_print_sync_protocols.hh \
+	cmd_print_unused_distfiles.cc cmd_print_unused_distfiles.hh \
 	cmd_purge.cc cmd_purge.hh \
 	cmd_report.cc cmd_report.hh cmd_report-fmt.hh \
 	cmd_resolve.cc cmd_resolve.hh \
