@@ -24,6 +24,7 @@
 #include <paludis/util/options-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <iosfwd>
+#include <memory>
 
 namespace paludis
 {
@@ -35,6 +36,8 @@ namespace paludis
 
         struct JobRequirement;
         typedef Sequence<JobRequirement> JobRequirements;
+
+        const std::shared_ptr<JobRequirements> minimise_requirements(const std::shared_ptr<const JobRequirements> &);
     }
 }
 
