@@ -1406,7 +1406,7 @@ namespace
 
                 Timestamp now(Timestamp::now());
                 if (now.seconds() - last_flushed.seconds() >= 10)
-                    display_active(true);
+                    display_active(false);
             }
         }
 
