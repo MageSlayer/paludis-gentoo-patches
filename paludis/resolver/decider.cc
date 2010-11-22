@@ -453,14 +453,21 @@ Decider::_make_change_type_for(
 {
     if (decision.destination()->replacing()->empty())
     {
-        const std::shared_ptr<const PackageIDSequence> others((*_imp->env)[selection::SomeArbitraryVersion(
+        const std::shared_ptr<const PackageIDSequence> others((*_imp->env)[selection::AllVersionsUnsorted(
                     generator::Package(decision.origin_id()->name()) &
                     generator::InRepository(decision.destination()->repository())
                     )]);
         if (others->empty())
             return ct_new;
         else
+        {
+            for (auto o(others->begin()), o_end(others->end()) ;
+                    o != o_end ; ++o)
+                if (_same_slot(*o, decision.origin_id()))
+                    return ct_add_to_slot;
+
             return ct_slot_new;
+        }
     }
     else
     {

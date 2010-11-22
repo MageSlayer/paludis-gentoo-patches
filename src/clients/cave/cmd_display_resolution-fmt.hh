@@ -137,6 +137,9 @@ const auto fs_change_type_new = make_format_string_fetcher("display-resolution/c
 const auto fs_change_type_slot_new = make_format_string_fetcher("display-resolution/change_type_slot_new", 1)
     << param<'c'>() << param<'s'>() << c::bold_blue();
 
+const auto fs_change_type_add_to_slot = make_format_string_fetcher("display-resolution/change_type_add_to_slot", 1)
+    << param<'c'>() << param<'s'>() << c::blue();
+
 const auto fs_change_type_upgrade = make_format_string_fetcher("display-resolution/change_type_upgrade", 1)
     << param<'c'>() << param<'s'>() << c::blue();
 

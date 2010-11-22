@@ -9,6 +9,7 @@ make_enum_ChangeType()
     key ct_downgrade                 "It's a downgrade"
     key ct_reinstall                 "It's a reinstall"
     key ct_upgrade                   "It's an upgrade"
+    key ct_add_to_slot               "We're adding a new version to an existing slot (binaries)"
     key ct_slot_new                  "It's a new slot, but other slots are installed"
     key ct_new                       "It's new"
 

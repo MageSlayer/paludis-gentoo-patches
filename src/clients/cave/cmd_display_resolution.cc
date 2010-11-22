@@ -1192,6 +1192,9 @@ namespace
                 case ct_slot_new:
                     cout << fuc(fs_change_type_slot_new(), fv<'c'>(c), fv<'s'>(x.replace(x.find('X'), 1, "s")));
                     continue;
+                case ct_add_to_slot:
+                    cout << fuc(fs_change_type_add_to_slot(), fv<'c'>(c), fv<'s'>(x.replace(x.find('X'), 1, "v")));
+                    continue;
                 case ct_upgrade:
                     cout << fuc(fs_change_type_upgrade(), fv<'c'>(c), fv<'s'>(x.replace(x.find('X'), 1, "u")));
                     continue;
@@ -1677,6 +1680,10 @@ namespace
 
                 case ct_slot_new:
                     kind = "new slot installs";
+                    break;
+
+                case ct_add_to_slot:
+                    kind = "adding to slot";
                     break;
 
                 case ct_upgrade:
