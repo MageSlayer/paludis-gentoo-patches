@@ -548,7 +548,7 @@ Decider::_find_replacing(
         for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                 i != i_end ; ++i)
         {
-            if ((*i)->version() == id->version() || _same_slot(*i, id))
+            if ((*i)->version() == id->version() || (_same_slot(*i, id) && repo->installed_root_key()))
                 result->push_back(*i);
         }
     }
