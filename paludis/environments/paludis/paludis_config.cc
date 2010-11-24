@@ -638,7 +638,12 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
                     d != d_end ; ++d)
             {
                 if (*d == r->first)
-                    throw ConfigurationError("Repository '" + stringify(r->first) + "' requires itself");
+                {
+                    Log::get_instance()->message("no_config_environment.repositories.self_dependent", ll_warning, lc_context)
+                        << "Repository '" + stringify(r->first) + "' incorrectly requires itself";
+                    continue;
+                }
+
                 try
                 {
                     repository_deps.add_edge(r->first, *d, true);
