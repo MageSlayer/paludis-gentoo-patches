@@ -348,6 +348,15 @@ _cave_cmd_perform()
     esac
 }
 
+(( ${+functions[_cave_cmd_print-best-version]} )) ||
+_cave_cmd_print-best-version()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '(--format -f)'{--format,-f}'[Select the output format]:Format:((full f spec s name n version v name-version V))' \
+    '*:package depspec:_cave_packages' && return 0
+}
+
 (( ${+functions[_cave_cmd_print-categories]} )) ||
 _cave_cmd_print-categories()
 {
@@ -454,6 +463,16 @@ _cave_cmd_print-id-metadata()
     '*:package depspec:_cave_packages' && return 0
 }
 
+(( ${+functions[_cave_cmd_print-id-size]} )) ||
+_cave_cmd_print-id-size()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '(--all --no-all -a)'{--all,--no-all,-a}'[If the spec matches multiple IDs, display all matches]' \
+    '(--best --no-best -b)'{--best,--no-best,-b}'[If the spec matches multiple IDs, select the best ID rather than giving an error]' \
+    '*:package depspec:_cave_packages' && return 0
+}
+
 (( ${+functions[_cave_cmd_print-ids]} )) ||
 _cave_cmd_print-ids()
 {
@@ -529,6 +548,13 @@ _cave_cmd_print-sets()
 
 (( ${+functions[_cave_cmd_print-sync-protocols]} )) ||
 _cave_cmd_print-sync-protocols()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]'
+}
+
+(( ${+functions[_cave_cmd_print-unused-distfiles]} )) ||
+_cave_cmd_print-unused-distfiles()
 {
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]'
@@ -672,6 +698,14 @@ _cave_cmd_show()
     '(--raw-names -r --no-raw-names)'{--raw-names,-r,--no-raw-names}'[Display raw rather than human readable key names]' \
     '(--one-version -1 --no-one-version --no-versions -0 --no-no-versions)'{--one-version,-1,--no-one-version}'[Display only a single version of any package, rather than all installed and the best installable package]' \
     '(--one-version -1 --no-one-version --no-versions -0 --no-no-versions)'{--no-versions,-0,--no-no-versions}'[Don'\''t display any version-specific information]' \
+    '*:package depspec:_cave_packages' && return 0
+}
+
+(( ${+functions[_cave_cmd_size]} )) ||
+_cave_cmd_size()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]' \
     '*:package depspec:_cave_packages' && return 0
 }
 
