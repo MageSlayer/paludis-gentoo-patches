@@ -28,8 +28,8 @@ _cave()
   _cave_commands=(
     'config:Perform post-install configuration on a package'
     'contents:Display the contents of a package ID'
-    'dump-cave-formats-conf:Output a ~/.cave/formats.conf'
     "display-resolution:Displays a dependency resolution created using \'cave resolve\'"
+    'dump-cave-formats-conf:Output a ~/.cave/formats.conf'
     'executables:Display executables belonging to an ID'
     "execute-resolution:Executes a dependency resolution created using \'cave resolve\'"
     'find-candidates:Find a list of candidate packages for a search'
@@ -42,6 +42,7 @@ _cave()
     'match:Determine whether a particular package version has certain properties'
     'owner:Shows package IDs owning a given file'
     'perform:Perform an action upon a package'
+    'print-best-version:Prints the best installed version matching a particular spec'
     'print-categories:Prints a list of known categories'
     'print-commands:Prints a list of known cave commands'
     'print-environment-metadata:Prints environment metadata'
@@ -51,6 +52,7 @@ _cave()
     'print-id-executables:Prints a list of executables belonging to an ID'
     'print-id-masks:Prints ID masks'
     'print-id-metadata:Prints ID metadata'
+    'print-id-size:Prints the size of files installed by a package, in a parsable format'
     'print-ids:Prints a list of known IDs'
     'print-owners:Prints a list of package IDs owning a given file'
     'print-packages:Prints a list of package names'
@@ -60,12 +62,14 @@ _cave()
     'print-set:Prints a list of known sets'
     'print-sets:Prints a list of sets'
     'print-sync-protocols:Prints a list of sync protocols'
+    'print-unused-distfiles:Prints all unused distfiles'
     'purge:Uninstall unused packages'
     'report:Display a summary of potential problems with installed packages'
     'resolve:Display how to resolve one or more targets, and possibly then perform that resolution'
     "resume:Resume a failed resolution from \'cave resolve\'"
     'search:Search for packages with particular characteristics'
     'show:Display a summary of a given object'
+    'size:Prints the size of files installed by a package'
     'sync:Sync all or specified repositories'
     'uninstall:Uninstall one or more packages'
     'update-world:Updates the world set'
