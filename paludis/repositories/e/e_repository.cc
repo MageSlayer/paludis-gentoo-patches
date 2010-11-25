@@ -1241,6 +1241,8 @@ ERepository::repository_factory_create(
 {
     Context context("When making ebuild repository from repo_file '" + f("repo_file") + "':");
 
+    RepositoryName our_name(repository_factory_name(env, f));
+
     std::string location(f("location"));
     if (location.empty())
         throw ERepositoryConfigurationError("Key 'location' not specified or empty");
@@ -1290,6 +1292,14 @@ ERepository::repository_factory_create(
             Context context_local("When finding configuration information for master '" + *t + "':");
 
             RepositoryName master_repository_name(*t);
+            if (master_repository_name == our_name)
+            {
+                Log::get_instance()->message("e.ebuild.configuration.own_master_repository", ll_warning, lc_context)
+                    << "According to '" << stringify(FSPath(location) / "metadata/layout.conf")
+                    << "', the repository '" << our_name << "' has itself as a master, which is invalid";
+                continue;
+            }
+
             try
             {
                 std::shared_ptr<Repository> master_repository_uncasted(
