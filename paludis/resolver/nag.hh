@@ -95,6 +95,7 @@ namespace paludis
                 typedef WrappedForwardIterator<NodesConstIteratorTag, const NAGIndex> NodesConstIterator;
                 NodesConstIterator begin_nodes() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 NodesConstIterator end_nodes() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                NodesConstIterator find_node(const NAGIndex &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 void serialise(Serialiser &) const;
                 static const std::shared_ptr<NAG> deserialise(Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));

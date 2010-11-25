@@ -418,6 +418,12 @@ NAG::end_nodes() const
     return NodesConstIterator(_imp->nodes.end());
 }
 
+NAG::NodesConstIterator
+NAG::find_node(const NAGIndex & x) const
+{
+    return NodesConstIterator(_imp->nodes.find(x));
+}
+
 void
 NAG::serialise(Serialiser & s) const
 {

@@ -290,6 +290,16 @@ namespace
 
                 if (normal)
                 {
+                    /* we might have added in binary creation later, so make from be
+                     * our binary creation node rather than ourself, if applicable */
+                    if (from.resolvent().destination_type() != dt_create_binary)
+                    {
+                        NAGIndex from_bin(from);
+                        from_bin.resolvent().destination_type() = dt_create_binary;
+                        if (nag->end_nodes() != nag->find_node(from_bin))
+                            from = from_bin;
+                    }
+
                     nag->add_edge(from, to,
                             make_named_values<NAGEdgeProperties>(
                                 n::always() = false,
