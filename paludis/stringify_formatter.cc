@@ -68,7 +68,11 @@ StringifyFormatter::format(const std::pair<const std::string, std::string> & s, 
 {
     if (_imp->f_str)
         return _imp->f_str_str->format(s, k);
-    return s.first + "=" + s.second;
+
+    if (s.first.empty())
+        return s.second;
+    else
+        return s.first + "=" + s.second;
 }
 
 std::string
