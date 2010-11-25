@@ -504,24 +504,24 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
             _imp->reduced_gid = std::make_shared<gid_t>(getgid());
         }
 
-        FSPath tty_0("/dev/pts/0");
-        FSStat tty_0_stat(tty_0);
+        FSPath tty("/dev/tty");
+        FSStat tty_stat(tty);
         std::string tty_error;
-        if (tty_0_stat.exists())
+        if (tty_stat.exists())
         {
             ::gid_t gids[100];
 
             int g(100);
             if ((g = ::getgrouplist(reduced_username().c_str(), reduced_gid(), gids, &g)) != -1)
             {
-                if (! (gids + g != std::find(gids, gids + g, tty_0_stat.group())))
-                    tty_error = " (user " + reduced_username() + " is not in group " + stringify(tty_0_stat.group()) + ")";
+                if (! (gids + g != std::find(gids, gids + g, tty_stat.group())))
+                    tty_error = " (user " + reduced_username() + " is not in group " + stringify(tty_stat.group()) + ")";
             }
             else
                 tty_error = " (could not determine group list for user " + reduced_username() + ")";
         }
         else
-            tty_error = " (unable to stat /dev/pts/0)";
+            tty_error = " (unable to stat /dev/tty)";
 
         if (! tty_error.empty())
         {
@@ -529,7 +529,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
                 << "Cannot verify that we have sufficient permissions to use PTYs properly "
                 "using userpriv"
                 << tty_error << ". Strange breakages may occur. You should ensure that the '"
-                << reduced_username() << "' user is in the group to which /dev/pts/0 belongs";
+                << reduced_username() << "' user is in the group to which /dev/tty belongs";
         }
 
         if (dist->mandatory_userpriv() && ((0 == *_imp->reduced_uid || 0 == *_imp->reduced_gid)))
