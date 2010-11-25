@@ -93,6 +93,7 @@ need_libarchive_check=
 need_resolver=
 need_sqlite3_check=
 need_jansson_check=
+need_stripper_check=
 
 dnl {{{ we can use abi::__cxa_demangle
 AC_MSG_CHECKING([for abi::__cxa_demangle])
@@ -978,6 +979,47 @@ if test x"$ENABLE_XML" = "xyes" ; then
 fi
 AC_SUBST([ENABLE_XML])
 AM_CONDITIONAL([ENABLE_XML], test "x$ENABLE_XML" = "xyes")
+dnl }}}
+
+dnl {{{ check for whether to build stripping things
+AC_MSG_CHECKING([whether to build the stripper])
+AC_ARG_ENABLE([stripper],
+			  AS_HELP_STRING([--enable-stripper], [Build the stripper (needs libmagic from file)]),
+			  [ENABLE_STRIPPER=$enableval
+			   AC_MSG_RESULT([$enableval])],
+			  [ENABLE_STRIPPER=yes
+			   AC_MSG_RESULT([yes])])
+if test x"$ENABLE_STRIPPER" = "xyes" ; then
+	need_stripper_check=yes
+	AC_DEFINE([ENABLE_STRIPPER], [1], [Build the stripper])
+fi
+AC_SUBST([ENABLE_STRIPPER])
+AM_CONDITIONAL([ENABLE_STRIPPER], test "x$ENABLE_STRIPPER" = "xyes")
+dnl }}}
+
+dnl {{{ libmagic check
+NEED_STRIPPER=$need_stripper_check
+if test "x$need_stripper_check" = "xyes" ; then
+	save_LIBS="$LIBS"
+	LIBS="$LIBS -lmagic"
+	AC_MSG_CHECKING([whether libmagic works])
+	AC_LINK_IFELSE([AC_LANG_SOURCE([
+#include <magic.h>
+int main() { magic_t m(magic_open(MAGIC_NONE)); }
+	])],
+		[AC_MSG_RESULT([yes])
+		 LIBS="$save_LIBS -lmagic"],
+		[AC_MSG_RESULT([no])
+		 AC_MSG_ERROR([libmagic is needed for stripping])
+		])
+	LIBS="$save_LIBS"
+	LIBMAGICDEPS_CFLAGS=
+	LIBMAGICDEPS_LIBS=-lmagic
+	AC_SUBST(LIBMAGICDEPS_CFLAGS)
+	AC_SUBST(LIBMAGICDEPS_LIBS)
+fi
+AC_SUBST([NEED_STRIPPER])
+AM_CONDITIONAL([NEED_STRIPPER], test "x$NEED_STRIPPER" = "xyes")
 dnl }}}
 
 dnl {{{ check for whether to build search index things
