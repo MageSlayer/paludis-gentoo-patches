@@ -36,6 +36,7 @@ namespace paludis
                 const std::shared_ptr<Environment> & env,
                 const std::string & match,
                 const std::string & query,
+                const bool dereference,
                 const std::function<void (const std::shared_ptr<const PackageID> &)> &);
     }
 }

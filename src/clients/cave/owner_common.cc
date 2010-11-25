@@ -33,6 +33,7 @@
 #include <paludis/selection.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/fs_stat.hh>
 #include <algorithm>
 #include <functional>
 
@@ -61,11 +62,23 @@ paludis::cave::owner_common(
         const std::shared_ptr<Environment> & env,
         const std::string & match,
         const std::string & q,
+        const bool dereference,
         const std::function<void (const std::shared_ptr<const PackageID> &)> & callback)
 {
     bool found(false);
     std::function<bool (const std::string &, const std::shared_ptr<const ContentsEntry> &)> handler;
     std::string query(q);
+
+    if (dereference)
+    {
+        FSPath query_path(query);
+        FSStat query_path_stat(query_path);
+        if (query_path_stat.exists())
+        {
+            if (query_path_stat.is_symlink())
+                query = stringify(query_path.realpath_if_exists());
+        }
+    }
 
     if (query.length() >= 2 && '/' == query.at(query.length() - 1))
         query.erase(query.length() - 1);

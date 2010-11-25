@@ -92,7 +92,7 @@ PrintOwnersCommand::run(
     if (std::distance(cmdline.begin_parameters(), cmdline.end_parameters()) != 1)
         throw args::DoHelp("print-owners takes exactly one parameter");
 
-    return owner_common(env, cmdline.a_match.argument(), *cmdline.begin_parameters(), &print_package_id);
+    return owner_common(env, cmdline.a_match.argument(), *cmdline.begin_parameters(), false, &print_package_id);
 }
 
 std::shared_ptr<args::ArgsHandler>
