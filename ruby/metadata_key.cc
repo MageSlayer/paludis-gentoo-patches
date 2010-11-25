@@ -482,6 +482,35 @@ namespace
 
     /*
      * call-seq:
+     *     value -> Hash
+     *
+     * Our Value.
+     * */
+    template <typename T_>
+    struct MapValue
+    {
+        static VALUE
+        fetch(VALUE self)
+        {
+            try
+            {
+                std::shared_ptr<const MetadataKey> * self_ptr;
+                Data_Get_Struct(self, std::shared_ptr<const MetadataKey>, self_ptr);
+                std::shared_ptr<const T_> c = std::static_pointer_cast<const MetadataCollectionKey<T_> >(*self_ptr)->value();
+                VALUE result (rb_hash_new());
+                for (typename T_::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
+                        rb_hash_aset(result, rb_str_new2(stringify(i->first).c_str()), rb_str_new2(stringify(i->second).c_str()));
+                return result;
+            }
+            catch (const std::exception & e)
+            {
+                exception_to_ruby_exception(e);
+            }
+        }
+    };
+
+    /*
+     * call-seq:
      *     value -> Array
      *
      * Our Value.
@@ -784,6 +813,7 @@ namespace
          * Metadata class for String to String maps.
          */
         c_metadata_string_string_map_key = rb_define_class_under(paludis_module(), "MetadataStringStringMapKey", c_metadata_key);
+        rb_define_method(c_metadata_string_string_map_key, "value", RUBY_FUNC_CAST((&MapValue<Map<std::string, std::string> >::fetch)), 0);
 
         /*
          * Document-class: Paludis::MetadataStringSequenceKey

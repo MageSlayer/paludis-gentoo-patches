@@ -400,6 +400,15 @@ module Paludis
             assert_equal 'e', repo['format'].value
             assert_nil repo['monkey']
         end
+
+        def test_sync
+            assert_kind_of MetadataStringStringMapKey, repo['sync']
+            assert_kind_of Hash, repo['sync'].value
+            assert_equal 3, repo['sync'].value.size
+            assert_equal 'normalsync', repo['sync'].value['']
+            assert_equal 'foosync', repo['sync'].value['foo']
+            assert_equal 'barsync', repo['sync'].value['bar']
+        end
     end
 end
 

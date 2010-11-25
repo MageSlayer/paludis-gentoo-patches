@@ -13,6 +13,7 @@ names_cache = /var/empty
 cache = /var/empty
 profiles = \${location}/profiles/testprofile
 builddir = `pwd`
+sync = normalsync foo: foosync bar: barsync
 END
 
 cat <<END > home/.paludis/repositories/installed.conf
