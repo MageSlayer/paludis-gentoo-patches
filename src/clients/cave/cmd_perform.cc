@@ -18,7 +18,7 @@
  */
 
 #include "cmd_perform.hh"
-#include "cmd_resolve_cmdline.hh"
+#include "resolve_cmdline.hh"
 #include "exceptions.hh"
 #include "format_user_config.hh"
 #include <paludis/args/args.hh>

@@ -24,7 +24,7 @@
 #include <paludis/util/sequence-fwd.hh>
 #include <paludis/util/map-fwd.hh>
 #include <memory>
-#include "cmd_resolve_cmdline.hh"
+#include "resolve_cmdline.hh"
 
 namespace paludis
 {

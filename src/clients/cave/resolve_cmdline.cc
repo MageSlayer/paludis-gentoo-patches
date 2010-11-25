@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "cmd_resolve_cmdline.hh"
+#include "resolve_cmdline.hh"
 #include <paludis/args/do_help.hh>
 #include <paludis/repository.hh>
 #include <paludis/environment.hh>

@@ -18,7 +18,7 @@
  */
 
 #include "cmd_fix_linkage.hh"
-#include "cmd_resolve_cmdline.hh"
+#include "resolve_cmdline.hh"
 #include "cmd_resolve_display_callback.hh"
 #include "resolve_common.hh"
 

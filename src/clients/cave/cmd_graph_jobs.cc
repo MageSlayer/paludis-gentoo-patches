@@ -18,7 +18,7 @@
  */
 
 #include "cmd_graph_jobs.hh"
-#include "cmd_resolve_cmdline.hh"
+#include "resolve_cmdline.hh"
 #include "exceptions.hh"
 #include "command_command_line.hh"
 #include <paludis/args/do_help.hh>

@@ -165,7 +165,6 @@ libcave_a_SOURCES = \
 	cmd_purge.cc cmd_purge.hh \
 	cmd_report.cc cmd_report.hh cmd_report-fmt.hh \
 	cmd_resolve.cc cmd_resolve.hh \
-	cmd_resolve_cmdline.cc cmd_resolve_cmdline.hh \
 	cmd_resolve_display_callback.cc cmd_resolve_display_callback.hh \
 	cmd_resolve_dump.cc cmd_resolve_dump.hh \
 	cmd_resume.cc cmd_resume.hh \
@@ -189,6 +188,7 @@ libcave_a_SOURCES = \
 	search_extras_handle.cc search_extras_handle.hh \
 	select_format_for_spec.cc select_format_for_spec.hh \
 	owner_common.cc owner_common.hh \
+	resolve_cmdline.cc resolve_cmdline.hh \
 	resolve_common.cc resolve_common.hh \
 	resume_data.cc resume_data.hh \
 	size_common.cc size_common.hh

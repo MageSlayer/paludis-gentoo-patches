@@ -18,7 +18,7 @@
  */
 
 #include "cmd_execute_resolution.hh"
-#include "cmd_resolve_cmdline.hh"
+#include "resolve_cmdline.hh"
 #include "cmd_perform.hh"
 #include "exceptions.hh"
 #include "command_command_line.hh"
