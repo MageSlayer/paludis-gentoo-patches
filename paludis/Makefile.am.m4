@@ -155,6 +155,15 @@ libpaludistarextras_@PALUDIS_PC_SLOT@_la_CXXFLAGS = $(AM_CXXFLAGS)
 libpaludistarextras_@PALUDIS_PC_SLOT@_la_LIBADD = -larchive
 libpaludistarextras_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
+if ENABLE_STRIPPER
+lib_LTLIBRARIES += libpaludisstripperextras_@PALUDIS_PC_SLOT@.la
+endif
+
+libpaludisstripperextras_@PALUDIS_PC_SLOT@_la_SOURCES = stripper_extras.cc stripper_extras.hh
+libpaludisstripperextras_@PALUDIS_PC_SLOT@_la_CXXFLAGS = $(AM_CXXFLAGS) $(LIBMAGICDEPS_CFLAGS)
+libpaludisstripperextras_@PALUDIS_PC_SLOT@_la_LIBADD = $(LIBMAGICDEPS_LIBS)
+libpaludisstripperextras_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
+
 paludis_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/
 paludis_include_HEADERS = headerlist seheaderlist
 

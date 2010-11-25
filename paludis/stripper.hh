@@ -26,6 +26,7 @@
 #include <paludis/util/pimp.hh>
 #include <paludis/util/fs_path.hh>
 #include <paludis/util/named_value.hh>
+#include <paludis/util/exception.hh>
 
 namespace paludis
 {
@@ -43,6 +44,13 @@ namespace paludis
         NamedValue<n::image_dir, FSPath> image_dir;
         NamedValue<n::split, bool> split;
         NamedValue<n::strip, bool> strip;
+    };
+
+    class PALUDIS_VISIBLE StripperError :
+        public Exception
+    {
+        public:
+            StripperError(const std::string &) throw ();
     };
 
     class PALUDIS_VISIBLE Stripper :

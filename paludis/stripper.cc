@@ -18,6 +18,8 @@
  */
 
 #include <paludis/stripper.hh>
+#include <paludis/stripper_extras.hh>
+#include <paludis/about.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/stringify.hh>
@@ -26,6 +28,7 @@
 #include <paludis/util/fs_iterator.hh>
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/options.hh>
+#include <paludis/util/singleton-impl.hh>
 #include <functional>
 #include <sstream>
 #include <list>
@@ -33,9 +36,85 @@
 #include <algorithm>
 #include <sys/stat.h>
 
+#include <dlfcn.h>
+#include <stdint.h>
+
+#include "config.h"
+
+#define STUPID_CAST(type, val) reinterpret_cast<type>(reinterpret_cast<uintptr_t>(val))
+
 using namespace paludis;
 
 typedef std::set<std::pair<dev_t, ino_t> > StrippedSet;
+
+StripperError::StripperError(const std::string & s) throw () :
+    Exception(s)
+{
+}
+
+namespace
+{
+    struct StripperHandle :
+        Singleton<StripperHandle>
+    {
+        typedef PaludisStripperExtras * (* InitPtr) ();
+        typedef const std::string (* LookupPtr) (PaludisStripperExtras * const, const std::string &);
+        typedef void (* CleanupPtr) (PaludisStripperExtras * const);
+
+        void * handle;
+        InitPtr init;
+        LookupPtr lookup;
+        CleanupPtr cleanup;
+
+        StripperHandle() :
+            handle(0),
+            init(0),
+            lookup(0),
+            cleanup(0)
+        {
+#ifndef ENABLE_STRIPPER
+            Log::get_instance()->message("strip.unsupported", ll_warning, lc_context)
+                << "Paludis was built without support for stripping. No stripping will be done.";
+#else
+            do
+            {
+                handle = ::dlopen(("libpaludisstripperextras_" + stringify(PALUDIS_PC_SLOT) + ".so").c_str(), RTLD_NOW | RTLD_GLOBAL);
+                if (! handle)
+                    break;
+
+                init = STUPID_CAST(InitPtr, ::dlsym(handle, "paludis_stripper_extras_init"));
+                if (! init)
+                    break;
+
+                lookup = STUPID_CAST(LookupPtr, ::dlsym(handle, "paludis_stripper_extras_lookup"));
+                if (! lookup)
+                    break;
+
+                cleanup = STUPID_CAST(CleanupPtr, ::dlsym(handle, "paludis_stripper_extras_cleanup"));
+                if (! cleanup)
+                    break;
+            }
+            while (false);
+
+            if (! (handle && init && lookup && cleanup))
+            {
+                Log::get_instance()->message("strip.broken", ll_warning, lc_context)
+                    << "Stripping cannot be used due to error '" << stringify(::dlerror()) << "' when using libpaludisstripperextras";
+
+                if (handle)
+                    ::dlclose(handle);
+                handle = 0;
+            }
+#endif
+        }
+
+        ~StripperHandle()
+        {
+            if (handle)
+                ::dlclose(handle);
+        }
+    };
+}
 
 namespace paludis
 {
@@ -44,10 +123,29 @@ namespace paludis
     {
         StripperOptions options;
         StrippedSet stripped_ids;
+        PaludisStripperExtras * stripper_extras;
 
         Imp(const StripperOptions & o) :
-            options(o)
+            options(o),
+            stripper_extras(0)
         {
+            try
+            {
+                if (StripperHandle::get_instance()->handle)
+                    stripper_extras = StripperHandle::get_instance()->init();
+            }
+            catch (const StripperError & e)
+            {
+                Log::get_instance()->message("strip.broken", ll_warning, lc_context)
+                    << "Got error '" << e.message() << "' (" << e.what() << ") when attempting to strip";
+                stripper_extras = 0;
+            }
+        }
+
+        ~Imp()
+        {
+            if (stripper_extras)
+                StripperHandle::get_instance()->cleanup(stripper_extras);
         }
     };
 }
@@ -129,15 +227,15 @@ Stripper::file_type(const FSPath & f)
 {
     Context context("When finding the file type of '" + stringify(f) + "':");
 
-    std::stringstream s;
-
-    Process file_process(ProcessCommand({ "file", stringify(f) }));
-    file_process.capture_stdout(s);
-    if (0 != file_process.run().wait())
-        Log::get_instance()->message("strip.identification_failed", ll_warning, lc_context)
-            << "Couldn't work out the file type of '" << f << "'";
-
-    return s.str();
+    if (_imp->stripper_extras)
+    {
+        std::string result(StripperHandle::get_instance()->lookup(_imp->stripper_extras, stringify(f)));
+        Log::get_instance()->message("strip.type", ll_debug, lc_context)
+            << "Magic says '" << f << "' is '" << result << "'";
+        return result;
+    }
+    else
+        return "";
 }
 
 void
