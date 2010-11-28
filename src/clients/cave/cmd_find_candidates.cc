@@ -35,6 +35,7 @@
 #include <paludis/user_dep_spec.hh>
 #include <paludis/package_id.hh>
 #include <paludis/mask.hh>
+#include <paludis/match_package.hh>
 
 #include <paludis/util/set.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -167,15 +168,10 @@ FindCandidatesCommand::run_hosted(
 
         std::list<std::string> specs;
 
-        if (search_options.a_matching.specified())
-        {
-            throw InternalError(PALUDIS_HERE, "not yet");
-        }
-        else
-            SearchExtrasHandle::get_instance()->find_candidates_function(db, specs,
-                    search_options.a_all_versions.specified(),
-                    search_options.a_visible.specified(),
-                    name_description_substring_hint);
+        SearchExtrasHandle::get_instance()->find_candidates_function(db, specs,
+                search_options.a_all_versions.specified(),
+                search_options.a_visible.specified(),
+                name_description_substring_hint);
 
         SearchExtrasHandle::get_instance()->cleanup_db_function(db);
 
@@ -183,6 +179,30 @@ FindCandidatesCommand::run_hosted(
                 s != s_end ; ++s)
         {
             step("Checking indexed candidates");
+
+            std::list<PackageDepSpec> matches;
+            for (args::StringSetArg::ConstIterator k(search_options.a_matching.begin_args()),
+                    k_end(search_options.a_matching.end_args()) ;
+                    k != k_end ; ++k)
+                matches.push_back(parse_user_package_dep_spec(*k, env.get(), { updso_allow_wildcards }));
+
+            if (! matches.empty())
+            {
+                bool ok(false);
+
+                for (auto m(matches.begin()), m_end(matches.end()) ;
+                        m != m_end ; ++m)
+                    if (match_package(*env, *m, **(*env)[selection::RequireExactlyOne(generator::Matches(
+                                        parse_user_package_dep_spec(*s, env.get(), { }), { }))]->begin(), { }))
+                    {
+                        ok = true;
+                        break;
+                    }
+
+                if (! ok)
+                    continue;
+            }
+
             yield(parse_user_package_dep_spec(*s, env.get(), { }));
         }
     }
