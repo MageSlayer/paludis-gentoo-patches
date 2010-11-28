@@ -550,6 +550,8 @@ _cave_cmd_print-sets()
 _cave_cmd_print-sync-protocols()
 {
   _arguments -s : \
+    '--sequential[Only perform one sync at a time]' \
+    '(--suffix -s)'{--suffix,-s}'[Use the specified suffix for syncing]' \
     '(--help -h)'{--help,-h}'[Display help messsage]'
 }
 
