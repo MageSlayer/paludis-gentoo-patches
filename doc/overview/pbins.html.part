@@ -48,7 +48,7 @@ particular:</p>
     is enabled (error messages like <code>archive_read_disk_entry_from_file failed</code>).</li>
 
     <li>Current releases of libarchive do not support GNU's tar extensions (although svn master does). However, without
-    extensions, tar is effectively useless. Thus, if the version of ilbarchive installed when Paludis is built does not
+    extensions, tar is effectively useless. Thus, if the version of libarchive installed when Paludis is built does not
     have GNU tar support, we use POSIX pax format when creating tarballs, and we use the <code>.pax</code> extension
     rather than <code>.tar</code> to make this clear. Unfortunately, <strong>GNU tar doesn't particularly like PAX
         tarballs</strong>, and will moan like crazy and not properly extract files built this way. Thus, if you intend
