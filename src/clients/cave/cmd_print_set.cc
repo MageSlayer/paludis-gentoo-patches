@@ -57,13 +57,12 @@ namespace
 
         virtual std::string app_synopsis() const
         {
-            return "Prints a list of known sets.";
+            return "Prints the contents of a set.";
         }
 
         virtual std::string app_description() const
         {
-            return "Prints a list of known sets. No formatting is used, making the output suitable for "
-                "parsing by scripts.";
+            return "Prints the contents (packages or other sets) of a given set.";
         }
 
         args::ArgsGroup g_display_options;
