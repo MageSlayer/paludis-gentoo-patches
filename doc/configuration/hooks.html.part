@@ -438,7 +438,7 @@ that performs the action, and optionally one with prototype
 <code>void paludis_hook_add_dependencies(const paludis::Environment *, const paludis::Hook &amp;,
     paludis::DirectedGraph&lt;std::string, int&gt; &amp;)</code>
 if it needs to define ordering dependencies with other hooks. If the hook is to be placed in an <code>auto</code>
-directory, it must also define <code>const std::tr1::shared_ptr&lt;const Seqyence&lt;std::string&gt; &gt;
+directory, it must also define <code>const std::tr1::shared_ptr&lt;const Sequence&lt;std::string&gt; &gt;
 paludis_hook_auto_phases(const paludis::Environment *)</code>. All functions are
 declared in the header <code>&lt;paludis/hook.hh&gt;</code>, including any necessary
 <code>extern</code> or visibility declarations.</p>
