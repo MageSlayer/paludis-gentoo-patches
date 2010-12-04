@@ -9,6 +9,12 @@ mkdir -p root/etc
 mkdir -p vdb
 touch vdb/THISISTHEVDB
 
+mkdir -p binrepo/{profiles/profile,metadata,eclass} || exit 1
+cd binrepo || exit 1
+echo "binrepo" >> profiles/repo_name || exit 1
+echo > profiles/categories || exit 1
+cd ..
+
 mkdir -p build
 ln -s build symlinked_build
 
@@ -1004,6 +1010,46 @@ KEYWORDS="test"
 EAPI="4"
 
 S="${WORKDIR}"
+END
+mkdir -p "cat/merge-type" || exit 1
+cat << 'END' > cat/merge-type/merge-type-4.ebuild || exit 1
+EAPI="${PV}"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork enabled"
+LICENSE="GPL-2"
+KEYWORDS="test"
+EAPI="4"
+
+S="${WORKDIR}"
+
+pkg_setup() {
+    if [[ ${EXPECTED_MERGE_TYPE} != ${MERGE_TYPE} ]] ; then
+        die ${EXPECTED_MERGE_TYPE} is not ${MERGE_TYPE}
+    fi
+}
+END
+mkdir -p "cat/merge-type-bin" || exit 1
+cat << 'END' > cat/merge-type-bin/merge-type-bin-4.ebuild || exit 1
+EAPI="${PV}"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork enabled"
+LICENSE="GPL-2"
+KEYWORDS="test"
+EAPI="4"
+
+S="${WORKDIR}"
+
+pkg_setup() {
+    if [[ ${EXPECTED_MERGE_TYPE} != ${MERGE_TYPE} ]] ; then
+        die ${EXPECTED_MERGE_TYPE} is not ${MERGE_TYPE}
+    fi
+}
 END
 cd ..
 

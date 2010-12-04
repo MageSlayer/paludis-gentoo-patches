@@ -54,6 +54,7 @@ namespace paludis
         typedef Name<struct commands_name> commands;
         typedef Name<struct config_protect_name> config_protect;
         typedef Name<struct config_protect_mask_name> config_protect_mask;
+        typedef Name<struct destination_name> destination;
         typedef Name<struct destination_repository_name> destination_repository;
         typedef Name<struct distdir_name> distdir;
         typedef Name<struct ebuild_dir_name> ebuild_dir;
@@ -66,6 +67,7 @@ namespace paludis
         typedef Name<struct files_dir_name> files_dir;
         typedef Name<struct image_name> image;
         typedef Name<struct info_vars_name> info_vars;
+        typedef Name<struct is_from_pbin_name> is_from_pbin;
         typedef Name<struct load_environment_name> load_environment;
         typedef Name<struct loadsaveenv_dir_name> loadsaveenv_dir;
         typedef Name<struct maybe_output_manager_name> maybe_output_manager;
@@ -179,7 +181,9 @@ namespace paludis
             NamedValue<n::accept_license, std::string> accept_license;
             NamedValue<n::config_protect, std::string> config_protect;
             NamedValue<n::config_protect_mask, std::string> config_protect_mask;
+            NamedValue<n::destination, std::shared_ptr<Repository> > destination;
             NamedValue<n::expand_vars, std::shared_ptr<const Map<std::string, std::string> > > expand_vars;
+            NamedValue<n::is_from_pbin, bool> is_from_pbin;
             NamedValue<n::loadsaveenv_dir, FSPath> loadsaveenv_dir;
             NamedValue<n::profiles, std::shared_ptr<const FSPathSequence> > profiles;
             NamedValue<n::profiles_with_parents, std::shared_ptr<const FSPathSequence> > profiles_with_parents;
@@ -199,7 +203,9 @@ namespace paludis
          */
         struct EbuildPretendCommandParams
         {
+            NamedValue<n::destination, std::shared_ptr<Repository> > destination;
             NamedValue<n::expand_vars, std::shared_ptr<const Map<std::string, std::string> > > expand_vars;
+            NamedValue<n::is_from_pbin, bool> is_from_pbin;
             NamedValue<n::profiles, std::shared_ptr<const FSPathSequence> > profiles;
             NamedValue<n::profiles_with_parents, std::shared_ptr<const FSPathSequence> > profiles_with_parents;
             NamedValue<n::replacing_ids, std::shared_ptr<const PackageIDSequence> > replacing_ids;

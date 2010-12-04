@@ -101,6 +101,7 @@ namespace paludis
         typedef Name<struct env_iuse_implicit_name> env_iuse_implicit;
         typedef Name<struct env_jobs_name> env_jobs;
         typedef Name<struct env_kv_name> env_kv;
+        typedef Name<struct env_merge_type_name> env_merge_type;
         typedef Name<struct env_p_name> env_p;
         typedef Name<struct env_pf_name> env_pf;
         typedef Name<struct env_portdir_name> env_portdir;
@@ -318,6 +319,7 @@ namespace paludis
             NamedValue<n::env_iuse_implicit, std::string> env_iuse_implicit;
             NamedValue<n::env_jobs, std::string> env_jobs;
             NamedValue<n::env_kv, std::string> env_kv;
+            NamedValue<n::env_merge_type, std::string> env_merge_type;
             NamedValue<n::env_p, std::string> env_p;
             NamedValue<n::env_pf, std::string> env_pf;
             NamedValue<n::env_portdir, std::string> env_portdir;

@@ -87,6 +87,7 @@ namespace
                         n::env_iuse_implicit() = check_get(k, "env_iuse_implicit"),
                         n::env_jobs() = check_get(k, "env_jobs"),
                         n::env_kv() = check_get(k, "env_kv"),
+                        n::env_merge_type() = check_get(k, "env_merge_type"),
                         n::env_p() = check_get(k, "env_p"),
                         n::env_pf() = check_get(k, "env_pf"),
                         n::env_portdir() = check_get(k, "env_portdir"),

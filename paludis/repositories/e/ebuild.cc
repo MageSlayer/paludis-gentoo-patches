@@ -878,6 +878,26 @@ EbuildInstallCommand::extend_command(Process & process)
         process.setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_replacing_versions(), s);
     }
 
+    if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_merge_type().empty())
+    {
+        std::string s;
+
+        if (install_params.destination())
+        {
+            if (install_params.destination()->installed_root_key())
+            {
+                if (install_params.is_from_pbin())
+                    s = "binary";
+                else
+                    s = "source";
+            }
+            else
+                s = "buildonly";
+        }
+
+        process.setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_merge_type(), s);
+    }
+
     for (Map<std::string, std::string>::ConstIterator
             i(install_params.expand_vars()->begin()),
             j(install_params.expand_vars()->end()) ; i != j ; ++i)

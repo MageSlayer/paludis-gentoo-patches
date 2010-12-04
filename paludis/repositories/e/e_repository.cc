@@ -2608,7 +2608,9 @@ ERepository::install(const std::shared_ptr<const ERepositoryID> & id,
                             n::accept_license() = accept_license,
                             n::config_protect() = environment_updated_profile_variable("CONFIG_PROTECT"),
                             n::config_protect_mask() = environment_updated_profile_variable("CONFIG_PROTECT_MASK"),
+                            n::destination() = install_action.options.destination(),
                             n::expand_vars() = expand_vars,
+                            n::is_from_pbin() = id->eapi()->supported()->is_pbin(),
                             n::loadsaveenv_dir() = package_builddir / "temp",
                             n::profiles() = _imp->params.profiles(),
                             n::profiles_with_parents() = profile()->profiles_with_parents(),
@@ -3094,14 +3096,16 @@ ERepository::pretend(
 
         EbuildPretendCommand pretend_cmd(command_params,
                 make_named_values<EbuildPretendCommandParams>(
-                n::expand_vars() = expand_vars,
-                n::profiles() = _imp->params.profiles(),
-                n::profiles_with_parents() = profile()->profiles_with_parents(),
-                n::replacing_ids() = a.options.replacing(),
-                n::use() = use,
-                n::use_expand() = join(profile()->use_expand()->begin(), profile()->use_expand()->end(), " "),
-                n::use_expand_hidden() = join(profile()->use_expand_hidden()->begin(), profile()->use_expand_hidden()->end(), " ")
-                ));
+                    n::destination() = a.options.destination(),
+                    n::expand_vars() = expand_vars,
+                    n::is_from_pbin() = id->eapi()->supported()->is_pbin(),
+                    n::profiles() = _imp->params.profiles(),
+                    n::profiles_with_parents() = profile()->profiles_with_parents(),
+                    n::replacing_ids() = a.options.replacing(),
+                    n::use() = use,
+                    n::use_expand() = join(profile()->use_expand()->begin(), profile()->use_expand()->end(), " "),
+                    n::use_expand_hidden() = join(profile()->use_expand_hidden()->begin(), profile()->use_expand_hidden()->end(), " ")
+                    ));
 
         if (! pretend_cmd())
             return false;

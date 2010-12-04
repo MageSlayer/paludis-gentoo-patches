@@ -235,5 +235,178 @@ namespace test_cases
             }
         }
     } test_e_repository_install_eapi_4;
+
+    struct ERepositoryEAPI4MergeTypeTest : TestCase
+    {
+        ERepositoryEAPI4MergeTypeTest() : TestCase("eapi 4 merge type") { }
+
+        unsigned max_run_time() const
+        {
+            return 3000;
+        }
+
+        bool repeatable() const
+        {
+            return false;
+        }
+
+        void run()
+        {
+            FSPath root(FSPath::cwd() / "e_repository_TEST_4_dir" / "root");
+
+            TestEnvironment env;
+            env.set_paludis_command("/bin/false");
+            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
+            keys->insert("format", "e");
+            keys->insert("names_cache", "/var/empty");
+            keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_4_dir" / "repo"));
+            keys->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_4_dir" / "repo/profiles/profile"));
+            keys->insert("layout", "traditional");
+            keys->insert("eapi_when_unknown", "0");
+            keys->insert("eapi_when_unspecified", "0");
+            keys->insert("profile_eapi", "0");
+            keys->insert("distdir", stringify(FSPath::cwd() / "e_repository_TEST_4_dir" / "distdir"));
+            keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_4_dir" / "build"));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
+            env.package_database()->add_repository(1, repo);
+
+            std::shared_ptr<Map<std::string, std::string> > v_keys(std::make_shared<Map<std::string, std::string>>());
+            v_keys->insert("format", "vdb");
+            v_keys->insert("names_cache", "/var/empty");
+            v_keys->insert("provides_cache", "/var/empty");
+            v_keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_4_dir" / "vdb"));
+            v_keys->insert("root", stringify(root));
+            std::shared_ptr<Repository> v_repo(VDBRepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
+            env.package_database()->add_repository(1, v_repo);
+
+            {
+                InstallAction action(make_named_values<InstallActionOptions>(
+                            n::destination() = v_repo,
+                            n::make_output_manager() = &make_standard_output_manager,
+                            n::perform_uninstall() = &cannot_uninstall,
+                            n::replacing() = std::make_shared<PackageIDSequence>(),
+                            n::want_phase() = &want_all_phases
+                            ));
+                ::setenv("EXPECTED_MERGE_TYPE", "source", 1);
+
+                TestMessageSuffix suffix("merge type source", true);
+                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/merge-type-4::test-repo",
+                                        &env, { })), { }))]->last());
+                TEST_CHECK(bool(id));
+                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
+                id->perform_action(action);
+            }
+        }
+    } test_e_repository_eapi_4_merge_type;
+
+#ifdef ENABLE_PBINS
+    struct ERepositoryEAPI4MergeTypeBinTest : TestCase
+    {
+        ERepositoryEAPI4MergeTypeBinTest() : TestCase("eapi 4 merge type bin") { }
+
+        unsigned max_run_time() const
+        {
+            return 3000;
+        }
+
+        bool repeatable() const
+        {
+            return false;
+        }
+
+        void run()
+        {
+            FSPath root(FSPath::cwd() / "e_repository_TEST_4_dir" / "root");
+
+            TestEnvironment env;
+            env.set_paludis_command("/bin/false");
+            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
+            keys->insert("format", "e");
+            keys->insert("names_cache", "/var/empty");
+            keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_4_dir" / "repo"));
+            keys->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_4_dir" / "repo/profiles/profile"));
+            keys->insert("layout", "traditional");
+            keys->insert("eapi_when_unknown", "0");
+            keys->insert("eapi_when_unspecified", "0");
+            keys->insert("profile_eapi", "0");
+            keys->insert("distdir", stringify(FSPath::cwd() / "e_repository_TEST_4_dir" / "distdir"));
+            keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_4_dir" / "build"));
+            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
+            env.package_database()->add_repository(1, repo);
+
+            std::shared_ptr<Map<std::string, std::string> > b_keys(std::make_shared<Map<std::string, std::string>>());
+            b_keys->insert("format", "e");
+            b_keys->insert("names_cache", "/var/empty");
+            b_keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_4_dir" / ("binrepo")));
+            b_keys->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_4_dir" / "repo/profiles/profile"));
+            b_keys->insert("layout", "traditional");
+            b_keys->insert("eapi_when_unknown", "0");
+            b_keys->insert("eapi_when_unspecified", "0");
+            b_keys->insert("profile_eapi", "0");
+            b_keys->insert("distdir", stringify(FSPath::cwd() / "e_repository_TEST_4_dir" / "distdir"));
+            b_keys->insert("binary_distdir", stringify(FSPath::cwd() / "e_repository_TEST_4_dir" / "distdir"));
+            b_keys->insert("binary_keywords_filter", "test");
+            b_keys->insert("binary_destination", "true");
+            b_keys->insert("master_repository", "test-repo");
+            b_keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_4_dir" / "build"));
+            b_keys->insert("root", stringify(root));
+            std::shared_ptr<Repository> b_repo(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, b_keys, std::placeholders::_1)));
+            env.package_database()->add_repository(2, b_repo);
+
+            std::shared_ptr<Map<std::string, std::string> > v_keys(std::make_shared<Map<std::string, std::string>>());
+            v_keys->insert("format", "vdb");
+            v_keys->insert("names_cache", "/var/empty");
+            v_keys->insert("provides_cache", "/var/empty");
+            v_keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_4_dir" / "vdb"));
+            v_keys->insert("root", stringify(root));
+            std::shared_ptr<Repository> v_repo(VDBRepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1)));
+            env.package_database()->add_repository(1, v_repo);
+
+            {
+                InstallAction action(make_named_values<InstallActionOptions>(
+                            n::destination() = b_repo,
+                            n::make_output_manager() = &make_standard_output_manager,
+                            n::perform_uninstall() = &cannot_uninstall,
+                            n::replacing() = std::make_shared<PackageIDSequence>(),
+                            n::want_phase() = &want_all_phases
+                            ));
+                ::setenv("EXPECTED_MERGE_TYPE", "buildonly", 1);
+
+                TestMessageSuffix suffix("merge type buildonly", true);
+                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/merge-type-bin-4::test-repo",
+                                        &env, { })), { }))]->last());
+                TEST_CHECK(bool(id));
+                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
+                id->perform_action(action);
+            }
+
+            {
+                InstallAction action(make_named_values<InstallActionOptions>(
+                            n::destination() = v_repo,
+                            n::make_output_manager() = &make_standard_output_manager,
+                            n::perform_uninstall() = &cannot_uninstall,
+                            n::replacing() = std::make_shared<PackageIDSequence>(),
+                            n::want_phase() = &want_all_phases
+                            ));
+                ::setenv("EXPECTED_MERGE_TYPE", "binary", 1);
+
+                TestMessageSuffix suffix("merge type binary", true);
+                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/merge-type-bin-4::binrepo",
+                                        &env, { })), { }))]->last());
+                TEST_CHECK(bool(id));
+                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "pbin-1+4");
+                id->perform_action(action);
+            }
+        }
+    } test_e_repository_eapi_4_merge_type_bin;
+#endif
 }
 
