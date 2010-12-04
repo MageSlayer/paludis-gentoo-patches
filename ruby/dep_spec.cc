@@ -59,6 +59,7 @@ namespace
 
     static VALUE c_all_dep_spec;
     static VALUE c_any_dep_spec;
+    static VALUE c_exactly_one_dep_spec;
     static VALUE c_conditional_dep_spec;
 
     static VALUE c_version_requirements_mode;
@@ -130,6 +131,7 @@ namespace
             WrappedSpec<NamedSetDepSpec>,
             WrappedSpec<AllDepSpec>,
             WrappedSpec<AnyDepSpec>,
+            WrappedSpec<ExactlyOneDepSpec>,
             WrappedSpec<ConditionalDepSpec>
         >::Type>
     {
@@ -264,6 +266,12 @@ namespace
         {
             wrapped.reset((new WrappedSpec<AnyDepSpec>(std::static_pointer_cast<AnyDepSpec>(node.spec()->clone())))->add_children(node.begin(), node.end()));
             klass = c_any_dep_spec;
+        }
+
+        void visit(const GenericSpecTree::NodeType<ExactlyOneDepSpec>::Type & node)
+        {
+            wrapped.reset((new WrappedSpec<ExactlyOneDepSpec>(std::static_pointer_cast<ExactlyOneDepSpec>(node.spec()->clone())))->add_children(node.begin(), node.end()));
+            klass = c_exactly_one_dep_spec;
         }
     };
 
@@ -1121,6 +1129,17 @@ namespace
         rb_funcall(c_any_dep_spec, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_include_module(c_any_dep_spec, rb_mEnumerable);
         rb_define_method(c_any_dep_spec, "each", RUBY_FUNC_CAST((&Composite<AllDepSpec>::each)), 0);
+
+        /*
+         * Document-class: Paludis::ExactlyOneDepSpec
+         *
+         * Represents a "^^ ( )" dependency block. Includes
+         * Enumerable[http://www.ruby-doc.org/core/classes/Enumerable.html].
+         */
+        c_exactly_one_dep_spec = rb_define_class_under(paludis_module(), "ExactlyOneDepSpec", c_dep_spec);
+        rb_funcall(c_exactly_one_dep_spec, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+        rb_include_module(c_exactly_one_dep_spec, rb_mEnumerable);
+        rb_define_method(c_exactly_one_dep_spec, "each", RUBY_FUNC_CAST((&Composite<AllDepSpec>::each)), 0);
 
         /*
          * Document-class: Paludis::ConditionalDepSpec

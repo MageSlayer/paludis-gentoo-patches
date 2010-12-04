@@ -189,6 +189,7 @@ template class SpecTree<MakeTypeList<
         SpecTreeLeafNodeType<NamedSetDepSpec>,
         SpecTreeInnerNodeType<AllDepSpec>,
         SpecTreeInnerNodeType<AnyDepSpec>,
+        SpecTreeInnerNodeType<ExactlyOneDepSpec>,
         SpecTreeInnerNodeType<ConditionalDepSpec>
     >::Type, AllDepSpec>;
 
@@ -269,6 +270,7 @@ template class LeafNode<GenericSpecTree, LicenseDepSpec>;
 template class LeafNode<GenericSpecTree, URILabelsDepSpec>;
 template class InnerNode<GenericSpecTree, AllDepSpec>;
 template class InnerNode<GenericSpecTree, AnyDepSpec>;
+template class InnerNode<GenericSpecTree, ExactlyOneDepSpec>;
 template class InnerNode<GenericSpecTree, ConditionalDepSpec>;
 
 /* DependencySpecTree */

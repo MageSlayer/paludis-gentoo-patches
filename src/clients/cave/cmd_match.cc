@@ -175,6 +175,11 @@ namespace
             std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
         }
 
+        void visit(const GenericSpecTree::NodeType<ExactlyOneDepSpec>::Type & node)
+        {
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
+        }
+
         void visit(const GenericSpecTree::NodeType<SimpleURIDepSpec>::Type & node)
         {
             texts.push_back(stringify(*node.spec()));

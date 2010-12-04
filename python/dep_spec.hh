@@ -32,6 +32,7 @@ namespace paludis
         class PythonCompositeDepSpec;
         class PythonAllDepSpec;
         class PythonAnyDepSpec;
+        class PythonExactlyOneDepSpec;
         class PythonConditionalDepSpec;
         class PythonStringDepSpec;
         class PythonPlainTextDepSpec;
@@ -48,6 +49,7 @@ namespace paludis
         class PALUDIS_VISIBLE PythonDepSpec :
             public virtual DeclareAbstractAcceptMethods<PythonDepSpec, MakeTypeList<
                     PythonAnyDepSpec,
+                    PythonExactlyOneDepSpec,
                     PythonAllDepSpec,
                     PythonConditionalDepSpec,
                     PythonBlockDepSpec,
@@ -100,6 +102,15 @@ namespace paludis
             public:
                 PythonAnyDepSpec();
                 PythonAnyDepSpec(const AnyDepSpec &);
+        };
+
+        class PALUDIS_VISIBLE PythonExactlyOneDepSpec :
+            public PythonCompositeDepSpec,
+            public ImplementAcceptMethods<PythonDepSpec, PythonExactlyOneDepSpec>
+        {
+            public:
+                PythonExactlyOneDepSpec();
+                PythonExactlyOneDepSpec(const ExactlyOneDepSpec &);
         };
 
         class PALUDIS_VISIBLE PythonAllDepSpec :
@@ -290,6 +301,7 @@ namespace paludis
 
                 void visit(const GenericSpecTree::NodeType<AllDepSpec>::Type &);
                 void visit(const GenericSpecTree::NodeType<AnyDepSpec>::Type &);
+                void visit(const GenericSpecTree::NodeType<ExactlyOneDepSpec>::Type &);
                 void visit(const GenericSpecTree::NodeType<ConditionalDepSpec>::Type &);
 
                 void visit(const GenericSpecTree::NodeType<PackageDepSpec>::Type &);
@@ -326,6 +338,7 @@ namespace paludis
 
                 void visit(const PythonAllDepSpec &);
                 void visit(const PythonAnyDepSpec &);
+                void visit(const PythonExactlyOneDepSpec &);
                 void visit(const PythonConditionalDepSpec &);
                 void visit(const PythonPackageDepSpec &);
                 void visit(const PythonPlainTextDepSpec &);
@@ -340,6 +353,7 @@ namespace paludis
 
                 void real_visit(const PythonAllDepSpec &);
                 void real_visit(const PythonAnyDepSpec &);
+                void real_visit(const PythonExactlyOneDepSpec &);
                 void real_visit(const PythonConditionalDepSpec &);
                 void real_visit(const PythonPackageDepSpec &);
                 void real_visit(const PythonPlainTextDepSpec &);

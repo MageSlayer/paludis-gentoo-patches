@@ -429,6 +429,12 @@ namespace
                     accept_visitor_returning<bool>(*this));
         }
 
+        bool visit(const GenericSpecTree::NodeType<ExactlyOneDepSpec>::Type & n) const
+        {
+            return indirect_iterator(n.end()) != std::find_if(indirect_iterator(n.begin()), indirect_iterator(n.end()),
+                    accept_visitor_returning<bool>(*this));
+        }
+
         bool visit(const GenericSpecTree::NodeType<ConditionalDepSpec>::Type & n) const
         {
             if (n.spec()->condition_met())
