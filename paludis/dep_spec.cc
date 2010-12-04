@@ -125,6 +125,23 @@ AllDepSpec::clone() const
     return result;
 }
 
+ExactlyOneDepSpec::ExactlyOneDepSpec()
+{
+}
+
+void
+ExactlyOneDepSpec::need_keys_added() const
+{
+}
+
+std::shared_ptr<DepSpec>
+ExactlyOneDepSpec::clone() const
+{
+    std::shared_ptr<ExactlyOneDepSpec> result(std::make_shared<ExactlyOneDepSpec>());
+    result->set_annotations_key(annotations_key());
+    return result;
+}
+
 namespace paludis
 {
     template <>

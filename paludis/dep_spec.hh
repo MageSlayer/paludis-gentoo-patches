@@ -152,6 +152,30 @@ namespace paludis
     };
 
     /**
+     * Represents a ^^ ( first second third ) group of requirements.
+     *
+     * \ingroup g_dep_spec
+     * \nosubgrouping
+     * \since 0.56
+     */
+    class PALUDIS_VISIBLE ExactlyOneDepSpec :
+        public DepSpec
+    {
+        protected:
+            virtual void need_keys_added() const;
+
+        public:
+            ///\name Basic operations
+            ///\{
+
+            ExactlyOneDepSpec();
+
+            ///\}
+
+            virtual std::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
+    };
+
+    /**
      * Represents a dependency spec whose children should only be considered
      * upon a certain condition (for example, a use dependency block).
      *

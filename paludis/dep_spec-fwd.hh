@@ -42,6 +42,7 @@ namespace paludis
     class FetchableURIDepSpec;
     class SimpleURIDepSpec;
     class AllDepSpec;
+    class ExactlyOneDepSpec;
     class AnyDepSpec;
     class ConditionalDepSpec;
     class BlockDepSpec;
