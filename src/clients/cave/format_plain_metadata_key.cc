@@ -117,6 +117,12 @@ namespace
             s << k.pretty_print_flat(f);
         }
 
+        void visit(const MetadataSpecTreeKey<RequiredUseSpecTree> & k)
+        {
+            StringifyFormatter f;
+            s << k.pretty_print_flat(f);
+        }
+
         void visit(const MetadataSpecTreeKey<SimpleURISpecTree> & k)
         {
             StringifyFormatter f;

@@ -147,6 +147,12 @@ namespace
             cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.pretty_print_flat(f) << endl;
         }
 
+        void visit(const MetadataSpecTreeKey<RequiredUseSpecTree> & k)
+        {
+            ColourFormatter f;
+            cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.pretty_print_flat(f) << endl;
+        }
+
         void visit(const MetadataSpecTreeKey<LicenseSpecTree> & k)
         {
             ColourFormatter f;

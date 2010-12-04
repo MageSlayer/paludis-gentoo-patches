@@ -540,6 +540,25 @@ namespace
                 }
             }
 
+            void visit(const MetadataSpecTreeKey<RequiredUseSpecTree> & k)
+            {
+                if (k.type() == type)
+                {
+                    ColourFormatter formatter;
+                    if (task->want_raw())
+                    {
+                        task->output_left_column(k.raw_name() + ":", in);
+                        task->output_right_column(k.pretty_print_flat(formatter));
+                    }
+                    else
+                    {
+                        task->output_left_column(k.human_name() + ":", in);
+                        task->output_right_column("");
+                        task->output_stream() << k.pretty_print(formatter);
+                    }
+                }
+            }
+
             void visit(const MetadataCollectionKey<PackageIDSequence> & k)
             {
                 if (k.type() == type)

@@ -634,6 +634,19 @@ namespace
             return false;
         }
 
+        bool visit(const MetadataSpecTreeKey<RequiredUseSpecTree> & s) const
+        {
+            switch (op)
+            {
+                case '=':
+                    return false;
+                case '<':
+                    return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(pattern));
+            }
+
+            return false;
+        }
+
         bool visit(const MetadataSpecTreeKey<ProvideSpecTree> & s) const
         {
             switch (op)

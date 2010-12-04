@@ -209,6 +209,12 @@ namespace
             cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(k.pretty_print_flat(f)));
         }
 
+        void visit(const MetadataSpecTreeKey<RequiredUseSpecTree> & k)
+        {
+            ColourFormatter f(indent);
+            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(k.pretty_print_flat(f)));
+        }
+
         void visit(const MetadataSpecTreeKey<FetchableURISpecTree> & k)
         {
             ColourFormatter f(indent);

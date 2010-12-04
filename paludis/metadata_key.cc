@@ -108,6 +108,7 @@ template class MetadataCollectionKey<FSPathSequence>;
 template class MetadataSpecTreeKey<LicenseSpecTree>;
 template class MetadataSpecTreeKey<ProvideSpecTree>;
 template class MetadataSpecTreeKey<PlainTextSpecTree>;
+template class MetadataSpecTreeKey<RequiredUseSpecTree>;
 #ifndef PALUDIS_NO_EXPLICIT_FULLY_SPECIALISED
 template class MetadataSpecTreeKey<FetchableURISpecTree>;
 template class MetadataSpecTreeKey<DependencySpecTree>;

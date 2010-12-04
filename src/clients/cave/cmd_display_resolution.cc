@@ -973,6 +973,12 @@ namespace
             cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.pretty_print_flat(formatter))));
         }
 
+        void visit(const MetadataSpecTreeKey<RequiredUseSpecTree> & k)
+        {
+            ColourFormatter formatter(0);
+            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.pretty_print_flat(formatter))));
+        }
+
         void visit(const MetadataValueKey<std::shared_ptr<const Choices> > & k)
         {
             ColourFormatter formatter(0);

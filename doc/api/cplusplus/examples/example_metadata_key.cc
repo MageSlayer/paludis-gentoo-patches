@@ -152,6 +152,12 @@ namespace
                 cout << indent << left << setw(30) << "    Value:" << " " << key.pretty_print_flat(formatter) << endl;
             }
 
+            void visit(const MetadataSpecTreeKey<RequiredUseSpecTree> & key)
+            {
+                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataSpecTreeKey<RequiredUseSpecTree>" << endl;
+                cout << indent << left << setw(30) << "    Value:" << " " << key.pretty_print_flat(formatter) << endl;
+            }
+
             void visit(const MetadataSpecTreeKey<ProvideSpecTree> & key)
             {
                 cout << indent << left << setw(30) << "    Class:" << " " << "MetadataSpecTreeKey<ProvideSpecTree>" << endl;

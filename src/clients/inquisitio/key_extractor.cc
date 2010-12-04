@@ -371,6 +371,21 @@ namespace
                 }
             }
 
+            void visit(const MetadataSpecTreeKey<RequiredUseSpecTree> & s)
+            {
+                if (_flatten)
+                {
+                    StringifyFormatter f;
+                    result = _m(s.pretty_print_flat(f));
+                }
+                else
+                {
+                    TreeVisitor v(_key, _visible_only, _env, _id, _m);
+                    s.value()->top()->accept(v);
+                    result = v.result;
+                }
+            }
+
             void visit(const MetadataSpecTreeKey<DependencySpecTree> & s)
             {
                 if (_flatten)

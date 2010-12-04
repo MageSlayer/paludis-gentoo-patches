@@ -112,6 +112,11 @@ namespace
             const std::shared_ptr<const PlainTextSpecTree> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
         }
 
+        void visit(const MetadataSpecTreeKey<RequiredUseSpecTree> & k)
+        {
+            const std::shared_ptr<const RequiredUseSpecTree> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
+        }
+
         void visit(const MetadataSpecTreeKey<ProvideSpecTree> & k)
         {
             const std::shared_ptr<const ProvideSpecTree> & PALUDIS_ATTRIBUTE((unused)) t(k.value());

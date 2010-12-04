@@ -300,6 +300,12 @@ namespace
             k.value()->top()->accept(m);
         }
 
+        void visit(const MetadataSpecTreeKey<RequiredUseSpecTree> & k)
+        {
+            SpecTreeAsString m = { texts, match_options };
+            k.value()->top()->accept(m);
+        }
+
         void visit(const MetadataSpecTreeKey<DependencySpecTree> & k)
         {
             SpecTreeAsString m = { texts, match_options };

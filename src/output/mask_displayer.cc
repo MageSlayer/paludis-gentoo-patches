@@ -198,6 +198,12 @@ namespace
             s << k.pretty_print_flat(formatter);
         }
 
+        void visit(const MetadataSpecTreeKey<RequiredUseSpecTree> & k)
+        {
+            ColourFormatter formatter;
+            s << k.pretty_print_flat(formatter);
+        }
+
         void visit(const MetadataValueKey<std::shared_ptr<const Choices> > & k)
         {
             s << k.human_name();

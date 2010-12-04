@@ -106,6 +106,12 @@ namespace
             std::cout << k.pretty_print_flat(f) << std::endl;
         }
 
+        void visit(const MetadataSpecTreeKey<RequiredUseSpecTree> & k)
+        {
+            StringifyFormatter f;
+            std::cout << k.pretty_print_flat(f) << std::endl;
+        }
+
         void visit(const MetadataSpecTreeKey<ProvideSpecTree> & k)
         {
             StringifyFormatter f;

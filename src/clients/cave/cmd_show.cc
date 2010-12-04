@@ -508,6 +508,33 @@ namespace
             }
         }
 
+        void visit(const MetadataSpecTreeKey<RequiredUseSpecTree> & k)
+        {
+            if (cmdline.a_complex_keys.specified() || important)
+            {
+                ColourFormatter f(indent);
+                if (cmdline.a_flat.specified())
+                    out << fuc(
+                            (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
+                            fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
+                            fv<'v'>(k.pretty_print_flat(f)),
+                            fv<'i'>(std::string(indent, ' ')),
+                            fv<'b'>(important ? "true" : "")
+                            );
+                else
+                {
+                    out << fuc(
+                            (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
+                            fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
+                            fv<'v'>(""),
+                            fv<'i'>(std::string(indent, ' ')),
+                            fv<'b'>(important ? "true" : "")
+                            );
+                    out << k.pretty_print(f);
+                }
+            }
+        }
+
         void visit(const MetadataSpecTreeKey<FetchableURISpecTree> & k)
         {
             if (cmdline.a_complex_keys.specified() || important)
