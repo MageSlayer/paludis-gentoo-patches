@@ -323,6 +323,7 @@ namespace paludis
              * - "used", saying that an installed ID should not be treated as unused
              * - "unbinaryable", saying that we should be excluded from requests to create a binary
              * - "unchrootable", saying that we should be excluded from requests to install to a chroot
+             * - "binary", saying that we are already a binary package
              *
              * \since 0.48
              */
