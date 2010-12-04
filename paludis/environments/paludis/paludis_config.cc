@@ -177,9 +177,9 @@ namespace paludis
         std::shared_ptr<FSPathSequence> bashrc_files;
 
         Repos repos;
-        std::function<std::string (const std::string &)> predefined_conf_vars_func;
         std::string root_prefix;
         std::string system_root_prefix;
+        FSPath local_config_dir;
 
         std::shared_ptr<KeywordsConf> keywords_conf;
         std::shared_ptr<UseConf> use_conf;
@@ -212,6 +212,7 @@ namespace paludis
         paludis_command("paludis"),
         config_dir("(unset)"),
         bashrc_files(std::make_shared<FSPathSequence>()),
+        local_config_dir("/"),
         keywords_conf(std::make_shared<KeywordsConf>(e)),
         use_conf(std::make_shared<UseConf>(e)),
         licenses_conf(std::make_shared<LicensesConf>(e)),
@@ -413,27 +414,28 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         }
     }
 
-    FSPath local_config_dir(FSPath(getenv_with_default("PALUDIS_HOME", getenv_or_error("HOME"))) /
-            (".paludis" + local_config_suffix)), old_config_dir(local_config_dir);
+    _imp->local_config_dir = FSPath(getenv_with_default("PALUDIS_HOME", getenv_or_error("HOME"))) /
+            (".paludis" + local_config_suffix);
+    FSPath old_config_dir(_imp->local_config_dir);
 
     try
     {
-        if (! local_config_dir.stat().exists())
-            local_config_dir = (FSPath(SYSCONFDIR) / ("paludis" + local_config_suffix));
+        if (! _imp->local_config_dir.stat().exists())
+            _imp->local_config_dir = (FSPath(SYSCONFDIR) / ("paludis" + local_config_suffix));
     }
     catch (const FSError &)
     {
-        local_config_dir = (FSPath(SYSCONFDIR) / ("paludis" + local_config_suffix));
+        _imp->local_config_dir = (FSPath(SYSCONFDIR) / ("paludis" + local_config_suffix));
     }
 
     if (_imp->commandline_environment->end() == _imp->commandline_environment->find("root"))
     {
-        if (! local_config_dir.stat().exists())
+        if (! _imp->local_config_dir.stat().exists())
             throw PaludisConfigNoDirectoryError("Can't find configuration directory (tried '"
-                + stringify(old_config_dir) + "', '" + stringify(local_config_dir) + "')");
+                + stringify(old_config_dir) + "', '" + stringify(_imp->local_config_dir) + "')");
 
         Log::get_instance()->message("paludis_environment.paludis_config.initial_dir", ll_debug, lc_no_context)
-            << "PaludisConfig initial directory is '" << local_config_dir << "'";
+            << "PaludisConfig initial directory is '" << _imp->local_config_dir << "'";
     }
 
     std::shared_ptr<KeyValueConfigFile> specpath;
@@ -444,10 +446,10 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
             std::placeholders::_1,
             std::placeholders::_2);
 
-    if ((local_config_dir / "specpath.conf").stat().exists())
+    if ((_imp->local_config_dir / "specpath.conf").stat().exists())
     {
         specpath = std::make_shared<KeyValueConfigFile>(
-            local_config_dir / "specpath.conf",
+            _imp->local_config_dir / "specpath.conf",
             KeyValueConfigFileOptions() + kvcfo_allow_env,
             def_predefined,
             &KeyValueConfigFile::no_transformation);
@@ -474,16 +476,16 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
 
     if (! _imp->root_prefix.empty() && stringify(FSPath(_imp->root_prefix).realpath()) != "/")
     {
-        local_config_dir = FSPath(_imp->root_prefix) / SYSCONFDIR / ("paludis" + local_config_suffix);
-        if (! local_config_dir.stat().exists())
+        _imp->local_config_dir = FSPath(_imp->root_prefix) / SYSCONFDIR / ("paludis" + local_config_suffix);
+        if (! _imp->local_config_dir.stat().exists())
             throw PaludisConfigError("Can't find configuration directory under root ("
-                    "tried '" + stringify(local_config_dir) + "' and couldn't find any "
+                    "tried '" + stringify(_imp->local_config_dir) + "' and couldn't find any "
                     "specpath variables on the commandline");
     }
 
     _imp->root = _imp->root_prefix.empty() ? "/" : _imp->root_prefix;
     _imp->system_root = _imp->system_root_prefix.empty() ? "/" : _imp->system_root_prefix;
-    _imp->config_dir = stringify(local_config_dir);
+    _imp->config_dir = stringify(_imp->local_config_dir);
 
     const std::shared_ptr<const PaludisDistribution> dist(
             PaludisExtraDistributionData::get_instance()->data_from_distribution(
@@ -491,13 +493,13 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
 
     /* check that we can safely use userpriv */
     {
-        Process process(ProcessCommand({ "sh", "-c", "ls -ld '" + stringify(local_config_dir) + "'/* >/dev/null 2>/dev/null" }));
+        Process process(ProcessCommand({ "sh", "-c", "ls -ld '" + stringify(_imp->local_config_dir) + "'/* >/dev/null 2>/dev/null" }));
         process
             .setuid_setgid(reduced_uid(), reduced_gid());
         if (0 != process.run().wait())
         {
             Log::get_instance()->message("paludis_environment.userpriv.disabled", ll_warning, lc_context)
-                << "Cannot access configuration directory '" << local_config_dir
+                << "Cannot access configuration directory '" << _imp->local_config_dir
                 << "' using userpriv, so userpriv will be disabled. Generally Paludis "
                 "configuration directories and files should be world readable.";
             _imp->reduced_uid = std::make_shared<uid_t>(getuid());
@@ -547,49 +549,17 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         }
     }
 
-    _imp->predefined_conf_vars_func = std::bind(&initial_conf_vars,
-            _imp->root_prefix.empty() ? "/" : _imp->root_prefix, std::placeholders::_1);
-
     Log::get_instance()->message("paludis_environment.paludis_config.real_dir", ll_debug, lc_no_context)
-        << "PaludisConfig real directory is '" << local_config_dir << "', root prefix is '" << _imp->root_prefix
+        << "PaludisConfig real directory is '" << _imp->local_config_dir << "', root prefix is '" << _imp->root_prefix
         << "', config suffix is '" << local_config_suffix << "'";
 
     /* repositories */
     {
         /* add normal repositories. start by getting defaults for config files... */
 
-        if ((local_config_dir / (dist->repository_defaults_filename_part() + ".conf")).stat().exists())
-        {
-            _imp->predefined_conf_vars_func = std::bind(&from_kv, std::make_shared<KeyValueConfigFile>(
-                            local_config_dir / (dist->repository_defaults_filename_part() + ".conf"), KeyValueConfigFileOptions() + kvcfo_allow_env,
-                            std::bind(&to_kv_func, _imp->predefined_conf_vars_func, std::placeholders::_1, std::placeholders::_2),
-                            &KeyValueConfigFile::no_transformation),
-                    std::placeholders::_1);
-        }
-        else if ((local_config_dir / (dist->repository_defaults_filename_part() + ".bash")).stat().exists())
-        {
-            std::stringstream s;
-            Process process(ProcessCommand({ "bash", stringify(local_config_dir / (dist->repository_defaults_filename_part() + ".bash")) + "'" }));
-            process
-                .setenv("PALUDIS_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
-                .setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
-                .prefix_stderr(dist->repository_defaults_filename_part() + ".bash> ")
-                .capture_stdout(s);
-            int exit_status(process.run().wait());
-            _imp->predefined_conf_vars_func = std::bind(&from_kv, std::make_shared<KeyValueConfigFile>(
-                            s, KeyValueConfigFileOptions() + kvcfo_allow_env,
-                            std::bind(&to_kv_func, _imp->predefined_conf_vars_func, std::placeholders::_1, std::placeholders::_2),
-                            &KeyValueConfigFile::no_transformation),
-                    std::placeholders::_1);
-            if (exit_status != 0)
-                Log::get_instance()->message("paludis_environment.repository_defaults.failure", ll_warning, lc_context)
-                    << "Script '" << (local_config_dir / (dist->repository_defaults_filename_part() + ".bash"))
-                    << "' returned non-zero exit status '" << exit_status << "'";
-        }
-
         /* find candidate config directories */
         std::list<FSPath> dirs;
-        dirs.push_back(local_config_dir / dist->repositories_directory());
+        dirs.push_back(_imp->local_config_dir / dist->repositories_directory());
 
         /* find repo config files */
         std::list<FSPath> repo_files;
@@ -700,13 +670,13 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
     /* keywords */
     {
         std::list<FSPath> files;
-        files.push_back(local_config_dir / (dist->keywords_filename_part() + ".conf"));
-        files.push_back(local_config_dir / (dist->keywords_filename_part() + ".bash"));
-        if ((local_config_dir / (dist->keywords_filename_part() + ".conf.d")).stat().exists())
+        files.push_back(_imp->local_config_dir / (dist->keywords_filename_part() + ".conf"));
+        files.push_back(_imp->local_config_dir / (dist->keywords_filename_part() + ".bash"));
+        if ((_imp->local_config_dir / (dist->keywords_filename_part() + ".conf.d")).stat().exists())
         {
-            std::remove_copy_if(FSIterator(local_config_dir / (dist->keywords_filename_part() + ".conf.d"), { }), FSIterator(), std::back_inserter(files),
+            std::remove_copy_if(FSIterator(_imp->local_config_dir / (dist->keywords_filename_part() + ".conf.d"), { }), FSIterator(), std::back_inserter(files),
                     std::bind(std::logical_not<bool>(), std::bind(&is_file_with_extension, _1, ".conf", IsFileWithOptions())));
-            std::remove_copy_if(FSIterator(local_config_dir / (dist->keywords_filename_part() + ".conf.d"), { }), FSIterator(), std::back_inserter(files),
+            std::remove_copy_if(FSIterator(_imp->local_config_dir / (dist->keywords_filename_part() + ".conf.d"), { }), FSIterator(), std::back_inserter(files),
                     std::bind(std::logical_not<bool>(), std::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
         }
 
@@ -725,15 +695,15 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
     /* output */
     {
         std::list<FSPath> files;
-        files.push_back(local_config_dir / (dist->output_filename_part() + ".conf"));
-        files.push_back(local_config_dir / (dist->output_filename_part() + ".bash"));
+        files.push_back(_imp->local_config_dir / (dist->output_filename_part() + ".conf"));
+        files.push_back(_imp->local_config_dir / (dist->output_filename_part() + ".bash"));
         files.push_back(FSPath(getenv_with_default("PALUDIS_DEFAULT_OUTPUT_CONF",
                         SHAREDIR "/paludis/environments/paludis/default_output.conf")));
-        if ((local_config_dir / (dist->output_filename_part() + ".conf.d")).stat().exists())
+        if ((_imp->local_config_dir / (dist->output_filename_part() + ".conf.d")).stat().exists())
         {
-            std::remove_copy_if(FSIterator(local_config_dir / (dist->output_filename_part() + ".conf.d"), { }), FSIterator(), std::back_inserter(files),
+            std::remove_copy_if(FSIterator(_imp->local_config_dir / (dist->output_filename_part() + ".conf.d"), { }), FSIterator(), std::back_inserter(files),
                     std::bind(std::logical_not<bool>(), std::bind(&is_file_with_extension, _1, ".conf", IsFileWithOptions())));
-            std::remove_copy_if(FSIterator(local_config_dir / (dist->output_filename_part() + ".conf.d"), { }), FSIterator(), std::back_inserter(files),
+            std::remove_copy_if(FSIterator(_imp->local_config_dir / (dist->output_filename_part() + ".conf.d"), { }), FSIterator(), std::back_inserter(files),
                     std::bind(std::logical_not<bool>(), std::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
         }
 
@@ -757,13 +727,13 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
     /* use */
     {
         std::list<FSPath> files;
-        files.push_back(local_config_dir / (dist->use_filename_part() + ".conf"));
-        files.push_back(local_config_dir / (dist->use_filename_part() + ".bash"));
-        if ((local_config_dir / (dist->use_filename_part() + ".conf.d")).stat().exists())
+        files.push_back(_imp->local_config_dir / (dist->use_filename_part() + ".conf"));
+        files.push_back(_imp->local_config_dir / (dist->use_filename_part() + ".bash"));
+        if ((_imp->local_config_dir / (dist->use_filename_part() + ".conf.d")).stat().exists())
         {
-            std::remove_copy_if(FSIterator(local_config_dir / (dist->use_filename_part() + ".conf.d"), { }), FSIterator(), std::back_inserter(files),
+            std::remove_copy_if(FSIterator(_imp->local_config_dir / (dist->use_filename_part() + ".conf.d"), { }), FSIterator(), std::back_inserter(files),
                     std::bind(std::logical_not<bool>(), std::bind(&is_file_with_extension, _1, ".conf", IsFileWithOptions())));
-            std::remove_copy_if(FSIterator(local_config_dir / (dist->use_filename_part() + ".conf.d"), { }), FSIterator(), std::back_inserter(files),
+            std::remove_copy_if(FSIterator(_imp->local_config_dir / (dist->use_filename_part() + ".conf.d"), { }), FSIterator(), std::back_inserter(files),
                     std::bind(std::logical_not<bool>(), std::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
         }
 
@@ -782,13 +752,13 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
     /* licenses */
     {
         std::list<FSPath> files;
-        files.push_back(local_config_dir / (dist->licenses_filename_part() + ".conf"));
-        files.push_back(local_config_dir / (dist->licenses_filename_part() + ".bash"));
-        if ((local_config_dir / (dist->licenses_filename_part() + ".conf.d")).stat().exists())
+        files.push_back(_imp->local_config_dir / (dist->licenses_filename_part() + ".conf"));
+        files.push_back(_imp->local_config_dir / (dist->licenses_filename_part() + ".bash"));
+        if ((_imp->local_config_dir / (dist->licenses_filename_part() + ".conf.d")).stat().exists())
         {
-            std::remove_copy_if(FSIterator(local_config_dir / (dist->licenses_filename_part() + ".conf.d"), { }), FSIterator(), std::back_inserter(files),
+            std::remove_copy_if(FSIterator(_imp->local_config_dir / (dist->licenses_filename_part() + ".conf.d"), { }), FSIterator(), std::back_inserter(files),
                     std::bind(std::logical_not<bool>(), std::bind(&is_file_with_extension, _1, ".conf", IsFileWithOptions())));
-            std::remove_copy_if(FSIterator(local_config_dir / (dist->licenses_filename_part() + ".conf.d"), { }), FSIterator(), std::back_inserter(files),
+            std::remove_copy_if(FSIterator(_imp->local_config_dir / (dist->licenses_filename_part() + ".conf.d"), { }), FSIterator(), std::back_inserter(files),
                     std::bind(std::logical_not<bool>(), std::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
         }
 
@@ -807,14 +777,14 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
     /* user mask */
     {
         std::list<FSPath> files;
-        files.push_back(local_config_dir / (dist->package_mask_filename_part() + ".conf"));
-        files.push_back(local_config_dir / (dist->package_mask_filename_part() + ".bash"));
-        if ((local_config_dir / (dist->package_mask_filename_part() + ".conf.d")).stat().exists())
+        files.push_back(_imp->local_config_dir / (dist->package_mask_filename_part() + ".conf"));
+        files.push_back(_imp->local_config_dir / (dist->package_mask_filename_part() + ".bash"));
+        if ((_imp->local_config_dir / (dist->package_mask_filename_part() + ".conf.d")).stat().exists())
         {
-            std::remove_copy_if(FSIterator(local_config_dir / (dist->package_mask_filename_part() + ".conf.d"), { }),
+            std::remove_copy_if(FSIterator(_imp->local_config_dir / (dist->package_mask_filename_part() + ".conf.d"), { }),
                     FSIterator(), std::back_inserter(files),
                     std::bind(std::logical_not<bool>(), std::bind(&is_file_with_extension, _1, ".conf", IsFileWithOptions())));
-            std::remove_copy_if(FSIterator(local_config_dir / (dist->package_mask_filename_part() + ".conf.d"), { }),
+            std::remove_copy_if(FSIterator(_imp->local_config_dir / (dist->package_mask_filename_part() + ".conf.d"), { }),
                     FSIterator(), std::back_inserter(files),
                     std::bind(std::logical_not<bool>(), std::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
         }
@@ -834,14 +804,14 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
     /* user unmask */
     {
         std::list<FSPath> files;
-        files.push_back(local_config_dir / (dist->package_unmask_filename_part() + ".conf"));
-        files.push_back(local_config_dir / (dist->package_unmask_filename_part() + ".bash"));
-        if ((local_config_dir / (dist->package_unmask_filename_part() + ".conf.d")).stat().exists())
+        files.push_back(_imp->local_config_dir / (dist->package_unmask_filename_part() + ".conf"));
+        files.push_back(_imp->local_config_dir / (dist->package_unmask_filename_part() + ".bash"));
+        if ((_imp->local_config_dir / (dist->package_unmask_filename_part() + ".conf.d")).stat().exists())
         {
-            std::remove_copy_if(FSIterator(local_config_dir / (dist->package_unmask_filename_part() + ".conf.d"), { }),
+            std::remove_copy_if(FSIterator(_imp->local_config_dir / (dist->package_unmask_filename_part() + ".conf.d"), { }),
                     FSIterator(), std::back_inserter(files),
                     std::bind(std::logical_not<bool>(), std::bind(&is_file_with_extension, _1, ".conf", IsFileWithOptions())));
-            std::remove_copy_if(FSIterator(local_config_dir / (dist->package_unmask_filename_part() + ".conf.d"), { }),
+            std::remove_copy_if(FSIterator(_imp->local_config_dir / (dist->package_unmask_filename_part() + ".conf.d"), { }),
                     FSIterator(), std::back_inserter(files),
                     std::bind(std::logical_not<bool>(), std::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
         }
@@ -861,13 +831,13 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
     /* mirrors */
     {
         std::list<FSPath> files;
-        files.push_back(local_config_dir / (dist->mirrors_filename_part() + ".conf"));
-        files.push_back(local_config_dir / (dist->mirrors_filename_part() + ".bash"));
-        if ((local_config_dir / (dist->mirrors_filename_part() + ".conf.d")).stat().exists())
+        files.push_back(_imp->local_config_dir / (dist->mirrors_filename_part() + ".conf"));
+        files.push_back(_imp->local_config_dir / (dist->mirrors_filename_part() + ".bash"));
+        if ((_imp->local_config_dir / (dist->mirrors_filename_part() + ".conf.d")).stat().exists())
         {
-            std::remove_copy_if(FSIterator(local_config_dir / (dist->mirrors_filename_part() + ".conf.d"), { }), FSIterator(), std::back_inserter(files),
+            std::remove_copy_if(FSIterator(_imp->local_config_dir / (dist->mirrors_filename_part() + ".conf.d"), { }), FSIterator(), std::back_inserter(files),
                     std::bind(std::logical_not<bool>(), std::bind(&is_file_with_extension, _1, ".conf", IsFileWithOptions())));
-            std::remove_copy_if(FSIterator(local_config_dir / (dist->mirrors_filename_part() + ".conf.d"), { }), FSIterator(), std::back_inserter(files),
+            std::remove_copy_if(FSIterator(_imp->local_config_dir / (dist->mirrors_filename_part() + ".conf.d"), { }), FSIterator(), std::back_inserter(files),
                     std::bind(std::logical_not<bool>(), std::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
         }
 
@@ -883,16 +853,70 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         }
     }
 
-    _imp->bashrc_files->push_back(local_config_dir / dist->bashrc_filename());
+    _imp->bashrc_files->push_back(_imp->local_config_dir / dist->bashrc_filename());
 }
 
 PaludisConfig::~PaludisConfig()
 {
 }
 
+namespace
+{
+    std::string desuffix(const std::string & s)
+    {
+        std::string::size_type p(s.rfind('.'));
+        if (std::string::npos == p)
+            return s;
+        else
+            return s.substr(0, p);
+    }
+}
+
 const std::function<std::string (const std::string &)>
 PaludisConfig::repo_func_from_file(const FSPath & repo_file)
 {
+    std::function<std::string (const std::string &)> predefined_conf_vars_func;
+
+    predefined_conf_vars_func = std::bind(&initial_conf_vars,
+            _imp->root_prefix.empty() ? "/" : _imp->root_prefix, std::placeholders::_1);
+
+    predefined_conf_vars_func = std::bind(&override, "repo_file", stringify(repo_file), predefined_conf_vars_func, std::placeholders::_1);
+    predefined_conf_vars_func = std::bind(&override, "repo_file_basename", stringify(repo_file.basename()), predefined_conf_vars_func, std::placeholders::_1);
+    predefined_conf_vars_func = std::bind(&override, "repo_file_unsuffixed", desuffix(stringify(repo_file.basename())), predefined_conf_vars_func, std::placeholders::_1);
+
+    const std::shared_ptr<const PaludisDistribution> dist(
+            PaludisExtraDistributionData::get_instance()->data_from_distribution(
+                *DistributionData::get_instance()->distribution_from_string(distribution())));
+
+    if ((_imp->local_config_dir / (dist->repository_defaults_filename_part() + ".conf")).stat().exists())
+    {
+        predefined_conf_vars_func = std::bind(&from_kv, std::make_shared<KeyValueConfigFile>(
+                    _imp->local_config_dir / (dist->repository_defaults_filename_part() + ".conf"), KeyValueConfigFileOptions() + kvcfo_allow_env,
+                    std::bind(&to_kv_func, predefined_conf_vars_func, std::placeholders::_1, std::placeholders::_2),
+                    &KeyValueConfigFile::no_transformation),
+                std::placeholders::_1);
+    }
+    else if ((_imp->local_config_dir / (dist->repository_defaults_filename_part() + ".bash")).stat().exists())
+    {
+        std::stringstream s;
+        Process process(ProcessCommand({ "bash", stringify(_imp->local_config_dir / (dist->repository_defaults_filename_part() + ".bash")) + "'" }));
+        process
+            .setenv("PALUDIS_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
+            .setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
+            .prefix_stderr(dist->repository_defaults_filename_part() + ".bash> ")
+            .capture_stdout(s);
+        int exit_status(process.run().wait());
+        predefined_conf_vars_func = std::bind(&from_kv, std::make_shared<KeyValueConfigFile>(
+                    s, KeyValueConfigFileOptions() + kvcfo_allow_env,
+                    std::bind(&to_kv_func, predefined_conf_vars_func, std::placeholders::_1, std::placeholders::_2),
+                    &KeyValueConfigFile::no_transformation),
+                std::placeholders::_1);
+        if (exit_status != 0)
+            Log::get_instance()->message("paludis_environment.repository_defaults.failure", ll_warning, lc_context)
+                << "Script '" << (_imp->local_config_dir / (dist->repository_defaults_filename_part() + ".bash"))
+                << "' returned non-zero exit status '" << exit_status << "'";
+    }
+
     std::shared_ptr<KeyValueConfigFile> kv;
     if (is_file_with_extension(repo_file, ".bash", { }))
     {
@@ -905,7 +929,7 @@ PaludisConfig::repo_func_from_file(const FSPath & repo_file)
             .capture_stdout(s);
         int exit_status(process.run().wait());
         kv = std::make_shared<KeyValueConfigFile>(s, KeyValueConfigFileOptions() + kvcfo_allow_env,
-                    std::bind(&to_kv_func, _imp->predefined_conf_vars_func, std::placeholders::_1, std::placeholders::_2),
+                    std::bind(&to_kv_func, predefined_conf_vars_func, std::placeholders::_1, std::placeholders::_2),
                     &KeyValueConfigFile::no_transformation);
 
         if (exit_status != 0)
@@ -917,14 +941,10 @@ PaludisConfig::repo_func_from_file(const FSPath & repo_file)
     }
     else
         kv = std::make_shared<KeyValueConfigFile>(repo_file, KeyValueConfigFileOptions() + kvcfo_allow_env,
-                std::bind(&to_kv_func, _imp->predefined_conf_vars_func, std::placeholders::_1, std::placeholders::_2),
+                std::bind(&to_kv_func, predefined_conf_vars_func, std::placeholders::_1, std::placeholders::_2),
                 &KeyValueConfigFile::no_transformation);
 
-    std::function<std::string (const std::string &)> repo_func(
-            std::bind(&from_kv, kv, std::placeholders::_1));
-
-    repo_func = std::bind(&override, "repo_file", stringify(repo_file), repo_func, std::placeholders::_1);
-
+    std::function<std::string (const std::string &)> repo_func(std::bind(&from_kv, kv, std::placeholders::_1));
     return repo_func;
 }
 

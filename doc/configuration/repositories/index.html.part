@@ -8,7 +8,8 @@
 file is a standard key=value config file, and it may be in bash format (in which case it has a <code>.bash</code>
 extension rather than <code>.conf</code>). The <code>repository_defaults.conf</code> file
 (which does <em>not</em> live in the <code>repositories</code> subdirectory), if it exists, is treated as if it were
-prepended to each individual file.</p>
+prepended to each individual file. It is evaluated once per repository config, allowing predefined variables like
+<code>${repo_file}</code> to be used inside it.</p>
 
 <div class="note">
     <p>The filenames used for repository configuration files have no effect upon the names of the repositories. Whilst
@@ -18,7 +19,7 @@ prepended to each individual file.</p>
 
 <h2>Predefined Keys</h2>
 
-<p>The following keys are predefined. They should not be modified, but may be used in configuration files to define
+<p>The following variables are predefined. They should not be modified, but may be used in configuration files to define
 other keys.</p>
 
 <dl>
@@ -26,6 +27,15 @@ other keys.</p>
     <dd>The filesystem root. Relevant if <code>specpath.conf</code> is in use. Using this variable can create a
     configuration system that works both inside and outside of a chroot (e.g. <code>location =
         ${root}/var/db/paludis/repositories/paludis-overlay</code>).</dd>
+
+    <dt><code>repo_file</code></dt>
+    <dd>The filename of the repository config file.</dd>
+
+    <dt><code>repo_file_basename</code></dt>
+    <dd>The basename (filename without path) of the repository config file.</dd>
+
+    <dt><code>repo_file_unsuffixed</code></dt>
+    <dd>The basename without file extension of the repository config file.</dd>
 </dl>
 
 <h2>General Keys</h2>
