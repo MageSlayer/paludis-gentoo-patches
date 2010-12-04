@@ -73,11 +73,14 @@ namespace paludis
                         "sync", "sync", mkt_normal, params.sync())),
             sync_options_key(std::make_shared<LiteralMetadataStringStringMapKey>(
                         "sync_options", "sync_options", mkt_normal, params.sync_options())),
-            sync_hosts(params.sync()),
+            sync_hosts(std::make_shared<Map<std::string, std::string> >()),
             sync_host_key(std::make_shared<LiteralMetadataStringStringMapKey>("sync_host", "sync_host", mkt_internal, sync_hosts)),
             store(DeferredConstructionPtr<std::shared_ptr<UnavailableRepositoryStore> > (
                         std::bind(&make_store, repo, std::cref(params))))
         {
+            for (auto i(params.sync()->begin()), i_end(params.sync()->end()) ;
+                    i != i_end ; ++i)
+                sync_hosts->insert(i->first, extract_host_from_url(i->second));
         }
     };
 }

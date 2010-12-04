@@ -365,7 +365,7 @@ namespace paludis
                     make_binary_keywords_filter(params.binary_keywords_filter()))),
         accounts_repository_data_location_key(layout->accounts_repository_data_location_key()),
         e_updates_location_key(layout->e_updates_location_key()),
-        sync_hosts(params.sync()),
+        sync_hosts(std::make_shared<Map<std::string, std::string> >()),
         sync_host_key(std::make_shared<LiteralMetadataStringStringMapKey>("sync_host", "sync_host", mkt_internal, sync_hosts)),
         eclass_mtimes(std::make_shared<EclassMtimes>(r, params.eclassdirs())),
         master_mtime(0)
@@ -396,6 +396,10 @@ namespace paludis
         FSStat mtfs(mtf.stat());
         if (mtfs.exists())
             master_mtime = mtfs.mtim().seconds();
+
+        for (auto i(params.sync()->begin()), i_end(params.sync()->end()) ;
+                i != i_end ; ++i)
+            sync_hosts->insert(i->first, extract_host_from_url(i->second));
     }
 
     Imp<ERepository>::~Imp()
