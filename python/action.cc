@@ -116,7 +116,8 @@ namespace
     {
         return new PretendActionOptions(make_named_values<PretendActionOptions>(
                     n::destination() = r,
-                    n::make_output_manager() = &make_standard_output_manager
+                    n::make_output_manager() = &make_standard_output_manager,
+                    n::replacing() = std::make_shared<PackageIDSequence>()
                     ));
     }
 

@@ -138,7 +138,8 @@ namespace test_cases
 
             PretendAction pretend_action(make_named_values<PretendActionOptions>(
                         n::destination() = installed_repo,
-                        n::make_output_manager() = &make_standard_output_manager
+                        n::make_output_manager() = &make_standard_output_manager,
+                        n::replacing() = std::make_shared<PackageIDSequence>()
                         ));
 
             {

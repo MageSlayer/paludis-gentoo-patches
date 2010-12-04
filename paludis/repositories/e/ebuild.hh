@@ -202,6 +202,7 @@ namespace paludis
             NamedValue<n::expand_vars, std::shared_ptr<const Map<std::string, std::string> > > expand_vars;
             NamedValue<n::profiles, std::shared_ptr<const FSPathSequence> > profiles;
             NamedValue<n::profiles_with_parents, std::shared_ptr<const FSPathSequence> > profiles_with_parents;
+            NamedValue<n::replacing_ids, std::shared_ptr<const PackageIDSequence> > replacing_ids;
             NamedValue<n::use, std::string> use;
             NamedValue<n::use_expand, std::string> use_expand;
             NamedValue<n::use_expand_hidden, std::string> use_expand_hidden;

@@ -146,7 +146,7 @@ namespace
                     "be backgrounded or run in parallel with installs", true),
 
             g_install_action_options(main_options_section(), "Install Action Options",
-                    "Options for if the action is 'install' or (for --destination) 'pretend'"),
+                    "Options for if the action is 'install' or (for --destination and --replacing) 'pretend'"),
             a_destination(&g_install_action_options, "destination", '\0',
                     "The name of the repository to which the install should take place"),
             a_replacing(&g_install_action_options, "replacing", '\0',
@@ -171,7 +171,7 @@ namespace
                     " [ --ignore-unfetched ] spec");
             add_usage_line("info spec");
             add_usage_line("install --destination repo [ --replacing spec ... ] spec");
-            add_usage_line("pretend --destination repo spec");
+            add_usage_line("pretend --destination repo [ --replacing spec ... ] spec");
             add_usage_line("pretend-fetch spec");
             add_usage_line("uninstall [ --config-protect values ] spec");
         }
@@ -423,6 +423,21 @@ PerformCommand::run(
     if (cmdline.a_fetch_unneeded.specified())
         parts += fp_unneeded;
 
+    const std::shared_ptr<PackageIDSequence> replacing(std::make_shared<PackageIDSequence>());
+    for (args::StringSetArg::ConstIterator p(cmdline.a_replacing.begin_args()),
+            p_end(cmdline.a_replacing.end_args()) ;
+            p != p_end ; ++p)
+    {
+        PackageDepSpec rspec(parse_user_package_dep_spec(*p, env.get(), { }));
+        const std::shared_ptr<const PackageIDSequence> rids((*env)[selection::AllVersionsUnsorted(generator::Matches(rspec, { }))]);
+        if (rids->empty())
+            nothing_matching_error(env.get(), *p, filter::All());
+        else if (1 != std::distance(rids->begin(), rids->end()))
+            throw BeMoreSpecific(rspec, rids);
+        else
+            replacing->push_back(*rids->begin());
+    }
+
     if (action == "config")
     {
         if (cmdline.a_if_supported.specified() && ! id->supports_action(SupportsActionTest<ConfigAction>()))
@@ -525,21 +540,6 @@ PerformCommand::run(
         const std::shared_ptr<Repository> destination(env->package_database()->fetch_repository(
                     RepositoryName(cmdline.a_destination.argument())));
 
-        const std::shared_ptr<PackageIDSequence> replacing(std::make_shared<PackageIDSequence>());
-        for (args::StringSetArg::ConstIterator p(cmdline.a_replacing.begin_args()),
-                p_end(cmdline.a_replacing.end_args()) ;
-                p != p_end ; ++p)
-        {
-            PackageDepSpec rspec(parse_user_package_dep_spec(*p, env.get(), { }));
-            const std::shared_ptr<const PackageIDSequence> rids((*env)[selection::AllVersionsUnsorted(generator::Matches(rspec, { }))]);
-            if (rids->empty())
-                nothing_matching_error(env.get(), *p, filter::All());
-            else if (1 != std::distance(rids->begin(), rids->end()))
-                throw BeMoreSpecific(rspec, rids);
-            else
-                replacing->push_back(*rids->begin());
-        }
-
         OutputManagerFromIPCOrEnvironment output_manager_holder(env.get(), cmdline, id);
         WantInstallPhase want_phase(cmdline, output_manager_holder);
         InstallActionOptions options(make_named_values<InstallActionOptions>(
@@ -569,7 +569,8 @@ PerformCommand::run(
         OutputManagerFromIPCOrEnvironment output_manager_holder(env.get(), cmdline, id);
         PretendActionOptions options(make_named_values<PretendActionOptions>(
                     n::destination() = destination,
-                    n::make_output_manager() = std::ref(output_manager_holder)
+                    n::make_output_manager() = std::ref(output_manager_holder),
+                    n::replacing() = replacing
                     ));
         PretendAction pretend_action(options);
         execute(env, cmdline, id, action, pretend_action, output_manager_holder);

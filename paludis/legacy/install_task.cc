@@ -747,9 +747,22 @@ InstallTask::_pretend()
             bool success(true);
             if (dep->package_id()->supports_action(pretend_action_query))
             {
+                std::shared_ptr<PackageIDSequence> replacing;
+
+                // look for packages with the same name in the same slot in the destination repos
+                if (dep->destination())
+                    replacing = (*_imp->env)[selection::AllVersionsSorted(
+                            (generator::Package(dep->package_id()->name()) &
+                             generator::InRepository(dep->destination()->name())) |
+                            filter::SupportsAction<UninstallAction>() |
+                            filter::SameSlot(dep->package_id()))];
+                else
+                    replacing = std::make_shared<PackageIDSequence>();
+
                 PretendActionOptions options(make_named_values<PretendActionOptions>(
                             n::destination() = dep->destination(),
-                            n::make_output_manager() = std::ref(output_manager_holder)
+                            n::make_output_manager() = std::ref(output_manager_holder),
+                            n::replacing() = replacing
                             ));
                 PretendAction pretend_action(options);
                 dep->package_id()->perform_action(pretend_action);

@@ -3093,6 +3093,7 @@ ERepository::pretend(
                 n::expand_vars() = expand_vars,
                 n::profiles() = _imp->params.profiles(),
                 n::profiles_with_parents() = profile()->profiles_with_parents(),
+                n::replacing_ids() = a.options.replacing(),
                 n::use() = use,
                 n::use_expand() = join(profile()->use_expand()->begin(), profile()->use_expand()->end(), " "),
                 n::use_expand_hidden() = join(profile()->use_expand_hidden()->begin(), profile()->use_expand_hidden()->end(), " ")

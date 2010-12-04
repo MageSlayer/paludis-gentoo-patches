@@ -374,6 +374,13 @@ namespace paludis
          */
         NamedValue<n::make_output_manager, std::function<std::shared_ptr<OutputManager> (
                 const PretendAction &)> > make_output_manager;
+
+        /**
+         * We will replace these.
+         *
+         * \since 0.55
+         */
+        NamedValue<n::replacing, std::shared_ptr<const PackageIDSequence> > replacing;
     };
 
     /**

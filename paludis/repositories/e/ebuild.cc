@@ -1092,6 +1092,27 @@ EbuildPretendCommand::extend_command(Process & process)
         process.setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_use_expand_hidden(),
                 pretend_params.use_expand_hidden());
 
+    if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_replacing_ids().empty())
+        process.setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_replacing_ids(),
+                join(indirect_iterator(pretend_params.replacing_ids()->begin()),
+                    indirect_iterator(pretend_params.replacing_ids()->end()), " "));
+
+    if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_replacing_versions().empty())
+    {
+        std::string s;
+        for (PackageIDSequence::ConstIterator i(pretend_params.replacing_ids()->begin()),
+                i_end(pretend_params.replacing_ids()->end()) ;
+                i != i_end ; ++i)
+            if ((*i)->name() == params.package_id()->name())
+            {
+                if (! s.empty())
+                    s.append(" ");
+                s.append(stringify((*i)->version()));
+            }
+
+        process.setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_replacing_versions(), s);
+    }
+
     for (Map<std::string, std::string>::ConstIterator
             i(pretend_params.expand_vars()->begin()),
             j(pretend_params.expand_vars()->end()) ; i != j ; ++i)
