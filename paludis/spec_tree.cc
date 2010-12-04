@@ -227,6 +227,14 @@ template class SpecTree<MakeTypeList<
     >::Type, AllDepSpec>;
 
 template class SpecTree<MakeTypeList<
+        SpecTreeLeafNodeType<PlainTextDepSpec>,
+        SpecTreeInnerNodeType<AllDepSpec>,
+        SpecTreeInnerNodeType<AnyDepSpec>,
+        SpecTreeInnerNodeType<ExactlyOneDepSpec>,
+        SpecTreeInnerNodeType<ConditionalDepSpec>
+    >::Type, AllDepSpec>;
+
+template class SpecTree<MakeTypeList<
         SpecTreeLeafNodeType<PackageDepSpec>,
         SpecTreeLeafNodeType<BlockDepSpec>,
         SpecTreeLeafNodeType<DependenciesLabelsDepSpec>,
@@ -376,6 +384,42 @@ template class LeafNode<PlainTextSpecTree, PlainTextDepSpec>;
 template class LeafNode<PlainTextSpecTree, PlainTextLabelDepSpec>;
 template class InnerNode<PlainTextSpecTree, AllDepSpec>;
 template class InnerNode<PlainTextSpecTree, ConditionalDepSpec>;
+
+/* RequiredUseSpecTree */
+
+template const std::shared_ptr<RequiredUseSpecTree::NodeType<PlainTextDepSpec>::Type>
+    BasicInnerNode<RequiredUseSpecTree>::append<PlainTextDepSpec>(const std::shared_ptr<const PlainTextDepSpec> &);
+template const std::shared_ptr<RequiredUseSpecTree::NodeType<PlainTextDepSpec>::Type>
+    BasicInnerNode<RequiredUseSpecTree>::append<PlainTextDepSpec>(const std::shared_ptr<PlainTextDepSpec> &);
+
+template const std::shared_ptr<RequiredUseSpecTree::NodeType<AllDepSpec>::Type>
+    BasicInnerNode<RequiredUseSpecTree>::append<AllDepSpec>(const std::shared_ptr<const AllDepSpec> &);
+template const std::shared_ptr<RequiredUseSpecTree::NodeType<AllDepSpec>::Type>
+    BasicInnerNode<RequiredUseSpecTree>::append<AllDepSpec>(const std::shared_ptr<AllDepSpec> &);
+
+template const std::shared_ptr<RequiredUseSpecTree::NodeType<AnyDepSpec>::Type>
+    BasicInnerNode<RequiredUseSpecTree>::append<AnyDepSpec>(const std::shared_ptr<const AnyDepSpec> &);
+template const std::shared_ptr<RequiredUseSpecTree::NodeType<AnyDepSpec>::Type>
+    BasicInnerNode<RequiredUseSpecTree>::append<AnyDepSpec>(const std::shared_ptr<AnyDepSpec> &);
+
+template const std::shared_ptr<RequiredUseSpecTree::NodeType<ExactlyOneDepSpec>::Type>
+    BasicInnerNode<RequiredUseSpecTree>::append<ExactlyOneDepSpec>(const std::shared_ptr<const ExactlyOneDepSpec> &);
+template const std::shared_ptr<RequiredUseSpecTree::NodeType<ExactlyOneDepSpec>::Type>
+    BasicInnerNode<RequiredUseSpecTree>::append<ExactlyOneDepSpec>(const std::shared_ptr<ExactlyOneDepSpec> &);
+
+template const std::shared_ptr<RequiredUseSpecTree::NodeType<ConditionalDepSpec>::Type>
+    BasicInnerNode<RequiredUseSpecTree>::append<ConditionalDepSpec>(const std::shared_ptr<const ConditionalDepSpec> &);
+template const std::shared_ptr<RequiredUseSpecTree::NodeType<ConditionalDepSpec>::Type>
+    BasicInnerNode<RequiredUseSpecTree>::append<ConditionalDepSpec>(const std::shared_ptr<ConditionalDepSpec> &);
+
+template class BasicInnerNode<RequiredUseSpecTree>;
+template class WrappedForwardIterator<BasicInnerNode<RequiredUseSpecTree>::ConstIteratorTag,
+         const std::shared_ptr<const BasicNode<RequiredUseSpecTree> > >;
+template class LeafNode<RequiredUseSpecTree, PlainTextDepSpec>;
+template class InnerNode<RequiredUseSpecTree, AllDepSpec>;
+template class InnerNode<RequiredUseSpecTree, AnyDepSpec>;
+template class InnerNode<RequiredUseSpecTree, ExactlyOneDepSpec>;
+template class InnerNode<RequiredUseSpecTree, ConditionalDepSpec>;
 
 /* ProvideSpecTree */
 
@@ -535,6 +579,14 @@ template InnerNode<PlainTextSpecTree, AllDepSpec>::operator InnerNode<GenericSpe
 template InnerNode<PlainTextSpecTree, ConditionalDepSpec>::operator InnerNode<GenericSpecTree, ConditionalDepSpec> () const;
 template LeafNode<PlainTextSpecTree, PlainTextDepSpec>::operator LeafNode<GenericSpecTree, PlainTextDepSpec> () const;
 template LeafNode<PlainTextSpecTree, PlainTextLabelDepSpec>::operator LeafNode<GenericSpecTree, PlainTextLabelDepSpec> () const;
+
+/* RequiredUseSpecTree -> GenericSpecTree */
+
+template InnerNode<RequiredUseSpecTree, AllDepSpec>::operator InnerNode<GenericSpecTree, AllDepSpec> () const;
+template InnerNode<RequiredUseSpecTree, AnyDepSpec>::operator InnerNode<GenericSpecTree, AnyDepSpec> () const;
+template InnerNode<RequiredUseSpecTree, ExactlyOneDepSpec>::operator InnerNode<GenericSpecTree, ExactlyOneDepSpec> () const;
+template InnerNode<RequiredUseSpecTree, ConditionalDepSpec>::operator InnerNode<GenericSpecTree, ConditionalDepSpec> () const;
+template LeafNode<RequiredUseSpecTree, PlainTextDepSpec>::operator LeafNode<GenericSpecTree, PlainTextDepSpec> () const;
 
 /* ProvideSpecTree -> GenericSpecTree */
 

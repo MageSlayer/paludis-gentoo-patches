@@ -1472,6 +1472,7 @@ template VALUE paludis::ruby::dep_tree_to_value<DependencySpecTree> (const std::
 template VALUE paludis::ruby::dep_tree_to_value<FetchableURISpecTree> (const std::shared_ptr<const FetchableURISpecTree> &);
 template VALUE paludis::ruby::dep_tree_to_value<SimpleURISpecTree> (const std::shared_ptr<const SimpleURISpecTree> &);
 template VALUE paludis::ruby::dep_tree_to_value<PlainTextSpecTree> (const std::shared_ptr<const PlainTextSpecTree> &);
+template VALUE paludis::ruby::dep_tree_to_value<RequiredUseSpecTree> (const std::shared_ptr<const RequiredUseSpecTree> &);
 template VALUE paludis::ruby::dep_tree_to_value<ProvideSpecTree> (const std::shared_ptr<const ProvideSpecTree> &);
 template VALUE paludis::ruby::dep_tree_to_value<LicenseSpecTree> (const std::shared_ptr<const LicenseSpecTree> &);
 

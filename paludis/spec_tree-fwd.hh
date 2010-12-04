@@ -115,6 +115,14 @@ namespace paludis
 
     typedef SpecTree<MakeTypeList<
             SpecTreeLeafNodeType<PlainTextDepSpec>,
+            SpecTreeInnerNodeType<AllDepSpec>,
+            SpecTreeInnerNodeType<AnyDepSpec>,
+            SpecTreeInnerNodeType<ExactlyOneDepSpec>,
+            SpecTreeInnerNodeType<ConditionalDepSpec>
+        >::Type, AllDepSpec> RequiredUseSpecTree;
+
+    typedef SpecTree<MakeTypeList<
+            SpecTreeLeafNodeType<PlainTextDepSpec>,
             SpecTreeLeafNodeType<PlainTextLabelDepSpec>,
             SpecTreeInnerNodeType<AllDepSpec>,
             SpecTreeInnerNodeType<ConditionalDepSpec>
