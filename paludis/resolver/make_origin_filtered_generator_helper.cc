@@ -73,7 +73,7 @@ namespace
 
             for (PackageIDSet::ConstIterator i(id->begin()), i_end(id->end()) ;
                     i != i_end ; ++i)
-                if (can_make_binary_for(*i))
+                if (! is_already_binary(*i))
                     result->insert(*i);
 
             return result;

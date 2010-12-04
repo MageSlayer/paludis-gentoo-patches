@@ -39,6 +39,14 @@ paludis::resolver::can_make_binary_for(const std::shared_ptr<const PackageID> & 
 }
 
 bool
+paludis::resolver::is_already_binary(const std::shared_ptr<const PackageID> & id)
+{
+    if (! id->behaviours_key())
+        return false;
+    return id->behaviours_key()->value()->end() != id->behaviours_key()->value()->find("binary");
+}
+
+bool
 paludis::resolver::can_chroot(const std::shared_ptr<const PackageID> & id)
 {
     if (! id->behaviours_key())
