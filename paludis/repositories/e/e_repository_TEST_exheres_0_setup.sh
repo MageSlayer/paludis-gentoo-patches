@@ -1084,6 +1084,20 @@ src_install() {
     nonfatal doman bar.1 && die
 }
 END
+mkdir -p "packages/cat/global-optionq"
+cat <<'END' > packages/cat/global-optionq/global-optionq-1.ebuild || exit 1
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
+HOMEPAGE="http://example.com/"
+DOWNLOADS=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENCES="GPL-2"
+PLATFORMS="test"
+WORK="${WORKBASE}"
+
+optionq spork
+END
 cd ..
 
 cd ..

@@ -147,7 +147,7 @@ EbuildCommand::operator() ()
     using namespace std::placeholders;
 
     process.pipe_command_handler("PALUDIS_PIPE_COMMAND", std::bind(&pipe_command_handler, params.environment(),
-                params.package_id(), _1, params.maybe_output_manager()));
+                params.package_id(), in_metadata_generation(), _1, params.maybe_output_manager()));
 
     std::shared_ptr<const FSPathSequence> syncers_dirs(params.environment()->syncers_dirs());
     std::shared_ptr<const FSPathSequence> bashrc_files(params.environment()->bashrc_files());
@@ -361,6 +361,12 @@ EbuildCommand::add_portage_vars(Process & process) const
 }
 
 bool
+EbuildCommand::in_metadata_generation() const
+{
+    return false;
+}
+
+bool
 EbuildCommand::do_run_command(Process & process)
 {
     return 0 == process.run().wait();
@@ -393,6 +399,12 @@ EbuildMetadataCommand::extend_command(Process & process)
     process
         .setuid_setgid(params.environment()->reduced_uid(), params.environment()->reduced_gid())
         ;
+}
+
+bool
+EbuildMetadataCommand::in_metadata_generation() const
+{
+    return true;
 }
 
 namespace
@@ -1014,7 +1026,7 @@ WriteVDBEntryCommand::operator() ()
         .setenv("PALUDIS_PIPE_COMMANDS_SUPPORTED", "yes")
         .setenv("PALUDIS_PIPE_COMMANDS_STATUS_SUPPORTED", "yes")
         .pipe_command_handler("PALUDIS_PIPE_COMMAND", std::bind(&pipe_command_handler, params.environment(),
-                    params.package_id(), _1, params.maybe_output_manager()));
+                    params.package_id(), false, _1, params.maybe_output_manager()));
 
     if (! params.package_id()->eapi()->supported()->ebuild_metadata_variables()->iuse_effective()->name().empty())
         if (params.package_id()->raw_iuse_effective_key())
@@ -1261,7 +1273,7 @@ WriteBinaryEbuildCommand::operator() ()
         .setenv("PALUDIS_PIPE_COMMANDS_SUPPORTED", "yes")
         .setenv("PALUDIS_PIPE_COMMANDS_STATUS_SUPPORTED", "yes")
         .pipe_command_handler("PALUDIS_PIPE_COMMAND", std::bind(&pipe_command_handler, params.environment(),
-                    params.package_id(), _1, params.maybe_output_manager()));
+                    params.package_id(), false, _1, params.maybe_output_manager()));
 
     if (0 != process.run().wait())
         throw ActionFailedError("Write binary command failed");

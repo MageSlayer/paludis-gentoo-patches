@@ -162,8 +162,8 @@ namespace
 
 std::string
 paludis::erepository::pipe_command_handler(const Environment * const environment,
-        const std::shared_ptr<const PackageID> & package_id, const std::string & s,
-        const std::shared_ptr<OutputManager> & maybe_output_manager)
+        const std::shared_ptr<const PackageID> & package_id, bool in_metadata_generation,
+        const std::string & s, const std::shared_ptr<OutputManager> & maybe_output_manager)
 {
     Context context("In ebuild pipe command handler:");
 
@@ -418,6 +418,9 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                 std::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(tokens[1]));
                 if (! eapi->supported())
                     return "EOPTIONQ EAPI " + tokens[1] + " unsupported";
+
+                if (in_metadata_generation)
+                    return "Ecannot query options during metadata generation";
 
                 if (! package_id->choices_key())
                     return "EOPTIONQ ID " + stringify(*package_id) + " has no choices";

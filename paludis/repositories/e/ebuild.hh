@@ -390,6 +390,11 @@ namespace paludis
                  */
                 virtual void extend_command(Process &) = 0;
 
+                /**
+                 * Are we generating metadata?
+                 */
+                virtual bool in_metadata_generation() const;
+
             public:
                 /**
                  * Destructor.
@@ -753,6 +758,8 @@ namespace paludis
                 bool failure();
 
                 bool do_run_command(Process &);
+
+                virtual bool in_metadata_generation() const;
 
                 virtual void extend_command(Process &);
 

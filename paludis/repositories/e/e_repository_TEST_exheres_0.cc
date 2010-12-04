@@ -640,6 +640,15 @@ namespace test_cases
                 TEST_CHECK(bool(id));
                 TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
+
+            {
+                TestMessageSuffix suffix("global optionq", true);
+                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/global-optionq-1",
+                                        &env, { })), { }))]->last());
+                TEST_CHECK(bool(id));
+                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
+            }
         }
     } test_e_repository_install_exheres_0;
 }
