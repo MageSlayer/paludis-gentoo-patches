@@ -82,10 +82,12 @@ namespace paludis
     {
         private:
             const bool _enabled;
+            const bool _mask;
 
         public:
             ELikeOptionalTestsChoiceValue(const std::shared_ptr<const PackageID> &,
-                    const Environment * const env, const std::shared_ptr<const Choice> &);
+                    const Environment * const env, const std::shared_ptr<const Choice> &,
+                    const bool mask);
 
             virtual const UnprefixedChoiceName unprefixed_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const ChoiceNameWithPrefix name_with_prefix() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -105,10 +107,12 @@ namespace paludis
     {
         private:
             const bool _enabled;
+            const bool _mask;
 
         public:
             ELikeRecommendedTestsChoiceValue(const std::shared_ptr<const PackageID> &,
-                    const Environment * const env, const std::shared_ptr<const Choice> &);
+                    const Environment * const env, const std::shared_ptr<const Choice> &,
+                    const bool mask);
 
             virtual const UnprefixedChoiceName unprefixed_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const ChoiceNameWithPrefix name_with_prefix() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -128,10 +132,12 @@ namespace paludis
     {
         private:
             const bool _enabled;
+            const bool _mask;
 
         public:
             ELikeExpensiveTestsChoiceValue(const std::shared_ptr<const PackageID> &,
-                    const Environment * const env, const std::shared_ptr<const Choice> &);
+                    const Environment * const env, const std::shared_ptr<const Choice> &,
+                    const bool mask);
 
             virtual const UnprefixedChoiceName unprefixed_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const ChoiceNameWithPrefix name_with_prefix() const PALUDIS_ATTRIBUTE((warn_unused_result));

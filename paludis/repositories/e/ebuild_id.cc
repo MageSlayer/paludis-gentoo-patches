@@ -1483,9 +1483,9 @@ EbuildID::add_build_options(const std::shared_ptr<Choices> & choices) const
         {
             bool may_be_unrestricted_test(true), may_be_unrestricted_strip(true);
 
-            /* if we unconditionally restrict an action, don't add a build option
-             * for it. but if we conditionally restrict it, do, to avoid weirdness
-             * in cases like RESTRICT="test? ( test )." */
+            /* if we unconditionally restrict an action, don't add / force mask
+             * a build option for it. but if we conditionally restrict it, do,
+             * to avoid weirdness in cases like RESTRICT="test? ( test )." */
             if (restrict_key())
             {
                 UnconditionalRestrictFinder f;
@@ -1496,13 +1496,13 @@ EbuildID::add_build_options(const std::shared_ptr<Choices> & choices) const
 
             /* optional_tests */
             if (eapi()->supported()->choices_options()->has_optional_tests())
-                if (may_be_unrestricted_test)
-                    build_options->add(std::make_shared<ELikeOptionalTestsChoiceValue>(shared_from_this(), _imp->environment, build_options));
+                build_options->add(std::make_shared<ELikeOptionalTestsChoiceValue>(shared_from_this(), _imp->environment, build_options,
+                            ! may_be_unrestricted_test));
 
             /* recommended_tests */
             if (eapi()->supported()->choices_options()->has_recommended_tests())
-                if (may_be_unrestricted_test)
-                    build_options->add(std::make_shared<ELikeRecommendedTestsChoiceValue>(shared_from_this(), _imp->environment, build_options));
+                build_options->add(std::make_shared<ELikeRecommendedTestsChoiceValue>(shared_from_this(), _imp->environment, build_options,
+                            ! may_be_unrestricted_test));
 
             /* expensive_tests */
             if (eapi()->supported()->choices_options()->has_expensive_tests())
@@ -1526,7 +1526,8 @@ EbuildID::add_build_options(const std::shared_ptr<Choices> & choices) const
                 }
 
                 if (has_expensive_test_phase)
-                    build_options->add(std::make_shared<ELikeExpensiveTestsChoiceValue>(shared_from_this(), _imp->environment, build_options));
+                    build_options->add(std::make_shared<ELikeExpensiveTestsChoiceValue>(shared_from_this(), _imp->environment, build_options,
+                                ! may_be_unrestricted_test));
             }
 
             /* split, strip */

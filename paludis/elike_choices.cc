@@ -176,8 +176,10 @@ ELikeOptionalTestsChoiceValue::canonical_name_with_prefix()
 }
 
 ELikeOptionalTestsChoiceValue::ELikeOptionalTestsChoiceValue(const std::shared_ptr<const PackageID> & id,
-        const Environment * const env, const std::shared_ptr<const Choice> & choice) :
-    _enabled(env->want_choice_enabled(id, choice, canonical_unprefixed_name()).is_true())
+        const Environment * const env, const std::shared_ptr<const Choice> & choice,
+        const bool l) :
+    _enabled((! l) && (env->want_choice_enabled(id, choice, canonical_unprefixed_name()).is_true())),
+    _mask(l)
 {
 }
 
@@ -208,7 +210,7 @@ ELikeOptionalTestsChoiceValue::enabled_by_default() const
 bool
 ELikeOptionalTestsChoiceValue::locked() const
 {
-    return false;
+    return _mask;
 }
 
 const std::string
@@ -242,8 +244,10 @@ ELikeRecommendedTestsChoiceValue::canonical_name_with_prefix()
 }
 
 ELikeRecommendedTestsChoiceValue::ELikeRecommendedTestsChoiceValue(const std::shared_ptr<const PackageID> & id,
-        const Environment * const env, const std::shared_ptr<const Choice> & choice) :
-    _enabled(! env->want_choice_enabled(id, choice, canonical_unprefixed_name()).is_false())
+        const Environment * const env, const std::shared_ptr<const Choice> & choice,
+        const bool l) :
+    _enabled((! l) && (! env->want_choice_enabled(id, choice, canonical_unprefixed_name()).is_false())),
+    _mask(l)
 {
 }
 
@@ -274,7 +278,7 @@ ELikeRecommendedTestsChoiceValue::enabled_by_default() const
 bool
 ELikeRecommendedTestsChoiceValue::locked() const
 {
-    return false;
+    return _mask;
 }
 
 const std::string
@@ -326,8 +330,10 @@ ELikeExpensiveTestsChoiceValue::canonical_name_with_prefix()
 }
 
 ELikeExpensiveTestsChoiceValue::ELikeExpensiveTestsChoiceValue(const std::shared_ptr<const PackageID> & id,
-        const Environment * const env, const std::shared_ptr<const Choice> & choice) :
-    _enabled(env->want_choice_enabled(id, choice, canonical_unprefixed_name()).is_true())
+        const Environment * const env, const std::shared_ptr<const Choice> & choice,
+        const bool l) :
+    _enabled((! l) && (env->want_choice_enabled(id, choice, canonical_unprefixed_name()).is_true())),
+    _mask(l)
 {
 }
 
@@ -358,7 +364,7 @@ ELikeExpensiveTestsChoiceValue::enabled_by_default() const
 bool
 ELikeExpensiveTestsChoiceValue::locked() const
 {
-    return false;
+    return _mask;
 }
 
 const std::string
