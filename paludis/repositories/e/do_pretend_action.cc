@@ -151,7 +151,7 @@ paludis::erepository::do_pretend_action(
         {
             EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_bad_options());
             if (phases.begin_phases() == phases.end_phases())
-                throw InternalError(PALUDIS_HERE, "using myoptions but no ebuild_bad_options phase");
+                throw InternalError(PALUDIS_HERE, "using required_use but no ebuild_bad_options phase");
 
             for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
                     phase != phase_end ; ++phase)
