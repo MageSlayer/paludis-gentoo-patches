@@ -20,14 +20,21 @@ lib_LTLIBRARIES = libpaludiserepositoryxmlthings_@PALUDIS_PC_SLOT@.la
 endif
 
 noinst_HEADERS = \
+	a_finder.hh \
 	aa_visitor.hh \
 	can_skip_phase.hh \
 	check_fetched_files_visitor.hh \
+	check_userpriv.hh \
 	dep_parser.hh \
 	dep_parser-se.hh \
 	dep_parser-fwd.hh \
 	dep_spec_pretty_printer.hh \
 	dependencies_rewriter.hh \
+	do_fetch_action.hh \
+	do_info_action.hh \
+	do_install_action.hh \
+	do_pretend_action.hh \
+	do_pretend_fetch_action.hh \
 	e_choice_value.hh \
 	e_installed_repository.hh \
 	e_installed_repository_id.hh \
@@ -63,6 +70,7 @@ noinst_HEADERS = \
 	fix_locked_dependencies.hh \
 	glsa.hh \
 	layout.hh \
+	make_use.hh \
 	manifest2_reader.hh \
 	memoised_hashes.hh \
 	metadata_xml.hh \
@@ -84,12 +92,19 @@ noinst_HEADERS = \
 	vdb_unmerger.hh
 
 libpaludiserepository_la_SOURCES = \
+	a_finder.cc \
 	aa_visitor.cc \
 	can_skip_phase.cc \
 	check_fetched_files_visitor.cc \
+	check_userpriv.cc \
 	dep_parser.cc \
 	dep_spec_pretty_printer.cc \
 	dependencies_rewriter.cc \
+	do_fetch_action.cc \
+	do_info_action.cc \
+	do_install_action.cc \
+	do_pretend_action.cc \
+	do_pretend_fetch_action.cc \
 	e_choice_value.cc \
 	e_installed_repository.cc \
 	e_installed_repository_id.cc \
@@ -122,6 +137,7 @@ libpaludiserepository_la_SOURCES = \
 	fix_locked_dependencies.cc \
 	glsa.cc \
 	layout.cc \
+	make_use.cc \
 	manifest2_reader.cc \
 	memoised_hashes.cc \
 	metadata_xml.cc \

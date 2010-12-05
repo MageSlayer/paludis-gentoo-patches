@@ -197,6 +197,8 @@ namespace paludis
 
             const std::string eapi_for_file(const FSPath &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
+            const std::shared_ptr<const MirrorsSequence> get_mirrors(const std::string & m) const;
+
             ///\name Set methods
             ///\{
 
@@ -216,21 +218,6 @@ namespace paludis
             const std::shared_ptr<const erepository::ERepositoryID> make_id(
                     const QualifiedPackageName &, const FSPath &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            void fetch(const std::shared_ptr<const erepository::ERepositoryID> &,
-                    const FetchAction &) const;
-
-            void pretend_fetch(const std::shared_ptr<const erepository::ERepositoryID> &,
-                    PretendFetchAction &) const;
-
-            void install(const std::shared_ptr<const erepository::ERepositoryID> &,
-                    const InstallAction &) const;
-
-            bool pretend(const std::shared_ptr<const erepository::ERepositoryID> &,
-                    const PretendAction &) const;
-
-            void info(const std::shared_ptr<const erepository::ERepositoryID> &,
-                    const InfoAction &) const;
 
             const std::string get_package_file_manifest_key(const FSPath &, const QualifiedPackageName &) const;
 

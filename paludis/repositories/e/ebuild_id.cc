@@ -29,6 +29,11 @@
 #include <paludis/repositories/e/manifest2_reader.hh>
 #include <paludis/repositories/e/e_choice_value.hh>
 #include <paludis/repositories/e/metadata_xml.hh>
+#include <paludis/repositories/e/do_pretend_action.hh>
+#include <paludis/repositories/e/do_pretend_fetch_action.hh>
+#include <paludis/repositories/e/do_install_action.hh>
+#include <paludis/repositories/e/do_info_action.hh>
+#include <paludis/repositories/e/do_fetch_action.hh>
 
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
@@ -1222,37 +1227,41 @@ namespace
 {
     struct PerformAction
     {
+        const Environment * const env;
         const std::shared_ptr<const PackageID> id;
-
-        PerformAction(const std::shared_ptr<const PackageID> i) :
-            id(i)
-        {
-        }
 
         void visit(InstallAction & a)
         {
-            std::static_pointer_cast<const ERepository>(id->repository())->install(
+            do_install_action(
+                    env,
+                    std::static_pointer_cast<const ERepository>(id->repository()).get(),
                     std::static_pointer_cast<const ERepositoryID>(id),
-                    a.options);
+                    a);
         }
 
         void visit(FetchAction & a)
         {
-            std::static_pointer_cast<const ERepository>(id->repository())->fetch(
+            do_fetch_action(
+                    env,
+                    std::static_pointer_cast<const ERepository>(id->repository()).get(),
                     std::static_pointer_cast<const ERepositoryID>(id),
-                    a.options);
+                    a);
         }
 
         void visit(PretendFetchAction & a)
         {
-            std::static_pointer_cast<const ERepository>(id->repository())->pretend_fetch(
+            do_pretend_fetch_action(
+                    env,
+                    std::static_pointer_cast<const ERepository>(id->repository()).get(),
                     std::static_pointer_cast<const ERepositoryID>(id),
                     a);
         }
 
         void visit(PretendAction & action)
         {
-            if (! std::static_pointer_cast<const ERepository>(id->repository())->pretend(
+            if (! do_pretend_action(
+                        env,
+                        std::static_pointer_cast<const ERepository>(id->repository()).get(),
                         std::static_pointer_cast<const ERepositoryID>(id),
                         action))
                 action.set_failed();
@@ -1260,7 +1269,9 @@ namespace
 
         void visit(InfoAction & action)
         {
-            std::static_pointer_cast<const ERepository>(id->repository())->info(
+            do_info_action(
+                    env,
+                    std::static_pointer_cast<const ERepository>(id->repository()).get(),
                     std::static_pointer_cast<const ERepositoryID>(id),
                     action);
         }
@@ -1286,7 +1297,7 @@ EbuildID::perform_action(Action & a) const
     if (! eapi()->supported())
         throw ActionFailedError("Unsupported EAPI");
 
-    PerformAction b(shared_from_this());
+    PerformAction b{_imp->environment, shared_from_this()};
     a.accept(b);
 }
 
