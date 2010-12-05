@@ -1051,6 +1051,132 @@ pkg_setup() {
     fi
 }
 END
+mkdir -p "cat/required-use-all-good" || exit 1
+cat << 'END' > cat/required-use-all-good/required-use-all-good-4.ebuild || exit 1
+EAPI="${PV}"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+LICENSE="GPL-2"
+KEYWORDS="test"
+EAPI="4"
+IUSE="enabled1 enabled2 enabled3"
+REQUIRED_USE="enabled1 enabled2 enabled3"
+S="${WORKDIR}"
+END
+mkdir -p "cat/required-use-all-empty" || exit 1
+cat << 'END' > cat/required-use-all-empty/required-use-all-empty-4.ebuild || exit 1
+EAPI="${PV}"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+LICENSE="GPL-2"
+KEYWORDS="test"
+EAPI="4"
+IUSE=""
+REQUIRED_USE="( ( ( ) ) )"
+S="${WORKDIR}"
+END
+mkdir -p "cat/required-use-all-one-not-good" || exit 1
+cat << 'END' > cat/required-use-all-one-not-good/required-use-all-one-not-good-4.ebuild || exit 1
+EAPI="${PV}"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+LICENSE="GPL-2"
+KEYWORDS="test"
+EAPI="4"
+IUSE="enabled1 disabled2 enabled3"
+REQUIRED_USE="enabled1 disabled2 enabled3"
+S="${WORKDIR}"
+END
+mkdir -p "cat/required-use-any-good" || exit 1
+cat << 'END' > cat/required-use-any-good/required-use-any-good-4.ebuild || exit 1
+EAPI="${PV}"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+LICENSE="GPL-2"
+KEYWORDS="test"
+EAPI="4"
+IUSE="disabled1 enabled2 disabled3"
+REQUIRED_USE="|| ( disabled1 enabled2 disabled3 )"
+S="${WORKDIR}"
+END
+mkdir -p "cat/required-use-any-none" || exit 1
+cat << 'END' > cat/required-use-any-none/required-use-any-none-4.ebuild || exit 1
+EAPI="${PV}"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+LICENSE="GPL-2"
+KEYWORDS="test"
+EAPI="4"
+IUSE="disabled1 disabled2 disabled3"
+REQUIRED_USE="|| ( disabled1 disabled2 disabled3 )"
+S="${WORKDIR}"
+END
+mkdir -p "cat/required-use-any-empty" || exit 1
+cat << 'END' > cat/required-use-any-empty/required-use-any-empty-4.ebuild || exit 1
+EAPI="${PV}"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+LICENSE="GPL-2"
+KEYWORDS="test"
+EAPI="4"
+IUSE=""
+REQUIRED_USE="|| ( )"
+S="${WORKDIR}"
+END
+mkdir -p "cat/required-use-one-good" || exit 1
+cat << 'END' > cat/required-use-one-good/required-use-one-good-4.ebuild || exit 1
+EAPI="${PV}"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+LICENSE="GPL-2"
+KEYWORDS="test"
+EAPI="4"
+IUSE="disabled1 enabled2 disabled3"
+REQUIRED_USE="^^ ( disabled1 enabled2 disabled3 )"
+S="${WORKDIR}"
+END
+mkdir -p "cat/required-use-one-none" || exit 1
+cat << 'END' > cat/required-use-one-none/required-use-one-none-4.ebuild || exit 1
+EAPI="${PV}"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+LICENSE="GPL-2"
+KEYWORDS="test"
+EAPI="4"
+IUSE="disabled1 disabled2 disabled3"
+REQUIRED_USE="^^ ( disabled1 disabled2 disabled3 )"
+S="${WORKDIR}"
+END
+mkdir -p "cat/required-use-one-many" || exit 1
+cat << 'END' > cat/required-use-one-many/required-use-one-many-4.ebuild || exit 1
+EAPI="${PV}"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+LICENSE="GPL-2"
+KEYWORDS="test"
+EAPI="4"
+IUSE="disabled1 enabled2 enabled3"
+REQUIRED_USE="^^ ( disabled1 enabled2 enabled3 )"
+S="${WORKDIR}"
+END
 cd ..
 
 cd ..

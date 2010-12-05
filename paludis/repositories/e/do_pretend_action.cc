@@ -23,6 +23,7 @@
 #include <paludis/repositories/e/eapi_phase.hh>
 #include <paludis/repositories/e/make_use.hh>
 #include <paludis/repositories/e/myoptions_requirements_verifier.hh>
+#include <paludis/repositories/e/required_use_verifier.hh>
 #include <paludis/repositories/e/ebuild.hh>
 #include <paludis/repositories/e/can_skip_phase.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
@@ -51,9 +52,9 @@ paludis::erepository::do_pretend_action(
     if (! id->eapi()->supported())
         return false;
 
-    bool result(true);
+    bool result(true), can_pretend(true);
 
-    if (! id->raw_myoptions_key())
+    if ((! id->raw_myoptions_key()) && (! id->required_use_key()))
         if (id->eapi()->supported()->ebuild_phases()->ebuild_pretend().empty())
             return result;
 
@@ -141,7 +142,70 @@ paludis::erepository::do_pretend_action(
         }
     }
 
-    if (id->eapi()->supported()->ebuild_phases()->ebuild_pretend().empty())
+    if (id->required_use_key())
+    {
+        RequiredUseVerifier verifier(id);
+        id->required_use_key()->value()->top()->accept(verifier);
+
+        if (verifier.unmet_requirements() && ! verifier.unmet_requirements()->empty())
+        {
+            EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_bad_options());
+            if (phases.begin_phases() == phases.end_phases())
+                throw InternalError(PALUDIS_HERE, "using myoptions but no ebuild_bad_options phase");
+
+            for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
+                    phase != phase_end ; ++phase)
+            {
+                if (! output_manager)
+                    output_manager = a.options.make_output_manager()(a);
+
+                EbuildCommandParams command_params(make_named_values<EbuildCommandParams>(
+                            n::builddir() = repo->params().builddir(),
+                            n::clearenv() = phase->option("clearenv"),
+                            n::commands() = join(phase->begin_commands(), phase->end_commands(), " "),
+                            n::distdir() = repo->params().distdir(),
+                            n::ebuild_dir() = repo->layout()->package_directory(id->name()),
+                            n::ebuild_file() = id->fs_location_key()->value(),
+                            n::eclassdirs() = repo->params().eclassdirs(),
+                            n::environment() = env,
+                            n::exlibsdirs() = exlibsdirs,
+                            n::files_dir() = repo->layout()->package_directory(id->name()) / "files",
+                            n::maybe_output_manager() = output_manager,
+                            n::package_builddir() = repo->params().builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-bad_options"),
+                            n::package_id() = id,
+                            n::portdir() =
+                                (repo->params().master_repositories() && ! repo->params().master_repositories()->empty()) ?
+                                (*repo->params().master_repositories()->begin())->params().location() : repo->params().location(),
+                            n::root() = a.options.destination()->installed_root_key() ?
+                                stringify(a.options.destination()->installed_root_key()->value()) :
+                                "/",
+                            n::sandbox() = phase->option("sandbox"),
+                            n::sydbox() = phase->option("sydbox"),
+                            n::userpriv() = phase->option("userpriv") && userpriv_ok
+                            ));
+
+                EbuildBadOptionsCommand bad_options_cmd(command_params,
+                        make_named_values<EbuildBadOptionsCommandParams>(
+                            n::expand_vars() = expand_vars,
+                            n::profiles() = repo->params().profiles(),
+                            n::profiles_with_parents() = repo->profile()->profiles_with_parents(),
+                            n::unmet_requirements() = verifier.unmet_requirements(),
+                            n::use() = use,
+                            n::use_expand() = join(repo->profile()->use_expand()->begin(), repo->profile()->use_expand()->end(), " "),
+                            n::use_expand_hidden() = join(repo->profile()->use_expand_hidden()->begin(), repo->profile()->use_expand_hidden()->end(), " ")
+                            ));
+
+                if (! bad_options_cmd())
+                    throw ActionFailedError("Bad options phase died");
+            }
+
+            result = false;
+            can_pretend = false;
+
+        }
+    }
+
+    if (id->eapi()->supported()->ebuild_phases()->ebuild_pretend().empty() || ! can_pretend)
         return result;
 
     EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_pretend());

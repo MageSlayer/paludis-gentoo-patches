@@ -80,6 +80,7 @@ noinst_HEADERS = \
 	pipe_command_handler.hh \
 	profile.hh \
 	profile_file.hh \
+	required_use_verifier.hh \
 	source_uri_finder.hh \
 	traditional_layout.hh \
 	traditional_profile.hh \
@@ -148,6 +149,7 @@ libpaludiserepository_la_SOURCES = \
 	profile.cc \
 	profile_file.cc \
 	registration.cc \
+	required_use_verifier.cc \
 	source_uri_finder.cc \
 	traditional_layout.cc \
 	traditional_profile.cc \
