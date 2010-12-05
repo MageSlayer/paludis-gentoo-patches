@@ -82,6 +82,12 @@ namespace paludis
                 const Environment * const, const std::shared_ptr<const PackageID> &, const EAPI &) PALUDIS_VISIBLE;
 
         /**
+         * Parse a required_use heirarchy.
+         */
+        std::shared_ptr<RequiredUseSpecTree> parse_required_use(const std::string & s,
+                const Environment * const, const std::shared_ptr<const PackageID> &, const EAPI &) PALUDIS_VISIBLE;
+
+        /**
          * Parse a fetchable uri heirarchy.
          */
         std::shared_ptr<FetchableURISpecTree> parse_fetchable_uri(const std::string & s,

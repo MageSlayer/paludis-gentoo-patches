@@ -689,6 +689,46 @@ paludis::erepository::parse_myoptions(const std::string & s,
     return top;
 }
 
+std::shared_ptr<RequiredUseSpecTree>
+paludis::erepository::parse_required_use(const std::string & s,
+        const Environment * const env, const std::shared_ptr<const PackageID> & id, const EAPI & eapi)
+{
+    using namespace std::placeholders;
+
+    ParseStackTypes<RequiredUseSpecTree>::Stack stack;
+    std::shared_ptr<AllDepSpec> spec(std::make_shared<AllDepSpec>());
+    std::shared_ptr<DepSpec> thing_to_annotate(spec);
+    std::shared_ptr<RequiredUseSpecTree> top(std::make_shared<RequiredUseSpecTree>(spec));
+    stack.push_front(make_named_values<ParseStackTypes<RequiredUseSpecTree>::Item>(
+                n::item() = top->top(),
+                n::spec() = spec
+            ));
+
+    ELikeDepParserCallbacks callbacks(
+            make_named_values<ELikeDepParserCallbacks>(
+                n::on_all() = std::bind(&any_all_handler<RequiredUseSpecTree, AllDepSpec>, std::ref(stack)),
+                n::on_annotations() = std::bind(&set_annotations, std::ref(thing_to_annotate), _1),
+                n::on_any() = std::bind(&any_all_handler<RequiredUseSpecTree, AnyDepSpec>, std::ref(stack)),
+                n::on_arrow() = std::bind(&arrows_not_allowed_handler, s, _1, _2),
+                n::on_error() = std::bind(&error_handler, s, _1),
+                n::on_exactly_one() = std::bind(&any_all_handler<RequiredUseSpecTree, ExactlyOneDepSpec>, std::ref(stack)),
+                n::on_label() = std::bind(&labels_not_allowed_handler, s, _1),
+                n::on_pop() = std::bind(&pop_handler<RequiredUseSpecTree>, std::ref(stack),
+                        ParseStackTypes<RequiredUseSpecTree>::AnnotationsGoHere(std::bind(
+                                &set_thing_to_annotate, std::ref(thing_to_annotate), _1)), s),
+                n::on_should_be_empty() = std::bind(&should_be_empty_handler<RequiredUseSpecTree>, std::ref(stack), s),
+                n::on_string() = std::bind(&plain_text_handler<RequiredUseSpecTree>, std::ref(stack),
+                        ParseStackTypes<RequiredUseSpecTree>::AnnotationsGoHere(std::bind(
+                                &set_thing_to_annotate, std::ref(thing_to_annotate), _1)), _1),
+                n::on_use() = std::bind(&use_handler<RequiredUseSpecTree>, std::ref(stack), _1, env, id, std::cref(eapi)),
+                n::on_use_under_any() = &do_nothing
+            ));
+
+    parse_elike_dependencies(s, callbacks);
+
+    return top;
+}
+
 namespace
 {
     typedef std::tuple<std::string, std::string, std::string> URILabelsIndex;
