@@ -233,6 +233,7 @@ namespace
                         n::dodoc_r() = destringify_key<bool>(k, "dodoc_r"),
                         n::doins_symlink() = destringify_key<bool>(k, "doins_symlink"),
                         n::doman_lang_filenames() = destringify_key<bool>(k, "doman_lang_filenames"),
+                        n::doman_lang_filenames_overrides() = destringify_key<bool>(k, "doman_lang_filenames_overrides"),
                         n::dosym_mkdir() = destringify_key<bool>(k, "dosym_mkdir"),
                         n::econf_extra_options() = k.get("econf_extra_options"),
                         n::failure_is_fatal() = destringify_key<bool>(k, "failure_is_fatal"),

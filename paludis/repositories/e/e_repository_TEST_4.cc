@@ -233,6 +233,16 @@ namespace test_cases
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
                 id->perform_action(action);
             }
+
+            {
+                TestMessageSuffix suffix("doman 4", true);
+                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                                PackageDepSpec(parse_user_package_dep_spec("=cat/doman-4",
+                                        &env, { })), { }))]->last());
+                TEST_CHECK(bool(id));
+                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
+                id->perform_action(action);
+            }
         }
     } test_e_repository_install_eapi_4;
 

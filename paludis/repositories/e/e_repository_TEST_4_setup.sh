@@ -1177,6 +1177,30 @@ IUSE="disabled1 enabled2 enabled3"
 REQUIRED_USE="^^ ( disabled1 enabled2 enabled3 )"
 S="${WORKDIR}"
 END
+mkdir -p "cat/doman"
+cat <<"END" > cat/doman/doman-4.ebuild || exit 1
+EAPI="${PV}"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+S="${WORKDIR}"
+
+src_compile() {
+    echo \${PF} >foo.en_GB.8
+    echo \${PF} >bar.en_GB.7
+}
+
+src_install() {
+    doman -i18n= foo.* || die
+    doman -i18n=xx bar.* || die
+    rm "${D}"/usr/share/man/man8/foo.en_GB.8 || die
+    rm "${D}"/usr/share/man/xx/man7/bar.en_GB.7 || die
+}
+END
 cd ..
 
 cd ..

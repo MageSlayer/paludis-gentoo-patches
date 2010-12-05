@@ -64,6 +64,7 @@ namespace paludis
         typedef Name<struct dodoc_r_name> dodoc_r;
         typedef Name<struct doins_symlink_name> doins_symlink;
         typedef Name<struct doman_lang_filenames_name> doman_lang_filenames;
+        typedef Name<struct doman_lang_filenames_overrides_name> doman_lang_filenames_overrides;
         typedef Name<struct dosym_mkdir_name> dosym_mkdir;
         typedef Name<struct eapi_name> eapi;
         typedef Name<struct ebuild_bad_options_name> ebuild_bad_options;
@@ -441,6 +442,7 @@ namespace paludis
             NamedValue<n::dodoc_r, bool> dodoc_r;
             NamedValue<n::doins_symlink, bool> doins_symlink;
             NamedValue<n::doman_lang_filenames, bool> doman_lang_filenames;
+            NamedValue<n::doman_lang_filenames_overrides, bool> doman_lang_filenames_overrides;
             NamedValue<n::dosym_mkdir, bool> dosym_mkdir;
             NamedValue<n::econf_extra_options, std::string> econf_extra_options;
             NamedValue<n::failure_is_fatal, bool> failure_is_fatal;
