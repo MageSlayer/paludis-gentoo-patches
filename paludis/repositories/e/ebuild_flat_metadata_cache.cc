@@ -239,6 +239,9 @@ namespace
             if (-1 != m.myoptions()->flat_list_index() && ! m.myoptions()->name().empty())
                 id->load_myoptions(m.myoptions()->name(), m.myoptions()->description(), lines.at(m.myoptions()->flat_list_index()));
 
+            if (-1 != m.required_use()->flat_list_index() && ! m.required_use()->name().empty())
+                id->load_required_use(m.required_use()->name(), m.required_use()->description(), lines.at(m.required_use()->flat_list_index()));
+
             if (-1 != m.pdepend()->flat_list_index() && ! m.pdepend()->name().empty())
                 id->load_post_depend(m.pdepend()->name(), m.pdepend()->description(), lines.at(m.pdepend()->flat_list_index()), false);
 
@@ -581,6 +584,9 @@ EbuildFlatMetadataCache::load(const std::shared_ptr<const EbuildID> & id, const 
             if (! m.myoptions()->name().empty())
                 id->load_myoptions(m.myoptions()->name(), m.myoptions()->description(), keys[m.myoptions()->name()]);
 
+            if (! m.required_use()->name().empty())
+                id->load_required_use(m.required_use()->name(), m.required_use()->description(), keys[m.required_use()->name()]);
+
             if (! m.pdepend()->name().empty())
                 id->load_post_depend(m.pdepend()->name(), m.pdepend()->description(), keys[m.pdepend()->name()], false);
 
@@ -817,6 +823,9 @@ EbuildFlatMetadataCache::save(const std::shared_ptr<const EbuildID> & id)
 
         if (! m.myoptions()->name().empty() && id->raw_myoptions_key())
             write_kv(cache, m.myoptions()->name(), flatten(id->raw_myoptions_key()->value()));
+
+        if (! m.required_use()->name().empty() && id->required_use_key())
+            write_kv(cache, m.required_use()->name(), flatten(id->required_use_key()->value()));
 
         if (! m.pdepend()->name().empty() && id->post_dependencies_key())
             write_kv(cache, m.pdepend()->name(), flatten(id->post_dependencies_key()->value()));

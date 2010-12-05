@@ -138,6 +138,7 @@ namespace
             n::properties() = make_metadata_variable(k, "properties"),
             n::provide() = make_metadata_variable(k, "provide"),
             n::remote_ids() = make_metadata_variable(k, "remote_ids"),
+            n::required_use() = make_metadata_variable(k, "required_use"),
             n::restrictions() = make_metadata_variable(k, "restrict"),
             n::run_depend() = make_metadata_variable(k, "run_depend"),
             n::short_description() = make_metadata_variable(k, "short_description"),

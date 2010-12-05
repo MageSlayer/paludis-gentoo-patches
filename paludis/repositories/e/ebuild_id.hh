@@ -97,6 +97,7 @@ namespace paludis
                 virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_use_expand_key() const;
                 virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_use_expand_hidden_key() const;
                 virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > defined_phases_key() const;
+                virtual const std::shared_ptr<const MetadataSpecTreeKey<RequiredUseSpecTree> > required_use_key() const;
 
                 virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > behaviours_key() const;
 
@@ -136,6 +137,7 @@ namespace paludis
                 void load_provide(const std::string &, const std::string &, const std::string &) const;
                 void load_iuse(const std::string &, const std::string &, const std::string &) const;
                 void load_myoptions(const std::string &, const std::string &, const std::string &) const;
+                void load_required_use(const std::string &, const std::string &, const std::string &) const;
                 void load_use(const std::string &, const std::string &, const std::string &) const;
                 void load_inherited(const std::string &, const std::string &, const std::string &) const;
                 void load_keywords(const std::string &, const std::string &, const std::string &) const;

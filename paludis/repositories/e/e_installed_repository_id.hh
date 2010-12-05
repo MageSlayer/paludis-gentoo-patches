@@ -89,6 +89,7 @@ namespace paludis
                 virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > inherited_key() const;
                 virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > defined_phases_key() const;
                 virtual const std::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> > license_key() const;
+                virtual const std::shared_ptr<const MetadataSpecTreeKey<RequiredUseSpecTree> > required_use_key() const;
 
                 virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > behaviours_key() const;
 

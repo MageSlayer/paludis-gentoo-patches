@@ -166,6 +166,7 @@ namespace paludis
         typedef Name<struct rdepend_defaults_to_depend_name> rdepend_defaults_to_depend;
         typedef Name<struct remote_ids_name> remote_ids;
         typedef Name<struct require_use_expand_in_iuse_name> require_use_expand_in_iuse;
+        typedef Name<struct required_use_name> required_use;
         typedef Name<struct restrict_fetch_name> restrict_fetch;
         typedef Name<struct restrict_mirror_name> restrict_mirror;
         typedef Name<struct restrict_primaryuri_name> restrict_primaryuri;
@@ -366,6 +367,7 @@ namespace paludis
             NamedValue<n::properties, std::shared_ptr<const EAPIMetadataVariable> > properties;
             NamedValue<n::provide, std::shared_ptr<const EAPIMetadataVariable> > provide;
             NamedValue<n::remote_ids, std::shared_ptr<const EAPIMetadataVariable> > remote_ids;
+            NamedValue<n::required_use, std::shared_ptr<const EAPIMetadataVariable> > required_use;
             NamedValue<n::restrictions, std::shared_ptr<const EAPIMetadataVariable> > restrictions;
             NamedValue<n::run_depend, std::shared_ptr<const EAPIMetadataVariable> > run_depend;
             NamedValue<n::short_description, std::shared_ptr<const EAPIMetadataVariable> > short_description;

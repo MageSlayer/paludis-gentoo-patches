@@ -681,6 +681,94 @@ EMyOptionsKey::type() const
 namespace paludis
 {
     template <>
+    struct Imp<ERequiredUseKey>
+    {
+        const Environment * const env;
+        const std::shared_ptr<const ERepositoryID> id;
+        const std::string string_value;
+        mutable Mutex value_mutex;
+        mutable std::shared_ptr<const RequiredUseSpecTree> value;
+
+        const std::string raw_name;
+        const std::string human_name;
+        const MetadataKeyType type;
+
+        Imp(const Environment * const e, const std::shared_ptr<const ERepositoryID> & i, const std::string & v,
+                const std::string & r, const std::string & h, const MetadataKeyType t) :
+            env(e),
+            id(i),
+            string_value(v),
+            raw_name(r),
+            human_name(h),
+            type(t)
+        {
+        }
+    };
+}
+
+ERequiredUseKey::ERequiredUseKey(const Environment * const e,
+        const std::shared_ptr<const ERepositoryID> & id,
+        const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
+    Pimp<ERequiredUseKey>(e, id, v, r, h, t)
+{
+}
+
+ERequiredUseKey::~ERequiredUseKey()
+{
+}
+
+const std::shared_ptr<const RequiredUseSpecTree>
+ERequiredUseKey::value() const
+{
+    Lock l(_imp->value_mutex);
+
+    if (_imp->value)
+        return _imp->value;
+
+    Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
+    _imp->value = parse_required_use(_imp->string_value, _imp->env, _imp->id, *_imp->id->eapi());
+    return _imp->value;
+}
+
+std::string
+ERequiredUseKey::pretty_print(const RequiredUseSpecTree::ItemFormatter & f) const
+{
+    StringifyFormatter ff(f);
+    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, true, true);
+    value()->top()->accept(p);
+    return stringify(p);
+}
+
+std::string
+ERequiredUseKey::pretty_print_flat(const RequiredUseSpecTree::ItemFormatter & f) const
+{
+    StringifyFormatter ff(f);
+    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, false, true);
+    value()->top()->accept(p);
+    return stringify(p);
+}
+
+const std::string
+ERequiredUseKey::raw_name() const
+{
+    return _imp->raw_name;
+}
+
+const std::string
+ERequiredUseKey::human_name() const
+{
+    return _imp->human_name;
+}
+
+MetadataKeyType
+ERequiredUseKey::type() const
+{
+    return _imp->type;
+}
+
+namespace paludis
+{
+    template <>
     struct Imp<EProvideKey>
     {
         const Environment * const env;

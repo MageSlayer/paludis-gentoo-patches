@@ -106,6 +106,7 @@ namespace paludis
         mutable std::shared_ptr<const EStringSetKey> raw_iuse;
         mutable std::shared_ptr<const LiteralMetadataStringSetKey> raw_iuse_effective;
         mutable std::shared_ptr<const EMyOptionsKey> raw_myoptions;
+        mutable std::shared_ptr<const ERequiredUseKey> required_use;
         mutable std::shared_ptr<const EStringSetKey> inherited;
         mutable std::shared_ptr<const EStringSetKey> raw_use;
         mutable std::shared_ptr<const LiteralMetadataStringSetKey> raw_use_expand;
@@ -712,6 +713,13 @@ EbuildID::raw_myoptions_key() const
     return _imp->raw_myoptions;
 }
 
+const std::shared_ptr<const MetadataSpecTreeKey<RequiredUseSpecTree> >
+EbuildID::required_use_key() const
+{
+    need_keys_added();
+    return _imp->required_use;
+}
+
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 EbuildID::raw_use_key() const
 {
@@ -1045,6 +1053,14 @@ EbuildID::load_myoptions(const std::string & r, const std::string & h, const std
     Lock l(_imp->mutex);
     _imp->raw_myoptions = std::make_shared<EMyOptionsKey>(_imp->environment, shared_from_this(), r, h, v, mkt_internal);
     add_metadata_key(_imp->raw_myoptions);
+}
+
+void
+EbuildID::load_required_use(const std::string & r, const std::string & h, const std::string & v) const
+{
+    Lock l(_imp->mutex);
+    _imp->required_use = std::make_shared<ERequiredUseKey>(_imp->environment, shared_from_this(), r, h, v, mkt_internal);
+    add_metadata_key(_imp->required_use);
 }
 
 void

@@ -44,6 +44,7 @@ namespace paludis
                 virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_use_expand_key() const = 0;
                 virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_use_expand_hidden_key() const = 0;
                 virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > defined_phases_key() const = 0;
+                virtual const std::shared_ptr<const MetadataSpecTreeKey<RequiredUseSpecTree> > required_use_key() const = 0;
 
                 virtual std::shared_ptr<const Set<std::string> > breaks_portage() const PALUDIS_ATTRIBUTE((warn_unused_result));
 

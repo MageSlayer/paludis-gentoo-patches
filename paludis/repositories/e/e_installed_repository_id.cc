@@ -72,6 +72,7 @@ namespace
         std::shared_ptr<const MetadataCollectionKey<Set<std::string > > > raw_iuse;
         std::shared_ptr<const MetadataCollectionKey<Set<std::string > > > raw_iuse_effective;
         std::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > raw_myoptions;
+        std::shared_ptr<const MetadataSpecTreeKey<RequiredUseSpecTree> > required_use;
         std::shared_ptr<const MetadataCollectionKey<Set<std::string > > > raw_use_expand;
         std::shared_ptr<const MetadataCollectionKey<Set<std::string > > > raw_use_expand_hidden;
         std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Choices> > > choices;
@@ -277,6 +278,14 @@ EInstalledRepositoryID::need_keys_added() const
             _imp->keys->raw_myoptions = std::make_shared<EMyOptionsKey>(_imp->environment, shared_from_this(), vars->myoptions()->name(),
                         vars->myoptions()->description(), file_contents(_imp->dir / vars->myoptions()->name()), mkt_internal);
             add_metadata_key(_imp->keys->raw_myoptions);
+        }
+
+    if (! vars->required_use()->name().empty())
+        if ((_imp->dir / vars->required_use()->name()).stat().exists())
+        {
+            _imp->keys->required_use = std::make_shared<ERequiredUseKey>(_imp->environment, shared_from_this(), vars->required_use()->name(),
+                        vars->required_use()->description(), file_contents(_imp->dir / vars->required_use()->name()), mkt_internal);
+            add_metadata_key(_imp->keys->required_use);
         }
 
     if (! vars->use_expand()->name().empty())
@@ -715,6 +724,13 @@ EInstalledRepositoryID::raw_myoptions_key() const
 {
     need_keys_added();
     return _imp->keys->raw_myoptions;
+}
+
+const std::shared_ptr<const MetadataSpecTreeKey<RequiredUseSpecTree> >
+EInstalledRepositoryID::required_use_key() const
+{
+    need_keys_added();
+    return _imp->keys->required_use;
 }
 
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >

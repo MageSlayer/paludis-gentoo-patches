@@ -189,6 +189,30 @@ namespace paludis
                 virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
+        class ERequiredUseKey :
+            public MetadataSpecTreeKey<RequiredUseSpecTree>,
+            private Pimp<ERequiredUseKey>
+        {
+            public:
+                ERequiredUseKey(const Environment * const,
+                        const std::shared_ptr<const ERepositoryID> &,
+                        const std::string &, const std::string &, const std::string &, const MetadataKeyType);
+                ~ERequiredUseKey();
+
+                virtual const std::shared_ptr<const RequiredUseSpecTree> value() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual std::string pretty_print(const RequiredUseSpecTree::ItemFormatter &) const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual std::string pretty_print_flat(const RequiredUseSpecTree::ItemFormatter &) const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
+        };
+
         class EProvideKey :
             public MetadataSpecTreeKey<ProvideSpecTree>,
             private Pimp<EProvideKey>
