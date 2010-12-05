@@ -35,6 +35,7 @@ namespace paludis
     typedef std::function<void (const std::string &, const std::string &)> ELikeDepParserArrowFunction;
     typedef std::function<void ()> ELikeDepParserAnyFunction;
     typedef std::function<void ()> ELikeDepParserAllFunction;
+    typedef std::function<void ()> ELikeDepParserExactlyOneFunction;
     typedef std::function<void (const std::string &)> ELikeDepParserUseFunction;
     typedef std::function<void (const std::string &)> ELikeDepParserLabelFunction;
     typedef std::function<void ()> ELikeDepParserPushFunction;

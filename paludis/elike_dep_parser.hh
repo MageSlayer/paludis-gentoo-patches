@@ -32,6 +32,7 @@ namespace paludis
         typedef Name<struct on_any_name> on_any;
         typedef Name<struct on_arrow_name> on_arrow;
         typedef Name<struct on_error_name> on_error;
+        typedef Name<struct on_exactly_one_name> on_exactly_one;
         typedef Name<struct on_label_name> on_label;
         typedef Name<struct on_pop_name> on_pop;
         typedef Name<struct on_should_be_empty_name> on_should_be_empty;
@@ -47,6 +48,7 @@ namespace paludis
         NamedValue<n::on_any, ELikeDepParserAnyFunction> on_any;
         NamedValue<n::on_arrow, ELikeDepParserArrowFunction> on_arrow;
         NamedValue<n::on_error, ELikeDepParserErrorFunction> on_error;
+        NamedValue<n::on_exactly_one, ELikeDepParserExactlyOneFunction> on_exactly_one;
         NamedValue<n::on_label, ELikeDepParserLabelFunction> on_label;
         NamedValue<n::on_pop, ELikeDepParserPopFunction> on_pop;
         NamedValue<n::on_should_be_empty, ELikeDepParserShouldBeEmptyFunction> on_should_be_empty;

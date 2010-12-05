@@ -104,6 +104,13 @@ namespace
         throw FakeDepParseError(s, "Any dep specs not allowed here");
     }
 
+    void exactly_one_not_allowed_handler(const std::string & s) PALUDIS_ATTRIBUTE((noreturn));
+
+    void exactly_one_not_allowed_handler(const std::string & s)
+    {
+        throw FakeDepParseError(s, "Exactly one dep specs not allowed here");
+    }
+
     void arrows_not_allowed_handler(const std::string & s, const std::string & f, const std::string & t) PALUDIS_ATTRIBUTE((noreturn));
 
     void arrows_not_allowed_handler(const std::string & s, const std::string & f, const std::string & t)
@@ -180,6 +187,7 @@ paludis::fakerepository::parse_depend(const std::string & s,
                 n::on_any() = std::bind(&any_all_handler<DependencySpecTree, AnyDepSpec>, std::ref(stack)),
                 n::on_arrow() = std::bind(&arrows_not_allowed_handler, s, _1, _2),
                 n::on_error() = std::bind(&error_handler, s, _1),
+                n::on_exactly_one() = std::bind(&exactly_one_not_allowed_handler, s),
                 n::on_label() = std::bind(&labels_not_allowed_handler, s, _1),
                 n::on_pop() = std::bind(&pop_handler<DependencySpecTree>, std::ref(stack), s),
                 n::on_should_be_empty() = std::bind(&should_be_empty_handler<DependencySpecTree>, std::ref(stack), s),
@@ -210,6 +218,7 @@ paludis::fakerepository::parse_provide(const std::string & s,
                 n::on_any() = std::bind(&any_not_allowed_handler, s),
                 n::on_arrow() = std::bind(&arrows_not_allowed_handler, s, _1, _2),
                 n::on_error() = std::bind(&error_handler, s, _1),
+                n::on_exactly_one() = std::bind(&exactly_one_not_allowed_handler, s),
                 n::on_label() = std::bind(&labels_not_allowed_handler, s, _1),
                 n::on_pop() = std::bind(&pop_handler<ProvideSpecTree>, std::ref(stack), s),
                 n::on_should_be_empty() = std::bind(&should_be_empty_handler<ProvideSpecTree>, std::ref(stack), s),
@@ -240,6 +249,7 @@ paludis::fakerepository::parse_fetchable_uri(const std::string & s,
                 n::on_any() = std::bind(&any_not_allowed_handler, s),
                 n::on_arrow() = std::bind(&arrow_handler<FetchableURISpecTree>, std::ref(stack), _1, _2),
                 n::on_error() = std::bind(&error_handler, s, _1),
+                n::on_exactly_one() = std::bind(&exactly_one_not_allowed_handler, s),
                 n::on_label() = std::bind(&labels_not_allowed_handler, s, _1),
                 n::on_pop() = std::bind(&pop_handler<FetchableURISpecTree>, std::ref(stack), s),
                 n::on_should_be_empty() = std::bind(&should_be_empty_handler<FetchableURISpecTree>, std::ref(stack), s),
@@ -270,6 +280,7 @@ paludis::fakerepository::parse_simple_uri(const std::string & s,
                 n::on_any() = std::bind(&any_not_allowed_handler, s),
                 n::on_arrow() = std::bind(&arrows_not_allowed_handler, s, _1, _2),
                 n::on_error() = std::bind(&error_handler, s, _1),
+                n::on_exactly_one() = std::bind(&exactly_one_not_allowed_handler, s),
                 n::on_label() = std::bind(&labels_not_allowed_handler, s, _1),
                 n::on_pop() = std::bind(&pop_handler<SimpleURISpecTree>, std::ref(stack), s),
                 n::on_should_be_empty() = std::bind(&should_be_empty_handler<SimpleURISpecTree>, std::ref(stack), s),
@@ -295,18 +306,19 @@ paludis::fakerepository::parse_license(const std::string & s,
 
     ELikeDepParserCallbacks callbacks(
             make_named_values<ELikeDepParserCallbacks>(
-            n::on_all() = std::bind(&any_all_handler<LicenseSpecTree, AllDepSpec>, std::ref(stack)),
-            n::on_annotations() = &discard_annotations,
-            n::on_any() = std::bind(&any_all_handler<LicenseSpecTree, AnyDepSpec>, std::ref(stack)),
-            n::on_arrow() = std::bind(&arrows_not_allowed_handler, s, _1, _2),
-            n::on_error() = std::bind(&error_handler, s, _1),
-            n::on_label() = std::bind(&labels_not_allowed_handler, s, _1),
-            n::on_pop() = std::bind(&pop_handler<LicenseSpecTree>, std::ref(stack), s),
-            n::on_should_be_empty() = std::bind(&should_be_empty_handler<LicenseSpecTree>, std::ref(stack), s),
-            n::on_string() = std::bind(&license_handler<LicenseSpecTree>, std::ref(stack), _1),
-            n::on_use() = std::bind(&use_handler<LicenseSpecTree>, std::ref(stack), _1, env, id),
-            n::on_use_under_any() = &do_nothing
-            ));
+                n::on_all() = std::bind(&any_all_handler<LicenseSpecTree, AllDepSpec>, std::ref(stack)),
+                n::on_annotations() = &discard_annotations,
+                n::on_any() = std::bind(&any_all_handler<LicenseSpecTree, AnyDepSpec>, std::ref(stack)),
+                n::on_arrow() = std::bind(&arrows_not_allowed_handler, s, _1, _2),
+                n::on_error() = std::bind(&error_handler, s, _1),
+                n::on_exactly_one() = std::bind(&exactly_one_not_allowed_handler, s),
+                n::on_label() = std::bind(&labels_not_allowed_handler, s, _1),
+                n::on_pop() = std::bind(&pop_handler<LicenseSpecTree>, std::ref(stack), s),
+                n::on_should_be_empty() = std::bind(&should_be_empty_handler<LicenseSpecTree>, std::ref(stack), s),
+                n::on_string() = std::bind(&license_handler<LicenseSpecTree>, std::ref(stack), _1),
+                n::on_use() = std::bind(&use_handler<LicenseSpecTree>, std::ref(stack), _1, env, id),
+                n::on_use_under_any() = &do_nothing
+                ));
 
     parse_elike_dependencies(s, callbacks);
 
