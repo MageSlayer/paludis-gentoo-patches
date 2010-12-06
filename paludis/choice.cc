@@ -62,7 +62,7 @@ WrappedValueTraits<ChoicePrefixNameTag>::validate(const std::string & s)
             case ':':
             case '_':
                 return false;
-        };
+        }
 
         switch (s.at(0))
         {
@@ -70,12 +70,13 @@ WrappedValueTraits<ChoicePrefixNameTag>::validate(const std::string & s)
             case '_':
             case '-':
                 return false;
-        };
+        }
 
-        if (s[0] >= 'A' && s[0] <= 'Z')
-            return false;
+        static const std::string allowed_chars(
+                "abcdefghijklmnopqrstuvwxyz"
+                "0123456789-_+");
 
-        if (std::string::npos != s.find(" \t\r\n()#"))
+        if (std::string::npos != s.find_first_not_of(allowed_chars))
             return false;
     }
 
@@ -91,14 +92,14 @@ bool
 WrappedValueTraits<ChoiceNameWithPrefixTag>::validate(const std::string & s)
 {
     if (s.empty())
-        throw ChoiceNameWithPrefixError(s);
+        return false;
 
     switch (s.at(s.length() - 1))
     {
         case ':':
         case '_':
             return false;
-    };
+    }
 
     switch (s.at(0))
     {
@@ -106,9 +107,14 @@ WrappedValueTraits<ChoiceNameWithPrefixTag>::validate(const std::string & s)
         case '_':
         case '-':
             return false;
-    };
+    }
 
-    if (std::string::npos != s.find(" \t\r\n()#"))
+    static const std::string allowed_chars(
+            "abcdefghijklmnopqrstuvwxyz"
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            "0123456789-_+@:.");
+
+    if (std::string::npos != s.find_first_not_of(allowed_chars))
         return false;
 
     return true;
@@ -130,8 +136,7 @@ WrappedValueTraits<UnprefixedChoiceNameTag>::validate(const std::string & s)
         case ':':
         case '_':
             return false;
-            break;
-    };
+    }
 
     switch (s.at(0))
     {
@@ -139,10 +144,14 @@ WrappedValueTraits<UnprefixedChoiceNameTag>::validate(const std::string & s)
         case '_':
         case '-':
             return false;
-            break;
-    };
+    }
 
-    if (std::string::npos != s.find(" \t\r\n()#"))
+    static const std::string allowed_chars(
+            "abcdefghijklmnopqrstuvwxyz"
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            "0123456789-_+@.");
+
+    if (std::string::npos != s.find_first_not_of(allowed_chars))
         return false;
 
     return true;
