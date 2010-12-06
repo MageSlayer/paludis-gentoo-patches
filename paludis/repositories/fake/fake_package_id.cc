@@ -515,7 +515,7 @@ namespace
 
         virtual const ChoiceNameWithPrefix name_with_prefix() const
         {
-            return ChoiceNameWithPrefix((choice->prefix().value().empty() ? "" : stringify(choice->prefix()) + "*") + stringify(value_name));
+            return ChoiceNameWithPrefix((choice->prefix().value().empty() ? "" : stringify(choice->prefix()) + ":") + stringify(value_name));
         }
 
         virtual bool enabled() const
