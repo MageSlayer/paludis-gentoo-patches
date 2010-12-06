@@ -736,7 +736,7 @@ ERepository::need_mirrors() const
                                 e_end(ee.end()) ; e != e_end ; ++e)
                             ms->push_back(*e);
 
-                        _imp->mirrors.insert(std::make_pair(ee.at(0), ms));
+                        _imp->mirrors.insert(std::make_pair(ee.at(0), ms)).first->second = ms;
                     }
                 }
             }
