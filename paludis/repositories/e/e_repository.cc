@@ -265,6 +265,7 @@ namespace paludis
         std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > info_vars_key;
         std::shared_ptr<const MetadataValueKey<std::string> > binary_destination_key;
         std::shared_ptr<const MetadataValueKey<std::string> > binary_src_uri_prefix_key;
+        std::shared_ptr<const MetadataValueKey<std::string> > binary_distdir_key;
         std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > binary_keywords_filter;
         std::shared_ptr<const MetadataValueKey<FSPath> > accounts_repository_data_location_key;
         std::shared_ptr<const MetadataValueKey<FSPath> > e_updates_location_key;
@@ -358,6 +359,9 @@ namespace paludis
         binary_src_uri_prefix_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
                     "binary_uri_prefix", "binary_uri_prefix", params.binary_destination() ? mkt_normal : mkt_internal,
                     params.binary_uri_prefix())),
+        binary_distdir_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
+                    "binary_distdir", "binary_distdir", params.binary_destination() ? mkt_normal : mkt_internal,
+                    stringify(params.binary_distdir()))),
         binary_keywords_filter(std::make_shared<LiteralMetadataStringSetKey>(
                     "binary_keywords_filter", "binary_keywords_filter", params.binary_destination() ? mkt_normal : mkt_internal,
                     make_binary_keywords_filter(params.binary_keywords_filter()))),
@@ -568,6 +572,7 @@ ERepository::_add_metadata_keys() const
         add_metadata_key(_imp->info_vars_key);
     add_metadata_key(_imp->binary_destination_key);
     add_metadata_key(_imp->binary_src_uri_prefix_key);
+    add_metadata_key(_imp->binary_distdir_key);
     add_metadata_key(_imp->binary_keywords_filter);
     if (_imp->accounts_repository_data_location_key)
         add_metadata_key(_imp->accounts_repository_data_location_key);
