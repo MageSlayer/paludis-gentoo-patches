@@ -4,6 +4,28 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the Git log.
 
+0.56.0:
+    * New 'cave' subcommand: 'print-spec'.
+
+    * New 'cave resolve' option: '--dependencies-to-slash'.
+
+    * New 'cave sync' options: '--suffix' (and support for sync suffixes in
+      repository configuration files).
+
+    * 'cave resolve' now shows which reasons are responsible for reconfiguration
+      requirements.
+
+    * The user used for userpriv operations (typically 'paludisbuild') is now
+      expected to be in the 'tty' group.
+
+    * The 'repo_file' variable may now be used in repository_defaults.conf.
+      Added new repo_file_basename, repo_file_unsuffixed, variables.
+
+    * Values in overlay thirdpartymirrors files now override those in masters.
+
+    * The documentation now recommends use of the 'cave' client rather than
+      'paludis'.
+
 0.54.11:
     * 'cave resolve --make binaries' now behaves properly when considering
       packages that cannot be made into binaries.
