@@ -7,7 +7,6 @@
     <li><a href="stricter.html#testfailures">Packages Failing <code>src_test</code></a></li>
     <li><a href="stricter.html#sandboxwithroot">Sandbox Violations when <code>ROOT</code> is Set</a></li>
     <li><a href="stricter.html#blacklist">Repository Blacklists</a></li>
-    <li><a href="stricter.html#downgrades">Paludis wants to downgrade Qt or KDE</a></li>
 </ul>
 
 <h2 id="mergingweirdstuff">Merging Weird Stuff</h2>
@@ -63,21 +62,4 @@ question will likely lead to breakages.</p>
     that Paludis will not emulate.</li>
     <li>When they are known to be a security threat.</li>
 </ul>
-
-<h2 id="downgrades">Paludis wants to downgrade Qt or KDE</h2>
-
-<p>Unlike Portage, Paludis enforces the dependencies of installed
-packages, rather than those of the corresponding package in its
-original repository. Unfortunately, to work around Portage limitations,
-the Qt and KDE eclasses are set up to depend specifically on those
-versions that are in the tree at the time of installation.  The result
-is that after upgrading to a newer version, dependant packages that
-were installed before the new version became available will try to
-force a downgrade back to the old version.</p>
-
-<p>To solve this problem, run your Paludis update command with
-the <code>--dl-downgrade warning</code> option, and check the
-backtrace for the package that depends on the older library.
-Reinstalling this package will fix the dependency.  Repeat if there is
-more than one package with the problem.</p>
 

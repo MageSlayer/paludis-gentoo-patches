@@ -38,8 +38,8 @@
     <li>Ability to see why a package is really being pulled in, rather than relying
     upon the rather crude '--tree' offered by Portage.</li>
 
-    <li>Much improved output: <code>--query</code> makes it easy to get a useful summary
-    of information about a package, and <code>--pretend</code> can be configured to show
+    <li>Much improved output: <code>cave show</code> makes it easy to get a useful summary
+    of information about a package, and <code>cave resolve</code> can be configured to show
     relevant information (e.g. USE flag descriptions and an explanation of why a package
     is being pulled in).</li>
 

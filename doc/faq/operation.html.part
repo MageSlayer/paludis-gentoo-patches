@@ -3,8 +3,6 @@
 <h1>FAQ: Operation</h1>
 
 <ul>
-    <li><a href="operation.html#updatingdepends">Paludis does not update DEPENDs of already installed packages</a></li>
-    <li><a href="operation.html#updateworldmissesthings">Updating world misses things</a></li>
     <li><a href="operation.html#info">Get package information for a bug report</a></li>
     <li><a href="operation.html#arrows">What do those fancy arrows when merging things mean?</a></li>
     <li><a href="operation.html#updates">Profiles Updates for Package Moves and Slot Moves</a></li>
@@ -12,37 +10,16 @@
         <code>*/*::overlay-&gt;</code></a></li>
 </ul>
 
-<h2 id="updatingdepends">Paludis does not update DEPENDs of already installed packages</h2>
-
-<p>Paludis ignores build time dependencies (DEPENDs) of already installed packages by default.
-If you need a different behaviour, use the <code>--dl-installed-deps-pre</code>
-option. You may also want to use the <code>installed-slots</code> set rather than
-<code>world</code>.</p>
-
-<h2 id="updateworldmissesthings">Updating world misses things</h2>
-
-<p>Paludis doesn't 'miss' packages. If you think it is missing something, check the
-following:</p>
-
-<ul>
-    <li>See the previous item. Is the thing in question only included as a build dependency of
-    a package?</li>
-    <li>Are you sure the package is in world? <code>paludis --query world</code> will tell
-    you.</li>
-    <li>Is the upgrade being blocked by another package that depends upon a lower version
-    of the thing being missed?</li>
-</ul>
-
 <h2 id="info">Get package information for a bug report</h2>
 
-<p>Use <code>paludis --info</code> to get general configuration information. Paludis will <em>not</em> show any
+<p>Use <code>cave info info</code> to get general configuration information. Paludis will <em>not</em> show any
 configuration that is 'per-package' in this output. (This is different to <code>emerge</code>, which misleadingly shows
 an arbitrary global configuration no matter what.)</p>
 
-<p>If you are submitting a bug report for a particular package, use <code>paludis --info <em>spec</em></code> instead.
-If it's an installed package, <em>spec</em> can usually just be the qualified package name (for example, <code>paludis
-    --info sys-apps/paludis</code>). If you're installing a package, you should instead specify an exact package ID
-(such as <code>paludis --info =sys-apps/paludis-0.26.0_alpha12::paludis-overlay</code>).</p>
+<p>If you are submitting a bug report for a particular package, use <code>cave info <em>spec</em></code> instead.
+If it's an installed package, <em>spec</em> can usually just be the qualified package name (for example, <code>cave
+    info sys-apps/paludis</code>). If you're installing a package, you should instead specify an exact package ID
+(such as <code>cave info =sys-apps/paludis-0.26.0_alpha12::paludis-overlay</code>).</p>
 
 <h2 id="arrows">What do those fancy arrows when merging things mean?</h2>
 

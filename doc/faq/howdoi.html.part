@@ -5,8 +5,6 @@
 <ul>
     <li><a href="howdoi.html#ccache">Use <code>ccache</code></a></li>
     <li><a href="howdoi.html#distcc">Use <code>distcc</code></a></li>
-    <li><a href="howdoi.html#defaultoptions">Specify default options</a></li>
-    <li><a href="howdoi.html#removeunneeded">Remove unneeded packages</a></li>
     <li><a href="howdoi.html#unmask">Unmask a Package</a></li>
     <li><a href="howdoi.html#syncfromcvs">Sync from CVS</a></li>
     <li><a href="howdoi.html#syncfromsnapshot">Sync from a Gentoo tree snapshot</a></li>
@@ -43,94 +41,6 @@ DISTCC_HOSTS="localhost another_host"
 PATH="/usr/lib/distcc/bin:${PATH}"
 SANDBOX_WRITE="${SANDBOX_WRITE}:${DISTCC_DIR}"
 </pre>
-
-<h2 id="defaultoptions">Specify default options</h2>
-
-<p>Often users want to specify certain options by default. Common choices include:</p>
-
-<ul>
-    <li><code>--log-level warning</code> (you should <strong>not</strong> use
-    <code>silent</code> in this way -- warnings are warnings because you need
-    to read them)</li>
-
-    <li><code>--show-reasons summary</code></li>
-
-    <li><code>--resume-command-template $HOME/.paludis-resume-XXXXXX</code></li>
-
-    <li><code>--dl-reinstall-scm weekly</code></li>
-</ul>
-
-<p>You can either use a shell alias, or <code>export
-    PALUDIS_OPTIONS="--options"</code> (in your environment, not in the
-configuration <code>bashrc</code>).</p>
-
-<h2 id="removeunneeded">Remove unneeded packages</h2>
-
-<p>Paludis has three ways of removing unused packages. You should <strong>always</strong>
-use <code>--pretend</code> and check the output before proceeding:</p>
-
-<dl>
-    <dt><code>--uninstall-unused</code></dt>
-    <dd>
-    <p>For the purposes of <code>--uninstall-unused</code>, an installed package
-    is <em>used</em> if any of these conditions are true:</p>
-
-    <ul>
-        <li>It is matched by any dependency specification in any repository's <code>system</code> or
-        <code>world</code> set.</li>
-        <li>It is depended upon by another used package.</li>
-    </ul>
-
-    <p>This action will therefore flag any packages that are no longer in use,
-    for example because they were only pulled in by a package that is no longer
-    installed, or because they were required by an old version of a package but
-    no longer are.</p>
-    </dd>
-
-    <dt><code>--uninstall --with-unused-dependencies</code></dt>
-    <dd>
-    <p>This action will uninstall a package, along with any of its dependencies
-    that will no longer be used once the target package is removed.</p>
-
-    <p>This action is recursive, so if <code>foo</code> depends upon <code>bar</code>
-    and <code>bar</code> depends upon <code>baz</code>, and if neither <code>bar</code>
-    nor <code>baz</code> are otherwise required, uninstalling <code>foo</code> will
-    also uninstall <code>bar</code> then <code>baz</code>.</p>
-    </dd>
-
-    <dt><code>--uninstall --with-dependencies</code></dt>
-    <dd>
-    <p>This action will uninstall a package, along with any other package that
-    requires this package as a dependency. Again, this action is recursive.</p>
-    </dd>
-</dl>
-
-<p>Some important notes:</p>
-
-<ul>
-    <li>These actions rely upon a package's dependencies being correctly specified.
-    They do not attempt to figure out whether a package has unlisted dependencies
-    using devious trickery.</li>
-
-    <li>These actions rely upon a package correctly using <code>USE</code> flags. If
-    a package was built with, say, <code>-foo</code> whilst <code>libfoo</code> was
-    installed, Paludis will not consider the package to require <code>libfoo</code>.
-    Unfortunately, some people don't know how to use <code>autoconf</code> correctly,
-    so this assumption is currently not entirely safe in all cases.</li>
-
-    <li>Currently a package's build dependencies, as well as its runtime and post
-    dependencies, are used when determining needed packages. Experimentation has
-    shown that doing otherwise will lead to an awful lot of breakage -- in the future,
-    if ebuild authors start being more careful, this behaviour may become
-    controllable.</li>
-
-    <li>For the case of any-of (<code>|| ( foo bar )</code>) dependencies, Paludis
-    currently does the safe thing and assumes that all available options, if
-    installed, are needed. This cannot be changed safely until ebuild authors stop
-    abusing <code>|| ( )</code> -- this construct <em>should</em> only be used
-    where the dependency can be switched at runtime, but unfortunately it is
-    often used to mean "compile against one of these".</li>
-</ul>
 
 <h2 id="unmask">Unmask a Package</h2>
 

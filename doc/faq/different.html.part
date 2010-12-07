@@ -3,21 +3,12 @@
 <h1>FAQ: Things Paludis Does Differently</h1>
 
 <ul>
-    <li><a href="different.html#tree">No <code>--tree</code> Equivalent</a></li>
     <li><a href="different.html#features">No <code>FEATURES</code> Equivalent</a></li>
-    <li><a href="different.html#emptytree_usechanged">No <code>--emptytree</code> Equivalent or No <code>--newuse</code>
-        Equivalent</a></li>
     <li><a href="different.html#mkdir">No Automatic Directory Creation</a></li>
     <li><a href="different.html#revdep_rebuild">Revdep-rebuild Equivalent</a></li>
     <li><a href="different.html#layman">Alternatives to Layman</a></li>
     <li><a href="different.html#package_provided">No <code>package.provided</code> file</a></li>
 </ul>
-
-<h2 id="tree">No <code>--tree</code> Equivalent</h2>
-
-<p>Paludis does not have something identical to <code>emerge --tree</code>. It
-does, however, have <code>--show-reasons</code>, which we find to be
-considerably more informative, useful and correct.</p>
 
 <h2 id="features">No <code>FEATURES</code> Equivalent</h2>
 
@@ -59,10 +50,6 @@ a rather ugly way of handling things. We do have equivalents to most values:</p>
     <dd>Controlled by <code>BUILD_OPTIONS: optional_tests</code> in use.conf.</dd>
 </dl>
 
-<h2 id="emptytree_usechanged">No <code>--emptytree</code> Equivalent or No <code>--newuse</code> Equivalent</h2>
-
-<p>The option <code>--dl-reinstall</code> handles both these cases.</p>
-
 <h2 id="mkdir">No Automatic Directory Creation</h2>
 
 <p>Portage usually automatically creates directories for things. Paludis will
@@ -81,7 +68,7 @@ local root access.</p>
 
 <h2 id="revdep_rebuild">Revdep-rebuild Equivalent</h2>
 
-<p>Use the <code>reconcilio</code> client.</p>
+<p>Use <code>cave fix-linkage</code>.</p>
 
 <h2 id="layman">Alternatives to Layman</h2>
 
@@ -102,11 +89,11 @@ considered preferable.</p>
 
 <p>Portage supports pretending that a package is installed for the purposes of dependency resolution via a file called
 <code>package.provided</code>. Paludis provides a cleaner approach, in the form of <a
-    href="../clients/importare.html"><code>importare</code></a>. <code>Importare</code> allows you to more cleanly
+    href="../clients/cave-import.html"><code>cave import</code></a>. <code>cave import</code> allows you to more cleanly
 reinstall, uninstall, and upgrade unpackaged packages, using the same sort of merge/unmerge process that paludis uses
 for ebuilds.</p>
 
-<p>To use importare, you will first have to configure an
+<p>To use <code>cave import</code>, you will first have to configure an
 <a href="../configuration/repositories/installed_unpackaged.html"><code>installed_unpackaged</code></a> format repository.</p>
 
 <p>To get a more direct equivalent of package.provided, you can "install" an empty directory with importare.</p>

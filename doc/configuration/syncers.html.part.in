@@ -17,7 +17,8 @@ tell whether such a URI should be synced by, say, Subversion, Git or Darcs. Inst
 
 <h2>Standard Syncers</h2>
 
-<p>Paludis ships with the following sync protocols (you can use <code>paludis --list-sync-protocols</code> to get the
+<p>Paludis ships with the following sync protocols (you can use <code>cave print-sync-protocols</code> and <code>cave
+    sync-protocol-options</code> to get the
 list yourself). Note that many of these syncers depend upon external programs that are not listed as dependencies for
 Paludis.</p>
 

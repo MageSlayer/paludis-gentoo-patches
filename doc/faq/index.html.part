@@ -26,21 +26,18 @@ functionality. Pestering anyone about these is liable to get you hurt a lot.</p>
 <ul>
     <li><a href="howdoi.html#ccache">Use <code>ccache</code></a></li>
     <li><a href="howdoi.html#distcc">Use <code>distcc</code></a></li>
-    <li><a href="howdoi.html#defaultoptions">Specify default options</a></li>
-    <li><a href="howdoi.html#removeunneeded">Remove unneeded packages</a></li>
     <li><a href="howdoi.html#unmask">Unmask a Package</a></li>
     <li><a href="howdoi.html#syncfromcvs">Sync from CVS</a></li>
     <li><a href="howdoi.html#syncfromsnapshot">Sync from a Gentoo tree snapshot</a></li>
     <li><a href="howdoi.html#deletedvdb">Recover VDB</a></li>
     <li><a href="howdoi.html#removeportage">Remove Portage from my Gentoo installation</a></li>
     <li><a href="howdoi.html#etcupdate">Update Configuration Files (<code>etc-update</code>)</a></li>
+    <li><a href="howdoi.html#sync">Sync while doing anything else</a></li>
 </ul>
 
 <h2>Operation</h2>
 
 <ul>
-    <li><a href="operation.html#updatingdepends">Paludis does not update DEPENDs of already installed packages</a></li>
-    <li><a href="operation.html#updateworldmissesthings">Updating world misses things</a></li>
     <li><a href="operation.html#info">Get package information for a bug report</a></li>
     <li><a href="operation.html#arrows">What do those fancy arrows when merging things mean?</a></li>
     <li><a href="operation.html#updates">Profiles Updates for Package Moves and Slot Moves</a></li>
@@ -55,7 +52,6 @@ functionality. Pestering anyone about these is liable to get you hurt a lot.</p>
     <li><a href="stricter.html#testfailures">Packages Failing <code>src_test</code></a></li>
     <li><a href="stricter.html#sandboxwithroot">Sandbox Violations when <code>ROOT</code> is Set</a></li>
     <li><a href="stricter.html#blacklist">Repository Blacklists</a></li>
-    <li><a href="stricter.html#downgrades">Paludis wants to downgrade Qt or KDE</a></li>
 </ul>
 
 <h2>Undesirable Misfunctionality</h2>
@@ -72,10 +68,7 @@ functionality. Pestering anyone about these is liable to get you hurt a lot.</p>
 <h2>Things Paludis Does Differently</h2>
 
 <ul>
-    <li><a href="different.html#tree">No <code>--tree</code> Equivalent</a></li>
     <li><a href="different.html#features">No <code>FEATURES</code> Equivalent</a></li>
-    <li><a href="different.html#emptytree_usechanged">No <code>--emptytree</code> Equivalent or No <code>--newuse</code>
-        Equivalent</a></li>
     <li><a href="different.html#mkdir">No Automatic Directory Creation</a></li>
     <li><a href="different.html#revdep_rebuild">Revdep-rebuild Equivalent</a></li>
     <li><a href="different.html#playman">No Layman (and how Playman is different)</a></li>

@@ -318,8 +318,8 @@ config.</p>
 <p>To see if a configuration can be used successfully, try:</p>
 
 <pre>
-sudo paludis <em>[ add '--environment portage' if appropriate ]</em> --sync
-paludis <em>[ add '--environment portage' if appropriate ]</em> --pretend --install world
+sudo cave <em>[ add '--environment portage' if appropriate ]</em> sync
+cave <em>[ add '--environment portage' if appropriate ]</em> resolve --complete world
 </pre>
 
 <p>You will probably find that Paludis picks up some updates that Portage doesn't. Paludis does complete dependency
