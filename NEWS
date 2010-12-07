@@ -4,6 +4,91 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the Git log.
 
+0.54.11:
+    * 'cave resolve --make binaries' now behaves properly when considering
+      packages that cannot be made into binaries.
+
+    * 'cave show x' will no longer suggest every package name containing an 'x'.
+
+    * Display-If-Profile headers in news items are now handled correctly.
+
+0.54.10:
+    * A bug in via-binary package ordering has been fixed.
+
+    * 'cave owner' now has a --dereference option.
+
+    * We now use libmagic rather than calling the 'file' executable to determine
+      whether or not to strip files.
+
+0.54.9:
+    * Binary package configuration is now documented, although it is still
+      considered experimental. Various binary-related bugs are fixed.
+
+    * We now display much cleaner errors if output manager creation fails (e.g.
+      if the log directory does not exist).
+
+    * New cave print-unused-distfiles subcommand.
+
+    * We no longer show "no output for X seconds" messages when only one job is
+      running.
+
+0.54.8:
+    * We now produce easier to understand error messages for certain resolutions
+      where unmasking is required.
+
+    * We now show suggestions when 'cave resolve' targets do not exist.
+
+0.54.7:
+    * Added 'cave has-version', 'cave print-best-version'.
+
+    * 'cave show' now displays correct headings for suboption groups.
+
+0.54.6:
+    * Coreutils 8.6 changes how 'stat' displays mtimes. We now support the new
+      output format.
+
+0.54.5:
+    * A bug where especially nasty circular dependencies would sometimes end up
+      being ordered incorrectly has been fixed.
+
+    * cave show --all-versions, --repository-at-a-time, --no-keys
+
+0.54.4:
+    * XFS clobbers set*id bits when fallocate is used. This is now worked
+      around.
+
+    * Various output improvements to 'cave display-resolution'.
+
+    * 'cave resolve' now has '--ignore-unable-decisions' and
+      '--ignore-unorderable-jobs' overrides. Both will lead to horribly broken
+      systems if abused.
+
+    * New 'cave' subcommands: 'size', 'print-size'.
+
+    * 'cave owner /blah/' will now match paths like '/blah'.
+
+    * 'cave resolve --prefer/--avoid' now work if given an unqualified package
+      name.
+
+    * New user dependency spec options: [.::repokey=blah], [.$role] and [.key?].
+
+0.54.3:
+    * split debug now works correctly again.
+
+    * IDs for repositories will now exist but be masked in their origin
+      repository when a repository is already configured.
+
+    * New --graph-jobs option for 'cave resolve'.
+
+    * 'cave execute-resolution' no longer shows (no output for x seconds)
+      messages when only one job is active.
+
+    * The option descriptions for 'cave import --preserve-work' now match what
+      the option values do.
+
+    * 'cave purge' will now error if given parameters, since it does not do
+      anything with them.
+
 0.54.2:
     * Upgrading from older versions to 0.54.1 would produce strange errors. This
       does not happen for 0.54.2.
