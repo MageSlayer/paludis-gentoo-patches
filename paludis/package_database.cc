@@ -267,7 +267,7 @@ namespace
 }
 
 QualifiedPackageName
-PackageDatabase::fetch_unique_qualified_package_name(const PackageNamePart & p, const Filter & f) const
+PackageDatabase::fetch_unique_qualified_package_name(const PackageNamePart & p, const Filter & f, const bool disambiguate) const
 {
     Context context("When disambiguating package name '" + stringify(p) + "':");
 
@@ -343,6 +343,10 @@ PackageDatabase::fetch_unique_qualified_package_name(const PackageNamePart & p, 
             throw AmbiguousPackageNameError(stringify(p), first_iterator(result->begin()),
                     first_iterator(result->end()));
         } while (false);
+
+        if (! disambiguate)
+            throw AmbiguousPackageNameError(stringify(p), first_iterator(result->begin()),
+                      first_iterator(result->end()));
 
         Log::get_instance()->message("package_database.ambiguous_name", ll_warning, lc_context)
             << "Package name '" << p << "' is ambiguous, assuming you meant '" << *qpns.begin()

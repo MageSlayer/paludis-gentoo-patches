@@ -279,10 +279,12 @@ namespace paludis
              * limit the potential results to packages that match.
              *
              * \throw AmbiguousPackageNameError if there is no unambiguous
-             * disambiguation.
+             * disambiguation. If disambiguate is set to false, the
+             * exception will be always thrown in presence of ambiguity.
+             * \since 0.56 takes the disambiguate flag.
              */
             QualifiedPackageName fetch_unique_qualified_package_name(
-                    const PackageNamePart &, const Filter & = all_filter()) const
+                    const PackageNamePart &, const Filter & = all_filter(), const bool disambiguate = true) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**

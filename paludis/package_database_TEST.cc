@@ -216,6 +216,9 @@ namespace test_cases
             TEST_CHECK_STRINGIFY_EQUAL(p.fetch_unique_qualified_package_name(PackageNamePart("pkg-foo"),
                         filter::SupportsAction<InstallAction>()),
                     "avail-cat/pkg-foo");
+            TEST_CHECK_THROWS(p.fetch_unique_qualified_package_name(PackageNamePart("pkg-foo"),
+                        filter::All(), false),
+                    AmbiguousPackageNameError);
 
         }
     } package_database_disambiguate_test;
