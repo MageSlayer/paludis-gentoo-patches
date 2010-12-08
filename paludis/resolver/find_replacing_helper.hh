@@ -40,6 +40,8 @@ namespace paludis
                 explicit FindReplacingHelper(const Environment * const);
                 ~FindReplacingHelper();
 
+                void set_one_binary_per_slot(bool value);
+
                 const std::shared_ptr<const PackageIDSequence> operator() (
                         const std::shared_ptr<const PackageID> &,
                         const std::shared_ptr<const Repository> &) const;

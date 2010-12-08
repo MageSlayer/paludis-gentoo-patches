@@ -45,9 +45,11 @@ namespace paludis
     struct Imp<FindReplacingHelper>
     {
         const Environment * const env;
+        bool one_binary_per_slot;
 
         Imp(const Environment * const e) :
-            env(e)
+            env(e),
+            one_binary_per_slot(false)
         {
         }
     };
@@ -59,6 +61,12 @@ FindReplacingHelper::FindReplacingHelper(const Environment * const e) :
 }
 
 FindReplacingHelper::~FindReplacingHelper() = default;
+
+void
+FindReplacingHelper::set_one_binary_per_slot(bool value)
+{
+    _imp->one_binary_per_slot = value;
+}
 
 const std::shared_ptr<const PackageIDSequence>
 FindReplacingHelper::operator() (
@@ -92,7 +100,7 @@ FindReplacingHelper::operator() (
         for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                 i != i_end ; ++i)
         {
-            if ((*i)->version() == id->version() || (same_slot(*i, id) && repo->installed_root_key()))
+            if ((*i)->version() == id->version() || (same_slot(*i, id) && (_imp->one_binary_per_slot || repo->installed_root_key())))
                 result->push_back(*i);
         }
     }
