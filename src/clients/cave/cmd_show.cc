@@ -391,7 +391,8 @@ namespace
                     fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                     fv<'v'>(k.pretty_print_flat(f)),
                     fv<'i'>(std::string(indent, ' ')),
-                    fv<'b'>(important ? "true" : "")
+                    fv<'b'>(important ? "true" : ""),
+                    fv<'p'>("")
                     );
         }
 
@@ -403,7 +404,8 @@ namespace
                     fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                     fv<'v'>(k.pretty_print_flat(f)),
                     fv<'i'>(std::string(indent, ' ')),
-                    fv<'b'>(important ? "true" : "")
+                    fv<'b'>(important ? "true" : ""),
+                    fv<'p'>("")
                     );
         }
 
@@ -415,7 +417,8 @@ namespace
                     fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                     fv<'v'>(k.pretty_print_flat(f)),
                     fv<'i'>(std::string(indent, ' ')),
-                    fv<'b'>(important ? "true" : "")
+                    fv<'b'>(important ? "true" : ""),
+                    fv<'p'>("")
                     );
         }
 
@@ -427,7 +430,8 @@ namespace
                     fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                     fv<'v'>(k.pretty_print_flat(f)),
                     fv<'i'>(std::string(indent, ' ')),
-                    fv<'b'>(important ? "true" : "")
+                    fv<'b'>(important ? "true" : ""),
+                    fv<'p'>("")
                     );
         }
 
@@ -439,7 +443,8 @@ namespace
                     fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                     fv<'v'>(k.pretty_print_flat(f)),
                     fv<'i'>(std::string(indent, ' ')),
-                    fv<'b'>(important ? "true" : "")
+                    fv<'b'>(important ? "true" : ""),
+                    fv<'p'>("")
                     );
         }
 
@@ -450,7 +455,8 @@ namespace
                     fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                     fv<'v'>(join(k.value()->begin(), k.value()->end(), ", ")),
                     fv<'i'>(std::string(indent, ' ')),
-                    fv<'b'>(important ? "true" : "")
+                    fv<'b'>(important ? "true" : ""),
+                    fv<'p'>("")
                     );
         }
 
@@ -462,7 +468,8 @@ namespace
                     fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                     fv<'v'>(k.pretty_print_flat(f)),
                     fv<'i'>(std::string(indent, ' ')),
-                    fv<'b'>(important ? "true" : "")
+                    fv<'b'>(important ? "true" : ""),
+                    fv<'p'>("")
                     );
         }
 
@@ -476,7 +483,8 @@ namespace
                         fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                         fv<'v'>(k.pretty_print_flat(f)),
                         fv<'i'>(std::string(indent, ' ')),
-                        fv<'b'>(important ? "true" : "")
+                        fv<'b'>(important ? "true" : ""),
+                        fv<'p'>("")
                         );
             }
         }
@@ -492,7 +500,8 @@ namespace
                             fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                             fv<'v'>(k.pretty_print_flat(f)),
                             fv<'i'>(std::string(indent, ' ')),
-                            fv<'b'>(important ? "true" : "")
+                            fv<'b'>(important ? "true" : ""),
+                            fv<'p'>("")
                             );
                 else
                 {
@@ -501,7 +510,8 @@ namespace
                             fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                             fv<'v'>(""),
                             fv<'i'>(std::string(indent, ' ')),
-                            fv<'b'>(important ? "true" : "")
+                            fv<'b'>(important ? "true" : ""),
+                            fv<'p'>("")
                             );
                     out << k.pretty_print(f);
                 }
@@ -519,7 +529,8 @@ namespace
                             fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                             fv<'v'>(k.pretty_print_flat(f)),
                             fv<'i'>(std::string(indent, ' ')),
-                            fv<'b'>(important ? "true" : "")
+                            fv<'b'>(important ? "true" : ""),
+                            fv<'p'>("")
                             );
                 else
                 {
@@ -528,7 +539,8 @@ namespace
                             fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                             fv<'v'>(""),
                             fv<'i'>(std::string(indent, ' ')),
-                            fv<'b'>(important ? "true" : "")
+                            fv<'b'>(important ? "true" : ""),
+                            fv<'p'>("")
                             );
                     out << k.pretty_print(f);
                 }
@@ -546,7 +558,8 @@ namespace
                             fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                             fv<'v'>(k.pretty_print_flat(f)),
                             fv<'i'>(std::string(indent, ' ')),
-                            fv<'b'>(important ? "true" : "")
+                            fv<'b'>(important ? "true" : ""),
+                            fv<'p'>("")
                             );
                 else
                 {
@@ -555,7 +568,8 @@ namespace
                             fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                             fv<'v'>(""),
                             fv<'i'>(std::string(indent, ' ')),
-                            fv<'b'>(important ? "true" : "")
+                            fv<'b'>(important ? "true" : ""),
+                            fv<'p'>("")
                             );
                     out << k.pretty_print(f);
                 }
@@ -572,7 +586,8 @@ namespace
                         fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                         fv<'v'>(k.pretty_print_flat(f)),
                         fv<'i'>(std::string(indent, ' ')),
-                        fv<'b'>(important ? "true" : "")
+                        fv<'b'>(important ? "true" : ""),
+                        fv<'p'>("")
                         );
             }
         }
@@ -588,7 +603,8 @@ namespace
                             fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                             fv<'v'>(k.pretty_print_flat(f)),
                             fv<'i'>(std::string(indent, ' ')),
-                            fv<'b'>(important ? "true" : "")
+                            fv<'b'>(important ? "true" : ""),
+                            fv<'p'>("")
                             );
                 else
                 {
@@ -597,7 +613,8 @@ namespace
                             fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                             fv<'v'>(""),
                             fv<'i'>(std::string(indent, ' ')),
-                            fv<'b'>(important ? "true" : "")
+                            fv<'b'>(important ? "true" : ""),
+                            fv<'p'>("")
                             );
                     out << k.pretty_print(f);
                 }
@@ -611,7 +628,8 @@ namespace
                     fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                     fv<'v'>(stringify(k.value())),
                     fv<'i'>(std::string(indent, ' ')),
-                    fv<'b'>(important ? "true" : "")
+                    fv<'b'>(important ? "true" : ""),
+                    fv<'p'>("")
                     );
         }
 
@@ -622,7 +640,8 @@ namespace
                     fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                     fv<'v'>(stringify(k.value())),
                     fv<'i'>(std::string(indent, ' ')),
-                    fv<'b'>(important ? "true" : "")
+                    fv<'b'>(important ? "true" : ""),
+                    fv<'p'>("")
                     );
         }
 
@@ -633,7 +652,8 @@ namespace
                     fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                     fv<'v'>(stringify(k.value())),
                     fv<'i'>(std::string(indent, ' ')),
-                    fv<'b'>(important ? "true" : "")
+                    fv<'b'>(important ? "true" : ""),
+                    fv<'p'>("")
                     );
         }
 
@@ -644,7 +664,8 @@ namespace
                     fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                     fv<'v'>(stringify(k.value())),
                     fv<'i'>(std::string(indent, ' ')),
-                    fv<'b'>(important ? "true" : "")
+                    fv<'b'>(important ? "true" : ""),
+                    fv<'p'>("")
                     );
         }
 
@@ -655,7 +676,8 @@ namespace
                     fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                     fv<'v'>(stringify(k.value())),
                     fv<'i'>(std::string(indent, ' ')),
-                    fv<'b'>(important ? "true" : "")
+                    fv<'b'>(important ? "true" : ""),
+                    fv<'p'>("")
                     );
         }
 
@@ -666,7 +688,8 @@ namespace
                     fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                     fv<'v'>(stringify(*k.value())),
                     fv<'i'>(std::string(indent, ' ')),
-                    fv<'b'>(important ? "true" : "")
+                    fv<'b'>(important ? "true" : ""),
+                    fv<'p'>("")
                     );
         }
 
@@ -684,7 +707,8 @@ namespace
                             fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                             fv<'v'>(d.s.str()),
                             fv<'i'>(std::string(indent, ' ')),
-                            fv<'b'>(important ? "true" : "")
+                            fv<'b'>(important ? "true" : ""),
+                            fv<'p'>("")
                             );
                 }
                 else
@@ -697,7 +721,8 @@ namespace
                             fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                             fv<'v'>(""),
                             fv<'i'>(std::string(indent, ' ')),
-                            fv<'b'>(important ? "true" : "")
+                            fv<'b'>(important ? "true" : ""),
+                            fv<'p'>("")
                             );
                     out << d.s.str();
                 }
@@ -750,20 +775,24 @@ namespace
                         {
                             if ((*v)->locked())
                                 s << fuc(fs_choice_forced_enabled(), fv<'s'>(stringify((*v)->unprefixed_name())),
-                                        fv<'r'>(added_or_changed_string(*c, *v, maybe_old_id, old_id_is_installed))) << " ";
+                                        fv<'r'>(added_or_changed_string(*c, *v, maybe_old_id, old_id_is_installed)));
                             else
                                 s << fuc(fs_choice_enabled(), fv<'s'>(stringify((*v)->unprefixed_name())),
-                                        fv<'r'>(added_or_changed_string(*c, *v, maybe_old_id, old_id_is_installed))) << " ";
+                                        fv<'r'>(added_or_changed_string(*c, *v, maybe_old_id, old_id_is_installed)));
                         }
                         else
                         {
                             if ((*v)->locked())
                                 s << fuc(fs_choice_forced_disabled(), fv<'s'>(stringify((*v)->unprefixed_name())),
-                                        fv<'r'>(added_or_changed_string(*c, *v, maybe_old_id, old_id_is_installed))) << " ";
+                                        fv<'r'>(added_or_changed_string(*c, *v, maybe_old_id, old_id_is_installed)));
                             else
                                 s << fuc(fs_choice_disabled(), fv<'s'>(stringify((*v)->unprefixed_name())),
-                                        fv<'r'>(added_or_changed_string(*c, *v, maybe_old_id, old_id_is_installed))) << " ";
+                                        fv<'r'>(added_or_changed_string(*c, *v, maybe_old_id, old_id_is_installed)));
                         }
+
+                        if (! (*v)->parameter().empty())
+                            s << fuc(fs_choice_parameter(), fv<'v'>((*v)->parameter()));
+                        s << " ";
                     }
                 }
 
@@ -772,7 +801,8 @@ namespace
                         fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                         fv<'v'>(s.str()),
                         fv<'i'>(std::string(indent, ' ')),
-                        fv<'b'>(important ? "true" : "")
+                        fv<'b'>(important ? "true" : ""),
+                        fv<'p'>("")
                         );
             }
             else
@@ -782,7 +812,8 @@ namespace
                         fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                         fv<'v'>(""),
                         fv<'i'>(std::string(indent, ' ')),
-                        fv<'b'>(important ? "true" : "")
+                        fv<'b'>(important ? "true" : ""),
+                        fv<'p'>("")
                         );
 
                 for (Choices::ConstIterator c(k.value()->begin()), c_end(k.value()->end()) ;
@@ -813,7 +844,8 @@ namespace
                             fv<'s'>(cmdline.a_raw_names.specified() ? (*c)->raw_name() : (*c)->human_name()),
                             fv<'v'>(""),
                             fv<'i'>(std::string(indent + 1, ' ')),
-                            fv<'b'>(important ? "true" : "")
+                            fv<'b'>(important ? "true" : ""),
+                            fv<'p'>("")
                             );
 
                     for (Choice::ConstIterator v((*c)->begin()), v_end((*c)->end()) ;
@@ -836,7 +868,8 @@ namespace
                                                 fv<'r'>(added_or_changed_string(*c, *v, maybe_old_id, old_id_is_installed)))),
                                         fv<'v'>((*v)->description()),
                                         fv<'i'>(std::string(indent + 2, ' ')),
-                                        fv<'b'>(important ? "true" : "")
+                                        fv<'b'>(important ? "true" : ""),
+                                        fv<'p'>((*v)->parameter())
                                         );
                             }
                             else
@@ -850,7 +883,8 @@ namespace
                                                 fv<'r'>(added_or_changed_string(*c, *v, maybe_old_id, old_id_is_installed)))),
                                         fv<'v'>((*v)->description()),
                                         fv<'i'>(std::string(indent + 2, ' ')),
-                                        fv<'b'>(important ? "true" : "")
+                                        fv<'b'>(important ? "true" : ""),
+                                        fv<'p'>((*v)->parameter())
                                         );
                             }
                         }
@@ -867,7 +901,8 @@ namespace
                                                 fv<'r'>(added_or_changed_string(*c, *v, maybe_old_id, old_id_is_installed)))),
                                         fv<'v'>((*v)->description()),
                                         fv<'i'>(std::string(indent + 2, ' ')),
-                                        fv<'b'>(important ? "true" : "")
+                                        fv<'b'>(important ? "true" : ""),
+                                        fv<'p'>((*v)->parameter())
                                         );
                             }
                             else
@@ -881,7 +916,8 @@ namespace
                                                 fv<'r'>(added_or_changed_string(*c, *v, maybe_old_id, old_id_is_installed)))),
                                         fv<'v'>((*v)->description()),
                                         fv<'i'>(std::string(indent + 2, ' ')),
-                                        fv<'b'>(important ? "true" : "")
+                                        fv<'b'>(important ? "true" : ""),
+                                        fv<'p'>((*v)->parameter())
                                         );
                             }
                         }
@@ -899,7 +935,8 @@ namespace
                         fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                         fv<'v'>(stringify(k.value()->mask_file())),
                         fv<'i'>(std::string(indent, ' ')),
-                        fv<'b'>(important ? "true" : "")
+                        fv<'b'>(important ? "true" : ""),
+                        fv<'p'>("")
                         );
                 for (Sequence<std::string>::ConstIterator i(k.value()->comment()->begin()), i_end(k.value()->comment()->end()) ;
                         i != i_end ; ++i)
@@ -917,7 +954,8 @@ namespace
                     fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
                     fv<'v'>(pretty_print_time(k.value().seconds())),
                     fv<'i'>(std::string(indent, ' ')),
-                    fv<'b'>(important ? "true" : "")
+                    fv<'b'>(important ? "true" : ""),
+                    fv<'p'>("")
                     );
         }
     };
@@ -949,7 +987,8 @@ namespace
                         fv<'s'>("Masked"),
                         fv<'v'>("by " + m.description()),
                         fv<'i'>(std::string(indent, ' ')),
-                        fv<'b'>("")
+                        fv<'b'>(""),
+                        fv<'p'>("")
                         );
             }
         }
@@ -961,7 +1000,8 @@ namespace
                     fv<'s'>(cmdline.a_raw_names.specified() ? stringify(m.key()) : m.description()),
                     fv<'v'>(m.explanation()),
                     fv<'i'>(std::string(indent, ' ')),
-                    fv<'b'>("")
+                    fv<'b'>(""),
+                    fv<'p'>("")
                     );
         }
 
@@ -972,7 +1012,8 @@ namespace
                     fv<'s'>(cmdline.a_raw_names.specified() ? stringify(m.key()) : "by " + m.description()),
                     fv<'v'>(stringify(*m.associated_package())),
                     fv<'i'>(std::string(indent, ' ')),
-                    fv<'b'>("")
+                    fv<'b'>(""),
+                    fv<'p'>("")
                     );
         }
 
@@ -983,7 +1024,8 @@ namespace
                     fv<'s'>(cmdline.a_raw_names.specified() ? stringify(m.key()) : "by " + m.description()),
                     fv<'v'>(""),
                     fv<'i'>(std::string(indent, ' ')),
-                    fv<'b'>("")
+                    fv<'b'>(""),
+                    fv<'p'>("")
                     );
         }
 
@@ -1001,7 +1043,8 @@ namespace
                         fv<'s'>(cmdline.a_raw_names.specified() ? stringify(m.key()) : "by " + m.description()),
                         fv<'v'>(""),
                         fv<'i'>(std::string(indent, ' ')),
-                        fv<'b'>("")
+                        fv<'b'>(""),
+                        fv<'p'>("")
                         );
             }
         }

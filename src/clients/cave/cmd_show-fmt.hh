@@ -55,14 +55,19 @@ const auto fs_choice_forced_disabled = make_format_string_fetcher("show/choice_f
 const auto fs_choice_disabled = make_format_string_fetcher("show/choice_disabled", 1)
     << c::red() << "-" << param<'s'>() << c::normal() << param<'r'>();
 
-const auto fs_metadata_value_raw = make_format_string_fetcher("show/metadata_value_raw", 1)
+const auto fs_choice_parameter = make_format_string_fetcher("show/choice_parameter", 1)
+    << "=" << param<'v'>();
+
+const auto fs_metadata_value_raw = make_format_string_fetcher("show/metadata_value_raw", 2)
     << "    " << param<'i'>() << param<'i'>() << param<'i'>() << param<'i'>()
     << param_if<'b'>() << c::bold_normal() << param_endif<'b'>() << param<'s'>() << c::normal()
+    << param_if<'p'>() << "=" << param<'p'>() << param_endif<'p'>()
     << "%{column 30}" << param<'v'>() << "\\n";
 
-const auto fs_metadata_value_human = make_format_string_fetcher("show/metadata_value_human", 1)
+const auto fs_metadata_value_human = make_format_string_fetcher("show/metadata_value_human", 2)
     << "    " << param<'i'>() << param<'i'>() << param<'i'>() << param<'i'>()
     << param_if<'b'>() << c::bold_normal() << param_endif<'b'>() << param<'s'>() << c::normal()
+    << param_if<'p'>() << "=" << param<'p'>() << param_endif<'p'>()
     << "%{column 30}" << param<'v'>() << "\\n";
 
 const auto fs_metadata_continued_value = make_format_string_fetcher("show/metadata_continued_value", 1)
