@@ -293,6 +293,7 @@ paludis::erepository::do_install_action(
                         n::output_manager() = output_manager,
                         n::package_id() = id,
                         n::perform_uninstall() = install_action.options.perform_uninstall(),
+                        n::replacing() = install_action.options.replacing(),
                         n::used_this_for_config_protect() = std::bind(
                                 &used_this_for_config_protect, std::ref(used_config_protect), std::placeholders::_1)
                         ));

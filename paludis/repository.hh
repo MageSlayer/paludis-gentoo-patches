@@ -76,6 +76,7 @@ namespace paludis
         typedef Name<struct provided_by_name> provided_by;
         typedef Name<struct provided_by_spec_name> provided_by_spec;
         typedef Name<struct provides_interface_name> provides_interface;
+        typedef Name<struct replacing_name> replacing;
         typedef Name<struct status_name> status;
         typedef Name<struct used_this_for_config_protect_name> used_this_for_config_protect;
         typedef Name<struct virtual_name_name> virtual_name;
@@ -166,6 +167,13 @@ namespace paludis
         NamedValue<n::perform_uninstall, std::function<void (
                 const std::shared_ptr<const PackageID> &,
                 const UninstallActionOptions &)> > perform_uninstall;
+
+        /**
+         * Someone needs to replace these (either the merge or the install).
+         *
+         * \since 0.57
+         */
+        NamedValue<n::replacing, std::shared_ptr<const PackageIDSequence> > replacing;
 
         NamedValue<n::used_this_for_config_protect, std::function<void (const std::string &)> > used_this_for_config_protect;
     };
