@@ -50,6 +50,7 @@ noinst_HEADERS = \
 	destination.hh destination-fwd.hh \
 	destination_types.hh destination_types-fwd.hh destination_types-se.hh \
 	destination_utils.hh destination_utils-fwd.hh \
+	find_replacing_helper.hh find_replacing_helper-fwd.hh \
 	find_repository_for_helper.hh find_repository_for_helper-fwd.hh \
 	get_constraints_for_dependent_helper.hh get_constraints_for_dependent_helper-fwd.hh \
 	get_constraints_for_purge_helper.hh get_constraints_for_purge_helper-fwd.hh \
@@ -86,6 +87,7 @@ noinst_HEADERS = \
 	resolvent.hh resolvent-fwd.hh \
 	resolver.hh resolver-fwd.hh \
 	resolver_functions.hh resolver_functions-fwd.hh \
+	same_slot.hh same_slot-fwd.hh \
 	sanitised_dependencies.hh sanitised_dependencies-fwd.hh \
 	slot_name_or_null.hh slot_name_or_null-fwd.hh \
 	spec_rewriter.hh spec_rewriter-fwd.hh \
@@ -118,6 +120,7 @@ libpaludisresolver_a_SOURCES = \
 	destination.cc \
 	destination_types.cc \
 	destination_utils.cc \
+	find_replacing_helper.cc \
 	find_repository_for_helper.cc \
 	get_constraints_for_dependent_helper.cc \
 	get_constraints_for_purge_helper.cc \
@@ -154,6 +157,7 @@ libpaludisresolver_a_SOURCES = \
 	resolvent.cc \
 	resolver.cc \
 	resolver_functions.cc \
+	same_slot.cc \
 	sanitised_dependencies.cc \
 	slot_name_or_null.cc \
 	spec_rewriter.cc \

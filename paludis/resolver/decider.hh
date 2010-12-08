@@ -212,9 +212,6 @@ namespace paludis
 
                 const std::shared_ptr<Constraints> _initial_constraints_for(const Resolvent &) const;
 
-                bool _same_slot(const std::shared_ptr<const PackageID> & a,
-                        const std::shared_ptr<const PackageID> & b) const;
-
                 const std::shared_ptr<const PackageID> _find_existing_id_for(
                         const std::shared_ptr<const Resolution> &) const;
                 const std::shared_ptr<const PackageIDSequence> _find_installable_id_candidates_for(

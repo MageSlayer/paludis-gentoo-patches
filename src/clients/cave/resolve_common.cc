@@ -71,6 +71,7 @@
 #include <paludis/resolver/always_via_binary_helper.hh>
 #include <paludis/resolver/can_use_helper.hh>
 #include <paludis/resolver/confirm_helper.hh>
+#include <paludis/resolver/find_replacing_helper.hh>
 #include <paludis/resolver/find_repository_for_helper.hh>
 #include <paludis/resolver/get_constraints_for_dependent_helper.hh>
 #include <paludis/resolver/get_constraints_for_purge_helper.hh>
@@ -710,6 +711,8 @@ paludis::cave::resolve_common(
         else
             confirm_helper.add_allowed_to_break_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
 
+    FindReplacingHelper find_replacing_helper(env.get());
+
     FindRepositoryForHelper find_repository_for_helper(env.get());
 
     GetConstraintsForDependentHelper get_constraints_for_dependent_helper(env.get());
@@ -940,6 +943,7 @@ paludis::cave::resolve_common(
                 n::always_via_binary_fn() = std::cref(always_via_binary_helper),
                 n::can_use_fn() = std::cref(can_use_helper),
                 n::confirm_fn() = std::cref(confirm_helper),
+                n::find_replacing_fn() = std::cref(find_replacing_helper),
                 n::find_repository_for_fn() = std::cref(find_repository_for_helper),
                 n::get_constraints_for_dependent_fn() = std::cref(get_constraints_for_dependent_helper),
                 n::get_constraints_for_purge_fn() = std::cref(get_constraints_for_purge_helper),

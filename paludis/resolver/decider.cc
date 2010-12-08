@@ -37,6 +37,7 @@
 #include <paludis/resolver/collect_purges.hh>
 #include <paludis/resolver/accumulate_deps_and_provides.hh>
 #include <paludis/resolver/why_changed_choices.hh>
+#include <paludis/resolver/same_slot.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_named_values.hh>
@@ -463,7 +464,7 @@ Decider::_make_change_type_for(
         {
             for (auto o(others->begin()), o_end(others->end()) ;
                     o != o_end ; ++o)
-                if (_same_slot(*o, decision.origin_id()))
+                if (same_slot(*o, decision.origin_id()))
                     return ct_add_to_slot;
 
             return ct_slot_new;
@@ -528,49 +529,7 @@ Decider::_find_replacing(
         const std::shared_ptr<const PackageID> & id,
         const std::shared_ptr<const Repository> & repo) const
 {
-    Context context("When working out what is replaced by '" + stringify(*id) +
-            "' when it is installed to '" + stringify(repo->name()) + "':");
-
-    std::set<RepositoryName> repos;
-
-    if (repo->installed_root_key())
-    {
-        for (PackageDatabase::RepositoryConstIterator r(_imp->env->package_database()->begin_repositories()),
-                r_end(_imp->env->package_database()->end_repositories()) ;
-                r != r_end ; ++r)
-            if ((*r)->installed_root_key() &&
-                    (*r)->installed_root_key()->value() == repo->installed_root_key()->value())
-                repos.insert((*r)->name());
-    }
-    else
-        repos.insert(repo->name());
-
-    std::shared_ptr<PackageIDSequence> result(std::make_shared<PackageIDSequence>());
-    for (std::set<RepositoryName>::const_iterator r(repos.begin()),
-            r_end(repos.end()) ;
-            r != r_end ; ++r)
-    {
-        std::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::AllVersionsUnsorted(
-                    generator::Package(id->name()) & generator::InRepository(*r))]);
-        for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
-                i != i_end ; ++i)
-        {
-            if ((*i)->version() == id->version() || (_same_slot(*i, id) && repo->installed_root_key()))
-                result->push_back(*i);
-        }
-    }
-
-    return result;
-}
-
-bool
-Decider::_same_slot(const std::shared_ptr<const PackageID> & a,
-        const std::shared_ptr<const PackageID> & b) const
-{
-    if (a->slot_key())
-        return b->slot_key() && a->slot_key()->value() == b->slot_key()->value();
-    else
-        return ! b->slot_key();
+    return _imp->fns.find_replacing_fn()(id, repo);
 }
 
 const std::shared_ptr<Resolution>

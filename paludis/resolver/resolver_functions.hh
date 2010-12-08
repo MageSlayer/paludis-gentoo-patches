@@ -51,6 +51,7 @@ namespace paludis
         typedef Name<struct always_via_binary_fn_name> always_via_binary_fn;
         typedef Name<struct can_use_fn_name> can_use_fn;
         typedef Name<struct confirm_fn_name> confirm_fn;
+        typedef Name<struct find_replacing_fn_name> find_replacing_fn;
         typedef Name<struct find_repository_for_fn_name> find_repository_for_fn;
         typedef Name<struct get_constraints_for_dependent_fn_name> get_constraints_for_dependent_fn;
         typedef Name<struct get_constraints_for_purge_fn_name> get_constraints_for_purge_fn;
@@ -92,6 +93,11 @@ namespace paludis
                 const std::shared_ptr<const Resolution> &,
                 const std::shared_ptr<const RequiredConfirmation> &
                 )> ConfirmFunction;
+
+        typedef std::function<std::shared_ptr<const PackageIDSequence> (
+                const std::shared_ptr<const PackageID> &,
+                const std::shared_ptr<const Repository> &
+                )> FindReplacingFunction;
 
         typedef std::function<const std::shared_ptr<const Repository> (
                 const std::shared_ptr<const Resolution> &,
@@ -178,6 +184,7 @@ namespace paludis
             NamedValue<n::always_via_binary_fn, AlwaysViaBinaryFunction> always_via_binary_fn;
             NamedValue<n::can_use_fn, CanUseFunction> can_use_fn;
             NamedValue<n::confirm_fn, ConfirmFunction> confirm_fn;
+            NamedValue<n::find_replacing_fn, FindReplacingFunction> find_replacing_fn;
             NamedValue<n::find_repository_for_fn, FindRepositoryForFunction> find_repository_for_fn;
             NamedValue<n::get_constraints_for_dependent_fn, GetConstraintsForDependentFunction> get_constraints_for_dependent_fn;
             NamedValue<n::get_constraints_for_purge_fn, GetConstraintsForPurgeFunction> get_constraints_for_purge_fn;

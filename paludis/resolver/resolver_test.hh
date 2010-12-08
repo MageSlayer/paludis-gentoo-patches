@@ -40,6 +40,7 @@
 #include <paludis/resolver/always_via_binary_helper.hh>
 #include <paludis/resolver/can_use_helper.hh>
 #include <paludis/resolver/confirm_helper.hh>
+#include <paludis/resolver/find_replacing_helper.hh>
 #include <paludis/resolver/find_repository_for_helper.hh>
 #include <paludis/resolver/get_constraints_for_dependent_helper.hh>
 #include <paludis/resolver/get_constraints_for_purge_helper.hh>
@@ -95,6 +96,7 @@ namespace paludis
                 AlwaysViaBinaryHelper always_via_binary_helper;
                 CanUseHelper can_use_helper;
                 ConfirmHelper confirm_helper;
+                FindReplacingHelper find_replacing_helper;
                 FindRepositoryForHelper find_repository_for_helper;
                 GetConstraintsForDependentHelper get_constraints_for_dependent_helper;
                 GetConstraintsForPurgeHelper get_constraints_for_purge_helper;
