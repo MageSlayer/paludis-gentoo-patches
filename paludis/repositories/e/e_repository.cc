@@ -1943,29 +1943,48 @@ ERepository::merge(const MergeParams & m)
 
     write_binary_ebuild_command();
 
+    std::list<std::shared_ptr<const PackageID> > replaces;
+
     if (is_replace)
     {
         /* 0.1 replacing 00.1 etc */
         if (is_replace->fs_location_key()->value() != binary_ebuild_location)
             FSPath(is_replace->fs_location_key()->value()).unlink();
+        replaces.push_back(is_replace);
+    }
 
-        do
+    for (auto r(m.replacing()->begin()), r_end(m.replacing()->end()) ;
+            r != r_end ; ++r)
+    {
+        if (is_replace && (*r)->name() == is_replace->name() && (*r)->version() == is_replace->version())
+            continue;
+
+        if ((*r)->repository()->name() != name())
+            continue;
+
+        FSPath p((*r)->fs_location_key()->value());
+        FSStat p_stat(p);
+        if (p_stat.exists())
+            p.unlink();
+
+        replaces.push_back(*r);
+    }
+
+    if (_imp->params.write_cache() != FSPath("/var/empty"))
+        for (auto r(replaces.begin()), r_end(replaces.end()) ;
+                r != r_end ; ++r)
         {
             FSPath cache(_imp->params.write_cache());
-            if (cache == FSPath("/var/empty"))
-                break;
 
             if (_imp->params.append_repository_name_to_write_cache())
                 cache /= stringify(name());
 
-            cache /= stringify(is_replace->name().category());
-            cache /= (stringify(is_replace->name().package()) + "-" + stringify(is_replace->version()));
+            cache /= stringify((*r)->name().category());
+            cache /= (stringify((*r)->name().package()) + "-" + stringify((*r)->version()));
 
             if (cache.stat().is_regular_file_or_symlink_to_regular_file())
                 cache.unlink();
         }
-        while (false);
-    }
 
     if (! has_category_named(m.package_id()->name().category()))
     {

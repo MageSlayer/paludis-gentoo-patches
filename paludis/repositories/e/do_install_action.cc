@@ -412,27 +412,29 @@ paludis::erepository::do_install_action(
         }
     }
 
-    for (PackageIDSequence::ConstIterator i(install_action.options.replacing()->begin()), i_end(install_action.options.replacing()->end()) ;
-            i != i_end ; ++i)
-    {
-        Context local_context("When cleaning '" + stringify(**i) + "':");
-        if ((*i)->name() == id->name() && (*i)->version() == id->version())
-            continue;
-
-        if (id->eapi()->supported()->ebuild_phases()->ebuild_new_upgrade_phase_order())
-            if ((*i)->name() == id->name() && slot_is_same(*i, id))
+    /* replacing for pbins is done during the merge */
+    if (install_action.options.destination()->installed_root_key())
+        for (PackageIDSequence::ConstIterator i(install_action.options.replacing()->begin()), i_end(install_action.options.replacing()->end()) ;
+                i != i_end ; ++i)
+        {
+            Context local_context("When cleaning '" + stringify(**i) + "':");
+            if ((*i)->name() == id->name() && (*i)->version() == id->version())
                 continue;
 
-        UninstallActionOptions uo(make_named_values<UninstallActionOptions>(
-                    n::config_protect() = used_config_protect,
-                    n::if_for_install_id() = id,
-                    n::ignore_for_unmerge() = std::bind(&ignore_merged, merged_entries,
+            if (id->eapi()->supported()->ebuild_phases()->ebuild_new_upgrade_phase_order())
+                if ((*i)->name() == id->name() && slot_is_same(*i, id))
+                    continue;
+
+            UninstallActionOptions uo(make_named_values<UninstallActionOptions>(
+                        n::config_protect() = used_config_protect,
+                        n::if_for_install_id() = id,
+                        n::ignore_for_unmerge() = std::bind(&ignore_merged, merged_entries,
                             std::placeholders::_1),
-                    n::is_overwrite() = false,
-                    n::make_output_manager() = std::bind(&this_output_manager, output_manager, std::placeholders::_1)
-                    ));
-        install_action.options.perform_uninstall()(*i, uo);
-    }
+                        n::is_overwrite() = false,
+                        n::make_output_manager() = std::bind(&this_output_manager, output_manager, std::placeholders::_1)
+                        ));
+            install_action.options.perform_uninstall()(*i, uo);
+        }
 
     output_manager->succeeded();
 }
