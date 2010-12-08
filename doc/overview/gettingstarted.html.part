@@ -210,9 +210,8 @@ Paludis ignores.</p>
 <p>The <code>names_cache = </code> option, if set to (for example) <code>/var/cache/paludis/names</code>, can be used to
 make resolving <code>pkg</code> to <code>cat/pkg</code> much faster (a lot less than a second, as opposed to tens of
 seconds on typical hardware). Most users will benefit hugely from this option. However, Portage will not update or use
-this cache, so if for any reason you use Portage for any operation, you must then run <code>paludis
-    --regenerate-installable-cache</code> (and possibly <code>paludis --regenerate-installed-cache</code> if you also
-use caches for VDB as described below). You will also need to force a cache regeneration if you manually (as opposed to
+this cache, so if for any reason you use Portage for any operation, you must then run <code>cave
+fix-cache</code>. You will also need to force a cache regeneration if you manually (as opposed to
 via <code>--sync</code>) modify a repository.</p>
 
 <p>To disable the names cache, use <code>/var/empty</code> as the value.</p>
@@ -234,9 +233,8 @@ provides_cache = (see below)
 <p>The <code>names_cache = </code> option, if set to (for example) <code>/var/cache/paludis/names</code>, can be used to
 make resolving <code>pkg</code> to <code>cat/pkg</code> much faster (a lot less than a second, as opposed to tens of
 seconds on typical hardware). Most users will benefit hugely from this option. However, Portage will not update or use
-this cache, so if for any reason you use Portage for any operation, you must then run <code>paludis
-    --regenerate-installed-cache</code> (and possibly <code>paludis --regenerate-installable-cache</code> if you also
-use caches for other repositories as described above).</p>
+this cache, so if for any reason you use Portage for any operation, you must then run <code>cave
+fix-cache</code>.</p>
 
 <p>The <code>provides_cache = </code> option, if set to (for example) <code>/var/cache/paludis/provides</code>, can be
 used to make resolving an old style virtual to its providers much faster (a lot less of a second, as opposed to anywhere

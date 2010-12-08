@@ -630,7 +630,7 @@ VDBRepository::load_provided_using_cache() const
     {
         Log::get_instance()->message("e.vdb.provides_cache.not_regular_file", ll_warning, lc_no_context)
             << "Provides cache at '" << _imp->params.provides_cache() << "' is not a regular file. Perhaps you need to regenerate "
-            "the cache using 'paludis --regenerate-installed-cache'?";
+            "the cache using 'cave fix-cache'?";
         return false;
     }
 
@@ -643,7 +643,7 @@ VDBRepository::load_provided_using_cache() const
     {
         Log::get_instance()->message("e.vdb.provides_cache.unsupported", ll_warning, lc_no_context) << "Can't use provides cache at '"
             << _imp->params.provides_cache() << "' because format '" << version << "' is not 'paludis-3'. Perhaps you need to regenerate "
-            "the cache using 'paludis --regenerate-installed-cache'?";
+            "the cache using 'cave fix-cache'?";
         return false;
     }
 
