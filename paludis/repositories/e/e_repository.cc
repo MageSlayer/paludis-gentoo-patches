@@ -1949,7 +1949,12 @@ ERepository::merge(const MergeParams & m)
     {
         /* 0.1 replacing 00.1 etc */
         if (is_replace->fs_location_key()->value() != binary_ebuild_location)
-            FSPath(is_replace->fs_location_key()->value()).unlink();
+        {
+            FSPath p(is_replace->fs_location_key()->value());
+            m.output_manager()->stdout_stream() << "Deleting replaced pbin " << p << std::endl;
+            p.unlink();
+        }
+
         replaces.push_back(is_replace);
     }
 
@@ -1965,7 +1970,10 @@ ERepository::merge(const MergeParams & m)
         FSPath p((*r)->fs_location_key()->value());
         FSStat p_stat(p);
         if (p_stat.exists())
+        {
+            m.output_manager()->stdout_stream() << "Deleting pbin " << p << std::endl;
             p.unlink();
+        }
 
         replaces.push_back(*r);
     }
@@ -1983,7 +1991,10 @@ ERepository::merge(const MergeParams & m)
             cache /= (stringify((*r)->name().package()) + "-" + stringify((*r)->version()));
 
             if (cache.stat().is_regular_file_or_symlink_to_regular_file())
+            {
+                m.output_manager()->stdout_stream() << "Deleting cache file " << cache << std::endl;
                 cache.unlink();
+            }
         }
 
     if (! has_category_named(m.package_id()->name().category()))
