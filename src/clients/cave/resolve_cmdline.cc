@@ -262,6 +262,8 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
             ("build",                 'b',  "Send only build dependencies to /")
             ("none",                  'n',  "Don't send dependencies to / at all"),
             "all"),
+    a_one_binary_per_slot(&g_destination_options, "one-binary-per-slot", '\0', "When building a binary package, "
+            "remove other versions in the same repository and slot (as would be done for non-binary packages).", true),
 
 //    g_query_options(this, "Query Options", "Query the user interactively when making decisions. "
 //            "If only --query is specified, prompt for everything. Otherwise, prompt only for the specified decisions."),

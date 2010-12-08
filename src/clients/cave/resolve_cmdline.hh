@@ -98,6 +98,7 @@ namespace paludis
             args::EnumArg a_make_dependencies;
             args::StringSetArg a_via_binary;
             args::EnumArg a_dependencies_to_slash;
+            args::SwitchArg a_one_binary_per_slot;
 
 //            args::ArgsGroup g_query_options;
 //            args::SwitchArg a_query;

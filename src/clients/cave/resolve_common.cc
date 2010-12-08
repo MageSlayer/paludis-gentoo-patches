@@ -712,6 +712,7 @@ paludis::cave::resolve_common(
             confirm_helper.add_allowed_to_break_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
 
     FindReplacingHelper find_replacing_helper(env.get());
+    find_replacing_helper.set_one_binary_per_slot(resolution_options.a_one_binary_per_slot.specified());
 
     FindRepositoryForHelper find_repository_for_helper(env.get());
 
