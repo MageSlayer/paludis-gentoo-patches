@@ -19,6 +19,7 @@
 
 #include <paludis/util/safe_ofstream.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -28,36 +29,86 @@
 
 using namespace paludis;
 
-SafeOFStreamBuf::SafeOFStreamBuf(const int f) :
+namespace paludis
+{
+    template <>
+    struct Imp<SafeOFStreamBuf>
+    {
+        std::shared_ptr<std::string> buffered_text;
+    };
+}
+
+SafeOFStreamBuf::SafeOFStreamBuf(const int f, const bool buffer) :
+    Pimp<SafeOFStreamBuf>(),
     fd(f)
+{
+    if (buffer)
+        _imp->buffered_text = std::make_shared<std::string>();
+}
+
+SafeOFStreamBuf::~SafeOFStreamBuf()
 {
 }
 
 SafeOFStreamBuf::int_type
 SafeOFStreamBuf::overflow(int_type c)
 {
-    if (c != traits_type::eof())
+    if (_imp->buffered_text)
     {
-        char z = c;
-        if (1 != write(fd, &z, 1))
-            return traits_type::eof();
+        _imp->buffered_text->append(1, c);
+        if (_imp->buffered_text->length() >= 4096)
+            write_buffered();
     }
+    else
+    {
+        if (c != traits_type::eof())
+        {
+            char z = c;
+            if (1 != write(fd, &z, 1))
+                return traits_type::eof();
+        }
+    }
+
     return c;
 }
 
 std::streamsize
 SafeOFStreamBuf::xsputn(const char * s, std::streamsize num)
 {
-    return write(fd, s, num);
+    if (_imp->buffered_text)
+    {
+        _imp->buffered_text->append(s, num);
+        if (_imp->buffered_text->length() >= 4096)
+            write_buffered();
+
+        return num;
+    }
+    else
+        return write(fd, s, num);
 }
 
-SafeOFStreamBase::SafeOFStreamBase(const int f) :
-    buf(f)
+void
+SafeOFStreamBuf::write_buffered()
+{
+    if (! _imp->buffered_text)
+        return;
+
+    while (! _imp->buffered_text->empty())
+    {
+        int n(::write(fd, _imp->buffered_text->data(), _imp->buffered_text->length()));
+        if (-1 == n)
+            throw SafeOFStreamError("Write to fd " + stringify(fd) + " failed");
+        _imp->buffered_text->erase(0, n);
+    }
+}
+
+SafeOFStreamBase::SafeOFStreamBase(const int f, const bool b) :
+    buf(f, b)
 {
 }
 
-SafeOFStream::SafeOFStream(const int f) :
-    SafeOFStreamBase(f),
+SafeOFStream::SafeOFStream(const int f, const bool buffer) :
+    SafeOFStreamBase(f, buffer),
     std::ostream(&buf),
     _close(false)
 {
@@ -80,8 +131,8 @@ namespace
     }
 }
 
-SafeOFStream::SafeOFStream(const FSPath & p, const int open_flags) :
-    SafeOFStreamBase(check_open_path(p, open_flags)),
+SafeOFStream::SafeOFStream(const FSPath & p, const int open_flags, const bool b) :
+    SafeOFStreamBase(check_open_path(p, open_flags), b),
     std::ostream(&buf),
     _close(true)
 {
@@ -89,6 +140,8 @@ SafeOFStream::SafeOFStream(const FSPath & p, const int open_flags) :
 
 SafeOFStream::~SafeOFStream()
 {
+    buf.write_buffered();
+
     if (_close)
         ::close(buf.fd);
 
@@ -100,4 +153,6 @@ SafeOFStreamError::SafeOFStreamError(const std::string & s) throw () :
     Exception(s)
 {
 }
+
+template class Pimp<SafeOFStreamBuf>;
 

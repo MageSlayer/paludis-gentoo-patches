@@ -51,7 +51,7 @@ namespace paludis
                 const std::string & s
                 ) :
             filename(o),
-            stream(std::make_shared<SafeOFStream>(filename)),
+            stream(std::make_shared<SafeOFStream>(filename, -1, true)),
             keep_on_success(k),
             keep_on_empty(l),
             summary_output_manager(m),

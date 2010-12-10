@@ -48,7 +48,7 @@ namespace
     HookResult
     ordering_run(const Environment *, const Hook &)
     {
-        SafeOFStream f(FSPath("hooker_TEST_dir/ordering.out"), O_CREAT | O_WRONLY | O_APPEND);
+        SafeOFStream f(FSPath("hooker_TEST_dir/ordering.out"), O_CREAT | O_WRONLY | O_APPEND, false);
         f << "sohook" << std::endl;
         return make_named_values<HookResult>(n::max_exit_status() = 0, n::output() = "");
     }

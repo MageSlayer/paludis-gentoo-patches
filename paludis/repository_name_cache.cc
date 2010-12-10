@@ -164,7 +164,7 @@ Imp<RepositoryNameCache>::update(const PackageNamePart & p, NameCacheMap::iterat
 
     try
     {
-        SafeOFStream f(ff);
+        SafeOFStream f(ff, -1, true);
 
         for (std::set<CategoryNamePart>::const_iterator it(r->second.begin()),
                  it_end(r->second.end()); it_end != it; ++it)
@@ -250,7 +250,7 @@ RepositoryNameCache::regenerate_cache() const
     {
         try
         {
-            SafeOFStream f(_imp->location / stringify(e->first));
+            SafeOFStream f(_imp->location / stringify(e->first), -1, true);
             f << e->second;
         }
         catch (const SafeOFStreamError & ee)
@@ -263,7 +263,7 @@ RepositoryNameCache::regenerate_cache() const
 
     try
     {
-        SafeOFStream f(_imp->location / "_VERSION_");;
+        SafeOFStream f(_imp->location / "_VERSION_", -1, true);;
         f << "paludis-2" << std::endl;
         f << _imp->repo->name() << std::endl;
     }

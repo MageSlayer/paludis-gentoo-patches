@@ -799,7 +799,7 @@ VDBRepository::write_provides_cache() const
 
     try
     {
-        SafeOFStream f(_imp->params.provides_cache());
+        SafeOFStream f(_imp->params.provides_cache(), -1, true);
 
         f << "paludis-3" << std::endl;
         f << name() << std::endl;
@@ -1292,7 +1292,7 @@ namespace
         if (v.changed)
         {
             std::cout << "    Rewriting " << f << std::endl;
-            SafeOFStream ff(f);
+            SafeOFStream ff(f, -1, true);
             ff << v.str.str() << std::endl;
         }
 
@@ -1512,7 +1512,7 @@ VDBRepository::perform_updates()
                     std::shared_ptr<const EAPI> eapi(std::static_pointer_cast<const VDBID>(m->first)->eapi());
                     if (eapi->supported())
                     {
-                        SafeOFStream pf(to_dir / eapi->supported()->ebuild_environment_variables()->env_pf());
+                        SafeOFStream pf(to_dir / eapi->supported()->ebuild_environment_variables()->env_pf(), -1, true);
                         pf << newpf << std::endl;
                     }
                     else
@@ -1522,7 +1522,7 @@ VDBRepository::perform_updates()
                             << "', cannot update PF-equivalent VDB key for move";
                     }
 
-                    SafeOFStream category(to_dir / "CATEGORY");
+                    SafeOFStream category(to_dir / "CATEGORY", -1, true);
                     category << m->second.category() << std::endl;
 
                     if (newpf != oldpf)
@@ -1546,7 +1546,7 @@ VDBRepository::perform_updates()
             {
                 std::cout << "    " << *m->first << " to " << m->second << std::endl;
 
-                SafeOFStream f(m->first->fs_location_key()->value() / "SLOT");
+                SafeOFStream f(m->first->fs_location_key()->value() / "SLOT", -1, true);
                 f << m->second << std::endl;
             }
         }
@@ -1604,7 +1604,7 @@ VDBRepository::perform_updates()
         if (! failed)
         {
             cache_dir.mkdir(0755, { fspmkdo_ok_if_exists });
-            SafeOFStream cache_file_f(cache_file);
+            SafeOFStream cache_file_f(cache_file, -1, true);
             for (std::map<FSPath, std::time_t, FSPathComparator>::const_iterator it(update_timestamps.begin()),
                      it_end(update_timestamps.end()); it_end != it; ++it)
                 cache_file_f << it->second << '\t' << it->first << std::endl;

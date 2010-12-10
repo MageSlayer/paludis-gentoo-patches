@@ -193,7 +193,7 @@ namespace
                         ));
 
             cout << fuc(fs_writing_resume_file(), fv<'f'>(stringify(resume_file)));
-            SafeOFStream stream(resume_file);
+            SafeOFStream stream(resume_file, -1, true);
             Serialiser ser(stream);
             resume_data.serialise(ser);
         }

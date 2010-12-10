@@ -881,7 +881,7 @@ EbuildFlatMetadataCache::save(const std::shared_ptr<const EbuildID> & id)
     try
     {
         {
-            SafeOFStream cache_file(_imp->filename);
+            SafeOFStream cache_file(_imp->filename, -1, true);
             cache_file << cache.str();
         }
         _imp->filename.utime(Timestamp(_imp->ebuild_stat.mtim().seconds(), 0));

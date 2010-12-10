@@ -332,26 +332,26 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
     target_ver_dir.mkdir(0755, { });
 
     {
-        SafeOFStream source_repository_file(target_ver_dir / "source_repository");
+        SafeOFStream source_repository_file(target_ver_dir / "source_repository", -1, true);
         source_repository_file << m.package_id()->repository()->name() << std::endl;
     }
 
     if (m.package_id()->short_description_key())
     {
-        SafeOFStream description_file(target_ver_dir / "description");
+        SafeOFStream description_file(target_ver_dir / "description", -1, true);
         description_file << m.package_id()->short_description_key()->value() << std::endl;
     }
 
     if (m.package_id()->build_dependencies_key())
     {
-        SafeOFStream build_dependencies_file(target_ver_dir / "build_dependencies");
+        SafeOFStream build_dependencies_file(target_ver_dir / "build_dependencies", -1, true);
         StringifyFormatter f;
         build_dependencies_file << m.package_id()->build_dependencies_key()->pretty_print_flat(f) << std::endl;
     }
 
     if (m.package_id()->run_dependencies_key())
     {
-        SafeOFStream run_dependencies_file(target_ver_dir / "run_dependencies");
+        SafeOFStream run_dependencies_file(target_ver_dir / "run_dependencies", -1, true);
         StringifyFormatter f;
         run_dependencies_file << m.package_id()->run_dependencies_key()->pretty_print_flat(f) << std::endl;
     }

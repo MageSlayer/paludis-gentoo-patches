@@ -220,13 +220,13 @@ ERepositoryNews::update_news() const
             {
                 Context update_context("When updating skip and unread files:");
 
-                SafeOFStream s(_imp->skip_file, O_CREAT | O_WRONLY | O_APPEND);
+                SafeOFStream s(_imp->skip_file, O_CREAT | O_WRONLY | O_APPEND, false);
                 if (! s)
                     Log::get_instance()->message("e.news.skip_file.append_failure", ll_warning, lc_no_context) <<
                         "Cannot append to news skip file '" << _imp->skip_file <<
                         "', skipping news item '" << *d << "'";
 
-                SafeOFStream t(_imp->unread_file, O_CREAT | O_WRONLY | O_APPEND);
+                SafeOFStream t(_imp->unread_file, O_CREAT | O_WRONLY | O_APPEND, false);
                 if (! t)
                     Log::get_instance()->message("e.news.unread_file.append_failure", ll_warning, lc_no_context) <<
                         "Cannot append to unread file '" << _imp->unread_file <<

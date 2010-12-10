@@ -106,7 +106,7 @@ World::_add_string_to_world(const std::string & n) const
     {
         try
         {
-            SafeOFStream f(*_imp->maybe_world_file);
+            SafeOFStream f(*_imp->maybe_world_file, -1, true);
         }
         catch (const SafeOFStreamError & e)
         {

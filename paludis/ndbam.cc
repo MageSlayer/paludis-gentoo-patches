@@ -130,7 +130,7 @@ NDBAM::NDBAM(const FSPath & l,
         (l / "indices" / "categories").mkdir(0755, { fspmkdo_ok_if_exists });
         (l / "indices" / "packages").mkdir(0755, { fspmkdo_ok_if_exists });
         (l / "data").mkdir(0755, { fspmkdo_ok_if_exists });
-        SafeOFStream n(l / "ndbam.conf");
+        SafeOFStream n(l / "ndbam.conf", -1, true);
         n << "ndbam_format = 1" << std::endl;
         n << "repository_format = " << preferred_format << std::endl;
         if (! n)

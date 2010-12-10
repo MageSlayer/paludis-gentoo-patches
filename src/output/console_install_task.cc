@@ -1913,7 +1913,7 @@ ConsoleInstallTask::show_resume_command(const std::string & resume_command_templ
             if (-1 != fd)
             {
                 ::fchmod(fd, 0644);
-                SafeOFStream resume_command_file(fd);
+                SafeOFStream resume_command_file(fd, true);
                 resume_command_file << resume_command << endl;
 
                 if (resume_command_file)

@@ -151,7 +151,7 @@ do_build_downgrade_check_list(NoConfigEnvironment & env)
         bool b(i);
         env.set_accept_unstable(b);
         std::cerr << "Generating " << (b ? "unstable" : "stable")  << "..." << std::endl;
-        SafeOFStream f(output_dir / ((b ? "unstable" : "stable") + std::string(".txt")));
+        SafeOFStream f(output_dir / ((b ? "unstable" : "stable") + std::string(".txt")), -1, true);
         exit_status |= build_one_list(env, f);
     }
 

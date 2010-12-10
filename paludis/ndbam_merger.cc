@@ -349,7 +349,7 @@ void
 NDBAMMerger::merge()
 {
     display_override(">>> Merging to " + stringify(_imp->params.root()));
-    _imp->contents_file = std::make_shared<SafeOFStream>(_imp->params.contents_file());
+    _imp->contents_file = std::make_shared<SafeOFStream>(_imp->params.contents_file(), -1, false);
     FSMerger::merge();
 }
 

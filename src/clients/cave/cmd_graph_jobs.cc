@@ -248,7 +248,7 @@ GraphJobsCommand::run(
 
     std::shared_ptr<SafeOFStream> stream_if_file;
     if (! cmdline.graph_jobs_options.a_graph_jobs_basename.argument().empty())
-        stream_if_file = std::make_shared<SafeOFStream>(FSPath(cmdline.graph_jobs_options.a_graph_jobs_basename.argument() + ".graphviz"));
+        stream_if_file = std::make_shared<SafeOFStream>(FSPath(cmdline.graph_jobs_options.a_graph_jobs_basename.argument() + ".graphviz"), -1, true);
 
     int retcode(0);
 

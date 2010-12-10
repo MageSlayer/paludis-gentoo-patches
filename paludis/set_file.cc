@@ -422,7 +422,7 @@ SimpleHandler::rewrite() const
 
     try
     {
-        SafeOFStream f(_p.file_name());
+        SafeOFStream f(_p.file_name(), -1, true);
 
         for (std::list<std::string>::const_iterator i(_lines.begin()), i_end(_lines.end()) ;
                 i != i_end ; ++i)
@@ -515,7 +515,7 @@ PaludisConfHandler::rewrite() const
 
     try
     {
-        SafeOFStream f(_p.file_name());
+        SafeOFStream f(_p.file_name(), -1, true);
 
         for (std::list<std::string>::const_iterator i(_lines.begin()), i_end(_lines.end()) ;
                 i != i_end ; ++i)

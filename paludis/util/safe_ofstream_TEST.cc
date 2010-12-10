@@ -35,7 +35,7 @@ namespace test_cases
 
         void run()
         {
-            SafeOFStream s(FSPath::cwd() / "safe_ofstream_TEST_dir" / "new");
+            SafeOFStream s(FSPath::cwd() / "safe_ofstream_TEST_dir" / "new", -1, false);
             TEST_CHECK(s);
             s << "foo";
             TEST_CHECK(s);
@@ -53,7 +53,7 @@ namespace test_cases
 
         void run()
         {
-            SafeOFStream s(FSPath::cwd() / "safe_ofstream_TEST_dir" / "existing");
+            SafeOFStream s(FSPath::cwd() / "safe_ofstream_TEST_dir" / "existing", -1, false);
             TEST_CHECK(s);
             s << "foo";
             TEST_CHECK(s);
@@ -71,7 +71,7 @@ namespace test_cases
 
         void run()
         {
-            SafeOFStream s(FSPath::cwd() / "safe_ofstream_TEST_dir" / "existing_sym");
+            SafeOFStream s(FSPath::cwd() / "safe_ofstream_TEST_dir" / "existing_sym", -1, false);
             TEST_CHECK(s);
             s << "foo";
             TEST_CHECK(s);
@@ -89,7 +89,7 @@ namespace test_cases
 
         void run()
         {
-            TEST_CHECK_THROWS(SafeOFStream(FSPath::cwd() / "safe_ofstream_TEST_dir" / "existing_dir"), SafeOFStreamError);
+            TEST_CHECK_THROWS(SafeOFStream(FSPath::cwd() / "safe_ofstream_TEST_dir" / "existing_dir", -1, false), SafeOFStreamError);
         }
 
         bool repeatable() const
@@ -104,7 +104,7 @@ namespace test_cases
 
         void run()
         {
-            TEST_CHECK_THROWS(SafeOFStream(FSPath::cwd() / "safe_ofstream_TEST_dir" / "existing_perm"), SafeOFStreamError);
+            TEST_CHECK_THROWS(SafeOFStream(FSPath::cwd() / "safe_ofstream_TEST_dir" / "existing_perm", -1, false), SafeOFStreamError);
         }
 
         bool skip() const
@@ -127,7 +127,7 @@ namespace test_cases
             bool threw(false);
             try
             {
-                SafeOFStream s(FSPath("/dev/full"));
+                SafeOFStream s(FSPath("/dev/full"), -1, false);
                 TEST_CHECK(s);
                 s << "foo";
                 TEST_CHECK(! s);

@@ -23,6 +23,7 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/fs_path-fwd.hh>
+#include <paludis/util/pimp.hh>
 #include <ostream>
 
 /** \file
@@ -48,6 +49,7 @@ namespace paludis
      * \since 0.34.3
      */
     class PALUDIS_VISIBLE SafeOFStreamBuf :
+        private Pimp<SafeOFStreamBuf>,
         public std::streambuf
     {
         protected:
@@ -61,9 +63,12 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            SafeOFStreamBuf(const int f);
+            SafeOFStreamBuf(const int f, const bool buffer);
+            ~SafeOFStreamBuf();
 
             ///\}
+
+            void write_buffered();
 
             /// Our file descriptor.
             int fd;
@@ -85,7 +90,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            SafeOFStreamBase(const int fd);
+            SafeOFStreamBase(const int fd, const bool buffer);
 
             ///\}
     };
@@ -108,8 +113,8 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            explicit SafeOFStream(const int fd);
-            explicit SafeOFStream(const FSPath &, const int open_flags = -1);
+            SafeOFStream(const int fd, const bool buffer);
+            SafeOFStream(const FSPath &, const int open_flags, const bool buffer);
             ~SafeOFStream();
 
             ///\}
@@ -127,6 +132,8 @@ namespace paludis
         public:
             SafeOFStreamError(const std::string &) throw ();
     };
+
+    extern template class Pimp<SafeOFStreamBuf>;
 }
 
 #endif

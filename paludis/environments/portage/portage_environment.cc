@@ -917,7 +917,7 @@ PortageEnvironment::_add_string_to_world(const std::string & s) const
     {
         try
         {
-            SafeOFStream f(_imp->world_file);
+            SafeOFStream f(_imp->world_file, -1, true);
         }
         catch (const SafeOFStreamError & e)
         {

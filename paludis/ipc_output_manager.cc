@@ -61,7 +61,7 @@ namespace paludis
         std::shared_ptr<SafeOFStream> pipe_command_write_stream;
 
         Imp(int r, int w) :
-            pipe_command_write_stream(std::make_shared<SafeOFStream>(w))
+            pipe_command_write_stream(std::make_shared<SafeOFStream>(w, false))
         {
             *pipe_command_write_stream << "PING 1 GOAT" << '\0' << std::flush;
 
@@ -94,8 +94,8 @@ IPCOutputManager::IPCOutputManager(const int r, const int w, const CreateOutputM
         throw InternalError(PALUDIS_HERE, "got response '" + response + "'");
 
     int stdout_fd(destringify<int>(tokens[2])), stderr_fd(destringify<int>(tokens[3]));
-    _imp->stdout_stream = std::make_shared<SafeOFStream>(stdout_fd);
-    _imp->stderr_stream = std::make_shared<SafeOFStream>(stderr_fd);
+    _imp->stdout_stream = std::make_shared<SafeOFStream>(stdout_fd, false);
+    _imp->stderr_stream = std::make_shared<SafeOFStream>(stderr_fd, false);
 
     if (0 != ::fcntl(stdout_fd, F_SETFD, FD_CLOEXEC))
         throw InternalError(PALUDIS_HERE, "fcntl failed");

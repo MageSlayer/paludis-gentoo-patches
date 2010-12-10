@@ -99,7 +99,7 @@ CommandOutputManager::CommandOutputManager(const std::string & s, const std::str
     if (0 != ::close(_imp->stdout_pipe->read_fd()))
         throw CommandOutputManagerError("close stdout_pipe read_fd failed");
     _imp->stdout_pipe->clear_read_fd();
-    _imp->stdout_stream.reset(new SafeOFStream(_imp->stdout_pipe->write_fd()));
+    _imp->stdout_stream.reset(new SafeOFStream(_imp->stdout_pipe->write_fd(), false));
 
     _imp->stderr_pipe.reset(new Pipe(true));
     _imp->stderr_process.reset(new Process(ProcessCommand(_imp->stderr_command)));
@@ -109,7 +109,7 @@ CommandOutputManager::CommandOutputManager(const std::string & s, const std::str
     if (0 != ::close(_imp->stderr_pipe->read_fd()))
         throw CommandOutputManagerError("close stderr_pipe read_fd failed");
     _imp->stderr_pipe->clear_read_fd();
-    _imp->stderr_stream.reset(new SafeOFStream(_imp->stderr_pipe->write_fd()));
+    _imp->stderr_stream.reset(new SafeOFStream(_imp->stderr_pipe->write_fd(), false));
 }
 
 CommandOutputManager::~CommandOutputManager()

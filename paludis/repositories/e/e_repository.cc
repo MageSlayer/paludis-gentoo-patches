@@ -1096,7 +1096,7 @@ ERepository::make_manifest(const QualifiedPackageName & qpn)
     FSPath package_dir = _imp->layout->package_directory(qpn);
 
     FSPath(package_dir / "Manifest").unlink();
-    SafeOFStream manifest(FSPath(package_dir / "Manifest"));
+    SafeOFStream manifest(FSPath(package_dir / "Manifest"), -1, true);
     if (! manifest)
         throw ERepositoryConfigurationError("Couldn't open Manifest for writing.");
 
@@ -1999,7 +1999,7 @@ ERepository::merge(const MergeParams & m)
 
     if (! has_category_named(m.package_id()->name().category()))
     {
-        SafeOFStream s(_imp->layout->categories_file(), O_CREAT | O_WRONLY | O_CLOEXEC | O_APPEND);
+        SafeOFStream s(_imp->layout->categories_file(), O_CREAT | O_WRONLY | O_CLOEXEC | O_APPEND, true);
         s << m.package_id()->name().category() << std::endl;
     }
 }

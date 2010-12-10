@@ -209,7 +209,7 @@ main(int argc, char *argv[])
 
             std::shared_ptr<SafeOFStream> outf;
             if (CommandLine::get_instance()->a_report_file.specified())
-                outf = std::make_shared<SafeOFStream>(FSPath(CommandLine::get_instance()->a_report_file.argument()));
+                outf = std::make_shared<SafeOFStream>(FSPath(CommandLine::get_instance()->a_report_file.argument()), -1, true);
 
             std::ostream & out(outf ? *outf : cout);
 

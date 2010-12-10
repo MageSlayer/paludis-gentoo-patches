@@ -314,7 +314,7 @@ namespace test_cases
 
             {
                 {
-                    SafeOFStream s(input_pipe->write_fd());
+                    SafeOFStream s(input_pipe->write_fd(), true);
                     s << "backwards" << std::endl;
                 }
                 TEST_CHECK(0 == ::close(input_pipe->write_fd()));

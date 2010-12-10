@@ -473,7 +473,7 @@ RepositoryRepository::merge(const MergeParams & m)
             std::string data((std::istreambuf_iterator<char>(config_template_input)), std::istreambuf_iterator<char>());
             data = replace_vars(data, repo_sync, repo_format, repo_name);
 
-            SafeOFStream config_filename_output(config_filename_file);
+            SafeOFStream config_filename_output(config_filename_file, -1, true);
             config_filename_output << data;
         }
 
