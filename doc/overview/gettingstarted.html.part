@@ -266,8 +266,8 @@ generated metadata to this directory. This will avoid having to source every ebu
 <code>${location}/metadata/cache</code>, so the <code>write_cache</code> option is of no use for it; most overlays,
 however, do not provide this.)</p>
 
-<p>For details on <code>sync</code> formats, use <code>paludis --list-sync-protocols</code>. The listed options can be
-used via <code>sync_options = </code>.</p>
+<p>For a list of <code>sync</code> formats, use <code>cave print-sync-protocols</code>. The protocol options can be obtained
+using <code>cave sync-protocol-options</code>. The listed options can be used via <code>sync_options = </code>.</p>
 
 <h5>repositories/layman.conf and repositories/repository.conf</h5>
 
