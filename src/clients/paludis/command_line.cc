@@ -202,6 +202,8 @@ CommandLine::CommandLine() :
     add_example(
             "paludis --uninstall-unused --pretend",
             "Uninstall all unused packages.");
+
+    add_note("paludis is deprecated. Use 'cave' instead.");
 }
 
 std::string
@@ -213,16 +215,13 @@ CommandLine::app_name() const
 std::string
 CommandLine::app_synopsis() const
 {
-    return "The other package mangler";
+    return "The deprecated other package mangler client";
 }
 
 std::string
 CommandLine::app_description() const
 {
-    return
-        "paludis is the command line interface used to handle packages. It can query and "
-        "install packages, update repositories and display information about packages "
-        "already installed on a system.";
+    return "paludis is deprecated; use 'cave' instead.";
 }
 
 CommandLine::~CommandLine()
