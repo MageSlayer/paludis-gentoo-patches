@@ -57,6 +57,13 @@ BeMoreSpecific::BeMoreSpecific(const PackageDepSpec & spec, const std::shared_pt
 {
 }
 
+BeMoreSpecific::BeMoreSpecific(const PackageDepSpec & spec, const std::shared_ptr<const PackageIDSequence> & s,
+        const std::string & extra_message) throw () :
+    Exception("Found multiple suitable IDs matching '" + stringify(spec) + "': { '" + join(indirect_iterator(s->begin()),
+                indirect_iterator(s->end()), "', '") + "' }. " + extra_message)
+{
+}
+
 BadIDForCommand::BadIDForCommand(const PackageDepSpec & spec, const std::shared_ptr<const PackageID> & s,
         const std::string & r) throw () :
     Exception("Spec '" + stringify(spec) + "' resolves to ID '" + stringify(*s) + "', which " + r)

@@ -146,7 +146,7 @@ UninstallCommand::run(
         if (ids->empty())
             nothing_matching_error(env.get(), *p, filter::SupportsAction<UninstallAction>());
         else if ((! cmdline.a_all_versions.specified()) && has_multiple_versions(ids))
-            throw BeMoreSpecific(spec, ids);
+            throw BeMoreSpecific(spec, ids, "Consider using '--" + cmdline.a_all_versions.long_name() + "'");
         else
         {
             for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;

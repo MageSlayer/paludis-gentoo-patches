@@ -53,6 +53,8 @@ namespace paludis
         {
             public:
                 BeMoreSpecific(const PackageDepSpec &, const std::shared_ptr<const PackageIDSequence> &) throw ();
+                BeMoreSpecific(const PackageDepSpec &, const std::shared_ptr<const PackageIDSequence> &,
+                        const std::string & extra_message) throw ();
         };
 
         class PALUDIS_VISIBLE BadIDForCommand :
