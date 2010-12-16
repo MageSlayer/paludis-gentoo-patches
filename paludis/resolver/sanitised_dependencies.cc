@@ -314,6 +314,7 @@ namespace
         const std::string human_name;
         std::string original_specs_as_string;
         std::list<std::shared_ptr<const DependenciesLabelSequence> > labels_stack;
+        std::list<ConditionalDepSpec> conditions_stack;
 
         Finder(
                 const Environment * const e,
@@ -352,7 +353,7 @@ namespace
 
         SanitisedDependency make_sanitised(const PackageOrBlockDepSpec & spec)
         {
-            std::stringstream adl;
+            std::stringstream adl, acs;
             auto classifier(std::make_shared<LabelsClassifier>());
             for (DependenciesLabelSequence::ConstIterator i((*labels_stack.begin())->begin()),
                     i_end((*labels_stack.begin())->end()) ;
@@ -362,7 +363,12 @@ namespace
                 (*i)->accept(*classifier);
             }
 
+            for (auto c(conditions_stack.begin()), c_end(conditions_stack.end()) ;
+                    c != c_end ; ++c)
+                acs << (acs.str().empty() ? "" : ", ") << stringify(*c);
+
             return make_named_values<SanitisedDependency>(
+                    n::active_conditions_as_string() = acs.str(),
                     n::active_dependency_labels() = *labels_stack.begin(),
                     n::active_dependency_labels_as_string() = adl.str(),
                     n::active_dependency_labels_classifier() = classifier,
@@ -387,9 +393,11 @@ namespace
         {
             if (changed_choices ? node.spec()->condition_would_be_met_when(*changed_choices) : node.spec()->condition_met())
             {
+                conditions_stack.push_front(*node.spec());
                 labels_stack.push_front(*labels_stack.begin());
                 std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
                 labels_stack.pop_front();
+                conditions_stack.pop_front();
             }
         }
 
@@ -525,6 +533,7 @@ void
 SanitisedDependency::serialise(Serialiser & s) const
 {
     s.object("SanitisedDependency")
+        .member(SerialiserFlags<>(), "active_conditions_as_string", active_conditions_as_string())
         .member(SerialiserFlags<>(), "active_dependency_labels_as_string", active_dependency_labels_as_string())
         .member(SerialiserFlags<serialise::might_be_null>(), "active_dependency_labels_classifier", active_dependency_labels_classifier())
         .member(SerialiserFlags<>(), "metadata_key_human_name", metadata_key_human_name())
@@ -542,6 +551,7 @@ SanitisedDependency::deserialise(Deserialisation & d, const std::shared_ptr<cons
     Deserialisator v(d, "SanitisedDependency");
 
     return make_named_values<SanitisedDependency>(
+            n::active_conditions_as_string() = v.member<std::string>("active_conditions_as_string"),
             n::active_dependency_labels() = make_null_shared_ptr(),
             n::active_dependency_labels_as_string() = v.member<std::string>("active_dependency_labels_as_string"),
             n::active_dependency_labels_classifier() = v.member<std::shared_ptr<LabelsClassifier> >("active_dependency_labels_classifier"),

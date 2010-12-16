@@ -36,6 +36,7 @@ namespace paludis
 {
     namespace n
     {
+        typedef Name<struct active_conditions_as_string_name> active_conditions_as_string;
         typedef Name<struct active_dependency_labels_name> active_dependency_labels;
         typedef Name<struct active_dependency_labels_as_string_name> active_dependency_labels_as_string;
         typedef Name<struct active_dependency_labels_classifier_name> active_dependency_labels_classifier;
@@ -49,6 +50,7 @@ namespace paludis
     {
         struct SanitisedDependency
         {
+            NamedValue<n::active_conditions_as_string, std::string> active_conditions_as_string;
             NamedValue<n::active_dependency_labels, std::shared_ptr<const DependenciesLabelSequence> > active_dependency_labels;
             NamedValue<n::active_dependency_labels_as_string, std::string> active_dependency_labels_as_string;
             NamedValue<n::active_dependency_labels_classifier, std::shared_ptr<const LabelsClassifier> > active_dependency_labels_classifier;

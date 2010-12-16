@@ -210,6 +210,8 @@ namespace
                                 + r.sanitised_dependency().metadata_key_human_name() + "'"
                                 + (r.sanitised_dependency().active_dependency_labels_as_string().empty() ? "" :
                                     ", labelled '" + r.sanitised_dependency().active_dependency_labels_as_string() + "'")
+                                + (r.sanitised_dependency().active_conditions_as_string().empty() ? "" :
+                                    ", conditions '" + r.sanitised_dependency().active_conditions_as_string() + "'")
                                 + as,
                                 false), false);
                 }
