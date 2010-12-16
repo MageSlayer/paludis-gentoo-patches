@@ -6,8 +6,8 @@ const auto fs_erasing_resume_file = make_format_string_fetcher("execute-resoluti
 const auto fs_writing_resume_file = make_format_string_fetcher("execute-resolution/writing_resume_file", 1)
     << "\\nWriting resume information to " << param<'f'>() << "..." << "\\n";
 
-const auto fs_starting_action = make_format_string_fetcher("execute-resolution/starting_action", 1)
-    << "\\n" << c::bold_blue_or_pink() << param<'x'>() << " of " << param<'y'>() << ": Starting "
+const auto fs_starting_action = make_format_string_fetcher("execute-resolution/starting_action", 2)
+    << "\\n" << c::bold_blue_or_pink() << param<'x'>() << ": Starting "
     << param<'a'>() << " for " << param<'i'>() << param<'r'>() << "..." << c::normal() << "\\n\\n";
 
 const auto fs_done_action = make_format_string_fetcher("execute-resolution/done_action", 1)
@@ -31,7 +31,7 @@ const auto fs_updating_world = make_format_string_fetcher("execute-resolution/up
     << "\\n" << c::bold_green_or_pink() << "Updating world" << c::normal() << "\\n\\n";
 
 const auto fs_already_action = make_format_string_fetcher("execute-resolution/already_action", 1)
-    << "\\n" << c::bold_green_or_pink() << param<'x'>() << " of " << param<'y'>() << ": Already "
+    << "\\n" << c::bold_green_or_pink() << param<'x'>() << ": Already "
     << param<'s'>() << " for " << param<'t'>() << c::normal() << "\\n\\n";
 
 const auto fs_output_heading = make_format_string_fetcher("execute-resolution/output_heading", 1)

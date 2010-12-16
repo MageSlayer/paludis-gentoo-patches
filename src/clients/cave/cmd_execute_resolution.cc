@@ -199,12 +199,23 @@ namespace
         }
     }
 
+    std::string make_x_of_y(const int x, const int y, const int f, const int s)
+    {
+        std::string result(stringify(x) + " of " + stringify(y));
+        if (f != 0)
+            result.append(", " + stringify(f) + " failed");
+        if (s != 0)
+            result.append(", " + stringify(s) + " skipped");
+        return result;
+    }
+
     bool do_pretend(
             const std::shared_ptr<Environment> & env,
             const ExecuteResolutionCommandLine & cmdline,
             const PackageDepSpec & origin_id_spec,
             const RepositoryName & destination_repository_name,
-            const int x, const int y, const int prev_x,
+            const int x, const int y, const int f, const int s,
+            std::string & string_to_backspace,
             std::shared_ptr<OutputManager> & output_manager_goes_here)
     {
         Context context("When pretending for '" + stringify(origin_id_spec) + "':");
@@ -212,9 +223,10 @@ namespace
         const std::shared_ptr<const PackageID> origin_id(*(*env)[selection::RequireExactlyOne(
                     generator::Matches(origin_id_spec, { }))]->begin());
 
-        if (0 != prev_x)
-            cout << std::string(stringify(prev_x).length() + stringify(y).length() + 4, '\010');
-        cout << x << " of " << y << std::flush;
+        if (! string_to_backspace.empty())
+            cout << std::string(string_to_backspace.length(), '\010');
+        string_to_backspace = make_x_of_y(x, y, f, s);
+        cout << string_to_backspace << std::flush;
 
         std::shared_ptr<Sequence<std::string> > args(std::make_shared<Sequence<std::string>>());
 
@@ -222,7 +234,7 @@ namespace
         args->push_back("--hooks");
         args->push_back("--if-supported");
         args->push_back("--x-of-y");
-        args->push_back(stringify(x) + " of " + stringify(y));
+        args->push_back(make_x_of_y(x, y, f, s));
         args->push_back(stringify(origin_id->uniquely_identifying_spec()));
         args->push_back("--destination");
         args->push_back(stringify(destination_repository_name));
@@ -304,9 +316,9 @@ namespace
             const std::string & action,
             const std::shared_ptr<const PackageIDSequence> & ids,
             const std::shared_ptr<const Sequence<PackageDepSpec> > & maybe_replacing_specs,
-            const int x, const int y)
+            const int x, const int y, const int f, const int s)
     {
-        cout << fuc(fs_starting_action(), fv<'x'>(stringify(x)), fv<'y'>(stringify(y)),
+        cout << fuc(fs_starting_action(), fv<'x'>(make_x_of_y(x, y, f, s)),
                 fv<'a'>(action), fv<'i'>(join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), ", ")),
                 fv<'r'>(maybe_replacing(env, ids, maybe_replacing_specs)));
     }
@@ -343,7 +355,7 @@ namespace
             const ExecuteResolutionCommandLine & cmdline,
             const int n_fetch_jobs,
             const PackageDepSpec & id_spec,
-            const int x, const int y, bool normal_only,
+            const int x, const int y, const int f, const int s, bool normal_only,
             Mutex & job_mutex,
             JobActiveState & active_state)
     {
@@ -360,7 +372,7 @@ namespace
         if (0 != n_fetch_jobs)
             command.append("--output-exclusivity with-others --no-terminal-titles ");
         command.append(stringify(id->uniquely_identifying_spec()));
-        command.append(" --x-of-y '" + stringify(x) + " of " + stringify(y) + "'");
+        command.append(" --x-of-y '" + make_x_of_y(x, y, f, s) + "'");
 
         if (normal_only)
             command.append(" --regulars-only --ignore-manual-fetch-errors");
@@ -419,6 +431,7 @@ namespace
             const std::shared_ptr<const Sequence<PackageDepSpec> > & replacing_specs,
             const std::string & destination_string,
             const int x, const int y,
+            const int f, const int s,
             Mutex & job_mutex,
             JobActiveState & active_state)
     {
@@ -441,7 +454,7 @@ namespace
                 i != i_end ; ++i)
             command.append(" --replacing " + stringify(*i));
 
-        command.append(" --x-of-y '" + stringify(x) + " of " + stringify(y) + "'");
+        command.append(" --x-of-y '" + make_x_of_y(x, y, f, s) + "'");
 
         if (cmdline.execution_options.a_skip_phase.specified() || cmdline.execution_options.a_abort_at_phase.specified()
                 || cmdline.execution_options.a_skip_until_phase.specified())
@@ -494,6 +507,7 @@ namespace
             const int n_fetch_jobs,
             const PackageDepSpec & id_spec,
             const int x, const int y,
+            const int f, const int s,
             Mutex & job_mutex,
             JobActiveState & active_state)
     {
@@ -511,7 +525,7 @@ namespace
             command.append("--output-exclusivity with-others ");
         command.append(stringify(id->uniquely_identifying_spec()));
 
-        command.append(" --x-of-y '" + stringify(x) + " of " + stringify(y) + "'");
+        command.append(" --x-of-y '" + make_x_of_y(x, y, f, s) + "'");
 
         if (cmdline.execution_options.a_skip_phase.specified() || cmdline.execution_options.a_abort_at_phase.specified()
                 || cmdline.execution_options.a_skip_until_phase.specified())
@@ -694,7 +708,8 @@ namespace
             const ExecuteResolutionCommandLine & cmdline)
     {
         bool failed(false);
-        int x(0), y(lists->pretend_job_list()->length()), prev_x(0);
+        int x(0), y(lists->pretend_job_list()->length()), f(0), s(0);
+        std::string string_to_backspace("");
 
         if (0 != env->perform_hook(Hook("pretend_all_pre")
                     ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " ")),
@@ -709,12 +724,15 @@ namespace
                 cout << "Executing pretend actions: " << std::flush;
 
             std::shared_ptr<OutputManager> output_manager_goes_here;
-            failed = failed || ! do_pretend(env, cmdline, (*c)->origin_id_spec(), (*c)->destination_repository_name(),
-                    x, y, prev_x, output_manager_goes_here);
-            prev_x = x;
+            if (! do_pretend(env, cmdline, (*c)->origin_id_spec(), (*c)->destination_repository_name(),
+                    x, y, f, s, string_to_backspace, output_manager_goes_here))
+            {
+                failed = true;
+                ++f;
+            }
         }
 
-        if (0 != prev_x)
+        if (! string_to_backspace.empty())
             cout << endl;
 
         if (0 != env->perform_hook(Hook("pretend_all_post")
@@ -728,13 +746,17 @@ namespace
     struct ExecuteCounts
     {
         Mutex mutex;
-        int x_fetches, y_fetches, x_installs, y_installs;
+        int x_fetches, y_fetches, f_fetches, s_fetches, x_installs, y_installs, f_installs, s_installs;
 
         ExecuteCounts() :
             x_fetches(0),
             y_fetches(0),
+            f_fetches(0),
+            s_fetches(0),
             x_installs(0),
-            y_installs(0)
+            y_installs(0),
+            f_installs(0),
+            s_installs(0)
         {
         }
 
@@ -827,7 +849,8 @@ namespace
                 case x1_pre:
                     {
                         ++counts.x_installs;
-                        starting_action(env, action_string, ids, install_item.replacing_specs(), counts.x_installs, counts.y_installs);
+                        starting_action(env, action_string, ids, install_item.replacing_specs(), counts.x_installs, counts.y_installs,
+                                counts.f_installs, counts.s_installs);
                     }
                     break;
 
@@ -839,20 +862,23 @@ namespace
                             install_item.set_state(active_state);
                         }
 
-                        if (! do_fetch(env, cmdline, n_fetch_jobs, install_item.origin_id_spec(), counts.x_installs, counts.y_installs, false,
+                        if (! do_fetch(env, cmdline, n_fetch_jobs, install_item.origin_id_spec(), counts.x_installs, counts.y_installs,
+                                    counts.f_installs, counts.s_installs, false,
                                     job_mutex, *active_state))
                         {
                             Lock lock(job_mutex);
                             install_item.set_state(active_state->failed());
+                            ++counts.f_installs;
                             return 1;
                         }
 
                         if (! do_install(env, cmdline, n_fetch_jobs, install_item.origin_id_spec(), install_item.destination_repository_name(),
                                     install_item.replacing_specs(), destination_string,
-                                    counts.x_installs, counts.y_installs, job_mutex, *active_state))
+                                    counts.x_installs, counts.y_installs, counts.f_installs, counts.s_installs, job_mutex, *active_state))
                         {
                             Lock lock(job_mutex);
                             install_item.set_state(active_state->failed());
+                            ++counts.f_installs;
                             return 1;
                         }
 
@@ -886,7 +912,8 @@ namespace
                 case x1_pre:
                     {
                         ++counts.x_installs;
-                        starting_action(env, "remove", ids, make_null_shared_ptr(), counts.x_installs, counts.y_installs);
+                        starting_action(env, "remove", ids, make_null_shared_ptr(), counts.x_installs, counts.y_installs,
+                                counts.f_installs, counts.s_installs);
                     }
                     break;
 
@@ -901,10 +928,12 @@ namespace
                         for (Sequence<PackageDepSpec>::ConstIterator i(uninstall_item.ids_to_remove_specs()->begin()),
                                 i_end(uninstall_item.ids_to_remove_specs()->end()) ;
                                 i != i_end ; ++i)
-                            if (! do_uninstall(env, cmdline, n_fetch_jobs, *i, counts.x_installs, counts.y_installs, job_mutex, *active_state))
+                            if (! do_uninstall(env, cmdline, n_fetch_jobs, *i, counts.x_installs, counts.y_installs,
+                                        counts.f_installs, counts.s_installs, job_mutex, *active_state))
                             {
                                 Lock lock(job_mutex);
                                 uninstall_item.set_state(active_state->failed());
+                                ++counts.f_installs;
                                 return 1;
                             }
 
@@ -931,7 +960,8 @@ namespace
                 case x1_pre:
                     {
                         ++counts.x_fetches;
-                        starting_action(env, "fetch", ids, make_null_shared_ptr(), counts.x_fetches, counts.y_fetches);
+                        starting_action(env, "fetch", ids, make_null_shared_ptr(), counts.x_fetches, counts.y_fetches,
+                                counts.f_fetches, counts.s_fetches);
                     }
                     break;
 
@@ -943,11 +973,12 @@ namespace
                             fetch_item.set_state(active_state);
                         }
 
-                        if (! do_fetch(env, cmdline, n_fetch_jobs, fetch_item.origin_id_spec(), counts.x_fetches, counts.y_fetches, true,
-                                    job_mutex, *active_state))
+                        if (! do_fetch(env, cmdline, n_fetch_jobs, fetch_item.origin_id_spec(), counts.x_fetches, counts.y_fetches,
+                                    counts.f_fetches, counts.s_fetches, true, job_mutex, *active_state))
                         {
                             Lock lock(job_mutex);
                             fetch_item.set_state(active_state->failed());
+                            ++counts.f_fetches;
                             return 1;
                         }
 
@@ -1049,14 +1080,24 @@ namespace
     {
         const std::shared_ptr<Environment> env;
         ExecuteCounts & counts;
-        int x, y;
+        int * const fetch_sf;
+        int * const install_sf;
+        int x, y, f, s;
         std::string text;
 
         AlreadyDoneVisitor(
                 const std::shared_ptr<Environment> & e,
-                ExecuteCounts & c) :
+                ExecuteCounts & c,
+                int * const sf,
+                int * const si) :
             env(e),
-            counts(c)
+            counts(c),
+            fetch_sf(sf),
+            install_sf(si),
+            x(0),
+            y(0),
+            f(0),
+            s(0)
         {
         }
 
@@ -1065,6 +1106,8 @@ namespace
             text = "install " + stringify_id_or_spec(env, j.origin_id_spec());
             x = ++counts.x_installs;
             y = counts.y_installs;
+            if (install_sf)
+                ++*install_sf;
         }
 
         void visit(const FetchJob & j)
@@ -1072,6 +1115,8 @@ namespace
             text = "fetch " + stringify_id_or_spec(env, j.origin_id_spec());
             x = ++counts.x_fetches;
             y = counts.y_fetches;
+            if (fetch_sf)
+                ++*fetch_sf;
         }
 
         void visit(const UninstallJob & j)
@@ -1080,6 +1125,8 @@ namespace
                     std::bind(&stringify_id_or_spec, env, std::placeholders::_1));
             x = ++counts.x_installs;
             y = counts.y_installs;
+            if (install_sf)
+                ++*install_sf;
         }
     };
 
@@ -1087,12 +1134,13 @@ namespace
             const std::shared_ptr<Environment> & env,
             const std::string & state,
             const std::shared_ptr<const ExecuteJob> & job,
-            ExecuteCounts & counts)
+            ExecuteCounts & counts,
+            int * const fetch_sf,
+            int * const install_sf)
     {
-        AlreadyDoneVisitor v(env, counts);
+        AlreadyDoneVisitor v(env, counts, fetch_sf, install_sf);
         job->accept(v);
-        cout << fuc(fs_already_action(), fv<'x'>(stringify(v.x)), fv<'y'>(stringify(v.y)),
-                fv<'s'>(state), fv<'t'>(v.text));
+        cout << fuc(fs_already_action(), fv<'x'>(make_x_of_y(v.x, v.y, v.f, v.s)), fv<'s'>(state), fv<'t'>(v.text));
     }
 
     struct MakeJobID
@@ -1276,18 +1324,18 @@ namespace
                 {
                     local_retcode = 1;
                     want = false;
-                    already_done_action(env, "failed", job, counts);
+                    already_done_action(env, "failed", job, counts, &counts.f_fetches, &counts.f_installs);
                 }
                 else if (initial_state.skipped)
                 {
                     local_retcode = 1;
                     want = false;
-                    already_done_action(env, "skipped", job, counts);
+                    already_done_action(env, "skipped", job, counts, &counts.s_fetches, &counts.s_installs);
                 }
                 else if (initial_state.done)
                 {
                     want = false;
-                    already_done_action(env, "succeeded", job, counts);
+                    already_done_action(env, "succeeded", job, counts, 0, 0);
                 }
             }
 
