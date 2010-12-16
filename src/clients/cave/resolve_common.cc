@@ -65,6 +65,7 @@
 #include <paludis/resolver/decisions.hh>
 #include <paludis/resolver/resolution.hh>
 #include <paludis/resolver/resolutions_by_resolvent.hh>
+#include <paludis/resolver/required_confirmations.hh>
 
 #include <paludis/resolver/allow_choice_changes_helper.hh>
 #include <paludis/resolver/allowed_to_remove_helper.hh>
@@ -358,7 +359,8 @@ namespace
             const std::shared_ptr<const Sequence<std::pair<std::string, std::string> > > & targets,
             const std::shared_ptr<const Sequence<std::string> > & world_specs,
             const std::shared_ptr<const Sequence<std::string> > & removed_if_dependent_names,
-            const bool is_set)
+            const bool is_set,
+            const bool pretend_only)
     {
         Context context("When performing chosen resolution:");
 
@@ -391,7 +393,7 @@ namespace
                 }
         }
 
-        if (! resolution_options.a_execute.specified())
+        if (pretend_only || ! resolution_options.a_execute.specified())
             args->push_back("--pretend");
 
         for (Sequence<std::string>::ConstIterator p(world_specs->begin()), p_end(world_specs->end()) ;
@@ -656,6 +658,49 @@ namespace
         else
             return env->package_database()->fetch_unique_qualified_package_name(PackageNamePart(s));
     }
+
+    struct AllowPretend
+    {
+        bool visit(const ChangedChoicesConfirmation &) const
+        {
+            return false;
+        }
+
+        bool visit(const BreakConfirmation &) const
+        {
+            return true;
+        }
+
+        bool visit(const DowngradeConfirmation &) const
+        {
+            return true;
+        }
+
+        bool visit(const NotBestConfirmation &) const
+        {
+            return true;
+        }
+
+        bool visit(const RemoveDecision &) const
+        {
+            return true;
+        }
+
+        bool visit(const BreakDecision &) const
+        {
+            return true;
+        }
+
+        bool visit(const MaskedConfirmation &) const
+        {
+            return true;
+        }
+
+        bool visit(const RemoveSystemPackageConfirmation &) const
+        {
+            return true;
+        }
+    };
 }
 
 int
@@ -1041,20 +1086,33 @@ paludis::cave::resolve_common(
             if (! resolver->resolved()->taken_unable_to_make_decisions()->empty())
                 retcode |= 1;
 
+        bool unconfirmed_but_allow_pretend(false);
         if (! resolver->resolved()->taken_unconfirmed_decisions()->empty())
+        {
+            unconfirmed_but_allow_pretend = true;
+            for (auto c(resolver->resolved()->taken_unconfirmed_decisions()->begin()),
+                    c_end(resolver->resolved()->taken_unconfirmed_decisions()->end()) ;
+                    c != c_end && unconfirmed_but_allow_pretend ; ++c)
+                if ((*c)->required_confirmations_if_any())
+                    for (auto r((*c)->required_confirmations_if_any()->begin()),
+                            r_end((*c)->required_confirmations_if_any()->end()) ;
+                            r != r_end && unconfirmed_but_allow_pretend ; ++r)
+                        unconfirmed_but_allow_pretend &= (*r)->accept_returning<bool>(AllowPretend());
+
             retcode |= 2;
+        }
 
         if (! resolution_options.a_ignore_unorderable_jobs.specified())
             if (! resolver->resolved()->taken_unorderable_decisions()->empty())
                 retcode |= 4;
 
-        if (0 == retcode)
+        if (0 == retcode || (2 == retcode && unconfirmed_but_allow_pretend))
             return perform_resolution(env, resolver->resolved(), resolution_options,
                     execution_options, program_options, keys_if_import,
                     purge ? std::make_shared<const Sequence<std::pair<std::string, std::string> > >() : targets_if_not_purge,
                     world_specs_if_not_auto ? world_specs_if_not_auto : targets_cleaned_up,
                     get_removed_if_dependent_names(env.get(), resolver->resolved()),
-                    is_set);
+                    is_set, unconfirmed_but_allow_pretend);
     }
     catch (...)
     {
