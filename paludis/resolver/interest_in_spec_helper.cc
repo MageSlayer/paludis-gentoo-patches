@@ -301,6 +301,15 @@ InterestInSpecHelper::operator() (
                 return si_take;
         }
 
+        if (dep.spec().if_package() && (suggestion || recommendation))
+        {
+            auto e(_imp->env->interest_in_suggestion(id, *dep.spec().if_package()));
+            if (e.is_true())
+                return si_take;
+            else if (e.is_false())
+                return si_ignore;
+        }
+
         return si_untaken;
     }
     else
