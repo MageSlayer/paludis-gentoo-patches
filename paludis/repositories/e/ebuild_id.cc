@@ -1553,8 +1553,7 @@ EbuildID::add_build_options(const std::shared_ptr<Choices> & choices) const
                 }
 
                 if (has_expensive_test_phase)
-                    build_options->add(std::make_shared<ELikeExpensiveTestsChoiceValue>(shared_from_this(), _imp->environment, build_options,
-                                ! may_be_unrestricted_test));
+                    build_options->add(std::make_shared<ELikeExpensiveTestsChoiceValue>(shared_from_this(), _imp->environment, build_options, false));
             }
 
             /* split, strip */
