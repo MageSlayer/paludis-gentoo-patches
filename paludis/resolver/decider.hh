@@ -208,6 +208,7 @@ namespace paludis
 
                 SpecInterest _interest_in_spec(
                         const std::shared_ptr<const Resolution> &,
+                        const std::shared_ptr<const PackageID> &,
                         const SanitisedDependency &) const;
 
                 const std::shared_ptr<Constraints> _initial_constraints_for(const Resolvent &) const;

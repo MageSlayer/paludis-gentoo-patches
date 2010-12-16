@@ -36,6 +36,7 @@
 #include <paludis/environment.hh>
 #include <paludis/package_dep_spec_collection.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/match_package.hh>
 #include <list>
 
 using namespace paludis;
@@ -230,6 +231,7 @@ namespace
 SpecInterest
 InterestInSpecHelper::operator() (
         const std::shared_ptr<const Resolution> & resolution,
+        const std::shared_ptr<const PackageID> & id,
         const SanitisedDependency & dep) const
 {
     CareAboutDepFnVisitor v{_imp->env, _imp->no_blockers_from_specs, _imp->no_dependencies_from_specs,
@@ -242,33 +244,33 @@ InterestInSpecHelper::operator() (
         if (! (suggestion || recommendation))
             return si_take;
 
-        for (auto l(_imp->take_specs.begin()), l_end(_imp->take_specs.end()) ;
-                l != l_end ; ++l)
+        if (dep.spec().if_package())
         {
-            PackageDepSpec spec(*dep.spec().if_package());
-            if (match_qpns(*_imp->env, *l, *spec.package_ptr()))
-                return si_take;
+            for (auto l(_imp->take_specs.begin()), l_end(_imp->take_specs.end()) ;
+                    l != l_end ; ++l)
+                if (match_qpns(*_imp->env, *l, *dep.spec().if_package()->package_ptr()))
+                    return si_take;
         }
 
         for (auto l(_imp->take_from_specs.begin()), l_end(_imp->take_from_specs.end()) ;
                 l != l_end ; ++l)
         {
-            if (match_qpns(*_imp->env, *l, resolution->resolvent().package()))
+            if (match_package(*_imp->env, *l, *id, { }))
                 return si_take;
         }
 
-        for (auto l(_imp->ignore_specs.begin()), l_end(_imp->ignore_specs.end()) ;
-                l != l_end ; ++l)
+        if (dep.spec().if_package())
         {
-            PackageDepSpec spec(*dep.spec().if_package());
-            if (match_qpns(*_imp->env, *l, *spec.package_ptr()))
-                return si_ignore;
+            for (auto l(_imp->ignore_specs.begin()), l_end(_imp->ignore_specs.end()) ;
+                    l != l_end ; ++l)
+                if (match_qpns(*_imp->env, *l, *dep.spec().if_package()->package_ptr()))
+                    return si_ignore;
         }
 
         for (auto l(_imp->ignore_from_specs.begin()), l_end(_imp->ignore_from_specs.end()) ;
                 l != l_end ; ++l)
         {
-            if (match_qpns(*_imp->env, *l, resolution->resolvent().package()))
+            if (match_package(*_imp->env, *l, *id, { }))
                 return si_ignore;
         }
 

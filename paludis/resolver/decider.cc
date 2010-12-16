@@ -1163,7 +1163,7 @@ Decider::_add_dependencies_if_necessary(
     {
         Context context_2("When handling dependency '" + stringify(s->spec()) + "':");
 
-        SpecInterest interest(_interest_in_spec(our_resolution, *s));
+        SpecInterest interest(_interest_in_spec(our_resolution, package_id, *s));
 
         switch (interest)
         {
@@ -1206,9 +1206,12 @@ Decider::_add_dependencies_if_necessary(
 }
 
 SpecInterest
-Decider::_interest_in_spec(const std::shared_ptr<const Resolution> & resolution, const SanitisedDependency & dep) const
+Decider::_interest_in_spec(
+        const std::shared_ptr<const Resolution> & resolution,
+        const std::shared_ptr<const PackageID> & id,
+        const SanitisedDependency & dep) const
 {
-    return _imp->fns.interest_in_spec_fn()(resolution, dep);
+    return _imp->fns.interest_in_spec_fn()(resolution, id, dep);
 }
 
 const std::shared_ptr<Constraints>

@@ -149,6 +149,7 @@ namespace paludis
 
         typedef std::function<SpecInterest (
                 const std::shared_ptr<const Resolution> &,
+                const std::shared_ptr<const PackageID> &,
                 const SanitisedDependency &
                 )> InterestInSpecFunction;
 
