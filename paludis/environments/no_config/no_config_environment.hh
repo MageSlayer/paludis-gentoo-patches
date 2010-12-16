@@ -163,6 +163,11 @@ namespace paludis
                     ) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
+            virtual Tribool interest_in_suggestion(
+                    const std::shared_ptr<const PackageID> & from_id,
+                    const PackageDepSpec & spec) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
             virtual std::shared_ptr<PackageDatabase> package_database()
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 

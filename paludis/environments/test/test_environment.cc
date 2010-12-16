@@ -309,6 +309,14 @@ TestEnvironment::set_want_choice_enabled(const ChoicePrefixName & p, const Unpre
     _imp->override_want_choice_enabled[stringify(p) + ":" + stringify(n)] = v;
 }
 
+Tribool
+TestEnvironment::interest_in_suggestion(
+        const std::shared_ptr<const PackageID> &,
+        const PackageDepSpec &) const
+{
+    return indeterminate;
+}
+
 void
 TestEnvironment::populate_sets() const
 {

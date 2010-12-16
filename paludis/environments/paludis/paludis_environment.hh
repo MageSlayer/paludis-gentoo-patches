@@ -164,6 +164,10 @@ namespace paludis
                     ) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
+            virtual Tribool interest_in_suggestion(
+                    const std::shared_ptr<const PackageID> & from_id,
+                    const PackageDepSpec & spec) const;
+
             virtual const std::shared_ptr<OutputManager> create_output_manager(
                     const CreateOutputManagerInfo &) const;
 

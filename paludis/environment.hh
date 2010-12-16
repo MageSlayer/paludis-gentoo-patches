@@ -147,6 +147,24 @@ namespace paludis
 
             ///\}
 
+            ///\name Suggestion-related queries
+            ///\{
+
+            /**
+             * Do we want to ignore or take a particular suggestion from a
+             * particular package?
+             *
+             * Command line things override this.
+             *
+             * \since 0.58
+             */
+            virtual Tribool interest_in_suggestion(
+                    const std::shared_ptr<const PackageID> & from_id,
+                    const PackageDepSpec & spec) const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            ///\}
+
             ///\name Mask-related queries
             ///\{
 

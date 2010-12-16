@@ -92,6 +92,10 @@ namespace paludis
 
             ///\}
 
+            virtual Tribool interest_in_suggestion(
+                    const std::shared_ptr<const PackageID> & from_id,
+                    const PackageDepSpec & spec) const;
+
             virtual const Tribool want_choice_enabled(
                     const std::shared_ptr<const PackageID> &,
                     const std::shared_ptr<const Choice> &,

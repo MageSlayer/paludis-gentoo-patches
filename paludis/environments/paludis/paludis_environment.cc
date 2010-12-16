@@ -496,6 +496,14 @@ PaludisEnvironment::known_choice_value_names(
     return _imp->config->use_conf()->known_choice_value_names(id, choice);
 }
 
+Tribool
+PaludisEnvironment::interest_in_suggestion(
+        const std::shared_ptr<const PackageID> &,
+        const PackageDepSpec &) const
+{
+    return indeterminate;
+}
+
 const std::shared_ptr<OutputManager>
 PaludisEnvironment::create_output_manager(const CreateOutputManagerInfo & i) const
 {

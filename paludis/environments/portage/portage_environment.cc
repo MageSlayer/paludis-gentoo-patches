@@ -1054,3 +1054,11 @@ PortageEnvironment::repository_from_new_config_file(const FSPath &)
     throw InternalError(PALUDIS_HERE, "can't create repositories on the fly for PortageEnvironment");
 }
 
+Tribool
+PortageEnvironment::interest_in_suggestion(
+        const std::shared_ptr<const PackageID> &,
+        const PackageDepSpec &) const
+{
+    return indeterminate;
+}
+

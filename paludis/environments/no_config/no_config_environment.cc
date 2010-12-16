@@ -639,3 +639,11 @@ NoConfigEnvironment::update_config_files_for_package_move(const PackageDepSpec &
 {
 }
 
+Tribool
+NoConfigEnvironment::interest_in_suggestion(
+        const std::shared_ptr<const PackageID> &,
+        const PackageDepSpec &) const
+{
+    return indeterminate;
+}
+

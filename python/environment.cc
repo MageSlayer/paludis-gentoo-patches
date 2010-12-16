@@ -416,6 +416,13 @@ class EnvironmentImplementationWrapper :
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "system_root_key");
         }
 
+        virtual Tribool interest_in_suggestion(
+                const std::shared_ptr<const PackageID> &,
+                const PackageDepSpec &) const
+        {
+            throw PythonMethodNotImplemented("EnvironmentImplementation", "interest_in_suggestion");
+        }
+
         virtual const Tribool want_choice_enabled(
                 const std::shared_ptr<const PackageID> &,
                 const std::shared_ptr<const Choice> &,
