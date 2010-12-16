@@ -34,6 +34,7 @@
 #include <vector>
 #include <map>
 #include <cstdlib>
+#include <cstring>
 
 #include <errno.h>
 #include <unistd.h>
@@ -601,7 +602,7 @@ Process::run()
 
     pid_t child(fork());
     if (-1 == child)
-        throw ProcessError("fork() failed");
+        throw ProcessError("fork() failed: " + stringify(::strerror(errno)));
     else if ((0 == child) ^ _imp->as_main_process)
     {
         try
@@ -756,7 +757,10 @@ Process::run()
             act.sa_flags = 0;
             sigaction(SIGCLD, &act, 0);
 
-            if (0 != fork())
+            pid_t p(fork());
+            if (-1 == p)
+                throw ProcessError("fork() failed: " + stringify(::strerror(errno)));
+            else if (0 != p)
                 _exit(0);
         }
 
