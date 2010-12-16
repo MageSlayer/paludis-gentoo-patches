@@ -144,6 +144,18 @@ namespace
         }
     };
 
+    std::string stringify_id_or_spec(
+            const std::shared_ptr<Environment> & env,
+            const PackageDepSpec & spec)
+    {
+        const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::BestVersionOnly(
+                    generator::Matches(spec, { }))]);
+        if (ids->empty())
+            return stringify(spec);
+        else
+            return stringify(**ids->begin());
+    }
+
     struct NotASuccess
     {
         bool operator() (const std::shared_ptr<const ExecuteJob> & job) const
@@ -220,9 +232,6 @@ namespace
     {
         Context context("When pretending for '" + stringify(origin_id_spec) + "':");
 
-        const std::shared_ptr<const PackageID> origin_id(*(*env)[selection::RequireExactlyOne(
-                    generator::Matches(origin_id_spec, { }))]->begin());
-
         if (! string_to_backspace.empty())
             cout << std::string(string_to_backspace.length(), '\010');
         string_to_backspace = make_x_of_y(x, y, f, s);
@@ -235,7 +244,7 @@ namespace
         args->push_back("--if-supported");
         args->push_back("--x-of-y");
         args->push_back(make_x_of_y(x, y, f, s));
-        args->push_back(stringify(origin_id->uniquely_identifying_spec()));
+        args->push_back(stringify(origin_id_spec));
         args->push_back("--destination");
         args->push_back(stringify(destination_repository_name));
 
@@ -285,7 +294,7 @@ namespace
 
     std::string maybe_replacing(
             const std::shared_ptr<Environment> & env,
-            const std::shared_ptr<const PackageIDSequence> & ids,
+            const std::shared_ptr<const Sequence<PackageDepSpec> > & id_specs,
             const std::shared_ptr<const Sequence<PackageDepSpec> > & maybe_replacing_specs)
     {
         std::string r;
@@ -302,7 +311,7 @@ namespace
                 const auto replacing_ids((*env)[selection::BestVersionOnly(generator::Matches(*i, { }))]);
                 if (replacing_ids->empty())
                     r.append(stringify(*i));
-                else if (ids->empty() || (*ids->begin())->name() != (*replacing_ids->begin())->name())
+                else if (id_specs->empty() || *id_specs->begin()->package_ptr() != (*replacing_ids->begin())->name())
                     r.append(stringify(**replacing_ids->begin()));
                 else
                     r.append((*replacing_ids->begin())->canonical_form(idcf_no_name));
@@ -311,33 +320,57 @@ namespace
         return r;
     }
 
+    std::string maybe_ids(
+            const std::shared_ptr<Environment> & env,
+            const std::shared_ptr<const Sequence<PackageDepSpec> > & id_specs)
+    {
+        std::string r;
+
+        if (id_specs)
+            for (auto i(id_specs->begin()), i_end(id_specs->end()) ;
+                    i != i_end ; ++i)
+            {
+                if (! r.empty())
+                    r.append(", ");
+
+                const auto ids((*env)[selection::BestVersionOnly(generator::Matches(*i, { }))]);
+                if (ids->empty())
+                    r.append(stringify(*i));
+                else
+                    r.append(stringify(**ids->begin()));
+            }
+
+        return r;
+    }
+
     void starting_action(
             const std::shared_ptr<Environment> & env,
             const std::string & action,
-            const std::shared_ptr<const PackageIDSequence> & ids,
+            const std::shared_ptr<const Sequence<PackageDepSpec> > & id_specs,
             const std::shared_ptr<const Sequence<PackageDepSpec> > & maybe_replacing_specs,
             const int x, const int y, const int f, const int s)
     {
         cout << fuc(fs_starting_action(), fv<'x'>(make_x_of_y(x, y, f, s)),
-                fv<'a'>(action), fv<'i'>(join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), ", ")),
-                fv<'r'>(maybe_replacing(env, ids, maybe_replacing_specs)));
+                fv<'a'>(action), fv<'i'>(join(id_specs->begin(), id_specs->end(), ", ",
+                        std::bind(&stringify_id_or_spec, env, std::placeholders::_1))),
+                fv<'r'>(maybe_replacing(env, id_specs, maybe_replacing_specs)));
     }
 
     void done_action(
             const std::shared_ptr<Environment> & env,
             const std::string & action,
-            const std::shared_ptr<const PackageIDSequence> & ids,
+            const std::shared_ptr<const Sequence<PackageDepSpec> > & ids,
             const std::shared_ptr<const Sequence<PackageDepSpec> > & maybe_replacing_specs,
             const bool success)
     {
         cout << endl;
         if (success)
             cout << fuc(fs_done_action(),
-                    fv<'a'>(action), fv<'i'>(join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), ", ")),
+                    fv<'a'>(action), fv<'i'>(maybe_ids(env, ids)),
                     fv<'r'>(maybe_replacing(env, ids, maybe_replacing_specs)));
         else
             cout << fuc(fs_failed_action(),
-                    fv<'a'>(action), fv<'i'>(join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), ", ")),
+                    fv<'a'>(action), fv<'i'>(maybe_ids(env, ids)),
                     fv<'r'>(maybe_replacing(env, ids, maybe_replacing_specs)));
     }
 
@@ -361,9 +394,6 @@ namespace
     {
         Context context("When fetching for '" + stringify(id_spec) + "':");
 
-        const std::shared_ptr<const PackageID> id(*(*env)[selection::RequireExactlyOne(
-                    generator::Matches(id_spec, { }))]->begin());
-
         std::string command(cmdline.program_options.a_perform_program.argument());
         if (command.empty())
             command = "$CAVE perform";
@@ -371,7 +401,7 @@ namespace
         command.append(" fetch --hooks --if-supported --managed-output ");
         if (0 != n_fetch_jobs)
             command.append("--output-exclusivity with-others --no-terminal-titles ");
-        command.append(stringify(id->uniquely_identifying_spec()));
+        command.append(stringify(id_spec));
         command.append(" --x-of-y '" + make_x_of_y(x, y, f, s) + "'");
 
         if (normal_only)
@@ -435,10 +465,7 @@ namespace
             Mutex & job_mutex,
             JobActiveState & active_state)
     {
-        const std::shared_ptr<const PackageID> id(*(*env)[selection::RequireExactlyOne(
-                    generator::Matches(id_spec, { }))]->begin());
-
-        Context context("When " + destination_string + " for '" + stringify(*id) + "':");
+        Context context("When " + destination_string + " for '" + stringify(id_spec) + "':");
 
         std::string command(cmdline.program_options.a_perform_program.argument());
         if (command.empty())
@@ -447,7 +474,7 @@ namespace
         command.append(" install --hooks --managed-output ");
         if (0 != n_fetch_jobs)
             command.append("--output-exclusivity with-others ");
-        command.append(stringify(id->uniquely_identifying_spec()));
+        command.append(stringify(id_spec));
         command.append(" --destination " + stringify(destination_repository_name));
         for (Sequence<PackageDepSpec>::ConstIterator i(replacing_specs->begin()),
                 i_end(replacing_specs->end()) ;
@@ -513,9 +540,6 @@ namespace
     {
         Context context("When removing '" + stringify(id_spec) + "':");
 
-        const std::shared_ptr<const PackageID> id(*(*env)[selection::RequireExactlyOne(
-                    generator::Matches(id_spec, { }))]->begin());
-
         std::string command(cmdline.program_options.a_perform_program.argument());
         if (command.empty())
             command = "$CAVE perform";
@@ -523,7 +547,7 @@ namespace
         command.append(" uninstall --hooks --managed-output ");
         if (0 != n_fetch_jobs)
             command.append("--output-exclusivity with-others ");
-        command.append(stringify(id->uniquely_identifying_spec()));
+        command.append(stringify(id_spec));
 
         command.append(" --x-of-y '" + make_x_of_y(x, y, f, s) + "'");
 
@@ -786,6 +810,13 @@ namespace
         x1_post
     };
 
+    std::shared_ptr<Sequence<PackageDepSpec> > ensequence(const PackageDepSpec & s)
+    {
+        auto result(std::make_shared<Sequence<PackageDepSpec> >());
+        result->push_back(s);
+        return result;
+    }
+
     struct ExecuteOneVisitor
     {
         const std::shared_ptr<Environment> env;
@@ -841,15 +872,13 @@ namespace
             if (destination_string.empty())
                 throw InternalError(PALUDIS_HERE, "unhandled dt");
 
-            const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::RequireExactlyOne(
-                        generator::Matches(install_item.origin_id_spec(), { }))]);
-
             switch (part)
             {
                 case x1_pre:
                     {
                         ++counts.x_installs;
-                        starting_action(env, action_string, ids, install_item.replacing_specs(), counts.x_installs, counts.y_installs,
+                        starting_action(env, action_string, ensequence(install_item.origin_id_spec()),
+                                install_item.replacing_specs(), counts.x_installs, counts.y_installs,
                                 counts.f_installs, counts.s_installs);
                     }
                     break;
@@ -888,7 +917,7 @@ namespace
                     break;
 
                 case x1_post:
-                    done_action(env, action_string, ids, install_item.replacing_specs(), 0 == retcode);
+                    done_action(env, action_string, ensequence(install_item.origin_id_spec()), install_item.replacing_specs(), 0 == retcode);
                     break;
             }
 
@@ -897,22 +926,12 @@ namespace
 
         int visit(UninstallJob & uninstall_item)
         {
-            const std::shared_ptr<PackageIDSequence> ids(std::make_shared<PackageIDSequence>());
-            for (Sequence<PackageDepSpec>::ConstIterator i(uninstall_item.ids_to_remove_specs()->begin()),
-                    i_end(uninstall_item.ids_to_remove_specs()->end()) ;
-                    i != i_end ; ++i)
-            {
-                const std::shared_ptr<const PackageID> id(*(*env)[selection::RequireExactlyOne(
-                            generator::Matches(*i, { }))]->begin());
-                ids->push_back(id);
-            }
-
             switch (part)
             {
                 case x1_pre:
                     {
                         ++counts.x_installs;
-                        starting_action(env, "remove", ids, make_null_shared_ptr(), counts.x_installs, counts.y_installs,
+                        starting_action(env, "remove", uninstall_item.ids_to_remove_specs(), make_null_shared_ptr(), counts.x_installs, counts.y_installs,
                                 counts.f_installs, counts.s_installs);
                     }
                     break;
@@ -943,7 +962,7 @@ namespace
                     break;
 
                 case x1_post:
-                    done_action(env, "remove", ids, make_null_shared_ptr(), 0 == retcode);
+                    done_action(env, "remove", uninstall_item.ids_to_remove_specs(), make_null_shared_ptr(), 0 == retcode);
                     break;
             }
 
@@ -952,15 +971,12 @@ namespace
 
         int visit(FetchJob & fetch_item)
         {
-            const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::RequireExactlyOne(
-                        generator::Matches(fetch_item.origin_id_spec(), { }))]);
-
             switch (part)
             {
                 case x1_pre:
                     {
                         ++counts.x_fetches;
-                        starting_action(env, "fetch", ids, make_null_shared_ptr(), counts.x_fetches, counts.y_fetches,
+                        starting_action(env, "fetch", ensequence(fetch_item.origin_id_spec()), make_null_shared_ptr(), counts.x_fetches, counts.y_fetches,
                                 counts.f_fetches, counts.s_fetches);
                     }
                     break;
@@ -988,7 +1004,7 @@ namespace
                     break;
 
                 case x1_post:
-                    done_action(env, "fetch", ids, make_null_shared_ptr(), 0 == retcode);
+                    done_action(env, "fetch", ensequence(fetch_item.origin_id_spec()), make_null_shared_ptr(), 0 == retcode);
                     break;
             }
 
@@ -1063,18 +1079,6 @@ namespace
             done = true;
         }
     };
-
-    std::string stringify_id_or_spec(
-            const std::shared_ptr<Environment> & env,
-            const PackageDepSpec & spec)
-    {
-        const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::BestVersionOnly(
-                    generator::Matches(spec, { }))]);
-        if (ids->empty())
-            return stringify(spec);
-        else
-            return stringify(**ids->begin());
-    }
 
     struct AlreadyDoneVisitor
     {
@@ -1160,9 +1164,8 @@ namespace
 
         std::string visit(const InstallJob & j) const
         {
-            const auto ids((*env)[selection::BestVersionOnly(generator::Matches(j.origin_id_spec(), { }))]);
             return "installing " + stringify_id_or_spec(env, j.origin_id_spec()) + " to ::" + stringify(j.destination_repository_name())
-                + maybe_replacing(env, ids, j.replacing_specs());
+                + maybe_replacing(env, ensequence(j.origin_id_spec()), j.replacing_specs());
         }
 
         std::string visit(const FetchJob & j) const
