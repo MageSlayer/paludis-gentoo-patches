@@ -23,6 +23,7 @@
 #include <paludis/repositories/e/e_repository_params.hh>
 #include <paludis/repositories/e/eapi_phase.hh>
 #include <paludis/repositories/e/e_key.hh>
+#include <paludis/repositories/e/e_slot_key.hh>
 #include <paludis/repositories/e/e_choices_key.hh>
 #include <paludis/repositories/e/e_mask.hh>
 #include <paludis/repositories/e/eapi.hh>
@@ -125,7 +126,7 @@ namespace paludis
         mutable bool has_keys;
         mutable bool has_masks;
 
-        mutable std::shared_ptr<const ESlotKey> slot;
+        mutable std::shared_ptr<const MetadataValueKey<SlotName> > slot;
         mutable std::shared_ptr<const LiteralMetadataValueKey<FSPath> > fs_location;
         mutable std::shared_ptr<const LiteralMetadataValueKey<std::string> > short_description;
         mutable std::shared_ptr<const LiteralMetadataValueKey<std::string> > long_description;
@@ -1144,7 +1145,7 @@ void
 EbuildID::load_slot(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->slot = std::make_shared<ESlotKey>(m, v, mkt_internal);
+    _imp->slot = ESlotKeyStore::get_instance()->fetch(m, v, mkt_internal);
     add_metadata_key(_imp->slot);
 }
 

@@ -49,6 +49,7 @@ noinst_HEADERS = \
 	e_repository_params-se.hh \
 	e_repository_params.hh \
 	e_repository_sets.hh \
+	e_slot_key.hh \
 	e_stripper.hh \
 	eapi.hh \
 	eapi-fwd.hh \
@@ -119,6 +120,7 @@ libpaludiserepository_la_SOURCES = \
 	e_repository_news.cc \
 	e_repository_params.cc \
 	e_repository_sets.cc \
+	e_slot_key.cc \
 	e_stripper.cc \
 	eapi.cc \
 	eapi_phase.cc \
