@@ -18,7 +18,6 @@
  */
 
 #include <paludis/metadata_key.hh>
-#include <paludis/util/pimp-impl.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/set.hh>
@@ -32,24 +31,6 @@
 using namespace paludis;
 
 #include <paludis/metadata_key-se.cc>
-
-namespace paludis
-{
-    template <>
-    struct Imp<MetadataKey>
-    {
-        const std::string raw_name;
-        const std::string human_name;
-        const MetadataKeyType type;
-
-        Imp(const std::string & r, const std::string & h, const MetadataKeyType t) :
-            raw_name(r),
-            human_name(h),
-            type(t)
-        {
-        }
-    };
-}
 
 MetadataKey::~MetadataKey()
 {
