@@ -12,6 +12,7 @@ vimscripts = \
 	paludis-output-conf.vim \
 	paludis-package-mask-conf.vim \
 	paludis-repositories-conf.vim \
+	paludis-suggestions-conf.vim \
 	paludis-use-conf.vim
 
 if HAVE_VIM

@@ -38,6 +38,12 @@ au BufNewFile,BufRead licences.conf
 au BufNewFile,BufRead **/licences.conf.d/*.conf
    \      set filetype=paludis-licenses-conf
 
+au BufNewFile,BufRead suggestions.conf
+   \      set filetype=paludis-suggestions-conf
+
+au BufNewFile,BufRead **/suggestions.conf.d/*.conf
+   \      set filetype=paludis-suggestions-conf
+
 au BufNewFile,BufRead mirrors.conf
     \     set filetype=paludis-mirrors-conf
 
