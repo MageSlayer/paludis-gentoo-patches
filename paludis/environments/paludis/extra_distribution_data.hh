@@ -40,6 +40,7 @@ namespace paludis
         typedef Name<struct package_unmask_filename_part_name> package_unmask_filename_part;
         typedef Name<struct repositories_directory_name> repositories_directory;
         typedef Name<struct repository_defaults_filename_part_name> repository_defaults_filename_part;
+        typedef Name<struct suggestions_filename_part_name> suggestions_filename_part;
         typedef Name<struct use_filename_part_name> use_filename_part;
     }
 
@@ -59,6 +60,7 @@ namespace paludis
             NamedValue<n::package_unmask_filename_part, std::string> package_unmask_filename_part;
             NamedValue<n::repositories_directory, std::string> repositories_directory;
             NamedValue<n::repository_defaults_filename_part, std::string> repository_defaults_filename_part;
+            NamedValue<n::suggestions_filename_part, std::string> suggestions_filename_part;
             NamedValue<n::use_filename_part, std::string> use_filename_part;
         };
 

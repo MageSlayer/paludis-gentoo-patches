@@ -26,6 +26,7 @@
 #include <paludis/environments/paludis/mirrors_conf.hh>
 #include <paludis/environments/paludis/output_conf.hh>
 #include <paludis/environments/paludis/world.hh>
+#include <paludis/environments/paludis/suggestions_conf.hh>
 
 #include <paludis/util/config_file.hh>
 #include <paludis/hooker.hh>
@@ -498,10 +499,10 @@ PaludisEnvironment::known_choice_value_names(
 
 Tribool
 PaludisEnvironment::interest_in_suggestion(
-        const std::shared_ptr<const PackageID> &,
-        const PackageDepSpec &) const
+        const std::shared_ptr<const PackageID> & i,
+        const PackageDepSpec & s) const
 {
-    return indeterminate;
+    return _imp->config->suggestions_conf()->interest_in_suggestion(i, s);
 }
 
 const std::shared_ptr<OutputManager>

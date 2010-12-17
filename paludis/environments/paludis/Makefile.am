@@ -10,17 +10,18 @@ DEFS= \
 	-DSHAREDIR=\"$(datarootdir)\"
 
 libpaludispaludisenvironment_la_SOURCES = \
-	bashable_conf.cc       bashable_conf.hh \
-	keywords_conf.cc       keywords_conf.hh \
-	licenses_conf.cc       licenses_conf.hh \
-	package_mask_conf.cc   package_mask_conf.hh \
-	use_conf.cc            use_conf.hh \
-	mirrors_conf.cc        mirrors_conf.hh \
-	output_conf.cc         output_conf.hh \
-	world.cc               world.hh \
-	paludis_config.cc      paludis_config.hh \
-	paludis_environment.cc paludis_environment.hh \
+	bashable_conf.cc           bashable_conf.hh \
 	extra_distribution_data.cc extra_distribution_data.hh \
+	keywords_conf.cc           keywords_conf.hh \
+	licenses_conf.cc           licenses_conf.hh \
+	mirrors_conf.cc            mirrors_conf.hh \
+	output_conf.cc             output_conf.hh \
+	package_mask_conf.cc       package_mask_conf.hh \
+	paludis_config.cc          paludis_config.hh \
+	paludis_environment.cc     paludis_environment.hh \
+	suggestions_conf.cc        suggestions_conf.hh \
+	use_conf.cc                use_conf.hh \
+	world.cc                   world.hh \
 	registration.cc
 
 shareenvpaludisdir = $(datarootdir)/paludis/environments/paludis/
@@ -36,16 +37,17 @@ libenvdir = $(libdir)/paludis/environments
 noinst_LTLIBRARIES = libpaludispaludisenvironment.la
 
 noinst_HEADERS = \
-	paludis_config.hh \
-	paludis_environment.hh \
-	use_conf.hh \
+	bashable_conf.hh \
+	extra_distribution_data.hh \
 	keywords_conf.hh \
 	licenses_conf.hh \
-	bashable_conf.hh \
-	package_mask_conf.hh \
-	world.hh \
 	mirrors_conf.hh \
-	extra_distribution_data.hh
+	package_mask_conf.hh \
+	paludis_config.hh \
+	paludis_environment.hh \
+	suggestions_conf.hh \
+	use_conf.hh \
+	world.hh
 
 EXTRA_DIST = \
 	paludis_environment_TEST_setup.sh \

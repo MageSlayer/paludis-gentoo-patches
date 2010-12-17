@@ -51,6 +51,7 @@ namespace paludis
                             n::package_unmask_filename_part() = k->get("package_unmask_filename_part"),
                             n::repositories_directory() = k->get("repositories_directory"),
                             n::repository_defaults_filename_part() = k->get("repository_defaults_filename_part"),
+                            n::suggestions_filename_part() = k->get("suggestions_filename_part"),
                             n::use_filename_part() = k->get("use_filename_part")
                             ));
         }

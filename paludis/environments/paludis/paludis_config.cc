@@ -27,6 +27,7 @@
 #include <paludis/environments/paludis/output_conf.hh>
 #include <paludis/environments/paludis/world.hh>
 #include <paludis/environments/paludis/extra_distribution_data.hh>
+#include <paludis/environments/paludis/suggestions_conf.hh>
 
 #include <paludis/util/config_file.hh>
 #include <paludis/util/destringify.hh>
@@ -188,6 +189,7 @@ namespace paludis
         std::shared_ptr<PackageMaskConf> package_unmask_conf;
         std::shared_ptr<MirrorsConf> mirrors_conf;
         std::shared_ptr<OutputConf> output_conf;
+        std::shared_ptr<SuggestionsConf> suggestions_conf;
         mutable std::shared_ptr<World> world;
 
         mutable Mutex reduced_mutex;
@@ -220,6 +222,7 @@ namespace paludis
         package_unmask_conf(std::make_shared<PackageMaskConf>(e)),
         mirrors_conf(std::make_shared<MirrorsConf>(e)),
         output_conf(std::make_shared<OutputConf>(e)),
+        suggestions_conf(std::make_shared<SuggestionsConf>(e)),
         has_general_conf(false),
         accept_all_breaks_portage(false),
         reduced_username(getenv_with_default("PALUDIS_REDUCED_USERNAME", "paludisbuild")),
@@ -853,6 +856,32 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         }
     }
 
+    /* suggestions */
+    {
+        std::list<FSPath> files;
+        files.push_back(_imp->local_config_dir / (dist->suggestions_filename_part() + ".conf"));
+        files.push_back(_imp->local_config_dir / (dist->suggestions_filename_part() + ".bash"));
+        if ((_imp->local_config_dir / (dist->suggestions_filename_part() + ".conf.d")).stat().exists())
+        {
+            std::remove_copy_if(FSIterator(_imp->local_config_dir / (dist->suggestions_filename_part() + ".conf.d"), { }), FSIterator(), std::back_inserter(files),
+                    std::bind(std::logical_not<bool>(), std::bind(&is_file_with_extension, _1, ".conf", IsFileWithOptions())));
+            std::remove_copy_if(FSIterator(_imp->local_config_dir / (dist->suggestions_filename_part() + ".conf.d"), { }), FSIterator(), std::back_inserter(files),
+                    std::bind(std::logical_not<bool>(), std::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
+        }
+
+        for (std::list<FSPath>::const_iterator file(files.begin()), file_end(files.end()) ;
+                file != file_end ; ++file)
+        {
+            Context local_context("When reading suggestions file '" + stringify(*file) + "':");
+
+            if (! file->stat().exists())
+                continue;
+
+            _imp->suggestions_conf->add(*file);
+        }
+    }
+
+
     _imp->bashrc_files->push_back(_imp->local_config_dir / dist->bashrc_filename());
 }
 
@@ -1109,6 +1138,12 @@ std::shared_ptr<const MirrorsConf>
 PaludisConfig::mirrors_conf() const
 {
     return _imp->mirrors_conf;
+}
+
+std::shared_ptr<const SuggestionsConf>
+PaludisConfig::suggestions_conf() const
+{
+    return _imp->suggestions_conf;
 }
 
 std::shared_ptr<const World>

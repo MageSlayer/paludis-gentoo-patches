@@ -50,6 +50,7 @@ namespace paludis
         struct MirrorsConf;
         struct OutputConf;
         struct World;
+        struct SuggestionsConf;
 
         /**
          * A PaludisConfigError is thrown if a configuration error is encountered
@@ -119,6 +120,7 @@ namespace paludis
                 std::shared_ptr<const MirrorsConf> mirrors_conf() const;
                 std::shared_ptr<const World> world() const;
                 std::shared_ptr<const OutputConf> output_conf() const;
+                std::shared_ptr<const SuggestionsConf> suggestions_conf() const;
 
                 ///\}
 
