@@ -38,6 +38,7 @@
 #include <paludis/util/return_literal_function.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/fs_stat.hh>
+#include <paludis/util/singleton-impl.hh>
 
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
@@ -110,6 +111,30 @@ namespace
         std::shared_ptr<const MetadataValueKey<std::string> > pkgmanager;
         std::shared_ptr<const MetadataValueKey<std::string> > vdb_format;
     };
+
+
+    struct EInstalledRepositoryIDData :
+        Singleton<EInstalledRepositoryIDData>
+    {
+        std::shared_ptr<DependenciesLabelSequence> raw_dependencies_labels;
+        std::shared_ptr<DependenciesLabelSequence> build_dependencies_labels;
+        std::shared_ptr<DependenciesLabelSequence> run_dependencies_labels;
+        std::shared_ptr<DependenciesLabelSequence> post_dependencies_labels;
+
+        EInstalledRepositoryIDData() :
+            raw_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
+            build_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
+            run_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
+            post_dependencies_labels(std::make_shared<DependenciesLabelSequence>())
+        {
+            raw_dependencies_labels->push_back(std::make_shared<DependenciesBuildLabel>("build", return_literal_function(true)));
+            raw_dependencies_labels->push_back(std::make_shared<DependenciesRunLabel>("run", return_literal_function(true)));
+
+            build_dependencies_labels->push_back(std::make_shared<DependenciesBuildLabel>("DEPEND", return_literal_function(true)));
+            run_dependencies_labels->push_back(std::make_shared<DependenciesRunLabel>("RDEPEND", return_literal_function(true)));
+            post_dependencies_labels->push_back(std::make_shared<DependenciesPostLabel>("PDEPEND", return_literal_function(true)));
+        }
+    };
 }
 
 namespace paludis
@@ -131,11 +156,6 @@ namespace paludis
         std::shared_ptr<const MetadataValueKey<FSPath> > fs_location;
         std::shared_ptr<const EAPI> eapi;
 
-        std::shared_ptr<DependenciesLabelSequence> raw_dependencies_labels;
-        std::shared_ptr<DependenciesLabelSequence> build_dependencies_labels;
-        std::shared_ptr<DependenciesLabelSequence> run_dependencies_labels;
-        std::shared_ptr<DependenciesLabelSequence> post_dependencies_labels;
-
         Imp(const QualifiedPackageName & q, const VersionSpec & v,
                 const Environment * const e,
                 const std::shared_ptr<const Repository> r, const FSPath & f) :
@@ -143,23 +163,8 @@ namespace paludis
             version(v),
             environment(e),
             repository(r),
-            dir(f),
-            raw_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
-            build_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
-            run_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
-            post_dependencies_labels(std::make_shared<DependenciesLabelSequence>())
+            dir(f)
         {
-            raw_dependencies_labels->push_back(std::make_shared<DependenciesBuildLabel>("build",
-                            return_literal_function(true)));
-            raw_dependencies_labels->push_back(std::make_shared<DependenciesRunLabel>("run",
-                            return_literal_function(true)));
-
-            build_dependencies_labels->push_back(std::make_shared<DependenciesBuildLabel>("DEPEND",
-                            return_literal_function(true)));
-            run_dependencies_labels->push_back(std::make_shared<DependenciesRunLabel>("RDEPEND",
-                            return_literal_function(true)));
-            post_dependencies_labels->push_back(std::make_shared<DependenciesPostLabel>("PDEPEND",
-                            return_literal_function(true)));
         }
     };
 }
@@ -331,19 +336,23 @@ EInstalledRepositoryID::need_keys_added() const
             raw_deps->top()->accept(rewriter);
 
             _imp->keys->raw_dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), vars->dependencies()->name(),
-                        vars->dependencies()->description(), raw_deps_str, _imp->build_dependencies_labels, mkt_dependencies);
+                        vars->dependencies()->description(), raw_deps_str,
+                        EInstalledRepositoryIDData::get_instance()->build_dependencies_labels, mkt_dependencies);
             add_metadata_key(_imp->keys->raw_dependencies);
 
             _imp->keys->build_dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), vars->dependencies()->name() + ".DEPEND",
-                        vars->dependencies()->description() + " (build)", rewriter.depend(), _imp->build_dependencies_labels, mkt_internal);
+                        vars->dependencies()->description() + " (build)", rewriter.depend(),
+                        EInstalledRepositoryIDData::get_instance()->build_dependencies_labels, mkt_internal);
             add_metadata_key(_imp->keys->build_dependencies);
 
             _imp->keys->run_dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), vars->dependencies()->name() + ".RDEPEND",
-                        vars->dependencies()->description() + " (run)", rewriter.rdepend(), _imp->build_dependencies_labels, mkt_internal);
+                        vars->dependencies()->description() + " (run)", rewriter.rdepend(),
+                        EInstalledRepositoryIDData::get_instance()->run_dependencies_labels, mkt_internal);
             add_metadata_key(_imp->keys->run_dependencies);
 
             _imp->keys->post_dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), vars->dependencies()->name() + ".PDEPEND",
-                        vars->dependencies()->description() + " (post)", rewriter.pdepend(), _imp->build_dependencies_labels, mkt_internal);
+                        vars->dependencies()->description() + " (post)", rewriter.pdepend(),
+                        EInstalledRepositoryIDData::get_instance()->post_dependencies_labels, mkt_internal);
             add_metadata_key(_imp->keys->post_dependencies);
         }
     }
@@ -354,7 +363,7 @@ EInstalledRepositoryID::need_keys_added() const
             {
                 _imp->keys->build_dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), vars->build_depend()->name(),
                             vars->build_depend()->description(), file_contents(_imp->dir / vars->build_depend()->name()),
-                            _imp->build_dependencies_labels, mkt_dependencies);
+                            EInstalledRepositoryIDData::get_instance()->build_dependencies_labels, mkt_dependencies);
                 add_metadata_key(_imp->keys->build_dependencies);
             }
 
@@ -363,7 +372,7 @@ EInstalledRepositoryID::need_keys_added() const
             {
                 _imp->keys->run_dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), vars->run_depend()->name(),
                             vars->run_depend()->description(), file_contents(_imp->dir / vars->run_depend()->name()),
-                            _imp->run_dependencies_labels, mkt_dependencies);
+                            EInstalledRepositoryIDData::get_instance()->run_dependencies_labels, mkt_dependencies);
                 add_metadata_key(_imp->keys->run_dependencies);
             }
 
@@ -372,7 +381,7 @@ EInstalledRepositoryID::need_keys_added() const
             {
                 _imp->keys->post_dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), vars->pdepend()->name(),
                             vars->pdepend()->description(), file_contents(_imp->dir / vars->pdepend()->name()),
-                            _imp->post_dependencies_labels, mkt_dependencies);
+                            EInstalledRepositoryIDData::get_instance()->post_dependencies_labels, mkt_dependencies);
                 add_metadata_key(_imp->keys->post_dependencies);
             }
     }
