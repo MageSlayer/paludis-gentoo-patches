@@ -806,7 +806,7 @@ paludis::erepository::parse_plain_text_label(const std::string & s)
 namespace
 {
     bool enabled_if_option(
-            const std::shared_ptr<const PackageID> id,
+            const std::shared_ptr<const PackageID> & id,
             const std::string label,
             const ChoiceNameWithPrefix n)
     {

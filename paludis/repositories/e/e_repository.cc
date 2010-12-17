@@ -1675,7 +1675,7 @@ ERepository::eapi_for_file(const FSPath & f) const
 
 namespace
 {
-    std::shared_ptr<const SetSpecTree> get_system_set(const std::shared_ptr<const SetSpecTree> s)
+    std::shared_ptr<const SetSpecTree> get_system_set(const std::shared_ptr<const SetSpecTree> & s)
     {
         return s;
     }

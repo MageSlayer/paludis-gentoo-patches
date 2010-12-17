@@ -247,7 +247,7 @@ namespace
     };
 
     void add_choice_to_map(std::map<ChoiceNameWithPrefix, ChoiceOptions> & values,
-           const std::pair<ChoiceNameWithPrefix, ChoiceOptions> & flag,
+           const std::pair<const ChoiceNameWithPrefix, ChoiceOptions> & flag,
            const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & key)
     {
         std::map<ChoiceNameWithPrefix, ChoiceOptions>::iterator i(values.find(flag.first));
