@@ -40,7 +40,7 @@
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###configuration/sets.html">sets/</a>
+                <a href="###TOPURI###configuration/suggestions.html">suggestions.conf</a>
             </td>
         </tr>
 
@@ -58,7 +58,7 @@
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###configuration/repositories/index.html">repositories/</a>
+                <a href="###TOPURI###configuration/sets.html">sets/</a>
             </td>
         </tr>
 
@@ -76,7 +76,7 @@
             </td>
 
             <td class="currentpage">
-                &nbsp;
+                <a href="###TOPURI###configuration/repositories/index.html">repositories/</a>
             </td>
         </tr>
 

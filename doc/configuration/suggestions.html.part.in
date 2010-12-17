@@ -1,0 +1,46 @@
+<!-- vim: set tw=120 ft=html sw=4 sts=4 et : -->
+
+<h1>suggestions.conf</h1>
+
+###PALUDISENVIRONMENTONLY###
+
+<p>The <code>suggestions.conf</code> file allows suggested dependencies to be automatically taken or ignored. It is a
+standard configuration file which may be a bash file (<code>suggestions.bash</code>) and which may use the
+<code>suggestions.conf.d/</code> directory. Note that suggestions are not generally used on Gentoo.</p>
+
+<p>Each line in the file consists of a specification followed by one or more tokens. A specification may be any of:</p>
+
+<ul>
+    <li>The special specification <code>*/*</code>, which matches all packages.</li>
+    <li>A simple <code>category/package</code> name.</li>
+    <li>A simple <code>set</code> name.</li>
+    <li>A complex dependency specification.</li>
+</ul>
+
+<p>Lines are considered only if the package containing the suggested dependency matches the specification.</p>
+
+<p>A token may be one of the following:</p>
+
+<ul>
+    <li><code>*/*</code>, which says to take all suggestions from the package.</li>
+    <li>A simple <code>cat/pkg</code>, which says to take any suggestions related to the named package. Note that
+    complex dependency specifications may <em>not</em> be used here.</li>
+    <li>A minus sign, followed by either of the above, to discard rather than take the suggestion in question.</li>
+</ul>
+
+<h2>Example</h2>
+
+<pre>
+# We are always interested in some suggestions from kdevelop:
+dev-util/kdevelop dev-util/subversion kde-base/konsole
+
+# We never want some other suggestions from kdevelop:
+dev-util/kdevelop -dev-util/cvs
+
+# We don't want any suggestions on kmail from anything:
+*/* -kde-base/kmail
+
+# Otherwise, we're interested in all kde-base suggestions:
+kde-base/* */*
+</pre>
+

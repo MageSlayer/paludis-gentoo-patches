@@ -172,6 +172,8 @@ paludis-*.*.*.tar.bz2
 /doc/configuration/output.html.part
 /doc/configuration/packagemask.html
 /doc/configuration/packagemask.html.part
+/doc/configuration/suggestions.html
+/doc/configuration/suggestions.html.part
 /doc/configuration/repositories.html
 /doc/configuration/repositories.html.part
 /doc/configuration/sets.html

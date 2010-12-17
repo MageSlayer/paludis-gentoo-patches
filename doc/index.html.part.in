@@ -70,6 +70,7 @@ the exheres repository format.</p>
     <li><a href="configuration/output.html">output.conf</a>: for output configuration and logging.</li>
     <li><a href="configuration/packagemask.html">package_mask.conf and package_unmask.conf</a>: for masks.</li>
     <li><a href="configuration/bashrc.html">bashrc</a>: for package build environment options.</li>
+    <li><a href="configuration/suggestions.html">suggestions.conf</a>: for suggestions.</li>
     <li><a href="configuration/sets.html">sets/*.conf</a>: for user defined package sets.</li>
     <li><a href="configuration/repositories/index.html">repositories/*.conf and repository_defaults.conf</a></li>
 </ul>
