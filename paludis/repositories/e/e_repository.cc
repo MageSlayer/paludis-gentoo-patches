@@ -837,11 +837,6 @@ ERepository::purge_invalid_cache() const
                 _imp->params.eapi_when_unknown()));
 
     std::shared_ptr<EclassMtimes> eclass_mtimes(std::make_shared<EclassMtimes>(this, _imp->params.eclassdirs()));
-    time_t master_mtime(0);
-    FSPath master_mtime_file(_imp->params.location() / "metadata" / "timestamp");
-    FSStat master_mtime_file_stat(master_mtime_file.stat());
-    if (master_mtime_file_stat.exists())
-        master_mtime = master_mtime_file_stat.mtim().seconds();
 
     for (FSIterator dc(write_cache, { fsio_inode_sort, fsio_want_directories, fsio_deref_symlinks_for_wants }), dc_end ; dc != dc_end ; ++dc)
     {
