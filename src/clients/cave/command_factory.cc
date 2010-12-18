@@ -37,6 +37,7 @@
 
 #include "cmd_config.hh"
 #include "cmd_contents.hh"
+#include "cmd_digest.hh"
 #include "cmd_display_resolution.hh"
 #include "cmd_dump_cave_formats_conf.hh"
 #include "cmd_executables.hh"
@@ -154,6 +155,7 @@ CommandFactory::CommandFactory() :
     _imp->handlers.insert(std::make_pair("config", std::bind(&make_command<ConfigCommand>)));
     _imp->handlers.insert(std::make_pair("contents", std::bind(&make_command<ContentsCommand>)));
     _imp->handlers.insert(std::make_pair("display-resolution", std::bind(&make_command<DisplayResolutionCommand>)));
+    _imp->handlers.insert(std::make_pair("digest", std::bind(&make_command<DigestCommand>)));
     _imp->handlers.insert(std::make_pair("dump-cave-formats-conf", std::bind(&make_command<DumpCaveFormatsConfCommand>)));
     _imp->handlers.insert(std::make_pair("executables", std::bind(&make_command<ExecutablesCommand>)));
     _imp->handlers.insert(std::make_pair("execute-resolution", std::bind(&make_command<ExecuteResolutionCommand>)));

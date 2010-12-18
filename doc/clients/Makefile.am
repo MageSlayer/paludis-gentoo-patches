@@ -28,6 +28,7 @@ paludisclientshtml_DATA = \
 CAVE_COMMANDS_HTML = \
 	cave-config.html \
 	cave-contents.html \
+	cave-digest.html \
 	cave-display-resolution.html \
 	cave-dump-cave-formats-conf.html \
 	cave-executables.html \

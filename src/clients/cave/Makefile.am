@@ -24,6 +24,7 @@ noinst_PROGRAMS = man-cave
 command_MANS = \
 	cave-config.1 \
 	cave-contents.1 \
+	cave-digest.1 \
 	cave-display-resolution.1 \
 	cave-dump-cave-formats-conf.1 \
 	cave-executables.1 \
@@ -124,6 +125,7 @@ libcave_a_SOURCES = \
 	command_factory.cc command_factory.hh \
 	cmd_contents.cc cmd_contents.hh cmd_contents-fmt.hh \
 	cmd_config.cc cmd_config.hh \
+	cmd_digest.cc cmd_digest.hh \
 	cmd_display_resolution.cc cmd_display_resolution.hh cmd_display_resolution-fmt.hh \
 	cmd_dump_cave_formats_conf.cc cmd_dump_cave_formats_conf.hh \
 	cmd_executables.cc cmd_executables.hh cmd_executables-fmt.hh \

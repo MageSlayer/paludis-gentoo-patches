@@ -83,6 +83,7 @@ paludis-*.*.*.tar.bz2
 /doc/clients/cave.html
 /doc/clients/cave-config.html
 /doc/clients/cave-contents.html
+/doc/clients/cave-digest.html
 /doc/clients/cave-display-resolution.html
 /doc/clients/cave-dump-cave-formats-conf.html
 /doc/clients/cave-executables.html
