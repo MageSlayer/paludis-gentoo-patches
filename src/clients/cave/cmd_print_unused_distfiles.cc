@@ -2,6 +2,7 @@
 
 /*
  * Copyright (c) 2010 Stephan Friedrichs
+ * Copyright (c) 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -45,6 +46,7 @@
 #include <iostream>
 #include <algorithm>
 #include <set>
+#include <list>
 
 
 using namespace paludis;
@@ -73,9 +75,16 @@ namespace
                 "formatting is used, making the output suitable for parsing by scripts.";
         }
 
-        PrintUnusedDistfilesCommandLine()
+        args::ArgsGroup g_repository_options;
+        args::StringSetArg a_include;
+
+        PrintUnusedDistfilesCommandLine() :
+            g_repository_options(main_options_section(), "Repository Options", "Alter how repositories are handled."),
+            a_include(&g_repository_options, "include", 'i', "Treat all distfiles from IDs in the specified repository "
+                    "as used. May be specified multiple times. Typically this is used for binary repositories, to avoid "
+                    "treating non-installed binary distfiles as unused.")
         {
-            add_usage_line("");
+            add_usage_line("[ --include mybinrepo ... ]");
         }
     };
 
@@ -142,17 +151,31 @@ PrintUnusedDistfilesCommand::run(
     //
 
     std::set<std::string> used_distfiles;
-    std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsUnsorted(
-                generator::All() | filter::InstalledAtRoot(
-                env->preferred_root_key()->value()))]);
 
-    for (PackageIDSequence::ConstIterator iter(ids->begin()), end(ids->end()) ;
-        iter != end ; ++iter)
+    std::list<Selection> selections;
+    selections.push_back(selection::AllVersionsUnsorted(generator::All() | filter::InstalledAtRoot(env->preferred_root_key()->value())));
+
+    for (auto c(cmdline.a_include.begin_args()), c_end(cmdline.a_include.end_args()) ;
+            c != c_end ; ++c)
+        selections.push_back(selection::AllVersionsUnsorted(generator::InRepository(RepositoryName(*c))));
+
+    std::set<std::shared_ptr<const PackageID>, PackageIDComparator> already_done((PackageIDComparator(env->package_database().get())));
+    for (auto s(selections.begin()), s_end(selections.end()) ;
+            s != s_end ; ++s)
     {
-        if ((*iter)->fetches_key())
+        auto ids((*env)[*s]);
+
+        for (PackageIDSequence::ConstIterator iter(ids->begin()), end(ids->end()) ;
+                iter != end ; ++iter)
         {
-            DistfilesFilter filter(used_distfiles);
-            (*iter)->fetches_key()->value()->top()->accept(filter);
+            if (! already_done.insert(*iter).second)
+                continue;
+
+            if ((*iter)->fetches_key())
+            {
+                DistfilesFilter filter(used_distfiles);
+                (*iter)->fetches_key()->value()->top()->accept(filter);
+            }
         }
     }
 
