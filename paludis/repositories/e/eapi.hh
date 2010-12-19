@@ -185,6 +185,7 @@ namespace paludis
         typedef Name<struct slot_name> slot;
         typedef Name<struct source_merged_variables_name> source_merged_variables;
         typedef Name<struct src_uri_name> src_uri;
+        typedef Name<struct suggestions_group_name_name> suggestions_group_name;
         typedef Name<struct support_eclasses_name> support_eclasses;
         typedef Name<struct support_exlibs_name> support_exlibs;
         typedef Name<struct supported_name> supported;
@@ -476,6 +477,7 @@ namespace paludis
             NamedValue<n::myoptions_number_selected_at_most_one, std::string> myoptions_number_selected_at_most_one;
             NamedValue<n::myoptions_number_selected_exactly_one, std::string> myoptions_number_selected_exactly_one;
             NamedValue<n::myoptions_requires, std::string> myoptions_requires;
+            NamedValue<n::suggestions_group_name, std::string> suggestions_group_name;
         };
     }
 #endif
