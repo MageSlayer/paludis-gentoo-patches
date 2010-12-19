@@ -37,7 +37,9 @@
 #include <paludis/package_dep_spec_collection.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/match_package.hh>
+#include <paludis/dep_spec_annotations.hh>
 #include <list>
+#include <set>
 
 using namespace paludis;
 using namespace paludis::resolver;
@@ -49,8 +51,10 @@ namespace paludis
     {
         const Environment * const env;
         std::list<PackageDepSpec> take_specs;
+        std::set<std::string> take_groups;
         std::list<PackageDepSpec> take_from_specs;
         std::list<PackageDepSpec> ignore_specs;
+        std::set<std::string> ignore_groups;
         std::list<PackageDepSpec> ignore_from_specs;
         PackageDepSpecCollection no_blockers_from_specs;
         PackageDepSpecCollection no_dependencies_from_specs;
@@ -84,6 +88,12 @@ InterestInSpecHelper::add_take_spec(const PackageDepSpec & spec)
 }
 
 void
+InterestInSpecHelper::add_take_group(const std::string & group)
+{
+    _imp->take_groups.insert(group);
+}
+
+void
 InterestInSpecHelper::add_take_from_spec(const PackageDepSpec & spec)
 {
     _imp->take_from_specs.push_back(spec);
@@ -93,6 +103,12 @@ void
 InterestInSpecHelper::add_ignore_spec(const PackageDepSpec & spec)
 {
     _imp->ignore_specs.push_back(spec);
+}
+
+void
+InterestInSpecHelper::add_ignore_group(const std::string & group)
+{
+    _imp->ignore_groups.insert(group);
 }
 
 void
@@ -259,6 +275,20 @@ InterestInSpecHelper::operator() (
                 return si_take;
         }
 
+        std::string spec_group;
+        {
+            const DepSpec & spec(dep.spec().if_block() ? static_cast<const DepSpec &>(*dep.spec().if_block()) : *dep.spec().if_package());
+            if (spec.maybe_annotations())
+            {
+                auto a(spec.maybe_annotations()->find(dsar_suggestions_group_name));
+                if (a != spec.maybe_annotations()->end())
+                    spec_group = a->value();
+            }
+        }
+
+        if ((! spec_group.empty()) && _imp->take_groups.end() != _imp->take_groups.find(spec_group))
+            return si_take;
+
         if (dep.spec().if_package())
         {
             for (auto l(_imp->ignore_specs.begin()), l_end(_imp->ignore_specs.end()) ;
@@ -273,6 +303,9 @@ InterestInSpecHelper::operator() (
             if (match_package(*_imp->env, *l, *id, { }))
                 return si_ignore;
         }
+
+        if ((! spec_group.empty()) && _imp->ignore_groups.end() != _imp->ignore_groups.find(spec_group))
+            return si_ignore;
 
         if (suggestion)
         {

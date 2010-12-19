@@ -44,8 +44,10 @@ namespace paludis
                 ~InterestInSpecHelper();
 
                 void add_take_spec(const PackageDepSpec &);
+                void add_take_group(const std::string &);
                 void add_take_from_spec(const PackageDepSpec &);
                 void add_ignore_spec(const PackageDepSpec &);
+                void add_ignore_group(const std::string &);
                 void add_ignore_from_spec(const PackageDepSpec &);
                 void add_no_blockers_from_spec(const PackageDepSpec &);
                 void add_no_dependencies_from_spec(const PackageDepSpec &);

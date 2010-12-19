@@ -104,8 +104,10 @@ const auto fs_reasons_end = make_format_string_fetcher("display-resolution/reaso
 const auto fs_confirm = make_format_string_fetcher("display-resolution/confirm", 1)
     << c::bold_red() << "    Cannot proceed without: " << c::normal() << param<'s'>() << "\\n";
 
-const auto fs_take = make_format_string_fetcher("display-resolution/take", 1)
-    << c::bold_green_or_pink() << "    Take using: " << c::normal() << "--take" << "\\n";
+const auto fs_take = make_format_string_fetcher("display-resolution/take", 2)
+    << c::bold_green_or_pink() << "    Take using: " << c::normal() << "--take"
+    << param_if<'g'>() << " (" << param<'g'>() << ")" << param_endif<'g'>()
+    << "\\n";
 
 const auto fs_take_purge = make_format_string_fetcher("display-resolution/take_purge", 1)
     << c::bold_green_or_pink() << "    Take using: " << c::normal() << "--purge" << "\\n";

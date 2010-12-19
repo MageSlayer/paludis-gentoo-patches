@@ -783,10 +783,36 @@ namespace
             cout << fuc(fs_confirm(), fv<'s'>(join(indirect_iterator(r->begin()), indirect_iterator(r->end()), ", ", stringify_confirmation)));
     }
 
-    void display_untaken_change(
-            const ChangesToMakeDecision &)
+    std::string find_suggestion_groups(
+            const std::shared_ptr<const Resolution> & resolution,
+            const Decision &)
     {
-        cout << fuc(fs_take());
+        std::stringstream result;
+
+        for (auto c(resolution->constraints()->begin()), c_end(resolution->constraints()->end()) ;
+                c != c_end ; ++c)
+        {
+            const DepSpec & spec((*c)->spec().if_block() ? static_cast<const DepSpec &>(*(*c)->spec().if_block()) : *(*c)->spec().if_package());
+            if (spec.maybe_annotations())
+            {
+                auto a(spec.maybe_annotations()->find(dsar_suggestions_group_name));
+                if (a != spec.maybe_annotations()->end())
+                {
+                    if (! result.str().empty())
+                        result << ", ";
+                    result << a->value();
+                }
+            }
+        }
+
+        return result.str();
+    }
+
+    void display_untaken_change(
+            const std::shared_ptr<const Resolution> resolution,
+            const ChangesToMakeDecision & decision)
+    {
+        cout << fuc(fs_take(), fv<'g'>(find_suggestion_groups(resolution, decision)));
     }
 
     struct IsPurgeVisitor
@@ -1270,7 +1296,7 @@ namespace
         if (maybe_totals)
             display_downloads(env, cmdline, decision.origin_id(), maybe_totals);
         if (untaken)
-            display_untaken_change(decision);
+            display_untaken_change(resolution, decision);
         if (confirmations)
             display_confirmations(decision);
         if (! cycle_notes.empty())

@@ -933,7 +933,26 @@ paludis::cave::resolve_common(
     for (args::StringSetArg::ConstIterator i(resolution_options.a_take.begin_args()),
             i_end(resolution_options.a_take.end_args()) ;
             i != i_end ; ++i)
-        interest_in_spec_helper.add_take_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
+    {
+        bool might_be_group(std::string::npos == i->find_first_not_of(
+                    "abcdefghijklmnopqrstuvwxyz"
+                    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                    "0123456789-_"));
+
+        if (might_be_group)
+        {
+            interest_in_spec_helper.add_take_group(*i);
+            try
+            {
+                interest_in_spec_helper.add_take_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
+            }
+            catch (const Exception &)
+            {
+            }
+        }
+        else
+            interest_in_spec_helper.add_take_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
+    }
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_take_from.begin_args()),
             i_end(resolution_options.a_take_from.end_args()) ;
@@ -943,7 +962,26 @@ paludis::cave::resolve_common(
     for (args::StringSetArg::ConstIterator i(resolution_options.a_ignore.begin_args()),
             i_end(resolution_options.a_ignore.end_args()) ;
             i != i_end ; ++i)
-        interest_in_spec_helper.add_ignore_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
+    {
+        bool might_be_group(std::string::npos == i->find_first_not_of(
+                    "abcdefghijklmnopqrstuvwxyz"
+                    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                    "0123456789-_"));
+
+        if (might_be_group)
+        {
+            interest_in_spec_helper.add_ignore_group(*i);
+            try
+            {
+                interest_in_spec_helper.add_ignore_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
+            }
+            catch (const Exception &)
+            {
+            }
+        }
+        else
+            interest_in_spec_helper.add_ignore_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
+    }
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_ignore_from.begin_args()),
             i_end(resolution_options.a_ignore_from.end_args()) ;

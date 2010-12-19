@@ -202,11 +202,12 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
             ("display",                    "Display recommendations, but do not take them unless explicitly told to do so")
             ("take",                       "Take all recommendations"),
             "take"),
-    a_take(&g_suggestion_options, "take", 't', "Take any suggestion matching the supplied package specification"
-            " (e.g. --take 'app-vim/securemodelines' or --take 'app-vim/*')"),
+    a_take(&g_suggestion_options, "take", 't', "Take any suggestion matching the supplied package specification "
+            "or suggestion group name (e.g. --take 'app-vim/securemodelines' or --take 'app-vim/*' or --take send-email)"),
     a_take_from(&g_suggestion_options, "take-from", 'T', "Take all suggestions made by any package matching the "
             "supplied package specification"),
-    a_ignore(&g_suggestion_options, "ignore", 'i', "Discard any suggestion matching the supplied package specification"),
+    a_ignore(&g_suggestion_options, "ignore", 'i', "Discard any suggestion matching the supplied package specification "
+            "or group name"),
     a_ignore_from(&g_suggestion_options, "ignore-from", 'I', "Discard all suggestions made by any package matching the "
             "supplied package specification"),
 
