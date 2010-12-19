@@ -78,6 +78,7 @@
 #include <paludis/output_manager.hh>
 #include <paludis/changed_choices.hh>
 #include <paludis/mask_utils.hh>
+#include <paludis/dep_spec_annotations.hh>
 
 #include <set>
 #include <iterator>
@@ -134,23 +135,14 @@ namespace
     };
 
     std::string get_annotation(
-            const std::shared_ptr<const MetadataSectionKey> & section,
+            const std::shared_ptr<const DepSpecAnnotations> & annotations,
             const std::string & name)
     {
-        MetadataSectionKey::MetadataConstIterator i(section->find_metadata(name));
-        if (i == section->end_metadata())
+        auto i(annotations->find(name));
+        if (i == annotations->end())
             return "";
 
-        const MetadataValueKey<std::string> * value(
-                simple_visitor_cast<const MetadataValueKey<std::string> >(**i));
-        if (! value)
-        {
-            Log::get_instance()->message("cave.get_annotation.not_a_string", ll_warning, lc_context)
-                << "Annotation '" << (*i)->raw_name() << "' not a string. This is probably a bug.";
-            return "";
-        }
-
-        return value->value();
+        return i->value();
     }
 
     std::string stringify_change_by_resolvent(const ChangeByResolvent & r)
@@ -170,7 +162,7 @@ namespace
         }
 
         std::pair<std::string, Tribool> annotate(
-                const std::shared_ptr<const MetadataSectionKey> & key,
+                const std::shared_ptr<const DepSpecAnnotations> & key,
                 const std::pair<std::string, Tribool> unannotated,
                 const bool annotate_regardless) const
         {
@@ -192,7 +184,7 @@ namespace
         std::pair<std::string, Tribool> visit(const DependencyReason & r) const
         {
             if (r.sanitised_dependency().spec().if_block())
-                return annotate(r.sanitised_dependency().spec().if_block()->annotations_key(),
+                return annotate(r.sanitised_dependency().spec().if_block()->maybe_annotations(),
                         std::make_pair(stringify(*r.sanitised_dependency().spec().if_block())
                             + " from " + (verbose ? stringify(*r.from_id()) : stringify(r.from_id()->name())),
                             false), true);
@@ -204,7 +196,7 @@ namespace
                     if (! r.sanitised_dependency().original_specs_as_string().empty())
                         as = " (originally " + r.sanitised_dependency().original_specs_as_string() + ")";
 
-                    return annotate(r.sanitised_dependency().spec().if_package()->annotations_key(),
+                    return annotate(r.sanitised_dependency().spec().if_package()->maybe_annotations(),
                             std::make_pair(stringify(*r.sanitised_dependency().spec().if_package())
                                 + " from " + stringify(*r.from_id()) + ", key '"
                                 + r.sanitised_dependency().metadata_key_human_name() + "'"
@@ -223,7 +215,7 @@ namespace
                             ! cs.includes_non_test_buildish)
                         ts = " (test)";
 
-                    return annotate(r.sanitised_dependency().spec().if_package()->annotations_key(),
+                    return annotate(r.sanitised_dependency().spec().if_package()->maybe_annotations(),
                             std::make_pair(stringify(r.from_id()->name()) + ts, false), false);
                 }
             }

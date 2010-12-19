@@ -56,6 +56,7 @@
 #include <paludis/filter.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
+#include <paludis/dep_spec_annotations.hh>
 
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/fast_unique_copy.hh>
@@ -1205,19 +1206,12 @@ namespace
 
         void do_annotations(const DepSpec & p)
         {
-            if (p.annotations_key() && (p.annotations_key()->begin_metadata() != p.annotations_key()->end_metadata()))
+            if (p.maybe_annotations() && (p.maybe_annotations()->begin() != p.maybe_annotations()->end()))
             {
                 str << " [[ ";
-                for (MetadataSectionKey::MetadataConstIterator k(p.annotations_key()->begin_metadata()),
-                        k_end(p.annotations_key()->end_metadata()) ;
-                        k != k_end ; ++k)
-                {
-                    const MetadataValueKey<std::string> * r(
-                            simple_visitor_cast<const MetadataValueKey<std::string> >(**k));
-                    if (! r)
-                        throw InternalError(PALUDIS_HERE, "annotations must be string keys");
-                    str << (*k)->raw_name() << " = [" << (r->value().empty() ? " " : " " + r->value() + " ") << "] ";
-                }
+                for (auto m(p.maybe_annotations()->begin()), m_end(p.maybe_annotations()->end()) ;
+                        m != m_end ; ++m)
+                    str << m->key() << " = [" << (m->value().empty() ? " " : " " + m->value() + " ") << "] ";
                 str << "]] ";
             }
         }

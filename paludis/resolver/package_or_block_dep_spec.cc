@@ -24,10 +24,10 @@
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/serialise-impl.hh>
-#include <paludis/metadata_key.hh>
+#include <paludis/dep_spec_annotations.hh>
 #include <paludis/elike_package_dep_spec.hh>
-#include <paludis/elike_annotations.hh>
 #include <ostream>
 
 using namespace paludis;
@@ -79,26 +79,16 @@ PackageOrBlockDepSpec::serialise(Serialiser & s) const
             ;
     }
 
-    if (! spec->annotations_key())
+    if (! spec->maybe_annotations())
         w.member(SerialiserFlags<>(), "annotations_count", 0);
     else
     {
         int n(0);
-        for (MetadataSectionKey::MetadataConstIterator m(spec->annotations_key()->begin_metadata()),
-                m_end(spec->annotations_key()->end_metadata()) ;
+        for (auto m(spec->maybe_annotations()->begin()), m_end(spec->maybe_annotations()->end()) ;
                 m != m_end ; ++m)
         {
-            const MetadataValueKey<std::string> * k(
-                    simple_visitor_cast<const MetadataValueKey<std::string> >(**m));
-            if (! k)
-            {
-                Log::get_instance()->message("resolver.sanitised_dependencies.not_a_string", ll_warning, lc_context)
-                    << "Annotation '" << (*m)->raw_name() << "' not a string. This is probably a bug.";
-                continue;
-            }
-
-            w.member(SerialiserFlags<>(), "annotations_k_" + stringify(n), k->human_name());
-            w.member(SerialiserFlags<>(), "annotations_v_" + stringify(n), k->value());
+            w.member(SerialiserFlags<>(), "annotations_k_" + stringify(n), m->key());
+            w.member(SerialiserFlags<>(), "annotations_v_" + stringify(n), m->value());
             ++n;
         }
 
@@ -124,33 +114,31 @@ PackageOrBlockDepSpec::deserialise(Deserialisation & d, const std::shared_ptr<co
                 vso_letters_anywhere, vso_dotted_suffixes },
                 for_id));
 
-    std::shared_ptr<MetadataSectionKey> annotations;
-
-    std::shared_ptr<Map<std::string, std::string> > m(std::make_shared<Map<std::string, std::string>>());
+    auto annotations(std::make_shared<DepSpecAnnotations>());
     for (int a(0), a_end(v.member<int>("annotations_count")) ;
             a != a_end ; ++a)
     {
         std::string key(v.member<std::string>("annotations_k_" + stringify(a)));
         std::string value(v.member<std::string>("annotations_v_" + stringify(a)));
-        m->insert(key, value);
+        annotations->add(make_named_values<DepSpecAnnotation>(
+                    n::key() = key,
+                    n::value() = value
+                    ));
     }
-
-    if (! m->empty())
-        annotations = std::make_shared<ELikeAnnotations>(m);
 
     if (block)
     {
         BlockKind kind(destringify<BlockKind>(v.member<std::string>("block_kind")));
         std::string text(v.member<std::string>("text"));
         BlockDepSpec b_spec(text, spec, kind);
-        if (annotations)
-            b_spec.set_annotations_key(annotations);
+        if (annotations->begin() != annotations->end())
+            b_spec.set_annotations(annotations);
         return PackageOrBlockDepSpec(b_spec);
     }
     else
     {
-        if (annotations)
-            spec.set_annotations_key(annotations);
+        if (annotations->begin() != annotations->end())
+            spec.set_annotations(annotations);
         return PackageOrBlockDepSpec(spec);
     }
 }

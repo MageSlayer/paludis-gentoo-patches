@@ -37,7 +37,7 @@ namespace paludis
         {
             private:
                 void verify_one(const ChoicePrefixName &, const std::string &,
-                        const std::shared_ptr<const MetadataSectionKey> &);
+                        const std::shared_ptr<const DepSpecAnnotations> &);
 
             public:
                 MyOptionsRequirementsVerifier(const std::shared_ptr<const ERepositoryID> &);

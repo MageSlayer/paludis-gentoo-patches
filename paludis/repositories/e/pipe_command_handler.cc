@@ -47,6 +47,7 @@
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/choice.hh>
+#include <paludis/dep_spec_annotations.hh>
 #include <vector>
 #include <limits>
 #include <sstream>
@@ -117,10 +118,9 @@ namespace
         {
             bool seen_description(false), done_brackets(false);
 
-            if (p.annotations_key())
-                for (MetadataSectionKey::MetadataConstIterator k(p.annotations_key()->begin_metadata()),
-                        k_end(p.annotations_key()->end_metadata()) ;
-                        k != k_end ; ++k)
+            if (p.maybe_annotations())
+                for (auto m(p.maybe_annotations()->begin()), m_end(p.maybe_annotations()->end()) ;
+                        m != m_end ; ++m)
                 {
                     if (! done_brackets)
                     {
@@ -128,13 +128,9 @@ namespace
                         done_brackets = true;
                     }
 
-                    const MetadataValueKey<std::string> * r(
-                            simple_visitor_cast<const MetadataValueKey<std::string> >(**k));
-                    if (! r)
-                        throw InternalError(PALUDIS_HERE, "annotations must be string keys");
-                    str << (*k)->raw_name() << " = [" << (r->value().empty() ? " " : " " + r->value() + " ") << "] ";
+                    str << m->key() << " = [" << (m->value().empty() ? " " : " " + m->value() + " ") << "] ";
 
-                    if ((*k)->raw_name() == description_annotation)
+                    if (m->key() == description_annotation)
                         seen_description = true;
                 }
 

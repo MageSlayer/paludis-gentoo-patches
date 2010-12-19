@@ -34,7 +34,6 @@
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/options.hh>
-#include <paludis/metadata_key.hh>
 #include <paludis/additional_package_dep_spec_requirement.hh>
 #include <paludis/dep_spec_data.hh>
 
@@ -52,22 +51,12 @@ namespace paludis
     template <>
     struct Imp<DepSpec>
     {
-        std::shared_ptr<const MetadataSectionKey> annotations_key;
-
-        Imp()
-        {
-        }
-
-        Imp(const std::shared_ptr<const MetadataSectionKey> & k) :
-            annotations_key(k)
-        {
-        }
+        std::shared_ptr<const DepSpecAnnotations> annotations;
     };
 }
 
 DepSpec::DepSpec() :
-    Pimp<DepSpec>(),
-    _imp(Pimp<DepSpec>::_imp)
+    Pimp<DepSpec>()
 {
 }
 
@@ -75,19 +64,16 @@ DepSpec::~DepSpec()
 {
 }
 
-const std::shared_ptr<const MetadataSectionKey>
-DepSpec::annotations_key() const
+const std::shared_ptr<const DepSpecAnnotations>
+DepSpec::maybe_annotations() const
 {
-    return _imp->annotations_key;
+    return _imp->annotations;
 }
 
 void
-DepSpec::set_annotations_key(const std::shared_ptr<const MetadataSectionKey> & k)
+DepSpec::set_annotations(const std::shared_ptr<const DepSpecAnnotations> & a)
 {
-    clear_metadata_keys();
-    _imp->annotations_key = k;
-    if (_imp->annotations_key)
-        add_metadata_key(_imp->annotations_key);
+    _imp->annotations = a;
 }
 
 AnyDepSpec::AnyDepSpec()
@@ -98,22 +84,11 @@ std::shared_ptr<DepSpec>
 AnyDepSpec::clone() const
 {
     std::shared_ptr<AnyDepSpec> result(std::make_shared<AnyDepSpec>());
-    result->set_annotations_key(annotations_key());
+    result->set_annotations(maybe_annotations());
     return result;
 }
 
-void
-AnyDepSpec::need_keys_added() const
-{
-}
-
-
 AllDepSpec::AllDepSpec()
-{
-}
-
-void
-AllDepSpec::need_keys_added() const
 {
 }
 
@@ -121,7 +96,7 @@ std::shared_ptr<DepSpec>
 AllDepSpec::clone() const
 {
     std::shared_ptr<AllDepSpec> result(std::make_shared<AllDepSpec>());
-    result->set_annotations_key(annotations_key());
+    result->set_annotations(maybe_annotations());
     return result;
 }
 
@@ -129,16 +104,11 @@ ExactlyOneDepSpec::ExactlyOneDepSpec()
 {
 }
 
-void
-ExactlyOneDepSpec::need_keys_added() const
-{
-}
-
 std::shared_ptr<DepSpec>
 ExactlyOneDepSpec::clone() const
 {
     std::shared_ptr<ExactlyOneDepSpec> result(std::make_shared<ExactlyOneDepSpec>());
-    result->set_annotations_key(annotations_key());
+    result->set_annotations(maybe_annotations());
     return result;
 }
 
@@ -148,12 +118,9 @@ namespace paludis
     struct Imp<ConditionalDepSpec>
     {
         const std::shared_ptr<const ConditionalDepSpecData> data;
-        Mutex mutex;
-        bool added_keys;
 
         Imp(const std::shared_ptr<const ConditionalDepSpecData> & d) :
-            data(d),
-            added_keys(false)
+            data(d)
         {
         }
     };
@@ -182,32 +149,11 @@ ConditionalDepSpec::ConditionalDepSpec(const ConditionalDepSpec & other) :
     CloneUsingThis<DepSpec, ConditionalDepSpec>(other),
     _imp(Pimp<ConditionalDepSpec>::_imp)
 {
-    set_annotations_key(other.annotations_key());
+    set_annotations(other.maybe_annotations());
 }
 
 ConditionalDepSpec::~ConditionalDepSpec()
 {
-}
-
-void
-ConditionalDepSpec::need_keys_added() const
-{
-    Lock l(_imp->mutex);
-    if (! _imp->added_keys)
-    {
-        _imp->added_keys = true;
-        using namespace std::placeholders;
-        std::for_each(_imp->data->begin_metadata(), _imp->data->end_metadata(),
-                std::bind(&ConditionalDepSpec::add_metadata_key, this, _1));
-    }
-}
-
-void
-ConditionalDepSpec::clear_metadata_keys() const
-{
-    Lock l(_imp->mutex);
-    _imp->added_keys = false;
-    MetadataKeyHolder::clear_metadata_keys();
 }
 
 bool
@@ -262,13 +208,8 @@ std::shared_ptr<DepSpec>
 NamedSetDepSpec::clone() const
 {
     std::shared_ptr<NamedSetDepSpec> result(std::make_shared<NamedSetDepSpec>(_name));
-    result->set_annotations_key(annotations_key());
+    result->set_annotations(maybe_annotations());
     return result;
-}
-
-void
-NamedSetDepSpec::need_keys_added() const
-{
 }
 
 BlockDepSpec::BlockDepSpec(const std::string & s, const PackageDepSpec & p, const BlockKind k) :
@@ -283,7 +224,7 @@ BlockDepSpec::BlockDepSpec(const BlockDepSpec & other) :
     _spec(other._spec),
     _kind(other._kind)
 {
-    set_annotations_key(other.annotations_key());
+    set_annotations(other.maybe_annotations());
 }
 
 std::ostream &
@@ -391,13 +332,8 @@ std::shared_ptr<DepSpec>
 PlainTextDepSpec::clone() const
 {
     std::shared_ptr<PlainTextDepSpec> result(std::make_shared<PlainTextDepSpec>(text()));
-    result->set_annotations_key(annotations_key());
+    result->set_annotations(maybe_annotations());
     return result;
-}
-
-void
-PlainTextDepSpec::need_keys_added() const
-{
 }
 
 PlainTextLabelDepSpec::PlainTextLabelDepSpec(const std::string & s) :
@@ -413,7 +349,7 @@ std::shared_ptr<DepSpec>
 PlainTextLabelDepSpec::clone() const
 {
     std::shared_ptr<PlainTextLabelDepSpec> result(std::make_shared<PlainTextLabelDepSpec>(text()));
-    result->set_annotations_key(annotations_key());
+    result->set_annotations(maybe_annotations());
     return result;
 }
 
@@ -421,11 +357,6 @@ const std::string
 PlainTextLabelDepSpec::label() const
 {
     return text().substr(0, text().length() - 1);
-}
-
-void
-PlainTextLabelDepSpec::need_keys_added() const
-{
 }
 
 LicenseDepSpec::LicenseDepSpec(const std::string & s) :
@@ -437,13 +368,8 @@ std::shared_ptr<DepSpec>
 LicenseDepSpec::clone() const
 {
     std::shared_ptr<LicenseDepSpec> result(std::make_shared<LicenseDepSpec>(text()));
-    result->set_annotations_key(annotations_key());
+    result->set_annotations(maybe_annotations());
     return result;
-}
-
-void
-LicenseDepSpec::need_keys_added() const
-{
 }
 
 SimpleURIDepSpec::SimpleURIDepSpec(const std::string & s) :
@@ -455,13 +381,8 @@ std::shared_ptr<DepSpec>
 SimpleURIDepSpec::clone() const
 {
     std::shared_ptr<SimpleURIDepSpec> result(std::make_shared<SimpleURIDepSpec>(text()));
-    result->set_annotations_key(annotations_key());
+    result->set_annotations(maybe_annotations());
     return result;
-}
-
-void
-SimpleURIDepSpec::need_keys_added() const
-{
 }
 
 const PackageDepSpec
@@ -486,25 +407,14 @@ std::shared_ptr<DepSpec>
 BlockDepSpec::clone() const
 {
     std::shared_ptr<BlockDepSpec> result(std::make_shared<BlockDepSpec>(*this));
-    result->set_annotations_key(annotations_key());
+    result->set_annotations(maybe_annotations());
     return result;
-}
-
-void
-BlockDepSpec::need_keys_added() const
-{
 }
 
 FetchableURIDepSpec::FetchableURIDepSpec(const std::string & s) :
     StringDepSpec(s)
 {
 }
-
-void
-FetchableURIDepSpec::need_keys_added() const
-{
-}
-
 
 std::string
 FetchableURIDepSpec::original_url() const
@@ -545,7 +455,7 @@ std::shared_ptr<DepSpec>
 FetchableURIDepSpec::clone() const
 {
     std::shared_ptr<FetchableURIDepSpec> result(std::make_shared<FetchableURIDepSpec>(text()));
-    result->set_annotations_key(annotations_key());
+    result->set_annotations(maybe_annotations());
     return result;
 }
 
@@ -588,7 +498,7 @@ LabelsDepSpec<T_>::clone() const
 {
     using namespace std::placeholders;
     std::shared_ptr<LabelsDepSpec<T_> > my_clone(std::make_shared<LabelsDepSpec<T_>>());
-    my_clone->set_annotations_key(annotations_key());
+    my_clone->set_annotations(maybe_annotations());
     std::for_each(begin(), end(), std::bind(std::mem_fn(&LabelsDepSpec<T_>::add_label), my_clone.get(), _1));
     return my_clone;
 }
@@ -614,12 +524,6 @@ LabelsDepSpec<T_>::add_label(const std::shared_ptr<const T_> & item)
     _imp->items.push_back(item);
 }
 
-template <typename T_>
-void
-LabelsDepSpec<T_>::need_keys_added() const
-{
-}
-
 namespace paludis
 {
     template <>
@@ -642,7 +546,6 @@ PackageDepSpec::PackageDepSpec(const std::shared_ptr<const PackageDepSpecData> &
     Pimp<PackageDepSpec>(d, std::shared_ptr<const DepTag>()),
     _imp(Pimp<PackageDepSpec>::_imp)
 {
-    set_annotations_key(d->annotations_key());
 }
 
 PackageDepSpec::~PackageDepSpec()
@@ -656,7 +559,7 @@ PackageDepSpec::PackageDepSpec(const PackageDepSpec & d) :
     CloneUsingThis<DepSpec, PackageDepSpec>(d),
     _imp(Pimp<PackageDepSpec>::_imp)
 {
-    set_annotations_key(d.annotations_key());
+    set_annotations(d.maybe_annotations());
 }
 
 std::shared_ptr<const QualifiedPackageName>
@@ -753,11 +656,6 @@ std::shared_ptr<const PackageDepSpecData>
 PackageDepSpec::data() const
 {
     return _imp->data;
-}
-
-void
-PackageDepSpec::need_keys_added() const
-{
 }
 
 template class LabelsDepSpec<URILabel>;

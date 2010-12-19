@@ -45,6 +45,7 @@
 #include <paludis/stringify_formatter-impl.hh>
 #include <paludis/choice.hh>
 #include <paludis/elike_choices.hh>
+#include <paludis/dep_spec_annotations.hh>
 
 #include <list>
 #include <algorithm>
@@ -156,23 +157,11 @@ namespace
             if (v == p->second.end())
                 v = p->second.insert(std::make_pair(n, Annotations())).first;
 
-            if (node.spec()->annotations_key())
+            if (node.spec()->maybe_annotations())
             {
-                for (MetadataSectionKey::MetadataConstIterator m(node.spec()->annotations_key()->begin_metadata()),
-                        m_end(node.spec()->annotations_key()->end_metadata()) ;
+                for (auto m(node.spec()->maybe_annotations()->begin()), m_end(node.spec()->maybe_annotations()->end()) ;
                         m != m_end ; ++m)
-                {
-                    const MetadataValueKey<std::string> * mm(simple_visitor_cast<const MetadataValueKey<std::string> >(**m));
-                    if (! mm)
-                    {
-                        Log::get_instance()->message("e_key.myoptions.strange_annotation", ll_warning, lc_context)
-                            << "Don't know how to handle annotation '" << (*m)->raw_name() << "'";
-                        continue;
-                    }
-
-                    Annotations::iterator a(v->second.find(mm->raw_name()));
-                    v->second.insert(make_pair(mm->raw_name(), mm->value()));
-                }
+                    v->second.insert(make_pair(m->key(), m->value()));
             }
         }
 

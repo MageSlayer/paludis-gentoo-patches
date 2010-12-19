@@ -660,93 +660,6 @@ namespace
 
     /*
      * call-seq:
-     *     each_metadata {|key| block } -> Nil
-     *
-     * Our metadata.
-     */
-    VALUE
-    dep_spec_each_metadata(VALUE self)
-    {
-        std::shared_ptr<WrappedSpecBase> * ptr;
-        Data_Get_Struct(self, std::shared_ptr<WrappedSpecBase>, ptr);
-        try
-        {
-            for (DepSpec::MetadataConstIterator it((*ptr)->base_spec()->begin_metadata()),
-                    it_end((*ptr)->base_spec()->end_metadata()); it_end != it; ++it)
-            {
-                VALUE val(metadata_key_to_value(*it));
-                if (Qnil != val)
-                    rb_yield(val);
-            }
-        }
-        catch (const std::exception & e)
-        {
-            exception_to_ruby_exception(e);
-        }
-
-        return Qnil;
-    }
-
-    /*
-     * call-seq:
-     *     [String] -> MetadataKey or Nil
-     *
-     * The named metadata key.
-     */
-    VALUE
-    dep_spec_subscript(VALUE self, VALUE raw_name)
-    {
-        std::shared_ptr<WrappedSpecBase> * ptr;
-        Data_Get_Struct(self, std::shared_ptr<WrappedSpecBase>, ptr);
-        try
-        {
-            DepSpec::MetadataConstIterator it((*ptr)->base_spec()->find_metadata(StringValuePtr(raw_name)));
-            if ((*ptr)->base_spec()->end_metadata() == it)
-                return Qnil;
-            return metadata_key_to_value(*it);
-        }
-        catch (const std::exception & e)
-        {
-            exception_to_ruby_exception(e);
-        }
-
-        return Qnil;
-    }
-
-    /*
-     * Document-method: choices_key
-     *
-     * call-seq:
-     *     annotations_key -> MetadataSectionKey
-     *
-     * Our annotations
-     */
-    template <typename T_, const std::shared_ptr<const T_> (DepSpec::* m_) () const>
-    struct KeyValue
-    {
-        static VALUE
-        fetch(VALUE self)
-        {
-            std::shared_ptr<WrappedSpecBase> * ptr;
-            Data_Get_Struct(self, std::shared_ptr<WrappedSpecBase>, ptr);
-            std::shared_ptr<const T_> key(((*(*ptr)->base_spec()).*m_)());
-
-            try
-            {
-                if (key)
-                    return metadata_key_to_value(key);
-            }
-            catch (const std::exception & e)
-            {
-                exception_to_ruby_exception(e);
-            }
-
-            return Qnil;
-        }
-    };
-
-    /*
-     * call-seq:
      *     text -> String
      *
      * Fetch our text.
@@ -1103,10 +1016,6 @@ namespace
          */
         c_dep_spec = rb_define_class_under(paludis_module(), "DepSpec", rb_cObject);
         rb_funcall(c_dep_spec, rb_intern("private_class_method"), 1, rb_str_new2("new"));
-        rb_define_method(c_dep_spec, "each_metadata", RUBY_FUNC_CAST(&dep_spec_each_metadata), 0);
-        rb_define_method(c_dep_spec, "[]", RUBY_FUNC_CAST(&dep_spec_subscript), 1);
-        rb_define_method(c_dep_spec, "annotations_key",
-                RUBY_FUNC_CAST((&KeyValue<MetadataSectionKey, &DepSpec::annotations_key>::fetch)), 0);
 
         /*
          * Document-class: Paludis::AllDepSpec

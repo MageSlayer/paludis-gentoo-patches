@@ -29,7 +29,7 @@
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/accept_visitor.hh>
-#include <paludis/metadata_key.hh>
+#include <paludis/dep_spec_annotations.hh>
 #include <list>
 #include <algorithm>
 
@@ -43,18 +43,13 @@ namespace
     const std::string get_annotations(const DepSpec & a)
     {
         std::stringstream s;
-        if (a.annotations_key() && (a.annotations_key()->begin_metadata() != a.annotations_key()->end_metadata()))
+        if (a.maybe_annotations() && (a.maybe_annotations()->begin() != a.maybe_annotations()->end()))
         {
             s << " [[ ";
-            for (MetadataSectionKey::MetadataConstIterator k(a.annotations_key()->begin_metadata()),
-                    k_end(a.annotations_key()->end_metadata()) ;
-                    k != k_end ; ++k)
-            {
-                const MetadataValueKey<std::string> * r(simple_visitor_cast<const MetadataValueKey<std::string> >(**k));
-                if (! r)
-                    throw InternalError(PALUDIS_HERE, "annotations must be string keys");
-                s << (*k)->raw_name() << " = [" << (r->value().empty() ? " " : " " + r->value() + " ") << "] ";
-            }
+            for (auto m(a.maybe_annotations()->begin()), m_end(a.maybe_annotations()->end()) ;
+                    m != m_end ; ++m)
+                s << m->key() << " = [" << (m->value().empty() ? " " : " " + m->value() + " ") << "] ";
+
             s << "]]";
         }
         return s.str();

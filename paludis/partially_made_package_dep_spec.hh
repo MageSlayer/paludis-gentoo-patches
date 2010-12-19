@@ -193,12 +193,6 @@ namespace paludis
             PartiallyMadePackageDepSpec & clear_additional_requirements();
 
             /**
-             * Add annotations
-             */
-            PartiallyMadePackageDepSpec & annotations(
-                    const std::shared_ptr<const MetadataSectionKey> &);
-
-            /**
              * Turn ourselves into a PackageDepSpec.
              */
             operator const PackageDepSpec() const;

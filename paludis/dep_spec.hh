@@ -32,7 +32,6 @@
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/dep_tag-fwd.hh>
 #include <paludis/name.hh>
-#include <paludis/metadata_key_holder.hh>
 #include <paludis/version_operator-fwd.hh>
 #include <paludis/version_requirements-fwd.hh>
 #include <paludis/version_spec-fwd.hh>
@@ -42,6 +41,7 @@
 #include <paludis/additional_package_dep_spec_requirement-fwd.hh>
 #include <paludis/partially_made_package_dep_spec-fwd.hh>
 #include <paludis/dep_spec_data-fwd.hh>
+#include <paludis/dep_spec_annotations-fwd.hh>
 
 #include <memory>
 
@@ -67,12 +67,8 @@ namespace paludis
      */
     class PALUDIS_VISIBLE DepSpec :
         private Pimp<DepSpec>,
-        public MetadataKeyHolder,
         public virtual Cloneable<DepSpec>
     {
-        private:
-            Pimp<DepSpec>::ImpPtr & _imp;
-
         protected:
             DepSpec();
 
@@ -87,21 +83,19 @@ namespace paludis
 
             ///\}
 
-            ///\name Upcasts
-            ///\{
+            /**
+             * Our annotations, may be null.
+             *
+             * \since 0.58
+             */
+            const std::shared_ptr<const DepSpecAnnotations> maybe_annotations() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
-             * The annotations_key, if non-zero, contains any annotations.
+             * Change our annotations, may be null.
+             *
+             * \since 0.58
              */
-            const std::shared_ptr<const MetadataSectionKey> annotations_key() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            /**
-             * Change the annotations key.
-             */
-            void set_annotations_key(const std::shared_ptr<const MetadataSectionKey> &);
-
-            ///\}
+            void set_annotations(const std::shared_ptr<const DepSpecAnnotations> &);
     };
 
     /**
@@ -113,9 +107,6 @@ namespace paludis
     class PALUDIS_VISIBLE AnyDepSpec :
         public DepSpec
     {
-        protected:
-            virtual void need_keys_added() const;
-
         public:
             ///\name Basic operations
             ///\{
@@ -137,9 +128,6 @@ namespace paludis
     class PALUDIS_VISIBLE AllDepSpec :
         public DepSpec
     {
-        protected:
-            virtual void need_keys_added() const;
-
         public:
             ///\name Basic operations
             ///\{
@@ -161,9 +149,6 @@ namespace paludis
     class PALUDIS_VISIBLE ExactlyOneDepSpec :
         public DepSpec
     {
-        protected:
-            virtual void need_keys_added() const;
-
         public:
             ///\name Basic operations
             ///\{
@@ -194,10 +179,6 @@ namespace paludis
             Pimp<ConditionalDepSpec>::ImpPtr & _imp;
 
             std::string _as_string() const;
-
-        protected:
-            virtual void need_keys_added() const;
-            virtual void clear_metadata_keys() const;
 
         public:
             ///\name Basic operations
@@ -332,9 +313,6 @@ namespace paludis
 
             Pimp<PackageDepSpec>::ImpPtr & _imp;
 
-        protected:
-            virtual void need_keys_added() const;
-
         public:
             ///\name Basic operations
             ///\{
@@ -448,9 +426,6 @@ namespace paludis
     class PALUDIS_VISIBLE PlainTextDepSpec :
         public StringDepSpec
     {
-        protected:
-            virtual void need_keys_added() const;
-
         public:
             ///\name Basic operations
             ///\{
@@ -473,9 +448,6 @@ namespace paludis
     {
         private:
             const SetName _name;
-
-        protected:
-            virtual void need_keys_added() const;
 
         public:
             ///\name Basic operations
@@ -501,9 +473,6 @@ namespace paludis
     class PALUDIS_VISIBLE LicenseDepSpec :
         public StringDepSpec
     {
-        protected:
-            virtual void need_keys_added() const;
-
         public:
             ///\name Basic operations
             ///\{
@@ -529,9 +498,6 @@ namespace paludis
     class PALUDIS_VISIBLE FetchableURIDepSpec :
         public StringDepSpec
     {
-        protected:
-            virtual void need_keys_added() const;
-
         public:
             ///\name Basic operations
             ///\{
@@ -573,9 +539,6 @@ namespace paludis
     class PALUDIS_VISIBLE SimpleURIDepSpec :
         public StringDepSpec
     {
-        protected:
-            virtual void need_keys_added() const;
-
         public:
             ///\name Basic operations
             ///\{
@@ -620,9 +583,6 @@ namespace paludis
         private:
             PackageDepSpec _spec;
             BlockKind _kind;
-
-        protected:
-            virtual void need_keys_added() const;
 
         public:
             ///\name Basic operations
@@ -679,9 +639,6 @@ namespace paludis
         private:
             typename Pimp<LabelsDepSpec>::ImpPtr & _imp;
 
-        protected:
-            virtual void need_keys_added() const;
-
         public:
             ///\name Basic operations
             ///\{
@@ -711,9 +668,6 @@ namespace paludis
     class PALUDIS_VISIBLE PlainTextLabelDepSpec :
         public StringDepSpec
     {
-        protected:
-            virtual void need_keys_added() const;
-
         public:
             ///\name Basic operations
             ///\{

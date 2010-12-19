@@ -167,27 +167,3 @@ paludis::parse_elike_conditional_dep_spec(const std::string & s,
     return ConditionalDepSpec(std::make_shared<EConditionalDepSpecData>(s, env, id, no_warning_for_unlisted));
 }
 
-ChoiceNameWithPrefix
-paludis::elike_conditional_dep_spec_flag(const ConditionalDepSpec & spec)
-{
-    ConditionalDepSpec::MetadataConstIterator i(spec.find_metadata("Flag"));
-    if (i == spec.end_metadata())
-        throw InternalError(PALUDIS_HERE, "Spec '" + stringify(spec) + "' has no Flag metadata");
-    const MetadataValueKey<std::string>  * key(simple_visitor_cast<const MetadataValueKey<std::string> >(**i));
-    if (! key)
-        throw InternalError(PALUDIS_HERE, "Spec '" + stringify(spec) + "' has Flag metadata which is not a string");
-    return ChoiceNameWithPrefix(key->value());
-}
-
-bool
-paludis::elike_conditional_dep_spec_is_inverse(const ConditionalDepSpec & spec)
-{
-    ConditionalDepSpec::MetadataConstIterator i(spec.find_metadata("Inverse"));
-    if (i == spec.end_metadata())
-        throw InternalError(PALUDIS_HERE, "Spec '" + stringify(spec) + "' has no Inverse metadata");
-    const MetadataValueKey<std::string>  * key(simple_visitor_cast<const MetadataValueKey<std::string> >(**i));
-    if (! key)
-        throw InternalError(PALUDIS_HERE, "Spec '" + stringify(spec) + "' has Inverse metadata which is not a string");
-    return destringify<bool>(key->value());
-}
-

@@ -40,7 +40,6 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/package_id.hh>
 #include <paludis/elike_package_dep_spec.hh>
-#include <paludis/elike_annotations.hh>
 #include <paludis/serialise-impl.hh>
 #include <paludis/environment.hh>
 #include <paludis/repository.hh>

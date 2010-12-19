@@ -163,11 +163,6 @@ namespace paludis
             virtual std::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements_ptr() const = 0;
 
             /**
-             * Fetch the annotations (may be a zero pointer).
-             */
-            virtual std::shared_ptr<const MetadataSectionKey> annotations_key() const = 0;
-
-            /**
              * Fetch options if we're being used to construct a new PartiallyMadePackageDepSpec.
              *
              * \since 0.38

@@ -32,6 +32,7 @@
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/choice.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/dep_spec_annotations.hh>
 #include <algorithm>
 #include <list>
 
@@ -110,8 +111,10 @@ namespace
 }
 
 void
-MyOptionsRequirementsVerifier::verify_one(const ChoicePrefixName & spec_prefix,
-        const std::string & spec_text, const std::shared_ptr<const MetadataSectionKey> & annotations_key)
+MyOptionsRequirementsVerifier::verify_one(
+        const ChoicePrefixName & spec_prefix,
+        const std::string & spec_text,
+        const std::shared_ptr<const DepSpecAnnotations> & annotations)
 {
     std::pair<UnprefixedChoiceName, bool> active_myoption(parse_myoption(spec_text));
     ChoiceNameWithPrefix active_flag((
@@ -135,18 +138,10 @@ MyOptionsRequirementsVerifier::verify_one(const ChoicePrefixName & spec_prefix,
         }
     }
 
-    for (MetadataSectionKey::MetadataConstIterator m(annotations_key->begin_metadata()), m_end(annotations_key->end_metadata()) ;
+    for (auto m(annotations->begin()), m_end(annotations->end()) ;
             m != m_end ; ++m)
     {
-        const MetadataValueKey<std::string> * mm(simple_visitor_cast<const MetadataValueKey<std::string> >(**m));
-        if (! mm)
-        {
-            Log::get_instance()->message("e_key.myoptions.strange_annotation", ll_warning, lc_context)
-                << "Don't know how to handle annotation '" << (*m)->raw_name() << "'";
-            continue;
-        }
-
-        std::string a_key(mm->raw_name()), a_value(mm->value());
+        std::string a_key(m->key()), a_value(m->value());
 
         if (a_key == _imp->id->eapi()->supported()->annotations()->myoptions_description())
         {
@@ -251,10 +246,10 @@ MyOptionsRequirementsVerifier::visit(const PlainTextSpecTree::NodeType<PlainText
                 ++*l;
     }
 
-    if ((! node.spec()->annotations_key()) || (node.spec()->annotations_key()->begin_metadata() == node.spec()->annotations_key()->end_metadata()))
+    if ((! node.spec()->maybe_annotations()) || (node.spec()->maybe_annotations()->begin() == node.spec()->maybe_annotations()->end()))
         return;
 
-    verify_one(*_imp->current_prefix_stack.begin(), node.spec()->text(), node.spec()->annotations_key());
+    verify_one(*_imp->current_prefix_stack.begin(), node.spec()->text(), node.spec()->maybe_annotations());
 }
 
 void
@@ -282,25 +277,17 @@ MyOptionsRequirementsVerifier::visit(const PlainTextSpecTree::NodeType<AllDepSpe
     _imp->number_enabled_stack.push_front(0);
 
     std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
-    if (node.spec()->annotations_key() && (node.spec()->annotations_key()->begin_metadata() != node.spec()->annotations_key()->end_metadata()))
+    if (node.spec()->maybe_annotations() && (node.spec()->maybe_annotations()->begin() != node.spec()->maybe_annotations()->end()))
     {
         for (ChildrenList::const_iterator i(_imp->current_children_stack.begin()->begin()),
                 i_end(_imp->current_children_stack.begin()->end()) ;
                 i != i_end ; ++i)
-            verify_one(i->first, i->second, node.spec()->annotations_key());
+            verify_one(i->first, i->second, node.spec()->maybe_annotations());
 
-        for (MetadataSectionKey::MetadataConstIterator m(node.spec()->annotations_key()->begin_metadata()), m_end(node.spec()->annotations_key()->end_metadata()) ;
+        for (auto m(node.spec()->maybe_annotations()->begin()), m_end(node.spec()->maybe_annotations()->end()) ;
                 m != m_end ; ++m)
         {
-            const MetadataValueKey<std::string> * mm(simple_visitor_cast<const MetadataValueKey<std::string> >(**m));
-            if (! mm)
-            {
-                Log::get_instance()->message("e_key.myoptions.strange_annotation", ll_warning, lc_context)
-                    << "Don't know how to handle annotation '" << (*m)->raw_name() << "'";
-                continue;
-            }
-
-            std::string a_key(mm->raw_name()), a_value(mm->value());
+            std::string a_key(m->key()), a_value(m->value());
 
             if (a_key == _imp->id->eapi()->supported()->annotations()->myoptions_number_selected())
             {

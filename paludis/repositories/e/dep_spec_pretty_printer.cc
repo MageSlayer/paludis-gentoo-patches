@@ -18,9 +18,6 @@
  */
 
 #include <paludis/repositories/e/dep_spec_pretty_printer.hh>
-#include <paludis/dep_spec.hh>
-#include <paludis/metadata_key.hh>
-#include <paludis/formatter.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/pimp-impl.hh>
@@ -35,6 +32,10 @@
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/action-fwd.hh>
+#include <paludis/dep_spec.hh>
+#include <paludis/formatter.hh>
+#include <paludis/dep_spec_annotations.hh>
+#include <paludis/metadata_key.hh>
 #include <algorithm>
 #include <sstream>
 
@@ -190,7 +191,7 @@ namespace
 void
 DepSpecPrettyPrinter::visit(const GenericSpecTree::NodeType<AllDepSpec>::Type & node)
 {
-    bool need_parens(_imp->all_needs_parens || node.spec()->annotations_key() ||
+    bool need_parens(_imp->all_needs_parens || node.spec()->maybe_annotations() ||
             (! _imp->outer_block && indirect_iterator(node.end()) != std::find_if(indirect_iterator(node.begin()),
                                                                                   indirect_iterator(node.end()),
                                                                                   is_label)));
@@ -587,16 +588,14 @@ DepSpecPrettyPrinter::visit(const GenericSpecTree::NodeType<DependenciesLabelsDe
 void
 DepSpecPrettyPrinter::do_annotations(const DepSpec & p)
 {
-    if (p.annotations_key() && (p.annotations_key()->begin_metadata() != p.annotations_key()->end_metadata()))
+    if (p.maybe_annotations() && (p.maybe_annotations()->begin() != p.maybe_annotations()->end()))
     {
         _imp->s << " [[ ";
-        for (MetadataSectionKey::MetadataConstIterator k(p.annotations_key()->begin_metadata()), k_end(p.annotations_key()->end_metadata()) ;
-                k != k_end ; ++k)
+
+        for (auto m(p.maybe_annotations()->begin()), m_end(p.maybe_annotations()->end()) ;
+                m != m_end ; ++m)
         {
-            const MetadataValueKey<std::string> * r(simple_visitor_cast<const MetadataValueKey<std::string> >(**k));
-            if (! r)
-                throw InternalError(PALUDIS_HERE, "annotations must be string keys");
-            _imp->s << (*k)->raw_name() << " = [" << (r->value().empty() ? " " : " " + r->value() + " ") << "] ";
+            _imp->s << m->key() << " = [" << (m->value().empty() ? " " : " " + m->value() + " ") << "] ";
         }
         _imp->s << "]]";
     }

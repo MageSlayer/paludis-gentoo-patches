@@ -59,7 +59,6 @@ namespace
         std::shared_ptr<const FSPath> installed_at_path;
         std::shared_ptr<const InstallableToPath> installable_to_path;
         std::shared_ptr<AdditionalPackageDepSpecRequirements> additional_requirements;
-        std::shared_ptr<const MetadataSectionKey> annotations;
         PartiallyMadePackageDepSpecOptions options_for_partially_made_package_dep_spec_v;
 
         PartiallyMadePackageDepSpecData(const PartiallyMadePackageDepSpecOptions & o) :
@@ -83,7 +82,6 @@ namespace
             installed_at_path(other.installed_at_path_ptr()),
             installable_to_path(other.installable_to_path_ptr()),
             additional_requirements(other.additional_requirements_ptr() ? new AdditionalPackageDepSpecRequirements : 0),
-            annotations(other.annotations_key()),
             options_for_partially_made_package_dep_spec_v(other.options_for_partially_made_package_dep_spec())
         {
             if (version_requirements)
@@ -109,7 +107,6 @@ namespace
             installed_at_path(other.installed_at_path),
             installable_to_path(other.installable_to_path),
             additional_requirements(other.additional_requirements),
-            annotations(other.annotations),
             options_for_partially_made_package_dep_spec_v(other.options_for_partially_made_package_dep_spec_v)
         {
         }
@@ -340,11 +337,6 @@ namespace
             return additional_requirements;
         }
 
-        virtual std::shared_ptr<const MetadataSectionKey> annotations_key() const
-        {
-            return annotations;
-        }
-
         virtual const PartiallyMadePackageDepSpecOptions options_for_partially_made_package_dep_spec() const
         {
             return options_for_partially_made_package_dep_spec_v;
@@ -557,13 +549,6 @@ PartiallyMadePackageDepSpec &
 PartiallyMadePackageDepSpec::clear_additional_requirements()
 {
     _imp->data->additional_requirements.reset();
-    return *this;
-}
-
-PartiallyMadePackageDepSpec &
-PartiallyMadePackageDepSpec::annotations(const std::shared_ptr<const MetadataSectionKey> & a)
-{
-    _imp->data->annotations = a;
     return *this;
 }
 

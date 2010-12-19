@@ -31,7 +31,6 @@
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/singleton-impl.hh>
-#include <paludis/elike_annotations.hh>
 #include <paludis/elike_dep_parser.hh>
 #include <paludis/elike_conditional_dep_spec.hh>
 #include <paludis/elike_package_dep_spec.hh>
@@ -39,10 +38,10 @@
 #include <paludis/environment.hh>
 #include <paludis/repository.hh>
 #include <paludis/package_id.hh>
-#include <paludis/metadata_key.hh>
-#include <paludis/literal_metadata_key.hh>
 #include <paludis/action.hh>
 #include <paludis/choice.hh>
+#include <paludis/dep_spec_annotations.hh>
+#include <paludis/metadata_key.hh>
 #include <map>
 #include <list>
 #include <set>
@@ -343,8 +342,13 @@ namespace
             std::shared_ptr<DepSpec> & spec,
             const std::shared_ptr<const Map<std::string, std::string> > & m)
     {
-        std::shared_ptr<ELikeAnnotations> key(std::make_shared<ELikeAnnotations>(m));
-        spec->set_annotations_key(key);
+        auto annotations(std::make_shared<DepSpecAnnotations>());
+        for (auto k(m->begin()), k_end(m->end()) ;
+                k != k_end ; ++k)
+            annotations->add(make_named_values<DepSpecAnnotation>(
+                        n::key() = k->first,
+                        n::value() = k->second));
+        spec->set_annotations(annotations);
     }
 
     void set_annotations_block(
@@ -353,32 +357,33 @@ namespace
             std::shared_ptr<BlockDepSpec> & if_block_spec,
             const std::shared_ptr<const Map<std::string, std::string> > & m)
     {
-        std::shared_ptr<ELikeAnnotations> key(std::make_shared<ELikeAnnotations>(m));
-        spec->set_annotations_key(key);
+        auto annotations(std::make_shared<DepSpecAnnotations>());
+        for (auto k(m->begin()), k_end(m->end()) ;
+                k != k_end ; ++k)
+            annotations->add(make_named_values<DepSpecAnnotation>(
+                        n::key() = k->first,
+                        n::value() = k->second));
+        spec->set_annotations(annotations);
 
         if (if_block_spec && (! eapi.supported()->annotations()->blocker_resolution().empty())
-                && if_block_spec->annotations_key())
+                && if_block_spec->maybe_annotations())
         {
-            auto a(if_block_spec->annotations_key()->find_metadata(eapi.supported()->annotations()->blocker_resolution()));
-            if (a != if_block_spec->annotations_key()->end_metadata())
+            auto a(if_block_spec->maybe_annotations()->find(eapi.supported()->annotations()->blocker_resolution()));
+            if (a != if_block_spec->maybe_annotations()->end())
             {
-                auto k(simple_visitor_cast<const MetadataValueKey<std::string> >(**a));
-                if (! k)
-                    throw EDepParseError(stringify(*if_block_spec), "Annotation key for blocker resolution not a string");
-
-                if (k->value().empty())
+                if (a->value().empty())
                 {
                 }
-                else if (k->value() == eapi.supported()->annotations()->blocker_resolution_manual())
+                else if (a->value() == eapi.supported()->annotations()->blocker_resolution_manual())
                     if_block_spec->set_block_kind(bk_manual);
-                else if (k->value() == eapi.supported()->annotations()->blocker_resolution_uninstall_blocked_after())
+                else if (a->value() == eapi.supported()->annotations()->blocker_resolution_uninstall_blocked_after())
                     if_block_spec->set_block_kind(bk_uninstall_blocked_after);
-                else if (k->value() == eapi.supported()->annotations()->blocker_resolution_uninstall_blocked_before())
+                else if (a->value() == eapi.supported()->annotations()->blocker_resolution_uninstall_blocked_before())
                     if_block_spec->set_block_kind(bk_uninstall_blocked_before);
-                else if (k->value() == eapi.supported()->annotations()->blocker_resolution_upgrade_blocked_before())
+                else if (a->value() == eapi.supported()->annotations()->blocker_resolution_upgrade_blocked_before())
                     if_block_spec->set_block_kind(bk_upgrade_blocked_before);
                 else
-                    throw EDepParseError(stringify(*if_block_spec), "Unknown value '" + k->value() + "' for annotation '" + k->raw_name() + "'");
+                    throw EDepParseError(stringify(*if_block_spec), "Unknown value '" + a->value() + "' for annotation '" + a->key() + "'");
             }
         }
     }
