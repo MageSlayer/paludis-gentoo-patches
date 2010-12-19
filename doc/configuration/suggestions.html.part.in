@@ -22,9 +22,10 @@ standard configuration file which may be a bash file (<code>suggestions.bash</co
 <p>A token may be one of the following:</p>
 
 <ul>
-    <li><code>*/*</code>, which says to take all suggestions from the package.</li>
     <li>A simple <code>cat/pkg</code>, which says to take any suggestions related to the named package. Note that
-    complex dependency specifications may <em>not</em> be used here.</li>
+    complex dependency specifications may <em>not</em> be used here; however, either or both of the <code>cat</code>
+    and <code>pkg</code> tokens may be <code>*</code>.</li>
+    <li>A suggestions group name, to take all suggestions with that group.</li>
     <li>A minus sign, followed by either of the above, to discard rather than take the suggestion in question.</li>
 </ul>
 
@@ -42,5 +43,8 @@ dev-util/kdevelop -dev-util/cvs
 
 # Otherwise, we're interested in all kde-base suggestions:
 kde-base/* */*
+
+# We want the send-email suggestions from git:
+dev-scm/git send-email
 </pre>
 

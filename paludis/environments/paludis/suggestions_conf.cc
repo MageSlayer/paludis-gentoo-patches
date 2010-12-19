@@ -21,14 +21,7 @@
 #include <paludis/environments/paludis/paludis_environment.hh>
 #include <paludis/environments/paludis/paludis_config.hh>
 #include <paludis/environments/paludis/bashable_conf.hh>
-#include <paludis/environment.hh>
-#include <paludis/name.hh>
-#include <paludis/dep_spec.hh>
-#include <paludis/spec_tree.hh>
-#include <paludis/user_dep_spec.hh>
-#include <paludis/match_package.hh>
 #include <paludis/util/config_file.hh>
-#include <paludis/package_id.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/tokeniser.hh>
@@ -38,6 +31,14 @@
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/environment.hh>
+#include <paludis/name.hh>
+#include <paludis/dep_spec.hh>
+#include <paludis/spec_tree.hh>
+#include <paludis/user_dep_spec.hh>
+#include <paludis/match_package.hh>
+#include <paludis/package_id.hh>
+#include <paludis/dep_spec_annotations.hh>
 #include <unordered_map>
 #include <list>
 #include <vector>
@@ -51,7 +52,9 @@ namespace
     struct ValueFlag
     {
         bool negated;
-        std::shared_ptr<const QualifiedPackageName> name;
+        std::string cat_requirement;
+        std::string pkg_requirement;
+        std::string group_requirement;
 
         ValueFlag(const std::string & s) :
             negated(false)
@@ -67,8 +70,19 @@ namespace
             if (s_fixed.empty())
                 throw PaludisConfigError("Empty value flag '" + s + "'");
 
-            if (s_fixed != "*/*")
-                name = std::make_shared<QualifiedPackageName>(s_fixed);
+            std::string::size_type slash_p(s_fixed.find('/'));
+            if (std::string::npos == slash_p)
+                group_requirement = s_fixed;
+            else
+            {
+                std::string c(s_fixed.substr(0, slash_p));
+                if (c != "*")
+                    cat_requirement = c;
+
+                std::string p(s_fixed.substr(slash_p + 1));
+                if (p != "*")
+                    pkg_requirement = p;
+            }
         }
     };
 }
@@ -164,6 +178,14 @@ SuggestionsConf::interest_in_suggestion(
         const std::shared_ptr<const PackageID> & from_id,
         const PackageDepSpec & spec) const
 {
+    std::string spec_group;
+    if (spec.maybe_annotations())
+    {
+        auto a(spec.maybe_annotations()->find(dsar_suggestions_group_name));
+        if (a != spec.maybe_annotations()->end())
+            spec_group = a->value();
+    }
+
     /* highest priority: specific */
     {
         SpecificMap::const_iterator i(_imp->qualified.find(from_id->name()));
@@ -178,11 +200,22 @@ SuggestionsConf::interest_in_suggestion(
                 for (ValuesList::const_iterator l(j->second.begin()), l_end(j->second.end()) ;
                         l != l_end ; ++l)
                 {
-                    if (! l->name)
-                        return l->negated ? false : true;
+                    if (! l->group_requirement.empty())
+                    {
+                        if (spec_group == l->group_requirement)
+                            return l->negated ? false : true;
+                    }
+                    else
+                    {
+                        if (! l->pkg_requirement.empty())
+                            if (stringify(spec.package_ptr()->package()) != l->pkg_requirement)
+                                continue;
+                        if (! l->cat_requirement.empty())
+                            if (stringify(spec.package_ptr()->category()) != l->cat_requirement)
+                                continue;
 
-                    if (*l->name == *spec.package_ptr())
                         return l->negated ? false : true;
+                    }
                 }
             }
         }
@@ -211,11 +244,22 @@ SuggestionsConf::interest_in_suggestion(
             for (ValuesList::const_iterator l(i->second.second.begin()), l_end(i->second.second.end()) ;
                     l != l_end ; ++l)
             {
-                if (! l->name)
-                    return l->negated ? false : true;
+                if (! l->group_requirement.empty())
+                {
+                    if (spec_group == l->group_requirement)
+                        return l->negated ? false : true;
+                }
+                else
+                {
+                    if (! l->pkg_requirement.empty())
+                        if (stringify(spec.package_ptr()->package()) != l->pkg_requirement)
+                            continue;
+                    if (! l->cat_requirement.empty())
+                        if (stringify(spec.package_ptr()->category()) != l->cat_requirement)
+                            continue;
 
-                if (*l->name == *spec.package_ptr())
                     return l->negated ? false : true;
+                }
             }
         }
     }
@@ -231,11 +275,22 @@ SuggestionsConf::interest_in_suggestion(
         for (ValuesList::const_iterator l(j->second.begin()), l_end(j->second.end()) ;
                 l != l_end ; ++l)
         {
-            if (! l->name)
-                return l->negated ? false : true;
+            if (! l->group_requirement.empty())
+            {
+                if (spec_group == l->group_requirement)
+                    return l->negated ? false : true;
+            }
+            else
+            {
+                if (! l->pkg_requirement.empty())
+                    if (stringify(spec.package_ptr()->package()) != l->pkg_requirement)
+                        continue;
+                if (! l->cat_requirement.empty())
+                    if (stringify(spec.package_ptr()->category()) != l->cat_requirement)
+                        continue;
 
-            if (*l->name == *spec.package_ptr())
                 return l->negated ? false : true;
+            }
         }
     }
 
