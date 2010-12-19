@@ -136,9 +136,9 @@ namespace
 
     std::string get_annotation(
             const std::shared_ptr<const DepSpecAnnotations> & annotations,
-            const std::string & name)
+            const DepSpecAnnotationRole role)
     {
-        auto i(annotations->find(name));
+        auto i(annotations->find(role));
         if (i == annotations->end())
             return "";
 
@@ -171,7 +171,7 @@ namespace
 
             std::pair<std::string, Tribool> result(unannotated);
 
-            std::string description_annotation(get_annotation(key, "description"));
+            std::string description_annotation(get_annotation(key, dsar_general_description));
             if (! description_annotation.empty())
             {
                 result.first = result.first + ": \"" + description_annotation + "\"";
