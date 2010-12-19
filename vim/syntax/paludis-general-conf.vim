@@ -1,8 +1,8 @@
 " Vim syntax file
-" Language:	Paludis general.conf files
-" Author:	Ciaran McCreesh
-" Copyright:	Copyright (c) 2007, 2008, 2010 Ciaran McCreesh
-" Licence:	You may redistribute this under the same terms as Vim itself
+" Language:     Paludis general.conf files
+" Author:       Ciaran McCreesh
+" Copyright:    Copyright (c) 2007, 2008, 2010 Ciaran McCreesh
+" Licence:      You may redistribute this under the same terms as Vim itself
 "
 " Syntax highlighting for Paludis general.conf files.
 "
@@ -18,28 +18,28 @@ endif
 syn region PaludisGeneralConfComment start=/^\s*#/ end=/$/
 
 syn region PaludisGeneralConfKey start=/^\(\s*[^#]\)\@=/ end=/=\@=/
-	    \ contains=PaludisGeneralConfKnownKey
+            \ contains=PaludisGeneralConfKnownKey
 
 syn match PaludisGeneralConfEquals /=/ skipwhite
-	    \ nextgroup=PaludisGeneralConfValue
+            \ nextgroup=PaludisGeneralConfValue
 
 syn region PaludisGeneralConfValue contained start=// end=/$/
-	    \ contains=PaludisGeneralConfString,PaludisGeneralConfUnquoted,
-	    \    PaludisGeneralConfContinuation,PaludisGeneralConfVariable,
-	    \    PaludisGeneralConfEnvVariable
-	    \ skipwhite
+            \ contains=PaludisGeneralConfString,PaludisGeneralConfUnquoted,
+            \    PaludisGeneralConfContinuation,PaludisGeneralConfVariable,
+            \    PaludisGeneralConfEnvVariable
+            \ skipwhite
 
 syn match PaludisGeneralConfContinuation contained /\\$/
-	    \ skipnl
+            \ skipnl
 
 syn match PaludisGeneralConfUnquoted contained /[^ \t$"'\\]\+/ skipwhite
 
 syn region PaludisGeneralConfString contained start=/"/ end=/"/
-	    \ contains=PaludisGeneralConfVariable,PaludisGeneralConfEnvVariable
-	    \ skipwhite
+            \ contains=PaludisGeneralConfVariable,PaludisGeneralConfEnvVariable
+            \ skipwhite
 
 syn keyword PaludisGeneralConfKnownKey contained
-	    \ reduced_username portage_compatible distribution world
+            \ reduced_username portage_compatible distribution world
 
 syn match PaludisGeneralConfVariable contained /\$\({[^{}]\+}\|\(ENV{\)\@!=[a-zA-Z0-9_]\+\)/ skipwhite
 

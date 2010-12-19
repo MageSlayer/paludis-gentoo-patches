@@ -1,8 +1,8 @@
 " Vim syntax file
-" Language:	Paludis output.conf files
-" Author:	Ciaran McCreesh
-" Copyright:	Copyright (c) 2010 Ciaran McCreesh
-" Licence:	You may redistribute this under the same terms as Vim itself
+" Language:     Paludis output.conf files
+" Author:       Ciaran McCreesh
+" Copyright:    Copyright (c) 2010 Ciaran McCreesh
+" Licence:      You may redistribute this under the same terms as Vim itself
 "
 " Syntax highlighting for output.conf files.
 "
@@ -18,42 +18,42 @@ endif
 syn region PaludisOutputConfComment start=/^\s*#/ end=/$/
 
 syn region PaludisOutputConfKey start=/^\(\s*[^#]\)\@=/ end=/=\@=/
-	    \ contains=PaludisOutputConfKnownKey
+            \ contains=PaludisOutputConfKnownKey
 
 syn match PaludisOutputConfEquals /?\?=/ skipwhite
-	    \ nextgroup=PaludisOutputConfValue
+            \ nextgroup=PaludisOutputConfValue
 
 syn region PaludisOutputConfValue contained start=// end=/$/
-	    \ contains=PaludisOutputConfString,PaludisOutputConfUnquoted,
-	    \    PaludisOutputConfContinuation,PaludisOutputConfVariable,
-	    \    PaludisOutputConfEnvVariable,
-	    \    PaludisOutputConfMacro,PaludisOutputConfKnownValue
-	    \ skipwhite
+            \ contains=PaludisOutputConfString,PaludisOutputConfUnquoted,
+            \    PaludisOutputConfContinuation,PaludisOutputConfVariable,
+            \    PaludisOutputConfEnvVariable,
+            \    PaludisOutputConfMacro,PaludisOutputConfKnownValue
+            \ skipwhite
 
 syn match PaludisOutputConfContinuation contained /\\$/
-	    \ skipnl
+            \ skipnl
 
 syn match PaludisOutputConfUnquoted contained /[^ \t$%"'\\]\+/ skipwhite
 
 syn region PaludisOutputConfString contained start=/"/ end=/"/
-	    \ contains=PaludisOutputConfVariable,PaludisOutputConfMacro,
-	    \    PaludisOutputConfEnvVariable
-	    \ skipwhite
+            \ contains=PaludisOutputConfVariable,PaludisOutputConfMacro,
+            \    PaludisOutputConfEnvVariable
+            \ skipwhite
 
 syn keyword PaludisOutputConfKnownKey contained
-	    \ handler children messages_children type output_exclusivity
-	    \ manager action ignore_unfetched if_success if_failure
-	    \ child condition_variable if_true if_false if_unset
-	    \ filename keep_on_empty keep_on_success summary_output_manager
-	    \ format_debug format_info format_warn format_error format_log
-	    \ summary_output_message start_command end_command
-	    \ nothing_more_to_come_command succeeded_command
-	    \ stdout_command stderr_command extra_message_managers
-	    \ extra_output_managers log_path always_keep_output_logs
-	    \ quiet stdout_children stderr_children format_status
+            \ handler children messages_children type output_exclusivity
+            \ manager action ignore_unfetched if_success if_failure
+            \ child condition_variable if_true if_false if_unset
+            \ filename keep_on_empty keep_on_success summary_output_manager
+            \ format_debug format_info format_warn format_error format_log
+            \ summary_output_message start_command end_command
+            \ nothing_more_to_come_command succeeded_command
+            \ stdout_command stderr_command extra_message_managers
+            \ extra_output_managers log_path always_keep_output_logs
+            \ quiet stdout_children stderr_children format_status
 
 syn keyword PaludisOutputConfKnownValue contained
-	    \ buffer file format_messages forward_at_finish ipc tee standard command
+            \ buffer file format_messages forward_at_finish ipc tee standard command
 
 syn match PaludisOutputConfVariable contained
             \ /\$\({[^{}]\+}\|\(ENV{\)\@![a-zA-Z0-9_]\+\)/ skipwhite
@@ -65,10 +65,10 @@ syn match PaludisOutputConfMacro contained
             \ /%\({[^}]*}\|[a-zA-Z0-9_]\*\)/ skipwhite
 
 syn region PaludisOutputConfSection start=/^\[/ end=/\]$/ skipwhite
-	    \ contains=PaludisOutputConfSectionName
+            \ contains=PaludisOutputConfSectionName
 
 syn keyword PaludisOutputConfSectionName contained
-	    \ rule manager
+            \ rule manager
 
 hi def link PaludisOutputConfKnownKey                    Keyword
 hi def link PaludisOutputConfKnownValue                  Special

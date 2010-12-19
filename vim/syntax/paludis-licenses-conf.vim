@@ -1,8 +1,8 @@
 " Vim syntax file
-" Language:	Paludis licenses.conf files
-" Author:	Ciaran McCreesh
-" Copyright:	Copyright (c) 2007 Ciaran McCreesh
-" Licence:	You may redistribute this under the same terms as Vim itself
+" Language:     Paludis licenses.conf files
+" Author:       Ciaran McCreesh
+" Copyright:    Copyright (c) 2007 Ciaran McCreesh
+" Licence:      You may redistribute this under the same terms as Vim itself
 "
 " Syntax highlighting for Paludis licenses.conf files.
 "
@@ -18,15 +18,15 @@ endif
 syn region PaludisLicensesConfComment start=/^\s*#/ end=/$/
 
 syn match  PaludisLicensesConfPDS /^[^ \t#\/]\+\/[^ \t#\/]\+\s*/
-	    \ nextgroup=PaludisLicensesConfLicense,PaludisLicensesConfContinuation
+            \ nextgroup=PaludisLicensesConfLicense,PaludisLicensesConfContinuation
             \ contains=PaludisLicensesConfWildcard
 syn match  PaludisLicensesConfWildcard contained /\(\*\/\@=\|\/\@<=\*\)/
 syn match  PaludisLicensesConfSet /^[^ \t#\/]\+\S\@!/
-	    \ nextgroup=PaludisLicensesConfLicense,PaludisLicensesConfContinuation skipwhite
+            \ nextgroup=PaludisLicensesConfLicense,PaludisLicensesConfContinuation skipwhite
 syn match  PaludisLicensesConfLicense contained /-\?[a-zA-Z0-9\-_*]\+/
-	    \ nextgroup=PaludisLicensesConfLicense,PaludisLicensesConfContinuation skipwhite
+            \ nextgroup=PaludisLicensesConfLicense,PaludisLicensesConfContinuation skipwhite
 syn match  PaludisLicensesConfContinuation contained /\\$/
-	    \ nextgroup=PaludisLicensesConfLicense,PaludisLicensesConfContinuation skipwhite skipnl
+            \ nextgroup=PaludisLicensesConfLicense,PaludisLicensesConfContinuation skipwhite skipnl
 
 hi def link PaludisLicensesConfComment          Comment
 hi def link PaludisLicensesConfPDS              Identifier

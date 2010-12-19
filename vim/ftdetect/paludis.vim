@@ -1,8 +1,8 @@
 " Vim filetype detection file
-" Language:	Paludis Things
-" Author:	Ciaran McCreesh
-" Copyright:	Copyright (c) 2007, 2010 Ciaran McCreesh
-" Licence:	You may redistribute this under the same terms as Vim itself
+" Language:     Paludis Things
+" Author:       Ciaran McCreesh
+" Copyright:    Copyright (c) 2007, 2010 Ciaran McCreesh
+" Licence:      You may redistribute this under the same terms as Vim itself
 "
 " Filetype detection for Paludis things.
 "
