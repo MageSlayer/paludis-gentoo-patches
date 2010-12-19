@@ -31,7 +31,7 @@
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/legacy/dep_list_exceptions.hh>
 #include <paludis/legacy/dep_list.hh>
-#include <paludis/override_functions.hh>
+#include <paludis/legacy/override_functions.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/mask.hh>

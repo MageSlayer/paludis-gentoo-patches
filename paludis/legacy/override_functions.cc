@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/override_functions.hh>
+#include <paludis/legacy/override_functions.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/stringify.hh>

@@ -26,6 +26,7 @@ paludis_legacy_include_HEADERS = \
 	find_unused_packages_task.hh \
 	handled_information.hh handled_information-fwd.hh \
 	install_task.hh install_task-se.hh \
+	override_functions.hh \
 	query_visitor.hh \
 	range_rewriter.hh \
 	report_task.hh \
@@ -42,6 +43,7 @@ libpaludislegacy_@PALUDIS_PC_SLOT@_la_SOURCES = \
 	find_unused_packages_task.cc \
 	handled_information.cc \
 	install_task.cc \
+	override_functions.cc \
 	query_visitor.cc \
 	range_rewriter.cc \
 	report_task.cc \

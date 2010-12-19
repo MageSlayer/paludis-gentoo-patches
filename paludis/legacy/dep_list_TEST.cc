@@ -23,7 +23,7 @@
 #include <paludis/mask.hh>
 #include <paludis/stringify_formatter-impl.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
-#include <paludis/override_functions.hh>
+#include <paludis/legacy/override_functions.hh>
 #include <paludis/repositories/e/dep_spec_pretty_printer.hh>
 #include <paludis/choice.hh>
 

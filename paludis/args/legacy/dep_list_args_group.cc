@@ -25,7 +25,7 @@
 
 #include <paludis/args/do_help.hh>
 #include <paludis/environment-fwd.hh>
-#include <paludis/override_functions.hh>
+#include <paludis/legacy/override_functions.hh>
 
 using namespace paludis;
 using namespace paludis::args;

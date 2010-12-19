@@ -23,7 +23,7 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
-#include <paludis/override_functions.hh>
+#include <paludis/legacy/override_functions.hh>
 #include <ruby.h>
 
 using namespace paludis;
