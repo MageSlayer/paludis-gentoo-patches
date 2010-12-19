@@ -23,6 +23,8 @@ make_enum_DepSpecAnnotationRole()
     key dsar_myoptions_n_at_most_one          "MYOPTIONS, at most one"
     key dsar_myoptions_n_exactly_one          "MYOPTIONS, exactly one"
 
+    key dsar_suggestions_group_name           "Group name for suggestions"
+
     want_destringify
 
     doxygen_comment << "END"

@@ -412,6 +412,13 @@ namespace
                     role = dsar_myoptions_requires;
             }
 
+            /* suggestions */
+            if (dsar_none == role)
+            {
+                if (k->first == eapi.supported()->annotations()->suggestions_group_name())
+                    role = dsar_suggestions_group_name;
+            }
+
             /* general */
             if (dsar_none == role)
             {
