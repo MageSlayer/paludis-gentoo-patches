@@ -126,9 +126,8 @@ namespace
 
     struct MyOptionsFinder
     {
-        typedef std::map<std::string, std::string> Annotations;
-        typedef std::map<UnprefixedChoiceName, Annotations> Values;
-        typedef std::map<ChoicePrefixName, Values> Prefixes;
+        typedef std::map<UnprefixedChoiceName, std::string> Descriptions;
+        typedef std::map<ChoicePrefixName, Descriptions> Prefixes;
 
         Prefixes prefixes;
         std::list<ChoicePrefixName> current_prefix_stack;
@@ -147,22 +146,22 @@ namespace
 
             Prefixes::iterator p(prefixes.find(*current_prefix_stack.begin()));
             if (p == prefixes.end())
-                p = prefixes.insert(std::make_pair(*current_prefix_stack.begin(), Values())).first;
+                p = prefixes.insert(std::make_pair(*current_prefix_stack.begin(), Descriptions())).first;
 
             UnprefixedChoiceName n(parse_myoption(node.spec()->text()).first);
             if (std::string::npos != stringify(n).find(':'))
                 throw MyOptionsError("Flag '" + stringify(n) + "' must not contain a ':'");
 
-            Values::iterator v(p->second.find(n));
-            if (v == p->second.end())
-                v = p->second.insert(std::make_pair(n, Annotations())).first;
-
             if (node.spec()->maybe_annotations())
             {
-                for (auto m(node.spec()->maybe_annotations()->begin()), m_end(node.spec()->maybe_annotations()->end()) ;
-                        m != m_end ; ++m)
-                    v->second.insert(make_pair(m->key(), m->value()));
+                auto m_role(node.spec()->maybe_annotations()->find(dsar_general_description));
+                if (m_role != node.spec()->maybe_annotations()->end())
+                    p->second.insert(std::make_pair(n, m_role->value())).first->second = m_role->value();
+                else
+                    p->second.insert(std::make_pair(n, ""));
             }
+            else
+                p->second.insert(std::make_pair(n, ""));
         }
 
         void visit(const PlainTextSpecTree::NodeType<PlainTextLabelDepSpec>::Type & node)
@@ -191,18 +190,12 @@ namespace
     std::shared_ptr<ChoiceValue> make_myoption(
             const std::shared_ptr<const ERepositoryID> & id,
             std::shared_ptr<Choice> & choice,
-            MyOptionsFinder::Values::const_iterator & v,
+            const UnprefixedChoiceName & unprefixed,
+            const std::string & description,
             const Tribool s,
             const bool b)
     {
-        std::string description;
-        for (MyOptionsFinder::Annotations::const_iterator a(v->second.begin()), a_end(v->second.end()) ;
-                a != a_end ; ++a)
-        {
-            if (a->first == id->eapi()->supported()->annotations()->myoptions_description())
-                description = a->second;
-        }
-        return id->make_choice_value(choice, v->first, s, false, b, description, false);
+        return id->make_choice_value(choice, unprefixed, s, false, b, description, false);
     }
 
     std::string get_maybe_description(const std::shared_ptr<const Map<ChoiceNameWithPrefix, std::string> > & m,
@@ -331,9 +324,9 @@ EChoicesKey::populate_myoptions() const
             MyOptionsFinder::Prefixes::iterator p(myoptions.prefixes.find(ChoicePrefixName(lower_u)));
             if (myoptions.prefixes.end() != p)
             {
-                for (MyOptionsFinder::Values::const_iterator v(p->second.begin()), v_end(p->second.end()) ;
+                for (MyOptionsFinder::Descriptions::const_iterator v(p->second.begin()), v_end(p->second.end()) ;
                         v != v_end ; ++v)
-                    exp->add(make_myoption(_imp->id, exp, v, indeterminate, true));
+                    exp->add(make_myoption(_imp->id, exp, v->first, v->second, indeterminate, true));
                 myoptions.prefixes.erase(p);
             }
         }
@@ -342,9 +335,9 @@ EChoicesKey::populate_myoptions() const
     if (myoptions.prefixes.end() != p)
     {
         Context local_local_context("When using empty prefix to populate choices:");
-        for (MyOptionsFinder::Values::const_iterator v(p->second.begin()), v_end(p->second.end()) ;
+        for (MyOptionsFinder::Descriptions::const_iterator v(p->second.begin()), v_end(p->second.end()) ;
                 v != v_end ; ++v)
-            options->add(make_myoption(_imp->id, options, v, indeterminate, true));
+            options->add(make_myoption(_imp->id, options, v->first, v->second, indeterminate, true));
         myoptions.prefixes.erase(p);
     }
 

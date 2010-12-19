@@ -89,6 +89,7 @@ PackageOrBlockDepSpec::serialise(Serialiser & s) const
         {
             w.member(SerialiserFlags<>(), "annotations_k_" + stringify(n), m->key());
             w.member(SerialiserFlags<>(), "annotations_v_" + stringify(n), m->value());
+            w.member(SerialiserFlags<>(), "annotations_r_" + stringify(n), stringify(m->role()));
             ++n;
         }
 
@@ -120,8 +121,10 @@ PackageOrBlockDepSpec::deserialise(Deserialisation & d, const std::shared_ptr<co
     {
         std::string key(v.member<std::string>("annotations_k_" + stringify(a)));
         std::string value(v.member<std::string>("annotations_v_" + stringify(a)));
+        std::string role(v.member<std::string>("annotations_r_" + stringify(a)));
         annotations->add(make_named_values<DepSpecAnnotation>(
                     n::key() = key,
+                    n::role() = destringify<DepSpecAnnotationRole>(role),
                     n::value() = value
                     ));
     }

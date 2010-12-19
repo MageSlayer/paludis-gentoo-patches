@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# vim: set sw=4 sts=4 et ft=sh :
+
+make_enum_DepSpecAnnotationRole()
+{
+    prefix dsar
+
+    key dsar_none                             "No particular role"
+
+    key dsar_general_description              "A description"
+    key dsar_general_url                      "A url"
+    key dsar_general_note                     "A note"
+    key dsar_general_lang                     "A language"
+    key dsar_general_defined_in               "Defined in"
+
+    key dsar_blocker_manual                   "Blocker, resolve manually"
+    key dsar_blocker_uninstall_blocked_after  "Blocker, uninstall blocked after"
+    key dsar_blocker_uninstall_blocked_before "Blocker, uninstall blocked before"
+    key dsar_blocker_upgrade_blocked_before   "Blocker, upgrade blocked before"
+
+    key dsar_myoptions_requires               "MYOPTIONS, requires"
+    key dsar_myoptions_n_at_least_one         "MYOPTIONS, at least one"
+    key dsar_myoptions_n_at_most_one          "MYOPTIONS, at most one"
+    key dsar_myoptions_n_exactly_one          "MYOPTIONS, exactly one"
+
+    want_destringify
+
+    doxygen_comment << "END"
+        /**
+         * Role for a DepSpecAnnotation.
+         *
+         * \ingroup g_dep_spec
+         * \since 0.58
+         */
+END
+}
+

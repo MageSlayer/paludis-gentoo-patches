@@ -123,6 +123,10 @@ namespace paludis
         typedef Name<struct fancy_test_flag_name> fancy_test_flag;
         typedef Name<struct fix_mtimes_name> fix_mtimes;
         typedef Name<struct flat_list_index_name> flat_list_index;
+        typedef Name<struct general_description_name> general_description;
+        typedef Name<struct general_lang_name> general_lang;
+        typedef Name<struct general_note_name> general_note;
+        typedef Name<struct general_url_name> general_url;
         typedef Name<struct generated_from_name> generated_from;
         typedef Name<struct generated_time_name> generated_time;
         typedef Name<struct generated_using_name> generated_using;
@@ -145,7 +149,6 @@ namespace paludis
         typedef Name<struct metadata_key_name> metadata_key;
         typedef Name<struct minimum_flat_list_size_name> minimum_flat_list_size;
         typedef Name<struct myoptions_name> myoptions;
-        typedef Name<struct myoptions_description_name> myoptions_description;
         typedef Name<struct myoptions_number_selected_name> myoptions_number_selected;
         typedef Name<struct myoptions_number_selected_at_least_one_name> myoptions_number_selected_at_least_one;
         typedef Name<struct myoptions_number_selected_at_most_one_name> myoptions_number_selected_at_most_one;
@@ -464,7 +467,10 @@ namespace paludis
             NamedValue<n::blocker_resolution_uninstall_blocked_after, std::string> blocker_resolution_uninstall_blocked_after;
             NamedValue<n::blocker_resolution_uninstall_blocked_before, std::string> blocker_resolution_uninstall_blocked_before;
             NamedValue<n::blocker_resolution_upgrade_blocked_before, std::string> blocker_resolution_upgrade_blocked_before;
-            NamedValue<n::myoptions_description, std::string> myoptions_description;
+            NamedValue<n::general_description, std::string> general_description;
+            NamedValue<n::general_lang, std::string> general_lang;
+            NamedValue<n::general_note, std::string> general_note;
+            NamedValue<n::general_url, std::string> general_url;
             NamedValue<n::myoptions_number_selected, std::string> myoptions_number_selected;
             NamedValue<n::myoptions_number_selected_at_least_one, std::string> myoptions_number_selected_at_least_one;
             NamedValue<n::myoptions_number_selected_at_most_one, std::string> myoptions_number_selected_at_most_one;

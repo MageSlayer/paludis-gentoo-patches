@@ -20,10 +20,16 @@
 #ifndef PALUDIS_GUARD_PALUDIS_DEP_SPEC_ANNOTATIONS_FWD_HH
 #define PALUDIS_GUARD_PALUDIS_DEP_SPEC_ANNOTATIONS_FWD_HH 1
 
+#include <paludis/util/attributes.hh>
+#include <iosfwd>
+
 namespace paludis
 {
     class DepSpecAnnotation;
     class DepSpecAnnotations;
+
+#include <paludis/dep_spec_annotations-se.hh>
+
 }
 
 #endif

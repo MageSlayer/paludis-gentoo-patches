@@ -338,19 +338,6 @@ namespace
     {
     }
 
-    void set_annotations(
-            std::shared_ptr<DepSpec> & spec,
-            const std::shared_ptr<const Map<std::string, std::string> > & m)
-    {
-        auto annotations(std::make_shared<DepSpecAnnotations>());
-        for (auto k(m->begin()), k_end(m->end()) ;
-                k != k_end ; ++k)
-            annotations->add(make_named_values<DepSpecAnnotation>(
-                        n::key() = k->first,
-                        n::value() = k->second));
-        spec->set_annotations(annotations);
-    }
-
     void set_annotations_block(
             const EAPI & eapi,
             std::shared_ptr<DepSpec> & spec,
@@ -360,32 +347,106 @@ namespace
         auto annotations(std::make_shared<DepSpecAnnotations>());
         for (auto k(m->begin()), k_end(m->end()) ;
                 k != k_end ; ++k)
+        {
+            if (k->first.empty())
+                continue;
+
+            DepSpecAnnotationRole role(dsar_none);
+
+            /* blocks */
+            if (if_block_spec && (! eapi.supported()->annotations()->blocker_resolution().empty()))
+            {
+                if (k->first == eapi.supported()->annotations()->blocker_resolution())
+                {
+                    if (k->second.empty())
+                    {
+                    }
+                    else if (k->second == eapi.supported()->annotations()->blocker_resolution_manual())
+                    {
+                        if_block_spec->set_block_kind(bk_manual);
+                        role = dsar_blocker_manual;
+                    }
+                    else if (k->second == eapi.supported()->annotations()->blocker_resolution_uninstall_blocked_after())
+                    {
+                        if_block_spec->set_block_kind(bk_uninstall_blocked_after);
+                        role = dsar_blocker_uninstall_blocked_after;
+                    }
+                    else if (k->second == eapi.supported()->annotations()->blocker_resolution_uninstall_blocked_before())
+                    {
+                        if_block_spec->set_block_kind(bk_uninstall_blocked_before);
+                        role = dsar_blocker_uninstall_blocked_before;
+                    }
+                    else if (k->second == eapi.supported()->annotations()->blocker_resolution_upgrade_blocked_before())
+                    {
+                        if_block_spec->set_block_kind(bk_upgrade_blocked_before);
+                        role = dsar_blocker_upgrade_blocked_before;
+                    }
+                    else
+                        throw EDepParseError(stringify(*if_block_spec), "Unknown value '" + k->second + "' for annotation '" + k->first + "'");
+                }
+            }
+
+            /* myoptions number-selected */
+            if (dsar_none == role)
+            {
+                if (k->first == eapi.supported()->annotations()->myoptions_number_selected())
+                {
+                    if (k->second.empty())
+                    {
+                    }
+                    else if (k->second == eapi.supported()->annotations()->myoptions_number_selected_at_least_one())
+                        role = dsar_myoptions_n_at_least_one;
+                    else if (k->second == eapi.supported()->annotations()->myoptions_number_selected_at_most_one())
+                        role = dsar_myoptions_n_at_most_one;
+                    else if (k->second == eapi.supported()->annotations()->myoptions_number_selected_exactly_one())
+                        role = dsar_myoptions_n_exactly_one;
+                    else
+                        throw EDepParseError(k->first, "Unknown value '" + k->second + "' for annotation '" + k->first + "'");
+                }
+            }
+
+            /* myoptions requires */
+            if (dsar_none == role)
+            {
+                if (k->first == eapi.supported()->annotations()->myoptions_requires())
+                    role = dsar_myoptions_requires;
+            }
+
+            /* general */
+            if (dsar_none == role)
+            {
+                if (k->first == eapi.supported()->annotations()->general_description())
+                    role = dsar_general_description;
+                else if (k->first == eapi.supported()->annotations()->general_url())
+                    role = dsar_general_url;
+                else if (k->first == eapi.supported()->annotations()->general_note())
+                    role = dsar_general_note;
+                else if (k->first == eapi.supported()->annotations()->general_lang())
+                    role = dsar_general_lang;
+                else if (k->first == eapi.supported()->ebuild_options()->bracket_merged_variables_annotation())
+                    role = dsar_general_defined_in;
+            }
+
+            if (dsar_none == role)
+                Log::get_instance()->message("e.dep_parser.unknown_annotation", ll_qa, lc_context)
+                    << "Unknown annotation '" << k->first << "' = '" << k->second << "'";
+
             annotations->add(make_named_values<DepSpecAnnotation>(
                         n::key() = k->first,
+                        n::role() = role,
                         n::value() = k->second));
-        spec->set_annotations(annotations);
-
-        if (if_block_spec && (! eapi.supported()->annotations()->blocker_resolution().empty())
-                && if_block_spec->maybe_annotations())
-        {
-            auto a(if_block_spec->maybe_annotations()->find(eapi.supported()->annotations()->blocker_resolution()));
-            if (a != if_block_spec->maybe_annotations()->end())
-            {
-                if (a->value().empty())
-                {
-                }
-                else if (a->value() == eapi.supported()->annotations()->blocker_resolution_manual())
-                    if_block_spec->set_block_kind(bk_manual);
-                else if (a->value() == eapi.supported()->annotations()->blocker_resolution_uninstall_blocked_after())
-                    if_block_spec->set_block_kind(bk_uninstall_blocked_after);
-                else if (a->value() == eapi.supported()->annotations()->blocker_resolution_uninstall_blocked_before())
-                    if_block_spec->set_block_kind(bk_uninstall_blocked_before);
-                else if (a->value() == eapi.supported()->annotations()->blocker_resolution_upgrade_blocked_before())
-                    if_block_spec->set_block_kind(bk_upgrade_blocked_before);
-                else
-                    throw EDepParseError(stringify(*if_block_spec), "Unknown value '" + a->value() + "' for annotation '" + a->key() + "'");
-            }
         }
+
+        spec->set_annotations(annotations);
+    }
+
+    void set_annotations(
+            const EAPI & eapi,
+            std::shared_ptr<DepSpec> & spec,
+            const std::shared_ptr<const Map<std::string, std::string> > & m)
+    {
+        std::shared_ptr<BlockDepSpec> not_block;
+        set_annotations_block(eapi, spec, not_block, m);
     }
 
     void set_thing_to_annotate(std::shared_ptr<DepSpec> & spec, const std::shared_ptr<DepSpec> & s)
@@ -466,7 +527,7 @@ paludis::erepository::parse_provide(const std::string & s,
     ELikeDepParserCallbacks callbacks(
             make_named_values<ELikeDepParserCallbacks>(
                 n::on_all() = std::bind(&any_all_handler<ProvideSpecTree, AllDepSpec>, std::ref(stack)),
-                n::on_annotations() = std::bind(&set_annotations, std::ref(thing_to_annotate), _1),
+                n::on_annotations() = std::bind(&set_annotations, std::cref(eapi), std::ref(thing_to_annotate), _1),
                 n::on_any() = std::bind(&any_not_allowed_handler, s),
                 n::on_arrow() = std::bind(&arrows_not_allowed_handler, s, _1, _2),
                 n::on_error() = std::bind(&error_handler, s, _1),
@@ -506,7 +567,7 @@ paludis::erepository::parse_fetchable_uri(const std::string & s,
     ELikeDepParserCallbacks callbacks(
             make_named_values<ELikeDepParserCallbacks>(
                 n::on_all() = std::bind(&any_all_handler<FetchableURISpecTree, AllDepSpec>, std::ref(stack)),
-                n::on_annotations() = std::bind(&set_annotations, std::ref(thing_to_annotate), _1),
+                n::on_annotations() = std::bind(&set_annotations, std::cref(eapi), std::ref(thing_to_annotate), _1),
                 n::on_any() = std::bind(&any_not_allowed_handler, s),
                 n::on_arrow() = std::bind(&arrow_handler<FetchableURISpecTree>, std::ref(stack),
                     ParseStackTypes<FetchableURISpecTree>::AnnotationsGoHere(std::bind(
@@ -550,7 +611,7 @@ paludis::erepository::parse_simple_uri(const std::string & s,
     ELikeDepParserCallbacks callbacks(
             make_named_values<ELikeDepParserCallbacks>(
                 n::on_all() = std::bind(&any_all_handler<SimpleURISpecTree, AllDepSpec>, std::ref(stack)),
-                n::on_annotations() = std::bind(&set_annotations, std::ref(thing_to_annotate), _1),
+                n::on_annotations() = std::bind(&set_annotations, std::cref(eapi), std::ref(thing_to_annotate), _1),
                 n::on_any() = std::bind(&any_not_allowed_handler, s),
                 n::on_arrow() = std::bind(&arrows_not_allowed_handler, s, _1, _2),
                 n::on_error() = std::bind(&error_handler, s, _1),
@@ -590,7 +651,7 @@ paludis::erepository::parse_license(const std::string & s,
     ELikeDepParserCallbacks callbacks(
             make_named_values<ELikeDepParserCallbacks>(
                 n::on_all() = std::bind(&any_all_handler<LicenseSpecTree, AllDepSpec>, std::ref(stack)),
-                n::on_annotations() = std::bind(&set_annotations, std::ref(thing_to_annotate), _1),
+                n::on_annotations() = std::bind(&set_annotations, std::cref(eapi), std::ref(thing_to_annotate), _1),
                 n::on_any() = std::bind(&any_all_handler<LicenseSpecTree, AnyDepSpec>, std::ref(stack)),
                 n::on_arrow() = std::bind(&arrows_not_allowed_handler, s, _1, _2),
                 n::on_error() = std::bind(&error_handler, s, _1),
@@ -630,7 +691,7 @@ paludis::erepository::parse_plain_text(const std::string & s,
     ELikeDepParserCallbacks callbacks(
             make_named_values<ELikeDepParserCallbacks>(
                 n::on_all() = std::bind(&any_all_handler<PlainTextSpecTree, AllDepSpec>, std::ref(stack)),
-                n::on_annotations() = std::bind(&set_annotations, std::ref(thing_to_annotate), _1),
+                n::on_annotations() = std::bind(&set_annotations, std::cref(eapi), std::ref(thing_to_annotate), _1),
                 n::on_any() = std::bind(&any_not_allowed_handler, s),
                 n::on_arrow() = std::bind(&arrows_not_allowed_handler, s, _1, _2),
                 n::on_error() = std::bind(&error_handler, s, _1),
@@ -670,7 +731,7 @@ paludis::erepository::parse_myoptions(const std::string & s,
     ELikeDepParserCallbacks callbacks(
             make_named_values<ELikeDepParserCallbacks>(
                 n::on_all() = std::bind(&any_all_handler<PlainTextSpecTree, AllDepSpec>, std::ref(stack)),
-                n::on_annotations() = std::bind(&set_annotations, std::ref(thing_to_annotate), _1),
+                n::on_annotations() = std::bind(&set_annotations, std::cref(eapi), std::ref(thing_to_annotate), _1),
                 n::on_any() = std::bind(&any_not_allowed_handler, s),
                 n::on_arrow() = std::bind(&arrows_not_allowed_handler, s, _1, _2),
                 n::on_error() = std::bind(&error_handler, s, _1),
@@ -712,7 +773,7 @@ paludis::erepository::parse_required_use(const std::string & s,
     ELikeDepParserCallbacks callbacks(
             make_named_values<ELikeDepParserCallbacks>(
                 n::on_all() = std::bind(&any_all_handler<RequiredUseSpecTree, AllDepSpec>, std::ref(stack)),
-                n::on_annotations() = std::bind(&set_annotations, std::ref(thing_to_annotate), _1),
+                n::on_annotations() = std::bind(&set_annotations, std::cref(eapi), std::ref(thing_to_annotate), _1),
                 n::on_any() = std::bind(&any_all_handler<RequiredUseSpecTree, AnyDepSpec>, std::ref(stack)),
                 n::on_arrow() = std::bind(&arrows_not_allowed_handler, s, _1, _2),
                 n::on_error() = std::bind(&error_handler, s, _1),

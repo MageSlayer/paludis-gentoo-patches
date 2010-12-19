@@ -29,6 +29,8 @@
 
 using namespace paludis;
 
+#include <paludis/dep_spec_annotations-se.cc>
+
 typedef std::vector<DepSpecAnnotation> Annotations;
 
 namespace paludis
@@ -71,6 +73,11 @@ namespace
     {
         return a.key() == k;
     }
+
+    bool role_is(const DepSpecAnnotation & a, const DepSpecAnnotationRole k)
+    {
+        return a.role() == k;
+    }
 }
 
 DepSpecAnnotations::ConstIterator
@@ -78,6 +85,13 @@ DepSpecAnnotations::find(const std::string & s) const
 {
     return ConstIterator(std::find_if(_imp->annotations.begin(), _imp->annotations.end(),
                 std::bind(&key_is, std::placeholders::_1, s)));
+}
+
+DepSpecAnnotations::ConstIterator
+DepSpecAnnotations::find(const DepSpecAnnotationRole r) const
+{
+    return ConstIterator(std::find_if(_imp->annotations.begin(), _imp->annotations.end(),
+                std::bind(&role_is, std::placeholders::_1, r)));
 }
 
 void

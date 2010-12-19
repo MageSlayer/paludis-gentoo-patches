@@ -31,12 +31,14 @@ namespace paludis
     namespace n
     {
         typedef Name<struct key_name> key;
+        typedef Name<struct role_name> role;
         typedef Name<struct value_name> value;
     }
 
     struct DepSpecAnnotation
     {
         NamedValue<n::key, std::string> key;
+        NamedValue<n::role, DepSpecAnnotationRole> role;
         NamedValue<n::value, std::string> value;
     };
 
@@ -55,6 +57,7 @@ namespace paludis
             ConstIterator begin() const PALUDIS_ATTRIBUTE((warn_unused_result));
             ConstIterator end() const PALUDIS_ATTRIBUTE((warn_unused_result));
             ConstIterator find(const std::string &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+            ConstIterator find(const DepSpecAnnotationRole) const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     extern template class Pimp<DepSpecAnnotations>;

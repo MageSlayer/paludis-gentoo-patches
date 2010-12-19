@@ -141,83 +141,76 @@ MyOptionsRequirementsVerifier::verify_one(
     for (auto m(annotations->begin()), m_end(annotations->end()) ;
             m != m_end ; ++m)
     {
-        std::string a_key(m->key()), a_value(m->value());
-
-        if (a_key == _imp->id->eapi()->supported()->annotations()->myoptions_description())
+        switch (m->role())
         {
-        }
-        else if (a_key == _imp->id->eapi()->supported()->annotations()->myoptions_number_selected())
-        {
-        }
-        else if (a_key == _imp->id->eapi()->supported()->ebuild_options()->bracket_merged_variables_annotation())
-        {
-        }
-        else if (a_key == _imp->id->eapi()->supported()->annotations()->myoptions_requires())
-        {
-            std::list<std::string> tokens;
-            tokenise_whitespace(a_value, std::back_inserter(tokens));
-            ChoicePrefixName prefix("");
-            for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
-                    t != t_end ; ++t)
-            {
-                if (t->empty())
-                    continue;
-
-                if (':' == t->at(t->length() - 1))
+            case dsar_myoptions_requires:
                 {
-                    prefix = ChoicePrefixName(t->substr(0, t->length() - 1));
-                    continue;
-                }
-
-                bool req_state(true);
-                std::string req_flag_s(*t);
-                if ('-' == req_flag_s.at(0))
-                {
-                    req_state = false;
-                    req_flag_s.erase(0, 1);
-                }
-
-                UnprefixedChoiceName suffix(req_flag_s);
-
-                std::shared_ptr<const ChoiceValue> choice_value;
-                if (_imp->id->choices_key())
-                    for (Choices::ConstIterator k(_imp->id->choices_key()->value()->begin()),
-                            k_end(_imp->id->choices_key()->value()->end()) ;
-                            k != k_end && ! choice_value ; ++k)
+                    std::list<std::string> tokens;
+                    tokenise_whitespace(m->value(), std::back_inserter(tokens));
+                    ChoicePrefixName prefix("");
+                    for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
+                            t != t_end ; ++t)
                     {
-                        if ((*k)->prefix() != prefix)
+                        if (t->empty())
                             continue;
 
-                        for (Choice::ConstIterator i((*k)->begin()), i_end((*k)->end()) ;
-                                i != i_end && ! choice_value ; ++i)
-                            if ((*i)->unprefixed_name() == suffix)
-                                choice_value = *i;
-                    }
+                        if (':' == t->at(t->length() - 1))
+                        {
+                            prefix = ChoicePrefixName(t->substr(0, t->length() - 1));
+                            continue;
+                        }
 
-                if (choice_value)
-                {
-                    if (choice_value->enabled() != req_state)
-                    {
-                        _imp->unmet_requirements->push_back(stringify(active_myoption.second ? "Enabling" : "Disabling") +
-                                " option '" + stringify(active_flag) + "' requires option '" +
-                                stringify(choice_value->name_with_prefix()) + "' to be " +
-                                (req_state ? "enabled" : "disabled"));
+                        bool req_state(true);
+                        std::string req_flag_s(*t);
+                        if ('-' == req_flag_s.at(0))
+                        {
+                            req_state = false;
+                            req_flag_s.erase(0, 1);
+                        }
+
+                        UnprefixedChoiceName suffix(req_flag_s);
+
+                        std::shared_ptr<const ChoiceValue> choice_value;
+                        if (_imp->id->choices_key())
+                            for (Choices::ConstIterator k(_imp->id->choices_key()->value()->begin()),
+                                    k_end(_imp->id->choices_key()->value()->end()) ;
+                                    k != k_end && ! choice_value ; ++k)
+                            {
+                                if ((*k)->prefix() != prefix)
+                                    continue;
+
+                                for (Choice::ConstIterator i((*k)->begin()), i_end((*k)->end()) ;
+                                        i != i_end && ! choice_value ; ++i)
+                                    if ((*i)->unprefixed_name() == suffix)
+                                        choice_value = *i;
+                            }
+
+                        if (choice_value)
+                        {
+                            if (choice_value->enabled() != req_state)
+                            {
+                                _imp->unmet_requirements->push_back(stringify(active_myoption.second ? "Enabling" : "Disabling") +
+                                        " option '" + stringify(active_flag) + "' requires option '" +
+                                        stringify(choice_value->name_with_prefix()) + "' to be " +
+                                        (req_state ? "enabled" : "disabled"));
+                            }
+                        }
+                        else
+                        {
+                            /* ick */
+                            ChoiceNameWithPrefix qualified_flag_name((stringify(prefix).empty() ? "" : stringify(prefix) +
+                                        stringify(_imp->id->eapi()->supported()->choices_options()->use_expand_separator())) + stringify(suffix));
+                            _imp->unmet_requirements->push_back(stringify(active_myoption.second ? "Enabling" : "Disabling") +
+                                    " option '" + stringify(active_flag) + "' requires option '" + stringify(qualified_flag_name) + "' to be " +
+                                    (req_state ? "enabled" : "disabled") + ", but no such option exists");
+                        }
                     }
                 }
-                else
-                {
-                    /* ick */
-                    ChoiceNameWithPrefix qualified_flag_name((stringify(prefix).empty() ? "" : stringify(prefix) +
-                                stringify(_imp->id->eapi()->supported()->choices_options()->use_expand_separator())) + stringify(suffix));
-                    _imp->unmet_requirements->push_back(stringify(active_myoption.second ? "Enabling" : "Disabling") +
-                            " option '" + stringify(active_flag) + "' requires option '" + stringify(qualified_flag_name) + "' to be " +
-                            (req_state ? "enabled" : "disabled") + ", but no such option exists");
-                }
-            }
+                break;
+
+            default:
+                break;
         }
-        else
-            Log::get_instance()->message("e.myoptions_requirements_verifier.unknown_annotation", ll_warning, lc_context)
-                << "Unknown annotation '" << a_key << "' = '" << a_value << "' on option '" << spec_text << "'";
     }
 }
 
@@ -287,45 +280,52 @@ MyOptionsRequirementsVerifier::visit(const PlainTextSpecTree::NodeType<AllDepSpe
         for (auto m(node.spec()->maybe_annotations()->begin()), m_end(node.spec()->maybe_annotations()->end()) ;
                 m != m_end ; ++m)
         {
-            std::string a_key(m->key()), a_value(m->value());
-
-            if (a_key == _imp->id->eapi()->supported()->annotations()->myoptions_number_selected())
+            switch (m->role())
             {
-                std::string children_s;
-                for (ChildrenList::const_iterator i(_imp->current_children_stack.begin()->begin()),
-                        i_end(_imp->current_children_stack.begin()->end()) ;
-                        i != i_end ; ++i)
-                {
-                    if (! children_s.empty())
-                        children_s.append(", ");
-
-                    if (! stringify(i->first).empty())
+                case dsar_myoptions_n_at_least_one:
+                case dsar_myoptions_n_at_most_one:
+                case dsar_myoptions_n_exactly_one:
                     {
-                        children_s.append(stringify(i->first));
-                        children_s.append(stringify(_imp->id->eapi()->supported()->choices_options()->use_expand_separator()));
+                        std::string children_s;
+                        for (ChildrenList::const_iterator i(_imp->current_children_stack.begin()->begin()),
+                                i_end(_imp->current_children_stack.begin()->end()) ;
+                                i != i_end ; ++i)
+                        {
+                            if (! children_s.empty())
+                                children_s.append(", ");
+
+                            if (! stringify(i->first).empty())
+                            {
+                                children_s.append(stringify(i->first));
+                                children_s.append(stringify(_imp->id->eapi()->supported()->choices_options()->use_expand_separator()));
+                            }
+                            children_s.append(stringify(i->second));
+                        }
+
+                        children_s = "( " + children_s + " )";
+
+                        if (dsar_myoptions_n_at_least_one != m->role())
+                        {
+                            if (*_imp->number_enabled_stack.begin() < 1)
+                                _imp->unmet_requirements->push_back("At least one of options " + children_s + " must be met");
+                        }
+                        else if (dsar_myoptions_n_at_most_one != m->role())
+                        {
+                            if (*_imp->number_enabled_stack.begin() > 1)
+                                _imp->unmet_requirements->push_back("At most one of options " + children_s + " must be met");
+                        }
+                        else if (dsar_myoptions_n_exactly_one != m->role())
+                        {
+                            if (*_imp->number_enabled_stack.begin() != 1)
+                                _imp->unmet_requirements->push_back("Exactly one of options " + children_s + " must be met");
+                        }
+                        else
+                            _imp->unmet_requirements->push_back("Don't know what '" + stringify(m->value()) + "' means");
                     }
-                    children_s.append(stringify(i->second));
-                }
+                    break;
 
-                children_s = "( " + children_s + " )";
-
-                if (a_value == _imp->id->eapi()->supported()->annotations()->myoptions_number_selected_at_least_one())
-                {
-                    if (*_imp->number_enabled_stack.begin() < 1)
-                        _imp->unmet_requirements->push_back("At least one of options " + children_s + " must be met");
-                }
-                else if (a_value == _imp->id->eapi()->supported()->annotations()->myoptions_number_selected_at_most_one())
-                {
-                    if (*_imp->number_enabled_stack.begin() > 1)
-                        _imp->unmet_requirements->push_back("At most one of options " + children_s + " must be met");
-                }
-                else if (a_value == _imp->id->eapi()->supported()->annotations()->myoptions_number_selected_exactly_one())
-                {
-                    if (*_imp->number_enabled_stack.begin() != 1)
-                        _imp->unmet_requirements->push_back("Exactly one of options " + children_s + " must be met");
-                }
-                else
-                    _imp->unmet_requirements->push_back("Don't know what '" + stringify(a_value) + "' means");
+                default:
+                    break;
             }
         }
     }

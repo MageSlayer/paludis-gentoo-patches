@@ -130,7 +130,7 @@ namespace
 
                     str << m->key() << " = [" << (m->value().empty() ? " " : " " + m->value() + " ") << "] ";
 
-                    if (m->key() == description_annotation)
+                    if (m->role() == dsar_general_description)
                         seen_description = true;
                 }
 
@@ -490,7 +490,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
 
                 StringifyFormatter ff;
                 MyOptionsRewriter p(package_id,
-                        eapi->supported()->annotations()->myoptions_description(),
+                        eapi->supported()->annotations()->general_description(),
                         std::string(1, eapi->supported()->choices_options()->use_expand_separator()));
                 mm->value()->top()->accept(p);
                 return "O0;" + p.str.str();
