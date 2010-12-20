@@ -304,17 +304,17 @@ MyOptionsRequirementsVerifier::visit(const PlainTextSpecTree::NodeType<AllDepSpe
 
                         children_s = "( " + children_s + " )";
 
-                        if (dsar_myoptions_n_at_least_one != m->role())
+                        if (dsar_myoptions_n_at_least_one == m->role())
                         {
                             if (*_imp->number_enabled_stack.begin() < 1)
                                 _imp->unmet_requirements->push_back("At least one of options " + children_s + " must be met");
                         }
-                        else if (dsar_myoptions_n_at_most_one != m->role())
+                        else if (dsar_myoptions_n_at_most_one == m->role())
                         {
                             if (*_imp->number_enabled_stack.begin() > 1)
                                 _imp->unmet_requirements->push_back("At most one of options " + children_s + " must be met");
                         }
-                        else if (dsar_myoptions_n_exactly_one != m->role())
+                        else if (dsar_myoptions_n_exactly_one == m->role())
                         {
                             if (*_imp->number_enabled_stack.begin() != 1)
                                 _imp->unmet_requirements->push_back("Exactly one of options " + children_s + " must be met");
