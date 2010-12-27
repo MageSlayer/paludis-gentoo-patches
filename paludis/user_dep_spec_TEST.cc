@@ -430,75 +430,75 @@ namespace test_cases
             pkg3->keywords_key()->set_from_string("~d");
 
             PackageDepSpec a(parse_user_package_dep_spec("cat/pkg1[.KEYWORDS<~a]", &env, { }));
-            TEST_CHECK(match_package(env, a, *pkg1, { }));
-            TEST_CHECK(match_package(env, a, *pkg2, { }));
-            TEST_CHECK(! match_package(env, a, *pkg3, { }));
+            TEST_CHECK(match_package(env, a, pkg1, { }));
+            TEST_CHECK(match_package(env, a, pkg2, { }));
+            TEST_CHECK(! match_package(env, a, pkg3, { }));
 
             PackageDepSpec b(parse_user_package_dep_spec("cat/pkg1[.KEYWORDS<~b]", &env, { }));
-            TEST_CHECK(match_package(env, b, *pkg1, { }));
-            TEST_CHECK(! match_package(env, b, *pkg2, { }));
-            TEST_CHECK(! match_package(env, b, *pkg3, { }));
+            TEST_CHECK(match_package(env, b, pkg1, { }));
+            TEST_CHECK(! match_package(env, b, pkg2, { }));
+            TEST_CHECK(! match_package(env, b, pkg3, { }));
 
             PackageDepSpec c(parse_user_package_dep_spec("cat/pkg1[.KEYWORDS<~c]", &env, { }));
-            TEST_CHECK(! match_package(env, c, *pkg1, { }));
-            TEST_CHECK(match_package(env, c, *pkg2, { }));
-            TEST_CHECK(! match_package(env, c, *pkg3, { }));
+            TEST_CHECK(! match_package(env, c, pkg1, { }));
+            TEST_CHECK(match_package(env, c, pkg2, { }));
+            TEST_CHECK(! match_package(env, c, pkg3, { }));
 
             PackageDepSpec d(parse_user_package_dep_spec("cat/pkg1[.KEYWORDS>~a]", &env, { }));
-            TEST_CHECK(! match_package(env, d, *pkg1, { }));
-            TEST_CHECK(! match_package(env, d, *pkg2, { }));
-            TEST_CHECK(! match_package(env, d, *pkg3, { }));
+            TEST_CHECK(! match_package(env, d, pkg1, { }));
+            TEST_CHECK(! match_package(env, d, pkg2, { }));
+            TEST_CHECK(! match_package(env, d, pkg3, { }));
 
             PackageDepSpec e(parse_user_package_dep_spec("cat/pkg1[.KEYWORDS=~d]", &env, { }));
-            TEST_CHECK(! match_package(env, e, *pkg1, { }));
-            TEST_CHECK(! match_package(env, e, *pkg2, { }));
-            TEST_CHECK(match_package(env, e, *pkg3, { }));
+            TEST_CHECK(! match_package(env, e, pkg1, { }));
+            TEST_CHECK(! match_package(env, e, pkg2, { }));
+            TEST_CHECK(match_package(env, e, pkg3, { }));
 
             PackageDepSpec f(parse_user_package_dep_spec("cat/pkg1[.KEYWORDS=~a ~c]", &env, { }));
-            TEST_CHECK(! match_package(env, f, *pkg1, { }));
-            TEST_CHECK(match_package(env, f, *pkg2, { }));
-            TEST_CHECK(! match_package(env, f, *pkg3, { }));
+            TEST_CHECK(! match_package(env, f, pkg1, { }));
+            TEST_CHECK(match_package(env, f, pkg2, { }));
+            TEST_CHECK(! match_package(env, f, pkg3, { }));
 
             PackageDepSpec g(parse_user_package_dep_spec("cat/pkg1[.HITCHHIKER=42]", &env, { }));
-            TEST_CHECK(match_package(env, g, *pkg1, { }));
+            TEST_CHECK(match_package(env, g, pkg1, { }));
 
             PackageDepSpec h(parse_user_package_dep_spec("cat/pkg1[.HITCHHIKER<41]", &env, { }));
-            TEST_CHECK(! match_package(env, h, *pkg1, { }));
+            TEST_CHECK(! match_package(env, h, pkg1, { }));
 
             PackageDepSpec i(parse_user_package_dep_spec("cat/pkg1[.HITCHHIKER<42]", &env, { }));
-            TEST_CHECK(! match_package(env, i, *pkg1, { }));
+            TEST_CHECK(! match_package(env, i, pkg1, { }));
 
             PackageDepSpec j(parse_user_package_dep_spec("cat/pkg1[.HITCHHIKER<43]", &env, { }));
-            TEST_CHECK(match_package(env, j, *pkg1, { }));
+            TEST_CHECK(match_package(env, j, pkg1, { }));
 
             PackageDepSpec k(parse_user_package_dep_spec("cat/pkg1[.HITCHHIKER>42]", &env, { }));
-            TEST_CHECK(! match_package(env, k, *pkg1, { }));
+            TEST_CHECK(! match_package(env, k, pkg1, { }));
 
             PackageDepSpec l(parse_user_package_dep_spec("cat/pkg1[.HITCHHIKER>41]", &env, { }));
-            TEST_CHECK(match_package(env, l, *pkg1, { }));
+            TEST_CHECK(match_package(env, l, pkg1, { }));
 
             PackageDepSpec m(parse_user_package_dep_spec("cat/pkg1[.HITCHHIKER?]", &env, { }));
-            TEST_CHECK(match_package(env, m, *pkg1, { }));
+            TEST_CHECK(match_package(env, m, pkg1, { }));
 
             PackageDepSpec n(parse_user_package_dep_spec("cat/pkg1[.SPOON?]", &env, { }));
-            TEST_CHECK(! match_package(env, n, *pkg1, { }));
+            TEST_CHECK(! match_package(env, n, pkg1, { }));
 
             PackageDepSpec o(parse_user_package_dep_spec("cat/pkg1[.$keywords<~a]", &env, { }));
-            TEST_CHECK(match_package(env, o, *pkg1, { }));
-            TEST_CHECK(match_package(env, o, *pkg2, { }));
-            TEST_CHECK(! match_package(env, o, *pkg3, { }));
+            TEST_CHECK(match_package(env, o, pkg1, { }));
+            TEST_CHECK(match_package(env, o, pkg2, { }));
+            TEST_CHECK(! match_package(env, o, pkg3, { }));
 
             PackageDepSpec p(parse_user_package_dep_spec("cat/pkg1[.::$format=fake]", &env, { }));
-            TEST_CHECK(match_package(env, p, *pkg1, { }));
+            TEST_CHECK(match_package(env, p, pkg1, { }));
 
             PackageDepSpec q(parse_user_package_dep_spec("cat/pkg1[.::$format=e]", &env, { }));
-            TEST_CHECK(! match_package(env, q, *pkg1, { }));
+            TEST_CHECK(! match_package(env, q, pkg1, { }));
 
             PackageDepSpec r(parse_user_package_dep_spec("cat/pkg1[.::format=fake]", &env, { }));
-            TEST_CHECK(match_package(env, r, *pkg1, { }));
+            TEST_CHECK(match_package(env, r, pkg1, { }));
 
             PackageDepSpec s(parse_user_package_dep_spec("cat/pkg1[.::format=e]", &env, { }));
-            TEST_CHECK(! match_package(env, s, *pkg1, { }));
+            TEST_CHECK(! match_package(env, s, pkg1, { }));
         }
     } test_user_package_dep_spec_user_key_req;
 }

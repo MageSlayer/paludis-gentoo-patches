@@ -172,7 +172,7 @@ UninstallList::add_errors_for_system()
             continue;
 
         bool needed(false);
-        if (match_package_in_set(*_imp->env, *system, *l->package_id(), { }))
+        if (match_package_in_set(*_imp->env, *system, l->package_id(), { }))
             needed = true;
 
         if ((! needed) && l->package_id()->provide_key())
@@ -186,7 +186,7 @@ UninstallList::add_errors_for_system()
                             generator::Matches(**v, { }))]);
                 for (PackageIDSequence::ConstIterator i(virtuals->begin()), i_end(virtuals->end()) ;
                         i != i_end && ! needed ; ++i)
-                    if (match_package_in_set(*_imp->env, *system, **i, { }))
+                    if (match_package_in_set(*_imp->env, *system, *i, { }))
                         needed = true;
             }
         }
@@ -473,7 +473,7 @@ UninstallList::add_unused_dependencies()
         for (PackageIDSet::ConstIterator i(unused_dependencies->begin()),
                 i_end(unused_dependencies->end()) ; i != i_end ; ++i)
         {
-            if (match_package_in_set(*_imp->env, *world, **i, { }))
+            if (match_package_in_set(*_imp->env, *world, *i, { }))
                 continue;
 
             if (_imp->uninstall_list.end() != std::find_if(_imp->uninstall_list.begin(),
@@ -550,7 +550,7 @@ UninstallList::collect_world() const
     for (PackageIDSet::ConstIterator i(everything->begin()),
             i_end(everything->end()) ; i != i_end ; ++i)
     {
-        if (match_package_in_set(*_imp->env, *world, **i, { }))
+        if (match_package_in_set(*_imp->env, *world, *i, { }))
             result->insert(*i);
     }
 

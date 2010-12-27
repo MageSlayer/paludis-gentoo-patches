@@ -39,7 +39,7 @@ paludis::resolver::collect_world(
 
     for (auto i(from->begin()), i_end(from->end()) ;
             i != i_end ; ++i)
-        if (match_package_in_set(*env, *set, **i, { }))
+        if (match_package_in_set(*env, *set, *i, { }))
             result->insert(*i);
 
     return result;

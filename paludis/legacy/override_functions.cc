@@ -32,7 +32,7 @@
 using namespace paludis;
 
 bool
-paludis::override_tilde_keywords(const Environment * const e, const PackageID & id, const Mask & m)
+paludis::override_tilde_keywords(const Environment * const e, const std::shared_ptr<const PackageID> & id, const Mask & m)
 {
     Context c("When working out whether mask is a tilde keyword mask for override:");
 
@@ -57,7 +57,7 @@ paludis::override_tilde_keywords(const Environment * const e, const PackageID & 
 }
 
 bool
-paludis::override_unkeyworded(const Environment * const e, const PackageID & id, const Mask & m)
+paludis::override_unkeyworded(const Environment * const e, const std::shared_ptr<const PackageID> & id, const Mask & m)
 {
     Context c("When working out whether mask is an unkeyworded mask for override:");
 

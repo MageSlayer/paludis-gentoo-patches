@@ -586,7 +586,7 @@ PortageEnvironment::want_choice_enabled(
     for (PackageUse::const_iterator i(_imp->package_use.begin()), i_end(_imp->package_use.end()) ;
             i != i_end ; ++i)
     {
-        if (! match_package(*this, *i->first, *id, { }))
+        if (! match_package(*this, *i->first, id, { }))
             continue;
 
         if (i->second == stringify(f))
@@ -630,7 +630,7 @@ namespace
 
 bool
 PortageEnvironment::accept_keywords(const std::shared_ptr <const KeywordNameSet> & keywords,
-        const PackageID & d) const
+        const std::shared_ptr<const PackageID> & d) const
 {
     if (keywords->end() != keywords->find(KeywordName("*")))
         return true;
@@ -673,7 +673,7 @@ PortageEnvironment::accept_keywords(const std::shared_ptr <const KeywordNameSet>
 }
 
 bool
-PortageEnvironment::unmasked_by_user(const PackageID & e) const
+PortageEnvironment::unmasked_by_user(const std::shared_ptr<const PackageID> & e) const
 {
     for (PackageUnmask::const_iterator i(_imp->package_unmask.begin()), i_end(_imp->package_unmask.end()) ;
             i != i_end ; ++i)
@@ -702,7 +702,7 @@ PortageEnvironment::known_choice_value_names(const std::shared_ptr<const Package
     for (PackageUse::const_iterator i(_imp->package_use.begin()), i_end(_imp->package_use.end()) ;
             i != i_end ; ++i)
     {
-        if (! match_package(*this, *i->first, *id, { }))
+        if (! match_package(*this, *i->first, id, { }))
             continue;
 
         if (0 == i->second.compare(0, prefix_lower.length(), prefix_lower, 0, prefix_lower.length()))
@@ -778,7 +778,7 @@ PortageEnvironment::mirrors(const std::string & m) const
 }
 
 bool
-PortageEnvironment::accept_license(const std::string &, const PackageID &) const
+PortageEnvironment::accept_license(const std::string &, const std::shared_ptr<const PackageID> &) const
 {
     return true;
 }
@@ -838,11 +838,11 @@ namespace
 }
 
 const std::shared_ptr<const Mask>
-PortageEnvironment::mask_for_breakage(const PackageID & id) const
+PortageEnvironment::mask_for_breakage(const std::shared_ptr<const PackageID> & id) const
 {
     if (! _imp->ignore_all_breaks_portage)
     {
-        std::shared_ptr<const Set<std::string> > breakages(id.breaks_portage());
+        std::shared_ptr<const Set<std::string> > breakages(id->breaks_portage());
         if (breakages)
         {
             std::set<std::string> bad_breakages;
@@ -858,7 +858,7 @@ PortageEnvironment::mask_for_breakage(const PackageID & id) const
 }
 
 const std::shared_ptr<const Mask>
-PortageEnvironment::mask_for_user(const PackageID & d, const bool o) const
+PortageEnvironment::mask_for_user(const std::shared_ptr<const PackageID> & d, const bool o) const
 {
     for (PackageMask::const_iterator i(_imp->package_mask.begin()), i_end(_imp->package_mask.end()) ;
             i != i_end ; ++i)

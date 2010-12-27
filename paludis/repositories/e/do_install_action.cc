@@ -51,9 +51,13 @@ namespace
 {
     struct AcceptLicenseFinder
     {
+        const Environment * const env;
+        const std::shared_ptr<const PackageID> id;
         std::stringstream s;
 
-        AcceptLicenseFinder()
+        AcceptLicenseFinder(const Environment * const e, const std::shared_ptr<const PackageID> & i) :
+            env(e),
+            id(i)
         {
             s << "*";
         }
@@ -189,7 +193,7 @@ paludis::erepository::do_install_action(
         /* make ACCEPT_LICENSE */
         if (! id->eapi()->supported()->ebuild_environment_variables()->env_accept_license().empty())
         {
-            AcceptLicenseFinder g;
+            AcceptLicenseFinder g(env, id);
             if (id->license_key())
                 id->license_key()->value()->top()->accept(g);
 
@@ -258,7 +262,7 @@ paludis::erepository::do_install_action(
         if (skip)
             continue;
 
-        if (can_skip_phase(id, *phase))
+        if (can_skip_phase(env, id, *phase))
         {
             output_manager->stdout_stream() << "--- No need to do anything for " << phase->equal_option("skipname") << " phase" << std::endl;
             continue;

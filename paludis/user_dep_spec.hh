@@ -80,7 +80,7 @@ namespace paludis
 
             virtual const std::pair<bool, std::string> requirement_met(
                     const Environment * const, const ChangedChoices *,
-                    const PackageID &, const ChangedChoices * const) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                    const std::shared_ptr<const PackageID> &, const ChangedChoices * const) const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string as_human_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string as_raw_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
 

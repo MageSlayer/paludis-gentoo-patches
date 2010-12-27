@@ -132,7 +132,7 @@ KeywordsConf::add(const FSPath & filename)
 }
 
 bool
-KeywordsConf::query(const std::shared_ptr<const KeywordNameSet> & k, const PackageID & e) const
+KeywordsConf::query(const std::shared_ptr<const KeywordNameSet> & k, const std::shared_ptr<const PackageID> & e) const
 {
     static const KeywordName star_keyword("*");
     static const KeywordName minus_star_keyword("-*");
@@ -143,7 +143,7 @@ KeywordsConf::query(const std::shared_ptr<const KeywordNameSet> & k, const Packa
     /* highest priority: specific */
     bool break_when_done(false);
     {
-        SpecificMap::const_iterator i(_imp->qualified.find(e.name()));
+        SpecificMap::const_iterator i(_imp->qualified.find(e->name()));
         if (i != _imp->qualified.end())
         {
             for (PDSToKeywordsList::const_iterator j(i->second.begin()), j_end(i->second.end()) ;

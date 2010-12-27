@@ -87,7 +87,7 @@ namespace paludis
 
                 virtual const std::string environment_variable(const std::string &) const;
 
-                virtual const std::shared_ptr<const RepositoryMaskInfo> profile_masked(const PackageID &) const;
+                virtual const std::shared_ptr<const RepositoryMaskInfo> profile_masked(const std::shared_ptr<const PackageID> &) const;
 
                 virtual const std::shared_ptr<const SetSpecTree> system_packages() const;
 

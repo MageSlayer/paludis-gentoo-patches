@@ -175,26 +175,26 @@ PaludisEnvironment::~PaludisEnvironment()
 
 bool
 PaludisEnvironment::accept_keywords(const std::shared_ptr<const KeywordNameSet> & k,
-        const PackageID & e) const
+        const std::shared_ptr<const PackageID> & e) const
 {
     return _imp->config->keywords_conf()->query(k, e);
 }
 
 bool
-PaludisEnvironment::accept_license(const std::string & license, const PackageID & d) const
+PaludisEnvironment::accept_license(const std::string & license, const std::shared_ptr<const PackageID> & d) const
 {
     if (license == "*")
         return true;
     if (license == "-*")
         return false;
 
-    Context context("When checking license of '" + license + "' for '" + stringify(d) + "':");
+    Context context("When checking license of '" + license + "' for '" + stringify(*d) + "':");
 
     return _imp->config->licenses_conf()->query(license, d);
 }
 
 bool
-PaludisEnvironment::unmasked_by_user(const PackageID & d) const
+PaludisEnvironment::unmasked_by_user(const std::shared_ptr<const PackageID> & d) const
 {
     return _imp->config->package_unmask_conf()->query(d);
 }
@@ -411,11 +411,11 @@ namespace
 }
 
 const std::shared_ptr<const Mask>
-PaludisEnvironment::mask_for_breakage(const PackageID & id) const
+PaludisEnvironment::mask_for_breakage(const std::shared_ptr<const PackageID> & id) const
 {
     if (! _imp->config->accept_all_breaks_portage())
     {
-        std::shared_ptr<const Set<std::string> > breakages(id.breaks_portage());
+        std::shared_ptr<const Set<std::string> > breakages(id->breaks_portage());
         if (breakages)
         {
             std::list<std::string> bad_breakages;
@@ -431,7 +431,7 @@ PaludisEnvironment::mask_for_breakage(const PackageID & id) const
 }
 
 const std::shared_ptr<const Mask>
-PaludisEnvironment::mask_for_user(const PackageID & d, const bool o) const
+PaludisEnvironment::mask_for_user(const std::shared_ptr<const PackageID> & d, const bool o) const
 {
     if (_imp->config->package_mask_conf()->query(d))
         return std::make_shared<UserConfigMask>(o);

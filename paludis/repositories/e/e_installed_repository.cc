@@ -139,9 +139,9 @@ EInstalledRepository::some_ids_might_not_be_masked() const
 }
 
 bool
-EInstalledRepository::is_suitable_destination_for(const PackageID & e) const
+EInstalledRepository::is_suitable_destination_for(const std::shared_ptr<const PackageID> & e) const
 {
-    std::string f(e.repository()->format_key() ? e.repository()->format_key()->value() : "");
+    std::string f(e->repository()->format_key() ? e->repository()->format_key()->value() : "");
     return f == "e" || f == "ebuild" || f == "exheres" || f == "portage";
 }
 

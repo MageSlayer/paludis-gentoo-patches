@@ -205,7 +205,7 @@ paludis::erepository::do_fetch_action(
                 if (skip)
                     continue;
 
-                if (can_skip_phase(id, *phase))
+                if (can_skip_phase(env, id, *phase))
                     continue;
 
                 EbuildCommandParams command_params(make_named_values<EbuildCommandParams>(

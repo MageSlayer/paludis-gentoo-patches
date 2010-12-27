@@ -83,7 +83,7 @@ paludis::erepository::do_pretend_action(
 
     if (id->raw_myoptions_key())
     {
-        MyOptionsRequirementsVerifier verifier(id);
+        MyOptionsRequirementsVerifier verifier(env, id);
         id->raw_myoptions_key()->value()->top()->accept(verifier);
 
         if (verifier.unmet_requirements() && ! verifier.unmet_requirements()->empty())
@@ -144,7 +144,7 @@ paludis::erepository::do_pretend_action(
 
     if (id->required_use_key())
     {
-        RequiredUseVerifier verifier(id);
+        RequiredUseVerifier verifier(env, id);
         id->required_use_key()->value()->top()->accept(verifier);
 
         if (verifier.unmet_requirements() && ! verifier.unmet_requirements()->empty())
@@ -212,7 +212,7 @@ paludis::erepository::do_pretend_action(
     for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
             phase != phase_end ; ++phase)
     {
-        if (can_skip_phase(id, *phase))
+        if (can_skip_phase(env, id, *phase))
             continue;
 
         if (! output_manager)

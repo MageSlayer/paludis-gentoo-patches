@@ -83,7 +83,7 @@ namespace paludis
             void _add_metadata_keys() const;
 
             bool load_provided_using_cache() const;
-            void provides_from_package_id(const PackageID &) const;
+            void provides_from_package_id(const std::shared_ptr<const PackageID> &) const;
             void load_provided_the_slow_way() const;
 
             void write_provides_cache() const;

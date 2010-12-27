@@ -39,7 +39,9 @@ namespace paludis
                 bool matches(const std::string &);
 
             public:
-                RequiredUseVerifier(const std::shared_ptr<const ERepositoryID> &);
+                RequiredUseVerifier(
+                        const Environment * const,
+                        const std::shared_ptr<const ERepositoryID> &);
                 ~RequiredUseVerifier();
 
                 const std::shared_ptr<const Sequence<std::string> > unmet_requirements() const PALUDIS_ATTRIBUTE((warn_unused_result));

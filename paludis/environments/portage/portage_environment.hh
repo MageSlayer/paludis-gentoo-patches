@@ -141,19 +141,19 @@ namespace paludis
 
             virtual void set_paludis_command(const std::string &);
 
-            virtual bool accept_license(const std::string &, const PackageID &) const
+            virtual bool accept_license(const std::string &, const std::shared_ptr<const PackageID> &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool accept_keywords(const std::shared_ptr<const KeywordNameSet> &, const PackageID &) const
+            virtual bool accept_keywords(const std::shared_ptr<const KeywordNameSet> &, const std::shared_ptr<const PackageID> &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const std::shared_ptr<const Mask> mask_for_breakage(const PackageID &) const
+            virtual const std::shared_ptr<const Mask> mask_for_breakage(const std::shared_ptr<const PackageID> &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const std::shared_ptr<const Mask> mask_for_user(const PackageID &, const bool) const
+            virtual const std::shared_ptr<const Mask> mask_for_user(const std::shared_ptr<const PackageID> &, const bool) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool unmasked_by_user(const PackageID &) const
+            virtual bool unmasked_by_user(const std::shared_ptr<const PackageID> &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual uid_t reduced_uid() const;

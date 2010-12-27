@@ -446,7 +446,7 @@ namespace
                             env->package_database()->fetch_repository(*r)->package_ids(*q));
                     for (PackageIDSequence::ConstIterator i(id->begin()), i_end(id->end()) ;
                             i != i_end ; ++i)
-                        if (match_package(*env, spec, **i, options))
+                        if (match_package(*env, spec, *i, options))
                             result->insert(*i);
                 }
             }

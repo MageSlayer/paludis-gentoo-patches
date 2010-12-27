@@ -331,10 +331,10 @@ EbuildID::need_keys_added() const
     add_metadata_key(std::make_shared<LiteralMetadataValueKey<std::string>>("EAPI", "EAPI", mkt_internal, _imp->eapi->name()));
 
     _imp->repository_mask = std::make_shared<EMutableRepositoryMaskInfoKey>(shared_from_this(), "repository_mask", "Repository masked",
-        std::static_pointer_cast<const ERepository>(repository())->repository_masked(*this), mkt_internal);
+        std::static_pointer_cast<const ERepository>(repository())->repository_masked(shared_from_this()), mkt_internal);
     add_metadata_key(_imp->repository_mask);
     _imp->profile_mask = std::make_shared<EMutableRepositoryMaskInfoKey>(shared_from_this(), "profile_mask", "Profile masked",
-        std::static_pointer_cast<const ERepository>(repository())->profile()->profile_masked(*this), mkt_internal);
+        std::static_pointer_cast<const ERepository>(repository())->profile()->profile_masked(shared_from_this()), mkt_internal);
     add_metadata_key(_imp->profile_mask);
 
     std::shared_ptr<const Map<ChoiceNameWithPrefix, std::string> > maybe_use_descriptions;
@@ -435,16 +435,16 @@ namespace
     {
         bool ok;
         const Environment * const env;
-        bool (Environment::* const func) (const std::string &, const PackageID &) const;
-        const PackageID * const id;
+        bool (Environment::* const func) (const std::string &, const std::shared_ptr<const PackageID> &) const;
+        const std::shared_ptr<const PackageID> id;
 
         LicenceChecker(const Environment * const e,
-                bool (Environment::* const f) (const std::string &, const PackageID &) const,
-                const PackageID * const d) :
+                bool (Environment::* const f) (const std::string &, const std::shared_ptr<const PackageID> &) const,
+                const std::shared_ptr<const PackageID> & i) :
             ok(true),
             env(e),
             func(f),
-            id(d)
+            id(i)
         {
         }
 
@@ -481,7 +481,7 @@ namespace
 
         void visit(const LicenseSpecTree::NodeType<LicenseDepSpec>::Type & node)
         {
-            if (! (env->*func)(node.spec()->text(), *id))
+            if (! (env->*func)(node.spec()->text(), id))
                 ok = false;
         }
     };
@@ -513,7 +513,7 @@ EbuildID::need_masks_added() const
 
     if (keywords_key())
     {
-        if (! _imp->environment->accept_keywords(keywords_key()->value(), *this))
+        if (! _imp->environment->accept_keywords(keywords_key()->value(), shared_from_this()))
         {
             add_mask(std::make_shared<EUnacceptedMask>('K',
                             DistributionData::get_instance()->distribution_from_string(
@@ -534,7 +534,7 @@ EbuildID::need_masks_added() const
 
     if (license_key())
     {
-        LicenceChecker c(_imp->environment, &Environment::accept_license, this);
+        LicenceChecker c(_imp->environment, &Environment::accept_license, shared_from_this());
         license_key()->value()->top()->accept(c);
         if (! c.ok)
             add_mask(std::make_shared<EUnacceptedMask>('L',
@@ -542,7 +542,7 @@ EbuildID::need_masks_added() const
                                 _imp->environment->distribution())->concept_license(), license_key()));
     }
 
-    if (! _imp->environment->unmasked_by_user(*this))
+    if (! _imp->environment->unmasked_by_user(shared_from_this()))
     {
         /* repo unless user */
         if (_imp->repository_mask->value())
@@ -553,7 +553,7 @@ EbuildID::need_masks_added() const
             add_mask(std::make_shared<ERepositoryMask>('P', "profile", _imp->profile_mask));
 
         /* user */
-        std::shared_ptr<const Mask> user_mask(_imp->environment->mask_for_user(*this, false));
+        std::shared_ptr<const Mask> user_mask(_imp->environment->mask_for_user(shared_from_this(), false));
         if (user_mask)
             add_mask(user_mask);
     }
@@ -576,7 +576,7 @@ EbuildID::need_masks_added() const
                                 )));
 
         /* user */
-        std::shared_ptr<const Mask> user_mask(_imp->environment->mask_for_user(*this, true));
+        std::shared_ptr<const Mask> user_mask(_imp->environment->mask_for_user(shared_from_this(), true));
         if (user_mask)
             add_overridden_mask(std::make_shared<OverriddenMask>(
                             make_named_values<OverriddenMask>(
@@ -587,7 +587,7 @@ EbuildID::need_masks_added() const
     }
 
     /* break portage */
-    std::shared_ptr<const Mask> breaks_mask(_imp->environment->mask_for_breakage(*this));
+    std::shared_ptr<const Mask> breaks_mask(_imp->environment->mask_for_breakage(shared_from_this()));
     if (breaks_mask)
         add_mask(breaks_mask);
 }
@@ -602,8 +602,8 @@ EbuildID::invalidate_masks() const
 
     _imp->has_masks = false;
     PackageID::invalidate_masks();
-    _imp->repository_mask->set_value(std::static_pointer_cast<const ERepository>(repository())->repository_masked(*this));
-    _imp->profile_mask->set_value(std::static_pointer_cast<const ERepository>(repository())->profile()->profile_masked(*this));
+    _imp->repository_mask->set_value(std::static_pointer_cast<const ERepository>(repository())->repository_masked(shared_from_this()));
+    _imp->profile_mask->set_value(std::static_pointer_cast<const ERepository>(repository())->profile()->profile_masked(shared_from_this()));
 }
 
 const std::string

@@ -345,9 +345,9 @@ RepositoryRepository::sync_host_key() const
 }
 
 bool
-RepositoryRepository::is_suitable_destination_for(const PackageID & e) const
+RepositoryRepository::is_suitable_destination_for(const std::shared_ptr<const PackageID> & e) const
 {
-    std::string f(e.repository()->format_key() ? e.repository()->format_key()->value() : "");
+    std::string f(e->repository()->format_key() ? e->repository()->format_key()->value() : "");
     return f == "unavailable";
 }
 
@@ -438,7 +438,7 @@ RepositoryRepository::merge(const MergeParams & m)
     Context context("When merging '" + stringify(*m.package_id())
             + "' to RepositoryRepository repository '" + stringify(name()) + "':");
 
-    if (! is_suitable_destination_for(*m.package_id()))
+    if (! is_suitable_destination_for(m.package_id()))
         throw ActionFailedError("Not a suitable destination for '" + stringify(*m.package_id()) + "'");
 
     std::string repo_sync(get_string_key(m.package_id(), "REPOSITORY_SYNC"));

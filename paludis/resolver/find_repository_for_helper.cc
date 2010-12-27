@@ -100,7 +100,7 @@ FindRepositoryForHelper::operator() (
         }
 
         if ((*r)->destination_interface() &&
-                (*r)->destination_interface()->is_suitable_destination_for(*decision.origin_id()))
+                (*r)->destination_interface()->is_suitable_destination_for(decision.origin_id()))
         {
             if (result)
             {

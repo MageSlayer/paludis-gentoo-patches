@@ -85,9 +85,9 @@ namespace
     }
 }
 
-NoDestinationError::NoDestinationError(const PackageID & p,
+NoDestinationError::NoDestinationError(const std::shared_ptr<const PackageID> & p,
         const std::shared_ptr<const DestinationsSet> & d) throw () :
-    DepListError("No suitable destination for '" + stringify(p) + "' in (" +
+    DepListError("No suitable destination for '" + stringify(*p) + "' in (" +
             destinations_to_string(d) + ")")
 {
 }

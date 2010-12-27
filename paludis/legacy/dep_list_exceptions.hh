@@ -201,7 +201,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            NoDestinationError(const PackageID &,
+            NoDestinationError(const std::shared_ptr<const PackageID> &,
                     const std::shared_ptr<const DestinationsSet> &) throw ();
 
             ///\}

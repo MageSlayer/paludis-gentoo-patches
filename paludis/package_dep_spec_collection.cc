@@ -61,12 +61,12 @@ PackageDepSpecCollection::match_any(
 {
     auto named(_imp->by_name.equal_range(id->name()));
     for ( ; named.first != named.second ; ++named.first)
-        if (match_package(*env, named.first->second, *id, opts))
+        if (match_package(*env, named.first->second, id, opts))
             return true;
 
     for (auto u(_imp->unnamed.begin()), u_end(_imp->unnamed.end()) ;
             u != u_end ; ++u)
-        if (match_package(*env, *u, *id, opts))
+        if (match_package(*env, *u, id, opts))
             return true;
 
     return false;

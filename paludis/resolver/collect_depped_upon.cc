@@ -61,7 +61,7 @@ namespace
                 i != i_end ; ++i)
         {
             if ((! result) || dependent_checker_id(*i)->version() >= result->version())
-                if (match_package(*env, spec, *dependent_checker_id(*i), { }))
+                if (match_package(*env, spec, dependent_checker_id(*i), { }))
                     result = dependent_checker_id(*i);
         }
 
@@ -116,14 +116,14 @@ namespace
                     }
                 }
 
-                if (! match_package(*env, *spec, *dependent_checker_id(*g), { }))
+                if (! match_package(*env, *spec, dependent_checker_id(*g), { }))
                     continue;
 
                 bool any(false);
                 for (typename C_::ConstIterator n(newly_available->begin()), n_end(newly_available->end()) ;
                         n != n_end ; ++n)
                 {
-                    if (match_package(*env, *spec, *dependent_checker_id(*n), { }))
+                    if (match_package(*env, *spec, dependent_checker_id(*n), { }))
                     {
                         any = true;
                         break;

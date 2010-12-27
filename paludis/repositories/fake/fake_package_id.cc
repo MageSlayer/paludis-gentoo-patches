@@ -133,14 +133,14 @@ namespace paludis
     struct Imp<FakeMetadataCollectionKey<C_> >
     {
         std::shared_ptr<C_> collection;
-        const PackageID * const id;
+        const std::shared_ptr<const PackageID> id;
         const Environment * const env;
 
         const std::string raw_name;
         const std::string human_name;
         const MetadataKeyType type;
 
-        Imp(const PackageID * const i, const Environment * const e,
+        Imp(const std::shared_ptr<const PackageID> & i, const Environment * const e,
                 const std::string & r, const std::string & h, const MetadataKeyType t) :
             id(i),
             env(e),
@@ -154,7 +154,7 @@ namespace paludis
 
 template <typename C_>
 FakeMetadataCollectionKey<C_>::FakeMetadataCollectionKey(
-        const std::string & r, const std::string & h, const MetadataKeyType t, const PackageID * const i,
+        const std::string & r, const std::string & h, const MetadataKeyType t, const std::shared_ptr<const PackageID> & i,
         const Environment * const e) :
     Pimp<FakeMetadataCollectionKey<C_> >(i, e, r, h, t),
     _imp(Pimp<FakeMetadataCollectionKey<C_> >::_imp)
@@ -196,7 +196,7 @@ FakeMetadataCollectionKey<C_>::type() const
 
 FakeMetadataKeywordSetKey::FakeMetadataKeywordSetKey(const std::string & r,
         const std::string & h, const std::string & v, const MetadataKeyType t,
-        const PackageID * const i, const Environment * const e) :
+        const std::shared_ptr<const PackageID> & i, const Environment * const e) :
     FakeMetadataCollectionKey<KeywordNameSet>(r, h, t, i, e)
 {
     set_from_string(v);
@@ -720,7 +720,7 @@ namespace paludis
         mutable bool has_masks;
 
         Imp(const Environment * const e, const std::shared_ptr<const FakeRepositoryBase> & r,
-                const QualifiedPackageName & q, const VersionSpec & v, const PackageID * const id) :
+                const QualifiedPackageName & q, const VersionSpec & v) :
             env(e),
             repository(r),
             name(q),
@@ -730,7 +730,6 @@ namespace paludis
             post_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
             suggested_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
             slot(std::make_shared<LiteralMetadataValueKey<SlotName>>("SLOT", "Slot", mkt_internal, SlotName("0"))),
-            keywords(std::make_shared<FakeMetadataKeywordSetKey>("KEYWORDS", "Keywords", "test", mkt_normal, id, env)),
             behaviours_set(std::make_shared<Set<std::string>>()),
             has_masks(false)
         {
@@ -748,10 +747,9 @@ namespace paludis
 
 FakePackageID::FakePackageID(const Environment * const e, const std::shared_ptr<const FakeRepositoryBase> & r,
         const QualifiedPackageName & q, const VersionSpec & v) :
-    Pimp<FakePackageID>(e, r, q, v, this),
+    Pimp<FakePackageID>(e, r, q, v),
     _imp(Pimp<FakePackageID>::_imp)
 {
-    add_metadata_key(_imp->keywords);
 }
 
 FakePackageID::~FakePackageID()
@@ -1042,6 +1040,8 @@ FakePackageID::need_keys_added() const
         _imp->hitchhiker = std::make_shared<FakeMetadataValueKey<long>>("HITCHHIKER", "Hitchhiker",
                     mkt_internal, 42);
 
+        _imp->keywords = std::make_shared<FakeMetadataKeywordSetKey>("KEYWORDS", "Keywords", "test", mkt_normal, shared_from_this(), _imp->env);
+
         add_metadata_key(_imp->slot);
         add_metadata_key(_imp->build_dependencies);
         add_metadata_key(_imp->run_dependencies);
@@ -1054,6 +1054,7 @@ FakePackageID::need_keys_added() const
         add_metadata_key(_imp->choices);
         add_metadata_key(_imp->behaviours);
         add_metadata_key(_imp->hitchhiker);
+        add_metadata_key(_imp->keywords);
     }
 }
 
@@ -1075,16 +1076,16 @@ namespace
     {
         bool ok;
         const Environment * const env;
-        bool (Environment::* const func) (const std::string &, const PackageID &) const;
-        const PackageID * const id;
+        bool (Environment::* const func) (const std::string &, const std::shared_ptr<const PackageID> &) const;
+        const std::shared_ptr<const PackageID> id;
 
         LicenceChecker(const Environment * const e,
-                bool (Environment::* const f) (const std::string &, const PackageID &) const,
-                const PackageID * const d) :
+                bool (Environment::* const f) (const std::string &, const std::shared_ptr<const PackageID> &) const,
+                const std::shared_ptr<const PackageID> & i) :
             ok(true),
             env(e),
             func(f),
-            id(d)
+            id(i)
         {
         }
 
@@ -1121,7 +1122,7 @@ namespace
 
         void visit(const LicenseSpecTree::NodeType<LicenseDepSpec>::Type & node)
         {
-            if (! (env->*func)(node.spec()->text(), *id))
+            if (! (env->*func)(node.spec()->text(), id))
                 ok = false;
         }
     };
@@ -1140,26 +1141,26 @@ FakePackageID::need_masks_added() const
     Context context("When generating masks for ID '" + canonical_form(idcf_full) + "':");
 
     if (keywords_key())
-        if (! _imp->env->accept_keywords(keywords_key()->value(), *this))
+        if (! _imp->env->accept_keywords(keywords_key()->value(), shared_from_this()))
             add_mask(std::make_shared<FakeUnacceptedMask>('K', "keywords", keywords_key()));
 
     if (license_key())
     {
-        LicenceChecker c(_imp->env, &Environment::accept_license, this);
+        LicenceChecker c(_imp->env, &Environment::accept_license, shared_from_this());
         license_key()->value()->top()->accept(c);
         if (! c.ok)
             add_mask(std::make_shared<FakeUnacceptedMask>('L', "license", license_key()));
     }
 
-    if (! _imp->env->unmasked_by_user(*this))
+    if (! _imp->env->unmasked_by_user(shared_from_this()))
     {
-        std::shared_ptr<const Mask> user_mask(_imp->env->mask_for_user(*this, false));
+        std::shared_ptr<const Mask> user_mask(_imp->env->mask_for_user(shared_from_this(), false));
         if (user_mask)
             add_mask(user_mask);
     }
     else
     {
-        std::shared_ptr<const Mask> user_mask(_imp->env->mask_for_user(*this, true));
+        std::shared_ptr<const Mask> user_mask(_imp->env->mask_for_user(shared_from_this(), true));
         if (user_mask)
             add_overridden_mask(std::make_shared<OverriddenMask>(
                             make_named_values<OverriddenMask>(
@@ -1168,7 +1169,7 @@ FakePackageID::need_masks_added() const
                                 )));
     }
 
-    std::shared_ptr<const Mask> breaks_mask(_imp->env->mask_for_breakage(*this));
+    std::shared_ptr<const Mask> breaks_mask(_imp->env->mask_for_breakage(shared_from_this()));
     if (breaks_mask)
         add_mask(breaks_mask);
 
@@ -1325,7 +1326,7 @@ FakeMetadataKeywordSetKey::pretty_print_flat(const Formatter<KeywordName> & f) c
 
         std::shared_ptr<KeywordNameSet> k(std::make_shared<KeywordNameSet>());
         k->insert(*i);
-        if (_imp->env->accept_keywords(k, *_imp->id))
+        if (_imp->env->accept_keywords(k, _imp->id))
             result.append(f.format(*i, format::Accepted()));
         else
             result.append(f.format(*i, format::Unaccepted()));

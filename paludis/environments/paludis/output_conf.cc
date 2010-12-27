@@ -196,7 +196,7 @@ namespace
                 return false;
 
             if (rule.matches_requirement() && ! match_package(*env, *rule.matches_requirement(),
-                        *i.package_id(), { }))
+                        i.package_id(), { }))
                 return false;
 
             if (! rule.ignore_unfetched_requirement().is_indeterminate())

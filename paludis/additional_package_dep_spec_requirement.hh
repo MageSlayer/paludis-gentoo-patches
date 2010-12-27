@@ -57,11 +57,12 @@ namespace paludis
              *
              * \since 0.44 returns pair<bool, std::string>
              * \since 0.51 takes optional ChangedChoices arguments
+             * \since 0.58 takes id by shared_ptr
              */
             virtual const std::pair<bool, std::string> requirement_met(
                     const Environment * const,
                     const ChangedChoices * const maybe_changes_to_owner,
-                    const PackageID &,
+                    const std::shared_ptr<const PackageID> &,
                     const ChangedChoices * const maybe_changes_to_target) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**

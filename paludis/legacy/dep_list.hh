@@ -85,7 +85,7 @@ namespace paludis
      *
      * \ingroup g_dep_list
      */
-    typedef Sequence<std::function<bool (const PackageID &, const Mask &)> > DepListOverrideMasksFunctions;
+    typedef Sequence<std::function<bool (const std::shared_ptr<const PackageID> &, const Mask &)> > DepListOverrideMasksFunctions;
 
     /**
      * An entry in a DepList.
@@ -156,7 +156,7 @@ namespace paludis
             /**
              * Find an appropriate destination for a package.
              */
-            std::shared_ptr<Repository> find_destination(const PackageID &,
+            std::shared_ptr<Repository> find_destination(const std::shared_ptr<const PackageID> &,
                     const std::shared_ptr<const DestinationsSet> &);
 
             /**
@@ -169,8 +169,9 @@ namespace paludis
              * Return whether we prefer the first parameter, which is installed,
              * over the second, which isn't.
              */
-            bool prefer_installed_over_uninstalled(const PackageID &,
-                    const PackageID &);
+            bool prefer_installed_over_uninstalled(
+                    const std::shared_ptr<const PackageID> &,
+                    const std::shared_ptr<const PackageID> &);
 
             /**
              * Add a package to the list.
@@ -205,7 +206,7 @@ namespace paludis
              * Return whether the specified PackageID is matched by
              * the top level target.
              */
-            bool is_top_level_target(const PackageID &) const;
+            bool is_top_level_target(const std::shared_ptr<const PackageID> &) const;
 
             void add_not_top_level(
                     const bool only_if_not_suggested_label,

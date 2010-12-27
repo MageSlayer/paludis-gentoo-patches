@@ -595,8 +595,10 @@ namespace paludis
 
             /**
              * Are we a suitable destination for the specified package?
+             *
+             * \since 0.58 takes id by shared_ptr
              */
-            virtual bool is_suitable_destination_for(const PackageID &) const
+            virtual bool is_suitable_destination_for(const std::shared_ptr<const PackageID> &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**

@@ -401,9 +401,9 @@ AccountsRepository::some_ids_might_not_be_masked() const
 }
 
 bool
-AccountsRepository::is_suitable_destination_for(const PackageID & id) const
+AccountsRepository::is_suitable_destination_for(const std::shared_ptr<const PackageID> & id) const
 {
-    std::string f(id.repository()->format_key() ? id.repository()->format_key()->value() : "");
+    std::string f(id->repository()->format_key() ? id->repository()->format_key()->value() : "");
     return _imp->handler_if_installed && f == "accounts";
 }
 

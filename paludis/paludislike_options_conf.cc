@@ -426,7 +426,7 @@ namespace
         {
             if (maybe_id)
             {
-                if (! match_package(*env, i->spec(), *maybe_id, { }))
+                if (! match_package(*env, i->spec(), maybe_id, { }))
                     continue;
             }
             else
@@ -453,7 +453,7 @@ namespace
         {
             if (maybe_id)
             {
-                if (! match_package(*env, i->spec(), *maybe_id, { }))
+                if (! match_package(*env, i->spec(), maybe_id, { }))
                     continue;
             }
             else
@@ -502,7 +502,7 @@ PaludisLikeOptionsConf::want_choice_enabled_locked(
                 r != r_end ; ++r)
         {
             if (! match_package_in_set(*_imp->params.environment(), *r->set_value().value().value(),
-                        *maybe_id, { }))
+                        maybe_id, { }))
                 continue;
 
             check_values_groups(_imp->params.environment(), maybe_id, prefix, unprefixed_name, r->values_groups(),
@@ -561,7 +561,7 @@ PaludisLikeOptionsConf::value_for_choice_parameter(
         for (SetNamesWithValuesGroups::const_iterator r(_imp->set_specs.begin()), r_end(_imp->set_specs.end()) ;
                 r != r_end ; ++r)
         {
-            if (! match_package_in_set(*_imp->params.environment(), *r->set_value().value().value(), *id, { }))
+            if (! match_package_in_set(*_imp->params.environment(), *r->set_value().value().value(), id, { }))
                 continue;
 
             check_values_groups(_imp->params.environment(), id, prefix, unprefixed_name, r->values_groups(),
@@ -607,7 +607,7 @@ PaludisLikeOptionsConf::known_choice_value_names(
                 r != r_end ; ++r)
         {
             if (! match_package_in_set(*_imp->params.environment(), *r->set_value().value().value(),
-                        *maybe_id, { }))
+                        maybe_id, { }))
                 continue;
 
             collect_known_from_values_groups(_imp->params.environment(), maybe_id, prefix, r->values_groups(), result);

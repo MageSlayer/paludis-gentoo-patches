@@ -47,13 +47,17 @@ namespace paludis
     template <>
     struct Imp<RequiredUseVerifier>
     {
+        const Environment * const env;
         const std::shared_ptr<const ERepositoryID> id;
         std::shared_ptr<Sequence<std::string> > unmet_requirements;
 
         std::list<Met> stack;
         bool top;
 
-        Imp(const std::shared_ptr<const ERepositoryID> & i) :
+        Imp(
+                const Environment * const e,
+                const std::shared_ptr<const ERepositoryID> & i) :
+            env(e),
             id(i),
             unmet_requirements(std::make_shared<Sequence<std::string>>()),
             top(true)
@@ -63,8 +67,10 @@ namespace paludis
     };
 }
 
-RequiredUseVerifier::RequiredUseVerifier(const std::shared_ptr<const ERepositoryID> & id) :
-    Pimp<RequiredUseVerifier>(id)
+RequiredUseVerifier::RequiredUseVerifier(
+        const Environment * const e,
+        const std::shared_ptr<const ERepositoryID> & id) :
+    Pimp<RequiredUseVerifier>(e, id)
 {
 }
 

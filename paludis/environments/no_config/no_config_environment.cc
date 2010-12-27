@@ -447,8 +447,9 @@ NoConfigEnvironment::set_paludis_command(const std::string & s)
 }
 
 bool
-NoConfigEnvironment::accept_keywords(const std::shared_ptr<const KeywordNameSet> & keywords,
-        const PackageID &) const
+NoConfigEnvironment::accept_keywords(
+        const std::shared_ptr<const KeywordNameSet> & keywords,
+        const std::shared_ptr<const PackageID> &) const
 {
     if (_imp->is_vdb)
         return true;
@@ -503,19 +504,19 @@ NoConfigEnvironment::remove_from_world(const SetName &) const
 }
 
 bool
-NoConfigEnvironment::unmasked_by_user(const PackageID &) const
+NoConfigEnvironment::unmasked_by_user(const std::shared_ptr<const PackageID> &) const
 {
     return false;
 }
 
 const std::shared_ptr<const Mask>
-NoConfigEnvironment::mask_for_breakage(const PackageID &) const
+NoConfigEnvironment::mask_for_breakage(const std::shared_ptr<const PackageID> &) const
 {
     return std::shared_ptr<const Mask>();
 }
 
 const std::shared_ptr<const Mask>
-NoConfigEnvironment::mask_for_user(const PackageID &, const bool) const
+NoConfigEnvironment::mask_for_user(const std::shared_ptr<const PackageID> &, const bool) const
 {
     return std::shared_ptr<const Mask>();
 }
@@ -539,7 +540,7 @@ NoConfigEnvironment::mirrors(const std::string &) const
 }
 
 bool
-NoConfigEnvironment::accept_license(const std::string &, const PackageID &) const
+NoConfigEnvironment::accept_license(const std::string &, const std::shared_ptr<const PackageID> &) const
 {
     return true;
 }

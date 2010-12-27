@@ -78,7 +78,7 @@ FakeInstalledRepository::~FakeInstalledRepository()
 }
 
 bool
-FakeInstalledRepository::is_suitable_destination_for(const PackageID &) const
+FakeInstalledRepository::is_suitable_destination_for(const std::shared_ptr<const PackageID> &) const
 {
     return _imp->is_suitable_destination;
 }

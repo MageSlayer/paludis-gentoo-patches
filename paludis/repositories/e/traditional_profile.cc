@@ -872,7 +872,7 @@ TraditionalProfile::use_masked(
         for (PackageFlagStatusMapList::const_iterator g(i->package_use_mask.begin()),
                 g_end(i->package_use_mask.end()) ; g != g_end ; ++g)
         {
-            if (! match_package(*_imp->env, *g->first, *id, { }))
+            if (! match_package(*_imp->env, *g->first, id, { }))
                 continue;
 
             FlagStatusMap::const_iterator h(g->second.find(value_prefixed));
@@ -908,7 +908,7 @@ TraditionalProfile::use_forced(
         for (PackageFlagStatusMapList::const_iterator g(i->package_use_force.begin()),
                 g_end(i->package_use_force.end()) ; g != g_end ; ++g)
         {
-            if (! match_package(*_imp->env, *g->first, *id, { }))
+            if (! match_package(*_imp->env, *g->first, id, { }))
                 continue;
 
             FlagStatusMap::const_iterator h(g->second.find(value_prefixed));
@@ -937,7 +937,7 @@ TraditionalProfile::use_state_ignoring_masks(
         for (PackageFlagStatusMapList::const_iterator g(i->package_use.begin()),
                 g_end(i->package_use.end()) ; g != g_end ; ++g)
         {
-            if (! match_package(*_imp->env, *g->first, *id, { }))
+            if (! match_package(*_imp->env, *g->first, id, { }))
                 continue;
 
             FlagStatusMap::const_iterator h(g->second.find(value_prefixed));
@@ -1037,9 +1037,9 @@ TraditionalProfile::virtuals() const
 }
 
 const std::shared_ptr<const RepositoryMaskInfo>
-TraditionalProfile::profile_masked(const PackageID & id) const
+TraditionalProfile::profile_masked(const std::shared_ptr<const PackageID> & id) const
 {
-    PackageMaskMap::const_iterator rr(_imp->package_mask.find(id.name()));
+    PackageMaskMap::const_iterator rr(_imp->package_mask.find(id->name()));
     if (_imp->package_mask.end() == rr)
         return std::shared_ptr<const RepositoryMaskInfo>();
     else

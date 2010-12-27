@@ -192,7 +192,7 @@ FindCandidatesCommand::run_hosted(
 
                 for (auto m(matches.begin()), m_end(matches.end()) ;
                         m != m_end ; ++m)
-                    if (match_package(*env, *m, **(*env)[selection::RequireExactlyOne(generator::Matches(
+                    if (match_package(*env, *m, *(*env)[selection::RequireExactlyOne(generator::Matches(
                                         parse_user_package_dep_spec(*s, env.get(), { }), { }))]->begin(), { }))
                     {
                         ok = true;

@@ -271,7 +271,7 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
     Context context("When merging '" + stringify(*m.package_id()) + "' at '" + stringify(m.image_dir())
             + "' to InstalledUnpackagedRepository repository '" + stringify(name()) + "':");
 
-    if (! is_suitable_destination_for(*m.package_id()))
+    if (! is_suitable_destination_for(m.package_id()))
         throw ActionFailedError("Not a suitable destination for '" + stringify(*m.package_id()) + "'");
 
     FSPath install_under("/");
@@ -394,9 +394,9 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
 }
 
 bool
-InstalledUnpackagedRepository::is_suitable_destination_for(const PackageID & e) const
+InstalledUnpackagedRepository::is_suitable_destination_for(const std::shared_ptr<const PackageID> & e) const
 {
-    std::string f(e.repository()->format_key() ? e.repository()->format_key()->value() : "");
+    std::string f(e->repository()->format_key() ? e->repository()->format_key()->value() : "");
     return f == "unpackaged";
 }
 

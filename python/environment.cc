@@ -64,57 +64,57 @@ class EnvironmentImplementationWrapper :
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "populate_sets");
         }
 
-        virtual bool accept_license(const std::string & s, const PackageID & p) const
+        virtual bool accept_license(const std::string & s, const std::shared_ptr<const PackageID> & p) const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             Lock l(get_mutex());
 
             if (bp::override f = get_override("accept_license"))
-                return f(s, boost::cref(p));
+                return f(s, p);
             else
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "accept_license");
         }
 
-        virtual bool accept_keywords(const std::shared_ptr<const KeywordNameSet> & k, const PackageID & p) const
+        virtual bool accept_keywords(const std::shared_ptr<const KeywordNameSet> & k, const std::shared_ptr<const PackageID> & p) const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             Lock l(get_mutex());
 
             if (bp::override f = get_override("accept_keywords"))
-                return f(k, boost::cref(p));
+                return f(k, p);
             else
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "accept_keywords");
         }
 
-        virtual const std::shared_ptr<const Mask> mask_for_breakage(const PackageID & p) const
+        virtual const std::shared_ptr<const Mask> mask_for_breakage(const std::shared_ptr<const PackageID> & p) const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             Lock l(get_mutex());
 
             if (bp::override f = get_override("mask_for_breakage"))
-                return f(boost::cref(p));
+                return f(p);
             else
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "mask_for_breakage");
         }
 
-        virtual const std::shared_ptr<const Mask> mask_for_user(const PackageID & p, const bool b) const
+        virtual const std::shared_ptr<const Mask> mask_for_user(const std::shared_ptr<const PackageID> & p, const bool b) const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             Lock l(get_mutex());
 
             if (bp::override f = get_override("mask_for_user"))
-                return f(boost::cref(p), b);
+                return f(p, b);
             else
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "mask_for_user");
         }
 
-        virtual bool unmasked_by_user(const PackageID & p) const
+        virtual bool unmasked_by_user(const std::shared_ptr<const PackageID> & p) const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             Lock l(get_mutex());
 
             if (bp::override f = get_override("unmasked_by_user"))
-                return f(boost::cref(p));
+                return f(p);
             else
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "unmasked_by_user");
         }

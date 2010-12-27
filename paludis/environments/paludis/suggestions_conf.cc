@@ -194,7 +194,7 @@ SuggestionsConf::interest_in_suggestion(
             for (PDSToValuesList::const_iterator j(i->second.begin()), j_end(i->second.end()) ;
                     j != j_end ; ++j)
             {
-                if (! match_package(*_imp->env, *j->first, *from_id, { }))
+                if (! match_package(*_imp->env, *j->first, from_id, { }))
                     continue;
 
                 for (ValuesList::const_iterator l(j->second.begin()), l_end(j->second.end()) ;
@@ -238,7 +238,7 @@ SuggestionsConf::interest_in_suggestion(
                 }
             }
 
-            if (! match_package_in_set(*_imp->env, *i->second.first, *from_id, { }))
+            if (! match_package_in_set(*_imp->env, *i->second.first, from_id, { }))
                 continue;
 
             for (ValuesList::const_iterator l(i->second.second.begin()), l_end(i->second.second.end()) ;
@@ -269,7 +269,7 @@ SuggestionsConf::interest_in_suggestion(
     for (PDSToValuesList::const_iterator j(_imp->unqualified.begin()), j_end(_imp->unqualified.end()) ;
             j != j_end ; ++j)
     {
-        if (! match_package(*_imp->env, *j->first, *from_id, { }))
+        if (! match_package(*_imp->env, *j->first, from_id, { }))
             continue;
 
         for (ValuesList::const_iterator l(j->second.begin()), l_end(j->second.end()) ;

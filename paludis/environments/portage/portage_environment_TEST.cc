@@ -57,7 +57,7 @@ namespace
     };
 
     bool accept_keyword(const TestPortageEnvironment & env,
-            const KeywordName & k, const PackageID & e)
+            const KeywordName & k, const std::shared_ptr<const PackageID> & e)
     {
         std::shared_ptr<KeywordNameSet> kk(std::make_shared<KeywordNameSet>());
         kk->insert(k);
@@ -145,46 +145,46 @@ namespace test_cases
                         generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-x-1",
                                     &env, { })), { }))]->begin());
 
-            TEST_CHECK(accept_keyword(env, KeywordName("arch"), *idx));
-            TEST_CHECK(accept_keyword(env, KeywordName("other_arch"), *idx));
-            TEST_CHECK(! accept_keyword(env, KeywordName("~arch"), *idx));
+            TEST_CHECK(accept_keyword(env, KeywordName("arch"), idx));
+            TEST_CHECK(accept_keyword(env, KeywordName("other_arch"), idx));
+            TEST_CHECK(! accept_keyword(env, KeywordName("~arch"), idx));
 
             const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(
                         generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
                                     &env, { })), { }))]->begin());
 
-            TEST_CHECK(accept_keyword(env, KeywordName("arch"), *id1));
-            TEST_CHECK(accept_keyword(env, KeywordName("other_arch"), *id1));
-            TEST_CHECK(accept_keyword(env, KeywordName("~arch"), *id1));
+            TEST_CHECK(accept_keyword(env, KeywordName("arch"), id1));
+            TEST_CHECK(accept_keyword(env, KeywordName("other_arch"), id1));
+            TEST_CHECK(accept_keyword(env, KeywordName("~arch"), id1));
 
             const std::shared_ptr<const PackageID> id2(*env[selection::RequireExactlyOne(
                         generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-two-1",
                                     &env, { })), { }))]->begin());
 
-            TEST_CHECK(accept_keyword(env, KeywordName("other_arch"), *id2));
-            TEST_CHECK(accept_keyword(env, KeywordName("arch"), *id2));
-            TEST_CHECK(accept_keyword(env, KeywordName("~arch"), *id2));
+            TEST_CHECK(accept_keyword(env, KeywordName("other_arch"), id2));
+            TEST_CHECK(accept_keyword(env, KeywordName("arch"), id2));
+            TEST_CHECK(accept_keyword(env, KeywordName("~arch"), id2));
 
             const std::shared_ptr<const PackageID> id3(*env[selection::RequireExactlyOne(
                         generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-three-1",
                                     &env, { })), { }))]->begin());
 
-            TEST_CHECK(! accept_keyword(env, KeywordName("other_arch"), *id3));
-            TEST_CHECK(! accept_keyword(env, KeywordName("arch"), *id3));
-            TEST_CHECK(! accept_keyword(env, KeywordName("~arch"), *id3));
+            TEST_CHECK(! accept_keyword(env, KeywordName("other_arch"), id3));
+            TEST_CHECK(! accept_keyword(env, KeywordName("arch"), id3));
+            TEST_CHECK(! accept_keyword(env, KeywordName("~arch"), id3));
 
             const std::shared_ptr<const PackageID> id4(*env[selection::RequireExactlyOne(
                         generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-four-1",
                                     &env, { })), { }))]->begin());
-            TEST_CHECK(accept_keyword(env, KeywordName("fred"), *id4));
+            TEST_CHECK(accept_keyword(env, KeywordName("fred"), id4));
             std::shared_ptr<const KeywordNameSet> empty(std::make_shared<KeywordNameSet>());
-            TEST_CHECK(env.accept_keywords(empty, *id4));
+            TEST_CHECK(env.accept_keywords(empty, id4));
 
             const std::shared_ptr<const PackageID> id5(*env[selection::RequireExactlyOne(
                         generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-five-1",
                                     &env, { })), { }))]->begin());
-            TEST_CHECK(accept_keyword(env, KeywordName("~foo"), *id5));
-            TEST_CHECK(! accept_keyword(env, KeywordName("foo"), *id5));
+            TEST_CHECK(accept_keyword(env, KeywordName("~foo"), id5));
+            TEST_CHECK(! accept_keyword(env, KeywordName("foo"), id5));
         }
     } test_accept_keywords;
 

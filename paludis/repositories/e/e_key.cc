@@ -916,7 +916,7 @@ EKeywordsKey::pretty_print_flat(const Formatter<KeywordName> & f) const
 
         std::shared_ptr<KeywordNameSet> k(std::make_shared<KeywordNameSet>());
         k->insert(*i);
-        if (_imp->env->accept_keywords(k, *_imp->id))
+        if (_imp->env->accept_keywords(k, _imp->id))
             result.append(f.format(*i, format::Accepted()));
         else
             result.append(f.format(*i, format::Unaccepted()));

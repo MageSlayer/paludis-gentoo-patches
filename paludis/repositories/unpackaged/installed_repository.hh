@@ -66,7 +66,7 @@ namespace paludis
             virtual void invalidate();
             virtual void invalidate_masks();
 
-            virtual bool is_suitable_destination_for(const PackageID &) const
+            virtual bool is_suitable_destination_for(const std::shared_ptr<const PackageID> &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual bool is_default_destination() const

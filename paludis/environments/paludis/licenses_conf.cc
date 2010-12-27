@@ -132,12 +132,12 @@ LicensesConf::add(const FSPath & filename)
 }
 
 bool
-LicensesConf::query(const std::string & t, const PackageID & e) const
+LicensesConf::query(const std::string & t, const std::shared_ptr<const PackageID> & e) const
 {
     /* highest priority: specific */
     bool break_when_done(false);
     {
-        SpecificMap::const_iterator i(_imp->qualified.find(e.name()));
+        SpecificMap::const_iterator i(_imp->qualified.find(e->name()));
         if (i != _imp->qualified.end())
         {
             for (PDSToLicensesList::const_iterator j(i->second.begin()), j_end(i->second.end()) ;

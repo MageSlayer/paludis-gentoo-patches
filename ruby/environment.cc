@@ -121,7 +121,7 @@ namespace
         try
         {
             return value_to_environment(self)->accept_license(
-                    std::string(StringValuePtr(license)), *(value_to_package_id(p))) ? Qtrue : Qfalse;
+                    std::string(StringValuePtr(license)), (value_to_package_id(p))) ? Qtrue : Qfalse;
         }
         catch (const std::exception & e)
         {
@@ -151,7 +151,7 @@ namespace
                     VALUE kw = rb_ary_entry(keywords, i);
                     knc->insert(KeywordName(StringValuePtr(kw)));
                 }
-                return value_to_environment(self)->accept_keywords(knc, *value_to_package_id(p)) ? Qtrue : Qfalse;
+                return value_to_environment(self)->accept_keywords(knc, value_to_package_id(p)) ? Qtrue : Qfalse;
             }
             catch (const std::exception & e)
             {

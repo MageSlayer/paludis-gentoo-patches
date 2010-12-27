@@ -617,13 +617,13 @@ ERepository::package_ids(const QualifiedPackageName & n) const
 }
 
 std::shared_ptr<const RepositoryMaskInfo>
-ERepository::repository_masked(const PackageID & id) const
+ERepository::repository_masked(const std::shared_ptr<const PackageID> & id) const
 {
     Lock l(_imp->mutexes->repo_mask_mutex);
 
     if (! _imp->has_repo_mask)
     {
-        Context context("When querying repository mask for '" + stringify(id) + "':");
+        Context context("When querying repository mask for '" + stringify(*id) + "':");
 
         using namespace std::placeholders;
 
@@ -664,7 +664,7 @@ ERepository::repository_masked(const PackageID & id) const
         _imp->has_repo_mask = true;
     }
 
-    RepositoryMaskMap::iterator r(_imp->repo_mask.find(id.name()));
+    RepositoryMaskMap::iterator r(_imp->repo_mask.find(id->name()));
     if (_imp->repo_mask.end() == r)
         return std::shared_ptr<const RepositoryMaskInfo>();
     else
@@ -982,11 +982,11 @@ ERepository::params() const
 }
 
 bool
-ERepository::is_suitable_destination_for(const PackageID & e) const
+ERepository::is_suitable_destination_for(const std::shared_ptr<const PackageID> & e) const
 {
-    std::string f(e.repository()->format_key() ? e.repository()->format_key()->value() : "");
+    std::string f(e->repository()->format_key() ? e->repository()->format_key()->value() : "");
     if (f == "e")
-        return static_cast<const ERepositoryID &>(e).eapi()->supported()->can_be_pbin();
+        return static_cast<const ERepositoryID &>(*e).eapi()->supported()->can_be_pbin();
     else
         return false;
 }
@@ -1863,7 +1863,7 @@ ERepository::merge(const MergeParams & m)
     Context context("When merging '" + stringify(*m.package_id()) + "' at '" + stringify(m.image_dir())
             + "' to E repository '" + stringify(name()) + "':");
 
-    if (! is_suitable_destination_for(*m.package_id()))
+    if (! is_suitable_destination_for(m.package_id()))
         throw ActionFailedError("Not a suitable destination for '" + stringify(*m.package_id()) + "'");
 
     auto is_replace(find_id(package_ids(m.package_id()->name()), m.package_id()->version()));

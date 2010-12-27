@@ -54,17 +54,17 @@ namespace environment
         std::shared_ptr<PackageID> pid(repo->add_version("cat", "pkg", "1.0"));
         e.package_database()->add_repository(0, repo);
 
-        bool PALUDIS_ATTRIBUTE((unused)) b2(e.accept_license("l", *pid));
+        bool PALUDIS_ATTRIBUTE((unused)) b2(e.accept_license("l", pid));
 
         std::shared_ptr<KeywordNameSet> kns(std::make_shared<KeywordNameSet>());
         kns->insert(KeywordName("keyword"));
-        bool PALUDIS_ATTRIBUTE((unused)) b3(e.accept_keywords(kns, *pid));
+        bool PALUDIS_ATTRIBUTE((unused)) b3(e.accept_keywords(kns, pid));
 
-        e.mask_for_breakage(*pid);
+        e.mask_for_breakage(pid);
 
-        e.mask_for_user(*pid, false);
+        e.mask_for_user(pid, false);
 
-        bool PALUDIS_ATTRIBUTE((unused)) b4(e.unmasked_by_user(*pid));
+        bool PALUDIS_ATTRIBUTE((unused)) b4(e.unmasked_by_user(pid));
 
         e.package_database();
 

@@ -173,8 +173,12 @@ namespace paludis
              *
              * Used by PackageID implementations. Generally PackageID's masks methods
              * should be used rather than calling this directly.
+             *
+             * \since 0.58 takes id by shared_ptr
              */
-            virtual bool accept_license(const std::string &, const PackageID &) const
+            virtual bool accept_license(
+                    const std::string &,
+                    const std::shared_ptr<const PackageID> &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
@@ -184,8 +188,12 @@ namespace paludis
              *
              * Used by PackageID implementations. Generally PackageID's masks methods
              * should be used rather than calling this directly.
+             *
+             * \since 0.58 takes id by shared_ptr
              */
-            virtual bool accept_keywords(const std::shared_ptr<const KeywordNameSet> &, const PackageID &) const
+            virtual bool accept_keywords(
+                    const std::shared_ptr<const KeywordNameSet> &,
+                    const std::shared_ptr<const PackageID> &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
@@ -195,8 +203,11 @@ namespace paludis
              *
              * Used by PackageID implementations. Generally PackageID's masks methods
              * should be used rather than calling this directly.
+             *
+             * \since 0.58 takes id by shared_ptr
              */
-            virtual const std::shared_ptr<const Mask> mask_for_breakage(const PackageID &) const
+            virtual const std::shared_ptr<const Mask> mask_for_breakage(
+                    const std::shared_ptr<const PackageID> &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
@@ -209,8 +220,11 @@ namespace paludis
              *
              * Used by PackageID implementations. Generally PackageID's masks methods
              * should be used rather than calling this directly.
+             *
+             * \since 0.58 takes id by shared_ptr
              */
-            virtual const std::shared_ptr<const Mask> mask_for_user(const PackageID &,
+            virtual const std::shared_ptr<const Mask> mask_for_user(
+                    const std::shared_ptr<const PackageID> &,
                     const bool will_be_used_for_overridden) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
@@ -222,8 +236,11 @@ namespace paludis
              *
              * Used by PackageID implementations. Generally PackageID's masks methods
              * should be used rather than calling this directly.
+             *
+             * \since 0.58 takes id by shared_ptr
              */
-            virtual bool unmasked_by_user(const PackageID &) const
+            virtual bool unmasked_by_user(
+                    const std::shared_ptr<const PackageID> &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}

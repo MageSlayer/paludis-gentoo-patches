@@ -437,7 +437,7 @@ Decider::_make_destination_for(
 {
     const std::shared_ptr<const Repository> repo(_find_repository_for(resolution, decision));
     if ((! repo->destination_interface()) ||
-            (! repo->destination_interface()->is_suitable_destination_for(*decision.origin_id())))
+            (! repo->destination_interface()->is_suitable_destination_for(decision.origin_id())))
         throw InternalError(PALUDIS_HERE, stringify(repo->name()) + " is not a suitable destination for "
                 + stringify(*decision.origin_id()));
 
@@ -703,13 +703,13 @@ namespace
             if (constraint.spec().if_package())
             {
                 if (! match_package_with_maybe_changes(*env, *constraint.spec().if_package(),
-                            changed_choices_for_constraint.get(), *chosen_id, changed_choices.get(), { }))
+                            changed_choices_for_constraint.get(), chosen_id, changed_choices.get(), { }))
                     return false;
             }
             else
             {
                 if (match_package_with_maybe_changes(*env, constraint.spec().if_block()->blocking(),
-                            changed_choices_for_constraint.get(), *chosen_id, changed_choices.get(), { }))
+                            changed_choices_for_constraint.get(), chosen_id, changed_choices.get(), { }))
                     return false;
             }
 
@@ -1847,9 +1847,9 @@ Decider::_find_id_for_from(
                 c != c_end ; ++c)
         {
             if ((*c)->spec().if_package())
-                ok = ok && match_package(*_imp->env, *(*c)->spec().if_package(), **i, opts);
+                ok = ok && match_package(*_imp->env, *(*c)->spec().if_package(), *i, opts);
             else
-                ok = ok && ! match_package(*_imp->env, (*c)->spec().if_block()->blocking(), **i, opts);
+                ok = ok && ! match_package(*_imp->env, (*c)->spec().if_block()->blocking(), *i, opts);
 
             if (! ok)
                 break;
@@ -1915,10 +1915,10 @@ Decider::_find_id_for_from(
 
                 if ((*c)->spec().if_package())
                     ok = ok && match_package_with_maybe_changes(*_imp->env, *(*c)->spec().if_package(),
-                            get_changed_choices_for(*c).get(), **i, why_changed_choices->changed_choices().get(), { });
+                            get_changed_choices_for(*c).get(), *i, why_changed_choices->changed_choices().get(), { });
                 else
                     ok = ok && ! match_package_with_maybe_changes(*_imp->env, (*c)->spec().if_block()->blocking(),
-                            get_changed_choices_for(*c).get(), **i, why_changed_choices->changed_choices().get(), { });
+                            get_changed_choices_for(*c).get(), *i, why_changed_choices->changed_choices().get(), { });
             }
 
             if (ok)
@@ -2214,7 +2214,7 @@ namespace
             bool is_system(false);
             for (PackageIDSequence::ConstIterator i(remove_decision.ids()->begin()), i_end(remove_decision.ids()->end()) ;
                     i != i_end && ! is_system ; ++i)
-                if (match_package_in_set(*env, *env->set(SetName("system")), **i, { }))
+                if (match_package_in_set(*env, *env->set(SetName("system")), *i, { }))
                     is_system = true;
 
             if (is_system)
@@ -2315,7 +2315,7 @@ Decider::_resolve_purges()
 
         /* to catch packages being purged that are also in world and not used
          * by anything else */
-        if (match_package_in_set(*_imp->env, *world, **i, { }))
+        if (match_package_in_set(*_imp->env, *world, *i, { }))
             continue;
 
         const std::shared_ptr<ChangeByResolventSequence> used_to_use(std::make_shared<ChangeByResolventSequence>());

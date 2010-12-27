@@ -49,7 +49,7 @@ namespace paludis
     bool match_package(
             const Environment & env,
             const PackageDepSpec & spec,
-            const PackageID & target,
+            const std::shared_ptr<const PackageID> & id,
             const MatchPackageOptions & options)
         PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
 
@@ -65,7 +65,7 @@ namespace paludis
             const Environment & env,
             const PackageDepSpec & spec,
             const ChangedChoices * const maybe_changes_to_owner,
-            const PackageID & target,
+            const std::shared_ptr<const PackageID> & id,
             const ChangedChoices * const maybe_changes_to_target,
             const MatchPackageOptions & options)
         PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
@@ -81,7 +81,7 @@ namespace paludis
     bool match_package_in_set(
             const Environment & env,
             const SetSpecTree & spec,
-            const PackageID & target,
+            const std::shared_ptr<const PackageID> & id,
             const MatchPackageOptions & options)
         PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
 }

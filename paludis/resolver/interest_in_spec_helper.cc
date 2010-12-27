@@ -271,7 +271,7 @@ InterestInSpecHelper::operator() (
         for (auto l(_imp->take_from_specs.begin()), l_end(_imp->take_from_specs.end()) ;
                 l != l_end ; ++l)
         {
-            if (match_package(*_imp->env, *l, *id, { }))
+            if (match_package(*_imp->env, *l, id, { }))
                 return si_take;
         }
 
@@ -300,7 +300,7 @@ InterestInSpecHelper::operator() (
         for (auto l(_imp->ignore_from_specs.begin()), l_end(_imp->ignore_from_specs.end()) ;
                 l != l_end ; ++l)
         {
-            if (match_package(*_imp->env, *l, *id, { }))
+            if (match_package(*_imp->env, *l, id, { }))
                 return si_ignore;
         }
 

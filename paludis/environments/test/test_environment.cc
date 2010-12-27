@@ -89,13 +89,13 @@ TestEnvironment::~TestEnvironment()
 }
 
 bool
-TestEnvironment::accept_keywords(const std::shared_ptr<const KeywordNameSet> & k, const PackageID &) const
+TestEnvironment::accept_keywords(const std::shared_ptr<const KeywordNameSet> & k, const std::shared_ptr<const PackageID> &) const
 {
     return k->end() != k->find(KeywordName("test")) || k->end() != k->find(KeywordName("*"));
 }
 
 bool
-TestEnvironment::accept_license(const std::string &, const PackageID &) const
+TestEnvironment::accept_license(const std::string &, const std::shared_ptr<const PackageID> &) const
 {
     return true;
 }
@@ -179,19 +179,19 @@ TestEnvironment::hook_dirs() const
 }
 
 const std::shared_ptr<const Mask>
-TestEnvironment::mask_for_breakage(const PackageID &) const
+TestEnvironment::mask_for_breakage(const std::shared_ptr<const PackageID> &) const
 {
     return std::shared_ptr<const Mask>();
 }
 
 const std::shared_ptr<const Mask>
-TestEnvironment::mask_for_user(const PackageID &, const bool) const
+TestEnvironment::mask_for_user(const std::shared_ptr<const PackageID> &, const bool) const
 {
     return std::shared_ptr<const Mask>();
 }
 
 bool
-TestEnvironment::unmasked_by_user(const PackageID &) const
+TestEnvironment::unmasked_by_user(const std::shared_ptr<const PackageID> &) const
 {
     return false;
 }

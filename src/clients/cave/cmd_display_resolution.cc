@@ -317,7 +317,7 @@ namespace
     {
         const std::shared_ptr<const PackageID> maybe_id(id_for_decision_or_null(decision));
         if (maybe_id)
-            return match_package(*env, spec, *maybe_id, { });
+            return match_package(*env, spec, maybe_id, { });
         else
         {
             /* could also match slot here too */
@@ -1415,14 +1415,14 @@ namespace
                 cout << fuc(fs_unable_unsuitable_did_not_meet(), fv<'s'>(s));
 
                 if ((*c)->spec().if_package() && (*c)->spec().if_package()->additional_requirements_ptr() &&
-                        (! match_package(*env, *(*c)->spec().if_package(), *u->package_id(), { })) &&
-                        match_package(*env, *(*c)->spec().if_package(), *u->package_id(), { mpo_ignore_additional_requirements }))
+                        (! match_package(*env, *(*c)->spec().if_package(), u->package_id(), { })) &&
+                        match_package(*env, *(*c)->spec().if_package(), u->package_id(), { mpo_ignore_additional_requirements }))
                 {
                     for (AdditionalPackageDepSpecRequirements::ConstIterator a((*c)->spec().if_package()->additional_requirements_ptr()->begin()),
                             a_end((*c)->spec().if_package()->additional_requirements_ptr()->end()) ;
                             a != a_end ; ++a)
                     {
-                        const std::pair<bool, std::string> p((*a)->requirement_met(env.get(), 0, *u->package_id(), 0));
+                        const std::pair<bool, std::string> p((*a)->requirement_met(env.get(), 0, u->package_id(), 0));
                         if (p.first)
                             continue;
 

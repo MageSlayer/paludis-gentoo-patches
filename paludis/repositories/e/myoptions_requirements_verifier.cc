@@ -46,6 +46,7 @@ namespace paludis
     template <>
     struct Imp<MyOptionsRequirementsVerifier>
     {
+        const Environment * const env;
         const std::shared_ptr<const ERepositoryID> id;
 
         std::shared_ptr<Sequence<std::string> > unmet_requirements;
@@ -53,7 +54,10 @@ namespace paludis
         std::list<ChildrenList> current_children_stack;
         std::list<int> number_enabled_stack;
 
-        Imp(const std::shared_ptr<const ERepositoryID> & i) :
+        Imp(
+                const Environment * const e,
+                const std::shared_ptr<const ERepositoryID> & i) :
+            env(e),
             id(i),
             unmet_requirements(std::make_shared<Sequence<std::string>>())
         {
@@ -64,8 +68,10 @@ namespace paludis
     };
 }
 
-MyOptionsRequirementsVerifier::MyOptionsRequirementsVerifier(const std::shared_ptr<const ERepositoryID> & id) :
-    Pimp<MyOptionsRequirementsVerifier>(id)
+MyOptionsRequirementsVerifier::MyOptionsRequirementsVerifier(
+        const Environment * const e,
+        const std::shared_ptr<const ERepositoryID> & id) :
+    Pimp<MyOptionsRequirementsVerifier>(e, id)
 {
 }
 

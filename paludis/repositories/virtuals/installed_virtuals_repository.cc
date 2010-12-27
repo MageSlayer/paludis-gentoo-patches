@@ -363,9 +363,9 @@ InstalledVirtualsRepository::repository_factory_dependencies(
 }
 
 bool
-InstalledVirtualsRepository::is_suitable_destination_for(const PackageID & e) const
+InstalledVirtualsRepository::is_suitable_destination_for(const std::shared_ptr<const PackageID> & e) const
 {
-    std::string f(e.repository()->format_key() ? e.repository()->format_key()->value() : "");
+    std::string f(e->repository()->format_key() ? e->repository()->format_key()->value() : "");
     return f == "virtuals";
 
 }

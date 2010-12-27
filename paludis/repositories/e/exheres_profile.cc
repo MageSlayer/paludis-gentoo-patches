@@ -358,9 +358,9 @@ ExheresProfile::environment_variable(const std::string & s) const
 }
 
 const std::shared_ptr<const RepositoryMaskInfo>
-ExheresProfile::profile_masked(const PackageID & id) const
+ExheresProfile::profile_masked(const std::shared_ptr<const PackageID> & id) const
 {
-    PackageMaskMap::const_iterator rr(_imp->package_mask.find(id.name()));
+    PackageMaskMap::const_iterator rr(_imp->package_mask.find(id->name()));
     if (_imp->package_mask.end() == rr)
         return std::shared_ptr<const RepositoryMaskInfo>();
     else

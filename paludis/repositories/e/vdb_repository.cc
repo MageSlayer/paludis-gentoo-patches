@@ -434,7 +434,7 @@ VDBRepository::perform_uninstall(
     for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
             phase != phase_end ; ++phase)
     {
-        if (can_skip_phase(id, *phase))
+        if (can_skip_phase(_imp->params.environment(), id, *phase))
         {
             output_manager->stdout_stream() << "--- No need to do anything for " << phase->equal_option("skipname") << " phase" << std::endl;
             continue;
@@ -704,16 +704,16 @@ VDBRepository::load_provided_using_cache() const
 }
 
 void
-VDBRepository::provides_from_package_id(const PackageID & id) const
+VDBRepository::provides_from_package_id(const std::shared_ptr<const PackageID> & id) const
 {
-    Context context("When loading VDB PROVIDEs entry for '" + stringify(id) + "':");
+    Context context("When loading VDB PROVIDEs entry for '" + stringify(*id) + "':");
 
     try
     {
-        if (! id.provide_key())
+        if (! id->provide_key())
             return;
 
-        std::shared_ptr<const ProvideSpecTree> provide(id.provide_key()->value());
+        std::shared_ptr<const ProvideSpecTree> provide(id->provide_key()->value());
         DepSpecFlattener<ProvideSpecTree, PackageDepSpec> f(_imp->params.environment());
         provide->top()->accept(f);
 
@@ -726,12 +726,12 @@ VDBRepository::provides_from_package_id(const PackageID & id) const
 
             if (pp.category() != CategoryNamePart("virtual"))
                 Log::get_instance()->message("e.vdb.provide.non_virtual", ll_warning, lc_no_context)
-                    << "PROVIDE of non-virtual '" << pp << "' from '" << id << "' will not work as expected";
+                    << "PROVIDE of non-virtual '" << pp << "' from '" << *id << "' will not work as expected";
 
             qpns->push_back(pp);
         }
 
-        ProvidesMap::iterator it(_imp->provides_map->find(std::make_pair(id.name(), id.version())));
+        ProvidesMap::iterator it(_imp->provides_map->find(std::make_pair(id->name(), id->version())));
         if (qpns->empty())
         {
             if (_imp->provides_map->end() != it)
@@ -740,7 +740,7 @@ VDBRepository::provides_from_package_id(const PackageID & id) const
         else
         {
             if (_imp->provides_map->end() == it)
-                _imp->provides_map->insert(std::make_pair(std::make_pair(id.name(), id.version()), qpns));
+                _imp->provides_map->insert(std::make_pair(std::make_pair(id->name(), id->version()), qpns));
             else
                 it->second = qpns;
         }
@@ -752,7 +752,7 @@ VDBRepository::provides_from_package_id(const PackageID & id) const
     catch (const Exception & ee)
     {
         Log::get_instance()->message("e.vdb.provides.failure", ll_warning, lc_no_context) << "Skipping VDB PROVIDE entry for '"
-            << id << "' due to exception '" << ee.message() << "' (" << ee.what() << ")";
+            << *id << "' due to exception '" << ee.message() << "' (" << ee.what() << ")";
     }
 }
 
@@ -779,7 +779,7 @@ VDBRepository::load_provided_the_slow_way() const
             i != i_end ; ++i)
         for (PackageIDSequence::ConstIterator e(i->second->begin()), e_end(i->second->end()) ;
                 e != e_end ; ++e)
-            provides_from_package_id(**e);
+            provides_from_package_id(*e);
 
     Log::get_instance()->message("e.vdb.provides.done", ll_debug, lc_no_context) << "Done VDB PROVIDEs map creation";
 }
@@ -888,7 +888,7 @@ VDBRepository::merge(const MergeParams & m)
     Context context("When merging '" + stringify(*m.package_id()) + "' at '" + stringify(m.image_dir())
             + "' to VDB repository '" + stringify(name()) + "':");
 
-    if (! is_suitable_destination_for(*m.package_id()))
+    if (! is_suitable_destination_for(m.package_id()))
         throw ActionFailedError("Not a suitable destination for '" + stringify(*m.package_id()) + "'");
 
     std::shared_ptr<const ERepositoryID> is_replace(package_id_if_exists(m.package_id()->name(), m.package_id()->version()));
@@ -1050,7 +1050,7 @@ VDBRepository::merge(const MergeParams & m)
 
     if (_imp->used_provides_cache || (! _imp->tried_provides_cache && load_provided_using_cache()))
     {
-        provides_from_package_id(*m.package_id());
+        provides_from_package_id(m.package_id());
         write_provides_cache();
         _imp->provides.reset();
     }

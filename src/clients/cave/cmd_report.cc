@@ -225,7 +225,7 @@ ReportCommand::run(
                 cout << fuc(fs_package_origin_masked());
             }
 
-            if (insecurity && match_package_in_set(*env, *insecurity, *origin, { }))
+            if (insecurity && match_package_in_set(*env, *insecurity, origin, { }))
             {
                 need_heading_origin(done_heading, done_heading_origin, *i, origin);
                 cout << fuc(fs_package_origin_insecure());

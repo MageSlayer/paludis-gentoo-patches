@@ -335,7 +335,7 @@ ExndbamRepository::merge(const MergeParams & m)
     Context context("When merging '" + stringify(*m.package_id()) + "' at '" + stringify(m.image_dir())
             + "' to Exndbam repository '" + stringify(name()) + "':");
 
-    if (! is_suitable_destination_for(*m.package_id()))
+    if (! is_suitable_destination_for(m.package_id()))
         throw ActionFailedError("Not a suitable destination for '" + stringify(*m.package_id()) + "'");
 
     std::shared_ptr<const PackageID> if_overwritten_id, if_same_name_id;
@@ -506,7 +506,7 @@ ExndbamRepository::perform_uninstall(
     for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
             phase != phase_end ; ++phase)
     {
-        if (can_skip_phase(id, *phase))
+        if (can_skip_phase(_imp->params.environment(), id, *phase))
         {
             output_manager->stdout_stream() << "--- No need to do anything for " <<
                 phase->equal_option("skipname") << " phase" << std::endl;

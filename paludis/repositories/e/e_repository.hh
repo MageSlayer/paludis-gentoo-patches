@@ -92,7 +92,7 @@ namespace paludis
 
             /* RepositoryDestinationInterface */
 
-            virtual bool is_suitable_destination_for(const PackageID &) const
+            virtual bool is_suitable_destination_for(const std::shared_ptr<const PackageID> &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual bool is_default_destination() const
@@ -162,7 +162,7 @@ namespace paludis
             const std::shared_ptr<const erepository::Layout> layout() const;
             const std::shared_ptr<const erepository::Profile> profile() const;
 
-            std::shared_ptr<const RepositoryMaskInfo> repository_masked(const PackageID &) const;
+            std::shared_ptr<const RepositoryMaskInfo> repository_masked(const std::shared_ptr<const PackageID> &) const;
 
             void regenerate_cache() const;
 

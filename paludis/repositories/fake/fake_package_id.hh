@@ -64,7 +64,7 @@ namespace paludis
             typename Pimp<FakeMetadataCollectionKey<C_> >::ImpPtr & _imp;
 
             FakeMetadataCollectionKey(const std::string &, const std::string &, const MetadataKeyType,
-                    const PackageID * const, const Environment * const);
+                    const std::shared_ptr<const PackageID> &, const Environment * const);
 
         public:
             ~FakeMetadataCollectionKey();
@@ -81,7 +81,7 @@ namespace paludis
     {
         public:
             FakeMetadataKeywordSetKey(const std::string &, const std::string &, const std::string &, const MetadataKeyType,
-                    const PackageID * const, const Environment * const);
+                    const std::shared_ptr<const PackageID> &, const Environment * const);
 
             void set_from_string(const std::string &);
 

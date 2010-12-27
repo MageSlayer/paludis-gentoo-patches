@@ -36,9 +36,13 @@ namespace
 {
     struct FindAnyFetchesFinder
     {
+        const Environment * const env;
+        const std::shared_ptr<const PackageID> package_id;
         bool result;
 
-        FindAnyFetchesFinder() :
+        FindAnyFetchesFinder(const Environment * const e, const std::shared_ptr<const PackageID> & id) :
+            env(e),
+            package_id(id),
             result(true)
         {
         }
@@ -66,7 +70,9 @@ namespace
 }
 
 bool
-paludis::erepository::can_skip_phase(const std::shared_ptr<const ERepositoryID> & id,
+paludis::erepository::can_skip_phase(
+        const Environment * const env,
+        const std::shared_ptr<const ERepositoryID> & id,
         const EAPIPhase & phase)
 {
     if (! id->defined_phases_key())
@@ -87,7 +93,7 @@ paludis::erepository::can_skip_phase(const std::shared_ptr<const ERepositoryID> 
         {
             if (id->fetches_key())
             {
-                FindAnyFetchesFinder f;
+                FindAnyFetchesFinder f(env, id);
                 id->fetches_key()->value()->top()->accept(f);
                 if (! f.result)
                     return false;

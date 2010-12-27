@@ -425,7 +425,7 @@ DepSpecPrettyPrinter::visit(const GenericSpecTree::NodeType<LicenseDepSpec>::Typ
 
     if (_imp->env && _imp->id && _imp->check_conditions)
     {
-        if (_imp->env->accept_license(node.spec()->text(), *_imp->id))
+        if (_imp->env->accept_license(node.spec()->text(), _imp->id))
             _imp->s << _imp->formatter.format(*node.spec(), format::Accepted());
         else
             _imp->s << _imp->formatter.format(*node.spec(), format::Unaccepted());

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -43,7 +43,7 @@ namespace paludis
      * \ingroup g_dep_list
      * \since 0.26
      */
-    bool override_tilde_keywords(const Environment * const e, const PackageID & i, const Mask & m)
+    bool override_tilde_keywords(const Environment * const e, const std::shared_ptr<const PackageID> & i, const Mask & m)
         PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
 
     /**
@@ -52,7 +52,7 @@ namespace paludis
      * \ingroup g_dep_list
      * \since 0.26
      */
-    bool override_unkeyworded(const Environment * const e, const PackageID & i, const Mask & m)
+    bool override_unkeyworded(const Environment * const e, const std::shared_ptr<const PackageID> & i, const Mask & m)
         PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
 
     /**

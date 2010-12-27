@@ -1728,7 +1728,7 @@ namespace
                 if (! d->handled())
                     continue;
 
-                if (! match_package(*env, *node.spec(), *d->package_id(), { }))
+                if (! match_package(*env, *node.spec(), d->package_id(), { }))
                     continue;
 
                 CheckHandledVisitor v;

@@ -779,80 +779,84 @@ namespace
 }
 
 const std::pair<bool, std::string>
-UserKeyRequirement::requirement_met(const Environment * const, const ChangedChoices * const, const PackageID & id, const ChangedChoices * const) const
+UserKeyRequirement::requirement_met(
+        const Environment * const,
+        const ChangedChoices * const,
+        const std::shared_ptr<const PackageID> & id,
+        const ChangedChoices * const) const
 {
-    Context context("When working out whether '" + stringify(id) + "' matches " + as_raw_string() + ":");
+    Context context("When working out whether '" + stringify(*id) + "' matches " + as_raw_string() + ":");
 
     const MetadataKey * key(0);
 
     if (0 == _imp->key.compare(0, 3, "::$"))
     {
         if (_imp->key == "::$format")
-            key = id.repository()->format_key().get();
+            key = id->repository()->format_key().get();
         else if (_imp->key == "::$location")
-            key = id.repository()->location_key().get();
+            key = id->repository()->location_key().get();
         else if (_imp->key == "::$installed_root")
-            key = id.repository()->installed_root_key().get();
+            key = id->repository()->installed_root_key().get();
         else if (_imp->key == "::$accept_keywords")
-            key = id.repository()->accept_keywords_key().get();
+            key = id->repository()->accept_keywords_key().get();
         else if (_imp->key == "::$sync_host")
-            key = id.repository()->sync_host_key().get();
+            key = id->repository()->sync_host_key().get();
     }
     else if (0 == _imp->key.compare(0, 1, "$"))
     {
         if (_imp->key == "$behaviours")
-            key = id.behaviours_key().get();
+            key = id->behaviours_key().get();
         else if (_imp->key == "$build_dependencies")
-            key = id.build_dependencies_key().get();
+            key = id->build_dependencies_key().get();
         else if (_imp->key == "$choices")
-            key = id.choices_key().get();
+            key = id->choices_key().get();
         else if (_imp->key == "$contained_in")
-            key = id.contained_in_key().get();
+            key = id->contained_in_key().get();
         else if (_imp->key == "$contains")
-            key = id.contains_key().get();
+            key = id->contains_key().get();
         else if (_imp->key == "$contents")
-            key = id.contents_key().get();
+            key = id->contents_key().get();
         else if (_imp->key == "$dependencies")
-            key = id.dependencies_key().get();
+            key = id->dependencies_key().get();
         else if (_imp->key == "$fetches")
-            key = id.fetches_key().get();
+            key = id->fetches_key().get();
         else if (_imp->key == "$from_repositories")
-            key = id.from_repositories_key().get();
+            key = id->from_repositories_key().get();
         else if (_imp->key == "$fs_location")
-            key = id.fs_location_key().get();
+            key = id->fs_location_key().get();
         else if (_imp->key == "$homepage")
-            key = id.homepage_key().get();
+            key = id->homepage_key().get();
         else if (_imp->key == "$installed_time")
-            key = id.installed_time_key().get();
+            key = id->installed_time_key().get();
         else if (_imp->key == "$keywords")
-            key = id.keywords_key().get();
+            key = id->keywords_key().get();
         else if (_imp->key == "$long_description")
-            key = id.long_description_key().get();
+            key = id->long_description_key().get();
         else if (_imp->key == "$post_dependencies")
-            key = id.post_dependencies_key().get();
+            key = id->post_dependencies_key().get();
         else if (_imp->key == "$provide")
-            key = id.provide_key().get();
+            key = id->provide_key().get();
         else if (_imp->key == "$run_dependencies")
-            key = id.run_dependencies_key().get();
+            key = id->run_dependencies_key().get();
         else if (_imp->key == "$short_description")
-            key = id.short_description_key().get();
+            key = id->short_description_key().get();
         else if (_imp->key == "$slot")
-            key = id.slot_key().get();
+            key = id->slot_key().get();
         else if (_imp->key == "$suggested_dependencies")
-            key = id.suggested_dependencies_key().get();
+            key = id->suggested_dependencies_key().get();
         else if (_imp->key == "$virtual_for")
-            key = id.virtual_for_key().get();
+            key = id->virtual_for_key().get();
     }
     else if (0 == _imp->key.compare(0, 2, "::"))
     {
-        Repository::MetadataConstIterator m(id.repository()->find_metadata(_imp->key.substr(2)));
-        if (m != id.repository()->end_metadata())
+        Repository::MetadataConstIterator m(id->repository()->find_metadata(_imp->key.substr(2)));
+        if (m != id->repository()->end_metadata())
             key = m->get();
     }
     else
     {
-        PackageID::MetadataConstIterator m(id.find_metadata(_imp->key));
-        if (m != id.end_metadata())
+        PackageID::MetadataConstIterator m(id->find_metadata(_imp->key));
+        if (m != id->end_metadata())
             key = m->get();
     }
 

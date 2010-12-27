@@ -60,7 +60,7 @@ namespace paludis
                 /**
                  * Query a particular license.
                  */
-                bool query(const std::string &, const PackageID &) const;
+                bool query(const std::string &, const std::shared_ptr<const PackageID> &) const;
         };
     }
 }

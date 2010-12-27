@@ -40,7 +40,9 @@ namespace paludis
                         const std::shared_ptr<const DepSpecAnnotations> &);
 
             public:
-                MyOptionsRequirementsVerifier(const std::shared_ptr<const ERepositoryID> &);
+                MyOptionsRequirementsVerifier(
+                        const Environment * const,
+                        const std::shared_ptr<const ERepositoryID> &);
                 ~MyOptionsRequirementsVerifier();
 
                 const std::shared_ptr<const Sequence<std::string> > unmet_requirements() const PALUDIS_ATTRIBUTE((warn_unused_result));

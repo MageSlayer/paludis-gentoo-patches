@@ -49,10 +49,10 @@ namespace
 {
     struct SlotRequirementChecker
     {
-        const PackageID & id;
+        const std::shared_ptr<const PackageID> id;
         bool result;
 
-        SlotRequirementChecker(const PackageID & i) :
+        SlotRequirementChecker(const std::shared_ptr<const PackageID> & i) :
             id(i),
             result(true)
         {
@@ -60,7 +60,7 @@ namespace
 
         void visit(const SlotExactRequirement & s)
         {
-            result = id.slot_key() && id.slot_key()->value() == s.slot();
+            result = id->slot_key() && id->slot_key()->value() == s.slot();
         }
 
         void visit(const SlotAnyLockedRequirement &)
@@ -80,17 +80,17 @@ paludis::match_package_with_maybe_changes(
         const Environment & env,
         const PackageDepSpec & spec,
         const ChangedChoices * const maybe_changes_to_owner,
-        const PackageID & entry,
+        const std::shared_ptr<const PackageID> & id,
         const ChangedChoices * const maybe_changes_to_target,
         const MatchPackageOptions & options)
 {
-    if (spec.package_ptr() && *spec.package_ptr() != entry.name())
+    if (spec.package_ptr() && *spec.package_ptr() != id->name())
         return false;
 
-    if (spec.package_name_part_ptr() && *spec.package_name_part_ptr() != entry.name().package())
+    if (spec.package_name_part_ptr() && *spec.package_name_part_ptr() != id->name().package())
         return false;
 
-    if (spec.category_name_part_ptr() && *spec.category_name_part_ptr() != entry.name().category())
+    if (spec.category_name_part_ptr() && *spec.category_name_part_ptr() != id->name().category())
         return false;
 
     if (spec.version_requirements_ptr())
@@ -99,7 +99,7 @@ paludis::match_package_with_maybe_changes(
             case vr_and:
                 for (VersionRequirements::ConstIterator r(spec.version_requirements_ptr()->begin()),
                         r_end(spec.version_requirements_ptr()->end()) ; r != r_end ; ++r)
-                    if (! r->version_operator().as_version_spec_comparator()(entry.version(), r->version_spec()))
+                    if (! r->version_operator().as_version_spec_comparator()(id->version(), r->version_spec()))
                         return false;
                 break;
 
@@ -108,7 +108,7 @@ paludis::match_package_with_maybe_changes(
                     bool matched(false);
                     for (VersionRequirements::ConstIterator r(spec.version_requirements_ptr()->begin()),
                             r_end(spec.version_requirements_ptr()->end()) ; r != r_end ; ++r)
-                        if (r->version_operator().as_version_spec_comparator()(entry.version(), r->version_spec()))
+                        if (r->version_operator().as_version_spec_comparator()(id->version(), r->version_spec()))
                         {
                             matched = true;
                             break;
@@ -124,49 +124,49 @@ paludis::match_package_with_maybe_changes(
         }
 
     if (spec.in_repository_ptr())
-        if (*spec.in_repository_ptr() != entry.repository()->name())
+        if (*spec.in_repository_ptr() != id->repository()->name())
             return false;
 
     if (spec.from_repository_ptr())
     {
-        if (! entry.from_repositories_key())
+        if (! id->from_repositories_key())
             return false;
 
-        if (entry.from_repositories_key()->value()->end() == entry.from_repositories_key()->value()->find(
+        if (id->from_repositories_key()->value()->end() == id->from_repositories_key()->value()->find(
                     stringify(*spec.from_repository_ptr())))
             return false;
     }
 
     if (spec.installed_at_path_ptr())
     {
-        if (! entry.repository()->installed_root_key())
+        if (! id->repository()->installed_root_key())
             return false;
-        if (entry.repository()->installed_root_key()->value() != *spec.installed_at_path_ptr())
+        if (id->repository()->installed_root_key()->value() != *spec.installed_at_path_ptr())
             return false;
     }
 
     if (spec.installable_to_repository_ptr())
     {
-        if (! entry.supports_action(SupportsActionTest<InstallAction>()))
+        if (! id->supports_action(SupportsActionTest<InstallAction>()))
             return false;
         if (! spec.installable_to_repository_ptr()->include_masked())
-            if (entry.masked())
+            if (id->masked())
                 return false;
 
         const std::shared_ptr<const Repository> dest(env.package_database()->fetch_repository(
                     spec.installable_to_repository_ptr()->repository()));
         if (! dest->destination_interface())
             return false;
-        if (! dest->destination_interface()->is_suitable_destination_for(entry))
+        if (! dest->destination_interface()->is_suitable_destination_for(id))
             return false;
     }
 
     if (spec.installable_to_path_ptr())
     {
-        if (! entry.supports_action(SupportsActionTest<InstallAction>()))
+        if (! id->supports_action(SupportsActionTest<InstallAction>()))
             return false;
         if (! spec.installable_to_path_ptr()->include_masked())
-            if (entry.masked())
+            if (id->masked())
                 return false;
 
         bool ok(false);
@@ -180,7 +180,7 @@ paludis::match_package_with_maybe_changes(
                 continue;
             if ((*d)->installed_root_key()->value() != spec.installable_to_path_ptr()->path())
                 continue;
-            if (! (*d)->destination_interface()->is_suitable_destination_for(entry))
+            if (! (*d)->destination_interface()->is_suitable_destination_for(id))
                 continue;
 
             ok = true;
@@ -193,7 +193,7 @@ paludis::match_package_with_maybe_changes(
 
     if (spec.slot_requirement_ptr())
     {
-        SlotRequirementChecker v(entry);
+        SlotRequirementChecker v(id);
         spec.slot_requirement_ptr()->accept(v);
         if (! v.result)
             return false;
@@ -205,7 +205,7 @@ paludis::match_package_with_maybe_changes(
         {
             for (AdditionalPackageDepSpecRequirements::ConstIterator u(spec.additional_requirements_ptr()->begin()),
                     u_end(spec.additional_requirements_ptr()->end()) ; u != u_end ; ++u)
-                if (! (*u)->requirement_met(&env, maybe_changes_to_owner, entry, maybe_changes_to_target).first)
+                if (! (*u)->requirement_met(&env, maybe_changes_to_owner, id, maybe_changes_to_target).first)
                     return false;
         }
     }
@@ -217,17 +217,17 @@ bool
 paludis::match_package(
         const Environment & env,
         const PackageDepSpec & spec,
-        const PackageID & target,
+        const std::shared_ptr<const PackageID> & id,
         const MatchPackageOptions & options)
 {
-    return match_package_with_maybe_changes(env, spec, 0, target, 0, options);
+    return match_package_with_maybe_changes(env, spec, 0, id, 0, options);
 }
 
 bool
 paludis::match_package_in_set(
         const Environment & env,
         const SetSpecTree & target,
-        const PackageID & entry,
+        const std::shared_ptr<const PackageID> & id,
         const MatchPackageOptions & options)
 {
     using namespace std::placeholders;
@@ -236,6 +236,6 @@ paludis::match_package_in_set(
     target.top()->accept(f);
     return indirect_iterator(f.end()) != std::find_if(
             indirect_iterator(f.begin()), indirect_iterator(f.end()),
-            std::bind(&match_package, std::cref(env), _1, std::cref(entry), std::cref(options)));
+            std::bind(&match_package, std::cref(env), _1, std::cref(id), std::cref(options)));
 }
 
