@@ -50,19 +50,19 @@ URILabel::~URILabel()
 }
 
 template <typename T_>
-ConcreteURILabel<T_>::ConcreteURILabel(const std::string & t) :
+SpecificURILabel<T_>::SpecificURILabel(const std::string & t) :
     _text(t)
 {
 }
 
 template <typename T_>
-ConcreteURILabel<T_>::~ConcreteURILabel()
+SpecificURILabel<T_>::~SpecificURILabel()
 {
 }
 
 template <typename T_>
 const std::string
-ConcreteURILabel<T_>::text() const
+SpecificURILabel<T_>::text() const
 {
     return _text;
 }
@@ -72,7 +72,7 @@ DependenciesLabel::~DependenciesLabel()
 }
 
 template <typename T_>
-ConcreteDependenciesLabel<T_>::ConcreteDependenciesLabel(const std::string & t,
+SpecificDependenciesLabel<T_>::SpecificDependenciesLabel(const std::string & t,
         const std::function<bool ()> & e) :
     _text(t),
     _enabled(e)
@@ -80,40 +80,40 @@ ConcreteDependenciesLabel<T_>::ConcreteDependenciesLabel(const std::string & t,
 }
 
 template <typename T_>
-ConcreteDependenciesLabel<T_>::~ConcreteDependenciesLabel()
+SpecificDependenciesLabel<T_>::~SpecificDependenciesLabel()
 {
 }
 
 template <typename T_>
 const std::string
-ConcreteDependenciesLabel<T_>::text() const
+SpecificDependenciesLabel<T_>::text() const
 {
     return _text;
 }
 
 template <typename T_>
 bool
-ConcreteDependenciesLabel<T_>::enabled() const
+SpecificDependenciesLabel<T_>::enabled() const
 {
     return _enabled();
 }
 
-template class ConcreteURILabel<URIMirrorsThenListedLabelTag>;
-template class ConcreteURILabel<URIMirrorsOnlyLabelTag>;
-template class ConcreteURILabel<URIListedOnlyLabelTag>;
-template class ConcreteURILabel<URIListedThenMirrorsLabelTag>;
-template class ConcreteURILabel<URILocalMirrorsOnlyLabelTag>;
-template class ConcreteURILabel<URIManualOnlyLabelTag>;
+template class SpecificURILabel<URIMirrorsThenListedLabelTag>;
+template class SpecificURILabel<URIMirrorsOnlyLabelTag>;
+template class SpecificURILabel<URIListedOnlyLabelTag>;
+template class SpecificURILabel<URIListedThenMirrorsLabelTag>;
+template class SpecificURILabel<URILocalMirrorsOnlyLabelTag>;
+template class SpecificURILabel<URIManualOnlyLabelTag>;
 
-template class ConcreteDependenciesLabel<DependenciesBuildLabelTag>;
-template class ConcreteDependenciesLabel<DependenciesRunLabelTag>;
-template class ConcreteDependenciesLabel<DependenciesPostLabelTag>;
-template class ConcreteDependenciesLabel<DependenciesCompileAgainstLabelTag>;
-template class ConcreteDependenciesLabel<DependenciesFetchLabelTag>;
-template class ConcreteDependenciesLabel<DependenciesInstallLabelTag>;
-template class ConcreteDependenciesLabel<DependenciesSuggestionLabelTag>;
-template class ConcreteDependenciesLabel<DependenciesRecommendationLabelTag>;
-template class ConcreteDependenciesLabel<DependenciesTestLabelTag>;
+template class SpecificDependenciesLabel<DependenciesBuildLabelTag>;
+template class SpecificDependenciesLabel<DependenciesRunLabelTag>;
+template class SpecificDependenciesLabel<DependenciesPostLabelTag>;
+template class SpecificDependenciesLabel<DependenciesCompileAgainstLabelTag>;
+template class SpecificDependenciesLabel<DependenciesFetchLabelTag>;
+template class SpecificDependenciesLabel<DependenciesInstallLabelTag>;
+template class SpecificDependenciesLabel<DependenciesSuggestionLabelTag>;
+template class SpecificDependenciesLabel<DependenciesRecommendationLabelTag>;
+template class SpecificDependenciesLabel<DependenciesTestLabelTag>;
 
 template class Sequence<std::shared_ptr<const DependenciesLabel> >;
 template class WrappedForwardIterator<Sequence<std::shared_ptr<const DependenciesLabel> >::ConstIteratorTag,

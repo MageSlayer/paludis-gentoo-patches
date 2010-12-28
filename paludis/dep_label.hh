@@ -80,9 +80,9 @@ namespace paludis
      * \nosubgrouping
      */
     template <typename T_>
-    class PALUDIS_VISIBLE ConcreteURILabel :
+    class PALUDIS_VISIBLE SpecificURILabel :
         public URILabel,
-        public ImplementAcceptMethods<URILabel, ConcreteURILabel<T_> >
+        public ImplementAcceptMethods<URILabel, SpecificURILabel<T_> >
     {
         private:
             const std::string _text;
@@ -91,8 +91,8 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            ConcreteURILabel(const std::string &);
-            ~ConcreteURILabel();
+            SpecificURILabel(const std::string &);
+            ~SpecificURILabel();
 
             ///\}
 
@@ -140,9 +140,9 @@ namespace paludis
      * \ingroup g_dep_spec
      */
     template <typename T_>
-    class PALUDIS_VISIBLE ConcreteDependenciesLabel :
+    class PALUDIS_VISIBLE SpecificDependenciesLabel :
         public DependenciesLabel,
-        public ImplementAcceptMethods<DependenciesLabel, ConcreteDependenciesLabel<T_> >
+        public ImplementAcceptMethods<DependenciesLabel, SpecificDependenciesLabel<T_> >
     {
         private:
             const std::string _text;
@@ -152,8 +152,8 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            ConcreteDependenciesLabel(const std::string &, const std::function<bool ()> &);
-            ~ConcreteDependenciesLabel();
+            SpecificDependenciesLabel(const std::string &, const std::function<bool ()> &);
+            ~SpecificDependenciesLabel();
 
             ///\}
 
@@ -164,22 +164,22 @@ namespace paludis
             typedef T_ Tag;
     };
 
-    extern template class ConcreteURILabel<URIMirrorsThenListedLabelTag>;
-    extern template class ConcreteURILabel<URIMirrorsOnlyLabelTag>;
-    extern template class ConcreteURILabel<URIListedOnlyLabelTag>;
-    extern template class ConcreteURILabel<URIListedThenMirrorsLabelTag>;
-    extern template class ConcreteURILabel<URILocalMirrorsOnlyLabelTag>;
-    extern template class ConcreteURILabel<URIManualOnlyLabelTag>;
+    extern template class SpecificURILabel<URIMirrorsThenListedLabelTag>;
+    extern template class SpecificURILabel<URIMirrorsOnlyLabelTag>;
+    extern template class SpecificURILabel<URIListedOnlyLabelTag>;
+    extern template class SpecificURILabel<URIListedThenMirrorsLabelTag>;
+    extern template class SpecificURILabel<URILocalMirrorsOnlyLabelTag>;
+    extern template class SpecificURILabel<URIManualOnlyLabelTag>;
 
-    extern template class ConcreteDependenciesLabel<DependenciesBuildLabelTag>;
-    extern template class ConcreteDependenciesLabel<DependenciesRunLabelTag>;
-    extern template class ConcreteDependenciesLabel<DependenciesPostLabelTag>;
-    extern template class ConcreteDependenciesLabel<DependenciesCompileAgainstLabelTag>;
-    extern template class ConcreteDependenciesLabel<DependenciesFetchLabelTag>;
-    extern template class ConcreteDependenciesLabel<DependenciesInstallLabelTag>;
-    extern template class ConcreteDependenciesLabel<DependenciesSuggestionLabelTag>;
-    extern template class ConcreteDependenciesLabel<DependenciesRecommendationLabelTag>;
-    extern template class ConcreteDependenciesLabel<DependenciesTestLabelTag>;
+    extern template class SpecificDependenciesLabel<DependenciesBuildLabelTag>;
+    extern template class SpecificDependenciesLabel<DependenciesRunLabelTag>;
+    extern template class SpecificDependenciesLabel<DependenciesPostLabelTag>;
+    extern template class SpecificDependenciesLabel<DependenciesCompileAgainstLabelTag>;
+    extern template class SpecificDependenciesLabel<DependenciesFetchLabelTag>;
+    extern template class SpecificDependenciesLabel<DependenciesInstallLabelTag>;
+    extern template class SpecificDependenciesLabel<DependenciesSuggestionLabelTag>;
+    extern template class SpecificDependenciesLabel<DependenciesRecommendationLabelTag>;
+    extern template class SpecificDependenciesLabel<DependenciesTestLabelTag>;
 
     extern template class WrappedForwardIterator<Sequence<std::shared_ptr<const DependenciesLabel> >::ConstIteratorTag,
              const std::shared_ptr<const DependenciesLabel> >;

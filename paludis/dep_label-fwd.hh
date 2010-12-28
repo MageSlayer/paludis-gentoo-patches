@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -35,25 +35,25 @@ namespace paludis
 {
     struct URILabel;
 
-    template <typename T_> struct ConcreteURILabel;
+    template <typename T_> struct SpecificURILabel;
 
     struct URIMirrorsThenListedLabelTag;
-    typedef ConcreteURILabel<URIMirrorsThenListedLabelTag> URIMirrorsThenListedLabel;
+    typedef SpecificURILabel<URIMirrorsThenListedLabelTag> URIMirrorsThenListedLabel;
 
     struct URIMirrorsOnlyLabelTag;
-    typedef ConcreteURILabel<URIMirrorsOnlyLabelTag> URIMirrorsOnlyLabel;
+    typedef SpecificURILabel<URIMirrorsOnlyLabelTag> URIMirrorsOnlyLabel;
 
     struct URIListedOnlyLabelTag;
-    typedef ConcreteURILabel<URIListedOnlyLabelTag> URIListedOnlyLabel;
+    typedef SpecificURILabel<URIListedOnlyLabelTag> URIListedOnlyLabel;
 
     struct URIListedThenMirrorsLabelTag;
-    typedef ConcreteURILabel<URIListedThenMirrorsLabelTag> URIListedThenMirrorsLabel;
+    typedef SpecificURILabel<URIListedThenMirrorsLabelTag> URIListedThenMirrorsLabel;
 
     struct URILocalMirrorsOnlyLabelTag;
-    typedef ConcreteURILabel<URILocalMirrorsOnlyLabelTag> URILocalMirrorsOnlyLabel;
+    typedef SpecificURILabel<URILocalMirrorsOnlyLabelTag> URILocalMirrorsOnlyLabel;
 
     struct URIManualOnlyLabelTag;
-    typedef ConcreteURILabel<URIManualOnlyLabelTag> URIManualOnlyLabel;
+    typedef SpecificURILabel<URIManualOnlyLabelTag> URIManualOnlyLabel;
 
     /**
      * A URILabel can be written to a stream.
@@ -66,7 +66,7 @@ namespace paludis
     struct DependenciesLabel;
 
     template <typename>
-    struct ConcreteDependenciesLabel;
+    struct SpecificDependenciesLabel;
 
     /**
      * Tag for DependenciesBuildLabel.
@@ -82,7 +82,7 @@ namespace paludis
      * \since 0.42
      * \ingroup g_dep_spec
      */
-    typedef ConcreteDependenciesLabel<DependenciesBuildLabelTag> DependenciesBuildLabel;
+    typedef SpecificDependenciesLabel<DependenciesBuildLabelTag> DependenciesBuildLabel;
 
     /**
      * Tag for DependenciesRunLabel.
@@ -98,7 +98,7 @@ namespace paludis
      * \since 0.42
      * \ingroup g_dep_spec
      */
-    typedef ConcreteDependenciesLabel<DependenciesRunLabelTag> DependenciesRunLabel;
+    typedef SpecificDependenciesLabel<DependenciesRunLabelTag> DependenciesRunLabel;
 
     /**
      * Tag for DependenciesPostLabel.
@@ -114,7 +114,7 @@ namespace paludis
      * \since 0.42
      * \ingroup g_dep_spec
      */
-    typedef ConcreteDependenciesLabel<DependenciesPostLabelTag> DependenciesPostLabel;
+    typedef SpecificDependenciesLabel<DependenciesPostLabelTag> DependenciesPostLabel;
 
     /**
      * Tag for DependenciesCompileAgainstLabel.
@@ -130,7 +130,7 @@ namespace paludis
      * \since 0.42
      * \ingroup g_dep_spec
      */
-    typedef ConcreteDependenciesLabel<DependenciesCompileAgainstLabelTag> DependenciesCompileAgainstLabel;
+    typedef SpecificDependenciesLabel<DependenciesCompileAgainstLabelTag> DependenciesCompileAgainstLabel;
 
     /**
      * Tag for DependenciesFetchLabel.
@@ -146,7 +146,7 @@ namespace paludis
      * \since 0.42
      * \ingroup g_dep_spec
      */
-    typedef ConcreteDependenciesLabel<DependenciesFetchLabelTag> DependenciesFetchLabel;
+    typedef SpecificDependenciesLabel<DependenciesFetchLabelTag> DependenciesFetchLabel;
 
     /**
      * Tag for DependenciesInstallLabel.
@@ -162,7 +162,7 @@ namespace paludis
      * \since 0.42
      * \ingroup g_dep_spec
      */
-    typedef ConcreteDependenciesLabel<DependenciesInstallLabelTag> DependenciesInstallLabel;
+    typedef SpecificDependenciesLabel<DependenciesInstallLabelTag> DependenciesInstallLabel;
 
     /**
      * Tag for DependenciesSuggestionLabel.
@@ -178,7 +178,7 @@ namespace paludis
      * \since 0.42
      * \ingroup g_dep_spec
      */
-    typedef ConcreteDependenciesLabel<DependenciesSuggestionLabelTag> DependenciesSuggestionLabel;
+    typedef SpecificDependenciesLabel<DependenciesSuggestionLabelTag> DependenciesSuggestionLabel;
 
     /**
      * Tag for DependenciesRecommendationLabel.
@@ -194,7 +194,7 @@ namespace paludis
      * \since 0.42
      * \ingroup g_dep_spec
      */
-    typedef ConcreteDependenciesLabel<DependenciesRecommendationLabelTag> DependenciesRecommendationLabel;
+    typedef SpecificDependenciesLabel<DependenciesRecommendationLabelTag> DependenciesRecommendationLabel;
 
     /**
      * Tag for DependenciesTestLabel.
@@ -210,7 +210,7 @@ namespace paludis
      * \since 0.42
      * \ingroup g_dep_spec
      */
-    typedef ConcreteDependenciesLabel<DependenciesTestLabelTag> DependenciesTestLabel;
+    typedef SpecificDependenciesLabel<DependenciesTestLabelTag> DependenciesTestLabel;
 
     /**
      * A collection of DependencyLabel instances.
