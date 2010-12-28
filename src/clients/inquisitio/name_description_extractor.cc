@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -36,17 +36,17 @@ NameDescriptionExtractor::~NameDescriptionExtractor()
 }
 
 bool
-NameDescriptionExtractor::operator() (const Matcher & m, const PackageID & id) const
+NameDescriptionExtractor::operator() (const Matcher & m, const std::shared_ptr<const PackageID> & id) const
 {
-    if (m(stringify(id.name())))
+    if (m(stringify(id->name())))
         return true;
 
-    if (id.short_description_key())
-        if (m(id.short_description_key()->value()))
+    if (id->short_description_key())
+        if (m(id->short_description_key()->value()))
             return true;
 
-    if (id.long_description_key())
-        if (m(id.long_description_key()->value()))
+    if (id->long_description_key())
+        if (m(id->long_description_key()->value()))
             return true;
 
     return false;

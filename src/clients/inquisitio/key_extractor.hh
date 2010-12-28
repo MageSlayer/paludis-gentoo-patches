@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -35,7 +35,7 @@ namespace inquisitio
                     const paludis::Environment &);
             ~KeyExtractor();
 
-            bool operator() (const Matcher &, const paludis::PackageID &) const;
+            bool operator() (const Matcher &, const std::shared_ptr<const paludis::PackageID> &) const;
     };
 }
 

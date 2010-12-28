@@ -304,8 +304,7 @@ namespace
     {
         auto repo(env->package_database()->fetch_repository(id->repository_name()));
         std::shared_ptr<ConditionalDepSpec> spec(std::make_shared<ConditionalDepSpec>(parse_elike_conditional_dep_spec(
-                        u, env, id,
-                        bool(repo->installed_root_key()) || ! eapi.supported()->package_dep_spec_parse_options()[epdso_missing_use_deps_is_qa])));
+                        u, bool(repo->installed_root_key()) || ! eapi.supported()->package_dep_spec_parse_options()[epdso_missing_use_deps_is_qa])));
         stack.push_front(make_named_values<typename ParseStackTypes<T_>::Item>(
                     n::item() = stack.begin()->item()->append(spec),
                     n::spec() = spec

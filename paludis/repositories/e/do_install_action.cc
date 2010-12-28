@@ -74,7 +74,7 @@ namespace
 
         void visit(const LicenseSpecTree::NodeType<ConditionalDepSpec>::Type & node)
         {
-            if (node.spec()->condition_met())
+            if (node.spec()->condition_met(env, id))
                 std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
         }
 
@@ -127,7 +127,7 @@ paludis::erepository::do_install_action(
 
     bool userpriv_restrict, test_restrict, strip_restrict;
     {
-        DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> restricts(env);
+        DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> restricts(env, id);
         if (id->restrict_key())
             id->restrict_key()->value()->top()->accept(restricts);
 

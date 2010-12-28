@@ -128,11 +128,6 @@ namespace
             return std::shared_ptr<const SlotRequirement>();
         }
 
-        virtual std::shared_ptr<const MetadataSectionKey> annotations_key() const
-        {
-            return std::shared_ptr<const MetadataSectionKey>();
-        }
-
         virtual std::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements_ptr() const
         {
             return std::shared_ptr<const AdditionalPackageDepSpecRequirements>();

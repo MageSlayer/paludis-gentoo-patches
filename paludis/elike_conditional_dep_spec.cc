@@ -28,12 +28,12 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/changed_choices.hh>
 #include <paludis/name.hh>
-#include <paludis/literal_metadata_key.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_id.hh>
 #include <paludis/repository.hh>
 #include <paludis/choice.hh>
 #include <paludis/dep_spec_data.hh>
+#include <paludis/metadata_key.hh>
 #include <ostream>
 #include <string>
 
@@ -91,17 +91,11 @@ namespace
     {
         bool inverse;
         ChoiceNameWithPrefix flag;
-
-        const Environment * const env;
-        const std::shared_ptr<const PackageID> id;
         bool no_warning_for_unlisted;
 
-        EConditionalDepSpecData(const std::string & s, const Environment * const e, const std::shared_ptr<const PackageID> & i,
-                const bool n) :
+        EConditionalDepSpecData(const std::string & s, const bool n) :
             inverse(false),
             flag("x"),
-            env(e),
-            id(i),
             no_warning_for_unlisted(n)
         {
             if (s.empty())
@@ -115,9 +109,6 @@ namespace
                 throw ELikeConditionalDepSpecParseError(s, "missing flag name on use conditional");
 
             flag = ChoiceNameWithPrefix(s.substr(inverse ? 1 : 0, s.length() - (inverse ? 2 : 1)));
-
-            add_metadata_key(std::make_shared<LiteralMetadataValueKey<std::string> >("Flag", "Flag", mkt_normal, stringify(flag)));
-            add_metadata_key(std::make_shared<LiteralMetadataValueKey<std::string> >("Inverse", "Inverse", mkt_normal, stringify(inverse)));
         }
 
         virtual std::string as_string() const
@@ -125,45 +116,36 @@ namespace
             return (inverse ? "!" : "") + stringify(flag) + "?";
         }
 
-        virtual bool condition_met() const
+        virtual bool condition_met(const Environment * const, const std::shared_ptr<const PackageID> & id) const
         {
-            if (! id)
-                throw InternalError(PALUDIS_HERE, "! id");
-
             return icky_use_query(flag, *id, no_warning_for_unlisted) ^ inverse;
         }
 
-        virtual bool condition_meetable() const
+        virtual bool condition_meetable(const Environment * const env, const std::shared_ptr<const PackageID> & id) const
         {
-            if (! id)
-                throw InternalError(PALUDIS_HERE, "! id");
-
-            return condition_met() || ! icky_use_query_locked(flag, *id, no_warning_for_unlisted);
+            return condition_met(env, id) || ! icky_use_query_locked(flag, *id, no_warning_for_unlisted);
         }
 
-        virtual bool condition_would_be_met_when(const ChangedChoices & changes) const
+        virtual bool condition_would_be_met_when(const Environment * const env, const std::shared_ptr<const PackageID> & id,
+                const ChangedChoices & changes) const
         {
             Tribool overridden(changes.overridden_value(flag));
 
             if (overridden.is_indeterminate())
-                return condition_met();
-            else if (! condition_meetable())
-                return condition_met();
+                return condition_met(env, id);
+            else if (! condition_meetable(env, id))
+                return condition_met(env, id);
             else
                 return overridden.is_true() ^ inverse;
-        }
-
-        virtual void need_keys_added() const
-        {
         }
     };
 }
 
 ConditionalDepSpec
-paludis::parse_elike_conditional_dep_spec(const std::string & s,
-        const Environment * const env, const std::shared_ptr<const PackageID> & id,
+paludis::parse_elike_conditional_dep_spec(
+        const std::string & s,
         const bool no_warning_for_unlisted)
 {
-    return ConditionalDepSpec(std::make_shared<EConditionalDepSpecData>(s, env, id, no_warning_for_unlisted));
+    return ConditionalDepSpec(std::make_shared<EConditionalDepSpecData>(s, no_warning_for_unlisted));
 }
 

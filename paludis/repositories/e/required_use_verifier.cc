@@ -178,7 +178,7 @@ RequiredUseVerifier::visit(const RequiredUseSpecTree::NodeType<ExactlyOneDepSpec
 void
 RequiredUseVerifier::visit(const RequiredUseSpecTree::NodeType<ConditionalDepSpec>::Type & node)
 {
-    if (! node.spec()->condition_met())
+    if (! node.spec()->condition_met(_imp->env, _imp->id))
         return;
 
     _imp->stack.push_front(Met{0, false});

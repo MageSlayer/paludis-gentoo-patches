@@ -1510,12 +1510,12 @@ namespace
     struct CheckSatisfiedVisitor
     {
         const Environment * const env;
-        const PackageID & id;
+        const std::shared_ptr<const PackageID> & id;
         std::shared_ptr<const PackageDepSpec> failure;
         std::set<SetName> recursing_sets;
 
         CheckSatisfiedVisitor(const Environment * const e,
-                const PackageID & i) :
+                const std::shared_ptr<const PackageID> & i) :
             env(e),
             id(i)
         {
@@ -1545,7 +1545,7 @@ namespace
 
         void visit(const DependencySpecTree::NodeType<ConditionalDepSpec>::Type & node)
         {
-            if (node.spec()->condition_met())
+            if (node.spec()->condition_met(env, id))
                 std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()),
                         accept_visitor(*this));
         }
@@ -1596,7 +1596,7 @@ InstallTask::_unsatisfied(const DepListEntry & e) const
 {
     Context context("When checking whether dependencies for '" + stringify(*e.package_id()) + "' are satisfied:");
 
-    CheckSatisfiedVisitor v(environment(), *e.package_id());
+    CheckSatisfiedVisitor v(environment(), e.package_id());
 
     if (dl_deps_pre == _imp->dep_list.options()->uninstalled_deps_pre() ||
             dl_deps_pre_or_post == _imp->dep_list.options()->uninstalled_deps_pre())
@@ -1786,7 +1786,7 @@ namespace
 
         void visit(const DependencySpecTree::NodeType<ConditionalDepSpec>::Type & node)
         {
-            if (node.spec()->condition_met())
+            if (node.spec()->condition_met(env, id))
                 std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()),
                         accept_visitor(*this));
         }

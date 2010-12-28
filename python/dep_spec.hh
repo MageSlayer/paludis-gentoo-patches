@@ -132,8 +132,8 @@ namespace paludis
             public:
                 PythonConditionalDepSpec(const ConditionalDepSpec &);
 
-                bool condition_met() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                bool condition_meetable() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                bool condition_met(const Environment * const, const std::shared_ptr<const PackageID> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                bool condition_meetable(const Environment * const, const std::shared_ptr<const PackageID> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 const std::shared_ptr<const ConditionalDepSpecData> data() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };

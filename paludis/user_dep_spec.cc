@@ -410,9 +410,13 @@ namespace
 
     struct SpecTreeSearcher
     {
+        const Environment * const env;
+        const std::shared_ptr<const PackageID> id;
         const std::string pattern;
 
-        SpecTreeSearcher(const std::string & p) :
+        SpecTreeSearcher(const Environment * const e, const std::shared_ptr<const PackageID> & i, const std::string & p) :
+            env(e),
+            id(i),
             pattern(p)
         {
         }
@@ -437,7 +441,7 @@ namespace
 
         bool visit(const GenericSpecTree::NodeType<ConditionalDepSpec>::Type & n) const
         {
-            if (n.spec()->condition_met())
+            if (n.spec()->condition_met(env, id))
                 return indirect_iterator(n.end()) != std::find_if(indirect_iterator(n.begin()), indirect_iterator(n.end()),
                         accept_visitor_returning<bool>(*this));
             else
@@ -499,10 +503,15 @@ namespace
 
     struct KeyComparator
     {
+        const Environment * const env;
+        const std::shared_ptr<const PackageID> id;
         const std::string pattern;
         const char op;
 
-        KeyComparator(const std::string & p, const char o) :
+        KeyComparator(const Environment * const e, const std::shared_ptr<const PackageID> & i,
+                const std::string & p, const char o) :
+            env(e),
+            id(i),
             pattern(p),
             op(o)
         {
@@ -602,7 +611,7 @@ namespace
                 case '=':
                     return false;
                 case '<':
-                    return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(pattern));
+                    return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
             }
 
             return false;
@@ -615,7 +624,7 @@ namespace
                 case '=':
                     return false;
                 case '<':
-                    return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(pattern));
+                    return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
             }
 
             return false;
@@ -628,7 +637,7 @@ namespace
                 case '=':
                     return false;
                 case '<':
-                    return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(pattern));
+                    return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
             }
 
             return false;
@@ -641,7 +650,7 @@ namespace
                 case '=':
                     return false;
                 case '<':
-                    return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(pattern));
+                    return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
             }
 
             return false;
@@ -654,7 +663,7 @@ namespace
                 case '=':
                     return false;
                 case '<':
-                    return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(pattern));
+                    return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
             }
 
             return false;
@@ -667,7 +676,7 @@ namespace
                 case '=':
                     return false;
                 case '<':
-                    return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(pattern));
+                    return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
             }
 
             return false;
@@ -680,7 +689,7 @@ namespace
                 case '=':
                     return false;
                 case '<':
-                    return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(pattern));
+                    return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
             }
 
             return false;
@@ -693,7 +702,7 @@ namespace
                 case '=':
                     return false;
                 case '<':
-                    return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(pattern));
+                    return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
             }
 
             return false;
@@ -868,7 +877,7 @@ UserKeyRequirement::requirement_met(
         return std::make_pair(true, as_human_string());
     else
     {
-        KeyComparator c(_imp->value, _imp->op);
+        KeyComparator c(env, id, _imp->value, _imp->op);
         return std::make_pair(key->accept_returning<bool>(c), as_human_string());
     }
 }

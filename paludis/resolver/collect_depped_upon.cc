@@ -71,6 +71,7 @@ namespace
     struct DependentChecker
     {
         const Environment * const env;
+        const std::shared_ptr<const PackageID> id;
         const std::shared_ptr<const C_> going_away;
         const std::shared_ptr<const C_> newly_available;
         const std::shared_ptr<const PackageIDSequence> not_changing_slots;
@@ -78,10 +79,12 @@ namespace
 
         DependentChecker(
                 const Environment * const e,
+                const std::shared_ptr<const PackageID> & i,
                 const std::shared_ptr<const C_> & g,
                 const std::shared_ptr<const C_> & n,
                 const std::shared_ptr<const PackageIDSequence> & s) :
             env(e),
+            id(i),
             going_away(g),
             newly_available(n),
             not_changing_slots(s),
@@ -141,7 +144,7 @@ namespace
 
         void visit(const DependencySpecTree::NodeType<ConditionalDepSpec>::Type & s)
         {
-            if (s.spec()->condition_met())
+            if (s.spec()->condition_met(env, id))
                 std::for_each(indirect_iterator(s.begin()), indirect_iterator(s.end()),
                         accept_visitor(*this));
         }
@@ -172,7 +175,7 @@ paludis::resolver::dependent_upon(
         const std::shared_ptr<const ChangeByResolventSequence> & staying,
         const std::shared_ptr<const PackageIDSequence> & not_changing_slots)
 {
-    DependentChecker<ChangeByResolventSequence> c(env, going_away, staying, not_changing_slots);
+    DependentChecker<ChangeByResolventSequence> c(env, id, going_away, staying, not_changing_slots);
     if (id->dependencies_key())
         id->dependencies_key()->value()->top()->accept(c);
     else
@@ -197,7 +200,7 @@ paludis::resolver::collect_depped_upon(
         const std::shared_ptr<const PackageIDSequence> & candidates,
         const std::shared_ptr<const PackageIDSequence> & not_changing_slots)
 {
-    DependentChecker<PackageIDSequence> c(env, candidates, std::make_shared<PackageIDSequence>(), not_changing_slots);
+    DependentChecker<PackageIDSequence> c(env, id, candidates, std::make_shared<PackageIDSequence>(), not_changing_slots);
     if (id->dependencies_key())
         id->dependencies_key()->value()->top()->accept(c);
     else

@@ -60,7 +60,7 @@ paludis::erepository::do_pretend_action(
 
     bool userpriv_restrict;
     {
-        DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> restricts(env);
+        DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> restricts(env, id);
         if (id->restrict_key())
             id->restrict_key()->value()->top()->accept(restricts);
 

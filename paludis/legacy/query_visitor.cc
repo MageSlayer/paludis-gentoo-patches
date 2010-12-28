@@ -140,7 +140,7 @@ QueryVisitor::visit(const DependencySpecTree::NodeType<ConditionalDepSpec>::Type
 {
     /* for use? ( ) dep specs, return true if we're not enabled, so that
      * weird || ( ) cases work. */
-    if (node.spec()->condition_met())
+    if (node.spec()->condition_met(_imp->environment, _imp->id))
     {
         _imp->result = true;
         for (DependencySpecTree::NodeType<AnyDepSpec>::Type::ConstIterator c(node.begin()), c_end(node.end()) ;
@@ -174,7 +174,7 @@ QueryVisitor::visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type & node)
         for (DependencySpecTree::NodeType<AnyDepSpec>::Type::ConstIterator c(node.begin()), c_end(node.end()) ;
                 c != c_end ; ++c)
         {
-            if (! is_viable_any_child(**c))
+            if (! is_viable_any_child(_imp->environment, _imp->id, **c))
                 continue;
 
             (*c)->accept(*this);

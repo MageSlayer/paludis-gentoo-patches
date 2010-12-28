@@ -85,7 +85,7 @@ ShowSuggestVisitor::~ShowSuggestVisitor()
 void
 ShowSuggestVisitor::visit(const DependencySpecTree::NodeType<ConditionalDepSpec>::Type & node)
 {
-    if (node.spec()->condition_met())
+    if (node.spec()->condition_met(_imp->environment, _imp->id))
     {
         _imp->labels.push_front(*_imp->labels.begin());
         RunOnDestruction restore_labels(std::bind(std::mem_fn(&LabelsStack::pop_front), &_imp->labels));

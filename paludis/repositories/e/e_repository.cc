@@ -1799,7 +1799,7 @@ ERepository::get_environment_variable(
     {
         using namespace std::placeholders;
 
-        DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> restricts(_imp->params.environment());
+        DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> restricts(_imp->params.environment(), id_uncasted);
         if (id->restrict_key())
             id->restrict_key()->value()->top()->accept(restricts);
 

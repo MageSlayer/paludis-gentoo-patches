@@ -714,7 +714,7 @@ VDBRepository::provides_from_package_id(const std::shared_ptr<const PackageID> &
             return;
 
         std::shared_ptr<const ProvideSpecTree> provide(id->provide_key()->value());
-        DepSpecFlattener<ProvideSpecTree, PackageDepSpec> f(_imp->params.environment());
+        DepSpecFlattener<ProvideSpecTree, PackageDepSpec> f(_imp->params.environment(), id);
         provide->top()->accept(f);
 
         std::shared_ptr<std::list<QualifiedPackageName> > qpns(std::make_shared<std::list<QualifiedPackageName>>());

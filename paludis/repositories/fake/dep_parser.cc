@@ -139,11 +139,10 @@ namespace
     }
 
     template <typename T_>
-    void use_handler(typename ParseStackTypes<T_>::Stack & stack, const std::string & u,
-            const Environment * const env, const std::shared_ptr<const PackageID> & id)
+    void use_handler(typename ParseStackTypes<T_>::Stack & stack, const std::string & u)
     {
         stack.push_front((*stack.begin())->append(
-                    std::make_shared<ConditionalDepSpec>(parse_elike_conditional_dep_spec(u, env, id, false))));
+                    std::make_shared<ConditionalDepSpec>(parse_elike_conditional_dep_spec(u, false))));
     }
 
     template <typename T_>
@@ -172,7 +171,7 @@ namespace
 
 std::shared_ptr<DependencySpecTree>
 paludis::fakerepository::parse_depend(const std::string & s,
-        const Environment * const env, const std::shared_ptr<const PackageID> & id)
+        const Environment * const, const std::shared_ptr<const PackageID> & id)
 {
     using namespace std::placeholders;
 
@@ -192,7 +191,7 @@ paludis::fakerepository::parse_depend(const std::string & s,
                 n::on_pop() = std::bind(&pop_handler<DependencySpecTree>, std::ref(stack), s),
                 n::on_should_be_empty() = std::bind(&should_be_empty_handler<DependencySpecTree>, std::ref(stack), s),
                 n::on_string() = std::bind(&package_or_block_dep_spec_string_handler<DependencySpecTree>, std::ref(stack), _1, id),
-                n::on_use() = std::bind(&use_handler<DependencySpecTree>, std::ref(stack), _1, env, id),
+                n::on_use() = std::bind(&use_handler<DependencySpecTree>, std::ref(stack), _1),
                 n::on_use_under_any() = &do_nothing
                 ));
 
@@ -203,7 +202,7 @@ paludis::fakerepository::parse_depend(const std::string & s,
 
 std::shared_ptr<ProvideSpecTree>
 paludis::fakerepository::parse_provide(const std::string & s,
-        const Environment * const env, const std::shared_ptr<const PackageID> & id)
+        const Environment * const, const std::shared_ptr<const PackageID> & id)
 {
     using namespace std::placeholders;
 
@@ -223,7 +222,7 @@ paludis::fakerepository::parse_provide(const std::string & s,
                 n::on_pop() = std::bind(&pop_handler<ProvideSpecTree>, std::ref(stack), s),
                 n::on_should_be_empty() = std::bind(&should_be_empty_handler<ProvideSpecTree>, std::ref(stack), s),
                 n::on_string() = std::bind(&package_dep_spec_string_handler<ProvideSpecTree>, std::ref(stack), _1, id),
-                n::on_use() = std::bind(&use_handler<ProvideSpecTree>, std::ref(stack), _1, env, id),
+                n::on_use() = std::bind(&use_handler<ProvideSpecTree>, std::ref(stack), _1),
                 n::on_use_under_any() = &do_nothing
                 ));
 
@@ -234,7 +233,7 @@ paludis::fakerepository::parse_provide(const std::string & s,
 
 std::shared_ptr<FetchableURISpecTree>
 paludis::fakerepository::parse_fetchable_uri(const std::string & s,
-        const Environment * const env, const std::shared_ptr<const PackageID> & id)
+        const Environment * const, const std::shared_ptr<const PackageID> &)
 {
     using namespace std::placeholders;
 
@@ -254,7 +253,7 @@ paludis::fakerepository::parse_fetchable_uri(const std::string & s,
                 n::on_pop() = std::bind(&pop_handler<FetchableURISpecTree>, std::ref(stack), s),
                 n::on_should_be_empty() = std::bind(&should_be_empty_handler<FetchableURISpecTree>, std::ref(stack), s),
                 n::on_string() = std::bind(&arrow_handler<FetchableURISpecTree>, std::ref(stack), _1, ""),
-                n::on_use() = std::bind(&use_handler<FetchableURISpecTree>, std::ref(stack), _1, env, id),
+                n::on_use() = std::bind(&use_handler<FetchableURISpecTree>, std::ref(stack), _1),
                 n::on_use_under_any() = &do_nothing
                 ));
 
@@ -265,7 +264,7 @@ paludis::fakerepository::parse_fetchable_uri(const std::string & s,
 
 std::shared_ptr<SimpleURISpecTree>
 paludis::fakerepository::parse_simple_uri(const std::string & s,
-        const Environment * const env, const std::shared_ptr<const PackageID> & id)
+        const Environment * const, const std::shared_ptr<const PackageID> &)
 {
     using namespace std::placeholders;
 
@@ -285,7 +284,7 @@ paludis::fakerepository::parse_simple_uri(const std::string & s,
                 n::on_pop() = std::bind(&pop_handler<SimpleURISpecTree>, std::ref(stack), s),
                 n::on_should_be_empty() = std::bind(&should_be_empty_handler<SimpleURISpecTree>, std::ref(stack), s),
                 n::on_string() = std::bind(&simple_uri_handler<SimpleURISpecTree>, std::ref(stack), _1),
-                n::on_use() = std::bind(&use_handler<SimpleURISpecTree>, std::ref(stack), _1, env, id),
+                n::on_use() = std::bind(&use_handler<SimpleURISpecTree>, std::ref(stack), _1),
                 n::on_use_under_any() = &do_nothing
                 ));
 
@@ -296,7 +295,7 @@ paludis::fakerepository::parse_simple_uri(const std::string & s,
 
 std::shared_ptr<LicenseSpecTree>
 paludis::fakerepository::parse_license(const std::string & s,
-        const Environment * const env, const std::shared_ptr<const PackageID> & id)
+        const Environment * const, const std::shared_ptr<const PackageID> &)
 {
     using namespace std::placeholders;
 
@@ -316,7 +315,7 @@ paludis::fakerepository::parse_license(const std::string & s,
                 n::on_pop() = std::bind(&pop_handler<LicenseSpecTree>, std::ref(stack), s),
                 n::on_should_be_empty() = std::bind(&should_be_empty_handler<LicenseSpecTree>, std::ref(stack), s),
                 n::on_string() = std::bind(&license_handler<LicenseSpecTree>, std::ref(stack), _1),
-                n::on_use() = std::bind(&use_handler<LicenseSpecTree>, std::ref(stack), _1, env, id),
+                n::on_use() = std::bind(&use_handler<LicenseSpecTree>, std::ref(stack), _1),
                 n::on_use_under_any() = &do_nothing
                 ));
 

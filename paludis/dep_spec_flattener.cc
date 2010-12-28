@@ -39,12 +39,14 @@ namespace paludis
     struct Imp<DepSpecFlattener<Heirarchy_, Item_> >
     {
         const Environment * const env;
+        const std::shared_ptr<const PackageID> package_id;
 
         std::list<std::shared_ptr<const Item_> > specs;
         std::set<SetName> recursing_sets;
 
-        Imp(const Environment * const e) :
-            env(e)
+        Imp(const Environment * const e, const std::shared_ptr<const PackageID> & i) :
+            env(e),
+            package_id(i)
         {
         }
     };
@@ -76,8 +78,9 @@ namespace paludis
 
 template <typename Heirarchy_, typename Item_>
 DepSpecFlattener<Heirarchy_, Item_>::DepSpecFlattener(
-        const Environment * const env) :
-    Pimp<DepSpecFlattener<Heirarchy_, Item_> >(env),
+        const Environment * const env,
+        const std::shared_ptr<const PackageID> & id) :
+    Pimp<DepSpecFlattener<Heirarchy_, Item_> >(env, id),
     _imp(Pimp<DepSpecFlattener<Heirarchy_, Item_> >::_imp)
 {
 }
@@ -219,7 +222,8 @@ namespace
     template <typename Heirarchy_, typename Item_, bool>
     struct HandleConditional
     {
-        inline static void handle(const typename Heirarchy_::template NodeType<ConditionalDepSpec>::Type &, DepSpecFlattener<Heirarchy_, Item_> &)
+        inline static void handle(const typename Heirarchy_::template NodeType<ConditionalDepSpec>::Type &, DepSpecFlattener<Heirarchy_, Item_> &,
+                const Environment * const, const std::shared_ptr<const PackageID> &)
         {
         }
     };
@@ -227,9 +231,10 @@ namespace
     template <typename Heirarchy_, typename Item_>
     struct HandleConditional<Heirarchy_, Item_, true>
     {
-        inline static void handle(const typename Heirarchy_::template NodeType<ConditionalDepSpec>::Type & node, DepSpecFlattener<Heirarchy_, Item_> & f)
+        inline static void handle(const typename Heirarchy_::template NodeType<ConditionalDepSpec>::Type & node, DepSpecFlattener<Heirarchy_, Item_> & f,
+                const Environment * const env, const std::shared_ptr<const PackageID> & id)
         {
-            if (node.spec()->condition_met())
+            if (node.spec()->condition_met(env, id))
                 std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(f));
         }
     };
@@ -240,7 +245,8 @@ void
 DepSpecFlattener<Heirarchy_, Item_>::visit(const typename Heirarchy_::template NodeType<ConditionalDepSpec>::Type & node)
 {
     HandleConditional<Heirarchy_, Item_, TypeListContains<
-        typename Heirarchy_::VisitableTypeList, typename Heirarchy_::template NodeType<ConditionalDepSpec>::Type>::value>::handle(node, *this);
+        typename Heirarchy_::VisitableTypeList, typename Heirarchy_::template NodeType<ConditionalDepSpec>::Type>::value>::handle(
+                node, *this, _imp->env, _imp->package_id);
 }
 
 template <typename Heirarchy_, typename Item_>

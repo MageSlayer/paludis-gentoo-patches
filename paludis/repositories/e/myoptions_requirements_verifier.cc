@@ -254,7 +254,7 @@ MyOptionsRequirementsVerifier::visit(const PlainTextSpecTree::NodeType<PlainText
 void
 MyOptionsRequirementsVerifier::visit(const PlainTextSpecTree::NodeType<ConditionalDepSpec>::Type & node)
 {
-    if (node.spec()->condition_met())
+    if (node.spec()->condition_met(_imp->env, _imp->id))
     {
         _imp->current_prefix_stack.push_front(*_imp->current_prefix_stack.begin());
         _imp->current_children_stack.push_front(ChildrenList());

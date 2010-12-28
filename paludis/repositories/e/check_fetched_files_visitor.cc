@@ -130,7 +130,7 @@ void
 CheckFetchedFilesVisitor::visit(const FetchableURISpecTree::NodeType<ConditionalDepSpec>::Type & node)
 {
     Save<bool> save_in_nofetch(&_imp->in_nofetch, _imp->in_nofetch);
-    if ((_imp->check_unneeded) || (node.spec()->condition_met()))
+    if ((_imp->check_unneeded) || (node.spec()->condition_met(_imp->env, _imp->id)))
         std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
 }
 

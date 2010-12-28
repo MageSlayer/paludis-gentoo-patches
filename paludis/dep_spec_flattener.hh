@@ -29,6 +29,7 @@
 #include <paludis/util/no_type.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <memory>
+#include <type_traits>
 
 /** \file
  * Declarations for DepSpecFlattener.
@@ -93,7 +94,11 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            DepSpecFlattener(const Environment * const);
+            DepSpecFlattener(
+                    const Environment * const,
+                    const std::shared_ptr<const PackageID> & = typename std::enable_if<
+                        std::is_same<Heirarchy_, SetSpecTree>::value,
+                        std::shared_ptr<const PackageID> >::type());
 
             ~DepSpecFlattener();
 

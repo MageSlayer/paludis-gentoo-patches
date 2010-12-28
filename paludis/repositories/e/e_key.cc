@@ -367,7 +367,7 @@ EFetchableURIKey::initial_label() const
 
     if (! _imp->initial_label)
     {
-        DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> f(_imp->env);
+        DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> f(_imp->env, _imp->id);
         if (_imp->id->restrict_key())
             _imp->id->restrict_key()->value()->top()->accept(f);
         for (DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec>::ConstIterator i(f.begin()), i_end(f.end()) ;

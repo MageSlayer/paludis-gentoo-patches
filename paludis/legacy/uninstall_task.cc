@@ -209,7 +209,7 @@ UninstallTask::add_target(const std::string & target)
         _imp->had_set_targets = true;
 
         std::shared_ptr<const SetSpecTree> spec(_imp->env->set(SetName(target)));
-        DepSpecFlattener<SetSpecTree, PackageDepSpec> f(_imp->env);
+        DepSpecFlattener<SetSpecTree, PackageDepSpec> f(_imp->env, make_null_shared_ptr());
         spec->top()->accept(f);
         std::copy(f.begin(), f.end(), std::back_inserter(_imp->targets));
     }

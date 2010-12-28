@@ -55,7 +55,7 @@ AFinder::visit(const FetchableURISpecTree::NodeType<AllDepSpec>::Type & node)
 void
 AFinder::visit(const FetchableURISpecTree::NodeType<ConditionalDepSpec>::Type & node)
 {
-    if (node.spec()->condition_met())
+    if (node.spec()->condition_met(env, id))
     {
         _labels.push_front(*_labels.begin());
         std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));

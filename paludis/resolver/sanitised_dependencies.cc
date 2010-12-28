@@ -60,6 +60,9 @@ namespace
 
     struct MakeAnyOfStringVisitor
     {
+        const Environment * const env;
+        const std::shared_ptr<const PackageID> our_id;
+
         std::string result;
         const std::shared_ptr<const ChangedChoices> changed_choices;
 
@@ -85,9 +88,9 @@ namespace
 
         void visit(const DependencySpecTree::NodeType<ConditionalDepSpec>::Type & node)
         {
-            if (changed_choices ? node.spec()->condition_would_be_met_when(*changed_choices) : node.spec()->condition_met())
+            if (changed_choices ? node.spec()->condition_would_be_met_when(env, our_id, *changed_choices) : node.spec()->condition_met(env, our_id))
             {
-                MakeAnyOfStringVisitor v{"", changed_choices};
+                MakeAnyOfStringVisitor v{env, our_id, "", changed_choices};
                 std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(v));
                 result.append(" " + stringify(*node.spec()) + " (" + v.result + " )");
             }
@@ -95,14 +98,14 @@ namespace
 
         void visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type & node)
         {
-            MakeAnyOfStringVisitor v{"", changed_choices};
+            MakeAnyOfStringVisitor v{env, our_id, "", changed_choices};
             std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(v));
             result.append(" || (" + v.result + " )");
         }
 
         void visit(const DependencySpecTree::NodeType<AllDepSpec>::Type & node)
         {
-            MakeAnyOfStringVisitor v{"", changed_choices};
+            MakeAnyOfStringVisitor v{env, our_id, "", changed_choices};
             std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(v));
             result.append(" (" + v.result + " )");
         }
@@ -110,6 +113,7 @@ namespace
 
     struct AnyDepSpecChildHandler
     {
+        const Environment * const env;
         const Decider & decider;
         const std::shared_ptr<const Resolution> our_resolution;
         const std::shared_ptr<const PackageID> our_id;
@@ -123,10 +127,13 @@ namespace
 
         bool seen_any;
 
-        AnyDepSpecChildHandler(const Decider & r, const std::shared_ptr<const Resolution> & q,
+        AnyDepSpecChildHandler(
+                const Environment * const e,
+                const Decider & r, const std::shared_ptr<const Resolution> & q,
                 const std::shared_ptr<const PackageID> & o,
                 const std::shared_ptr<const ChangedChoices> & c,
                 const std::function<SanitisedDependency (const PackageOrBlockDepSpec &)> & f) :
+            env(e),
             decider(r),
             our_resolution(q),
             our_id(o),
@@ -188,7 +195,7 @@ namespace
 
         void visit(const DependencySpecTree::NodeType<ConditionalDepSpec>::Type & node)
         {
-            if (changed_choices ? node.spec()->condition_would_be_met_when(*changed_choices) : node.spec()->condition_met())
+            if (changed_choices ? node.spec()->condition_would_be_met_when(env, our_id, *changed_choices) : node.spec()->condition_met(env, our_id))
             {
                 nested = true;
 
@@ -219,7 +226,7 @@ namespace
 
         void visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type & node)
         {
-            AnyDepSpecChildHandler h(decider, our_resolution, our_id, changed_choices, parent_make_sanitised);
+            AnyDepSpecChildHandler h(env, decider, our_resolution, our_id, changed_choices, parent_make_sanitised);
             std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(h));
             std::list<SanitisedDependency> l;
             h.commit(
@@ -390,7 +397,7 @@ namespace
 
         void visit(const DependencySpecTree::NodeType<ConditionalDepSpec>::Type & node)
         {
-            if (changed_choices ? node.spec()->condition_would_be_met_when(*changed_choices) : node.spec()->condition_met())
+            if (changed_choices ? node.spec()->condition_would_be_met_when(env, our_id, *changed_choices) : node.spec()->condition_met(env, our_id))
             {
                 conditions_stack.push_front(*node.spec());
                 labels_stack.push_front(*labels_stack.begin());
@@ -412,12 +419,12 @@ namespace
             Save<std::string> save_original_specs_as_string(&original_specs_as_string);
 
             {
-                MakeAnyOfStringVisitor v{"", changed_choices};
+                MakeAnyOfStringVisitor v{env, our_id, "", changed_choices};
                 std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(v));
                 original_specs_as_string = "|| (" + v.result + " )";
             }
 
-            AnyDepSpecChildHandler h(decider, our_resolution, our_id, changed_choices,
+            AnyDepSpecChildHandler h(env, decider, our_resolution, our_id, changed_choices,
                     std::bind(&Finder::make_sanitised, this, std::placeholders::_1));
             std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(h));
             h.commit(

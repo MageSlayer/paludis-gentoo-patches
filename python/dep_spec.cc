@@ -170,15 +170,15 @@ PythonConditionalDepSpec::PythonConditionalDepSpec(const ConditionalDepSpec & d)
 }
 
 bool
-PythonConditionalDepSpec::condition_met() const
+PythonConditionalDepSpec::condition_met(const Environment * const env, const std::shared_ptr<const PackageID> & id) const
 {
-    return _data->condition_met();
+    return _data->condition_met(env, id);
 }
 
 bool
-PythonConditionalDepSpec::condition_meetable() const
+PythonConditionalDepSpec::condition_meetable(const Environment * const env, const std::shared_ptr<const PackageID> & id) const
 {
-    return _data->condition_meetable();
+    return _data->condition_meetable(env, id);
 }
 
 const std::shared_ptr<const ConditionalDepSpecData>

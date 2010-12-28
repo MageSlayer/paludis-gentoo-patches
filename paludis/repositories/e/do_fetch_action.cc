@@ -57,7 +57,7 @@ paludis::erepository::do_fetch_action(
 
     bool fetch_restrict(false), userpriv_restrict(false);
     {
-        DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> restricts(env);
+        DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> restricts(env, id);
         if (id->restrict_key())
             id->restrict_key()->value()->top()->accept(restricts);
 

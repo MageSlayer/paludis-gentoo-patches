@@ -194,20 +194,33 @@ namespace paludis
              * Is our condition met?
              *
              * This takes into account inverses etc.
+             *
+             * \since 0.58 takes env, package_id
              */
-            bool condition_met() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool condition_met(
+                    const Environment * const,
+                    const std::shared_ptr<const PackageID> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Would our condition met, if certain choices were changed?
+             *
+             * \since 0.58 takes env, package_id
              */
-            bool condition_would_be_met_when(const ChangedChoices &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool condition_would_be_met_when(
+                    const Environment * const,
+                    const std::shared_ptr<const PackageID> &,
+                    const ChangedChoices &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Is our condition meetable?
              *
              * This takes into account inverses, masks, forces etc.
+             *
+             * \since 0.58 takes env, package_id
              */
-            bool condition_meetable() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool condition_meetable(
+                    const Environment * const,
+                    const std::shared_ptr<const PackageID> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Fetch our data.

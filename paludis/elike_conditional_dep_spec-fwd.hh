@@ -21,8 +21,6 @@
 #define PALUDIS_GUARD_PALUDIS_ELIKE_CONDITIONAL_DEP_SPEC_FWD_HH 1
 
 #include <paludis/dep_spec-fwd.hh>
-#include <paludis/environment-fwd.hh>
-#include <paludis/package_id-fwd.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/choice-fwd.hh>
 #include <string>
@@ -32,7 +30,6 @@ namespace paludis
     class ELikeConditionalDepSpecParseError;
 
     ConditionalDepSpec parse_elike_conditional_dep_spec(const std::string &,
-            const Environment * const, const std::shared_ptr<const PackageID> &,
             const bool no_warning_for_unlisted) PALUDIS_VISIBLE;
 }
 

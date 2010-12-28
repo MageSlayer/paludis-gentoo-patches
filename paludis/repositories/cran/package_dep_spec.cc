@@ -114,11 +114,6 @@ namespace
             return std::shared_ptr<const AdditionalPackageDepSpecRequirements>();
         }
 
-        virtual std::shared_ptr<const MetadataSectionKey> annotations_key() const
-        {
-            return std::shared_ptr<const MetadataSectionKey>();
-        }
-
         CRANPackageDepSpecData & version_requirement(const VersionRequirement & v)
         {
             if (! version_requirements_v)

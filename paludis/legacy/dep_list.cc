@@ -725,13 +725,13 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<ConditionalDepSpec
         d->_imp->labels.push_front(*d->_imp->labels.begin());
         RunOnDestruction restore_labels(std::bind(std::mem_fn(&LabelsStack::pop_front), &d->_imp->labels));
 
-        if (node.spec()->condition_met())
+        if (node.spec()->condition_met(d->_imp->env, d->_imp->current_package_id()))
             std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()),
                     accept_visitor(*this));
     }
     else
     {
-        if (node.spec()->condition_meetable())
+        if (node.spec()->condition_meetable(d->_imp->env, d->_imp->current_package_id()))
             std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()),
                     accept_visitor(*this));
     }
@@ -746,7 +746,8 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type 
     RunOnDestruction restore_labels(std::bind(std::mem_fn(&LabelsStack::pop_front), &d->_imp->labels));
 
     /* annoying requirement: || ( foo? ( ... ) ) resolves to empty if !foo. */
-    if (indirect_iterator(node.end()) == std::find_if(indirect_iterator(node.begin()), indirect_iterator(node.end()), &is_viable_any_child))
+    if (indirect_iterator(node.end()) == std::find_if(indirect_iterator(node.begin()), indirect_iterator(node.end()),
+                std::bind(&is_viable_any_child, d->_imp->env, d->_imp->current_package_id(), std::placeholders::_1)))
         return;
 
     {
@@ -766,7 +767,7 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type 
     for (DependencySpecTree::NodeType<AnyDepSpec>::Type::ConstIterator c(node.begin()), c_end(node.end()) ;
             c != c_end ; ++c)
     {
-        if (! is_viable_any_child(**c))
+        if (! is_viable_any_child(d->_imp->env, d->_imp->current_package_id(), **c))
             continue;
 
         if (d->already_installed(**c, destinations))
@@ -788,7 +789,7 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type 
     for (DependencySpecTree::NodeType<AnyDepSpec>::Type::ConstIterator c(node.begin()), c_end(node.end()) ;
             c != c_end ; ++c)
     {
-        if (! is_viable_any_child(**c))
+        if (! is_viable_any_child(d->_imp->env, d->_imp->current_package_id(), **c))
             continue;
         if (! is_interesting_any_child(*d->_imp->env, **c))
             continue;
@@ -813,7 +814,7 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type 
     for (DependencySpecTree::NodeType<AnyDepSpec>::Type::ConstIterator c(node.begin()), c_end(node.end()) ;
             c != c_end ; ++c)
     {
-        if (! is_viable_any_child(**c))
+        if (! is_viable_any_child(d->_imp->env, d->_imp->current_package_id(), **c))
             continue;
 
         try
@@ -839,7 +840,7 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type 
         for (DependencySpecTree::NodeType<AnyDepSpec>::Type::ConstIterator c(node.begin()), c_end(node.end()) ;
                 c != c_end ; ++c)
         {
-            if (! is_viable_any_child(**c))
+            if (! is_viable_any_child(d->_imp->env, d->_imp->current_package_id(), **c))
                 continue;
 
             d->add_not_top_level(only_if_not_suggested_label, **c, destinations);
@@ -1170,7 +1171,7 @@ DepList::add_package(const std::shared_ptr<const PackageID> & p, const std::shar
     /* add provides */
     if (p->provide_key())
     {
-        DepSpecFlattener<ProvideSpecTree, PackageDepSpec> f(_imp->env);
+        DepSpecFlattener<ProvideSpecTree, PackageDepSpec> f(_imp->env, _imp->current_package_id());
         p->provide_key()->value()->top()->accept(f);
 
         if (f.begin() != f.end() && ! (*DistributionData::get_instance()->distribution_from_string(
@@ -1740,12 +1741,13 @@ DepList::push_back(const DepListEntry & e)
 }
 
 bool
-paludis::is_viable_any_child(const DependencySpecTree::BasicNode & i)
+paludis::is_viable_any_child(const Environment * const env,
+        const std::shared_ptr<const PackageID> & id, const DependencySpecTree::BasicNode & i)
 {
     const DependencySpecTree::NodeType<ConditionalDepSpec>::Type * const u(simple_visitor_cast<
             const DependencySpecTree::NodeType<ConditionalDepSpec>::Type>(i));
     if (0 != u)
-        return u->spec()->condition_met();
+        return u->spec()->condition_met(env, id);
     else
         return true;
 }

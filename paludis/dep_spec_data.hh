@@ -31,7 +31,8 @@
 #include <paludis/additional_package_dep_spec_requirement-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/partially_made_package_dep_spec-fwd.hh>
-#include <paludis/metadata_key_holder.hh>
+#include <paludis/environment-fwd.hh>
+#include <paludis/package_id-fwd.hh>
 #include <string>
 #include <memory>
 
@@ -43,8 +44,7 @@ namespace paludis
      * \since 0.26
      * \ingroup g_dep_spec
      */
-    class PALUDIS_VISIBLE ConditionalDepSpecData :
-        public MetadataKeyHolder
+    class PALUDIS_VISIBLE ConditionalDepSpecData
     {
         public:
             ///\name Basic operations
@@ -61,18 +61,31 @@ namespace paludis
 
             /**
              * Fetch the result for condition_met.
+             *
+             * \since 0.58 takes env, package_id
              */
-            virtual bool condition_met() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+            virtual bool condition_met(
+                    const Environment * const,
+                    const std::shared_ptr<const PackageID> &) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
              * Fetch the result for condition_would_be_met_when.
+             *
+             * \since 0.58 takes env, package_id
              */
-            virtual bool condition_would_be_met_when(const ChangedChoices &) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+            virtual bool condition_would_be_met_when(
+                    const Environment * const,
+                    const std::shared_ptr<const PackageID> &,
+                    const ChangedChoices &) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
              * Fetch the result for condition_meetable.
+             *
+             * \since 0.58 takes env, package_id
              */
-            virtual bool condition_meetable() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+            virtual bool condition_meetable(
+                    const Environment * const,
+                    const std::shared_ptr<const PackageID> &) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 
     /**

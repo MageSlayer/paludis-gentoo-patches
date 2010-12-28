@@ -157,21 +157,24 @@ ConditionalDepSpec::~ConditionalDepSpec()
 }
 
 bool
-ConditionalDepSpec::condition_met() const
+ConditionalDepSpec::condition_met(const Environment * const env, const std::shared_ptr<const PackageID> & id) const
 {
-    return _imp->data->condition_met();
+    return _imp->data->condition_met(env, id);
 }
 
 bool
-ConditionalDepSpec::condition_would_be_met_when(const ChangedChoices & c) const
+ConditionalDepSpec::condition_would_be_met_when(
+        const Environment * const env,
+        const std::shared_ptr<const PackageID> & id,
+        const ChangedChoices & c) const
 {
-    return _imp->data->condition_would_be_met_when(c);
+    return _imp->data->condition_would_be_met_when(env, id, c);
 }
 
 bool
-ConditionalDepSpec::condition_meetable() const
+ConditionalDepSpec::condition_meetable(const Environment * const env, const std::shared_ptr<const PackageID> & id) const
 {
-    return _imp->data->condition_meetable();
+    return _imp->data->condition_meetable(env, id);
 }
 
 const std::shared_ptr<const ConditionalDepSpecData>

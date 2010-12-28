@@ -117,7 +117,7 @@ FetchVisitor::~FetchVisitor()
 void
 FetchVisitor::visit(const FetchableURISpecTree::NodeType<ConditionalDepSpec>::Type & node)
 {
-    if ((_imp->fetch_unneeded) || (node.spec()->condition_met()))
+    if ((_imp->fetch_unneeded) || (node.spec()->condition_met(_imp->env, _imp->id)))
     {
         _imp->labels.push_front(* _imp->labels.begin());
         std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));

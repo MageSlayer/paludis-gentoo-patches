@@ -77,14 +77,14 @@ namespace
             const std::string _key;
             const bool _visible_only;
             const Environment & _env;
-            const PackageID & _id;
+            const std::shared_ptr<const PackageID> _id;
             const Matcher & _m;
 
         public:
             bool result;
 
             TreeVisitor(const std::string & k, const bool v, const Environment & e,
-                    const PackageID & i, const Matcher & m) :
+                    const std::shared_ptr<const PackageID> & i, const Matcher & m) :
                 _key(k),
                 _visible_only(v),
                 _env(e),
@@ -119,7 +119,7 @@ namespace
                     {
                         if (! _visible_only)
                             std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
-                        else if (node.spec()->condition_met())
+                        else if (node.spec()->condition_met(&_env, _id))
                             std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
                     }
                 }
@@ -201,14 +201,14 @@ namespace
             const bool _flatten;
             const bool _visible_only;
             const Environment & _env;
-            const PackageID & _id;
+            const std::shared_ptr<const PackageID> _id;
             const Matcher & _m;
 
         public:
             bool result;
 
             KeyVisitor(const std::string & k, const bool f, const bool v, const Environment & e,
-                    const PackageID & i, const Matcher & m) :
+                    const std::shared_ptr<const PackageID> & i, const Matcher & m) :
                 _key(k),
                 _flatten(f),
                 _visible_only(v),
@@ -485,10 +485,10 @@ namespace
 }
 
 bool
-KeyExtractor::operator() (const Matcher & m, const PackageID & id) const
+KeyExtractor::operator() (const Matcher & m, const std::shared_ptr<const PackageID> & id) const
 {
-    PackageID::MetadataConstIterator mi(id.find_metadata(_imp->key));
-    if (id.end_metadata() == mi)
+    PackageID::MetadataConstIterator mi(id->find_metadata(_imp->key));
+    if (id->end_metadata() == mi)
         return false;
 
     KeyVisitor v(_imp->key, _imp->flatten, _imp->visible_only, _imp->env, id, m);

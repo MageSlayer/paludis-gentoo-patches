@@ -233,7 +233,7 @@ paludis::match_package_in_set(
 {
     using namespace std::placeholders;
 
-    DepSpecFlattener<SetSpecTree, PackageDepSpec> f(&env);
+    DepSpecFlattener<SetSpecTree, PackageDepSpec> f(&env, id);
     target.top()->accept(f);
     return indirect_iterator(f.end()) != std::find_if(
             indirect_iterator(f.begin()), indirect_iterator(f.end()),

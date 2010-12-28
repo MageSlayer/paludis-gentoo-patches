@@ -187,17 +187,17 @@ namespace
                 throw InternalError(PALUDIS_HERE, "Bad --kind '" + k + "'");
         }
 
-        bool operator() (const PackageID & id) const
+        bool operator() (const std::shared_ptr<const PackageID> & id) const
         {
-            auto repo(env->package_database()->fetch_repository(id.repository_name()));
+            auto repo(env->package_database()->fetch_repository(id->repository_name()));
             if ((! installed) && repo->installed_root_key())
                 return false;
 
-            if ((! installable) && id.supports_action(SupportsActionTest<InstallAction>()))
+            if ((! installable) && id->supports_action(SupportsActionTest<InstallAction>()))
                 return false;
 
             if (visible_only)
-                return ! id.masked();
+                return ! id->masked();
             else
                 return true;
         }
@@ -218,7 +218,7 @@ namespace
         {
         }
 
-        bool operator() (const PackageID & id) const
+        bool operator() (const std::shared_ptr<const PackageID> & id) const
         {
             for (std::list<std::shared_ptr<Extractor> >::const_iterator e(extractors.begin()), e_end(extractors.end()) ;
                     e != e_end ; ++e)
@@ -235,8 +235,8 @@ namespace
             const Environment & env,
             const std::shared_ptr<const Repository> & r,
             const QualifiedPackageName & q,
-            const std::function<bool (const PackageID &)> & e,
-            const std::function<bool (const PackageID &)> & m,
+            const std::function<bool (const std::shared_ptr<const PackageID> &)> & e,
+            const std::function<bool (const std::shared_ptr<const PackageID> &)> & m,
             const bool all_versions,
             const bool invert_match,
             const DisplayCallback & display_callback)
@@ -256,9 +256,9 @@ namespace
                 try
                 {
                     display_callback.visit(Searched());
-                    if (e(**i))
+                    if (e(*i))
                     {
-                        if (invert_match ^ m(**i))
+                        if (invert_match ^ m(*i))
                             return *i;
                         else
                         {
@@ -289,8 +289,8 @@ namespace
             const Environment & env,
             const std::list<std::shared_ptr<const Repository> > & repos,
             std::pair<const QualifiedPackageName, std::shared_ptr<const PackageID> > & q,
-            const std::function<bool (const PackageID &)> & e,
-            const std::function<bool (const PackageID &)> & m,
+            const std::function<bool (const std::shared_ptr<const PackageID> &)> & e,
+            const std::function<bool (const std::shared_ptr<const PackageID> &)> & m,
             const bool all_versions,
             const bool invert_match,
             const DisplayCallback & display_callback)

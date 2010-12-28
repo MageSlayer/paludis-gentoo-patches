@@ -92,10 +92,16 @@ namespace
     class DistfilesFilter
     {
         private:
+            const Environment * const env;
+            const std::shared_ptr<const PackageID> id;
             std::set<std::string> & files;
 
         public:
-            DistfilesFilter(std::set<std::string> & f) :
+            DistfilesFilter(const Environment * const e,
+                    const std::shared_ptr<const PackageID> & i,
+                    std::set<std::string> & f) :
+                env(e),
+                id(i),
                 files(f)
             {
             }
@@ -108,7 +114,7 @@ namespace
             void visit(const FetchableURISpecTree::NodeType<ConditionalDepSpec>::Type & node)
             {
                 // recurse iff the conditions (e.g. useflags) are met
-                if (node.spec()->condition_met())
+                if (node.spec()->condition_met(env, id))
                     std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
             }
 
@@ -173,7 +179,7 @@ PrintUnusedDistfilesCommand::run(
 
             if ((*iter)->fetches_key())
             {
-                DistfilesFilter filter(used_distfiles);
+                DistfilesFilter filter(env.get(), *iter, used_distfiles);
                 (*iter)->fetches_key()->value()->top()->accept(filter);
             }
         }

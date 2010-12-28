@@ -319,7 +319,7 @@ DepSpecPrettyPrinter::visit(const GenericSpecTree::NodeType<ConditionalDepSpec>:
 
     if (! _imp->check_conditions)
         _imp->s << _imp->formatter.format(*node.spec(), format::Plain()) << " (";
-    else if (node.spec()->condition_met())
+    else if (node.spec()->condition_met(_imp->env, _imp->id))
         _imp->s << _imp->formatter.format(*node.spec(), format::Enabled()) << " (";
     else
         _imp->s << _imp->formatter.format(*node.spec(), format::Disabled()) << " (";

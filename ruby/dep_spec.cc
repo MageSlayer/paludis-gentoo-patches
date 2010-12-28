@@ -555,25 +555,27 @@ namespace
     /*
      * Document-method: condition_met?
      * call-seq:
-     *     condition_met? -> true or false
+     *     condition_met?(Environment, PackageID) -> true or false
      *
      * Whether our condition is met.
      */
     /*
      * Document-method: condition_meetable?
      * call-seq:
-     *     condition_meetable? -> true or false
+     *     condition_meetable?(Environment, PackageID) -> true or false
      *
      * Whether our condition is meetable.
      */
-    template <bool (ConditionalDepSpec::* f_) () const>
+    template <bool (ConditionalDepSpec::* f_) (const Environment * const, const std::shared_ptr<const PackageID> &) const>
     struct ConditionalDepSpecBoolFunc
     {
-        static VALUE func(VALUE self)
+        static VALUE func(VALUE self, VALUE env, VALUE id)
         {
             std::shared_ptr<WrappedSpecBase> * p;
             Data_Get_Struct(self, std::shared_ptr<WrappedSpecBase>, p);
-            return ((*std::static_pointer_cast<const WrappedSpec<ConditionalDepSpec> >(*p)->spec().get()).*f_)() ? Qtrue : Qfalse;
+            std::shared_ptr<Environment> e(value_to_environment(env));
+            std::shared_ptr<const PackageID> i(value_to_package_id(id));
+            return ((*std::static_pointer_cast<const WrappedSpec<ConditionalDepSpec> >(*p)->spec().get()).*f_)(e.get(), i) ? Qtrue : Qfalse;
         }
     };
 
@@ -1071,9 +1073,9 @@ namespace
         rb_define_method(c_conditional_dep_spec, "condition", RUBY_FUNC_CAST(conditional_dep_spec_to_s), 0);
         rb_define_alias(c_conditional_dep_spec, "to_s", "condition");
         rb_define_method(c_conditional_dep_spec, "condition_met?", RUBY_FUNC_CAST(
-                    &ConditionalDepSpecBoolFunc<&ConditionalDepSpec::condition_met>::func), 0);
+                    &ConditionalDepSpecBoolFunc<&ConditionalDepSpec::condition_met>::func), 2);
         rb_define_method(c_conditional_dep_spec, "condition_meetable?", RUBY_FUNC_CAST(
-                    &ConditionalDepSpecBoolFunc<&ConditionalDepSpec::condition_meetable>::func), 0);
+                    &ConditionalDepSpecBoolFunc<&ConditionalDepSpec::condition_meetable>::func), 2);
         rb_define_method(c_conditional_dep_spec, "each", RUBY_FUNC_CAST((&Composite<AllDepSpec>::each)), 0);
 
         /*

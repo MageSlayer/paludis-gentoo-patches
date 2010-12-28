@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_SRC_CLIENTS_INQUISITIO_EXTRACTOR_HH 1
 
 #include <string>
+#include <memory>
 #include <paludis/package_id-fwd.hh>
 
 namespace inquisitio
@@ -35,7 +36,7 @@ namespace inquisitio
         public:
             virtual ~Extractor();
 
-            virtual bool operator() (const Matcher &, const paludis::PackageID &) const = 0;
+            virtual bool operator() (const Matcher &, const std::shared_ptr<const paludis::PackageID> &) const = 0;
     };
 }
 

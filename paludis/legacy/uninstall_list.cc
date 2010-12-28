@@ -177,7 +177,7 @@ UninstallList::add_errors_for_system()
 
         if ((! needed) && l->package_id()->provide_key())
         {
-            DepSpecFlattener<ProvideSpecTree, PackageDepSpec> f(_imp->env);
+            DepSpecFlattener<ProvideSpecTree, PackageDepSpec> f(_imp->env, l->package_id());
             l->package_id()->provide_key()->value()->top()->accept(f);
             for (DepSpecFlattener<ProvideSpecTree, PackageDepSpec>::ConstIterator v(f.begin()), v_end(f.end()) ;
                     v != v_end && ! needed ; ++v)
@@ -348,7 +348,7 @@ namespace
 
         void visit(const DependencySpecTree::NodeType<ConditionalDepSpec>::Type & node)
         {
-            if (node.spec()->condition_met())
+            if (node.spec()->condition_met(env, pkg))
                 std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()),
                         accept_visitor(*this));
         }

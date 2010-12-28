@@ -1115,7 +1115,7 @@ namespace
 
         void visit(const LicenseSpecTree::NodeType<ConditionalDepSpec>::Type & node)
         {
-            if (node.spec()->condition_met())
+            if (node.spec()->condition_met(env, id))
                 std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
         }
 
