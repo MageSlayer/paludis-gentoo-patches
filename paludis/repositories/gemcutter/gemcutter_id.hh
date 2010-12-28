@@ -42,7 +42,7 @@ namespace paludis
         {
             NamedValue<n::environment, const Environment *> environment;
             NamedValue<n::info, GemJSONInfo> info;
-            NamedValue<n::repository, const GemcutterRepository *> repository;
+            NamedValue<n::repository, RepositoryName> repository;
         };
 
         class PALUDIS_VISIBLE GemcutterID :
@@ -63,7 +63,7 @@ namespace paludis
                  const std::string canonical_form(const PackageIDCanonicalForm) const;
                  const QualifiedPackageName name() const;
                  const VersionSpec version() const;
-                 const std::shared_ptr<const Repository> repository() const;
+                 const RepositoryName repository_name() const;
                  virtual PackageDepSpec uniquely_identifying_spec() const;
 
                  const std::shared_ptr<const MetadataValueKey<SlotName> > slot_key() const;

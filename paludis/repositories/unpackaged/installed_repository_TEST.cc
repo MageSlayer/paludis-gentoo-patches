@@ -143,7 +143,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(id1->version(), VersionSpec("1", { }));
             TEST_CHECK_EQUAL(id1->slot_key()->value(), SlotName("0"));
             TEST_CHECK_EQUAL(id1->name(), QualifiedPackageName("cat-one/foo"));
-            TEST_CHECK_EQUAL(id1->repository()->name(), RepositoryName("installed-unpackaged"));
+            TEST_CHECK_EQUAL(id1->repository_name(), RepositoryName("installed-unpackaged"));
             TEST_CHECK(bool(id1->fs_location_key()));
             TEST_CHECK_EQUAL(id1->fs_location_key()->value(),
                     FSPath::cwd() / "installed_repository_TEST_dir/repo1/data/giant-space-weasel/1:0:foo/");
@@ -161,7 +161,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(id2->version(), VersionSpec("2", { }));
             TEST_CHECK_EQUAL(id2->slot_key()->value(), SlotName("1"));
             TEST_CHECK_EQUAL(id2->name(), QualifiedPackageName("cat-one/foo"));
-            TEST_CHECK_EQUAL(id2->repository()->name(), RepositoryName("installed-unpackaged"));
+            TEST_CHECK_EQUAL(id2->repository_name(), RepositoryName("installed-unpackaged"));
             TEST_CHECK(bool(id2->fs_location_key()));
             TEST_CHECK_EQUAL(id2->fs_location_key()->value(),
                     FSPath::cwd() / "installed_repository_TEST_dir/repo1/data/giant-space-weasel/2:1:bar/");

@@ -43,7 +43,7 @@ namespace paludis
 
                 EInstalledRepositoryID(const QualifiedPackageName &, const VersionSpec &,
                         const Environment * const,
-                        const std::shared_ptr<const Repository> &,
+                        const RepositoryName &,
                         const FSPath & file);
 
             public:
@@ -54,7 +54,7 @@ namespace paludis
 
                 virtual const QualifiedPackageName name() const;
                 virtual const VersionSpec version() const;
-                virtual const std::shared_ptr<const Repository> repository() const;
+                virtual const RepositoryName repository_name() const;
                 virtual const std::shared_ptr<const EAPI> eapi() const;
 
                 virtual const std::shared_ptr<const MetadataValueKey<SlotName> > slot_key() const;

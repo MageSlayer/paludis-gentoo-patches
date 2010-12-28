@@ -124,7 +124,7 @@ paludis::match_package_with_maybe_changes(
         }
 
     if (spec.in_repository_ptr())
-        if (*spec.in_repository_ptr() != id->repository()->name())
+        if (*spec.in_repository_ptr() != id->repository_name())
             return false;
 
     if (spec.from_repository_ptr())
@@ -139,9 +139,10 @@ paludis::match_package_with_maybe_changes(
 
     if (spec.installed_at_path_ptr())
     {
-        if (! id->repository()->installed_root_key())
+        auto repo(env.package_database()->fetch_repository(id->repository_name()));
+        if (! repo->installed_root_key())
             return false;
-        if (id->repository()->installed_root_key()->value() != *spec.installed_at_path_ptr())
+        if (repo->installed_root_key()->value() != *spec.installed_at_path_ptr())
             return false;
     }
 

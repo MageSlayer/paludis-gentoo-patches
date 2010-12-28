@@ -982,11 +982,12 @@ ERepository::params() const
 }
 
 bool
-ERepository::is_suitable_destination_for(const std::shared_ptr<const PackageID> & e) const
+ERepository::is_suitable_destination_for(const std::shared_ptr<const PackageID> & id) const
 {
-    std::string f(e->repository()->format_key() ? e->repository()->format_key()->value() : "");
+    auto repo(_imp->params.environment()->package_database()->fetch_repository(id->repository_name()));
+    std::string f(repo->format_key() ? repo->format_key()->value() : "");
     if (f == "e")
-        return static_cast<const ERepositoryID &>(*e).eapi()->supported()->can_be_pbin();
+        return static_cast<const ERepositoryID &>(*id).eapi()->supported()->can_be_pbin();
     else
         return false;
 }
@@ -1775,7 +1776,7 @@ ERepository::make_id(const QualifiedPackageName & q, const FSPath & f) const
 
     std::shared_ptr<EbuildID> result(std::make_shared<EbuildID>(q, extract_package_file_version(q, f),
                 _imp->params.environment(),
-                shared_from_this(), f, _guess_eapi(q, f),
+                name(), f, _guess_eapi(q, f),
                 _imp->master_mtime, _imp->eclass_mtimes));
     return result;
 }
@@ -1959,7 +1960,7 @@ ERepository::merge(const MergeParams & m)
         if (is_replace && (*r)->name() == is_replace->name() && (*r)->version() == is_replace->version())
             continue;
 
-        if ((*r)->repository()->name() != name())
+        if ((*r)->repository_name() != name())
             continue;
 
         FSPath p((*r)->fs_location_key()->value());

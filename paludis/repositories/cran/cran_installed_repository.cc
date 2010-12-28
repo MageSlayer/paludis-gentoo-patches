@@ -33,6 +33,7 @@
 #include <paludis/selection.hh>
 #include <paludis/hook.hh>
 #include <paludis/common_sets.hh>
+#include <paludis/package_database.hh>
 #include <paludis/repositories/cran/cran_package_id.hh>
 #include <paludis/repositories/cran/cran_dep_parser.hh>
 #include <paludis/repositories/cran/cran_installed_repository.hh>
@@ -460,9 +461,10 @@ CRANInstalledRepository::invalidate_masks()
 }
 
 bool
-CRANInstalledRepository::is_suitable_destination_for(const std::shared_ptr<const PackageID> & e) const
+CRANInstalledRepository::is_suitable_destination_for(const std::shared_ptr<const PackageID> & id) const
 {
-    std::string f(e->repository()->format_key() ? e->repository()->format_key()->value() : "");
+    auto repo(_imp->params.environment()->package_database()->fetch_repository(id->repository_name()));
+    std::string f(repo->format_key() ? repo->format_key()->value() : "");
     return f == "cran";
 }
 bool

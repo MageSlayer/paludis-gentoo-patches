@@ -780,7 +780,7 @@ namespace
 
 const std::pair<bool, std::string>
 UserKeyRequirement::requirement_met(
-        const Environment * const,
+        const Environment * const env,
         const ChangedChoices * const,
         const std::shared_ptr<const PackageID> & id,
         const ChangedChoices * const) const
@@ -789,18 +789,19 @@ UserKeyRequirement::requirement_met(
 
     const MetadataKey * key(0);
 
+    auto repo(env->package_database()->fetch_repository(id->repository_name()));
     if (0 == _imp->key.compare(0, 3, "::$"))
     {
         if (_imp->key == "::$format")
-            key = id->repository()->format_key().get();
+            key = repo->format_key().get();
         else if (_imp->key == "::$location")
-            key = id->repository()->location_key().get();
+            key = repo->location_key().get();
         else if (_imp->key == "::$installed_root")
-            key = id->repository()->installed_root_key().get();
+            key = repo->installed_root_key().get();
         else if (_imp->key == "::$accept_keywords")
-            key = id->repository()->accept_keywords_key().get();
+            key = repo->accept_keywords_key().get();
         else if (_imp->key == "::$sync_host")
-            key = id->repository()->sync_host_key().get();
+            key = repo->sync_host_key().get();
     }
     else if (0 == _imp->key.compare(0, 1, "$"))
     {
@@ -849,8 +850,8 @@ UserKeyRequirement::requirement_met(
     }
     else if (0 == _imp->key.compare(0, 2, "::"))
     {
-        Repository::MetadataConstIterator m(id->repository()->find_metadata(_imp->key.substr(2)));
-        if (m != id->repository()->end_metadata())
+        Repository::MetadataConstIterator m(repo->find_metadata(_imp->key.substr(2)));
+        if (m != repo->end_metadata())
             key = m->get();
     }
     else

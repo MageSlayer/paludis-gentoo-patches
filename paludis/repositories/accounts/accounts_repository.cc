@@ -40,6 +40,7 @@
 #include <paludis/filtered_generator.hh>
 #include <paludis/hook.hh>
 #include <paludis/common_sets.hh>
+#include <paludis/package_database.hh>
 
 using namespace paludis;
 using namespace paludis::accounts_repository;
@@ -57,15 +58,15 @@ namespace
     }
 
     std::shared_ptr<AccountsRepositoryStore>
-    make_store(const AccountsRepository * const repo, const AccountsRepositoryParams & p)
+    make_store(const RepositoryName & repository_name, const AccountsRepositoryParams & p)
     {
-        return std::make_shared<AccountsRepositoryStore>(p.environment(), repo, false);
+        return std::make_shared<AccountsRepositoryStore>(p.environment(), repository_name, false);
     }
 
     std::shared_ptr<AccountsRepositoryStore>
-    make_installed_store(const AccountsRepository * const repo, const InstalledAccountsRepositoryParams & p)
+    make_installed_store(const RepositoryName & repository_name, const InstalledAccountsRepositoryParams & p)
     {
-        return std::make_shared<AccountsRepositoryStore>(p.environment(), repo, true);
+        return std::make_shared<AccountsRepositoryStore>(p.environment(), repository_name, true);
     }
 }
 
@@ -84,29 +85,29 @@ namespace paludis
 
         const ActiveObjectPtr<DeferredConstructionPtr<std::shared_ptr<AccountsRepositoryStore> > > store;
 
-        Imp(AccountsRepository * const repo, const AccountsRepositoryParams & p) :
+        Imp(const RepositoryName & repository_name, const AccountsRepositoryParams & p) :
             params_if_not_installed(std::make_shared<AccountsRepositoryParams>(p)),
             format_key(std::make_shared<LiteralMetadataValueKey<std::string> >("format", "format", mkt_significant, "accounts")),
             store(DeferredConstructionPtr<std::shared_ptr<AccountsRepositoryStore> > (
-                        std::bind(&make_store, repo, std::cref(*params_if_not_installed))))
+                        std::bind(&make_store, repository_name, std::cref(*params_if_not_installed))))
         {
         }
 
-        Imp(AccountsRepository * const repo, const InstalledAccountsRepositoryParams & p) :
+        Imp(const RepositoryName & repository_name, const InstalledAccountsRepositoryParams & p) :
             params_if_installed(std::make_shared<InstalledAccountsRepositoryParams>(p)),
             handler_if_installed(make_handler(p.handler())),
             format_key(std::make_shared<LiteralMetadataValueKey<std::string> >("format", "format", mkt_significant, "installed-accounts")),
             handler_key(std::make_shared<LiteralMetadataValueKey<std::string> >("handler", "handler", mkt_normal, p.handler())),
             installed_root_key(std::make_shared<LiteralMetadataValueKey<FSPath>>("root", "root", mkt_normal, p.root())),
             store(DeferredConstructionPtr<std::shared_ptr<AccountsRepositoryStore> > (
-                        std::bind(&make_installed_store, repo, std::cref(*params_if_installed))))
+                        std::bind(&make_installed_store, repository_name, std::cref(*params_if_installed))))
         {
         }
     };
 }
 
 AccountsRepository::AccountsRepository(const AccountsRepositoryParams & p) :
-    Pimp<AccountsRepository>(this, p),
+    Pimp<AccountsRepository>(p.name(), p),
     Repository(
             p.environment(),
             p.name(),
@@ -124,7 +125,7 @@ AccountsRepository::AccountsRepository(const AccountsRepositoryParams & p) :
 }
 
 AccountsRepository::AccountsRepository(const InstalledAccountsRepositoryParams & p) :
-    Pimp<AccountsRepository>(this, p),
+    Pimp<AccountsRepository>(p.name(), p),
     Repository(
             p.environment(),
             p.name(),
@@ -275,9 +276,9 @@ void
 AccountsRepository::invalidate()
 {
     if (_imp->params_if_not_installed)
-        _imp.reset(new Imp<AccountsRepository>(this, *_imp->params_if_not_installed));
+        _imp.reset(new Imp<AccountsRepository>(name(), *_imp->params_if_not_installed));
     else
-        _imp.reset(new Imp<AccountsRepository>(this, *_imp->params_if_installed));
+        _imp.reset(new Imp<AccountsRepository>(name(), *_imp->params_if_installed));
     _add_metadata_keys();
 }
 
@@ -403,7 +404,9 @@ AccountsRepository::some_ids_might_not_be_masked() const
 bool
 AccountsRepository::is_suitable_destination_for(const std::shared_ptr<const PackageID> & id) const
 {
-    std::string f(id->repository()->format_key() ? id->repository()->format_key()->value() : "");
+    auto env(_imp->params_if_installed ? _imp->params_if_installed->environment() : _imp->params_if_not_installed->environment());
+    auto repo(env->package_database()->fetch_repository(id->repository_name()));
+    std::string f(repo->format_key() ? repo->format_key()->value() : "");
     return _imp->handler_if_installed && f == "accounts";
 }
 

@@ -1120,7 +1120,8 @@ namespace
         for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                 i != i_end ; ++i)
         {
-            if ((*i)->repository()->installed_root_key())
+            auto repo(env->package_database()->fetch_repository((*i)->repository_name()));
+            if (repo->installed_root_key())
                 all_installed->push_back(*i);
             else
             {
@@ -1142,7 +1143,7 @@ namespace
                     best_not_installed = *i;
             }
 
-            repos.insert((*i)->repository()->name());
+            repos.insert((*i)->repository_name());
         }
 
         if (! best_installable)
@@ -1161,7 +1162,7 @@ namespace
             for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                     i != i_end ; ++i)
             {
-                if ((*i)->repository()->name() != *r)
+                if ((*i)->repository_name() != *r)
                     continue;
 
                 if (slot_name != slot_as_string(*i))
@@ -1175,7 +1176,8 @@ namespace
                     header_out << " ";
                 need_space = true;
 
-                if ((*i)->repository()->installed_root_key())
+                auto repo(env->package_database()->fetch_repository((*i)->repository_name()));
+                if (repo->installed_root_key())
                     header_out << fuc(fs_package_version_installed(), fv<'s'>(stringify((*i)->canonical_form(idcf_version))));
                 else
                 {
@@ -1259,7 +1261,7 @@ namespace
         {
             std::set<RepositoryName> repos;
             for (auto i(ids->begin()), i_end(ids->end()) ; i != i_end ; ++i)
-                repos.insert((*i)->repository()->name());
+                repos.insert((*i)->repository_name());
 
             std::stringstream rest_out;
 

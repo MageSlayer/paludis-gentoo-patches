@@ -54,7 +54,7 @@ namespace paludis
                 virtual const std::string canonical_form(const PackageIDCanonicalForm) const;
                 virtual const QualifiedPackageName name() const;
                 virtual const VersionSpec version() const;
-                virtual const std::shared_ptr<const Repository> repository() const;
+                virtual const RepositoryName repository_name() const;
                 virtual PackageDepSpec uniquely_identifying_spec() const;
 
                 virtual const std::shared_ptr<const MetadataValueKey<SlotName> > slot_key() const;

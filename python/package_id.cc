@@ -74,8 +74,8 @@ void expose_package_id()
                 "[ro] VersionSpec\n"
                 )
 
-        .add_property("repository", &PackageID::repository,
-                "[ro] Repository\n"
+        .add_property("repository_name", &PackageID::repository_name,
+                "[ro] RepositoryName\n"
                 )
 
         .def("supports_action", &PackageID::supports_action,

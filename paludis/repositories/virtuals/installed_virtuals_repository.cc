@@ -155,7 +155,7 @@ InstalledVirtualsRepository::need_ids() const
                 i = _imp->ids.insert(std::make_pair((*p).virtual_name(), std::make_shared<PackageIDSequence>())).first;
 
             std::shared_ptr<const PackageID> id(std::make_shared<virtuals::VirtualsPackageID>(
-                        _imp->env, shared_from_this(), (*p).virtual_name(), (*p).provided_by(), false));
+                        _imp->env, name(), (*p).virtual_name(), (*p).provided_by(), false));
             i->second->push_back(id);
         }
     }
@@ -363,9 +363,10 @@ InstalledVirtualsRepository::repository_factory_dependencies(
 }
 
 bool
-InstalledVirtualsRepository::is_suitable_destination_for(const std::shared_ptr<const PackageID> & e) const
+InstalledVirtualsRepository::is_suitable_destination_for(const std::shared_ptr<const PackageID> & id) const
 {
-    std::string f(e->repository()->format_key() ? e->repository()->format_key()->value() : "");
+    auto repo(_imp->env->package_database()->fetch_repository(id->repository_name()));
+    std::string f(repo->format_key() ? repo->format_key()->value() : "");
     return f == "virtuals";
 
 }

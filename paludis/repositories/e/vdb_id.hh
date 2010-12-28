@@ -32,7 +32,7 @@ namespace paludis
             public:
                 VDBID(const QualifiedPackageName &, const VersionSpec &,
                         const Environment * const,
-                        const std::shared_ptr<const Repository> &,
+                        const RepositoryName &,
                         const FSPath & file);
 
                 virtual std::string fs_location_raw_name() const;

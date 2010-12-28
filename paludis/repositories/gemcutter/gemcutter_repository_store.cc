@@ -129,7 +129,7 @@ GemcutterRepositoryStore::_populate_one(const GemJSONInfo & info)
     const std::shared_ptr<GemcutterID> id(std::make_shared<GemcutterID>(make_named_values<GemcutterIDParams>(
                     n::environment() = _imp->env,
                     n::info() = info,
-                    n::repository() = _imp->repo
+                    n::repository() = _imp->repo->name()
                     )));
 
     _imp->categories->insert(id->name().category());

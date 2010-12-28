@@ -168,7 +168,7 @@ PackageDepSpec
 UnpackagedID::uniquely_identifying_spec() const
 {
     return parse_user_package_dep_spec("=" + stringify(name()) + "-" + stringify(version()) +
-            (slot_key() ? ":" + stringify(slot_key()->value()) : "") + "::" + stringify(repository()->name()),
+            (slot_key() ? ":" + stringify(slot_key()->value()) : "") + "::" + stringify(repository_name()),
             _imp->env, { });
 }
 
@@ -184,10 +184,10 @@ UnpackagedID::version() const
     return _imp->version;
 }
 
-const std::shared_ptr<const Repository>
-UnpackagedID::repository() const
+const RepositoryName
+UnpackagedID::repository_name() const
 {
-    return _imp->env->package_database()->fetch_repository(_imp->repository_name);
+    return _imp->repository_name;
 }
 
 const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > >

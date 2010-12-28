@@ -1134,7 +1134,7 @@ VDBRepository::make_id(const QualifiedPackageName & q, const VersionSpec & v, co
 
     Context context("When creating ID for '" + stringify(q) + "-" + stringify(v) + "' from '" + stringify(f) + "':");
 
-    std::shared_ptr<VDBID> result(std::make_shared<VDBID>(q, v, _imp->params.environment(), shared_from_this(), f));
+    std::shared_ptr<VDBID> result(std::make_shared<VDBID>(q, v, _imp->params.environment(), name(), f));
     return result;
 }
 

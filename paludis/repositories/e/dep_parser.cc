@@ -42,6 +42,7 @@
 #include <paludis/choice.hh>
 #include <paludis/dep_spec_annotations.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/package_database.hh>
 #include <map>
 #include <list>
 #include <set>
@@ -248,13 +249,14 @@ namespace
 
     template <typename T_>
     void dependency_label_handler(
+            const Environment * const env,
             const typename ParseStackTypes<T_>::Stack & h,
             const typename ParseStackTypes<T_>::AnnotationsGoHere & annotations_go_here,
             const std::shared_ptr<const PackageID> & id,
             const std::string & s,
             const EAPI & eapi)
     {
-        std::shared_ptr<DependenciesLabelsDepSpec> spec(parse_dependency_label(id, s, eapi));
+        std::shared_ptr<DependenciesLabelsDepSpec> spec(parse_dependency_label(env, id, s, eapi));
         h.begin()->item()->append(spec);
         annotations_go_here(spec, make_null_shared_ptr());
     }
@@ -300,9 +302,10 @@ namespace
             const std::shared_ptr<const PackageID> & id,
             const EAPI & eapi)
     {
+        auto repo(env->package_database()->fetch_repository(id->repository_name()));
         std::shared_ptr<ConditionalDepSpec> spec(std::make_shared<ConditionalDepSpec>(parse_elike_conditional_dep_spec(
                         u, env, id,
-                        bool(id->repository()->installed_root_key()) || ! eapi.supported()->package_dep_spec_parse_options()[epdso_missing_use_deps_is_qa])));
+                        bool(repo->installed_root_key()) || ! eapi.supported()->package_dep_spec_parse_options()[epdso_missing_use_deps_is_qa])));
         stack.push_front(make_named_values<typename ParseStackTypes<T_>::Item>(
                     n::item() = stack.begin()->item()->append(spec),
                     n::spec() = spec
@@ -495,7 +498,7 @@ paludis::erepository::parse_depend(const std::string & s,
                 n::on_arrow() = std::bind(&arrows_not_allowed_handler, s, _1, _2),
                 n::on_error() = std::bind(&error_handler, s, _1),
                 n::on_exactly_one() = std::bind(&exactly_one_not_allowed_handler, s),
-                n::on_label() = std::bind(&dependency_label_handler<DependencySpecTree>,
+                n::on_label() = std::bind(&dependency_label_handler<DependencySpecTree>, env,
                     std::ref(stack),
                     ParseStackTypes<DependencySpecTree>::AnnotationsGoHere(std::bind(
                             &set_thing_to_annotate_maybe_block, std::ref(thing_to_annotate), _1, std::ref(thing_to_annotate_if_block), _2)),
@@ -879,11 +882,13 @@ paludis::erepository::parse_plain_text_label(const std::string & s)
 namespace
 {
     bool enabled_if_option(
+            const Environment * const env,
             const std::shared_ptr<const PackageID> & id,
             const std::string label,
             const ChoiceNameWithPrefix n)
     {
-        if (id->repository()->installed_root_key())
+        auto repo(env->package_database()->fetch_repository(id->repository_name()));
+        if (repo->installed_root_key())
             return false;
 
         if (! id->choices_key())
@@ -953,6 +958,7 @@ namespace
 
 std::shared_ptr<DependenciesLabelsDepSpec>
 paludis::erepository::parse_dependency_label(
+        const Environment * const env,
         const std::shared_ptr<const PackageID> & id,
         const std::string & s,
         const EAPI & e)
@@ -995,7 +1001,7 @@ paludis::erepository::parse_dependency_label(
                 l->add_label(std::make_shared<DependenciesTestLabel>(*it, return_literal_function(true)));
             else
                 l->add_label(std::make_shared<DependenciesTestLabel>(*it, std::bind(
-                                    &enabled_if_option, id, *it, ChoiceNameWithPrefix(cc))));
+                                    &enabled_if_option, env, id, *it, ChoiceNameWithPrefix(cc))));
         }
         else if (c == "WarnAndIgnore")
         {

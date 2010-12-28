@@ -159,7 +159,7 @@ FakeRepositoryBase::add_version(const QualifiedPackageName & q, const VersionSpe
                 _imp->ids.find(q)->second->end(), VersionIs(v)))
         throw InternalError(PALUDIS_HERE, "duplicate id added");
 
-    std::shared_ptr<FakePackageID> id(std::make_shared<FakePackageID>(_imp->env, shared_from_this(), q, v));
+    std::shared_ptr<FakePackageID> id(std::make_shared<FakePackageID>(_imp->env, name(), q, v));
     _imp->ids.find(q)->second->push_back(id);
     return id;
 }

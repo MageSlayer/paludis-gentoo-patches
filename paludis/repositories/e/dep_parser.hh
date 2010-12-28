@@ -59,6 +59,7 @@ namespace paludis
          * Parse a dep spec label.
          */
         std::shared_ptr<DependenciesLabelsDepSpec> parse_dependency_label(
+                const Environment * const,
                 const std::shared_ptr<const PackageID> &,
                 const std::string & s,
                 const EAPI &) PALUDIS_VISIBLE;

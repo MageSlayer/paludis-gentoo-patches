@@ -117,7 +117,7 @@ namespace paludis
         const QualifiedPackageName name;
         const VersionSpec version;
         const Environment * const environment;
-        const std::shared_ptr<const ERepository> repository;
+        const RepositoryName repository_name;
         const FSPath ebuild;
         mutable std::shared_ptr<const EAPI> eapi;
         const std::string guessed_eapi;
@@ -168,12 +168,12 @@ namespace paludis
 
         Imp(const QualifiedPackageName & q, const VersionSpec & v,
                 const Environment * const e,
-                const std::shared_ptr<const ERepository> r, const FSPath & f, const std::string & g,
+                const RepositoryName & r, const FSPath & f, const std::string & g,
                 const time_t t, const std::shared_ptr<const EclassMtimes> & m) :
             name(q),
             version(v),
             environment(e),
-            repository(r),
+            repository_name(r),
             ebuild(f),
             guessed_eapi(g),
             master_mtime(t),
@@ -185,14 +185,26 @@ namespace paludis
     };
 }
 
+namespace
+{
+    std::string guess_eapi(const std::string & g, const Environment * const env, const RepositoryName & repo_name)
+    {
+        if (! g.empty())
+            return g;
+        auto repo(env->package_database()->fetch_repository(repo_name));
+        auto e_repo(std::static_pointer_cast<const ERepository>(repo));
+        return e_repo->params().eapi_when_unknown();
+    }
+}
+
 EbuildID::EbuildID(const QualifiedPackageName & q, const VersionSpec & v,
         const Environment * const e,
-        const std::shared_ptr<const ERepository> & r,
+        const RepositoryName & r,
         const FSPath & f,
         const std::string & g,
         const time_t t,
         const std::shared_ptr<const EclassMtimes> & m) :
-    Pimp<EbuildID>(q, v, e, r, f, g.empty() ? r->params().eapi_when_unknown() : g, t, m),
+    Pimp<EbuildID>(q, v, e, r, f, guess_eapi(g, e, r), t, m),
     _imp(Pimp<EbuildID>::_imp)
 {
 }
@@ -221,25 +233,27 @@ EbuildID::need_keys_added() const
 
     Context context("When generating metadata for ID '" + canonical_form(idcf_full) + "':");
 
-    FSPath cache_file(_imp->repository->params().cache());
+    auto repo(_imp->environment->package_database()->fetch_repository(repository_name()));
+    auto e_repo(std::static_pointer_cast<const ERepository>(repo));
+    FSPath cache_file(e_repo->params().cache());
     cache_file /= stringify(name().category());
     cache_file /= stringify(name().package()) + "-" + stringify(version());
 
-    FSPath write_cache_file(_imp->repository->params().write_cache());
-    if (_imp->repository->params().append_repository_name_to_write_cache())
-        write_cache_file /= stringify(repository()->name());
+    FSPath write_cache_file(e_repo->params().write_cache());
+    if (e_repo->params().append_repository_name_to_write_cache())
+        write_cache_file /= stringify(repository_name());
     write_cache_file /= stringify(name().category());
     write_cache_file /= stringify(name().package()) + "-" + stringify(version());
 
     bool ok(false);
-    if (_imp->repository->params().cache().basename() != "empty")
+    if (e_repo->params().cache().basename() != "empty")
     {
         EbuildFlatMetadataCache metadata_cache(_imp->environment, cache_file, _imp->ebuild, _imp->master_mtime, _imp->eclass_mtimes, false);
         if (metadata_cache.load(shared_from_this(), false))
             ok = true;
     }
 
-    if ((! ok) && _imp->repository->params().write_cache().basename() != "empty")
+    if ((! ok) && e_repo->params().write_cache().basename() != "empty")
     {
         EbuildFlatMetadataCache write_metadata_cache(_imp->environment,
                 write_cache_file, _imp->ebuild, _imp->master_mtime, _imp->eclass_mtimes, true);
@@ -261,12 +275,11 @@ EbuildID::need_keys_added() const
 
     if (! ok)
     {
-        if (_imp->repository->params().cache().basename() != "empty")
+        if (e_repo->params().cache().basename() != "empty")
             Log::get_instance()->message("e.ebuild.cache.no_usable", ll_qa, lc_no_context)
                 << "No usable cache entry for '" + canonical_form(idcf_full);
 
-        _imp->environment->trigger_notifier_callback(NotifierCallbackGeneratingMetadataEvent(
-                    _imp->repository->name()));
+        _imp->environment->trigger_notifier_callback(NotifierCallbackGeneratingMetadataEvent(repository_name()));
 
         _imp->eapi = EAPIData::get_instance()->eapi_from_string(_imp->guessed_eapi);
 
@@ -283,22 +296,22 @@ EbuildID::need_keys_added() const
                         + (count == 0 ? "no" : stringify(count)) + " ebuild variable phases but expected exactly one");
 
             EbuildMetadataCommand cmd(make_named_values<EbuildCommandParams>(
-                    n::builddir() = _imp->repository->params().builddir(),
+                    n::builddir() = e_repo->params().builddir(),
                     n::clearenv() = phases.begin_phases()->option("clearenv"),
                     n::commands() = join(phases.begin_phases()->begin_commands(), phases.begin_phases()->end_commands(), " "),
-                    n::distdir() = _imp->repository->params().distdir(),
-                    n::ebuild_dir() = _imp->repository->layout()->package_directory(name()),
+                    n::distdir() = e_repo->params().distdir(),
+                    n::ebuild_dir() = e_repo->layout()->package_directory(name()),
                     n::ebuild_file() = _imp->ebuild,
-                    n::eclassdirs() = _imp->repository->params().eclassdirs(),
+                    n::eclassdirs() = e_repo->params().eclassdirs(),
                     n::environment() = _imp->environment,
-                    n::exlibsdirs() = _imp->repository->layout()->exlibsdirs(name()),
-                    n::files_dir() = _imp->repository->layout()->package_directory(name()) / "files",
+                    n::exlibsdirs() = e_repo->layout()->exlibsdirs(name()),
+                    n::files_dir() = e_repo->layout()->package_directory(name()) / "files",
                     n::maybe_output_manager() = make_null_shared_ptr(),
-                    n::package_builddir() = _imp->repository->params().builddir() / (stringify(name().category()) + "-" + stringify(name().package()) + "-" + stringify(version()) + "-metadata"),
+                    n::package_builddir() = e_repo->params().builddir() / (stringify(name().category()) + "-" + stringify(name().package()) + "-" + stringify(version()) + "-metadata"),
                     n::package_id() = shared_from_this(),
                     n::portdir() =
-                        (_imp->repository->params().master_repositories() && ! _imp->repository->params().master_repositories()->empty()) ?
-                        (*_imp->repository->params().master_repositories()->begin())->params().location() : _imp->repository->params().location(),
+                        (e_repo->params().master_repositories() && ! e_repo->params().master_repositories()->empty()) ?
+                        (*e_repo->params().master_repositories()->begin())->params().location() : e_repo->params().location(),
                     n::root() = "/",
                     n::sandbox() = phases.begin_phases()->option("sandbox"),
                     n::sydbox() = phases.begin_phases()->option("sydbox"),
@@ -314,7 +327,7 @@ EbuildID::need_keys_added() const
             Log::get_instance()->message("e.ebuild.metadata.generated_eapi", ll_debug, lc_context) << "Generated metadata for '"
                 << canonical_form(idcf_full) << "' has EAPI '" << _imp->eapi->name() << "'";
 
-            if (_imp->repository->params().write_cache().basename() != "empty" && _imp->eapi->supported())
+            if (e_repo->params().write_cache().basename() != "empty" && _imp->eapi->supported())
             {
                 EbuildFlatMetadataCache metadata_cache(_imp->environment, write_cache_file, _imp->ebuild, _imp->master_mtime,
                         _imp->eclass_mtimes, false);
@@ -331,10 +344,10 @@ EbuildID::need_keys_added() const
     add_metadata_key(std::make_shared<LiteralMetadataValueKey<std::string>>("EAPI", "EAPI", mkt_internal, _imp->eapi->name()));
 
     _imp->repository_mask = std::make_shared<EMutableRepositoryMaskInfoKey>(shared_from_this(), "repository_mask", "Repository masked",
-        std::static_pointer_cast<const ERepository>(repository())->repository_masked(shared_from_this()), mkt_internal);
+            e_repo->repository_masked(shared_from_this()), mkt_internal);
     add_metadata_key(_imp->repository_mask);
     _imp->profile_mask = std::make_shared<EMutableRepositoryMaskInfoKey>(shared_from_this(), "profile_mask", "Profile masked",
-        std::static_pointer_cast<const ERepository>(repository())->profile()->profile_masked(shared_from_this()), mkt_internal);
+            e_repo->profile()->profile_masked(shared_from_this()), mkt_internal);
     add_metadata_key(_imp->profile_mask);
 
     std::shared_ptr<const Map<ChoiceNameWithPrefix, std::string> > maybe_use_descriptions;
@@ -344,12 +357,12 @@ EbuildID::need_keys_added() const
                     _imp->eapi->supported()->ebuild_metadata_variables()->use_expand()->name(),
                     _imp->eapi->supported()->ebuild_metadata_variables()->use_expand()->description(),
                     mkt_internal,
-                    e_repository()->profile()->use_expand());
+                    e_repo->profile()->use_expand());
         _imp->raw_use_expand_hidden = std::make_shared<LiteralMetadataStringSetKey>(
                     _imp->eapi->supported()->ebuild_metadata_variables()->use_expand_hidden()->name(),
                     _imp->eapi->supported()->ebuild_metadata_variables()->use_expand_hidden()->description(),
                     mkt_internal,
-                    e_repository()->profile()->use_expand_hidden());
+                    e_repo->profile()->use_expand_hidden());
 
         std::shared_ptr<const MetadataXML> m(MetadataXMLPool::get_instance()->metadata_if_exists(
                     _imp->fs_location->value().dirname() / "metadata.xml"));
@@ -372,15 +385,15 @@ EbuildID::need_keys_added() const
                 throw InternalError(PALUDIS_HERE, "no raw_iuse?");
 
             std::copy(_imp->raw_iuse->value()->begin(), _imp->raw_iuse->value()->end(), iuse_effective->inserter());
-            std::copy(e_repository()->profile()->iuse_implicit()->begin(), e_repository()->profile()->iuse_implicit()->end(),
+            std::copy(e_repo->profile()->iuse_implicit()->begin(), e_repo->profile()->iuse_implicit()->end(),
                     iuse_effective->inserter());
 
-            const std::shared_ptr<const Set<std::string> > use_expand(e_repository()->profile()->use_expand());
-            const std::shared_ptr<const Set<std::string> > use_expand_unprefixed(e_repository()->profile()->use_expand_unprefixed());
+            const std::shared_ptr<const Set<std::string> > use_expand(e_repo->profile()->use_expand());
+            const std::shared_ptr<const Set<std::string> > use_expand_unprefixed(e_repo->profile()->use_expand_unprefixed());
             const std::string separator(stringify(_imp->eapi->supported()->choices_options()->use_expand_separator()));
 
-            for (Set<std::string>::ConstIterator x(e_repository()->profile()->use_expand_implicit()->begin()),
-                    x_end(e_repository()->profile()->use_expand_implicit()->end()) ;
+            for (Set<std::string>::ConstIterator x(e_repo->profile()->use_expand_implicit()->begin()),
+                    x_end(e_repo->profile()->use_expand_implicit()->end()) ;
                     x != x_end ; ++x)
             {
                 std::string lower_x;
@@ -393,7 +406,7 @@ EbuildID::need_keys_added() const
                     Log::get_instance()->message("e.ebuild.iuse_effective.neither", ll_qa, lc_context)
                         << "USE_EXPAND_IMPLICIT value " << *x << " is not in either USE_EXPAND or USE_EXPAND_UNPREFIXED";
 
-                const std::shared_ptr<const Set<std::string> > values(e_repository()->profile()->use_expand_values(*x));
+                const std::shared_ptr<const Set<std::string> > values(e_repo->profile()->use_expand_values(*x));
                 for (Set<std::string>::ConstIterator v(values->begin()), v_end(values->end()) ;
                         v != v_end ; ++v)
                 {
@@ -414,7 +427,7 @@ EbuildID::need_keys_added() const
 
         _imp->choices = std::make_shared<EChoicesKey>(_imp->environment, shared_from_this(), "PALUDIS_CHOICES",
                     _imp->eapi->supported()->ebuild_environment_variables()->description_choices(),
-                    mkt_normal, e_repository(),
+                    mkt_normal, e_repo,
                     maybe_use_descriptions);
 
         if (_imp->eapi->supported()->is_pbin())
@@ -425,7 +438,7 @@ EbuildID::need_keys_added() const
     }
     else
         _imp->choices = std::make_shared<EChoicesKey>(_imp->environment, shared_from_this(), "PALUDIS_CHOICES", "Choices", mkt_normal,
-                    e_repository(), maybe_use_descriptions);
+                    e_repo, maybe_use_descriptions);
     add_metadata_key(_imp->choices);
 }
 
@@ -602,8 +615,11 @@ EbuildID::invalidate_masks() const
 
     _imp->has_masks = false;
     PackageID::invalidate_masks();
-    _imp->repository_mask->set_value(std::static_pointer_cast<const ERepository>(repository())->repository_masked(shared_from_this()));
-    _imp->profile_mask->set_value(std::static_pointer_cast<const ERepository>(repository())->profile()->profile_masked(shared_from_this()));
+
+    auto repo(_imp->environment->package_database()->fetch_repository(repository_name()));
+    auto e_repo(std::static_pointer_cast<const ERepository>(repo));
+    _imp->repository_mask->set_value(e_repo->repository_masked(shared_from_this()));
+    _imp->profile_mask->set_value(e_repo->profile()->profile_masked(shared_from_this()));
 }
 
 const std::string
@@ -614,16 +630,16 @@ EbuildID::canonical_form(const PackageIDCanonicalForm f) const
         case idcf_full:
             if (_imp->slot)
                 return stringify(name()) + "-" + stringify(version()) + ":" + stringify(_imp->slot->value()) +
-                    "::" + stringify(repository()->name());
+                    "::" + stringify(repository_name());
 
-            return stringify(name()) + "-" + stringify(version()) + "::" + stringify(repository()->name());
+            return stringify(name()) + "-" + stringify(version()) + "::" + stringify(repository_name());
 
         case idcf_no_version:
             if (_imp->slot)
                 return stringify(name()) + ":" + stringify(_imp->slot->value()) +
-                    "::" + stringify(repository()->name());
+                    "::" + stringify(repository_name());
 
-            return stringify(name()) + "::" + stringify(repository()->name());
+            return stringify(name()) + "::" + stringify(repository_name());
 
         case idcf_version:
             return stringify(version());
@@ -631,9 +647,9 @@ EbuildID::canonical_form(const PackageIDCanonicalForm f) const
         case idcf_no_name:
             if (_imp->slot)
                 return stringify(version()) + ":" + stringify(_imp->slot->value()) + "::" +
-                    stringify(repository()->name());
+                    stringify(repository_name());
 
-            return stringify(version()) + "::" + stringify(repository()->name());
+            return stringify(version()) + "::" + stringify(repository_name());
 
         case last_idcf:
             break;
@@ -646,7 +662,7 @@ PackageDepSpec
 EbuildID::uniquely_identifying_spec() const
 {
     return parse_user_package_dep_spec("=" + stringify(name()) + "-" + stringify(version()) +
-            (slot_key() ? ":" + stringify(slot_key()->value()) : "") + "::" + stringify(repository()->name()),
+            (slot_key() ? ":" + stringify(slot_key()->value()) : "") + "::" + stringify(repository_name()),
             _imp->environment, { });
 }
 
@@ -662,10 +678,10 @@ EbuildID::version() const
     return _imp->version;
 }
 
-const std::shared_ptr<const Repository>
-EbuildID::repository() const
+const RepositoryName
+EbuildID::repository_name() const
 {
-    return _imp->repository;
+    return _imp->repository_name;
 }
 
 const std::shared_ptr<const EAPI>
@@ -915,12 +931,6 @@ std::string
 EbuildID::guessed_eapi_name() const
 {
     return _imp->guessed_eapi;
-}
-
-std::shared_ptr<const ERepository>
-EbuildID::e_repository() const
-{
-    return _imp->repository;
 }
 
 void
@@ -1230,36 +1240,44 @@ namespace
 
         void visit(InstallAction & a)
         {
+            auto repo(env->package_database()->fetch_repository(id->repository_name()));
+            auto e_repo(std::static_pointer_cast<const ERepository>(repo));
             do_install_action(
                     env,
-                    std::static_pointer_cast<const ERepository>(id->repository()).get(),
+                    e_repo.get(),
                     std::static_pointer_cast<const ERepositoryID>(id),
                     a);
         }
 
         void visit(FetchAction & a)
         {
+            auto repo(env->package_database()->fetch_repository(id->repository_name()));
+            auto e_repo(std::static_pointer_cast<const ERepository>(repo));
             do_fetch_action(
                     env,
-                    std::static_pointer_cast<const ERepository>(id->repository()).get(),
+                    e_repo.get(),
                     std::static_pointer_cast<const ERepositoryID>(id),
                     a);
         }
 
         void visit(PretendFetchAction & a)
         {
+            auto repo(env->package_database()->fetch_repository(id->repository_name()));
+            auto e_repo(std::static_pointer_cast<const ERepository>(repo));
             do_pretend_fetch_action(
                     env,
-                    std::static_pointer_cast<const ERepository>(id->repository()).get(),
+                    e_repo.get(),
                     std::static_pointer_cast<const ERepositoryID>(id),
                     a);
         }
 
         void visit(PretendAction & action)
         {
+            auto repo(env->package_database()->fetch_repository(id->repository_name()));
+            auto e_repo(std::static_pointer_cast<const ERepository>(repo));
             if (! do_pretend_action(
                         env,
-                        std::static_pointer_cast<const ERepository>(id->repository()).get(),
+                        e_repo.get(),
                         std::static_pointer_cast<const ERepositoryID>(id),
                         action))
                 action.set_failed();
@@ -1267,9 +1285,11 @@ namespace
 
         void visit(InfoAction & action)
         {
+            auto repo(env->package_database()->fetch_repository(id->repository_name()));
+            auto e_repo(std::static_pointer_cast<const ERepository>(repo));
             do_info_action(
                     env,
-                    std::static_pointer_cast<const ERepository>(id->repository()).get(),
+                    e_repo.get(),
                     std::static_pointer_cast<const ERepositoryID>(id),
                     action);
         }
@@ -1395,6 +1415,9 @@ EbuildID::make_choice_value(
     if (! eapi()->supported())
         throw InternalError(PALUDIS_HERE, "Unsupported EAPI");
 
+    auto repo(_imp->environment->package_database()->fetch_repository(repository_name()));
+    auto e_repo(std::static_pointer_cast<const ERepository>(repo));
+
     std::string name_with_prefix_s;
     if (stringify(choice->prefix()).empty())
         name_with_prefix_s = stringify(value_name);
@@ -1415,12 +1438,12 @@ EbuildID::make_choice_value(
     }
     else
     {
-        if (_imp->repository->profile()->use_masked(shared_from_this(), choice, value_name, name_with_prefix))
+        if (e_repo->profile()->use_masked(shared_from_this(), choice, value_name, name_with_prefix))
         {
             locked = true;
             enabled = enabled_by_default = false;
         }
-        else if (_imp->repository->profile()->use_forced(shared_from_this(), choice, value_name, name_with_prefix))
+        else if (e_repo->profile()->use_forced(shared_from_this(), choice, value_name, name_with_prefix))
         {
             locked = true;
             enabled = enabled_by_default = true;
@@ -1436,7 +1459,7 @@ EbuildID::make_choice_value(
         }
         else
         {
-            Tribool profile_want(_imp->repository->profile()->use_state_ignoring_masks(shared_from_this(), choice, value_name, name_with_prefix));
+            Tribool profile_want(e_repo->profile()->use_state_ignoring_masks(shared_from_this(), choice, value_name, name_with_prefix));
             if (profile_want.is_true())
                 enabled_by_default = true;
             else if (profile_want.is_false())
@@ -1458,7 +1481,7 @@ EbuildID::make_choice_value(
     }
 
     return std::make_shared<EChoiceValue>(choice->prefix(), value_name, ChoiceNameWithPrefix(name_with_prefix), name(),
-                _imp->repository->use_desc(),
+                e_repo->use_desc(),
                 enabled, enabled_by_default, force_locked || locked, explicitly_listed, override_description, "");
 }
 
@@ -1585,15 +1608,18 @@ EbuildID::add_build_options(const std::shared_ptr<Choices> & choices) const
 void
 EbuildID::purge_invalid_cache() const
 {
-    FSPath write_cache_file(_imp->repository->params().write_cache());
-    if (_imp->repository->params().append_repository_name_to_write_cache())
-        write_cache_file /= stringify(repository()->name());
+    auto repo(_imp->environment->package_database()->fetch_repository(repository_name()));
+    auto e_repo(std::static_pointer_cast<const ERepository>(repo));
+
+    FSPath write_cache_file(e_repo->params().write_cache());
+    if (e_repo->params().append_repository_name_to_write_cache())
+        write_cache_file /= stringify(repository_name());
     write_cache_file /= stringify(name().category());
     write_cache_file /= stringify(name().package()) + "-" + stringify(version());
 
     if (write_cache_file.stat().exists())
     {
-        if (_imp->repository->params().write_cache().basename() != "empty")
+        if (e_repo->params().write_cache().basename() != "empty")
         {
             EbuildFlatMetadataCache write_metadata_cache(_imp->environment,
                     write_cache_file, _imp->ebuild, _imp->master_mtime, _imp->eclass_mtimes, true);

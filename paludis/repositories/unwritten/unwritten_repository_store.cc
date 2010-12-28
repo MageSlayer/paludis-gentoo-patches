@@ -21,6 +21,7 @@
 #include <paludis/repositories/unwritten/unwritten_repository_file.hh>
 #include <paludis/repositories/unwritten/unwritten_id.hh>
 #include <paludis/repositories/unwritten/unwritten_mask.hh>
+#include <paludis/repositories/unwritten/unwritten_repository.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/set.hh>
@@ -165,7 +166,7 @@ UnwrittenRepositoryStore::_populate_one(const Environment * const env, const FSP
                             n::remote_ids() = (*i).remote_ids(),
                             n::removed_by() = (*i).removed_by(),
                             n::removed_from() = (*i).removed_from(),
-                            n::repository() = _imp->repo,
+                            n::repository() = _imp->repo->name(),
                             n::slot() = (*i).slot(),
                             n::version() = (*i).version()
                         )));

@@ -273,7 +273,7 @@ namespace
             if (i.package_id()->slot_key())
                 m->insert("slot", stringify(i.package_id()->slot_key()->value()));
             m->insert("version", stringify(i.package_id()->version()));
-            m->insert("repository", stringify(i.package_id()->repository()->name()));
+            m->insert("repository", stringify(i.package_id()->repository_name()));
             m->insert("category", stringify(i.package_id()->name().category()));
             m->insert("package", stringify(i.package_id()->name().package()));
             m->insert("summaries_supported", stringify(i.client_output_features()[cof_summary_at_end]));

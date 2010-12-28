@@ -312,11 +312,12 @@ int do_environment_variable(const std::shared_ptr<Environment> & env)
     if (entries->empty())
         throw NoSuchPackageError(spec_str);
 
-    RepositoryEnvironmentVariableInterface * env_if((*(*entries->last())->repository()).environment_variable_interface());
+    auto repo(env->package_database()->fetch_repository((*entries->last())->repository_name()));
+    RepositoryEnvironmentVariableInterface * env_if(repo->environment_variable_interface());
 
     if (! env_if)
     {
-        std::cerr << "Repository '" << (*entries->last())->repository()->name() <<
+        std::cerr << "Repository '" << (*entries->last())->repository_name() <<
             "' cannot be queried for environment variables" << std::endl;
         return_code |= 1;
     }

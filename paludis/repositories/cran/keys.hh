@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -62,6 +62,7 @@ namespace paludis
             public MetadataValueKey<std::shared_ptr<const PackageID> >
         {
             private:
+                const Environment * const _env;
                 const CRANPackageID * const _v;
 
                 const std::string _r;
@@ -69,7 +70,7 @@ namespace paludis
                 const MetadataKeyType _t;
 
             public:
-                PackageIDKey(const std::string &, const std::string &, const CRANPackageID * const, const MetadataKeyType);
+                PackageIDKey(const Environment * const, const std::string &, const std::string &, const CRANPackageID * const, const MetadataKeyType);
 
                 virtual const std::shared_ptr<const PackageID> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));

@@ -166,10 +166,12 @@ namespace
     {
         typedef bool result;
 
+        const Environment * const env;
         const bool visible_only;
         bool installed, installable;
 
-        Eligible(const bool v, const std::string & k) :
+        Eligible(const Environment * const e, const bool v, const std::string & k) :
+            env(e),
             visible_only(v),
             installed(true),
             installable(true)
@@ -187,7 +189,8 @@ namespace
 
         bool operator() (const PackageID & id) const
         {
-            if ((! installed) && id.repository()->installed_root_key())
+            auto repo(env->package_database()->fetch_repository(id.repository_name()));
+            if ((! installed) && repo->installed_root_key())
                 return false;
 
             if ((! installable) && id.supports_action(SupportsActionTest<InstallAction>()))
@@ -420,6 +423,7 @@ do_search(Environment & env)
     }
 
     Eligible eligible(
+            &env,
             CommandLine::get_instance()->a_visible_only.specified(),
             CommandLine::get_instance()->a_kind.argument());
 

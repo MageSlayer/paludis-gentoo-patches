@@ -36,6 +36,8 @@
 #include <paludis/stringify_formatter.hh>
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/util/pimp-impl.hh>
+#include <paludis/environment.hh>
+#include <paludis/package_database.hh>
 #include <set>
 #include <map>
 #include <list>
@@ -130,7 +132,8 @@ namespace
                 {
                     std::set<std::string> tokens;
                     tokenise_whitespace(lines[m.inherited()->flat_list_index()], std::inserter(tokens, tokens.begin()));
-                    FSPath eclassdir((id->repository()->location_key()->value() / "eclass").realpath_if_exists());
+                    auto repo(_imp->env->package_database()->fetch_repository(id->repository_name()));
+                    FSPath eclassdir((repo->location_key()->value() / "eclass").realpath_if_exists());
                     for (std::set<std::string>::const_iterator it(tokens.begin()),
                              it_end(tokens.end()); it_end != it; ++it)
                     {
@@ -401,7 +404,8 @@ EbuildFlatMetadataCache::load(const std::shared_ptr<const EbuildID> & id, const 
                 {
                     std::vector<std::string> eclasses;
                     tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(keys["_eclasses_"], "\t", "", std::back_inserter(eclasses));
-                    FSPath eclassdir((id->repository()->location_key()->value() / "eclass").realpath_if_exists());
+                    auto repo(_imp->env->package_database()->fetch_repository(id->repository_name()));
+                    FSPath eclassdir((repo->location_key()->value() / "eclass").realpath_if_exists());
                     for (std::vector<std::string>::const_iterator it(eclasses.begin()),
                              it_end(eclasses.end()); it_end != it; ++it)
                     {

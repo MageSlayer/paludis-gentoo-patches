@@ -165,7 +165,7 @@ namespace
         Data_Get_Struct(self, std::shared_ptr<const PackageID>, self_ptr);
         try
         {
-            return rb_str_new2(stringify((*self_ptr)->repository()->name()).c_str());
+            return rb_str_new2(stringify((*self_ptr)->repository_name()).c_str());
         }
         catch (const std::exception & e)
         {

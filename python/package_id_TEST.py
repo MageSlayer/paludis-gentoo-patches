@@ -54,8 +54,8 @@ class TestCase_01_PackageID(unittest.TestCase):
         self.assertEquals(str(self.pid.slot_key().value()), "0")
 
     def test_05_repository(self):
-        self.assertEquals(str(self.pid.repository.name), "testrepo")
-        self.assertEquals(str(self.ipid.repository.name), "installed")
+        self.assertEquals(str(self.pid.repository_name), "testrepo")
+        self.assertEquals(str(self.ipid.repository_name), "installed")
 
     def test_07_canonical_form(self):
         # Load the metadata

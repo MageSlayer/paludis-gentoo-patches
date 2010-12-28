@@ -66,7 +66,7 @@ namespace paludis
         const Environment * const env;
         const QualifiedPackageName name;
         const VersionSpec version;
-        const UnavailableRepository * const repo;
+        const RepositoryName repository_name;
 
         const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > dependencies_key;
         const std::shared_ptr<const MetadataValueKey<std::string> > description_key;
@@ -80,7 +80,7 @@ namespace paludis
             env(e.environment()),
             name(e.name()),
             version("0", { }),
-            repo(e.repository()),
+            repository_name(e.repository()),
             dependencies_key(e.dependencies()),
             description_key(e.description()),
             homepage_key(e.homepage()),
@@ -134,16 +134,16 @@ UnavailableRepositoryID::canonical_form(const PackageIDCanonicalForm f) const
     {
         case idcf_full:
             return stringify(_imp->name) + "-" + stringify(_imp->version) +
-                "::" + stringify(_imp->repo->name());
+                "::" + stringify(_imp->repository_name);
 
         case idcf_no_version:
-            return stringify(_imp->name) + "::" + stringify(_imp->repo->name());
+            return stringify(_imp->name) + "::" + stringify(_imp->repository_name);
 
         case idcf_version:
             return stringify(_imp->version);
 
         case idcf_no_name:
-            return stringify(_imp->version) + "::" + stringify(_imp->repo->name());
+            return stringify(_imp->version) + "::" + stringify(_imp->repository_name);
 
         case last_idcf:
             break;
@@ -156,7 +156,7 @@ PackageDepSpec
 UnavailableRepositoryID::uniquely_identifying_spec() const
 {
     return parse_user_package_dep_spec("=" + stringify(name()) + "-" + stringify(version())
-            + "::" + stringify(repository()->name()),
+            + "::" + stringify(repository_name()),
             _imp->env, { });
 }
 
@@ -172,10 +172,10 @@ UnavailableRepositoryID::version() const
     return _imp->version;
 }
 
-const std::shared_ptr<const Repository>
-UnavailableRepositoryID::repository() const
+const RepositoryName
+UnavailableRepositoryID::repository_name() const
 {
-    return _imp->repo->shared_from_this();
+    return _imp->repository_name;
 }
 
 bool

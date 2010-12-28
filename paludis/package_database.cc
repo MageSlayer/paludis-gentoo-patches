@@ -285,14 +285,15 @@ PackageDatabase::fetch_unique_qualified_package_name(const PackageNamePart & p, 
              it_end(pkgs->end()); it_end != it; ++it)
     {
         Context local_context("When checking category '" + stringify(it->name().category()) + "' in repository '" +
-                stringify(it->repository()->name()) + "':");
+                stringify(it->repository_name()) + "':");
 
-        if (! checked.insert(std::make_pair(it->name().category(), it->repository()->name())).second)
+        if (! checked.insert(std::make_pair(it->name().category(), it->repository_name())).second)
             continue;
 
-        std::shared_ptr<const CategoryNamePartSet> unimportant_cats(it->repository()->unimportant_category_names());
+        auto repo(fetch_repository(it->repository_name()));
+        std::shared_ptr<const CategoryNamePartSet> unimportant_cats(repo->unimportant_category_names());
         bool is_important(unimportant_cats->end() == unimportant_cats->find(it->name().category()));
-        bool is_in_important_repo(! it->repository()->is_unimportant());
+        bool is_in_important_repo(! repo->is_unimportant());
         QPNIMap::iterator i(result->insert(std::make_pair(it->name(), std::make_pair(is_important, is_in_important_repo))).first);
         i->second.first = i->second.first || is_important;
         i->second.second = i->second.second || is_in_important_repo;

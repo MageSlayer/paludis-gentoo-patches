@@ -50,6 +50,7 @@
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/elike_choices.hh>
+#include <paludis/package_database.hh>
 
 #include <iterator>
 
@@ -147,7 +148,7 @@ namespace paludis
         const QualifiedPackageName name;
         const VersionSpec version;
         const Environment * const environment;
-        const std::shared_ptr<const Repository> repository;
+        const RepositoryName repository_name;
         const FSPath dir;
 
         mutable std::shared_ptr<EInstalledRepositoryIDKeys> keys;
@@ -158,11 +159,11 @@ namespace paludis
 
         Imp(const QualifiedPackageName & q, const VersionSpec & v,
                 const Environment * const e,
-                const std::shared_ptr<const Repository> r, const FSPath & f) :
+                const RepositoryName & r, const FSPath & f) :
             name(q),
             version(v),
             environment(e),
-            repository(r),
+            repository_name(r),
             dir(f)
         {
         }
@@ -171,7 +172,7 @@ namespace paludis
 
 EInstalledRepositoryID::EInstalledRepositoryID(const QualifiedPackageName & q, const VersionSpec & v,
         const Environment * const e,
-        const std::shared_ptr<const Repository> & r,
+        const RepositoryName & r,
         const FSPath & f) :
     Pimp<EInstalledRepositoryID>(q, v, e, r, f),
     _imp(Pimp<EInstalledRepositoryID>::_imp)
@@ -617,16 +618,16 @@ EInstalledRepositoryID::canonical_form(const PackageIDCanonicalForm f) const
         case idcf_full:
             if (_imp->keys && _imp->keys->slot)
                 return stringify(name()) + "-" + stringify(version()) + ":" + stringify(_imp->keys->slot->value()) + "::" +
-                    stringify(repository()->name());
+                    stringify(repository_name());
 
-            return stringify(name()) + "-" + stringify(version()) + "::" + stringify(repository()->name());
+            return stringify(name()) + "-" + stringify(version()) + "::" + stringify(repository_name());
 
         case idcf_no_version:
             if (_imp->keys && _imp->keys->slot)
                 return stringify(name()) + ":" + stringify(_imp->keys->slot->value()) + "::" +
-                    stringify(repository()->name());
+                    stringify(repository_name());
 
-            return stringify(name()) + "::" + stringify(repository()->name());
+            return stringify(name()) + "::" + stringify(repository_name());
 
         case idcf_version:
             return stringify(version());
@@ -634,9 +635,9 @@ EInstalledRepositoryID::canonical_form(const PackageIDCanonicalForm f) const
         case idcf_no_name:
             if (_imp->keys && _imp->keys->slot)
                 return stringify(version()) + ":" + stringify(_imp->keys->slot->value()) + "::" +
-                    stringify(repository()->name());
+                    stringify(repository_name());
 
-            return stringify(version()) + "::" + stringify(repository()->name());
+            return stringify(version()) + "::" + stringify(repository_name());
 
         case last_idcf:
             break;
@@ -649,7 +650,7 @@ PackageDepSpec
 EInstalledRepositoryID::uniquely_identifying_spec() const
 {
     return parse_user_package_dep_spec("=" + stringify(name()) + "-" + stringify(version()) +
-            (slot_key() ? ":" + stringify(slot_key()->value()) : "") + "::" + stringify(repository()->name()),
+            (slot_key() ? ":" + stringify(slot_key()->value()) : "") + "::" + stringify(repository_name()),
             _imp->environment, { });
 }
 
@@ -665,10 +666,10 @@ EInstalledRepositoryID::version() const
     return _imp->version;
 }
 
-const std::shared_ptr<const Repository>
-EInstalledRepositoryID::repository() const
+const RepositoryName
+EInstalledRepositoryID::repository_name() const
 {
-    return _imp->repository;
+    return _imp->repository_name;
 }
 
 const std::shared_ptr<const EAPI>
@@ -974,26 +975,25 @@ namespace
 {
     struct PerformAction
     {
+        const Environment * const env;
         const std::shared_ptr<const erepository::ERepositoryID> id;
-
-        PerformAction(const std::shared_ptr<const erepository::ERepositoryID> i) :
-            id(i)
-        {
-        }
 
         void visit(const UninstallAction & a)
         {
-            std::static_pointer_cast<const EInstalledRepository>(id->repository())->perform_uninstall(id, a);
+            auto repo(env->package_database()->fetch_repository(id->repository_name()));
+            std::static_pointer_cast<const EInstalledRepository>(repo)->perform_uninstall(id, a);
         }
 
         void visit(const ConfigAction & a)
         {
-            std::static_pointer_cast<const EInstalledRepository>(id->repository())->perform_config(id, a);
+            auto repo(env->package_database()->fetch_repository(id->repository_name()));
+            std::static_pointer_cast<const EInstalledRepository>(repo)->perform_config(id, a);
         }
 
         void visit(const InfoAction & a)
         {
-            std::static_pointer_cast<const EInstalledRepository>(id->repository())->perform_info(id, a);
+            auto repo(env->package_database()->fetch_repository(id->repository_name()));
+            std::static_pointer_cast<const EInstalledRepository>(repo)->perform_info(id, a);
         }
 
         void visit(const InstallAction & a) PALUDIS_ATTRIBUTE((noreturn));
@@ -1026,7 +1026,7 @@ namespace
 void
 EInstalledRepositoryID::perform_action(Action & a) const
 {
-    PerformAction b(shared_from_this());
+    PerformAction b{_imp->environment, shared_from_this()};
     a.accept(b);
 }
 

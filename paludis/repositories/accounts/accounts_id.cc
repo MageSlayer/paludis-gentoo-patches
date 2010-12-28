@@ -36,7 +36,9 @@
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/literal_metadata_key.hh>
+#include <paludis/environment.hh>
 #include <paludis/repository.hh>
+#include <paludis/package_database.hh>
 #include <paludis/action.hh>
 #include <paludis/user_dep_spec.hh>
 #include <algorithm>
@@ -71,7 +73,7 @@ namespace paludis
 
         const QualifiedPackageName name;
         const VersionSpec version;
-        const std::shared_ptr<const Repository> repository;
+        const RepositoryName repository_name;
 
         const std::shared_ptr<const LiteralMetadataValueKey<FSPath> > fs_location_key;
         const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > from_repositories_key;
@@ -97,13 +99,13 @@ namespace paludis
         mutable std::shared_ptr<const LiteralMetadataValueKey<std::string> > preferred_gid_key;
 
         Imp(const Environment * const e,
-                const QualifiedPackageName & q, const std::shared_ptr<const Repository> & r,
+                const QualifiedPackageName & q, const RepositoryName & r,
                 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & f,
                 const FSPath & l, const bool u, const bool m) :
             env(e),
             name(q),
             version("0", { }),
-            repository(r),
+            repository_name(r),
             fs_location_key(std::make_shared<LiteralMetadataValueKey<FSPath>>("location", "Location", mkt_internal, l)),
             from_repositories_key(f),
             behaviours_key(AccountsIDBehaviours::get_instance()->behaviours_key),
@@ -117,7 +119,7 @@ namespace paludis
 }
 
 AccountsID::AccountsID(const Environment * const e,
-        const QualifiedPackageName & q, const std::shared_ptr<const Repository> & r,
+        const QualifiedPackageName & q, const RepositoryName & r,
         const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & f, const FSPath & l,
         const bool u, const bool m) :
     Pimp<AccountsID>(e, q, r, f, l, u, m),
@@ -270,10 +272,10 @@ AccountsID::version() const
     return _imp->version;
 }
 
-const std::shared_ptr<const Repository>
-AccountsID::repository() const
+const RepositoryName
+AccountsID::repository_name() const
 {
-    return _imp->repository;
+    return _imp->repository_name;
 }
 
 const std::string
@@ -282,16 +284,16 @@ AccountsID::canonical_form(const PackageIDCanonicalForm f) const
     switch (f)
     {
         case idcf_full:
-            return stringify(name()) + "-" + stringify(version()) + "::" + stringify(repository()->name());
+            return stringify(name()) + "-" + stringify(version()) + "::" + stringify(repository_name());
 
         case idcf_no_version:
-            return stringify(name()) + "::" + stringify(repository()->name());
+            return stringify(name()) + "::" + stringify(repository_name());
 
         case idcf_version:
             return stringify(version());
 
         case idcf_no_name:
-            return stringify(version()) + "::" + stringify(repository()->name());
+            return stringify(version()) + "::" + stringify(repository_name());
 
         case last_idcf:
             break;
@@ -303,7 +305,7 @@ AccountsID::canonical_form(const PackageIDCanonicalForm f) const
 PackageDepSpec
 AccountsID::uniquely_identifying_spec() const
 {
-    return parse_user_package_dep_spec(stringify(name()) + "::" + stringify(repository()->name()),
+    return parse_user_package_dep_spec(stringify(name()) + "::" + stringify(repository_name()),
             _imp->env, { });
 }
 
@@ -538,7 +540,8 @@ AccountsID::perform_action(Action & action) const
             i != i_end ; ++i)
     {
         Context local_context("When cleaning '" + stringify(**i) + "':");
-        if ((*i)->repository()->format_key() && (*i)->repository()->format_key()->value() == "installed-accounts"
+        auto repo(_imp->env->package_database()->fetch_repository((*i)->repository_name()));
+        if (repo->format_key() && repo->format_key()->value() == "installed-accounts"
                 && (*i)->name() == name())
             continue;
         else

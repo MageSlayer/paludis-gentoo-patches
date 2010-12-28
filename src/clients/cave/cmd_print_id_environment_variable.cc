@@ -31,6 +31,7 @@
 #include <paludis/selection.hh>
 #include <paludis/package_id.hh>
 #include <paludis/repository.hh>
+#include <paludis/package_database.hh>
 #include <iostream>
 #include <cstdlib>
 
@@ -90,19 +91,20 @@ namespace
     };
 
     void do_one_var(
+            const Environment * const env,
             const PackageDepSpec & s,
             const std::shared_ptr<const PackageID> & id,
             const std::string & n,
             const PrintIDEnvironmentVariableCommandLine & cmdline
             )
     {
-        std::shared_ptr<const Repository> r(id->repository());
+        auto repo(env->package_database()->fetch_repository(id->repository_name()));
 
-        if (0 != r->environment_variable_interface())
+        if (0 != repo->environment_variable_interface())
         {
             std::shared_ptr<Map<char, std::string> > m(std::make_shared<Map<char, std::string>>());
             m->insert('n', n);
-            m->insert('v', r->environment_variable_interface()->get_environment_variable(id, n));
+            m->insert('v', repo->environment_variable_interface()->get_environment_variable(id, n));
 
             cout << format_string(cmdline.a_format.argument(), m);
         }
@@ -148,7 +150,7 @@ PrintIDEnvironmentVariableCommand::run(
             i != i_end ; ++i)
         for (args::StringSequenceArg::ConstIterator v(cmdline.a_variable_name.begin_args()), v_end(cmdline.a_variable_name.end_args()) ;
                 v != v_end ; ++v)
-            do_one_var(spec, *i, *v, cmdline);
+            do_one_var(env.get(), spec, *i, *v, cmdline);
 
     return EXIT_SUCCESS;
 }

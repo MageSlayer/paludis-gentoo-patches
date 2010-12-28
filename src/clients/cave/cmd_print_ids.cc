@@ -254,7 +254,7 @@ namespace
         m->insert('v', stringify(i->version()));
         m->insert('s', i->slot_key() ? stringify(i->slot_key()->value()) : "");
         m->insert(':', i->slot_key() ? ":" : "");
-        m->insert('r', stringify(i->repository()->name()));
+        m->insert('r', stringify(i->repository_name()));
         m->insert('F', i->canonical_form(idcf_full));
         m->insert('V', i->canonical_form(idcf_version));
         m->insert('W', i->canonical_form(idcf_no_version));

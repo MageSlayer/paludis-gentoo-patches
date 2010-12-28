@@ -559,7 +559,7 @@ InstallTask::_add_package_id(const std::shared_ptr<const PackageID> & target)
 
     PartiallyMadePackageDepSpec part_spec({ });
     part_spec.package(target->name());
-    part_spec.in_repository(target->repository()->name());
+    part_spec.in_repository(target->repository_name());
     part_spec.version_requirement(make_named_values<VersionRequirement>(
                 n::version_operator() = vo_equal,
                 n::version_spec() = target->version()));

@@ -160,7 +160,7 @@ EbuildCommand::operator() ()
         .setenv("PN", stringify(params.package_id()->name().package()))
         .setenv("PVR", stringify(params.package_id()->version()))
         .setenv("CATEGORY", stringify(params.package_id()->name().category()))
-        .setenv("REPOSITORY", stringify(params.package_id()->repository()->name()))
+        .setenv("REPOSITORY", stringify(params.package_id()->repository_name()))
         .setenv("EAPI", stringify(params.package_id()->eapi()->exported_name()))
         .setenv("PKGMANAGER", PALUDIS_PACKAGE "-" + stringify(PALUDIS_VERSION_MAJOR) + "." +
                 stringify(PALUDIS_VERSION_MINOR) + "." +
@@ -511,7 +511,11 @@ EbuildMetadataCommand::load(const std::shared_ptr<const EbuildID> & id)
     if (! ((s = get(keys, id->eapi()->supported()->ebuild_metadata_variables()->eapi()->name()))).empty())
         id->set_eapi(s);
     else
-        id->set_eapi(id->e_repository()->params().eapi_when_unspecified());
+    {
+        auto repo(params.environment()->package_database()->fetch_repository(id->repository_name()));
+        auto e_repo(std::static_pointer_cast<const ERepository>(repo));
+        id->set_eapi(e_repo->params().eapi_when_unspecified());
+    }
 
     if (! id->eapi()->supported())
     {

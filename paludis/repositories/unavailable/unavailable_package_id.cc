@@ -45,7 +45,7 @@ namespace paludis
         const Environment * const env;
         const QualifiedPackageName name;
         const VersionSpec version;
-        const UnavailableRepository * const repo;
+        const RepositoryName repository_name;
 
         const std::shared_ptr<const MetadataValueKey<SlotName> > slot_key;
         const std::shared_ptr<const MetadataValueKey<std::string> > description_key;
@@ -59,7 +59,7 @@ namespace paludis
             env(e.environment()),
             name(e.name()),
             version(e.version()),
-            repo(e.repository()),
+            repository_name(e.repository()),
             slot_key(std::make_shared<LiteralMetadataValueKey<SlotName>>("SLOT", "Slot", mkt_internal, e.slot())),
             description_key(e.description()),
             repository_homepage_key(e.repository_homepage()),
@@ -107,12 +107,12 @@ UnavailablePackageID::canonical_form(const PackageIDCanonicalForm f) const
     {
         case idcf_full:
             return stringify(_imp->name) + "-" + stringify(_imp->version) +
-                ":" + stringify(_imp->slot_key->value()) + "::" + stringify(_imp->repo->name()) +
+                ":" + stringify(_imp->slot_key->value()) + "::" + stringify(_imp->repository_name) +
                 " (in ::" + *_imp->from_repositories_key->value()->begin() + ")";
 
         case idcf_no_version:
             return stringify(_imp->name) + ":" + stringify(_imp->slot_key->value()) +
-                "::" + stringify(_imp->repo->name()) +
+                "::" + stringify(_imp->repository_name) +
                 " (in ::" + *_imp->from_repositories_key->value()->begin() + ")";
 
         case idcf_version:
@@ -121,7 +121,7 @@ UnavailablePackageID::canonical_form(const PackageIDCanonicalForm f) const
 
         case idcf_no_name:
             return stringify(_imp->version) +
-                ":" + stringify(_imp->slot_key->value()) + "::" + stringify(_imp->repo->name()) +
+                ":" + stringify(_imp->slot_key->value()) + "::" + stringify(_imp->repository_name) +
                 " (in ::" + *_imp->from_repositories_key->value()->begin() + ")";
 
         case last_idcf:
@@ -135,7 +135,7 @@ PackageDepSpec
 UnavailablePackageID::uniquely_identifying_spec() const
 {
     return parse_user_package_dep_spec("=" + stringify(name()) + "-" + stringify(version()) +
-            (slot_key() ? ":" + stringify(slot_key()->value()) : "") + "::" + stringify(repository()->name()) +
+            (slot_key() ? ":" + stringify(slot_key()->value()) : "") + "::" + stringify(repository_name()) +
             "[." + _imp->from_repositories_key->raw_name() + "=" + *_imp->from_repositories_key->value()->begin() + "]",
             _imp->env, { });
 }
@@ -152,10 +152,10 @@ UnavailablePackageID::version() const
     return _imp->version;
 }
 
-const std::shared_ptr<const Repository>
-UnavailablePackageID::repository() const
+const RepositoryName
+UnavailablePackageID::repository_name() const
 {
-    return _imp->repo->shared_from_this();
+    return _imp->repository_name;
 }
 
 bool

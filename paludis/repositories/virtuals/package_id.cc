@@ -76,7 +76,7 @@ namespace paludis
                                     n::version_spec() = v->version()))
                             .slot_requirement(std::make_shared<UserSlotExactRequirement>(
                                         v->slot_key() ? v->slot_key()->value() : SlotName("UNKNOWN")))
-                            .in_repository(v->repository()->name()))
+                            .in_repository(v->repository_name()))
                     :
                     std::make_shared<PackageDepSpec>(
                             make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
@@ -164,7 +164,7 @@ namespace paludis
     struct Imp<VirtualsPackageID>
     {
         const Environment * const env;
-        const std::shared_ptr<const Repository> repository;
+        const RepositoryName repository_name;
         const QualifiedPackageName name;
         const VersionSpec version;
         std::shared_ptr<DependenciesLabelSequence> bdep_labels;
@@ -177,12 +177,12 @@ namespace paludis
 
         Imp(
                 const Environment * const e,
-                const std::shared_ptr<const Repository> & o,
+                const RepositoryName & r,
                 const QualifiedPackageName & n,
                 const std::shared_ptr<const PackageID> & p,
                 const bool b) :
             env(e),
-            repository(o),
+            repository_name(r),
             name(n),
             version(p->version()),
             bdep_labels(std::make_shared<DependenciesLabelSequence>()),
@@ -202,11 +202,11 @@ namespace paludis
 
 VirtualsPackageID::VirtualsPackageID(
         const Environment * const e,
-        const std::shared_ptr<const Repository> & owner,
+        const RepositoryName & r,
         const QualifiedPackageName & virtual_name,
         const std::shared_ptr<const PackageID> & virtual_for,
         const bool exact) :
-    Pimp<VirtualsPackageID>(e, owner, virtual_name, virtual_for, exact),
+    Pimp<VirtualsPackageID>(e, r, virtual_name, virtual_for, exact),
     _imp(Pimp<VirtualsPackageID>::_imp)
 {
     add_metadata_key(_imp->virtual_for);
@@ -224,18 +224,18 @@ VirtualsPackageID::canonical_form(const PackageIDCanonicalForm f) const
     switch (f)
     {
         case idcf_full:
-            return stringify(_imp->name) + "-" + stringify(_imp->version) + "::" + stringify(_imp->repository->name()) +
+            return stringify(_imp->name) + "-" + stringify(_imp->version) + "::" + stringify(_imp->repository_name) +
                 " (virtual for " + stringify(*_imp->virtual_for->value()) + ")";
 
         case idcf_no_version:
-            return stringify(_imp->name) + "::" + stringify(_imp->repository->name()) +
+            return stringify(_imp->name) + "::" + stringify(_imp->repository_name) +
                 " (virtual for " + _imp->virtual_for->value()->canonical_form(idcf_no_version) + ")";
 
         case idcf_version:
             return stringify(_imp->version) + " (for " + stringify(_imp->virtual_for->value()->canonical_form(idcf_no_version)) + ")";
 
         case idcf_no_name:
-            return stringify(_imp->version) + "::" + stringify(_imp->repository->name()) +
+            return stringify(_imp->version) + "::" + stringify(_imp->repository_name) +
                 " (virtual for " + stringify(*_imp->virtual_for->value()) + ")";
 
         case last_idcf:
@@ -251,7 +251,7 @@ VirtualsPackageID::uniquely_identifying_spec() const
     /* hack: ensure the slot key's loaded, so that stringify returns the full form */
     _imp->virtual_for->value()->slot_key();
     return parse_user_package_dep_spec("=" + stringify(name()) + "-" + stringify(version()) +
-            (slot_key() ? ":" + stringify(slot_key()->value()) : "") + "::" + stringify(repository()->name()) +
+            (slot_key() ? ":" + stringify(slot_key()->value()) : "") + "::" + stringify(repository_name()) +
             "[." + _imp->virtual_for->raw_name() + "=" + stringify(*_imp->virtual_for->value()) + "]",
             _imp->env, { });
 }
@@ -268,10 +268,10 @@ VirtualsPackageID::version() const
     return _imp->version;
 }
 
-const std::shared_ptr<const Repository>
-VirtualsPackageID::repository() const
+const RepositoryName
+VirtualsPackageID::repository_name() const
 {
-    return _imp->repository;
+    return _imp->repository_name;
 }
 
 const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > >
@@ -387,59 +387,62 @@ namespace
 {
     struct PerformAction
     {
+        const Environment * const env;
         const PackageID * const id;
-
-        PerformAction(const PackageID * const i) :
-            id(i)
-        {
-        }
 
         void visit(const InstallAction & a)
         {
             SupportsActionTest<InstallAction> t;
-            if (! id->repository()->some_ids_might_support_action(t))
+            auto repo(env->package_database()->fetch_repository(id->repository_name()));
+            if (! repo->some_ids_might_support_action(t))
                 throw ActionFailedError("Unsupported action: " + a.simple_name());
         }
 
         void visit(const UninstallAction & a)
         {
             SupportsActionTest<UninstallAction> t;
-            if (! id->repository()->some_ids_might_support_action(t))
+            auto repo(env->package_database()->fetch_repository(id->repository_name()));
+            if (! repo->some_ids_might_support_action(t))
                 throw ActionFailedError("Unsupported action: " + a.simple_name());
         }
 
         void visit(const ConfigAction & a)
         {
             SupportsActionTest<ConfigAction> t;
-            if (! id->repository()->some_ids_might_support_action(t))
+            auto repo(env->package_database()->fetch_repository(id->repository_name()));
+            if (! repo->some_ids_might_support_action(t))
                 throw ActionFailedError("Unsupported action: " + a.simple_name());
         }
 
         void visit(const FetchAction & a)
         {
             SupportsActionTest<FetchAction> t;
-            if (! id->repository()->some_ids_might_support_action(t))
+            auto repo(env->package_database()->fetch_repository(id->repository_name()));
+            if (! repo->some_ids_might_support_action(t))
                 throw ActionFailedError("Unsupported action: " + a.simple_name());
         }
 
         void visit(const InfoAction & a)
         {
             SupportsActionTest<InfoAction> t;
-            if (! id->repository()->some_ids_might_support_action(t))
+            auto repo(env->package_database()->fetch_repository(id->repository_name()));
+            if (! repo->some_ids_might_support_action(t))
                 throw ActionFailedError("Unsupported action: " + a.simple_name());
         }
 
         void visit(const PretendAction & a)
         {
             SupportsActionTest<PretendAction> t;
-            if (! id->repository()->some_ids_might_support_action(t))
+            auto repo(env->package_database()->fetch_repository(id->repository_name()));
+            if (! repo->some_ids_might_support_action(t))
                 throw ActionFailedError("Unsupported action: " + a.simple_name());
         }
 
         void visit(const PretendFetchAction & a)
         {
             SupportsActionTest<PretendFetchAction> t;
-            if (! id->repository()->some_ids_might_support_action(t))
+            auto repo(env->package_database()->fetch_repository(id->repository_name()));
+            if (! repo->some_ids_might_support_action(t))
                 throw ActionFailedError("Unsupported action: " + a.simple_name());
         }
     };
@@ -448,14 +451,15 @@ namespace
 void
 VirtualsPackageID::perform_action(Action & a) const
 {
-    PerformAction b(this);
+    PerformAction b{_imp->env, this};
     a.accept(b);
 }
 
 bool
 VirtualsPackageID::supports_action(const SupportsActionTestBase & b) const
 {
-    return repository()->some_ids_might_support_action(b);
+    auto repo(_imp->env->package_database()->fetch_repository(repository_name()));
+    return repo->some_ids_might_support_action(b);
 }
 
 namespace

@@ -64,7 +64,7 @@ namespace paludis
         const Environment * const env;
         const QualifiedPackageName name;
         const VersionSpec version;
-        const RepositoryRepository * const repo;
+        const RepositoryName repository_name;
 
         const std::shared_ptr<LiteralMetadataStringSetKey> behaviours_key;
 
@@ -72,7 +72,7 @@ namespace paludis
             env(e.environment()),
             name(e.name()),
             version("0", { }),
-            repo(e.repository()),
+            repository_name(e.repository()),
             behaviours_key(RepositoryIDBehaviours::get_instance()->behaviours_key)
         {
         }
@@ -107,16 +107,16 @@ RepositoryID::canonical_form(const PackageIDCanonicalForm f) const
     {
         case idcf_full:
             return stringify(_imp->name) + "-" + stringify(_imp->version) +
-                "::" + stringify(_imp->repo->name());
+                "::" + stringify(_imp->repository_name);
 
         case idcf_no_version:
-            return stringify(_imp->name) + "::" + stringify(_imp->repo->name());
+            return stringify(_imp->name) + "::" + stringify(_imp->repository_name);
 
         case idcf_version:
             return stringify(_imp->version);
 
         case idcf_no_name:
-            return stringify(_imp->version) + "::" + stringify(_imp->repo->name());
+            return stringify(_imp->version) + "::" + stringify(_imp->repository_name);
 
         case last_idcf:
             break;
@@ -129,7 +129,7 @@ PackageDepSpec
 RepositoryID::uniquely_identifying_spec() const
 {
     return parse_user_package_dep_spec("=" + stringify(name()) + "-" + stringify(version()) +
-            + "::" + stringify(repository()->name()),
+            + "::" + stringify(repository_name()),
             _imp->env, { });
 }
 
@@ -145,10 +145,10 @@ RepositoryID::version() const
     return _imp->version;
 }
 
-const std::shared_ptr<const Repository>
-RepositoryID::repository() const
+const RepositoryName
+RepositoryID::repository_name() const
 {
-    return _imp->repo->shared_from_this();
+    return _imp->repository_name;
 }
 
 bool

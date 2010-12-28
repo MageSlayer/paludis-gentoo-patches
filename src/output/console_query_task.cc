@@ -211,8 +211,8 @@ ConsoleQueryTask::display_versions_by_repository(const PackageDepSpec &,
     std::list<RepositoryName> repo_names;
     PackageIDSequence::ConstIterator e(entries->begin()), e_end(entries->end());
     for ( ; e != e_end ; ++e)
-        if (repo_names.end() == std::find(repo_names.begin(), repo_names.end(), (*e)->repository()->name()))
-            repo_names.push_back((*e)->repository()->name());
+        if (repo_names.end() == std::find(repo_names.begin(), repo_names.end(), (*e)->repository_name()))
+            repo_names.push_back((*e)->repository_name());
 
     /* display versions, by repository. */
     std::list<RepositoryName>::const_iterator r(repo_names.begin()), r_end(repo_names.end());
@@ -225,7 +225,7 @@ ConsoleQueryTask::display_versions_by_repository(const PackageDepSpec &,
         {
             Context context("When displaying entry '" + stringify(**e) + "':'");
 
-            if ((*e)->repository()->name() == *r)
+            if ((*e)->repository_name() == *r)
             {
                 /* show the slot, if we're about to move onto a new slot */
                 std::string slot_name(slot_as_string(*e));

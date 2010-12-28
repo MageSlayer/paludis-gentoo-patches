@@ -256,7 +256,7 @@ namespace paludis
             ///\{
 
             FakePackageID(const Environment * const e,
-                    const std::shared_ptr<const FakeRepositoryBase> &,
+                    const RepositoryName &,
                     const QualifiedPackageName &, const VersionSpec &);
             ~FakePackageID();
 
@@ -266,7 +266,7 @@ namespace paludis
 
             virtual const QualifiedPackageName name() const;
             virtual const VersionSpec version() const;
-            virtual const std::shared_ptr<const Repository> repository() const;
+            virtual const RepositoryName repository_name() const;
             virtual PackageDepSpec uniquely_identifying_spec() const;
 
             virtual const std::shared_ptr<const MetadataValueKey<SlotName> > slot_key() const;

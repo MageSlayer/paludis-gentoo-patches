@@ -39,6 +39,7 @@
 #include <paludis/util/fs_path.hh>
 #include <paludis/util/fs_stat.hh>
 #include <paludis/output_manager.hh>
+#include <paludis/package_database.hh>
 #include <algorithm>
 #include <list>
 
@@ -158,7 +159,8 @@ FetchVisitor::visit(const FetchableURISpecTree::NodeType<FetchableURIDepSpec>::T
     if (! *_imp->labels.begin())
         throw ActionFailedError("No fetch action label available");
 
-    SourceURIFinder source_uri_finder(_imp->env, _imp->id->repository().get(),
+    auto repo(_imp->env->package_database()->fetch_repository(_imp->id->repository_name()));
+    SourceURIFinder source_uri_finder(_imp->env, repo.get(),
             node.spec()->original_url(), node.spec()->filename(), _imp->mirrors_name, _imp->get_mirrors_fn);
     (*_imp->labels.begin())->accept(source_uri_finder);
     for (SourceURIFinder::ConstIterator i(source_uri_finder.begin()), i_end(source_uri_finder.end()) ;
@@ -221,7 +223,7 @@ FetchVisitor::visit(const FetchableURISpecTree::NodeType<FetchableURIDepSpec>::T
                     .setenv("PNVR", stringify(_imp->id->name().package()) + "-" +
                             stringify(_imp->id->version()))
                     .setenv("CATEGORY", stringify(_imp->id->name().category()))
-                    .setenv("REPOSITORY", stringify(_imp->id->repository()->name()))
+                    .setenv("REPOSITORY", stringify(_imp->id->repository_name()))
                     .setenv("EAPI", stringify(_imp->eapi.name()))
                     .setenv("SLOT", "")
                     .setenv("PKGMANAGER", PALUDIS_PACKAGE "-" + stringify(PALUDIS_VERSION_MAJOR) + "." +

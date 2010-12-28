@@ -129,7 +129,7 @@ namespace test_cases
             TEST_CHECK_EQUAL(id->version(), VersionSpec("1.0", { }));
             TEST_CHECK_EQUAL(id->slot_key()->value(), SlotName("foo"));
             TEST_CHECK_EQUAL(id->name(), QualifiedPackageName("cat/pkg"));
-            TEST_CHECK_EQUAL(id->repository()->name(), RepositoryName("unpackaged"));
+            TEST_CHECK_EQUAL(id->repository_name(), RepositoryName("unpackaged"));
             TEST_CHECK(bool(id->fs_location_key()));
             TEST_CHECK_EQUAL(id->fs_location_key()->value(), FSPath("unpackaged_repository_TEST_dir/pkg"));
         }

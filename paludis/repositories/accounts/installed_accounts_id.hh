@@ -46,7 +46,7 @@ namespace paludis
 
             public:
                 InstalledAccountsID(const Environment * const,
-                        const QualifiedPackageName &, const std::shared_ptr<const Repository> &,
+                        const QualifiedPackageName &, const RepositoryName &,
                         const bool is_user);
                 ~InstalledAccountsID();
 
@@ -54,7 +54,7 @@ namespace paludis
 
                 virtual const QualifiedPackageName name() const;
                 virtual const VersionSpec version() const;
-                virtual const std::shared_ptr<const Repository> repository() const;
+                virtual const RepositoryName repository_name() const;
                 virtual PackageDepSpec uniquely_identifying_spec() const;
 
                 ///\name Specific metadata keys

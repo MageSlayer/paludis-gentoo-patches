@@ -228,7 +228,7 @@ CRANRepository::need_ids() const
         if (is_file_with_extension(*d, ".DESCRIPTION", { }))
         {
             std::shared_ptr<cranrepository::CRANPackageID> id(std::make_shared<cranrepository::CRANPackageID>(_imp->params.environment(),
-                        shared_from_this(), *d));
+                        name(), *d));
             if (! _imp->ids.insert(std::make_pair(id->name(), id)).second)
                 Log::get_instance()->message("cran.id.duplicate", ll_warning, lc_context)
                     << "Couldn't insert package '" << *id << "' due to name collision";

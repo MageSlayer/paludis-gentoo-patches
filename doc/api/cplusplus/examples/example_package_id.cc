@@ -59,7 +59,7 @@ int main(int argc, char * argv[])
             /* Start by outputting some basic properties: */
             cout << left << setw(30) << "    Name:" << " " << (*i)->name() << endl;
             cout << left << setw(30) << "    Version:" << " " << (*i)->version() << endl;
-            cout << left << setw(30) << "    Repository Name:" << " " << (*i)->repository()->name() << endl;
+            cout << left << setw(30) << "    Repository Name:" << " " << (*i)->repository_name() << endl;
 
             /* The PackageID::canonical_form method should be used when
              * outputting a package (the ostream << operator uses this). */

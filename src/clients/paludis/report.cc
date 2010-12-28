@@ -123,7 +123,7 @@ namespace
 
                 comma = true;
             }
-            cout << " in '" << (*o)->repository()->name() << "'";
+            cout << " in '" << (*o)->repository_name() << "'";
             outer_comma = true;
         }
         ++_n_errors;

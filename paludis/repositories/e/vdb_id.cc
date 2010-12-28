@@ -26,7 +26,7 @@ using namespace paludis::erepository;
 
 VDBID::VDBID(const QualifiedPackageName & q, const VersionSpec & v,
         const Environment * const e,
-        const std::shared_ptr<const Repository> & r,
+        const RepositoryName & r,
         const FSPath & f) :
     EInstalledRepositoryID(q, v, e, r, f)
 {

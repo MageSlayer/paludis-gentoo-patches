@@ -74,7 +74,7 @@ namespace paludis
 
         const QualifiedPackageName name;
         const VersionSpec version;
-        const std::shared_ptr<const Repository> repository;
+        const RepositoryName repository_name;
         const std::shared_ptr<const LiteralMetadataStringSetKey> behaviours_key;
 
         mutable Mutex mutex;
@@ -83,12 +83,12 @@ namespace paludis
         const bool is_user;
 
         Imp(const Environment * const e,
-                const QualifiedPackageName & q, const std::shared_ptr<const Repository> & r,
+                const QualifiedPackageName & q, const RepositoryName & r,
                 const bool u) :
             env(e),
             name(q),
             version("0", { }),
-            repository(r),
+            repository_name(r),
             behaviours_key(InstalledAccountsIDBehaviours::get_instance()->behaviours_key),
             is_user(u)
         {
@@ -97,7 +97,7 @@ namespace paludis
 }
 
 InstalledAccountsID::InstalledAccountsID(const Environment * const e,
-        const QualifiedPackageName & q, const std::shared_ptr<const Repository> & r, const bool u) :
+        const QualifiedPackageName & q, const RepositoryName & r, const bool u) :
     Pimp<InstalledAccountsID>(e, q, r, u),
     _imp(Pimp<InstalledAccountsID>::_imp)
 {
@@ -191,10 +191,10 @@ InstalledAccountsID::version() const
     return _imp->version;
 }
 
-const std::shared_ptr<const Repository>
-InstalledAccountsID::repository() const
+const RepositoryName
+InstalledAccountsID::repository_name() const
 {
-    return _imp->repository;
+    return _imp->repository_name;
 }
 
 const std::string
@@ -203,16 +203,16 @@ InstalledAccountsID::canonical_form(const PackageIDCanonicalForm f) const
     switch (f)
     {
         case idcf_full:
-            return stringify(name()) + "-" + stringify(version()) + "::" + stringify(repository()->name());
+            return stringify(name()) + "-" + stringify(version()) + "::" + stringify(repository_name());
 
         case idcf_no_version:
-            return stringify(name()) + "::" + stringify(repository()->name());
+            return stringify(name()) + "::" + stringify(repository_name());
 
         case idcf_version:
             return stringify(version());
 
         case idcf_no_name:
-            return stringify(version()) + "::" + stringify(repository()->name());
+            return stringify(version()) + "::" + stringify(repository_name());
 
         case last_idcf:
             break;
@@ -224,7 +224,7 @@ InstalledAccountsID::canonical_form(const PackageIDCanonicalForm f) const
 PackageDepSpec
 InstalledAccountsID::uniquely_identifying_spec() const
 {
-    return parse_user_package_dep_spec(stringify(name()) + "::" + stringify(repository()->name()), _imp->env, { });
+    return parse_user_package_dep_spec(stringify(name()) + "::" + stringify(repository_name()), _imp->env, { });
 }
 
 const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > >

@@ -41,6 +41,8 @@
 #include <paludis/action.hh>
 #include <paludis/dep_label.hh>
 #include <paludis/user_dep_spec.hh>
+#include <paludis/environment.hh>
+#include <paludis/package_database.hh>
 #include <paludis/util/tokeniser.hh>
 #include <string>
 #include <algorithm>
@@ -56,10 +58,7 @@ namespace paludis
     struct Imp<CRANPackageID>
     {
         const Environment * const env;
-
-        const std::shared_ptr<const Repository> repository;
-        const std::shared_ptr<const CRANRepository> cran_repository;
-        const std::shared_ptr<const CRANInstalledRepository> cran_installed_repository;
+        const RepositoryName repository_name;
 
         QualifiedPackageName name;
         VersionSpec version;
@@ -77,11 +76,9 @@ namespace paludis
         std::shared_ptr<DependenciesLabelSequence> suggests_labels;
         std::shared_ptr<DependenciesLabelSequence> depends_labels;
 
-        Imp(const Environment * const e,
-                const std::shared_ptr<const CRANRepository> & r, const FSPath & f) :
+        Imp(const Environment * const e, const RepositoryName & r, const FSPath & f) :
             env(e),
-            repository(r),
-            cran_repository(r),
+            repository_name(r),
             name("cran/" + cran_name_to_internal(strip_trailing_string(f.basename(), ".DESCRIPTION"))),
             version("0", { }),
             suggests_labels(std::make_shared<DependenciesLabelSequence>()),
@@ -91,14 +88,12 @@ namespace paludis
             depends_labels->push_back(std::make_shared<DependenciesBuildLabel>("Depends", return_literal_function(true)));
         }
 
-        Imp(const Environment * const e,
-                const std::shared_ptr<const CRANRepository> & c, const CRANPackageID * const r, const std::string & t) :
+        Imp(const Environment * const e, const RepositoryName & c, const CRANPackageID * const r, const std::string & t) :
             env(e),
-            repository(c),
-            cran_repository(c),
+            repository_name(c),
             name("cran/" + cran_name_to_internal(t)),
             version(r->version()),
-            contained_in_key(std::make_shared<PackageIDKey>("Contained", "Contained in", r, mkt_normal)),
+            contained_in_key(std::make_shared<PackageIDKey>(e, "Contained", "Contained in", r, mkt_normal)),
             suggests_labels(std::make_shared<DependenciesLabelSequence>()),
             depends_labels(std::make_shared<DependenciesLabelSequence>())
         {
@@ -108,7 +103,7 @@ namespace paludis
     };
 }
 
-CRANPackageID::CRANPackageID(const Environment * const env, const std::shared_ptr<const CRANRepository> & r, const FSPath & f) :
+CRANPackageID::CRANPackageID(const Environment * const env, const RepositoryName & r, const FSPath & f) :
     Pimp<CRANPackageID>(env, r, f),
     _imp(Pimp<CRANPackageID>::_imp)
 {
@@ -229,7 +224,7 @@ CRANPackageID::CRANPackageID(const Environment * const env, const std::shared_pt
                     t != t_end ; ++t)
             {
                 if (*t != stringify(name().package()))
-                    _imp->contains_key->push_back(std::make_shared<CRANPackageID>(_imp->env, _imp->cran_repository, this, *t));
+                    _imp->contains_key->push_back(std::make_shared<CRANPackageID>(_imp->env, r, this, *t));
                 else
                 {
                     /* yay CRAN... */
@@ -277,7 +272,7 @@ CRANPackageID::CRANPackageID(const Environment * const env, const std::shared_pt
 }
 
 CRANPackageID::CRANPackageID(const Environment * const e,
-        const std::shared_ptr<const CRANRepository> & c, const CRANPackageID * const r, const std::string & t) :
+        const RepositoryName & c, const CRANPackageID * const r, const std::string & t) :
     Pimp<CRANPackageID>(e, c, r, t),
     _imp(Pimp<CRANPackageID>::_imp)
 {
@@ -313,10 +308,10 @@ CRANPackageID::version() const
     return _imp->version;
 }
 
-const std::shared_ptr<const Repository>
-CRANPackageID::repository() const
+const RepositoryName
+CRANPackageID::repository_name() const
 {
-    return _imp->repository;
+    return _imp->repository_name;
 }
 
 const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > >
@@ -441,16 +436,16 @@ CRANPackageID::canonical_form(const PackageIDCanonicalForm f) const
     switch (f)
     {
         case idcf_full:
-            return stringify(_imp->name) + "-" + stringify(_imp->version) + "::" + stringify(_imp->repository->name());
+            return stringify(_imp->name) + "-" + stringify(_imp->version) + "::" + stringify(_imp->repository_name);
 
         case idcf_version:
             return stringify(_imp->version);
 
         case idcf_no_version:
-            return stringify(_imp->name) + "::" + stringify(_imp->repository->name());
+            return stringify(_imp->name) + "::" + stringify(_imp->repository_name);
 
         case idcf_no_name:
-            return stringify(version()) + "::" + stringify(repository()->name());
+            return stringify(version()) + "::" + stringify(_imp->repository_name);
 
         case last_idcf:
             break;
@@ -462,7 +457,7 @@ CRANPackageID::canonical_form(const PackageIDCanonicalForm f) const
 PackageDepSpec
 CRANPackageID::uniquely_identifying_spec() const
 {
-    return parse_user_package_dep_spec("=" + stringify(name()) + "-" + stringify(version()) + "::" + stringify(repository()->name()),
+    return parse_user_package_dep_spec("=" + stringify(name()) + "-" + stringify(version()) + "::" + stringify(_imp->repository_name),
             _imp->env, { });
 }
 
@@ -470,28 +465,21 @@ namespace
 {
     struct SupportsActionQuery
     {
-        const std::shared_ptr<const CRANRepository> cran_repository;
-        const std::shared_ptr<const CRANInstalledRepository> cran_installed_repository;
-
-        SupportsActionQuery(const std::shared_ptr<const CRANRepository> & c, const std::shared_ptr<const CRANInstalledRepository> & r) :
-            cran_repository(c),
-            cran_installed_repository(r)
-        {
-        }
+        bool is_installed;
 
         bool visit(const SupportsActionTest<FetchAction> &) const
         {
-            return bool(cran_repository);
+            return ! is_installed;
         }
 
         bool visit(const SupportsActionTest<PretendFetchAction> &) const
         {
-            return bool(cran_repository);
+            return ! is_installed;
         }
 
         bool visit(const SupportsActionTest<InstallAction> &) const
         {
-            return bool(cran_repository);
+            return ! is_installed;
         }
 
         bool visit(const SupportsActionTest<ConfigAction> &) const
@@ -519,7 +507,8 @@ namespace
 bool
 CRANPackageID::supports_action(const SupportsActionTestBase & b) const
 {
-    SupportsActionQuery q(_imp->cran_repository, _imp->cran_installed_repository);
+    auto repo(_imp->env->package_database()->fetch_repository(repository_name()));
+    SupportsActionQuery q{bool(repo->installed_root_key())};
     return b.accept_returning<bool>(q);
 }
 

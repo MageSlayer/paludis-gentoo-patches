@@ -224,9 +224,10 @@ ImportCommand::run(
         for (PackageIDSequence::ConstIterator i(old_ids->begin()), i_end(old_ids->end()) ;
                 i != i_end ; ++i)
         {
-            if (! (*i)->repository()->format_key())
+            auto repo(env->package_database()->fetch_repository((*i)->repository_name()));
+            if (! repo->format_key())
                 continue;
-            if ((*i)->repository()->format_key()->value() != "installed_unpackaged")
+            if (repo->format_key()->value() != "installed_unpackaged")
                 continue;
             old_id = *i;
             break;

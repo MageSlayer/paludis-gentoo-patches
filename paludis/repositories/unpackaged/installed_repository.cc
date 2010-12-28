@@ -49,6 +49,7 @@
 #include <paludis/selection.hh>
 #include <paludis/hook.hh>
 #include <paludis/common_sets.hh>
+#include <paludis/package_database.hh>
 #include <sstream>
 #include <sys/time.h>
 
@@ -274,10 +275,11 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
     if (! is_suitable_destination_for(m.package_id()))
         throw ActionFailedError("Not a suitable destination for '" + stringify(*m.package_id()) + "'");
 
+    auto repo(_imp->params.environment()->package_database()->fetch_repository(m.package_id()->repository_name()));
     FSPath install_under("/");
     {
-        Repository::MetadataConstIterator k(m.package_id()->repository()->find_metadata("install_under"));
-        if (k == m.package_id()->repository()->end_metadata())
+        Repository::MetadataConstIterator k(repo->find_metadata("install_under"));
+        if (k == repo->end_metadata())
             throw ActionFailedError("Could not fetch install_under key from owning repository");
         const MetadataValueKey<FSPath> * kk(simple_visitor_cast<const MetadataValueKey<FSPath> >(**k));
         if (! kk)
@@ -287,8 +289,8 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
 
     int rewrite_ids_over_to_root(-1);
     {
-        Repository::MetadataConstIterator k(m.package_id()->repository()->find_metadata("rewrite_ids_over_to_root"));
-        if (k == m.package_id()->repository()->end_metadata())
+        Repository::MetadataConstIterator k(repo->find_metadata("rewrite_ids_over_to_root"));
+        if (k == repo->end_metadata())
             throw ActionFailedError("Could not fetch rewrite_ids_over_to_root key from owning repository");
         const MetadataValueKey<long> * kk(simple_visitor_cast<const MetadataValueKey<long> >(**k));
         if (! kk)
@@ -333,7 +335,7 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
 
     {
         SafeOFStream source_repository_file(target_ver_dir / "source_repository", -1, true);
-        source_repository_file << m.package_id()->repository()->name() << std::endl;
+        source_repository_file << m.package_id()->repository_name() << std::endl;
     }
 
     if (m.package_id()->short_description_key())
@@ -394,9 +396,10 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
 }
 
 bool
-InstalledUnpackagedRepository::is_suitable_destination_for(const std::shared_ptr<const PackageID> & e) const
+InstalledUnpackagedRepository::is_suitable_destination_for(const std::shared_ptr<const PackageID> & id) const
 {
-    std::string f(e->repository()->format_key() ? e->repository()->format_key()->value() : "");
+    auto repo(_imp->params.environment()->package_database()->fetch_repository(id->repository_name()));
+    std::string f(repo->format_key() ? repo->format_key()->value() : "");
     return f == "unpackaged";
 }
 

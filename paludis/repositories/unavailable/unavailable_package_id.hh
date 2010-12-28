@@ -50,7 +50,7 @@ namespace paludis
             NamedValue<n::from_repositories, std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > > from_repositories;
             NamedValue<n::mask, std::shared_ptr<const Mask> > mask;
             NamedValue<n::name, QualifiedPackageName> name;
-            NamedValue<n::repository, const UnavailableRepository *> repository;
+            NamedValue<n::repository, RepositoryName> repository;
             NamedValue<n::repository_description, std::shared_ptr<const MetadataValueKey<std::string> > > repository_description;
             NamedValue<n::repository_homepage, std::shared_ptr<const MetadataValueKey<std::string> > > repository_homepage;
             NamedValue<n::slot, SlotName> slot;
@@ -75,7 +75,7 @@ namespace paludis
                  const std::string canonical_form(const PackageIDCanonicalForm) const;
                  const QualifiedPackageName name() const;
                  const VersionSpec version() const;
-                 const std::shared_ptr<const Repository> repository() const;
+                 const RepositoryName repository_name() const;
                  virtual PackageDepSpec uniquely_identifying_spec() const;
 
                  const std::shared_ptr<const MetadataValueKey<SlotName> > slot_key() const;

@@ -336,7 +336,7 @@ VirtualsRepository::make_virtual_package_id(
         throw InternalError(PALUDIS_HERE, "tried to make a virtual package id using '" + stringify(virtual_name) + "', '"
                 + stringify(*provider) + "'");
 
-    return std::make_shared<virtuals::VirtualsPackageID>(_imp->env, shared_from_this(), virtual_name, provider, true);
+    return std::make_shared<virtuals::VirtualsPackageID>(_imp->env, name(), virtual_name, provider, true);
 }
 
 bool

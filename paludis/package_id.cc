@@ -150,10 +150,10 @@ PackageIDSetComparator::operator() (const std::shared_ptr<const PackageID> & a,
     if (a->version() > b->version())
         return false;
 
-    if (a->repository()->name().value() < b->repository()->name().value())
+    if (a->repository_name().value() < b->repository_name().value())
         return true;
 
-    if (a->repository()->name().value() > b->repository()->name().value())
+    if (a->repository_name().value() > b->repository_name().value())
         return false;
 
     return a->arbitrary_less_than_comparison(*b);
@@ -164,7 +164,7 @@ paludis::operator== (const PackageID & a, const PackageID & b)
 {
     return (a.name() == b.name())
         && (a.version() == b.version())
-        && (a.repository()->name() == b.repository()->name())
+        && (a.repository_name() == b.repository_name())
         && (! a.arbitrary_less_than_comparison(b))
         && (! b.arbitrary_less_than_comparison(a));
 }
@@ -214,8 +214,8 @@ PackageIDComparator::operator() (const std::shared_ptr<const PackageID> & a,
         return false;
 
     std::unordered_map<RepositoryName, unsigned, Hash<RepositoryName> >::const_iterator
-        ma(_imp->m.find(a->repository()->name())),
-        mb(_imp->m.find(b->repository()->name()));
+        ma(_imp->m.find(a->repository_name())),
+        mb(_imp->m.find(b->repository_name()));
 
     if (ma == _imp->m.end() || mb == _imp->m.end())
         throw InternalError(PALUDIS_HERE, "Repository not in database");
@@ -234,7 +234,7 @@ PackageID::hash() const
     return
         (Hash<QualifiedPackageName>()(name()) << 0) ^
         (Hash<VersionSpec>()(version()) << 5) ^
-        (Hash<RepositoryName>()(repository()->name()) << 9) ^
+        (Hash<RepositoryName>()(repository_name()) << 9) ^
         (extra_hash_value() << 13);
 }
 

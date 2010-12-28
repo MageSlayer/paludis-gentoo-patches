@@ -39,37 +39,37 @@ namespace paludis
             private Pimp<AccountsRepositoryStore>
         {
             private:
-                void _load(const std::shared_ptr<const Repository> & repo);
+                void _load(const RepositoryName &);
 
                 void _load_one(
-                        const std::shared_ptr<const Repository> & repo,
+                        const RepositoryName &,
                         const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & from_repo,
                         const FSPath & dir);
 
                 void _load_one_users(
-                        const std::shared_ptr<const Repository> & repo,
+                        const RepositoryName &,
                         const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & from_repo,
                         const FSPath & dir);
 
                 void _load_one_user(
-                        const std::shared_ptr<const Repository> & repo,
+                        const RepositoryName &,
                         const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & from_repo,
                         const FSPath & file);
 
                 void _load_one_groups(
-                        const std::shared_ptr<const Repository> & repo,
+                        const RepositoryName &,
                         const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & from_repo,
                         const FSPath & dir);
 
                 void _load_one_group(
-                        const std::shared_ptr<const Repository> & repo,
+                        const RepositoryName &,
                         const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & from_repo,
                         const FSPath & file);
 
             public:
                 AccountsRepositoryStore(
                         const Environment * const,
-                        const AccountsRepository * const,
+                        const RepositoryName &,
                         const bool installed);
 
                 ~AccountsRepositoryStore();

@@ -371,17 +371,7 @@ std::string
 ExtraLiteralMetadataValueKeyMethods<std::shared_ptr<const PackageID> >::pretty_print(const Formatter<PackageID> & f) const
 {
     std::shared_ptr<const PackageID> v(static_cast<const LiteralMetadataValueKey<std::shared_ptr<const PackageID> > *>(this)->value());
-    if (v->repository()->installed_root_key())
-        return f.format(*v, format::Installed());
-    else if (v->supports_action(SupportsActionTest<InstallAction>()))
-    {
-        if (v->masked())
-            return f.format(*v, format::Plain());
-        else
-            return f.format(*v, format::Installable());
-    }
-    else
-        return f.format(*v, format::Plain());
+    return f.format(*v, format::Plain());
 }
 
 template <typename T_>

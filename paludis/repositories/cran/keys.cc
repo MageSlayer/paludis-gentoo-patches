@@ -32,6 +32,8 @@
 #include <paludis/formatter.hh>
 #include <paludis/action.hh>
 #include <paludis/repository.hh>
+#include <paludis/environment.hh>
+#include <paludis/package_database.hh>
 #include <functional>
 
 using namespace paludis;
@@ -87,8 +89,9 @@ PackageIDSequenceKey::pretty_print_flat(const Formatter<PackageID> & f) const
                 std::cref(f), _1, format::Plain()));
 }
 
-PackageIDKey::PackageIDKey(const std::string & r, const std::string & h,
+PackageIDKey::PackageIDKey(const Environment * const e, const std::string & r, const std::string & h,
         const CRANPackageID * const v, const MetadataKeyType t) :
+    _env(e),
     _v(v),
     _r(r),
     _h(h),
@@ -123,7 +126,8 @@ PackageIDKey::type() const
 std::string
 PackageIDKey::pretty_print(const Formatter<PackageID> & f) const
 {
-    if (_v->repository()->installed_root_key())
+    auto repo(_env->package_database()->fetch_repository(_v->repository_name()));
+    if (repo->installed_root_key())
         return f.format(*_v, format::Installed());
     else if (_v->supports_action(SupportsActionTest<InstallAction>()))
     {

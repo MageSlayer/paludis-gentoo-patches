@@ -159,8 +159,10 @@ namespace paludis
 
             /**
              * What is our owning repository?
+             *
+             * \since 0.58
              */
-            virtual const std::shared_ptr<const Repository> repository() const = 0;
+            virtual const RepositoryName repository_name() const = 0;
 
             /**
              * Return a PackageDepSpec that uniquely identifies us.

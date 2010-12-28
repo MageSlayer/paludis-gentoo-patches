@@ -43,9 +43,9 @@ namespace paludis
                 virtual void need_masks_added() const;
 
             public:
-                CRANPackageID(const Environment * const, const std::shared_ptr<const CRANRepository> &,
+                CRANPackageID(const Environment * const, const RepositoryName &,
                         const FSPath &);
-                CRANPackageID(const Environment * const, const std::shared_ptr<const CRANRepository> &,
+                CRANPackageID(const Environment * const, const RepositoryName &,
                         const CRANPackageID * const, const std::string &);
                 ~CRANPackageID();
 
@@ -53,7 +53,7 @@ namespace paludis
 
                 virtual const QualifiedPackageName name() const;
                 virtual const VersionSpec version() const;
-                virtual const std::shared_ptr<const Repository> repository() const;
+                virtual const RepositoryName repository_name() const;
                 virtual PackageDepSpec uniquely_identifying_spec() const;
 
                 virtual const std::shared_ptr<const MetadataValueKey<SlotName> > slot_key() const;
@@ -77,7 +77,6 @@ namespace paludis
                 virtual const std::shared_ptr<const MetadataValueKey<FSPath> > fs_location_key() const;
                 virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > behaviours_key() const;
                 virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > from_repositories_key() const;
- 
 
                 virtual bool supports_action(const SupportsActionTestBase &) const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual void perform_action(Action &) const PALUDIS_ATTRIBUTE((noreturn));

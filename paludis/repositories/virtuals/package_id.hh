@@ -73,7 +73,7 @@ namespace paludis
             public:
                 VirtualsPackageID(
                         const Environment * const,
-                        const std::shared_ptr<const Repository> & repo,
+                        const RepositoryName &,
                         const QualifiedPackageName & virtual_name,
                         const std::shared_ptr<const PackageID> & virtual_for,
                         const bool exact);
@@ -84,7 +84,7 @@ namespace paludis
 
                 virtual const QualifiedPackageName name() const;
                 virtual const VersionSpec version() const;
-                virtual const std::shared_ptr<const Repository> repository() const;
+                virtual const RepositoryName repository_name() const;
                 virtual PackageDepSpec uniquely_identifying_spec() const;
 
                 virtual const std::shared_ptr<const MetadataValueKey<SlotName> > slot_key() const;

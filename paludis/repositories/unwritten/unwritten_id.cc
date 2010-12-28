@@ -43,7 +43,7 @@ namespace paludis
         const Environment * const env;
         const QualifiedPackageName name;
         const VersionSpec version;
-        const UnwrittenRepository * const repo;
+        const RepositoryName repository_name;
 
         const std::shared_ptr<const MetadataValueKey<SlotName> > slot_key;
         const std::shared_ptr<const MetadataValueKey<std::string> > description_key;
@@ -63,7 +63,7 @@ namespace paludis
             env(e.environment()),
             name(e.name()),
             version(e.version()),
-            repo(e.repository()),
+            repository_name(e.repository()),
             slot_key(e.slot()),
             description_key(e.description()),
             added_by_key(e.added_by()),
@@ -129,18 +129,18 @@ UnwrittenID::canonical_form(const PackageIDCanonicalForm f) const
     {
         case idcf_full:
             return stringify(_imp->name) + "-" + stringify(_imp->version) +
-                ":" + stringify(slot_key()->value()) + "::" + stringify(_imp->repo->name());
+                ":" + stringify(slot_key()->value()) + "::" + stringify(_imp->repository_name);
 
         case idcf_no_version:
             return stringify(_imp->name) + ":" + stringify(slot_key()->value()) +
-                "::" + stringify(_imp->repo->name());
+                "::" + stringify(_imp->repository_name);
 
         case idcf_version:
             return stringify(_imp->version);
 
         case idcf_no_name:
             return stringify(_imp->version) +
-                ":" + stringify(slot_key()->value()) + "::" + stringify(_imp->repo->name());
+                ":" + stringify(slot_key()->value()) + "::" + stringify(_imp->repository_name);
 
         case last_idcf:
             break;
@@ -153,7 +153,7 @@ PackageDepSpec
 UnwrittenID::uniquely_identifying_spec() const
 {
     return parse_user_package_dep_spec("=" + stringify(name()) + "-" + stringify(version()) +
-            (slot_key() ? ":" + stringify(slot_key()->value()) : "") + "::" + stringify(repository()->name()),
+            (slot_key() ? ":" + stringify(slot_key()->value()) : "") + "::" + stringify(repository_name()),
             _imp->env, { });
 }
 
@@ -169,10 +169,10 @@ UnwrittenID::version() const
     return _imp->version;
 }
 
-const std::shared_ptr<const Repository>
-UnwrittenID::repository() const
+const RepositoryName
+UnwrittenID::repository_name() const
 {
-    return _imp->repo->shared_from_this();
+    return _imp->repository_name;
 }
 
 bool

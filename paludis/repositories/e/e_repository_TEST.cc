@@ -389,6 +389,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
+            env.package_database()->add_repository(1, repo);
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
             {
@@ -434,6 +435,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
+            env.package_database()->add_repository(1, repo);
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
             {
@@ -874,6 +876,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "build"));
             std::shared_ptr<ERepository> repo(std::static_pointer_cast<ERepository>(ERepository::repository_factory_create(&env,
                             std::bind(from_keys, keys, std::placeholders::_1))));
+            env.package_database()->add_repository(1, repo);
             repo->make_manifest(QualifiedPackageName("category/package"));
 
             std::multiset<std::string> made_manifest, reference_manifest;

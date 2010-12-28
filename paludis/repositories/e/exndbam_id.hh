@@ -36,7 +36,7 @@ namespace paludis
             public:
                 ExndbamID(const QualifiedPackageName &, const VersionSpec &,
                         const Environment * const,
-                        const std::shared_ptr<const Repository> &,
+                        const RepositoryName &,
                         const FSPath & file,
                         const NDBAM * const);
 

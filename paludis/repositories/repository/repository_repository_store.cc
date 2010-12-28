@@ -18,6 +18,7 @@
  */
 
 #include <paludis/repositories/repository/repository_repository_store.hh>
+#include <paludis/repositories/repository/repository_repository.hh>
 #include <paludis/repositories/repository/repository_id.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/stringify.hh>
@@ -94,7 +95,7 @@ RepositoryRepositoryStore::_populate_one(const RepositoryName & repo_name)
     const std::shared_ptr<RepositoryID> id(std::make_shared<RepositoryID>(make_named_values<RepositoryIDParams>(
                     n::environment() = _imp->env,
                     n::name() = CategoryNamePart("repository") + PackageNamePart(stringify(repo_name)),
-                    n::repository() = _imp->repo
+                    n::repository() = _imp->repo->name()
                     )));
 
     _imp->categories->insert(id->name().category());

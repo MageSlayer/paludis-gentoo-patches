@@ -1247,7 +1247,7 @@ namespace
                 ! (*decision.destination()->replacing()->begin())->from_repositories_key()->value()->empty() &&
                 (*decision.destination()->replacing()->begin())->from_repositories_key()->value()->end() ==
                 (*decision.destination()->replacing()->begin())->from_repositories_key()->value()->find(stringify(
-                        decision.origin_id()->repository()->name())))
+                        decision.origin_id()->repository_name())))
         {
             cout << fuc(fs_change_formerly_from(), fv<'r'>(join(
                             (*decision.destination()->replacing()->begin())->from_repositories_key()->value()->begin(),

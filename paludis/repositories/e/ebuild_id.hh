@@ -27,7 +27,6 @@
 
 namespace paludis
 {
-    class ERepository;
     class EclassMtimes;
 
     namespace erepository
@@ -49,7 +48,7 @@ namespace paludis
             public:
                 EbuildID(const QualifiedPackageName &, const VersionSpec &,
                         const Environment * const e,
-                        const std::shared_ptr<const ERepository> &,
+                        const RepositoryName &,
                         const FSPath & file,
                         const std::string & guessed_eapi,
                         const time_t master_mtime,
@@ -62,7 +61,7 @@ namespace paludis
 
                 virtual const QualifiedPackageName name() const;
                 virtual const VersionSpec version() const;
-                virtual const std::shared_ptr<const Repository> repository() const;
+                virtual const RepositoryName repository_name() const;
 
                 virtual const std::shared_ptr<const MetadataValueKey<SlotName> > slot_key() const;
                 virtual const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > > virtual_for_key() const;
@@ -115,8 +114,6 @@ namespace paludis
 
                 virtual std::size_t extra_hash_value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                virtual std::shared_ptr<const ERepository> e_repository() const;
 
                 void set_eapi(const std::string &) const;
                 std::string guessed_eapi_name() const;

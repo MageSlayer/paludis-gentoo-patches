@@ -64,16 +64,16 @@ namespace paludis
     struct Imp<AccountsRepositoryStore>
     {
         const Environment * const env;
-        const AccountsRepository * const repo;
+        const RepositoryName repository_name;
         const bool installed;
 
         std::shared_ptr<CategoryNamePartSet> categories;
         mutable PackageNames package_names;
         mutable IDs ids;
 
-        Imp(const Environment * const e, const AccountsRepository * const r, const bool i) :
+        Imp(const Environment * const e, const RepositoryName & r, const bool i) :
             env(e),
-            repo(r),
+            repository_name(r),
             installed(i),
             categories(std::make_shared<CategoryNamePartSet>())
         {
@@ -85,11 +85,11 @@ namespace paludis
 
 AccountsRepositoryStore::AccountsRepositoryStore(
         const Environment * const env,
-        const AccountsRepository * const repo,
+        const RepositoryName & r,
         const bool installed) :
-    Pimp<AccountsRepositoryStore>(env, repo, installed)
+    Pimp<AccountsRepositoryStore>(env, r, installed)
 {
-    _load(repo->shared_from_this());
+    _load(r);
 }
 
 AccountsRepositoryStore::~AccountsRepositoryStore()
@@ -97,7 +97,7 @@ AccountsRepositoryStore::~AccountsRepositoryStore()
 }
 
 void
-AccountsRepositoryStore::_load(const std::shared_ptr<const Repository> & repo)
+AccountsRepositoryStore::_load(const RepositoryName & repository_name)
 {
     Context context("When loading data for AccountsRepository:");
 
@@ -134,13 +134,13 @@ AccountsRepositoryStore::_load(const std::shared_ptr<const Repository> & repo)
         std::shared_ptr<Set<std::string> > r_set(std::make_shared<Set<std::string>>());
         r_set->insert(stringify((*r)->name()));
         std::shared_ptr<LiteralMetadataStringSetKey> r_key(std::make_shared<LiteralMetadataStringSetKey>("defined_by", "Defined by repository", mkt_internal, r_set));
-        _load_one(repo, r_key, dir);
+        _load_one(repository_name, r_key, dir);
     }
 }
 
 void
 AccountsRepositoryStore::_load_one(
-        const std::shared_ptr<const Repository> & repo,
+        const RepositoryName & repository_name,
         const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & from_repo,
         const FSPath & dir)
 {
@@ -148,29 +148,29 @@ AccountsRepositoryStore::_load_one(
 
     FSPath users_dir(dir / "users");
     if (users_dir.stat().is_directory_or_symlink_to_directory())
-        _load_one_users(repo, from_repo, users_dir);
+        _load_one_users(repository_name, from_repo, users_dir);
     else
         Log::get_instance()->message("accounts.no_users", ll_debug, lc_context) <<
-            "Repository " << repo->name() << " has accounts_repository_data_location " << dir << ", but no users subdirectory";
+            "Repository " << repository_name << " has accounts_repository_data_location " << dir << ", but no users subdirectory";
 
     FSPath groups_dir(dir / "groups");
     if (groups_dir.stat().is_directory_or_symlink_to_directory())
-        _load_one_groups(repo, from_repo, groups_dir);
+        _load_one_groups(repository_name, from_repo, groups_dir);
     else
         Log::get_instance()->message("accounts.no_groups", ll_debug, lc_context) <<
-            "Repository " << repo->name() << " has accounts_repository_data_location " << dir << ", but no groups subdirectory";
+            "Repository " << repository_name << " has accounts_repository_data_location " << dir << ", but no groups subdirectory";
 
 }
 
 void
 AccountsRepositoryStore::_load_one_users(
-        const std::shared_ptr<const Repository> & repo,
+        const RepositoryName & repository_name,
         const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & from_repo,
         const FSPath & dir)
 {
     for (FSIterator d(dir, { fsio_inode_sort }), d_end ; d != d_end ; ++d)
         if (is_file_with_extension(*d, ".conf", { }))
-            _load_one_user(repo, from_repo, *d);
+            _load_one_user(repository_name, from_repo, *d);
         else
             Log::get_instance()->message("accounts.unknown_file", ll_debug, lc_context) <<
                 "Don't know what to do with '" << *d << "'";
@@ -178,7 +178,7 @@ AccountsRepositoryStore::_load_one_users(
 
 void
 AccountsRepositoryStore::_load_one_user(
-        const std::shared_ptr<const Repository> & repo,
+        const RepositoryName & repository_name,
         const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & from_repo,
         const FSPath & filename)
 {
@@ -213,20 +213,20 @@ AccountsRepositoryStore::_load_one_user(
         q->second = std::make_shared<PackageIDSequence>();
 
     if (_imp->installed)
-        q->second->push_back(std::make_shared<InstalledAccountsID>(_imp->env, qpn, repo, true));
+        q->second->push_back(std::make_shared<InstalledAccountsID>(_imp->env, qpn, repository_name, true));
     else
-        q->second->push_back(std::make_shared<AccountsID>(_imp->env, qpn, repo, from_repo, filename, true, masked));
+        q->second->push_back(std::make_shared<AccountsID>(_imp->env, qpn, repository_name, from_repo, filename, true, masked));
 }
 
 void
 AccountsRepositoryStore::_load_one_groups(
-        const std::shared_ptr<const Repository> & repo,
+        const RepositoryName & repository_name,
         const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & from_repo,
         const FSPath & dir)
 {
     for (FSIterator d(dir, { fsio_inode_sort }), d_end ; d != d_end ; ++d)
         if (is_file_with_extension(*d, ".conf", { }))
-            _load_one_group(repo, from_repo, *d);
+            _load_one_group(repository_name, from_repo, *d);
         else
             Log::get_instance()->message("accounts.unknown_file", ll_debug, lc_context) <<
                 "Don't know what to do with '" << *d << "'";
@@ -234,7 +234,7 @@ AccountsRepositoryStore::_load_one_groups(
 
 void
 AccountsRepositoryStore::_load_one_group(
-        const std::shared_ptr<const Repository> & repo,
+        const RepositoryName & repository_name,
         const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & from_repo,
         const FSPath & filename)
 {
@@ -269,9 +269,9 @@ AccountsRepositoryStore::_load_one_group(
         q->second = std::make_shared<PackageIDSequence>();
 
     if (_imp->installed)
-        q->second->push_back(std::make_shared<InstalledAccountsID>(_imp->env, qpn, repo, false));
+        q->second->push_back(std::make_shared<InstalledAccountsID>(_imp->env, qpn, repository_name, false));
     else
-        q->second->push_back(std::make_shared<AccountsID>(_imp->env, qpn, repo, from_repo, filename, false, masked));
+        q->second->push_back(std::make_shared<AccountsID>(_imp->env, qpn, repository_name, from_repo, filename, false, masked));
 }
 
 bool

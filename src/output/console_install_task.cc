@@ -981,10 +981,10 @@ ConsoleInstallTask::display_merge_list_entry_repository(const DepListEntry & d, 
             ! inst->empty() && (*inst->begin())->from_repositories_key() &&
             (*inst->begin())->from_repositories_key()->value()->end() ==
             (*inst->begin())->from_repositories_key()->value()->find(
-                stringify(d.package_id()->repository()->name())));
+                stringify(d.package_id()->repository_name())));
 
-    if (changed || environment()->package_database()->favourite_repository() != d.package_id()->repository()->name())
-        output_no_endl("::" + stringify(d.package_id()->repository()->name()));
+    if (changed || environment()->package_database()->favourite_repository() != d.package_id()->repository_name())
+        output_no_endl("::" + stringify(d.package_id()->repository_name()));
     if (changed)
         output_no_endl(" (previously ::" + join((*inst->begin())->from_repositories_key()->value()->begin(),
                         (*inst->begin())->from_repositories_key()->value()->end(), ", ::") + ")");

@@ -530,7 +530,7 @@ PackageDepSpec
 InstalledUnpackagedID::uniquely_identifying_spec() const
 {
     return parse_user_package_dep_spec("=" + stringify(name()) + "-" + stringify(version()) +
-            (slot_key() ? ":" + stringify(slot_key()->value()) : "") + "::" + stringify(repository()->name()),
+            (slot_key() ? ":" + stringify(slot_key()->value()) : "") + "::" + stringify(repository_name()),
             _imp->env, { });
 }
 
@@ -546,10 +546,10 @@ InstalledUnpackagedID::version() const
     return _imp->version;
 }
 
-const std::shared_ptr<const Repository>
-InstalledUnpackagedID::repository() const
+const RepositoryName
+InstalledUnpackagedID::repository_name() const
 {
-    return _imp->env->package_database()->fetch_repository(_imp->repository_name);
+    return _imp->repository_name;
 }
 
 const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > >
@@ -842,10 +842,11 @@ InstalledUnpackagedID::uninstall(const bool replace,
 {
     Context context("When uninstalling '" + stringify(*this) + "':");
 
+    auto repo(_imp->env->package_database()->fetch_repository(repository_name()));
     bool last((! replace) && (! if_for_install_id));
     if (last)
     {
-        std::shared_ptr<const PackageIDSequence> ids(repository()->package_ids(name()));
+        std::shared_ptr<const PackageIDSequence> ids(repo->package_ids(name()));
         for (PackageIDSequence::ConstIterator v(ids->begin()), v_end(ids->end()) ;
                 v != v_end ; ++v)
             if (**v != *this)
@@ -885,7 +886,7 @@ InstalledUnpackagedID::uninstall(const bool replace,
         FSPath pkg_dir(fs_location_key()->value().dirname());
         pkg_dir.rmdir();
 
-        std::static_pointer_cast<const InstalledUnpackagedRepository>(repository())->deindex(name());
+        std::static_pointer_cast<const InstalledUnpackagedRepository>(repo)->deindex(name());
     }
 }
 

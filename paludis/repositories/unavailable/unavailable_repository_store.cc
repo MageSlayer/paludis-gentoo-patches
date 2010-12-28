@@ -23,6 +23,7 @@
 #include <paludis/repositories/unavailable/unavailable_repository_id.hh>
 #include <paludis/repositories/unavailable/unavailable_repository_dependencies_key.hh>
 #include <paludis/repositories/unavailable/unavailable_mask.hh>
+#include <paludis/repositories/unavailable/unavailable_repository.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/set.hh>
@@ -173,7 +174,7 @@ UnavailableRepositoryStore::_populate_one(const Environment * const env, const F
                                 n::from_repositories() = from_repositories,
                                 n::mask() = mask,
                                 n::name() = (*i).name(),
-                                n::repository() = _imp->repo,
+                                n::repository() = _imp->repo->name(),
                                 n::repository_description() = repository_description,
                                 n::repository_homepage() = repository_homepage,
                                 n::slot() = (*i).slot(),
@@ -205,7 +206,7 @@ UnavailableRepositoryStore::_populate_one(const Environment * const env, const F
                         n::homepage() = repository_homepage,
                         n::mask() = mask,
                         n::name() = CategoryNamePart("repository") + PackageNamePart(file.repo_name()),
-                        n::repository() = _imp->repo,
+                        n::repository() = _imp->repo->name(),
                         n::sync() = repository_sync
                         )));
 
