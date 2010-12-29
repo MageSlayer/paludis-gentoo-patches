@@ -22,6 +22,8 @@
 
 #include <paludis/dep_label-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
+#include <paludis/environment-fwd.hh>
+#include <paludis/package_id-fwd.hh>
 #include <paludis/util/simple_visitor.hh>
 #include <paludis/util/pimp.hh>
 #include <paludis/util/attributes.hh>
@@ -128,8 +130,14 @@ namespace paludis
             /// Our text.
             virtual const std::string text() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-            /// Are we enabled?
-            virtual bool enabled() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+            /**
+             * Are we enabled?
+             *
+             * \since 0.58 takes env, package_id
+             */
+            virtual bool enabled(
+                    const Environment * const,
+                    const std::shared_ptr<const PackageID> &) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 
     /**

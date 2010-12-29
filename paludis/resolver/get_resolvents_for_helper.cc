@@ -140,6 +140,7 @@ namespace
 {
     struct DestinationTypesFinder
     {
+        const Environment * const env;
         const DestinationType target_destination_type;
         const bool want_target_dependencies;
         const bool want_target_runtime_dependencies;
@@ -182,7 +183,7 @@ namespace
                         {
                             /* this will track run deps of build deps, which isn't
                              * really right... */
-                            if (is_run_or_post_dep(dep.sanitised_dependency()))
+                            if (is_run_or_post_dep(env, package_id, dep.sanitised_dependency()))
                                 binary_if_possible = true;
                         }
 
@@ -198,7 +199,7 @@ namespace
                             chroot_if_possible = true;
                         else if (want_target_runtime_dependencies)
                         {
-                            if (is_run_or_post_dep(dep.sanitised_dependency()))
+                            if (is_run_or_post_dep(env, package_id, dep.sanitised_dependency()))
                                 chroot_if_possible = true;
                         }
 
@@ -216,9 +217,9 @@ namespace
 
             if (want_runtime_dependencies_on_slash ^ want_dependencies_on_slash)
             {
-                if (want_dependencies_on_slash && ! is_run_or_post_dep(dep.sanitised_dependency()))
+                if (want_dependencies_on_slash && ! is_run_or_post_dep(env, package_id, dep.sanitised_dependency()))
                     slash += dt_install_to_slash;
-                if (want_runtime_dependencies_on_slash && is_run_or_post_dep(dep.sanitised_dependency()))
+                if (want_runtime_dependencies_on_slash && is_run_or_post_dep(env, package_id, dep.sanitised_dependency()))
                     slash += dt_install_to_slash;
             }
             else if (want_runtime_dependencies_on_slash || want_dependencies_on_slash)
@@ -244,7 +245,7 @@ namespace
     };
 
     DestinationTypes get_destination_types_for_fn(
-            const Environment * const,
+            const Environment * const env,
             const PackageDepSpec &,
             const DestinationType target_destination_type,
             const bool want_target_dependencies,
@@ -254,7 +255,7 @@ namespace
             const std::shared_ptr<const PackageID> & package_id,
             const std::shared_ptr<const Reason> & reason)
     {
-        DestinationTypesFinder f{target_destination_type, want_target_dependencies, want_target_runtime_dependencies,
+        DestinationTypesFinder f{env, target_destination_type, want_target_dependencies, want_target_runtime_dependencies,
             want_dependencies_on_slash, want_runtime_dependencies_on_slash, package_id};
         return reason->accept_returning<DestinationTypes>(f);
     }

@@ -360,7 +360,7 @@ namespace
         SanitisedDependency make_sanitised(const PackageOrBlockDepSpec & spec)
         {
             std::stringstream adl, acs;
-            auto classifier(std::make_shared<LabelsClassifier>());
+            auto classifier(std::make_shared<LabelsClassifier>(env, our_id));
             for (DependenciesLabelSequence::ConstIterator i((*labels_stack.begin())->begin()),
                     i_end((*labels_stack.begin())->end()) ;
                     i != i_end ; ++i)

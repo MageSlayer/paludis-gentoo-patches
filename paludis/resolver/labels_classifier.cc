@@ -22,6 +22,7 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/dep_label.hh>
 #include <paludis/serialise-impl.hh>
 #include <algorithm>
@@ -29,7 +30,24 @@
 using namespace paludis;
 using namespace paludis::resolver;
 
-LabelsClassifier::LabelsClassifier() :
+namespace paludis
+{
+    template <>
+    struct Imp<LabelsClassifier>
+    {
+        const Environment * const env;
+        const std::shared_ptr<const PackageID> package_id;
+
+        Imp(const Environment * const e, const std::shared_ptr<const PackageID> & i) :
+            env(e),
+            package_id(i)
+        {
+        }
+    };
+}
+
+LabelsClassifier::LabelsClassifier(const Environment * const env, const std::shared_ptr<const PackageID> & id) :
+    Pimp<LabelsClassifier>(env, id),
     any_enabled(false),
     includes_buildish(false),
     includes_compile_against(false),
@@ -44,10 +62,12 @@ LabelsClassifier::LabelsClassifier() :
 {
 }
 
+LabelsClassifier::~LabelsClassifier() = default;
+
 void
 LabelsClassifier::visit(const DependenciesBuildLabel & l)
 {
-    if (l.enabled())
+    if (l.enabled(_imp->env, _imp->package_id))
     {
         is_requirement = true;
         includes_buildish = true;
@@ -59,7 +79,7 @@ LabelsClassifier::visit(const DependenciesBuildLabel & l)
 void
 LabelsClassifier::visit(const DependenciesTestLabel & l)
 {
-    if (l.enabled())
+    if (l.enabled(_imp->env, _imp->package_id))
     {
         is_requirement = true;
         includes_buildish = true;
@@ -70,7 +90,7 @@ LabelsClassifier::visit(const DependenciesTestLabel & l)
 void
 LabelsClassifier::visit(const DependenciesFetchLabel & l)
 {
-    if (l.enabled())
+    if (l.enabled(_imp->env, _imp->package_id))
     {
         is_requirement = true;
         includes_buildish = true;
@@ -83,7 +103,7 @@ LabelsClassifier::visit(const DependenciesFetchLabel & l)
 void
 LabelsClassifier::visit(const DependenciesRunLabel & l)
 {
-    if (l.enabled())
+    if (l.enabled(_imp->env, _imp->package_id))
     {
         is_requirement = true;
         includes_non_post_runish = true;
@@ -94,7 +114,7 @@ LabelsClassifier::visit(const DependenciesRunLabel & l)
 void
 LabelsClassifier::visit(const DependenciesPostLabel & l)
 {
-    if (l.enabled())
+    if (l.enabled(_imp->env, _imp->package_id))
     {
         is_requirement = true;
         includes_postish = true;
@@ -105,7 +125,7 @@ LabelsClassifier::visit(const DependenciesPostLabel & l)
 void
 LabelsClassifier::visit(const DependenciesInstallLabel & l)
 {
-    if (l.enabled())
+    if (l.enabled(_imp->env, _imp->package_id))
     {
         is_requirement = true;
         includes_buildish = true;
@@ -117,7 +137,7 @@ LabelsClassifier::visit(const DependenciesInstallLabel & l)
 void
 LabelsClassifier::visit(const DependenciesCompileAgainstLabel & l)
 {
-    if (l.enabled())
+    if (l.enabled(_imp->env, _imp->package_id))
     {
         is_requirement = true;
         includes_non_post_runish = true;
@@ -130,7 +150,7 @@ LabelsClassifier::visit(const DependenciesCompileAgainstLabel & l)
 void
 LabelsClassifier::visit(const DependenciesRecommendationLabel & l)
 {
-    if (l.enabled())
+    if (l.enabled(_imp->env, _imp->package_id))
     {
         is_recommendation = true;
         includes_postish = true;
@@ -141,7 +161,7 @@ LabelsClassifier::visit(const DependenciesRecommendationLabel & l)
 void
 LabelsClassifier::visit(const DependenciesSuggestionLabel & l)
 {
-    if (l.enabled())
+    if (l.enabled(_imp->env, _imp->package_id))
     {
         is_suggestion = true;
         includes_postish = true;
@@ -172,7 +192,7 @@ LabelsClassifier::deserialise(
         Deserialisation & d)
 {
     Deserialisator v(d, "LabelsClassifier");
-    auto result(std::make_shared<LabelsClassifier>());
+    auto result(std::make_shared<LabelsClassifier>(static_cast<const Environment *>(0), std::shared_ptr<const PackageID>()));
     result->any_enabled = v.member<bool>("any_enabled");
     result->includes_buildish = v.member<bool>("includes_buildish");
     result->includes_compile_against = v.member<bool>("includes_compile_against");
@@ -189,12 +209,12 @@ LabelsClassifier::deserialise(
 }
 
 bool
-paludis::resolver::is_suggestion(const SanitisedDependency & dep)
+paludis::resolver::is_suggestion(const Environment * const env, const std::shared_ptr<const PackageID> & id, const SanitisedDependency & dep)
 {
     if (dep.active_dependency_labels()->empty())
         return false;
 
-    LabelsClassifier v;
+    LabelsClassifier v(env, id);
     std::for_each(indirect_iterator(dep.active_dependency_labels()->begin()),
             indirect_iterator(dep.active_dependency_labels()->end()),
             accept_visitor(v));
@@ -202,12 +222,12 @@ paludis::resolver::is_suggestion(const SanitisedDependency & dep)
 }
 
 bool
-paludis::resolver::is_recommendation(const SanitisedDependency & dep)
+paludis::resolver::is_recommendation(const Environment * const env, const std::shared_ptr<const PackageID> & id, const SanitisedDependency & dep)
 {
     if (dep.active_dependency_labels()->empty())
         return false;
 
-    LabelsClassifier v;
+    LabelsClassifier v(env, id);
     std::for_each(indirect_iterator(dep.active_dependency_labels()->begin()),
             indirect_iterator(dep.active_dependency_labels()->end()),
             accept_visitor(v));
@@ -215,12 +235,12 @@ paludis::resolver::is_recommendation(const SanitisedDependency & dep)
 }
 
 bool
-paludis::resolver::is_just_build_dep(const SanitisedDependency & dep)
+paludis::resolver::is_just_build_dep(const Environment * const env, const std::shared_ptr<const PackageID> & id, const SanitisedDependency & dep)
 {
     if (dep.active_dependency_labels()->empty())
         throw InternalError(PALUDIS_HERE, "not implemented");
 
-    LabelsClassifier v;
+    LabelsClassifier v(env, id);
     std::for_each(indirect_iterator(dep.active_dependency_labels()->begin()),
             indirect_iterator(dep.active_dependency_labels()->end()),
             accept_visitor(v));
@@ -228,12 +248,12 @@ paludis::resolver::is_just_build_dep(const SanitisedDependency & dep)
 }
 
 bool
-paludis::resolver::is_compiled_against_dep(const SanitisedDependency & dep)
+paludis::resolver::is_compiled_against_dep(const Environment * const env, const std::shared_ptr<const PackageID> & id, const SanitisedDependency & dep)
 {
     if (dep.active_dependency_labels()->empty())
         throw InternalError(PALUDIS_HERE, "not implemented");
 
-    LabelsClassifier v;
+    LabelsClassifier v(env, id);
     std::for_each(indirect_iterator(dep.active_dependency_labels()->begin()),
             indirect_iterator(dep.active_dependency_labels()->end()),
             accept_visitor(v));
@@ -241,12 +261,12 @@ paludis::resolver::is_compiled_against_dep(const SanitisedDependency & dep)
 }
 
 bool
-paludis::resolver::is_enabled_dep(const SanitisedDependency & dep)
+paludis::resolver::is_enabled_dep(const Environment * const env, const std::shared_ptr<const PackageID> & id, const SanitisedDependency & dep)
 {
     if (dep.active_dependency_labels()->empty())
         throw InternalError(PALUDIS_HERE, "not implemented");
 
-    LabelsClassifier v;
+    LabelsClassifier v(env, id);
     std::for_each(indirect_iterator(dep.active_dependency_labels()->begin()),
             indirect_iterator(dep.active_dependency_labels()->end()),
             accept_visitor(v));
@@ -254,12 +274,12 @@ paludis::resolver::is_enabled_dep(const SanitisedDependency & dep)
 }
 
 bool
-paludis::resolver::is_run_or_post_dep(const SanitisedDependency & dep)
+paludis::resolver::is_run_or_post_dep(const Environment * const env, const std::shared_ptr<const PackageID> & id, const SanitisedDependency & dep)
 {
     if (dep.active_dependency_labels()->empty())
         throw InternalError(PALUDIS_HERE, "not implemented");
 
-    LabelsClassifier v;
+    LabelsClassifier v(env, id);
     std::for_each(indirect_iterator(dep.active_dependency_labels()->begin()),
             indirect_iterator(dep.active_dependency_labels()->end()),
             accept_visitor(v));

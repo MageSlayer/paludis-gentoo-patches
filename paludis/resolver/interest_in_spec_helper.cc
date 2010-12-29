@@ -181,17 +181,17 @@ namespace
             if (ignore_dep_from(env, no_blockers_from_specs, no_dependencies_from_specs, decision.existing_id(), bool(dep.spec().if_block())))
                 return false;
 
-            if (! is_enabled_dep(dep))
+            if (! is_enabled_dep(env, decision.existing_id(), dep))
                 return false;
 
             if (! follow_installed_build_dependencies)
-                if (is_just_build_dep(dep))
+                if (is_just_build_dep(env, decision.existing_id(), dep))
                     return false;
             if (! follow_installed_dependencies)
-                if (! is_compiled_against_dep(dep))
+                if (! is_compiled_against_dep(env, decision.existing_id(), dep))
                     return false;
 
-            if (is_suggestion(dep) || is_recommendation(dep))
+            if (is_suggestion(env, decision.existing_id(), dep) || is_recommendation(env, decision.existing_id(), dep))
             {
                 /* we only take a suggestion or recommendation for an existing
                  * package if it's already met. for now, we ignore suggested
@@ -236,7 +236,7 @@ namespace
             if (ignore_dep_from(env, no_blockers_from_specs, no_dependencies_from_specs, decision.origin_id(), bool(dep.spec().if_block())))
                 return false;
 
-            if (is_enabled_dep(dep))
+            if (is_enabled_dep(env, decision.origin_id(), dep))
                 return true;
 
             return false;
@@ -255,7 +255,7 @@ InterestInSpecHelper::operator() (
 
     if (resolution->decision()->accept_returning<bool>(v))
     {
-        bool suggestion(is_suggestion(dep)), recommendation(is_recommendation(dep));
+        bool suggestion(is_suggestion(_imp->env, id, dep)), recommendation(is_recommendation(_imp->env, id, dep));
 
         if (! (suggestion || recommendation))
             return si_take;

@@ -22,6 +22,9 @@
 
 #include <paludis/util/attributes.hh>
 #include <paludis/resolver/sanitised_dependencies-fwd.hh>
+#include <paludis/environment-fwd.hh>
+#include <paludis/package_id-fwd.hh>
+#include <memory>
 
 namespace paludis
 {
@@ -29,14 +32,40 @@ namespace paludis
     {
         struct LabelsClassifier;
 
-        bool is_suggestion(const SanitisedDependency & dep) PALUDIS_ATTRIBUTE((warn_unused_result));
-        bool is_recommendation(const SanitisedDependency & dep) PALUDIS_ATTRIBUTE((warn_unused_result));
+        bool is_suggestion(
+                const Environment * const,
+                const std::shared_ptr<const PackageID> &,
+                const SanitisedDependency &) PALUDIS_ATTRIBUTE((warn_unused_result));
 
-        bool is_just_build_dep(const SanitisedDependency & dep) PALUDIS_ATTRIBUTE((warn_unused_result));
-        bool is_just_fetch_dep(const SanitisedDependency & dep) PALUDIS_ATTRIBUTE((warn_unused_result));
-        bool is_run_or_post_dep(const SanitisedDependency & dep) PALUDIS_ATTRIBUTE((warn_unused_result));
-        bool is_compiled_against_dep(const SanitisedDependency & dep) PALUDIS_ATTRIBUTE((warn_unused_result));
-        bool is_enabled_dep(const SanitisedDependency & dep) PALUDIS_ATTRIBUTE((warn_unused_result));
+        bool is_recommendation(
+                const Environment * const,
+                const std::shared_ptr<const PackageID> &,
+                const SanitisedDependency &) PALUDIS_ATTRIBUTE((warn_unused_result));
+
+        bool is_just_build_dep(
+                const Environment * const,
+                const std::shared_ptr<const PackageID> &,
+                const SanitisedDependency &) PALUDIS_ATTRIBUTE((warn_unused_result));
+
+        bool is_just_fetch_dep(
+                const Environment * const,
+                const std::shared_ptr<const PackageID> &,
+                const SanitisedDependency &) PALUDIS_ATTRIBUTE((warn_unused_result));
+
+        bool is_run_or_post_dep(
+                const Environment * const,
+                const std::shared_ptr<const PackageID> &,
+                const SanitisedDependency &) PALUDIS_ATTRIBUTE((warn_unused_result));
+
+        bool is_compiled_against_dep(
+                const Environment * const,
+                const std::shared_ptr<const PackageID> &,
+                const SanitisedDependency &) PALUDIS_ATTRIBUTE((warn_unused_result));
+
+        bool is_enabled_dep(
+                const Environment * const,
+                const std::shared_ptr<const PackageID> &,
+                const SanitisedDependency &) PALUDIS_ATTRIBUTE((warn_unused_result));
     }
 }
 

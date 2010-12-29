@@ -41,7 +41,7 @@ AlwaysEnabledDependencyLabel<Label_>::text() const
 
 template <typename Label_>
 bool
-AlwaysEnabledDependencyLabel<Label_>::enabled() const
+AlwaysEnabledDependencyLabel<Label_>::enabled(const Environment * const, const std::shared_ptr<const PackageID> &) const
 {
     return true;
 }

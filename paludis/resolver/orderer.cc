@@ -226,16 +226,19 @@ namespace
 
     struct EdgesFromReasonVisitor
     {
+        const Environment * const env;
         const std::shared_ptr<NAG> nag;
         const ResolventsSet & ignore_dependencies_from_resolvents;
         const Resolvent resolvent;
         const std::function<NAGIndexRole (const Resolvent &)> role_for_fetching;
 
         EdgesFromReasonVisitor(
+                const Environment * const e,
                 const std::shared_ptr<NAG> & n,
                 const ResolventsSet & i,
                 const Resolvent & v,
             const std::function<NAGIndexRole (const Resolvent &)> & f) :
+            env(e),
             nag(n),
             ignore_dependencies_from_resolvents(i),
             resolvent(v),
@@ -251,7 +254,7 @@ namespace
                 return;
 
             /* what sort of dep are we? */
-            LabelsClassifier classifier;
+            LabelsClassifier classifier(env, r.from_id());
             for (DependenciesLabelSequence::ConstIterator l(r.sanitised_dependency().active_dependency_labels()->begin()),
                     l_end(r.sanitised_dependency().active_dependency_labels()->end()) ;
                     l != l_end ; ++l)
@@ -471,7 +474,7 @@ Orderer::resolve()
 
         _add_binary_cleverness(*r);
 
-        EdgesFromReasonVisitor edges_from_reason_visitor(_imp->resolved->nag(), ignore_dependencies_from_resolvents, (*r)->resolvent(),
+        EdgesFromReasonVisitor edges_from_reason_visitor(_imp->env, _imp->resolved->nag(), ignore_dependencies_from_resolvents, (*r)->resolvent(),
                 std::bind(&Orderer::_role_for_fetching, this, std::placeholders::_1));
         for (Constraints::ConstIterator c((*r)->constraints()->begin()),
                 c_end((*r)->constraints()->end()) ;

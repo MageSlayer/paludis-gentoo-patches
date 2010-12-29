@@ -38,7 +38,9 @@ namespace paludis
             ~AlwaysEnabledDependencyLabel();
 
             virtual const std::string text() const;
-            virtual bool enabled() const;
+            virtual bool enabled(
+                    const Environment * const,
+                    const std::shared_ptr<const PackageID> &) const;
     };
 
     extern template class AlwaysEnabledDependencyLabel<DependenciesBuildLabelTag>;

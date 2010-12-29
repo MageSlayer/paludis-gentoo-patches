@@ -915,6 +915,29 @@ namespace
 {
     typedef std::tuple<std::string, std::string, std::string> DepLabelsIndex;
 
+    struct EnabledByChoiceTestDependencyLabel :
+        DependenciesTestLabel
+    {
+        std::string label_text;
+        ChoiceNameWithPrefix choice_name;
+
+        EnabledByChoiceTestDependencyLabel(const std::string & s, const ChoiceNameWithPrefix & p) :
+            label_text(s),
+            choice_name(p)
+        {
+        }
+
+        virtual bool enabled(const Environment * const env, const std::shared_ptr<const PackageID> & id) const
+        {
+            return enabled_if_option(env, id, label_text, choice_name);
+        }
+
+        virtual const std::string text() const
+        {
+            return label_text;
+        }
+    };
+
     struct DepLabelsStore :
         Singleton<DepLabelsStore>
     {
@@ -945,6 +968,15 @@ namespace
                 throw EDepParseError(text, "Label '" + text + "' maps to unknown class '" + class_name + "'");
         }
 
+        std::shared_ptr<DependenciesLabel> make_test(const std::string & class_name,
+                const ChoiceNameWithPrefix & c, const std::string & text)
+        {
+            if (class_name == "DependenciesTestLabel")
+                return std::make_shared<EnabledByChoiceTestDependencyLabel>(text, c);
+            else
+                throw EDepParseError(text, "Label '" + text + "' maps to unknown test label class '" + class_name + "'");
+        }
+
         std::shared_ptr<DependenciesLabel> get(const std::string & eapi_name, const std::string & class_name, const std::string & text)
         {
             Lock lock(mutex);
@@ -955,36 +987,25 @@ namespace
                 i = store.insert(std::make_pair(x, make(class_name, text))).first;
             return i->second;
         }
-    };
 
-    struct TestLabel :
-        DependenciesTestLabel
-    {
-        std::string label_text;
-        std::function<bool ()> label_enabled;
-
-        TestLabel(const std::string & s, const std::function<bool ()> & l) :
-            label_text(s),
-            label_enabled(l)
+        std::shared_ptr<DependenciesLabel> get_test(const std::string & eapi_name, const std::string & class_name,
+                const ChoiceNameWithPrefix & choice_name, const std::string & text)
         {
-        }
+            Lock lock(mutex);
+            DepLabelsIndex x{eapi_name, class_name, stringify(choice_name) + "/" + text};
 
-        virtual bool enabled() const
-        {
-            return label_enabled();
-        }
-
-        virtual const std::string text() const
-        {
-            return label_text;
+            auto i(store.find(x));
+            if (i == store.end())
+                i = store.insert(std::make_pair(x, make_test(class_name, choice_name, text))).first;
+            return i->second;
         }
     };
 }
 
 std::shared_ptr<DependenciesLabelsDepSpec>
 paludis::erepository::parse_dependency_label(
-        const Environment * const env,
-        const std::shared_ptr<const PackageID> & id,
+        const Environment * const,
+        const std::shared_ptr<const PackageID> &,
         const std::string & s,
         const EAPI & e)
 {
@@ -1017,8 +1038,7 @@ paludis::erepository::parse_dependency_label(
             if (cc.empty())
                 l->add_label(DepLabelsStore::get_instance()->get(e.name(), c, *it));
             else
-                l->add_label(std::make_shared<TestLabel>(*it, std::bind(
-                                &enabled_if_option, env, id, *it, ChoiceNameWithPrefix(cc))));
+                l->add_label(DepLabelsStore::get_instance()->get_test(e.name(), c, ChoiceNameWithPrefix(cc), *it));
         }
         else
             l->add_label(DepLabelsStore::get_instance()->get(e.name(), c, *it));
