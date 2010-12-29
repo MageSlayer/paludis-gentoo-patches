@@ -21,6 +21,7 @@
 #include <paludis/util/set-impl.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/return_literal_function.hh>
+#include <paludis/util/singleton-impl.hh>
 #include <paludis/selection.hh>
 #include <paludis/generator.hh>
 #include <paludis/filtered_generator.hh>
@@ -30,11 +31,28 @@
 #include <paludis/environment.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
+#include <paludis/always_enabled_dependency_label.hh>
 #include <sstream>
 #include <list>
 
 using namespace paludis;
 using namespace paludis::accounts_repository;
+
+namespace
+{
+    struct AccountsDepKeyData :
+        Singleton<AccountsDepKeyData>
+    {
+        const std::shared_ptr<DependenciesLabelSequence> initial_labels;
+
+        AccountsDepKeyData() :
+            initial_labels(std::make_shared<DependenciesLabelSequence>())
+        {
+            initial_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesBuildLabelTag> >("build"));
+            initial_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesRunLabelTag> >("run"));
+        }
+    };
+}
 
 namespace paludis
 {
@@ -44,13 +62,11 @@ namespace paludis
         const Environment * const env;
         const std::shared_ptr<std::list<std::shared_ptr<PackageDepSpec> > > specs;
         const std::shared_ptr<DependencySpecTree> tree;
-        const std::shared_ptr<DependenciesLabelSequence> initial_labels;
 
         Imp(const Environment * const e, const std::shared_ptr<const Set<std::string> > & s) :
             env(e),
             specs(std::make_shared<std::list<std::shared_ptr<PackageDepSpec> >>()),
-            tree(std::make_shared<DependencySpecTree>(std::make_shared<AllDepSpec>())),
-            initial_labels(std::make_shared<DependenciesLabelSequence>())
+            tree(std::make_shared<DependencySpecTree>(std::make_shared<AllDepSpec>()))
         {
             for (Set<std::string>::ConstIterator i(s->begin()), i_end(s->end()) ;
                     i != i_end ; ++i)
@@ -60,9 +76,6 @@ namespace paludis
                 specs->push_back(spec);
                 tree->top()->append(spec);
             }
-
-            initial_labels->push_back(std::make_shared<DependenciesBuildLabel>("build", return_literal_function(true)));
-            initial_labels->push_back(std::make_shared<DependenciesRunLabel>("run", return_literal_function(true)));
         }
     };
 }
@@ -104,7 +117,7 @@ AccountsDepKey::value() const
 const std::shared_ptr<const DependenciesLabelSequence>
 AccountsDepKey::initial_labels() const
 {
-    return _imp->initial_labels;
+    return AccountsDepKeyData::get_instance()->initial_labels;
 }
 
 std::string

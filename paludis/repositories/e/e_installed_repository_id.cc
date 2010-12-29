@@ -51,6 +51,7 @@
 #include <paludis/user_dep_spec.hh>
 #include <paludis/elike_choices.hh>
 #include <paludis/package_database.hh>
+#include <paludis/always_enabled_dependency_label.hh>
 
 #include <iterator>
 
@@ -128,12 +129,12 @@ namespace
             run_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
             post_dependencies_labels(std::make_shared<DependenciesLabelSequence>())
         {
-            raw_dependencies_labels->push_back(std::make_shared<DependenciesBuildLabel>("build", return_literal_function(true)));
-            raw_dependencies_labels->push_back(std::make_shared<DependenciesRunLabel>("run", return_literal_function(true)));
+            raw_dependencies_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesBuildLabelTag> >("build"));
+            raw_dependencies_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesRunLabelTag> >("run"));
 
-            build_dependencies_labels->push_back(std::make_shared<DependenciesBuildLabel>("DEPEND", return_literal_function(true)));
-            run_dependencies_labels->push_back(std::make_shared<DependenciesRunLabel>("RDEPEND", return_literal_function(true)));
-            post_dependencies_labels->push_back(std::make_shared<DependenciesPostLabel>("PDEPEND", return_literal_function(true)));
+            build_dependencies_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesBuildLabelTag> >("DEPEND"));
+            run_dependencies_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesRunLabelTag> >("RDEPEND"));
+            post_dependencies_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesPostLabelTag> >("PDEPEND"));
         }
     };
 }

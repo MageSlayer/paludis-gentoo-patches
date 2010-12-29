@@ -71,33 +71,6 @@ DependenciesLabel::~DependenciesLabel()
 {
 }
 
-template <typename T_>
-SpecificDependenciesLabel<T_>::SpecificDependenciesLabel(const std::string & t,
-        const std::function<bool ()> & e) :
-    _text(t),
-    _enabled(e)
-{
-}
-
-template <typename T_>
-SpecificDependenciesLabel<T_>::~SpecificDependenciesLabel()
-{
-}
-
-template <typename T_>
-const std::string
-SpecificDependenciesLabel<T_>::text() const
-{
-    return _text;
-}
-
-template <typename T_>
-bool
-SpecificDependenciesLabel<T_>::enabled() const
-{
-    return _enabled();
-}
-
 template class SpecificURILabel<URIMirrorsThenListedLabelTag>;
 template class SpecificURILabel<URIMirrorsOnlyLabelTag>;
 template class SpecificURILabel<URIListedOnlyLabelTag>;

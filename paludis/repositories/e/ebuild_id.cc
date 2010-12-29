@@ -46,6 +46,7 @@
 #include <paludis/elike_choices.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/notifier_callback.hh>
+#include <paludis/always_enabled_dependency_label.hh>
 
 #include <paludis/util/fs_error.hh>
 #include <paludis/util/stringify.hh>
@@ -97,12 +98,12 @@ namespace
             pbin_behaviours_value->insert("unbinaryable");
             pbin_behaviours_value->insert("binary");
 
-            raw_dependencies_labels->push_back(std::make_shared<DependenciesBuildLabel>("build", return_literal_function(true)));
-            raw_dependencies_labels->push_back(std::make_shared<DependenciesRunLabel>("run", return_literal_function(true)));
+            raw_dependencies_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesBuildLabelTag> >("build"));
+            raw_dependencies_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesRunLabelTag> >("run"));
 
-            build_dependencies_labels->push_back(std::make_shared<DependenciesBuildLabel>("DEPEND", return_literal_function(true)));
-            run_dependencies_labels->push_back(std::make_shared<DependenciesRunLabel>("RDEPEND", return_literal_function(true)));
-            post_dependencies_labels->push_back(std::make_shared<DependenciesPostLabel>("PDEPEND", return_literal_function(true)));
+            build_dependencies_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesBuildLabelTag> >("DEPEND"));
+            run_dependencies_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesRunLabelTag> >("RDEPEND"));
+            post_dependencies_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesPostLabelTag> >("PDEPEND"));
         }
     };
 }

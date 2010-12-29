@@ -27,6 +27,7 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/return_literal_function.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/singleton-impl.hh>
 #include <paludis/name.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/version_spec.hh>
@@ -44,6 +45,7 @@
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
+#include <paludis/always_enabled_dependency_label.hh>
 
 using namespace paludis;
 using namespace paludis::virtuals;
@@ -158,6 +160,24 @@ VirtualsDepKey::initial_labels() const
     return _imp->labels;
 }
 
+namespace
+{
+    struct VirtualsDepKeyData :
+        Singleton<VirtualsDepKeyData>
+    {
+        std::shared_ptr<DependenciesLabelSequence> bdep_labels;
+        std::shared_ptr<DependenciesLabelSequence> rdep_labels;
+
+        VirtualsDepKeyData() :
+            bdep_labels(std::make_shared<DependenciesLabelSequence>()),
+            rdep_labels(std::make_shared<DependenciesLabelSequence>())
+        {
+            bdep_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesBuildLabelTag> >("DEPEND"));
+            rdep_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesRunLabelTag> >("RDEPEND"));
+        }
+    };
+}
+
 namespace paludis
 {
     template <>
@@ -167,8 +187,6 @@ namespace paludis
         const RepositoryName repository_name;
         const QualifiedPackageName name;
         const VersionSpec version;
-        std::shared_ptr<DependenciesLabelSequence> bdep_labels;
-        std::shared_ptr<DependenciesLabelSequence> rdep_labels;
         const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > > virtual_for;
         const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > bdep;
         const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > rdep;
@@ -185,17 +203,11 @@ namespace paludis
             repository_name(r),
             name(n),
             version(p->version()),
-            bdep_labels(std::make_shared<DependenciesLabelSequence>()),
-            rdep_labels(std::make_shared<DependenciesLabelSequence>()),
             virtual_for(std::make_shared<LiteralMetadataValueKey<std::shared_ptr<const PackageID> > >("VIRTUAL_FOR", "Virtual for", mkt_normal, p)),
-            bdep(std::make_shared<virtuals::VirtualsDepKey>(e, "DEPEND", "Build dependencies", p, bdep_labels, b)),
-            rdep(std::make_shared<virtuals::VirtualsDepKey>(e, "RDEPEND", "Run dependencies", p, rdep_labels, b)),
+            bdep(std::make_shared<virtuals::VirtualsDepKey>(e, "DEPEND", "Build dependencies", p, VirtualsDepKeyData::get_instance()->bdep_labels, b)),
+            rdep(std::make_shared<virtuals::VirtualsDepKey>(e, "RDEPEND", "Run dependencies", p, VirtualsDepKeyData::get_instance()->rdep_labels, b)),
             has_masks(false)
         {
-            bdep_labels->push_back(std::make_shared<DependenciesBuildLabel>("DEPEND",
-                            return_literal_function(true)));
-            rdep_labels->push_back(std::make_shared<DependenciesRunLabel>("RDEPEND",
-                            return_literal_function(true)));
         }
     };
 }

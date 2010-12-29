@@ -28,7 +28,6 @@
 #include <paludis/util/type_list.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
-#include <functional>
 
 /** \file
  * Declarations for dependency label-related classes.
@@ -144,22 +143,7 @@ namespace paludis
         public DependenciesLabel,
         public ImplementAcceptMethods<DependenciesLabel, SpecificDependenciesLabel<T_> >
     {
-        private:
-            const std::string _text;
-            const std::function<bool ()> _enabled;
-
         public:
-            ///\name Basic operations
-            ///\{
-
-            SpecificDependenciesLabel(const std::string &, const std::function<bool ()> &);
-            ~SpecificDependenciesLabel();
-
-            ///\}
-
-            virtual const std::string text() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual bool enabled() const PALUDIS_ATTRIBUTE((warn_unused_result));
-
             /// Convenience typedef alias to obtain our tag.
             typedef T_ Tag;
     };

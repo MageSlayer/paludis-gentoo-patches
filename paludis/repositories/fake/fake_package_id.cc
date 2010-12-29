@@ -30,6 +30,7 @@
 #include <paludis/choice.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/package_database.hh>
+#include <paludis/always_enabled_dependency_label.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/pimp-impl.hh>
@@ -45,6 +46,7 @@
 #include <paludis/util/return_literal_function.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
+#include <paludis/util/singleton-impl.hh>
 #include <map>
 #include <list>
 #include <sstream>
@@ -679,6 +681,30 @@ FakeUnsupportedMask::explanation() const
     return "Marked as unsupported";
 }
 
+namespace
+{
+    struct FakePackageIDData :
+        Singleton<FakePackageIDData>
+    {
+        std::shared_ptr<DependenciesLabelSequence> build_dependencies_labels;
+        std::shared_ptr<DependenciesLabelSequence> run_dependencies_labels;
+        std::shared_ptr<DependenciesLabelSequence> post_dependencies_labels;
+        std::shared_ptr<DependenciesLabelSequence> suggested_dependencies_labels;
+
+        FakePackageIDData() :
+            build_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
+            run_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
+            post_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
+            suggested_dependencies_labels(std::make_shared<DependenciesLabelSequence>())
+        {
+            build_dependencies_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesBuildLabelTag> >("DEPEND"));
+            run_dependencies_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesRunLabelTag> >("RDEPEND"));
+            post_dependencies_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesPostLabelTag> >("PDEPEND"));
+            suggested_dependencies_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesSuggestionLabelTag> >("SDEPEND"));
+        }
+    };
+}
+
 namespace paludis
 {
     using namespace std::placeholders;
@@ -692,11 +718,6 @@ namespace paludis
         const RepositoryName repository_name;
         const QualifiedPackageName name;
         const VersionSpec version;
-
-        mutable std::shared_ptr<DependenciesLabelSequence> build_dependencies_labels;
-        mutable std::shared_ptr<DependenciesLabelSequence> run_dependencies_labels;
-        mutable std::shared_ptr<DependenciesLabelSequence> post_dependencies_labels;
-        mutable std::shared_ptr<DependenciesLabelSequence> suggested_dependencies_labels;
 
         std::shared_ptr<LiteralMetadataValueKey<SlotName> > slot;
         std::shared_ptr<FakeMetadataKeywordSetKey> keywords;
@@ -724,22 +745,10 @@ namespace paludis
             repository_name(r),
             name(q),
             version(v),
-            build_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
-            run_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
-            post_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
-            suggested_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
             slot(std::make_shared<LiteralMetadataValueKey<SlotName>>("SLOT", "Slot", mkt_internal, SlotName("0"))),
             behaviours_set(std::make_shared<Set<std::string>>()),
             has_masks(false)
         {
-            build_dependencies_labels->push_back(std::make_shared<DependenciesBuildLabel>("DEPEND",
-                            return_literal_function(true)));
-            run_dependencies_labels->push_back(std::make_shared<DependenciesRunLabel>("RDEPEND",
-                            return_literal_function(true)));
-            post_dependencies_labels->push_back(std::make_shared<DependenciesPostLabel>("PDEPEND",
-                            return_literal_function(true)));
-            suggested_dependencies_labels->push_back(std::make_shared<DependenciesSuggestionLabel>("SDEPEND",
-                            return_literal_function(true)));
         }
     };
 }
@@ -997,22 +1006,22 @@ FakePackageID::need_keys_added() const
         _imp->build_dependencies = std::make_shared<FakeMetadataSpecTreeKey<DependencySpecTree>>("DEPEND", "Build dependencies",
                     "", std::bind(&parse_depend, _1, _imp->env,
                         shared_from_this()),
-                    _imp->build_dependencies_labels, mkt_dependencies);
+                    FakePackageIDData::get_instance()->build_dependencies_labels, mkt_dependencies);
 
         _imp->run_dependencies = std::make_shared<FakeMetadataSpecTreeKey<DependencySpecTree>>("RDEPEND", "Run dependencies",
                     "", std::bind(&parse_depend, _1, _imp->env,
                         shared_from_this()),
-                    _imp->run_dependencies_labels, mkt_dependencies);
+                    FakePackageIDData::get_instance()->run_dependencies_labels, mkt_dependencies);
 
         _imp->post_dependencies = std::make_shared<FakeMetadataSpecTreeKey<DependencySpecTree>>("PDEPEND", "Post dependencies",
                     "", std::bind(&parse_depend, _1, _imp->env,
                         shared_from_this()),
-                    _imp->post_dependencies_labels, mkt_dependencies);
+                    FakePackageIDData::get_instance()->post_dependencies_labels, mkt_dependencies);
 
         _imp->suggested_dependencies = std::make_shared<FakeMetadataSpecTreeKey<DependencySpecTree>>("SDEPEND", "Suggested dependencies",
                     "", std::bind(&parse_depend, _1, _imp->env,
                         shared_from_this()),
-                    _imp->suggested_dependencies_labels, mkt_dependencies);
+                    FakePackageIDData::get_instance()->suggested_dependencies_labels, mkt_dependencies);
 
         _imp->src_uri = std::make_shared<FakeMetadataSpecTreeKey<FetchableURISpecTree>>("SRC_URI", "Source URI",
                     "", std::bind(&parse_fetchable_uri, _1, _imp->env,

@@ -23,6 +23,7 @@
 
 #include <paludis/dep_label.hh>
 #include <paludis/util/return_literal_function.hh>
+#include <paludis/always_enabled_dependency_label.hh>
 
 using namespace paludis;
 using namespace paludis::python;
@@ -31,9 +32,9 @@ namespace bp = boost::python;
 namespace
 {
     template <typename T_>
-    T_ * make_concrete_dependencies_label(const std::string & t, const bool b)
+    T_ * make_concrete_dependencies_label(const std::string & t)
     {
-        return new T_(t, return_literal_function(b));
+        return new T_(t);
     }
 }
 
@@ -67,7 +68,7 @@ struct class_concrete_dependencies_label :
     {
         def("__init__",
                 bp::make_constructor(&make_concrete_dependencies_label<L_>),
-                "__init__(String, bool)"
+                "__init__(String)"
            );
 
         bp::implicitly_convertible<std::shared_ptr<L_>, std::shared_ptr<DependenciesLabel> >();
@@ -125,12 +126,12 @@ void expose_dep_label()
     /**
      * ConcreteDependenciesLabels
      */
-    class_concrete_dependencies_label<DependenciesBuildLabel>("DependenciesBuildLabel");
-    class_concrete_dependencies_label<DependenciesRunLabel>("DependenciesRunLabel");
-    class_concrete_dependencies_label<DependenciesPostLabel>("DependenciesPostLabel");
-    class_concrete_dependencies_label<DependenciesCompileAgainstLabel>("DependenciesCompileAgainstLabel");
-    class_concrete_dependencies_label<DependenciesInstallLabel>("DependenciesInstallLabel");
-    class_concrete_dependencies_label<DependenciesFetchLabel>("DependenciesFetchLabel");
-    class_concrete_dependencies_label<DependenciesSuggestionLabel>("DependenciesSuggestionLabel");
-    class_concrete_dependencies_label<DependenciesRecommendationLabel>("DependenciesRecommendationLabel");
+    class_concrete_dependencies_label<AlwaysEnabledDependencyLabel<DependenciesBuildLabelTag> >("DependenciesBuildLabel");
+    class_concrete_dependencies_label<AlwaysEnabledDependencyLabel<DependenciesRunLabelTag> >("DependenciesRunLabel");
+    class_concrete_dependencies_label<AlwaysEnabledDependencyLabel<DependenciesPostLabelTag> >("DependenciesPostLabel");
+    class_concrete_dependencies_label<AlwaysEnabledDependencyLabel<DependenciesCompileAgainstLabelTag> >("DependenciesCompileAgainstLabel");
+    class_concrete_dependencies_label<AlwaysEnabledDependencyLabel<DependenciesInstallLabelTag> >("DependenciesInstallLabel");
+    class_concrete_dependencies_label<AlwaysEnabledDependencyLabel<DependenciesFetchLabelTag> >("DependenciesFetchLabel");
+    class_concrete_dependencies_label<AlwaysEnabledDependencyLabel<DependenciesSuggestionLabelTag> >("DependenciesSuggestionLabel");
+    class_concrete_dependencies_label<AlwaysEnabledDependencyLabel<DependenciesRecommendationLabelTag> >("DependenciesRecommendationLabel");
 }

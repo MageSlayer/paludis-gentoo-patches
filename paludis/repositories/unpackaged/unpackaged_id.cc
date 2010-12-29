@@ -29,6 +29,7 @@
 #include <paludis/util/return_literal_function.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/fs_stat.hh>
+#include <paludis/util/singleton-impl.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
@@ -40,9 +41,28 @@
 #include <paludis/choice.hh>
 #include <paludis/elike_choices.hh>
 #include <paludis/user_dep_spec.hh>
+#include <paludis/always_enabled_dependency_label.hh>
 
 using namespace paludis;
 using namespace paludis::unpackaged_repositories;
+
+namespace
+{
+    struct UnpackagedIDData :
+        Singleton<UnpackagedIDData>
+    {
+        std::shared_ptr<DependenciesLabelSequence> build_dependencies_labels;
+        std::shared_ptr<DependenciesLabelSequence> run_dependencies_labels;
+
+        UnpackagedIDData() :
+            build_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
+            run_dependencies_labels(std::make_shared<DependenciesLabelSequence>())
+        {
+            build_dependencies_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesBuildLabelTag> >("build_dependencies"));
+            run_dependencies_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesRunLabelTag> >("run_dependencies"));
+        }
+    };
+}
 
 namespace paludis
 {
@@ -53,9 +73,6 @@ namespace paludis
         const QualifiedPackageName name;
         const VersionSpec version;
         const RepositoryName repository_name;
-
-        std::shared_ptr<DependenciesLabelSequence> build_dependencies_labels;
-        std::shared_ptr<DependenciesLabelSequence> run_dependencies_labels;
 
         const std::shared_ptr<LiteralMetadataValueKey<SlotName> > slot_key;
         const std::shared_ptr<LiteralMetadataValueKey<FSPath> > fs_location_key;
@@ -82,14 +99,12 @@ namespace paludis
             name(q),
             version(v),
             repository_name(n),
-            build_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
-            run_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
             slot_key(std::make_shared<LiteralMetadataValueKey<SlotName> >("slot", "Slot", mkt_internal, s)),
             fs_location_key(std::make_shared<LiteralMetadataValueKey<FSPath> >("location", "Location", mkt_normal, l)),
             build_dependencies_key(std::make_shared<UnpackagedDependencyKey>(env, "build_dependencies", "Build dependencies", mkt_dependencies,
-                        build_dependencies_labels, b)),
+                        UnpackagedIDData::get_instance()->build_dependencies_labels, b)),
             run_dependencies_key(std::make_shared<UnpackagedDependencyKey>(env, "run_dependencies", "Run dependencies", mkt_dependencies,
-                        run_dependencies_labels, r)),
+                        UnpackagedIDData::get_instance()->run_dependencies_labels, r)),
             description_key(std::make_shared<LiteralMetadataValueKey<std::string> >("description", "Description", mkt_significant, d)),
             choices_key(std::make_shared<UnpackagedChoicesKey>(env, "choices", "Choices", mkt_normal, id)),
             strip_key(ds.is_indeterminate() ? make_null_shared_ptr() :
@@ -97,10 +112,6 @@ namespace paludis
             preserve_work_key(dw.is_indeterminate() ? make_null_shared_ptr() :
                     std::make_shared<LiteralMetadataValueKey<bool>>("preserve_work", "Preserve work", mkt_internal, dw.is_true() ? true : false))
         {
-            build_dependencies_labels->push_back(std::make_shared<DependenciesBuildLabel>("build_dependencies",
-                            return_literal_function(true)));
-            run_dependencies_labels->push_back(std::make_shared<DependenciesRunLabel>("run_dependencies",
-                            return_literal_function(true)));
         }
     };
 }

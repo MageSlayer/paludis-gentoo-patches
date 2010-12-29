@@ -44,6 +44,8 @@
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/singleton-impl.hh>
+#include <paludis/always_enabled_dependency_label.hh>
 #include <string>
 #include <algorithm>
 #include <list>
@@ -51,6 +53,24 @@
 
 using namespace paludis;
 using namespace paludis::cranrepository;
+
+namespace
+{
+    struct CRANPackageIDData :
+        Singleton<CRANPackageIDData>
+    {
+        std::shared_ptr<DependenciesLabelSequence> suggests_labels;
+        std::shared_ptr<DependenciesLabelSequence> depends_labels;
+
+        CRANPackageIDData() :
+            suggests_labels(std::make_shared<DependenciesLabelSequence>()),
+            depends_labels(std::make_shared<DependenciesLabelSequence>())
+        {
+            suggests_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesSuggestionLabelTag> >("Suggests"));
+            depends_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesBuildLabelTag> >("Depends"));
+        }
+    };
+}
 
 namespace paludis
 {
@@ -73,19 +93,12 @@ namespace paludis
         std::shared_ptr<DepKey> depends_key;
         std::shared_ptr<DepKey> suggests_key;
 
-        std::shared_ptr<DependenciesLabelSequence> suggests_labels;
-        std::shared_ptr<DependenciesLabelSequence> depends_labels;
-
         Imp(const Environment * const e, const RepositoryName & r, const FSPath & f) :
             env(e),
             repository_name(r),
             name("cran/" + cran_name_to_internal(strip_trailing_string(f.basename(), ".DESCRIPTION"))),
-            version("0", { }),
-            suggests_labels(std::make_shared<DependenciesLabelSequence>()),
-            depends_labels(std::make_shared<DependenciesLabelSequence>())
+            version("0", { })
         {
-            suggests_labels->push_back(std::make_shared<DependenciesSuggestionLabel>("Suggests", return_literal_function(true)));
-            depends_labels->push_back(std::make_shared<DependenciesBuildLabel>("Depends", return_literal_function(true)));
         }
 
         Imp(const Environment * const e, const RepositoryName & c, const CRANPackageID * const r, const std::string & t) :
@@ -93,12 +106,8 @@ namespace paludis
             repository_name(c),
             name("cran/" + cran_name_to_internal(t)),
             version(r->version()),
-            contained_in_key(std::make_shared<PackageIDKey>(e, "Contained", "Contained in", r, mkt_normal)),
-            suggests_labels(std::make_shared<DependenciesLabelSequence>()),
-            depends_labels(std::make_shared<DependenciesLabelSequence>())
+            contained_in_key(std::make_shared<PackageIDKey>(e, "Contained", "Contained in", r, mkt_normal))
         {
-            suggests_labels->push_back(std::make_shared<DependenciesSuggestionLabel>("Suggests", return_literal_function(true)));
-            depends_labels->push_back(std::make_shared<DependenciesBuildLabel>("Depends", return_literal_function(true)));
         }
     };
 }
@@ -238,7 +247,7 @@ CRANPackageID::CRANPackageID(const Environment * const env, const RepositoryName
         {
             Context local_context("When handling Suggests: key:");
             _imp->suggests_key = std::make_shared<DepKey>(_imp->env, "Suggests", "Suggests", file.get("Suggests"),
-                        _imp->suggests_labels, mkt_dependencies);
+                        CRANPackageIDData::get_instance()->suggests_labels, mkt_dependencies);
             add_metadata_key(_imp->suggests_key);
         }
 
@@ -253,10 +262,11 @@ CRANPackageID::CRANPackageID(const Environment * const env, const RepositoryName
         {
             Context local_context("When handling Depends: key:");
             _imp->depends_key = std::make_shared<DepKey>(_imp->env, "Depends", "Depends", file.get("Depends") + ", R",
-                        _imp->depends_labels, mkt_dependencies);
+                        CRANPackageIDData::get_instance()->depends_labels, mkt_dependencies);
         }
         else
-            _imp->depends_key = std::make_shared<DepKey>(_imp->env, "Depends", "Depends", "R", _imp->depends_labels, mkt_dependencies);
+            _imp->depends_key = std::make_shared<DepKey>(_imp->env, "Depends", "Depends", "R",
+                    CRANPackageIDData::get_instance()->depends_labels, mkt_dependencies);
         add_metadata_key(_imp->depends_key);
     }
     catch (const InternalError &)

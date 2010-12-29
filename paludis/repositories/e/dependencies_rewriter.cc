@@ -29,7 +29,9 @@
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/accept_visitor.hh>
+#include <paludis/util/singleton-impl.hh>
 #include <paludis/dep_spec_annotations.hh>
+#include <paludis/always_enabled_dependency_label.hh>
 #include <list>
 #include <algorithm>
 
@@ -54,6 +56,19 @@ namespace
         }
         return s.str();
     }
+
+    struct DependenciesRewriterData :
+        Singleton<DependenciesRewriterData>
+    {
+        std::shared_ptr<DependenciesLabelSequence> default_labels;
+
+        DependenciesRewriterData() :
+            default_labels(std::make_shared<DependenciesLabelSequence>())
+        {
+            default_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesBuildLabelTag> >("build"));
+            default_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesRunLabelTag> >("run"));
+        }
+    };
 }
 
 namespace paludis
@@ -65,15 +80,11 @@ namespace paludis
         std::string rdepend;
         std::string pdepend;
 
-        std::shared_ptr<DependenciesLabelSequence> default_labels;
         LabelsStack labels;
 
-        Imp() :
-            default_labels(std::make_shared<DependenciesLabelSequence>())
+        Imp()
         {
-            default_labels->push_back(std::make_shared<DependenciesBuildLabel>("build", return_literal_function(true)));
-            default_labels->push_back(std::make_shared<DependenciesRunLabel>("run", return_literal_function(true)));
-            labels.push_front(default_labels);
+            labels.push_front(DependenciesRewriterData::get_instance()->default_labels);
         }
     };
 }

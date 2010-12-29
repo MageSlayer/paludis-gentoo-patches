@@ -27,6 +27,7 @@
 #include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/always_enabled_dependency_label.hh>
 #include <paludis/spec_tree.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
@@ -151,8 +152,8 @@ namespace
             runtime_dependencies_label(std::make_shared<DependenciesLabelsDepSpec>()),
             initial_labels(std::make_shared<DependenciesLabelSequence>())
         {
-            development_dependencies_label->add_label(std::make_shared<DependenciesBuildLabel>("development", return_literal_function(true)));
-            runtime_dependencies_label->add_label(std::make_shared<DependenciesRunLabel>("runtime", return_literal_function(true)));
+            development_dependencies_label->add_label(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesBuildLabelTag> >("development"));
+            runtime_dependencies_label->add_label(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesRunLabelTag> >("runtime"));
             initial_labels->push_back(*development_dependencies_label->begin());
         }
     };

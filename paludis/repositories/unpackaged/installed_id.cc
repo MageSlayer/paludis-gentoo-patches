@@ -48,6 +48,7 @@
 #include <paludis/comma_separated_dep_parser.hh>
 #include <paludis/comma_separated_dep_printer.hh>
 #include <paludis/formatter.hh>
+#include <paludis/always_enabled_dependency_label.hh>
 #include <functional>
 
 using namespace paludis;
@@ -55,17 +56,25 @@ using namespace paludis::unpackaged_repositories;
 
 namespace
 {
-    struct InstalledUnpackagedIDBehaviours :
-        Singleton<InstalledUnpackagedIDBehaviours>
+    struct InstalledUnpackagedIDData :
+        Singleton<InstalledUnpackagedIDData>
     {
         std::shared_ptr<Set<std::string> > behaviours_value;
         std::shared_ptr<LiteralMetadataStringSetKey> behaviours_key;
 
-        InstalledUnpackagedIDBehaviours() :
+        std::shared_ptr<DependenciesLabelSequence> build_dependencies_labels;
+        std::shared_ptr<DependenciesLabelSequence> run_dependencies_labels;
+
+        InstalledUnpackagedIDData() :
             behaviours_value(std::make_shared<Set<std::string>>()),
-            behaviours_key(std::make_shared<LiteralMetadataStringSetKey>("behaviours", "behaviours", mkt_internal, behaviours_value))
+            behaviours_key(std::make_shared<LiteralMetadataStringSetKey>("behaviours", "behaviours", mkt_internal, behaviours_value)),
+            build_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
+            run_dependencies_labels(std::make_shared<DependenciesLabelSequence>())
         {
             behaviours_value->insert("transient");
+
+            build_dependencies_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesBuildLabelTag> >("build_dependencies"));
+            run_dependencies_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesRunLabelTag> >("run_dependencies"));
         }
     };
 
@@ -393,9 +402,6 @@ namespace paludis
         const FSPath root;
         const NDBAM * const ndbam;
 
-        std::shared_ptr<DependenciesLabelSequence> build_dependencies_labels;
-        std::shared_ptr<DependenciesLabelSequence> run_dependencies_labels;
-
         std::shared_ptr<LiteralMetadataValueKey<SlotName> > slot_key;
         std::shared_ptr<InstalledUnpackagedFSPathKey> fs_location_key;
         std::shared_ptr<InstalledUnpackagedContentsKey> contents_key;
@@ -422,17 +428,10 @@ namespace paludis
             repository_name(r),
             root(ro),
             ndbam(d),
-            build_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
-            run_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
             slot_key(std::make_shared<LiteralMetadataValueKey<SlotName> >("slot", "Slot", mkt_internal, s)),
             fs_location_key(std::make_shared<InstalledUnpackagedFSPathKey>(l)),
-            behaviours_key(InstalledUnpackagedIDBehaviours::get_instance()->behaviours_key)
+            behaviours_key(InstalledUnpackagedIDData::get_instance()->behaviours_key)
         {
-            build_dependencies_labels->push_back(std::make_shared<DependenciesBuildLabel>("build_dependencies",
-                            return_literal_function(true)));
-            run_dependencies_labels->push_back(std::make_shared<DependenciesRunLabel>("run_dependencies",
-                            return_literal_function(true)));
-
             if ((l / "contents").stat().exists())
             {
                 contents_key = std::make_shared<InstalledUnpackagedContentsKey>(id, d);
@@ -452,12 +451,12 @@ namespace paludis
             if ((l / "build_dependencies").stat().exists())
                 build_dependencies_key = std::make_shared<InstalledUnpackagedDependencyKey>(env,
                             "build_dependencies", "Build dependencies", l / "build_dependencies",
-                            build_dependencies_labels, mkt_dependencies);
+                            InstalledUnpackagedIDData::get_instance()->build_dependencies_labels, mkt_dependencies);
 
             if ((l / "run_dependencies").stat().exists())
                 run_dependencies_key = std::make_shared<InstalledUnpackagedDependencyKey>(env,
                             "run_dependencies", "Run dependencies", l / "run_dependencies",
-                            run_dependencies_labels, mkt_dependencies);
+                            InstalledUnpackagedIDData::get_instance()->run_dependencies_labels, mkt_dependencies);
         }
     };
 }

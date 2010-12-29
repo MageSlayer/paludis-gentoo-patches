@@ -43,6 +43,7 @@
 #include <paludis/dep_spec_annotations.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/package_database.hh>
+#include <paludis/always_enabled_dependency_label.hh>
 #include <map>
 #include <list>
 #include <set>
@@ -923,21 +924,23 @@ namespace
         std::shared_ptr<DependenciesLabel> make(const std::string & class_name, const std::string & text)
         {
             if (class_name == "DependenciesBuildLabel")
-                return std::make_shared<DependenciesBuildLabel>(text, return_literal_function(true));
+                return std::make_shared<AlwaysEnabledDependencyLabel<DependenciesBuildLabelTag> >(text);
             else if (class_name == "DependenciesRunLabel")
-                return std::make_shared<DependenciesRunLabel>(text, return_literal_function(true));
+                return std::make_shared<AlwaysEnabledDependencyLabel<DependenciesRunLabelTag> >(text);
             else if (class_name == "DependenciesPostLabel")
-                return std::make_shared<DependenciesPostLabel>(text, return_literal_function(true));
+                return std::make_shared<AlwaysEnabledDependencyLabel<DependenciesPostLabelTag> >(text);
             else if (class_name == "DependenciesInstallLabel")
-                return std::make_shared<DependenciesInstallLabel>(text, return_literal_function(true));
+                return std::make_shared<AlwaysEnabledDependencyLabel<DependenciesInstallLabelTag> >(text);
             else if (class_name == "DependenciesCompileAgainstLabel")
-                return std::make_shared<DependenciesCompileAgainstLabel>(text, return_literal_function(true));
+                return std::make_shared<AlwaysEnabledDependencyLabel<DependenciesCompileAgainstLabelTag> >(text);
             else if (class_name == "DependenciesFetchLabel")
-                return std::make_shared<DependenciesFetchLabel>(text, return_literal_function(true));
+                return std::make_shared<AlwaysEnabledDependencyLabel<DependenciesFetchLabelTag> >(text);
             else if (class_name == "DependenciesSuggestionLabel")
-                return std::make_shared<DependenciesSuggestionLabel>(text, return_literal_function(true));
+                return std::make_shared<AlwaysEnabledDependencyLabel<DependenciesSuggestionLabelTag> >(text);
             else if (class_name == "DependenciesRecommendationLabel")
-                return std::make_shared<DependenciesRecommendationLabel>(text, return_literal_function(true));
+                return std::make_shared<AlwaysEnabledDependencyLabel<DependenciesRecommendationLabelTag> >(text);
+            else if (class_name == "DependenciesTestLabel")
+                return std::make_shared<AlwaysEnabledDependencyLabel<DependenciesTestLabelTag> >(text);
             else
                 throw EDepParseError(text, "Label '" + text + "' maps to unknown class '" + class_name + "'");
         }
@@ -951,6 +954,29 @@ namespace
             if (i == store.end())
                 i = store.insert(std::make_pair(x, make(class_name, text))).first;
             return i->second;
+        }
+    };
+
+    struct TestLabel :
+        DependenciesTestLabel
+    {
+        std::string label_text;
+        std::function<bool ()> label_enabled;
+
+        TestLabel(const std::string & s, const std::function<bool ()> & l) :
+            label_text(s),
+            label_enabled(l)
+        {
+        }
+
+        virtual bool enabled() const
+        {
+            return label_enabled();
+        }
+
+        virtual const std::string text() const
+        {
+            return label_text;
         }
     };
 }
@@ -975,14 +1001,6 @@ paludis::erepository::parse_dependency_label(
 
     for (std::set<std::string>::iterator it = labels.begin(), it_e = labels.end(); it != it_e; ++it)
     {
-        if (std::string::npos != it->find(','))
-        {
-            Log::get_instance()->message("e.dep_parser.obsolete_label_syntax", ll_warning, lc_context)
-                << "Label '" << *it << "' uses commas, which are obsolete, so treating it as a build label instead";
-            l->add_label(std::make_shared<DependenciesBuildLabel>(*it, return_literal_function(true)));
-            continue;
-        }
-
         std::string c(e.supported()->dependency_labels()->class_for_label(*it)), cc;
         if (c.empty())
             throw EDepParseError(s, "Unknown label '" + *it + "'");
@@ -997,16 +1015,10 @@ paludis::erepository::parse_dependency_label(
         if (c == "DependenciesTestLabel")
         {
             if (cc.empty())
-                l->add_label(std::make_shared<DependenciesTestLabel>(*it, return_literal_function(true)));
+                l->add_label(DepLabelsStore::get_instance()->get(e.name(), c, *it));
             else
-                l->add_label(std::make_shared<DependenciesTestLabel>(*it, std::bind(
-                                    &enabled_if_option, env, id, *it, ChoiceNameWithPrefix(cc))));
-        }
-        else if (c == "WarnAndIgnore")
-        {
-            Log::get_instance()->message("e.dep_parser.obsolete_label", ll_warning, lc_context)
-                << "Label '" << *it << "' no longer exists, pretending it's a build label instead";
-            l->add_label(std::make_shared<DependenciesBuildLabel>(*it, return_literal_function(true)));
+                l->add_label(std::make_shared<TestLabel>(*it, std::bind(
+                                &enabled_if_option, env, id, *it, ChoiceNameWithPrefix(cc))));
         }
         else
             l->add_label(DepLabelsStore::get_instance()->get(e.name(), c, *it));

@@ -22,13 +22,30 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/return_literal_function.hh>
+#include <paludis/util/singleton-impl.hh>
 #include <paludis/dep_label.hh>
 #include <paludis/comma_separated_dep_parser.hh>
 #include <paludis/comma_separated_dep_printer.hh>
+#include <paludis/always_enabled_dependency_label.hh>
 #include <memory>
 
 using namespace paludis;
 using namespace paludis::unavailable_repository;
+
+namespace
+{
+    struct UnavailableRepositoryDependenciesKeyData :
+        Singleton<UnavailableRepositoryDependenciesKeyData>
+    {
+        const std::shared_ptr<DependenciesLabelSequence> labels;
+
+        UnavailableRepositoryDependenciesKeyData() :
+            labels(std::make_shared<DependenciesLabelSequence>())
+        {
+            labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesBuildLabelTag> >("build"));
+        }
+    };
+}
 
 namespace paludis
 {
@@ -37,7 +54,6 @@ namespace paludis
     {
         const Environment * const env;
         const std::shared_ptr<const DependencySpecTree> value;
-        const std::shared_ptr<DependenciesLabelSequence> labels;
 
         const std::string raw_name;
         const std::string human_name;
@@ -48,12 +64,10 @@ namespace paludis
                 const std::string & v) :
             env(e),
             value(CommaSeparatedDepParser::parse(e, v)),
-            labels(std::make_shared<DependenciesLabelSequence>()),
             raw_name(r),
             human_name(h),
             type(t)
         {
-            labels->push_back(std::make_shared<DependenciesBuildLabel>("build", return_literal_function(true)));
         }
     };
 }
@@ -112,6 +126,6 @@ UnavailableRepositoryDependenciesKey::pretty_print_flat(const DependencySpecTree
 const std::shared_ptr<const DependenciesLabelSequence>
 UnavailableRepositoryDependenciesKey::initial_labels() const
 {
-    return _imp->labels;
+    return UnavailableRepositoryDependenciesKeyData::get_instance()->labels;
 }
 
