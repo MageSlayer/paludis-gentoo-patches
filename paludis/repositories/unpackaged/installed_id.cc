@@ -47,8 +47,11 @@
 #include <paludis/user_dep_spec.hh>
 #include <paludis/comma_separated_dep_parser.hh>
 #include <paludis/comma_separated_dep_printer.hh>
+#include <paludis/comma_separated_dep_pretty_printer.hh>
 #include <paludis/formatter.hh>
 #include <paludis/always_enabled_dependency_label.hh>
+#include <paludis/pretty_printer.hh>
+#include <paludis/call_pretty_printer.hh>
 #include <functional>
 
 using namespace paludis;
@@ -309,6 +312,13 @@ namespace
             {
                 return _type;
             }
+
+            virtual const std::string pretty_print_value(
+                    const PrettyPrinter & pretty_printer,
+                    const PrettyPrintOptions &) const
+            {
+                return join(value()->begin(), value()->end(), " ", CallPrettyPrinter(pretty_printer));
+            }
     };
 
     class InstalledUnpackagedDependencyKey :
@@ -386,6 +396,15 @@ namespace
             virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result))
             {
                 return _type;
+            }
+
+            virtual const std::string pretty_print_value(
+                    const PrettyPrinter & printer,
+                    const PrettyPrintOptions & options) const
+            {
+                CommaSeparatedDepPrettyPrinter p(printer, options);
+                value()->top()->accept(p);
+                return p.result();
             }
     };
 }

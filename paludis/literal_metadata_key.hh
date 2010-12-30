@@ -100,6 +100,16 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
+    template <typename T_>
+    class PALUDIS_VISIBLE PrettyPrintableLiteralMetadataValueKey :
+        public MetadataValueKey<T_>
+    {
+        public:
+            virtual const std::string pretty_print_value(
+                    const PrettyPrinter &,
+                    const PrettyPrintOptions &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+    };
+
     /**
      * A LiteralMetadataValueKey is a MetadataValueKey whose value is a
      * copyable literal that is known at construction time.
@@ -109,7 +119,7 @@ namespace paludis
      */
     template <typename T_>
     class PALUDIS_VISIBLE LiteralMetadataValueKey :
-        public MetadataValueKey<T_>,
+        public std::conditional<MetadataValueKeyIsPrettyPrintable<T_>::value, PrettyPrintableLiteralMetadataValueKey<T_>, MetadataValueKey<T_> >::type,
         private Pimp<LiteralMetadataValueKey<T_> >,
         public ExtraLiteralMetadataValueKeyMethods<T_>
     {
@@ -170,6 +180,10 @@ namespace paludis
             virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual const std::string pretty_print_value(
+                    const PrettyPrinter &,
+                    const PrettyPrintOptions &) const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -204,6 +218,10 @@ namespace paludis
             virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual const std::string pretty_print_value(
+                    const PrettyPrinter &,
+                    const PrettyPrintOptions &) const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -238,6 +256,10 @@ namespace paludis
             virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual const std::string pretty_print_value(
+                    const PrettyPrinter &,
+                    const PrettyPrintOptions &) const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -303,6 +325,10 @@ namespace paludis
             virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual const std::string pretty_print_value(
+                    const PrettyPrinter &,
+                    const PrettyPrintOptions &) const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }
 

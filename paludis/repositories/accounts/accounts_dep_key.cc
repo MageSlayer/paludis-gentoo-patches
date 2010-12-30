@@ -32,6 +32,7 @@
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
 #include <paludis/always_enabled_dependency_label.hh>
+#include <paludis/pretty_printer.hh>
 #include <sstream>
 #include <list>
 
@@ -150,6 +151,25 @@ AccountsDepKey::pretty_print_flat(const DependencySpecTree::ItemFormatter & f) c
         }
         else
             s << f.format(**i, format::Plain());
+    }
+
+    return s.str();
+}
+
+const std::string
+AccountsDepKey::pretty_print_value(
+        const PrettyPrinter & pretty_printer,
+        const PrettyPrintOptions &) const
+{
+    std::stringstream s;
+
+    for (std::list<std::shared_ptr<PackageDepSpec> >::const_iterator i(_imp->specs->begin()),
+            i_end(_imp->specs->end()) ; i != i_end ; ++i)
+    {
+        if (! s.str().empty())
+            s << ", ";
+
+        s << pretty_printer.prettify(**i);
     }
 
     return s.str();

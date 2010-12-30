@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2010 Ciaran McCreesh
+ * Copyright (c) 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,31 +17,12 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_METADATA_KEY_FWD_HH
-#define PALUDIS_GUARD_PALUDIS_METADATA_KEY_FWD_HH 1
-
-#include <paludis/util/attributes.hh>
-#include <paludis/name-fwd.hh>
-#include <iosfwd>
-
-/** \file
- * Forward declarations for paludis/metadata_key.hh .
- *
- * \ingroup g_metadata_key
- */
+#ifndef PALUDIS_GUARD_PALUDIS_COMMA_SEPARATED_DEP_PRETTY_PRINTER_FWD_HH
+#define PALUDIS_GUARD_PALUDIS_COMMA_SEPARATED_DEP_PRETTY_PRINTER_FWD_HH 1
 
 namespace paludis
 {
-    class MetadataKey;
-    class PrettyPrintableMetadataKey;
-    class MetadataSectionKey;
-    class MetadataTimeKey;
-    template <typename C_> class MetadataCollectionKey;
-    template <typename C_> class MetadataSpecTreeKey;
-    template <typename V_> class MetadataValueKey;
-
-#include <paludis/metadata_key-se.hh>
-
+    struct CommaSeparatedDepPrettyPrinter;
 }
 
 #endif

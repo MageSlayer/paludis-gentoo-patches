@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -52,6 +52,10 @@ namespace paludis
                 virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::string pretty_print_value(
+                        const PrettyPrinter &,
+                        const PrettyPrintOptions &) const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         class UnpackagedChoicesKey :

@@ -70,6 +70,10 @@ namespace paludis
 
                 virtual const std::shared_ptr<const DependenciesLabelSequence> initial_labels() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::string pretty_print_value(
+                        const PrettyPrinter &,
+                        const PrettyPrintOptions &) const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 }

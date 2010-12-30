@@ -26,6 +26,7 @@
 #include <paludis/dep_label.hh>
 #include <paludis/comma_separated_dep_parser.hh>
 #include <paludis/comma_separated_dep_printer.hh>
+#include <paludis/comma_separated_dep_pretty_printer.hh>
 #include <paludis/always_enabled_dependency_label.hh>
 #include <memory>
 
@@ -105,6 +106,16 @@ MetadataKeyType
 UnavailableRepositoryDependenciesKey::type() const
 {
     return _imp->type;
+}
+
+const std::string
+UnavailableRepositoryDependenciesKey::pretty_print_value(
+        const PrettyPrinter & printer,
+        const PrettyPrintOptions & options) const
+{
+    CommaSeparatedDepPrettyPrinter p(printer, options);
+    _imp->value->top()->accept(p);
+    return p.result();
 }
 
 std::string

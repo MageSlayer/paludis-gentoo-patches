@@ -28,6 +28,8 @@
 #include <paludis/action.hh>
 #include <paludis/repository.hh>
 #include <paludis/name.hh>
+#include <paludis/pretty_printer.hh>
+#include <paludis/call_pretty_printer.hh>
 #include <functional>
 
 using namespace paludis;
@@ -157,6 +159,13 @@ LiteralMetadataFSPathSequenceKey::pretty_print_flat(const Formatter<FSPath> & f)
 }
 
 const std::string
+LiteralMetadataFSPathSequenceKey::pretty_print_value(
+        const PrettyPrinter & p, const PrettyPrintOptions &) const
+{
+    return join(value()->begin(), value()->end(), " ", CallPrettyPrinter(p));
+}
+
+const std::string
 LiteralMetadataFSPathSequenceKey::human_name() const
 {
     return _imp->human_name;
@@ -256,6 +265,13 @@ namespace
     }
 }
 
+const std::string
+LiteralMetadataStringSetKey::pretty_print_value(
+        const PrettyPrinter & p, const PrettyPrintOptions &) const
+{
+    return join(value()->begin(), value()->end(), " ", CallPrettyPrinter(p));
+}
+
 std::string
 LiteralMetadataStringSetKey::pretty_print_flat(const Formatter<std::string> & f) const
 {
@@ -263,11 +279,25 @@ LiteralMetadataStringSetKey::pretty_print_flat(const Formatter<std::string> & f)
     return join(value()->begin(), value()->end(), " ", std::bind(&format_string, _1, f));
 }
 
+const std::string
+LiteralMetadataStringStringMapKey::pretty_print_value(
+        const PrettyPrinter & p, const PrettyPrintOptions &) const
+{
+    return join(value()->begin(), value()->end(), " ", CallPrettyPrinter(p));
+}
+
 std::string
 LiteralMetadataStringStringMapKey::pretty_print_flat(const Formatter<std::pair<const std::string, std::string> > & f) const
 {
     using namespace std::placeholders;
     return join(value()->begin(), value()->end(), " ", std::bind(&format_string_string, _1, f));
+}
+
+const std::string
+LiteralMetadataStringSequenceKey::pretty_print_value(
+        const PrettyPrinter & p, const PrettyPrintOptions &) const
+{
+    return join(value()->begin(), value()->end(), " ", CallPrettyPrinter(p));
 }
 
 std::string
@@ -392,6 +422,15 @@ const T_
 LiteralMetadataValueKey<T_>::value() const
 {
     return _imp->value;
+}
+
+template <typename T_>
+const std::string
+PrettyPrintableLiteralMetadataValueKey<T_>::pretty_print_value(
+        const PrettyPrinter & printer,
+        const PrettyPrintOptions &) const
+{
+    return printer.prettify(this->value());
 }
 
 namespace paludis

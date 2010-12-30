@@ -42,6 +42,8 @@
 #include <paludis/environment.hh>
 #include <paludis/package_id.hh>
 #include <paludis/formatter.hh>
+#include <paludis/pretty_printer.hh>
+#include <paludis/call_pretty_printer.hh>
 
 #include <map>
 #include <algorithm>
@@ -222,6 +224,15 @@ InfoVarsMetadataKey::pretty_print_flat(const Formatter<std::string> & f) const
 {
     using namespace std::placeholders;
     return join(value()->begin(), value()->end(), " ", std::bind(&format_string, _1, f));
+}
+
+const std::string
+InfoVarsMetadataKey::pretty_print_value(
+        const PrettyPrinter & pretty_printer,
+        const PrettyPrintOptions &) const
+{
+    using namespace std::placeholders;
+    return join(value()->begin(), value()->end(), " ", CallPrettyPrinter(pretty_printer));
 }
 
 const std::string

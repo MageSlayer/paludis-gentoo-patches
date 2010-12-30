@@ -56,6 +56,10 @@ namespace paludis
                 virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::string pretty_print_value(
+                        const PrettyPrinter &,
+                        const PrettyPrintOptions &) const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         class PackageIDKey :
@@ -81,6 +85,10 @@ namespace paludis
                 virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::string pretty_print_value(
+                        const PrettyPrinter &,
+                        const PrettyPrintOptions &) const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         class DepKey :
@@ -112,6 +120,10 @@ namespace paludis
                 virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::string pretty_print_value(
+                        const PrettyPrinter &,
+                        const PrettyPrintOptions &) const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 }

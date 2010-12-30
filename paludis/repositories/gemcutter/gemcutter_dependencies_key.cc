@@ -39,6 +39,7 @@
 #include <paludis/version_requirements.hh>
 #include <paludis/version_operator.hh>
 #include <paludis/version_spec.hh>
+#include <paludis/pretty_printer.hh>
 #include <sstream>
 #include <algorithm>
 #include <vector>
@@ -118,6 +119,81 @@ namespace
 
             if (! flat)
                 s << formatter.newline();
+        }
+
+        void visit(const DependencySpecTree::NodeType<NamedSetDepSpec>::Type &)
+        {
+        }
+
+        void visit(const DependencySpecTree::NodeType<AllDepSpec>::Type & node)
+        {
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
+        }
+
+        void visit(const DependencySpecTree::NodeType<ConditionalDepSpec>::Type & node)
+        {
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
+        }
+
+        void visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type & node)
+        {
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
+        }
+    };
+
+    struct ValuePrinter
+    {
+        std::stringstream s;
+        const PrettyPrinter & printer;
+        const PrettyPrintOptions options;
+
+        const unsigned indent;
+        const bool flat;
+        bool need_space;
+
+        ValuePrinter(
+                const PrettyPrinter & p,
+                const PrettyPrintOptions & o) :
+            printer(p),
+            options(o),
+            indent(0),
+            flat(! options[ppo_multiline_allowed]),
+            need_space(false)
+        {
+        }
+
+        void visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & node)
+        {
+            if (! flat)
+                s << printer.indentify(indent + 1);
+            else if (need_space)
+                s << " ";
+            else
+                need_space = true;
+
+            s << printer.prettify(*node.spec());
+
+            if (! flat)
+                s << printer.newline();
+        }
+
+        void visit(const DependencySpecTree::NodeType<BlockDepSpec>::Type &)
+        {
+        }
+
+        void visit(const DependencySpecTree::NodeType<DependenciesLabelsDepSpec>::Type & node)
+        {
+            if (! flat)
+                s << printer.indentify(indent);
+            else if (need_space)
+                s << " ";
+            else
+                need_space = true;
+
+            s << printer.prettify(*node.spec());
+
+            if (! flat)
+                s << printer.newline();
         }
 
         void visit(const DependencySpecTree::NodeType<NamedSetDepSpec>::Type &)
@@ -298,6 +374,16 @@ std::string
 GemcutterDependenciesKey::pretty_print_flat(const DependencySpecTree::ItemFormatter & f) const
 {
     Printer p{_imp->env, f, true};
+    _imp->value->top()->accept(p);
+    return p.s.str();
+}
+
+const std::string
+GemcutterDependenciesKey::pretty_print_value(
+        const PrettyPrinter & printer,
+        const PrettyPrintOptions & options) const
+{
+    ValuePrinter p{printer, options};
     _imp->value->top()->accept(p);
     return p.s.str();
 }

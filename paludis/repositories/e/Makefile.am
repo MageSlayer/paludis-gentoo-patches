@@ -83,6 +83,7 @@ noinst_HEADERS = \
 	profile_file.hh \
 	required_use_verifier.hh \
 	source_uri_finder.hh \
+	spec_tree_pretty_printer.hh \
 	traditional_layout.hh \
 	traditional_profile.hh \
 	use_desc.hh \
@@ -153,6 +154,7 @@ libpaludiserepository_la_SOURCES = \
 	registration.cc \
 	required_use_verifier.cc \
 	source_uri_finder.cc \
+	spec_tree_pretty_printer.cc \
 	traditional_layout.cc \
 	traditional_profile.cc \
 	use_desc.cc \

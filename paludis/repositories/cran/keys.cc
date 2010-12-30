@@ -21,6 +21,7 @@
 #include <paludis/repositories/cran/cran_package_id.hh>
 #include <paludis/repositories/cran/cran_dep_parser.hh>
 #include <paludis/repositories/cran/dep_spec_pretty_printer.hh>
+#include <paludis/repositories/cran/spec_tree_pretty_printer.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/join.hh>
@@ -34,6 +35,7 @@
 #include <paludis/repository.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
+#include <paludis/call_pretty_printer.hh>
 #include <functional>
 
 using namespace paludis;
@@ -89,6 +91,14 @@ PackageIDSequenceKey::pretty_print_flat(const Formatter<PackageID> & f) const
                 std::cref(f), _1, format::Plain()));
 }
 
+const std::string
+PackageIDSequenceKey::pretty_print_value(
+        const PrettyPrinter & p, const PrettyPrintOptions &) const
+{
+    using namespace std::placeholders;
+    return join(value()->begin(), value()->end(), " ", CallPrettyPrinter(p));
+}
+
 PackageIDKey::PackageIDKey(const Environment * const e, const std::string & r, const std::string & h,
         const CRANPackageID * const v, const MetadataKeyType t) :
     _env(e),
@@ -103,6 +113,12 @@ const std::shared_ptr<const PackageID>
 PackageIDKey::value() const
 {
     return _v->shared_from_this();
+}
+
+const std::string
+PackageIDKey::pretty_print_value(const PrettyPrinter & p, const PrettyPrintOptions &) const
+{
+    return p.prettify(value());
 }
 
 const std::string
@@ -225,6 +241,15 @@ DepKey::pretty_print_flat(const DependencySpecTree::ItemFormatter & f) const
 {
     StringifyFormatter ff(f);
     DepSpecPrettyPrinter p(_imp->env, ff, 0, false);
+    value()->top()->accept(p);
+    return stringify(p);
+}
+
+const std::string
+DepKey::pretty_print_value(
+        const PrettyPrinter & printer, const PrettyPrintOptions & options) const
+{
+    SpecTreePrettyPrinter p(printer, options);
     value()->top()->accept(p);
     return stringify(p);
 }

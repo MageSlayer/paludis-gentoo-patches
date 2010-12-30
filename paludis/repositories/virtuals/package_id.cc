@@ -46,6 +46,7 @@
 #include <paludis/filtered_generator.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
 #include <paludis/always_enabled_dependency_label.hh>
+#include <paludis/pretty_printer.hh>
 
 using namespace paludis;
 using namespace paludis::virtuals;
@@ -152,6 +153,14 @@ std::string
 VirtualsDepKey::pretty_print_flat(const DependencySpecTree::ItemFormatter & f) const
 {
     return pretty_print(f);
+}
+
+const std::string
+VirtualsDepKey::pretty_print_value(
+        const PrettyPrinter & pretty_printer,
+        const PrettyPrintOptions &) const
+{
+    return pretty_printer.prettify(*_imp->spec);
 }
 
 const std::shared_ptr<const DependenciesLabelSequence>

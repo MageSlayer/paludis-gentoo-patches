@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# vim: set sw=4 sts=4 et ft=sh :
+
+make_enum_PrettyPrintOption()
+{
+    prefix ppo
+
+    key ppo_multiline_allowed           "Print over multiple lines if appropriate"
+}
+

@@ -64,6 +64,10 @@ namespace paludis
                  */
                 virtual std::string pretty_print_flat(const SimpleURISpecTree::ItemFormatter &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::string pretty_print_value(
+                        const PrettyPrinter &,
+                        const PrettyPrintOptions &) const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 }

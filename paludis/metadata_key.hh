@@ -31,6 +31,8 @@
 #include <paludis/formatter-fwd.hh>
 #include <paludis/metadata_key_holder.hh>
 #include <paludis/choice-fwd.hh>
+#include <paludis/pretty_printer-fwd.hh>
+#include <paludis/pretty_print_options-fwd.hh>
 #include <paludis/util/fs_path-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/remove_shared_ptr.hh>
@@ -141,6 +143,26 @@ namespace paludis
     };
 
     /**
+     * A PrettyPrintableMetadataKey is a MetadataKey with a pretty printable value.
+     *
+     * \since 0.58
+     * \ingroup g_metadata_key
+     */
+    class PALUDIS_VISIBLE PrettyPrintableMetadataKey :
+        public MetadataKey
+    {
+        public:
+            /**
+             * Pretty print our value.
+             *
+             * \since 0.58
+             */
+            virtual const std::string pretty_print_value(
+                    const PrettyPrinter &,
+                    const PrettyPrintOptions &) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+    };
+
+    /**
      * A MetadataSectionKey is a MetadataKey that holds a number of other
      * MetadataKey instances.
      *
@@ -232,6 +254,37 @@ namespace paludis
     };
 
     /**
+     * Selects whether a MetadataValueKey instantiation is a
+     * PrettyPrintableMetadataKey.
+     *
+     * \since 0.58
+     * \ingroup g_metadata_key
+     */
+    template <typename C_>
+    struct MetadataValueKeyIsPrettyPrintable
+    {
+        enum { value = false };
+    };
+
+    template <>
+    struct MetadataValueKeyIsPrettyPrintable<std::shared_ptr<const PackageID> >
+    {
+        enum { value = true };
+    };
+
+    template <>
+    struct MetadataValueKeyIsPrettyPrintable<long>
+    {
+        enum { value = true };
+    };
+
+    template <>
+    struct MetadataValueKeyIsPrettyPrintable<bool>
+    {
+        enum { value = true };
+    };
+
+    /**
      * A MetadataValueKey is a MetadataKey that holds some simple type
      * as its value.
      *
@@ -241,7 +294,7 @@ namespace paludis
      */
     template <typename C_>
     class PALUDIS_VISIBLE MetadataValueKey :
-        public MetadataKey,
+        public std::conditional<MetadataValueKeyIsPrettyPrintable<C_>::value, PrettyPrintableMetadataKey, MetadataKey>::type,
         public ImplementAcceptMethods<MetadataKey, MetadataValueKey<C_> >,
         public virtual ExtraMetadataValueKeyMethods<C_>
     {
@@ -289,7 +342,7 @@ namespace paludis
      */
     template <typename C_>
     class PALUDIS_VISIBLE MetadataCollectionKey :
-        public MetadataKey,
+        public PrettyPrintableMetadataKey,
         public ImplementAcceptMethods<MetadataKey, MetadataCollectionKey<C_> >
     {
         public:
@@ -320,7 +373,7 @@ namespace paludis
      */
     template <typename C_>
     class PALUDIS_VISIBLE MetadataSpecTreeKey :
-        public MetadataKey,
+        public PrettyPrintableMetadataKey,
         public ImplementAcceptMethods<MetadataKey, MetadataSpecTreeKey<C_> >
     {
         public:
@@ -360,7 +413,7 @@ namespace paludis
      */
     template <>
     class PALUDIS_VISIBLE MetadataSpecTreeKey<FetchableURISpecTree> :
-        public MetadataKey,
+        public PrettyPrintableMetadataKey,
         public ImplementAcceptMethods<MetadataKey, MetadataSpecTreeKey<FetchableURISpecTree> >
     {
         public:
@@ -407,7 +460,7 @@ namespace paludis
      */
     template <>
     class PALUDIS_VISIBLE MetadataSpecTreeKey<DependencySpecTree> :
-        public MetadataKey,
+        public PrettyPrintableMetadataKey,
         public ImplementAcceptMethods<MetadataKey, MetadataSpecTreeKey<DependencySpecTree> >
     {
         public:

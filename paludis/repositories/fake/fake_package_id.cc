@@ -31,6 +31,8 @@
 #include <paludis/user_dep_spec.hh>
 #include <paludis/package_database.hh>
 #include <paludis/always_enabled_dependency_label.hh>
+#include <paludis/pretty_printer.hh>
+#include <paludis/call_pretty_printer.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/pimp-impl.hh>
@@ -54,81 +56,6 @@
 
 using namespace paludis;
 using namespace paludis::fakerepository;
-
-namespace paludis
-{
-    template <typename C_>
-    struct Imp<FakeMetadataValueKey<C_> >
-    {
-        const std::string raw_name;
-        const std::string human_name;
-        const MetadataKeyType type;
-        C_ value;
-
-        Imp(const std::string & r, const std::string & h, const MetadataKeyType t, const C_ & c) :
-            raw_name(r),
-            human_name(h),
-            type(t),
-            value(c)
-        {
-        }
-    };
-}
-
-template <typename C_>
-FakeMetadataValueKey<C_>::FakeMetadataValueKey(
-        const std::string & r, const std::string & h, const MetadataKeyType t, const C_ & c) :
-    Pimp<FakeMetadataValueKey<C_> >(r, h, t, c),
-    _imp(Pimp<FakeMetadataValueKey<C_> >::_imp)
-{
-}
-
-template <typename C_>
-FakeMetadataValueKey<C_>::~FakeMetadataValueKey()
-{
-}
-
-template <typename C_>
-const C_
-FakeMetadataValueKey<C_>::value() const
-{
-    return this->_imp->value;
-}
-
-template <typename C_>
-const std::string
-FakeMetadataValueKey<C_>::raw_name() const
-{
-    return this->_imp->raw_name;
-}
-
-template <typename C_>
-const std::string
-FakeMetadataValueKey<C_>::human_name() const
-{
-    return this->_imp->human_name;
-}
-
-template <typename C_>
-MetadataKeyType
-FakeMetadataValueKey<C_>::type() const
-{
-    return this->_imp->type;
-}
-
-template <typename C_>
-std::string
-FakeMetadataValueKey<C_>::pretty_print() const
-{
-    return stringify(value());
-}
-
-template <typename C_>
-void
-FakeMetadataValueKey<C_>::set_value(const C_ & c)
-{
-    this->_imp->value = c;
-}
 
 namespace paludis
 {
@@ -195,6 +122,15 @@ MetadataKeyType
 FakeMetadataCollectionKey<C_>::type() const
 {
     return this->_imp->type;
+}
+
+template <typename C_>
+const std::string
+FakeMetadataCollectionKey<C_>::pretty_print_value(
+        const PrettyPrinter & pretty_printer,
+        const PrettyPrintOptions &) const
+{
+    return join(value()->begin(), value()->end(), " ", CallPrettyPrinter(pretty_printer));
 }
 
 FakeMetadataKeywordSetKey::FakeMetadataKeywordSetKey(const std::string & r,
@@ -347,6 +283,14 @@ FakeMetadataSpecTreeKey<C_>::pretty_print_flat(const typename C_::ItemFormatter 
     return _imp->string_value;
 }
 
+template <typename C_>
+const std::string
+FakeMetadataSpecTreeKey<C_>::pretty_print_value(
+        const PrettyPrinter &, const PrettyPrintOptions &) const
+{
+    return _imp->string_value;
+}
+
 FakeMetadataSpecTreeKey<FetchableURISpecTree>::FakeMetadataSpecTreeKey(const std::string & r, const std::string & h, const std::string & v,
         const std::function<const std::shared_ptr<const FetchableURISpecTree> (const std::string &)> & f, const MetadataKeyType t) :
     Pimp<FakeMetadataSpecTreeKey<FetchableURISpecTree> >(f, r, h, t),
@@ -388,6 +332,12 @@ const std::shared_ptr<const FetchableURISpecTree>
 FakeMetadataSpecTreeKey<FetchableURISpecTree>::value() const
 {
     return _imp->value;
+}
+
+const std::string
+FakeMetadataSpecTreeKey<FetchableURISpecTree>::pretty_print_value(const PrettyPrinter &, const PrettyPrintOptions &) const
+{
+    return _imp->string_value;
 }
 
 std::string
@@ -432,6 +382,12 @@ const std::shared_ptr<const DependencySpecTree>
 FakeMetadataSpecTreeKey<DependencySpecTree>::value() const
 {
     return _imp->value;
+}
+
+const std::string
+FakeMetadataSpecTreeKey<DependencySpecTree>::pretty_print_value(const PrettyPrinter &, const PrettyPrintOptions &) const
+{
+    return _imp->string_value;
 }
 
 std::string
@@ -731,7 +687,7 @@ namespace paludis
         std::shared_ptr<FakeMetadataSpecTreeKey<FetchableURISpecTree> > src_uri;
         std::shared_ptr<FakeMetadataSpecTreeKey<SimpleURISpecTree> > homepage;
         std::shared_ptr<FakeMetadataChoicesKey> choices;
-        std::shared_ptr<FakeMetadataValueKey<long> > hitchhiker;
+        std::shared_ptr<LiteralMetadataValueKey<long> > hitchhiker;
         std::shared_ptr<LiteralMetadataStringSetKey> behaviours;
 
         std::shared_ptr<Set<std::string> > behaviours_set;
@@ -1044,7 +1000,7 @@ FakePackageID::need_keys_added() const
         _imp->behaviours = std::make_shared<LiteralMetadataStringSetKey>("BEHAVIOURS", "Behaviours",
                     mkt_internal, _imp->behaviours_set);
 
-        _imp->hitchhiker = std::make_shared<FakeMetadataValueKey<long>>("HITCHHIKER", "Hitchhiker",
+        _imp->hitchhiker = std::make_shared<LiteralMetadataValueKey<long>>("HITCHHIKER", "Hitchhiker",
                     mkt_internal, 42);
 
         _imp->keywords = std::make_shared<FakeMetadataKeywordSetKey>("KEYWORDS", "Keywords", "test", mkt_normal, shared_from_this(), _imp->env);
@@ -1312,17 +1268,17 @@ FakePackageID::size_of_all_distfiles_key() const
     return std::shared_ptr<const MetadataValueKey<long> >();
 }
 
-const std::shared_ptr<FakeMetadataValueKey<long> >
-FakePackageID::hitchhiker_key()
-{
-    need_keys_added();
-    return _imp->hitchhiker;
-}
-
 char
 FakePackageID::use_expand_separator() const
 {
     return '_';
+}
+
+const std::string
+FakeMetadataKeywordSetKey::pretty_print_value(
+        const PrettyPrinter & pretty_printer, const PrettyPrintOptions &) const
+{
+    return join(value()->begin(), value()->end(), " ", CallPrettyPrinter(pretty_printer));
 }
 
 std::string
@@ -1391,7 +1347,4 @@ template class FakeMetadataSpecTreeKey<DependencySpecTree>;
 template class FakeMetadataSpecTreeKey<SimpleURISpecTree>;
 
 template class FakeMetadataCollectionKey<KeywordNameSet>;
-
-template class FakeMetadataValueKey<bool>;
-template class FakeMetadataValueKey<long>;
 

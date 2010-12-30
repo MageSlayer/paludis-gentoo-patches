@@ -237,6 +237,13 @@ struct MetadataPackageIDKeyWrapper :
         else
             throw PythonMethodNotImplemented("MetadataPackageIDKey", "type");
     }
+
+    virtual const std::string pretty_print_value(
+            const PrettyPrinter &,
+            const PrettyPrintOptions &) const
+    {
+        throw PythonMethodNotImplemented("MetadataPackageIDKey", "pretty_print_value");
+    }
 };
 
 struct MetadataStringKeyWrapper :
@@ -684,6 +691,13 @@ struct MetadataCollectionKeyWrapper :
         else
             throw PythonMethodNotImplemented("MetadataCollectionKey", "type");
     }
+
+    virtual const std::string pretty_print_value(
+            const PrettyPrinter &,
+            const PrettyPrintOptions &) const
+    {
+        throw PythonMethodNotImplemented("MetadataCollectionKey", "pretty_print_value");
+    }
 };
 
 template <typename C_>
@@ -752,6 +766,13 @@ struct MetadataSpecTreeKeyWrapper :
             return f();
         else
             throw PythonMethodNotImplemented("MetadataSpecTreeKey", "type");
+    }
+
+    virtual const std::string pretty_print_value(
+            const PrettyPrinter &,
+            const PrettyPrintOptions &) const
+    {
+        throw PythonMethodNotImplemented("MetadataSpecTreeKey", "pretty_print_value");
     }
 };
 
@@ -833,6 +854,13 @@ struct MetadataSpecTreeKeyWrapper<FetchableURISpecTree> :
         else
             throw PythonMethodNotImplemented("MetadataSpecTreeKey", "type");
     }
+
+    virtual const std::string pretty_print_value(
+            const PrettyPrinter &,
+            const PrettyPrintOptions &) const
+    {
+        throw PythonMethodNotImplemented("MetadataSpecTreeKey", "pretty_print_value");
+    }
 };
 
 template <>
@@ -912,6 +940,13 @@ struct MetadataSpecTreeKeyWrapper<DependencySpecTree> :
             return f();
         else
             throw PythonMethodNotImplemented("MetadataSpecTreeKey", "type");
+    }
+
+    virtual const std::string pretty_print_value(
+            const PrettyPrinter &,
+            const PrettyPrintOptions &) const
+    {
+        throw PythonMethodNotImplemented("MetadataSpecTreeKey", "pretty_print_value");
     }
 };
 

@@ -36,6 +36,7 @@
 #include <paludis/formatter.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/spec_tree.hh>
+#include <paludis/pretty_printer.hh>
 
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
@@ -116,6 +117,34 @@ namespace
         }
     };
 
+    struct UnwrittenHomepagePrettyPrinter
+    {
+        std::stringstream s;
+        const PrettyPrinter & pretty_printer;
+
+        UnwrittenHomepagePrettyPrinter(const PrettyPrinter & p) :
+            pretty_printer(p)
+        {
+        }
+
+        void visit(const SimpleURISpecTree::NodeType<AllDepSpec>::Type & node)
+        {
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
+        }
+
+        void visit(const SimpleURISpecTree::NodeType<ConditionalDepSpec>::Type & node)
+        {
+            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
+        }
+
+        void visit(const SimpleURISpecTree::NodeType<SimpleURIDepSpec>::Type & node)
+        {
+            if (! s.str().empty())
+                s << " ";
+            s << pretty_printer.prettify(*node.spec());
+        }
+    };
+
     struct UnwrittenHomepageKey :
         MetadataSpecTreeKey<SimpleURISpecTree>
     {
@@ -166,6 +195,15 @@ namespace
         virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             return _type;
+        }
+
+        virtual const std::string pretty_print_value(
+                const PrettyPrinter & pretty_printer,
+                const PrettyPrintOptions &) const
+        {
+            UnwrittenHomepagePrettyPrinter p(pretty_printer);
+            value()->top()->accept(p);
+            return p.s.str();
         }
     };
 }

@@ -85,6 +85,10 @@ namespace paludis
                 virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::string pretty_print_value(
+                        const PrettyPrinter &,
+                        const PrettyPrintOptions &) const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         class EFetchableURIKey :
@@ -114,6 +118,10 @@ namespace paludis
                 virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::string pretty_print_value(
+                        const PrettyPrinter &,
+                        const PrettyPrintOptions &) const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         class ESimpleURIKey :
@@ -138,6 +146,10 @@ namespace paludis
                 virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::string pretty_print_value(
+                        const PrettyPrinter &,
+                        const PrettyPrintOptions &) const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         class EPlainTextSpecKey :
@@ -163,6 +175,10 @@ namespace paludis
                 virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::string pretty_print_value(
+                        const PrettyPrinter &,
+                        const PrettyPrintOptions &) const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         class EMyOptionsKey :
@@ -187,6 +203,10 @@ namespace paludis
                 virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::string pretty_print_value(
+                        const PrettyPrinter &,
+                        const PrettyPrintOptions &) const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         class ERequiredUseKey :
@@ -211,6 +231,10 @@ namespace paludis
                 virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::string pretty_print_value(
+                        const PrettyPrinter &,
+                        const PrettyPrintOptions &) const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         class EProvideKey :
@@ -235,6 +259,10 @@ namespace paludis
                 virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::string pretty_print_value(
+                        const PrettyPrinter &,
+                        const PrettyPrintOptions &) const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         class ELicenseKey :
@@ -261,6 +289,10 @@ namespace paludis
                 virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::string pretty_print_value(
+                        const PrettyPrinter &,
+                        const PrettyPrintOptions &) const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         class EKeywordsKey :
@@ -283,6 +315,10 @@ namespace paludis
                 virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::string pretty_print_value(
+                        const PrettyPrinter &,
+                        const PrettyPrintOptions &) const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         class EStringSetKey :
@@ -303,6 +339,10 @@ namespace paludis
                 virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::string pretty_print_value(
+                        const PrettyPrinter &,
+                        const PrettyPrintOptions &) const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         class EContentsKey :

@@ -25,6 +25,7 @@
 #include <paludis/repositories/e/vdb_contents_tokeniser.hh>
 #include <paludis/repositories/e/e_repository.hh>
 #include <paludis/repositories/e/myoption.hh>
+#include <paludis/repositories/e/spec_tree_pretty_printer.hh>
 
 #include <paludis/util/pretty_print.hh>
 #include <paludis/util/pimp-impl.hh>
@@ -51,6 +52,7 @@
 #include <paludis/stringify_formatter-impl.hh>
 #include <paludis/dep_spec_flattener.hh>
 #include <paludis/literal_metadata_key.hh>
+#include <paludis/call_pretty_printer.hh>
 
 #include <algorithm>
 #include <functional>
@@ -167,6 +169,16 @@ EDependenciesKey::initial_labels() const
     return _imp->labels;
 }
 
+const std::string
+EDependenciesKey::pretty_print_value(
+        const PrettyPrinter & pretty_printer,
+        const PrettyPrintOptions & options) const
+{
+    SpecTreePrettyPrinter p(pretty_printer, options);
+    value()->top()->accept(p);
+    return stringify(p);
+}
+
 std::string
 EDependenciesKey::pretty_print(const DependencySpecTree::ItemFormatter & f) const
 {
@@ -252,6 +264,16 @@ ELicenseKey::value() const
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
     _imp->value = parse_license(_imp->string_value, _imp->env, _imp->id, *_imp->id->eapi());
     return _imp->value;
+}
+
+const std::string
+ELicenseKey::pretty_print_value(
+        const PrettyPrinter & pretty_printer,
+        const PrettyPrintOptions & options) const
+{
+    SpecTreePrettyPrinter p(pretty_printer, options);
+    value()->top()->accept(p);
+    return stringify(p);
 }
 
 std::string
@@ -340,6 +362,16 @@ EFetchableURIKey::value() const
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
     _imp->value = parse_fetchable_uri(_imp->string_value, _imp->env, _imp->id, *_imp->id->eapi());
     return _imp->value;
+}
+
+const std::string
+EFetchableURIKey::pretty_print_value(
+        const PrettyPrinter & pretty_printer,
+        const PrettyPrintOptions & options) const
+{
+    SpecTreePrettyPrinter p(pretty_printer, options);
+    value()->top()->accept(p);
+    return stringify(p);
 }
 
 std::string
@@ -467,6 +499,16 @@ ESimpleURIKey::value() const
     return _imp->value;
 }
 
+const std::string
+ESimpleURIKey::pretty_print_value(
+        const PrettyPrinter & pretty_printer,
+        const PrettyPrintOptions & options) const
+{
+    SpecTreePrettyPrinter p(pretty_printer, options);
+    value()->top()->accept(p);
+    return stringify(p);
+}
+
 std::string
 ESimpleURIKey::pretty_print(const SimpleURISpecTree::ItemFormatter & f) const
 {
@@ -552,6 +594,16 @@ EPlainTextSpecKey::value() const
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
     _imp->value = parse_plain_text(_imp->string_value, _imp->env, _imp->id, *_imp->id->eapi());
     return _imp->value;
+}
+
+const std::string
+EPlainTextSpecKey::pretty_print_value(
+        const PrettyPrinter & pretty_printer,
+        const PrettyPrintOptions & options) const
+{
+    SpecTreePrettyPrinter p(pretty_printer, options);
+    value()->top()->accept(p);
+    return stringify(p);
 }
 
 std::string
@@ -642,6 +694,16 @@ EMyOptionsKey::value() const
     return _imp->value;
 }
 
+const std::string
+EMyOptionsKey::pretty_print_value(
+        const PrettyPrinter & pretty_printer,
+        const PrettyPrintOptions & options) const
+{
+    SpecTreePrettyPrinter p(pretty_printer, options);
+    value()->top()->accept(p);
+    return stringify(p);
+}
+
 std::string
 EMyOptionsKey::pretty_print(const PlainTextSpecTree::ItemFormatter & f) const
 {
@@ -728,6 +790,16 @@ ERequiredUseKey::value() const
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
     _imp->value = parse_required_use(_imp->string_value, _imp->env, _imp->id, *_imp->id->eapi());
     return _imp->value;
+}
+
+const std::string
+ERequiredUseKey::pretty_print_value(
+        const PrettyPrinter & pretty_printer,
+        const PrettyPrintOptions & options) const
+{
+    SpecTreePrettyPrinter p(pretty_printer, options);
+    value()->top()->accept(p);
+    return stringify(p);
 }
 
 std::string
@@ -817,6 +889,16 @@ EProvideKey::value() const
     return _imp->value;
 }
 
+const std::string
+EProvideKey::pretty_print_value(
+        const PrettyPrinter & pretty_printer,
+        const PrettyPrintOptions & options) const
+{
+    SpecTreePrettyPrinter p(pretty_printer, options);
+    value()->top()->accept(p);
+    return stringify(p);
+}
+
 std::string
 EProvideKey::pretty_print(const ProvideSpecTree::ItemFormatter & f) const
 {
@@ -902,6 +984,12 @@ EKeywordsKey::value() const
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
     tokenise_whitespace(_imp->string_value, create_inserter<KeywordName>(_imp->value->inserter()));
     return _imp->value;
+}
+
+const std::string
+EKeywordsKey::pretty_print_value(const PrettyPrinter & p, const PrettyPrintOptions &) const
+{
+    return join(value()->begin(), value()->end(), " ", CallPrettyPrinter(p));
 }
 
 std::string
@@ -1024,6 +1112,13 @@ EStringSetKey::pretty_print_flat(const Formatter<std::string> & f) const
 {
     using namespace std::placeholders;
     return join(value()->begin(), value()->end(), " ", std::bind(&format_string, _1, f));
+}
+
+const std::string
+EStringSetKey::pretty_print_value(
+        const PrettyPrinter & p, const PrettyPrintOptions &) const
+{
+    return join(value()->begin(), value()->end(), " ", CallPrettyPrinter(p));
 }
 
 namespace paludis

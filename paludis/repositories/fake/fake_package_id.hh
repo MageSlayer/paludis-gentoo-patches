@@ -31,31 +31,6 @@ namespace paludis
     class FakeRepositoryBase;
 
     template <typename C_>
-    class PALUDIS_VISIBLE FakeMetadataValueKey :
-        public MetadataValueKey<C_>,
-        private Pimp<FakeMetadataValueKey<C_> >
-    {
-        protected:
-            typename Pimp<FakeMetadataValueKey<C_> >::ImpPtr & _imp;
-
-        public:
-            FakeMetadataValueKey(const std::string &, const std::string &, const MetadataKeyType,
-                    const C_ &);
-
-            ~FakeMetadataValueKey();
-
-            virtual const C_ value() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            void set_value(const C_ &);
-
-            virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual std::string pretty_print() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-    };
-
-    template <typename C_>
     class PALUDIS_VISIBLE FakeMetadataCollectionKey :
         public MetadataCollectionKey<C_>,
         private Pimp<FakeMetadataCollectionKey<C_> >
@@ -74,6 +49,10 @@ namespace paludis
             virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual const std::string pretty_print_value(
+                    const PrettyPrinter &,
+                    const PrettyPrintOptions &) const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     class PALUDIS_VISIBLE FakeMetadataKeywordSetKey :
@@ -87,6 +66,10 @@ namespace paludis
 
             virtual std::string pretty_print_flat(const Formatter<KeywordName> &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual const std::string pretty_print_value(
+                    const PrettyPrinter &,
+                    const PrettyPrintOptions &) const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     template <typename C_>
@@ -116,6 +99,10 @@ namespace paludis
             virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual const std::string pretty_print_value(
+                    const PrettyPrinter &,
+                    const PrettyPrintOptions &) const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     template <>
@@ -149,6 +136,10 @@ namespace paludis
             virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual const std::string pretty_print_value(
+                    const PrettyPrinter &,
+                    const PrettyPrintOptions &) const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     template <>
@@ -183,6 +174,10 @@ namespace paludis
             virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual const std::string pretty_print_value(
+                    const PrettyPrinter &,
+                    const PrettyPrintOptions &) const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     class PALUDIS_VISIBLE FakeMetadataChoicesKey :
@@ -307,7 +302,6 @@ namespace paludis
             const std::shared_ptr<FakeMetadataSpecTreeKey<FetchableURISpecTree> > fetches_key();
             const std::shared_ptr<FakeMetadataSpecTreeKey<SimpleURISpecTree> > homepage_key();
             const std::shared_ptr<FakeMetadataChoicesKey> choices_key();
-            const std::shared_ptr<FakeMetadataValueKey<long> > hitchhiker_key();
 
             const std::shared_ptr<Set<std::string> > behaviours_set();
 
