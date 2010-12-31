@@ -22,7 +22,7 @@
 #include <paludis/repositories/e/e_repository_id.hh>
 #include <paludis/repositories/e/vdb_repository.hh>
 #include <paludis/repositories/e/eapi.hh>
-#include <paludis/repositories/e/dep_spec_pretty_printer.hh>
+#include <paludis/repositories/e/spec_tree_pretty_printer.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
 #include <paludis/environments/test/test_environment.hh>
@@ -38,7 +38,6 @@
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/action.hh>
-#include <paludis/stringify_formatter.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/generator.hh>
 #include <paludis/filter.hh>
@@ -46,6 +45,7 @@
 #include <paludis/selection.hh>
 #include <paludis/repository_factory.hh>
 #include <paludis/choice.hh>
+#include <paludis/unformatted_pretty_printer.hh>
 
 #include <paludis/util/indirect_iterator-impl.hh>
 
@@ -504,12 +504,12 @@ namespace test_cases
                     TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id1->find_metadata("EAPI"))->value(), "0");
                     TEST_CHECK(bool(id1->short_description_key()));
                     TEST_CHECK_EQUAL(id1->short_description_key()->value(), "The Description");
-                    StringifyFormatter ff;
-                    erepository::DepSpecPrettyPrinter pd(0, std::shared_ptr<const PackageID>(), ff, 0, false, false);
+                    UnformattedPrettyPrinter ff;
+                    erepository::SpecTreePrettyPrinter pd(ff, { });
                     TEST_CHECK(bool(id1->build_dependencies_key()));
                     id1->build_dependencies_key()->value()->top()->accept(pd);
                     TEST_CHECK_STRINGIFY_EQUAL(pd, "foo/bar");
-                    erepository::DepSpecPrettyPrinter pr(0, std::shared_ptr<const PackageID>(), ff, 0, false, false);
+                    erepository::SpecTreePrettyPrinter pr(ff, { });
                     TEST_CHECK(bool(id1->run_dependencies_key()));
                     id1->run_dependencies_key()->value()->top()->accept(pr);
                     TEST_CHECK_STRINGIFY_EQUAL(pr, "foo/bar");
@@ -521,11 +521,11 @@ namespace test_cases
                     TEST_CHECK(id2->end_metadata() != id2->find_metadata("EAPI"));
                     TEST_CHECK(bool(id2->short_description_key()));
                     TEST_CHECK_EQUAL(id2->short_description_key()->value(), "dquote \" squote ' backslash \\ dollar $");
-                    erepository::DepSpecPrettyPrinter pd2(0, std::shared_ptr<const PackageID>(), ff, 0, false, false);
+                    erepository::SpecTreePrettyPrinter pd2(ff, { });
                     TEST_CHECK(bool(id2->build_dependencies_key()));
                     id2->build_dependencies_key()->value()->top()->accept(pd2);
                     TEST_CHECK_STRINGIFY_EQUAL(pd2, "foo/bar bar/baz");
-                    erepository::DepSpecPrettyPrinter pr2(0, std::shared_ptr<const PackageID>(), ff, 0, false, false);
+                    erepository::SpecTreePrettyPrinter pr2(ff, { });
                     TEST_CHECK(bool(id2->run_dependencies_key()));
                     id2->run_dependencies_key()->value()->top()->accept(pr2);
                     TEST_CHECK_STRINGIFY_EQUAL(pr2, "foo/bar");

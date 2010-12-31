@@ -21,7 +21,6 @@
 #include <paludis/repositories/e/ebuild_id.hh>
 #include <paludis/repositories/e/dep_parser.hh>
 #include <paludis/repositories/e/eapi.hh>
-#include <paludis/repositories/e/dep_spec_pretty_printer.hh>
 #include <paludis/repositories/e/vdb_contents_tokeniser.hh>
 #include <paludis/repositories/e/e_repository.hh>
 #include <paludis/repositories/e/myoption.hh>
@@ -49,7 +48,6 @@
 #include <paludis/contents.hh>
 #include <paludis/repository.hh>
 #include <paludis/environment.hh>
-#include <paludis/stringify_formatter-impl.hh>
 #include <paludis/dep_spec_flattener.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/call_pretty_printer.hh>
@@ -179,24 +177,6 @@ EDependenciesKey::pretty_print_value(
     return stringify(p);
 }
 
-std::string
-EDependenciesKey::pretty_print(const DependencySpecTree::ItemFormatter & f) const
-{
-    StringifyFormatter ff(f);
-    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, true, true);
-    value()->top()->accept(p);
-    return stringify(p);
-}
-
-std::string
-EDependenciesKey::pretty_print_flat(const DependencySpecTree::ItemFormatter & f) const
-{
-    StringifyFormatter ff(f);
-    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, false, true);
-    value()->top()->accept(p);
-    return stringify(p);
-}
-
 const std::string
 EDependenciesKey::raw_name() const
 {
@@ -272,24 +252,6 @@ ELicenseKey::pretty_print_value(
         const PrettyPrintOptions & options) const
 {
     SpecTreePrettyPrinter p(pretty_printer, options);
-    value()->top()->accept(p);
-    return stringify(p);
-}
-
-std::string
-ELicenseKey::pretty_print(const LicenseSpecTree::ItemFormatter & f) const
-{
-    StringifyFormatter ff(f);
-    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, true, true);
-    value()->top()->accept(p);
-    return stringify(p);
-}
-
-std::string
-ELicenseKey::pretty_print_flat(const LicenseSpecTree::ItemFormatter & f) const
-{
-    StringifyFormatter ff(f);
-    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, false, true);
     value()->top()->accept(p);
     return stringify(p);
 }
@@ -370,24 +332,6 @@ EFetchableURIKey::pretty_print_value(
         const PrettyPrintOptions & options) const
 {
     SpecTreePrettyPrinter p(pretty_printer, options);
-    value()->top()->accept(p);
-    return stringify(p);
-}
-
-std::string
-EFetchableURIKey::pretty_print(const FetchableURISpecTree::ItemFormatter & f) const
-{
-    StringifyFormatter ff(f);
-    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, true, true);
-    value()->top()->accept(p);
-    return stringify(p);
-}
-
-std::string
-EFetchableURIKey::pretty_print_flat(const FetchableURISpecTree::ItemFormatter & f) const
-{
-    StringifyFormatter ff(f);
-    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, false, true);
     value()->top()->accept(p);
     return stringify(p);
 }
@@ -509,24 +453,6 @@ ESimpleURIKey::pretty_print_value(
     return stringify(p);
 }
 
-std::string
-ESimpleURIKey::pretty_print(const SimpleURISpecTree::ItemFormatter & f) const
-{
-    StringifyFormatter ff(f);
-    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, true, true);
-    value()->top()->accept(p);
-    return stringify(p);
-}
-
-std::string
-ESimpleURIKey::pretty_print_flat(const SimpleURISpecTree::ItemFormatter & f) const
-{
-    StringifyFormatter ff(f);
-    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, false, true);
-    value()->top()->accept(p);
-    return stringify(p);
-}
-
 const std::string
 ESimpleURIKey::raw_name() const
 {
@@ -602,24 +528,6 @@ EPlainTextSpecKey::pretty_print_value(
         const PrettyPrintOptions & options) const
 {
     SpecTreePrettyPrinter p(pretty_printer, options);
-    value()->top()->accept(p);
-    return stringify(p);
-}
-
-std::string
-EPlainTextSpecKey::pretty_print(const PlainTextSpecTree::ItemFormatter & f) const
-{
-    StringifyFormatter ff(f);
-    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, true, true);
-    value()->top()->accept(p);
-    return stringify(p);
-}
-
-std::string
-EPlainTextSpecKey::pretty_print_flat(const PlainTextSpecTree::ItemFormatter & f) const
-{
-    StringifyFormatter ff(f);
-    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, false, true);
     value()->top()->accept(p);
     return stringify(p);
 }
@@ -704,24 +612,6 @@ EMyOptionsKey::pretty_print_value(
     return stringify(p);
 }
 
-std::string
-EMyOptionsKey::pretty_print(const PlainTextSpecTree::ItemFormatter & f) const
-{
-    StringifyFormatter ff(f);
-    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, true, true);
-    value()->top()->accept(p);
-    return stringify(p);
-}
-
-std::string
-EMyOptionsKey::pretty_print_flat(const PlainTextSpecTree::ItemFormatter & f) const
-{
-    StringifyFormatter ff(f);
-    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, false, true);
-    value()->top()->accept(p);
-    return stringify(p);
-}
-
 const std::string
 EMyOptionsKey::raw_name() const
 {
@@ -798,24 +688,6 @@ ERequiredUseKey::pretty_print_value(
         const PrettyPrintOptions & options) const
 {
     SpecTreePrettyPrinter p(pretty_printer, options);
-    value()->top()->accept(p);
-    return stringify(p);
-}
-
-std::string
-ERequiredUseKey::pretty_print(const RequiredUseSpecTree::ItemFormatter & f) const
-{
-    StringifyFormatter ff(f);
-    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, true, true);
-    value()->top()->accept(p);
-    return stringify(p);
-}
-
-std::string
-ERequiredUseKey::pretty_print_flat(const RequiredUseSpecTree::ItemFormatter & f) const
-{
-    StringifyFormatter ff(f);
-    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, false, true);
     value()->top()->accept(p);
     return stringify(p);
 }
@@ -899,24 +771,6 @@ EProvideKey::pretty_print_value(
     return stringify(p);
 }
 
-std::string
-EProvideKey::pretty_print(const ProvideSpecTree::ItemFormatter & f) const
-{
-    StringifyFormatter ff(f);
-    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, true, true);
-    value()->top()->accept(p);
-    return stringify(p);
-}
-
-std::string
-EProvideKey::pretty_print_flat(const ProvideSpecTree::ItemFormatter & f) const
-{
-    StringifyFormatter ff(f);
-    DepSpecPrettyPrinter p(_imp->env, _imp->id, ff, 0, false, true);
-    value()->top()->accept(p);
-    return stringify(p);
-}
-
 const std::string
 EProvideKey::raw_name() const
 {
@@ -990,27 +844,6 @@ const std::string
 EKeywordsKey::pretty_print_value(const PrettyPrinter & p, const PrettyPrintOptions &) const
 {
     return join(value()->begin(), value()->end(), " ", CallPrettyPrinter(p));
-}
-
-std::string
-EKeywordsKey::pretty_print_flat(const Formatter<KeywordName> & f) const
-{
-    std::string result;
-    for (KeywordNameSet::ConstIterator i(value()->begin()), i_end(value()->end()) ;
-            i != i_end ; ++i)
-    {
-        if (! result.empty())
-            result.append(" ");
-
-        std::shared_ptr<KeywordNameSet> k(std::make_shared<KeywordNameSet>());
-        k->insert(*i);
-        if (_imp->env->accept_keywords(k, _imp->id))
-            result.append(f.format(*i, format::Accepted()));
-        else
-            result.append(f.format(*i, format::Unaccepted()));
-    }
-
-    return result;
 }
 
 const std::string
@@ -1097,21 +930,6 @@ MetadataKeyType
 EStringSetKey::type() const
 {
     return _imp->type;
-}
-
-namespace
-{
-    std::string format_string(const std::string & i, const Formatter<std::string> & f)
-    {
-        return f.format(i, format::Plain());
-    }
-}
-
-std::string
-EStringSetKey::pretty_print_flat(const Formatter<std::string> & f) const
-{
-    using namespace std::placeholders;
-    return join(value()->begin(), value()->end(), " ", std::bind(&format_string, _1, f));
 }
 
 const std::string

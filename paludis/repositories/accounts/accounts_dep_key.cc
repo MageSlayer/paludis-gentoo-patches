@@ -27,7 +27,6 @@
 #include <paludis/filtered_generator.hh>
 #include <paludis/filter.hh>
 #include <paludis/dep_spec.hh>
-#include <paludis/formatter.hh>
 #include <paludis/environment.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
@@ -119,41 +118,6 @@ const std::shared_ptr<const DependenciesLabelSequence>
 AccountsDepKey::initial_labels() const
 {
     return AccountsDepKeyData::get_instance()->initial_labels;
-}
-
-std::string
-AccountsDepKey::pretty_print(const DependencySpecTree::ItemFormatter & f) const
-{
-    return f.indent(0) + pretty_print_flat(f) + "\n";
-}
-
-std::string
-AccountsDepKey::pretty_print_flat(const DependencySpecTree::ItemFormatter & f) const
-{
-    std::stringstream s;
-
-    for (std::list<std::shared_ptr<PackageDepSpec> >::const_iterator i(_imp->specs->begin()),
-            i_end(_imp->specs->end()) ; i != i_end ; ++i)
-    {
-        if (! s.str().empty())
-            s << ", ";
-
-        if (_imp->env)
-        {
-            if (! (*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(**i, { }) |
-                        filter::InstalledAtRoot(_imp->env->preferred_root_key()->value()))]->empty())
-                s << f.format(**i, format::Installed());
-            else if (! (*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(**i, { }) |
-                        filter::SupportsAction<InstallAction>() | filter::NotMasked())]->empty())
-                s << f.format(**i, format::Installable());
-            else
-                s << f.format(**i, format::Plain());
-        }
-        else
-            s << f.format(**i, format::Plain());
-    }
-
-    return s.str();
 }
 
 const std::string

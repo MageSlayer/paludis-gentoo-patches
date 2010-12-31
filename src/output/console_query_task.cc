@@ -19,7 +19,6 @@
 
 #include "console_query_task.hh"
 #include "mask_displayer.hh"
-#include "colour_formatter.hh"
 #include "colour_pretty_printer.hh"
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/pimp-impl.hh>

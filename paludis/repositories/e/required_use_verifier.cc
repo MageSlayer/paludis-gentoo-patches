@@ -26,7 +26,6 @@
 #include <paludis/action.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/choice.hh>
-#include <paludis/stringify_formatter.hh>
 #include <paludis/unformatted_pretty_printer.hh>
 #include <list>
 #include <algorithm>

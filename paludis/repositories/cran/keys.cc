@@ -20,7 +20,6 @@
 #include <paludis/repositories/cran/keys.hh>
 #include <paludis/repositories/cran/cran_package_id.hh>
 #include <paludis/repositories/cran/cran_dep_parser.hh>
-#include <paludis/repositories/cran/dep_spec_pretty_printer.hh>
 #include <paludis/repositories/cran/spec_tree_pretty_printer.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/stringify.hh>
@@ -28,9 +27,8 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/pimp-impl.hh>
 #include <paludis/dep_spec.hh>
-#include <paludis/stringify_formatter-impl.hh>
-#include <paludis/formatter.hh>
 #include <paludis/action.hh>
 #include <paludis/repository.hh>
 #include <paludis/environment.hh>
@@ -81,16 +79,6 @@ PackageIDSequenceKey::push_back(const std::shared_ptr<const PackageID> & i)
     _v->push_back(i);
 }
 
-std::string
-PackageIDSequenceKey::pretty_print_flat(const Formatter<PackageID> & f) const
-{
-    using namespace std::placeholders;
-    return join(indirect_iterator(value()->begin()), indirect_iterator(value()->end()), " ",
-            std::bind(static_cast<std::string (Formatter<PackageID>::*)(const PackageID &, const format::Plain &) const>(
-                    &Formatter<PackageID>::format),
-                std::cref(f), _1, format::Plain()));
-}
-
 const std::string
 PackageIDSequenceKey::pretty_print_value(
         const PrettyPrinter & p, const PrettyPrintOptions &) const
@@ -137,23 +125,6 @@ MetadataKeyType
 PackageIDKey::type() const
 {
     return _t;
-}
-
-std::string
-PackageIDKey::pretty_print(const Formatter<PackageID> & f) const
-{
-    auto repo(_env->package_database()->fetch_repository(_v->repository_name()));
-    if (repo->installed_root_key())
-        return f.format(*_v, format::Installed());
-    else if (_v->supports_action(SupportsActionTest<InstallAction>()))
-    {
-        if (_v->masked())
-            return f.format(*_v, format::Plain());
-        else
-            return f.format(*_v, format::Installable());
-    }
-    else
-        return f.format(*_v, format::Plain());
 }
 
 namespace paludis
@@ -225,24 +196,6 @@ DepKey::value() const
     Context context("When parsing CRAN dependency string:");
     _imp->c = parse_depends(_imp->v);
     return _imp->c;
-}
-
-std::string
-DepKey::pretty_print(const DependencySpecTree::ItemFormatter & f) const
-{
-    StringifyFormatter ff(f);
-    DepSpecPrettyPrinter p(_imp->env, ff, 12, true);
-    value()->top()->accept(p);
-    return stringify(p);
-}
-
-std::string
-DepKey::pretty_print_flat(const DependencySpecTree::ItemFormatter & f) const
-{
-    StringifyFormatter ff(f);
-    DepSpecPrettyPrinter p(_imp->env, ff, 0, false);
-    value()->top()->accept(p);
-    return stringify(p);
 }
 
 const std::string

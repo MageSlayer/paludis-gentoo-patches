@@ -25,7 +25,6 @@
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/dep_label.hh>
 #include <paludis/comma_separated_dep_parser.hh>
-#include <paludis/comma_separated_dep_printer.hh>
 #include <paludis/comma_separated_dep_pretty_printer.hh>
 #include <paludis/always_enabled_dependency_label.hh>
 #include <memory>
@@ -114,22 +113,6 @@ UnavailableRepositoryDependenciesKey::pretty_print_value(
         const PrettyPrintOptions & options) const
 {
     CommaSeparatedDepPrettyPrinter p(printer, options);
-    _imp->value->top()->accept(p);
-    return p.result();
-}
-
-std::string
-UnavailableRepositoryDependenciesKey::pretty_print(const DependencySpecTree::ItemFormatter & f) const
-{
-    CommaSeparatedDepPrinter p(_imp->env, f, false);
-    _imp->value->top()->accept(p);
-    return p.result();
-}
-
-std::string
-UnavailableRepositoryDependenciesKey::pretty_print_flat(const DependencySpecTree::ItemFormatter & f) const
-{
-    CommaSeparatedDepPrinter p(_imp->env, f, true);
     _imp->value->top()->accept(p);
     return p.result();
 }

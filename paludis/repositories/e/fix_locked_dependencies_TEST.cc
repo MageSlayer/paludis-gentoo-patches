@@ -20,14 +20,14 @@
 #include <paludis/repositories/e/fix_locked_dependencies.hh>
 #include <paludis/repositories/e/dep_parser.hh>
 #include <paludis/repositories/e/eapi.hh>
-#include <paludis/repositories/e/dep_spec_pretty_printer.hh>
+#include <paludis/repositories/e/spec_tree_pretty_printer.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
 #include <paludis/repositories/fake/fake_repository.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/stringify_formatter.hh>
 #include <paludis/package_database.hh>
+#include <paludis/unformatted_pretty_printer.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 
@@ -67,10 +67,10 @@ namespace test_cases
                         "|| ( foo/bar ( bar/baz oink/squeak ) ) blah/blah", &env, id, *eapi)),
                 aa(fix_locked_dependencies(&env, *eapi, id, bb));
 
-            StringifyFormatter ff;
-            DepSpecPrettyPrinter
-                a(0, std::shared_ptr<const PackageID>(), ff, 0, false, false),
-                b(0, std::shared_ptr<const PackageID>(), ff, 0, false, false);
+            UnformattedPrettyPrinter ff;
+            SpecTreePrettyPrinter
+                a(ff, { }),
+                b(ff, { });
             aa->top()->accept(a);
             bb->top()->accept(b);
 
@@ -80,9 +80,9 @@ namespace test_cases
                         "foo/bar:= cat/installed:= >=cat/installed-1.2:= <=cat/installed-1.2:=", &env, id, *eapi)),
                 dd(fix_locked_dependencies(&env, *eapi, id, cc));
 
-            DepSpecPrettyPrinter
-                c(0, std::shared_ptr<const PackageID>(), ff, 0, false, false),
-                d(0, std::shared_ptr<const PackageID>(), ff, 0, false, false);
+            SpecTreePrettyPrinter
+                c(ff, { }),
+                d(ff, { });
             cc->top()->accept(c);
             dd->top()->accept(d);
 

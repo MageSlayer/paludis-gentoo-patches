@@ -21,7 +21,6 @@ noinst_HEADERS = \
 	masks.hh \
 	keys.hh \
 	normalise.hh \
-	dep_spec_pretty_printer.hh \
 	spec_tree_pretty_printer.hh \
 	package_dep_spec.hh
 
@@ -35,7 +34,6 @@ libpaludiscranrepository_la_SOURCES = \
 	normalise.cc \
 	masks.cc \
 	keys.cc \
-	dep_spec_pretty_printer.cc \
 	spec_tree_pretty_printer.cc \
 	package_dep_spec.cc \
 	$(paludis_repositories_cran_include_HEADERS)

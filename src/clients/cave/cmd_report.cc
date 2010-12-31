@@ -18,7 +18,6 @@
  */
 
 #include "cmd_report.hh"
-#include "colour_formatter.hh"
 #include "format_user_config.hh"
 #include "colours.hh"
 #include "exceptions.hh"

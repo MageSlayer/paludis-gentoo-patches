@@ -29,7 +29,6 @@
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
-#include <paludis/stringify_formatter.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/environment.hh>
 #include <paludis/choice.hh>

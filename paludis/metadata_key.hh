@@ -28,7 +28,6 @@
 #include <paludis/spec_tree.hh>
 #include <paludis/contents-fwd.hh>
 #include <paludis/repository-fwd.hh>
-#include <paludis/formatter-fwd.hh>
 #include <paludis/metadata_key_holder.hh>
 #include <paludis/choice-fwd.hh>
 #include <paludis/pretty_printer-fwd.hh>

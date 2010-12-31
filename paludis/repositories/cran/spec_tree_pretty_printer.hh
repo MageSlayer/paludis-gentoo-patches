@@ -23,7 +23,6 @@
 #include <paludis/util/pimp.hh>
 #include <paludis/spec_tree.hh>
 #include <paludis/dep_spec-fwd.hh>
-#include <paludis/formatter.hh>
 #include <paludis/pretty_print_options-fwd.hh>
 #include <paludis/pretty_printer-fwd.hh>
 #include <iosfwd>

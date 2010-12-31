@@ -25,7 +25,6 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/choice.hh>
 #include <paludis/elike_choices.hh>
-#include <paludis/comma_separated_dep_printer.hh>
 #include <paludis/comma_separated_dep_parser.hh>
 #include <paludis/comma_separated_dep_pretty_printer.hh>
 #include <memory>
@@ -101,22 +100,6 @@ UnpackagedDependencyKey::pretty_print_value(
         const PrettyPrinter & printer, const PrettyPrintOptions & options) const
 {
     CommaSeparatedDepPrettyPrinter p(printer, options);
-    _imp->value->top()->accept(p);
-    return p.result();
-}
-
-std::string
-UnpackagedDependencyKey::pretty_print(const DependencySpecTree::ItemFormatter & f) const
-{
-    CommaSeparatedDepPrinter p(_imp->env, f, false);
-    _imp->value->top()->accept(p);
-    return p.result();
-}
-
-std::string
-UnpackagedDependencyKey::pretty_print_flat(const DependencySpecTree::ItemFormatter & f) const
-{
-    CommaSeparatedDepPrinter p(_imp->env, f, true);
     _imp->value->top()->accept(p);
     return p.result();
 }

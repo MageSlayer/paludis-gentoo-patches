@@ -22,7 +22,7 @@
 #include <paludis/repositories/e/e_repository_id.hh>
 #include <paludis/repositories/e/vdb_repository.hh>
 #include <paludis/repositories/e/eapi.hh>
-#include <paludis/repositories/e/dep_spec_pretty_printer.hh>
+#include <paludis/repositories/e/spec_tree_pretty_printer.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
 #include <paludis/environments/test/test_environment.hh>
@@ -36,7 +36,6 @@
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/action.hh>
-#include <paludis/stringify_formatter.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/generator.hh>
 #include <paludis/filter.hh>
@@ -44,6 +43,7 @@
 #include <paludis/selection.hh>
 #include <paludis/repository_factory.hh>
 #include <paludis/choice.hh>
+#include <paludis/unformatted_pretty_printer.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <functional>
@@ -108,19 +108,19 @@ namespace test_cases
                             PackageDepSpec(parse_user_package_dep_spec("category/package",
                                     &env, { })), { }))]->last());
 
-            StringifyFormatter ff;
+            UnformattedPrettyPrinter ff;
 
-            erepository::DepSpecPrettyPrinter pd(0, std::shared_ptr<const PackageID>(), ff, 0, false, false);
+            erepository::SpecTreePrettyPrinter pd(ff, { });
             TEST_CHECK(bool(id->build_dependencies_key()));
             id->build_dependencies_key()->value()->top()->accept(pd);
             TEST_CHECK_STRINGIFY_EQUAL(pd, "( cat/pkg1 build: cat/pkg2 build+run: cat/pkg3 suggestion: post: )");
 
-            erepository::DepSpecPrettyPrinter pr(0, std::shared_ptr<const PackageID>(), ff, 0, false, false);
+            erepository::SpecTreePrettyPrinter pr(ff, { });
             TEST_CHECK(bool(id->run_dependencies_key()));
             id->run_dependencies_key()->value()->top()->accept(pr);
             TEST_CHECK_STRINGIFY_EQUAL(pr, "( cat/pkg1 build: build+run: cat/pkg3 suggestion: post: )");
 
-            erepository::DepSpecPrettyPrinter pp(0, std::shared_ptr<const PackageID>(), ff, 0, false, false);
+            erepository::SpecTreePrettyPrinter pp(ff, { });
             TEST_CHECK(bool(id->post_dependencies_key()));
             id->post_dependencies_key()->value()->top()->accept(pp);
             TEST_CHECK_STRINGIFY_EQUAL(pp, "( build: build+run: suggestion: cat/pkg4 post: cat/pkg5 )");

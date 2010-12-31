@@ -18,9 +18,9 @@
  */
 
 #include <paludis/comma_separated_dep_parser.hh>
-#include <paludis/comma_separated_dep_printer.hh>
+#include <paludis/comma_separated_dep_pretty_printer.hh>
 #include <paludis/environments/test/test_environment.hh>
-#include <paludis/stringify_formatter.hh>
+#include <paludis/unformatted_pretty_printer.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 
@@ -38,8 +38,8 @@ namespace test_cases
             TestEnvironment env;
             std::shared_ptr<const DependencySpecTree> spec(
                     CommaSeparatedDepParser::parse(&env, "cat/one  , cat/two, cat/three\n"));
-            StringifyFormatter f;
-            CommaSeparatedDepPrinter p(&env, f, true);
+            UnformattedPrettyPrinter f;
+            CommaSeparatedDepPrettyPrinter p(f, { });
             spec->top()->accept(p);
             TEST_CHECK_EQUAL(p.result(), "cat/one, cat/two, cat/three");
         }

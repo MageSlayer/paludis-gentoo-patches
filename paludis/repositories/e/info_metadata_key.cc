@@ -41,7 +41,6 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_id.hh>
-#include <paludis/formatter.hh>
 #include <paludis/pretty_printer.hh>
 #include <paludis/call_pretty_printer.hh>
 
@@ -209,21 +208,6 @@ InfoPkgsMetadataKey::need_keys_added() const
 
         add_metadata_key(key);
     }
-}
-
-namespace
-{
-    std::string format_string(const std::string & i, const Formatter<std::string> & f)
-    {
-        return f.format(i, format::Plain());
-    }
-}
-
-std::string
-InfoVarsMetadataKey::pretty_print_flat(const Formatter<std::string> & f) const
-{
-    using namespace std::placeholders;
-    return join(value()->begin(), value()->end(), " ", std::bind(&format_string, _1, f));
 }
 
 const std::string

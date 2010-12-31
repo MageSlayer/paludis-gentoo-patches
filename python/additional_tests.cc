@@ -35,8 +35,6 @@
 #include <paludis/hook.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/util/options.hh>
-#include <paludis/formatter.hh>
-#include <paludis/stringify_formatter-impl.hh>
 #include <paludis/util/clone-impl.hh>
 #include <paludis/util/timestamp.hh>
 #include <memory>
@@ -213,76 +211,6 @@ namespace metadata_key
     }
 }
 
-namespace formatter
-{
-    using namespace format;
-
-    // CanFormat for PlainRoles
-    void test_plain_roles(CanFormat<PlainTextDepSpec> & f)
-    {
-        PlainTextDepSpec d("foo");
-        f.format(d, Plain());
-    }
-
-    // CanFormat for AcceptableRoles
-    void test_acceptable_roles(CanFormat<KeywordName> & f)
-    {
-        KeywordName k("keyword");
-        f.format(k, Plain());
-        f.format(k, Accepted());
-        f.format(k, Unaccepted());
-    }
-
-    // CanFormat for PackageRoles
-    void test_package_roles(CanFormat<PackageDepSpec> & f)
-    {
-        TestEnvironment e;
-        PackageDepSpec p(parse_user_package_dep_spec("cat/pkg", &e, { }));
-        f.format(p, Plain());
-        f.format(p, Installed());
-        f.format(p, Installable());
-    }
-
-    // CanSpace
-    void test_can_space(CanSpace & f)
-    {
-        f.newline();
-        f.indent(1);
-    }
-
-    void test_formatter_string(const Formatter<std::string> &)
-    {
-    }
-
-    void test_formmater_keyword_name(const Formatter<KeywordName> &)
-    {
-    }
-
-    void test_formatter_license_spec_tree(const LicenseSpecTree::ItemFormatter &)
-    {
-    }
-
-    void test_formatter_provide_spec_tree(const ProvideSpecTree::ItemFormatter &)
-    {
-    }
-
-    void test_formatter_dependency_spec_tree(const DependencySpecTree::ItemFormatter &)
-    {
-    }
-
-    void test_formatter_plain_text_spec_tree(const PlainTextSpecTree::ItemFormatter &)
-    {
-    }
-
-    void test_formatter_simple_uri_spec_tree(const SimpleURISpecTree::ItemFormatter &)
-    {
-    }
-
-    void test_formatter_fetchable_uri_spec_tree(const FetchableURISpecTree::ItemFormatter &)
-    {
-    }
-}
-
 void expose_additional_tests()
 {
     /**
@@ -317,22 +245,5 @@ void expose_additional_tests()
     bp::def("test_metadata_fetchable_uri_spec_tree_key", &metadata_key::test_metadata_spec_tree_key<FetchableURISpecTree>);
     bp::def("test_metadata_simple_uri_spec_tree_key", &metadata_key::test_metadata_spec_tree_key<SimpleURISpecTree>);
     bp::def("test_metadata_section_key", &metadata_key::test_metadata_section_key);
-
-    /**
-     * Formatter tests
-     */
-    bp::def("test_plain_roles", &formatter::test_plain_roles);
-    bp::def("test_acceptable_roles", &formatter::test_acceptable_roles);
-    bp::def("test_package_roles", &formatter::test_package_roles);
-    bp::def("test_can_space", &formatter::test_can_space);
-
-    bp::def("test_formatter_string", &formatter::test_formatter_string);
-    bp::def("test_formmater_keyword_name", &formatter::test_formmater_keyword_name);
-    bp::def("test_formatter_license_spec_tree", &formatter::test_formatter_license_spec_tree);
-    bp::def("test_formatter_provide_spec_tree", &formatter::test_formatter_provide_spec_tree);
-    bp::def("test_formatter_dependency_spec_tree", &formatter::test_formatter_dependency_spec_tree);
-    bp::def("test_formatter_plain_text_spec_tree", &formatter::test_formatter_plain_text_spec_tree);
-    bp::def("test_formatter_simple_uri_spec_tree", &formatter::test_formatter_simple_uri_spec_tree);
-    bp::def("test_formatter_fetchable_uri_spec_tree", &formatter::test_formatter_fetchable_uri_spec_tree);
 }
 

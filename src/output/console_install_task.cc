@@ -19,7 +19,7 @@
 
 #include "console_install_task.hh"
 #include "colour.hh"
-#include "colour_formatter.hh"
+#include "colour_pretty_printer.hh"
 #include "mask_displayer.hh"
 
 #include <paludis/util/indirect_iterator-impl.hh>
@@ -1149,7 +1149,8 @@ ConsoleInstallTask::display_merge_list_entry_choices(const DepListEntry & d,
                 if (old_id && old_id->choices_key())
                     old_choices = old_id->choices_key()->value();
 
-                ColourFormatter formatter;
+                ColourPrettyPrinter printer(environment(), d.package_id());
+
                 std::string s;
                 bool non_blank_prefix(false);
                 for (Choices::ConstIterator k(d.package_id()->choices_key()->value()->begin()),
@@ -1180,21 +1181,7 @@ ConsoleInstallTask::display_merge_list_entry_choices(const DepListEntry & d,
                         if (! s.empty())
                             s.append(" ");
 
-                        std::string t;
-                        if ((*i)->enabled())
-                        {
-                            if ((*i)->locked())
-                                t = formatter.format(**i, format::Forced());
-                            else
-                                t = formatter.format(**i, format::Enabled());
-                        }
-                        else
-                        {
-                            if ((*i)->locked())
-                                t = formatter.format(**i, format::Masked());
-                            else
-                                t = formatter.format(**i, format::Disabled());
-                        }
+                        std::string t(printer.prettify(*i));
 
                         bool changed(false), added(false);
                         if ((*k)->consider_added_or_changed())
@@ -1213,14 +1200,14 @@ ConsoleInstallTask::display_merge_list_entry_choices(const DepListEntry & d,
 
                         if (changed)
                         {
-                            t = formatter.decorate(**i, t, format::Changed());
+                            t = t + "*";
                             if (want_changed_use_flags())
                                 _choice_descriptions[(*k)->human_name()][(*i)->name_with_prefix()].push_back(d.package_id());
                         }
                         else if (added)
                         {
                             if (old_id)
-                                t = formatter.decorate(**i, t, format::Added());
+                                t = t + "*";
                             if (want_new_use_flags())
                                 _choice_descriptions[(*k)->human_name()][(*i)->name_with_prefix()].push_back(d.package_id());
                         }

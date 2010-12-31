@@ -25,7 +25,6 @@
 #include <paludis/util/select.hh>
 #include <paludis/util/simple_visitor.hh>
 #include <paludis/util/sequence.hh>
-#include <paludis/formatter.hh>
 
 namespace paludis
 {
@@ -173,31 +172,6 @@ namespace paludis
             const std::shared_ptr<typename InnerNodeType<RootNode_>::Type> top();
 
             const std::shared_ptr<const typename InnerNodeType<RootNode_>::Type> top() const;
-
-            typedef Formatter<
-                typename Select<TypeListContains<VisitableTypeList, typename NodeType<PackageDepSpec>::Type>::value,
-                         PackageDepSpec, NoType<1u> >::Type,
-                typename Select<TypeListContains<VisitableTypeList, typename NodeType<BlockDepSpec>::Type>::value,
-                         BlockDepSpec, NoType<2u> >::Type,
-                typename Select<TypeListContains<VisitableTypeList, typename NodeType<FetchableURIDepSpec>::Type>::value,
-                         FetchableURIDepSpec, NoType<3u> >::Type,
-                typename Select<TypeListContains<VisitableTypeList, typename NodeType<SimpleURIDepSpec>::Type>::value,
-                         SimpleURIDepSpec, NoType<4u> >::Type,
-                typename Select<TypeListContains<VisitableTypeList, typename NodeType<DependenciesLabelsDepSpec>::Type>::value,
-                         DependenciesLabelsDepSpec, NoType<5u> >::Type,
-                typename Select<TypeListContains<VisitableTypeList, typename NodeType<URILabelsDepSpec>::Type>::value,
-                         URILabelsDepSpec, NoType<6u> >::Type,
-                typename Select<TypeListContains<VisitableTypeList, typename NodeType<PlainTextDepSpec>::Type>::value,
-                         PlainTextDepSpec, NoType<7u> >::Type,
-                typename Select<TypeListContains<VisitableTypeList, typename NodeType<LicenseDepSpec>::Type>::value,
-                         LicenseDepSpec, NoType<8u> >::Type,
-                typename Select<TypeListContains<VisitableTypeList, typename NodeType<ConditionalDepSpec>::Type>::value,
-                         ConditionalDepSpec, NoType<9u> >::Type,
-                typename Select<TypeListContains<VisitableTypeList, typename NodeType<NamedSetDepSpec>::Type>::value,
-                         NamedSetDepSpec, NoType<10u> >::Type,
-                typename Select<TypeListContains<VisitableTypeList, typename NodeType<PlainTextLabelDepSpec>::Type>::value,
-                         PlainTextLabelDepSpec, NoType<11u> >::Type
-                > ItemFormatter;
 
         private:
             const std::shared_ptr<typename InnerNodeType<RootNode_>::Type> _top;

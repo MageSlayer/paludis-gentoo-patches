@@ -33,7 +33,6 @@
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/metadata_key-fwd.hh>
 #include <paludis/dep_spec.hh>
-#include <paludis/formatter.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/spec_tree.hh>
 #include <paludis/pretty_printer.hh>
@@ -89,34 +88,6 @@ UnwrittenRepositoryFile::end() const
 
 namespace
 {
-    struct UnwrittenHomepagePrinter
-    {
-        std::stringstream s;
-        const SimpleURISpecTree::ItemFormatter & formatter;
-
-        UnwrittenHomepagePrinter(const SimpleURISpecTree::ItemFormatter & f) :
-            formatter(f)
-        {
-        }
-
-        void visit(const SimpleURISpecTree::NodeType<AllDepSpec>::Type & node)
-        {
-            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
-        }
-
-        void visit(const SimpleURISpecTree::NodeType<ConditionalDepSpec>::Type & node)
-        {
-            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
-        }
-
-        void visit(const SimpleURISpecTree::NodeType<SimpleURIDepSpec>::Type & node)
-        {
-            if (! s.str().empty())
-                s << " ";
-            s << formatter.format(*node.spec(), format::Plain());
-        }
-    };
-
     struct UnwrittenHomepagePrettyPrinter
     {
         std::stringstream s;
@@ -166,20 +137,6 @@ namespace
         const std::shared_ptr<const SimpleURISpecTree> value() const
         {
             return vv;
-        }
-
-        std::string pretty_print(const SimpleURISpecTree::ItemFormatter & f) const
-        {
-            UnwrittenHomepagePrinter p(f);
-            value()->top()->accept(p);
-            return p.s.str();
-        }
-
-        std::string pretty_print_flat(const SimpleURISpecTree::ItemFormatter & f) const
-        {
-            UnwrittenHomepagePrinter p(f);
-            value()->top()->accept(p);
-            return p.s.str();
         }
 
         virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result))

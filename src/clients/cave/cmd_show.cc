@@ -18,7 +18,6 @@
  */
 
 #include "cmd_show.hh"
-#include "colour_formatter.hh"
 #include "colour_pretty_printer.hh"
 #include "colours.hh"
 #include "exceptions.hh"

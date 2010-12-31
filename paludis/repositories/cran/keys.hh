@@ -50,9 +50,6 @@ namespace paludis
 
                 void push_back(const std::shared_ptr<const PackageID> &);
 
-                virtual std::string pretty_print_flat(const Formatter<PackageID> &) const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
                 virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -79,9 +76,6 @@ namespace paludis
                 virtual const std::shared_ptr<const PackageID> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::string pretty_print(const Formatter<PackageID> &) const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
                 virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -106,12 +100,6 @@ namespace paludis
                 ~DepKey();
 
                 virtual const std::shared_ptr<const DependencySpecTree> value() const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                virtual std::string pretty_print(const DependencySpecTree::ItemFormatter &) const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                virtual std::string pretty_print_flat(const DependencySpecTree::ItemFormatter &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual const std::shared_ptr<const DependenciesLabelSequence> initial_labels() const

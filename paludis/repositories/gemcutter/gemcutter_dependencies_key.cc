@@ -54,93 +54,6 @@ GemcutterDependenciesError::GemcutterDependenciesError(const std::string & s) th
 
 namespace
 {
-    struct Printer
-    {
-        std::stringstream s;
-        const Environment * const env;
-        DependencySpecTree::ItemFormatter formatter;
-        const unsigned indent;
-        const bool flat;
-        bool need_space;
-
-        Printer(
-                const Environment * const e,
-                const DependencySpecTree::ItemFormatter & f,
-                const bool b) :
-            env(e),
-            formatter(f),
-            indent(0),
-            flat(b),
-            need_space(false)
-        {
-        }
-
-        void visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & node)
-        {
-            if (! flat)
-                s << formatter.indent(indent + 1);
-            else if (need_space)
-                s << " ";
-            else
-                need_space = true;
-
-            if (env)
-            {
-                if (! (*env)[selection::SomeArbitraryVersion(generator::Matches(*node.spec(), { }) |
-                            filter::InstalledAtRoot(env->preferred_root_key()->value()))]->empty())
-                    s << formatter.format(*node.spec(), format::Installed());
-                else if (! (*env)[selection::SomeArbitraryVersion(generator::Matches(*node.spec(), { }) |
-                            filter::SupportsAction<InstallAction>() | filter::NotMasked())]->empty())
-                    s << formatter.format(*node.spec(), format::Installable());
-                else
-                    s << formatter.format(*node.spec(), format::Plain());
-            }
-            else
-                s << formatter.format(*node.spec(), format::Plain());
-
-            if (! flat)
-                s << formatter.newline();
-        }
-
-        void visit(const DependencySpecTree::NodeType<BlockDepSpec>::Type &)
-        {
-        }
-
-        void visit(const DependencySpecTree::NodeType<DependenciesLabelsDepSpec>::Type & node)
-        {
-            if (! flat)
-                s << formatter.indent(indent);
-            else if (need_space)
-                s << " ";
-            else
-                need_space = true;
-
-            s << formatter.format(*node.spec(), format::Plain());
-
-            if (! flat)
-                s << formatter.newline();
-        }
-
-        void visit(const DependencySpecTree::NodeType<NamedSetDepSpec>::Type &)
-        {
-        }
-
-        void visit(const DependencySpecTree::NodeType<AllDepSpec>::Type & node)
-        {
-            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
-        }
-
-        void visit(const DependencySpecTree::NodeType<ConditionalDepSpec>::Type & node)
-        {
-            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
-        }
-
-        void visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type & node)
-        {
-            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
-        }
-    };
-
     struct ValuePrinter
     {
         std::stringstream s;
@@ -360,22 +273,6 @@ const std::shared_ptr<const DependenciesLabelSequence>
 GemcutterDependenciesKey::initial_labels() const
 {
     return GemcutterDependenciesKeyData::get_instance()->initial_labels;
-}
-
-std::string
-GemcutterDependenciesKey::pretty_print(const DependencySpecTree::ItemFormatter & f) const
-{
-    Printer p{_imp->env, f, false};
-    _imp->value->top()->accept(p);
-    return p.s.str();
-}
-
-std::string
-GemcutterDependenciesKey::pretty_print_flat(const DependencySpecTree::ItemFormatter & f) const
-{
-    Printer p{_imp->env, f, true};
-    _imp->value->top()->accept(p);
-    return p.s.str();
 }
 
 const std::string

@@ -22,7 +22,6 @@
 
 #include <paludis/metadata_key.hh>
 #include <paludis/name.hh>
-#include <paludis/formatter.hh>
 #include <paludis/dep_label.hh>
 #include <paludis/environment.hh>
 #include <paludis/util/set.hh>
@@ -691,17 +690,6 @@ struct MetadataSpecTreeKeyWrapper :
             return f();
         else
             throw PythonMethodNotImplemented("MetadataSpecTreeKey", "value");
-    }
-
-    virtual std::string pretty_print_flat(const typename C_::ItemFormatter & formatter) const
-        PALUDIS_ATTRIBUTE((warn_unused_result))
-    {
-        Lock l(get_mutex());
-
-        if (bp::override f = this->get_override("pretty_print_flat"))
-            return f(boost::cref(formatter));
-        else
-            throw PythonMethodNotImplemented("MetadataSpecTreeKey", "pretty_print_flat");
     }
 
     virtual const std::string raw_name() const

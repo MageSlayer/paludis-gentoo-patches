@@ -111,9 +111,6 @@ namespace paludis
 
             virtual const std::shared_ptr<const FSPathSequence> value() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::string pretty_print_flat(const Formatter<FSPath> &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
             virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -149,9 +146,6 @@ namespace paludis
 
             virtual const std::shared_ptr<const Set<std::string> > value() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::string pretty_print_flat(const Formatter<std::string> &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
             virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -186,9 +180,6 @@ namespace paludis
             ///\}
 
             virtual const std::shared_ptr<const Sequence<std::string> > value() const PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual std::string pretty_print_flat(const Formatter<std::string> &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -255,9 +246,6 @@ namespace paludis
             ///\}
 
             virtual const std::shared_ptr<const Map<std::string, std::string> > value() const PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual std::string pretty_print_flat(const Formatter<std::pair<const std::string, std::string> > &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));

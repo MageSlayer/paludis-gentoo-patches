@@ -42,10 +42,6 @@ namespace paludis
 
                 const std::shared_ptr<const DependencySpecTree> value() const;
 
-                std::string pretty_print(const DependencySpecTree::ItemFormatter & f) const;
-
-                std::string pretty_print_flat(const DependencySpecTree::ItemFormatter & f) const;
-
                 virtual const std::shared_ptr<const DependenciesLabelSequence> initial_labels() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 

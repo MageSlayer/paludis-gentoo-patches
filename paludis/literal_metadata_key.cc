@@ -23,7 +23,6 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/timestamp.hh>
-#include <paludis/formatter.hh>
 #include <paludis/package_id.hh>
 #include <paludis/action.hh>
 #include <paludis/repository.hh>
@@ -143,21 +142,6 @@ LiteralMetadataFSPathSequenceKey::value() const
     return _imp->value;
 }
 
-namespace
-{
-    std::string format_fsentry(const FSPath & i, const Formatter<FSPath> & f)
-    {
-        return f.format(i, format::Plain());
-    }
-}
-
-std::string
-LiteralMetadataFSPathSequenceKey::pretty_print_flat(const Formatter<FSPath> & f) const
-{
-    using namespace std::placeholders;
-    return join(value()->begin(), value()->end(), " ", std::bind(&format_fsentry, _1, f));
-}
-
 const std::string
 LiteralMetadataFSPathSequenceKey::pretty_print_value(
         const PrettyPrinter & p, const PrettyPrintOptions &) const
@@ -252,31 +236,11 @@ LiteralMetadataStringSequenceKey::type() const
     return _imp->type;
 }
 
-namespace
-{
-    std::string format_string(const std::string & i, const Formatter<std::string> & f)
-    {
-        return f.format(i, format::Plain());
-    }
-
-    std::string format_string_string(const std::pair<const std::string, std::string> & i, const Formatter<std::pair<const std::string, std::string> > & f)
-    {
-        return f.format(i, format::Plain());
-    }
-}
-
 const std::string
 LiteralMetadataStringSetKey::pretty_print_value(
         const PrettyPrinter & p, const PrettyPrintOptions &) const
 {
     return join(value()->begin(), value()->end(), " ", CallPrettyPrinter(p));
-}
-
-std::string
-LiteralMetadataStringSetKey::pretty_print_flat(const Formatter<std::string> & f) const
-{
-    using namespace std::placeholders;
-    return join(value()->begin(), value()->end(), " ", std::bind(&format_string, _1, f));
 }
 
 const std::string
@@ -286,25 +250,11 @@ LiteralMetadataStringStringMapKey::pretty_print_value(
     return join(value()->begin(), value()->end(), " ", CallPrettyPrinter(p));
 }
 
-std::string
-LiteralMetadataStringStringMapKey::pretty_print_flat(const Formatter<std::pair<const std::string, std::string> > & f) const
-{
-    using namespace std::placeholders;
-    return join(value()->begin(), value()->end(), " ", std::bind(&format_string_string, _1, f));
-}
-
 const std::string
 LiteralMetadataStringSequenceKey::pretty_print_value(
         const PrettyPrinter & p, const PrettyPrintOptions &) const
 {
     return join(value()->begin(), value()->end(), " ", CallPrettyPrinter(p));
-}
-
-std::string
-LiteralMetadataStringSequenceKey::pretty_print_flat(const Formatter<std::string> & f) const
-{
-    using namespace std::placeholders;
-    return join(value()->begin(), value()->end(), " ", std::bind(&format_string, _1, f));
 }
 
 const std::string

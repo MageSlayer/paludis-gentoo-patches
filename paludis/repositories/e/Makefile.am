@@ -28,7 +28,6 @@ noinst_HEADERS = \
 	dep_parser.hh \
 	dep_parser-se.hh \
 	dep_parser-fwd.hh \
-	dep_spec_pretty_printer.hh \
 	dependencies_rewriter.hh \
 	do_fetch_action.hh \
 	do_info_action.hh \
@@ -101,7 +100,6 @@ libpaludiserepository_la_SOURCES = \
 	check_fetched_files_visitor.cc \
 	check_userpriv.cc \
 	dep_parser.cc \
-	dep_spec_pretty_printer.cc \
 	dependencies_rewriter.cc \
 	do_fetch_action.cc \
 	do_info_action.cc \
@@ -374,17 +372,6 @@ e_repository_sets_TEST_LDADD = \
 
 e_repository_sets_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 
-dep_spec_pretty_printer_TEST_SOURCES = dep_spec_pretty_printer_TEST.cc
-
-dep_spec_pretty_printer_TEST_LDADD = \
-	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/util/test_extras.o \
-	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/test/libtest.a \
-	$(DYNAMIC_LD_LIBS)
-
-dep_spec_pretty_printer_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
-
 dep_parser_TEST_SOURCES = dep_parser_TEST.cc
 
 dep_parser_TEST_LDADD = \
@@ -457,7 +444,6 @@ EXTRA_DIST = \
 	dep_parser-se.hh \
 	dep_parser-se.cc \
 	dep_parser_TEST.cc \
-	dep_spec_pretty_printer_TEST.cc \
 	depend_rdepend_TEST.cc \
 	depend_rdepend_TEST_setup.sh \
 	depend_rdepend_TEST_cleanup.sh \
@@ -649,7 +635,6 @@ TESTS = \
 	exndbam_repository_TEST \
 	aa_visitor_TEST \
 	dep_parser_TEST \
-	dep_spec_pretty_printer_TEST \
 	depend_rdepend_TEST \
 	e_repository_sets_TEST \
 	ebuild_flat_metadata_cache_TEST \

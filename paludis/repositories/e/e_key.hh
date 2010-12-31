@@ -73,12 +73,6 @@ namespace paludis
                 virtual const std::shared_ptr<const DependencySpecTree> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::string pretty_print(const DependencySpecTree::ItemFormatter &) const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                virtual std::string pretty_print_flat(const DependencySpecTree::ItemFormatter &) const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
                 virtual const std::shared_ptr<const DependenciesLabelSequence> initial_labels() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -106,12 +100,6 @@ namespace paludis
                 virtual const std::shared_ptr<const FetchableURISpecTree> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::string pretty_print(const FetchableURISpecTree::ItemFormatter &) const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                virtual std::string pretty_print_flat(const FetchableURISpecTree::ItemFormatter &) const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
                 virtual const std::shared_ptr<const URILabel> initial_label() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -137,12 +125,6 @@ namespace paludis
                 virtual const std::shared_ptr<const SimpleURISpecTree> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::string pretty_print(const SimpleURISpecTree::ItemFormatter &) const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                virtual std::string pretty_print_flat(const SimpleURISpecTree::ItemFormatter &) const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
                 virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -164,12 +146,6 @@ namespace paludis
                 ~EPlainTextSpecKey();
 
                 virtual const std::shared_ptr<const PlainTextSpecTree> value() const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                virtual std::string pretty_print(const PlainTextSpecTree::ItemFormatter &) const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                virtual std::string pretty_print_flat(const PlainTextSpecTree::ItemFormatter &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -194,12 +170,6 @@ namespace paludis
                 virtual const std::shared_ptr<const PlainTextSpecTree> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::string pretty_print(const PlainTextSpecTree::ItemFormatter &) const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                virtual std::string pretty_print_flat(const PlainTextSpecTree::ItemFormatter &) const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
                 virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -222,12 +192,6 @@ namespace paludis
                 virtual const std::shared_ptr<const RequiredUseSpecTree> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::string pretty_print(const RequiredUseSpecTree::ItemFormatter &) const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                virtual std::string pretty_print_flat(const RequiredUseSpecTree::ItemFormatter &) const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
                 virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -248,12 +212,6 @@ namespace paludis
                 ~EProvideKey();
 
                 virtual const std::shared_ptr<const ProvideSpecTree> value() const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                virtual std::string pretty_print(const ProvideSpecTree::ItemFormatter &) const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                virtual std::string pretty_print_flat(const ProvideSpecTree::ItemFormatter &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -280,12 +238,6 @@ namespace paludis
                 virtual const std::shared_ptr<const LicenseSpecTree> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::string pretty_print(const LicenseSpecTree::ItemFormatter &) const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                virtual std::string pretty_print_flat(const LicenseSpecTree::ItemFormatter &) const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
                 virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -309,9 +261,6 @@ namespace paludis
                 const std::shared_ptr<const KeywordNameSet> value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::string pretty_print_flat(const Formatter<KeywordName> &) const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
                 virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -331,9 +280,6 @@ namespace paludis
                 ~EStringSetKey();
 
                 const std::shared_ptr<const Set<std::string> > value() const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                virtual std::string pretty_print_flat(const Formatter<std::string> &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));

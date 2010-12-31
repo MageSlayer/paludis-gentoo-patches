@@ -33,7 +33,6 @@
 #include <paludis/generator.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/filter.hh>
-#include <paludis/stringify_formatter.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/unformatted_pretty_printer.hh>
 #include <test/test_framework.hh>

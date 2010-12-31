@@ -20,10 +20,10 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/dep_spec_flattener.hh>
 #include <paludis/repositories/cran/cran_dep_parser.hh>
-#include <paludis/repositories/cran/dep_spec_pretty_printer.hh>
+#include <paludis/repositories/cran/spec_tree_pretty_printer.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/system.hh>
-#include <paludis/stringify_formatter.hh>
+#include <paludis/unformatted_pretty_printer.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 
@@ -38,9 +38,9 @@ namespace test_cases
 
         void run()
         {
-            StringifyFormatter ff;
-            cranrepository::DepSpecPrettyPrinter d1(0, ff, 0, false), d2(0, ff, 0, false), d3(0, ff, 0, false),
-                d4(0, ff, 0, false), d5(0, ff, 0, false), d6(0, ff, 0, false);
+            UnformattedPrettyPrinter ff;
+            cranrepository::SpecTreePrettyPrinter d1(ff, { }), d2(ff, { }), d3(ff, { }),
+                d4(ff, { }), d5(ff, { }), d6(ff, { });
 
             // test R dependency
             std::string dep1("R (>= 2.0.0)");

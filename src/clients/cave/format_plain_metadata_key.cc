@@ -25,10 +25,10 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/timestamp.hh>
-#include <paludis/stringify_formatter.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/mask.hh>
 #include <paludis/unformatted_pretty_printer.hh>
+#include <paludis/name.hh>
 #include <sstream>
 
 using namespace paludis;

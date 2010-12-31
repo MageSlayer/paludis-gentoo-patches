@@ -19,7 +19,6 @@
 
 #include "cmd_info.hh"
 #include "cmd_perform.hh"
-#include "colour_formatter.hh"
 #include "colour_pretty_printer.hh"
 #include "colours.hh"
 #include "exceptions.hh"

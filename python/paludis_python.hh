@@ -183,7 +183,6 @@ void expose_environment() PALUDIS_VISIBLE;
 void expose_exception() PALUDIS_VISIBLE;
 void expose_filter() PALUDIS_VISIBLE;
 void expose_filtered_generator() PALUDIS_VISIBLE;
-void expose_formatter() PALUDIS_VISIBLE;
 void expose_fs_path() PALUDIS_VISIBLE;
 void expose_generator() PALUDIS_VISIBLE;
 void expose_log() PALUDIS_VISIBLE;

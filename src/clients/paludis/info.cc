@@ -20,7 +20,6 @@
 #include "info.hh"
 #include "command_line.hh"
 #include "src/output/colour.hh"
-#include "src/output/colour_formatter.hh"
 #include "src/output/colour_pretty_printer.hh"
 #include <paludis/about.hh>
 #include <paludis/user_dep_spec.hh>

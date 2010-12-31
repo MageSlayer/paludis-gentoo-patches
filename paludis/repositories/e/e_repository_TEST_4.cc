@@ -22,7 +22,7 @@
 #include <paludis/repositories/e/e_repository_id.hh>
 #include <paludis/repositories/e/vdb_repository.hh>
 #include <paludis/repositories/e/eapi.hh>
-#include <paludis/repositories/e/dep_spec_pretty_printer.hh>
+#include <paludis/repositories/e/spec_tree_pretty_printer.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
 #include <paludis/environments/test/test_environment.hh>
@@ -36,7 +36,6 @@
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/action.hh>
-#include <paludis/stringify_formatter.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/generator.hh>
 #include <paludis/filter.hh>

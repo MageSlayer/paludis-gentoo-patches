@@ -35,7 +35,6 @@ IF_PYTHON_TESTS = \
 	environment_TEST.py \
 	filter_TEST.py \
 	filtered_generator_TEST.py \
-	formatter_TEST.py \
 	generator_TEST.py \
 	log_TEST.py \
 	mask_TEST.py \
@@ -66,7 +65,6 @@ IF_PYTHON_SOURCES = \
 	exception.hh exception.cc \
 	filter.cc \
 	filtered_generator.cc \
-	formatter.cc \
 	fs_path.cc \
 	generator.cc \
 	mask.cc \

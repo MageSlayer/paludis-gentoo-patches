@@ -30,14 +30,14 @@
 #include <paludis/util/timestamp.hh>
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/fs_error.hh>
-#include <paludis/repositories/e/dep_spec_pretty_printer.hh>
 #include <paludis/repositories/e/dep_parser.hh>
 #include <paludis/repositories/e/dependencies_rewriter.hh>
-#include <paludis/stringify_formatter.hh>
 #include <paludis/repositories/e/eapi.hh>
+#include <paludis/repositories/e/spec_tree_pretty_printer.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
+#include <paludis/unformatted_pretty_printer.hh>
 #include <set>
 #include <map>
 #include <list>
@@ -676,8 +676,8 @@ namespace
     template <typename T_>
     std::string flatten(const T_ & d)
     {
-        StringifyFormatter ff;
-        DepSpecPrettyPrinter p(0, std::shared_ptr<const PackageID>(), ff, 0, false, false);
+        UnformattedPrettyPrinter f;
+        SpecTreePrettyPrinter p(f, { });
         d->top()->accept(p);
         return stringify(p);
     }

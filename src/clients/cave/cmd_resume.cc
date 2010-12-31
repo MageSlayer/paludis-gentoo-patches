@@ -23,7 +23,6 @@
 #include "exceptions.hh"
 #include "command_command_line.hh"
 #include "colours.hh"
-#include "colour_formatter.hh"
 #include "resume_data.hh"
 #include <paludis/args/do_help.hh>
 #include <paludis/args/escape.hh>

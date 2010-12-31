@@ -46,9 +46,7 @@
 #include <paludis/action.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/comma_separated_dep_parser.hh>
-#include <paludis/comma_separated_dep_printer.hh>
 #include <paludis/comma_separated_dep_pretty_printer.hh>
-#include <paludis/formatter.hh>
 #include <paludis/always_enabled_dependency_label.hh>
 #include <paludis/pretty_printer.hh>
 #include <paludis/call_pretty_printer.hh>
@@ -80,11 +78,6 @@ namespace
             run_dependencies_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesRunLabelTag> >("run_dependencies"));
         }
     };
-
-    std::string format_string(const std::string & i, const Formatter<std::string> & f)
-    {
-        return f.format(i, format::Plain());
-    }
 
     class InstalledUnpackagedFSPathKey :
         public MetadataValueKey<FSPath>
@@ -292,12 +285,6 @@ namespace
                 return _v;
             }
 
-            std::string pretty_print_flat(const Formatter<std::string> & f) const
-            {
-                using namespace std::placeholders;
-                return join(value()->begin(), value()->end(), " ", std::bind(&format_string, _1, f));
-            }
-
             virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result))
             {
                 return _raw_name;
@@ -360,22 +347,6 @@ namespace
                 _v = CommaSeparatedDepParser::parse(_env, strip_trailing(
                             std::string((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>()), "\n"));
                 return _v;
-            }
-
-            std::string
-            pretty_print(const DependencySpecTree::ItemFormatter & f) const
-            {
-                CommaSeparatedDepPrinter p(_env, f, false);
-                value()->top()->accept(p);
-                return p.result();
-            }
-
-            std::string
-            pretty_print_flat(const DependencySpecTree::ItemFormatter & f) const
-            {
-                CommaSeparatedDepPrinter p(_env, f, true);
-                value()->top()->accept(p);
-                return p.result();
             }
 
             const std::shared_ptr<const DependenciesLabelSequence> initial_labels() const

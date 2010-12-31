@@ -62,12 +62,6 @@ namespace paludis
                 virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::string pretty_print(const DependencySpecTree::ItemFormatter &) const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                virtual std::string pretty_print_flat(const DependencySpecTree::ItemFormatter &) const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
                 virtual const std::shared_ptr<const DependenciesLabelSequence> initial_labels() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 

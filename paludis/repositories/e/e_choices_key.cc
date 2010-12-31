@@ -21,7 +21,6 @@
 #include <paludis/repositories/e/e_key.hh>
 #include <paludis/repositories/e/ebuild_id.hh>
 #include <paludis/repositories/e/eapi.hh>
-#include <paludis/repositories/e/dep_spec_pretty_printer.hh>
 #include <paludis/repositories/e/profile.hh>
 #include <paludis/repositories/e/e_repository.hh>
 #include <paludis/repositories/e/myoption.hh>
@@ -42,7 +41,6 @@
 #include <paludis/util/accept_visitor.hh>
 
 #include <paludis/environment.hh>
-#include <paludis/stringify_formatter-impl.hh>
 #include <paludis/choice.hh>
 #include <paludis/elike_choices.hh>
 #include <paludis/dep_spec_annotations.hh>

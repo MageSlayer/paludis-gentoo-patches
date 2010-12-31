@@ -6,7 +6,6 @@ AUTOMAKE_OPTIONS = 1.11 parallel-tests
 noinst_LIBRARIES = liboutput.a
 liboutput_a_SOURCES = \
 	colour.cc colour.hh \
-	colour_formatter.cc colour_formatter.hh \
 	colour_pretty_printer.cc colour_pretty_printer.hh \
 	console_task.cc console_task.hh \
 	console_install_task.cc console_install_task.hh \

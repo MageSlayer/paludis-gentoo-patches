@@ -24,7 +24,6 @@
 #include <paludis/repositories/e/eapi_phase.hh>
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/dep_parser.hh>
-#include <paludis/repositories/e/dep_spec_pretty_printer.hh>
 #include <paludis/repositories/e/e_repository_params.hh>
 #include <paludis/repositories/e/e_repository.hh>
 #include <paludis/repositories/e/extra_distribution_data.hh>
@@ -49,7 +48,6 @@
 #include <paludis/set_file.hh>
 #include <paludis/version_operator.hh>
 #include <paludis/version_requirements.hh>
-#include <paludis/stringify_formatter.hh>
 #include <paludis/selection.hh>
 #include <paludis/generator.hh>
 #include <paludis/filtered_generator.hh>
@@ -57,6 +55,7 @@
 #include <paludis/output_manager.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
 #include <paludis/dep_spec_annotations.hh>
+#include <paludis/unformatted_pretty_printer.hh>
 
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/fast_unique_copy.hh>
@@ -1196,7 +1195,7 @@ namespace
         bool changed;
 
         std::stringstream str;
-        StringifyFormatter f;
+        UnformattedPrettyPrinter f;
 
         DepRewriter(const DepRewrites & w) :
             rewrites(w),
@@ -1236,13 +1235,13 @@ namespace
         {
             /* don't rewrite blocks. some people block the old package after
              * doing a move. */
-            str << f.format(*node.spec(), format::Plain()) << " ";
+            str << f.prettify(*node.spec()) << " ";
             do_annotations(*node.spec());
         }
 
         void visit(const DependencySpecTree::NodeType<DependenciesLabelsDepSpec>::Type & node)
         {
-            str << f.format(*node.spec(), format::Plain()) << " ";
+            str << f.prettify(*node.spec()) << " ";
             do_annotations(*node.spec());
         }
 
@@ -1251,19 +1250,18 @@ namespace
             if (node.spec()->package_ptr() && rewrites.end() != rewrites.find(*node.spec()->package_ptr()))
             {
                 changed = true;
-                str << f.format(PartiallyMadePackageDepSpec(*node.spec())
-                        .package(rewrites.find(*node.spec()->package_ptr())->second),
-                        format::Plain()) << " ";
+                str << f.prettify(PartiallyMadePackageDepSpec(*node.spec())
+                        .package(rewrites.find(*node.spec()->package_ptr())->second)) << " ";
             }
             else
-                str << f.format(*node.spec(), format::Plain()) << " ";
+                str << f.prettify(*node.spec()) << " ";
 
             do_annotations(*node.spec());
         }
 
         void visit(const DependencySpecTree::NodeType<ConditionalDepSpec>::Type & node)
         {
-            str << f.format(*node.spec(), format::Plain()) << " ( ";
+            str << f.prettify(*node.spec()) << " ( ";
             std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
             str << " ) ";
             do_annotations(*node.spec());
@@ -1271,7 +1269,7 @@ namespace
 
         void visit(const DependencySpecTree::NodeType<NamedSetDepSpec>::Type & node)
         {
-            str << f.format(*node.spec(), format::Plain()) << " ";
+            str << f.prettify(*node.spec()) << " ";
             do_annotations(*node.spec());
         }
     };

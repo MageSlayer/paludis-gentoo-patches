@@ -4,7 +4,7 @@
 include_hh << END
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/spec_tree-fwd.hh>
-#include <paludis/formatter.hh>
+#include <paludis/name.hh>
 END
 
 include_cc << END
@@ -80,16 +80,4 @@ make_nn_LowercaseNiceNames() {
     name "LicenseDepSpec" "license_dep_spec"
     name "ConditionalDepSpec" "conditional_dep_spec"
     name "NamedSetDepSpec" "named_set_dep_spec"
-
-    name "format::Plain" "plain"
-    name "format::Enabled" "enabled"
-    name "format::Disabled" "disabled"
-    name "format::Masked" "masked"
-    name "format::Forced" "forced"
-    name "format::Changed" "changed"
-    name "format::Added" "added"
-    name "format::Accepted" "accepted"
-    name "format::Unaccepted" "unaccepted"
-    name "format::Installed" "installed"
-    name "format::Installable" "installable"
 }

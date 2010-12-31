@@ -18,7 +18,7 @@
  */
 
 #include <paludis/repositories/e/e_repository.hh>
-#include <paludis/repositories/e/dep_spec_pretty_printer.hh>
+#include <paludis/repositories/e/spec_tree_pretty_printer.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
 #include <paludis/environments/test/test_environment.hh>
@@ -26,7 +26,7 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/stringify_formatter.hh>
+#include <paludis/unformatted_pretty_printer.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include "config.h"
@@ -103,8 +103,8 @@ namespace test_cases
 
             std::shared_ptr<const SetSpecTree> set1(env.set(SetName("set1::test-repo-1")));
             TEST_CHECK(bool(set1));
-            StringifyFormatter ff;
-            erepository::DepSpecPrettyPrinter pretty(0, std::shared_ptr<const PackageID>(), ff, 0, false, false);
+            UnformattedPrettyPrinter ff;
+            erepository::SpecTreePrettyPrinter pretty(ff, { });
             set1->top()->accept(pretty);
             TEST_CHECK_STRINGIFY_EQUAL(pretty, "cat-one/foo >=cat-two/bar-2");
         }
@@ -133,8 +133,8 @@ namespace test_cases
             env.package_database()->add_repository(1, repo);
 
             std::shared_ptr<const SetSpecTree> insecurity(env.set(SetName("insecurity::test-repo-1")));
-            StringifyFormatter ff;
-            erepository::DepSpecPrettyPrinter pretty(0, std::shared_ptr<const PackageID>(), ff, 0, false, false);
+            UnformattedPrettyPrinter ff;
+            erepository::SpecTreePrettyPrinter pretty(ff, { });
             insecurity->top()->accept(pretty);
             TEST_CHECK_STRINGIFY_EQUAL(pretty, "=cat-four/xyzzy-2.0.1::test-repo-1 =cat-four/xyzzy-2.0.2::test-repo-1 =cat-one/foo-1::test-repo-1 =cat-two/bar-1.5::test-repo-1 "
                                        "=cat-two/bar-1.5.1::test-repo-1 =cat-three/baz-1.0::test-repo-1 "
@@ -177,8 +177,8 @@ namespace test_cases
             env.package_database()->add_repository(0, installed);
 
             std::shared_ptr<const SetSpecTree> security(env.set(SetName("security::test-repo-1")));
-            StringifyFormatter ff;
-            erepository::DepSpecPrettyPrinter pretty(0, std::shared_ptr<const PackageID>(), ff, 0, false, false);
+            UnformattedPrettyPrinter ff;
+            erepository::SpecTreePrettyPrinter pretty(ff, { });
             security->top()->accept(pretty);
             TEST_CHECK_STRINGIFY_EQUAL(pretty, "=cat-four/xyzzy-2.0.3::test-repo-1 =cat-two/bar-2.0::test-repo-1 =cat-three/baz-1.3::test-repo-1");
         }

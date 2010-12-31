@@ -22,7 +22,7 @@
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/fix_locked_dependencies.hh>
 #include <paludis/repositories/e/dep_parser.hh>
-#include <paludis/repositories/e/dep_spec_pretty_printer.hh>
+#include <paludis/repositories/e/spec_tree_pretty_printer.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/exception.hh>
@@ -41,13 +41,13 @@
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/metadata_key.hh>
-#include <paludis/stringify_formatter.hh>
 #include <paludis/selection.hh>
 #include <paludis/generator.hh>
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/choice.hh>
 #include <paludis/dep_spec_annotations.hh>
+#include <paludis/unformatted_pretty_printer.hh>
 #include <vector>
 #include <limits>
 #include <sstream>
@@ -64,7 +64,7 @@ namespace
 
     struct MyOptionsRewriter
     {
-        StringifyFormatter f;
+        UnformattedPrettyPrinter f;
         std::stringstream str;
 
         std::string prefix;
@@ -95,7 +95,7 @@ namespace
         void visit(const PlainTextSpecTree::NodeType<ConditionalDepSpec>::Type & node)
         {
             Save<std::string> save_prefix(&prefix);
-            str << f.format(*node.spec(), format::Plain()) << " ( ";
+            str << f.prettify(*node.spec()) << " ( ";
             std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
             str << " ) ";
             do_annotations(*node.spec(), "");
@@ -103,14 +103,14 @@ namespace
 
         void visit(const PlainTextSpecTree::NodeType<PlainTextDepSpec>::Type & node)
         {
-            str << f.format(*node.spec(), format::Plain()) << " ";
+            str << f.prettify(*node.spec()) << " ";
             do_annotations(*node.spec(), (prefix.empty() ? "" : prefix + joiner) + stringify(*node.spec()));
         }
 
         void visit(const PlainTextSpecTree::NodeType<PlainTextLabelDepSpec>::Type & node)
         {
             prefix = node.spec()->label();
-            str << f.format(*node.spec(), format::Plain()) << " ";
+            str << f.prettify(*node.spec()) << " ";
             do_annotations(*node.spec(), "");
         }
 
@@ -470,8 +470,8 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                 std::shared_ptr<const DependencySpecTree> before(mm->value());
                 std::shared_ptr<const DependencySpecTree> after(fix_locked_dependencies(
                             environment, *eapi, package_id, before));
-                StringifyFormatter ff;
-                DepSpecPrettyPrinter p(0, std::shared_ptr<const PackageID>(), ff, 0, false, false);
+                UnformattedPrettyPrinter ff;
+                SpecTreePrettyPrinter p(ff, { });
                 after->top()->accept(p);
                 return "O0;" + stringify(p);
             }
@@ -488,7 +488,6 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                 if (! mm)
                     throw InternalError(PALUDIS_HERE, "oops. key '" + var + "' isn't a PlainTextSpecTree key");
 
-                StringifyFormatter ff;
                 MyOptionsRewriter p(package_id,
                         eapi->supported()->annotations()->general_description(),
                         std::string(1, eapi->supported()->choices_options()->use_expand_separator()));

@@ -39,48 +39,6 @@ namespace
         return result;
     }
 
-    struct Printer
-    {
-        const bool flat;
-        const SimpleURISpecTree::ItemFormatter & formatter;
-        int indent;
-        bool need_space;
-        std::stringstream s;
-
-        Printer(const bool f, const SimpleURISpecTree::ItemFormatter & i) :
-            flat(f),
-            formatter(i),
-            indent(0),
-            need_space(false)
-        {
-        }
-
-        void visit(const SimpleURISpecTree::NodeType<SimpleURIDepSpec>::Type & node)
-        {
-            if (! flat)
-                s << formatter.indent(indent);
-            else if (need_space)
-                s << " ";
-            else
-                need_space = true;
-
-            s << formatter.format(*node.spec(), format::Plain());
-
-            if (! flat)
-                s << formatter.newline();
-        }
-
-        void visit(const SimpleURISpecTree::NodeType<AllDepSpec>::Type & node)
-        {
-            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
-        }
-
-        void visit(const SimpleURISpecTree::NodeType<ConditionalDepSpec>::Type & node)
-        {
-            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
-        }
-    };
-
     struct ValuePrinter
     {
         std::stringstream s;
@@ -193,22 +151,6 @@ GemcutterURIKey::pretty_print_value(
         const PrettyPrinter & printer, const PrettyPrintOptions & options) const
 {
     ValuePrinter p{printer, options};
-    _imp->value->top()->accept(p);
-    return p.s.str();
-}
-
-std::string
-GemcutterURIKey::pretty_print(const SimpleURISpecTree::ItemFormatter & f) const
-{
-    Printer p{false, f};
-    _imp->value->top()->accept(p);
-    return p.s.str();
-}
-
-std::string
-GemcutterURIKey::pretty_print_flat(const SimpleURISpecTree::ItemFormatter & f) const
-{
-    Printer p{true, f};
     _imp->value->top()->accept(p);
     return p.s.str();
 }

@@ -36,7 +36,6 @@
 #include <paludis/package_id.hh>
 #include <paludis/repository.hh>
 #include <paludis/metadata_key.hh>
-#include <paludis/stringify_formatter.hh>
 #include <paludis/repository_factory.hh>
 #include <paludis/package_database.hh>
 #include <paludis/unformatted_pretty_printer.hh>

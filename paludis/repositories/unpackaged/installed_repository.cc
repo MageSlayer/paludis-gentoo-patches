@@ -36,7 +36,6 @@
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/fs_iterator.hh>
 #include <paludis/util/fs_stat.hh>
-#include <paludis/stringify_formatter.hh>
 #include <paludis/action.hh>
 #include <paludis/environment.hh>
 #include <paludis/dep_tag.hh>

@@ -22,7 +22,6 @@
 #include "exceptions.hh"
 #include "command_command_line.hh"
 #include "colours.hh"
-#include "colour_formatter.hh"
 #include "colour_pretty_printer.hh"
 #include "format_user_config.hh"
 #include <paludis/args/do_help.hh>

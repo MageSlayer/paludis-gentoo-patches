@@ -51,20 +51,6 @@ namespace paludis
                 virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                /**
-                 * Return a multiline-line indented and formatted version of our
-                 * value, using the supplied Formatter to format individual items.
-                 */
-                virtual std::string pretty_print(const SimpleURISpecTree::ItemFormatter &) const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                /**
-                 * Return a single-line formatted version of our value, using the
-                 * supplied Formatter to format individual items.
-                 */
-                virtual std::string pretty_print_flat(const SimpleURISpecTree::ItemFormatter &) const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
                 virtual const std::string pretty_print_value(
                         const PrettyPrinter &,
                         const PrettyPrintOptions &) const PALUDIS_ATTRIBUTE((warn_unused_result));

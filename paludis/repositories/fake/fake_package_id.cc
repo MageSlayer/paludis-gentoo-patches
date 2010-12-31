@@ -24,7 +24,6 @@
 #include <paludis/action.hh>
 #include <paludis/environment.hh>
 #include <paludis/version_spec.hh>
-#include <paludis/formatter.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/choice.hh>
@@ -270,20 +269,6 @@ FakeMetadataSpecTreeKey<C_>::type() const
 }
 
 template <typename C_>
-std::string
-FakeMetadataSpecTreeKey<C_>::pretty_print(const typename C_::ItemFormatter &) const
-{
-    return _imp->string_value;
-}
-
-template <typename C_>
-std::string
-FakeMetadataSpecTreeKey<C_>::pretty_print_flat(const typename C_::ItemFormatter &) const
-{
-    return _imp->string_value;
-}
-
-template <typename C_>
 const std::string
 FakeMetadataSpecTreeKey<C_>::pretty_print_value(
         const PrettyPrinter &, const PrettyPrintOptions &) const
@@ -340,18 +325,6 @@ FakeMetadataSpecTreeKey<FetchableURISpecTree>::pretty_print_value(const PrettyPr
     return _imp->string_value;
 }
 
-std::string
-FakeMetadataSpecTreeKey<FetchableURISpecTree>::pretty_print(const FetchableURISpecTree::ItemFormatter &) const
-{
-    return _imp->string_value;
-}
-
-std::string
-FakeMetadataSpecTreeKey<FetchableURISpecTree>::pretty_print_flat(const FetchableURISpecTree::ItemFormatter &) const
-{
-    return _imp->string_value;
-}
-
 const std::shared_ptr<const URILabel>
 FakeMetadataSpecTreeKey<FetchableURISpecTree>::initial_label() const
 {
@@ -386,18 +359,6 @@ FakeMetadataSpecTreeKey<DependencySpecTree>::value() const
 
 const std::string
 FakeMetadataSpecTreeKey<DependencySpecTree>::pretty_print_value(const PrettyPrinter &, const PrettyPrintOptions &) const
-{
-    return _imp->string_value;
-}
-
-std::string
-FakeMetadataSpecTreeKey<DependencySpecTree>::pretty_print(const DependencySpecTree::ItemFormatter &) const
-{
-    return _imp->string_value;
-}
-
-std::string
-FakeMetadataSpecTreeKey<DependencySpecTree>::pretty_print_flat(const DependencySpecTree::ItemFormatter &) const
 {
     return _imp->string_value;
 }
@@ -1279,27 +1240,6 @@ FakeMetadataKeywordSetKey::pretty_print_value(
         const PrettyPrinter & pretty_printer, const PrettyPrintOptions &) const
 {
     return join(value()->begin(), value()->end(), " ", CallPrettyPrinter(pretty_printer));
-}
-
-std::string
-FakeMetadataKeywordSetKey::pretty_print_flat(const Formatter<KeywordName> & f) const
-{
-    std::string result;
-    for (KeywordNameSet::ConstIterator i(value()->begin()), i_end(value()->end()) ;
-            i != i_end ; ++i)
-    {
-        if (! result.empty())
-            result.append(" ");
-
-        std::shared_ptr<KeywordNameSet> k(std::make_shared<KeywordNameSet>());
-        k->insert(*i);
-        if (_imp->env->accept_keywords(k, _imp->id))
-            result.append(f.format(*i, format::Accepted()));
-        else
-            result.append(f.format(*i, format::Unaccepted()));
-    }
-
-    return result;
 }
 
 const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Choices> > >

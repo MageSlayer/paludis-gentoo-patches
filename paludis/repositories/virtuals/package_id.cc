@@ -34,7 +34,6 @@
 #include <paludis/environment.hh>
 #include <paludis/version_requirements.hh>
 #include <paludis/metadata_key.hh>
-#include <paludis/formatter.hh>
 #include <paludis/action.hh>
 #include <paludis/mask.hh>
 #include <paludis/package_database.hh>
@@ -129,30 +128,6 @@ MetadataKeyType
 VirtualsDepKey::type() const
 {
     return mkt_dependencies;
-}
-
-std::string
-VirtualsDepKey::pretty_print(const DependencySpecTree::ItemFormatter & f) const
-{
-    if (_imp->env)
-    {
-        if (! (*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(*_imp->spec, { }) |
-                    filter::InstalledAtRoot(_imp->env->preferred_root_key()->value()))]->empty())
-            return f.format(*_imp->spec, format::Installed());
-        else if (! (*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(*_imp->spec, { }) |
-                    filter::SupportsAction<InstallAction>() | filter::NotMasked())]->empty())
-            return f.format(*_imp->spec, format::Installable());
-        else
-            return f.format(*_imp->spec, format::Plain());
-    }
-    else
-        return f.format(*_imp->spec, format::Plain());
-}
-
-std::string
-VirtualsDepKey::pretty_print_flat(const DependencySpecTree::ItemFormatter & f) const
-{
-    return pretty_print(f);
 }
 
 const std::string
