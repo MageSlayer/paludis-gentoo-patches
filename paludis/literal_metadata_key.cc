@@ -371,39 +371,6 @@ LiteralMetadataValueKey<T_>::type() const
     return _imp->type;
 }
 
-ExtraLiteralMetadataValueKeyMethods<long>::~ExtraLiteralMetadataValueKeyMethods()
-{
-}
-
-std::string
-ExtraLiteralMetadataValueKeyMethods<long>::pretty_print() const
-{
-    long v(static_cast<const LiteralMetadataValueKey<long> *>(this)->value());
-    return stringify(v);
-}
-
-ExtraLiteralMetadataValueKeyMethods<bool>::~ExtraLiteralMetadataValueKeyMethods()
-{
-}
-
-std::string
-ExtraLiteralMetadataValueKeyMethods<bool>::pretty_print() const
-{
-    bool v(static_cast<const LiteralMetadataValueKey<bool> *>(this)->value());
-    return stringify(v);
-}
-
-ExtraLiteralMetadataValueKeyMethods<std::shared_ptr<const PackageID> >::~ExtraLiteralMetadataValueKeyMethods()
-{
-}
-
-std::string
-ExtraLiteralMetadataValueKeyMethods<std::shared_ptr<const PackageID> >::pretty_print(const Formatter<PackageID> & f) const
-{
-    std::shared_ptr<const PackageID> v(static_cast<const LiteralMetadataValueKey<std::shared_ptr<const PackageID> > *>(this)->value());
-    return f.format(*v, format::Plain());
-}
-
 template <typename T_>
 LiteralMetadataValueKey<T_>::LiteralMetadataValueKey(const std::string & r, const std::string & h,
         const MetadataKeyType t, const T_ & v) :

@@ -27,6 +27,7 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/choice.hh>
 #include <paludis/stringify_formatter.hh>
+#include <paludis/unformatted_pretty_printer.hh>
 #include <list>
 #include <algorithm>
 
@@ -132,7 +133,7 @@ RequiredUseVerifier::visit(const RequiredUseSpecTree::NodeType<AllDepSpec>::Type
     if (_imp->top)
     {
         if (_imp->stack.begin()->any_unmet)
-            _imp->unmet_requirements->push_back(_imp->id->required_use_key()->pretty_print_flat(StringifyFormatter()));
+            _imp->unmet_requirements->push_back(_imp->id->required_use_key()->pretty_print_value(UnformattedPrettyPrinter(), { }));
     }
 }
 

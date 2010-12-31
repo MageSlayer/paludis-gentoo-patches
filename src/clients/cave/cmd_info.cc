@@ -20,6 +20,7 @@
 #include "cmd_info.hh"
 #include "cmd_perform.hh"
 #include "colour_formatter.hh"
+#include "colour_pretty_printer.hh"
 #include "colours.hh"
 #include "exceptions.hh"
 #include "format_user_config.hh"
@@ -42,6 +43,7 @@
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/pretty_print.hh>
 #include <paludis/util/timestamp.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/action.hh>
 #include <paludis/about_metadata.hh>
 #include <cstdlib>
@@ -134,10 +136,12 @@ namespace
 
     struct InfoDisplayer
     {
+        const Environment * const env;
         const InfoCommandLine & cmdline;
         const int indent;
 
-        InfoDisplayer(const InfoCommandLine & c, const int i) :
+        InfoDisplayer(const Environment * const e, const InfoCommandLine & c, const int i) :
+            env(e),
             cmdline(c),
             indent(i)
         {
@@ -150,39 +154,39 @@ namespace
             for (std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
                     s(keys.begin()), s_end(keys.end()) ; s != s_end ; ++s)
             {
-                InfoDisplayer i(cmdline, indent + 1);
+                InfoDisplayer i(env, cmdline, indent + 1);
                 (*s)->accept(i);
             }
         }
 
         void visit(const MetadataCollectionKey<KeywordNameSet> & k)
         {
-            ColourFormatter f(indent);
-            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(k.pretty_print_flat(f)));
+            ColourPrettyPrinter printer(env, make_null_shared_ptr(), indent);
+            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(k.pretty_print_value(printer, { })));
         }
 
         void visit(const MetadataCollectionKey<Set<std::string> > & k)
         {
-            ColourFormatter f(indent);
-            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(k.pretty_print_flat(f)));
+            ColourPrettyPrinter printer(env, make_null_shared_ptr(), indent);
+            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(k.pretty_print_value(printer, { })));
         }
 
         void visit(const MetadataCollectionKey<Map<std::string, std::string> > & k)
         {
-            ColourFormatter f(indent);
-            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(k.pretty_print_flat(f)));
+            ColourPrettyPrinter printer(env, make_null_shared_ptr(), indent);
+            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(k.pretty_print_value(printer, { })));
         }
 
         void visit(const MetadataCollectionKey<Sequence<std::string> > & k)
         {
-            ColourFormatter f(indent);
-            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(k.pretty_print_flat(f)));
+            ColourPrettyPrinter printer(env, make_null_shared_ptr(), indent);
+            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(k.pretty_print_value(printer, { })));
         }
 
         void visit(const MetadataCollectionKey<PackageIDSequence> & k)
         {
-            ColourFormatter f(indent);
-            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(k.pretty_print_flat(f)));
+            ColourPrettyPrinter printer(env, make_null_shared_ptr(), indent);
+            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(k.pretty_print_value(printer, { })));
         }
 
         void visit(const MetadataCollectionKey<FSPathSequence> & k)
@@ -193,79 +197,79 @@ namespace
 
         void visit(const MetadataSpecTreeKey<LicenseSpecTree> & k)
         {
-            ColourFormatter f(indent);
-            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(k.pretty_print_flat(f)));
+            ColourPrettyPrinter printer(env, make_null_shared_ptr(), indent);
+            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(k.pretty_print_value(printer, { })));
         }
 
         void visit(const MetadataSpecTreeKey<SimpleURISpecTree> & k)
         {
-            ColourFormatter f(indent);
-            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(k.pretty_print_flat(f)));
+            ColourPrettyPrinter printer(env, make_null_shared_ptr(), indent);
+            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(k.pretty_print_value(printer, { })));
         }
 
         void visit(const MetadataSpecTreeKey<PlainTextSpecTree> & k)
         {
-            ColourFormatter f(indent);
-            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(k.pretty_print_flat(f)));
+            ColourPrettyPrinter printer(env, make_null_shared_ptr(), indent);
+            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(k.pretty_print_value(printer, { })));
         }
 
         void visit(const MetadataSpecTreeKey<RequiredUseSpecTree> & k)
         {
-            ColourFormatter f(indent);
-            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(k.pretty_print_flat(f)));
+            ColourPrettyPrinter printer(env, make_null_shared_ptr(), indent);
+            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(k.pretty_print_value(printer, { })));
         }
 
         void visit(const MetadataSpecTreeKey<FetchableURISpecTree> & k)
         {
-            ColourFormatter f(indent);
-            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(k.pretty_print_flat(f)));
+            ColourPrettyPrinter printer(env, make_null_shared_ptr(), indent);
+            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(k.pretty_print_value(printer, { })));
         }
 
         void visit(const MetadataSpecTreeKey<ProvideSpecTree> & k)
         {
-            ColourFormatter f(indent);
-            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(k.pretty_print_flat(f)));
+            ColourPrettyPrinter printer(env, make_null_shared_ptr(), indent);
+            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(k.pretty_print_value(printer, { })));
         }
 
         void visit(const MetadataSpecTreeKey<DependencySpecTree> & k)
         {
-            ColourFormatter f(indent);
-            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(k.pretty_print_flat(f)));
+            ColourPrettyPrinter printer(env, make_null_shared_ptr(), indent);
+            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(k.pretty_print_value(printer, { })));
         }
 
         void visit(const MetadataValueKey<std::string> & k)
         {
-            ColourFormatter f(indent);
+            ColourPrettyPrinter printer(env, make_null_shared_ptr(), indent);
             cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(stringify(k.value())));
         }
 
         void visit(const MetadataValueKey<SlotName> & k)
         {
-            ColourFormatter f(indent);
+            ColourPrettyPrinter printer(env, make_null_shared_ptr(), indent);
             cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(stringify(k.value())));
         }
 
         void visit(const MetadataValueKey<long> & k)
         {
-            ColourFormatter f(indent);
+            ColourPrettyPrinter printer(env, make_null_shared_ptr(), indent);
             cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(stringify(k.value())));
         }
 
         void visit(const MetadataValueKey<bool> & k)
         {
-            ColourFormatter f(indent);
+            ColourPrettyPrinter printer(env, make_null_shared_ptr(), indent);
             cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(stringify(k.value())));
         }
 
         void visit(const MetadataValueKey<FSPath> & k)
         {
-            ColourFormatter f(indent);
+            ColourPrettyPrinter printer(env, make_null_shared_ptr(), indent);
             cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(stringify(k.value())));
         }
 
         void visit(const MetadataValueKey<std::shared_ptr<const PackageID> > & k)
         {
-            ColourFormatter f(indent);
+            ColourPrettyPrinter printer(env, make_null_shared_ptr(), indent);
             cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(stringify(*k.value())));
         }
 
@@ -289,7 +293,7 @@ namespace
 
     void do_one_repository(
             const InfoCommandLine & cmdline,
-            const std::shared_ptr<Environment> &,
+            const std::shared_ptr<Environment> & env,
             const std::shared_ptr<const Repository> & repo)
     {
         cout << fuc(fs_repository_heading(), fv<'s'>(stringify(repo->name())));
@@ -300,7 +304,7 @@ namespace
             if ((*k)->type() == mkt_internal)
                 continue;
 
-            InfoDisplayer i(cmdline, 1);
+            InfoDisplayer i(env.get(), cmdline, 1);
             (*k)->accept(i);
         }
         cout << endl;
@@ -318,7 +322,7 @@ namespace
             if ((*k)->type() == mkt_internal)
                 continue;
 
-            InfoDisplayer i(cmdline, 1);
+            InfoDisplayer i(env.get(), cmdline, 1);
             (*k)->accept(i);
         }
         cout << endl;
@@ -326,7 +330,7 @@ namespace
 
     void do_about(
             const InfoCommandLine & cmdline,
-            const std::shared_ptr<Environment> &)
+            const std::shared_ptr<Environment> & env)
     {
         cout << fuc(fs_heading(), fv<'s'>("Package Manager Information"));
         std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator> keys(AboutMetadata::get_instance()->begin_metadata(),
@@ -337,7 +341,7 @@ namespace
             if ((*k)->type() == mkt_internal)
                 continue;
 
-            InfoDisplayer i(cmdline, 1);
+            InfoDisplayer i(env.get(), cmdline, 1);
             (*k)->accept(i);
         }
         cout << endl;

@@ -39,6 +39,7 @@
 #include <paludis/filtered_generator.hh>
 #include <paludis/selection.hh>
 #include <paludis/user_dep_spec.hh>
+#include <paludis/unformatted_pretty_printer.hh>
 
 #include <algorithm>
 #include <iterator>
@@ -171,13 +172,12 @@ main(int argc, char *argv[])
                 throw args::DoHelp("--" + CommandLine::get_instance()->a_preserve_metadata.long_name() + " specified but "
                         "no old ID available");
 
-            StringifyFormatter f;
             if (old_id->short_description_key())
                 description = old_id->short_description_key()->value();
             if (old_id->build_dependencies_key())
-                build_dependencies = old_id->build_dependencies_key()->pretty_print_flat(f);
+                build_dependencies = old_id->build_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { });
             if (old_id->run_dependencies_key())
-                run_dependencies = old_id->run_dependencies_key()->pretty_print_flat(f);
+                run_dependencies = old_id->run_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { });
         }
 
         if (CommandLine::get_instance()->a_description.specified())

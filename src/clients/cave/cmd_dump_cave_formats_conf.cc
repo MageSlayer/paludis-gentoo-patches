@@ -147,6 +147,8 @@ namespace
 #include "cmd_verify-fmt.hh"
             }{
 #include "colour_formatter-fmt.hh"
+            }{
+#include "colour_pretty_printer-fmt.hh"
             }
         }
     };

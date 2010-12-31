@@ -44,18 +44,6 @@ MetadataTimeKey::~MetadataTimeKey()
 {
 }
 
-ExtraMetadataValueKeyMethods<long>::~ExtraMetadataValueKeyMethods()
-{
-}
-
-ExtraMetadataValueKeyMethods<bool>::~ExtraMetadataValueKeyMethods()
-{
-}
-
-ExtraMetadataValueKeyMethods<std::shared_ptr<const PackageID> >::~ExtraMetadataValueKeyMethods()
-{
-}
-
 template <typename T_>
 MetadataCollectionKey<T_>::~MetadataCollectionKey()
 {

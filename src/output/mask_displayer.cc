@@ -19,7 +19,7 @@
 
 #include "mask_displayer.hh"
 #include "colour.hh"
-#include "colour_formatter.hh"
+#include "colour_pretty_printer.hh"
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/sequence.hh>
@@ -58,7 +58,15 @@ namespace
 {
     struct KeyPrettyPrinter
     {
+        const Environment * const env;
+        const std::shared_ptr<const PackageID> id;
         std::ostringstream s;
+
+        KeyPrettyPrinter(const Environment * const e, const std::shared_ptr<const PackageID> & i) :
+            env(e),
+            id(i)
+        {
+        }
 
         void visit(const MetadataValueKey<std::shared_ptr<const PackageID> > & k)
         {
@@ -98,7 +106,7 @@ namespace
                 else
                     s << " ";
 
-                KeyPrettyPrinter p;
+                KeyPrettyPrinter p(env, id);
                 (*m)->accept(p);
                 s << p.s.str();
                 need_comma = true;
@@ -128,80 +136,80 @@ namespace
 
         void visit(const MetadataCollectionKey<Set<std::string> > & k)
         {
-            ColourFormatter formatter;
-            s << k.pretty_print_flat(formatter);
+            ColourPrettyPrinter printer(env, id);
+            s << k.pretty_print_value(printer, { });
         }
 
         void visit(const MetadataCollectionKey<Map<std::string, std::string> > & k)
         {
-            ColourFormatter formatter;
-            s << k.pretty_print_flat(formatter);
+            ColourPrettyPrinter printer(env, id);
+            s << k.pretty_print_value(printer, { });
         }
 
         void visit(const MetadataCollectionKey<Sequence<std::string> > & k)
         {
-            ColourFormatter formatter;
-            s << k.pretty_print_flat(formatter);
+            ColourPrettyPrinter printer(env, id);
+            s << k.pretty_print_value(printer, { });
         }
 
         void visit(const MetadataCollectionKey<FSPathSequence> & k)
         {
-            ColourFormatter formatter;
-            s << k.pretty_print_flat(formatter);
+            ColourPrettyPrinter printer(env, id);
+            s << k.pretty_print_value(printer, { });
         }
 
         void visit(const MetadataCollectionKey<PackageIDSequence> & k)
         {
-            ColourFormatter formatter;
-            s << k.pretty_print_flat(formatter);
+            ColourPrettyPrinter printer(env, id);
+            s << k.pretty_print_value(printer, { });
         }
 
         void visit(const MetadataSpecTreeKey<FetchableURISpecTree> & k)
         {
-            ColourFormatter formatter;
-            s << k.pretty_print_flat(formatter);
+            ColourPrettyPrinter printer(env, id);
+            s << k.pretty_print_value(printer, { });
         }
 
         void visit(const MetadataSpecTreeKey<SimpleURISpecTree> & k)
         {
-            ColourFormatter formatter;
-            s << k.pretty_print_flat(formatter);
+            ColourPrettyPrinter printer(env, id);
+            s << k.pretty_print_value(printer, { });
         }
 
         void visit(const MetadataSpecTreeKey<LicenseSpecTree> & k)
         {
-            ColourFormatter formatter;
-            s << k.pretty_print_flat(formatter);
+            ColourPrettyPrinter printer(env, id);
+            s << k.pretty_print_value(printer, { });
         }
 
         void visit(const MetadataSpecTreeKey<DependencySpecTree> & k)
         {
-            ColourFormatter formatter;
-            s << k.pretty_print_flat(formatter);
+            ColourPrettyPrinter printer(env, id);
+            s << k.pretty_print_value(printer, { });
         }
 
         void visit(const MetadataCollectionKey<KeywordNameSet> & k)
         {
-            ColourFormatter formatter;
-            s << k.pretty_print_flat(formatter);
+            ColourPrettyPrinter printer(env, id);
+            s << k.pretty_print_value(printer, { });
         }
 
         void visit(const MetadataSpecTreeKey<ProvideSpecTree> & k)
         {
-            ColourFormatter formatter;
-            s << k.pretty_print_flat(formatter);
+            ColourPrettyPrinter printer(env, id);
+            s << k.pretty_print_value(printer, { });
         }
 
         void visit(const MetadataSpecTreeKey<PlainTextSpecTree> & k)
         {
-            ColourFormatter formatter;
-            s << k.pretty_print_flat(formatter);
+            ColourPrettyPrinter printer(env, id);
+            s << k.pretty_print_value(printer, { });
         }
 
         void visit(const MetadataSpecTreeKey<RequiredUseSpecTree> & k)
         {
-            ColourFormatter formatter;
-            s << k.pretty_print_flat(formatter);
+            ColourPrettyPrinter printer(env, id);
+            s << k.pretty_print_value(printer, { });
         }
 
         void visit(const MetadataValueKey<std::shared_ptr<const Choices> > & k)
@@ -235,7 +243,7 @@ MaskDisplayer::visit(const UnacceptedMask & m)
 
     if (m.unaccepted_key())
     {
-        KeyPrettyPrinter k;
+        KeyPrettyPrinter k(_imp->env, _imp->id);
         m.unaccepted_key()->accept(k);
         _imp->s << k.s.str();
     }
@@ -259,7 +267,7 @@ MaskDisplayer::visit(const RepositoryMask & m)
 
         if (m.mask_key())
         {
-            KeyPrettyPrinter k;
+            KeyPrettyPrinter k(_imp->env, _imp->id);
             m.mask_key()->accept(k);
             _imp->s << " (" << k.s.str() << ")";
         }
@@ -268,7 +276,7 @@ MaskDisplayer::visit(const RepositoryMask & m)
     {
         if (m.mask_key())
         {
-            KeyPrettyPrinter k;
+            KeyPrettyPrinter k(_imp->env, _imp->id);
             m.mask_key()->accept(k);
             _imp->s << k.s.str();
         }

@@ -38,68 +38,6 @@
 
 namespace paludis
 {
-    /**
-     * Implement extra methods for LiteralMetadataValueKey.
-     *
-     * \ingroup g_metadata_key
-     * \since 0.26
-     */
-    template <typename T_>
-    class ExtraLiteralMetadataValueKeyMethods
-    {
-    };
-
-    /**
-     * Implement extra methods for LiteralMetadataValueKey for PackageID.
-     *
-     * \ingroup g_metadata_key
-     * \since 0.26
-     */
-    template <>
-    class PALUDIS_VISIBLE ExtraLiteralMetadataValueKeyMethods<std::shared_ptr<const PackageID> > :
-        public virtual ExtraMetadataValueKeyMethods<std::shared_ptr<const PackageID> >
-    {
-        public:
-            virtual ~ExtraLiteralMetadataValueKeyMethods() = 0;
-
-            virtual std::string pretty_print(const Formatter<PackageID> &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-    };
-
-    /**
-     * Implement extra methods for LiteralMetadataValueKey for long.
-     *
-     * \ingroup g_metadata_key
-     * \since 0.28
-     */
-    template <>
-    class PALUDIS_VISIBLE ExtraLiteralMetadataValueKeyMethods<long> :
-        public virtual ExtraMetadataValueKeyMethods<long>
-    {
-        public:
-            virtual ~ExtraLiteralMetadataValueKeyMethods() = 0;
-
-            virtual std::string pretty_print() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-    };
-
-    /**
-     * Implement extra methods for LiteralMetadataValueKey for bool.
-     *
-     * \ingroup g_metadata_key
-     * \since 0.34.1
-     */
-    template <>
-    class PALUDIS_VISIBLE ExtraLiteralMetadataValueKeyMethods<bool> :
-        public virtual ExtraMetadataValueKeyMethods<bool>
-    {
-        public:
-            virtual ~ExtraLiteralMetadataValueKeyMethods() = 0;
-
-            virtual std::string pretty_print() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-    };
-
     template <typename T_>
     class PALUDIS_VISIBLE PrettyPrintableLiteralMetadataValueKey :
         public MetadataValueKey<T_>
@@ -120,8 +58,7 @@ namespace paludis
     template <typename T_>
     class PALUDIS_VISIBLE LiteralMetadataValueKey :
         public std::conditional<MetadataValueKeyIsPrettyPrintable<T_>::value, PrettyPrintableLiteralMetadataValueKey<T_>, MetadataValueKey<T_> >::type,
-        private Pimp<LiteralMetadataValueKey<T_> >,
-        public ExtraLiteralMetadataValueKeyMethods<T_>
+        private Pimp<LiteralMetadataValueKey<T_> >
     {
         private:
             typename Pimp<LiteralMetadataValueKey<T_> >::ImpPtr & _imp;

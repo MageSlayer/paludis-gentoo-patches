@@ -18,8 +18,6 @@ noinst_PROGRAMS = \
 	example_dep_tag \
 	example_dep_spec_flattener \
 	example_environment \
-	example_formatter \
-	example_stringify_formatter \
 	example_package_id \
 	example_metadata_key \
 	example_mask \
@@ -84,18 +82,6 @@ example_dep_spec_flattener_LDADD = \
 
 example_environment_SOURCES = example_environment.cc
 example_environment_LDADD = \
-	libpaludisexamples.a \
-	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/args/libpaludisargs_@PALUDIS_PC_SLOT@.la
-
-example_formatter_SOURCES = example_formatter.cc
-example_formatter_LDADD = \
-	libpaludisexamples.a \
-	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/args/libpaludisargs_@PALUDIS_PC_SLOT@.la
-
-example_stringify_formatter_SOURCES = example_stringify_formatter.cc
-example_stringify_formatter_LDADD = \
 	libpaludisexamples.a \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/args/libpaludisargs_@PALUDIS_PC_SLOT@.la

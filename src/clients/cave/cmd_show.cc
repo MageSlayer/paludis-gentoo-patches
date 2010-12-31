@@ -19,6 +19,7 @@
 
 #include "cmd_show.hh"
 #include "colour_formatter.hh"
+#include "colour_pretty_printer.hh"
 #include "colours.hh"
 #include "exceptions.hh"
 #include "select_format_for_spec.hh"
@@ -344,6 +345,7 @@ namespace
 
     struct InfoDisplayer
     {
+        const std::shared_ptr<const Environment> env;
         const ShowCommandLine & cmdline;
         const int indent;
         const bool important;
@@ -352,10 +354,13 @@ namespace
         const bool old_id_is_installed;
         std::ostream & out;
 
-        InfoDisplayer(const ShowCommandLine & c, const int i, const bool m,
+        InfoDisplayer(
+                const std::shared_ptr<const Environment> & e,
+                const ShowCommandLine & c, const int i, const bool m,
                 const std::shared_ptr<const PackageID> & k,
                 const std::shared_ptr<const PackageID> & o, const bool b,
                 std::ostream & ou) :
+            env(e),
             cmdline(c),
             indent(i),
             important(m),
@@ -377,7 +382,7 @@ namespace
             for (std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
                     s(keys.begin()), s_end(keys.end()) ; s != s_end ; ++s)
             {
-                InfoDisplayer i(cmdline, indent + 1, ((*s)->type() == mkt_significant), maybe_current_id, maybe_old_id, old_id_is_installed, out);
+                InfoDisplayer i(env, cmdline, indent + 1, ((*s)->type() == mkt_significant), maybe_current_id, maybe_old_id, old_id_is_installed, out);
                 if (want_key(cmdline, *s, maybe_current_id))
                     accept_visitor(i)(**s);
             }
@@ -385,11 +390,11 @@ namespace
 
         void visit(const MetadataCollectionKey<KeywordNameSet> & k)
         {
-            ColourFormatter f(indent);
+            ColourPrettyPrinter printer(env.get(), maybe_current_id, indent);
             out << fuc(
                     (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                     fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
-                    fv<'v'>(k.pretty_print_flat(f)),
+                    fv<'v'>(k.pretty_print_value(printer, { })),
                     fv<'i'>(std::string(indent, ' ')),
                     fv<'b'>(important ? "true" : ""),
                     fv<'p'>("")
@@ -398,11 +403,11 @@ namespace
 
         void visit(const MetadataCollectionKey<Set<std::string> > & k)
         {
-            ColourFormatter f(indent);
+            ColourPrettyPrinter printer(env.get(), maybe_current_id, indent);
             out << fuc(
                     (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                     fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
-                    fv<'v'>(k.pretty_print_flat(f)),
+                    fv<'v'>(k.pretty_print_value(printer, { })),
                     fv<'i'>(std::string(indent, ' ')),
                     fv<'b'>(important ? "true" : ""),
                     fv<'p'>("")
@@ -411,11 +416,11 @@ namespace
 
         void visit(const MetadataCollectionKey<Map<std::string, std::string> > & k)
         {
-            ColourFormatter f(indent);
+            ColourPrettyPrinter printer(env.get(), maybe_current_id, indent);
             out << fuc(
                     (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                     fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
-                    fv<'v'>(k.pretty_print_flat(f)),
+                    fv<'v'>(k.pretty_print_value(printer, { })),
                     fv<'i'>(std::string(indent, ' ')),
                     fv<'b'>(important ? "true" : ""),
                     fv<'p'>("")
@@ -424,11 +429,11 @@ namespace
 
         void visit(const MetadataCollectionKey<Sequence<std::string> > & k)
         {
-            ColourFormatter f(indent);
+            ColourPrettyPrinter printer(env.get(), maybe_current_id, indent);
             out << fuc(
                     (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                     fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
-                    fv<'v'>(k.pretty_print_flat(f)),
+                    fv<'v'>(k.pretty_print_value(printer, { })),
                     fv<'i'>(std::string(indent, ' ')),
                     fv<'b'>(important ? "true" : ""),
                     fv<'p'>("")
@@ -437,11 +442,11 @@ namespace
 
         void visit(const MetadataCollectionKey<PackageIDSequence> & k)
         {
-            ColourFormatter f(indent);
+            ColourPrettyPrinter printer(env.get(), maybe_current_id, indent);
             out << fuc(
                     (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                     fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
-                    fv<'v'>(k.pretty_print_flat(f)),
+                    fv<'v'>(k.pretty_print_value(printer, { })),
                     fv<'i'>(std::string(indent, ' ')),
                     fv<'b'>(important ? "true" : ""),
                     fv<'p'>("")
@@ -462,11 +467,11 @@ namespace
 
         void visit(const MetadataSpecTreeKey<LicenseSpecTree> & k)
         {
-            ColourFormatter f(indent);
+            ColourPrettyPrinter printer(env.get(), maybe_current_id, indent);
             out << fuc(
                     (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                     fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
-                    fv<'v'>(k.pretty_print_flat(f)),
+                    fv<'v'>(k.pretty_print_value(printer, { })),
                     fv<'i'>(std::string(indent, ' ')),
                     fv<'b'>(important ? "true" : ""),
                     fv<'p'>("")
@@ -477,11 +482,11 @@ namespace
         {
             if (cmdline.a_complex_keys.specified() || important)
             {
-                ColourFormatter f(indent);
+                ColourPrettyPrinter printer(env.get(), maybe_current_id, indent);
                 out << fuc(
                         (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                         fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
-                        fv<'v'>(k.pretty_print_flat(f)),
+                        fv<'v'>(k.pretty_print_value(printer, { })),
                         fv<'i'>(std::string(indent, ' ')),
                         fv<'b'>(important ? "true" : ""),
                         fv<'p'>("")
@@ -493,12 +498,12 @@ namespace
         {
             if (cmdline.a_complex_keys.specified() || important)
             {
-                ColourFormatter f(indent);
+                ColourPrettyPrinter printer(env.get(), maybe_current_id, indent);
                 if (cmdline.a_flat.specified())
                     out << fuc(
                             (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                             fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
-                            fv<'v'>(k.pretty_print_flat(f)),
+                            fv<'v'>(k.pretty_print_value(printer, { })),
                             fv<'i'>(std::string(indent, ' ')),
                             fv<'b'>(important ? "true" : ""),
                             fv<'p'>("")
@@ -513,7 +518,7 @@ namespace
                             fv<'b'>(important ? "true" : ""),
                             fv<'p'>("")
                             );
-                    out << k.pretty_print(f);
+                    out << k.pretty_print_value(printer, { ppo_multiline_allowed });
                 }
             }
         }
@@ -522,12 +527,12 @@ namespace
         {
             if (cmdline.a_complex_keys.specified() || important)
             {
-                ColourFormatter f(indent);
+                ColourPrettyPrinter printer(env.get(), maybe_current_id, indent);
                 if (cmdline.a_flat.specified())
                     out << fuc(
                             (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                             fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
-                            fv<'v'>(k.pretty_print_flat(f)),
+                            fv<'v'>(k.pretty_print_value(printer, { })),
                             fv<'i'>(std::string(indent, ' ')),
                             fv<'b'>(important ? "true" : ""),
                             fv<'p'>("")
@@ -542,7 +547,7 @@ namespace
                             fv<'b'>(important ? "true" : ""),
                             fv<'p'>("")
                             );
-                    out << k.pretty_print(f);
+                    out << k.pretty_print_value(printer, { ppo_multiline_allowed });
                 }
             }
         }
@@ -551,12 +556,12 @@ namespace
         {
             if (cmdline.a_complex_keys.specified() || important)
             {
-                ColourFormatter f(indent);
+                ColourPrettyPrinter printer(env.get(), maybe_current_id, indent);
                 if (cmdline.a_flat.specified())
                     out << fuc(
                             (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                             fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
-                            fv<'v'>(k.pretty_print_flat(f)),
+                            fv<'v'>(k.pretty_print_value(printer, { })),
                             fv<'i'>(std::string(indent, ' ')),
                             fv<'b'>(important ? "true" : ""),
                             fv<'p'>("")
@@ -571,7 +576,7 @@ namespace
                             fv<'b'>(important ? "true" : ""),
                             fv<'p'>("")
                             );
-                    out << k.pretty_print(f);
+                    out << k.pretty_print_value(printer, { ppo_multiline_allowed });
                 }
             }
         }
@@ -580,11 +585,11 @@ namespace
         {
             if (cmdline.a_complex_keys.specified() || important)
             {
-                ColourFormatter f(indent);
+                ColourPrettyPrinter printer(env.get(), maybe_current_id, indent);
                 out << fuc(
                         (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                         fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
-                        fv<'v'>(k.pretty_print_flat(f)),
+                        fv<'v'>(k.pretty_print_value(printer, { })),
                         fv<'i'>(std::string(indent, ' ')),
                         fv<'b'>(important ? "true" : ""),
                         fv<'p'>("")
@@ -596,12 +601,12 @@ namespace
         {
             if (cmdline.a_complex_keys.specified() || important)
             {
-                ColourFormatter f(indent);
+                ColourPrettyPrinter printer(env.get(), maybe_current_id, indent);
                 if (cmdline.a_flat.specified())
                     out << fuc(
                             (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                             fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
-                            fv<'v'>(k.pretty_print_flat(f)),
+                            fv<'v'>(k.pretty_print_value(printer, { })),
                             fv<'i'>(std::string(indent, ' ')),
                             fv<'b'>(important ? "true" : ""),
                             fv<'p'>("")
@@ -616,7 +621,7 @@ namespace
                             fv<'b'>(important ? "true" : ""),
                             fv<'p'>("")
                             );
-                    out << k.pretty_print(f);
+                    out << k.pretty_print_value(printer, { ppo_multiline_allowed });
                 }
             }
         }
@@ -962,11 +967,13 @@ namespace
 
     struct MaskDisplayer
     {
+        const std::shared_ptr<const Environment> env;
         const ShowCommandLine & cmdline;
         const int indent;
         std::ostream & out;
 
-        MaskDisplayer(const ShowCommandLine & c, const int i, std::ostream & o) :
+        MaskDisplayer(const std::shared_ptr<const Environment> & e, const ShowCommandLine & c, const int i, std::ostream & o) :
+            env(e),
             cmdline(c),
             indent(i),
             out(o)
@@ -977,7 +984,7 @@ namespace
         {
             if (m.unaccepted_key())
             {
-                InfoDisplayer i(cmdline, indent, false, make_null_shared_ptr(), make_null_shared_ptr(), false, out);
+                InfoDisplayer i(env, cmdline, indent, false, make_null_shared_ptr(), make_null_shared_ptr(), false, out);
                 m.unaccepted_key()->accept(i);
             }
             else
@@ -1033,7 +1040,7 @@ namespace
         {
             if (m.mask_key())
             {
-                InfoDisplayer i(cmdline, indent, false, make_null_shared_ptr(), make_null_shared_ptr(), false, out);
+                InfoDisplayer i(env, cmdline, indent, false, make_null_shared_ptr(), make_null_shared_ptr(), false, out);
                 m.mask_key()->accept(i);
             }
             else
@@ -1062,7 +1069,7 @@ namespace
         for (std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
                 k(keys.begin()), k_end(keys.end()) ; k != k_end ; ++k)
         {
-            InfoDisplayer i(cmdline, 0, ((*k)->type() == mkt_significant), make_null_shared_ptr(), make_null_shared_ptr(), false, cout);
+            InfoDisplayer i(env, cmdline, 0, ((*k)->type() == mkt_significant), make_null_shared_ptr(), make_null_shared_ptr(), false, cout);
             if (want_key(cmdline, *k, make_null_shared_ptr()))
                 accept_visitor(i)(**k);
         }
@@ -1071,7 +1078,7 @@ namespace
 
     void do_one_package_id(
             const ShowCommandLine & cmdline,
-            const std::shared_ptr<Environment> &,
+            const std::shared_ptr<Environment> & env,
             const std::shared_ptr<const PackageID> & best,
             const std::shared_ptr<const PackageID> & maybe_old_id,
             const bool old_id_is_installed,
@@ -1083,7 +1090,7 @@ namespace
                 k(keys.begin()), k_end(keys.end()) ; k != k_end ; ++k)
         {
             bool explicit_key(cmdline.a_key.end_args() != std::find(cmdline.a_key.begin_args(), cmdline.a_key.end_args(), (*k)->raw_name()));
-            InfoDisplayer i(cmdline, 1, ((*k)->type() == mkt_significant) || explicit_key, best, maybe_old_id, old_id_is_installed, out);
+            InfoDisplayer i(env, cmdline, 1, ((*k)->type() == mkt_significant) || explicit_key, best, maybe_old_id, old_id_is_installed, out);
             if (want_key(cmdline, *k, best))
                 accept_visitor(i)(**k);
         }
@@ -1091,14 +1098,14 @@ namespace
         if (best->masked())
         {
             out << fuc(fs_package_id_masks(), fv<'s'>("Masked"));
-            MaskDisplayer d(cmdline, 2, out);
+            MaskDisplayer d(env, cmdline, 2, out);
             std::for_each(indirect_iterator(best->begin_masks()), indirect_iterator(best->end_masks()), accept_visitor(d));
         }
 
         if (best->begin_overridden_masks() != best->end_overridden_masks())
         {
             out << fuc(fs_package_id_masks_overridden(), fv<'s'>("Overridden Masks"));
-            MaskDisplayer d(cmdline, 2, out);
+            MaskDisplayer d(env, cmdline, 2, out);
             for (PackageID::OverriddenMasksConstIterator m(best->begin_overridden_masks()), m_end(best->end_overridden_masks()) ;
                     m != m_end ; ++m)
                 (*m)->mask()->accept(d);

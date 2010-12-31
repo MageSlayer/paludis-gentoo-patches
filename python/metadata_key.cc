@@ -198,16 +198,6 @@ struct MetadataPackageIDKeyWrapper :
             throw PythonMethodNotImplemented("MetadataPackageIDKey", "value");
     }
 
-    virtual std::string pretty_print(const Formatter<PackageID> &) const
-    {
-        Lock l(get_mutex());
-
-        if (bp::override f = get_override("pretty_print"))
-            return f();
-        else
-            throw PythonMethodNotImplemented("MetadataPackageIDKey", "pretty_print");
-    }
-
     virtual const std::string raw_name() const
     {
         Lock l(get_mutex());
@@ -649,19 +639,6 @@ struct MetadataCollectionKeyWrapper :
             throw PythonMethodNotImplemented("MetadataCollectionKey", "value");
     }
 
-    std::string pretty_print_flat(const Formatter<
-            typename std::remove_const<
-                    typename RemoveSharedPtr<typename C_::value_type>::Type>::type> & formatter) const
-        PALUDIS_ATTRIBUTE((warn_unused_result))
-    {
-        Lock l(get_mutex());
-
-        if (bp::override f = this->get_override("pretty_print_flat"))
-            return f(boost::cref(formatter));
-        else
-            throw PythonMethodNotImplemented("MetadataCollectionKey", "pretty_print_flat");
-    }
-
     virtual const std::string raw_name() const
     {
         Lock l(get_mutex());
@@ -714,17 +691,6 @@ struct MetadataSpecTreeKeyWrapper :
             return f();
         else
             throw PythonMethodNotImplemented("MetadataSpecTreeKey", "value");
-    }
-
-    virtual std::string pretty_print(const typename C_::ItemFormatter & formatter) const
-        PALUDIS_ATTRIBUTE((warn_unused_result))
-    {
-        Lock l(get_mutex());
-
-        if (bp::override f = this->get_override("pretty_print"))
-            return f(boost::cref(formatter));
-        else
-            throw PythonMethodNotImplemented("MetadataSpecTreeKey", "pretty_print");
     }
 
     virtual std::string pretty_print_flat(const typename C_::ItemFormatter & formatter) const
@@ -792,28 +758,6 @@ struct MetadataSpecTreeKeyWrapper<FetchableURISpecTree> :
             throw PythonMethodNotImplemented("MetadataSpecTreeKey", "value");
     }
 
-    virtual std::string pretty_print(const FetchableURISpecTree::ItemFormatter & formatter) const
-        PALUDIS_ATTRIBUTE((warn_unused_result))
-    {
-        Lock l(get_mutex());
-
-        if (bp::override f = this->get_override("pretty_print"))
-            return f(boost::cref(formatter));
-        else
-            throw PythonMethodNotImplemented("MetadataSpecTreeKey", "pretty_print");
-    }
-
-    virtual std::string pretty_print_flat(const FetchableURISpecTree::ItemFormatter & formatter) const
-        PALUDIS_ATTRIBUTE((warn_unused_result))
-    {
-        Lock l(get_mutex());
-
-        if (bp::override f = this->get_override("pretty_print_flat"))
-            return f(boost::cref(formatter));
-        else
-            throw PythonMethodNotImplemented("MetadataSpecTreeKey", "pretty_print_flat");
-    }
-
     virtual const std::shared_ptr<const URILabel> initial_label() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
@@ -877,28 +821,6 @@ struct MetadataSpecTreeKeyWrapper<DependencySpecTree> :
             return f();
         else
             throw PythonMethodNotImplemented("MetadataSpecTreeKey", "value");
-    }
-
-    virtual std::string pretty_print(const DependencySpecTree::ItemFormatter & formatter) const
-        PALUDIS_ATTRIBUTE((warn_unused_result))
-    {
-        Lock l(get_mutex());
-
-        if (bp::override f = this->get_override("pretty_print"))
-            return f(boost::cref(formatter));
-        else
-            throw PythonMethodNotImplemented("MetadataSpecTreeKey", "pretty_print");
-    }
-
-    virtual std::string pretty_print_flat(const DependencySpecTree::ItemFormatter & formatter) const
-        PALUDIS_ATTRIBUTE((warn_unused_result))
-    {
-        Lock l(get_mutex());
-
-        if (bp::override f = this->get_override("pretty_print_flat"))
-            return f(boost::cref(formatter));
-        else
-            throw PythonMethodNotImplemented("MetadataSpecTreeKey", "pretty_print_flat");
     }
 
     virtual const std::shared_ptr<const DependenciesLabelSequence> initial_labels() const
@@ -976,12 +898,6 @@ struct class_set_key :
                 ("value() -> " + set + "\n"
                  "Fetch our value.").c_str()
            );
-
-        def("pretty_print_flat", bp::pure_virtual(&MetadataCollectionKey<C_>::pretty_print_flat),
-                ("pretty_print_flat(" + set +"Formatter) -> string\n"
-                 "Return a single-line formatted version of our value, using the\n"
-                 "supplied Formatter to format individual items.").c_str()
-           );
     }
 };
 
@@ -1010,18 +926,6 @@ struct class_spec_tree_key :
         def("value", bp::pure_virtual(&MetadataSpecTreeKey<C_>::value),
                 ("value() -> " + spec_tree + "\n"
                  "Fetch our value").c_str()
-           );
-
-        def("pretty_print", bp::pure_virtual(&MetadataSpecTreeKey<C_>::pretty_print),
-                ("pretty_print(" + spec_tree + "Formatter) -> string\n"
-                 "Return a multiline-line indented and formatted version of our\n"
-                 "value, using the supplied Formatter to format individual items.").c_str()
-           );
-
-        def("pretty_print_flat", bp::pure_virtual(&MetadataSpecTreeKey<C_>::pretty_print_flat),
-                ("pretty_print_flat(" + spec_tree + "Formatter) -> string\n"
-                 "Return a single-line formatted version of our value, using the\n"
-                 "supplied Formatter to format individual items.").c_str()
            );
     }
 };
@@ -1053,18 +957,6 @@ struct class_spec_tree_key<FetchableURISpecTree> :
         def("value", bp::pure_virtual(&MetadataSpecTreeKey<FetchableURISpecTree>::value),
                 ("value() -> " + spec_tree + "\n"
                  "Fetch our value").c_str()
-           );
-
-        def("pretty_print", bp::pure_virtual(&MetadataSpecTreeKey<FetchableURISpecTree>::pretty_print),
-                ("pretty_print(" + spec_tree + "Formatter) -> string\n"
-                 "Return a multiline-line indented and formatted version of our\n"
-                 "value, using the supplied Formatter to format individual items.").c_str()
-           );
-
-        def("pretty_print_flat", bp::pure_virtual(&MetadataSpecTreeKey<FetchableURISpecTree>::pretty_print_flat),
-                ("pretty_print_flat(" + spec_tree + "Formatter) -> string\n"
-                 "Return a single-line formatted version of our value, using the\n"
-                 "supplied Formatter to format individual items.").c_str()
            );
 
         def("initial_label", bp::pure_virtual(&MetadataSpecTreeKey<FetchableURISpecTree>::initial_label),
@@ -1102,18 +994,6 @@ struct class_spec_tree_key<DependencySpecTree> :
         def("value", bp::pure_virtual(&MetadataSpecTreeKey<DependencySpecTree>::value),
                 ("value() -> " + spec_tree + "\n"
                  "Fetch our value").c_str()
-           );
-
-        def("pretty_print", bp::pure_virtual(&MetadataSpecTreeKey<DependencySpecTree>::pretty_print),
-                ("pretty_print(" + spec_tree + "Formatter) -> string\n"
-                 "Return a multiline-line indented and formatted version of our\n"
-                 "value, using the supplied Formatter to format individual items.").c_str()
-           );
-
-        def("pretty_print_flat", bp::pure_virtual(&MetadataSpecTreeKey<DependencySpecTree>::pretty_print_flat),
-                ("pretty_print_flat(" + spec_tree + "Formatter) -> string\n"
-                 "Return a single-line formatted version of our value, using the\n"
-                 "supplied Formatter to format individual items.").c_str()
            );
 
         def("initial_labels", bp::pure_virtual(&MetadataSpecTreeKey<DependencySpecTree>::initial_labels),

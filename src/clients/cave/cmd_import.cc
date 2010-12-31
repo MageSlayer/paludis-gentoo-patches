@@ -39,6 +39,7 @@
 #include <paludis/stringify_formatter.hh>
 #include <paludis/repository_factory.hh>
 #include <paludis/package_database.hh>
+#include <paludis/unformatted_pretty_printer.hh>
 
 #include <iostream>
 #include <cstdlib>
@@ -237,13 +238,12 @@ ImportCommand::run(
             throw args::DoHelp("--" + cmdline.a_preserve_metadata.long_name() + " specified but "
                     "no old ID available");
 
-        StringifyFormatter f;
         if (old_id->short_description_key())
             description = old_id->short_description_key()->value();
         if (old_id->build_dependencies_key())
-            build_dependencies = old_id->build_dependencies_key()->pretty_print_flat(f);
+            build_dependencies = old_id->build_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { });
         if (old_id->run_dependencies_key())
-            run_dependencies = old_id->run_dependencies_key()->pretty_print_flat(f);
+            run_dependencies = old_id->run_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { });
     }
 
     if (cmdline.a_description.specified())

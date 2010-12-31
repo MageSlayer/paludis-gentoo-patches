@@ -33,6 +33,7 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/environment.hh>
 #include <paludis/choice.hh>
+#include <paludis/unformatted_pretty_printer.hh>
 #include <functional>
 #include <algorithm>
 
@@ -360,8 +361,7 @@ namespace
             {
                 if (_flatten)
                 {
-                    StringifyFormatter f;
-                    result = _m(s.pretty_print_flat(f));
+                    result = _m(s.pretty_print_value(UnformattedPrettyPrinter(), { }));
                 }
                 else
                 {
@@ -375,8 +375,7 @@ namespace
             {
                 if (_flatten)
                 {
-                    StringifyFormatter f;
-                    result = _m(s.pretty_print_flat(f));
+                    result = _m(s.pretty_print_value(UnformattedPrettyPrinter(), { }));
                 }
                 else
                 {
@@ -390,8 +389,7 @@ namespace
             {
                 if (_flatten)
                 {
-                    StringifyFormatter f;
-                    result = _m(s.pretty_print_flat(f));
+                    result = _m(s.pretty_print_value(UnformattedPrettyPrinter(), { }));
                 }
                 else
                 {
@@ -405,8 +403,7 @@ namespace
             {
                 if (_flatten)
                 {
-                    StringifyFormatter f;
-                    result = _m(s.pretty_print_flat(f));
+                    result = _m(s.pretty_print_value(UnformattedPrettyPrinter(), { }));
                 }
                 else
                 {
@@ -420,8 +417,7 @@ namespace
             {
                 if (_flatten)
                 {
-                    StringifyFormatter f;
-                    result = _m(s.pretty_print_flat(f));
+                    result = _m(s.pretty_print_value(UnformattedPrettyPrinter(), { }));
                 }
                 else
                 {
@@ -435,8 +431,7 @@ namespace
             {
                 if (_flatten)
                 {
-                    StringifyFormatter f;
-                    result = _m(s.pretty_print_flat(f));
+                    result = _m(s.pretty_print_value(UnformattedPrettyPrinter(), { }));
                 }
                 else
                 {
@@ -450,8 +445,7 @@ namespace
             {
                 if (_flatten)
                 {
-                    StringifyFormatter f;
-                    result = _m(s.pretty_print_flat(f));
+                    result = _m(s.pretty_print_value(UnformattedPrettyPrinter(), { }));
                 }
                 else
                 {
@@ -465,8 +459,7 @@ namespace
             {
                 if (_flatten)
                 {
-                    StringifyFormatter f;
-                    result = _m(s.pretty_print_flat(f));
+                    result = _m(s.pretty_print_value(UnformattedPrettyPrinter(), { }));
                 }
                 else
                 {

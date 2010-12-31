@@ -195,8 +195,6 @@ namespace metadata_key
     {
         test_metadata_key(m);
         m.value();
-        StringifyFormatter ff;
-        m.pretty_print_flat(ff);
     }
 
     template <typename C_>
@@ -204,9 +202,6 @@ namespace metadata_key
     {
         test_metadata_key(m);
         m.value();
-        StringifyFormatter ff;
-        m.pretty_print(ff);
-        m.pretty_print_flat(ff);
     }
 
     template <>
@@ -214,9 +209,6 @@ namespace metadata_key
     {
         test_metadata_key(m);
         m.value();
-        StringifyFormatter ff;
-        m.pretty_print(ff);
-        m.pretty_print_flat(ff);
         m.initial_label();
     }
 }

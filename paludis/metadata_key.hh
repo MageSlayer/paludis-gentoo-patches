@@ -185,75 +185,6 @@ namespace paludis
     };
 
     /**
-     * Extra methods for MetadataValueKey with certain item types.
-     *
-     * \ingroup g_metadata_key
-     * \since 0.26
-     */
-    template <typename C_>
-    class ExtraMetadataValueKeyMethods
-    {
-    };
-
-    /**
-     * Extra methods for MetadataValueKey with long value type.
-     *
-     * \ingroup g_metadata_key
-     * \since 0.26
-     */
-    template <>
-    class PALUDIS_VISIBLE ExtraMetadataValueKeyMethods<long>
-    {
-        public:
-            virtual ~ExtraMetadataValueKeyMethods() = 0;
-
-            /**
-             * Return a formatted version of our value.
-             */
-            virtual std::string pretty_print() const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-    };
-
-    /**
-     * Extra methods for MetadataValueKey with bool value type.
-     *
-     * \ingroup g_metadata_key
-     * \since 0.26
-     */
-    template <>
-    class PALUDIS_VISIBLE ExtraMetadataValueKeyMethods<bool>
-    {
-        public:
-            virtual ~ExtraMetadataValueKeyMethods() = 0;
-
-            /**
-             * Return a formatted version of our value.
-             */
-            virtual std::string pretty_print() const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-    };
-
-    /**
-     * Extra methods for MetadataValueKey with PackageID value type.
-     *
-     * \ingroup g_metadata_key
-     * \since 0.26
-     */
-    template <>
-    class PALUDIS_VISIBLE ExtraMetadataValueKeyMethods<std::shared_ptr<const PackageID> >
-    {
-        public:
-            virtual ~ExtraMetadataValueKeyMethods() = 0;
-
-            /**
-             * Return a formatted version of our value, using the supplied Formatter to
-             * format the item.
-             */
-            virtual std::string pretty_print(const Formatter<PackageID> &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-    };
-
-    /**
      * Selects whether a MetadataValueKey instantiation is a
      * PrettyPrintableMetadataKey.
      *
@@ -295,8 +226,7 @@ namespace paludis
     template <typename C_>
     class PALUDIS_VISIBLE MetadataValueKey :
         public std::conditional<MetadataValueKeyIsPrettyPrintable<C_>::value, PrettyPrintableMetadataKey, MetadataKey>::type,
-        public ImplementAcceptMethods<MetadataKey, MetadataValueKey<C_> >,
-        public virtual ExtraMetadataValueKeyMethods<C_>
+        public ImplementAcceptMethods<MetadataKey, MetadataValueKey<C_> >
     {
         public:
             virtual ~MetadataValueKey() = 0;
@@ -353,14 +283,6 @@ namespace paludis
              */
             virtual const std::shared_ptr<const C_> value() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            /**
-             * Return a single-line formatted version of our value, using the
-             * supplied Formatter to format individual items.
-             */
-            virtual std::string pretty_print_flat(const Formatter<
-                    typename std::remove_const<typename RemoveSharedPtr<typename C_::value_type>::Type>::type> &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 
     /**
@@ -383,20 +305,6 @@ namespace paludis
              * Fetch our value.
              */
             virtual const std::shared_ptr<const C_> value() const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            /**
-             * Return a multiline-line indented and formatted version of our
-             * value, using the supplied Formatter to format individual items.
-             */
-            virtual std::string pretty_print(const typename C_::ItemFormatter &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            /**
-             * Return a single-line formatted version of our value, using the
-             * supplied Formatter to format individual items.
-             */
-            virtual std::string pretty_print_flat(const typename C_::ItemFormatter &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 
@@ -423,20 +331,6 @@ namespace paludis
              * Fetch our value.
              */
             virtual const std::shared_ptr<const FetchableURISpecTree> value() const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            /**
-             * Return a multiline-line indented and formatted version of our
-             * value, using the supplied Formatter to format individual items.
-             */
-            virtual std::string pretty_print(const FetchableURISpecTree::ItemFormatter &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            /**
-             * Return a single-line formatted version of our value, using the
-             * supplied Formatter to format individual items.
-             */
-            virtual std::string pretty_print_flat(const FetchableURISpecTree::ItemFormatter &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
@@ -470,20 +364,6 @@ namespace paludis
              * Fetch our value.
              */
             virtual const std::shared_ptr<const DependencySpecTree> value() const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            /**
-             * Return a multiline-line indented and formatted version of our
-             * value, using the supplied Formatter to format individual items.
-             */
-            virtual std::string pretty_print(const DependencySpecTree::ItemFormatter &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            /**
-             * Return a single-line formatted version of our value, using the
-             * supplied Formatter to format individual items.
-             */
-            virtual std::string pretty_print_flat(const DependencySpecTree::ItemFormatter &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**

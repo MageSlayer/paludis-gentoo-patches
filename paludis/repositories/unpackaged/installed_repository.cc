@@ -50,6 +50,7 @@
 #include <paludis/hook.hh>
 #include <paludis/common_sets.hh>
 #include <paludis/package_database.hh>
+#include <paludis/unformatted_pretty_printer.hh>
 #include <sstream>
 #include <sys/time.h>
 
@@ -347,15 +348,13 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
     if (m.package_id()->build_dependencies_key())
     {
         SafeOFStream build_dependencies_file(target_ver_dir / "build_dependencies", -1, true);
-        StringifyFormatter f;
-        build_dependencies_file << m.package_id()->build_dependencies_key()->pretty_print_flat(f) << std::endl;
+        build_dependencies_file << m.package_id()->build_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }) << std::endl;
     }
 
     if (m.package_id()->run_dependencies_key())
     {
         SafeOFStream run_dependencies_file(target_ver_dir / "run_dependencies", -1, true);
-        StringifyFormatter f;
-        run_dependencies_file << m.package_id()->run_dependencies_key()->pretty_print_flat(f) << std::endl;
+        run_dependencies_file << m.package_id()->run_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }) << std::endl;
     }
 
     NDBAMMerger merger(

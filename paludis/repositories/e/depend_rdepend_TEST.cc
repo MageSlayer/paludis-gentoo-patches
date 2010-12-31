@@ -35,6 +35,7 @@
 #include <paludis/filter.hh>
 #include <paludis/stringify_formatter.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/unformatted_pretty_printer.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 
@@ -153,17 +154,15 @@ namespace
                         n::want_phase() = &want_all_phases
                     ));
 
-            StringifyFormatter f;
-
             {
                 std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Package(
                                 QualifiedPackageName("cat/eapi" + eapi + "donly")))]->begin());
 
-                TEST_CHECK_EQUAL(id->build_dependencies_key()->pretty_print_flat(f), "the/depend");
+                TEST_CHECK_EQUAL(id->build_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }), "the/depend");
                 if (special)
-                    TEST_CHECK_EQUAL(id->run_dependencies_key()->pretty_print_flat(f), "the/depend");
+                    TEST_CHECK_EQUAL(id->run_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }), "the/depend");
                 else
-                    TEST_CHECK_EQUAL(id->run_dependencies_key()->pretty_print_flat(f), "");
+                    TEST_CHECK_EQUAL(id->run_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }), "");
 
                 id->perform_action(action);
 
@@ -173,19 +172,19 @@ namespace
                                 QualifiedPackageName("cat/eapi" + eapi + "donly")) |
                             filter::InstalledAtRoot(root))]->begin());
 
-                TEST_CHECK_EQUAL(v_id->build_dependencies_key()->pretty_print_flat(f), "the/depend");
+                TEST_CHECK_EQUAL(v_id->build_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }), "the/depend");
                 if (special)
-                    TEST_CHECK_EQUAL(v_id->run_dependencies_key()->pretty_print_flat(f), "the/depend");
+                    TEST_CHECK_EQUAL(v_id->run_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }), "the/depend");
                 else
-                    TEST_CHECK_EQUAL(v_id->run_dependencies_key()->pretty_print_flat(f), "");
+                    TEST_CHECK_EQUAL(v_id->run_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }), "");
             }
 
             {
                 std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Package(
                                 QualifiedPackageName("cat/eapi" + eapi + "ronly")))]->begin());
 
-                TEST_CHECK_EQUAL(id->build_dependencies_key()->pretty_print_flat(f), "");
-                TEST_CHECK_EQUAL(id->run_dependencies_key()->pretty_print_flat(f), "the/rdepend");
+                TEST_CHECK_EQUAL(id->build_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }), "");
+                TEST_CHECK_EQUAL(id->run_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }), "the/rdepend");
 
                 id->perform_action(action);
 
@@ -195,16 +194,16 @@ namespace
                                 QualifiedPackageName("cat/eapi" + eapi + "ronly")) |
                             filter::InstalledAtRoot(root))]->begin());
 
-                TEST_CHECK_EQUAL(v_id->build_dependencies_key()->pretty_print_flat(f), "");
-                TEST_CHECK_EQUAL(v_id->run_dependencies_key()->pretty_print_flat(f), "the/rdepend");
+                TEST_CHECK_EQUAL(v_id->build_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }), "");
+                TEST_CHECK_EQUAL(v_id->run_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }), "the/rdepend");
             }
 
             {
                 std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Package(
                                 QualifiedPackageName("cat/eapi" + eapi + "both")))]->begin());
 
-                TEST_CHECK_EQUAL(id->build_dependencies_key()->pretty_print_flat(f), "the/depend");
-                TEST_CHECK_EQUAL(id->run_dependencies_key()->pretty_print_flat(f), "the/rdepend");
+                TEST_CHECK_EQUAL(id->build_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }), "the/depend");
+                TEST_CHECK_EQUAL(id->run_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }), "the/rdepend");
 
                 id->perform_action(action);
 
@@ -214,8 +213,8 @@ namespace
                                 QualifiedPackageName("cat/eapi" + eapi + "both")) |
                             filter::InstalledAtRoot(root))]->begin());
 
-                TEST_CHECK_EQUAL(v_id->build_dependencies_key()->pretty_print_flat(f), "the/depend");
-                TEST_CHECK_EQUAL(v_id->run_dependencies_key()->pretty_print_flat(f), "the/rdepend");
+                TEST_CHECK_EQUAL(v_id->build_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }), "the/depend");
+                TEST_CHECK_EQUAL(v_id->run_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }), "the/rdepend");
             }
         }
     };

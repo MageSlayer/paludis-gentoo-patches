@@ -23,6 +23,7 @@
 #include "command_command_line.hh"
 #include "colours.hh"
 #include "colour_formatter.hh"
+#include "colour_pretty_printer.hh"
 #include "format_user_config.hh"
 #include <paludis/args/do_help.hh>
 #include <paludis/util/safe_ifstream.hh>
@@ -523,7 +524,7 @@ namespace
     }
 
     void display_choices(
-            const std::shared_ptr<Environment> &,
+            const std::shared_ptr<Environment> & env,
             const DisplayResolutionCommandLine & cmdline,
             const std::shared_ptr<const PackageID> & id,
             const std::shared_ptr<const WhyChangedChoices> & changed_choices,
@@ -534,7 +535,7 @@ namespace
         if (! id->choices_key())
             return;
 
-        ColourFormatter formatter(0);
+        ColourPrettyPrinter printer(env.get(), id, 0);
 
         std::shared_ptr<const Choices> old_choices;
         if (old_id && old_id->choices_key())
@@ -581,16 +582,16 @@ namespace
                 if ((changed_state.is_indeterminate() && (*i)->enabled()) || (changed_state.is_true()))
                 {
                     if ((*i)->locked())
-                        t = formatter.format(**i, format::Forced());
+                        t = printer.prettify_choice_value_forced(*i);
                     else
-                        t = formatter.format(**i, format::Enabled());
+                        t = printer.prettify_choice_value_enabled(*i);
                 }
                 else
                 {
                     if ((*i)->locked())
-                        t = formatter.format(**i, format::Masked());
+                        t = printer.prettify_choice_value_masked(*i);
                     else
-                        t = formatter.format(**i, format::Disabled());
+                        t = printer.prettify_choice_value_disabled(*i);
                 }
 
                 bool changed(false), added(false);
@@ -610,13 +611,11 @@ namespace
                 }
 
                 if (changed)
-                {
-                    t = formatter.decorate(**i, t, format::Changed());
-                }
+                    t = t + "*";
                 else if (added)
                 {
                     if (old_id)
-                        t = formatter.decorate(**i, t, format::Added());
+                        t = t + "+";
                 }
 
                 s_prefix.first.append(t);
@@ -866,6 +865,8 @@ namespace
 
     struct MaskedByKeyVisitor
     {
+        const Environment * const env;
+        const std::shared_ptr<const PackageID> id;
         const std::string indent;
 
         void visit(const MetadataValueKey<std::shared_ptr<const PackageID> > & k)
@@ -923,91 +924,93 @@ namespace
 
         void visit(const MetadataCollectionKey<Set<std::string> > & k)
         {
-            ColourFormatter formatter(0);
-            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.pretty_print_flat(formatter))));
+            ColourPrettyPrinter printer(env, id, 0);
+            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.pretty_print_value(printer, { }))));
         }
 
         void visit(const MetadataCollectionKey<Map<std::string, std::string> > & k)
         {
-            ColourFormatter formatter(0);
-            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.pretty_print_flat(formatter))));
+            ColourPrettyPrinter printer(env, id, 0);
+            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.pretty_print_value(printer, { }))));
         }
 
         void visit(const MetadataCollectionKey<Sequence<std::string> > & k)
         {
-            ColourFormatter formatter(0);
-            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.pretty_print_flat(formatter))));
+            ColourPrettyPrinter printer(env, id, 0);
+            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.pretty_print_value(printer, { }))));
         }
 
         void visit(const MetadataCollectionKey<FSPathSequence> & k)
         {
-            ColourFormatter formatter(0);
-            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.pretty_print_flat(formatter))));
+            ColourPrettyPrinter printer(env, id, 0);
+            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.pretty_print_value(printer, { }))));
         }
 
         void visit(const MetadataCollectionKey<PackageIDSequence> & k)
         {
-            ColourFormatter formatter(0);
-            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.pretty_print_flat(formatter))));
+            ColourPrettyPrinter printer(env, id, 0);
+            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.pretty_print_value(printer, { }))));
         }
 
         void visit(const MetadataSpecTreeKey<FetchableURISpecTree> & k)
         {
-            ColourFormatter formatter(0);
-            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.pretty_print_flat(formatter))));
+            ColourPrettyPrinter printer(env, id, 0);
+            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.pretty_print_value(printer, { }))));
         }
 
         void visit(const MetadataSpecTreeKey<SimpleURISpecTree> & k)
         {
-            ColourFormatter formatter(0);
-            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.pretty_print_flat(formatter))));
+            ColourPrettyPrinter printer(env, id, 0);
+            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.pretty_print_value(printer, { }))));
         }
 
         void visit(const MetadataSpecTreeKey<LicenseSpecTree> & k)
         {
-            ColourFormatter formatter(0);
-            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.pretty_print_flat(formatter))));
+            ColourPrettyPrinter printer(env, id, 0);
+            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.pretty_print_value(printer, { }))));
         }
 
         void visit(const MetadataSpecTreeKey<DependencySpecTree> & k)
         {
-            ColourFormatter formatter(0);
-            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.pretty_print_flat(formatter))));
+            ColourPrettyPrinter printer(env, id, 0);
+            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.pretty_print_value(printer, { }))));
         }
 
         void visit(const MetadataCollectionKey<KeywordNameSet> & k)
         {
-            ColourFormatter formatter(0);
-            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.pretty_print_flat(formatter))));
+            ColourPrettyPrinter printer(env, id, 0);
+            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.pretty_print_value(printer, { }))));
         }
 
         void visit(const MetadataSpecTreeKey<ProvideSpecTree> & k)
         {
-            ColourFormatter formatter(0);
-            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.pretty_print_flat(formatter))));
+            ColourPrettyPrinter printer(env, id, 0);
+            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.pretty_print_value(printer, { }))));
         }
 
         void visit(const MetadataSpecTreeKey<PlainTextSpecTree> & k)
         {
-            ColourFormatter formatter(0);
-            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.pretty_print_flat(formatter))));
+            ColourPrettyPrinter printer(env, id, 0);
+            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.pretty_print_value(printer, { }))));
         }
 
         void visit(const MetadataSpecTreeKey<RequiredUseSpecTree> & k)
         {
-            ColourFormatter formatter(0);
-            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.pretty_print_flat(formatter))));
+            ColourPrettyPrinter printer(env, id, 0);
+            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.pretty_print_value(printer, { }))));
         }
 
         void visit(const MetadataValueKey<std::shared_ptr<const Choices> > & k)
         {
-            ColourFormatter formatter(0);
+            ColourPrettyPrinter printer(env, id, 0);
             cout << fuc(fs_mask_by_valueless(), fv<'i'>(indent), fv<'k'>(k.human_name()));
         }
     };
 
     struct MaskedByVisitor
     {
+        const Environment * const env;
+        const std::shared_ptr<const PackageID> id;
         const std::string colour;
         const std::string indent;
 
@@ -1019,7 +1022,7 @@ namespace
         void visit(const RepositoryMask & m) const
         {
             cout << fuc(fs_masked_by(), fv<'i'>(indent), fv<'c'>(colour), fv<'d'>(m.description()));
-            MaskedByKeyVisitor v{indent + "    "};
+            MaskedByKeyVisitor v{env, id, indent + "    "};
             if (m.mask_key())
                 m.mask_key()->accept(v);
         }
@@ -1027,7 +1030,7 @@ namespace
         void visit(const UnacceptedMask & m) const
         {
             cout << fuc(fs_masked_by(), fv<'i'>(indent), fv<'c'>(colour), fv<'d'>(m.description()));
-            MaskedByKeyVisitor v{indent + "    "};
+            MaskedByKeyVisitor v{env, id, indent + "    "};
             if (m.unaccepted_key())
                 m.unaccepted_key()->accept(v);
         }
@@ -1045,7 +1048,7 @@ namespace
     };
 
     void display_masks(
-            const std::shared_ptr<Environment> &,
+            const std::shared_ptr<Environment> & env,
             const ChangesToMakeDecision & decision)
     {
         if (! decision.origin_id()->masked())
@@ -1053,7 +1056,7 @@ namespace
 
         for (auto m(decision.origin_id()->begin_masks()), m_end(decision.origin_id()->end_masks()) ;
                 m != m_end ; ++m)
-            (*m)->accept(MaskedByVisitor{c::bold_red().colour_string(), "    "});
+            (*m)->accept(MaskedByVisitor{env.get(), decision.origin_id(), c::bold_red().colour_string(), "    "});
     }
 
     struct Totals
@@ -1398,7 +1401,7 @@ namespace
             for (PackageID::MasksConstIterator m(u->package_id()->begin_masks()),
                     m_end(u->package_id()->end_masks()) ;
                     m != m_end ; ++m)
-                (*m)->accept(MaskedByVisitor{"", "        "});
+                (*m)->accept(MaskedByVisitor{env.get(), u->package_id(), "", "        "});
 
             std::set<std::string> duplicates;
             for (Constraints::ConstIterator c(u->unmet_constraints()->begin()),

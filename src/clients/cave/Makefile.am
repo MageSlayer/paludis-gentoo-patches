@@ -119,6 +119,7 @@ noinst_LIBRARIES = libcave.a
 # See note above for adding commands
 libcave_a_SOURCES = \
 	colour_formatter.cc colour_formatter.hh colour_formatter-fmt.hh \
+	colour_pretty_printer.cc colour_pretty_printer.hh colour_pretty_printer-fmt.hh \
 	command.cc command.hh \
 	command_line.cc command_line.hh \
 	command_command_line.cc command_command_line.hh \

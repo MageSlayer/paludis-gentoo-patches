@@ -102,80 +102,67 @@ namespace
 
         void visit(const MetadataSpecTreeKey<PlainTextSpecTree> & k)
         {
-            StringifyFormatter f;
-            std::cout << k.pretty_print_flat(f) << std::endl;
+            std::cout << k.pretty_print_value(UnformattedPrettyPrinter(), { }) << std::endl;
         }
 
         void visit(const MetadataSpecTreeKey<RequiredUseSpecTree> & k)
         {
-            StringifyFormatter f;
-            std::cout << k.pretty_print_flat(f) << std::endl;
+            std::cout << k.pretty_print_value(UnformattedPrettyPrinter(), { }) << std::endl;
         }
 
         void visit(const MetadataSpecTreeKey<ProvideSpecTree> & k)
         {
-            StringifyFormatter f;
-            std::cout << k.pretty_print_flat(f) << std::endl;
+            std::cout << k.pretty_print_value(UnformattedPrettyPrinter(), { }) << std::endl;
         }
 
         void visit(const MetadataSpecTreeKey<FetchableURISpecTree> & k)
         {
-            StringifyFormatter f;
-            std::cout << k.pretty_print_flat(f) << std::endl;
+            std::cout << k.pretty_print_value(UnformattedPrettyPrinter(), { }) << std::endl;
         }
 
         void visit(const MetadataSpecTreeKey<DependencySpecTree> & k)
         {
-            StringifyFormatter f;
-            std::cout << k.pretty_print_flat(f) << std::endl;
+            std::cout << k.pretty_print_value(UnformattedPrettyPrinter(), { }) << std::endl;
         }
 
         void visit(const MetadataSpecTreeKey<SimpleURISpecTree> & k)
         {
-            StringifyFormatter f;
-            std::cout << k.pretty_print_flat(f) << std::endl;
+            std::cout << k.pretty_print_value(UnformattedPrettyPrinter(), { }) << std::endl;
         }
 
         void visit(const MetadataSpecTreeKey<LicenseSpecTree> & k)
         {
-            StringifyFormatter f;
-            std::cout << k.pretty_print_flat(f) << std::endl;
+            std::cout << k.pretty_print_value(UnformattedPrettyPrinter(), { }) << std::endl;
         }
 
         void visit(const MetadataCollectionKey<FSPathSequence> & k)
         {
-            StringifyFormatter f;
-            std::cout << k.pretty_print_flat(f) << std::endl;
+            std::cout << k.pretty_print_value(UnformattedPrettyPrinter(), { }) << std::endl;
         }
 
         void visit(const MetadataCollectionKey<PackageIDSequence> & k)
         {
-            StringifyFormatter f;
-            std::cout << k.pretty_print_flat(f) << std::endl;
+            std::cout << k.pretty_print_value(UnformattedPrettyPrinter(), { }) << std::endl;
         }
 
         void visit(const MetadataCollectionKey<KeywordNameSet> & k)
         {
-            StringifyFormatter f;
-            std::cout << k.pretty_print_flat(f) << std::endl;
+            std::cout << k.pretty_print_value(UnformattedPrettyPrinter(), { }) << std::endl;
         }
 
         void visit(const MetadataCollectionKey<Set<std::string> > & k)
         {
-            StringifyFormatter f;
-            std::cout << k.pretty_print_flat(f) << std::endl;
+            std::cout << k.pretty_print_value(UnformattedPrettyPrinter(), { }) << std::endl;
         }
 
         void visit(const MetadataCollectionKey<Map<std::string, std::string> > & k)
         {
-            StringifyFormatter f;
-            std::cout << k.pretty_print_flat(f) << std::endl;
+            std::cout << k.pretty_print_value(UnformattedPrettyPrinter(), { }) << std::endl;
         }
 
         void visit(const MetadataCollectionKey<Sequence<std::string> > & k)
         {
-            StringifyFormatter f;
-            std::cout << k.pretty_print_flat(f) << std::endl;
+            std::cout << k.pretty_print_value(UnformattedPrettyPrinter(), { }) << std::endl;
         }
 
         void visit(const MetadataValueKey<std::shared_ptr<const PackageID> > & k)

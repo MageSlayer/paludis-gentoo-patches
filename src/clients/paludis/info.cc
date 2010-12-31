@@ -21,6 +21,7 @@
 #include "command_line.hh"
 #include "src/output/colour.hh"
 #include "src/output/colour_formatter.hh"
+#include "src/output/colour_pretty_printer.hh"
 #include <paludis/about.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/util/sequence.hh>
@@ -33,6 +34,7 @@
 #include <paludis/util/timestamp.hh>
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/process.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/package_database.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_id.hh>
@@ -75,9 +77,11 @@ namespace
 
     struct InfoDisplayer
     {
+        const Environment * const env;
         std::string indent;
 
-        InfoDisplayer(const std::string & i) :
+        InfoDisplayer(const Environment * const e, const std::string & i) :
+            env(e),
             indent(i)
         {
         }
@@ -88,7 +92,7 @@ namespace
             cout << indent << colour(cl_heading, k.human_name() + ":") << endl;
             std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator > keys(
                     k.begin_metadata(), k.end_metadata());
-            InfoDisplayer i(indent + "    ");
+            InfoDisplayer i(env, indent + "    ");
             for (std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
                     e(keys.begin()), e_end(keys.end()) ; e != e_end ; ++e)
                 if ((*e)->type() != mkt_internal)
@@ -143,80 +147,80 @@ namespace
 
         void visit(const MetadataSpecTreeKey<PlainTextSpecTree> & k)
         {
-            ColourFormatter f;
-            cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.pretty_print_flat(f) << endl;
+            ColourPrettyPrinter printer(env, make_null_shared_ptr());
+            cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.pretty_print_value(printer, { }) << endl;
         }
 
         void visit(const MetadataSpecTreeKey<RequiredUseSpecTree> & k)
         {
-            ColourFormatter f;
-            cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.pretty_print_flat(f) << endl;
+            ColourPrettyPrinter printer(env, make_null_shared_ptr());
+            cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.pretty_print_value(printer, { }) << endl;
         }
 
         void visit(const MetadataSpecTreeKey<LicenseSpecTree> & k)
         {
-            ColourFormatter f;
-            cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.pretty_print_flat(f) << endl;
+            ColourPrettyPrinter printer(env, make_null_shared_ptr());
+            cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.pretty_print_value(printer, { }) << endl;
         }
 
         void visit(const MetadataSpecTreeKey<FetchableURISpecTree> & k)
         {
-            ColourFormatter f;
-            cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.pretty_print_flat(f) << endl;
+            ColourPrettyPrinter printer(env, make_null_shared_ptr());
+            cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.pretty_print_value(printer, { }) << endl;
         }
 
         void visit(const MetadataSpecTreeKey<SimpleURISpecTree> & k)
         {
-            ColourFormatter f;
-            cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.pretty_print_flat(f) << endl;
+            ColourPrettyPrinter printer(env, make_null_shared_ptr());
+            cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.pretty_print_value(printer, { }) << endl;
         }
 
         void visit(const MetadataSpecTreeKey<DependencySpecTree> & k)
         {
-            ColourFormatter f;
-            cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.pretty_print_flat(f) << endl;
+            ColourPrettyPrinter printer(env, make_null_shared_ptr());
+            cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.pretty_print_value(printer, { }) << endl;
         }
 
         void visit(const MetadataSpecTreeKey<ProvideSpecTree> & k)
         {
-            ColourFormatter f;
-            cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.pretty_print_flat(f) << endl;
+            ColourPrettyPrinter printer(env, make_null_shared_ptr());
+            cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.pretty_print_value(printer, { }) << endl;
         }
 
         void visit(const MetadataCollectionKey<FSPathSequence> & k)
         {
-            ColourFormatter f;
-            cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.pretty_print_flat(f) << endl;
+            ColourPrettyPrinter printer(env, make_null_shared_ptr());
+            cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.pretty_print_value(printer, { }) << endl;
         }
 
         void visit(const MetadataCollectionKey<PackageIDSequence> & k)
         {
-            ColourFormatter f;
-            cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.pretty_print_flat(f) << endl;
+            ColourPrettyPrinter printer(env, make_null_shared_ptr());
+            cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.pretty_print_value(printer, { }) << endl;
         }
 
         void visit(const MetadataCollectionKey<KeywordNameSet> & k)
         {
-            ColourFormatter f;
-            cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.pretty_print_flat(f) << endl;
+            ColourPrettyPrinter printer(env, make_null_shared_ptr());
+            cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.pretty_print_value(printer, { }) << endl;
         }
 
         void visit(const MetadataCollectionKey<Set<std::string> > & k)
         {
-            ColourFormatter f;
-            cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.pretty_print_flat(f) << endl;
+            ColourPrettyPrinter printer(env, make_null_shared_ptr());
+            cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.pretty_print_value(printer, { }) << endl;
         }
 
         void visit(const MetadataCollectionKey<Map<std::string, std::string> > & k)
         {
-            ColourFormatter f;
-            cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.pretty_print_flat(f) << endl;
+            ColourPrettyPrinter printer(env, make_null_shared_ptr());
+            cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.pretty_print_value(printer, { }) << endl;
         }
 
         void visit(const MetadataCollectionKey<Sequence<std::string> > & k)
         {
-            ColourFormatter f;
-            cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.pretty_print_flat(f) << endl;
+            ColourPrettyPrinter printer(env, make_null_shared_ptr());
+            cout << std::setw(30) << (indent + k.human_name() + ":") << " " << k.pretty_print_value(printer, { }) << endl;
         }
 
         void visit(const MetadataValueKey<std::shared_ptr<const Choices> > & k)
@@ -357,7 +361,7 @@ do_info(const std::shared_ptr<const Environment> & env)
         cout << colour(cl_heading, "Environment:") << endl;
         std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator> keys(
                 env->begin_metadata(), env->end_metadata());
-        InfoDisplayer i("    ");
+        InfoDisplayer i(env.get(), "    ");
         for (std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
                 k(keys.begin()), k_end(keys.end()) ; k != k_end ; ++k)
             if ((*k)->type() != mkt_internal)
@@ -371,7 +375,7 @@ do_info(const std::shared_ptr<const Environment> & env)
     {
         cout << "Repository " << colour(cl_repository_name, r->name()) << ":" << endl;
         std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator> keys(r->begin_metadata(), r->end_metadata());
-        InfoDisplayer i("    ");
+        InfoDisplayer i(env.get(), "    ");
         for (std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
                 k(keys.begin()), k_end(keys.end()) ; k != k_end ; ++k)
             if ((*k)->type() != mkt_internal)

@@ -114,13 +114,6 @@ how concepts map on to different language bindings.</p>
         <td>How to use EnvironmentFactory and the resultant Environment</td>
     </tr>
     <tr>
-        <td>example_formatter</td>
-        <td><a href="cplusplus/examples.html">C++</a></td>
-        <td></td>
-        <td></td>
-        <td>How to create a formatter</td>
-    </tr>
-    <tr>
         <td>example_mask</td>
         <td><a href="cplusplus/examples.html">C++</a></td>
         <td><a href="ruby/example_mask.html">Ruby</a></td>
@@ -175,13 +168,6 @@ how concepts map on to different language bindings.</p>
         <td><a href="ruby/example_selection.html">Ruby</a></td>
         <td></td>
         <td>How to use the standard Selection, Generator and Filter classes</td>
-    </tr>
-    <tr>
-        <td>example_stringify_formatter</td>
-        <td><a href="cplusplus/examples.html">C++</a></td>
-        <td></td>
-        <td></td>
-        <td>How to use StringifyFormatter</td>
     </tr>
     <tr>
         <td>example_version_operator</td>

@@ -20,6 +20,7 @@
 #include "console_query_task.hh"
 #include "mask_displayer.hh"
 #include "colour_formatter.hh"
+#include "colour_pretty_printer.hh"
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/set.hh>
@@ -333,16 +334,16 @@ namespace
             {
                 if (k.type() == type)
                 {
-                    ColourFormatter formatter;
+                    ColourPrettyPrinter printer(env, id);
                     if (task->want_raw())
                     {
                         task->output_left_column(k.raw_name() + ":", in);
-                        task->output_right_column(k.pretty_print_flat(formatter));
+                        task->output_right_column(k.pretty_print_value(printer, { }));
                     }
                     else
                     {
                         task->output_left_column(k.human_name() + ":", in);
-                        task->output_right_column(k.pretty_print_flat(formatter));
+                        task->output_right_column(k.pretty_print_value(printer, { }));
                     }
                 }
             }
@@ -351,16 +352,16 @@ namespace
             {
                 if (k.type() == type)
                 {
-                    ColourFormatter formatter;
+                    ColourPrettyPrinter printer(env, id);
                     if (task->want_raw())
                     {
                         task->output_left_column(k.raw_name() + ":", in);
-                        task->output_right_column(k.pretty_print_flat(formatter));
+                        task->output_right_column(k.pretty_print_value(printer, { }));
                     }
                     else
                     {
                         task->output_left_column(k.human_name() + ":", in);
-                        task->output_right_column(k.pretty_print_flat(formatter));
+                        task->output_right_column(k.pretty_print_value(printer, { }));
                     }
                 }
             }
@@ -369,16 +370,16 @@ namespace
             {
                 if (k.type() == type)
                 {
-                    ColourFormatter formatter;
+                    ColourPrettyPrinter printer(env, id);
                     if (task->want_raw())
                     {
                         task->output_left_column(k.raw_name() + ":", in);
-                        task->output_right_column(k.pretty_print_flat(formatter));
+                        task->output_right_column(k.pretty_print_value(printer, { }));
                     }
                     else
                     {
                         task->output_left_column(k.human_name() + ":", in);
-                        task->output_right_column(k.pretty_print_flat(formatter));
+                        task->output_right_column(k.pretty_print_value(printer, { }));
                     }
                 }
             }
@@ -387,16 +388,16 @@ namespace
             {
                 if (k.type() == type)
                 {
-                    ColourFormatter formatter;
+                    ColourPrettyPrinter printer(env, id);
                     if (task->want_raw())
                     {
                         task->output_left_column(k.raw_name() + ":", in);
-                        task->output_right_column(k.pretty_print_flat(formatter));
+                        task->output_right_column(k.pretty_print_value(printer, { }));
                     }
                     else
                     {
                         task->output_left_column(k.human_name() + ":", in);
-                        task->output_right_column(k.pretty_print_flat(formatter));
+                        task->output_right_column(k.pretty_print_value(printer, { }));
                     }
                 }
             }
@@ -405,16 +406,16 @@ namespace
             {
                 if (k.type() == type)
                 {
-                    ColourFormatter formatter;
+                    ColourPrettyPrinter printer(env, id);
                     if (task->want_raw())
                     {
                         task->output_left_column(k.raw_name() + ":", in);
-                        task->output_right_column(k.pretty_print_flat(formatter));
+                        task->output_right_column(k.pretty_print_value(printer, { }));
                     }
                     else
                     {
                         task->output_left_column(k.human_name() + ":", in);
-                        task->output_right_column(k.pretty_print_flat(formatter));
+                        task->output_right_column(k.pretty_print_value(printer, { }));
                     }
                 }
             }
@@ -423,17 +424,17 @@ namespace
             {
                 if (k.type() == type)
                 {
-                    ColourFormatter formatter;
+                    ColourPrettyPrinter printer(env, id);
                     if (task->want_raw())
                     {
                         task->output_left_column(k.raw_name() + ":", in);
-                        task->output_right_column(k.pretty_print_flat(formatter));
+                        task->output_right_column(k.pretty_print_value(printer, { }));
                     }
                     else
                     {
                         task->output_left_column(k.human_name() + ":", in);
                         task->output_right_column("");
-                        task->output_stream() << k.pretty_print(formatter);
+                        task->output_stream() << k.pretty_print_value(printer, { ppo_multiline_allowed });
                     }
                 }
             }
@@ -442,16 +443,16 @@ namespace
             {
                 if (k.type() == type)
                 {
-                    ColourFormatter formatter;
+                    ColourPrettyPrinter printer(env, id);
                     if (task->want_raw())
                     {
                         task->output_left_column(k.raw_name() + ":", in);
-                        task->output_right_column(k.pretty_print_flat(formatter));
+                        task->output_right_column(k.pretty_print_value(printer, { }));
                     }
                     else
                     {
                         task->output_left_column(k.human_name() + ":", in);
-                        task->output_stream() << k.pretty_print_flat(formatter);
+                        task->output_stream() << k.pretty_print_value(printer, { });
                         task->output_right_column("");
                     }
                 }
@@ -461,16 +462,16 @@ namespace
             {
                 if (k.type() == type)
                 {
-                    ColourFormatter formatter;
+                    ColourPrettyPrinter printer(env, id);
                     if (task->want_raw())
                     {
                         task->output_left_column(k.raw_name() + ":", in);
-                        task->output_right_column(k.pretty_print_flat(formatter));
+                        task->output_right_column(k.pretty_print_value(printer, { }));
                     }
                     else
                     {
                         task->output_left_column(k.human_name() + ":", in);
-                        task->output_stream() << k.pretty_print_flat(formatter);
+                        task->output_stream() << k.pretty_print_value(printer, { });
                         task->output_right_column("");
                     }
                 }
@@ -480,11 +481,11 @@ namespace
             {
                 if (k.type() == type)
                 {
-                    ColourFormatter formatter;
+                    ColourPrettyPrinter printer(env, id);
                     if (task->want_raw())
                     {
                         task->output_left_column(k.raw_name() + ":", in);
-                        task->output_right_column(k.pretty_print_flat(formatter));
+                        task->output_right_column(k.pretty_print_value(printer, { }));
                     }
                     else
                     {
@@ -494,10 +495,10 @@ namespace
                         if (is_complex)
                         {
                             task->output_right_column("");
-                            task->output_stream() << k.pretty_print(formatter);
+                            task->output_stream() << k.pretty_print_value(printer, { ppo_multiline_allowed });
                         }
                         else
-                            task->output_right_column(k.pretty_print_flat(formatter));
+                            task->output_right_column(k.pretty_print_value(printer, { }));
                     }
                 }
             }
@@ -506,17 +507,17 @@ namespace
             {
                 if (k.type() == type)
                 {
-                    ColourFormatter formatter;
+                    ColourPrettyPrinter printer(env, id);
                     if (task->want_raw())
                     {
                         task->output_left_column(k.raw_name() + ":", in);
-                        task->output_right_column(k.pretty_print_flat(formatter));
+                        task->output_right_column(k.pretty_print_value(printer, { }));
                     }
                     else
                     {
                         task->output_left_column(k.human_name() + ":", in);
                         task->output_right_column("");
-                        task->output_stream() << k.pretty_print(formatter);
+                        task->output_stream() << k.pretty_print_value(printer, { ppo_multiline_allowed });
                     }
                 }
             }
@@ -525,17 +526,17 @@ namespace
             {
                 if (k.type() == type)
                 {
-                    ColourFormatter formatter;
+                    ColourPrettyPrinter printer(env, id);
                     if (task->want_raw())
                     {
                         task->output_left_column(k.raw_name() + ":", in);
-                        task->output_right_column(k.pretty_print_flat(formatter));
+                        task->output_right_column(k.pretty_print_value(printer, { }));
                     }
                     else
                     {
                         task->output_left_column(k.human_name() + ":", in);
                         task->output_right_column("");
-                        task->output_stream() << k.pretty_print(formatter);
+                        task->output_stream() << k.pretty_print_value(printer, { ppo_multiline_allowed });
                     }
                 }
             }
@@ -544,17 +545,17 @@ namespace
             {
                 if (k.type() == type)
                 {
-                    ColourFormatter formatter;
+                    ColourPrettyPrinter printer(env, id);
                     if (task->want_raw())
                     {
                         task->output_left_column(k.raw_name() + ":", in);
-                        task->output_right_column(k.pretty_print_flat(formatter));
+                        task->output_right_column(k.pretty_print_value(printer, { }));
                     }
                     else
                     {
                         task->output_left_column(k.human_name() + ":", in);
                         task->output_right_column("");
-                        task->output_stream() << k.pretty_print(formatter);
+                        task->output_stream() << k.pretty_print_value(printer, { ppo_multiline_allowed });
                     }
                 }
             }
@@ -563,16 +564,16 @@ namespace
             {
                 if (k.type() == type)
                 {
-                    ColourFormatter formatter;
+                    ColourPrettyPrinter printer(env, id);
                     if (task->want_raw())
                     {
                         task->output_left_column(k.raw_name() + ":", in);
-                        task->output_right_column(k.pretty_print_flat(formatter));
+                        task->output_right_column(k.pretty_print_value(printer, { }));
                     }
                     else
                     {
                         task->output_left_column(k.human_name() + ":", in);
-                        task->output_right_column(k.pretty_print_flat(formatter));
+                        task->output_right_column(k.pretty_print_value(printer, { }));
                     }
                 }
             }
@@ -632,6 +633,7 @@ namespace
             {
                 if (k.type() == type)
                 {
+                    ColourPrettyPrinter printer(env, id);
                     if (task->want_raw())
                     {
                         task->output_left_column(k.raw_name() + ":", in);
@@ -640,7 +642,7 @@ namespace
                     else
                     {
                         task->output_left_column(k.human_name() + ":", in);
-                        task->output_right_column(k.pretty_print());
+                        task->output_right_column(k.pretty_print_value(printer, { }));
                     }
                 }
             }
@@ -649,6 +651,7 @@ namespace
             {
                 if (k.type() == type)
                 {
+                    ColourPrettyPrinter printer(env, id);
                     if (task->want_raw())
                     {
                         task->output_left_column(k.raw_name() + ":", in);
@@ -657,7 +660,7 @@ namespace
                     else
                     {
                         task->output_left_column(k.human_name() + ":", in);
-                        task->output_right_column(k.pretty_print());
+                        task->output_right_column(k.pretty_print_value(printer, { }));
                     }
                 }
             }
@@ -748,7 +751,7 @@ namespace
 
             void visit(const MetadataValueKey<std::shared_ptr<const Choices> > & k)
             {
-                ColourFormatter formatter;
+                ColourPrettyPrinter printer(env, id);
                 if (k.type() == type)
                 {
                     if (task->want_raw())
@@ -767,23 +770,7 @@ namespace
                                 if (! v.empty())
                                     v.append(" ");
 
-                                std::string t;
-                                if ((*i)->enabled())
-                                {
-                                    if ((*i)->locked())
-                                        t = formatter.format(**i, format::Forced());
-                                    else
-                                        t = formatter.format(**i, format::Enabled());
-                                }
-                                else
-                                {
-                                    if ((*i)->locked())
-                                        t = formatter.format(**i, format::Masked());
-                                    else
-                                        t = formatter.format(**i, format::Disabled());
-                                }
-
-                                v.append(t);
+                                v.append(printer.prettify(*i));
                             }
                             task->output_right_column(v);
                         }
@@ -821,23 +808,7 @@ namespace
                                 if (! s.empty())
                                     s.append(" ");
 
-                                std::string t;
-                                if ((*i)->enabled())
-                                {
-                                    if ((*i)->locked())
-                                        t = formatter.format(**i, format::Forced());
-                                    else
-                                        t = formatter.format(**i, format::Enabled());
-                                }
-                                else
-                                {
-                                    if ((*i)->locked())
-                                        t = formatter.format(**i, format::Masked());
-                                    else
-                                        t = formatter.format(**i, format::Disabled());
-                                }
-
-                                s.append(t);
+                                s.append(printer.prettify(*i));
                             }
                         }
 

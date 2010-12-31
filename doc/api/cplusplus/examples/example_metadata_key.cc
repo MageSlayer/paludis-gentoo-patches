@@ -45,10 +45,6 @@ namespace
     class MetadataKeyInformationVisitor
     {
         private:
-            /* Various methods need a formatter. See \ref example_stringify_formatter.cc
-             * "example_stringify_formatter.cc" for more details. */
-            StringifyFormatter formatter;
-
             /* Because of MetadataSectionKey, we can be called recursively. We add a level
              * of indenting each time. */
             std::string indent;
@@ -149,50 +145,50 @@ namespace
             void visit(const MetadataSpecTreeKey<PlainTextSpecTree> & key)
             {
                 cout << indent << left << setw(30) << "    Class:" << " " << "MetadataSpecTreeKey<PlainTextSpecTree>" << endl;
-                cout << indent << left << setw(30) << "    Value:" << " " << key.pretty_print_flat(formatter) << endl;
+                cout << indent << left << setw(30) << "    Value:" << " " << key.pretty_print_value(UnformattedPrettyPrinter(), { }) << endl;
             }
 
             void visit(const MetadataSpecTreeKey<RequiredUseSpecTree> & key)
             {
                 cout << indent << left << setw(30) << "    Class:" << " " << "MetadataSpecTreeKey<RequiredUseSpecTree>" << endl;
-                cout << indent << left << setw(30) << "    Value:" << " " << key.pretty_print_flat(formatter) << endl;
+                cout << indent << left << setw(30) << "    Value:" << " " << key.pretty_print_value(UnformattedPrettyPrinter(), { }) << endl;
             }
 
             void visit(const MetadataSpecTreeKey<ProvideSpecTree> & key)
             {
                 cout << indent << left << setw(30) << "    Class:" << " " << "MetadataSpecTreeKey<ProvideSpecTree>" << endl;
-                cout << indent << left << setw(30) << "    Value:" << " " << key.pretty_print_flat(formatter) << endl;
+                cout << indent << left << setw(30) << "    Value:" << " " << key.pretty_print_value(UnformattedPrettyPrinter(), { }) << endl;
             }
 
             void visit(const MetadataSpecTreeKey<LicenseSpecTree> & key)
             {
                 cout << indent << left << setw(30) << "    Class:" << " " << "MetadataSpecTreeKey<LicenseSpecTree>" << endl;
-                cout << indent << left << setw(30) << "    Value:" << " " << key.pretty_print_flat(formatter) << endl;
+                cout << indent << left << setw(30) << "    Value:" << " " << key.pretty_print_value(UnformattedPrettyPrinter(), { }) << endl;
             }
 
             void visit(const MetadataSpecTreeKey<SimpleURISpecTree> & key)
             {
                 cout << indent << left << setw(30) << "    Class:" << " " << "MetadataSpecTreeKey<SimpleURISpecTree>" << endl;
-                cout << indent << left << setw(30) << "    Value:" << " " << key.pretty_print_flat(formatter) << endl;
+                cout << indent << left << setw(30) << "    Value:" << " " << key.pretty_print_value(UnformattedPrettyPrinter(), { }) << endl;
             }
 
             void visit(const MetadataSpecTreeKey<DependencySpecTree> & key)
             {
                 cout << indent << left << setw(30) << "    Class:" << " " << "MetadataSpecTreeKey<DependencySpecTree>" << endl;
-                cout << indent << left << setw(30) << "    Value:" << " " << key.pretty_print_flat(formatter) << endl;
+                cout << indent << left << setw(30) << "    Value:" << " " << key.pretty_print_value(UnformattedPrettyPrinter(), { }) << endl;
             }
 
             void visit(const MetadataSpecTreeKey<FetchableURISpecTree> & key)
             {
                 cout << indent << left << setw(30) << "    Class:" << " " << "MetadataSpecTreeKey<FetchableURISpecTree>" << endl;
-                cout << indent << left << setw(30) << "    Value:" << " " << key.pretty_print_flat(formatter) << endl;
+                cout << indent << left << setw(30) << "    Value:" << " " << key.pretty_print_value(UnformattedPrettyPrinter(), { }) << endl;
                 cout << indent << left << setw(30) << "    Initial label:" << " " << key.initial_label()->text() << endl;
             }
 
             void visit(const MetadataCollectionKey<KeywordNameSet> & key)
             {
                 cout << indent << left << setw(30) << "    Class:" << " " << "MetadataCollectionKey<KeywordNameSet>" << endl;
-                cout << indent << left << setw(30) << "    Value:" << " " << key.pretty_print_flat(formatter) << endl;
+                cout << indent << left << setw(30) << "    Value:" << " " << key.pretty_print_value(UnformattedPrettyPrinter(), { }) << endl;
             }
 
             void visit(const MetadataCollectionKey<Set<std::string> > & key)
