@@ -64,6 +64,7 @@ CAVE_COMMANDS_HTML = \
 	cave-print-repository-metadata.html \
 	cave-print-set.html \
 	cave-print-sets.html \
+	cave-print-spec.html \
 	cave-print-sync-protocols.html \
 	cave-print-unused-distfiles.html \
 	cave-purge.html \
