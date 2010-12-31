@@ -1089,7 +1089,7 @@ namespace
                 k(keys.begin()), k_end(keys.end()) ; k != k_end ; ++k)
         {
             bool explicit_key(cmdline.a_key.end_args() != std::find(cmdline.a_key.begin_args(), cmdline.a_key.end_args(), (*k)->raw_name()));
-            InfoDisplayer i(env, cmdline, 1, ((*k)->type() == mkt_significant) || explicit_key, best, maybe_old_id, old_id_is_installed, out);
+            InfoDisplayer i(env, cmdline, 0, ((*k)->type() == mkt_significant) || explicit_key, best, maybe_old_id, old_id_is_installed, out);
             if (want_key(cmdline, *k, best))
                 accept_visitor(i)(**k);
         }
