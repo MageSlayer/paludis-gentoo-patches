@@ -1378,7 +1378,7 @@ VDBRepository::perform_updates()
                 continue;
             }
 
-            for (FSIterator d(k->value(), { fsio_want_directories, fsio_deref_symlinks_for_wants }), d_end ; d != d_end ; ++d)
+            for (FSIterator d(k->value(), { fsio_want_regular_files, fsio_deref_symlinks_for_wants }), d_end ; d != d_end ; ++d)
             {
                 Context context_3("When performing updates from '" + stringify(*d) + "':");
 
