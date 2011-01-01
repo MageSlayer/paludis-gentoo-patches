@@ -49,25 +49,25 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct config_protect_name> config_protect;
-        typedef Name<struct destination_name> destination;
-        typedef Name<struct errors_name> errors;
-        typedef Name<struct exclude_unmirrorable_name> exclude_unmirrorable;
-        typedef Name<struct failed_automatic_fetching_name> failed_automatic_fetching;
-        typedef Name<struct failed_integrity_checks_name> failed_integrity_checks;
-        typedef Name<struct fetch_parts_name> fetch_parts;
-        typedef Name<struct if_for_install_id_name> if_for_install_id;
-        typedef Name<struct ignore_for_unmerge_name> ignore_for_unmerge;
-        typedef Name<struct ignore_unfetched_name> ignore_unfetched;
-        typedef Name<struct is_overwrite_name> is_overwrite;
-        typedef Name<struct make_output_manager_name> make_output_manager;
-        typedef Name<struct perform_uninstall_name> perform_uninstall;
-        typedef Name<struct replacing_name> replacing;
-        typedef Name<struct requires_manual_fetching_name> requires_manual_fetching;
-        typedef Name<struct safe_resume_name> safe_resume;
-        typedef Name<struct target_file_name> target_file;
-        typedef Name<struct want_phase_name> want_phase;
-        typedef Name<struct ignore_not_in_manifest_name> ignore_not_in_manifest;
+        typedef Name<struct name_config_protect> config_protect;
+        typedef Name<struct name_destination> destination;
+        typedef Name<struct name_errors> errors;
+        typedef Name<struct name_exclude_unmirrorable> exclude_unmirrorable;
+        typedef Name<struct name_failed_automatic_fetching> failed_automatic_fetching;
+        typedef Name<struct name_failed_integrity_checks> failed_integrity_checks;
+        typedef Name<struct name_fetch_parts> fetch_parts;
+        typedef Name<struct name_if_for_install_id> if_for_install_id;
+        typedef Name<struct name_ignore_for_unmerge> ignore_for_unmerge;
+        typedef Name<struct name_ignore_unfetched> ignore_unfetched;
+        typedef Name<struct name_is_overwrite> is_overwrite;
+        typedef Name<struct name_make_output_manager> make_output_manager;
+        typedef Name<struct name_perform_uninstall> perform_uninstall;
+        typedef Name<struct name_replacing> replacing;
+        typedef Name<struct name_requires_manual_fetching> requires_manual_fetching;
+        typedef Name<struct name_safe_resume> safe_resume;
+        typedef Name<struct name_target_file> target_file;
+        typedef Name<struct name_want_phase> want_phase;
+        typedef Name<struct name_ignore_not_in_manifest> ignore_not_in_manifest;
     }
 
     /**

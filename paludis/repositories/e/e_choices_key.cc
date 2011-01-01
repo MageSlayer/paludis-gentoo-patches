@@ -213,8 +213,8 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct default_value_name> default_value;
-        typedef Name<struct implicit_name> implicit;
+        typedef Name<struct name_default_value> default_value;
+        typedef Name<struct name_implicit> implicit;
     }
 }
 

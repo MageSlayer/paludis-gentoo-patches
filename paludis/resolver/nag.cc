@@ -102,8 +102,8 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct index_name> index;
-        typedef Name<struct lowlink_name> lowlink;
+        typedef Name<struct name_index> index;
+        typedef Name<struct name_lowlink> lowlink;
     }
 
     template <>

@@ -57,13 +57,13 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct action_requirement_name> action_requirement;
-        typedef Name<struct ignore_unfetched_requirement_name> ignore_unfetched_requirement;
-        typedef Name<struct manager_name> manager;
-        typedef Name<struct matches_requirement_name> matches_requirement;
-        typedef Name<struct name_requirement_name> name_requirement;
-        typedef Name<struct output_exclusivity_requirement_name> output_exclusivity_requirement;
-        typedef Name<struct type_requirement_name> type_requirement;
+        typedef Name<struct name_action_requirement> action_requirement;
+        typedef Name<struct name_ignore_unfetched_requirement> ignore_unfetched_requirement;
+        typedef Name<struct name_manager> manager;
+        typedef Name<struct name_matches_requirement> matches_requirement;
+        typedef Name<struct name_name_requirement> name_requirement;
+        typedef Name<struct name_output_exclusivity_requirement> output_exclusivity_requirement;
+        typedef Name<struct name_type_requirement> type_requirement;
     }
 }
 

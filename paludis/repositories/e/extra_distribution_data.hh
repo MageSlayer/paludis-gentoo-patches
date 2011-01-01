@@ -31,23 +31,23 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct default_buildroot_name> default_buildroot;
-        typedef Name<struct default_distdir_name> default_distdir;
-        typedef Name<struct default_eapi_when_unknown_name> default_eapi_when_unknown;
-        typedef Name<struct default_eapi_when_unspecified_name> default_eapi_when_unspecified;
-        typedef Name<struct default_layout_name> default_layout;
-        typedef Name<struct default_names_cache_name> default_names_cache;
-        typedef Name<struct default_profile_eapi_name> default_profile_eapi;
-        typedef Name<struct default_profile_layout_name> default_profile_layout;
-        typedef Name<struct default_provides_cache_name> default_provides_cache;
-        typedef Name<struct default_write_cache_name> default_write_cache;
-        typedef Name<struct news_directory_name> news_directory;
-        typedef Name<struct qa_category_dir_checks_name> qa_category_dir_checks;
-        typedef Name<struct qa_eclass_file_contents_checks_name> qa_eclass_file_contents_checks;
-        typedef Name<struct qa_package_dir_checks_name> qa_package_dir_checks;
-        typedef Name<struct qa_package_id_checks_name> qa_package_id_checks;
-        typedef Name<struct qa_package_id_file_contents_checks_name> qa_package_id_file_contents_checks;
-        typedef Name<struct qa_tree_checks_name> qa_tree_checks;
+        typedef Name<struct name_default_buildroot> default_buildroot;
+        typedef Name<struct name_default_distdir> default_distdir;
+        typedef Name<struct name_default_eapi_when_unknown> default_eapi_when_unknown;
+        typedef Name<struct name_default_eapi_when_unspecified> default_eapi_when_unspecified;
+        typedef Name<struct name_default_layout> default_layout;
+        typedef Name<struct name_default_names_cache> default_names_cache;
+        typedef Name<struct name_default_profile_eapi> default_profile_eapi;
+        typedef Name<struct name_default_profile_layout> default_profile_layout;
+        typedef Name<struct name_default_provides_cache> default_provides_cache;
+        typedef Name<struct name_default_write_cache> default_write_cache;
+        typedef Name<struct name_news_directory> news_directory;
+        typedef Name<struct name_qa_category_dir_checks> qa_category_dir_checks;
+        typedef Name<struct name_qa_eclass_file_contents_checks> qa_eclass_file_contents_checks;
+        typedef Name<struct name_qa_package_dir_checks> qa_package_dir_checks;
+        typedef Name<struct name_qa_package_id_checks> qa_package_id_checks;
+        typedef Name<struct name_qa_package_id_file_contents_checks> qa_package_id_file_contents_checks;
+        typedef Name<struct name_qa_tree_checks> qa_tree_checks;
     }
 
     namespace erepository

@@ -30,15 +30,15 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct dependencies_name> dependencies;
-        typedef Name<struct description_name> description;
-        typedef Name<struct environment_name> environment;
-        typedef Name<struct format_name> format;
-        typedef Name<struct homepage_name> homepage;
-        typedef Name<struct mask_name> mask;
+        typedef Name<struct name_dependencies> dependencies;
+        typedef Name<struct name_description> description;
+        typedef Name<struct name_environment> environment;
+        typedef Name<struct name_format> format;
+        typedef Name<struct name_homepage> homepage;
+        typedef Name<struct name_mask> mask;
         typedef Name<struct name_name> name;
-        typedef Name<struct repository_name> repository;
-        typedef Name<struct sync_name> sync;
+        typedef Name<struct name_repository> repository;
+        typedef Name<struct name_sync> sync;
     }
 
     namespace unavailable_repository

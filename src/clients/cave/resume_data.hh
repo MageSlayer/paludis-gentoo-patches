@@ -30,12 +30,12 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct job_lists_name> job_lists;
-        typedef Name<struct preserve_world_name> preserve_world;
-        typedef Name<struct removed_if_dependent_names_name> removed_if_dependent_names;
-        typedef Name<struct target_set_name> target_set;
-        typedef Name<struct targets_name> targets;
-        typedef Name<struct world_specs_name> world_specs;
+        typedef Name<struct name_job_lists> job_lists;
+        typedef Name<struct name_preserve_world> preserve_world;
+        typedef Name<struct name_removed_if_dependent_names> removed_if_dependent_names;
+        typedef Name<struct name_target_set> target_set;
+        typedef Name<struct name_targets> targets;
+        typedef Name<struct name_world_specs> world_specs;
     }
 
     namespace cave

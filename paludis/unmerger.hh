@@ -48,10 +48,10 @@ namespace paludis
 
     namespace n
     {
-        typedef Name<struct environment_name> environment;
-        typedef Name<struct ignore_name> ignore;
-        typedef Name<struct maybe_output_manager_name> maybe_output_manager;
-        typedef Name<struct root_name> root;
+        typedef Name<struct name_environment> environment;
+        typedef Name<struct name_ignore> ignore;
+        typedef Name<struct name_maybe_output_manager> maybe_output_manager;
+        typedef Name<struct name_root> root;
     }
 
     /**

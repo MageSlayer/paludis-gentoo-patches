@@ -29,16 +29,16 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct description_name> description;
-        typedef Name<struct environment_name> environment;
-        typedef Name<struct from_repositories_name> from_repositories;
-        typedef Name<struct mask_name> mask;
+        typedef Name<struct name_description> description;
+        typedef Name<struct name_environment> environment;
+        typedef Name<struct name_from_repositories> from_repositories;
+        typedef Name<struct name_mask> mask;
         typedef Name<struct name_name> name;
-        typedef Name<struct repository_name> repository;
-        typedef Name<struct repository_description_name> repository_description;
-        typedef Name<struct repository_homepage_name> repository_homepage;
-        typedef Name<struct slot_name> slot;
-        typedef Name<struct version_name> version;
+        typedef Name<struct name_repository> repository;
+        typedef Name<struct name_repository_description> repository_description;
+        typedef Name<struct name_repository_homepage> repository_homepage;
+        typedef Name<struct name_slot> slot;
+        typedef Name<struct name_version> version;
     }
 
     namespace unavailable_repository

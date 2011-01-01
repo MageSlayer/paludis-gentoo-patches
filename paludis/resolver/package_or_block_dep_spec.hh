@@ -29,8 +29,8 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct if_package_name> if_package;
-        typedef Name<struct if_block_name> if_block;
+        typedef Name<struct name_if_package> if_package;
+        typedef Name<struct name_if_block> if_block;
     }
 
     namespace resolver

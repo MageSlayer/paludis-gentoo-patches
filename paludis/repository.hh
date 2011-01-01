@@ -58,29 +58,29 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct arch_name> arch;
-        typedef Name<struct build_start_time_name> build_start_time;
-        typedef Name<struct destination_interface_name> destination_interface;
-        typedef Name<struct environment_file_name> environment_file;
-        typedef Name<struct environment_variable_interface_name> environment_variable_interface;
-        typedef Name<struct image_dir_name> image_dir;
-        typedef Name<struct make_virtuals_interface_name> make_virtuals_interface;
-        typedef Name<struct manifest_interface_name> manifest_interface;
-        typedef Name<struct merged_entries_name> merged_entries;
-        typedef Name<struct options_name> options;
-        typedef Name<struct output_manager_name> output_manager;
-        typedef Name<struct package_id_name> package_id;
-        typedef Name<struct path_name> path;
-        typedef Name<struct perform_uninstall_name> perform_uninstall;
-        typedef Name<struct profile_name> profile;
-        typedef Name<struct provided_by_name> provided_by;
-        typedef Name<struct provided_by_spec_name> provided_by_spec;
-        typedef Name<struct provides_interface_name> provides_interface;
-        typedef Name<struct replacing_name> replacing;
-        typedef Name<struct status_name> status;
-        typedef Name<struct used_this_for_config_protect_name> used_this_for_config_protect;
-        typedef Name<struct virtual_name_name> virtual_name;
-        typedef Name<struct virtuals_interface_name> virtuals_interface;
+        typedef Name<struct name_arch> arch;
+        typedef Name<struct name_build_start_time> build_start_time;
+        typedef Name<struct name_destination_interface> destination_interface;
+        typedef Name<struct name_environment_file> environment_file;
+        typedef Name<struct name_environment_variable_interface> environment_variable_interface;
+        typedef Name<struct name_image_dir> image_dir;
+        typedef Name<struct name_make_virtuals_interface> make_virtuals_interface;
+        typedef Name<struct name_manifest_interface> manifest_interface;
+        typedef Name<struct name_merged_entries> merged_entries;
+        typedef Name<struct name_options> options;
+        typedef Name<struct name_output_manager> output_manager;
+        typedef Name<struct name_package_id> package_id;
+        typedef Name<struct name_path> path;
+        typedef Name<struct name_perform_uninstall> perform_uninstall;
+        typedef Name<struct name_profile> profile;
+        typedef Name<struct name_provided_by> provided_by;
+        typedef Name<struct name_provided_by_spec> provided_by_spec;
+        typedef Name<struct name_provides_interface> provides_interface;
+        typedef Name<struct name_replacing> replacing;
+        typedef Name<struct name_status> status;
+        typedef Name<struct name_used_this_for_config_protect> used_this_for_config_protect;
+        typedef Name<struct name_virtual_name> virtual_name;
+        typedef Name<struct name_virtuals_interface> virtuals_interface;
     }
 
     /**

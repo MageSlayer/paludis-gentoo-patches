@@ -30,22 +30,22 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct authors_name> authors;
-        typedef Name<struct bug_tracker_uri_name> bug_tracker_uri;
-        typedef Name<struct dependencies_name> dependencies;
-        typedef Name<struct development_dependencies_name> development_dependencies;
-        typedef Name<struct documentation_uri_name> documentation_uri;
-        typedef Name<struct gem_uri_name> gem_uri;
-        typedef Name<struct homepage_uri_name> homepage_uri;
-        typedef Name<struct info_name> info;
-        typedef Name<struct mailing_list_uri_name> mailing_list_uri;
+        typedef Name<struct name_authors> authors;
+        typedef Name<struct name_bug_tracker_uri> bug_tracker_uri;
+        typedef Name<struct name_dependencies> dependencies;
+        typedef Name<struct name_development_dependencies> development_dependencies;
+        typedef Name<struct name_documentation_uri> documentation_uri;
+        typedef Name<struct name_gem_uri> gem_uri;
+        typedef Name<struct name_homepage_uri> homepage_uri;
+        typedef Name<struct name_info> info;
+        typedef Name<struct name_mailing_list_uri> mailing_list_uri;
         typedef Name<struct name_name> name;
-        typedef Name<struct project_uri_name> project_uri;
-        typedef Name<struct requirements_name> requirements;
-        typedef Name<struct runtime_dependencies_name> runtime_dependencies;
-        typedef Name<struct source_code_uri_name> source_code_uri;
-        typedef Name<struct version_name> version;
-        typedef Name<struct wiki_uri_name> wiki_uri;
+        typedef Name<struct name_project_uri> project_uri;
+        typedef Name<struct name_requirements> requirements;
+        typedef Name<struct name_runtime_dependencies> runtime_dependencies;
+        typedef Name<struct name_source_code_uri> source_code_uri;
+        typedef Name<struct name_version> version;
+        typedef Name<struct name_wiki_uri> wiki_uri;
     }
 
     namespace gemcutter_repository

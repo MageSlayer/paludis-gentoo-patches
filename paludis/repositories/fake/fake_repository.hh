@@ -27,7 +27,7 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct environment_name> environment;
+        typedef Name<struct name_environment> environment;
         typedef Name<struct name_name> name;
     }
 

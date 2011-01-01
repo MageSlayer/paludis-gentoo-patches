@@ -39,8 +39,8 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct version_operator_name> version_operator;
-        typedef Name<struct version_spec_name> version_spec;
+        typedef Name<struct name_version_operator> version_operator;
+        typedef Name<struct name_version_spec> version_spec;
     }
 
     /**

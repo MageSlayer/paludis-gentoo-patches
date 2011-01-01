@@ -66,17 +66,17 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct equals_value_name> equals_value;
-        typedef Name<struct locked_name> locked;
-        typedef Name<struct minus_name> minus;
-        typedef Name<struct minus_star_name> minus_star;
-        typedef Name<struct prefix_name> prefix;
-        typedef Name<struct set_name_name> set_name;
-        typedef Name<struct set_value_name> set_value;
-        typedef Name<struct spec_name> spec;
-        typedef Name<struct unprefixed_name_name> unprefixed_name;
-        typedef Name<struct values_name> values;
-        typedef Name<struct values_groups_name> values_groups;
+        typedef Name<struct name_equals_value> equals_value;
+        typedef Name<struct name_locked> locked;
+        typedef Name<struct name_minus> minus;
+        typedef Name<struct name_minus_star> minus_star;
+        typedef Name<struct name_prefix> prefix;
+        typedef Name<struct name_set_name> set_name;
+        typedef Name<struct name_set_value> set_value;
+        typedef Name<struct name_spec> spec;
+        typedef Name<struct name_unprefixed_name> unprefixed_name;
+        typedef Name<struct name_values> values;
+        typedef Name<struct name_values_groups> values_groups;
     }
 }
 

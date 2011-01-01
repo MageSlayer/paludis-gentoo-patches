@@ -29,8 +29,8 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct name_or_null_name> name_or_null;
-        typedef Name<struct null_means_unknown_name> null_means_unknown;
+        typedef Name<struct name_name_or_null> name_or_null;
+        typedef Name<struct name_null_means_unknown> null_means_unknown;
     }
 
     namespace resolver

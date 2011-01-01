@@ -32,8 +32,8 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct job_number_name> job_number;
-        typedef Name<struct required_if_name> required_if;
+        typedef Name<struct name_job_number> job_number;
+        typedef Name<struct name_required_if> required_if;
     }
 
     namespace resolver

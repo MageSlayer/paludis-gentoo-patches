@@ -39,14 +39,14 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct builddir_name> builddir;
-        typedef Name<struct eapi_when_unknown_name> eapi_when_unknown;
-        typedef Name<struct environment_name> environment;
-        typedef Name<struct location_name> location;
+        typedef Name<struct name_builddir> builddir;
+        typedef Name<struct name_eapi_when_unknown> eapi_when_unknown;
+        typedef Name<struct name_environment> environment;
+        typedef Name<struct name_location> location;
         typedef Name<struct name_name> name;
-        typedef Name<struct names_cache_name> names_cache;
-        typedef Name<struct provides_cache_name> provides_cache;
-        typedef Name<struct root_name> root;
+        typedef Name<struct name_names_cache> names_cache;
+        typedef Name<struct name_provides_cache> provides_cache;
+        typedef Name<struct name_root> root;
     }
 
     namespace erepository

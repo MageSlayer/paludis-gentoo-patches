@@ -36,9 +36,9 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct destination_type_name> destination_type;
-        typedef Name<struct package_name> package;
-        typedef Name<struct slot_name> slot;
+        typedef Name<struct name_destination_type> destination_type;
+        typedef Name<struct name_package> package;
+        typedef Name<struct name_slot> slot;
     }
 
     namespace resolver

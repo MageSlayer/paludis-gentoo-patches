@@ -40,10 +40,10 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct create_function_name> create_function;
-        typedef Name<struct dependencies_function_name> dependencies_function;
-        typedef Name<struct importance_function_name> importance_function;
-        typedef Name<struct name_function_name> name_function;
+        typedef Name<struct name_create_function> create_function;
+        typedef Name<struct name_dependencies_function> dependencies_function;
+        typedef Name<struct name_importance_function> importance_function;
+        typedef Name<struct name_name_function> name_function;
     }
 }
 

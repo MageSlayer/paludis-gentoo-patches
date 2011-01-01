@@ -31,9 +31,9 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct constraints_name> constraints;
-        typedef Name<struct decision_name> decision;
-        typedef Name<struct resolvent_name> resolvent;
+        typedef Name<struct name_constraints> constraints;
+        typedef Name<struct name_decision> decision;
+        typedef Name<struct name_resolvent> resolvent;
     }
 
     namespace resolver

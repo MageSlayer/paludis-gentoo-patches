@@ -29,18 +29,18 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct build_dependencies_name> build_dependencies;
-        typedef Name<struct description_name> description;
-        typedef Name<struct environment_name> environment;
-        typedef Name<struct install_under_name> install_under;
-        typedef Name<struct location_name> location;
+        typedef Name<struct name_build_dependencies> build_dependencies;
+        typedef Name<struct name_description> description;
+        typedef Name<struct name_environment> environment;
+        typedef Name<struct name_install_under> install_under;
+        typedef Name<struct name_location> location;
         typedef Name<struct name_name> name;
-        typedef Name<struct preserve_work_name> preserve_work;
-        typedef Name<struct rewrite_ids_over_to_root_name> rewrite_ids_over_to_root;
-        typedef Name<struct run_dependencies_name> run_dependencies;
-        typedef Name<struct slot_name> slot;
-        typedef Name<struct strip_name> strip;
-        typedef Name<struct version_name> version;
+        typedef Name<struct name_preserve_work> preserve_work;
+        typedef Name<struct name_rewrite_ids_over_to_root> rewrite_ids_over_to_root;
+        typedef Name<struct name_run_dependencies> run_dependencies;
+        typedef Name<struct name_slot> slot;
+        typedef Name<struct name_strip> strip;
+        typedef Name<struct name_version> version;
     }
 
     namespace unpackaged_repositories

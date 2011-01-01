@@ -28,18 +28,18 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct has_additional_requirements_name> has_additional_requirements;
-        typedef Name<struct has_category_name_part_name> has_category_name_part;
-        typedef Name<struct has_from_repository_name> has_from_repository;
-        typedef Name<struct has_in_repository_name> has_in_repository;
-        typedef Name<struct has_installable_to_path_name> has_installable_to_path;
-        typedef Name<struct has_installable_to_repository_name> has_installable_to_repository;
-        typedef Name<struct has_installed_at_path_name> has_installed_at_path;
-        typedef Name<struct has_package_name> has_package;
-        typedef Name<struct has_package_name_part_name> has_package_name_part;
-        typedef Name<struct has_slot_requirement_name> has_slot_requirement;
-        typedef Name<struct has_tag_name> has_tag;
-        typedef Name<struct has_version_requirements_name> has_version_requirements;
+        typedef Name<struct name_has_additional_requirements> has_additional_requirements;
+        typedef Name<struct name_has_category_name_part> has_category_name_part;
+        typedef Name<struct name_has_from_repository> has_from_repository;
+        typedef Name<struct name_has_in_repository> has_in_repository;
+        typedef Name<struct name_has_installable_to_path> has_installable_to_path;
+        typedef Name<struct name_has_installable_to_repository> has_installable_to_repository;
+        typedef Name<struct name_has_installed_at_path> has_installed_at_path;
+        typedef Name<struct name_has_package> has_package;
+        typedef Name<struct name_has_package_name_part> has_package_name_part;
+        typedef Name<struct name_has_slot_requirement> has_slot_requirement;
+        typedef Name<struct name_has_tag> has_tag;
+        typedef Name<struct name_has_version_requirements> has_version_requirements;
     }
 
     /**

@@ -45,10 +45,10 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct comment_name> comment;
-        typedef Name<struct mask_name> mask;
-        typedef Name<struct mask_file_name> mask_file;
-        typedef Name<struct override_reason_name> override_reason;
+        typedef Name<struct name_comment> comment;
+        typedef Name<struct name_mask> mask;
+        typedef Name<struct name_mask_file> mask_file;
+        typedef Name<struct name_override_reason> override_reason;
     }
 
     /**

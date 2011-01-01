@@ -48,8 +48,8 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct best_anywhere_name> best_anywhere;
-        typedef Name<struct best_keyworded_name> best_keyworded;
+        typedef Name<struct name_best_anywhere> best_anywhere;
+        typedef Name<struct name_best_keyworded> best_keyworded;
     }
 }
 

@@ -50,8 +50,8 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct best_version_name> best_version;
-        typedef Name<struct our_version_name> our_version;
+        typedef Name<struct name_best_version> best_version;
+        typedef Name<struct name_our_version> our_version;
     }
 }
 

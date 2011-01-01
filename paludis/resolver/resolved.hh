@@ -34,15 +34,15 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct job_lists_name> job_lists;
-        typedef Name<struct nag_name> nag;
-        typedef Name<struct resolutions_by_resolvent_name> resolutions_by_resolvent;
-        typedef Name<struct taken_change_or_remove_decisions_name> taken_change_or_remove_decisions;
-        typedef Name<struct taken_unable_to_make_decisions_name> taken_unable_to_make_decisions;
-        typedef Name<struct taken_unconfirmed_decisions_name> taken_unconfirmed_decisions;
-        typedef Name<struct taken_unorderable_decisions_name> taken_unorderable_decisions;
-        typedef Name<struct untaken_change_or_remove_decisions_name> untaken_change_or_remove_decisions;
-        typedef Name<struct untaken_unable_to_make_decisions_name> untaken_unable_to_make_decisions;
+        typedef Name<struct name_job_lists> job_lists;
+        typedef Name<struct name_nag> nag;
+        typedef Name<struct name_resolutions_by_resolvent> resolutions_by_resolvent;
+        typedef Name<struct name_taken_change_or_remove_decisions> taken_change_or_remove_decisions;
+        typedef Name<struct name_taken_unable_to_make_decisions> taken_unable_to_make_decisions;
+        typedef Name<struct name_taken_unconfirmed_decisions> taken_unconfirmed_decisions;
+        typedef Name<struct name_taken_unorderable_decisions> taken_unorderable_decisions;
+        typedef Name<struct name_untaken_change_or_remove_decisions> untaken_change_or_remove_decisions;
+        typedef Name<struct name_untaken_unable_to_make_decisions> untaken_unable_to_make_decisions;
     }
 
     namespace resolver

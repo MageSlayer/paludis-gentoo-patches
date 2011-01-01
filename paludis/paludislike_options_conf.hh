@@ -38,9 +38,9 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct allow_locking_name> allow_locking;
-        typedef Name<struct environment_name> environment;
-        typedef Name<struct make_config_file_name> make_config_file;
+        typedef Name<struct name_allow_locking> allow_locking;
+        typedef Name<struct name_environment> environment;
+        typedef Name<struct name_make_config_file> make_config_file;
     }
 
     /**

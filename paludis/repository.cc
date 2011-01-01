@@ -79,7 +79,7 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct repository_blacklist_name> repository_blacklist;
+        typedef Name<struct name_repository_blacklist> repository_blacklist;
     }
 }
 

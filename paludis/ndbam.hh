@@ -37,13 +37,13 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct fs_location_name> fs_location;
-        typedef Name<struct magic_name> magic;
-        typedef Name<struct mutex_name> mutex;
+        typedef Name<struct name_fs_location> fs_location;
+        typedef Name<struct name_magic> magic;
+        typedef Name<struct name_mutex> mutex;
         typedef Name<struct name_name> name;
-        typedef Name<struct package_id_name> package_id;
-        typedef Name<struct slot_name> slot;
-        typedef Name<struct version_name> version;
+        typedef Name<struct name_package_id> package_id;
+        typedef Name<struct name_slot> slot;
+        typedef Name<struct name_version> version;
     }
 
     struct NDBAMEntry

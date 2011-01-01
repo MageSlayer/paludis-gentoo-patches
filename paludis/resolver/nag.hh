@@ -34,13 +34,13 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct always_name> always;
-        typedef Name<struct build_name> build;
-        typedef Name<struct build_all_met_name> build_all_met;
-        typedef Name<struct resolvent_name> resolvent;
-        typedef Name<struct role_name> role;
-        typedef Name<struct run_name> run;
-        typedef Name<struct run_all_met_name> run_all_met;
+        typedef Name<struct name_always> always;
+        typedef Name<struct name_build> build;
+        typedef Name<struct name_build_all_met> build_all_met;
+        typedef Name<struct name_resolvent> resolvent;
+        typedef Name<struct name_role> role;
+        typedef Name<struct name_run> run;
+        typedef Name<struct name_run_all_met> run_all_met;
     }
 
     namespace resolver

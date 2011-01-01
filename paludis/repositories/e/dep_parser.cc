@@ -63,8 +63,8 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct item_name> item;
-        typedef Name<struct spec_name> spec;
+        typedef Name<struct name_item> item;
+        typedef Name<struct name_spec> spec;
     }
 }
 

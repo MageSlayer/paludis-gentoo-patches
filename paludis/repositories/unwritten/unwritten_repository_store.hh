@@ -32,9 +32,9 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct entry_suffix_name> entry_suffix;
+        typedef Name<struct name_entry_suffix> entry_suffix;
         typedef Name<struct name_name> name;
-        typedef Name<struct role_name> role;
+        typedef Name<struct name_role> role;
     }
 
     namespace unwritten_repository

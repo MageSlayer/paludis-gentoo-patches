@@ -34,8 +34,8 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct nodes_name> nodes;
-        typedef Name<struct requirements_name> requirements;
+        typedef Name<struct name_nodes> nodes;
+        typedef Name<struct name_requirements> requirements;
     }
 
     namespace resolver

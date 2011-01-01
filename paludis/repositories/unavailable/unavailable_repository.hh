@@ -29,11 +29,11 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct environment_name> environment;
-        typedef Name<struct location_name> location;
+        typedef Name<struct name_environment> environment;
+        typedef Name<struct name_location> location;
         typedef Name<struct name_name> name;
-        typedef Name<struct sync_name> sync;
-        typedef Name<struct sync_options_name> sync_options;
+        typedef Name<struct name_sync> sync;
+        typedef Name<struct name_sync_options> sync_options;
     }
 
     namespace unavailable_repository

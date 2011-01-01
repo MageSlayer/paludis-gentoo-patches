@@ -29,11 +29,11 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct environment_name> environment;
-        typedef Name<struct handler_name> handler;
-        typedef Name<struct installed_name> installed;
+        typedef Name<struct name_environment> environment;
+        typedef Name<struct name_handler> handler;
+        typedef Name<struct name_installed> installed;
         typedef Name<struct name_name> name;
-        typedef Name<struct root_name> root;
+        typedef Name<struct name_root> root;
     }
 
     namespace accounts_repository

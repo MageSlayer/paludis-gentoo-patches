@@ -30,9 +30,9 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct key_name> key;
-        typedef Name<struct role_name> role;
-        typedef Name<struct value_name> value;
+        typedef Name<struct name_key> key;
+        typedef Name<struct name_role> role;
+        typedef Name<struct name_value> value;
     }
 
     struct DepSpecAnnotation

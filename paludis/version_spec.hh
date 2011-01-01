@@ -64,9 +64,9 @@ namespace paludis
 
     namespace n
     {
-        typedef Name<struct number_value_name> number_value;
-        typedef Name<struct text_name> text;
-        typedef Name<struct type_name> type;
+        typedef Name<struct name_number_value> number_value;
+        typedef Name<struct name_text> text;
+        typedef Name<struct name_type> type;
     }
 
     /**

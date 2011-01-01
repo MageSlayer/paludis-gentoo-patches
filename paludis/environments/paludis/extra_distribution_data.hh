@@ -28,20 +28,20 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct bashrc_filename_name> bashrc_filename;
-        typedef Name<struct info_messages_are_spam_name> info_messages_are_spam;
-        typedef Name<struct keywords_filename_part_name> keywords_filename_part;
-        typedef Name<struct licenses_filename_part_name> licenses_filename_part;
-        typedef Name<struct mandatory_userpriv_name> mandatory_userpriv;
-        typedef Name<struct mirrors_filename_part_name> mirrors_filename_part;
-        typedef Name<struct output_filename_part_name> output_filename_part;
-        typedef Name<struct output_managers_directory_name> output_managers_directory;
-        typedef Name<struct package_mask_filename_part_name> package_mask_filename_part;
-        typedef Name<struct package_unmask_filename_part_name> package_unmask_filename_part;
-        typedef Name<struct repositories_directory_name> repositories_directory;
-        typedef Name<struct repository_defaults_filename_part_name> repository_defaults_filename_part;
-        typedef Name<struct suggestions_filename_part_name> suggestions_filename_part;
-        typedef Name<struct use_filename_part_name> use_filename_part;
+        typedef Name<struct name_bashrc_filename> bashrc_filename;
+        typedef Name<struct name_info_messages_are_spam> info_messages_are_spam;
+        typedef Name<struct name_keywords_filename_part> keywords_filename_part;
+        typedef Name<struct name_licenses_filename_part> licenses_filename_part;
+        typedef Name<struct name_mandatory_userpriv> mandatory_userpriv;
+        typedef Name<struct name_mirrors_filename_part> mirrors_filename_part;
+        typedef Name<struct name_output_filename_part> output_filename_part;
+        typedef Name<struct name_output_managers_directory> output_managers_directory;
+        typedef Name<struct name_package_mask_filename_part> package_mask_filename_part;
+        typedef Name<struct name_package_unmask_filename_part> package_unmask_filename_part;
+        typedef Name<struct name_repositories_directory> repositories_directory;
+        typedef Name<struct name_repository_defaults_filename_part> repository_defaults_filename_part;
+        typedef Name<struct name_suggestions_filename_part> suggestions_filename_part;
+        typedef Name<struct name_use_filename_part> use_filename_part;
     }
 
     namespace paludis_environment

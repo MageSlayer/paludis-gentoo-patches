@@ -35,13 +35,13 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct destination_type_name> destination_type;
-        typedef Name<struct force_unable_name> force_unable;
-        typedef Name<struct nothing_is_fine_too_name> nothing_is_fine_too;
-        typedef Name<struct reason_name> reason;
-        typedef Name<struct spec_name> spec;
-        typedef Name<struct untaken_name> untaken;
-        typedef Name<struct use_existing_name> use_existing;
+        typedef Name<struct name_destination_type> destination_type;
+        typedef Name<struct name_force_unable> force_unable;
+        typedef Name<struct name_nothing_is_fine_too> nothing_is_fine_too;
+        typedef Name<struct name_reason> reason;
+        typedef Name<struct name_spec> spec;
+        typedef Name<struct name_untaken> untaken;
+        typedef Name<struct name_use_existing> use_existing;
     }
 
     namespace resolver

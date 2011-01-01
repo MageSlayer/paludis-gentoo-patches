@@ -46,7 +46,7 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct create_function_name> create_function;
+        typedef Name<struct name_create_function> create_function;
     }
 }
 

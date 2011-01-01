@@ -34,10 +34,10 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct herds_name> herds;
-        typedef Name<struct long_description_name> long_description;
-        typedef Name<struct maintainers_name> maintainers;
-        typedef Name<struct uses_name> uses;
+        typedef Name<struct name_herds> herds;
+        typedef Name<struct name_long_description> long_description;
+        typedef Name<struct name_maintainers> maintainers;
+        typedef Name<struct name_uses> uses;
     }
 
     namespace erepository

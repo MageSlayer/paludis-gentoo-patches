@@ -31,11 +31,11 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct builddir_name> builddir;
-        typedef Name<struct eapi_when_unknown_name> eapi_when_unknown;
-        typedef Name<struct environment_name> environment;
-        typedef Name<struct location_name> location;
-        typedef Name<struct root_name> root;
+        typedef Name<struct name_builddir> builddir;
+        typedef Name<struct name_eapi_when_unknown> eapi_when_unknown;
+        typedef Name<struct name_environment> environment;
+        typedef Name<struct name_location> location;
+        typedef Name<struct name_root> root;
     }
 
     namespace erepository

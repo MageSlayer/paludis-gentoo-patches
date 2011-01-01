@@ -46,28 +46,28 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct allow_choice_changes_fn_name> allow_choice_changes_fn;
-        typedef Name<struct allowed_to_remove_fn_name> allowed_to_remove_fn;
-        typedef Name<struct always_via_binary_fn_name> always_via_binary_fn;
-        typedef Name<struct can_use_fn_name> can_use_fn;
-        typedef Name<struct confirm_fn_name> confirm_fn;
-        typedef Name<struct find_replacing_fn_name> find_replacing_fn;
-        typedef Name<struct find_repository_for_fn_name> find_repository_for_fn;
-        typedef Name<struct get_constraints_for_dependent_fn_name> get_constraints_for_dependent_fn;
-        typedef Name<struct get_constraints_for_purge_fn_name> get_constraints_for_purge_fn;
-        typedef Name<struct get_constraints_for_via_binary_fn_name> get_constraints_for_via_binary_fn;
-        typedef Name<struct get_destination_types_for_blocker_fn_name> get_destination_types_for_blocker_fn;
-        typedef Name<struct get_destination_types_for_error_fn_name> get_destination_types_for_error_fn;
-        typedef Name<struct get_initial_constraints_for_fn_name> get_initial_constraints_for_fn;
-        typedef Name<struct get_resolvents_for_fn_name> get_resolvents_for_fn;
-        typedef Name<struct get_use_existing_nothing_fn_name> get_use_existing_nothing_fn;
-        typedef Name<struct interest_in_spec_fn_name> interest_in_spec_fn;
-        typedef Name<struct make_destination_filtered_generator_fn_name> make_destination_filtered_generator_fn;
-        typedef Name<struct make_origin_filtered_generator_fn_name> make_origin_filtered_generator_fn;
-        typedef Name<struct make_unmaskable_filter_fn_name> make_unmaskable_filter_fn;
-        typedef Name<struct order_early_fn_name> order_early_fn;
-        typedef Name<struct prefer_or_avoid_fn_name> prefer_or_avoid_fn;
-        typedef Name<struct remove_if_dependent_fn_name> remove_if_dependent_fn;
+        typedef Name<struct name_allow_choice_changes_fn> allow_choice_changes_fn;
+        typedef Name<struct name_allowed_to_remove_fn> allowed_to_remove_fn;
+        typedef Name<struct name_always_via_binary_fn> always_via_binary_fn;
+        typedef Name<struct name_can_use_fn> can_use_fn;
+        typedef Name<struct name_confirm_fn> confirm_fn;
+        typedef Name<struct name_find_replacing_fn> find_replacing_fn;
+        typedef Name<struct name_find_repository_for_fn> find_repository_for_fn;
+        typedef Name<struct name_get_constraints_for_dependent_fn> get_constraints_for_dependent_fn;
+        typedef Name<struct name_get_constraints_for_purge_fn> get_constraints_for_purge_fn;
+        typedef Name<struct name_get_constraints_for_via_binary_fn> get_constraints_for_via_binary_fn;
+        typedef Name<struct name_get_destination_types_for_blocker_fn> get_destination_types_for_blocker_fn;
+        typedef Name<struct name_get_destination_types_for_error_fn> get_destination_types_for_error_fn;
+        typedef Name<struct name_get_initial_constraints_for_fn> get_initial_constraints_for_fn;
+        typedef Name<struct name_get_resolvents_for_fn> get_resolvents_for_fn;
+        typedef Name<struct name_get_use_existing_nothing_fn> get_use_existing_nothing_fn;
+        typedef Name<struct name_interest_in_spec_fn> interest_in_spec_fn;
+        typedef Name<struct name_make_destination_filtered_generator_fn> make_destination_filtered_generator_fn;
+        typedef Name<struct name_make_origin_filtered_generator_fn> make_origin_filtered_generator_fn;
+        typedef Name<struct name_make_unmaskable_filter_fn> make_unmaskable_filter_fn;
+        typedef Name<struct name_order_early_fn> order_early_fn;
+        typedef Name<struct name_prefer_or_avoid_fn> prefer_or_avoid_fn;
+        typedef Name<struct name_remove_if_dependent_fn> remove_if_dependent_fn;
     }
 
     namespace resolver

@@ -32,15 +32,15 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct config_protect_name> config_protect;
-        typedef Name<struct config_protect_mask_name> config_protect_mask;
-        typedef Name<struct contents_file_name> contents_file;
-        typedef Name<struct environment_name> environment;
-        typedef Name<struct ignore_name> ignore;
-        typedef Name<struct ndbam_name> ndbam;
-        typedef Name<struct output_manager_name> output_manager;
-        typedef Name<struct package_id_name> package_id;
-        typedef Name<struct root_name> root;
+        typedef Name<struct name_config_protect> config_protect;
+        typedef Name<struct name_config_protect_mask> config_protect_mask;
+        typedef Name<struct name_contents_file> contents_file;
+        typedef Name<struct name_environment> environment;
+        typedef Name<struct name_ignore> ignore;
+        typedef Name<struct name_ndbam> ndbam;
+        typedef Name<struct name_output_manager> output_manager;
+        typedef Name<struct name_package_id> package_id;
+        typedef Name<struct name_root> root;
     }
 
     class NDBAM;

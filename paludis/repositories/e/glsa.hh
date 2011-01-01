@@ -32,9 +32,9 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct op_name> op;
-        typedef Name<struct slot_name> slot;
-        typedef Name<struct version_name> version;
+        typedef Name<struct name_op> op;
+        typedef Name<struct name_slot> slot;
+        typedef Name<struct name_version> version;
     }
 
     namespace erepository

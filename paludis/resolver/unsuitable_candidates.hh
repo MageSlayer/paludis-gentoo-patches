@@ -30,8 +30,8 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct package_id_name> package_id;
-        typedef Name<struct unmet_constraints_name> unmet_constraints;
+        typedef Name<struct name_package_id> package_id;
+        typedef Name<struct name_unmet_constraints> unmet_constraints;
     }
 
     namespace resolver

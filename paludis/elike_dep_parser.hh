@@ -27,18 +27,18 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct on_all_name> on_all;
-        typedef Name<struct on_annotations_name> on_annotations;
-        typedef Name<struct on_any_name> on_any;
-        typedef Name<struct on_arrow_name> on_arrow;
-        typedef Name<struct on_error_name> on_error;
-        typedef Name<struct on_exactly_one_name> on_exactly_one;
-        typedef Name<struct on_label_name> on_label;
-        typedef Name<struct on_pop_name> on_pop;
-        typedef Name<struct on_should_be_empty_name> on_should_be_empty;
-        typedef Name<struct on_string_name> on_string;
-        typedef Name<struct on_use_name> on_use;
-        typedef Name<struct on_use_under_any_name> on_use_under_any;
+        typedef Name<struct name_on_all> on_all;
+        typedef Name<struct name_on_annotations> on_annotations;
+        typedef Name<struct name_on_any> on_any;
+        typedef Name<struct name_on_arrow> on_arrow;
+        typedef Name<struct name_on_error> on_error;
+        typedef Name<struct name_on_exactly_one> on_exactly_one;
+        typedef Name<struct name_on_label> on_label;
+        typedef Name<struct name_on_pop> on_pop;
+        typedef Name<struct name_on_should_be_empty> on_should_be_empty;
+        typedef Name<struct name_on_string> on_string;
+        typedef Name<struct name_on_use> on_use;
+        typedef Name<struct name_on_use_under_any> on_use_under_any;
     }
 
     struct ELikeDepParserCallbacks

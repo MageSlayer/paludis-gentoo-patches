@@ -26,10 +26,10 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct environment_name> environment;
+        typedef Name<struct name_environment> environment;
         typedef Name<struct name_name> name;
-        typedef Name<struct suitable_destination_name> suitable_destination;
-        typedef Name<struct supports_uninstall_name> supports_uninstall;
+        typedef Name<struct name_suitable_destination> suitable_destination;
+        typedef Name<struct name_supports_uninstall> supports_uninstall;
     }
 
     /**

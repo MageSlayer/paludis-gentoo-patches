@@ -45,13 +45,13 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct consider_added_or_changed_name> consider_added_or_changed;
-        typedef Name<struct contains_every_value_name> contains_every_value;
-        typedef Name<struct hidden_name> hidden;
-        typedef Name<struct human_name_name> human_name;
-        typedef Name<struct prefix_name> prefix;
-        typedef Name<struct raw_name_name> raw_name;
-        typedef Name<struct show_with_no_prefix_name> show_with_no_prefix;
+        typedef Name<struct name_consider_added_or_changed> consider_added_or_changed;
+        typedef Name<struct name_contains_every_value> contains_every_value;
+        typedef Name<struct name_hidden> hidden;
+        typedef Name<struct name_human_name> human_name;
+        typedef Name<struct name_prefix> prefix;
+        typedef Name<struct name_raw_name> raw_name;
+        typedef Name<struct name_show_with_no_prefix> show_with_no_prefix;
     }
 
     /**

@@ -39,13 +39,13 @@ namespace paludis
 
     namespace n
     {
-        typedef Name<struct builddir_name> builddir;
-        typedef Name<struct distdir_name> distdir;
-        typedef Name<struct environment_name> environment;
-        typedef Name<struct library_name> library;
-        typedef Name<struct location_name> location;
-        typedef Name<struct mirror_name> mirror;
-        typedef Name<struct sync_name> sync;
+        typedef Name<struct name_builddir> builddir;
+        typedef Name<struct name_distdir> distdir;
+        typedef Name<struct name_environment> environment;
+        typedef Name<struct name_library> library;
+        typedef Name<struct name_location> location;
+        typedef Name<struct name_mirror> mirror;
+        typedef Name<struct name_sync> sync;
     }
 
     /**

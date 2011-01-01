@@ -32,8 +32,8 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct replacing_name> replacing;
-        typedef Name<struct repository_name> repository;
+        typedef Name<struct name_replacing> replacing;
+        typedef Name<struct name_repository> repository;
     }
 
     namespace resolver

@@ -49,35 +49,35 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct associated_entry_name> associated_entry;
-        typedef Name<struct blocks_name> blocks;
-        typedef Name<struct circular_name> circular;
-        typedef Name<struct dependency_tags_name> dependency_tags;
-        typedef Name<struct destination_name> destination;
-        typedef Name<struct downgrade_name> downgrade;
-        typedef Name<struct fall_back_name> fall_back;
-        typedef Name<struct generation_name> generation;
-        typedef Name<struct handled_name> handled;
-        typedef Name<struct installed_deps_post_name> installed_deps_post;
-        typedef Name<struct installed_deps_pre_name> installed_deps_pre;
-        typedef Name<struct installed_deps_runtime_name> installed_deps_runtime;
-        typedef Name<struct kind_name> kind;
-        typedef Name<struct match_package_options_name> match_package_options;
-        typedef Name<struct new_slots_name> new_slots;
-        typedef Name<struct override_masks_name> override_masks;
-        typedef Name<struct package_id_name> package_id;
-        typedef Name<struct reinstall_name> reinstall;
-        typedef Name<struct reinstall_scm_name> reinstall_scm;
-        typedef Name<struct state_name> state;
-        typedef Name<struct suggested_name> suggested;
-        typedef Name<struct tags_name> tags;
-        typedef Name<struct target_type_name> target_type;
-        typedef Name<struct uninstalled_deps_post_name> uninstalled_deps_post;
-        typedef Name<struct uninstalled_deps_pre_name> uninstalled_deps_pre;
-        typedef Name<struct uninstalled_deps_runtime_name> uninstalled_deps_runtime;
-        typedef Name<struct uninstalled_deps_suggested_name> uninstalled_deps_suggested;
-        typedef Name<struct upgrade_name> upgrade;
-        typedef Name<struct use_name> use;
+        typedef Name<struct name_associated_entry> associated_entry;
+        typedef Name<struct name_blocks> blocks;
+        typedef Name<struct name_circular> circular;
+        typedef Name<struct name_dependency_tags> dependency_tags;
+        typedef Name<struct name_destination> destination;
+        typedef Name<struct name_downgrade> downgrade;
+        typedef Name<struct name_fall_back> fall_back;
+        typedef Name<struct name_generation> generation;
+        typedef Name<struct name_handled> handled;
+        typedef Name<struct name_installed_deps_post> installed_deps_post;
+        typedef Name<struct name_installed_deps_pre> installed_deps_pre;
+        typedef Name<struct name_installed_deps_runtime> installed_deps_runtime;
+        typedef Name<struct name_kind> kind;
+        typedef Name<struct name_match_package_options> match_package_options;
+        typedef Name<struct name_new_slots> new_slots;
+        typedef Name<struct name_override_masks> override_masks;
+        typedef Name<struct name_package_id> package_id;
+        typedef Name<struct name_reinstall> reinstall;
+        typedef Name<struct name_reinstall_scm> reinstall_scm;
+        typedef Name<struct name_state> state;
+        typedef Name<struct name_suggested> suggested;
+        typedef Name<struct name_tags> tags;
+        typedef Name<struct name_target_type> target_type;
+        typedef Name<struct name_uninstalled_deps_post> uninstalled_deps_post;
+        typedef Name<struct name_uninstalled_deps_pre> uninstalled_deps_pre;
+        typedef Name<struct name_uninstalled_deps_runtime> uninstalled_deps_runtime;
+        typedef Name<struct name_uninstalled_deps_suggested> uninstalled_deps_suggested;
+        typedef Name<struct name_upgrade> upgrade;
+        typedef Name<struct name_use> use;
     }
 
     /**

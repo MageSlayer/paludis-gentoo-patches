@@ -28,16 +28,16 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct accept_unstable_name> accept_unstable;
-        typedef Name<struct disable_metadata_cache_name> disable_metadata_cache;
-        typedef Name<struct extra_accept_keywords_name> extra_accept_keywords;
-        typedef Name<struct extra_params_name> extra_params;
-        typedef Name<struct extra_repository_dirs_name> extra_repository_dirs;
-        typedef Name<struct master_repository_name_name> master_repository_name;
-        typedef Name<struct profiles_if_not_auto_name> profiles_if_not_auto;
-        typedef Name<struct repository_dir_name> repository_dir;
-        typedef Name<struct repository_type_name> repository_type;
-        typedef Name<struct write_cache_name> write_cache;
+        typedef Name<struct name_accept_unstable> accept_unstable;
+        typedef Name<struct name_disable_metadata_cache> disable_metadata_cache;
+        typedef Name<struct name_extra_accept_keywords> extra_accept_keywords;
+        typedef Name<struct name_extra_params> extra_params;
+        typedef Name<struct name_extra_repository_dirs> extra_repository_dirs;
+        typedef Name<struct name_master_repository_name> master_repository_name;
+        typedef Name<struct name_profiles_if_not_auto> profiles_if_not_auto;
+        typedef Name<struct name_repository_dir> repository_dir;
+        typedef Name<struct name_repository_type> repository_type;
+        typedef Name<struct name_write_cache> write_cache;
     }
 
     namespace no_config_environment

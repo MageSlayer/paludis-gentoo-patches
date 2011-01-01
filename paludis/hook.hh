@@ -47,8 +47,8 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct max_exit_status_name> max_exit_status;
-        typedef Name<struct output_name> output;
+        typedef Name<struct name_max_exit_status> max_exit_status;
+        typedef Name<struct name_output> output;
     }
 
     /**

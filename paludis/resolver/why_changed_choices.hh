@@ -30,8 +30,8 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct changed_choices_name> changed_choices;
-        typedef Name<struct reasons_name> reasons;
+        typedef Name<struct name_changed_choices> changed_choices;
+        typedef Name<struct name_reasons> reasons;
     }
 
     namespace resolver

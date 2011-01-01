@@ -29,12 +29,12 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct debug_dir_name> debug_dir;
-        typedef Name<struct image_dir_name> image_dir;
-        typedef Name<struct output_manager_name> output_manager;
-        typedef Name<struct package_id_name> package_id;
-        typedef Name<struct split_name> split;
-        typedef Name<struct strip_name> strip;
+        typedef Name<struct name_debug_dir> debug_dir;
+        typedef Name<struct name_image_dir> image_dir;
+        typedef Name<struct name_output_manager> output_manager;
+        typedef Name<struct name_package_id> package_id;
+        typedef Name<struct name_split> split;
+        typedef Name<struct name_strip> strip;
     }
 
     namespace erepository

@@ -30,17 +30,17 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct environment_name> environment;
-        typedef Name<struct environment_file_name> environment_file;
-        typedef Name<struct fix_mtimes_before_name> fix_mtimes_before;
-        typedef Name<struct image_name> image;
-        typedef Name<struct install_under_name> install_under;
-        typedef Name<struct merged_entries_name> merged_entries;
-        typedef Name<struct options_name> options;
-        typedef Name<struct output_manager_name> output_manager;
-        typedef Name<struct package_id_name> package_id;
-        typedef Name<struct root_name> root;
-        typedef Name<struct tar_file_name> tar_file;
+        typedef Name<struct name_environment> environment;
+        typedef Name<struct name_environment_file> environment_file;
+        typedef Name<struct name_fix_mtimes_before> fix_mtimes_before;
+        typedef Name<struct name_image> image;
+        typedef Name<struct name_install_under> install_under;
+        typedef Name<struct name_merged_entries> merged_entries;
+        typedef Name<struct name_options> options;
+        typedef Name<struct name_output_manager> output_manager;
+        typedef Name<struct name_package_id> package_id;
+        typedef Name<struct name_root> root;
+        typedef Name<struct name_tar_file> tar_file;
     }
 
     namespace erepository

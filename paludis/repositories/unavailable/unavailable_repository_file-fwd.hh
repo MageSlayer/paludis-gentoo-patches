@@ -31,10 +31,10 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct description_name> description;
+        typedef Name<struct name_description> description;
         typedef Name<struct name_name> name;
-        typedef Name<struct slot_name> slot;
-        typedef Name<struct version_name> version;
+        typedef Name<struct name_slot> slot;
+        typedef Name<struct name_version> version;
     }
 
     namespace unavailable_repository

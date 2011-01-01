@@ -36,14 +36,14 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct active_conditions_as_string_name> active_conditions_as_string;
-        typedef Name<struct active_dependency_labels_name> active_dependency_labels;
-        typedef Name<struct active_dependency_labels_as_string_name> active_dependency_labels_as_string;
-        typedef Name<struct active_dependency_labels_classifier_name> active_dependency_labels_classifier;
-        typedef Name<struct metadata_key_human_name_name> metadata_key_human_name;
-        typedef Name<struct metadata_key_raw_name_name> metadata_key_raw_name;
-        typedef Name<struct original_specs_as_string_name> original_specs_as_string;
-        typedef Name<struct spec_name> spec;
+        typedef Name<struct name_active_conditions_as_string> active_conditions_as_string;
+        typedef Name<struct name_active_dependency_labels> active_dependency_labels;
+        typedef Name<struct name_active_dependency_labels_as_string> active_dependency_labels_as_string;
+        typedef Name<struct name_active_dependency_labels_classifier> active_dependency_labels_classifier;
+        typedef Name<struct name_metadata_key_human_name> metadata_key_human_name;
+        typedef Name<struct name_metadata_key_raw_name> metadata_key_raw_name;
+        typedef Name<struct name_original_specs_as_string> original_specs_as_string;
+        typedef Name<struct name_spec> spec;
     }
 
     namespace resolver

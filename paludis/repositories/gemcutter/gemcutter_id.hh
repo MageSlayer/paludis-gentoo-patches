@@ -31,9 +31,9 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct environment_name> environment;
-        typedef Name<struct info_name> info;
-        typedef Name<struct repository_name> repository;
+        typedef Name<struct name_environment> environment;
+        typedef Name<struct name_info> info;
+        typedef Name<struct name_repository> repository;
     }
 
     namespace gemcutter_repository

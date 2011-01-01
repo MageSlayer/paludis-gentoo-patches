@@ -44,15 +44,15 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct concept_keyword_name> concept_keyword;
-        typedef Name<struct concept_license_name> concept_license;
-        typedef Name<struct concept_use_name> concept_use;
-        typedef Name<struct default_environment_name> default_environment;
-        typedef Name<struct extra_data_dir_name> extra_data_dir;
-        typedef Name<struct fallback_environment_name> fallback_environment;
+        typedef Name<struct name_concept_keyword> concept_keyword;
+        typedef Name<struct name_concept_license> concept_license;
+        typedef Name<struct name_concept_use> concept_use;
+        typedef Name<struct name_default_environment> default_environment;
+        typedef Name<struct name_extra_data_dir> extra_data_dir;
+        typedef Name<struct name_fallback_environment> fallback_environment;
         typedef Name<struct name_name> name;
-        typedef Name<struct paludis_package_name> paludis_package;
-        typedef Name<struct support_old_style_virtuals_name> support_old_style_virtuals;
+        typedef Name<struct name_paludis_package> paludis_package;
+        typedef Name<struct name_support_old_style_virtuals> support_old_style_virtuals;
     }
 
     /**

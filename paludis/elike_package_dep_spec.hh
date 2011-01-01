@@ -27,16 +27,16 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct add_package_requirement_name> add_package_requirement;
-        typedef Name<struct add_version_requirement_name> add_version_requirement;
-        typedef Name<struct check_sanity_name> check_sanity;
-        typedef Name<struct get_remove_trailing_version_name> get_remove_trailing_version;
-        typedef Name<struct get_remove_version_operator_name> get_remove_version_operator;
-        typedef Name<struct has_version_operator_name> has_version_operator;
-        typedef Name<struct options_for_partially_made_package_dep_spec_name> options_for_partially_made_package_dep_spec;
-        typedef Name<struct remove_trailing_repo_if_exists_name> remove_trailing_repo_if_exists;
-        typedef Name<struct remove_trailing_slot_if_exists_name> remove_trailing_slot_if_exists;
-        typedef Name<struct remove_trailing_square_bracket_if_exists_name> remove_trailing_square_bracket_if_exists;
+        typedef Name<struct name_add_package_requirement> add_package_requirement;
+        typedef Name<struct name_add_version_requirement> add_version_requirement;
+        typedef Name<struct name_check_sanity> check_sanity;
+        typedef Name<struct name_get_remove_trailing_version> get_remove_trailing_version;
+        typedef Name<struct name_get_remove_version_operator> get_remove_version_operator;
+        typedef Name<struct name_has_version_operator> has_version_operator;
+        typedef Name<struct name_options_for_partially_made_package_dep_spec> options_for_partially_made_package_dep_spec;
+        typedef Name<struct name_remove_trailing_repo_if_exists> remove_trailing_repo_if_exists;
+        typedef Name<struct name_remove_trailing_slot_if_exists> remove_trailing_slot_if_exists;
+        typedef Name<struct name_remove_trailing_square_bracket_if_exists> remove_trailing_square_bracket_if_exists;
     }
 
     struct GenericELikePackageDepSpecParseFunctions

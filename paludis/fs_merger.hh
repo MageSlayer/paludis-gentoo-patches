@@ -48,16 +48,16 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct environment_name> environment;
-        typedef Name<struct fix_mtimes_before_name> fix_mtimes_before;
-        typedef Name<struct get_new_ids_or_minus_one_name> get_new_ids_or_minus_one;
-        typedef Name<struct image_name> image;
-        typedef Name<struct install_under_name> install_under;
-        typedef Name<struct maybe_output_manager_name> maybe_output_manager;
-        typedef Name<struct merged_entries_name> merged_entries;
-        typedef Name<struct no_chown_name> no_chown;
-        typedef Name<struct options_name> options;
-        typedef Name<struct root_name> root;
+        typedef Name<struct name_environment> environment;
+        typedef Name<struct name_fix_mtimes_before> fix_mtimes_before;
+        typedef Name<struct name_get_new_ids_or_minus_one> get_new_ids_or_minus_one;
+        typedef Name<struct name_image> image;
+        typedef Name<struct name_install_under> install_under;
+        typedef Name<struct name_maybe_output_manager> maybe_output_manager;
+        typedef Name<struct name_merged_entries> merged_entries;
+        typedef Name<struct name_no_chown> no_chown;
+        typedef Name<struct name_options> options;
+        typedef Name<struct name_root> root;
     }
 
     /**

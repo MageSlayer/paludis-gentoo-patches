@@ -30,7 +30,7 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct cycle_breaking_name> cycle_breaking;
+        typedef Name<struct name_cycle_breaking> cycle_breaking;
     }
 
     namespace resolver

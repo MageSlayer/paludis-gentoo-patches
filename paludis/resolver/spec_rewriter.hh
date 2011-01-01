@@ -36,7 +36,7 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct specs_name> specs;
+        typedef Name<struct name_specs> specs;
     }
 
     namespace resolver

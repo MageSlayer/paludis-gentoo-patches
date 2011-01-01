@@ -31,8 +31,8 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct execute_job_list_name> execute_job_list;
-        typedef Name<struct pretend_job_list_name> pretend_job_list;
+        typedef Name<struct name_execute_job_list> execute_job_list;
+        typedef Name<struct name_pretend_job_list> pretend_job_list;
     }
 
     namespace resolver

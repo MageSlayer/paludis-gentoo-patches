@@ -32,8 +32,8 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct package_id_name> package_id;
-        typedef Name<struct resolvent_name> resolvent;
+        typedef Name<struct name_package_id> package_id;
+        typedef Name<struct name_resolvent> resolvent;
     }
 
     namespace resolver

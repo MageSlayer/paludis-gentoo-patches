@@ -29,21 +29,21 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct added_by_name> added_by;
-        typedef Name<struct bug_ids_name> bug_ids;
-        typedef Name<struct comment_name> comment;
-        typedef Name<struct commit_id_name> commit_id;
-        typedef Name<struct description_name> description;
-        typedef Name<struct environment_name> environment;
-        typedef Name<struct homepage_name> homepage;
-        typedef Name<struct mask_name> mask;
+        typedef Name<struct name_added_by> added_by;
+        typedef Name<struct name_bug_ids> bug_ids;
+        typedef Name<struct name_comment> comment;
+        typedef Name<struct name_commit_id> commit_id;
+        typedef Name<struct name_description> description;
+        typedef Name<struct name_environment> environment;
+        typedef Name<struct name_homepage> homepage;
+        typedef Name<struct name_mask> mask;
         typedef Name<struct name_name> name;
-        typedef Name<struct remote_ids_name> remote_ids;
-        typedef Name<struct removed_by_name> removed_by;
-        typedef Name<struct removed_from_name> removed_from;
-        typedef Name<struct repository_name> repository;
-        typedef Name<struct slot_name> slot;
-        typedef Name<struct version_name> version;
+        typedef Name<struct name_remote_ids> remote_ids;
+        typedef Name<struct name_removed_by> removed_by;
+        typedef Name<struct name_removed_from> removed_from;
+        typedef Name<struct name_repository> repository;
+        typedef Name<struct name_slot> slot;
+        typedef Name<struct name_version> version;
     }
 
     namespace unwritten_repository

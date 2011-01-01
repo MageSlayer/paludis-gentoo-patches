@@ -40,12 +40,12 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct environment_name> environment;
-        typedef Name<struct filter_file_name> filter_file;
-        typedef Name<struct local_name> local;
-        typedef Name<struct options_name> options;
-        typedef Name<struct output_manager_name> output_manager;
-        typedef Name<struct remote_name> remote;
+        typedef Name<struct name_environment> environment;
+        typedef Name<struct name_filter_file> filter_file;
+        typedef Name<struct name_local> local;
+        typedef Name<struct name_options> options;
+        typedef Name<struct name_output_manager> output_manager;
+        typedef Name<struct name_remote> remote;
     }
 
     /**

@@ -42,12 +42,12 @@ namespace paludis
 
     namespace n
     {
-        typedef Name<struct kind_name> kind;
-        typedef Name<struct package_id_name> package_id;
-        typedef Name<struct tags_name> tags;
-        typedef Name<struct with_dependencies_as_errors_name> with_dependencies_as_errors;
-        typedef Name<struct with_dependencies_included_name> with_dependencies_included;
-        typedef Name<struct with_unused_dependencies_name> with_unused_dependencies;
+        typedef Name<struct name_kind> kind;
+        typedef Name<struct name_package_id> package_id;
+        typedef Name<struct name_tags> tags;
+        typedef Name<struct name_with_dependencies_as_errors> with_dependencies_as_errors;
+        typedef Name<struct name_with_dependencies_included> with_dependencies_included;
+        typedef Name<struct name_with_unused_dependencies> with_unused_dependencies;
     }
 
     /**

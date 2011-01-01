@@ -52,8 +52,8 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct generation_name> generation;
-        typedef Name<struct tag_name> tag;
+        typedef Name<struct name_generation> generation;
+        typedef Name<struct name_tag> tag;
     }
 
     /**
