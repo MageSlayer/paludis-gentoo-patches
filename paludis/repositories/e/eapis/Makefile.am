@@ -9,18 +9,18 @@ eapis = \
 	1.conf \
 	2.conf \
 	3.conf \
+	4.conf \
 	exheres-0.conf \
 	paludis-1.conf \
 	pbin-1+0.conf \
 	pbin-1+1.conf \
 	pbin-1+2.conf \
 	pbin-1+3.conf \
+	pbin-1+4.conf \
 	pbin-1+paludis-1.conf \
 	pbin-1+exheres-0.conf
 
-future_eapis = \
-	4.conf \
-	pbin-1+4.conf
+future_eapis =
 
 eapidir = $(datadir)/paludis/eapis/
 
