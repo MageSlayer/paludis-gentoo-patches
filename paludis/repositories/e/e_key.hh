@@ -275,8 +275,7 @@ namespace paludis
             private Pimp<EStringSetKey>
         {
             public:
-                EStringSetKey(const std::shared_ptr<const ERepositoryID> &,
-                        const std::string &, const std::string &, const std::string &, const MetadataKeyType);
+                EStringSetKey(const std::string &, const std::string &, const std::string &, const MetadataKeyType);
                 ~EStringSetKey();
 
                 const std::shared_ptr<const Set<std::string> > value() const

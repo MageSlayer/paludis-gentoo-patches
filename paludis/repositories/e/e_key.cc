@@ -869,30 +869,25 @@ namespace paludis
     template <>
     struct Imp<EStringSetKey>
     {
-        const std::shared_ptr<const ERepositoryID> id;
-        const std::string string_value;
-        mutable Mutex value_mutex;
-        mutable std::shared_ptr<Set<std::string> > value;
+        const std::shared_ptr<Set<std::string> > value;
 
         const std::string raw_name;
         const std::string human_name;
         const MetadataKeyType type;
 
-        Imp(const std::shared_ptr<const ERepositoryID> & i, const std::string & v,
-                const std::string & r, const std::string & h, const MetadataKeyType t) :
-            id(i),
-            string_value(v),
+        Imp(const std::string & v, const std::string & r, const std::string & h, const MetadataKeyType t) :
+            value(std::make_shared<Set<std::string> >()),
             raw_name(r),
             human_name(h),
             type(t)
         {
+            tokenise_whitespace(v, value->inserter());
         }
     };
 }
 
-EStringSetKey::EStringSetKey(const std::shared_ptr<const ERepositoryID> & id,
-        const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
-    Pimp<EStringSetKey>(id, v, r, h, t)
+EStringSetKey::EStringSetKey(const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
+    Pimp<EStringSetKey>(v, r, h, t)
 {
 }
 
@@ -903,14 +898,6 @@ EStringSetKey::~EStringSetKey()
 const std::shared_ptr<const Set<std::string> >
 EStringSetKey::value() const
 {
-    Lock l(_imp->value_mutex);
-
-    if (_imp->value)
-        return _imp->value;
-
-    _imp->value = std::make_shared<Set<std::string>>();
-    Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
-    tokenise_whitespace(_imp->string_value, _imp->value->inserter());
     return _imp->value;
 }
 

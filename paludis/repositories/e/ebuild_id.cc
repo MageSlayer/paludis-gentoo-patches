@@ -1057,7 +1057,7 @@ void
 EbuildID::load_iuse(const std::string & r, const std::string & h, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->raw_iuse = std::make_shared<EStringSetKey>(shared_from_this(), r, h, v, mkt_internal);
+    _imp->raw_iuse = std::make_shared<EStringSetKey>(r, h, v, mkt_internal);
     add_metadata_key(_imp->raw_iuse);
 }
 
@@ -1081,7 +1081,7 @@ void
 EbuildID::load_use(const std::string & r, const std::string & h, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->raw_use = std::make_shared<EStringSetKey>(shared_from_this(), r, h, v, mkt_internal);
+    _imp->raw_use = std::make_shared<EStringSetKey>(r, h, v, mkt_internal);
     add_metadata_key(_imp->raw_use);
 }
 
@@ -1097,7 +1097,7 @@ void
 EbuildID::load_inherited(const std::string & r, const std::string & h, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->inherited = std::make_shared<EStringSetKey>(shared_from_this(), r, h, v, mkt_internal);
+    _imp->inherited = std::make_shared<EStringSetKey>(r, h, v, mkt_internal);
     add_metadata_key(_imp->inherited);
 }
 
@@ -1108,7 +1108,7 @@ EbuildID::load_defined_phases(const std::string & r, const std::string & h, cons
         throw InternalError(PALUDIS_HERE, "v should not be empty");
 
     Lock l(_imp->mutex);
-    _imp->defined_phases = std::make_shared<EStringSetKey>(shared_from_this(), r, h, v, mkt_internal);
+    _imp->defined_phases = std::make_shared<EStringSetKey>(r, h, v, mkt_internal);
     add_metadata_key(_imp->defined_phases);
 }
 
@@ -1164,7 +1164,7 @@ void
 EbuildID::load_generated_from(const std::string & r, const std::string & h, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->generated_from = std::make_shared<EStringSetKey>(shared_from_this(), r, h, v, mkt_normal);
+    _imp->generated_from = std::make_shared<EStringSetKey>(r, h, v, mkt_normal);
     add_metadata_key(_imp->generated_from);
 }
 
