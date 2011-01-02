@@ -332,8 +332,8 @@ module Paludis
             end
         end
 
-        def test_build_dependenciess_key
-            assert_raise RuntimeError do
+        def test_build_dependencies_key
+            assert_raise NameError do
                 pid_bad.build_dependencies_key.value
             end
         end

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -35,6 +35,8 @@
 #include <paludis/repositories/e/do_install_action.hh>
 #include <paludis/repositories/e/do_info_action.hh>
 #include <paludis/repositories/e/do_fetch_action.hh>
+#include <paludis/repositories/e/e_string_set_key.hh>
+#include <paludis/repositories/e/e_keywords_key.hh>
 
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
@@ -143,13 +145,13 @@ namespace paludis
         mutable std::shared_ptr<const EFetchableURIKey> src_uri;
         mutable std::shared_ptr<const ESimpleURIKey> homepage;
         mutable std::shared_ptr<const ELicenseKey> license;
-        mutable std::shared_ptr<const EKeywordsKey> keywords;
-        mutable std::shared_ptr<const EStringSetKey> raw_iuse;
+        mutable std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> > keywords;
+        mutable std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_iuse;
         mutable std::shared_ptr<const LiteralMetadataStringSetKey> raw_iuse_effective;
         mutable std::shared_ptr<const EMyOptionsKey> raw_myoptions;
         mutable std::shared_ptr<const ERequiredUseKey> required_use;
-        mutable std::shared_ptr<const EStringSetKey> inherited;
-        mutable std::shared_ptr<const EStringSetKey> raw_use;
+        mutable std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > inherited;
+        mutable std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_use;
         mutable std::shared_ptr<const LiteralMetadataStringSetKey> raw_use_expand;
         mutable std::shared_ptr<const LiteralMetadataStringSetKey> raw_use_expand_hidden;
         mutable std::shared_ptr<EMutableRepositoryMaskInfoKey> repository_mask;
@@ -160,8 +162,8 @@ namespace paludis
         mutable std::shared_ptr<const ESimpleURIKey> upstream_documentation;
         mutable std::shared_ptr<const ESimpleURIKey> upstream_release_notes;
         mutable std::shared_ptr<const EChoicesKey> choices;
-        mutable std::shared_ptr<const EStringSetKey> defined_phases;
-        mutable std::shared_ptr<const EStringSetKey> generated_from;
+        mutable std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > defined_phases;
+        mutable std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > generated_from;
         mutable std::shared_ptr<const LiteralMetadataTimeKey> generated_time;
         mutable std::shared_ptr<const LiteralMetadataValueKey<std::string> > generated_using;
         mutable std::shared_ptr<const LiteralMetadataStringSetKey> behaviours;
@@ -1054,10 +1056,10 @@ EbuildID::load_provide(const std::string & r, const std::string & h, const std::
 }
 
 void
-EbuildID::load_iuse(const std::string & r, const std::string & h, const std::string & v) const
+EbuildID::load_iuse(const std::shared_ptr<const EAPIMetadataVariable> & k, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->raw_iuse = std::make_shared<EStringSetKey>(r, h, v, mkt_internal);
+    _imp->raw_iuse = EStringSetKeyStore::get_instance()->fetch(k, v, mkt_internal);
     add_metadata_key(_imp->raw_iuse);
 }
 
@@ -1078,37 +1080,37 @@ EbuildID::load_required_use(const std::string & r, const std::string & h, const 
 }
 
 void
-EbuildID::load_use(const std::string & r, const std::string & h, const std::string & v) const
+EbuildID::load_use(const std::shared_ptr<const EAPIMetadataVariable> & r, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->raw_use = std::make_shared<EStringSetKey>(r, h, v, mkt_internal);
+    _imp->raw_use = EStringSetKeyStore::get_instance()->fetch(r, v, mkt_internal);
     add_metadata_key(_imp->raw_use);
 }
 
 void
-EbuildID::load_keywords(const std::string & r, const std::string & h, const std::string & v) const
+EbuildID::load_keywords(const std::shared_ptr<const EAPIMetadataVariable> & h, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->keywords = std::make_shared<EKeywordsKey>(_imp->environment, shared_from_this(), r, h, v, mkt_internal);
+    _imp->keywords = EKeywordsKeyStore::get_instance()->fetch(h, v, mkt_internal);
     add_metadata_key(_imp->keywords);
 }
 
 void
-EbuildID::load_inherited(const std::string & r, const std::string & h, const std::string & v) const
+EbuildID::load_inherited(const std::shared_ptr<const EAPIMetadataVariable> & r, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->inherited = std::make_shared<EStringSetKey>(r, h, v, mkt_internal);
+    _imp->inherited = EStringSetKeyStore::get_instance()->fetch(r, v, mkt_internal);
     add_metadata_key(_imp->inherited);
 }
 
 void
-EbuildID::load_defined_phases(const std::string & r, const std::string & h, const std::string & v) const
+EbuildID::load_defined_phases(const std::shared_ptr<const EAPIMetadataVariable> & h, const std::string & v) const
 {
     if (v.empty())
         throw InternalError(PALUDIS_HERE, "v should not be empty");
 
     Lock l(_imp->mutex);
-    _imp->defined_phases = std::make_shared<EStringSetKey>(r, h, v, mkt_internal);
+    _imp->defined_phases = EStringSetKeyStore::get_instance()->fetch(h, v, mkt_internal);
     add_metadata_key(_imp->defined_phases);
 }
 
@@ -1161,10 +1163,10 @@ EbuildID::load_slot(const std::shared_ptr<const EAPIMetadataVariable> & m, const
 }
 
 void
-EbuildID::load_generated_from(const std::string & r, const std::string & h, const std::string & v) const
+EbuildID::load_generated_from(const std::shared_ptr<const EAPIMetadataVariable> & h, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->generated_from = std::make_shared<EStringSetKey>(r, h, v, mkt_normal);
+    _imp->generated_from = EStringSetKeyStore::get_instance()->fetch(h, v, mkt_normal);
     add_metadata_key(_imp->generated_from);
 }
 

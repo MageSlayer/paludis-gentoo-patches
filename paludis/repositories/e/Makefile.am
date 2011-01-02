@@ -39,6 +39,7 @@ noinst_HEADERS = \
 	e_installed_repository_id.hh \
 	e_choices_key.hh \
 	e_key.hh \
+	e_keywords_key.hh \
 	e_mask.hh \
 	e_repository.hh \
 	e_repository_exceptions.hh \
@@ -49,6 +50,7 @@ noinst_HEADERS = \
 	e_repository_params.hh \
 	e_repository_sets.hh \
 	e_slot_key.hh \
+	e_string_set_key.hh \
 	e_stripper.hh \
 	eapi.hh \
 	eapi-fwd.hh \
@@ -111,6 +113,7 @@ libpaludiserepository_la_SOURCES = \
 	e_installed_repository_id.cc \
 	e_choices_key.cc \
 	e_key.cc \
+	e_keywords_key.cc \
 	e_mask.cc \
 	e_repository.cc \
 	e_repository_exceptions.cc \
@@ -120,6 +123,7 @@ libpaludiserepository_la_SOURCES = \
 	e_repository_params.cc \
 	e_repository_sets.cc \
 	e_slot_key.cc \
+	e_string_set_key.cc \
 	e_stripper.cc \
 	eapi.cc \
 	eapi_phase.cc \

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -26,6 +26,7 @@
 #include <paludis/repositories/e/dep_parser.hh>
 #include <paludis/repositories/e/dependencies_rewriter.hh>
 #include <paludis/repositories/e/e_choice_value.hh>
+#include <paludis/repositories/e/e_string_set_key.hh>
 
 #include <paludis/util/stringify.hh>
 #include <paludis/util/log.hh>
@@ -220,8 +221,7 @@ EInstalledRepositoryID::need_keys_added() const
     if (! env->env_use().empty())
         if ((_imp->dir / env->env_use()).stat().exists())
         {
-            _imp->keys->raw_use = std::make_shared<EStringSetKey>(env->env_use(), env->description_use(),
-                        file_contents(_imp->dir / env->env_use()), mkt_internal);
+            _imp->keys->raw_use = EStringSetKeyStore::get_instance()->fetch(vars->use(), file_contents(_imp->dir / env->env_use()), mkt_internal);
             add_metadata_key(_imp->keys->raw_use);
         }
 
@@ -236,8 +236,8 @@ EInstalledRepositoryID::need_keys_added() const
     if (! vars->inherited()->name().empty())
         if ((_imp->dir / vars->inherited()->name()).stat().exists())
         {
-            _imp->keys->inherited = std::make_shared<EStringSetKey>(vars->inherited()->name(), vars->inherited()->description(),
-                        file_contents(_imp->dir / vars->inherited()->name()), mkt_internal);
+            _imp->keys->inherited = EStringSetKeyStore::get_instance()->fetch(vars->inherited(),
+                    file_contents(_imp->dir / vars->inherited()->name()), mkt_internal);
             add_metadata_key(_imp->keys->inherited);
         }
 
@@ -247,8 +247,8 @@ EInstalledRepositoryID::need_keys_added() const
             std::string d(file_contents(_imp->dir / vars->defined_phases()->name()));
             if (! d.empty())
             {
-                _imp->keys->defined_phases = std::make_shared<EStringSetKey>(vars->defined_phases()->name(), vars->defined_phases()->description(),
-                            d, mkt_internal);
+                _imp->keys->defined_phases = EStringSetKeyStore::get_instance()->fetch(vars->defined_phases(),
+                        d, mkt_internal);
                 add_metadata_key(_imp->keys->defined_phases);
             }
         }
@@ -256,14 +256,14 @@ EInstalledRepositoryID::need_keys_added() const
     if (! vars->iuse()->name().empty())
     {
         if ((_imp->dir / vars->iuse()->name()).stat().exists())
-            _imp->keys->raw_iuse = std::make_shared<EStringSetKey>(vars->iuse()->name(), vars->iuse()->description(),
-                        file_contents(_imp->dir / vars->iuse()->name()), mkt_internal);
+            _imp->keys->raw_iuse = EStringSetKeyStore::get_instance()->fetch(vars->iuse(),
+                    file_contents(_imp->dir / vars->iuse()->name()), mkt_internal);
         else
         {
             /* hack: if IUSE doesn't exist, we still need an iuse_key to make the choices
              * code behave sanely. */
-            _imp->keys->raw_iuse = std::make_shared<EStringSetKey>(vars->iuse()->name(), vars->iuse()->description(),
-                        "", mkt_internal);
+            _imp->keys->raw_iuse = EStringSetKeyStore::get_instance()->fetch(vars->iuse(),
+                    "", mkt_internal);
         }
         add_metadata_key(_imp->keys->raw_iuse);
     }
@@ -272,9 +272,8 @@ EInstalledRepositoryID::need_keys_added() const
     {
         if ((_imp->dir / vars->iuse_effective()->name()).stat().exists())
         {
-            _imp->keys->raw_iuse_effective = std::make_shared<EStringSetKey>(
-                        vars->iuse_effective()->name(), vars->iuse_effective()->description(),
-                        file_contents(_imp->dir / vars->iuse_effective()->name()), mkt_internal);
+            _imp->keys->raw_iuse_effective = EStringSetKeyStore::get_instance()->fetch(vars->iuse_effective(),
+                    file_contents(_imp->dir / vars->iuse_effective()->name()), mkt_internal);
             add_metadata_key(_imp->keys->raw_iuse_effective);
         }
     }
@@ -298,16 +297,16 @@ EInstalledRepositoryID::need_keys_added() const
     if (! vars->use_expand()->name().empty())
         if ((_imp->dir / vars->use_expand()->name()).stat().exists())
         {
-            _imp->keys->raw_use_expand = std::make_shared<EStringSetKey>(vars->use_expand()->name(), vars->use_expand()->description(),
-                        file_contents(_imp->dir / vars->use_expand()->name()), mkt_internal);
+            _imp->keys->raw_use_expand = EStringSetKeyStore::get_instance()->fetch(vars->use_expand(),
+                    file_contents(_imp->dir / vars->use_expand()->name()), mkt_internal);
             add_metadata_key(_imp->keys->raw_use_expand);
         }
 
     if (! vars->use_expand_hidden()->name().empty())
         if ((_imp->dir / vars->use_expand_hidden()->name()).stat().exists())
         {
-            _imp->keys->raw_use_expand_hidden = std::make_shared<EStringSetKey>(vars->use_expand_hidden()->name(), vars->use_expand_hidden()->description(),
-                        file_contents(_imp->dir / vars->use_expand_hidden()->name()), mkt_internal);
+            _imp->keys->raw_use_expand_hidden = EStringSetKeyStore::get_instance()->fetch(vars->use_expand_hidden(),
+                    file_contents(_imp->dir / vars->use_expand_hidden()->name()), mkt_internal);
             add_metadata_key(_imp->keys->raw_use_expand_hidden);
         }
 

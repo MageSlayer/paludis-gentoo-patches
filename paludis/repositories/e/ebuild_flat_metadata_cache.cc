@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  * Copyright (c) 2008 David Leverton
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -226,18 +226,17 @@ namespace
             }
 
             if (-1 != m.keywords()->flat_list_index() && ! m.keywords()->name().empty())
-                id->load_keywords(m.keywords()->name(), m.keywords()->description(), lines.at(m.keywords()->flat_list_index()));
+                id->load_keywords(m.keywords(), lines.at(m.keywords()->flat_list_index()));
 
             if (-1 != m.inherited()->flat_list_index() && ! m.inherited()->name().empty())
-                id->load_inherited(m.inherited()->name(), m.inherited()->description(), lines.at(m.inherited()->flat_list_index()));
+                id->load_inherited(m.inherited(), lines.at(m.inherited()->flat_list_index()));
 
             if (-1 != m.defined_phases()->flat_list_index() && ! m.defined_phases()->name().empty())
                 if (! lines.at(m.defined_phases()->flat_list_index()).empty())
-                    id->load_defined_phases(m.defined_phases()->name(), m.defined_phases()->description(),
-                            lines.at(m.defined_phases()->flat_list_index()));
+                    id->load_defined_phases(m.defined_phases(), lines.at(m.defined_phases()->flat_list_index()));
 
             if (-1 != m.iuse()->flat_list_index() && ! m.iuse()->name().empty())
-                id->load_iuse(m.iuse()->name(), m.iuse()->description(), lines.at(m.iuse()->flat_list_index()));
+                id->load_iuse(m.iuse(), lines.at(m.iuse()->flat_list_index()));
 
             if (-1 != m.myoptions()->flat_list_index() && ! m.myoptions()->name().empty())
                 id->load_myoptions(m.myoptions()->name(), m.myoptions()->description(), lines.at(m.myoptions()->flat_list_index()));
@@ -252,10 +251,10 @@ namespace
                 id->load_provide(m.provide()->name(), m.provide()->description(), lines.at(m.provide()->flat_list_index()));
 
             if (-1 != m.use()->flat_list_index() && ! m.use()->name().empty())
-                id->load_use(m.use()->name(), m.use()->description(), lines.at(m.use()->flat_list_index()));
+                id->load_use(m.use(), lines.at(m.use()->flat_list_index()));
 
             if (-1 != m.generated_from()->flat_list_index() && ! m.generated_from()->name().empty())
-                id->load_generated_from(m.generated_from()->name(), m.generated_from()->description(), lines.at(m.generated_from()->flat_list_index()));
+                id->load_generated_from(m.generated_from(), lines.at(m.generated_from()->flat_list_index()));
 
             if (-1 != m.generated_time()->flat_list_index() && ! m.generated_time()->name().empty())
                 id->load_generated_time(m.generated_time()->name(), m.generated_time()->description(), lines.at(m.generated_time()->flat_list_index()));
@@ -573,17 +572,17 @@ EbuildFlatMetadataCache::load(const std::shared_ptr<const EbuildID> & id, const 
             }
 
             if (! m.keywords()->name().empty())
-                id->load_keywords(m.keywords()->name(), m.keywords()->description(), keys[m.keywords()->name()]);
+                id->load_keywords(m.keywords(), keys[m.keywords()->name()]);
 
             if (! m.inherited()->name().empty())
-                id->load_inherited(m.inherited()->name(), m.inherited()->description(), join(inherited.begin(), inherited.end(), " "));
+                id->load_inherited(m.inherited(), join(inherited.begin(), inherited.end(), " "));
 
             if (! m.defined_phases()->name().empty())
                 if (! keys[m.defined_phases()->name()].empty())
-                    id->load_defined_phases(m.defined_phases()->name(), m.defined_phases()->description(), keys[m.defined_phases()->name()]);
+                    id->load_defined_phases(m.defined_phases(), keys[m.defined_phases()->name()]);
 
             if (! m.iuse()->name().empty())
-                id->load_iuse(m.iuse()->name(), m.iuse()->description(), keys[m.iuse()->name()]);
+                id->load_iuse(m.iuse(), keys[m.iuse()->name()]);
 
             if (! m.myoptions()->name().empty())
                 id->load_myoptions(m.myoptions()->name(), m.myoptions()->description(), keys[m.myoptions()->name()]);
@@ -598,10 +597,10 @@ EbuildFlatMetadataCache::load(const std::shared_ptr<const EbuildID> & id, const 
                 id->load_provide(m.provide()->name(), m.provide()->description(), keys[m.provide()->name()]);
 
             if (! m.use()->name().empty())
-                id->load_use(m.use()->name(), m.use()->description(), keys[m.use()->name()]);
+                id->load_use(m.use(), keys[m.use()->name()]);
 
             if (! m.generated_from()->name().empty())
-                id->load_generated_from(m.generated_from()->name(), m.generated_from()->description(), keys[m.generated_from()->name()]);
+                id->load_generated_from(m.generated_from(), keys[m.generated_from()->name()]);
 
             if (! m.generated_time()->name().empty())
                 id->load_generated_time(m.generated_time()->name(), m.generated_time()->description(), keys[m.generated_time()->name()]);

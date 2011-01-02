@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -623,7 +623,7 @@ EbuildMetadataCommand::load(const std::shared_ptr<const EbuildID> & id)
         id->load_provide(m.provide()->name(), m.provide()->description(), get(keys, m.provide()->name()));
 
     if (! m.iuse()->name().empty())
-        id->load_iuse(m.iuse()->name(), m.iuse()->description(), get(keys, m.iuse()->name()));
+        id->load_iuse(m.iuse(), get(keys, m.iuse()->name()));
 
     if (! m.myoptions()->name().empty())
         id->load_myoptions(m.myoptions()->name(), m.myoptions()->description(), get(keys, m.myoptions()->name()));
@@ -632,10 +632,10 @@ EbuildMetadataCommand::load(const std::shared_ptr<const EbuildID> & id)
         id->load_required_use(m.required_use()->name(), m.required_use()->description(), get(keys, m.required_use()->name()));
 
     if (! m.inherited()->name().empty())
-        id->load_inherited(m.inherited()->name(), m.inherited()->description(), get(keys, m.inherited()->name()));
+        id->load_inherited(m.inherited(), get(keys, m.inherited()->name()));
 
     if (! m.keywords()->name().empty())
-        id->load_keywords(m.keywords()->name(), m.keywords()->description(), get(keys, m.keywords()->name()));
+        id->load_keywords(m.keywords(), get(keys, m.keywords()->name()));
 
     if (! m.restrictions()->name().empty())
         id->load_restrict(m.restrictions(), get(keys, m.restrictions()->name()));
@@ -644,10 +644,10 @@ EbuildMetadataCommand::load(const std::shared_ptr<const EbuildID> & id)
         id->load_properties(m.properties(), get(keys, m.properties()->name()));
 
     if (! m.use()->name().empty())
-        id->load_use(m.use()->name(), m.use()->description(), get(keys, m.use()->name()));
+        id->load_use(m.use(), get(keys, m.use()->name()));
 
     if (! m.generated_from()->name().empty())
-        id->load_generated_from(m.generated_from()->name(), m.generated_from()->description(), get(keys, m.generated_from()->name()));
+        id->load_generated_from(m.generated_from(), get(keys, m.generated_from()->name()));
 
     if (! m.generated_time()->name().empty())
         id->load_generated_time(m.generated_time()->name(), m.generated_time()->description(), get(keys, m.generated_time()->name()));
@@ -719,10 +719,9 @@ EbuildMetadataCommand::load(const std::shared_ptr<const EbuildID> & id)
         }
 
         if (defined_phases.empty())
-            id->load_defined_phases(m.defined_phases()->name(), m.defined_phases()->description(), "-");
+            id->load_defined_phases(m.defined_phases(), "-");
         else
-            id->load_defined_phases(m.defined_phases()->name(), m.defined_phases()->description(),
-                    join(defined_phases.begin(), defined_phases.end(), " "));
+            id->load_defined_phases(m.defined_phases(), join(defined_phases.begin(), defined_phases.end(), " "));
     }
 }
 

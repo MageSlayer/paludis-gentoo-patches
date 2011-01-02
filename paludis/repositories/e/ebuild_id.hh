@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -132,12 +132,12 @@ namespace paludis
                 void load_homepage(const std::string &, const std::string &, const std::string &) const;
                 void load_license(const std::shared_ptr<const EAPIMetadataVariable> &, const std::string &) const;
                 void load_provide(const std::string &, const std::string &, const std::string &) const;
-                void load_iuse(const std::string &, const std::string &, const std::string &) const;
+                void load_iuse(const std::shared_ptr<const EAPIMetadataVariable> &, const std::string &) const;
                 void load_myoptions(const std::string &, const std::string &, const std::string &) const;
                 void load_required_use(const std::string &, const std::string &, const std::string &) const;
-                void load_use(const std::string &, const std::string &, const std::string &) const;
-                void load_inherited(const std::string &, const std::string &, const std::string &) const;
-                void load_keywords(const std::string &, const std::string &, const std::string &) const;
+                void load_use(const std::shared_ptr<const EAPIMetadataVariable> &, const std::string &) const;
+                void load_inherited(const std::shared_ptr<const EAPIMetadataVariable> &, const std::string &) const;
+                void load_keywords(const std::shared_ptr<const EAPIMetadataVariable> &, const std::string &) const;
                 void load_restrict(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const;
                 void load_properties(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string &) const;
                 void load_long_description(const std::string &, const std::string &, const std::string &) const;
@@ -146,9 +146,9 @@ namespace paludis
                 void load_upstream_release_notes(const std::string &, const std::string &, const std::string &) const;
                 void load_bugs_to(const std::shared_ptr<const EAPIMetadataVariable> &, const std::string &) const;
                 void load_remote_ids(const std::shared_ptr<const EAPIMetadataVariable> &, const std::string &) const;
-                void load_defined_phases(const std::string &, const std::string &, const std::string &) const;
+                void load_defined_phases(const std::shared_ptr<const EAPIMetadataVariable> &, const std::string &) const;
                 void load_slot(const std::shared_ptr<const EAPIMetadataVariable> &, const std::string &) const;
-                void load_generated_from(const std::string &, const std::string &, const std::string &) const;
+                void load_generated_from(const std::shared_ptr<const EAPIMetadataVariable> &, const std::string &) const;
                 void load_generated_using(const std::string &, const std::string &, const std::string &) const;
                 void load_generated_time(const std::string &, const std::string &, const std::string &) const;
 

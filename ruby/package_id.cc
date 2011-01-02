@@ -2,7 +2,7 @@
 
 /*
  * Copyright (c) 2007, 2008 Richard Brown
- * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -463,12 +463,12 @@ namespace
         static VALUE
         fetch(VALUE self)
         {
-            std::shared_ptr<const PackageID> * self_ptr;
-            Data_Get_Struct(self, std::shared_ptr<const PackageID>, self_ptr);
-            std::shared_ptr<const MetadataKey> ptr = (((**self_ptr).*m_)());
-
             try
             {
+                std::shared_ptr<const PackageID> * self_ptr;
+                Data_Get_Struct(self, std::shared_ptr<const PackageID>, self_ptr);
+                std::shared_ptr<const MetadataKey> ptr = (((**self_ptr).*m_)());
+
                 if (ptr)
                 {
                     return metadata_key_to_value(((**self_ptr).*m_)());

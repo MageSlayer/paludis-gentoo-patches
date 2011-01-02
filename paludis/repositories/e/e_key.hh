@@ -247,49 +247,6 @@ namespace paludis
                         const PrettyPrintOptions &) const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
-        class EKeywordsKey :
-            public MetadataCollectionKey<KeywordNameSet>,
-            private Pimp<EKeywordsKey>
-        {
-            public:
-                EKeywordsKey(
-                        const Environment * const,
-                        const std::shared_ptr<const ERepositoryID> &,
-                        const std::string &, const std::string &, const std::string &, const MetadataKeyType);
-                ~EKeywordsKey();
-
-                const std::shared_ptr<const KeywordNameSet> value() const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                virtual const std::string pretty_print_value(
-                        const PrettyPrinter &,
-                        const PrettyPrintOptions &) const PALUDIS_ATTRIBUTE((warn_unused_result));
-        };
-
-        class EStringSetKey :
-            public MetadataCollectionKey<Set<std::string> >,
-            private Pimp<EStringSetKey>
-        {
-            public:
-                EStringSetKey(const std::string &, const std::string &, const std::string &, const MetadataKeyType);
-                ~EStringSetKey();
-
-                const std::shared_ptr<const Set<std::string> > value() const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                virtual const std::string pretty_print_value(
-                        const PrettyPrinter &,
-                        const PrettyPrintOptions &) const PALUDIS_ATTRIBUTE((warn_unused_result));
-        };
-
         class EContentsKey :
             public MetadataValueKey<std::shared_ptr<const Contents> >,
             private Pimp<EContentsKey>
