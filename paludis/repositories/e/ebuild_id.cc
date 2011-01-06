@@ -346,10 +346,10 @@ EbuildID::need_keys_added() const
 
     add_metadata_key(std::make_shared<LiteralMetadataValueKey<std::string>>("EAPI", "EAPI", mkt_internal, _imp->eapi->name()));
 
-    _imp->repository_mask = std::make_shared<EMutableRepositoryMaskInfoKey>(shared_from_this(), "repository_mask", "Repository masked",
+    _imp->repository_mask = std::make_shared<EMutableRepositoryMaskInfoKey>("repository_mask", "Repository masked",
             e_repo->repository_masked(shared_from_this()), mkt_internal);
     add_metadata_key(_imp->repository_mask);
-    _imp->profile_mask = std::make_shared<EMutableRepositoryMaskInfoKey>(shared_from_this(), "profile_mask", "Profile masked",
+    _imp->profile_mask = std::make_shared<EMutableRepositoryMaskInfoKey>("profile_mask", "Profile masked",
             e_repo->profile()->profile_masked(shared_from_this()), mkt_internal);
     add_metadata_key(_imp->profile_mask);
 
