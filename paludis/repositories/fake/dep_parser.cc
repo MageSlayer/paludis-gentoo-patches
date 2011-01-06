@@ -166,8 +166,7 @@ namespace
 }
 
 std::shared_ptr<DependencySpecTree>
-paludis::fakerepository::parse_depend(const std::string & s,
-        const Environment * const, const std::shared_ptr<const PackageID> &)
+paludis::fakerepository::parse_depend(const std::string & s, const Environment * const)
 {
     using namespace std::placeholders;
 
@@ -197,8 +196,7 @@ paludis::fakerepository::parse_depend(const std::string & s,
 }
 
 std::shared_ptr<ProvideSpecTree>
-paludis::fakerepository::parse_provide(const std::string & s,
-        const Environment * const, const std::shared_ptr<const PackageID> &)
+paludis::fakerepository::parse_provide(const std::string & s, const Environment * const)
 {
     using namespace std::placeholders;
 
@@ -228,8 +226,7 @@ paludis::fakerepository::parse_provide(const std::string & s,
 }
 
 std::shared_ptr<FetchableURISpecTree>
-paludis::fakerepository::parse_fetchable_uri(const std::string & s,
-        const Environment * const, const std::shared_ptr<const PackageID> &)
+paludis::fakerepository::parse_fetchable_uri(const std::string & s, const Environment * const)
 {
     using namespace std::placeholders;
 
@@ -259,8 +256,7 @@ paludis::fakerepository::parse_fetchable_uri(const std::string & s,
 }
 
 std::shared_ptr<SimpleURISpecTree>
-paludis::fakerepository::parse_simple_uri(const std::string & s,
-        const Environment * const, const std::shared_ptr<const PackageID> &)
+paludis::fakerepository::parse_simple_uri(const std::string & s, const Environment * const)
 {
     using namespace std::placeholders;
 
@@ -290,8 +286,7 @@ paludis::fakerepository::parse_simple_uri(const std::string & s,
 }
 
 std::shared_ptr<LicenseSpecTree>
-paludis::fakerepository::parse_license(const std::string & s,
-        const Environment * const, const std::shared_ptr<const PackageID> &)
+paludis::fakerepository::parse_license(const std::string & s, const Environment * const)
 {
     using namespace std::placeholders;
 

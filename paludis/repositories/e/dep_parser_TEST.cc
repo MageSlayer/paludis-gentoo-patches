@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -62,7 +62,7 @@ namespace test_cases
             UnformattedPrettyPrinter ff;
             SpecTreePrettyPrinter d(ff, { });
             parse_depend("",
-                    &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d);
+                    &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "");
         }
     } test_dep_spec_parser_empty;
@@ -88,7 +88,7 @@ namespace test_cases
             UnformattedPrettyPrinter ff;
             SpecTreePrettyPrinter d(ff, { });
             parse_depend("   \n   \t",
-                    &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d);
+                    &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "");
         }
     } test_dep_spec_parser_blank;
@@ -114,7 +114,7 @@ namespace test_cases
             UnformattedPrettyPrinter ff;
             SpecTreePrettyPrinter d(ff, { });
             parse_depend("app-editors/vim",
-                    &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d);
+                    &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "app-editors/vim");
         }
     } test_dep_spec_parser_package;
@@ -140,17 +140,17 @@ namespace test_cases
 
             SpecTreePrettyPrinter d1(ff, { });
             parse_depend(">=app-editors/vim-6.4_alpha",
-                    &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d1);
+                    &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d1);
             TEST_CHECK_EQUAL(stringify(d1), ">=app-editors/vim-6.4_alpha");
 
             SpecTreePrettyPrinter d2(ff, { });
             parse_depend("=app-editors/vim-6.4_alpha-r1",
-                    &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d2);
+                    &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d2);
             TEST_CHECK_EQUAL(stringify(d2), "=app-editors/vim-6.4_alpha-r1");
 
             SpecTreePrettyPrinter d3(ff, { });
             parse_depend(">=app-editors/vim-6.4_alpha:one",
-                    &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d3);
+                    &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d3);
             TEST_CHECK_EQUAL(stringify(d3), ">=app-editors/vim-6.4_alpha:one");
         }
     } test_dep_spec_parser_decorated_package;
@@ -176,7 +176,7 @@ namespace test_cases
 
             SpecTreePrettyPrinter d(ff, { });
             parse_depend("app-editors/vim app-misc/hilite   \nsys-apps/findutils",
-                    &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d);
+                    &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "app-editors/vim app-misc/hilite sys-apps/findutils");
         }
     } test_dep_spec_parser_packages;
@@ -198,7 +198,7 @@ namespace test_cases
 
             SpecTreePrettyPrinter d(ff, { });
             parse_depend("|| ( one/one two/two )",
-                    &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d);
+                    &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "|| ( one/one two/two )");
         }
     } test_dep_spec_parser_any;
@@ -220,15 +220,15 @@ namespace test_cases
 
             SpecTreePrettyPrinter d(ff, { });
             parse_depend("|| ( one/one foo? ( two/two ) )",
-                    &env, id, *EAPIData::get_instance()->eapi_from_string("0"))->top()->accept(d);
+                    &env, *EAPIData::get_instance()->eapi_from_string("0"))->top()->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "|| ( one/one foo? ( two/two ) )");
 
             TEST_CHECK_THROWS(parse_depend("|| ( one/one foo? ( two/two ) )",
-                    &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d), Exception);
+                    &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d), Exception);
 
             SpecTreePrettyPrinter e(ff, { });
             parse_depend("|| ( one/one ( foo? ( two/two ) ) )",
-                    &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(e);
+                    &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(e);
             TEST_CHECK_EQUAL(stringify(e), "|| ( one/one ( foo? ( two/two ) ) )");
         }
     } test_dep_spec_parser_any_use;
@@ -254,7 +254,7 @@ namespace test_cases
 
             SpecTreePrettyPrinter d(ff, { });
             parse_depend(" ( one/one two/two )    ",
-                    &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d);
+                    &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "one/one two/two");
         }
     } test_dep_spec_parser_all;
@@ -279,7 +279,7 @@ namespace test_cases
             std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
             SpecTreePrettyPrinter d(ff, { });
-            parse_depend("foo? ( one/one )", &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d);
+            parse_depend("foo? ( one/one )", &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "foo? ( one/one )");
         }
     } test_dep_spec_parser_use;
@@ -304,7 +304,7 @@ namespace test_cases
             std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
             SpecTreePrettyPrinter d(ff, { });
-            parse_depend("!foo? ( one/one )", &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d);
+            parse_depend("!foo? ( one/one )", &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "!foo? ( one/one )");
         }
     } test_dep_spec_parser_inv_use;
@@ -325,15 +325,15 @@ namespace test_cases
             std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
             SpecTreePrettyPrinter d(ff, { ppo_multiline_allowed });
-            parse_fetchable_uri("a\n->\tb", &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d);
+            parse_fetchable_uri("a\n->\tb", &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "a -> b\n");
 
             SpecTreePrettyPrinter e(ff, { ppo_multiline_allowed });
-            parse_fetchable_uri("a-> b", &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(e);
+            parse_fetchable_uri("a-> b", &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(e);
             TEST_CHECK_EQUAL(stringify(e), "a->\nb\n");
 
             TEST_CHECK_THROWS(parse_fetchable_uri("a -> b",
-                        &env, id, *EAPIData::get_instance()->eapi_from_string("0"))->top()->accept(d), Exception);
+                        &env, *EAPIData::get_instance()->eapi_from_string("0"))->top()->accept(d), Exception);
         }
     } test_dep_spec_parser_uri;
 
@@ -358,15 +358,15 @@ namespace test_cases
 
             SpecTreePrettyPrinter d(ff, { });
             TEST_CHECK_THROWS(parse_depend("!foo? ( one/one",
-                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d), Exception);
+                        &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d), Exception);
             TEST_CHECK_THROWS(parse_depend("!foo? ( one/one ) )",
-                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d), Exception);
+                        &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d), Exception);
             TEST_CHECK_THROWS(parse_depend("( ( ( ) )",
-                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d), Exception);
+                        &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d), Exception);
             TEST_CHECK_THROWS(parse_depend("( ( ( ) ) ) )",
-                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d), Exception);
+                        &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d), Exception);
             TEST_CHECK_THROWS(parse_depend(")",
-                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d), Exception);
+                        &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d), Exception);
         }
     } test_dep_spec_parser_bad_nesting;
 
@@ -391,38 +391,38 @@ namespace test_cases
 
             SpecTreePrettyPrinter d(ff, { });
             TEST_CHECK_THROWS(parse_depend("||",
-                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d), Exception);
+                        &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d), Exception);
             TEST_CHECK_THROWS(parse_depend("|| ",
-                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d), Exception);
+                        &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d), Exception);
             TEST_CHECK_THROWS(parse_depend("foo?",
-                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d), Exception);
+                        &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d), Exception);
             TEST_CHECK_THROWS(parse_depend("!? ( )",
-                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d), Exception);
+                        &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d), Exception);
             TEST_CHECK_THROWS(parse_depend("!foo? ||",
-                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d), Exception);
+                        &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d), Exception);
             TEST_CHECK_THROWS(parse_depend("(((",
-                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d), Exception);
+                        &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d), Exception);
             TEST_CHECK_THROWS(parse_depend(")",
-                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d), Exception);
+                        &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d), Exception);
             TEST_CHECK_THROWS(parse_depend("(foo/bar)",
-                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d), Exception);
+                        &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d), Exception);
             TEST_CHECK_THROWS(parse_license("a -> b",
-                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d), Exception);
+                        &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d), Exception);
 
             TEST_CHECK_THROWS(parse_fetchable_uri("( -> )",
-                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d), Exception);
+                        &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d), Exception);
             TEST_CHECK_THROWS(parse_fetchable_uri("( -> )",
-                        &env, id, *EAPIData::get_instance()->eapi_from_string("0"))->top()->accept(d), Exception);
+                        &env, *EAPIData::get_instance()->eapi_from_string("0"))->top()->accept(d), Exception);
             TEST_CHECK_THROWS(parse_fetchable_uri("foo? -> bar",
-                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d), Exception);
+                        &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d), Exception);
             TEST_CHECK_THROWS(parse_fetchable_uri("a ->",
-                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d), Exception);
+                        &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d), Exception);
             TEST_CHECK_THROWS(parse_fetchable_uri("a -> ( )",
-                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d), Exception);
+                        &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d), Exception);
             TEST_CHECK_THROWS(parse_fetchable_uri("a -> )",
-                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d), Exception);
+                        &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d), Exception);
             TEST_CHECK_THROWS(parse_fetchable_uri("a -> || ( )",
-                        &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d), Exception);
+                        &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d), Exception);
         }
     } test_dep_spec_parser_bad_values;
 
@@ -446,10 +446,10 @@ namespace test_cases
 
             SpecTreePrettyPrinter d(ff, { });
             parse_depend("build: one/one",
-                    &env, id, *EAPIData::get_instance()->eapi_from_string("exheres-0"))->top()->accept(d);
+                    &env, *EAPIData::get_instance()->eapi_from_string("exheres-0"))->top()->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "build: one/one");
             TEST_CHECK_THROWS(parse_depend("build: one/one",
-                        &env, id, *EAPIData::get_instance()->eapi_from_string("0"))->top()->accept(d), EDepParseError);
+                        &env, *EAPIData::get_instance()->eapi_from_string("0"))->top()->accept(d), EDepParseError);
         }
     } test_dep_spec_parser_labels;
 
@@ -470,10 +470,10 @@ namespace test_cases
 
             SpecTreePrettyPrinter d(ff, { });
             parse_fetchable_uri("http://foo/bar manual: two",
-                    &env, id, *EAPIData::get_instance()->eapi_from_string("exheres-0"))->top()->accept(d);
+                    &env, *EAPIData::get_instance()->eapi_from_string("exheres-0"))->top()->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "http://foo/bar manual: two");
             TEST_CHECK_THROWS(parse_fetchable_uri("http://foo/bar monkey: two",
-                        &env, id, *EAPIData::get_instance()->eapi_from_string("exheres-0"))->top()->accept(d), EDepParseError);
+                        &env, *EAPIData::get_instance()->eapi_from_string("exheres-0"))->top()->accept(d), EDepParseError);
         }
     } test_dep_spec_parser_exheres_0_uri_labels;
 
@@ -494,12 +494,12 @@ namespace test_cases
             UnformattedPrettyPrinter ff;
             SpecTreePrettyPrinter d(ff, { });
             parse_depend("cat/first [[ foo = bar bar = baz ]] cat/second cat/third [[ moo = oink ]]",
-                    &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d);
+                    &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(d);
             TEST_CHECK_EQUAL(stringify(d), "cat/first [[ bar = [ baz ] foo = [ bar ] ]] cat/second cat/third [[ moo = [ oink ] ]]");
 
             SpecTreePrettyPrinter e(ff, { });
             parse_depend("bar? ( foo? ( cat/first [[ for = first ]] ) [[ for = foo ]] baz? ( ) [[ for = baz ]] ) [[ for = bar ]]",
-                    &env, id, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(e);
+                    &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(e);
             TEST_CHECK_EQUAL(stringify(e), "bar? ( foo? ( cat/first [[ for = [ first ] ]] ) "
                     "[[ for = [ foo ] ]] baz? ( ) [[ for = [ baz ] ]] ) [[ for = [ bar ] ]]");
         }

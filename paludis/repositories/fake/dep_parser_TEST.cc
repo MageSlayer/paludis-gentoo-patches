@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -87,8 +87,7 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            std::shared_ptr<DependencySpecTree> d(fakerepository::parse_depend(
-                        "( ( a/a b/b ) )", &env, std::shared_ptr<const PackageID>()));
+            std::shared_ptr<DependencySpecTree> d(fakerepository::parse_depend("( ( a/a b/b ) )", &env));
 
             QuickPrinter p;
             d->top()->accept(p);

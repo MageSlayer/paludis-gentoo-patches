@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -921,40 +921,32 @@ FakePackageID::need_keys_added() const
         using namespace std::placeholders;
 
         _imp->build_dependencies = std::make_shared<FakeMetadataSpecTreeKey<DependencySpecTree>>("DEPEND", "Build dependencies",
-                    "", std::bind(&parse_depend, _1, _imp->env,
-                        shared_from_this()),
+                    "", std::bind(&parse_depend, _1, _imp->env),
                     FakePackageIDData::get_instance()->build_dependencies_labels, mkt_dependencies);
 
         _imp->run_dependencies = std::make_shared<FakeMetadataSpecTreeKey<DependencySpecTree>>("RDEPEND", "Run dependencies",
-                    "", std::bind(&parse_depend, _1, _imp->env,
-                        shared_from_this()),
+                    "", std::bind(&parse_depend, _1, _imp->env),
                     FakePackageIDData::get_instance()->run_dependencies_labels, mkt_dependencies);
 
         _imp->post_dependencies = std::make_shared<FakeMetadataSpecTreeKey<DependencySpecTree>>("PDEPEND", "Post dependencies",
-                    "", std::bind(&parse_depend, _1, _imp->env,
-                        shared_from_this()),
+                    "", std::bind(&parse_depend, _1, _imp->env),
                     FakePackageIDData::get_instance()->post_dependencies_labels, mkt_dependencies);
 
         _imp->suggested_dependencies = std::make_shared<FakeMetadataSpecTreeKey<DependencySpecTree>>("SDEPEND", "Suggested dependencies",
-                    "", std::bind(&parse_depend, _1, _imp->env,
-                        shared_from_this()),
+                    "", std::bind(&parse_depend, _1, _imp->env),
                     FakePackageIDData::get_instance()->suggested_dependencies_labels, mkt_dependencies);
 
         _imp->src_uri = std::make_shared<FakeMetadataSpecTreeKey<FetchableURISpecTree>>("SRC_URI", "Source URI",
-                    "", std::bind(&parse_fetchable_uri, _1, _imp->env,
-                        shared_from_this()), mkt_normal);
+                    "", std::bind(&parse_fetchable_uri, _1, _imp->env), mkt_normal);
 
         _imp->homepage = std::make_shared<FakeMetadataSpecTreeKey<SimpleURISpecTree>>("HOMEPAGE", "Homepage",
-                    "", std::bind(&parse_simple_uri, _1, _imp->env,
-                        shared_from_this()), mkt_normal);
+                    "", std::bind(&parse_simple_uri, _1, _imp->env), mkt_normal);
 
         _imp->license = std::make_shared<FakeMetadataSpecTreeKey<LicenseSpecTree>>("LICENSE", "License",
-                    "", std::bind(&parse_license, _1, _imp->env,
-                        shared_from_this()), mkt_normal);
+                    "", std::bind(&parse_license, _1, _imp->env), mkt_normal);
 
         _imp->provide = std::make_shared<FakeMetadataSpecTreeKey<ProvideSpecTree>>("PROVIDE", "Provide",
-                    "", std::bind(&parse_provide, _1, _imp->env,
-                        shared_from_this()), mkt_normal);
+                    "", std::bind(&parse_provide, _1, _imp->env), mkt_normal);
 
         _imp->choices = std::make_shared<FakeMetadataChoicesKey>(_imp->env, shared_from_this());
 

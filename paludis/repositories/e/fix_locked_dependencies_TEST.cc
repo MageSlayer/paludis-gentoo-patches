@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -64,7 +64,7 @@ namespace test_cases
             std::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string("paludis-1"));
 
             std::shared_ptr<const DependencySpecTree> bb(parse_depend(
-                        "|| ( foo/bar ( bar/baz oink/squeak ) ) blah/blah", &env, id, *eapi)),
+                        "|| ( foo/bar ( bar/baz oink/squeak ) ) blah/blah", &env, *eapi)),
                 aa(fix_locked_dependencies(&env, *eapi, id, bb));
 
             UnformattedPrettyPrinter ff;
@@ -77,7 +77,7 @@ namespace test_cases
             TEST_CHECK_STRINGIFY_EQUAL(a, b);
 
             std::shared_ptr<const DependencySpecTree> cc(parse_depend(
-                        "foo/bar:= cat/installed:= >=cat/installed-1.2:= <=cat/installed-1.2:=", &env, id, *eapi)),
+                        "foo/bar:= cat/installed:= >=cat/installed-1.2:= <=cat/installed-1.2:=", &env, *eapi)),
                 dd(fix_locked_dependencies(&env, *eapi, id, cc));
 
             SpecTreePrettyPrinter

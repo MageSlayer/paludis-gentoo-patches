@@ -332,8 +332,7 @@ EInstalledRepositoryID::need_keys_added() const
         {
             DependenciesRewriter rewriter;
             std::string raw_deps_str(file_contents(_imp->dir / vars->dependencies()->name()));
-            std::shared_ptr<DependencySpecTree> raw_deps(parse_depend(raw_deps_str,
-                    _imp->environment, shared_from_this(), *eapi()));
+            std::shared_ptr<DependencySpecTree> raw_deps(parse_depend(raw_deps_str, _imp->environment, *eapi()));
             raw_deps->top()->accept(rewriter);
 
             _imp->keys->raw_dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), vars->dependencies()->name(),

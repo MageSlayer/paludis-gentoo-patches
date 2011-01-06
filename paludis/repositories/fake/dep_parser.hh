@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -46,31 +46,31 @@ namespace paludis
          * Parse a dependency heirarchy.
          */
         std::shared_ptr<DependencySpecTree> parse_depend(const std::string & s,
-                const Environment * const, const std::shared_ptr<const PackageID> &) PALUDIS_VISIBLE;
+                const Environment * const) PALUDIS_VISIBLE;
 
         /**
          * Parse a provide heirarchy.
          */
         std::shared_ptr<ProvideSpecTree> parse_provide(const std::string & s,
-                const Environment * const, const std::shared_ptr<const PackageID> &) PALUDIS_VISIBLE;
+                const Environment * const) PALUDIS_VISIBLE;
 
         /**
          * Parse a fetchable uri heirarchy.
          */
         std::shared_ptr<FetchableURISpecTree> parse_fetchable_uri(const std::string & s,
-                const Environment * const, const std::shared_ptr<const PackageID> &) PALUDIS_VISIBLE;
+                const Environment * const) PALUDIS_VISIBLE;
 
         /**
          * Parse a simple uri heirarchy.
          */
         std::shared_ptr<SimpleURISpecTree> parse_simple_uri(const std::string & s,
-                const Environment * const, const std::shared_ptr<const PackageID> &) PALUDIS_VISIBLE;
+                const Environment * const) PALUDIS_VISIBLE;
 
         /**
          * Parse a license heirarchy.
          */
         std::shared_ptr<LicenseSpecTree> parse_license(const std::string & s,
-                const Environment * const, const std::shared_ptr<const PackageID> &) PALUDIS_VISIBLE;
+                const Environment * const) PALUDIS_VISIBLE;
     }
 }
 

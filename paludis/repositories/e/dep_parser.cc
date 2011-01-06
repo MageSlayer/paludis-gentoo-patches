@@ -250,11 +250,10 @@ namespace
             const Environment * const env,
             const typename ParseStackTypes<T_>::Stack & h,
             const typename ParseStackTypes<T_>::AnnotationsGoHere & annotations_go_here,
-            const std::shared_ptr<const PackageID> & id,
             const std::string & s,
             const EAPI & eapi)
     {
-        std::shared_ptr<DependenciesLabelsDepSpec> spec(parse_dependency_label(env, id, s, eapi));
+        std::shared_ptr<DependenciesLabelsDepSpec> spec(parse_dependency_label(env, s, eapi));
         h.begin()->item()->append(spec);
         annotations_go_here(spec, make_null_shared_ptr());
     }
@@ -469,8 +468,7 @@ namespace
 }
 
 std::shared_ptr<DependencySpecTree>
-paludis::erepository::parse_depend(const std::string & s,
-        const Environment * const env, const std::shared_ptr<const PackageID> & id, const EAPI & eapi)
+paludis::erepository::parse_depend(const std::string & s, const Environment * const env, const EAPI & eapi)
 {
     using namespace std::placeholders;
 
@@ -497,7 +495,7 @@ paludis::erepository::parse_depend(const std::string & s,
                     std::ref(stack),
                     ParseStackTypes<DependencySpecTree>::AnnotationsGoHere(std::bind(
                             &set_thing_to_annotate_maybe_block, std::ref(thing_to_annotate), _1, std::ref(thing_to_annotate_if_block), _2)),
-                    id, _1, std::cref(eapi)),
+                    _1, std::cref(eapi)),
                 n::on_pop() = std::bind(&pop_handler<DependencySpecTree>, std::ref(stack),
                     ParseStackTypes<DependencySpecTree>::AnnotationsGoHere(std::bind(
                             &set_thing_to_annotate_maybe_block, std::ref(thing_to_annotate), _1, std::ref(thing_to_annotate_if_block), _2)), s),
@@ -515,8 +513,7 @@ paludis::erepository::parse_depend(const std::string & s,
 }
 
 std::shared_ptr<ProvideSpecTree>
-paludis::erepository::parse_provide(const std::string & s,
-        const Environment * const env, const std::shared_ptr<const PackageID> &, const EAPI & eapi)
+paludis::erepository::parse_provide(const std::string & s, const Environment * const env, const EAPI & eapi)
 {
     using namespace std::placeholders;
 
@@ -555,8 +552,7 @@ paludis::erepository::parse_provide(const std::string & s,
 }
 
 std::shared_ptr<FetchableURISpecTree>
-paludis::erepository::parse_fetchable_uri(const std::string & s,
-        const Environment * const env, const std::shared_ptr<const PackageID> &, const EAPI & eapi)
+paludis::erepository::parse_fetchable_uri(const std::string & s, const Environment * const env, const EAPI & eapi)
 {
     using namespace std::placeholders;
 
@@ -599,8 +595,7 @@ paludis::erepository::parse_fetchable_uri(const std::string & s,
 }
 
 std::shared_ptr<SimpleURISpecTree>
-paludis::erepository::parse_simple_uri(const std::string & s,
-        const Environment * const env, const std::shared_ptr<const PackageID> &, const EAPI & eapi)
+paludis::erepository::parse_simple_uri(const std::string & s, const Environment * const env, const EAPI & eapi)
 {
     using namespace std::placeholders;
 
@@ -639,8 +634,7 @@ paludis::erepository::parse_simple_uri(const std::string & s,
 }
 
 std::shared_ptr<LicenseSpecTree>
-paludis::erepository::parse_license(const std::string & s,
-        const Environment * const env, const std::shared_ptr<const PackageID> &, const EAPI & eapi)
+paludis::erepository::parse_license(const std::string & s, const Environment * const env, const EAPI & eapi)
 {
     using namespace std::placeholders;
 
@@ -679,8 +673,7 @@ paludis::erepository::parse_license(const std::string & s,
 }
 
 std::shared_ptr<PlainTextSpecTree>
-paludis::erepository::parse_plain_text(const std::string & s,
-        const Environment * const env, const std::shared_ptr<const PackageID> &, const EAPI & eapi)
+paludis::erepository::parse_plain_text(const std::string & s, const Environment * const env, const EAPI & eapi)
 {
     using namespace std::placeholders;
 
@@ -719,8 +712,7 @@ paludis::erepository::parse_plain_text(const std::string & s,
 }
 
 std::shared_ptr<PlainTextSpecTree>
-paludis::erepository::parse_myoptions(const std::string & s,
-        const Environment * const env, const std::shared_ptr<const PackageID> &, const EAPI & eapi)
+paludis::erepository::parse_myoptions(const std::string & s, const Environment * const env, const EAPI & eapi)
 {
     using namespace std::placeholders;
 
@@ -761,8 +753,7 @@ paludis::erepository::parse_myoptions(const std::string & s,
 }
 
 std::shared_ptr<RequiredUseSpecTree>
-paludis::erepository::parse_required_use(const std::string & s,
-        const Environment * const env, const std::shared_ptr<const PackageID> &, const EAPI & eapi)
+paludis::erepository::parse_required_use(const std::string & s, const Environment * const env, const EAPI & eapi)
 {
     using namespace std::placeholders;
 
@@ -1000,7 +991,6 @@ namespace
 std::shared_ptr<DependenciesLabelsDepSpec>
 paludis::erepository::parse_dependency_label(
         const Environment * const,
-        const std::shared_ptr<const PackageID> &,
         const std::string & s,
         const EAPI & e)
 {

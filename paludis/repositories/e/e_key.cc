@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -157,7 +157,7 @@ EDependenciesKey::value() const
         return _imp->value;
 
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
-    _imp->value = parse_depend(_imp->string_value, _imp->env, _imp->id, *_imp->id->eapi());
+    _imp->value = parse_depend(_imp->string_value, _imp->env, *_imp->id->eapi());
     return _imp->value;
 }
 
@@ -242,7 +242,7 @@ ELicenseKey::value() const
         return _imp->value;
 
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
-    _imp->value = parse_license(_imp->string_value, _imp->env, _imp->id, *_imp->id->eapi());
+    _imp->value = parse_license(_imp->string_value, _imp->env, *_imp->id->eapi());
     return _imp->value;
 }
 
@@ -322,7 +322,7 @@ EFetchableURIKey::value() const
         return _imp->value;
 
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
-    _imp->value = parse_fetchable_uri(_imp->string_value, _imp->env, _imp->id, *_imp->id->eapi());
+    _imp->value = parse_fetchable_uri(_imp->string_value, _imp->env, *_imp->id->eapi());
     return _imp->value;
 }
 
@@ -439,7 +439,7 @@ ESimpleURIKey::value() const
         return _imp->value;
 
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
-    _imp->value = parse_simple_uri(_imp->string_value, _imp->env, _imp->id, *_imp->id->eapi());
+    _imp->value = parse_simple_uri(_imp->string_value, _imp->env, *_imp->id->eapi());
     return _imp->value;
 }
 
@@ -518,7 +518,7 @@ EPlainTextSpecKey::value() const
         return _imp->value;
 
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
-    _imp->value = parse_plain_text(_imp->string_value, _imp->env, _imp->id, *_imp->id->eapi());
+    _imp->value = parse_plain_text(_imp->string_value, _imp->env, *_imp->id->eapi());
     return _imp->value;
 }
 
@@ -598,7 +598,7 @@ EMyOptionsKey::value() const
         return _imp->value;
 
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
-    _imp->value = parse_myoptions(_imp->string_value, _imp->env, _imp->id, *_imp->id->eapi());
+    _imp->value = parse_myoptions(_imp->string_value, _imp->env, *_imp->id->eapi());
     return _imp->value;
 }
 
@@ -678,7 +678,7 @@ ERequiredUseKey::value() const
         return _imp->value;
 
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
-    _imp->value = parse_required_use(_imp->string_value, _imp->env, _imp->id, *_imp->id->eapi());
+    _imp->value = parse_required_use(_imp->string_value, _imp->env, *_imp->id->eapi());
     return _imp->value;
 }
 
@@ -757,7 +757,7 @@ EProvideKey::value() const
         return _imp->value;
 
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
-    _imp->value = parse_provide(_imp->string_value, _imp->env, _imp->id, *_imp->id->eapi());
+    _imp->value = parse_provide(_imp->string_value, _imp->env, *_imp->id->eapi());
     return _imp->value;
 }
 
