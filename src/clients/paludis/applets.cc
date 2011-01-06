@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -187,7 +187,7 @@ int do_has_version(const std::shared_ptr<Environment> & env)
     std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(
                 parse_user_package_dep_spec(query, env.get(), { })));
     std::shared_ptr<const PackageIDSequence> entries((*env)[selection::SomeArbitraryVersion(
-                generator::Matches(*spec, { }) | filter::InstalledAtRoot(env->preferred_root_key()->value()))]);
+                generator::Matches(*spec, make_null_shared_ptr(), { }) | filter::InstalledAtRoot(env->preferred_root_key()->value()))]);
 
     if (entries->empty())
         return_code = 1;
@@ -205,7 +205,7 @@ int do_best_version(const std::shared_ptr<Environment> & env)
     std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(
                 parse_user_package_dep_spec(query, env.get(), { })));
     std::shared_ptr<const PackageIDSequence> entries((*env)[selection::AllVersionsSorted(
-                generator::Matches(*spec, { }) | filter::InstalledAtRoot(env->preferred_root_key()->value()))]);
+                generator::Matches(*spec, make_null_shared_ptr(), { }) | filter::InstalledAtRoot(env->preferred_root_key()->value()))]);
 
     /* make built_with_use work for virtuals... icky... */
     while (! entries->empty())
@@ -246,7 +246,7 @@ int do_match(const std::shared_ptr<Environment> & env)
     std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(
                 parse_user_package_dep_spec(query, env.get(), { })));
     std::shared_ptr<const PackageIDSequence> entries((*env)[selection::AllVersionsSorted(
-                generator::Matches(*spec, { }) | filter::InstalledAtRoot(env->preferred_root_key()->value()))]);
+                generator::Matches(*spec, make_null_shared_ptr(), { }) | filter::InstalledAtRoot(env->preferred_root_key()->value()))]);
 
     while (! entries->empty())
     {
@@ -291,10 +291,10 @@ int do_environment_variable(const std::shared_ptr<Environment> & env)
                 parse_user_package_dep_spec(spec_str, env.get(), { })));
 
     std::shared_ptr<const PackageIDSequence> entries((*env)[selection::AllVersionsSorted(
-                generator::Matches(*spec, { }) | filter::InstalledAtRoot(env->preferred_root_key()->value()))]);
+                generator::Matches(*spec, make_null_shared_ptr(), { }) | filter::InstalledAtRoot(env->preferred_root_key()->value()))]);
 
     if (entries->empty())
-        entries = (*env)[selection::AllVersionsSorted(generator::Matches(*spec, { }))];
+        entries = (*env)[selection::AllVersionsSorted(generator::Matches(*spec, make_null_shared_ptr(), { }))];
 
     if (entries->empty())
         throw NoSuchPackageError(spec_str);

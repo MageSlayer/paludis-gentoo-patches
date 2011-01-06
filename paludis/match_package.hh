@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2010 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -44,12 +44,18 @@ namespace paludis
      * Return whether the specified PackageID matches the specified
      * PackageDepSpec.
      *
+     * \param spec_id The PackageID the spec comes from. May be null. Used for
+     * [use=] style dependencies.
+     *
+     * \since 0.58 takes spec_id
+     *
      * \ingroup g_query
      */
     bool match_package(
             const Environment & env,
             const PackageDepSpec & spec,
             const std::shared_ptr<const PackageID> & id,
+            const std::shared_ptr<const PackageID> & spec_id,
             const MatchPackageOptions & options)
         PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
 
@@ -57,6 +63,11 @@ namespace paludis
      * Return whether the specified PackageID matches the specified
      * PackageDepSpec, with the specified ChangedChoices applied to the target
      * and the ID from which the dep came.
+     *
+     * \param spec_id The PackageID the spec comes from. May be null. Used for
+     * [use=] style dependencies.
+     *
+     * \since 0.58 takes spec_id
      *
      * \ingroup g_query
      * \since 0.51
@@ -66,6 +77,7 @@ namespace paludis
             const PackageDepSpec & spec,
             const ChangedChoices * const maybe_changes_to_owner,
             const std::shared_ptr<const PackageID> & id,
+            const std::shared_ptr<const PackageID> & spec_id,
             const ChangedChoices * const maybe_changes_to_target,
             const MatchPackageOptions & options)
         PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -87,11 +87,11 @@ GetInitialConstraintsForHelper::add_without_spec(const PackageDepSpec & spec)
 }
 
 void
-GetInitialConstraintsForHelper::add_preset_spec(const PackageDepSpec & spec)
+GetInitialConstraintsForHelper::add_preset_spec(const PackageDepSpec & spec, const std::shared_ptr<const PackageID> & from_id)
 {
     auto reason(std::make_shared<PresetReason>("preset", make_null_shared_ptr()));
 
-    auto ids((*_imp->env)[selection::BestVersionInEachSlot(generator::Matches(spec, { }))]);
+    auto ids((*_imp->env)[selection::BestVersionInEachSlot(generator::Matches(spec, from_id, { }))]);
     for (auto i(ids->begin()), i_end(ids->end()) ;
             i != i_end ; ++i)
         for (EnumIterator<DestinationType> t, t_end(last_dt) ; t != t_end ; ++t)
@@ -101,6 +101,7 @@ GetInitialConstraintsForHelper::add_preset_spec(const PackageDepSpec & spec)
             const std::shared_ptr<Constraint> constraint(std::make_shared<Constraint>(make_named_values<Constraint>(
                             n::destination_type() = r.destination_type(),
                             n::force_unable() = false,
+                            n::from_id() = from_id,
                             n::nothing_is_fine_too() = true,
                             n::reason() = reason,
                             n::spec() = spec,
@@ -234,6 +235,7 @@ GetInitialConstraintsForHelper::_make_initial_constraints_for(
         result->add(std::make_shared<Constraint>(make_named_values<Constraint>(
                         n::destination_type() = resolvent.destination_type(),
                         n::force_unable() = false,
+                        n::from_id() = make_null_shared_ptr(),
                         n::nothing_is_fine_too() = true,
                         n::reason() = std::make_shared<PresetReason>("is scm", make_null_shared_ptr()),
                         n::spec() = make_package_dep_spec({ }).package(resolvent.package()),

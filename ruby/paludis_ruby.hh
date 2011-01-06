@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  * Copyright (c) 2006, 2007, 2008 Richard Brown
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -110,7 +110,7 @@ namespace paludis
         VALUE bool_to_value(bool b);
 
         VersionSpec value_to_version_spec(VALUE v);
-        std::shared_ptr<const PackageID> value_to_package_id(VALUE);
+        std::shared_ptr<const PackageID> value_to_package_id(VALUE, bool nil_ok = false);
         std::shared_ptr<const PackageDepSpec> value_to_package_dep_spec(VALUE v);
         std::shared_ptr<const DependenciesLabelsDepSpec> value_to_dependencies_labels_dep_spec(VALUE v);
         std::shared_ptr<const DepSpec> value_to_dep_spec(VALUE v);

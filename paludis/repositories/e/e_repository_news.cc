@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -33,6 +33,7 @@
 #include <paludis/util/fs_path.hh>
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/fs_iterator.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 
 #include <paludis/environment.hh>
 #include <paludis/distribution.hh>
@@ -177,7 +178,7 @@ ERepositoryNews::update_news() const
                                 generator::Matches(PackageDepSpec(parse_elike_package_dep_spec(*i,
                                             eapi.supported()->package_dep_spec_parse_options(),
                                             eapi.supported()->version_spec_options(),
-                                            std::shared_ptr<const PackageID>())), { }) |
+                                            std::shared_ptr<const PackageID>())), make_null_shared_ptr(), { }) |
                                 filter::InstalledAtRoot(_imp->environment->preferred_root_key()->value()))]->empty())
                         local_show = true;
                 show &= local_show;

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -40,6 +40,7 @@
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/fs_iterator.hh>
 #include <paludis/util/fs_error.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 
 #include <paludis/standard_output_manager.hh>
 #include <paludis/hooker.hh>
@@ -586,7 +587,7 @@ PortageEnvironment::want_choice_enabled(
     for (PackageUse::const_iterator i(_imp->package_use.begin()), i_end(_imp->package_use.end()) ;
             i != i_end ; ++i)
     {
-        if (! match_package(*this, *i->first, id, { }))
+        if (! match_package(*this, *i->first, id, make_null_shared_ptr(), { }))
             continue;
 
         if (i->second == stringify(f))
@@ -642,7 +643,7 @@ PortageEnvironment::accept_keywords(const std::shared_ptr <const KeywordNameSet>
     for (PackageKeywords::const_iterator it(_imp->package_keywords.begin()),
              it_end(_imp->package_keywords.end()); it_end != it; ++it)
     {
-        if (! match_package(*this, *it->first, d, { }))
+        if (! match_package(*this, *it->first, d, make_null_shared_ptr(), { }))
             continue;
 
         if ("-*" == it->second)
@@ -677,7 +678,7 @@ PortageEnvironment::unmasked_by_user(const std::shared_ptr<const PackageID> & e)
 {
     for (PackageUnmask::const_iterator i(_imp->package_unmask.begin()), i_end(_imp->package_unmask.end()) ;
             i != i_end ; ++i)
-        if (match_package(*this, **i, e, { }))
+        if (match_package(*this, **i, e, make_null_shared_ptr(), { }))
             return true;
 
     return false;
@@ -702,7 +703,7 @@ PortageEnvironment::known_choice_value_names(const std::shared_ptr<const Package
     for (PackageUse::const_iterator i(_imp->package_use.begin()), i_end(_imp->package_use.end()) ;
             i != i_end ; ++i)
     {
-        if (! match_package(*this, *i->first, id, { }))
+        if (! match_package(*this, *i->first, id, make_null_shared_ptr(), { }))
             continue;
 
         if (0 == i->second.compare(0, prefix_lower.length(), prefix_lower, 0, prefix_lower.length()))
@@ -862,7 +863,7 @@ PortageEnvironment::mask_for_user(const std::shared_ptr<const PackageID> & d, co
 {
     for (PackageMask::const_iterator i(_imp->package_mask.begin()), i_end(_imp->package_mask.end()) ;
             i != i_end ; ++i)
-        if (match_package(*this, **i, d, { }))
+        if (match_package(*this, **i, d, make_null_shared_ptr(), { }))
             return std::make_shared<UserConfigMask>(o);
 
     return std::shared_ptr<const Mask>();

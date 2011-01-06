@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -35,6 +35,7 @@
 #include <paludis/additional_package_dep_spec_requirement.hh>
 
 #include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 
 #include <functional>
 #include <algorithm>
@@ -81,6 +82,7 @@ paludis::match_package_with_maybe_changes(
         const PackageDepSpec & spec,
         const ChangedChoices * const maybe_changes_to_owner,
         const std::shared_ptr<const PackageID> & id,
+        const std::shared_ptr<const PackageID> &,
         const ChangedChoices * const maybe_changes_to_target,
         const MatchPackageOptions & options)
 {
@@ -219,9 +221,10 @@ paludis::match_package(
         const Environment & env,
         const PackageDepSpec & spec,
         const std::shared_ptr<const PackageID> & id,
+        const std::shared_ptr<const PackageID> & from_id,
         const MatchPackageOptions & options)
 {
-    return match_package_with_maybe_changes(env, spec, 0, id, 0, options);
+    return match_package_with_maybe_changes(env, spec, 0, id, from_id, 0, options);
 }
 
 bool
@@ -237,6 +240,6 @@ paludis::match_package_in_set(
     target.top()->accept(f);
     return indirect_iterator(f.end()) != std::find_if(
             indirect_iterator(f.begin()), indirect_iterator(f.end()),
-            std::bind(&match_package, std::cref(env), _1, std::cref(id), std::cref(options)));
+            std::bind(&match_package, std::cref(env), _1, std::cref(id), make_null_shared_ptr(), std::cref(options)));
 }
 

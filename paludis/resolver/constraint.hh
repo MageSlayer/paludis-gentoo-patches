@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -37,6 +37,7 @@ namespace paludis
     {
         typedef Name<struct name_destination_type> destination_type;
         typedef Name<struct name_force_unable> force_unable;
+        typedef Name<struct name_from_id> from_id;
         typedef Name<struct name_nothing_is_fine_too> nothing_is_fine_too;
         typedef Name<struct name_reason> reason;
         typedef Name<struct name_spec> spec;
@@ -50,6 +51,7 @@ namespace paludis
         {
             NamedValue<n::destination_type, DestinationType> destination_type;
             NamedValue<n::force_unable, bool> force_unable;
+            NamedValue<n::from_id, std::shared_ptr<const PackageID> > from_id;
             NamedValue<n::nothing_is_fine_too, bool> nothing_is_fine_too;
             NamedValue<n::reason, std::shared_ptr<const Reason> > reason;
             NamedValue<n::spec, PackageOrBlockDepSpec> spec;

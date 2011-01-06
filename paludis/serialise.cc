@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -378,7 +378,7 @@ DeserialisatorHandler<std::shared_ptr<const PackageID> >::handle(Deserialisation
                         epdso_allow_use_dep_question_defaults },
                         { vso_flexible_dashes, vso_flexible_dots, vso_ignore_case,
                         vso_letters_anywhere, vso_dotted_suffixes },
-                        make_null_shared_ptr()), { }))]->begin();
+                        make_null_shared_ptr()), make_null_shared_ptr(), { }))]->begin();
 }
 
 template class Pimp<Deserialiser>;

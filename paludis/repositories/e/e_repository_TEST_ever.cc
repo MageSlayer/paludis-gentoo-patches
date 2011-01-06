@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -30,6 +30,7 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/standard_output_manager.hh>
 #include <paludis/package_id.hh>
@@ -158,7 +159,7 @@ namespace
 
             const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("cat/" + test,
-                                    &env, { })), { }))]->last());
+                                    &env, { })), make_null_shared_ptr(), { }))]->last());
             TEST_CHECK(bool(id));
             id->perform_action(action);
         }

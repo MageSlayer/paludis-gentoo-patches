@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -32,13 +32,19 @@ namespace paludis
     template <>
     struct Imp<PackageDepSpecCollection>
     {
+        const std::shared_ptr<const PackageID> from_id;
         std::multimap<QualifiedPackageName, PackageDepSpec> by_name;
         std::list<PackageDepSpec> unnamed;
+
+        Imp(const std::shared_ptr<const PackageID> & i) :
+            from_id(i)
+        {
+        }
     };
 }
 
-PackageDepSpecCollection::PackageDepSpecCollection() :
-    Pimp<PackageDepSpecCollection>()
+PackageDepSpecCollection::PackageDepSpecCollection(const std::shared_ptr<const PackageID> & i) :
+    Pimp<PackageDepSpecCollection>(i)
 {
 }
 
@@ -61,12 +67,12 @@ PackageDepSpecCollection::match_any(
 {
     auto named(_imp->by_name.equal_range(id->name()));
     for ( ; named.first != named.second ; ++named.first)
-        if (match_package(*env, named.first->second, id, opts))
+        if (match_package(*env, named.first->second, id, _imp->from_id, opts))
             return true;
 
     for (auto u(_imp->unnamed.begin()), u_end(_imp->unnamed.end()) ;
             u != u_end ; ++u)
-        if (match_package(*env, *u, id, opts))
+        if (match_package(*env, *u, id, _imp->from_id, opts))
             return true;
 
     return false;

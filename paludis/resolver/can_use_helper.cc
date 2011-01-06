@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,6 +20,7 @@
 #include <paludis/resolver/can_use_helper.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/options.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/package_id.hh>
 #include <paludis/package_dep_spec_collection.hh>
@@ -36,7 +37,8 @@ namespace paludis
         PackageDepSpecCollection cannot_use_specs;
 
         Imp(const Environment * const e) :
-            env(e)
+            env(e),
+            cannot_use_specs(make_null_shared_ptr())
         {
         }
     };

@@ -2,7 +2,7 @@
 # vim: set sw=4 sts=4 et tw=80 :
 
 #
-# Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+# Copyright (c) 2006, 2007, 2008, 2011 Ciaran McCreesh
 # Copyright (c) 2008 Richard Brown
 #
 # This file is part of the Paludis package manager. Paludis is free software;
@@ -42,10 +42,10 @@ module Paludis
             spec_good = Paludis::parse_user_package_dep_spec('>=foo/bar-1', env, [])
             spec_bad = Paludis::parse_user_package_dep_spec('>=foo/bar-2', env, [])
             pid = env[Selection::RequireExactlyOne.new(Generator::Matches.new(
-                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', env, []), []))].first
+                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', env, []), nil, []))].first
 
-            assert Paludis::match_package(env, spec_good, pid, [])
-            assert !Paludis::match_package(env, spec_bad, pid, [])
+            assert Paludis::match_package(env, spec_good, pid, nil, [])
+            assert !Paludis::match_package(env, spec_bad, pid, nil, [])
 
         end
 
@@ -53,7 +53,7 @@ module Paludis
             env = EnvironmentFactory.instance.create("")
             world = env.set('world')
             pid = env[Selection::RequireExactlyOne.new(Generator::Matches.new(
-                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', env, []), []))].first
+                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', env, []), nil, []))].first
 
             assert Paludis::match_package_in_set(env, world, pid, [])
         end
@@ -62,14 +62,14 @@ module Paludis
             env = EnvironmentFactory.instance.create("")
             spec = Paludis::parse_user_package_dep_spec('>=foo/bar-1', env, [])
             pid = env[Selection::RequireExactlyOne.new(Generator::Matches.new(
-                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', env, []), []))].first
+                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', env, []), nil, []))].first
 
             assert_raise TypeError do
-                Paludis::match_package(spec,spec,pid, [])
+                Paludis::match_package(spec,spec,pid, nil, [])
             end
 
             assert_raise TypeError do
-                Paludis::match_package(env,spec,spec, [])
+                Paludis::match_package(env,spec,spec, nil, [])
             end
         end
 

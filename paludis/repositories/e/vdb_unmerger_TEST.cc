@@ -26,6 +26,7 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/fs_stat.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/standard_output_manager.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/package_database.hh>
@@ -129,8 +130,7 @@ namespace
                                 n::ignore() = &ignore_nothing,
                                 n::output_manager() = std::make_shared<StandardOutputManager>(),
                                 n::package_id() = *env[selection::RequireExactlyOne(generator::Matches(
-                                            parse_user_package_dep_spec("cat/" + fix(what), &env, { }),
-                                            { }))]->begin(),
+                                            parse_user_package_dep_spec("cat/" + fix(what), &env, { }), make_null_shared_ptr(), { }))]->begin(),
                                 n::root() = root_dir
                                 ));
 

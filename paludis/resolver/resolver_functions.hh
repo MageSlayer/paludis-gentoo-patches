@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -137,6 +137,7 @@ namespace paludis
 
         typedef std::function<std::pair<std::shared_ptr<Resolvents>, bool> (
                 const PackageDepSpec &,
+                const std::shared_ptr<const PackageID> &,
                 const std::shared_ptr<const SlotName> &,
                 const std::shared_ptr<const Reason> &
                 )> GetResolventsForFunction;

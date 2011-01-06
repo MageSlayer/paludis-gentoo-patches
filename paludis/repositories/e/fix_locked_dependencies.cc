@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -108,7 +108,7 @@ namespace
                     break;
 
                 std::shared_ptr<const PackageIDSequence> matches((*env)[selection::AllVersionsSorted(
-                            generator::Matches(*node.spec(), { }) | filter::InstalledAtRoot(env->system_root_key()->value()))]);
+                            generator::Matches(*node.spec(), id, { }) | filter::InstalledAtRoot(env->system_root_key()->value()))]);
                 if (matches->empty())
                     break;
 

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -191,7 +191,7 @@ ShowSuggestVisitor::visit(const DependencySpecTree::NodeType<PackageDepSpec>::Ty
     }
 
     std::shared_ptr<const PackageIDSequence> installed_matches((*_imp->environment)[selection::AllVersionsSorted(
-                generator::Matches(*node.spec(), _imp->dep_list->options()->match_package_options())
+                generator::Matches(*node.spec(), _imp->id, _imp->dep_list->options()->match_package_options())
                 | filter::InstalledAtRoot(_imp->environment->preferred_root_key()->value()))]);
     if (! installed_matches->empty())
     {
@@ -203,7 +203,7 @@ ShowSuggestVisitor::visit(const DependencySpecTree::NodeType<PackageDepSpec>::Ty
     }
 
     std::shared_ptr<const PackageIDSequence> matches((*_imp->environment)[selection::AllVersionsSorted(
-                generator::Matches(*node.spec(), _imp->dep_list->options()->match_package_options())
+                generator::Matches(*node.spec(), _imp->id, _imp->dep_list->options()->match_package_options())
                 | filter::SupportsAction<InstallAction>())]);
     if (matches->empty())
     {

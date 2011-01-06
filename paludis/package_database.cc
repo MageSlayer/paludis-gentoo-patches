@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -42,6 +42,7 @@
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/member_iterator.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <functional>
 #include <algorithm>
 #include <list>
@@ -279,7 +280,7 @@ PackageDatabase::fetch_unique_qualified_package_name(const PackageNamePart & p, 
     std::set<std::pair<CategoryNamePart, RepositoryName>, CategoryRepositoryNamePairComparator> checked;
 
     std::shared_ptr<const PackageIDSequence> pkgs((*_imp->environment)[selection::AllVersionsUnsorted(
-                generator::Matches(make_package_dep_spec({ }).package_name_part(p), { }) | f)]);
+                generator::Matches(make_package_dep_spec({ }).package_name_part(p), make_null_shared_ptr(), { }) | f)]);
 
     for (IndirectIterator<PackageIDSequence::ConstIterator> it(pkgs->begin()),
              it_end(pkgs->end()); it_end != it; ++it)

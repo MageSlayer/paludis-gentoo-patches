@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -26,6 +26,7 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/options.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/environment.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/user_dep_spec.hh>
@@ -151,7 +152,7 @@ PrintIDMetadataCommand::run(
     PackageDepSpec spec(parse_user_package_dep_spec(*cmdline.begin_parameters(), env.get(), { updso_allow_wildcards }));
 
     std::shared_ptr<const PackageIDSequence> entries(
-            (*env)[selection::AllVersionsSorted(generator::Matches(spec, { }))]);
+            (*env)[selection::AllVersionsSorted(generator::Matches(spec, make_null_shared_ptr(), { }))]);
 
     if (entries->empty())
         throw NothingMatching(spec);

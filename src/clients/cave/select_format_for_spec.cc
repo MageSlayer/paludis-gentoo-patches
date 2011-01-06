@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2010 Ciaran McCreesh
+ * Copyright (c) 2008, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -35,14 +35,15 @@ T_
 paludis::cave::select_format_for_spec(
         const std::shared_ptr<const Environment> & env,
         const PackageDepSpec & spec,
+        const std::shared_ptr<const PackageID> & from_id,
         const T_ & if_installed,
         const T_ & if_installable,
         const T_ & if_unavailable
         )
 {
-    if (! (*env)[selection::SomeArbitraryVersion(generator::Matches(spec, { }) | filter::InstalledAtRoot(env->system_root_key()->value()))]->empty())
+    if (! (*env)[selection::SomeArbitraryVersion(generator::Matches(spec, from_id, { }) | filter::InstalledAtRoot(env->system_root_key()->value()))]->empty())
         return if_installed;
-    if (! (*env)[selection::SomeArbitraryVersion(generator::Matches(spec, { }) | filter::SupportsAction<InstallAction>()
+    if (! (*env)[selection::SomeArbitraryVersion(generator::Matches(spec, from_id, { }) | filter::SupportsAction<InstallAction>()
                 | filter::NotMasked())]->empty())
         return if_installable;
     return if_unavailable;
@@ -51,6 +52,7 @@ paludis::cave::select_format_for_spec(
 template std::string paludis::cave::select_format_for_spec(
         const std::shared_ptr<const Environment> & env,
         const PackageDepSpec & spec,
+        const std::shared_ptr<const PackageID> & from_id,
         const std::string & if_installed,
         const std::string & if_installable,
         const std::string & if_unavailable
@@ -59,6 +61,7 @@ template std::string paludis::cave::select_format_for_spec(
 template FormatString<'i', 's'> paludis::cave::select_format_for_spec(
         const std::shared_ptr<const Environment> & env,
         const PackageDepSpec & spec,
+        const std::shared_ptr<const PackageID> & from_id,
         const FormatString<'i', 's'> & if_installed,
         const FormatString<'i', 's'> & if_installable,
         const FormatString<'i', 's'> & if_unavailable
@@ -67,6 +70,7 @@ template FormatString<'i', 's'> paludis::cave::select_format_for_spec(
 template FormatString<'s'> paludis::cave::select_format_for_spec(
         const std::shared_ptr<const Environment> & env,
         const PackageDepSpec & spec,
+        const std::shared_ptr<const PackageID> & from_id,
         const FormatString<'s'> & if_installed,
         const FormatString<'s'> & if_installable,
         const FormatString<'s'> & if_unavailable

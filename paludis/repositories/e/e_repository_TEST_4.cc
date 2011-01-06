@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -31,6 +31,7 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/standard_output_manager.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/package_id.hh>
@@ -145,7 +146,7 @@ namespace test_cases
                 TestMessageSuffix suffix("pkg_pretend", true);
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/pkg_pretend-4",
-                                        &env, { })), { }))]->last());
+                                        &env, { })), make_null_shared_ptr(), { }))]->last());
                 TEST_CHECK(bool(id));
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
                 id->perform_action(pretend_action);
@@ -156,7 +157,7 @@ namespace test_cases
                 TestMessageSuffix suffix("pkg_pretend-failure", true);
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/pkg_pretend-failure-4",
-                                        &env, { })), { }))]->last());
+                                        &env, { })), make_null_shared_ptr(), { }))]->last());
                 TEST_CHECK(bool(id));
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
                 id->perform_action(pretend_action);
@@ -167,7 +168,7 @@ namespace test_cases
                 TestMessageSuffix suffix("default_src_install 4", true);
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/default_src_install-4",
-                                        &env, { })), { }))]->last());
+                                        &env, { })), make_null_shared_ptr(), { }))]->last());
                 TEST_CHECK(bool(id));
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
                 id->perform_action(action);
@@ -177,7 +178,7 @@ namespace test_cases
                 TestMessageSuffix suffix("docompress 4", true);
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/docompress-4",
-                                        &env, { })), { }))]->last());
+                                        &env, { })), make_null_shared_ptr(), { }))]->last());
                 TEST_CHECK(bool(id));
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
                 id->perform_action(action);
@@ -187,7 +188,7 @@ namespace test_cases
                 TestMessageSuffix suffix("dodoc -r", true);
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/dodoc-r-4",
-                                        &env, { })), { }))]->last());
+                                        &env, { })), make_null_shared_ptr(), { }))]->last());
                 TEST_CHECK(bool(id));
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
                 id->perform_action(action);
@@ -197,7 +198,7 @@ namespace test_cases
                 TestMessageSuffix suffix("doins symlink", true);
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/doins-symlink-4",
-                                        &env, { })), { }))]->last());
+                                        &env, { })), make_null_shared_ptr(), { }))]->last());
                 TEST_CHECK(bool(id));
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
                 id->perform_action(action);
@@ -207,7 +208,7 @@ namespace test_cases
                 TestMessageSuffix suffix("banned functions 4", true);
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/banned-functions-4",
-                                        &env, { })), { }))]->last());
+                                        &env, { })), make_null_shared_ptr(), { }))]->last());
                 TEST_CHECK(bool(id));
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
                 TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
@@ -217,7 +218,7 @@ namespace test_cases
                 TestMessageSuffix suffix("econf disable dependency tracking", true);
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/econf-disable-dependency-tracking-4",
-                                        &env, { })), { }))]->last());
+                                        &env, { })), make_null_shared_ptr(), { }))]->last());
                 TEST_CHECK(bool(id));
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
                 id->perform_action(action);
@@ -227,7 +228,7 @@ namespace test_cases
                 TestMessageSuffix suffix("global scope use", true);
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/global-scope-use-4",
-                                        &env, { })), { }))]->last());
+                                        &env, { })), make_null_shared_ptr(), { }))]->last());
                 TEST_CHECK(bool(id));
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
                 id->perform_action(action);
@@ -237,7 +238,7 @@ namespace test_cases
                 TestMessageSuffix suffix("doman 4", true);
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/doman-4",
-                                        &env, { })), { }))]->last());
+                                        &env, { })), make_null_shared_ptr(), { }))]->last());
                 TEST_CHECK(bool(id));
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
                 id->perform_action(action);
@@ -303,7 +304,7 @@ namespace test_cases
                 TestMessageSuffix suffix("merge type source", true);
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/merge-type-4::test-repo",
-                                        &env, { })), { }))]->last());
+                                        &env, { })), make_null_shared_ptr(), { }))]->last());
                 TEST_CHECK(bool(id));
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
                 id->perform_action(action);
@@ -390,7 +391,7 @@ namespace test_cases
                 TestMessageSuffix suffix("merge type buildonly", true);
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/merge-type-bin-4::test-repo",
-                                        &env, { })), { }))]->last());
+                                        &env, { })), make_null_shared_ptr(), { }))]->last());
                 TEST_CHECK(bool(id));
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
                 id->perform_action(action);
@@ -409,7 +410,7 @@ namespace test_cases
                 TestMessageSuffix suffix("merge type binary", true);
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/merge-type-bin-4::binrepo",
-                                        &env, { })), { }))]->last());
+                                        &env, { })), make_null_shared_ptr(), { }))]->last());
                 TEST_CHECK(bool(id));
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "pbin-1+4");
                 id->perform_action(action);
@@ -472,7 +473,7 @@ namespace test_cases
                 TestMessageSuffix suffix("all good", true);
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/required-use-all-good-4::test-repo",
-                                        &env, { })), { }))]->last());
+                                        &env, { })), make_null_shared_ptr(), { }))]->last());
                 TEST_CHECK(bool(id));
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
                 id->perform_action(pretend_action);
@@ -489,7 +490,7 @@ namespace test_cases
                 TestMessageSuffix suffix("all empty", true);
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/required-use-all-empty-4::test-repo",
-                                        &env, { })), { }))]->last());
+                                        &env, { })), make_null_shared_ptr(), { }))]->last());
                 TEST_CHECK(bool(id));
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
                 id->perform_action(pretend_action);
@@ -506,7 +507,7 @@ namespace test_cases
                 TestMessageSuffix suffix("all one not good", true);
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/required-use-all-one-not-good-4::test-repo",
-                                        &env, { })), { }))]->last());
+                                        &env, { })), make_null_shared_ptr(), { }))]->last());
                 TEST_CHECK(bool(id));
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
                 id->perform_action(pretend_action);
@@ -523,7 +524,7 @@ namespace test_cases
                 TestMessageSuffix suffix("any good", true);
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/required-use-any-good-4::test-repo",
-                                        &env, { })), { }))]->last());
+                                        &env, { })), make_null_shared_ptr(), { }))]->last());
                 TEST_CHECK(bool(id));
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
                 id->perform_action(pretend_action);
@@ -540,7 +541,7 @@ namespace test_cases
                 TestMessageSuffix suffix("any empty", true);
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/required-use-any-empty-4::test-repo",
-                                        &env, { })), { }))]->last());
+                                        &env, { })), make_null_shared_ptr(), { }))]->last());
                 TEST_CHECK(bool(id));
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
                 id->perform_action(pretend_action);
@@ -557,7 +558,7 @@ namespace test_cases
                 TestMessageSuffix suffix("any none", true);
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/required-use-any-none-4::test-repo",
-                                        &env, { })), { }))]->last());
+                                        &env, { })), make_null_shared_ptr(), { }))]->last());
                 TEST_CHECK(bool(id));
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
                 id->perform_action(pretend_action);
@@ -574,7 +575,7 @@ namespace test_cases
                 TestMessageSuffix suffix("one none", true);
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/required-use-one-none-4::test-repo",
-                                        &env, { })), { }))]->last());
+                                        &env, { })), make_null_shared_ptr(), { }))]->last());
                 TEST_CHECK(bool(id));
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
                 id->perform_action(pretend_action);
@@ -591,7 +592,7 @@ namespace test_cases
                 TestMessageSuffix suffix("one none", true);
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/required-use-one-none-4::test-repo",
-                                        &env, { })), { }))]->last());
+                                        &env, { })), make_null_shared_ptr(), { }))]->last());
                 TEST_CHECK(bool(id));
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
                 id->perform_action(pretend_action);
@@ -608,7 +609,7 @@ namespace test_cases
                 TestMessageSuffix suffix("one good", true);
                 const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/required-use-one-good-4::test-repo",
-                                        &env, { })), { }))]->last());
+                                        &env, { })), make_null_shared_ptr(), { }))]->last());
                 TEST_CHECK(bool(id));
                 TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
                 id->perform_action(pretend_action);

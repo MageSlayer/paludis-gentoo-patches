@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -152,7 +152,13 @@ namespace paludis
             public Generator
         {
             public:
-                Matches(const PackageDepSpec &, const MatchPackageOptions &);
+                /**
+                 * \param spec_id The PackageID the spec comes from. May be null. Used for
+                 * [use=] style dependencies.
+                 *
+                 * \since 0.58 takes spec_id
+                 */
+                Matches(const PackageDepSpec &, const std::shared_ptr<const PackageID> & from_id, const MatchPackageOptions &);
         };
 
         /**

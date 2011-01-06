@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -264,6 +264,7 @@ namespace
 std::pair<std::shared_ptr<Resolvents>, bool>
 GetResolventsForHelper::operator() (
         const PackageDepSpec & spec,
+        const std::shared_ptr<const PackageID> & from_id,
         const std::shared_ptr<const SlotName> & maybe_slot,
         const std::shared_ptr<const Reason> & reason) const
 {
@@ -271,7 +272,7 @@ GetResolventsForHelper::operator() (
     std::shared_ptr<const PackageID> best;
 
     auto ids((*_imp->env)[selection::BestVersionOnly(
-                generator::Matches(spec, { mpo_ignore_additional_requirements }) |
+                generator::Matches(spec, from_id, { mpo_ignore_additional_requirements }) |
                 filter::SupportsAction<InstallAction>() |
                 filter::NotMasked() |
                 (maybe_slot ? Filter(filter::Slot(*maybe_slot)) : Filter(filter::All())))]);
@@ -280,7 +281,7 @@ GetResolventsForHelper::operator() (
         best = *ids->begin();
 
     auto installed_ids((*_imp->env)[selection::BestVersionInEachSlot(
-                generator::Matches(spec, { }) |
+                generator::Matches(spec, from_id, { }) |
                 (_imp->target_destination_type == dt_install_to_chroot ?
                  Filter(filter::InstalledNotAtRoot(_imp->env->system_root_key()->value())) :
                  Filter(filter::InstalledAtRoot(_imp->env->system_root_key()->value()))))]);

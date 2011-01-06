@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  * Copyright (c) 2006 Danny van Dyk
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -670,7 +670,7 @@ ERepository::repository_masked(const std::shared_ptr<const PackageID> & id) cons
     else
         for (std::list<std::pair<std::shared_ptr<const PackageDepSpec>, std::shared_ptr<const RepositoryMaskInfo> > >::const_iterator
                 k(r->second.begin()), k_end(r->second.end()) ; k != k_end ; ++k)
-            if (match_package(*_imp->params.environment(), *k->first, id, { }))
+            if (match_package(*_imp->params.environment(), *k->first, id, make_null_shared_ptr(), { }))
                 return k->second;
 
     return std::shared_ptr<const RepositoryMaskInfo>();

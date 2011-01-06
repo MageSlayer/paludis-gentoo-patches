@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -48,6 +48,7 @@
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/iterator_funcs.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 
 #include <cstdlib>
 #include <iostream>
@@ -113,7 +114,7 @@ namespace
             const PackageDepSpec & spec)
     {
         const std::shared_ptr<const PackageID> id(*((*env)[selection::RequireExactlyOne(
-                        generator::Matches(spec, { }))])->begin());
+                        generator::Matches(spec, make_null_shared_ptr(), { }))])->begin());
         result->insert(id->name());
     }
 

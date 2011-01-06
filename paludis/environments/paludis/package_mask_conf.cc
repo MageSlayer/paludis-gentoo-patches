@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -104,7 +104,7 @@ PackageMaskConf::query(const std::shared_ptr<const PackageID> & e) const
     if (indirect_iterator(_imp->masks.end()) != std::find_if(
             indirect_iterator(_imp->masks.begin()),
             indirect_iterator(_imp->masks.end()),
-            std::bind(&match_package, std::ref(*_imp->env), _1, std::cref(e), MatchPackageOptions())))
+            std::bind(&match_package, std::ref(*_imp->env), _1, std::cref(e), make_null_shared_ptr(), MatchPackageOptions())))
         return true;
 
     {

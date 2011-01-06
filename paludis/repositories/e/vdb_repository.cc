@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -1443,7 +1443,7 @@ VDBRepository::perform_updates()
                             SlotName old_slot(tokens.at(2)), new_slot(tokens.at(3));
 
                             const std::shared_ptr<const PackageIDSequence> ids((*_imp->params.environment())[selection::AllVersionsSorted(
-                                        (generator::Matches(old_spec, { }) & generator::InRepository(name())) |
+                                        (generator::Matches(old_spec, make_null_shared_ptr(), { }) & generator::InRepository(name())) |
                                         filter::Slot(old_slot)
                                         )]);
                             if (! ids->empty())

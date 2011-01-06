@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -41,6 +41,7 @@
 #include <paludis/util/destringify.hh>
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/tribool.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <algorithm>
 
 using namespace paludis;
@@ -77,7 +78,7 @@ namespace
             if (options[updso_no_disambiguation])
                 throw PackageDepSpecError("Need an explicit category specified");
             result.package(env->package_database()->fetch_unique_qualified_package_name(PackageNamePart(s),
-                filter::And(filter, filter::Matches(result, { }))));
+                filter::And(filter, filter::Matches(result, make_null_shared_ptr(), { }))));
         }
     }
 

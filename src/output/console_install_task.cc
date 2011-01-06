@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -512,16 +512,16 @@ ConsoleInstallTask::on_display_merge_list_entry(const DepListEntry & d)
 
     std::shared_ptr<const PackageIDSequence> existing_repo((*environment())[selection::AllVersionsSorted(repo ?
                 generator::Matches(make_package_dep_spec({ })
-                    .package(d.package_id()->name()).in_repository(*repo), { }) :
+                    .package(d.package_id()->name()).in_repository(*repo), d.package_id(), { }) :
                 generator::Matches(make_package_dep_spec({ })
-                    .package(d.package_id()->name()), { }) | filter::InstalledAtRoot(environment()->preferred_root_key()->value())
+                    .package(d.package_id()->name()), d.package_id(), { }) | filter::InstalledAtRoot(environment()->preferred_root_key()->value())
                 )]);;
 
     std::shared_ptr<const PackageIDSequence> existing_slot_repo((*environment())[selection::AllVersionsSorted((repo ?
                     generator::Matches(make_package_dep_spec({ })
-                        .package(d.package_id()->name()).in_repository(*repo), { }) :
+                        .package(d.package_id()->name()).in_repository(*repo), d.package_id(), { }) :
                     generator::Matches(make_package_dep_spec({ })
-                        .package(d.package_id()->name()), { }) | filter::InstalledAtRoot(environment()->preferred_root_key()->value()))
+                        .package(d.package_id()->name()), d.package_id(), { }) | filter::InstalledAtRoot(environment()->preferred_root_key()->value()))
                 | filter::SameSlot(d.package_id()))]);
 
     display_merge_list_entry_start(d, m);
@@ -1430,8 +1430,10 @@ ConsoleInstallTask::display_merge_list_entry_package_tags(const DepListEntry & d
 
         std::shared_ptr<const PackageDepSpec> spec(
             std::static_pointer_cast<const DependencyDepTag>(tag->tag())->dependency());
+        std::shared_ptr<const PackageID> id(
+                std::static_pointer_cast<const DependencyDepTag>(tag->tag())->package_id());
         if (d.kind() != dlk_masked && d.kind() != dlk_block && (*environment())[selection::SomeArbitraryVersion(
-                generator::Matches(*spec, { }) |
+                generator::Matches(*spec, id, { }) |
                 filter::InstalledAtRoot(environment()->preferred_root_key()->value()))]->empty())
             unsatisfied_dependents.insert(tag->tag()->short_text());
         else
@@ -1670,7 +1672,7 @@ ConsoleInstallTask::on_all_masked_error(const AllMaskedError & e)
     {
         std::shared_ptr<const PackageIDSequence> p(
                 (*environment())[selection::AllVersionsSorted(
-                    generator::Matches(e.query(), { })
+                    generator::Matches(e.query(), e.from_id(), { })
                     | filter::SupportsAction<InstallAction>())]);
         if (p->empty())
         {

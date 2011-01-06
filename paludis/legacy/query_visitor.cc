@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -91,7 +91,7 @@ QueryVisitor::visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & n
 
     // TODO: check destinations
     std::shared_ptr<const PackageIDSequence> matches((*_imp->environment)[selection::AllVersionsUnsorted(
-                generator::Matches(*node.spec(), _imp->dep_list->options()->match_package_options()) |
+                generator::Matches(*node.spec(), _imp->id, _imp->dep_list->options()->match_package_options()) |
                 filter::InstalledAtRoot(_imp->environment->preferred_root_key()->value()))]);
 
     if (indirect_iterator(matches->end()) != std::find_if(indirect_iterator(matches->begin()), indirect_iterator(matches->end()),
@@ -102,7 +102,7 @@ QueryVisitor::visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & n
     }
 
     /* check the merge list for any new packages that match */
-    if (_imp->dep_list->match_on_list(*node.spec()))
+    if (_imp->dep_list->match_on_list(*node.spec(), _imp->id))
     {
         _imp->result = true;
         return;

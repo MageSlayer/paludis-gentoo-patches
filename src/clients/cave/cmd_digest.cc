@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -31,6 +31,7 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/return_literal_function.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 
 #include <paludis/name.hh>
 #include <paludis/environment.hh>
@@ -111,7 +112,7 @@ DigestCommand::run(
         throw args::DoHelp("digest takes exactly two parameters");
 
     RepositoryName repo(*next(cmdline.begin_parameters()));
-    Filter repo_filter(filter::Matches(make_package_dep_spec({ }).in_repository(repo), { }));
+    Filter repo_filter(filter::Matches(make_package_dep_spec({ }).in_repository(repo), make_null_shared_ptr(), { }));
     QualifiedPackageName pkg(std::string::npos == cmdline.begin_parameters()->find('/') ?
             env->package_database()->fetch_unique_qualified_package_name(PackageNamePart(*cmdline.begin_parameters()), repo_filter) :
             QualifiedPackageName(*cmdline.begin_parameters()));

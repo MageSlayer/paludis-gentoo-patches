@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -376,9 +376,9 @@ namespace
         PackageDepSpec spec(parse_user_package_dep_spec(param, env.get(), { }));
 
         const std::shared_ptr<const PackageIDSequence> installed_ids((*env)[selection::AllVersionsSorted(generator::Matches(
-                        spec, { }) | filter::InstalledAtRoot(env->preferred_root_key()->value()))]);
+                        spec, make_null_shared_ptr(), { }) | filter::InstalledAtRoot(env->preferred_root_key()->value()))]);
         const std::shared_ptr<const PackageIDSequence> installable_ids((*env)[selection::BestVersionOnly(generator::Matches(
-                        spec, { }) | filter::SupportsAction<InstallAction>() | filter::NotMasked())]);
+                        spec, make_null_shared_ptr(), { }) | filter::SupportsAction<InstallAction>() | filter::NotMasked())]);
 
         if (installed_ids->empty() && installable_ids->empty())
             nothing_matching_error(env.get(), param, filter::InstalledAtRoot(env->preferred_root_key()->value()));

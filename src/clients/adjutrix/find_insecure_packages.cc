@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -33,6 +33,7 @@
 #include <paludis/selection.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 
 #include <set>
 #include <map>
@@ -86,7 +87,7 @@ namespace
             void visit(const SetSpecTree::NodeType<PackageDepSpec>::Type & node)
             {
                 std::shared_ptr<const PackageIDSequence> insecure(_env[selection::AllVersionsSorted(
-                            generator::Matches(*node.spec(), { }))]);
+                            generator::Matches(*node.spec(), make_null_shared_ptr(), { }))]);
                 for (PackageIDSequence::ConstIterator i(insecure->begin()),
                         i_end(insecure->end()) ; i != i_end ; ++i)
                     if (node.spec()->tag())

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -28,6 +28,7 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/safe_ofstream.hh>
 #include <paludis/util/process.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/selection.hh>
@@ -275,7 +276,7 @@ namespace
                                     make_package_dep_spec({ })
                                     .package(*spec->package_ptr())
                                     .slot_requirement(spec->slot_requirement_ptr()),
-                                    { }) |
+                                    make_null_shared_ptr(), { }) |
                                 filter::InstalledAtRoot(params.environment()->preferred_root_key()->value()))]->empty())
                         result->top()->append(spec);
                 }

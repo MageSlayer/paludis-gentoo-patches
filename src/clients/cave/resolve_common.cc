@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -791,7 +791,7 @@ paludis::cave::resolve_common(
     for (args::StringSetArg::ConstIterator i(resolution_options.a_preset.begin_args()),
             i_end(resolution_options.a_preset.end_args()) ;
             i != i_end ; ++i)
-        get_initial_constraints_for_helper.add_preset_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
+        get_initial_constraints_for_helper.add_preset_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }), make_null_shared_ptr());
 
     get_initial_constraints_for_helper.set_reinstall_scm_days(reinstall_scm_days(resolution_options));
 

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -53,6 +53,7 @@ namespace
     const std::shared_ptr<const PackageID> best_eventual(
             const Environment * const env,
             const PackageDepSpec & spec,
+            const std::shared_ptr<const PackageID> & from_id,
             const S_ & seq)
     {
         std::shared_ptr<const PackageID> result;
@@ -61,7 +62,7 @@ namespace
                 i != i_end ; ++i)
         {
             if ((! result) || dependent_checker_id(*i)->version() >= result->version())
-                if (match_package(*env, spec, dependent_checker_id(*i), { }))
+                if (match_package(*env, spec, dependent_checker_id(*i), from_id, { }))
                     result = dependent_checker_id(*i);
         }
 
@@ -108,9 +109,9 @@ namespace
                 if (s.spec()->slot_requirement_ptr() && simple_visitor_cast<const SlotAnyUnlockedRequirement>(
                             *s.spec()->slot_requirement_ptr()))
                 {
-                    auto best_eventual_id(best_eventual(env, *s.spec(), newly_available));
+                    auto best_eventual_id(best_eventual(env, *s.spec(), id, newly_available));
                     if (! best_eventual_id)
-                        best_eventual_id = best_eventual(env, *s.spec(), not_changing_slots);
+                        best_eventual_id = best_eventual(env, *s.spec(), id, not_changing_slots);
                     if (best_eventual_id && best_eventual_id->slot_key())
                     {
                         PartiallyMadePackageDepSpec part_spec(*s.spec());
@@ -119,14 +120,14 @@ namespace
                     }
                 }
 
-                if (! match_package(*env, *spec, dependent_checker_id(*g), { }))
+                if (! match_package(*env, *spec, dependent_checker_id(*g), id, { }))
                     continue;
 
                 bool any(false);
                 for (typename C_::ConstIterator n(newly_available->begin()), n_end(newly_available->end()) ;
                         n != n_end ; ++n)
                 {
-                    if (match_package(*env, *spec, dependent_checker_id(*n), { }))
+                    if (match_package(*env, *spec, dependent_checker_id(*n), id, { }))
                     {
                         any = true;
                         break;

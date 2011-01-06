@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -32,6 +32,7 @@
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/util/accept_visitor.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/generator.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/filter.hh>
@@ -409,7 +410,7 @@ MatchCommand::run_hosted(
         const PackageDepSpec & spec)
 {
     const std::shared_ptr<const PackageID> id(*((*env)[selection::RequireExactlyOne(
-                    generator::Matches(spec, { }))])->begin());
+                    generator::Matches(spec, make_null_shared_ptr(), { }))])->begin());
 
     std::list<std::string> texts;
 

@@ -28,6 +28,7 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/package_id.hh>
@@ -56,6 +57,7 @@ namespace
     {
         private:
             const Environment * const _env;
+            const std::shared_ptr<const PackageID> _from_id;
             const PackageIDSequence & _entries;
             std::string _depname;
             std::string _p;
@@ -69,10 +71,11 @@ namespace
             std::set<SetName> _recursing_sets;
 
         public:
-            ReverseDepChecker(const Environment * const e,
+            ReverseDepChecker(const Environment * const e, const std::shared_ptr<const PackageID> & f,
                     const PackageIDSequence & entries,
                     const std::string & p) :
                 _env(e),
+                _from_id(f),
                 _entries(entries),
                 _depname(""),
                 _p(p),
@@ -159,10 +162,10 @@ namespace
     }
 
     void
-        ReverseDepChecker::visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & node)
+    ReverseDepChecker::visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & node)
     {
         std::shared_ptr<const PackageIDSequence> dep_entries((*_env)[selection::AllVersionsSorted(
-                    generator::Matches(*node.spec(), { mpo_ignore_additional_requirements }))]);
+                    generator::Matches(*node.spec(), _from_id, { mpo_ignore_additional_requirements }))]);
         std::shared_ptr<PackageIDSequence> matches(std::make_shared<PackageIDSequence>());
 
         bool header_written = false;
@@ -216,24 +219,24 @@ namespace
 
         bool found_matches(false);
 
-        for (IndirectIterator<PackageIDSequence::ConstIterator> e(p_entries->begin()), e_end(p_entries->end()) ;
+        for (auto e(p_entries->begin()), e_end(p_entries->end()) ;
                 e != e_end ; ++e)
         {
             try
             {
-                ReverseDepChecker checker(&env, entries, stringify(p) + "-" + stringify(e->canonical_form(idcf_version)));
+                ReverseDepChecker checker(&env, *e, entries, stringify(p) + "-" + stringify((*e)->canonical_form(idcf_version)));
 
-                if (e->build_dependencies_key())
-                    checker.check(e->build_dependencies_key()->value(), e->build_dependencies_key()->raw_name());
+                if ((*e)->build_dependencies_key())
+                    checker.check((*e)->build_dependencies_key()->value(), (*e)->build_dependencies_key()->raw_name());
 
-                if (e->run_dependencies_key())
-                    checker.check(e->run_dependencies_key()->value(), e->run_dependencies_key()->raw_name());
+                if ((*e)->run_dependencies_key())
+                    checker.check((*e)->run_dependencies_key()->value(), (*e)->run_dependencies_key()->raw_name());
 
-                if (e->post_dependencies_key())
-                    checker.check(e->post_dependencies_key()->value(), e->post_dependencies_key()->raw_name());
+                if ((*e)->post_dependencies_key())
+                    checker.check((*e)->post_dependencies_key()->value(), (*e)->post_dependencies_key()->raw_name());
 
-                if (e->suggested_dependencies_key())
-                    checker.check(e->suggested_dependencies_key()->value(), e->suggested_dependencies_key()->raw_name());
+                if ((*e)->suggested_dependencies_key())
+                    checker.check((*e)->suggested_dependencies_key()->value(), (*e)->suggested_dependencies_key()->raw_name());
 
                 found_matches |= checker.found_matches();
             }
@@ -304,7 +307,7 @@ int do_find_reverse_deps(NoConfigEnvironment & env)
     }
 
     std::shared_ptr<const PackageIDSequence> entries(env[selection::AllVersionsSorted(generator::Matches(
-                    *spec, { }))]);
+                    *spec, make_null_shared_ptr(), { }))]);
     int ret(0);
 
     if (entries->empty())

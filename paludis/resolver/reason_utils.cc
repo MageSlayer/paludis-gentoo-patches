@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -19,6 +19,7 @@
 
 #include <paludis/resolver/reason_utils.hh>
 #include <paludis/resolver/reason.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 
 using namespace paludis;
 using namespace paludis::resolver;
@@ -67,6 +68,49 @@ namespace
             return r.reason_for_set()->accept_returning<bool>(*this);
         }
     };
+
+    struct FromIDVisitor
+    {
+        std::shared_ptr<const PackageID> visit(const DependencyReason & r) const
+        {
+            return r.from_id();
+        }
+
+        std::shared_ptr<const PackageID> visit(const DependentReason &) const
+        {
+            return make_null_shared_ptr();
+        }
+
+        std::shared_ptr<const PackageID> visit(const WasUsedByReason &) const
+        {
+            return make_null_shared_ptr();
+        }
+
+        std::shared_ptr<const PackageID> visit(const PresetReason &) const
+        {
+            return make_null_shared_ptr();
+        }
+
+        std::shared_ptr<const PackageID> visit(const ViaBinaryReason &) const
+        {
+            return make_null_shared_ptr();
+        }
+
+        std::shared_ptr<const PackageID> visit(const TargetReason &) const
+        {
+            return make_null_shared_ptr();
+        }
+
+        std::shared_ptr<const PackageID> visit(const LikeOtherDestinationTypeReason & r) const
+        {
+            return r.reason_for_other()->accept_returning<std::shared_ptr<const PackageID> >(*this);
+        }
+
+        std::shared_ptr<const PackageID> visit(const SetReason & r) const
+        {
+            return r.reason_for_set()->accept_returning<std::shared_ptr<const PackageID> >(*this);
+        }
+    };
 }
 
 bool
@@ -74,5 +118,12 @@ paludis::resolver::is_target(const std::shared_ptr<const Reason> & reason)
 {
     IsTargetVisitor v;
     return reason->accept_returning<bool>(v);
+}
+
+const std::shared_ptr<const PackageID>
+paludis::resolver::maybe_from_package_id_from_reason(const std::shared_ptr<const Reason> & reason)
+{
+    FromIDVisitor v;
+    return reason->accept_returning<std::shared_ptr<const PackageID> >(v);
 }
 

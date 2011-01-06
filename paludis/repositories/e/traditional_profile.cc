@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -43,6 +43,7 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/fs_error.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 
 #include <paludis/choice.hh>
 #include <paludis/dep_tag.hh>
@@ -872,7 +873,7 @@ TraditionalProfile::use_masked(
         for (PackageFlagStatusMapList::const_iterator g(i->package_use_mask.begin()),
                 g_end(i->package_use_mask.end()) ; g != g_end ; ++g)
         {
-            if (! match_package(*_imp->env, *g->first, id, { }))
+            if (! match_package(*_imp->env, *g->first, id, make_null_shared_ptr(), { }))
                 continue;
 
             FlagStatusMap::const_iterator h(g->second.find(value_prefixed));
@@ -908,7 +909,7 @@ TraditionalProfile::use_forced(
         for (PackageFlagStatusMapList::const_iterator g(i->package_use_force.begin()),
                 g_end(i->package_use_force.end()) ; g != g_end ; ++g)
         {
-            if (! match_package(*_imp->env, *g->first, id, { }))
+            if (! match_package(*_imp->env, *g->first, id, make_null_shared_ptr(), { }))
                 continue;
 
             FlagStatusMap::const_iterator h(g->second.find(value_prefixed));
@@ -937,7 +938,7 @@ TraditionalProfile::use_state_ignoring_masks(
         for (PackageFlagStatusMapList::const_iterator g(i->package_use.begin()),
                 g_end(i->package_use.end()) ; g != g_end ; ++g)
         {
-            if (! match_package(*_imp->env, *g->first, id, { }))
+            if (! match_package(*_imp->env, *g->first, id, make_null_shared_ptr(), { }))
                 continue;
 
             FlagStatusMap::const_iterator h(g->second.find(value_prefixed));
@@ -1046,7 +1047,7 @@ TraditionalProfile::profile_masked(const std::shared_ptr<const PackageID> & id) 
     {
         for (std::list<std::pair<std::shared_ptr<const PackageDepSpec>, std::shared_ptr<const RepositoryMaskInfo> > >::const_iterator k(rr->second.begin()),
                 k_end(rr->second.end()) ; k != k_end ; ++k)
-            if (match_package(*_imp->env, *k->first, id, { }))
+            if (match_package(*_imp->env, *k->first, id, make_null_shared_ptr(), { }))
                 return k->second;
     }
 

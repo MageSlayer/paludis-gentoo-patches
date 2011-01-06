@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -148,7 +148,7 @@ namespace
             const PackageDepSpec & spec)
     {
         const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::BestVersionOnly(
-                    generator::Matches(spec, { }))]);
+                    generator::Matches(spec, make_null_shared_ptr(), { }))]);
         if (ids->empty())
             return stringify(spec);
         else
@@ -307,7 +307,7 @@ namespace
                 else
                     r.append(", ");
 
-                const auto replacing_ids((*env)[selection::BestVersionOnly(generator::Matches(*i, { }))]);
+                const auto replacing_ids((*env)[selection::BestVersionOnly(generator::Matches(*i, make_null_shared_ptr(), { }))]);
                 if (replacing_ids->empty())
                     r.append(stringify(*i));
                 else if (id_specs->empty() || *id_specs->begin()->package_ptr() != (*replacing_ids->begin())->name())
@@ -332,7 +332,7 @@ namespace
                 if (! r.empty())
                     r.append(", ");
 
-                const auto ids((*env)[selection::BestVersionOnly(generator::Matches(*i, { }))]);
+                const auto ids((*env)[selection::BestVersionOnly(generator::Matches(*i, make_null_shared_ptr(), { }))]);
                 if (ids->empty())
                     r.append(stringify(*i));
                 else
@@ -1591,7 +1591,7 @@ namespace
             std::string r;
             if (! j.replacing_specs()->empty())
             {
-                const auto origin_ids((*env)[selection::BestVersionOnly(generator::Matches(j.origin_id_spec(), { }))]);
+                const auto origin_ids((*env)[selection::BestVersionOnly(generator::Matches(j.origin_id_spec(), make_null_shared_ptr(), { }))]);
 
                 for (auto i(j.replacing_specs()->begin()), i_end(j.replacing_specs()->end()) ;
                         i != i_end ; ++i)
@@ -1601,7 +1601,7 @@ namespace
                     else
                         r.append(", ");
 
-                    const auto ids((*env)[selection::BestVersionOnly(generator::Matches(*i, { }))]);
+                    const auto ids((*env)[selection::BestVersionOnly(generator::Matches(*i, make_null_shared_ptr(), { }))]);
                     if (ids->empty())
                         r.append(stringify(*i));
                     else if (origin_ids->empty() || (*origin_ids->begin())->name() != (*ids->begin())->name())

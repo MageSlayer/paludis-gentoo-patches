@@ -139,7 +139,8 @@ do_one_executables(
                     filter::InstalledAtRoot(env->preferred_root_key()->value()))));
 
     std::shared_ptr<const PackageIDSequence> entries(
-            (*env)[selection::AllVersionsSorted(generator::Matches(*spec, { }) | filter::InstalledAtRoot(env->preferred_root_key()->value()))]);
+            (*env)[selection::AllVersionsSorted(generator::Matches(*spec, make_null_shared_ptr(), { })
+                | filter::InstalledAtRoot(env->preferred_root_key()->value()))]);
 
     if (entries->empty())
         throw NoSuchPackageError(q);

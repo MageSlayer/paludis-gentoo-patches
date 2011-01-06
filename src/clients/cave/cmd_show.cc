@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -176,7 +176,7 @@ namespace
 
         void visit(const SetSpecTree::NodeType<PackageDepSpec>::Type & node)
         {
-            out << fuc(select_format_for_spec(env, *node.spec(),
+            out << fuc(select_format_for_spec(env, *node.spec(), make_null_shared_ptr(),
                         fs_set_spec_installed(),
                         fs_set_spec_installable(),
                         fs_set_spec_unavailable()),
@@ -226,7 +226,7 @@ namespace
     {
         cout << fuc(fs_wildcard_heading(), fv<'s'>(stringify(s)));
 
-        const std::shared_ptr<const PackageIDSequence> names((*env)[selection::BestVersionOnly(generator::Matches(s, { }))]);
+        const std::shared_ptr<const PackageIDSequence> names((*env)[selection::BestVersionOnly(generator::Matches(s, make_null_shared_ptr(), { }))]);
         if (names->empty())
             throw NothingMatching(s);
 
@@ -234,7 +234,7 @@ namespace
                 i != i_end ; ++i)
         {
             PackageDepSpec name_spec(make_package_dep_spec({ }).package((*i)->name()));
-            cout << fuc(select_format_for_spec(env, name_spec,
+            cout << fuc(select_format_for_spec(env, name_spec, make_null_shared_ptr(),
                         fs_wildcard_spec_installed(),
                         fs_wildcard_spec_installable(),
                         fs_wildcard_spec_unavailable()
@@ -1259,7 +1259,7 @@ namespace
     {
         cout << fuc(fs_package_heading(), fv<'s'>(stringify(s)));
 
-        auto ids((*env)[selection::AllVersionsGroupedBySlot(generator::Matches(s, { }))]);
+        auto ids((*env)[selection::AllVersionsGroupedBySlot(generator::Matches(s, make_null_shared_ptr(), { }))]);
         if (ids->empty())
             throw NothingMatching(s);
 
@@ -1274,7 +1274,7 @@ namespace
             for (auto r(repos.begin()), r_end(repos.end()) ; r != r_end ; ++r)
             {
                 auto r_ids((*env)[selection::AllVersionsGroupedBySlot(generator::Matches(
-                                PartiallyMadePackageDepSpec(s).in_repository(*r), { }))]);
+                                PartiallyMadePackageDepSpec(s).in_repository(*r), make_null_shared_ptr(), { }))]);
                 if (! r_ids->empty())
                     do_one_package_with_ids(cmdline, env, s, r_ids, cout, rest_out);
             }
@@ -1294,7 +1294,7 @@ namespace
             const PackageDepSpec & s)
     {
         const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::BestVersionOnly(generator::Matches(s,
-                        { }))]);
+                        make_null_shared_ptr(), { }))]);
         if (ids->empty())
             throw NothingMatching(s);
 

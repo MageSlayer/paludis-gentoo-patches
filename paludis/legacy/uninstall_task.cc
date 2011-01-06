@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -179,7 +179,7 @@ UninstallTask::add_target(const std::string & target)
         {
             /* blech. wildcards. */
             std::shared_ptr<const PackageIDSequence> names((*_imp->env)[selection::BestVersionOnly(
-                        generator::Matches(*pds, { }) | filter::SupportsAction<UninstallAction>())]);
+                        generator::Matches(*pds, make_null_shared_ptr(), { }) | filter::SupportsAction<UninstallAction>())]);
             if (names->empty())
             {
                 /* no match. we'll get an error from this later anyway. */
@@ -263,7 +263,7 @@ UninstallTask::execute()
             Context local_context("When looking for target '" + stringify(**t) + "':");
 
             std::shared_ptr<const PackageIDSequence> r((*_imp->env)[selection::AllVersionsSorted(
-                        generator::Matches(**t, { }) |
+                        generator::Matches(**t, make_null_shared_ptr(), { }) |
                         filter::SupportsAction<UninstallAction>())]);
             if (r->empty())
             {
@@ -331,7 +331,7 @@ UninstallTask::execute()
         {
             bool remove(true);
             std::shared_ptr<const PackageIDSequence> installed((*_imp->env)[selection::AllVersionsUnsorted(
-                        generator::Matches(make_package_dep_spec({ }).package(i->first), { }) |
+                        generator::Matches(make_package_dep_spec({ }).package(i->first), make_null_shared_ptr(), { }) |
                         filter::InstalledAtRoot(_imp->env->preferred_root_key()->value())
                         )]);
             for (PackageIDSequence::ConstIterator r(installed->begin()), r_end(installed->end()) ;

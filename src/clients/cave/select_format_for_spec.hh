@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2010 Ciaran McCreesh
+ * Copyright (c) 2008, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -23,7 +23,9 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
+#include <paludis/package_id-fwd.hh>
 #include <string>
+#include <memory>
 
 namespace paludis
 {
@@ -33,6 +35,7 @@ namespace paludis
         T_ select_format_for_spec(
                 const std::shared_ptr<const Environment> &,
                 const PackageDepSpec &,
+                const std::shared_ptr<const PackageID> & from_id,
                 const T_ & if_installed,
                 const T_ & if_installable,
                 const T_ & if_unavailable

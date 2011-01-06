@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -28,6 +28,7 @@
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/tribool.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/selection.hh>
 #include <paludis/generator.hh>
@@ -65,6 +66,8 @@ namespace paludis
 
         Imp(const Environment * const e) :
             env(e),
+            no_blockers_from_specs(make_null_shared_ptr()),
+            no_dependencies_from_specs(make_null_shared_ptr()),
             follow_installed_build_dependencies(false),
             follow_installed_dependencies(true),
             take_suggestions(indeterminate),
@@ -201,7 +204,7 @@ namespace
 
                 const std::shared_ptr<const PackageIDSequence> installed_ids(
                         (*env)[selection::SomeArbitraryVersion(
-                            generator::Matches(*dep.spec().if_package(), { }) |
+                            generator::Matches(*dep.spec().if_package(), dep.from_id(), { }) |
                             filter::InstalledAtRoot(env->system_root_key()->value()))]);
                 if (installed_ids->empty())
                     return false;
@@ -271,7 +274,7 @@ InterestInSpecHelper::operator() (
         for (auto l(_imp->take_from_specs.begin()), l_end(_imp->take_from_specs.end()) ;
                 l != l_end ; ++l)
         {
-            if (match_package(*_imp->env, *l, id, { }))
+            if (match_package(*_imp->env, *l, id, make_null_shared_ptr(), { }))
                 return si_take;
         }
 
@@ -300,7 +303,7 @@ InterestInSpecHelper::operator() (
         for (auto l(_imp->ignore_from_specs.begin()), l_end(_imp->ignore_from_specs.end()) ;
                 l != l_end ; ++l)
         {
-            if (match_package(*_imp->env, *l, id, { }))
+            if (match_package(*_imp->env, *l, id, make_null_shared_ptr(), { }))
                 return si_ignore;
         }
 
@@ -328,7 +331,7 @@ InterestInSpecHelper::operator() (
         {
             const std::shared_ptr<const PackageIDSequence> installed_ids(
                     (*_imp->env)[selection::SomeArbitraryVersion(
-                        generator::Matches(*dep.spec().if_package(), { }) |
+                        generator::Matches(*dep.spec().if_package(), dep.from_id(), { }) |
                         filter::InstalledAtRoot(_imp->env->system_root_key()->value()))]);
             if (! installed_ids->empty())
                 return si_take;

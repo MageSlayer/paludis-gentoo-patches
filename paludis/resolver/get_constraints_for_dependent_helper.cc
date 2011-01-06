@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -27,6 +27,7 @@
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/package_id.hh>
@@ -47,7 +48,8 @@ namespace paludis
         PackageDepSpecCollection less_restrictive_remove_blockers_specs;
 
         Imp(const Environment * const e) :
-            env(e)
+            env(e),
+            less_restrictive_remove_blockers_specs(make_null_shared_ptr())
         {
         }
     };
@@ -94,6 +96,7 @@ GetConstraintsForDependentHelper::operator() (
         result->push_back(std::make_shared<Constraint>(make_named_values<Constraint>(
                         n::destination_type() = dt_install_to_slash,
                         n::force_unable() = false,
+                        n::from_id() = id,
                         n::nothing_is_fine_too() = true,
                         n::reason() = reason,
                         n::spec() = BlockDepSpec("!" + stringify(*spec), *spec, bk_weak),

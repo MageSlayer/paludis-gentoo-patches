@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -43,6 +43,7 @@
 #include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 
 #include <cstdlib>
 #include <iostream>
@@ -193,7 +194,7 @@ FindCandidatesCommand::run_hosted(
                 for (auto m(matches.begin()), m_end(matches.end()) ;
                         m != m_end ; ++m)
                     if (match_package(*env, *m, *(*env)[selection::RequireExactlyOne(generator::Matches(
-                                        parse_user_package_dep_spec(*s, env.get(), { }), { }))]->begin(), { }))
+                                        parse_user_package_dep_spec(*s, env.get(), { }), make_null_shared_ptr(), { }))]->begin(), make_null_shared_ptr(), { }))
                     {
                         ok = true;
                         break;
@@ -298,7 +299,7 @@ FindCandidatesCommand::run_hosted(
                 k_end(search_options.a_matching.end_args()) ;
                 k != k_end ; ++k)
         {
-            generator::Matches m(parse_user_package_dep_spec(*k, env.get(), { updso_allow_wildcards }), { });
+            generator::Matches m(parse_user_package_dep_spec(*k, env.get(), { updso_allow_wildcards }), make_null_shared_ptr(), { });
 
             if (match_generator)
                 match_generator = std::make_shared<generator::Union>(*match_generator, m);

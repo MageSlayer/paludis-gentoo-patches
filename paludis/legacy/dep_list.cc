@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -259,12 +259,14 @@ namespace
     {
         const Environment * const env;
         const PackageDepSpec & a;
+        const std::shared_ptr<const PackageID> from_id;
         const MatchPackageOptions & o;
 
         MatchDepListEntryAgainstPackageDepSpec(const Environment * const ee,
-                const PackageDepSpec & aa, const MatchPackageOptions & oo) :
+                const PackageDepSpec & aa, const std::shared_ptr<const PackageID> & f, const MatchPackageOptions & oo) :
             env(ee),
             a(aa),
+            from_id(f),
             o(oo)
         {
         }
@@ -278,7 +280,7 @@ namespace
                 case dlk_provided:
                 case dlk_already_installed:
                 case dlk_subpackage:
-                    return match_package(*env, a, e.second->package_id(), o);
+                    return match_package(*env, a, e.second->package_id(), from_id, o);
 
                 case dlk_block:
                 case dlk_masked:
@@ -425,7 +427,7 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<PackageDepSpec>::T
     /* find already installed things */
     // TODO: check destinations
     std::shared_ptr<const PackageIDSequence> already_installed((*d->_imp->env)[selection::AllVersionsSorted(
-                generator::Matches(*node.spec(), d->_imp->opts->match_package_options()) |
+                generator::Matches(*node.spec(), d->_imp->current_package_id(), d->_imp->opts->match_package_options()) |
                 filter::InstalledAtRoot(d->_imp->env->preferred_root_key()->value()))]);
 
     /* are we already on the merge list? */
@@ -436,7 +438,8 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<PackageDepSpec>::T
         q = std::make_pair(d->_imp->merge_list_index.begin(), d->_imp->merge_list_index.end());
 
     MergeListIndex::iterator qq(std::find_if(q.first, q.second,
-                MatchDepListEntryAgainstPackageDepSpec(d->_imp->env, *node.spec(), d->_imp->opts->match_package_options())));
+                MatchDepListEntryAgainstPackageDepSpec(d->_imp->env, *node.spec(),
+                    d->_imp->current_package_id(), d->_imp->opts->match_package_options())));
 
     MergeList::iterator existing_merge_list_entry(qq == q.second ? d->_imp->merge_list.end() : qq->second);
     if (existing_merge_list_entry != d->_imp->merge_list.end())
@@ -484,7 +487,8 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<PackageDepSpec>::T
     /* find installable candidates, and find the best visible candidate */
     std::shared_ptr<const PackageID> best_visible_candidate;
     std::shared_ptr<const PackageIDSequence> installable_candidates(
-            (*d->_imp->env)[selection::AllVersionsSorted(generator::Matches(*node.spec(), d->_imp->opts->match_package_options()) &
+            (*d->_imp->env)[selection::AllVersionsSorted(generator::Matches(*node.spec(),
+                    d->_imp->current_package_id(), d->_imp->opts->match_package_options()) &
                 generator::SomeIDsMightSupportAction<InstallAction>())]);
 
     for (PackageIDSequence::ReverseConstIterator p(installable_candidates->rbegin()),
@@ -582,17 +586,18 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<PackageDepSpec>::T
         if (already_installed->empty() || ! can_fall_back)
         {
             if (! node.spec()->additional_requirements_ptr())
-                throw AllMaskedError(*node.spec());
+                throw AllMaskedError(*node.spec(), d->_imp->current_package_id());
 
             std::shared_ptr<const PackageIDSequence> match_except_reqs((*d->_imp->env)[selection::AllVersionsSorted(
-                        generator::Matches(*node.spec(), d->_imp->opts->match_package_options() + mpo_ignore_additional_requirements))]);
+                        generator::Matches(*node.spec(), d->_imp->current_package_id(),
+                            d->_imp->opts->match_package_options() + mpo_ignore_additional_requirements))]);
 
             for (PackageIDSequence::ReverseConstIterator i(match_except_reqs->rbegin()),
                     i_end(match_except_reqs->rend()) ; i != i_end ; ++i)
                 if (! (*i)->masked())
                     throw AdditionalRequirementsNotMetError(*node.spec(), *i);
 
-            throw AllMaskedError(*node.spec());
+            throw AllMaskedError(*node.spec(), d->_imp->current_package_id());
         }
         else
         {
@@ -868,10 +873,10 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<BlockDepSpec>::Typ
         PackageDepSpec just_package(make_package_dep_spec({ }).package(
                     *node.spec()->blocking().package_ptr()));
         already_installed = (*d->_imp->env)[selection::AllVersionsUnsorted(
-                generator::Matches(just_package, d->_imp->opts->match_package_options()) |
+                generator::Matches(just_package, make_null_shared_ptr(), d->_imp->opts->match_package_options()) |
                 filter::InstalledAtRoot(d->_imp->env->preferred_root_key()->value()))];
 
-        MatchDepListEntryAgainstPackageDepSpec m(d->_imp->env, just_package, d->_imp->opts->match_package_options());
+        MatchDepListEntryAgainstPackageDepSpec m(d->_imp->env, just_package, make_null_shared_ptr(), d->_imp->opts->match_package_options());
         for (std::pair<MergeListIndex::const_iterator, MergeListIndex::const_iterator> p(
                     d->_imp->merge_list_index.equal_range(*node.spec()->blocking().package_ptr())) ;
                 p.first != p.second ; ++p.first)
@@ -904,7 +909,7 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<BlockDepSpec>::Typ
     for (PackageIDSequence::ConstIterator aa(already_installed->begin()),
             aa_end(already_installed->end()) ; aa != aa_end ; ++aa)
     {
-        if (! match_package(*d->_imp->env, node.spec()->blocking(), *aa, d->_imp->opts->match_package_options()))
+        if (! match_package(*d->_imp->env, node.spec()->blocking(), *aa, d->_imp->current_package_id(), d->_imp->opts->match_package_options()))
             continue;
 
         bool replaced(false);
@@ -974,7 +979,8 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<BlockDepSpec>::Typ
     for (std::list<MergeList::const_iterator>::const_iterator r(will_be_installed.begin()),
             r_end(will_be_installed.end()) ; r != r_end ; ++r)
     {
-        if (! match_package(*d->_imp->env, node.spec()->blocking(), (*r)->package_id(), d->_imp->opts->match_package_options()))
+        if (! match_package(*d->_imp->env, node.spec()->blocking(), (*r)->package_id(),
+                    d->_imp->current_package_id(), d->_imp->opts->match_package_options()))
             continue;
 
         /* ignore if it's a virtual/blah (not <virtual/blah-1) block and it's blocking
@@ -1011,7 +1017,8 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<BlockDepSpec>::Typ
         for (MergeList::const_iterator r(d->_imp->merge_list.begin()),
                 r_end(d->_imp->merge_list.end()) ; r != r_end ; ++r)
         {
-            if (! match_package(*d->_imp->env, node.spec()->blocking(), r->package_id(), d->_imp->opts->match_package_options()))
+            if (! match_package(*d->_imp->env, node.spec()->blocking(), r->package_id(),
+                        d->_imp->current_package_id(), d->_imp->opts->match_package_options()))
                 continue;
 
             /* ignore if it's a virtual/blah (not <virtual/blah-1) block and it's blocking
@@ -1171,7 +1178,7 @@ DepList::add_package(const std::shared_ptr<const PackageID> & p, const std::shar
     /* add provides */
     if (p->provide_key())
     {
-        DepSpecFlattener<ProvideSpecTree, PackageDepSpec> f(_imp->env, _imp->current_package_id());
+        DepSpecFlattener<ProvideSpecTree, PackageDepSpec> f(_imp->env, p);
         p->provide_key()->value()->top()->accept(f);
 
         if (f.begin() != f.end() && ! (*DistributionData::get_instance()->distribution_from_string(
@@ -1195,7 +1202,7 @@ DepList::add_package(const std::shared_ptr<const PackageID> & p, const std::shar
                 z = std::make_pair(_imp->merge_list_index.begin(), _imp->merge_list_index.end());
 
             MergeListIndex::iterator zz(std::find_if(z.first, z.second,
-                MatchDepListEntryAgainstPackageDepSpec(_imp->env, *pp, _imp->opts->match_package_options())));
+                MatchDepListEntryAgainstPackageDepSpec(_imp->env, *pp, p, _imp->opts->match_package_options())));
 
             if (zz != z.second)
                 continue;
@@ -1708,7 +1715,7 @@ DepList::replaced(const PackageID & m) const
 
     PackageDepSpec spec(make_package_dep_spec({ }).package(m.name()));
     while (p.second != ((p.first = std::find_if(p.first, p.second,
-                        MatchDepListEntryAgainstPackageDepSpec(_imp->env, spec, _imp->opts->match_package_options())))))
+                        MatchDepListEntryAgainstPackageDepSpec(_imp->env, spec, make_null_shared_ptr(), _imp->opts->match_package_options())))))
     {
         if (! slot_is_same(*p.first->second->package_id(), m))
             p.first = next(p.first);
@@ -1720,7 +1727,7 @@ DepList::replaced(const PackageID & m) const
 }
 
 bool
-DepList::match_on_list(const PackageDepSpec & a) const
+DepList::match_on_list(const PackageDepSpec & a, const std::shared_ptr<const PackageID> & from_id) const
 {
     std::pair<MergeListIndex::const_iterator, MergeListIndex::const_iterator> p;
     if (a.package_ptr())
@@ -1729,7 +1736,7 @@ DepList::match_on_list(const PackageDepSpec & a) const
         p = std::make_pair(_imp->merge_list_index.begin(), _imp->merge_list_index.end());
 
     return p.second != std::find_if(p.first, p.second,
-            MatchDepListEntryAgainstPackageDepSpec(_imp->env, a, _imp->opts->match_package_options()));
+            MatchDepListEntryAgainstPackageDepSpec(_imp->env, a, from_id, _imp->opts->match_package_options()));
 }
 
 DepList::Iterator

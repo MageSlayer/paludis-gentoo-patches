@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -239,11 +239,11 @@ int do_one_info(
             std::make_shared<PackageDepSpec>(parse_user_package_dep_spec(q, env.get(), { })));
 
     std::shared_ptr<const PackageIDSequence>
-        entries((*env)[selection::AllVersionsSorted(generator::Matches(*spec, { }))]),
+        entries((*env)[selection::AllVersionsSorted(generator::Matches(*spec, make_null_shared_ptr(), { }))]),
         installed_entries((*env)[selection::AllVersionsSorted(
-                    generator::Matches(*spec, { }) | filter::InstalledAtRoot(env->preferred_root_key()->value()))]),
+                    generator::Matches(*spec, make_null_shared_ptr(), { }) | filter::InstalledAtRoot(env->preferred_root_key()->value()))]),
         installable_entries((*env)[selection::AllVersionsSorted(
-                    generator::Matches(*spec, { }) | filter::SupportsAction<InstallAction>() | filter::NotMasked())]);
+                    generator::Matches(*spec, make_null_shared_ptr(), { }) | filter::SupportsAction<InstallAction>() | filter::NotMasked())]);
 
     std::shared_ptr<PackageIDSequence> to_show_entries(std::make_shared<PackageIDSequence>());
 

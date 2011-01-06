@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -23,6 +23,7 @@
 #include <paludis/args/do_help.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/repository.hh>
@@ -95,7 +96,7 @@ ConfigCommand::run(
 
     PackageDepSpec spec(parse_user_package_dep_spec(*cmdline.begin_parameters(), env.get(), { }));
     const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsUnsorted(
-                generator::Matches(spec, { }) | filter::SupportsAction<ConfigAction>())]);
+                generator::Matches(spec, make_null_shared_ptr(), { }) | filter::SupportsAction<ConfigAction>())]);
     if (ids->empty())
         nothing_matching_error(env.get(), *cmdline.begin_parameters(), filter::SupportsAction<ConfigAction>());
     else if (1 != std::distance(ids->begin(), ids->end()))

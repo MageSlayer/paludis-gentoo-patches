@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -394,10 +394,12 @@ namespace
         AllFilterHandlerBase
     {
         const PackageDepSpec spec;
+        const std::shared_ptr<const PackageID> from_id;
         const MatchPackageOptions options;
 
-        MatchesHandler(const PackageDepSpec & s, const MatchPackageOptions & o) :
+        MatchesHandler(const PackageDepSpec & s, const std::shared_ptr<const PackageID> & f, const MatchPackageOptions & o) :
             spec(s),
+            from_id(f),
             options(o)
         {
         }
@@ -411,7 +413,7 @@ namespace
             for (PackageIDSet::ConstIterator i(id->begin()), i_end(id->end()) ;
                     i != i_end ; ++i)
             {
-                if (match_package(*env, spec, *i, options))
+                if (match_package(*env, spec, *i, from_id, options))
                     result->insert(*i);
             }
 
@@ -484,8 +486,8 @@ filter::NoSlot::NoSlot() :
 {
 }
 
-filter::Matches::Matches(const PackageDepSpec & spec, const MatchPackageOptions & o) :
-    Filter(std::make_shared<MatchesHandler>(spec, o))
+filter::Matches::Matches(const PackageDepSpec & spec, const std::shared_ptr<const PackageID> & f, const MatchPackageOptions & o) :
+    Filter(std::make_shared<MatchesHandler>(spec, f, o))
 {
 }
 

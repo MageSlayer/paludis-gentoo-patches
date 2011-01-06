@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -29,6 +29,7 @@
 #include <paludis/util/safe_ofstream.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/fs_stat.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/package_id.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/generator.hh>
@@ -119,7 +120,7 @@ namespace
                 part_spec.package(b->first.first);
                 if ("(none)" != b->first.second)
                     part_spec.slot_requirement(std::make_shared<UserSlotExactRequirement>(SlotName(b->first.second)));
-                if (! env[selection::SomeArbitraryVersion(generator::Matches(part_spec, { }))]->empty())
+                if (! env[selection::SomeArbitraryVersion(generator::Matches(part_spec, make_null_shared_ptr(), { }))]->empty())
                 {
                     results.insert(std::make_pair(b->first, stringify(b->second) + " -> nothing on " + desc));
                     exit_status |= 2;

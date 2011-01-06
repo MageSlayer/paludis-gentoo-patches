@@ -576,8 +576,11 @@ paludis::ruby::package_id_to_value(std::shared_ptr<const PackageID> m)
 }
 
 std::shared_ptr<const PackageID>
-paludis::ruby::value_to_package_id(VALUE v)
+paludis::ruby::value_to_package_id(VALUE v, bool nil_ok)
 {
+    if (nil_ok && rb_obj_is_kind_of(v, rb_cNilClass))
+        return std::shared_ptr<const PackageID>();
+
     if (rb_obj_is_kind_of(v, c_package_id))
     {
         std::shared_ptr<const PackageID> * v_ptr;

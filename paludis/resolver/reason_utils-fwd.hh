@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -22,6 +22,7 @@
 
 #include <paludis/util/attributes.hh>
 #include <paludis/resolver/reason-fwd.hh>
+#include <paludis/package_id-fwd.hh>
 #include <memory>
 
 namespace paludis
@@ -29,6 +30,9 @@ namespace paludis
     namespace resolver
     {
         bool is_target(const std::shared_ptr<const Reason> &) PALUDIS_VISIBLE PALUDIS_ATTRIBUTE((warn_unused_result));
+
+        const std::shared_ptr<const PackageID> maybe_from_package_id_from_reason(
+                const std::shared_ptr<const Reason> &) PALUDIS_VISIBLE PALUDIS_ATTRIBUTE((warn_unused_result));
     }
 }
 

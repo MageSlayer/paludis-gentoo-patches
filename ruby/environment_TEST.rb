@@ -2,7 +2,7 @@
 # vim: set sw=4 sts=4 et tw=80 :
 
 #
-# Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+# Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
 # Copyright (c) 2007, 2008 Richard Brown
 #
 # This file is part of the Paludis package manager. Paludis is free software;
@@ -80,7 +80,7 @@ module Paludis
 
         def pid
             env[Selection::RequireExactlyOne.new(Generator::Matches.new(
-                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', env, []), []))].first
+                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', env, []), nil, []))].first
         end
 
         def test_accept_license
@@ -88,7 +88,7 @@ module Paludis
             assert !env.accept_license('Failure', pid)
 
             pid2 = env[Selection::RequireExactlyOne.new(Generator::Matches.new(
-                Paludis::parse_user_package_dep_spec('=foo/baz-1.0::testrepo', env, []), []))].first
+                Paludis::parse_user_package_dep_spec('=foo/baz-1.0::testrepo', env, []), nil, []))].first
             assert env.accept_license('GPL-2', pid2)
             assert env.accept_license('Failure', pid2)
         end
@@ -107,7 +107,7 @@ module Paludis
 
         def pid
             env[Selection::RequireExactlyOne.new(Generator::Matches.new(
-                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', env, []), []))].first
+                Paludis::parse_user_package_dep_spec('=foo/bar-1.0::testrepo', env, []), nil, []))].first
         end
 
         def test_accept_keywords
@@ -311,7 +311,7 @@ module Paludis
         end
 
         def test_package_database_query
-            a = env[Selection::AllVersionsSorted.new(Generator::Matches.new(pda, []))]
+            a = env[Selection::AllVersionsSorted.new(Generator::Matches.new(pda, nil, []))]
             assert_kind_of Array, a
             assert_equal 1, a.length
             pid = a.first
@@ -320,7 +320,7 @@ module Paludis
             assert_equal '1.0', pid.version.to_s
             assert_equal 'testrepo', pid.repository_name
 
-            a = env[Selection::AllVersionsSorted.new(Generator::Matches.new(pda, []) | Filter::SupportsAction.new(InstallAction))]
+            a = env[Selection::AllVersionsSorted.new(Generator::Matches.new(pda, nil, []) | Filter::SupportsAction.new(InstallAction))]
             assert_kind_of Array, a
             assert_equal 1, a.length
             pid = a.first
@@ -329,7 +329,7 @@ module Paludis
             assert_equal '1.0', pid.version.to_s
             assert_equal 'testrepo', pid.repository_name
 
-            a = env[Selection::AllVersionsSorted.new(Generator::Matches.new(pda, []))]
+            a = env[Selection::AllVersionsSorted.new(Generator::Matches.new(pda, nil, []))]
             assert_kind_of Array, a
             assert_equal 1, a.length
             pid = a.first
@@ -338,7 +338,7 @@ module Paludis
             assert_equal '1.0', pid.version.to_s
             assert_equal 'testrepo', pid.repository_name
 
-            a = env[Selection::AllVersionsSorted.new(Generator::Matches.new(pda2, []) | Filter::SupportsAction.new(InstallAction))]
+            a = env[Selection::AllVersionsSorted.new(Generator::Matches.new(pda2, nil, []) | Filter::SupportsAction.new(InstallAction))]
             assert_kind_of Array, a
             assert_equal 2, a.length
             pid = a.shift
@@ -368,10 +368,10 @@ module Paludis
 
 
             a = env[Selection::AllVersionsUnsorted.new(Generator::Matches.new(Paludis::parse_user_package_dep_spec(
-                '>=foo/bar-27', env, []), []))]
+                '>=foo/bar-27', env, []), nil, []))]
             assert a.empty?
 
-            a = env[Selection::AllVersionsUnsorted.new(Generator::Matches.new(pda2, []) | Filter::SupportsAction.new(ConfigAction))]
+            a = env[Selection::AllVersionsUnsorted.new(Generator::Matches.new(pda2, nil, []) | Filter::SupportsAction.new(ConfigAction))]
             assert a.empty?
         end
     end

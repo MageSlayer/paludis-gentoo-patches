@@ -28,7 +28,7 @@ world = env.set('world')
 # For each ID:
 ids.each do | id |
     # Is it paludis?
-    if match_package(env, parse_user_package_dep_spec('sys-apps/paludis', env, []), id, [])
+    if match_package(env, parse_user_package_dep_spec('sys-apps/paludis', env, []), id, nil, [])
         puts id.to_s.ljust(49) + ': paludis'
     elsif match_package_in_set(env, system, id, [])
         puts id.to_s.ljust(49) + ': system'

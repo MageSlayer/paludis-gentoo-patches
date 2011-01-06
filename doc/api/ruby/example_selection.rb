@@ -34,19 +34,19 @@ env = EnvironmentFactory.instance.create(ExampleCommandLine.instance.environment
 # object used determines the number and ordering of results. In the
 # simplest form, it takes a Generator as a parameter.
 show_selection(env, Selection::AllVersionsSorted.new(
-        Generator::Matches.new(parse_user_package_dep_spec("sys-apps/paludis", env, []), [])))
+        Generator::Matches.new(parse_user_package_dep_spec("sys-apps/paludis", env, []), nil, [])))
 
 # Generators can be passed through a Filter. The Selection optimises
 # the code internally to avoid doing excess work.
 show_selection(env, Selection::AllVersionsSorted.new(
-        Generator::Matches.new(parse_user_package_dep_spec("sys-apps/paludis", env, []), []) |
+        Generator::Matches.new(parse_user_package_dep_spec("sys-apps/paludis", env, []), nil, []) |
         Filter::InstalledAtRoot.new("/")))
 
 # Filters can be combined. Usually Filter::NotMasked should be combined
 # with Filter::SupportsAction.new(InstallAction), since installed packages
 # aren't masked.
 show_selection(env, Selection::AllVersionsSorted.new(
-        Generator::Matches.new(parse_user_package_dep_spec("sys-apps/paludis", env, []), []) |
+        Generator::Matches.new(parse_user_package_dep_spec("sys-apps/paludis", env, []), nil, []) |
         Filter::SupportsAction.new(InstallAction) |
         Filter::NotMasked.new))
 
@@ -54,7 +54,7 @@ show_selection(env, Selection::AllVersionsSorted.new(
 # is no metadata cache. Consider using other Selection objects if
 # you only need the best matching or some arbitrary matching ID.
 show_selection(env, Selection::BestVersionOnly.new(
-        Generator::Matches.new(parse_user_package_dep_spec("sys-apps/paludis", env, []), []) |
+        Generator::Matches.new(parse_user_package_dep_spec("sys-apps/paludis", env, []), nil, []) |
         Filter::SupportsAction.new(InstallAction) |
         Filter::NotMasked.new))
 

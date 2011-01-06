@@ -299,11 +299,6 @@ void expose_dep_list()
                 "Return whether a spec structure is already installed."
             )
 
-        .def("match_on_list", &DepList::match_on_list,
-                "match_on_list(PackageDepSpec) -> bool\n"
-                "Return whether a spec matches an item in the list."
-            )
-
         .def("__iter__", bp::range<bp::return_internal_reference<> >(dl_begin_ptr, dl_end_ptr))
         ;
 }

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -110,14 +110,15 @@ namespace
     }
 
     VALUE
-    generator_matches_new(VALUE self, VALUE spec_v, VALUE options_v)
+    generator_matches_new(VALUE self, VALUE spec_v, VALUE id_v, VALUE options_v)
     {
         Generator * ptr(0);
         try
         {
             std::shared_ptr<const PackageDepSpec> spec(value_to_package_dep_spec(spec_v));
+            std::shared_ptr<const PackageID> id(value_to_package_id(id_v, true));
             MatchPackageOptions options(value_to_match_package_options(options_v));
-            ptr = new generator::Matches(*spec, options);
+            ptr = new generator::Matches(*spec, id, options);
             VALUE data(Data_Wrap_Struct(self, 0, &Common<Generator>::free, ptr));
             rb_obj_call_init(data, 2, &spec_v);
             return data;
@@ -300,7 +301,7 @@ namespace
          * Generate matching packages.
          */
         c_generator_matches = rb_define_class_under(c_generator_module, "Matches", c_generator);
-        rb_define_singleton_method(c_generator_matches, "new", RUBY_FUNC_CAST(&generator_matches_new), 2);
+        rb_define_singleton_method(c_generator_matches, "new", RUBY_FUNC_CAST(&generator_matches_new), 3);
 
         /*
          * Document-class: Paludis::Generator::Intersection

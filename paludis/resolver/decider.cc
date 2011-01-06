@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -38,6 +38,7 @@
 #include <paludis/resolver/accumulate_deps_and_provides.hh>
 #include <paludis/resolver/why_changed_choices.hh>
 #include <paludis/resolver/same_slot.hh>
+#include <paludis/resolver/reason_utils.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_named_values.hh>
@@ -577,6 +578,7 @@ Decider::_make_constraints_from_target(
         result->push_back(std::make_shared<Constraint>(make_named_values<Constraint>(
                             n::destination_type() = resolution->resolvent().destination_type(),
                             n::force_unable() = false,
+                            n::from_id() = make_null_shared_ptr(),
                             n::nothing_is_fine_too() = existing.second,
                             n::reason() = reason,
                             n::spec() = spec,
@@ -606,6 +608,7 @@ Decider::_make_constraints_from_dependency(
         result->push_back(std::make_shared<Constraint>(make_named_values<Constraint>(
                             n::destination_type() = resolution->resolvent().destination_type(),
                             n::force_unable() = false,
+                            n::from_id() = dep.from_id(),
                             n::nothing_is_fine_too() = existing.second,
                             n::reason() = reason,
                             n::spec() = *dep.spec().if_package(),
@@ -638,11 +641,11 @@ Decider::_make_constraints_from_blocker(
             break;
 
         case bk_manual:
-            force_unable = ! _already_met(spec);
+            force_unable = ! _already_met(spec, maybe_from_package_id_from_reason(reason));
             break;
 
         case bk_upgrade_blocked_before:
-            nothing_is_fine_too = ! _already_met(spec);
+            nothing_is_fine_too = ! _already_met(spec, maybe_from_package_id_from_reason(reason));
             break;
 
         case last_bk:
@@ -655,6 +658,7 @@ Decider::_make_constraints_from_blocker(
             result->push_back(std::make_shared<Constraint>(make_named_values<Constraint>(
                                 n::destination_type() = *t,
                                 n::force_unable() = force_unable,
+                                n::from_id() = maybe_from_package_id_from_reason(reason),
                                 n::nothing_is_fine_too() = nothing_is_fine_too,
                                 n::reason() = reason,
                                 n::spec() = spec,
@@ -703,13 +707,13 @@ namespace
             if (constraint.spec().if_package())
             {
                 if (! match_package_with_maybe_changes(*env, *constraint.spec().if_package(),
-                            changed_choices_for_constraint.get(), chosen_id, changed_choices.get(), { }))
+                            changed_choices_for_constraint.get(), chosen_id, constraint.from_id(), changed_choices.get(), { }))
                     return false;
             }
             else
             {
                 if (match_package_with_maybe_changes(*env, constraint.spec().if_block()->blocking(),
-                            changed_choices_for_constraint.get(), chosen_id, changed_choices.get(), { }))
+                            changed_choices_for_constraint.get(), chosen_id, constraint.from_id(), changed_choices.get(), { }))
                     return false;
             }
 
@@ -1177,7 +1181,7 @@ Decider::_add_dependencies_if_necessary(
         }
 
         const std::shared_ptr<DependencyReason> reason(std::make_shared<DependencyReason>(
-                    package_id, changed_choices, our_resolution->resolvent(), *s, _already_met(s->spec())));
+                    package_id, changed_choices, our_resolution->resolvent(), *s, _already_met(s->spec(), package_id)));
 
         /* empty resolvents is always ok for blockers, since blocking on things
          * that don't exist is fine */
@@ -1310,7 +1314,7 @@ Decider::find_any_score(
     if (is_block)
     {
         const std::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::BestVersionOnly(
-                    generator::Matches(spec, { mpo_ignore_additional_requirements })
+                    generator::Matches(spec, our_id, { mpo_ignore_additional_requirements })
                         | filter::SupportsAction<InstallAction>() | filter::NotMasked()
                     )]);
         if (ids->empty())
@@ -1320,7 +1324,7 @@ Decider::find_any_score(
     /* next: already installed */
     {
         const std::shared_ptr<const PackageIDSequence> installed_ids((*_imp->env)[selection::BestVersionOnly(
-                    generator::Matches(spec, { }) |
+                    generator::Matches(spec, our_id, { }) |
                     filter::InstalledAtRoot(_imp->env->system_root_key()->value()))]);
         if (! installed_ids->empty() ^ is_block)
             return std::make_pair(acs_already_installed, operator_bias);
@@ -1330,14 +1334,14 @@ Decider::find_any_score(
     if (! is_block && spec.additional_requirements_ptr())
     {
         const std::shared_ptr<const PackageIDSequence> installed_ids((*_imp->env)[selection::BestVersionOnly(
-                    generator::Matches(spec, { mpo_ignore_additional_requirements }) |
+                    generator::Matches(spec, our_id, { mpo_ignore_additional_requirements }) |
                     filter::InstalledAtRoot(_imp->env->system_root_key()->value()))]);
         if (! installed_ids->empty())
             return std::make_pair(acs_wrong_options_installed, operator_bias);
     }
 
     const std::shared_ptr<DependencyReason> reason(std::make_shared<DependencyReason>(
-                our_id, make_null_shared_ptr(), our_resolution->resolvent(), dep, _already_met(dep.spec())));
+                our_id, make_null_shared_ptr(), our_resolution->resolvent(), dep, _already_met(dep.spec(), our_id)));
     const std::shared_ptr<const Resolvents> resolvents(_get_resolvents_for(spec, reason).first);
 
     /* next: will already be installing */
@@ -1374,7 +1378,7 @@ Decider::find_any_score(
     if (is_block)
     {
         const std::shared_ptr<const PackageIDSequence> installed_ids((*_imp->env)[selection::BestVersionOnly(
-                    generator::Matches(spec, { }) |
+                    generator::Matches(spec, our_id, { }) |
                     filter::InstalledAtRoot(_imp->env->system_root_key()->value()))]);
         if (! installed_ids->empty())
             return std::make_pair(acs_blocks_installed, operator_bias);
@@ -1384,7 +1388,7 @@ Decider::find_any_score(
     if (! is_block)
     {
         const std::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::BestVersionOnly(
-                    generator::Matches(spec, { mpo_ignore_additional_requirements })
+                    generator::Matches(spec, our_id, { mpo_ignore_additional_requirements })
                     )]);
         if (! ids->empty())
             return std::make_pair(acs_exists, operator_bias);
@@ -1473,7 +1477,7 @@ Decider::_get_resolvents_for(
         exact_slot = spec.slot_requirement_ptr()->accept_returning<std::shared_ptr<SlotName> >(f);
     }
 
-    return _imp->fns.get_resolvents_for_fn()(spec, exact_slot, reason);
+    return _imp->fns.get_resolvents_for_fn()(spec, maybe_from_package_id_from_reason(reason), exact_slot, reason);
 }
 
 const DestinationTypes
@@ -1847,9 +1851,9 @@ Decider::_find_id_for_from(
                 c != c_end ; ++c)
         {
             if ((*c)->spec().if_package())
-                ok = ok && match_package(*_imp->env, *(*c)->spec().if_package(), *i, opts);
+                ok = ok && match_package(*_imp->env, *(*c)->spec().if_package(), *i, (*c)->from_id(), opts);
             else
-                ok = ok && ! match_package(*_imp->env, (*c)->spec().if_block()->blocking(), *i, opts);
+                ok = ok && ! match_package(*_imp->env, (*c)->spec().if_block()->blocking(), *i, (*c)->from_id(), opts);
 
             if (! ok)
                 break;
@@ -1915,10 +1919,10 @@ Decider::_find_id_for_from(
 
                 if ((*c)->spec().if_package())
                     ok = ok && match_package_with_maybe_changes(*_imp->env, *(*c)->spec().if_package(),
-                            get_changed_choices_for(*c).get(), *i, why_changed_choices->changed_choices().get(), { });
+                            get_changed_choices_for(*c).get(), *i, (*c)->from_id(), why_changed_choices->changed_choices().get(), { });
                 else
                     ok = ok && ! match_package_with_maybe_changes(*_imp->env, (*c)->spec().if_block()->blocking(),
-                            get_changed_choices_for(*c).get(), *i, why_changed_choices->changed_choices().get(), { });
+                            get_changed_choices_for(*c).get(), *i, (*c)->from_id(), why_changed_choices->changed_choices().get(), { });
             }
 
             if (ok)
@@ -2113,10 +2117,10 @@ Decider::resolve()
 }
 
 bool
-Decider::_already_met(const PackageOrBlockDepSpec & spec) const
+Decider::_already_met(const PackageOrBlockDepSpec & spec, const std::shared_ptr<const PackageID> & from_id) const
 {
     const std::shared_ptr<const PackageIDSequence> installed_ids((*_imp->env)[selection::AllVersionsUnsorted(
-                generator::Matches(spec.if_package() ?  *spec.if_package() : spec.if_block()->blocking(), { }) |
+                generator::Matches(spec.if_package() ?  *spec.if_package() : spec.if_block()->blocking(), from_id, { }) |
                 filter::InstalledAtRoot(_imp->env->system_root_key()->value()))]);
     if (installed_ids->empty())
         return bool(spec.if_block());
@@ -2386,6 +2390,7 @@ namespace
             result->push_back(make_shared_copy(make_named_values<Constraint>(
                             n::destination_type() = destination_type,
                             n::force_unable() = false,
+                            n::from_id() = from_constraint->from_id(),
                             n::nothing_is_fine_too() = true,
                             n::reason() = std::make_shared<LikeOtherDestinationTypeReason>(
                                     resolvent,

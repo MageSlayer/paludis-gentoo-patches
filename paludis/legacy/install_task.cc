@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -252,7 +252,7 @@ namespace
                 return std::make_shared<DepListEntryHandledSkippedDependent>(
                             *(*env)[selection::RequireExactlyOne(generator::Matches(
                                     parse_user_package_dep_spec(s.substr(1), env,
-                                        { }), { }))]->begin());
+                                        { }), make_null_shared_ptr(), { }))]->begin());
 
             case 'F':
                 if (s.length() != 1)
@@ -299,7 +299,7 @@ InstallTask::set_targets_from_serialisation(const std::string & format,
             throw InternalError(PALUDIS_HERE, "Serialised value '" + *s + "' too short: no package_id");
         const std::shared_ptr<const PackageID> package_id(*(*_imp->env)[selection::RequireExactlyOne(
                     generator::Matches(parse_user_package_dep_spec(*tokens.begin(),
-                            _imp->env, { }), { }))]->begin());
+                            _imp->env, { }), make_null_shared_ptr(), { }))]->begin());
         tokens.pop_front();
 
         if (tokens.empty())
@@ -504,7 +504,7 @@ InstallTask::_add_target(const std::string & target)
         else
         {
             std::shared_ptr<const PackageIDSequence> names((*_imp->env)[selection::BestVersionOnly(
-                        generator::Matches(*spec, { }) | filter::SupportsAction<InstallAction>())]);
+                        generator::Matches(*spec, make_null_shared_ptr(), { }) | filter::SupportsAction<InstallAction>())]);
 
             if (names->empty())
             {
@@ -1538,7 +1538,7 @@ namespace
         void visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & node)
         {
             if (! failure)
-                if ((*env)[selection::SomeArbitraryVersion(generator::Matches(*node.spec(), { })
+                if ((*env)[selection::SomeArbitraryVersion(generator::Matches(*node.spec(), id, { })
                             | filter::InstalledAtRoot(env->preferred_root_key()->value()))]->empty())
                     failure = node.spec();
         }
@@ -1728,7 +1728,7 @@ namespace
                 if (! d->handled())
                     continue;
 
-                if (! match_package(*env, *node.spec(), d->package_id(), { }))
+                if (! match_package(*env, *node.spec(), d->package_id(), id, { }))
                     continue;
 
                 CheckHandledVisitor v;
@@ -1743,7 +1743,7 @@ namespace
             /* no match on the dep list, fall back to installed packages. if
              * there are no matches here it's not a problem because of or-deps. */
             std::shared_ptr<const PackageIDSequence> installed((*env)[selection::AllVersionsUnsorted(
-                        generator::Matches(*node.spec(), { }) |
+                        generator::Matches(*node.spec(), id, { }) |
                         filter::InstalledAtRoot(env->preferred_root_key()->value()))]);
 
             for (PackageIDSequence::ConstIterator i(installed->begin()), i_end(installed->end()) ;

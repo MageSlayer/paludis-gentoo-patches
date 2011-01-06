@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -183,7 +183,7 @@ UninstallList::add_errors_for_system()
                     v != v_end && ! needed ; ++v)
             {
                 const std::shared_ptr<const PackageIDSequence> virtuals((*_imp->env)[selection::AllVersionsUnsorted(
-                            generator::Matches(**v, { }))]);
+                            generator::Matches(**v, l->package_id(), { }))]);
                 for (PackageIDSequence::ConstIterator i(virtuals->begin()), i_end(virtuals->end()) ;
                         i != i_end && ! needed ; ++i)
                     if (match_package_in_set(*_imp->env, *system, *i, { }))
@@ -330,8 +330,8 @@ namespace
 
             std::shared_ptr<const PackageIDSequence> m(
                     best_only ?
-                    (*env)[selection::BestVersionOnly(generator::Matches(*node.spec(), { }) | filter::InstalledAtRoot(env->preferred_root_key()->value()))] :
-                    (*env)[selection::AllVersionsSorted(generator::Matches(*node.spec(), { }) | filter::InstalledAtRoot(env->preferred_root_key()->value()))]);
+                    (*env)[selection::BestVersionOnly(generator::Matches(*node.spec(), pkg, { }) | filter::InstalledAtRoot(env->preferred_root_key()->value()))] :
+                    (*env)[selection::AllVersionsSorted(generator::Matches(*node.spec(), pkg, { }) | filter::InstalledAtRoot(env->preferred_root_key()->value()))]);
             for (PackageIDSequence::ConstIterator it = m->begin(), it_end = m->end();
                  it_end != it; ++it)
                 matches->insert(make_named_values<DepTagEntry>(

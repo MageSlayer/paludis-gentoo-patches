@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -94,7 +94,7 @@ ConsoleQueryTask::show(const PackageDepSpec & a, const std::shared_ptr<const Pac
     if (! a.package_ptr())
     {
         std::shared_ptr<const PackageIDSequence> entries(
-                (*_imp->env)[selection::BestVersionOnly(generator::Matches(a, { }))]);
+                (*_imp->env)[selection::BestVersionOnly(generator::Matches(a, display_entry, { }))]);
         if (entries->empty())
             throw NoSuchPackageError(stringify(a));
 
@@ -117,9 +117,9 @@ ConsoleQueryTask::show_one(const PackageDepSpec & a, const std::shared_ptr<const
     /* prefer the best installed version, then the best visible version, then
      * the best version */
     std::shared_ptr<const PackageIDSequence>
-        entries((*_imp->env)[selection::AllVersionsSorted(generator::Matches(a, { }))]),
+        entries((*_imp->env)[selection::AllVersionsSorted(generator::Matches(a, display_entry, { }))]),
         preferred_entries((*_imp->env)[selection::AllVersionsSorted(
-                    generator::Matches(a, { }) | filter::InstalledAtRoot(_imp->env->preferred_root_key()->value()))]);
+                    generator::Matches(a, display_entry, { }) | filter::InstalledAtRoot(_imp->env->preferred_root_key()->value()))]);
     if (entries->empty())
         throw NoSuchPackageError(stringify(a));
     if (preferred_entries->empty())

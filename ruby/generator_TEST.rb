@@ -2,7 +2,7 @@
 # vim: set sw=4 sts=4 et tw=80 :
 
 #
-# Copyright (c) 2008 Ciaran McCreesh
+# Copyright (c) 2008, 2011 Ciaran McCreesh
 #
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General
@@ -51,15 +51,15 @@ module Paludis
 
         def test_create
             assert_nothing_raised do
-                Generator::Matches.new(Paludis::parse_user_package_dep_spec("a/b", env, []), [])
+                Generator::Matches.new(Paludis::parse_user_package_dep_spec("a/b", env, []), nil, [])
             end
         end
 
         def test_to_s
-            assert_equal Generator::Matches.new(Paludis::parse_user_package_dep_spec("a/b", env, []), []).to_s,
+            assert_equal Generator::Matches.new(Paludis::parse_user_package_dep_spec("a/b", env, []), nil, []).to_s,
                 "packages matching a/b"
             assert_equal Generator::Matches.new(Paludis::parse_user_package_dep_spec("a/b", env, []),
-                                               [:ignore_additional_requirements]).to_s,
+                                               nil, [:ignore_additional_requirements]).to_s,
                 "packages matching a/b (ignoring additional requirements)"
         end
     end

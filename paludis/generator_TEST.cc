@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -31,6 +31,7 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
 #include <test/test_concepts.hh>
@@ -122,7 +123,7 @@ namespace test_cases
     {
         MatchesGeneratorTestCase() :
             GeneratorTestCaseBase("matches", generator::Matches(parse_user_package_dep_spec("cat/a",
-                            &env, { }), { }))
+                            &env, { }), make_null_shared_ptr(), { }))
         {
         }
 
@@ -140,7 +141,7 @@ namespace test_cases
     {
         MatchesCatWildcardGeneratorTestCase() :
             GeneratorTestCaseBase("matches cat wildcard", generator::Matches(parse_user_package_dep_spec("*/a",
-                            &env, { updso_allow_wildcards }), { }))
+                            &env, { updso_allow_wildcards }), make_null_shared_ptr(), { }))
         {
         }
 
@@ -158,7 +159,7 @@ namespace test_cases
     {
         MatchesPkgWildcardGeneratorTestCase() :
             GeneratorTestCaseBase("matches pkg wildcard", generator::Matches(parse_user_package_dep_spec("cat/*",
-                            &env, { updso_allow_wildcards }), { }))
+                            &env, { updso_allow_wildcards }), make_null_shared_ptr(), { }))
         {
         }
 
@@ -179,7 +180,7 @@ namespace test_cases
         MatchesAllWildcardGeneratorTestCase() :
             GeneratorTestCaseBase("matches all wildcard", generator::Matches(
                         parse_user_package_dep_spec(">=*/*-2",
-                            &env, { updso_allow_wildcards }), { }))
+                            &env, { updso_allow_wildcards }), make_null_shared_ptr(), { }))
         {
         }
 
@@ -287,9 +288,9 @@ namespace test_cases
         IntersectionGeneratorTestCase() :
             GeneratorTestCaseBase("intersection", generator::Intersection(
                     generator::Matches(parse_user_package_dep_spec("*/a",
-                            &env, { updso_allow_wildcards }), { }),
+                            &env, { updso_allow_wildcards }), make_null_shared_ptr(), { }),
                     generator::Matches(parse_user_package_dep_spec("cat/*",
-                            &env, { updso_allow_wildcards }), { })
+                            &env, { updso_allow_wildcards }), make_null_shared_ptr(), { })
                     ))
         {
         }

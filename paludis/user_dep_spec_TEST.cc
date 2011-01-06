@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -28,6 +28,7 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/version_requirements.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/repositories/fake/fake_repository.hh>
@@ -430,75 +431,75 @@ namespace test_cases
             pkg3->keywords_key()->set_from_string("~d");
 
             PackageDepSpec a(parse_user_package_dep_spec("cat/pkg1[.KEYWORDS<~a]", &env, { }));
-            TEST_CHECK(match_package(env, a, pkg1, { }));
-            TEST_CHECK(match_package(env, a, pkg2, { }));
-            TEST_CHECK(! match_package(env, a, pkg3, { }));
+            TEST_CHECK(match_package(env, a, pkg1, make_null_shared_ptr(), { }));
+            TEST_CHECK(match_package(env, a, pkg2, make_null_shared_ptr(), { }));
+            TEST_CHECK(! match_package(env, a, pkg3, make_null_shared_ptr(), { }));
 
             PackageDepSpec b(parse_user_package_dep_spec("cat/pkg1[.KEYWORDS<~b]", &env, { }));
-            TEST_CHECK(match_package(env, b, pkg1, { }));
-            TEST_CHECK(! match_package(env, b, pkg2, { }));
-            TEST_CHECK(! match_package(env, b, pkg3, { }));
+            TEST_CHECK(match_package(env, b, pkg1, make_null_shared_ptr(), { }));
+            TEST_CHECK(! match_package(env, b, pkg2, make_null_shared_ptr(), { }));
+            TEST_CHECK(! match_package(env, b, pkg3, make_null_shared_ptr(), { }));
 
             PackageDepSpec c(parse_user_package_dep_spec("cat/pkg1[.KEYWORDS<~c]", &env, { }));
-            TEST_CHECK(! match_package(env, c, pkg1, { }));
-            TEST_CHECK(match_package(env, c, pkg2, { }));
-            TEST_CHECK(! match_package(env, c, pkg3, { }));
+            TEST_CHECK(! match_package(env, c, pkg1, make_null_shared_ptr(), { }));
+            TEST_CHECK(match_package(env, c, pkg2, make_null_shared_ptr(), { }));
+            TEST_CHECK(! match_package(env, c, pkg3, make_null_shared_ptr(), { }));
 
             PackageDepSpec d(parse_user_package_dep_spec("cat/pkg1[.KEYWORDS>~a]", &env, { }));
-            TEST_CHECK(! match_package(env, d, pkg1, { }));
-            TEST_CHECK(! match_package(env, d, pkg2, { }));
-            TEST_CHECK(! match_package(env, d, pkg3, { }));
+            TEST_CHECK(! match_package(env, d, pkg1, make_null_shared_ptr(), { }));
+            TEST_CHECK(! match_package(env, d, pkg2, make_null_shared_ptr(), { }));
+            TEST_CHECK(! match_package(env, d, pkg3, make_null_shared_ptr(), { }));
 
             PackageDepSpec e(parse_user_package_dep_spec("cat/pkg1[.KEYWORDS=~d]", &env, { }));
-            TEST_CHECK(! match_package(env, e, pkg1, { }));
-            TEST_CHECK(! match_package(env, e, pkg2, { }));
-            TEST_CHECK(match_package(env, e, pkg3, { }));
+            TEST_CHECK(! match_package(env, e, pkg1, make_null_shared_ptr(), { }));
+            TEST_CHECK(! match_package(env, e, pkg2, make_null_shared_ptr(), { }));
+            TEST_CHECK(match_package(env, e, pkg3, make_null_shared_ptr(), { }));
 
             PackageDepSpec f(parse_user_package_dep_spec("cat/pkg1[.KEYWORDS=~a ~c]", &env, { }));
-            TEST_CHECK(! match_package(env, f, pkg1, { }));
-            TEST_CHECK(match_package(env, f, pkg2, { }));
-            TEST_CHECK(! match_package(env, f, pkg3, { }));
+            TEST_CHECK(! match_package(env, f, pkg1, make_null_shared_ptr(), { }));
+            TEST_CHECK(match_package(env, f, pkg2, make_null_shared_ptr(), { }));
+            TEST_CHECK(! match_package(env, f, pkg3, make_null_shared_ptr(), { }));
 
             PackageDepSpec g(parse_user_package_dep_spec("cat/pkg1[.HITCHHIKER=42]", &env, { }));
-            TEST_CHECK(match_package(env, g, pkg1, { }));
+            TEST_CHECK(match_package(env, g, pkg1, make_null_shared_ptr(), { }));
 
             PackageDepSpec h(parse_user_package_dep_spec("cat/pkg1[.HITCHHIKER<41]", &env, { }));
-            TEST_CHECK(! match_package(env, h, pkg1, { }));
+            TEST_CHECK(! match_package(env, h, pkg1, make_null_shared_ptr(), { }));
 
             PackageDepSpec i(parse_user_package_dep_spec("cat/pkg1[.HITCHHIKER<42]", &env, { }));
-            TEST_CHECK(! match_package(env, i, pkg1, { }));
+            TEST_CHECK(! match_package(env, i, pkg1, make_null_shared_ptr(), { }));
 
             PackageDepSpec j(parse_user_package_dep_spec("cat/pkg1[.HITCHHIKER<43]", &env, { }));
-            TEST_CHECK(match_package(env, j, pkg1, { }));
+            TEST_CHECK(match_package(env, j, pkg1, make_null_shared_ptr(), { }));
 
             PackageDepSpec k(parse_user_package_dep_spec("cat/pkg1[.HITCHHIKER>42]", &env, { }));
-            TEST_CHECK(! match_package(env, k, pkg1, { }));
+            TEST_CHECK(! match_package(env, k, pkg1, make_null_shared_ptr(), { }));
 
             PackageDepSpec l(parse_user_package_dep_spec("cat/pkg1[.HITCHHIKER>41]", &env, { }));
-            TEST_CHECK(match_package(env, l, pkg1, { }));
+            TEST_CHECK(match_package(env, l, pkg1, make_null_shared_ptr(), { }));
 
             PackageDepSpec m(parse_user_package_dep_spec("cat/pkg1[.HITCHHIKER?]", &env, { }));
-            TEST_CHECK(match_package(env, m, pkg1, { }));
+            TEST_CHECK(match_package(env, m, pkg1, make_null_shared_ptr(), { }));
 
             PackageDepSpec n(parse_user_package_dep_spec("cat/pkg1[.SPOON?]", &env, { }));
-            TEST_CHECK(! match_package(env, n, pkg1, { }));
+            TEST_CHECK(! match_package(env, n, pkg1, make_null_shared_ptr(), { }));
 
             PackageDepSpec o(parse_user_package_dep_spec("cat/pkg1[.$keywords<~a]", &env, { }));
-            TEST_CHECK(match_package(env, o, pkg1, { }));
-            TEST_CHECK(match_package(env, o, pkg2, { }));
-            TEST_CHECK(! match_package(env, o, pkg3, { }));
+            TEST_CHECK(match_package(env, o, pkg1, make_null_shared_ptr(), { }));
+            TEST_CHECK(match_package(env, o, pkg2, make_null_shared_ptr(), { }));
+            TEST_CHECK(! match_package(env, o, pkg3, make_null_shared_ptr(), { }));
 
             PackageDepSpec p(parse_user_package_dep_spec("cat/pkg1[.::$format=fake]", &env, { }));
-            TEST_CHECK(match_package(env, p, pkg1, { }));
+            TEST_CHECK(match_package(env, p, pkg1, make_null_shared_ptr(), { }));
 
             PackageDepSpec q(parse_user_package_dep_spec("cat/pkg1[.::$format=e]", &env, { }));
-            TEST_CHECK(! match_package(env, q, pkg1, { }));
+            TEST_CHECK(! match_package(env, q, pkg1, make_null_shared_ptr(), { }));
 
             PackageDepSpec r(parse_user_package_dep_spec("cat/pkg1[.::format=fake]", &env, { }));
-            TEST_CHECK(match_package(env, r, pkg1, { }));
+            TEST_CHECK(match_package(env, r, pkg1, make_null_shared_ptr(), { }));
 
             PackageDepSpec s(parse_user_package_dep_spec("cat/pkg1[.::format=e]", &env, { }));
-            TEST_CHECK(! match_package(env, s, pkg1, { }));
+            TEST_CHECK(! match_package(env, s, pkg1, make_null_shared_ptr(), { }));
         }
     } test_user_package_dep_spec_user_key_req;
 }

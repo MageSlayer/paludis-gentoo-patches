@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -26,6 +26,7 @@
 #include <paludis/resolver/destination_utils.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
@@ -43,7 +44,8 @@ namespace paludis
         PackageDepSpecCollection always_via_binary_specs;
 
         Imp(const Environment * const e) :
-            env(e)
+            env(e),
+            always_via_binary_specs(make_null_shared_ptr())
         {
         }
     };

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2010 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -23,6 +23,7 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/options.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/package_id.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/generator.hh>
@@ -63,10 +64,10 @@ namespace test_cases
             std::shared_ptr<Environment> env(std::make_shared<PaludisEnvironment>(""));
             const std::shared_ptr<const PackageID> one(*(*env)[selection::RequireExactlyOne(
                         generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
-                                    env.get(), { })), { }))]->begin());
+                                    env.get(), { })), make_null_shared_ptr(), { }))]->begin());
             const std::shared_ptr<const PackageID> three(*(*env)[selection::RequireExactlyOne(
                         generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-two-3",
-                                    env.get(), { })), { }))]->begin());
+                                    env.get(), { })), make_null_shared_ptr(), { }))]->begin());
 
             TEST_CHECK(get_use("foo", one));
             TEST_CHECK(! get_use("foofoo", one));
@@ -97,7 +98,7 @@ namespace test_cases
 
             const std::shared_ptr<const PackageID> id1(*(*env)[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
-                                    env.get(), { })), { }))]->begin());
+                                    env.get(), { })), make_null_shared_ptr(), { }))]->begin());
             std::shared_ptr<const Choice> foo_cards;
             for (Choices::ConstIterator c(id1->choices_key()->value()->begin()), c_end(id1->choices_key()->value()->end()) ;
                     c != c_end ; ++c)
@@ -123,10 +124,10 @@ namespace test_cases
 
             const std::shared_ptr<const PackageID> one(*(*env)[selection::RequireExactlyOne(
                         generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
-                                    env.get(), { })), { }))]->begin());
+                                    env.get(), { })), make_null_shared_ptr(), { }))]->begin());
             const std::shared_ptr<const PackageID> three(*(*env)[selection::RequireExactlyOne(
                         generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-two-3",
-                                    env.get(), { })), { }))]->begin());
+                                    env.get(), { })), make_null_shared_ptr(), { }))]->begin());
 
             TEST_CHECK(get_use("foo", one));
             TEST_CHECK(! get_use("foofoo", one));
@@ -156,10 +157,10 @@ namespace test_cases
 
             const std::shared_ptr<const PackageID> one(*(*env)[selection::RequireExactlyOne(
                         generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
-                                    env.get(), { })), { }))]->begin());
+                                    env.get(), { })), make_null_shared_ptr(), { }))]->begin());
             const std::shared_ptr<const PackageID> three(*(*env)[selection::RequireExactlyOne(
                         generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-two-3",
-                                    env.get(), { })), { }))]->begin());
+                                    env.get(), { })), make_null_shared_ptr(), { }))]->begin());
 
             TEST_CHECK(get_use("foo", one));
             TEST_CHECK(! get_use("foofoo", one));

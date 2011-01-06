@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -143,7 +143,7 @@ LicensesConf::query(const std::string & t, const std::shared_ptr<const PackageID
             for (PDSToLicensesList::const_iterator j(i->second.begin()), j_end(i->second.end()) ;
                     j != j_end ; ++j)
             {
-                if (! match_package(*_imp->env, *j->first, e, { }))
+                if (! match_package(*_imp->env, *j->first, e, make_null_shared_ptr(), { }))
                     continue;
 
                 for (LicensesList::const_iterator l(j->second.begin()), l_end(j->second.end()) ;
@@ -208,7 +208,7 @@ LicensesConf::query(const std::string & t, const std::shared_ptr<const PackageID
     for (PDSToLicensesList::const_iterator j(_imp->unqualified.begin()), j_end(_imp->unqualified.end()) ;
             j != j_end ; ++j)
     {
-        if (! match_package(*_imp->env, *j->first, e, { }))
+        if (! match_package(*_imp->env, *j->first, e, make_null_shared_ptr(), { }))
             continue;
 
         for (LicensesList::const_iterator l(j->second.begin()), l_end(j->second.end()) ;

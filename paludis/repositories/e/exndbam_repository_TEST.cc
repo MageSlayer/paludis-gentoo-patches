@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -26,6 +26,7 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/fs_path.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/standard_output_manager.hh>
 #include <paludis/action.hh>
 #include <paludis/filtered_generator.hh>
@@ -109,7 +110,7 @@ namespace test_cases
             if (! victim.empty())
                 replacing->push_back(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec(victim,
-                                &env, { })), { }))]->begin());
+                                &env, { })), make_null_shared_ptr(), { }))]->begin());
             InstallAction install_action(make_named_values<InstallActionOptions>(
                         n::destination() = exndbam_repo,
                         n::make_output_manager() = &make_standard_output_manager,
@@ -119,7 +120,7 @@ namespace test_cases
                     ));
             (*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec(chosen_one,
-                                &env, { })), { }))]->begin())->perform_action(install_action);
+                                &env, { })), make_null_shared_ptr(), { }))]->begin())->perform_action(install_action);
         }
 
         void run()

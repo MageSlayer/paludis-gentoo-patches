@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -409,7 +409,7 @@ PerformCommand::run(
 
     const auto spec_str(*next(cmdline.begin_parameters()));
     const auto spec(parse_user_package_dep_spec(spec_str, env.get(), { }));
-    const auto ids((*env)[selection::AllVersionsUnsorted(generator::Matches(spec, { }))]);
+    const auto ids((*env)[selection::AllVersionsUnsorted(generator::Matches(spec, make_null_shared_ptr(), { }))]);
     if (ids->empty())
         nothing_matching_error(env.get(), spec_str, filter::All());
     else if (1 != std::distance(ids->begin(), ids->end()))
@@ -429,7 +429,7 @@ PerformCommand::run(
             p != p_end ; ++p)
     {
         PackageDepSpec rspec(parse_user_package_dep_spec(*p, env.get(), { }));
-        const std::shared_ptr<const PackageIDSequence> rids((*env)[selection::AllVersionsUnsorted(generator::Matches(rspec, { }))]);
+        const std::shared_ptr<const PackageIDSequence> rids((*env)[selection::AllVersionsUnsorted(generator::Matches(rspec, make_null_shared_ptr(), { }))]);
         if (rids->empty())
             nothing_matching_error(env.get(), *p, filter::All());
         else if (1 != std::distance(rids->begin(), rids->end()))

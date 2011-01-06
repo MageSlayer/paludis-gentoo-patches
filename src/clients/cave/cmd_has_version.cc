@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -29,6 +29,7 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/map.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/generator.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/filter.hh>
@@ -96,7 +97,7 @@ HasVersionCommand::run(
         throw args::DoHelp("has-version takes exactly one parameter");
 
     auto s(parse_user_package_dep_spec(*cmdline.begin_parameters(), env.get(), { }));
-    auto ids((*env)[selection::BestVersionOnly(generator::Matches(s, { }) | filter::InstalledAtRoot(
+    auto ids((*env)[selection::BestVersionOnly(generator::Matches(s, make_null_shared_ptr(), { }) | filter::InstalledAtRoot(
                     env->preferred_root_key()->value()))]);
 
     if (ids->empty())

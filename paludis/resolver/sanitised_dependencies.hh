@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -40,6 +40,7 @@ namespace paludis
         typedef Name<struct name_active_dependency_labels> active_dependency_labels;
         typedef Name<struct name_active_dependency_labels_as_string> active_dependency_labels_as_string;
         typedef Name<struct name_active_dependency_labels_classifier> active_dependency_labels_classifier;
+        typedef Name<struct name_from_id> from_id;
         typedef Name<struct name_metadata_key_human_name> metadata_key_human_name;
         typedef Name<struct name_metadata_key_raw_name> metadata_key_raw_name;
         typedef Name<struct name_original_specs_as_string> original_specs_as_string;
@@ -54,6 +55,7 @@ namespace paludis
             NamedValue<n::active_dependency_labels, std::shared_ptr<const DependenciesLabelSequence> > active_dependency_labels;
             NamedValue<n::active_dependency_labels_as_string, std::string> active_dependency_labels_as_string;
             NamedValue<n::active_dependency_labels_classifier, std::shared_ptr<const LabelsClassifier> > active_dependency_labels_classifier;
+            NamedValue<n::from_id, std::shared_ptr<const PackageID> > from_id;
             NamedValue<n::metadata_key_human_name, std::string> metadata_key_human_name;
             NamedValue<n::metadata_key_raw_name, std::string> metadata_key_raw_name;
             NamedValue<n::original_specs_as_string, std::string> original_specs_as_string;

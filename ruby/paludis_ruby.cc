@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  * Copyright (c) 2006, 2007, 2008 Richard Brown
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -79,20 +79,21 @@ namespace
      * Document-method: match_package
      *
      * call-seq:
-     *     match_package(environment, package_dep_spec, package_id, options) -> true or false
+     *     match_package(environment, package_dep_spec, package_id, from_package_id, options) -> true or false
      *
      * Return whether the specified PackageID matches the specified PackageDepSpec.
      *
      */
-    VALUE paludis_match_package(VALUE, VALUE en, VALUE a, VALUE t, VALUE o)
+    VALUE paludis_match_package(VALUE, VALUE en, VALUE a, VALUE t, VALUE f, VALUE o)
     {
         try
         {
             std::shared_ptr<Environment> env = value_to_environment(en);
             std::shared_ptr<const PackageDepSpec> spec = value_to_package_dep_spec(a);
             std::shared_ptr<const PackageID> target = value_to_package_id(t);
+            std::shared_ptr<const PackageID> from_package_id = value_to_package_id(f, true);
             MatchPackageOptions options(value_to_match_package_options(o));
-            return match_package(*env, *spec, target, options) ? Qtrue : Qfalse;
+            return match_package(*env, *spec, target, from_package_id, options) ? Qtrue : Qfalse;
         }
         catch (const std::exception & e)
         {
@@ -427,7 +428,7 @@ void PALUDIS_VISIBLE paludis::ruby::init()
      */
     c_bad_version_operator_error = rb_define_class_under(c_paludis_module, "BadVersionOperatorError", rb_eRuntimeError);
 
-    rb_define_module_function(c_paludis_module, "match_package", RUBY_FUNC_CAST(&paludis_match_package), 4);
+    rb_define_module_function(c_paludis_module, "match_package", RUBY_FUNC_CAST(&paludis_match_package), 5);
     rb_define_module_function(c_paludis_module, "match_package_in_set", RUBY_FUNC_CAST(&paludis_match_package_in_set), 4);
     rb_define_module_function(c_paludis_module, "version_spec_comparator", RUBY_FUNC_CAST(&paludis_version_spec_comparator), 3);
 

@@ -18,7 +18,7 @@ env = EnvironmentFactory.instance.create(ExampleCommandLine.instance.environment
 
 # Fetch package IDs for installed 'sys-apps/paludis'
 ids = env[Selection::AllVersionsSorted.new(
-    Generator::Matches.new(Paludis::parse_user_package_dep_spec("sys-apps/paludis", env, []), []) |
+    Generator::Matches.new(Paludis::parse_user_package_dep_spec("sys-apps/paludis", env, []), nil, []) |
     Filter::InstalledAtRoot.new("/"))]
 
 # For each ID:

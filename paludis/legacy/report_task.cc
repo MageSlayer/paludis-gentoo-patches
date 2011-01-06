@@ -36,6 +36,7 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/sequence.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/package_database.hh>
 #include <paludis/version_requirements.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
@@ -104,7 +105,7 @@ namespace
     VulnerableChecker::visit(const SetSpecTree::NodeType<PackageDepSpec>::Type & node)
     {
         std::shared_ptr<const PackageIDSequence> insecure(_env[selection::AllVersionsSorted(
-                    generator::Matches(*node.spec(), { }))]);
+                    generator::Matches(*node.spec(), make_null_shared_ptr(), { }))]);
         for (PackageIDSequence::ConstIterator i(insecure->begin()),
                 i_end(insecure->end()) ; i != i_end ; ++i)
             if (node.spec()->tag() && simple_visitor_cast<const GLSADepTag>(*node.spec()->tag()))
@@ -217,7 +218,7 @@ ReportTask::execute()
                                                  .version_requirement(make_named_values<VersionRequirement>(
                                                          n::version_operator() = vo_equal,
                                                          n::version_spec() = (*v)->version())),
-                                                 { })) |
+                                                 make_null_shared_ptr(), { })) |
                                             filter::SupportsAction<InstallAction>()))]);
 
                             if (! installable->empty())

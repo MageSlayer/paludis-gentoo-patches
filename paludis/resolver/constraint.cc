@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -147,58 +147,13 @@ Constraint::serialise(Serialiser & s) const
     s.object("Constraint")
         .member(SerialiserFlags<>(), "destination_type", stringify(destination_type()))
         .member(SerialiserFlags<>(), "force_unable", stringify(force_unable()))
+        .member(SerialiserFlags<serialise::might_be_null>(), "from_id", from_id())
         .member(SerialiserFlags<>(), "nothing_is_fine_too", nothing_is_fine_too())
         .member(SerialiserFlags<serialise::might_be_null>(), "reason", reason())
         .member(SerialiserFlags<>(), "spec", spec())
         .member(SerialiserFlags<>(), "untaken", stringify(untaken()))
         .member(SerialiserFlags<>(), "use_existing", stringify(use_existing()))
         ;
-}
-
-namespace
-{
-    struct IDFinder
-    {
-        const std::shared_ptr<const PackageID> visit(const DependencyReason & r) const
-        {
-            return r.from_id();
-        }
-
-        const std::shared_ptr<const PackageID> visit(const SetReason &) const
-        {
-            return make_null_shared_ptr();
-        }
-
-        const std::shared_ptr<const PackageID> visit(const LikeOtherDestinationTypeReason &) const
-        {
-            return make_null_shared_ptr();
-        }
-
-        const std::shared_ptr<const PackageID> visit(const PresetReason &) const
-        {
-            return make_null_shared_ptr();
-        }
-
-        const std::shared_ptr<const PackageID> visit(const TargetReason &) const
-        {
-            return make_null_shared_ptr();
-        }
-
-        const std::shared_ptr<const PackageID> visit(const DependentReason &) const
-        {
-            return make_null_shared_ptr();
-        }
-
-        const std::shared_ptr<const PackageID> visit(const ViaBinaryReason &) const
-        {
-            return make_null_shared_ptr();
-        }
-
-        const std::shared_ptr<const PackageID> visit(const WasUsedByReason &) const
-        {
-            return make_null_shared_ptr();
-        }
-    };
 }
 
 const std::shared_ptr<Constraint>
@@ -209,15 +164,15 @@ Constraint::deserialise(Deserialisation & d)
     Deserialisator v(d, "Constraint");
 
     const std::shared_ptr<Reason> reason(v.member<std::shared_ptr<Reason> >("reason"));
-    IDFinder id_finder;
+    const std::shared_ptr<const PackageID> from_id(v.member<std::shared_ptr<const PackageID> >("from_id"));
 
     return std::make_shared<Constraint>(make_named_values<Constraint>(
                     n::destination_type() = destringify<DestinationType>(v.member<std::string>("destination_type")),
                     n::force_unable() = v.member<bool>("force_unable"),
+                    n::from_id() = from_id,
                     n::nothing_is_fine_too() = v.member<bool>("nothing_is_fine_too"),
                     n::reason() = reason,
-                    n::spec() = PackageOrBlockDepSpec::deserialise(*v.find_remove_member("spec"),
-                            reason->accept_returning<std::shared_ptr<const PackageID> >(id_finder)),
+                    n::spec() = PackageOrBlockDepSpec::deserialise(*v.find_remove_member("spec"), from_id),
                     n::untaken() = v.member<bool>("untaken"),
                     n::use_existing() = destringify<UseExisting>(v.member<std::string>("use_existing"))
             ));

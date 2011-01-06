@@ -131,25 +131,14 @@ class TestCase_02_DepList(unittest.TestCase):
     def test_02_options(self):
         self.assert_(isinstance(dl.options, DepListOptions))
 
-    def test_03_match_on_list(self):
-        self.assert_(not dl.match_on_list(pds))
-
     def test_04_clear(self):
         dl.add(pds, dd)
-        self.assert_(dl.match_on_list(pds))
         dl.clear()
-        self.assert_(not dl.match_on_list(pds))
 
     def test_05_add(self):
-        self.assert_(not dl.match_on_list(pds))
         dl.add(pds, dd)
-        self.assert_(dl.match_on_list(pds))
-
         dl.clear()
-
-        self.assert_(not dl.match_on_list(pds))
         dl.add(cds, dd)
-        self.assert_(dl.match_on_list(pds))
 
     def test_06_already_installed(self):
         self.assert_(not dl.already_installed(pds, dd))

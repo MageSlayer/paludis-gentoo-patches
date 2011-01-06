@@ -206,7 +206,7 @@ module Paludis
         def test_add_bad_tree
             assert_raise TypeError do
                 dl.add(env[Selection::BestVersionOnly.new(Generator::Matches.new(
-                    pda, []))].last.build_dependencies_key.value, dd)
+                    pda, nil, []))].last.build_dependencies_key.value, dd)
             end
         end
 

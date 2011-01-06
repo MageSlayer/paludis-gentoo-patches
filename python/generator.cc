@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -24,10 +24,19 @@
 #include <paludis/filtered_generator.hh>
 #include <paludis/filter.hh>
 #include <paludis/dep_spec.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 
 using namespace paludis;
 using namespace paludis::python;
 namespace bp = boost::python;
+
+namespace
+{
+    generator::Matches * make_generator_matches(const PackageDepSpec & spec, const MatchPackageOptions & o)
+    {
+        return new generator::Matches(spec, make_null_shared_ptr(), o);
+    }
+}
 
 void expose_generator()
 {
@@ -62,7 +71,12 @@ void expose_generator()
     bp::class_<generator::Matches, bp::bases<Generator> > generator_matches(
             "Matches",
             "Generate matching packages.",
-            bp::init<const PackageDepSpec &, const MatchPackageOptions &>("__init__(spec, MatchPackageOptions)")
+            bp::no_init
+            );
+
+    generator_matches.def("__init__",
+            bp::make_constructor(&make_generator_matches),
+            "__init__(spec, MatchPackageOptions)"
             );
 
     bp::class_<generator::Intersection, bp::bases<Generator> > generator_intersection(

@@ -141,7 +141,8 @@ int main(int argc, char * argv[])
 
             /* And display packages matching that spec */
             cout << "    " << left << setw(24) << "Matches:" << " ";
-            std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(generator::Matches(spec, { }))]);
+            std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(
+                        generator::Matches(spec, make_null_shared_ptr(), { }))]);
             bool need_indent(false);
             for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                     i != i_end ; ++i)

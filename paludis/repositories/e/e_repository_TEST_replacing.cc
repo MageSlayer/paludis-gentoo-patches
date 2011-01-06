@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -26,6 +26,7 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/map.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/action.hh>
@@ -143,7 +144,7 @@ namespace
 
             const std::shared_ptr<const PackageIDSequence> rlist(env[selection::AllVersionsSorted(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec(replacing, &env, { })),
-                            { }) |
+                            make_null_shared_ptr(), { }) |
                         filter::InstalledAtRoot(env.preferred_root_key()->value()))]);
 
             InstallAction action(make_named_values<InstallActionOptions>(
@@ -156,7 +157,7 @@ namespace
 
             const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("cat/" + test,
-                                    &env, { })), { }) |
+                                    &env, { })), make_null_shared_ptr(), { }) |
                         filter::SupportsAction<InstallAction>())]->last());
             TEST_CHECK(bool(id));
             id->perform_action(action);

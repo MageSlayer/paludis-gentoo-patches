@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -61,13 +61,13 @@ FormattedPrettyPrinter::prettify(const PackageDepSpec & v) const
     if (_imp->env)
     {
         {
-            auto ids((*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(v, { }) |
+            auto ids((*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(v, _imp->package_id, { }) |
                         filter::InstalledAtRoot(_imp->env->preferred_root_key()->value()))]);
             if (! ids->empty())
                 return format_installed(stringify(v));
         }
         {
-            auto ids((*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(v, { }) |
+            auto ids((*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(v, _imp->package_id, { }) |
                         filter::SupportsAction<InstallAction>() | filter::NotMasked())]);
             if (! ids->empty())
                 return format_installed(stringify(v));
@@ -85,7 +85,7 @@ FormattedPrettyPrinter::prettify(const BlockDepSpec & v) const
     if (_imp->env)
     {
         {
-            auto ids((*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(v.blocking(), { }) |
+            auto ids((*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(v.blocking(), _imp->package_id, { }) |
                         filter::InstalledAtRoot(_imp->env->preferred_root_key()->value()))]);
             if (! ids->empty())
                 return format_masked(stringify(v));

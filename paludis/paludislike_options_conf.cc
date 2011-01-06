@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -32,6 +32,7 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/active_object_ptr.hh>
 #include <paludis/util/deferred_construction_ptr.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/choice.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/name.hh>
@@ -426,7 +427,7 @@ namespace
         {
             if (maybe_id)
             {
-                if (! match_package(*env, i->spec(), maybe_id, { }))
+                if (! match_package(*env, i->spec(), maybe_id, make_null_shared_ptr(), { }))
                     continue;
             }
             else
@@ -453,7 +454,7 @@ namespace
         {
             if (maybe_id)
             {
-                if (! match_package(*env, i->spec(), maybe_id, { }))
+                if (! match_package(*env, i->spec(), maybe_id, make_null_shared_ptr(), { }))
                     continue;
             }
             else

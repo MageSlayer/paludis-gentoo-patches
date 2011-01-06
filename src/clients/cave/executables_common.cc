@@ -2,7 +2,7 @@
 
 /*
  * Copyright (c) 2009 Alexander Færøy
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -37,6 +37,7 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/accept_visitor.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 
 #include <algorithm>
 #include <set>
@@ -115,7 +116,7 @@ paludis::cave::executables_common(
                 filter::InstalledAtRoot(env->preferred_root_key()->value())));
 
     std::shared_ptr<const PackageIDSequence> entries(
-            (*env)[selection::AllVersionsSorted(generator::Matches(spec, { }) |
+            (*env)[selection::AllVersionsSorted(generator::Matches(spec, make_null_shared_ptr(), { }) |
                 filter::InstalledAtRoot(env->preferred_root_key()->value()))]);
 
     if (entries->empty())

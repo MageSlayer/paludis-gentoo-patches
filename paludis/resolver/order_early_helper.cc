@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -24,6 +24,7 @@
 #include <paludis/resolver/decision_utils.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/tribool.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/package_dep_spec_collection.hh>
 
@@ -40,7 +41,9 @@ namespace paludis
         PackageDepSpecCollection late_specs;
 
         Imp(const Environment * const e) :
-            env(e)
+            env(e),
+            early_specs(make_null_shared_ptr()),
+            late_specs(make_null_shared_ptr())
         {
         }
     };

@@ -2,7 +2,7 @@
 # vim: set sw=4 sts=4 et tw=80 :
 
 #
-# Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+# Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
 # Copyright (c) 2006, 2007, 2008 Richard Brown
 #
 # This file is part of the Paludis package manager. Paludis is free software;
@@ -55,7 +55,7 @@ module Paludis
 
         def p
             env[Selection::RequireExactlyOne.new(Generator::Matches.new(
-                Paludis::parse_user_package_dep_spec('=foo/bar-2.0::testrepo', env, []), []))].first
+                Paludis::parse_user_package_dep_spec('=foo/bar-2.0::testrepo', env, []), nil, []))].first
         end
 
         def installed_pid
@@ -185,7 +185,7 @@ module Paludis
 
         def test_get_environment_variable
             pid = env[Selection::BestVersionOnly.new(Generator::Matches.new(Paludis::parse_user_package_dep_spec(
-                '=foo/bar-1.0', env, []), []))].first;
+                '=foo/bar-1.0', env, []), nil, []))].first;
             assert_equal "hello", repo.get_environment_variable(pid, "TEST_ENV_VAR")
             assert_equal "", repo.get_environment_variable(pid, "TEST_UNSET_ENV_VAR")
         end
