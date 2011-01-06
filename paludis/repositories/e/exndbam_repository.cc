@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -493,6 +493,10 @@ ExndbamRepository::perform_uninstall(
     if (! _imp->params.root().stat().is_directory())
         throw ActionFailedError("Couldn't uninstall '" + stringify(*id) +
                 "' because root ('" + stringify(_imp->params.root()) + "') is not a directory");
+
+    if (! id->eapi()->supported())
+        throw ActionFailedError("Couldn't uninstall '" + stringify(*id) +
+                "' because EAPI is unsupported");
 
     std::shared_ptr<OutputManager> output_manager(a.options.make_output_manager()(a));
 

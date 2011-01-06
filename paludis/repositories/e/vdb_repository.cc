@@ -416,6 +416,10 @@ VDBRepository::perform_uninstall(
         throw ActionFailedError("Couldn't uninstall '" + stringify(*id) +
                 "' because root ('" + stringify(_imp->params.root()) + "') is not a directory");
 
+    if (! id->eapi()->supported())
+        throw ActionFailedError("Couldn't uninstall '" + stringify(*id) +
+                "' because EAPI is unsupported");
+
     std::shared_ptr<OutputManager> output_manager(a.options.make_output_manager()(a));
 
     std::string reinstalling_str(a.options.is_overwrite() ? "-reinstalling-" : "");
