@@ -794,7 +794,6 @@ namespace paludis
     template <>
     struct Imp<EContentsKey>
     {
-        const std::shared_ptr<const ERepositoryID> id;
         const FSPath filename;
         mutable Mutex value_mutex;
         mutable std::shared_ptr<Contents> value;
@@ -803,9 +802,7 @@ namespace paludis
         const std::string human_name;
         const MetadataKeyType type;
 
-        Imp(const std::shared_ptr<const ERepositoryID> & i, const FSPath & v,
-                const std::string & r, const std::string & h, const MetadataKeyType & t) :
-            id(i),
+        Imp(const FSPath & v, const std::string & r, const std::string & h, const MetadataKeyType & t) :
             filename(v),
             raw_name(r),
             human_name(h),
@@ -815,9 +812,8 @@ namespace paludis
     };
 }
 
-EContentsKey::EContentsKey(const std::shared_ptr<const ERepositoryID> & id,
-        const std::string & r, const std::string & h, const FSPath & v, const MetadataKeyType t) :
-    Pimp<EContentsKey>(id, v, r, h, t)
+EContentsKey::EContentsKey(const std::string & r, const std::string & h, const FSPath & v, const MetadataKeyType t) :
+    Pimp<EContentsKey>(v, r, h, t)
 {
 }
 
@@ -833,15 +829,15 @@ EContentsKey::value() const
     if (_imp->value)
         return _imp->value;
 
-    Context context("When creating contents for VDB key '" + stringify(*_imp->id) + "' from '" + stringify(_imp->filename) + "':");
+    Context context("When creating contents from '" + stringify(_imp->filename) + "':");
 
     _imp->value = std::make_shared<Contents>();
 
     FSPath f(_imp->filename);
     if (! f.stat().is_regular_file_or_symlink_to_regular_file())
     {
-        Log::get_instance()->message("e.contents.not_a_file", ll_warning, lc_context) << "CONTENTS lookup failed for request for '" <<
-                *_imp->id << "' using '" << _imp->filename << "'";
+        Log::get_instance()->message("e.contents.not_a_file", ll_warning, lc_context) << "Could not read CONTENTS file '" <<
+            _imp->filename << "'";
         return _imp->value;
     }
 

@@ -252,9 +252,7 @@ namespace paludis
             private Pimp<EContentsKey>
         {
             public:
-                EContentsKey(
-                        const std::shared_ptr<const ERepositoryID> &,
-                        const std::string &, const std::string &, const FSPath &, const MetadataKeyType);
+                EContentsKey(const std::string &, const std::string &, const FSPath &, const MetadataKeyType);
                 ~EContentsKey();
 
                 const std::shared_ptr<const Contents> value() const
