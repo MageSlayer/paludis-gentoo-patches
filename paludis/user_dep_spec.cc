@@ -793,6 +793,7 @@ UserKeyRequirement::requirement_met(
         const Environment * const env,
         const ChangedChoices * const,
         const std::shared_ptr<const PackageID> & id,
+        const std::shared_ptr<const PackageID> &,
         const ChangedChoices * const) const
 {
     Context context("When working out whether '" + stringify(*id) + "' matches " + as_raw_string() + ":");
@@ -917,6 +918,7 @@ Tribool
 UserKeyRequirement::accumulate_changes_to_make_met(
         const Environment * const,
         const ChangedChoices * const,
+        const std::shared_ptr<const PackageID> &,
         const std::shared_ptr<const PackageID> &,
         ChangedChoices &) const
 {

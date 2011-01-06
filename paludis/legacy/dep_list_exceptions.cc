@@ -36,9 +36,11 @@ AllMaskedError::AllMaskedError(const PackageDepSpec & q, const std::shared_ptr<c
 }
 
 AdditionalRequirementsNotMetError::AdditionalRequirementsNotMetError(const PackageDepSpec & q,
+        const std::shared_ptr<const PackageID> & f,
         const std::shared_ptr<const PackageID> & i) throw () :
     DepListError("Error searching for '" + stringify(q) + "': additional requirements are not met on '" + stringify(*i) + "'"),
     _query(q),
+    _from_id(f),
     _id(i)
 {
 }

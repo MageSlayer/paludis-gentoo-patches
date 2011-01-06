@@ -1896,7 +1896,8 @@ Decider::_find_id_for_from(
                             a != a_end ; ++a)
                     {
                         auto b((*a)->accumulate_changes_to_make_met(_imp->env,
-                                    get_changed_choices_for(*c).get(), *i, *why_changed_choices->changed_choices()));
+                                    get_changed_choices_for(*c).get(), *i, (*c)->from_id(),
+                                    *why_changed_choices->changed_choices()));
                         if (b.is_false())
                         {
                             ok = false;

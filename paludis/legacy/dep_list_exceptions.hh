@@ -105,6 +105,7 @@ namespace paludis
     {
         private:
             PackageDepSpec _query;
+            const std::shared_ptr<const PackageID> _from_id;
             const std::shared_ptr<const PackageID> _id;
 
         public:
@@ -113,6 +114,7 @@ namespace paludis
 
             AdditionalRequirementsNotMetError(
                     const PackageDepSpec & query,
+                    const std::shared_ptr<const PackageID> & from_id,
                     const std::shared_ptr<const PackageID> & id) throw ();
 
             virtual ~AdditionalRequirementsNotMetError() throw ();
@@ -135,6 +137,11 @@ namespace paludis
             const std::shared_ptr<const PackageID> package_id() const
             {
                 return _id;
+            }
+
+            const std::shared_ptr<const PackageID> from_package_id() const
+            {
+                return _from_id;
             }
     };
 

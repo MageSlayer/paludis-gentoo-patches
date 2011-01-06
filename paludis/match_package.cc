@@ -82,7 +82,7 @@ paludis::match_package_with_maybe_changes(
         const PackageDepSpec & spec,
         const ChangedChoices * const maybe_changes_to_owner,
         const std::shared_ptr<const PackageID> & id,
-        const std::shared_ptr<const PackageID> &,
+        const std::shared_ptr<const PackageID> & from_id,
         const ChangedChoices * const maybe_changes_to_target,
         const MatchPackageOptions & options)
 {
@@ -208,7 +208,7 @@ paludis::match_package_with_maybe_changes(
         {
             for (AdditionalPackageDepSpecRequirements::ConstIterator u(spec.additional_requirements_ptr()->begin()),
                     u_end(spec.additional_requirements_ptr()->end()) ; u != u_end ; ++u)
-                if (! (*u)->requirement_met(&env, maybe_changes_to_owner, id, maybe_changes_to_target).first)
+                if (! (*u)->requirement_met(&env, maybe_changes_to_owner, id, from_id, maybe_changes_to_target).first)
                     return false;
         }
     }

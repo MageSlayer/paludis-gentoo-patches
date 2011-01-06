@@ -595,7 +595,7 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<PackageDepSpec>::T
             for (PackageIDSequence::ReverseConstIterator i(match_except_reqs->rbegin()),
                     i_end(match_except_reqs->rend()) ; i != i_end ; ++i)
                 if (! (*i)->masked())
-                    throw AdditionalRequirementsNotMetError(*node.spec(), *i);
+                    throw AdditionalRequirementsNotMetError(*node.spec(), d->_imp->current_package_id(), *i);
 
             throw AllMaskedError(*node.spec(), d->_imp->current_package_id());
         }

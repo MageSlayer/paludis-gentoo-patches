@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -518,6 +518,7 @@ namespace
                     const Environment * const env,
                     const ChangedChoices * const maybe_changes_to_owner,
                     const std::shared_ptr<const PackageID> & id,
+                    const std::shared_ptr<const PackageID> &,
                     const ChangedChoices * const maybe_changes_to_target) const
             {
                 using namespace std::placeholders;
@@ -558,6 +559,7 @@ namespace
                     const Environment * const env,
                     const ChangedChoices * const maybe_changes_to_owner,
                     const std::shared_ptr<const PackageID> & id,
+                    const std::shared_ptr<const PackageID> &,
                     ChangedChoices & changed_choices) const
             {
                 Tribool result(indeterminate);

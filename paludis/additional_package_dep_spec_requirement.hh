@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -55,14 +55,19 @@ namespace paludis
              * be matched is known. If the bool is false, the string is
              * meaningless.
              *
+             * \param spec_id The PackageID the spec comes from. May be null. Used for
+             * [use=] style dependencies.
+             *
              * \since 0.44 returns pair<bool, std::string>
              * \since 0.51 takes optional ChangedChoices arguments
              * \since 0.58 takes id by shared_ptr
+             * \since 0.58 takes spec_id
              */
             virtual const std::pair<bool, std::string> requirement_met(
                     const Environment * const,
                     const ChangedChoices * const maybe_changes_to_owner,
-                    const std::shared_ptr<const PackageID> &,
+                    const std::shared_ptr<const PackageID> & target_id,
+                    const std::shared_ptr<const PackageID> & spec_id,
                     const ChangedChoices * const maybe_changes_to_target) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
@@ -75,13 +80,18 @@ namespace paludis
              * Returns true for changes made, false for not possible,
              * indeterminate for nothing needs changing.
              *
+             * \param spec_id The PackageID the spec comes from. May be null. Used for
+             * [use=] style dependencies.
+             *
              * \since 0.51
              * \since 0.55 returns Tribool
+             * \since 0.58 takes spec_id
              */
             virtual Tribool accumulate_changes_to_make_met(
                     const Environment * const,
                     const ChangedChoices * const maybe_changes_to_owner,
                     const std::shared_ptr<const PackageID> &,
+                    const std::shared_ptr<const PackageID> & spec_id,
                     ChangedChoices &) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
