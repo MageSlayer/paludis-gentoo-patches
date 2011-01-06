@@ -133,7 +133,7 @@ int main(int argc, char * argv[])
                     if (need_join)
                         cout << " and ";
 
-                    cout << (*u)->as_raw_string() + " (meaning: " + (*u)->as_human_string() + ")";
+                    cout << (*u)->as_raw_string() + " (meaning: " + (*u)->as_human_string(make_null_shared_ptr()) + ")";
                     need_join = true;
                 }
                 cout << endl;

@@ -793,7 +793,7 @@ UserKeyRequirement::requirement_met(
         const Environment * const env,
         const ChangedChoices * const,
         const std::shared_ptr<const PackageID> & id,
-        const std::shared_ptr<const PackageID> &,
+        const std::shared_ptr<const PackageID> & from_id,
         const ChangedChoices * const) const
 {
     Context context("When working out whether '" + stringify(*id) + "' matches " + as_raw_string() + ":");
@@ -873,19 +873,19 @@ UserKeyRequirement::requirement_met(
     }
 
     if (! key)
-        return std::make_pair(false, as_human_string());
+        return std::make_pair(false, as_human_string(from_id));
 
     if (_imp->op == '?')
-        return std::make_pair(true, as_human_string());
+        return std::make_pair(true, as_human_string(from_id));
     else
     {
         KeyComparator c(env, id, _imp->value, _imp->op);
-        return std::make_pair(key->accept_returning<bool>(c), as_human_string());
+        return std::make_pair(key->accept_returning<bool>(c), as_human_string(from_id));
     }
 }
 
 const std::string
-UserKeyRequirement::as_human_string() const
+UserKeyRequirement::as_human_string(const std::shared_ptr<const PackageID> &) const
 {
     std::string key_str;
     if ((! _imp->key.empty()) && (_imp->key.at(0) == '$'))

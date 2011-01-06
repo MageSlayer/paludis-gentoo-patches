@@ -96,8 +96,14 @@ namespace paludis
 
             /**
              * Return a human readable string representation of ourself.
+             *
+             * \param spec_id The PackageID the spec comes from. May be null. Used for
+             * [use=] style dependencies.
+             *
+             * \since 0.58 takes spec_id
              */
-            virtual const std::string as_human_string() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+            virtual const std::string as_human_string(
+                    const std::shared_ptr<const PackageID> & spec_id) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
              * Return a raw string representation of ourself.

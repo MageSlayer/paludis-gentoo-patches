@@ -540,7 +540,8 @@ namespace
                 return result;
             }
 
-            virtual const std::string as_human_string() const
+            virtual const std::string as_human_string(
+                    const std::shared_ptr<const PackageID> &) const
             {
                 return join(_reqs.begin(), _reqs.end(), "; ", std::mem_fn(&UseRequirement::as_human_string));
             }
