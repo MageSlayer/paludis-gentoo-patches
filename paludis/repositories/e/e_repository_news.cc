@@ -177,8 +177,7 @@ ERepositoryNews::update_news() const
                     if (! (*_imp->environment)[selection::SomeArbitraryVersion(
                                 generator::Matches(PackageDepSpec(parse_elike_package_dep_spec(*i,
                                             eapi.supported()->package_dep_spec_parse_options(),
-                                            eapi.supported()->version_spec_options(),
-                                            std::shared_ptr<const PackageID>())), make_null_shared_ptr(), { }) |
+                                            eapi.supported()->version_spec_options())), make_null_shared_ptr(), { }) |
                                 filter::InstalledAtRoot(_imp->environment->preferred_root_key()->value()))]->empty())
                         local_show = true;
                 show &= local_show;

@@ -275,7 +275,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
 
                 PackageDepSpec spec(parse_elike_package_dep_spec(tokens[3],
                             eapi->supported()->package_dep_spec_parse_options(),
-                            eapi->supported()->version_spec_options(), package_id));
+                            eapi->supported()->version_spec_options()));
                 std::shared_ptr<const PackageIDSequence> entries((*environment)[selection::AllVersionsSorted(
                             generator::Matches(spec, package_id, { }) | root)]);
                 if (eapi->supported()->pipe_commands()->rewrite_virtuals() && (! entries->empty()) &&
@@ -324,7 +324,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
 
                 PackageDepSpec spec(parse_elike_package_dep_spec(tokens[3],
                             eapi->supported()->package_dep_spec_parse_options(),
-                            eapi->supported()->version_spec_options(), package_id));
+                            eapi->supported()->version_spec_options()));
                 std::shared_ptr<const PackageIDSequence> entries((*environment)[selection::SomeArbitraryVersion(
                             generator::Matches(spec, package_id, { }) | root)]);
                 if (entries->empty())
@@ -348,7 +348,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
 
                 PackageDepSpec spec(parse_elike_package_dep_spec(tokens[2],
                             eapi->supported()->package_dep_spec_parse_options(),
-                            eapi->supported()->version_spec_options(), package_id));
+                            eapi->supported()->version_spec_options()));
                 std::shared_ptr<const PackageIDSequence> entries((*environment)[selection::AllVersionsSorted(
                             generator::Matches(spec, package_id, { }) | filter::InstalledAtRoot(environment->preferred_root_key()->value()))]);
                 if (eapi->supported()->pipe_commands()->rewrite_virtuals() && (! entries->empty()))

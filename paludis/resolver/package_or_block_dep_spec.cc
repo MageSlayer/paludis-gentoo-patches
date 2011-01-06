@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -98,7 +98,7 @@ PackageOrBlockDepSpec::serialise(Serialiser & s) const
 }
 
 PackageOrBlockDepSpec
-PackageOrBlockDepSpec::deserialise(Deserialisation & d, const std::shared_ptr<const PackageID> & for_id)
+PackageOrBlockDepSpec::deserialise(Deserialisation & d, const std::shared_ptr<const PackageID> &)
 {
     Context context("When deserialising:");
 
@@ -112,8 +112,7 @@ PackageOrBlockDepSpec::deserialise(Deserialisation & d, const std::shared_ptr<co
                 epdso_allow_slot_equal_deps, epdso_allow_slot_deps, epdso_allow_key_requirements,
                 epdso_allow_use_dep_question_defaults },
                 { vso_flexible_dashes, vso_flexible_dots, vso_ignore_case,
-                vso_letters_anywhere, vso_dotted_suffixes },
-                for_id));
+                vso_letters_anywhere, vso_dotted_suffixes }));
 
     auto annotations(std::make_shared<DepSpecAnnotations>());
     for (int a(0), a_end(v.member<int>("annotations_count")) ;

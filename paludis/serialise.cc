@@ -377,8 +377,7 @@ DeserialisatorHandler<std::shared_ptr<const PackageID> >::handle(Deserialisation
                         epdso_allow_slot_equal_deps, epdso_allow_slot_deps, epdso_allow_key_requirements,
                         epdso_allow_use_dep_question_defaults },
                         { vso_flexible_dashes, vso_flexible_dots, vso_ignore_case,
-                        vso_letters_anywhere, vso_dotted_suffixes },
-                        make_null_shared_ptr()), make_null_shared_ptr(), { }))]->begin();
+                        vso_letters_anywhere, vso_dotted_suffixes }), make_null_shared_ptr(), { }))]->begin();
 }
 
 template class Pimp<Deserialiser>;

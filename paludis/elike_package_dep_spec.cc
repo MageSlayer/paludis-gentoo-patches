@@ -90,7 +90,7 @@ paludis::elike_remove_trailing_square_bracket_if_exists(std::string & s, Partial
         const ELikePackageDepSpecOptions & options,
         const VersionSpecOptions & version_options,
         bool & had_bracket_version_requirements,
-        bool & had_use_requirements, const std::shared_ptr<const PackageID> & id)
+        bool & had_use_requirements)
 {
     std::string::size_type use_group_p;
     if (std::string::npos == ((use_group_p = s.rfind('['))))
@@ -470,8 +470,7 @@ namespace
 PartiallyMadePackageDepSpec
 paludis::partial_parse_elike_package_dep_spec(
         const std::string & ss, const ELikePackageDepSpecOptions & options,
-        const VersionSpecOptions & version_options,
-        const std::shared_ptr<const PackageID> & id)
+        const VersionSpecOptions & version_options)
 {
     using namespace std::placeholders;
 
@@ -495,15 +494,14 @@ paludis::partial_parse_elike_package_dep_spec(
                 n::remove_trailing_repo_if_exists() = std::bind(&elike_remove_trailing_repo_if_exists, _1, _2, options),
                 n::remove_trailing_slot_if_exists() = std::bind(&elike_remove_trailing_slot_if_exists, _1, _2, options),
                 n::remove_trailing_square_bracket_if_exists() = std::bind(&elike_remove_trailing_square_bracket_if_exists,
-                        _1, _2, options, version_options, std::ref(had_bracket_version_requirements), std::ref(had_use_requirements), id)
+                        _1, _2, options, version_options, std::ref(had_bracket_version_requirements), std::ref(had_use_requirements))
                 ));
 }
 
 PackageDepSpec
 paludis::parse_elike_package_dep_spec(const std::string & ss, const ELikePackageDepSpecOptions & options,
-        const VersionSpecOptions & version_options,
-        const std::shared_ptr<const PackageID> & id)
+        const VersionSpecOptions & version_options)
 {
-    return partial_parse_elike_package_dep_spec(ss, options, version_options, id);
+    return partial_parse_elike_package_dep_spec(ss, options, version_options);
 }
 

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -112,12 +112,11 @@ namespace
             const typename ParseStackTypes<T_>::Stack & h,
             const typename ParseStackTypes<T_>::AnnotationsGoHere & annotations_go_here,
             const std::string & s,
-            const EAPI & eapi,
-            const std::shared_ptr<const PackageID> & id)
+            const EAPI & eapi)
     {
         std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(
                     parse_elike_package_dep_spec(s, eapi.supported()->package_dep_spec_parse_options(),
-                        eapi.supported()->version_spec_options(), id)));
+                        eapi.supported()->version_spec_options())));
         h.begin()->item()->append(spec);
         call_annotations_go_here(annotations_go_here, spec);
     }
@@ -127,8 +126,7 @@ namespace
             const typename ParseStackTypes<T_>::Stack & h,
             const typename ParseStackTypes<T_>::AnnotationsGoHere & annotations_go_here,
             const std::string & s,
-            const EAPI & eapi,
-            const std::shared_ptr<const PackageID> & id)
+            const EAPI & eapi)
     {
         if ((! s.empty()) && ('!' == s.at(0)))
         {
@@ -151,14 +149,13 @@ namespace
                         s,
                         parse_elike_package_dep_spec(s.substr(specstart),
                             eapi.supported()->package_dep_spec_parse_options(),
-                            eapi.supported()->version_spec_options(),
-                            id),
+                            eapi.supported()->version_spec_options()),
                         strong ? bk_strong : bk_weak));
             h.begin()->item()->append(spec);
             annotations_go_here(spec, spec);
         }
         else
-            package_dep_spec_string_handler<T_>(h, annotations_go_here, s, eapi, id);
+            package_dep_spec_string_handler<T_>(h, annotations_go_here, s, eapi);
     }
 
     template <typename T_>
@@ -509,7 +506,7 @@ paludis::erepository::parse_depend(const std::string & s,
                 n::on_should_be_empty() = std::bind(&should_be_empty_handler<DependencySpecTree>, std::ref(stack), s),
                 n::on_string() = std::bind(&package_or_block_dep_spec_string_handler<DependencySpecTree>, std::ref(stack),
                     ParseStackTypes<DependencySpecTree>::AnnotationsGoHere(std::bind(
-                            &set_thing_to_annotate_maybe_block, std::ref(thing_to_annotate), _1, std::ref(thing_to_annotate_if_block), _2)), _1, eapi, id),
+                            &set_thing_to_annotate_maybe_block, std::ref(thing_to_annotate), _1, std::ref(thing_to_annotate_if_block), _2)), _1, eapi),
                 n::on_use() = std::bind(&use_handler<DependencySpecTree>, std::ref(stack), _1, env, id, std::cref(eapi)),
                 n::on_use_under_any() = std::bind(&use_under_any_handler, s, std::cref(eapi))
             ));
@@ -549,7 +546,7 @@ paludis::erepository::parse_provide(const std::string & s,
                 n::on_should_be_empty() = std::bind(&should_be_empty_handler<ProvideSpecTree>, std::ref(stack), s),
                 n::on_string() = std::bind(&package_dep_spec_string_handler<ProvideSpecTree>, std::ref(stack),
                     ParseStackTypes<ProvideSpecTree>::AnnotationsGoHere(std::bind(
-                            &set_thing_to_annotate, std::ref(thing_to_annotate), _1)), _1, std::cref(eapi), id),
+                            &set_thing_to_annotate, std::ref(thing_to_annotate), _1)), _1, std::cref(eapi)),
                 n::on_use() = std::bind(&use_handler<ProvideSpecTree>, std::ref(stack), _1, env, id, std::cref(eapi)),
                 n::on_use_under_any() = std::bind(&use_under_any_handler, s, std::cref(eapi))
             ));

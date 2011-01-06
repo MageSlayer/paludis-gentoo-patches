@@ -581,8 +581,7 @@ Imp<TraditionalProfile>::make_vars_from_file_vars()
                 std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(
                             parse_elike_package_dep_spec(i->second.substr(1),
                                 i->first->supported()->package_dep_spec_parse_options(),
-                                i->first->supported()->version_spec_options(),
-                                std::shared_ptr<const PackageID>())));
+                                i->first->supported()->version_spec_options())));
 
                 spec->set_tag(system_tag);
                 system_packages->top()->append(spec);
@@ -614,8 +613,7 @@ Imp<TraditionalProfile>::make_vars_from_file_vars()
                 virtuals->erase(v);
                 virtuals->insert(v, parse_elike_package_dep_spec(tokens[1],
                             line->first->supported()->package_dep_spec_parse_options(),
-                            line->first->supported()->version_spec_options(),
-                            std::shared_ptr<const PackageID>()));
+                            line->first->supported()->version_spec_options()));
             }
         }
         catch (const InternalError &)
@@ -639,8 +637,7 @@ Imp<TraditionalProfile>::make_vars_from_file_vars()
             std::shared_ptr<const PackageDepSpec> a(std::make_shared<PackageDepSpec>(
                         parse_elike_package_dep_spec(line->second.first,
                             line->first->supported()->package_dep_spec_parse_options(),
-                            line->first->supported()->version_spec_options(),
-                            std::shared_ptr<const PackageID>())));
+                            line->first->supported()->version_spec_options())));
 
             if (a->package_ptr())
                 package_mask[*a->package_ptr()].push_back(std::make_pair(a, line->second.second));
@@ -722,8 +719,7 @@ Imp<TraditionalProfile>::load_spec_use_file(const EAPI & eapi, const FSPath & fi
         {
             std::shared_ptr<const PackageDepSpec> spec(std::make_shared<PackageDepSpec>(
                         parse_elike_package_dep_spec(*tokens.begin(), eapi.supported()->package_dep_spec_parse_options(),
-                            eapi.supported()->version_spec_options(),
-                            std::shared_ptr<const PackageID>())));
+                            eapi.supported()->version_spec_options())));
             PackageFlagStatusMapList::iterator n(m.insert(m.end(), std::make_pair(spec, FlagStatusMap())));
 
             for (std::list<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;

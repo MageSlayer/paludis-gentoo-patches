@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -48,21 +48,18 @@ namespace
     };
 
     template <typename T_>
-    void package_dep_spec_string_handler(const typename ParseStackTypes<T_>::Stack & h, const std::string & s,
-            const std::shared_ptr<const PackageID> & id)
+    void package_dep_spec_string_handler(const typename ParseStackTypes<T_>::Stack & h, const std::string & s)
     {
         PackageDepSpec p(parse_elike_package_dep_spec(s, ELikePackageDepSpecOptions() + epdso_allow_slot_deps
                     + epdso_allow_slot_star_deps + epdso_allow_slot_equal_deps + epdso_allow_repository_deps
                     + epdso_allow_use_deps + epdso_allow_ranged_deps + epdso_allow_tilde_greater_deps
                     + epdso_strict_parsing,
-                    user_version_spec_options(),
-                    id));
+                    user_version_spec_options()));
         (*h.begin())->append(std::make_shared<PackageDepSpec>(p));
     }
 
     template <typename T_>
-    void package_or_block_dep_spec_string_handler(const typename ParseStackTypes<T_>::Stack & h, const std::string & s,
-            const std::shared_ptr<const PackageID> & id)
+    void package_or_block_dep_spec_string_handler(const typename ParseStackTypes<T_>::Stack & h, const std::string & s)
     {
         if ((! s.empty()) && ('!' == s.at(0)))
         {
@@ -72,11 +69,10 @@ namespace
                                 + epdso_allow_slot_star_deps + epdso_allow_slot_equal_deps + epdso_allow_repository_deps
                                 + epdso_allow_use_deps + epdso_allow_ranged_deps + epdso_allow_tilde_greater_deps
                                 + epdso_strict_parsing,
-                                user_version_spec_options(),
-                                id), bk_weak));
+                                user_version_spec_options()), bk_weak));
         }
         else
-            package_dep_spec_string_handler<T_>(h, s, id);
+            package_dep_spec_string_handler<T_>(h, s);
     }
 
     template <typename T_>
@@ -171,7 +167,7 @@ namespace
 
 std::shared_ptr<DependencySpecTree>
 paludis::fakerepository::parse_depend(const std::string & s,
-        const Environment * const, const std::shared_ptr<const PackageID> & id)
+        const Environment * const, const std::shared_ptr<const PackageID> &)
 {
     using namespace std::placeholders;
 
@@ -190,7 +186,7 @@ paludis::fakerepository::parse_depend(const std::string & s,
                 n::on_label() = std::bind(&labels_not_allowed_handler, s, _1),
                 n::on_pop() = std::bind(&pop_handler<DependencySpecTree>, std::ref(stack), s),
                 n::on_should_be_empty() = std::bind(&should_be_empty_handler<DependencySpecTree>, std::ref(stack), s),
-                n::on_string() = std::bind(&package_or_block_dep_spec_string_handler<DependencySpecTree>, std::ref(stack), _1, id),
+                n::on_string() = std::bind(&package_or_block_dep_spec_string_handler<DependencySpecTree>, std::ref(stack), _1),
                 n::on_use() = std::bind(&use_handler<DependencySpecTree>, std::ref(stack), _1),
                 n::on_use_under_any() = &do_nothing
                 ));
@@ -202,7 +198,7 @@ paludis::fakerepository::parse_depend(const std::string & s,
 
 std::shared_ptr<ProvideSpecTree>
 paludis::fakerepository::parse_provide(const std::string & s,
-        const Environment * const, const std::shared_ptr<const PackageID> & id)
+        const Environment * const, const std::shared_ptr<const PackageID> &)
 {
     using namespace std::placeholders;
 
@@ -221,7 +217,7 @@ paludis::fakerepository::parse_provide(const std::string & s,
                 n::on_label() = std::bind(&labels_not_allowed_handler, s, _1),
                 n::on_pop() = std::bind(&pop_handler<ProvideSpecTree>, std::ref(stack), s),
                 n::on_should_be_empty() = std::bind(&should_be_empty_handler<ProvideSpecTree>, std::ref(stack), s),
-                n::on_string() = std::bind(&package_dep_spec_string_handler<ProvideSpecTree>, std::ref(stack), _1, id),
+                n::on_string() = std::bind(&package_dep_spec_string_handler<ProvideSpecTree>, std::ref(stack), _1),
                 n::on_use() = std::bind(&use_handler<ProvideSpecTree>, std::ref(stack), _1),
                 n::on_use_under_any() = &do_nothing
                 ));

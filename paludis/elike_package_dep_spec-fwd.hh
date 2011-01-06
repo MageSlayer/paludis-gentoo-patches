@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -47,14 +47,12 @@ namespace paludis
         PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
 
     PackageDepSpec parse_elike_package_dep_spec(const std::string & ss, const ELikePackageDepSpecOptions &,
-            const VersionSpecOptions &,
-            const std::shared_ptr<const PackageID> &)
+            const VersionSpecOptions &)
         PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
 
     PartiallyMadePackageDepSpec partial_parse_elike_package_dep_spec(const std::string & ss,
             const ELikePackageDepSpecOptions &,
-            const VersionSpecOptions &,
-            const std::shared_ptr<const PackageID> &)
+            const VersionSpecOptions &)
         PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
 
     void elike_check_sanity(const std::string & s) PALUDIS_VISIBLE;
@@ -63,7 +61,7 @@ namespace paludis
             const ELikePackageDepSpecOptions & options,
             const VersionSpecOptions & version_options,
             bool & had_bracket_version_requirements,
-            bool & had_use_requirements, const std::shared_ptr<const PackageID> & id) PALUDIS_VISIBLE;
+            bool & had_use_requirements) PALUDIS_VISIBLE;
 
     void elike_remove_trailing_repo_if_exists(std::string & s, PartiallyMadePackageDepSpec & result,
             const ELikePackageDepSpecOptions & options) PALUDIS_VISIBLE;
