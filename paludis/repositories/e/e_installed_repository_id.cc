@@ -505,7 +505,7 @@ EInstalledRepositoryID::need_keys_added() const
     _imp->keys->contents = make_contents_key();
     add_metadata_key(_imp->keys->contents);
 
-    _imp->keys->installed_time = std::make_shared<EMTimeKey>(shared_from_this(), "INSTALLED_TIME", "Installed time",
+    _imp->keys->installed_time = std::make_shared<EMTimeKey>("INSTALLED_TIME", "Installed time",
                 _imp->dir / contents_filename(), mkt_normal);
     add_metadata_key(_imp->keys->installed_time);
 

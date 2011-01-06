@@ -914,7 +914,6 @@ namespace paludis
     template <>
     struct Imp<EMTimeKey>
     {
-        const std::shared_ptr<const ERepositoryID> id;
         const FSPath filename;
         mutable Mutex value_mutex;
         mutable std::shared_ptr<Timestamp> value;
@@ -923,9 +922,8 @@ namespace paludis
         const std::string human_name;
         const MetadataKeyType type;
 
-        Imp(const std::shared_ptr<const ERepositoryID> & i, const FSPath & v,
+        Imp(const FSPath & v,
                 const std::string & r, const std::string & h, const MetadataKeyType t) :
-            id(i),
             filename(v),
             raw_name(r),
             human_name(h),
@@ -935,9 +933,8 @@ namespace paludis
     };
 }
 
-EMTimeKey::EMTimeKey(const std::shared_ptr<const ERepositoryID> & id,
-        const std::string & r, const std::string & h, const FSPath & v, const MetadataKeyType t) :
-    Pimp<EMTimeKey>(id, v, r, h, t)
+EMTimeKey::EMTimeKey(const std::string & r, const std::string & h, const FSPath & v, const MetadataKeyType t) :
+    Pimp<EMTimeKey>(v, r, h, t)
 {
 }
 
@@ -962,8 +959,7 @@ EMTimeKey::value() const
     catch (const FSError & e)
     {
         Log::get_instance()->message("e.contents.mtime_failure", ll_warning, lc_context) << "Couldn't get mtime for '"
-            << _imp->filename << "' for ID '" << *_imp->id << "' due to exception '" << e.message()
-            << "' (" << e.what() << ")";
+            << _imp->filename << "' due to exception '" << e.message() << "' (" << e.what() << ")";
     }
 
     return *_imp->value;

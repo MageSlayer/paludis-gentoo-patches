@@ -270,8 +270,7 @@ namespace paludis
             private Pimp<EMTimeKey>
         {
             public:
-                EMTimeKey(const std::shared_ptr<const ERepositoryID> &,
-                        const std::string &, const std::string &, const FSPath &, const MetadataKeyType);
+                EMTimeKey(const std::string &, const std::string &, const FSPath &, const MetadataKeyType);
                 ~EMTimeKey();
 
                 Timestamp value() const
