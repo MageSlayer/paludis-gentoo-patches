@@ -77,7 +77,6 @@ namespace
     {
         private:
             const std::string _flags;
-            const std::shared_ptr<const PackageID> _id;
             const Tribool _default_value;
             const bool _ignore_if_no_such_group;
 
@@ -85,10 +84,9 @@ namespace
             const ELikeUseRequirementOptions _options;
 
         public:
-            UseRequirement(const std::string & n, const std::shared_ptr<const PackageID> & i,
+            UseRequirement(const std::string & n,
                     const ELikeUseRequirementOptions & o, Tribool d, const bool g) :
                 _flags(n),
-                _id(i),
                 _default_value(d),
                 _ignore_if_no_such_group(g),
                 _options(o)
@@ -104,6 +102,7 @@ namespace
                     const ChoiceNameWithPrefix &,
                     const ChangedChoices * const,
                     const std::shared_ptr<const PackageID> &,
+                    const std::shared_ptr<const PackageID> &,
                     const ChangedChoices * const) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             bool one_requirement_met(
@@ -111,6 +110,7 @@ namespace
                     const ChoiceNameWithPrefix & c,
                     const ChangedChoices * const maybe_changes_to_owner,
                     const std::shared_ptr<const PackageID> & id,
+                    const std::shared_ptr<const PackageID> & from_id,
                     const ChangedChoices * const maybe_changes_to_target) const PALUDIS_ATTRIBUTE((warn_unused_result))
             {
                 if (_ignore_if_no_such_group)
@@ -126,30 +126,27 @@ namespace
                         return true;
                 }
 
-                return one_requirement_met_base(env, c, maybe_changes_to_owner, id, maybe_changes_to_target);
+                return one_requirement_met_base(env, c, maybe_changes_to_owner, id, from_id, maybe_changes_to_target);
             }
 
-            virtual const std::string as_human_string() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+            virtual const std::string as_human_string(
+                    const std::shared_ptr<const PackageID> & from_id) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             const std::string flags() const PALUDIS_ATTRIBUTE((warn_unused_result))
             {
                 return _flags;
             }
 
-            const std::shared_ptr<const PackageID> package_id() const PALUDIS_ATTRIBUTE((warn_unused_result))
-            {
-                return _id;
-            }
-
             const std::pair<bool, std::string> requirement_met(
                     const Environment * const env,
                     const ChangedChoices * const maybe_changes_to_owner,
                     const std::shared_ptr<const PackageID> & id,
+                    const std::shared_ptr<const PackageID> & from_id,
                     const ChangedChoices * const maybe_changes_to_target) const
             {
                 if (_flags.length() >= 2 && ":*" == _flags.substr(_flags.length() - 2))
                 {
-                    if ((! _options[euro_allow_self_deps]) || (! _id) || (! _id->choices_key()))
+                    if ((! _options[euro_allow_self_deps]) || (! from_id) || (! from_id->choices_key()))
                         throw ELikeUseRequirementError(_flags, "[prefix:*] not allowed here");
                     if (_options[euro_portage_syntax] && ! _options[euro_both_syntaxes])
                     {
@@ -161,16 +158,16 @@ namespace
                     }
 
                     ChoicePrefixName prefix(_flags.substr(0, _flags.length() - 2));
-                    Choices::ConstIterator cc(_id->choices_key()->value()->find(prefix));
-                    if (cc == _id->choices_key()->value()->end())
+                    Choices::ConstIterator cc(from_id->choices_key()->value()->find(prefix));
+                    if (cc == from_id->choices_key()->value()->end())
                         Log::get_instance()->message("elike_use_requirement.prefix_star_unmatching", ll_warning, lc_context) <<
-                            "ID '" << *_id << "' uses requirement '" << _flags << "' but has no choice prefix '" << prefix << "'";
+                            "ID '" << *from_id << "' uses requirement '" << _flags << "' but has no choice prefix '" << prefix << "'";
                     else
                     {
                         std::pair<bool, std::string> result(true, "");
                         for (Choice::ConstIterator v((*cc)->begin()), v_end((*cc)->end()) ;
                                 v != v_end ; ++v)
-                            if (! one_requirement_met(env, (*v)->name_with_prefix(), maybe_changes_to_owner, id, maybe_changes_to_target))
+                            if (! one_requirement_met(env, (*v)->name_with_prefix(), maybe_changes_to_owner, id, from_id, maybe_changes_to_target))
                             {
                                 if (! result.first)
                                     result.second.append(", ");
@@ -180,16 +177,16 @@ namespace
 
                         if (! result.first)
                         {
-                            result.second = as_human_string() + " (unmet: " + result.second + ")";
+                            result.second = as_human_string(from_id) + " (unmet: " + result.second + ")";
                             return result;
                         }
                     }
                 }
                 else
-                    if (! one_requirement_met(env, ChoiceNameWithPrefix(_flags), maybe_changes_to_owner, id, maybe_changes_to_target))
-                        return std::make_pair(false, as_human_string());
+                    if (! one_requirement_met(env, ChoiceNameWithPrefix(_flags), maybe_changes_to_owner, id, from_id, maybe_changes_to_target))
+                        return std::make_pair(false, as_human_string(from_id));
 
-                return std::make_pair(true, as_human_string());
+                return std::make_pair(true, as_human_string(from_id));
             }
 
             const Tribool default_value() const PALUDIS_ATTRIBUTE((warn_unused_result))
@@ -215,14 +212,15 @@ namespace
                     const Environment * const env,
                     const ChangedChoices * const maybe_changes_to_owner,
                     const std::shared_ptr<const PackageID> & id,
+                    const std::shared_ptr<const PackageID> & from_id,
                     ChangedChoices & changed_choices) const
             {
-                if (requirement_met(env, maybe_changes_to_owner, id, &changed_choices).first)
+                if (requirement_met(env, maybe_changes_to_owner, id, from_id, &changed_choices).first)
                     return indeterminate;
 
                 if (_flags.length() >= 2 && ":*" == _flags.substr(_flags.length() - 2))
                 {
-                    if ((! _options[euro_allow_self_deps]) || (! _id) || (! _id->choices_key()))
+                    if ((! _options[euro_allow_self_deps]) || (! from_id) || (! from_id->choices_key()))
                         throw ELikeUseRequirementError(_flags, "[prefix:*] not allowed here");
                     if (_options[euro_portage_syntax] && ! _options[euro_both_syntaxes])
                     {
@@ -234,10 +232,10 @@ namespace
                     }
 
                     ChoicePrefixName prefix(_flags.substr(0, _flags.length() - 2));
-                    Choices::ConstIterator cc(_id->choices_key()->value()->find(prefix));
-                    if (cc == _id->choices_key()->value()->end())
+                    Choices::ConstIterator cc(from_id->choices_key()->value()->find(prefix));
+                    if (cc == from_id->choices_key()->value()->end())
                         Log::get_instance()->message("elike_use_requirement.prefix_star_unmatching", ll_warning, lc_context) <<
-                            "ID '" << *_id << "' uses requirement '" << _flags << "' but has no choice prefix '" << prefix << "'";
+                            "ID '" << *from_id << "' uses requirement '" << _flags << "' but has no choice prefix '" << prefix << "'";
                     else
                     {
                         for (Choice::ConstIterator v((*cc)->begin()), v_end((*cc)->end()) ;
@@ -280,20 +278,20 @@ namespace
     {
         public:
             EnabledUseRequirement(const std::string & n,
-                    const std::shared_ptr<const PackageID> & i,
                     const ELikeUseRequirementOptions & o,
                     Tribool d, const bool b) :
-                UseRequirement(n, i, o, d, b)
+                UseRequirement(n, o, d, b)
             {
             }
 
             virtual bool one_requirement_met_base(const Environment * const, const ChoiceNameWithPrefix & flag, const ChangedChoices * const,
-                    const std::shared_ptr<const PackageID> & pkg, const ChangedChoices * const changed_choices) const
+                    const std::shared_ptr<const PackageID> & pkg, const std::shared_ptr<const PackageID> &, const ChangedChoices * const changed_choices) const
             {
                 return icky_use_query(_options, flag, pkg, changed_choices, default_value());
             }
 
-            virtual const std::string as_human_string() const
+            virtual const std::string as_human_string(
+                    const std::shared_ptr<const PackageID> &) const
             {
                 return "Flag '" + stringify(flags()) + "' enabled" + default_value_human_string_fragment();
             }
@@ -304,20 +302,20 @@ namespace
     {
         public:
             DisabledUseRequirement(const std::string & n,
-                    const std::shared_ptr<const PackageID> & i,
                     const ELikeUseRequirementOptions & o,
                     Tribool d, const bool b) :
-                UseRequirement(n, i, o, d, b)
+                UseRequirement(n, o, d, b)
             {
             }
 
             virtual bool one_requirement_met_base(const Environment * const, const ChoiceNameWithPrefix & flag, const ChangedChoices * const,
-                    const std::shared_ptr<const PackageID> & pkg, const ChangedChoices * const changed_choices) const
+                    const std::shared_ptr<const PackageID> & pkg, const std::shared_ptr<const PackageID> &, const ChangedChoices * const changed_choices) const
             {
                 return ! icky_use_query(_options, flag, pkg, changed_choices, default_value());
             }
 
-            virtual const std::string as_human_string() const
+            virtual const std::string as_human_string(
+                    const std::shared_ptr<const PackageID> &) const
             {
                 return "Flag '" + stringify(flags()) + "' disabled" + default_value_human_string_fragment();
             }
@@ -328,10 +326,9 @@ namespace
     {
         public:
             ConditionalUseRequirement(const std::string & n,
-                    const std::shared_ptr<const PackageID> & i,
                     const ELikeUseRequirementOptions & o,
                     Tribool d, const bool b) :
-                UseRequirement(n, i, o, d, b)
+                UseRequirement(n, o, d, b)
             {
             }
     };
@@ -342,25 +339,25 @@ namespace
         public:
             IfMineThenUseRequirement(
                     const std::string & n,
-                    const std::shared_ptr<const PackageID> & i,
                     const ELikeUseRequirementOptions & o,
                     Tribool d, const bool b) :
-                ConditionalUseRequirement(n, i, o, d, b)
+                ConditionalUseRequirement(n, o, d, b)
             {
             }
 
             virtual bool one_requirement_met_base(const Environment * const, const ChoiceNameWithPrefix & flag,
                     const ChangedChoices * const maybe_changes_to_owner, const std::shared_ptr<const PackageID> & pkg,
-                    const ChangedChoices * const changed_choices) const
+                    const std::shared_ptr<const PackageID> & from_id, const ChangedChoices * const changed_choices) const
             {
-                return ! icky_use_query(_options, flag, package_id(), maybe_changes_to_owner) ||
+                return ! icky_use_query(_options, flag, from_id, maybe_changes_to_owner) ||
                     icky_use_query(_options, flag, pkg, changed_choices, default_value());
             }
 
-            virtual const std::string as_human_string() const
+            virtual const std::string as_human_string(
+                    const std::shared_ptr<const PackageID> & from_id) const
             {
                 return "Flag '" + stringify(flags()) + "' enabled if it is enabled for '"
-                    + stringify(*package_id()) + "'" + default_value_human_string_fragment();
+                    + stringify(*from_id) + "'" + default_value_human_string_fragment();
             }
     };
 
@@ -369,25 +366,26 @@ namespace
     {
         public:
             IfNotMineThenUseRequirement(const std::string & n,
-                    const std::shared_ptr<const PackageID> & i,
                     const ELikeUseRequirementOptions & o,
                     Tribool d, const bool b) :
-                ConditionalUseRequirement(n, i, o, d, b)
+                ConditionalUseRequirement(n, o, d, b)
             {
             }
 
             virtual bool one_requirement_met_base(const Environment * const, const ChoiceNameWithPrefix & flag,
                     const ChangedChoices * const maybe_changes_to_owner,
-                    const std::shared_ptr<const PackageID> & pkg, const ChangedChoices * const changed_choices) const
+                    const std::shared_ptr<const PackageID> & pkg, const std::shared_ptr<const PackageID> & from_id,
+                    const ChangedChoices * const changed_choices) const
             {
-                return icky_use_query(_options, flag, package_id(), maybe_changes_to_owner) ||
+                return icky_use_query(_options, flag, from_id, maybe_changes_to_owner) ||
                     icky_use_query(_options, flag, pkg, changed_choices, default_value());
             }
 
-            virtual const std::string as_human_string() const
+            virtual const std::string as_human_string(
+                    const std::shared_ptr<const PackageID> & from_id) const
             {
                 return "Flag '" + stringify(flags()) + "' enabled if it is disabled for '" +
-                    stringify(*package_id()) + "'" + default_value_human_string_fragment();
+                    stringify(*from_id) + "'" + default_value_human_string_fragment();
             }
     };
 
@@ -396,25 +394,25 @@ namespace
     {
         public:
             IfMineThenNotUseRequirement(const std::string & n,
-                    const std::shared_ptr<const PackageID> & i,
                     const ELikeUseRequirementOptions & o,
                     Tribool d, const bool b) :
-                ConditionalUseRequirement(n, i, o, d, b)
+                ConditionalUseRequirement(n, o, d, b)
             {
             }
 
             virtual bool one_requirement_met_base(const Environment * const, const ChoiceNameWithPrefix & flag,
                     const ChangedChoices * const maybe_changes_to_owner, const std::shared_ptr<const PackageID> & pkg,
-                    const ChangedChoices * const changed_choices) const
+                    const std::shared_ptr<const PackageID> & from_id, const ChangedChoices * const changed_choices) const
             {
-                return ! icky_use_query(_options, flag, package_id(), maybe_changes_to_owner) ||
+                return ! icky_use_query(_options, flag, from_id, maybe_changes_to_owner) ||
                     ! icky_use_query(_options, flag, pkg, changed_choices, default_value());
             }
 
-            virtual const std::string as_human_string() const
+            virtual const std::string as_human_string(
+                    const std::shared_ptr<const PackageID> & from_id) const
             {
                 return "Flag '" + stringify(flags()) + "' disabled if it is enabled for '" +
-                    stringify(*package_id()) + "'" + default_value_human_string_fragment();
+                    stringify(*from_id) + "'" + default_value_human_string_fragment();
             }
     };
 
@@ -423,25 +421,25 @@ namespace
     {
         public:
             IfNotMineThenNotUseRequirement(const std::string & n,
-                    const std::shared_ptr<const PackageID> & i,
                     const ELikeUseRequirementOptions & o,
                     Tribool d, const bool b) :
-                ConditionalUseRequirement(n, i, o, d, b)
+                ConditionalUseRequirement(n, o, d, b)
             {
             }
 
             virtual bool one_requirement_met_base(const Environment * const, const ChoiceNameWithPrefix & flag,
                     const ChangedChoices * const maybe_changes_to_owner, const std::shared_ptr<const PackageID> & pkg,
-                    const ChangedChoices * const changed_choices) const
+                    const std::shared_ptr<const PackageID> & from_id, const ChangedChoices * const changed_choices) const
             {
-                return icky_use_query(_options, flag, package_id(), maybe_changes_to_owner) ||
+                return icky_use_query(_options, flag, from_id, maybe_changes_to_owner) ||
                     ! icky_use_query(_options, flag, pkg, changed_choices, default_value());
             }
 
-            virtual const std::string as_human_string() const
+            virtual const std::string as_human_string(
+                    const std::shared_ptr<const PackageID> & from_id) const
             {
                 return "Flag '" + stringify(flags()) + "' disabled if it is disabled for '" +
-                    stringify(*package_id()) + "'" + default_value_human_string_fragment();
+                    stringify(*from_id) + "'" + default_value_human_string_fragment();
             }
     };
 
@@ -450,25 +448,25 @@ namespace
     {
         public:
             EqualUseRequirement(const std::string & n,
-                    const std::shared_ptr<const PackageID> & i,
                     const ELikeUseRequirementOptions & o,
                     Tribool d, const bool b) :
-                ConditionalUseRequirement(n, i, o, d, b)
+                ConditionalUseRequirement(n, o, d, b)
             {
             }
 
             virtual bool one_requirement_met_base(const Environment * const, const ChoiceNameWithPrefix & flag,
                     const ChangedChoices * const maybe_changes_to_owner, const std::shared_ptr<const PackageID> & pkg,
-                    const ChangedChoices * const changed_choices) const
+                    const std::shared_ptr<const PackageID> & from_id, const ChangedChoices * const changed_choices) const
             {
                 return icky_use_query(_options, flag, pkg, changed_choices, default_value()) ==
-                    icky_use_query(_options, flag, package_id(), maybe_changes_to_owner);
+                    icky_use_query(_options, flag, from_id, maybe_changes_to_owner);
             }
 
-            virtual const std::string as_human_string() const
+            virtual const std::string as_human_string(
+                    const std::shared_ptr<const PackageID> & from_id) const
             {
                 return "Flag '" + stringify(flags()) + "' enabled or disabled like it is for '"
-                    + stringify(*package_id()) + "'" + default_value_human_string_fragment();
+                    + stringify(*from_id) + "'" + default_value_human_string_fragment();
             }
     };
 
@@ -477,25 +475,25 @@ namespace
     {
         public:
             NotEqualUseRequirement(const std::string & n,
-                    const std::shared_ptr<const PackageID> & i,
                     const ELikeUseRequirementOptions & o,
                     Tribool d, const bool b) :
-                ConditionalUseRequirement(n, i, o, d, b)
+                ConditionalUseRequirement(n, o, d, b)
             {
             }
 
             virtual bool one_requirement_met_base(const Environment * const, const ChoiceNameWithPrefix & flag,
                     const ChangedChoices * const maybe_changes_to_owner, const std::shared_ptr<const PackageID> & pkg,
-                    const ChangedChoices * const changed_choices) const
+                    const std::shared_ptr<const PackageID> & from_id, const ChangedChoices * const changed_choices) const
             {
                 return icky_use_query(_options, flag, pkg, changed_choices, default_value()) !=
-                    icky_use_query(_options, flag, package_id(), maybe_changes_to_owner);
+                    icky_use_query(_options, flag, from_id, maybe_changes_to_owner);
             }
 
-            virtual const std::string as_human_string() const
+            virtual const std::string as_human_string(
+                    const std::shared_ptr<const PackageID> & from_id) const
             {
                 return "Flag '" + stringify(flags()) + "' enabled or disabled opposite to how it is for '"
-                    + stringify(*package_id()) + "'" + default_value_human_string_fragment();
+                    + stringify(*from_id) + "'" + default_value_human_string_fragment();
             }
     };
 
@@ -518,7 +516,7 @@ namespace
                     const Environment * const env,
                     const ChangedChoices * const maybe_changes_to_owner,
                     const std::shared_ptr<const PackageID> & id,
-                    const std::shared_ptr<const PackageID> &,
+                    const std::shared_ptr<const PackageID> & from_id,
                     const ChangedChoices * const maybe_changes_to_target) const
             {
                 using namespace std::placeholders;
@@ -527,7 +525,7 @@ namespace
                 for (Reqs::const_iterator r(_reqs.begin()), r_end(_reqs.end()) ;
                         r != r_end ; ++r)
                 {
-                    std::pair<bool, std::string> r_result((*r)->requirement_met(env, maybe_changes_to_owner, id, maybe_changes_to_target));
+                    std::pair<bool, std::string> r_result((*r)->requirement_met(env, maybe_changes_to_owner, id, from_id, maybe_changes_to_target));
                     if (! r_result.first)
                     {
                         if (! result.first)
@@ -541,9 +539,10 @@ namespace
             }
 
             virtual const std::string as_human_string(
-                    const std::shared_ptr<const PackageID> &) const
+                    const std::shared_ptr<const PackageID> & from_id) const
             {
-                return join(_reqs.begin(), _reqs.end(), "; ", std::mem_fn(&UseRequirement::as_human_string));
+                return join(_reqs.begin(), _reqs.end(), "; ", std::bind(std::mem_fn(&UseRequirement::as_human_string),
+                            std::placeholders::_1, from_id));
             }
 
             virtual const std::string as_raw_string() const
@@ -560,14 +559,14 @@ namespace
                     const Environment * const env,
                     const ChangedChoices * const maybe_changes_to_owner,
                     const std::shared_ptr<const PackageID> & id,
-                    const std::shared_ptr<const PackageID> &,
+                    const std::shared_ptr<const PackageID> & from_id,
                     ChangedChoices & changed_choices) const
             {
                 Tribool result(indeterminate);
                 for (auto r(_reqs.begin()), r_end(_reqs.end()) ;
                         r != r_end ; ++r)
                 {
-                    auto b((*r)->accumulate_changes_to_make_met(env, maybe_changes_to_owner, id, changed_choices));
+                    auto b((*r)->accumulate_changes_to_make_met(env, maybe_changes_to_owner, id, from_id, changed_choices));
                     if (b.is_false())
                         return false;
                     else if (b.is_true())
@@ -580,34 +579,31 @@ namespace
 
     template <typename T_>
     std::shared_ptr<const UseRequirement>
-    make_requirement(const std::string & n, const std::shared_ptr<const PackageID > & i,
-            const ELikeUseRequirementOptions & o, Tribool d, const bool b)
+    make_requirement(const std::string & n, const ELikeUseRequirementOptions & o, Tribool d, const bool b)
     {
-        return std::make_shared<T_>(n, i, o, d, b);
+        return std::make_shared<T_>(n, o, d, b);
     }
 
     typedef std::shared_ptr<const UseRequirement> (* Factory)(
-            const std::string &, const std::shared_ptr<const PackageID> &,
-            const ELikeUseRequirementOptions &, Tribool, bool);
+            const std::string &, const ELikeUseRequirementOptions &, Tribool, bool);
 
     void
     parse_flag(
             const std::shared_ptr<UseRequirements> & result,
             const Factory & factory,
             const std::string & c,
-            const std::shared_ptr<const PackageID> & id,
             Tribool d,
             const bool i,
             const ELikeUseRequirementOptions & options)
     {
-        result->add_requirement(factory(c, id, options, d, i));
+        result->add_requirement(factory(c, options, d, i));
     }
 
     void
     parse_one_use_requirement(
             const std::shared_ptr<UseRequirements> & result,
             const std::string & s, std::string & flag,
-            const std::shared_ptr<const PackageID> & id, const ELikeUseRequirementOptions & options)
+            const ELikeUseRequirementOptions & options)
     {
         Factory factory;
 
@@ -616,7 +612,7 @@ namespace
 
         if ('=' == flag.at(flag.length() - 1))
         {
-            if ((! options[euro_allow_self_deps]) || (! id))
+            if ((! options[euro_allow_self_deps]))
                 throw ELikeUseRequirementError(s, "Cannot use [use=] here");
 
             flag.erase(flag.length() - 1);
@@ -660,7 +656,7 @@ namespace
         }
         else if ('?' == flag.at(flag.length() - 1))
         {
-            if ((! options[euro_allow_self_deps]) || (! id))
+            if ((! options[euro_allow_self_deps]))
                 throw ELikeUseRequirementError(s, "Cannot use [use?] here");
 
             flag.erase(flag.length() - 1);
@@ -770,7 +766,7 @@ namespace
                 }
 
                 flag.erase(flag.length() - 3, 3);
-                parse_flag(result, factory, flag, id, Tribool(true), false, options);
+                parse_flag(result, factory, flag, Tribool(true), false, options);
             }
             else if ('-' == flag.at(flag.length() - 2))
             {
@@ -784,7 +780,7 @@ namespace
                 }
 
                 flag.erase(flag.length() - 3, 3);
-                parse_flag(result, factory, flag, id, Tribool(false), false, options);
+                parse_flag(result, factory, flag, Tribool(false), false, options);
             }
             else if ('?' == flag.at(flag.length() - 2))
             {
@@ -798,13 +794,13 @@ namespace
                 }
 
                 flag.erase(flag.length() - 3, 3);
-                parse_flag(result, factory, flag, id, Tribool(false), true, options);
+                parse_flag(result, factory, flag, Tribool(false), true, options);
             }
             else
                 throw ELikeUseRequirementError(s, "Invalid [] contents");
         }
         else
-            parse_flag(result, factory, flag, id, Tribool(indeterminate), false, options);
+            parse_flag(result, factory, flag, Tribool(indeterminate), false, options);
     }
 }
 
@@ -815,7 +811,7 @@ ELikeUseRequirementError::ELikeUseRequirementError(const std::string & s, const 
 
 std::shared_ptr<const AdditionalPackageDepSpecRequirement>
 paludis::parse_elike_use_requirement(const std::string & s,
-        const std::shared_ptr<const PackageID> & id, const ELikeUseRequirementOptions & options)
+        const ELikeUseRequirementOptions & options)
 {
     Context context("When parsing use requirement '" + s + "':");
 
@@ -825,7 +821,7 @@ paludis::parse_elike_use_requirement(const std::string & s,
     {
         std::string::size_type comma(s.find(',', pos));
         std::string flag(s.substr(pos, std::string::npos == comma ? comma : comma - pos));
-        parse_one_use_requirement(result, s, flag, id, options);
+        parse_one_use_requirement(result, s, flag, options);
         if (std::string::npos == comma)
             break;
 

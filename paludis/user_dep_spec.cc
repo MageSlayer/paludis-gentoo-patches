@@ -197,8 +197,7 @@ namespace
 
             default:
                 {
-                    std::shared_ptr<const AdditionalPackageDepSpecRequirement> req(parse_elike_use_requirement(flag,
-                                std::shared_ptr<const PackageID>(), { }));
+                    std::shared_ptr<const AdditionalPackageDepSpecRequirement> req(parse_elike_use_requirement(flag, { }));
                     result.additional_requirement(req);
                 }
                 break;
