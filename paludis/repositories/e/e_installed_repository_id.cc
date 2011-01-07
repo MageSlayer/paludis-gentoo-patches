@@ -436,9 +436,8 @@ EInstalledRepositoryID::need_keys_added() const
             std::string value(file_contents(_imp->dir / vars->upstream_changelog()->name()));
             if (! value.empty())
             {
-                _imp->keys->upstream_changelog = std::make_shared<ESimpleURIKey>(_imp->environment, shared_from_this(),
-                            vars->upstream_changelog()->name(),
-                            vars->upstream_changelog()->description(), value, mkt_normal);
+                _imp->keys->upstream_changelog = std::make_shared<ESimpleURIKey>(_imp->environment,
+                            vars->upstream_changelog(), eapi(), value, mkt_normal);
                 add_metadata_key(_imp->keys->upstream_changelog);
             }
         }
@@ -449,9 +448,8 @@ EInstalledRepositoryID::need_keys_added() const
             std::string value(file_contents(_imp->dir / vars->upstream_release_notes()->name()));
             if (! value.empty())
             {
-                _imp->keys->upstream_release_notes = std::make_shared<ESimpleURIKey>(_imp->environment, shared_from_this(),
-                            vars->upstream_release_notes()->name(),
-                            vars->upstream_release_notes()->description(), value, mkt_normal);
+                _imp->keys->upstream_release_notes = std::make_shared<ESimpleURIKey>(_imp->environment,
+                            vars->upstream_release_notes(), eapi(), value, mkt_normal);
                 add_metadata_key(_imp->keys->upstream_release_notes);
             }
         }
@@ -462,9 +460,8 @@ EInstalledRepositoryID::need_keys_added() const
             std::string value(file_contents(_imp->dir / vars->upstream_documentation()->name()));
             if (! value.empty())
             {
-                _imp->keys->upstream_documentation = std::make_shared<ESimpleURIKey>(_imp->environment, shared_from_this(),
-                            vars->upstream_documentation()->name(),
-                            vars->upstream_documentation()->description(), value, mkt_normal);
+                _imp->keys->upstream_documentation = std::make_shared<ESimpleURIKey>(_imp->environment,
+                            vars->upstream_documentation(), eapi(), value, mkt_normal);
                 add_metadata_key(_imp->keys->upstream_documentation);
             }
         }
@@ -495,8 +492,7 @@ EInstalledRepositoryID::need_keys_added() const
     if (! vars->homepage()->name().empty())
         if ((_imp->dir / vars->homepage()->name()).stat().exists())
         {
-            _imp->keys->homepage = std::make_shared<ESimpleURIKey>(_imp->environment, shared_from_this(), vars->homepage()->name(),
-                        vars->homepage()->description(),
+            _imp->keys->homepage = std::make_shared<ESimpleURIKey>(_imp->environment, vars->homepage(), eapi(),
                         file_contents(_imp->dir / vars->homepage()->name()), mkt_significant);
             add_metadata_key(_imp->keys->homepage);
         }

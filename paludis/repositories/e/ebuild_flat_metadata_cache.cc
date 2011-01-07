@@ -207,7 +207,7 @@ namespace
                 id->load_properties(m.properties(), lines.at(m.properties()->flat_list_index()));
 
             if (-1 != m.homepage()->flat_list_index() && ! m.homepage()->name().empty())
-                id->load_homepage(m.homepage()->name(), m.homepage()->description(), lines.at(m.homepage()->flat_list_index()));
+                id->load_homepage(m.homepage(), lines.at(m.homepage()->flat_list_index()));
 
             if (-1 != m.license()->flat_list_index() && ! m.license()->name().empty())
                 id->load_license(m.license(), lines.at(m.license()->flat_list_index()));
@@ -266,24 +266,21 @@ namespace
             {
                 std::string value(lines.at(m.upstream_changelog()->flat_list_index()));
                 if (! value.empty())
-                    id->load_upstream_changelog(m.upstream_changelog()->name(),
-                            m.upstream_changelog()->description(), value);
+                    id->load_upstream_changelog(m.upstream_changelog(), value);
             }
 
             if (-1 != m.upstream_documentation()->flat_list_index() && ! m.upstream_documentation()->name().empty())
             {
                 std::string value(lines.at(m.upstream_documentation()->flat_list_index()));
                 if (! value.empty())
-                    id->load_upstream_documentation(m.upstream_documentation()->name(),
-                            m.upstream_documentation()->description(), value);
+                    id->load_upstream_documentation(m.upstream_documentation(), value);
             }
 
             if (-1 != m.upstream_release_notes()->flat_list_index() && ! m.upstream_release_notes()->name().empty())
             {
                 std::string value(lines.at(m.upstream_release_notes()->flat_list_index()));
                 if (! value.empty())
-                    id->load_upstream_release_notes(m.upstream_release_notes()->name(),
-                            m.upstream_release_notes()->description(), value);
+                    id->load_upstream_release_notes(m.upstream_release_notes(), value);
             }
 
             if (-1 != m.bugs_to()->flat_list_index() && ! m.bugs_to()->name().empty())
@@ -553,7 +550,7 @@ EbuildFlatMetadataCache::load(const std::shared_ptr<const EbuildID> & id, const 
                 id->load_properties(m.properties(), keys[m.properties()->name()]);
 
             if (! m.homepage()->name().empty())
-                id->load_homepage(m.homepage()->name(), m.homepage()->description(), keys[m.homepage()->name()]);
+                id->load_homepage(m.homepage(), keys[m.homepage()->name()]);
 
             if (! m.license()->name().empty())
                 id->load_license(m.license(), keys[m.license()->name()]);
@@ -612,24 +609,21 @@ EbuildFlatMetadataCache::load(const std::shared_ptr<const EbuildID> & id, const 
             {
                 std::string value(keys[m.upstream_changelog()->name()]);
                 if (! value.empty())
-                    id->load_upstream_changelog(m.upstream_changelog()->name(),
-                            m.upstream_changelog()->description(), value);
+                    id->load_upstream_changelog(m.upstream_changelog(), value);
             }
 
             if (! m.upstream_documentation()->name().empty())
             {
                 std::string value(keys[m.upstream_documentation()->name()]);
                 if (! value.empty())
-                    id->load_upstream_documentation(m.upstream_documentation()->name(),
-                            m.upstream_documentation()->description(), value);
+                    id->load_upstream_documentation(m.upstream_documentation(), value);
             }
 
             if (! m.upstream_release_notes()->name().empty())
             {
                 std::string value(keys[m.upstream_release_notes()->name()]);
                 if (! value.empty())
-                    id->load_upstream_release_notes(m.upstream_release_notes()->name(),
-                            m.upstream_release_notes()->description(), value);
+                    id->load_upstream_release_notes(m.upstream_release_notes(), value);
             }
 
             if (! m.bugs_to()->name().empty())

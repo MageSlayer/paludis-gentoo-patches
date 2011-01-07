@@ -1016,10 +1016,10 @@ EbuildID::load_src_uri(const std::shared_ptr<const EAPIMetadataVariable> & m, co
 }
 
 void
-EbuildID::load_homepage(const std::string & r, const std::string & h, const std::string & v) const
+EbuildID::load_homepage(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->homepage = std::make_shared<ESimpleURIKey>(_imp->environment, shared_from_this(), r, h, v, mkt_significant);
+    _imp->homepage = std::make_shared<ESimpleURIKey>(_imp->environment, m, eapi(), v, mkt_significant);
     add_metadata_key(_imp->homepage);
 }
 
@@ -1115,26 +1115,26 @@ EbuildID::load_defined_phases(const std::shared_ptr<const EAPIMetadataVariable> 
 }
 
 void
-EbuildID::load_upstream_changelog(const std::string & r, const std::string & h, const std::string & v) const
+EbuildID::load_upstream_changelog(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->upstream_changelog = std::make_shared<ESimpleURIKey>(_imp->environment, shared_from_this(), r, h, v, mkt_normal);
+    _imp->upstream_changelog = std::make_shared<ESimpleURIKey>(_imp->environment, m, eapi(), v, mkt_normal);
     add_metadata_key(_imp->upstream_changelog);
 }
 
 void
-EbuildID::load_upstream_documentation(const std::string & r, const std::string & h, const std::string & v) const
+EbuildID::load_upstream_documentation(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->upstream_documentation = std::make_shared<ESimpleURIKey>(_imp->environment, shared_from_this(), r, h, v, mkt_normal);
+    _imp->upstream_documentation = std::make_shared<ESimpleURIKey>(_imp->environment, m, eapi(), v, mkt_normal);
     add_metadata_key(_imp->upstream_documentation);
 }
 
 void
-EbuildID::load_upstream_release_notes(const std::string & r, const std::string & h, const std::string & v) const
+EbuildID::load_upstream_release_notes(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->upstream_release_notes = std::make_shared<ESimpleURIKey>(_imp->environment, shared_from_this(), r, h, v, mkt_normal);
+    _imp->upstream_release_notes = std::make_shared<ESimpleURIKey>(_imp->environment, m, eapi(), v, mkt_normal);
     add_metadata_key(_imp->upstream_release_notes);
 }
 

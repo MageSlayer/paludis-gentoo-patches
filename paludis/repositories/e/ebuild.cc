@@ -614,7 +614,7 @@ EbuildMetadataCommand::load(const std::shared_ptr<const EbuildID> & id)
         id->load_src_uri(m.src_uri(), get(keys, m.src_uri()->name()));
 
     if (! m.homepage()->name().empty())
-        id->load_homepage(m.homepage()->name(), m.homepage()->description(), get(keys, m.homepage()->name()));
+        id->load_homepage(m.homepage(), get(keys, m.homepage()->name()));
 
     if (! m.license()->name().empty())
         id->load_license(m.license(), get(keys, m.license()->name()));
@@ -659,21 +659,21 @@ EbuildMetadataCommand::load(const std::shared_ptr<const EbuildID> & id)
     {
         std::string value(get(keys, m.upstream_changelog()->name()));
         if (! value.empty())
-            id->load_upstream_changelog(m.upstream_changelog()->name(), m.upstream_changelog()->description(), value);
+            id->load_upstream_changelog(m.upstream_changelog(), value);
     }
 
     if (! m.upstream_documentation()->name().empty())
     {
         std::string value(get(keys, m.upstream_documentation()->name()));
         if (! value.empty())
-            id->load_upstream_documentation(m.upstream_documentation()->name(), m.upstream_documentation()->description(), value);
+            id->load_upstream_documentation(m.upstream_documentation(), value);
     }
 
     if (! m.upstream_release_notes()->name().empty())
     {
         std::string value(get(keys, m.upstream_release_notes()->name()));
         if (! value.empty())
-            id->load_upstream_release_notes(m.upstream_release_notes()->name(), m.upstream_release_notes()->description(), value);
+            id->load_upstream_release_notes(m.upstream_release_notes(), value);
     }
 
     if (! m.bugs_to()->name().empty())

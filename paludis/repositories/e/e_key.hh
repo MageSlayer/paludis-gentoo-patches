@@ -118,8 +118,9 @@ namespace paludis
         {
             public:
                 ESimpleURIKey(const Environment * const,
-                        const std::shared_ptr<const ERepositoryID> &,
-                        const std::string &, const std::string &, const std::string &, const MetadataKeyType);
+                        const std::shared_ptr<const EAPIMetadataVariable> &,
+                        const std::shared_ptr<const EAPI> &,
+                        const std::string &, const MetadataKeyType);
                 ~ESimpleURIKey();
 
                 virtual const std::shared_ptr<const SimpleURISpecTree> value() const

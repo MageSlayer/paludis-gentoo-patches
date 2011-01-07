@@ -399,23 +399,22 @@ namespace paludis
     struct Imp<ESimpleURIKey>
     {
         const Environment * const env;
-        const std::shared_ptr<const ERepositoryID> id;
         const std::string string_value;
         mutable Mutex value_mutex;
         mutable std::shared_ptr<const SimpleURISpecTree> value;
 
-        const std::string raw_name;
-        const std::string human_name;
+        const std::shared_ptr<const EAPIMetadataVariable> variable;
+        const std::shared_ptr<const EAPI> eapi;
         const MetadataKeyType type;
 
-        Imp(const Environment * const e, const std::shared_ptr<const ERepositoryID> & i,
-                const std::string & v,
-                const std::string & r, const std::string & h, const MetadataKeyType t) :
+        Imp(const Environment * const e, const std::string & v,
+                const std::shared_ptr<const EAPIMetadataVariable> & m,
+                const std::shared_ptr<const EAPI> & p,
+                const MetadataKeyType t) :
             env(e),
-            id(i),
             string_value(v),
-            raw_name(r),
-            human_name(h),
+            variable(m),
+            eapi(p),
             type(t)
         {
         }
@@ -423,9 +422,10 @@ namespace paludis
 }
 
 ESimpleURIKey::ESimpleURIKey(const Environment * const e,
-        const std::shared_ptr<const ERepositoryID> & id,
-        const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
-    Pimp<ESimpleURIKey>(e, id, v, r, h, t)
+        const std::shared_ptr<const EAPIMetadataVariable> & m,
+        const std::shared_ptr<const EAPI> & p,
+        const std::string & v, const MetadataKeyType t) :
+    Pimp<ESimpleURIKey>(e, v, m, p, t)
 {
 }
 
@@ -441,8 +441,8 @@ ESimpleURIKey::value() const
     if (_imp->value)
         return _imp->value;
 
-    Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
-    _imp->value = parse_simple_uri(_imp->string_value, _imp->env, *_imp->id->eapi());
+    Context context("When parsing metadata key '" + raw_name() + "':");
+    _imp->value = parse_simple_uri(_imp->string_value, _imp->env, *_imp->eapi);
     return _imp->value;
 }
 
@@ -459,13 +459,13 @@ ESimpleURIKey::pretty_print_value(
 const std::string
 ESimpleURIKey::raw_name() const
 {
-    return _imp->raw_name;
+    return _imp->variable->name();
 }
 
 const std::string
 ESimpleURIKey::human_name() const
 {
-    return _imp->human_name;
+    return _imp->variable->description();
 }
 
 MetadataKeyType

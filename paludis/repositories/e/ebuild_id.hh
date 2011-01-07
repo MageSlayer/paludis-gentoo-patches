@@ -129,7 +129,7 @@ namespace paludis
                 void load_post_depend(const std::string &, const std::string &, const std::string &,
                         const bool rewritten) const;
                 void load_src_uri(const std::shared_ptr<const EAPIMetadataVariable> &, const std::string &) const;
-                void load_homepage(const std::string &, const std::string &, const std::string &) const;
+                void load_homepage(const std::shared_ptr<const EAPIMetadataVariable> &, const std::string &) const;
                 void load_license(const std::shared_ptr<const EAPIMetadataVariable> &, const std::string &) const;
                 void load_provide(const std::shared_ptr<const EAPIMetadataVariable> &, const std::string &) const;
                 void load_iuse(const std::shared_ptr<const EAPIMetadataVariable> &, const std::string &) const;
@@ -141,9 +141,9 @@ namespace paludis
                 void load_restrict(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const;
                 void load_properties(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string &) const;
                 void load_long_description(const std::string &, const std::string &, const std::string &) const;
-                void load_upstream_changelog(const std::string &, const std::string &, const std::string &) const;
-                void load_upstream_documentation(const std::string &, const std::string &, const std::string &) const;
-                void load_upstream_release_notes(const std::string &, const std::string &, const std::string &) const;
+                void load_upstream_changelog(const std::shared_ptr<const EAPIMetadataVariable> &, const std::string &) const;
+                void load_upstream_documentation(const std::shared_ptr<const EAPIMetadataVariable> &, const std::string &) const;
+                void load_upstream_release_notes(const std::shared_ptr<const EAPIMetadataVariable> &, const std::string &) const;
                 void load_bugs_to(const std::shared_ptr<const EAPIMetadataVariable> &, const std::string &) const;
                 void load_remote_ids(const std::shared_ptr<const EAPIMetadataVariable> &, const std::string &) const;
                 void load_defined_phases(const std::shared_ptr<const EAPIMetadataVariable> &, const std::string &) const;
