@@ -242,7 +242,7 @@ namespace
                 id->load_myoptions(m.myoptions()->name(), m.myoptions()->description(), lines.at(m.myoptions()->flat_list_index()));
 
             if (-1 != m.required_use()->flat_list_index() && ! m.required_use()->name().empty())
-                id->load_required_use(m.required_use()->name(), m.required_use()->description(), lines.at(m.required_use()->flat_list_index()));
+                id->load_required_use(m.required_use(), lines.at(m.required_use()->flat_list_index()));
 
             if (-1 != m.pdepend()->flat_list_index() && ! m.pdepend()->name().empty())
                 id->load_post_depend(m.pdepend()->name(), m.pdepend()->description(), lines.at(m.pdepend()->flat_list_index()), false);
@@ -588,7 +588,7 @@ EbuildFlatMetadataCache::load(const std::shared_ptr<const EbuildID> & id, const 
                 id->load_myoptions(m.myoptions()->name(), m.myoptions()->description(), keys[m.myoptions()->name()]);
 
             if (! m.required_use()->name().empty())
-                id->load_required_use(m.required_use()->name(), m.required_use()->description(), keys[m.required_use()->name()]);
+                id->load_required_use(m.required_use(), keys[m.required_use()->name()]);
 
             if (! m.pdepend()->name().empty())
                 id->load_post_depend(m.pdepend()->name(), m.pdepend()->description(), keys[m.pdepend()->name()], false);

@@ -1072,10 +1072,10 @@ EbuildID::load_myoptions(const std::string & r, const std::string & h, const std
 }
 
 void
-EbuildID::load_required_use(const std::string & r, const std::string & h, const std::string & v) const
+EbuildID::load_required_use(const std::shared_ptr<const EAPIMetadataVariable> & k, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->required_use = std::make_shared<ERequiredUseKey>(_imp->environment, shared_from_this(), r, h, v, mkt_internal);
+    _imp->required_use = std::make_shared<ERequiredUseKey>(_imp->environment, k, eapi(), v, mkt_internal);
     add_metadata_key(_imp->required_use);
 }
 

@@ -289,8 +289,8 @@ EInstalledRepositoryID::need_keys_added() const
     if (! vars->required_use()->name().empty())
         if ((_imp->dir / vars->required_use()->name()).stat().exists())
         {
-            _imp->keys->required_use = std::make_shared<ERequiredUseKey>(_imp->environment, shared_from_this(), vars->required_use()->name(),
-                        vars->required_use()->description(), file_contents(_imp->dir / vars->required_use()->name()), mkt_internal);
+            _imp->keys->required_use = std::make_shared<ERequiredUseKey>(_imp->environment, vars->required_use(),
+                    eapi(), file_contents(_imp->dir / vars->required_use()->name()), mkt_internal);
             add_metadata_key(_imp->keys->required_use);
         }
 

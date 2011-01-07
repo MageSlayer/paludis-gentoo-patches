@@ -134,7 +134,7 @@ namespace paludis
                 void load_provide(const std::shared_ptr<const EAPIMetadataVariable> &, const std::string &) const;
                 void load_iuse(const std::shared_ptr<const EAPIMetadataVariable> &, const std::string &) const;
                 void load_myoptions(const std::string &, const std::string &, const std::string &) const;
-                void load_required_use(const std::string &, const std::string &, const std::string &) const;
+                void load_required_use(const std::shared_ptr<const EAPIMetadataVariable> &, const std::string &) const;
                 void load_use(const std::shared_ptr<const EAPIMetadataVariable> &, const std::string &) const;
                 void load_inherited(const std::shared_ptr<const EAPIMetadataVariable> &, const std::string &) const;
                 void load_keywords(const std::shared_ptr<const EAPIMetadataVariable> &, const std::string &) const;

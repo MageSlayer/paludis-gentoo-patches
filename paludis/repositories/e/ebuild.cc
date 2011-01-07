@@ -629,7 +629,7 @@ EbuildMetadataCommand::load(const std::shared_ptr<const EbuildID> & id)
         id->load_myoptions(m.myoptions()->name(), m.myoptions()->description(), get(keys, m.myoptions()->name()));
 
     if (! m.required_use()->name().empty())
-        id->load_required_use(m.required_use()->name(), m.required_use()->description(), get(keys, m.required_use()->name()));
+        id->load_required_use(m.required_use(), get(keys, m.required_use()->name()));
 
     if (! m.inherited()->name().empty())
         id->load_inherited(m.inherited(), get(keys, m.inherited()->name()));
