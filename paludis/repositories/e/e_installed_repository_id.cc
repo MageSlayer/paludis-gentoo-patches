@@ -389,16 +389,16 @@ EInstalledRepositoryID::need_keys_added() const
     if (! vars->restrictions()->name().empty())
         if ((_imp->dir / vars->restrictions()->name()).stat().exists())
         {
-            _imp->keys->restrictions = std::make_shared<EPlainTextSpecKey>(_imp->environment, shared_from_this(), vars->restrictions(),
-                        file_contents(_imp->dir / vars->restrictions()->name()), mkt_internal);
+            _imp->keys->restrictions = std::make_shared<EPlainTextSpecKey>(_imp->environment, vars->restrictions(),
+                        eapi(), file_contents(_imp->dir / vars->restrictions()->name()), mkt_internal);
             add_metadata_key(_imp->keys->restrictions);
         }
 
     if (! vars->properties()->name().empty())
         if ((_imp->dir / vars->properties()->name()).stat().exists())
         {
-            _imp->keys->properties = std::make_shared<EPlainTextSpecKey>(_imp->environment, shared_from_this(), vars->properties(),
-                        file_contents(_imp->dir / vars->properties()->name()), mkt_internal);
+            _imp->keys->properties = std::make_shared<EPlainTextSpecKey>(_imp->environment, vars->properties(),
+                        eapi(), file_contents(_imp->dir / vars->properties()->name()), mkt_internal);
             add_metadata_key(_imp->keys->properties);
         }
 
@@ -475,8 +475,7 @@ EInstalledRepositoryID::need_keys_added() const
             std::string value(file_contents(_imp->dir / vars->bugs_to()->name()));
             if (! value.empty())
             {
-                _imp->keys->bugs_to = std::make_shared<EPlainTextSpecKey>(_imp->environment, shared_from_this(),
-                            vars->bugs_to(), value, mkt_normal);
+                _imp->keys->bugs_to = std::make_shared<EPlainTextSpecKey>(_imp->environment, vars->bugs_to(), eapi(), value, mkt_normal);
                 add_metadata_key(_imp->keys->bugs_to);
             }
         }
@@ -487,8 +486,8 @@ EInstalledRepositoryID::need_keys_added() const
             std::string value(file_contents(_imp->dir / vars->remote_ids()->name()));
             if (! value.empty())
             {
-                _imp->keys->remote_ids = std::make_shared<EPlainTextSpecKey>(_imp->environment, shared_from_this(),
-                            vars->remote_ids(), value, mkt_internal);
+                _imp->keys->remote_ids = std::make_shared<EPlainTextSpecKey>(_imp->environment,
+                            vars->remote_ids(), eapi(), value, mkt_internal);
                 add_metadata_key(_imp->keys->remote_ids);
             }
         }

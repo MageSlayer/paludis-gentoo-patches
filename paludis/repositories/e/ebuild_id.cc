@@ -1035,7 +1035,7 @@ void
 EbuildID::load_restrict(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->restrictions = std::make_shared<EPlainTextSpecKey>(_imp->environment, shared_from_this(), m, v, mkt_internal);
+    _imp->restrictions = std::make_shared<EPlainTextSpecKey>(_imp->environment, m, eapi(), v, mkt_internal);
     add_metadata_key(_imp->restrictions);
 }
 
@@ -1043,7 +1043,7 @@ void
 EbuildID::load_properties(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->properties = std::make_shared<EPlainTextSpecKey>(_imp->environment, shared_from_this(), m, v, mkt_internal);
+    _imp->properties = std::make_shared<EPlainTextSpecKey>(_imp->environment, m, eapi(), v, mkt_internal);
     add_metadata_key(_imp->properties);
 }
 
@@ -1142,7 +1142,7 @@ void
 EbuildID::load_bugs_to(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->bugs_to = std::make_shared<EPlainTextSpecKey>(_imp->environment, shared_from_this(), m, v, mkt_normal);
+    _imp->bugs_to = std::make_shared<EPlainTextSpecKey>(_imp->environment, m, eapi(), v, mkt_normal);
     add_metadata_key(_imp->bugs_to);
 }
 
@@ -1150,7 +1150,7 @@ void
 EbuildID::load_remote_ids(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->remote_ids = std::make_shared<EPlainTextSpecKey>(_imp->environment, shared_from_this(), m, v, mkt_internal);
+    _imp->remote_ids = std::make_shared<EPlainTextSpecKey>(_imp->environment, m, eapi(), v, mkt_internal);
     add_metadata_key(_imp->remote_ids);
 }
 
