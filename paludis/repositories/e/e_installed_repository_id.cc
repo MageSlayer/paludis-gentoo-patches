@@ -321,7 +321,7 @@ EInstalledRepositoryID::need_keys_added() const
     if (! vars->provide()->name().empty())
         if ((_imp->dir / vars->provide()->name()).stat().exists())
         {
-            _imp->keys->provide = std::make_shared<EProvideKey>(_imp->environment, shared_from_this(), vars->provide()->name(), vars->provide()->description(),
+            _imp->keys->provide = std::make_shared<EProvideKey>(_imp->environment, vars->provide(), eapi(),
                         file_contents(_imp->dir / vars->provide()->name()), mkt_internal);
             add_metadata_key(_imp->keys->provide);
         }

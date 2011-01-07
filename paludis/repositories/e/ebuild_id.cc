@@ -1048,10 +1048,10 @@ EbuildID::load_properties(const std::shared_ptr<const EAPIMetadataVariable> & m,
 }
 
 void
-EbuildID::load_provide(const std::string & r, const std::string & h, const std::string & v) const
+EbuildID::load_provide(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->provide = std::make_shared<EProvideKey>(_imp->environment, shared_from_this(), r, h, v, mkt_dependencies);
+    _imp->provide = std::make_shared<EProvideKey>(_imp->environment, m, eapi(), v, mkt_internal);
     add_metadata_key(_imp->provide);
 }
 

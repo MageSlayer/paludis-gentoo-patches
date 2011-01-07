@@ -620,7 +620,7 @@ EbuildMetadataCommand::load(const std::shared_ptr<const EbuildID> & id)
         id->load_license(m.license(), get(keys, m.license()->name()));
 
     if (! m.provide()->name().empty())
-        id->load_provide(m.provide()->name(), m.provide()->description(), get(keys, m.provide()->name()));
+        id->load_provide(m.provide(), get(keys, m.provide()->name()));
 
     if (! m.iuse()->name().empty())
         id->load_iuse(m.iuse(), get(keys, m.iuse()->name()));

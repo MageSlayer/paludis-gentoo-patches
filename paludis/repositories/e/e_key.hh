@@ -207,8 +207,9 @@ namespace paludis
         {
             public:
                 EProvideKey(const Environment * const,
-                        const std::shared_ptr<const ERepositoryID> &,
-                        const std::string &, const std::string &, const std::string &, const MetadataKeyType);
+                        const std::shared_ptr<const EAPIMetadataVariable> &,
+                        const std::shared_ptr<const EAPI> &,
+                        const std::string &, const MetadataKeyType);
                 ~EProvideKey();
 
                 virtual const std::shared_ptr<const ProvideSpecTree> value() const
