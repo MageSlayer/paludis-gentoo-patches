@@ -1027,7 +1027,7 @@ void
 EbuildID::load_license(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->license = std::make_shared<ELicenseKey>(_imp->environment, shared_from_this(), m, v, mkt_internal);
+    _imp->license = std::make_shared<ELicenseKey>(_imp->environment, m, eapi(), v, mkt_internal);
     add_metadata_key(_imp->license);
 }
 

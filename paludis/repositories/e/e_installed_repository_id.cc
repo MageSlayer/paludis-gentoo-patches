@@ -313,8 +313,8 @@ EInstalledRepositoryID::need_keys_added() const
     if (! vars->license()->name().empty())
         if ((_imp->dir / vars->license()->name()).stat().exists())
         {
-            _imp->keys->license = std::make_shared<ELicenseKey>(_imp->environment, shared_from_this(), vars->license(),
-                        file_contents(_imp->dir / vars->license()->name()),  mkt_normal);
+            _imp->keys->license = std::make_shared<ELicenseKey>(_imp->environment, vars->license(), eapi(),
+                        file_contents(_imp->dir / vars->license()->name()), mkt_normal);
             add_metadata_key(_imp->keys->license);
         }
 

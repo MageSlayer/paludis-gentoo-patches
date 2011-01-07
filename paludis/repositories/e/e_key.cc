@@ -201,21 +201,23 @@ namespace paludis
     struct Imp<ELicenseKey>
     {
         const Environment * const env;
-        const std::shared_ptr<const ERepositoryID> id;
         const std::string string_value;
         mutable Mutex value_mutex;
         mutable std::shared_ptr<const LicenseSpecTree> value;
 
         const std::shared_ptr<const EAPIMetadataVariable> variable;
+        const std::shared_ptr<const EAPI> eapi;
         const MetadataKeyType type;
 
         Imp(const Environment * const e,
-                const std::shared_ptr<const ERepositoryID> & i, const std::string & v,
-                const std::shared_ptr<const EAPIMetadataVariable> & m, const MetadataKeyType t) :
+                const std::string & v,
+                const std::shared_ptr<const EAPIMetadataVariable> & m,
+                const std::shared_ptr<const EAPI> & p,
+                const MetadataKeyType t) :
             env(e),
-            id(i),
             string_value(v),
             variable(m),
+            eapi(p),
             type(t)
         {
         }
@@ -224,9 +226,10 @@ namespace paludis
 
 ELicenseKey::ELicenseKey(
         const Environment * const e,
-        const std::shared_ptr<const ERepositoryID> & id,
-        const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v, const MetadataKeyType t) :
-    Pimp<ELicenseKey>(e, id, v, m, t)
+        const std::shared_ptr<const EAPIMetadataVariable> & m,
+        const std::shared_ptr<const EAPI> & p,
+        const std::string & v, const MetadataKeyType t) :
+    Pimp<ELicenseKey>(e, v, m, p, t)
 {
 }
 
@@ -241,8 +244,8 @@ ELicenseKey::value() const
     if (_imp->value)
         return _imp->value;
 
-    Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
-    _imp->value = parse_license(_imp->string_value, _imp->env, *_imp->id->eapi());
+    Context context("When parsing metadata key '" + raw_name() + "':");
+    _imp->value = parse_license(_imp->string_value, _imp->env, *_imp->eapi);
     return _imp->value;
 }
 

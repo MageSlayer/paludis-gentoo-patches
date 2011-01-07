@@ -230,8 +230,8 @@ namespace paludis
             public:
                 ELicenseKey(
                         const Environment * const,
-                        const std::shared_ptr<const ERepositoryID> &,
                         const std::shared_ptr<const EAPIMetadataVariable> &,
+                        const std::shared_ptr<const EAPI> &,
                         const std::string &, const MetadataKeyType);
                 ~ELicenseKey();
 
