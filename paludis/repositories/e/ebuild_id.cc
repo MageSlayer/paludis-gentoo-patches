@@ -1064,10 +1064,10 @@ EbuildID::load_iuse(const std::shared_ptr<const EAPIMetadataVariable> & k, const
 }
 
 void
-EbuildID::load_myoptions(const std::string & r, const std::string & h, const std::string & v) const
+EbuildID::load_myoptions(const std::shared_ptr<const EAPIMetadataVariable> & h, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->raw_myoptions = std::make_shared<EMyOptionsKey>(_imp->environment, shared_from_this(), r, h, v, mkt_internal);
+    _imp->raw_myoptions = std::make_shared<EMyOptionsKey>(_imp->environment, h, eapi(), v, mkt_internal);
     add_metadata_key(_imp->raw_myoptions);
 }
 

@@ -239,7 +239,7 @@ namespace
                 id->load_iuse(m.iuse(), lines.at(m.iuse()->flat_list_index()));
 
             if (-1 != m.myoptions()->flat_list_index() && ! m.myoptions()->name().empty())
-                id->load_myoptions(m.myoptions()->name(), m.myoptions()->description(), lines.at(m.myoptions()->flat_list_index()));
+                id->load_myoptions(m.myoptions(), lines.at(m.myoptions()->flat_list_index()));
 
             if (-1 != m.required_use()->flat_list_index() && ! m.required_use()->name().empty())
                 id->load_required_use(m.required_use(), lines.at(m.required_use()->flat_list_index()));
@@ -585,7 +585,7 @@ EbuildFlatMetadataCache::load(const std::shared_ptr<const EbuildID> & id, const 
                 id->load_iuse(m.iuse(), keys[m.iuse()->name()]);
 
             if (! m.myoptions()->name().empty())
-                id->load_myoptions(m.myoptions()->name(), m.myoptions()->description(), keys[m.myoptions()->name()]);
+                id->load_myoptions(m.myoptions(), keys[m.myoptions()->name()]);
 
             if (! m.required_use()->name().empty())
                 id->load_required_use(m.required_use(), keys[m.required_use()->name()]);

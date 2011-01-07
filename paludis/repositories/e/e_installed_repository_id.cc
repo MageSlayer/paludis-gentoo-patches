@@ -281,8 +281,8 @@ EInstalledRepositoryID::need_keys_added() const
     if (! vars->myoptions()->name().empty())
         if ((_imp->dir / vars->myoptions()->name()).stat().exists())
         {
-            _imp->keys->raw_myoptions = std::make_shared<EMyOptionsKey>(_imp->environment, shared_from_this(), vars->myoptions()->name(),
-                        vars->myoptions()->description(), file_contents(_imp->dir / vars->myoptions()->name()), mkt_internal);
+            _imp->keys->raw_myoptions = std::make_shared<EMyOptionsKey>(_imp->environment, vars->myoptions(),
+                        eapi(), file_contents(_imp->dir / vars->myoptions()->name()), mkt_internal);
             add_metadata_key(_imp->keys->raw_myoptions);
         }
 

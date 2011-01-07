@@ -559,32 +559,35 @@ namespace paludis
     struct Imp<EMyOptionsKey>
     {
         const Environment * const env;
-        const std::shared_ptr<const ERepositoryID> id;
         const std::string string_value;
         mutable Mutex value_mutex;
         mutable std::shared_ptr<const PlainTextSpecTree> value;
 
-        const std::string raw_name;
-        const std::string human_name;
+        const std::shared_ptr<const EAPIMetadataVariable> variable;
+        const std::shared_ptr<const EAPI> eapi;
         const MetadataKeyType type;
 
-        Imp(const Environment * const e, const std::shared_ptr<const ERepositoryID> & i, const std::string & v,
-                const std::string & r, const std::string & h, const MetadataKeyType t) :
+        Imp(const Environment * const e,
+                const std::string & v,
+                const std::shared_ptr<const EAPIMetadataVariable> & m,
+                const std::shared_ptr<const EAPI> & p,
+                const MetadataKeyType t) :
             env(e),
-            id(i),
             string_value(v),
-            raw_name(r),
-            human_name(h),
+            variable(m),
+            eapi(p),
             type(t)
         {
         }
     };
 }
 
-EMyOptionsKey::EMyOptionsKey(const Environment * const e,
-        const std::shared_ptr<const ERepositoryID> & id,
-        const std::string & r, const std::string & h, const std::string & v, const MetadataKeyType t) :
-    Pimp<EMyOptionsKey>(e, id, v, r, h, t)
+EMyOptionsKey::EMyOptionsKey(
+        const Environment * const e,
+        const std::shared_ptr<const EAPIMetadataVariable> & m,
+        const std::shared_ptr<const EAPI> & p,
+        const std::string & v, const MetadataKeyType t) :
+    Pimp<EMyOptionsKey>(e, v, m, p, t)
 {
 }
 
@@ -596,12 +599,11 @@ const std::shared_ptr<const PlainTextSpecTree>
 EMyOptionsKey::value() const
 {
     Lock l(_imp->value_mutex);
-
     if (_imp->value)
         return _imp->value;
 
-    Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
-    _imp->value = parse_myoptions(_imp->string_value, _imp->env, *_imp->id->eapi());
+    Context context("When parsing metadata key '" + raw_name() + "':");
+    _imp->value = parse_myoptions(_imp->string_value, _imp->env, *_imp->eapi);
     return _imp->value;
 }
 
@@ -618,13 +620,13 @@ EMyOptionsKey::pretty_print_value(
 const std::string
 EMyOptionsKey::raw_name() const
 {
-    return _imp->raw_name;
+    return _imp->variable->name();
 }
 
 const std::string
 EMyOptionsKey::human_name() const
 {
-    return _imp->human_name;
+    return _imp->variable->description();
 }
 
 MetadataKeyType

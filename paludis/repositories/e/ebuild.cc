@@ -626,7 +626,7 @@ EbuildMetadataCommand::load(const std::shared_ptr<const EbuildID> & id)
         id->load_iuse(m.iuse(), get(keys, m.iuse()->name()));
 
     if (! m.myoptions()->name().empty())
-        id->load_myoptions(m.myoptions()->name(), m.myoptions()->description(), get(keys, m.myoptions()->name()));
+        id->load_myoptions(m.myoptions(), get(keys, m.myoptions()->name()));
 
     if (! m.required_use()->name().empty())
         id->load_required_use(m.required_use(), get(keys, m.required_use()->name()));
