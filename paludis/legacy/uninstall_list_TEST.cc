@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -24,6 +24,7 @@
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/return_literal_function.hh>
 #include <paludis/package_database.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/repository_factory.hh>
@@ -45,18 +46,6 @@ namespace paludis
     {
         s << *e.package_id();
         return s;
-    }
-
-    template <typename T_>
-    T_ make_k_result(T_ t)
-    {
-        return t;
-    }
-
-    template <typename T_>
-    std::function<T_ ()> make_k(T_ t)
-    {
-        return std::bind(&make_k_result<T_>, t);
     }
 }
 
@@ -391,7 +380,7 @@ namespace test_cases
         {
             std::shared_ptr<SetSpecTree> world(std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>()));
             world->top()->append(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec("foo/moo", &env, { })));
-            env.add_set(SetName("world"), SetName("world"), make_k<std::shared_ptr<const SetSpecTree> >(world), false);
+            env.add_set(SetName("world"), SetName("world"), return_literal_function(world), false);
         }
 
         void populate_targets()
@@ -431,7 +420,7 @@ namespace test_cases
             std::shared_ptr<SetSpecTree> world(std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>()));
             world->top()->append(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec("foo/moo", &env, { })));
             world->top()->append(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec("foo/bar", &env, { })));
-            env.add_set(SetName("world"), SetName("world"), make_k(world), false);
+            env.add_set(SetName("world"), SetName("world"), return_literal_function(world), false);
         }
 
         void populate_targets()
@@ -473,7 +462,7 @@ namespace test_cases
             world->top()->append(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec("cat/needs-b", &env, { })));
             world->top()->append(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec("cat/needs-c", &env, { })));
             world->top()->append(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec("cat/needs-d", &env, { })));
-            env.add_set(SetName("world"), SetName("world"), make_k(world), false);
+            env.add_set(SetName("world"), SetName("world"), return_literal_function(world), false);
         }
 
         void populate_targets()
