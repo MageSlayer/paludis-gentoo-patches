@@ -223,12 +223,12 @@ ReportCommand::run(
                 need_heading_origin(done_heading, done_heading_origin, *i, origin);
                 cout << fuc(fs_package_origin_masked());
             }
+        }
 
-            if (insecurity && match_package_in_set(*env, *insecurity, origin, { }))
-            {
-                need_heading_origin(done_heading, done_heading_origin, *i, origin);
-                cout << fuc(fs_package_origin_insecure());
-            }
+        if (insecurity && match_package_in_set(*env, *insecurity, *i, { }))
+        {
+            need_heading(done_heading, *i);
+            cout << fuc(fs_package_insecure());
         }
 
         if (unused->end() != unused->find(*i))
@@ -238,7 +238,7 @@ ReportCommand::run(
                     (! (*i)->supports_action(SupportsActionTest<UninstallAction>())))
             {
                 /* ok, or weird */
-                }
+            }
             else
             {
                 need_heading(done_heading, *i);

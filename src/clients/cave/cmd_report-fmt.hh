@@ -12,8 +12,8 @@ const auto fs_package_origin = make_format_string_fetcher("report/origin", 1)
 const auto fs_package_origin_masked = make_format_string_fetcher("report/origin_masked", 1)
     << "        Masked in original repository\\n";
 
-const auto fs_package_origin_insecure = make_format_string_fetcher("report/origin_insecure", 1)
-    << "        Marked as insecure\\n";
+const auto fs_package_insecure = make_format_string_fetcher("report/insecure", 1)
+    << "    Marked as insecure\\n";
 
 const auto fs_package_unused = make_format_string_fetcher("report/unused", 1)
     << "    Not used by any package in world\\n";
