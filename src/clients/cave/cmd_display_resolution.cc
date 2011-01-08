@@ -40,7 +40,6 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/pretty_print.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
-#include <paludis/util/return_literal_function.hh>
 #include <paludis/util/enum_iterator.hh>
 #include <paludis/resolver/resolutions_by_resolvent.hh>
 #include <paludis/resolver/reason.hh>
@@ -133,6 +132,11 @@ namespace
                 "internal use; most users will not use this command directly.";
         }
     };
+
+    WantPhase want_all_phases(const std::string &)
+    {
+        return wp_yes;
+    }
 
     std::string get_annotation(
             const std::shared_ptr<const DepSpecAnnotations> & annotations,
@@ -1124,7 +1128,7 @@ namespace
                     n::ignore_unfetched() = false,
                     n::make_output_manager() = std::ref(output_manager_holder),
                     n::safe_resume() = true,
-                    n::want_phase() = std::bind(return_literal_function(wp_yes))
+                    n::want_phase() = &want_all_phases
                     ),
                 totals);
         id->perform_action(action);

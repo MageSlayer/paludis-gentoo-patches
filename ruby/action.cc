@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  * Copyright (c) 2007 Richard Brown
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -21,7 +21,6 @@
 #include <paludis_ruby.hh>
 #include <paludis/action.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/return_literal_function.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/standard_output_manager.hh>
 #include <ruby.h>
@@ -51,6 +50,11 @@ namespace
     static VALUE c_pretend_action;
 
     static VALUE c_pretend_fetch_action;
+
+    WantPhase want_all_phases(const std::string &)
+    {
+        return wp_yes;
+    }
 
     const FetchActionOptions
     value_to_fetch_action_options(VALUE v)
@@ -293,7 +297,7 @@ namespace
                         n::ignore_unfetched() = false,
                         n::make_output_manager() = &make_standard_output_manager,
                         n::safe_resume() = v_safe_resume,
-                        n::want_phase() = std::bind(return_literal_function(wp_yes))
+                        n::want_phase() = &want_all_phases
                     ));
 
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<FetchActionOptions>::free, ptr));
@@ -506,11 +510,6 @@ namespace
         }
     };
 
-    WantPhase want_all_phases(const std::string &)
-    {
-        return wp_yes;
-    }
-
     void cannot_perform_uninstall(const std::shared_ptr<const PackageID> & id, const UninstallActionOptions &)
     {
         throw InternalError(PALUDIS_HERE, "Can't uninstall '" + stringify(*id) + "'");
@@ -530,15 +529,12 @@ namespace
         InstallActionOptions * ptr(0);
         try
         {
-            bool v_no_config_protect;
             std::shared_ptr<Repository> v_destination;
 
             if (1 == argc && rb_obj_is_kind_of(argv[0], rb_cHash))
             {
                 if (Qnil == rb_hash_aref(argv[0], ID2SYM(rb_intern("destination"))))
                     rb_raise(rb_eArgError, "Missing Parameter: destination");
-                v_no_config_protect =
-                    value_to_bool(rb_hash_aref(argv[0], ID2SYM(rb_intern("no_config_protect"))));
                 v_destination = value_to_repository(rb_hash_aref(argv[0], ID2SYM(rb_intern("destination"))));
             }
             else if (1 == argc)

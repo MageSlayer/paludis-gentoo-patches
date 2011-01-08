@@ -34,6 +34,12 @@ namespace
     {
         return std::make_shared<StandardOutputManager>();
     }
+
+    /* We just want to run all phases for actions. */
+    WantPhase want_all_phases(const std::string &)
+    {
+        return wp_yes;
+    }
 }
 
 int main(int argc, char * argv[])
@@ -84,7 +90,7 @@ int main(int argc, char * argv[])
                             n::ignore_unfetched() = false,
                             n::make_output_manager() = &make_standard_output_manager,
                             n::safe_resume() = true,
-                            n::want_phase() = std::bind(return_literal_function(wp_yes))
+                            n::want_phase() = &want_all_phases
                             ));
                 try
                 {

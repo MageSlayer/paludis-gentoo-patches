@@ -31,7 +31,6 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/set.hh>
-#include <paludis/util/return_literal_function.hh>
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/standard_output_manager.hh>
@@ -938,7 +937,7 @@ namespace test_cases
                         n::ignore_unfetched() = false,
                         n::make_output_manager() = &make_standard_output_manager,
                         n::safe_resume() = true,
-                        n::want_phase() = std::bind(return_literal_function(wp_yes))
+                        n::want_phase() = &want_all_phases
                     ));
 
             {
@@ -1046,7 +1045,7 @@ namespace test_cases
                         n::ignore_unfetched() = false,
                         n::make_output_manager() = &make_standard_output_manager,
                         n::safe_resume() = true,
-                        n::want_phase() = std::bind(return_literal_function(wp_yes))
+                        n::want_phase() = &want_all_phases
                     ));
 
             const std::shared_ptr<const PackageID> id(*env[selection::AllVersionsSorted(generator::Matches(

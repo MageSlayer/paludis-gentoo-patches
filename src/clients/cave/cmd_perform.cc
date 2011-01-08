@@ -42,7 +42,6 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/iterator_funcs.hh>
-#include <paludis/util/return_literal_function.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <cstdlib>
 #include <iostream>
@@ -383,6 +382,11 @@ namespace
                 size = new_size;
         }
     };
+
+    WantPhase want_all_phases(const std::string &)
+    {
+        return wp_yes;
+    }
 }
 
 int
@@ -502,7 +506,7 @@ PerformCommand::run(
                     n::ignore_unfetched() = cmdline.a_ignore_unfetched.specified(),
                     n::make_output_manager() = std::ref(output_manager_holder),
                     n::safe_resume() = true,
-                    n::want_phase() = std::bind(return_literal_function(wp_yes))
+                    n::want_phase() = &want_all_phases
                     ));
         OurPretendFetchAction pretend_fetch_action(options);
         execute(env, cmdline, id, action, pretend_fetch_action, output_manager_holder);

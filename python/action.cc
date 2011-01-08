@@ -23,7 +23,6 @@
 #include <paludis/action.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/sequence.hh>
-#include <paludis/util/return_literal_function.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/standard_output_manager.hh>
 #include <paludis/repository.hh>
@@ -140,7 +139,7 @@ namespace
                     n::ignore_unfetched() = false,
                     n::make_output_manager() = &make_standard_output_manager,
                     n::safe_resume() = safe_resume,
-                    n::want_phase() = std::bind(return_literal_function(wp_yes))
+                    n::want_phase() = &want_all_phases
                     ));
     }
 

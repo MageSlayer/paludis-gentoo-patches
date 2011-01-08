@@ -30,7 +30,6 @@
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/return_literal_function.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 
 #include <paludis/name.hh>
@@ -91,6 +90,11 @@ namespace
     {
         return std::make_shared<StandardOutputManager>();
     }
+
+    WantPhase want_all_phases(const std::string &)
+    {
+        return wp_yes;
+    }
 }
 
 int
@@ -135,7 +139,7 @@ DigestCommand::run(
                     n::ignore_unfetched() = false,
                     n::make_output_manager() = &make_standard_output_manager,
                     n::safe_resume() = true,
-                    n::want_phase() = std::bind(return_literal_function(wp_yes))
+                    n::want_phase() = &want_all_phases
                     ));
 
         if ((*i)->supports_action(SupportsActionTest<FetchAction>()))

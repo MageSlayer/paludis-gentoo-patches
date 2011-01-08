@@ -2,7 +2,7 @@
 
 /*
  * Copyright (c) 2009 Kim Højgaard-Hansen
- * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -31,7 +31,6 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/return_literal_function.hh>
 #include <paludis/repositories/e/e_repository_exceptions.hh>
 #include <paludis/standard_output_manager.hh>
 #include <paludis/environments/no_config/no_config_environment.hh>
@@ -58,6 +57,11 @@ namespace
     std::shared_ptr<OutputManager> make_standard_output_manager(const Action &)
     {
         return std::make_shared<StandardOutputManager>();
+    }
+
+    WantPhase want_all_phases(const std::string &)
+    {
+        return wp_yes;
     }
 
     FSPath get_location_and_add_filters()
@@ -113,7 +117,7 @@ namespace
                                 n::ignore_unfetched() = false,
                                 n::make_output_manager() = &make_standard_output_manager,
                                 n::safe_resume() = true,
-                                n::want_phase() = std::bind(return_literal_function(wp_yes))
+                                n::want_phase() = &want_all_phases
                                 ));
                     (*i)->perform_action(a);
                     ++success;

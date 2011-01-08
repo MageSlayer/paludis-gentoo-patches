@@ -49,7 +49,6 @@
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
-#include <paludis/util/return_literal_function.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/create_output_manager_info.hh>
 #include <paludis/output_manager_from_environment.hh>
@@ -693,6 +692,11 @@ namespace
             task.on_display_failure_summary_success(*entry);
         }
     };
+
+    WantPhase want_all_phases(const std::string &)
+    {
+        return wp_yes;
+    }
 }
 
 void
@@ -784,7 +788,7 @@ InstallTask::_pretend()
                             n::ignore_unfetched() = true,
                             n::make_output_manager() = std::ref(output_manager_holder),
                             n::safe_resume() = _imp->safe_resume,
-                            n::want_phase() = std::bind(return_literal_function(wp_yes))
+                            n::want_phase() = &want_all_phases
                             ));
                 FetchAction fetch_action(options);
                 try
@@ -1966,7 +1970,7 @@ InstallTask::make_fetch_action_options(const DepListEntry &, OutputManagerFromEn
             n::ignore_unfetched() = false,
             n::make_output_manager() = std::ref(o),
             n::safe_resume() = _imp->safe_resume,
-            n::want_phase() = std::bind(return_literal_function(wp_yes))
+            n::want_phase() = &want_all_phases
             );
 }
 
