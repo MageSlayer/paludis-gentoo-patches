@@ -345,7 +345,7 @@ Imp<BrokenLinkageFinder>::gather_package(const std::shared_ptr<const PackageID> 
         if (0 != file)
         {
             Lock l(mutex);
-            files.insert(std::make_pair(stringify(file->location_key()->value()), pkg));
+            files.insert(std::make_pair(file->location_key()->value(), pkg));
         }
     }
 
