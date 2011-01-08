@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -111,7 +111,7 @@ paludis::paludis_environment::make_bashable_kv_conf(const FSPath & f,
     else
     {
         result = std::make_shared<KeyValueConfigFile>(f, o,
-                std::bind(&defined_vars_to_kv_func, predefined_variables, std::placeholders::_1, std::placeholders::_2),
+                std::bind(&defined_vars_to_kv_func, std::cref(predefined_variables), std::placeholders::_1, std::placeholders::_2),
                 &KeyValueConfigFile::no_transformation);
     }
 

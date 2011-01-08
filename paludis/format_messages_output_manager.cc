@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -206,7 +206,7 @@ FormatMessagesOutputManager::factory_create(
     std::shared_ptr<OutputManager> child(create_child_function(child_s));
 
     FormatMessagesOutputManagerFormatFunction format_func(std::bind(
-                &format_message, replace_vars_func, std::placeholders::_1, std::placeholders::_2));
+                &format_message, std::cref(replace_vars_func), std::placeholders::_1, std::placeholders::_2));
 
     return std::make_shared<FormatMessagesOutputManager>(
                 child, format_debug_s, format_info_s, format_warn_s, format_error_s, format_log_s, format_status_s, format_func);

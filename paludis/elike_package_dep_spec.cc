@@ -490,7 +490,7 @@ paludis::partial_parse_elike_package_dep_spec(
                 n::get_remove_version_operator() = std::bind(&elike_get_remove_version_operator, _1, options),
                 n::has_version_operator() = std::bind(&elike_has_version_operator, _1,
                         std::cref(had_bracket_version_requirements), options),
-                n::options_for_partially_made_package_dep_spec() = std::bind(&fixed_options_for_partially_made_package_dep_spec, o),
+                n::options_for_partially_made_package_dep_spec() = std::bind(&fixed_options_for_partially_made_package_dep_spec, std::cref(o)),
                 n::remove_trailing_repo_if_exists() = std::bind(&elike_remove_trailing_repo_if_exists, _1, _2, options),
                 n::remove_trailing_slot_if_exists() = std::bind(&elike_remove_trailing_slot_if_exists, _1, _2, options),
                 n::remove_trailing_square_bracket_if_exists() = std::bind(&elike_remove_trailing_square_bracket_if_exists,

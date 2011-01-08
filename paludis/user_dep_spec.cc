@@ -317,7 +317,7 @@ paludis::parse_user_package_dep_spec(const std::string & ss, const Environment *
                     ELikePackageDepSpecOptions() + epdso_allow_tilde_greater_deps + epdso_nice_equal_star),
             n::has_version_operator() = std::bind(&elike_has_version_operator, _1,
                     std::cref(had_bracket_version_requirements), ELikePackageDepSpecOptions()),
-            n::options_for_partially_made_package_dep_spec() = std::bind(&fixed_options_for_partially_made_package_dep_spec, o),
+            n::options_for_partially_made_package_dep_spec() = std::bind(&fixed_options_for_partially_made_package_dep_spec, std::cref(o)),
             n::remove_trailing_repo_if_exists() = std::bind(&user_remove_trailing_repo_if_exists, _1, _2),
             n::remove_trailing_slot_if_exists() = std::bind(&user_remove_trailing_slot_if_exists, _1, _2),
             n::remove_trailing_square_bracket_if_exists() = std::bind(&user_remove_trailing_square_bracket_if_exists,

@@ -1220,7 +1220,7 @@ DepList::add_package(const std::shared_ptr<const PackageID> & p, const std::shar
                         n::state() = dle_has_all_deps,
                         n::tags() = std::shared_ptr<DepListEntryTags>(std::make_shared<DepListEntryTags>())
                         )));
-            _imp->merge_list_index.insert(std::make_pair((*i)->text(), our_merge_entry_post_position));
+            _imp->merge_list_index.insert(std::make_pair(QualifiedPackageName((*i)->text()), our_merge_entry_post_position));
         }
     }
 
