@@ -192,7 +192,9 @@ namespace
             std::copy(cmdline.a_world_specs.begin_args(), cmdline.a_world_specs.end_args(), world_specs->back_inserter());
 
             std::shared_ptr<Sequence<std::string> > removed_if_dependent_names(std::make_shared<Sequence<std::string>>());
-            std::copy(cmdline.a_removed_if_dependent_names.begin_args(), cmdline.a_removed_if_dependent_names.end_args(), world_specs->back_inserter());
+            for (auto r(cmdline.a_removed_if_dependent_names.begin_args()), r_end(cmdline.a_removed_if_dependent_names.end_args()) ;
+                    r != r_end ; ++r)
+                world_specs->push_back("!" + *r);
 
             ResumeData resume_data(make_named_values<ResumeData>(
                         n::job_lists() = lists,
