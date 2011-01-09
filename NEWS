@@ -4,6 +4,37 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the Git log.
 
+0.56.4:
+    * Certain abusive || ( ) dependencies are now handled in the same way that
+      Portage treats them.
+
+    * When using 'cave uninstall --remove-if-dependent' followed by 'cave
+      resume', dependent packages would be added to rather than removed from
+      world. This is now fixed.
+
+0.56.3:
+    * cave report would previously not mention certain security issues. This is
+      now fixed.
+
+    * Syncing via 'rsync' now uses '--delete-delay' rather than
+      '--delete-after'. This requires rsync 3.
+
+0.56.2:
+    * EAPI 4 is enabled.
+
+    * New 'cave' subcommand: 'digest'.
+
+    * New 'cave print-unused-distfiles' option: '--include'.
+
+    * Updates now work correctly again.
+
+0.56.1:
+    * We now show the number of skipped and failed packages in "x of y" output.
+
+    * We now run pkg_pretend even if certain confirmations are required.
+
+    * Various minor bug fixes and documentation tweaks.
+
 0.56.0:
     * New 'cave' subcommand: 'print-spec'.
 
