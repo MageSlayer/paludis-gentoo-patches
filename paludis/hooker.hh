@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -85,10 +85,11 @@ namespace paludis
      * \ingroup g_hooks
      * \nosubgrouping
      */
-    class PALUDIS_VISIBLE Hooker :
-        private Pimp<Hooker>
+    class PALUDIS_VISIBLE Hooker
     {
         private:
+            Pimp<Hooker> _imp;
+
             std::shared_ptr<Sequence<std::shared_ptr<HookFile> > > _find_hooks(const Hook &) const;
 
         public:

@@ -468,7 +468,7 @@ namespace paludis
 }
 
 SanitisedDependencies::SanitisedDependencies() :
-    Pimp<SanitisedDependencies>()
+    _imp()
 {
 }
 

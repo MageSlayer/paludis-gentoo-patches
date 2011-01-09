@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2010 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -42,88 +42,63 @@ namespace paludis
     struct Imp;
 
     /**
-     * A class descended from Pimp has an associated
-     * Imp instance.
+     * Pointer to our implementation data.
      *
      * \ingroup g_oo
+     * \since 0.58
      */
     template <typename C_>
     class Pimp
     {
-        protected:
-            /**
-             * Smart pointer to our implementation.
-             *
-             * \see Pimp
-             * \ingroup g_oo
-             */
-            class ImpPtr
-            {
-                private:
-                    Imp<C_> * _ptr;
-
-                public:
-                    ///\name Basic operations
-                    ///\{
-
-                    template <typename... Args_>
-                    explicit ImpPtr(Args_ && ... args);
-
-                    ~ImpPtr();
-
-                    ImpPtr(ImpPtr &&);
-
-                    ImpPtr(const ImpPtr &) = delete;
-                    ImpPtr & operator= (const ImpPtr &) = delete;
-
-                    ///\}
-
-                    ///\name Dereference operators
-                    //\{
-
-                    inline Imp<C_> * operator-> ();
-
-                    inline const Imp<C_> * operator-> () const;
-
-                    Imp<C_> * get();
-                    const Imp<C_> * get() const;
-
-                    ///\}
-
-                    /**
-                     * Reset to a new Imp.
-                     */
-                    void reset(Imp<C_> * p);
-            };
-
-            /**
-             * Pointer to our implementation data.
-             */
-            ImpPtr _imp;
+        private:
+            Imp<C_> * _ptr;
 
         public:
-            /**
-             * Constructor.
-             */
+            ///\name Basic operations
+            ///\{
+
             template <typename... Args_>
             explicit Pimp(Args_ && ... args);
 
-            explicit Pimp(Imp<C_> *) = delete;
-
             ~Pimp();
+
+            Pimp(Pimp &&);
+
+            Pimp(const Pimp &) = delete;
+            Pimp & operator= (const Pimp &) = delete;
+
+            ///\}
+
+            ///\name Dereference operators
+            //\{
+
+            inline Imp<C_> * operator-> ();
+
+            inline const Imp<C_> * operator-> () const;
+
+            Imp<C_> * get();
+
+            const Imp<C_> * get() const;
+
+            ///\}
+
+            /**
+             * Reset to a new Imp.
+             */
+            void reset(Imp<C_> * p);
     };
 }
 
 template <typename C_>
 paludis::Imp<C_> *
-paludis::Pimp<C_>::ImpPtr::operator-> ()
+paludis::Pimp<C_>::operator-> ()
 {
     return _ptr;
 }
 
 template <typename C_>
 const paludis::Imp<C_> *
-paludis::Pimp<C_>::ImpPtr::operator-> () const
+paludis::Pimp<C_>::operator-> () const
 {
     return _ptr;
 }

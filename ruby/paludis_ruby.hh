@@ -149,12 +149,13 @@ namespace paludis
         /* registration */
 
         class RegisterRubyClass :
-            public Singleton<RegisterRubyClass>,
-            private Pimp<RegisterRubyClass>
+            public Singleton<RegisterRubyClass>
         {
             friend class Singleton<RegisterRubyClass>;
 
             private:
+                Pimp<RegisterRubyClass> _imp;
+
                 RegisterRubyClass();
                 ~RegisterRubyClass();
 

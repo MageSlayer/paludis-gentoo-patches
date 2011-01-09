@@ -39,7 +39,7 @@ namespace paludis
 }
 
 ChangedChoices::ChangedChoices() :
-    Pimp<ChangedChoices>()
+    _imp()
 {
 }
 

@@ -172,11 +172,12 @@ namespace paludis
 
     template <typename ElfType_>
     class DynamicEntries :
-        public Singleton<DynamicEntries<ElfType_> >,
-        private Pimp<DynamicEntries<ElfType_> >
+        public Singleton<DynamicEntries<ElfType_> >
     {
-        using Pimp<DynamicEntries>::_imp;
         friend class Singleton<DynamicEntries>;
+
+        private:
+            Pimp<DynamicEntries> _imp;
 
         public:
             void register_type(typename ElfType_::DynamicTag, std::shared_ptr<DynamicEntry<ElfType_> >);
@@ -195,10 +196,10 @@ namespace paludis
     template <typename ElfType_>
     class PALUDIS_VISIBLE DynamicSection :
         public Section<ElfType_>,
-        public ImplementAcceptMethods<Section<ElfType_>, DynamicSection<ElfType_> >,
-        private Pimp<DynamicSection<ElfType_> >
+        public ImplementAcceptMethods<Section<ElfType_>, DynamicSection<ElfType_> >
     {
-        using Pimp<DynamicSection>::_imp;
+        private:
+            Pimp<DynamicSection> _imp;
 
         public:
             DynamicSection(typename ElfType_::Word, const typename ElfType_::SectionHeader &, std::istream &, bool);

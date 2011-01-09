@@ -39,9 +39,11 @@ namespace paludis
 
     class PALUDIS_VISIBLE WildcardExpander :
         public std::iterator<std::forward_iterator_tag, const FSPath>,
-        public equality_operators::HasEqualityOperators,
-        private Pimp<WildcardExpander>
+        public equality_operators::HasEqualityOperators
     {
+        private:
+            Pimp<WildcardExpander> _imp;
+
         public:
             WildcardExpander(const std::string &, const FSPath & = FSPath("/"));
             WildcardExpander();
@@ -59,6 +61,8 @@ namespace paludis
 
             bool operator== (const WildcardExpander &) const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
+
+    extern template class Pimp<WildcardExpander>;
 }
 
 #endif

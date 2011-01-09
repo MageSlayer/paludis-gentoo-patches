@@ -76,9 +76,11 @@ namespace paludis
          *
          * \ingroup grpmanifest2reader
          */
-        class PALUDIS_VISIBLE Manifest2Reader :
-            private Pimp<Manifest2Reader>
+        class PALUDIS_VISIBLE Manifest2Reader
         {
+            private:
+                Pimp<Manifest2Reader> _imp;
+
             public:
                 ///\name Basic operations
 

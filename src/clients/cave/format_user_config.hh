@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -36,12 +36,13 @@ namespace paludis
         void set_want_colours(const bool v);
 
         class FormatUserConfigFile :
-            private Pimp<FormatUserConfigFile>,
             public Singleton<FormatUserConfigFile>
         {
             friend class Singleton<FormatUserConfigFile>;
 
             private:
+                Pimp<FormatUserConfigFile> _imp;
+
                 FormatUserConfigFile();
                 ~FormatUserConfigFile();
 

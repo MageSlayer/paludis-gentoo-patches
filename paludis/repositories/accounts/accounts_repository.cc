@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -107,7 +107,6 @@ namespace paludis
 }
 
 AccountsRepository::AccountsRepository(const AccountsRepositoryParams & p) :
-    Pimp<AccountsRepository>(p.name(), p),
     Repository(
             p.environment(),
             p.name(),
@@ -119,13 +118,12 @@ AccountsRepository::AccountsRepository(const AccountsRepositoryParams & p) :
                 n::provides_interface() = static_cast<RepositoryProvidesInterface *>(0),
                 n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
                 )),
-    _imp(Pimp<AccountsRepository>::_imp)
+    _imp(p.name(), p)
 {
     _add_metadata_keys();
 }
 
 AccountsRepository::AccountsRepository(const InstalledAccountsRepositoryParams & p) :
-    Pimp<AccountsRepository>(p.name(), p),
     Repository(
             p.environment(),
             p.name(),
@@ -137,7 +135,7 @@ AccountsRepository::AccountsRepository(const InstalledAccountsRepositoryParams &
                 n::provides_interface() = static_cast<RepositoryProvidesInterface *>(0),
                 n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
                 )),
-    _imp(Pimp<AccountsRepository>::_imp)
+    _imp(p.name(), p)
 {
     _add_metadata_keys();
 }

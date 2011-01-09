@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -88,7 +88,7 @@ PretendFetchVisitor::PretendFetchVisitor(
         const bool f,
         const std::shared_ptr<const URILabel> & n,
         PretendFetchAction & a) :
-    Pimp<PretendFetchVisitor>(e, i, p, d, f, n, a)
+    _imp(e, i, p, d, f, n, a)
 {
 }
 

@@ -2,7 +2,7 @@
 
 /*
  * Copyright (c) 2006, 2007 Danny van Dyk
- * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -113,8 +113,7 @@ namespace paludis
 }
 
 CRANPackageID::CRANPackageID(const Environment * const env, const RepositoryName & r, const FSPath & f) :
-    Pimp<CRANPackageID>(env, r, f),
-    _imp(Pimp<CRANPackageID>::_imp)
+    _imp(env, r, f)
 {
     Context context("When parsing file '" + stringify(f) + "' to create a CRAN Package ID:");
 
@@ -283,8 +282,7 @@ CRANPackageID::CRANPackageID(const Environment * const env, const RepositoryName
 
 CRANPackageID::CRANPackageID(const Environment * const e,
         const RepositoryName & c, const CRANPackageID * const r, const std::string & t) :
-    Pimp<CRANPackageID>(e, c, r, t),
-    _imp(Pimp<CRANPackageID>::_imp)
+    _imp(e, c, r, t)
 {
     Context context("When creating contained ID '" + stringify(t) + "' in " + stringify(*r) + "':");
 

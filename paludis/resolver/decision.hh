@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -59,9 +59,11 @@ namespace paludis
 
         class PALUDIS_VISIBLE NothingNoChangeDecision :
             public Decision,
-            public ImplementAcceptMethods<Decision, NothingNoChangeDecision>,
-            private Pimp<NothingNoChangeDecision>
+            public ImplementAcceptMethods<Decision, NothingNoChangeDecision>
         {
+            private:
+                Pimp<NothingNoChangeDecision> _imp;
+
             public:
                 NothingNoChangeDecision(const Resolvent &, const bool);
                 ~NothingNoChangeDecision();
@@ -74,9 +76,11 @@ namespace paludis
 
         class PALUDIS_VISIBLE ExistingNoChangeDecision :
             public Decision,
-            public ImplementAcceptMethods<Decision, ExistingNoChangeDecision>,
-            private Pimp<ExistingNoChangeDecision>
+            public ImplementAcceptMethods<Decision, ExistingNoChangeDecision>
         {
+            private:
+                Pimp<ExistingNoChangeDecision> _imp;
+
             public:
                 ExistingNoChangeDecision(
                         const Resolvent &,
@@ -146,9 +150,11 @@ namespace paludis
             public ChangeOrRemoveDecision,
             public ImplementAcceptMethods<Decision, ChangesToMakeDecision>,
             public ImplementAcceptMethods<ConfirmableDecision, ChangesToMakeDecision>,
-            public ImplementAcceptMethods<ChangeOrRemoveDecision, ChangesToMakeDecision>,
-            private Pimp<ChangesToMakeDecision>
+            public ImplementAcceptMethods<ChangeOrRemoveDecision, ChangesToMakeDecision>
         {
+            private:
+                Pimp<ChangesToMakeDecision> _imp;
+
             public:
                 ChangesToMakeDecision(
                         const Resolvent &,
@@ -201,9 +207,11 @@ namespace paludis
             public ChangeOrRemoveDecision,
             public ImplementAcceptMethods<Decision, RemoveDecision>,
             public ImplementAcceptMethods<ConfirmableDecision, RemoveDecision>,
-            public ImplementAcceptMethods<ChangeOrRemoveDecision, RemoveDecision>,
-            private Pimp<RemoveDecision>
+            public ImplementAcceptMethods<ChangeOrRemoveDecision, RemoveDecision>
         {
+            private:
+                Pimp<RemoveDecision> _imp;
+
             public:
                 RemoveDecision(
                         const Resolvent &,
@@ -228,9 +236,11 @@ namespace paludis
 
         class PALUDIS_VISIBLE UnableToMakeDecision :
             public Decision,
-            public ImplementAcceptMethods<Decision, UnableToMakeDecision>,
-            private Pimp<UnableToMakeDecision>
+            public ImplementAcceptMethods<Decision, UnableToMakeDecision>
         {
+            private:
+                Pimp<UnableToMakeDecision> _imp;
+
             public:
                 UnableToMakeDecision(
                         const Resolvent &,
@@ -252,9 +262,11 @@ namespace paludis
         class PALUDIS_VISIBLE BreakDecision :
             public ConfirmableDecision,
             public ImplementAcceptMethods<Decision, BreakDecision>,
-            public ImplementAcceptMethods<ConfirmableDecision, BreakDecision>,
-            private Pimp<BreakDecision>
+            public ImplementAcceptMethods<ConfirmableDecision, BreakDecision>
         {
+            private:
+                Pimp<BreakDecision> _imp;
+
             public:
                 BreakDecision(
                         const Resolvent &,

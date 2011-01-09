@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -26,8 +26,6 @@
 #include <deque>
 
 using namespace paludis;
-
-template class Pimp<ActionQueue>;
 
 namespace paludis
 {
@@ -89,7 +87,7 @@ namespace paludis
 }
 
 ActionQueue::ActionQueue(const unsigned n_threads, const bool nice, const bool limit_size) :
-    Pimp<ActionQueue>(n_threads, nice, limit_size)
+    _imp(n_threads, nice, limit_size)
 {
 }
 
@@ -134,4 +132,6 @@ ActionQueue::number_of_threads() const
 {
     return _imp->threads.number_of_threads();
 }
+
+template class Pimp<ActionQueue>;
 

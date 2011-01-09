@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -38,9 +38,11 @@ namespace paludis
 {
     namespace resolver
     {
-        class PALUDIS_VISIBLE Orderer :
-            private Pimp<Orderer>
+        class PALUDIS_VISIBLE Orderer
         {
+            private:
+                Pimp<Orderer> _imp;
+
             private:
                 void _check_self_deps_and_schedule(
                         const NAGIndex &,

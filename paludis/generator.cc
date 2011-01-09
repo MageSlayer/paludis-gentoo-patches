@@ -55,12 +55,12 @@ namespace paludis
 }
 
 Generator::Generator(const std::shared_ptr<const GeneratorHandler> & h) :
-    Pimp<Generator>(h)
+    _imp(h)
 {
 }
 
 Generator::Generator(const Generator & other) :
-    Pimp<Generator>(other._imp->handler)
+    _imp(other._imp->handler)
 {
 }
 

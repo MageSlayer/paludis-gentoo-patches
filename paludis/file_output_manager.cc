@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -66,7 +66,7 @@ namespace paludis
 
 FileOutputManager::FileOutputManager(const FSPath & o, const bool k, const bool l,
         const std::shared_ptr<OutputManager> & m, const std::string & s) :
-    Pimp<FileOutputManager>(o, k, l, m, s)
+    _imp(o, k, l, m, s)
 {
 }
 

@@ -172,7 +172,7 @@ namespace paludis
 }
 
 Deserialiser::Deserialiser(const Environment * const e, std::istream & s) :
-    Pimp<Deserialiser>(e, s)
+    _imp(e, s)
 {
 }
 
@@ -193,7 +193,7 @@ Deserialiser::environment() const
 }
 
 Deserialisation::Deserialisation(const std::string & i, Deserialiser & d) :
-    Pimp<Deserialisation>(d, i)
+    _imp(d, i)
 {
     char c;
     if (! d.stream().get(c))
@@ -328,7 +328,7 @@ Deserialisation::deserialiser() const
 }
 
 Deserialisator::Deserialisator(Deserialisation & d, const std::string & c) :
-    Pimp<Deserialisator>(c)
+    _imp(c)
 {
     if (c != d.class_name())
         throw InternalError(PALUDIS_HERE, "expected class name '" + stringify(c) + "' but got '"

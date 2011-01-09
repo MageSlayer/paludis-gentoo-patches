@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2010 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -38,9 +38,11 @@ namespace paludis
      * \ingroup grperepository
      * \nosubgrouping
      */
-    class EclassMtimes :
-        private Pimp<EclassMtimes>
+    class EclassMtimes
     {
+        private:
+            Pimp<EclassMtimes> _imp;
+
         public:
             ///\name Basic operations
             ///\{

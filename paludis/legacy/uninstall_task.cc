@@ -128,7 +128,7 @@ namespace paludis
 }
 
 UninstallTask::UninstallTask(Environment * const e) :
-    Pimp<UninstallTask>(e)
+    _imp(e)
 {
 }
 

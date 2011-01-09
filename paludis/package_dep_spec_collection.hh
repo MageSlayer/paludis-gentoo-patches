@@ -30,9 +30,11 @@
 
 namespace paludis
 {
-    class PALUDIS_VISIBLE PackageDepSpecCollection :
-        private Pimp<PackageDepSpecCollection>
+    class PALUDIS_VISIBLE PackageDepSpecCollection
     {
+        private:
+            Pimp<PackageDepSpecCollection> _imp;
+
         public:
             explicit PackageDepSpecCollection(const std::shared_ptr<const PackageID> & from_id);
             ~PackageDepSpecCollection();

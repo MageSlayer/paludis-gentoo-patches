@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -62,7 +62,7 @@ namespace paludis
 }
 
 EAPIPhase::EAPIPhase(const std::string & s) :
-    Pimp<EAPIPhase>()
+    _imp()
 {
     Context c("When parsing EAPI phase '" + s + "'");
 
@@ -111,7 +111,7 @@ EAPIPhase::end_commands() const
 }
 
 EAPIPhases::EAPIPhases(const std::string & s) :
-    Pimp<EAPIPhases>()
+    _imp()
 {
     Context c("When parsing EAPI phases '" + s + "'");
 

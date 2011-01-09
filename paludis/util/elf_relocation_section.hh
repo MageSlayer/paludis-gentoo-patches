@@ -98,10 +98,10 @@ namespace paludis
     template <typename ElfType_, typename Relocation_>
     class RelocationSection :
         public Section<ElfType_>,
-        public paludis::ImplementAcceptMethods<Section<ElfType_>, RelocationSection<ElfType_, Relocation_> >,
-        private paludis::Pimp<RelocationSection<ElfType_, Relocation_> >
+        public paludis::ImplementAcceptMethods<Section<ElfType_>, RelocationSection<ElfType_, Relocation_> >
     {
-        using paludis::Pimp<RelocationSection>::_imp;
+        private:
+            Pimp<RelocationSection> _imp;
 
         public:
             RelocationSection(typename ElfType_::Word, const typename ElfType_::SectionHeader &, std::istream &, bool);

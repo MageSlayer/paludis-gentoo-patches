@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -62,7 +62,6 @@ namespace
 }
 
 PbinMerger::PbinMerger(const PbinMergerParams & p) :
-    Pimp<PbinMerger>(p),
     TarMerger(make_named_values<TarMergerParams>(
                 n::compression() = tmc_none,
                 n::environment() = p.environment(),
@@ -77,7 +76,7 @@ PbinMerger::PbinMerger(const PbinMergerParams & p) :
                 n::root() = p.root(),
                 n::tar_file() = p.tar_file()
             )),
-    _imp(Pimp<PbinMerger>::_imp)
+    _imp(p)
 {
 }
 

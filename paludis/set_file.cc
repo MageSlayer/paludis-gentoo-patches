@@ -602,7 +602,7 @@ namespace paludis
 }
 
 SetFile::SetFile(const SetFileParams & p) :
-    Pimp<SetFile>(p)
+    _imp(p)
 {
 }
 

@@ -40,9 +40,11 @@ namespace paludis
      *
      * \ingroup g_package_database
      */
-    class PALUDIS_VISIBLE FuzzyCandidatesFinder :
-        private Pimp<FuzzyCandidatesFinder>
+    class PALUDIS_VISIBLE FuzzyCandidatesFinder
     {
+        private:
+            Pimp<FuzzyCandidatesFinder> _imp;
+
         public:
             ///\name Basic Operations
             ///\{
@@ -70,9 +72,11 @@ namespace paludis
      *
      * \ingroup g_package_database
      */
-    class PALUDIS_VISIBLE FuzzyRepositoriesFinder :
-        private Pimp<FuzzyRepositoriesFinder>
+    class PALUDIS_VISIBLE FuzzyRepositoriesFinder
     {
+        private:
+            Pimp<FuzzyRepositoriesFinder> _imp;
+
         public:
             ///\name Basic Operations
             ///\{

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -159,8 +159,7 @@ namespace paludis
 
 DepKey::DepKey(const Environment * const e, const std::string & r, const std::string & h, const std::string & v,
         const std::shared_ptr<const DependenciesLabelSequence> & s, const MetadataKeyType t) :
-    Pimp<DepKey>(e, v, s, r, h, t),
-    _imp(Pimp<DepKey>::_imp)
+    _imp(e, v, s, r, h, t)
 {
 }
 

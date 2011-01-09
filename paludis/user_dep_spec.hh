@@ -66,9 +66,11 @@ namespace paludis
      * \ingroup g_dep_spec
      */
     class PALUDIS_VISIBLE UserKeyRequirement :
-        public AdditionalPackageDepSpecRequirement,
-        private Pimp<UserKeyRequirement>
+        public AdditionalPackageDepSpecRequirement
     {
+        private:
+            Pimp<UserKeyRequirement> _imp;
+
         public:
             ///\name Basic operations
             ///\{

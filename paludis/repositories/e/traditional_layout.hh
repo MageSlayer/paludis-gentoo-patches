@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  * Copyright (c) 2006 Danny van Dyk
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -35,10 +35,11 @@ namespace paludis
          * \nosubgrouping
          */
         class PALUDIS_VISIBLE TraditionalLayout :
-            public Layout,
-            private Pimp<TraditionalLayout>
+            public Layout
         {
             private:
+                Pimp<TraditionalLayout> _imp;
+
                 void need_category_names() const;
                 void need_category_names_collection() const;
                 void need_package_ids(const QualifiedPackageName &) const;

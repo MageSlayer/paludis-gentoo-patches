@@ -62,7 +62,7 @@ namespace paludis
 }
 
 Constraints::Constraints() :
-    Pimp<Constraints>()
+    _imp()
 {
 }
 

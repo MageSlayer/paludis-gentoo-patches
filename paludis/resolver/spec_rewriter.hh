@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -48,9 +48,11 @@ namespace paludis
             const std::shared_ptr<const DependencySpecTree> as_spec_tree() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
-        class PALUDIS_VISIBLE SpecRewriter :
-            private Pimp<SpecRewriter>
+        class PALUDIS_VISIBLE SpecRewriter
         {
+            private:
+                Pimp<SpecRewriter> _imp;
+
             private:
                 void _need_rewrites() const;
 

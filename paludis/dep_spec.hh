@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -66,9 +66,11 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE DepSpec :
-        private Pimp<DepSpec>,
         public virtual Cloneable<DepSpec>
     {
+        private:
+            Pimp<DepSpec> _imp;
+
         protected:
             DepSpec();
 
@@ -170,13 +172,12 @@ namespace paludis
      */
     class PALUDIS_VISIBLE ConditionalDepSpec :
         public DepSpec,
-        private Pimp<ConditionalDepSpec>,
         public CloneUsingThis<DepSpec, ConditionalDepSpec>
     {
         friend std::ostream & operator<< (std::ostream &, const ConditionalDepSpec &);
 
         private:
-            Pimp<ConditionalDepSpec>::ImpPtr & _imp;
+            Pimp<ConditionalDepSpec> _imp;
 
             std::string _as_string() const;
 
@@ -315,7 +316,6 @@ namespace paludis
      */
     class PALUDIS_VISIBLE PackageDepSpec :
         public StringDepSpec,
-        private Pimp<PackageDepSpec>,
         public CloneUsingThis<DepSpec, PackageDepSpec>
     {
         friend std::ostream & operator<< (std::ostream &, const PackageDepSpec &);
@@ -324,7 +324,7 @@ namespace paludis
             const PackageDepSpec & operator= (const PackageDepSpec &);
             std::string _as_string() const;
 
-            Pimp<PackageDepSpec>::ImpPtr & _imp;
+            Pimp<PackageDepSpec> _imp;
 
         public:
             ///\name Basic operations
@@ -646,11 +646,10 @@ namespace paludis
      */
     template <typename Labels_>
     class PALUDIS_VISIBLE LabelsDepSpec :
-        public DepSpec,
-        private Pimp<LabelsDepSpec<Labels_> >
+        public DepSpec
     {
         private:
-            typename Pimp<LabelsDepSpec>::ImpPtr & _imp;
+            Pimp<LabelsDepSpec> _imp;
 
         public:
             ///\name Basic operations

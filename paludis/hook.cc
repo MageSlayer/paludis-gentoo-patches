@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  * Copyright (c) 2007 Piotr Jaroszyński
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -63,12 +63,12 @@ namespace paludis
 }
 
 Hook::AllowedOutputValues::AllowedOutputValues() :
-    Pimp<Hook::AllowedOutputValues>()
+    _imp()
 {
 }
 
 Hook::AllowedOutputValues::AllowedOutputValues(const AllowedOutputValues & other) :
-    Pimp<Hook::AllowedOutputValues>()
+    _imp()
 {
     _imp->allowed_values = other._imp->allowed_values;
 }
@@ -86,13 +86,13 @@ Hook::AllowedOutputValues::operator() (const std::string & v) const
 }
 
 Hook::Hook(const std::string & n) :
-    Pimp<Hook>(n, std::map<std::string, std::string>(), std::set<std::string>()),
+    _imp(n, std::map<std::string, std::string>(), std::set<std::string>()),
     output_dest(hod_stdout)
 {
 }
 
 Hook::Hook(const Hook & h) :
-    Pimp<Hook>(h._imp->name, h._imp->extra_env, h._imp->allowed_values),
+    _imp(h._imp->name, h._imp->extra_env, h._imp->allowed_values),
     output_dest(h.output_dest)
 {
 }

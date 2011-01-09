@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -64,8 +64,7 @@ namespace paludis
 FakeRepositoryBase::FakeRepositoryBase(const Environment * const e,
         const RepositoryName & our_name, const RepositoryCapabilities & caps) :
     Repository(e, our_name, caps),
-    Pimp<FakeRepositoryBase>(e),
-    _imp(Pimp<FakeRepositoryBase>::_imp)
+    _imp(e)
 {
 }
 

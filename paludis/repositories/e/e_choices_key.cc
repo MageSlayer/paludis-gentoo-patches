@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -92,7 +92,7 @@ EChoicesKey::EChoicesKey(
         const std::string & r, const std::string & h, const MetadataKeyType t,
         const std::shared_ptr<const ERepository> & p,
         const std::shared_ptr<const Map<ChoiceNameWithPrefix, std::string> > & d) :
-    Pimp<EChoicesKey>(e, i, p, d, r, h, t)
+    _imp(e, i, p, d, r, h, t)
 {
 }
 

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -35,9 +35,11 @@
 namespace paludis
 {
     class PALUDIS_VISIBLE IPCOutputManager :
-        private Pimp<IPCOutputManager>,
         public OutputManager
     {
+        private:
+            Pimp<IPCOutputManager> _imp;
+
         public:
             IPCOutputManager(
                     const int pipe_read_fd,
@@ -55,10 +57,11 @@ namespace paludis
             virtual void message(const MessageType, const std::string &);
     };
 
-    class PALUDIS_VISIBLE IPCInputManager :
-        private Pimp<IPCInputManager>
+    class PALUDIS_VISIBLE IPCInputManager
     {
         private:
+            Pimp<IPCInputManager> _imp;
+
             std::string _pipe_command_handler(const std::string &);
             void _copy_thread();
 
@@ -87,9 +90,11 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
-    class PALUDIS_VISIBLE OutputManagerFromIPC :
-        private Pimp<OutputManagerFromIPC>
+    class PALUDIS_VISIBLE OutputManagerFromIPC
     {
+        private:
+            Pimp<OutputManagerFromIPC> _imp;
+
         public:
             OutputManagerFromIPC(
                     const Environment * const,

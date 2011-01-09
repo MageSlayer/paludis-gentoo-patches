@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2010 Ciaran McCreesh
+ * Copyright (c) 2008, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -32,10 +32,11 @@ namespace paludis
 {
     namespace unavailable_repository
     {
-        class PALUDIS_VISIBLE UnavailableRepositoryStore :
-            private Pimp<UnavailableRepositoryStore>
+        class PALUDIS_VISIBLE UnavailableRepositoryStore
         {
             private:
+                Pimp<UnavailableRepositoryStore> _imp;
+
                 void _populate(const Environment * const env, const FSPath & f);
                 void _populate_one(const Environment * const env, const FSPath & f);
 

@@ -75,9 +75,11 @@ namespace paludis
         };
 
         class PALUDIS_VISIBLE PythonCompositeDepSpec :
-            public PythonDepSpec,
-            private Pimp<PythonCompositeDepSpec>
+            public PythonDepSpec
         {
+            private:
+                Pimp<PythonCompositeDepSpec> _imp;
+
             protected:
                 PythonCompositeDepSpec();
 
@@ -157,9 +159,11 @@ namespace paludis
 
         class PALUDIS_VISIBLE PythonPackageDepSpec :
             public PythonStringDepSpec,
-            private Pimp<PythonPackageDepSpec>,
             public ImplementAcceptMethods<PythonDepSpec, PythonPackageDepSpec>
         {
+            private:
+                Pimp<PythonPackageDepSpec> _imp;
+
             public:
                 PythonPackageDepSpec(const PackageDepSpec &);
                 PythonPackageDepSpec(const PythonPackageDepSpec &);

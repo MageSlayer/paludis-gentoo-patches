@@ -132,7 +132,7 @@ namespace paludis
 }
 
 FuzzyCandidatesFinder::FuzzyCandidatesFinder(const Environment & e, const std::string & name, const Filter & filter) :
-    Pimp<FuzzyCandidatesFinder>()
+    _imp()
 {
     Generator g = generator::All();
     std::string package(name);
@@ -193,7 +193,7 @@ namespace paludis
 }
 
 FuzzyRepositoriesFinder::FuzzyRepositoriesFinder(const Environment & e, const std::string & name) :
-    Pimp<FuzzyRepositoriesFinder>()
+    _imp()
 {
     DamerauLevenshtein distance_calculator(tolower_0_cost(name));
 

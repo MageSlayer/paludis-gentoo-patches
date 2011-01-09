@@ -104,7 +104,7 @@ namespace
 }
 
 UninstallList::UninstallList(const Environment * const env, const UninstallListOptions & o) :
-    Pimp<UninstallList>(env, o),
+    _imp(env, o),
     options(_imp->options)
 {
 }

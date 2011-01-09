@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -56,7 +56,7 @@ namespace paludis
 }
 
 DepSpec::DepSpec() :
-    Pimp<DepSpec>()
+    _imp()
 {
 }
 
@@ -127,8 +127,7 @@ namespace paludis
 }
 
 ConditionalDepSpec::ConditionalDepSpec(const std::shared_ptr<const ConditionalDepSpecData> & d) :
-    Pimp<ConditionalDepSpec>(d),
-    _imp(Pimp<ConditionalDepSpec>::_imp)
+    _imp(d)
 {
 }
 
@@ -145,9 +144,8 @@ namespace
 ConditionalDepSpec::ConditionalDepSpec(const ConditionalDepSpec & other) :
     Cloneable<DepSpec>(),
     DepSpec(),
-    Pimp<ConditionalDepSpec>(other._imp->data),
     CloneUsingThis<DepSpec, ConditionalDepSpec>(other),
-    _imp(Pimp<ConditionalDepSpec>::_imp)
+    _imp(other._imp->data)
 {
     set_annotations(other.maybe_annotations());
 }
@@ -485,8 +483,7 @@ namespace paludis
 
 template <typename T_>
 LabelsDepSpec<T_>::LabelsDepSpec() :
-    Pimp<LabelsDepSpec<T_> >(),
-    _imp(Pimp<LabelsDepSpec<T_> >::_imp)
+    _imp()
 {
 }
 
@@ -546,8 +543,7 @@ namespace paludis
 PackageDepSpec::PackageDepSpec(const std::shared_ptr<const PackageDepSpecData> & d) :
     Cloneable<DepSpec>(),
     StringDepSpec(d->as_string()),
-    Pimp<PackageDepSpec>(d, std::shared_ptr<const DepTag>()),
-    _imp(Pimp<PackageDepSpec>::_imp)
+    _imp(d, std::shared_ptr<const DepTag>())
 {
 }
 
@@ -558,9 +554,8 @@ PackageDepSpec::~PackageDepSpec()
 PackageDepSpec::PackageDepSpec(const PackageDepSpec & d) :
     Cloneable<DepSpec>(d),
     StringDepSpec(d._imp->data->as_string()),
-    Pimp<PackageDepSpec>(d._imp->data, d._imp->tag),
     CloneUsingThis<DepSpec, PackageDepSpec>(d),
-    _imp(Pimp<PackageDepSpec>::_imp)
+    _imp(d._imp->data, d._imp->tag)
 {
     set_annotations(d.maybe_annotations());
 }

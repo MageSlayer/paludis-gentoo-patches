@@ -137,7 +137,7 @@ namespace paludis
 }
 
 EKeywordsKeyStore::EKeywordsKeyStore() :
-    Pimp<EKeywordsKeyStore>()
+    _imp()
 {
 }
 

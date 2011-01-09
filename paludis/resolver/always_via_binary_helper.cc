@@ -52,7 +52,7 @@ namespace paludis
 }
 
 AlwaysViaBinaryHelper::AlwaysViaBinaryHelper(const Environment * const e) :
-    Pimp<AlwaysViaBinaryHelper>(e)
+    _imp(e)
 {
 }
 

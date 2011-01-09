@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -50,7 +50,7 @@ namespace paludis
 }
 
 TargetReason::TargetReason(const std::string & x) :
-    Pimp<TargetReason>(x)
+    _imp(x)
 {
 }
 
@@ -101,7 +101,7 @@ DependencyReason::DependencyReason(const std::shared_ptr<const PackageID> & i,
         const Resolvent & r,
         const SanitisedDependency & d,
         const bool a) :
-    Pimp<DependencyReason>(i, c, r, d, a)
+    _imp(i, c, r, d, a)
 {
 }
 
@@ -166,7 +166,7 @@ namespace paludis
 }
 
 DependentReason::DependentReason(const ChangeByResolvent & i) :
-    Pimp<DependentReason>(i)
+    _imp(i)
 {
 }
 
@@ -203,7 +203,7 @@ namespace paludis
 }
 
 WasUsedByReason::WasUsedByReason(const std::shared_ptr<const ChangeByResolventSequence> & i) :
-    Pimp<WasUsedByReason>(i)
+    _imp(i)
 {
 }
 
@@ -242,7 +242,7 @@ namespace paludis
 }
 
 PresetReason::PresetReason(const std::string & m, const std::shared_ptr<const Reason> & r) :
-    Pimp<PresetReason>(m, r)
+    _imp(m, r)
 {
 }
 
@@ -288,7 +288,7 @@ namespace paludis
 }
 
 SetReason::SetReason(const SetName & s, const std::shared_ptr<const Reason> & r) :
-    Pimp<SetReason>(s, r)
+    _imp(s, r)
 {
 }
 
@@ -334,7 +334,7 @@ namespace paludis
 }
 
 LikeOtherDestinationTypeReason::LikeOtherDestinationTypeReason(const Resolvent & s, const std::shared_ptr<const Reason> & r) :
-    Pimp<LikeOtherDestinationTypeReason>(s, r)
+    _imp(s, r)
 {
 }
 
@@ -378,7 +378,7 @@ namespace paludis
 }
 
 ViaBinaryReason::ViaBinaryReason(const Resolvent & r) :
-    Pimp<ViaBinaryReason>(r)
+    _imp(r)
 {
 }
 

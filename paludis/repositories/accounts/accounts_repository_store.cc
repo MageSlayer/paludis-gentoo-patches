@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -87,7 +87,7 @@ AccountsRepositoryStore::AccountsRepositoryStore(
         const Environment * const env,
         const RepositoryName & r,
         const bool installed) :
-    Pimp<AccountsRepositoryStore>(env, r, installed)
+    _imp(env, r, installed)
 {
     _load(r);
 }

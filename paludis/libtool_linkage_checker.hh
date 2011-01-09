@@ -26,9 +26,11 @@
 namespace paludis
 {
     class LibtoolLinkageChecker :
-        public LinkageChecker,
-        private Pimp<LibtoolLinkageChecker>
+        public LinkageChecker
     {
+        private:
+            Pimp<LibtoolLinkageChecker> _imp;
+
         public:
             LibtoolLinkageChecker(const FSPath &);
             virtual ~LibtoolLinkageChecker();

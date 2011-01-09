@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -60,13 +60,13 @@ namespace paludis
 }
 
 FSPath::FSPath(const std::string & path) :
-    Pimp<FSPath>(path)
+    _imp(path)
 {
     _normalise();
 }
 
 FSPath::FSPath(const FSPath & other) :
-    Pimp<FSPath>(other._imp->path)
+    _imp(other._imp->path)
 {
 }
 

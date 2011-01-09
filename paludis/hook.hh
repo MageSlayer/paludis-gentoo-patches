@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  * Copyright (c) 2007 Piotr Jaroszyński
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -71,9 +71,11 @@ namespace paludis
      * \ingroup g_hooks
      * \nosubgrouping
      */
-    class PALUDIS_VISIBLE Hook :
-        private Pimp<Hook>
+    class PALUDIS_VISIBLE Hook
     {
+        private:
+            Pimp<Hook> _imp;
+
         public:
             ///\name Basic operations
             ///\{
@@ -129,10 +131,12 @@ namespace paludis
      * \since 0.26
      * \nosubgrouping
      */
-    class PALUDIS_VISIBLE Hook::AllowedOutputValues :
-        private Pimp<Hook::AllowedOutputValues>
+    class PALUDIS_VISIBLE Hook::AllowedOutputValues
     {
         friend class Hook;
+
+        private:
+            Pimp<Hook::AllowedOutputValues> _imp;
 
         public:
             ///\name Basic operations

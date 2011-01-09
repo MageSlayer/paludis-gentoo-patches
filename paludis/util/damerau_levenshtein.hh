@@ -37,9 +37,11 @@ namespace paludis
      *
      * \ingroup g_utils
      */
-    class PALUDIS_VISIBLE DamerauLevenshtein :
-        private Pimp<DamerauLevenshtein>
+    class PALUDIS_VISIBLE DamerauLevenshtein
     {
+        private:
+            Pimp<DamerauLevenshtein> _imp;
+
         public:
             ///\name Basic Operations
             ///\{

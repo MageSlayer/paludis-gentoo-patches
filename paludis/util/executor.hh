@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -43,10 +43,11 @@ namespace paludis
             virtual void post_execute_exclusive() = 0;
     };
 
-    class PALUDIS_VISIBLE Executor :
-        private Pimp<Executor>
+    class PALUDIS_VISIBLE Executor
     {
         private:
+            Pimp<Executor> _imp;
+
             void _one(const std::shared_ptr<Executive>);
 
         public:

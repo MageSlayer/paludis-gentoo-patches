@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -35,9 +35,11 @@ namespace paludis
          * \ingroup grperepository
          * \ingroup grpeapi
          */
-        class EAPIPhase :
-            private Pimp<EAPIPhase>
+        class EAPIPhase
         {
+            private:
+                Pimp<EAPIPhase> _imp;
+
             public:
                 ///\name Basic operations
                 ///\{
@@ -68,9 +70,11 @@ namespace paludis
          * \ingroup grperepository
          * \ingroup grpeapi
          */
-        class EAPIPhases :
-            private Pimp<EAPIPhases>
+        class EAPIPhases
         {
+            private:
+                Pimp<EAPIPhases> _imp;
+
             public:
                 ///\name Basic operations
                 ///\{

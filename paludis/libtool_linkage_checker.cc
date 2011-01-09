@@ -72,7 +72,7 @@ namespace
 }
 
 LibtoolLinkageChecker::LibtoolLinkageChecker(const FSPath & root) :
-    Pimp<LibtoolLinkageChecker>(root)
+    _imp(root)
 {
 }
 

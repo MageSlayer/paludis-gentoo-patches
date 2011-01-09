@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -90,7 +90,6 @@ RepositoryRepositoryConfigurationError::RepositoryRepositoryConfigurationError(c
 }
 
 RepositoryRepository::RepositoryRepository(const RepositoryRepositoryParams & p) :
-    Pimp<RepositoryRepository>(this, p),
     Repository(
             p.environment(),
             p.name(),
@@ -102,7 +101,7 @@ RepositoryRepository::RepositoryRepository(const RepositoryRepositoryParams & p)
                 n::provides_interface() = static_cast<RepositoryProvidesInterface *>(0),
                 n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
                 )),
-    _imp(Pimp<RepositoryRepository>::_imp)
+    _imp(this, p)
 {
     _add_metadata_keys();
 }

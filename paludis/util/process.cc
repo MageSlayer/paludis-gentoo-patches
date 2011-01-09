@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -70,17 +70,17 @@ namespace paludis
 }
 
 ProcessCommand::ProcessCommand(const std::initializer_list<std::string> & i) :
-    Pimp<ProcessCommand>(std::vector<std::string>(i), "")
+    _imp(std::vector<std::string>(i), "")
 {
 }
 
 ProcessCommand::ProcessCommand(const std::string & s) :
-    Pimp<ProcessCommand>(std::vector<std::string>(), s)
+    _imp(std::vector<std::string>(), s)
 {
 }
 
 ProcessCommand::ProcessCommand(ProcessCommand && other) :
-    Pimp<ProcessCommand>(std::move(other._imp->args), other._imp->args_string)
+    _imp(std::move(other._imp->args), other._imp->args_string)
 {
 }
 
@@ -507,7 +507,7 @@ namespace paludis
 }
 
 Process::Process(ProcessCommand && c) :
-    Pimp<Process>(std::move(c))
+    _imp(std::move(c))
 {
 }
 
@@ -965,7 +965,7 @@ namespace paludis
 }
 
 RunningProcessHandle::RunningProcessHandle(pid_t p, std::unique_ptr<RunningProcessThread> && t) :
-    Pimp<RunningProcessHandle>(p, std::move(t))
+    _imp(p, std::move(t))
 {
 }
 
@@ -979,7 +979,7 @@ RunningProcessHandle::~RunningProcessHandle()
 }
 
 RunningProcessHandle::RunningProcessHandle(RunningProcessHandle && other) :
-    Pimp<RunningProcessHandle>(other._imp->pid, std::move(other._imp->thread))
+    _imp(other._imp->pid, std::move(other._imp->thread))
 {
     _imp->pid = -1;
 }

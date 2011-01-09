@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -53,7 +53,6 @@ namespace paludis
 }
 
 FakeRepository::FakeRepository(const FakeRepositoryParams & params) :
-    Pimp<FakeRepository>(),
     FakeRepositoryBase(params.environment(), params.name(), make_named_values<RepositoryCapabilities>(
                 n::destination_interface() = static_cast<RepositoryDestinationInterface *>(0),
                 n::environment_variable_interface() = static_cast<RepositoryEnvironmentVariableInterface *>(0),
@@ -63,7 +62,7 @@ FakeRepository::FakeRepository(const FakeRepositoryParams & params) :
                 n::virtuals_interface() = (*DistributionData::get_instance()->distribution_from_string(
                             params.environment()->distribution())).support_old_style_virtuals() ? this : 0
                 )),
-            _imp(Pimp<FakeRepository>::_imp)
+    _imp()
 {
     add_metadata_key(_imp->format_key);
 }

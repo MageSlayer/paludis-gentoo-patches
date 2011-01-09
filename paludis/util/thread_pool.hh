@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -42,9 +42,11 @@ namespace paludis
      * \nosubgrouping
      * \since 0.26
      */
-    class PALUDIS_VISIBLE ThreadPool :
-        private Pimp<ThreadPool>
+    class PALUDIS_VISIBLE ThreadPool
     {
+        private:
+            Pimp<ThreadPool> _imp;
+
         public:
             ///\name Basic operations
             ///\{
@@ -64,6 +66,8 @@ namespace paludis
              */
             unsigned number_of_threads() const;
     };
+
+    extern template class Pimp<ThreadPool>;
 }
 
 #endif

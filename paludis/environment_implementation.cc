@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -113,8 +113,8 @@ namespace paludis
 
         mutable Mutex sets_mutex;
         mutable bool loaded_sets;
-        std::shared_ptr<SetNameSet> set_names;
-        SetsStore sets;
+        mutable std::shared_ptr<SetNameSet> set_names;
+        mutable SetsStore sets;
 
         Imp() :
             loaded_sets(false)
@@ -124,8 +124,7 @@ namespace paludis
 }
 
 EnvironmentImplementation::EnvironmentImplementation() :
-    Pimp<EnvironmentImplementation>(),
-    _imp(Pimp<EnvironmentImplementation>::_imp)
+    _imp()
 {
 }
 

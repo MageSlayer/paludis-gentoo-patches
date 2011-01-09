@@ -265,7 +265,7 @@ ElfObject<ElfType_>::is_valid_elf(std::istream & stream)
 
 template <typename ElfType_>
 ElfObject<ElfType_>::ElfObject(std::istream & stream) :
-    Pimp<ElfObject>()
+    _imp()
 {
     try
     {

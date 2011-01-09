@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -48,13 +48,14 @@ namespace paludis
      * \ingroup g_log
      */
     class PALUDIS_VISIBLE Log :
-        public Singleton<Log>,
-        private Pimp<Log>
+        public Singleton<Log>
     {
         friend class Singleton<Log>;
         friend class LogMessageHandler;
 
         private:
+            Pimp<Log> _imp;
+
             Log();
 
             void _message(const std::string & id, const LogLevel, const LogContext, const std::string &);
@@ -145,6 +146,8 @@ namespace paludis
                 return *this;
             }
     };
+
+    extern template class Pimp<Log>;
 }
 
 #endif

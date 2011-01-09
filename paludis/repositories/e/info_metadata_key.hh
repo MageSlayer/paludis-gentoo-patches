@@ -15,11 +15,10 @@ namespace paludis
     namespace erepository
     {
         class InfoPkgsMetadataKey :
-            public MetadataSectionKey,
-            private Pimp<InfoPkgsMetadataKey>
+            public MetadataSectionKey
         {
             private:
-                Pimp<InfoPkgsMetadataKey>::ImpPtr & _imp;
+                Pimp<InfoPkgsMetadataKey> _imp;
 
             protected:
                 virtual void need_keys_added() const;
@@ -36,9 +35,11 @@ namespace paludis
         };
 
         class InfoVarsMetadataKey :
-            public MetadataCollectionKey<Set<std::string> >,
-            private Pimp<InfoVarsMetadataKey>
+            public MetadataCollectionKey<Set<std::string> >
         {
+            private:
+                Pimp<InfoVarsMetadataKey> _imp;
+
             public:
                 InfoVarsMetadataKey(const std::shared_ptr<const FSPathSequence> &);
                 ~InfoVarsMetadataKey();

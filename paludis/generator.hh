@@ -54,9 +54,11 @@ namespace paludis
      *
      * \ingroup g_selections
      */
-    class PALUDIS_VISIBLE Generator :
-        private Pimp<Generator>
+    class PALUDIS_VISIBLE Generator
     {
+        private:
+            Pimp<Generator> _imp;
+
         protected:
             Generator(const std::shared_ptr<const GeneratorHandler> &);
 

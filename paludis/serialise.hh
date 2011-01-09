@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -84,9 +84,11 @@ namespace paludis
             void escape_write(const std::string &);
     };
 
-    class PALUDIS_VISIBLE Deserialiser :
-        private Pimp<Deserialiser>
+    class PALUDIS_VISIBLE Deserialiser
     {
+        private:
+            Pimp<Deserialiser> _imp;
+
         public:
             Deserialiser(const Environment * const, std::istream &);
             ~Deserialiser();
@@ -96,9 +98,11 @@ namespace paludis
             std::istream & stream() PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
-    class PALUDIS_VISIBLE Deserialisation :
-        private Pimp<Deserialisation>
+    class PALUDIS_VISIBLE Deserialisation
     {
+        private:
+            Pimp<Deserialisation> _imp;
+
         public:
             Deserialisation(
                     const std::string & class_name,
@@ -122,9 +126,11 @@ namespace paludis
             ConstIterator end_children() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
-    class PALUDIS_VISIBLE Deserialisator :
-        private Pimp<Deserialisator>
+    class PALUDIS_VISIBLE Deserialisator
     {
+        private:
+            Pimp<Deserialisator> _imp;
+
         public:
             Deserialisator(
                     Deserialisation &,

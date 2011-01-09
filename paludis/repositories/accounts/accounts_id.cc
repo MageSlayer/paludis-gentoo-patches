@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -122,8 +122,7 @@ AccountsID::AccountsID(const Environment * const e,
         const QualifiedPackageName & q, const RepositoryName & r,
         const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > & f, const FSPath & l,
         const bool u, const bool m) :
-    Pimp<AccountsID>(e, q, r, f, l, u, m),
-    _imp(Pimp<AccountsID>::_imp)
+    _imp(e, q, r, f, l, u, m)
 {
     if (_imp->mask)
         add_mask(_imp->mask);

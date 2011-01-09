@@ -64,7 +64,7 @@ namespace paludis
 }
 
 PackageMaskConf::PackageMaskConf(const PaludisEnvironment * const e) :
-    Pimp<PackageMaskConf>(e)
+    _imp(e)
 {
 }
 

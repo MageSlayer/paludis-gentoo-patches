@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -66,9 +66,11 @@ namespace paludis
      * \ingroup g_ndbam
      * \since 0.26
      */
-    class PALUDIS_VISIBLE NDBAM :
-        private Pimp<NDBAM>
+    class PALUDIS_VISIBLE NDBAM
     {
+        private:
+            Pimp<NDBAM> _imp;
+
         public:
             ///\name Basic operations
             ///\{

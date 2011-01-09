@@ -1061,7 +1061,7 @@ DepList::AddVisitor::visit(const DependencySpecTree::NodeType<DependenciesLabels
 }
 
 DepList::DepList(const Environment * const e, const DepListOptions & o) :
-    Pimp<DepList>(e, o)
+    _imp(e, o)
 {
 }
 

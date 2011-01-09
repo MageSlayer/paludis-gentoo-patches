@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -52,10 +52,12 @@ namespace paludis
         };
 
         class TargetReason :
-            private Pimp<TargetReason>,
             public Reason,
             public ImplementAcceptMethods<Reason, TargetReason>
         {
+            private:
+                Pimp<TargetReason> _imp;
+
             public:
                 TargetReason(const std::string &);
                 ~TargetReason();
@@ -66,10 +68,12 @@ namespace paludis
         };
 
         class DependencyReason :
-            private Pimp<DependencyReason>,
             public Reason,
             public ImplementAcceptMethods<Reason, DependencyReason>
         {
+            private:
+                Pimp<DependencyReason> _imp;
+
             public:
                 DependencyReason(
                         const std::shared_ptr<const PackageID> & id,
@@ -90,10 +94,12 @@ namespace paludis
         };
 
         class DependentReason :
-            private Pimp<DependentReason>,
             public Reason,
             public ImplementAcceptMethods<Reason, DependentReason>
         {
+            private:
+                Pimp<DependentReason> _imp;
+
             public:
                 DependentReason(const ChangeByResolvent &);
                 ~DependentReason();
@@ -104,10 +110,12 @@ namespace paludis
         };
 
         class WasUsedByReason :
-            private Pimp<WasUsedByReason>,
             public Reason,
             public ImplementAcceptMethods<Reason, WasUsedByReason>
         {
+            private:
+                Pimp<WasUsedByReason> _imp;
+
             public:
                 WasUsedByReason(const std::shared_ptr<const ChangeByResolventSequence> & ids);
                 ~WasUsedByReason();
@@ -118,10 +126,12 @@ namespace paludis
         };
 
         class PresetReason :
-            private Pimp<PresetReason>,
             public Reason,
             public ImplementAcceptMethods<Reason, PresetReason>
         {
+            private:
+                Pimp<PresetReason> _imp;
+
             public:
                 PresetReason(
                         const std::string &,
@@ -137,9 +147,11 @@ namespace paludis
 
         class SetReason :
             public Reason,
-            private Pimp<SetReason>,
             public ImplementAcceptMethods<Reason, SetReason>
         {
+            private:
+                Pimp<SetReason> _imp;
+
             public:
                 SetReason(const SetName &, const std::shared_ptr<const Reason> &);
                 ~SetReason();
@@ -152,9 +164,11 @@ namespace paludis
 
         class LikeOtherDestinationTypeReason :
             public Reason,
-            private Pimp<LikeOtherDestinationTypeReason>,
             public ImplementAcceptMethods<Reason, LikeOtherDestinationTypeReason>
         {
+            private:
+                Pimp<LikeOtherDestinationTypeReason> _imp;
+
             public:
                 LikeOtherDestinationTypeReason(const Resolvent &, const std::shared_ptr<const Reason> &);
                 ~LikeOtherDestinationTypeReason();
@@ -167,9 +181,11 @@ namespace paludis
 
         class ViaBinaryReason :
             public Reason,
-            private Pimp<ViaBinaryReason>,
             public ImplementAcceptMethods<Reason, ViaBinaryReason>
         {
+            private:
+                Pimp<ViaBinaryReason> _imp;
+
             public:
                 ViaBinaryReason(const Resolvent &);
                 ~ViaBinaryReason();

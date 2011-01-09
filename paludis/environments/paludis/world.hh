@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -32,10 +32,11 @@ namespace paludis
 {
     namespace paludis_environment
     {
-        class PALUDIS_VISIBLE World :
-            private Pimp<World>
+        class PALUDIS_VISIBLE World
         {
             private:
+                Pimp<World> _imp;
+
                 bool _add_string_to_world(const std::string &) const;
                 bool _remove_string_from_world(const std::string &) const;
 

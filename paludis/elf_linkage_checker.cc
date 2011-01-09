@@ -133,7 +133,7 @@ namespace paludis
 }
 
 ElfLinkageChecker::ElfLinkageChecker(const FSPath & root, const std::shared_ptr<const Sequence<std::string>> & libraries) :
-    Pimp<ElfLinkageChecker>(root, libraries)
+    _imp(root, libraries)
 {
 }
 

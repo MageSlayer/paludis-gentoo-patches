@@ -50,7 +50,7 @@ namespace paludis
 }
 
 OrderEarlyHelper::OrderEarlyHelper(const Environment * const e) :
-    Pimp<OrderEarlyHelper>(e)
+    _imp(e)
 {
 }
 

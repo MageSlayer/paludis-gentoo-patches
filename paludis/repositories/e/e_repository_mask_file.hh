@@ -37,9 +37,11 @@ namespace paludis
          *
          * \ingroup grperepository
          */
-        class PALUDIS_VISIBLE MaskFile :
-            private Pimp<MaskFile>
+        class PALUDIS_VISIBLE MaskFile
         {
+            private:
+                Pimp<MaskFile> _imp;
+
             public:
                 ///\name Basic operations
                 ///\{

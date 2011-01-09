@@ -269,7 +269,7 @@ namespace paludis
         std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > binary_keywords_filter;
         std::shared_ptr<const MetadataValueKey<FSPath> > accounts_repository_data_location_key;
         std::shared_ptr<const MetadataValueKey<FSPath> > e_updates_location_key;
-        std::shared_ptr<const MetadataValueKey<std::string> > accept_keywords_key;
+        mutable std::shared_ptr<const MetadataValueKey<std::string> > accept_keywords_key;
         std::shared_ptr<Map<std::string, std::string> > sync_hosts;
         std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > > sync_host_key;
         std::list<std::shared_ptr<const MetadataKey> > about_keys;
@@ -528,8 +528,7 @@ ERepository::ERepository(const ERepositoryParams & p) :
                 n::provides_interface() = static_cast<RepositoryProvidesInterface *>(0),
                 n::virtuals_interface() = (*DistributionData::get_instance()->distribution_from_string(p.environment()->distribution())).support_old_style_virtuals() ? this : 0
                 )),
-    Pimp<ERepository>(this, p),
-    _imp(Pimp<ERepository>::_imp)
+    _imp(this, p)
 {
     _add_metadata_keys();
 }

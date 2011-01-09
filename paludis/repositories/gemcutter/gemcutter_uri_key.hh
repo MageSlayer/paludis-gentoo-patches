@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -28,11 +28,10 @@ namespace paludis
     namespace gemcutter_repository
     {
         class GemcutterURIKey :
-            public MetadataSpecTreeKey<SimpleURISpecTree>,
-            private Pimp<GemcutterURIKey>
+            public MetadataSpecTreeKey<SimpleURISpecTree>
         {
             private:
-                Pimp<GemcutterURIKey>::ImpPtr & _imp;
+                Pimp<GemcutterURIKey> _imp;
 
             public:
                 GemcutterURIKey(

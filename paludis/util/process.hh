@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -46,9 +46,11 @@ namespace paludis
             ProcessError(const std::string &) throw ();
     };
 
-    class PALUDIS_VISIBLE ProcessCommand :
-        private Pimp<ProcessCommand>
+    class PALUDIS_VISIBLE ProcessCommand
     {
+        private:
+            Pimp<ProcessCommand> _imp;
+
         public:
             /**
              * List of arguments, one string per argv value.
@@ -73,9 +75,11 @@ namespace paludis
             void exec() PALUDIS_ATTRIBUTE((noreturn));
     };
 
-    class PALUDIS_VISIBLE Process :
-        private Pimp<Process>
+    class PALUDIS_VISIBLE Process
     {
+        private:
+            Pimp<Process> _imp;
+
         public:
             explicit Process(ProcessCommand &&);
             ~Process();
@@ -109,9 +113,11 @@ namespace paludis
             Process & as_main_process();
     };
 
-    class PALUDIS_VISIBLE RunningProcessHandle :
-        private Pimp<RunningProcessHandle>
+    class PALUDIS_VISIBLE RunningProcessHandle
     {
+        private:
+            Pimp<RunningProcessHandle> _imp;
+
         public:
             RunningProcessHandle(
                     const pid_t,

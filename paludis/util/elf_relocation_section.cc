@@ -101,7 +101,7 @@ template <typename ElfType_, typename Relocation_>
 RelocationSection<ElfType_, Relocation_>::RelocationSection(
     typename ElfType_::Word index, const typename ElfType_::SectionHeader & shdr, std::istream & stream, bool need_byte_swap) :
     Section<ElfType_>(index, shdr),
-    Pimp<RelocationSection>()
+    _imp()
 {
     if (sizeof(typename Relocation_::Type) != shdr.sh_entsize)
         throw InvalidElfFileError(

@@ -129,8 +129,7 @@ VirtualsRepository::VirtualsRepository(const Environment * const env) :
                 n::provides_interface() = static_cast<RepositoryProvidesInterface *>(0),
                 n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
             )),
-    Pimp<VirtualsRepository>(env),
-    _imp(Pimp<VirtualsRepository>::_imp)
+    _imp(env)
 {
     add_metadata_key(_imp->format_key);
 }

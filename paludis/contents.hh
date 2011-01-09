@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -51,13 +51,12 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE ContentsEntry :
-        private Pimp<ContentsEntry>,
         public MetadataKeyHolder,
         public virtual DeclareAbstractAcceptMethods<ContentsEntry, MakeTypeList<
             ContentsFileEntry, ContentsDirEntry, ContentsSymEntry, ContentsOtherEntry>::Type>
     {
         private:
-            Pimp<ContentsEntry>::ImpPtr & _imp;
+            Pimp<ContentsEntry> _imp;
 
         protected:
             virtual void need_keys_added() const;
@@ -163,12 +162,11 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE ContentsSymEntry :
-        private Pimp<ContentsSymEntry>,
         public ContentsEntry,
         public ImplementAcceptMethods<ContentsEntry, ContentsSymEntry>
     {
         private:
-            Pimp<ContentsSymEntry>::ImpPtr & _imp;
+            Pimp<ContentsSymEntry> _imp;
 
         public:
             ///\name Basic operations
@@ -198,9 +196,11 @@ namespace paludis
      * \ingroup g_contents
      * \nosubgrouping
      */
-    class PALUDIS_VISIBLE Contents :
-        private Pimp<Contents>
+    class PALUDIS_VISIBLE Contents
     {
+        private:
+            Pimp<Contents> _imp;
+
         public:
             ///\name Basic operations
             ///\{

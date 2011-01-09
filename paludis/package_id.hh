@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -91,12 +91,11 @@ namespace paludis
      * \ingroup g_package_id
      */
     class PALUDIS_VISIBLE PackageID :
-        private Pimp<PackageID>,
         public equality_operators::HasEqualityOperators,
         public MetadataKeyHolder
     {
         private:
-            Pimp<PackageID>::ImpPtr & _imp;
+            Pimp<PackageID> _imp;
 
         protected:
             /**
@@ -475,9 +474,11 @@ namespace paludis
      * \since 0.26
      * \nosubgrouping
      */
-    class PALUDIS_VISIBLE PackageIDComparator :
-        private Pimp<PackageIDComparator>
+    class PALUDIS_VISIBLE PackageIDComparator
     {
+        private:
+            Pimp<PackageIDComparator> _imp;
+
         public:
             ///\name Standard library typedefs
             ///\{

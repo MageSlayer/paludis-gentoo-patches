@@ -167,7 +167,7 @@ namespace paludis
 }
 
 PaludisLikeOptionsConf::PaludisLikeOptionsConf(const PaludisLikeOptionsConfParams & params) :
-    Pimp<PaludisLikeOptionsConf>(params)
+    _imp(params)
 {
 }
 

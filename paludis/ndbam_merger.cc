@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -80,8 +80,7 @@ NDBAMMerger::NDBAMMerger(const NDBAMMergerParams & p) :
                 n::options() = p.options(),
                 n::root() = p.root()
                 )),
-    Pimp<NDBAMMerger>(p),
-    _imp(Pimp<NDBAMMerger>::_imp)
+    _imp(p)
 {
 }
 

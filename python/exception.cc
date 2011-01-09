@@ -46,7 +46,7 @@ namespace paludis
 }
 
 ExceptionRegister::ExceptionRegister() :
-    Pimp<ExceptionRegister>()
+    _imp()
 {
 }
 

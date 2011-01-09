@@ -2,7 +2,7 @@
 
 /*
  * Copyright (c) 2006 Danny van Dyk
- * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -32,11 +32,10 @@ namespace paludis
     {
         class PALUDIS_VISIBLE CRANPackageID :
             public PackageID,
-            private Pimp<CRANPackageID>,
             public std::enable_shared_from_this<CRANPackageID>
         {
             private:
-                Pimp<CRANPackageID>::ImpPtr & _imp;
+                Pimp<CRANPackageID> _imp;
 
             protected:
                 virtual void need_keys_added() const;

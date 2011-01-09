@@ -64,7 +64,7 @@ namespace paludis
 
 QueryVisitor::QueryVisitor(const DepList * const d, const std::shared_ptr<const DestinationsSet> & dd,
         const Environment * const e, const std::shared_ptr<const PackageID> & id) :
-    Pimp<QueryVisitor>(d, dd, e, id)
+    _imp(d, dd, e, id)
 {
 }
 

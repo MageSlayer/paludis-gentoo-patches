@@ -56,7 +56,7 @@ namespace paludis
 }
 
 GetConstraintsForDependentHelper::GetConstraintsForDependentHelper(const Environment * const e) :
-    Pimp<GetConstraintsForDependentHelper>(e)
+    _imp(e)
 {
 }
 

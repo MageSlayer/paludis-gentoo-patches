@@ -78,7 +78,7 @@ namespace paludis
 }
 
 InterestInSpecHelper::InterestInSpecHelper(const Environment * const e) :
-    Pimp<InterestInSpecHelper>(e)
+    _imp(e)
 {
 }
 

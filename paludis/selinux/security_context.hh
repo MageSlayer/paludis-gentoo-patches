@@ -59,9 +59,11 @@ namespace paludis
      *
      * \ingroup grplibpaludisselinux
      */
-    class PALUDIS_VISIBLE SecurityContext :
-        private Pimp<SecurityContext>
+    class PALUDIS_VISIBLE SecurityContext
     {
+        private:
+            Pimp<SecurityContext> _imp;
+
         public:
             /**
              * Constructor

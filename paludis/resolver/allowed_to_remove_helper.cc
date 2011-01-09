@@ -47,7 +47,7 @@ namespace paludis
 }
 
 AllowedToRemoveHelper::AllowedToRemoveHelper(const Environment * const e) :
-    Pimp<AllowedToRemoveHelper>(e)
+    _imp(e)
 {
 }
 

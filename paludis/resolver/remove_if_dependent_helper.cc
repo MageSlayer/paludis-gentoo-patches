@@ -47,7 +47,7 @@ namespace paludis
 }
 
 RemoveIfDependentHelper::RemoveIfDependentHelper(const Environment * const e) :
-    Pimp<RemoveIfDependentHelper>(e)
+    _imp(e)
 {
 }
 

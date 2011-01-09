@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -275,9 +275,11 @@ namespace paludis
      */
     class PALUDIS_VISIBLE InstallAction :
         public Action,
-        private Pimp<InstallAction>,
         public ImplementAcceptMethods<Action, InstallAction>
     {
+        private:
+            Pimp<InstallAction> _imp;
+
         public:
             ///\name Basic operations
             ///\{
@@ -305,9 +307,11 @@ namespace paludis
      */
     class PALUDIS_VISIBLE FetchAction :
         public Action,
-        private Pimp<FetchAction>,
         public ImplementAcceptMethods<Action, FetchAction>
     {
+        private:
+            Pimp<FetchAction> _imp;
+
         public:
             ///\name Basic operations
             ///\{
@@ -335,9 +339,11 @@ namespace paludis
      */
     class PALUDIS_VISIBLE UninstallAction :
         public Action,
-        private Pimp<UninstallAction>,
         public ImplementAcceptMethods<Action, UninstallAction>
     {
+        private:
+            Pimp<UninstallAction> _imp;
+
         public:
             ///\name Basic operations
             ///\{
@@ -393,9 +399,11 @@ namespace paludis
      */
     class PALUDIS_VISIBLE PretendAction :
         public Action,
-        private Pimp<PretendAction>,
         public ImplementAcceptMethods<Action, PretendAction>
     {
+        private:
+            Pimp<PretendAction> _imp;
+
         public:
             ///\name Basic operations
             ///\{
@@ -434,9 +442,11 @@ namespace paludis
      */
     class PALUDIS_VISIBLE PretendFetchAction :
         public Action,
-        private Pimp<PretendFetchAction>,
         public ImplementAcceptMethods<Action, PretendFetchAction>
     {
+        private:
+            Pimp<PretendFetchAction> _imp;
+
         public:
             ///\name Basic operations
             ///\{
@@ -487,9 +497,11 @@ namespace paludis
      */
     class PALUDIS_VISIBLE ConfigAction :
         public Action,
-        private Pimp<ConfigAction>,
         public ImplementAcceptMethods<Action, ConfigAction>
     {
+        private:
+            Pimp<ConfigAction> _imp;
+
         public:
             ///\name Basic operations
             ///\{
@@ -546,9 +558,11 @@ namespace paludis
      */
     class PALUDIS_VISIBLE InfoAction:
         public Action,
-        private Pimp<InfoAction>,
         public ImplementAcceptMethods<Action, InfoAction>
     {
+        private:
+            Pimp<InfoAction> _imp;
+
         public:
             ///\name Basic operations
             ///\{

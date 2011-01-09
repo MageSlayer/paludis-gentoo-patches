@@ -68,9 +68,11 @@ namespace paludis
                     const std::shared_ptr<const PackageID> & for_id) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
-        class SanitisedDependencies :
-            private Pimp<SanitisedDependencies>
+        class SanitisedDependencies
         {
+            private:
+                Pimp<SanitisedDependencies> _imp;
+
             private:
                 void _populate_one(
                         const Environment * const,

@@ -44,7 +44,7 @@ namespace paludis
 }
 
 PackageDepSpecCollection::PackageDepSpecCollection(const std::shared_ptr<const PackageID> & i) :
-    Pimp<PackageDepSpecCollection>(i)
+    _imp(i)
 {
 }
 

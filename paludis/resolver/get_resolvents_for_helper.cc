@@ -84,7 +84,7 @@ namespace paludis
 }
 
 GetResolventsForHelper::GetResolventsForHelper(const Environment * const e) :
-    Pimp<GetResolventsForHelper>(e)
+    _imp(e)
 {
 }
 

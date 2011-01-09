@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -63,12 +63,12 @@ namespace paludis
 
 
 FSStat::FSStat(const FSPath & p) :
-    Pimp<FSStat>(p)
+    _imp(p)
 {
 }
 
 FSStat::FSStat(const FSStat & p) :
-    Pimp<FSStat>(p._imp->path, p._imp->exists, p._imp->st)
+    _imp(p._imp->path, p._imp->exists, p._imp->st)
 {
 }
 

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2010 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -31,15 +31,6 @@
 #include <sstream>
 
 using namespace paludis;
-
-template class Singleton<DepTagCategoryFactory>;
-
-template class Set<DepTagEntry, DepTagEntryComparator>;
-template class WrappedForwardIterator<Set<DepTagEntry, DepTagEntryComparator>::ConstIteratorTag, const DepTagEntry>;
-template class WrappedOutputIterator<Set<DepTagEntry, DepTagEntryComparator>::InserterTag, DepTagEntry>;
-
-template class Pimp<GeneralSetDepTag>;
-template class Pimp<DependencyDepTag>;
 
 namespace
 {
@@ -237,7 +228,7 @@ namespace paludis
 }
 
 GeneralSetDepTag::GeneralSetDepTag(const SetName & id, const std::string & r) :
-    Pimp<GeneralSetDepTag>(id, r)
+    _imp(id, r)
 {
 }
 
@@ -284,7 +275,7 @@ namespace paludis
 }
 
 DependencyDepTag::DependencyDepTag(const std::shared_ptr<const PackageID> & i, const PackageDepSpec & d) :
-    Pimp<DependencyDepTag>(i, d)
+    _imp(i, d)
 {
 }
 
@@ -359,4 +350,13 @@ DepTagEntryComparator::operator() (const DepTagEntry & l, const DepTagEntry & r)
 {
     return *l.tag() < *r.tag();
 }
+
+template class Singleton<DepTagCategoryFactory>;
+
+template class Set<DepTagEntry, DepTagEntryComparator>;
+template class WrappedForwardIterator<Set<DepTagEntry, DepTagEntryComparator>::ConstIteratorTag, const DepTagEntry>;
+template class WrappedOutputIterator<Set<DepTagEntry, DepTagEntryComparator>::InserterTag, DepTagEntry>;
+
+template class Pimp<GeneralSetDepTag>;
+template class Pimp<DependencyDepTag>;
 

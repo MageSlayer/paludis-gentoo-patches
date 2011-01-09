@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2010 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2010, 2011 Ciaran McCreesh
  * Copyright (c) 2008 Fernando J. Pereda
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -69,7 +69,7 @@ namespace paludis
 }
 
 FSIterator::FSIterator(const FSPath & base, const FSIteratorOptions & options) :
-    Pimp<FSIterator>(std::shared_ptr<EntrySet>())
+    _imp(std::shared_ptr<EntrySet>())
 {
     using namespace std::placeholders;
 
@@ -173,13 +173,13 @@ FSIterator::FSIterator(const FSPath & base, const FSIteratorOptions & options) :
 }
 
 FSIterator::FSIterator(const FSIterator & other) :
-    Pimp<FSIterator>(other._imp->items)
+    _imp(other._imp->items)
 {
     _imp->iter = other._imp->iter;
 }
 
 FSIterator::FSIterator() :
-    Pimp<FSIterator>(std::shared_ptr<EntrySet>(std::make_shared<EntrySet>(&compare_name)))
+    _imp(std::shared_ptr<EntrySet>(std::make_shared<EntrySet>(&compare_name)))
 {
     _imp->iter = _imp->items->end();
 }

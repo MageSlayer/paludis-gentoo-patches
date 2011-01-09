@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -127,7 +127,6 @@ namespace paludis
      * \since 0.51 called FSMerger instead of Merger
      */
     class PALUDIS_VISIBLE FSMerger :
-        private Pimp<FSMerger>,
         public Merger
     {
         private:
@@ -135,7 +134,7 @@ namespace paludis
             void relabel_dir_recursive(const FSPath &, const FSPath &);
             void try_to_copy_xattrs(const FSPath &, int, FSMergerStatusFlags &);
 
-            Pimp<FSMerger>::ImpPtr & _imp;
+            Pimp<FSMerger> _imp;
 
         protected:
             ///\name Basic operations

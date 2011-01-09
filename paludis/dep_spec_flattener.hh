@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -62,11 +62,10 @@ namespace paludis
      * \nosubgrouping
      */
     template <typename Heirarchy_, typename Item_>
-    class PALUDIS_VISIBLE DepSpecFlattener :
-        private Pimp<DepSpecFlattener<Heirarchy_, Item_> >
+    class PALUDIS_VISIBLE DepSpecFlattener
     {
         private:
-            typename Pimp<DepSpecFlattener<Heirarchy_, Item_> >::ImpPtr & _imp;
+            Pimp<DepSpecFlattener<Heirarchy_, Item_> > _imp;
 
         public:
             ///\name Visit operations

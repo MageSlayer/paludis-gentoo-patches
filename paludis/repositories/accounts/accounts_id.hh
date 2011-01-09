@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -31,11 +31,10 @@ namespace paludis
 
         class AccountsID :
             public PackageID,
-            private Pimp<AccountsID>,
             public std::enable_shared_from_this<AccountsID>
         {
             private:
-                Pimp<AccountsID>::ImpPtr & _imp;
+                Pimp<AccountsID> _imp;
 
                 void _add_metadata_keys() const;
                 void _need_file_keys() const;

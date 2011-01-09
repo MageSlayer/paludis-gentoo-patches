@@ -89,12 +89,12 @@ namespace paludis
         }
 
         class PALUDIS_VISIBLE ExceptionRegister :
-            public Singleton<ExceptionRegister>,
-            private Pimp<ExceptionRegister>
+            public Singleton<ExceptionRegister>
         {
             friend class Singleton<ExceptionRegister>;
 
             private:
+                Pimp<ExceptionRegister> _imp;
                 ExceptionRegister();
 
                 void add_map_item(const std::string & name, std::shared_ptr<RegisteredExceptionBase>);

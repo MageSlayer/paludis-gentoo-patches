@@ -74,7 +74,7 @@ namespace paludis
 }
 
 KeywordsConf::KeywordsConf(const PaludisEnvironment * const e) :
-    Pimp<KeywordsConf>(e)
+    _imp(e)
 {
 }
 

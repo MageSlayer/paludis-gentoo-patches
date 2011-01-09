@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -97,8 +97,7 @@ VirtualsDepKey::VirtualsDepKey(const Environment * const e, const std::string & 
         const std::shared_ptr<const PackageID> & v,
         const std::shared_ptr<const DependenciesLabelSequence> & l,
         const bool exact) :
-    Pimp<VirtualsDepKey>(e, v, l, exact, r, h),
-    _imp(Pimp<VirtualsDepKey>::_imp)
+    _imp(e, v, l, exact, r, h)
 {
 }
 
@@ -202,8 +201,7 @@ VirtualsPackageID::VirtualsPackageID(
         const QualifiedPackageName & virtual_name,
         const std::shared_ptr<const PackageID> & virtual_for,
         const bool exact) :
-    Pimp<VirtualsPackageID>(e, r, virtual_name, virtual_for, exact),
-    _imp(Pimp<VirtualsPackageID>::_imp)
+    _imp(e, r, virtual_name, virtual_for, exact)
 {
     add_metadata_key(_imp->virtual_for);
     add_metadata_key(_imp->bdep);

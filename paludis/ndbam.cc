@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -107,7 +107,7 @@ NDBAM::NDBAM(const FSPath & l,
         const std::function<bool (const std::string &)> & check_format,
         const std::string & preferred_format,
         const VersionSpecOptions & version_options) :
-    Pimp<NDBAM>(l, version_options)
+    _imp(l, version_options)
 {
     Context c("When checking NDBAM layout at '" + stringify(l) + "':");
     if ((l / "ndbam.conf").stat().exists())

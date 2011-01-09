@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -107,7 +107,6 @@ namespace paludis
 }
 
 TarMerger::TarMerger(const TarMergerParams & p) :
-    Pimp<TarMerger>(p),
     Merger(make_named_values<MergerParams>(
                 n::environment() = p.environment(),
                 n::fix_mtimes_before() = p.fix_mtimes_before(),
@@ -120,7 +119,7 @@ TarMerger::TarMerger(const TarMergerParams & p) :
                 n::options() = p.options(),
                 n::root() = p.root()
                 )),
-    _imp(Pimp<TarMerger>::_imp)
+    _imp(p)
 {
 }
 

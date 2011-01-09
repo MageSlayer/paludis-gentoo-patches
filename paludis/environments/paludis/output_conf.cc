@@ -114,7 +114,7 @@ namespace paludis
 }
 
 OutputConf::OutputConf(const PaludisEnvironment * const e) :
-    Pimp<OutputConf>(e)
+    _imp(e)
 {
 }
 

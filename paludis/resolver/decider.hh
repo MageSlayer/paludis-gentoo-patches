@@ -55,9 +55,11 @@ namespace paludis
 {
     namespace resolver
     {
-        class PALUDIS_VISIBLE Decider :
-            private Pimp<Decider>
+        class PALUDIS_VISIBLE Decider
         {
+            private:
+                Pimp<Decider> _imp;
+
             private:
                 typedef std::tuple<std::shared_ptr<const PackageID>, std::shared_ptr<const WhyChangedChoices>, bool> FoundID;
 

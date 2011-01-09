@@ -305,7 +305,7 @@ namespace
 
 EbuildFlatMetadataCache::EbuildFlatMetadataCache(const Environment * const v, const FSPath & f,
         const FSPath & e, std::time_t t, const std::shared_ptr<const EclassMtimes> & m, bool s) :
-    Pimp<EbuildFlatMetadataCache>(v, f, e, t, m, s)
+    _imp(v, f, e, t, m, s)
 {
 }
 

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -63,7 +63,7 @@ UnpackagedDependencyKey::UnpackagedDependencyKey(const Environment * const env,
         const std::string & r, const std::string & h, const MetadataKeyType t,
         const std::shared_ptr<const DependenciesLabelSequence> & l,
         const std::string & v) :
-    Pimp<UnpackagedDependencyKey>(env, v, l, r, h, t)
+    _imp(env, v, l, r, h, t)
 {
 }
 
@@ -139,7 +139,7 @@ namespace paludis
 
 UnpackagedChoicesKey::UnpackagedChoicesKey(const Environment * const env, const std::string & r, const std::string & h,
         const MetadataKeyType t, const UnpackagedID * const id) :
-    Pimp<UnpackagedChoicesKey>(env, id, r, h, t)
+    _imp(env, id, r, h, t)
 {
 }
 

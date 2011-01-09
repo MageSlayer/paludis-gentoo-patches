@@ -172,7 +172,7 @@ namespace paludis
 }
 
 SecurityContext::SecurityContext() :
-    Pimp<SecurityContext>(security_context_t(0))
+    _imp(security_context_t(0))
 {
 }
 

@@ -110,8 +110,7 @@ ExndbamRepository::ExndbamRepository(const RepositoryName & n, const ExndbamRepo
                 n::provides_interface() = static_cast<RepositoryProvidesInterface *>(0),
                 n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
             )),
-    Pimp<ExndbamRepository>(p),
-    _imp(Pimp<ExndbamRepository>::_imp)
+    _imp(p)
 {
     _add_metadata_keys();
 }

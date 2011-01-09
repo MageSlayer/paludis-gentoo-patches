@@ -195,7 +195,7 @@ namespace
 }
 
 BrokenLinkageConfiguration::BrokenLinkageConfiguration(const FSPath & root) :
-    Pimp<BrokenLinkageConfiguration>()
+    _imp()
 {
     Context ctx("When loading broken linkage checker configuration for '" + stringify(root) + "':");
 

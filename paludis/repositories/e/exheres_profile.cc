@@ -127,7 +127,7 @@ ExheresProfile::ExheresProfile(
         const Environment * const env, const ERepository * const p, const RepositoryName & name,
         const FSPathSequence & location,
         const std::string & arch_var_if_special, const bool x) :
-    Pimp<ExheresProfile>(env, p, name, location, arch_var_if_special, x)
+    _imp(env, p, name, location, arch_var_if_special, x)
 {
     for (FSPathSequence::ConstIterator l(location.begin()), l_end(location.end()) ;
             l != l_end ; ++l)

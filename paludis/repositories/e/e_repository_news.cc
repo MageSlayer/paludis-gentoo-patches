@@ -111,7 +111,7 @@ namespace paludis
 
 ERepositoryNews::ERepositoryNews(const Environment * const e, const ERepository * const p,
         const erepository::ERepositoryParams & k) :
-    Pimp<ERepositoryNews>(e, p, k)
+    _imp(e, p, k)
 {
 }
 
@@ -270,7 +270,7 @@ namespace paludis
 }
 
 NewsFile::NewsFile(const FSPath & our_filename) :
-    Pimp<NewsFile>()
+    _imp()
 {
     Context context("When parsing GLEP 42 news file '" + stringify(our_filename) + "':");
 

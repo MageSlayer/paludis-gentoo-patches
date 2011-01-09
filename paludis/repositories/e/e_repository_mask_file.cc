@@ -52,7 +52,7 @@ namespace paludis
 }
 
 MaskFile::MaskFile(const FSPath & f, const LineConfigFileOptions & opts) :
-    Pimp<MaskFile>()
+    _imp()
 {
     LineConfigFileOptions myopts(opts);
     myopts += lcfo_disallow_comments;

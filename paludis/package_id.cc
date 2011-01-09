@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -65,8 +65,7 @@ namespace paludis
 }
 
 PackageID::PackageID() :
-    Pimp<PackageID>(),
-    _imp(Pimp<PackageID>::_imp)
+    _imp()
 {
 }
 
@@ -179,7 +178,7 @@ namespace paludis
 }
 
 PackageIDComparator::PackageIDComparator(const PackageDatabase * const db) :
-    Pimp<PackageIDComparator>()
+    _imp()
 {
     unsigned c(0);
     for (PackageDatabase::RepositoryConstIterator r(db->begin_repositories()),
@@ -188,7 +187,7 @@ PackageIDComparator::PackageIDComparator(const PackageDatabase * const db) :
 }
 
 PackageIDComparator::PackageIDComparator(const PackageIDComparator & other) :
-    Pimp<PackageIDComparator>()
+    _imp()
 {
     _imp->m = other._imp->m;
 }

@@ -146,9 +146,11 @@ namespace paludis
      * \ingroup g_dep_list
      * \nosubgrouping
      */
-    class PALUDIS_VISIBLE DepList :
-        private Pimp<DepList>
+    class PALUDIS_VISIBLE DepList
     {
+        private:
+            Pimp<DepList> _imp;
+
         protected:
             class AddVisitor;
             friend class AddVisitor;

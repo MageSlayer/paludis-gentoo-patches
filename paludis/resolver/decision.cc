@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -215,7 +215,7 @@ namespace paludis
 }
 
 NothingNoChangeDecision::NothingNoChangeDecision(const Resolvent & r, const bool t) :
-    Pimp<NothingNoChangeDecision>(r, t)
+    _imp(r, t)
 {
 }
 
@@ -270,7 +270,7 @@ namespace paludis
 
 ExistingNoChangeDecision::ExistingNoChangeDecision(const Resolvent & l, const std::shared_ptr<const PackageID> & e,
         const bool s, const bool v, const bool r, const bool t) :
-    Pimp<ExistingNoChangeDecision>(l, e, s, v, r, t)
+    _imp(l, e, s, v, r, t)
 {
 }
 
@@ -369,7 +369,7 @@ ChangesToMakeDecision::ChangesToMakeDecision(
         const bool t,
         const std::shared_ptr<const Destination> & d,
         const std::function<void (ChangesToMakeDecision &)> & f) :
-    Pimp<ChangesToMakeDecision>(r, o, h, b, c, t, d)
+    _imp(r, o, h, b, c, t, d)
 {
     if (f)
         f(*this);
@@ -497,7 +497,7 @@ UnableToMakeDecision::UnableToMakeDecision(
         const Resolvent & l,
         const std::shared_ptr<const UnsuitableCandidates> & u,
         const bool t) :
-    Pimp<UnableToMakeDecision>(l, u, t)
+    _imp(l, u, t)
 {
 }
 
@@ -551,7 +551,7 @@ namespace paludis
 }
 
 RemoveDecision::RemoveDecision(const Resolvent & l, const std::shared_ptr<const PackageIDSequence> & i, const bool t) :
-    Pimp<RemoveDecision>(l, i, t)
+    _imp(l, i, t)
 {
 }
 
@@ -622,7 +622,7 @@ namespace paludis
 }
 
 BreakDecision::BreakDecision(const Resolvent & l, const std::shared_ptr<const PackageID> & e, const bool t) :
-    Pimp<BreakDecision>(l, e, t)
+    _imp(l, e, t)
 {
 }
 

@@ -156,7 +156,7 @@ namespace
 }
 
 RegisterRubyClass::RegisterRubyClass() :
-    Pimp<RegisterRubyClass>()
+    _imp()
 {
 }
 

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -92,7 +92,6 @@ namespace paludis
 
 InstalledUnpackagedRepository::InstalledUnpackagedRepository(
         const RepositoryName & n, const InstalledUnpackagedRepositoryParams & p) :
-    Pimp<InstalledUnpackagedRepository>(p),
     Repository(p.environment(), n, make_named_values<RepositoryCapabilities>(
                 n::destination_interface() = this,
                 n::environment_variable_interface() = static_cast<RepositoryEnvironmentVariableInterface *>(0),
@@ -101,7 +100,7 @@ InstalledUnpackagedRepository::InstalledUnpackagedRepository(
                 n::provides_interface() = static_cast<RepositoryProvidesInterface *>(0),
                 n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
             )),
-    _imp(Pimp<InstalledUnpackagedRepository>::_imp)
+    _imp(p)
 {
     _add_metadata_keys();
 }

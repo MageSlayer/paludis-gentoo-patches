@@ -50,7 +50,7 @@ namespace paludis
 }
 
 GetConstraintsForViaBinaryHelper::GetConstraintsForViaBinaryHelper(const Environment * const e) :
-    Pimp<GetConstraintsForViaBinaryHelper>(e)
+    _imp(e)
 {
 }
 

@@ -372,7 +372,7 @@ namespace paludis
 }
 
 UserKeyRequirement::UserKeyRequirement(const std::string & s) :
-    Pimp<UserKeyRequirement>(s)
+    _imp(s)
 {
 }
 

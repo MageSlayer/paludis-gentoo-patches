@@ -105,7 +105,7 @@ namespace paludis
 
 Decider::Decider(const Environment * const e, const ResolverFunctions & f,
         const std::shared_ptr<ResolutionsByResolvent> & l) :
-    Pimp<Decider>(e, f, l)
+    _imp(e, f, l)
 {
 }
 

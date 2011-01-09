@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -55,13 +55,12 @@ namespace paludis
         };
 
         class PALUDIS_VISIBLE RepositoryRepository :
-            private Pimp<RepositoryRepository>,
             public Repository,
             public RepositoryDestinationInterface,
             public std::enable_shared_from_this<RepositoryRepository>
         {
             private:
-                Pimp<RepositoryRepository>::ImpPtr & _imp;
+                Pimp<RepositoryRepository> _imp;
 
                 void _add_metadata_keys();
 

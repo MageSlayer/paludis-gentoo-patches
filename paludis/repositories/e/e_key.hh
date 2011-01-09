@@ -58,9 +58,11 @@ namespace paludis
         };
 
         class EDependenciesKey :
-            public MetadataSpecTreeKey<DependencySpecTree>,
-            private Pimp<EDependenciesKey>
+            public MetadataSpecTreeKey<DependencySpecTree>
         {
+            private:
+                Pimp<EDependenciesKey> _imp;
+
             public:
                 EDependenciesKey(
                         const Environment * const,
@@ -86,9 +88,11 @@ namespace paludis
         };
 
         class EFetchableURIKey :
-            public MetadataSpecTreeKey<FetchableURISpecTree>,
-            private Pimp<EFetchableURIKey>
+            public MetadataSpecTreeKey<FetchableURISpecTree>
         {
+            private:
+                Pimp<EFetchableURIKey> _imp;
+
             public:
                 EFetchableURIKey(const Environment * const,
                         const std::shared_ptr<const ERepositoryID> &,
@@ -113,9 +117,11 @@ namespace paludis
         };
 
         class ESimpleURIKey :
-            public MetadataSpecTreeKey<SimpleURISpecTree>,
-            private Pimp<ESimpleURIKey>
+            public MetadataSpecTreeKey<SimpleURISpecTree>
         {
+            private:
+                Pimp<ESimpleURIKey> _imp;
+
             public:
                 ESimpleURIKey(const Environment * const,
                         const std::shared_ptr<const EAPIMetadataVariable> &,
@@ -136,9 +142,11 @@ namespace paludis
         };
 
         class EPlainTextSpecKey :
-            public MetadataSpecTreeKey<PlainTextSpecTree>,
-            private Pimp<EPlainTextSpecKey>
+            public MetadataSpecTreeKey<PlainTextSpecTree>
         {
+            private:
+                Pimp<EPlainTextSpecKey> _imp;
+
             public:
                 EPlainTextSpecKey(const Environment * const,
                         const std::shared_ptr<const EAPIMetadataVariable> &,
@@ -159,9 +167,11 @@ namespace paludis
         };
 
         class EMyOptionsKey :
-            public MetadataSpecTreeKey<PlainTextSpecTree>,
-            private Pimp<EMyOptionsKey>
+            public MetadataSpecTreeKey<PlainTextSpecTree>
         {
+            private:
+                Pimp<EMyOptionsKey> _imp;
+
             public:
                 EMyOptionsKey(const Environment * const,
                         const std::shared_ptr<const EAPIMetadataVariable> &,
@@ -182,9 +192,11 @@ namespace paludis
         };
 
         class ERequiredUseKey :
-            public MetadataSpecTreeKey<RequiredUseSpecTree>,
-            private Pimp<ERequiredUseKey>
+            public MetadataSpecTreeKey<RequiredUseSpecTree>
         {
+            private:
+                Pimp<ERequiredUseKey> _imp;
+
             public:
                 ERequiredUseKey(const Environment * const,
                         const std::shared_ptr<const EAPIMetadataVariable> &,
@@ -205,9 +217,11 @@ namespace paludis
         };
 
         class EProvideKey :
-            public MetadataSpecTreeKey<ProvideSpecTree>,
-            private Pimp<EProvideKey>
+            public MetadataSpecTreeKey<ProvideSpecTree>
         {
+            private:
+                Pimp<EProvideKey> _imp;
+
             public:
                 EProvideKey(const Environment * const,
                         const std::shared_ptr<const EAPIMetadataVariable> &,
@@ -228,9 +242,11 @@ namespace paludis
         };
 
         class ELicenseKey :
-            public MetadataSpecTreeKey<LicenseSpecTree>,
-            private Pimp<ELicenseKey>
+            public MetadataSpecTreeKey<LicenseSpecTree>
         {
+            private:
+                Pimp<ELicenseKey> _imp;
+
             public:
                 ELicenseKey(
                         const Environment * const,
@@ -252,9 +268,11 @@ namespace paludis
         };
 
         class EContentsKey :
-            public MetadataValueKey<std::shared_ptr<const Contents> >,
-            private Pimp<EContentsKey>
+            public MetadataValueKey<std::shared_ptr<const Contents> >
         {
+            private:
+                Pimp<EContentsKey> _imp;
+
             public:
                 EContentsKey(const std::string &, const std::string &, const FSPath &, const MetadataKeyType);
                 ~EContentsKey();
@@ -268,9 +286,11 @@ namespace paludis
         };
 
         class EMTimeKey :
-            public MetadataTimeKey,
-            private Pimp<EMTimeKey>
+            public MetadataTimeKey
         {
+            private:
+                Pimp<EMTimeKey> _imp;
+
             public:
                 EMTimeKey(const std::string &, const std::string &, const FSPath &, const MetadataKeyType);
                 ~EMTimeKey();

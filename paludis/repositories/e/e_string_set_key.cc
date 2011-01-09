@@ -136,7 +136,7 @@ namespace paludis
 }
 
 EStringSetKeyStore::EStringSetKeyStore() :
-    Pimp<EStringSetKeyStore>()
+    _imp()
 {
 }
 

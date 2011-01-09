@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -82,11 +82,10 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE NoConfigEnvironment :
-        public EnvironmentImplementation,
-        private Pimp<NoConfigEnvironment>
+        public EnvironmentImplementation
     {
         private:
-            Pimp<NoConfigEnvironment>::ImpPtr & _imp;
+            Pimp<NoConfigEnvironment> _imp;
 
             virtual void need_keys_added() const;
 

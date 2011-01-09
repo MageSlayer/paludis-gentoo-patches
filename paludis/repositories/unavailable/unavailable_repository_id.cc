@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -94,8 +94,7 @@ namespace paludis
 }
 
 UnavailableRepositoryID::UnavailableRepositoryID(const UnavailableRepositoryIDParams & entry) :
-    Pimp<UnavailableRepositoryID>(entry),
-    _imp(Pimp<UnavailableRepositoryID>::_imp)
+    _imp(entry)
 {
     if (_imp->dependencies_key)
         add_metadata_key(_imp->dependencies_key);

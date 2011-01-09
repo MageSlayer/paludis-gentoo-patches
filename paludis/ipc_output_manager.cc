@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -76,7 +76,7 @@ namespace paludis
 }
 
 IPCOutputManager::IPCOutputManager(const int r, const int w, const CreateOutputManagerInfo & i) :
-    Pimp<IPCOutputManager>(r, w)
+    _imp(r, w)
 {
     std::stringstream ser_stream;
     Serialiser ser(ser_stream);
@@ -207,7 +207,7 @@ namespace paludis
 
 IPCInputManager::IPCInputManager(const Environment * const e,
         const std::function<void (const std::shared_ptr<OutputManager> &)> & c) :
-    Pimp<IPCInputManager>(e, c)
+    _imp(e, c)
 {
 }
 
@@ -417,7 +417,7 @@ OutputManagerFromIPC::OutputManagerFromIPC(const Environment * const e,
         const std::shared_ptr<const PackageID> & i,
         const OutputExclusivity x,
         const ClientOutputFeatures & c) :
-    Pimp<OutputManagerFromIPC>(e, i, x, c)
+    _imp(e, i, x, c)
 {
 }
 

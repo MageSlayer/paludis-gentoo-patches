@@ -29,12 +29,13 @@ namespace paludis
     namespace erepository
     {
         class EStringSetKeyStore :
-            private Pimp<EStringSetKeyStore>,
             public Singleton<EStringSetKeyStore>
         {
             friend class Singleton<EStringSetKeyStore>;
 
             private:
+                Pimp<EStringSetKeyStore> _imp;
+
                 EStringSetKeyStore();
                 ~EStringSetKeyStore();
 

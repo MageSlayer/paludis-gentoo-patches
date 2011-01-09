@@ -49,7 +49,7 @@ namespace paludis
 FormattedPrettyPrinter::FormattedPrettyPrinter(
         const Environment * const e,
         const std::shared_ptr<const PackageID> & i) :
-    Pimp<FormattedPrettyPrinter>(e, i)
+    _imp(e, i)
 {
 }
 

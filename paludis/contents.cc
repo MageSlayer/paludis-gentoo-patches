@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -42,8 +42,7 @@ namespace paludis
 }
 
 ContentsEntry::ContentsEntry(const FSPath & n) :
-    Pimp<ContentsEntry>(n),
-    _imp(Pimp<ContentsEntry>::_imp)
+    _imp(n)
 {
     add_metadata_key(_imp->location_key);
 }
@@ -93,9 +92,8 @@ namespace paludis
 }
 
 ContentsSymEntry::ContentsSymEntry(const FSPath & our_name, const std::string & our_target) :
-    Pimp<ContentsSymEntry>(our_target),
     ContentsEntry(our_name),
-    _imp(Pimp<ContentsSymEntry>::_imp)
+    _imp(our_target)
 {
     add_metadata_key(_imp->target_key);
 }
@@ -126,7 +124,7 @@ namespace paludis
 }
 
 Contents::Contents() :
-    Pimp<Contents>()
+    _imp()
 {
 }
 

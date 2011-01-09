@@ -51,7 +51,7 @@ namespace paludis
 }
 
 AAVisitor::AAVisitor() :
-    Pimp<AAVisitor>()
+    _imp()
 {
 }
 

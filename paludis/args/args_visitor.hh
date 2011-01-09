@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  * Copyright (c) 2006 Stephen Bennett
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -56,10 +56,11 @@ namespace paludis
          *
          * \ingroup g_args
          */
-        class PALUDIS_VISIBLE ArgsVisitor :
-            private Pimp<ArgsVisitor>
+        class PALUDIS_VISIBLE ArgsVisitor
         {
             private:
+                Pimp<ArgsVisitor> _imp;
+
                 const std::string & get_param(const ArgsOption &);
 
                 std::string env_name(const std::string & long_name) const;

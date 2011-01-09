@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2010 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -127,7 +127,7 @@ namespace paludis
 }
 
 Log::Log() :
-    Pimp<Log>()
+    _imp()
 {
 }
 
@@ -216,4 +216,6 @@ LogMessageHandler::~LogMessageHandler()
     if (! std::uncaught_exception() && ! _message.empty())
         _log->_message(_id, _log_level, _log_context, _message);
 }
+
+template class Pimp<Log>;
 

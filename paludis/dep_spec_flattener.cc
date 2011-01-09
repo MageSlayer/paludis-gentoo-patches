@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -80,8 +80,7 @@ template <typename Heirarchy_, typename Item_>
 DepSpecFlattener<Heirarchy_, Item_>::DepSpecFlattener(
         const Environment * const env,
         const std::shared_ptr<const PackageID> & id) :
-    Pimp<DepSpecFlattener<Heirarchy_, Item_> >(env, id),
-    _imp(Pimp<DepSpecFlattener<Heirarchy_, Item_> >::_imp)
+    _imp(env, id)
 {
 }
 

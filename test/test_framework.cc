@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -111,7 +111,7 @@ TestMessageSuffix::suffixes()
 }
 
 TestMessageSuffix::TestMessageSuffix(const std::string & s, bool write) :
-    paludis::Pimp<TestMessageSuffix>()
+    _imp()
 {
     paludis::Imp<TestMessageSuffix>::suffixes.push_back(s);
     if (write)
@@ -144,7 +144,7 @@ namespace paludis
 }
 
 TestCase::TestCase(const std::string & our_name) :
-    paludis::Pimp<TestCase>(our_name)
+    _imp(our_name)
 {
     TestCaseList::register_test_case(this);
 }

@@ -66,7 +66,7 @@ Manifest2Error::Manifest2Error(const std::string & msg) throw () :
 }
 
 Manifest2Reader::Manifest2Reader(const FSPath & f) :
-    Pimp<Manifest2Reader>(f)
+    _imp(f)
 {
     if (! f.stat().exists())
         return;

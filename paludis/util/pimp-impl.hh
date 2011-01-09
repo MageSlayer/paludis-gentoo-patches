@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2010 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -31,56 +31,44 @@
 
 template <typename C_>
 template <typename... Args_>
-paludis::Pimp<C_>::ImpPtr::ImpPtr(Args_ && ... args) :
+paludis::Pimp<C_>::Pimp(Args_ && ... args) :
     _ptr(new Imp<C_>{std::forward<Args_>(args)...})
 {
 }
 
 template <typename C_>
-paludis::Pimp<C_>::ImpPtr::ImpPtr(ImpPtr && other) :
+paludis::Pimp<C_>::Pimp(Pimp && other) :
     _ptr(std::move(other._ptr))
 {
     other._ptr = 0;
 }
 
 template <typename C_>
-paludis::Pimp<C_>::ImpPtr::~ImpPtr()
+paludis::Pimp<C_>::~Pimp()
 {
     delete _ptr;
 }
 
 template <typename C_>
 paludis::Imp<C_> *
-paludis::Pimp<C_>::ImpPtr::get()
+paludis::Pimp<C_>::get()
 {
     return _ptr;
 }
 
 template <typename C_>
 const paludis::Imp<C_> *
-paludis::Pimp<C_>::ImpPtr::get() const
+paludis::Pimp<C_>::get() const
 {
     return _ptr;
 }
 
 template <typename C_>
 void
-paludis::Pimp<C_>::ImpPtr::reset(Imp<C_> * p)
+paludis::Pimp<C_>::reset(Imp<C_> * p)
 {
     delete _ptr;
     _ptr = p;
-}
-
-template <typename C_>
-template <typename... Args_>
-paludis::Pimp<C_>::Pimp(Args_ && ... args) :
-    _imp(std::forward<Args_>(args)...)
-{
-}
-
-template <typename C_>
-paludis::Pimp<C_>::~Pimp()
-{
 }
 
 #endif

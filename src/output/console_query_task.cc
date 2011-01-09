@@ -79,7 +79,7 @@ namespace
 }
 
 ConsoleQueryTask::ConsoleQueryTask(const Environment * const e) :
-    Pimp<ConsoleQueryTask>(e)
+    _imp(e)
 {
 }
 

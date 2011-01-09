@@ -33,9 +33,11 @@
 
 namespace paludis
 {
-    class PALUDIS_VISIBLE BrokenLinkageFinder :
-        private Pimp<BrokenLinkageFinder>
+    class PALUDIS_VISIBLE BrokenLinkageFinder
     {
+        private:
+            Pimp<BrokenLinkageFinder> _imp;
+
         public:
             BrokenLinkageFinder(const Environment *, const std::shared_ptr<const Sequence<std::string>> &);
             ~BrokenLinkageFinder();

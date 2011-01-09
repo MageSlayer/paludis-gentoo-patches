@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -53,10 +53,12 @@ namespace paludis
         };
 
         class PALUDIS_VISIBLE JobActiveState :
-            private Pimp<JobActiveState>,
             public JobState,
             public ImplementAcceptMethods<JobState, JobActiveState>
         {
+            private:
+                Pimp<JobActiveState> _imp;
+
             public:
                 JobActiveState();
                 ~JobActiveState();
@@ -72,10 +74,12 @@ namespace paludis
         };
 
         class PALUDIS_VISIBLE JobSucceededState :
-            private Pimp<JobSucceededState>,
             public JobState,
             public ImplementAcceptMethods<JobState, JobSucceededState>
         {
+            private:
+                Pimp<JobSucceededState> _imp;
+
             public:
                 JobSucceededState(const std::shared_ptr<OutputManager> &);
                 ~JobSucceededState();
@@ -87,10 +91,12 @@ namespace paludis
         };
 
         class PALUDIS_VISIBLE JobFailedState :
-            private Pimp<JobFailedState>,
             public JobState,
             public ImplementAcceptMethods<JobState, JobFailedState>
         {
+            private:
+                Pimp<JobFailedState> _imp;
+
             public:
                 JobFailedState(const std::shared_ptr<OutputManager> &);
                 ~JobFailedState();

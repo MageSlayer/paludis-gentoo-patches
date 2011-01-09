@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2010 Ciaran McCreesh
+ * Copyright (c) 2008, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -53,9 +53,11 @@ namespace paludis
             StripperError(const std::string &) throw ();
     };
 
-    class PALUDIS_VISIBLE Stripper :
-        private Pimp<Stripper>
+    class PALUDIS_VISIBLE Stripper
     {
+        private:
+            Pimp<Stripper> _imp;
+
         protected:
             virtual void on_enter_dir(const FSPath &) = 0;
             virtual void on_leave_dir(const FSPath &) = 0;

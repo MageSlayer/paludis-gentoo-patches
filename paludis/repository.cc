@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -131,9 +131,8 @@ Repository::Repository(
         const Environment * const env,
         const RepositoryName & our_name,
         const RepositoryCapabilities & caps) :
-    Pimp<Repository>(our_name),
     RepositoryCapabilities(caps),
-    _imp(Pimp<Repository>::_imp)
+    _imp(our_name)
 {
     std::string reason(RepositoryDistributionData::get_instance()->data_from_distribution(
                 *DistributionData::get_instance()->distribution_from_string(

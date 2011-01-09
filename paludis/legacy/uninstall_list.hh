@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -86,10 +86,11 @@ namespace paludis
      * \ingroup g_dep_list
      * \nosubgrouping
      */
-    class PALUDIS_VISIBLE UninstallList :
-        private Pimp<UninstallList>
+    class PALUDIS_VISIBLE UninstallList
     {
         private:
+            Pimp<UninstallList> _imp;
+
             void add_package(const std::shared_ptr<const PackageID> &, const std::shared_ptr<DepTag> &,
                     const UninstallListEntryKind k);
             void real_add(const std::shared_ptr<const PackageID> &,

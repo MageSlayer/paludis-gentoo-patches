@@ -2,7 +2,7 @@
 
 /*
  * Copyright (c) 2006 Danny van Dyk
- * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -74,11 +74,11 @@ namespace paludis
      */
     class PALUDIS_VISIBLE CRANRepository :
         public Repository,
-        private Pimp<CRANRepository>,
         public std::enable_shared_from_this<CRANRepository>
     {
         private:
-            Pimp<CRANRepository>::ImpPtr & _imp;
+            Pimp<CRANRepository> _imp;
+
             void _add_metadata_keys() const;
 
             void need_ids() const;

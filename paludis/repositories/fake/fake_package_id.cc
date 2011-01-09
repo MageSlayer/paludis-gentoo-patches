@@ -85,8 +85,7 @@ template <typename C_>
 FakeMetadataCollectionKey<C_>::FakeMetadataCollectionKey(
         const std::string & r, const std::string & h, const MetadataKeyType t, const std::shared_ptr<const PackageID> & i,
         const Environment * const e) :
-    Pimp<FakeMetadataCollectionKey<C_> >(i, e, r, h, t),
-    _imp(Pimp<FakeMetadataCollectionKey<C_> >::_imp)
+    _imp(i, e, r, h, t)
 {
 }
 
@@ -221,8 +220,7 @@ namespace paludis
 template <typename C_>
 FakeMetadataSpecTreeKey<C_>::FakeMetadataSpecTreeKey(const std::string & r, const std::string & h, const std::string & v,
         const std::function<const std::shared_ptr<const C_> (const std::string &)> & f, const MetadataKeyType t) :
-    Pimp<FakeMetadataSpecTreeKey<C_> >(f, r, h, t),
-    _imp(Pimp<FakeMetadataSpecTreeKey<C_> >::_imp)
+    _imp(f, r, h, t)
 {
     set_from_string(v);
 }
@@ -278,8 +276,7 @@ FakeMetadataSpecTreeKey<C_>::pretty_print_value(
 
 FakeMetadataSpecTreeKey<FetchableURISpecTree>::FakeMetadataSpecTreeKey(const std::string & r, const std::string & h, const std::string & v,
         const std::function<const std::shared_ptr<const FetchableURISpecTree> (const std::string &)> & f, const MetadataKeyType t) :
-    Pimp<FakeMetadataSpecTreeKey<FetchableURISpecTree> >(f, r, h, t),
-    _imp(Pimp<FakeMetadataSpecTreeKey<FetchableURISpecTree> >::_imp)
+    _imp(f, r, h, t)
 {
     set_from_string(v);
 }
@@ -334,8 +331,7 @@ FakeMetadataSpecTreeKey<FetchableURISpecTree>::initial_label() const
 FakeMetadataSpecTreeKey<DependencySpecTree>::FakeMetadataSpecTreeKey(const std::string & r, const std::string & h, const std::string & v,
         const std::function<const std::shared_ptr<const DependencySpecTree> (const std::string &)> & f,
         const std::shared_ptr<const DependenciesLabelSequence> & s, const MetadataKeyType t) :
-    Pimp<FakeMetadataSpecTreeKey<DependencySpecTree> >(f, s, r, h, t),
-    _imp(Pimp<FakeMetadataSpecTreeKey<DependencySpecTree> >::_imp)
+    _imp(f, s, r, h, t)
 {
     set_from_string(v);
 }
@@ -472,8 +468,7 @@ namespace
 
 FakeMetadataChoicesKey::FakeMetadataChoicesKey(const Environment * const e,
         const std::shared_ptr<const PackageID> & i) :
-    Pimp<FakeMetadataChoicesKey>(e, i),
-    _imp(Pimp<FakeMetadataChoicesKey>::_imp)
+    _imp(e, i)
 {
 }
 
@@ -546,7 +541,7 @@ namespace paludis
 }
 
 FakeUnacceptedMask::FakeUnacceptedMask(const char c, const std::string & s, const std::shared_ptr<const MetadataKey> & k) :
-    Pimp<FakeUnacceptedMask>(c, s, k)
+    _imp(c, s, k)
 {
 }
 
@@ -636,20 +631,20 @@ namespace paludis
         const QualifiedPackageName name;
         const VersionSpec version;
 
-        std::shared_ptr<LiteralMetadataValueKey<SlotName> > slot;
-        std::shared_ptr<FakeMetadataKeywordSetKey> keywords;
-        std::shared_ptr<FakeMetadataSpecTreeKey<LicenseSpecTree> > license;
-        std::shared_ptr<FakeMetadataSpecTreeKey<ProvideSpecTree> > provide;
-        std::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > build_dependencies;
-        std::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > run_dependencies;
-        std::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > post_dependencies;
-        std::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > suggested_dependencies;
-        std::shared_ptr<FakeMetadataSpecTreeKey<PlainTextSpecTree> > restrictions;
-        std::shared_ptr<FakeMetadataSpecTreeKey<FetchableURISpecTree> > src_uri;
-        std::shared_ptr<FakeMetadataSpecTreeKey<SimpleURISpecTree> > homepage;
-        std::shared_ptr<FakeMetadataChoicesKey> choices;
-        std::shared_ptr<LiteralMetadataValueKey<long> > hitchhiker;
-        std::shared_ptr<LiteralMetadataStringSetKey> behaviours;
+        mutable std::shared_ptr<LiteralMetadataValueKey<SlotName> > slot;
+        mutable std::shared_ptr<FakeMetadataKeywordSetKey> keywords;
+        mutable std::shared_ptr<FakeMetadataSpecTreeKey<LicenseSpecTree> > license;
+        mutable std::shared_ptr<FakeMetadataSpecTreeKey<ProvideSpecTree> > provide;
+        mutable std::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > build_dependencies;
+        mutable std::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > run_dependencies;
+        mutable std::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > post_dependencies;
+        mutable std::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > suggested_dependencies;
+        mutable std::shared_ptr<FakeMetadataSpecTreeKey<PlainTextSpecTree> > restrictions;
+        mutable std::shared_ptr<FakeMetadataSpecTreeKey<FetchableURISpecTree> > src_uri;
+        mutable std::shared_ptr<FakeMetadataSpecTreeKey<SimpleURISpecTree> > homepage;
+        mutable std::shared_ptr<FakeMetadataChoicesKey> choices;
+        mutable std::shared_ptr<LiteralMetadataValueKey<long> > hitchhiker;
+        mutable std::shared_ptr<LiteralMetadataStringSetKey> behaviours;
 
         std::shared_ptr<Set<std::string> > behaviours_set;
 
@@ -672,8 +667,7 @@ namespace paludis
 
 FakePackageID::FakePackageID(const Environment * const e, const RepositoryName & r,
         const QualifiedPackageName & q, const VersionSpec & v) :
-    Pimp<FakePackageID>(e, r, q, v),
-    _imp(Pimp<FakePackageID>::_imp)
+    _imp(e, r, q, v)
 {
 }
 

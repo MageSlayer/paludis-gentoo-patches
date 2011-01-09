@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  * Copyright (c) 2006 Danny van Dyk
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -111,22 +111,22 @@ namespace paludis
 }
 
 ConfigFile::Source::Source(const FSPath & f) :
-    Pimp<ConfigFile::Source>(f)
+    _imp(f)
 {
 }
 
 ConfigFile::Source::Source(const std::string & f) :
-    Pimp<ConfigFile::Source>(f)
+    _imp(f)
 {
 }
 
 ConfigFile::Source::Source(std::istream & f) :
-    Pimp<ConfigFile::Source>(f)
+    _imp(f)
 {
 }
 
 ConfigFile::Source::Source(const ConfigFile::Source & f) :
-    Pimp<ConfigFile::Source>(f._imp->filename, f._imp->text)
+    _imp(f._imp->filename, f._imp->text)
 {
 }
 
@@ -156,8 +156,6 @@ ConfigFile::Source::filename() const
 {
     return _imp->filename;
 }
-
-template class Pimp<ConfigFile::Source>;
 
 ConfigFile::~ConfigFile()
 {
@@ -191,7 +189,7 @@ namespace
 }
 
 LineConfigFile::LineConfigFile(const Source & sr, const LineConfigFileOptions & o) :
-    Pimp<LineConfigFile>(o)
+    _imp(o)
 {
     Context context("When parsing line-based configuration file '" + (sr.filename().empty() ? "?" : sr.filename()) + "':");
 
@@ -321,8 +319,6 @@ LineConfigFile::end() const
 {
     return ConstIterator(_imp->lines.end());
 }
-
-template class Pimp<LineConfigFile>;
 
 namespace paludis
 {
@@ -576,7 +572,7 @@ KeyValueConfigFile::KeyValueConfigFile(
         const KeyValueConfigFileOptions & o,
         const KeyValueConfigFile::DefaultFunction & f,
         const KeyValueConfigFile::TransformationFunction & i) :
-    Pimp<KeyValueConfigFile>(o, f, i)
+    _imp(o, f, i)
 {
     Context context("When parsing key=value-based configuration file '" + (sr.filename().empty() ? "?" : sr.filename()) + "':");
 
@@ -872,6 +868,8 @@ KeyValueConfigFile::transformation_function() const
     return _imp->transformation_function;
 }
 
+template class Pimp<ConfigFile::Source>;
+template class Pimp<LineConfigFile>;
 template class Pimp<KeyValueConfigFile>;
 
 template class WrappedForwardIterator<LineConfigFile::ConstIteratorTag, const std::string>;

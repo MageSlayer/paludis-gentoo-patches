@@ -130,7 +130,7 @@ namespace paludis
 }
 
 ReportTask::ReportTask(Environment * const env) :
-     Pimp<ReportTask>(env)
+     _imp(env)
 {
 }
 

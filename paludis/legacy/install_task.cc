@@ -183,7 +183,7 @@ namespace paludis
 
 InstallTask::InstallTask(Environment * const env, const DepListOptions & options,
         const std::shared_ptr<const DestinationsSet> & d) :
-    Pimp<InstallTask>(env, options, d)
+    _imp(env, options, d)
 {
 }
 

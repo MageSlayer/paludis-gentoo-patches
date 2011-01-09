@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -35,11 +35,10 @@ namespace paludis
         struct JobListConstIteratorTag;
 
         template <typename Job_>
-        class PALUDIS_VISIBLE JobList :
-            private Pimp<JobList<Job_> >
+        class PALUDIS_VISIBLE JobList
         {
             private:
-                using Pimp<JobList<Job_> >::_imp;
+                Pimp<JobList<Job_> > _imp;
 
             public:
                 JobList();

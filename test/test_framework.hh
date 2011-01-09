@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -37,9 +37,11 @@ namespace test
      *
      * \ingroup grptestframework
      */
-    class TestMessageSuffix :
-        paludis::Pimp<TestMessageSuffix>
+    class TestMessageSuffix
     {
+        private:
+            paludis::Pimp<TestMessageSuffix> _imp;
+
         public:
             /**
              * Constructor.
@@ -62,9 +64,11 @@ namespace test
      *
      * \ingroup grptestframework
      */
-    class TestCase :
-        private paludis::Pimp<TestCase>
+    class TestCase
     {
+        private:
+            paludis::Pimp<TestCase> _imp;
+
         protected:
             /**
              * Check that a given assertion is true.

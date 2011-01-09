@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -66,8 +66,7 @@ FakeInstalledRepository::FakeInstalledRepository(const FakeInstalledRepositoryPa
                 n::provides_interface() = this,
                 n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
                 )),
-    Pimp<FakeInstalledRepository>(p.supports_uninstall(), p.suitable_destination()),
-    _imp(Pimp<FakeInstalledRepository>::_imp)
+    _imp(p.supports_uninstall(), p.suitable_destination())
 {
     add_metadata_key(_imp->format_key);
     add_metadata_key(_imp->installed_root_key);

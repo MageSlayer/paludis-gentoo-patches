@@ -29,12 +29,13 @@ namespace paludis
     namespace erepository
     {
         class EKeywordsKeyStore :
-            private Pimp<EKeywordsKeyStore>,
             public Singleton<EKeywordsKeyStore>
         {
             friend class Singleton<EKeywordsKeyStore>;
 
             private:
+                Pimp<EKeywordsKeyStore> _imp;
+
                 EKeywordsKeyStore();
                 ~EKeywordsKeyStore();
 

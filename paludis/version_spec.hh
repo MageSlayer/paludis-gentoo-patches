@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -105,10 +105,12 @@ namespace paludis
      * \ingroup g_names
      */
     class PALUDIS_VISIBLE VersionSpec :
-        private Pimp<VersionSpec>,
         public relational_operators::HasRelationalOperators
     {
         friend std::ostream & operator<< (std::ostream &, const VersionSpec &);
+
+        private:
+            Pimp<VersionSpec> _imp;
 
         public:
             ///\name Basic operations

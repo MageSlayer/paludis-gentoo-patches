@@ -73,7 +73,7 @@ namespace paludis
 }
 
 LicensesConf::LicensesConf(const PaludisEnvironment * const e) :
-    Pimp<LicensesConf>(e)
+    _imp(e)
 {
 }
 

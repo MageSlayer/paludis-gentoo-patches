@@ -30,12 +30,13 @@ namespace paludis
     namespace erepository
     {
         class PALUDIS_VISIBLE MemoisedHashes :
-            public Singleton<MemoisedHashes>,
-            private Pimp<MemoisedHashes>
+            public Singleton<MemoisedHashes>
         {
             friend class Singleton<MemoisedHashes>;
 
             public:
+                Pimp<MemoisedHashes> _imp;
+
                 template <typename H_>
                 const std::string get(const FSPath & file, SafeIFStream & stream) const;
 

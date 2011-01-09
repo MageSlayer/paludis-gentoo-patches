@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  * Copyright (c) 2007 Piotr Jaroszyński
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -76,8 +76,7 @@ VDBUnmerger::VDBUnmerger(const VDBUnmergerOptions & o) :
                 n::maybe_output_manager() = o.output_manager(),
                 n::root() = o.root()
             )),
-    Pimp<VDBUnmerger>(o),
-    _imp(Pimp<VDBUnmerger>::_imp.get())
+    _imp(o)
 {
 }
 

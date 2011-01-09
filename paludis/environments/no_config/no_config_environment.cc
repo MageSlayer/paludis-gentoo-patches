@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -355,8 +355,7 @@ Imp<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
 }
 
 NoConfigEnvironment::NoConfigEnvironment(const no_config_environment::Params & params) :
-    Pimp<NoConfigEnvironment>(this, params),
-    _imp(Pimp<NoConfigEnvironment>::_imp)
+    _imp(this, params)
 {
     _imp->initialise(this);
 

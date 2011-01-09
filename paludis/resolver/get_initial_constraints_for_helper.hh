@@ -35,9 +35,11 @@ namespace paludis
 {
     namespace resolver
     {
-        class PALUDIS_VISIBLE GetInitialConstraintsForHelper :
-            private Pimp<GetInitialConstraintsForHelper>
+        class PALUDIS_VISIBLE GetInitialConstraintsForHelper
         {
+            private:
+                Pimp<GetInitialConstraintsForHelper> _imp;
+
             private:
                 const std::shared_ptr<Constraints> _make_initial_constraints_for(const Resolvent &) const;
 

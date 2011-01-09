@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -82,7 +82,7 @@ namespace paludis
 
 CommandOutputManager::CommandOutputManager(const std::string & s, const std::string & e,
         const std::string & so, const std::string & se, const std::string & su, const std::string & n) :
-    Pimp<CommandOutputManager>(s, e, so, se, su, n)
+    _imp(s, e, so, se, su, n)
 {
     if (! _imp->start_command.empty())
     {

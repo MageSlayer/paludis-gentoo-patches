@@ -53,9 +53,11 @@ namespace paludis
      *
      * \ingroup g_selections
      */
-    class PALUDIS_VISIBLE Filter :
-        private Pimp<Filter>
+    class PALUDIS_VISIBLE Filter
     {
+        private:
+            Pimp<Filter> _imp;
+
         protected:
             Filter(const std::shared_ptr<const FilterHandler> &);
 

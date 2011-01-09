@@ -141,7 +141,7 @@ EDependenciesKey::EDependenciesKey(
         const std::shared_ptr<const ERepositoryID> & id,
         const std::string & r, const std::string & h, const std::string & v,
         const std::shared_ptr<const DependenciesLabelSequence> & l, const MetadataKeyType t) :
-    Pimp<EDependenciesKey>(e, id, v, l, r, h, t)
+    _imp(e, id, v, l, r, h, t)
 {
 }
 
@@ -229,7 +229,7 @@ ELicenseKey::ELicenseKey(
         const std::shared_ptr<const EAPIMetadataVariable> & m,
         const std::shared_ptr<const EAPI> & p,
         const std::string & v, const MetadataKeyType t) :
-    Pimp<ELicenseKey>(e, v, m, p, t)
+    _imp(e, v, m, p, t)
 {
 }
 
@@ -308,7 +308,7 @@ namespace paludis
 EFetchableURIKey::EFetchableURIKey(const Environment * const e,
         const std::shared_ptr<const ERepositoryID> & id,
         const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v, const MetadataKeyType t) :
-    Pimp<EFetchableURIKey>(e, id, m, v, t)
+    _imp(e, id, m, v, t)
 {
 }
 
@@ -425,7 +425,7 @@ ESimpleURIKey::ESimpleURIKey(const Environment * const e,
         const std::shared_ptr<const EAPIMetadataVariable> & m,
         const std::shared_ptr<const EAPI> & p,
         const std::string & v, const MetadataKeyType t) :
-    Pimp<ESimpleURIKey>(e, v, m, p, t)
+    _imp(e, v, m, p, t)
 {
 }
 
@@ -506,7 +506,7 @@ EPlainTextSpecKey::EPlainTextSpecKey(const Environment * const e,
         const std::shared_ptr<const EAPIMetadataVariable> & m,
         const std::shared_ptr<const EAPI> & p,
         const std::string & v, const MetadataKeyType t) :
-    Pimp<EPlainTextSpecKey>(e, v, m, p, t)
+    _imp(e, v, m, p, t)
 {
 }
 
@@ -589,7 +589,7 @@ EMyOptionsKey::EMyOptionsKey(
         const std::shared_ptr<const EAPIMetadataVariable> & m,
         const std::shared_ptr<const EAPI> & p,
         const std::string & v, const MetadataKeyType t) :
-    Pimp<EMyOptionsKey>(e, v, m, p, t)
+    _imp(e, v, m, p, t)
 {
 }
 
@@ -671,7 +671,7 @@ ERequiredUseKey::ERequiredUseKey(
         const std::shared_ptr<const EAPIMetadataVariable> & m,
         const std::shared_ptr<const EAPI> & p,
         const std::string & v, const MetadataKeyType t) :
-    Pimp<ERequiredUseKey>(e, v, m, p, t)
+    _imp(e, v, m, p, t)
 {
 }
 
@@ -753,7 +753,7 @@ EProvideKey::EProvideKey(
         const std::shared_ptr<const EAPIMetadataVariable> & m,
         const std::shared_ptr<const EAPI> & p,
         const std::string & v, const MetadataKeyType t) :
-    Pimp<EProvideKey>(e, v, m, p, t)
+    _imp(e, v, m, p, t)
 {
 }
 
@@ -825,7 +825,7 @@ namespace paludis
 }
 
 EContentsKey::EContentsKey(const std::string & r, const std::string & h, const FSPath & v, const MetadataKeyType t) :
-    Pimp<EContentsKey>(v, r, h, t)
+    _imp(v, r, h, t)
 {
 }
 
@@ -942,7 +942,7 @@ namespace paludis
 }
 
 EMTimeKey::EMTimeKey(const std::string & r, const std::string & h, const FSPath & v, const MetadataKeyType t) :
-    Pimp<EMTimeKey>(v, r, h, t)
+    _imp(v, r, h, t)
 {
 }
 

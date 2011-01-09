@@ -115,7 +115,7 @@ namespace paludis
 }
 
 SuggestionsConf::SuggestionsConf(const PaludisEnvironment * const e) :
-    Pimp<SuggestionsConf>(e)
+    _imp(e)
 {
 }
 

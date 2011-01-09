@@ -28,9 +28,11 @@
 namespace paludis
 {
     class ElfLinkageChecker :
-        public LinkageChecker,
-        private Pimp<ElfLinkageChecker>
+        public LinkageChecker
     {
+        private:
+            Pimp<ElfLinkageChecker> _imp;
+
         public:
             ElfLinkageChecker(const FSPath &, const std::shared_ptr<const Sequence<std::string>> &);
             virtual ~ElfLinkageChecker();

@@ -164,7 +164,7 @@ namespace paludis
 }
 
 PackageDatabase::PackageDatabase(const Environment * const e) :
-    Pimp<PackageDatabase>()
+    _imp()
 {
     _imp->environment = e;
 }

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  * Copyright (c) 2006 Mark Loeser
  * Copyright (c) 2008 Fernando J. Pereda
  *
@@ -32,9 +32,11 @@
 
 namespace paludis
 {
-    class PALUDIS_VISIBLE FSStat :
-        private Pimp<FSStat>
+    class PALUDIS_VISIBLE FSStat
     {
+        private:
+            Pimp<FSStat> _imp;
+
         public:
             explicit FSStat(const FSPath &);
 

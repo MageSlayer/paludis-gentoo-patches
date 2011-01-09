@@ -232,8 +232,7 @@ namespace
 }
 
 PortageEnvironment::PortageEnvironment(const std::string & s) :
-    Pimp<PortageEnvironment>(this, s),
-    _imp(Pimp<PortageEnvironment>::_imp)
+    _imp(this, s)
 {
     using namespace std::placeholders;
 

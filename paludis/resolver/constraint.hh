@@ -64,9 +64,11 @@ namespace paludis
                     Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
-        class PALUDIS_VISIBLE Constraints :
-            private Pimp<Constraints>
+        class PALUDIS_VISIBLE Constraints
         {
+            private:
+                Pimp<Constraints> _imp;
+
             public:
                 Constraints();
                 ~Constraints();

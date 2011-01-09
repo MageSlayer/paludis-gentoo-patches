@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -70,7 +70,7 @@ namespace paludis
 RequiredUseVerifier::RequiredUseVerifier(
         const Environment * const e,
         const std::shared_ptr<const ERepositoryID> & id) :
-    Pimp<RequiredUseVerifier>(e, id)
+    _imp(e, id)
 {
 }
 

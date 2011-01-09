@@ -29,9 +29,11 @@
 
 namespace paludis
 {
-    class PALUDIS_VISIBLE BrokenLinkageConfiguration :
-        private Pimp<BrokenLinkageConfiguration>
+    class PALUDIS_VISIBLE BrokenLinkageConfiguration
     {
+        private:
+            Pimp<BrokenLinkageConfiguration> _imp;
+
         public:
             BrokenLinkageConfiguration(const FSPath &);
             ~BrokenLinkageConfiguration();

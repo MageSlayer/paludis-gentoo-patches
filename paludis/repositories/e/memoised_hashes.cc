@@ -53,7 +53,7 @@ namespace paludis
 }
 
 MemoisedHashes::MemoisedHashes() :
-    Pimp<MemoisedHashes>()
+    _imp()
 {
 }
 

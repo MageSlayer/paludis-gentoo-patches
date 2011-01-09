@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -33,12 +33,13 @@ namespace paludis
 {
     namespace erepository
     {
-        class PALUDIS_VISIBLE SpecTreePrettyPrinter :
-            private Pimp<SpecTreePrettyPrinter>
+        class PALUDIS_VISIBLE SpecTreePrettyPrinter
         {
             friend std::ostream & operator<< (std::ostream &, const SpecTreePrettyPrinter &);
 
             private:
+                Pimp<SpecTreePrettyPrinter> _imp;
+
                 void do_annotations(const DepSpec &);
 
             public:

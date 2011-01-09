@@ -43,12 +43,11 @@ namespace paludis
     struct ElfObjectSectionIteratorTag;
 
     template <typename ElfType_>
-    class PALUDIS_VISIBLE ElfObject :
-        private paludis::Pimp<ElfObject<ElfType_> >
+    class PALUDIS_VISIBLE ElfObject
     {
-        using paludis::Pimp<ElfObject>::_imp;
-
         private:
+            Pimp<ElfObject> _imp;
+
             typename ElfType_::Header _hdr;
 
         public:

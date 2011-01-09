@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2010 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -241,9 +241,11 @@ namespace paludis
      */
     class PALUDIS_VISIBLE GeneralSetDepTag :
         public DepTag,
-        public ImplementAcceptMethods<DepTag, GeneralSetDepTag>,
-        private Pimp<GeneralSetDepTag>
+        public ImplementAcceptMethods<DepTag, GeneralSetDepTag>
     {
+        private:
+            Pimp<GeneralSetDepTag> _imp;
+
         public:
             ///\name Basic operations
             ///\{
@@ -271,10 +273,11 @@ namespace paludis
      */
     class PALUDIS_VISIBLE DependencyDepTag :
         public DepTag,
-        public ImplementAcceptMethods<DepTag, DependencyDepTag>,
-        private Pimp<DependencyDepTag>
+        public ImplementAcceptMethods<DepTag, DependencyDepTag>
     {
         private:
+            Pimp<DependencyDepTag> _imp;
+
             void _make_str() const;
 
         public:

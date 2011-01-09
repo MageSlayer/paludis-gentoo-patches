@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  * Copyright (c) 2006 Stephen Bennett
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -259,10 +259,11 @@ namespace paludis
          */
         class PALUDIS_VISIBLE StringSetArg :
             public ArgsOption,
-            public ImplementAcceptMethods<ArgsOption, StringSetArg>,
-            private Pimp<StringSetArg>
+            public ImplementAcceptMethods<ArgsOption, StringSetArg>
         {
             private:
+                Pimp<StringSetArg> _imp;
+
                 void (* _validator) (const std::string &);
 
             public:
@@ -272,10 +273,12 @@ namespace paludis
                  *
                  * \ingroup grplibpaludisargs
                  */
-                class PALUDIS_VISIBLE StringSetArgOptions :
-                    private Pimp<StringSetArgOptions>
+                class PALUDIS_VISIBLE StringSetArgOptions
                 {
                     friend class StringSetArg;
+
+                    private:
+                        Pimp<StringSetArgOptions> _imp;
 
                     public:
                         /**
@@ -365,9 +368,11 @@ namespace paludis
          */
         class PALUDIS_VISIBLE StringSequenceArg :
             public ArgsOption,
-            public ImplementAcceptMethods<ArgsOption, StringSequenceArg>,
-            private Pimp<StringSequenceArg>
+            public ImplementAcceptMethods<ArgsOption, StringSequenceArg>
         {
+            private:
+                Pimp<StringSequenceArg> _imp;
+
             public:
                 ///\name Basic operations
                 ///\{
@@ -513,10 +518,11 @@ namespace paludis
          */
         class PALUDIS_VISIBLE EnumArg :
             public ArgsOption,
-            public ImplementAcceptMethods<ArgsOption, EnumArg>,
-            private Pimp<EnumArg>
+            public ImplementAcceptMethods<ArgsOption, EnumArg>
         {
             private:
+                Pimp<EnumArg> _imp;
+
                 std::string _argument;
                 std::string _default_arg;
 
@@ -527,10 +533,12 @@ namespace paludis
                  *
                  * \ingroup grplibpaludisargs
                  */
-                class PALUDIS_VISIBLE EnumArgOptions :
-                    private Pimp<EnumArgOptions>
+                class PALUDIS_VISIBLE EnumArgOptions
                 {
                     friend class EnumArg;
+
+                    private:
+                        Pimp<EnumArgOptions> _imp;
 
                     public:
                         /**

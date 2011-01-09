@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -106,7 +106,7 @@ JobSkippedState::serialise(Serialiser & s) const
 }
 
 JobActiveState::JobActiveState() :
-    Pimp<JobActiveState>()
+    _imp()
 {
 }
 
@@ -153,7 +153,7 @@ JobActiveState::serialise(Serialiser & s) const
 }
 
 JobSucceededState::JobSucceededState(const std::shared_ptr<OutputManager> & m) :
-    Pimp<JobSucceededState>(m)
+    _imp(m)
 {
 }
 
@@ -182,7 +182,7 @@ JobSucceededState::serialise(Serialiser & s) const
 }
 
 JobFailedState::JobFailedState(const std::shared_ptr<OutputManager> & m) :
-    Pimp<JobFailedState>(m)
+    _imp(m)
 {
 }
 

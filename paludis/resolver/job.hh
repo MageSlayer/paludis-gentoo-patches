@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -36,9 +36,11 @@ namespace paludis
 {
     namespace resolver
     {
-        class PALUDIS_VISIBLE PretendJob :
-            private Pimp<PretendJob>
+        class PALUDIS_VISIBLE PretendJob
         {
+            private:
+                Pimp<PretendJob> _imp;
+
             public:
                 PretendJob(
                         const PackageDepSpec &,
@@ -72,10 +74,12 @@ namespace paludis
         };
 
         class PALUDIS_VISIBLE FetchJob :
-            private Pimp<FetchJob>,
             public ExecuteJob,
             public ImplementAcceptMethods<ExecuteJob, FetchJob>
         {
+            private:
+                Pimp<FetchJob> _imp;
+
             public:
                 FetchJob(
                         const std::shared_ptr<const JobRequirements> &,
@@ -95,10 +99,12 @@ namespace paludis
         };
 
         class PALUDIS_VISIBLE InstallJob :
-            private Pimp<InstallJob>,
             public ExecuteJob,
             public ImplementAcceptMethods<ExecuteJob, InstallJob>
         {
+            private:
+                Pimp<InstallJob> _imp;
+
             public:
                 InstallJob(
                         const std::shared_ptr<const JobRequirements> &,
@@ -123,10 +129,12 @@ namespace paludis
         };
 
         class PALUDIS_VISIBLE UninstallJob :
-            private Pimp<UninstallJob>,
             public ExecuteJob,
             public ImplementAcceptMethods<ExecuteJob, UninstallJob>
         {
+            private:
+                Pimp<UninstallJob> _imp;
+
             public:
                 UninstallJob(
                         const std::shared_ptr<const JobRequirements> &,

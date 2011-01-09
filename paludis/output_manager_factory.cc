@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -90,7 +90,7 @@ namespace paludis
 }
 
 OutputManagerFactory::OutputManagerFactory() :
-    Pimp<OutputManagerFactory>()
+    _imp()
 {
     /* we might want to make this plugin loadable at some point */
     add_manager(BufferOutputManager::factory_managers(), BufferOutputManager::factory_create);

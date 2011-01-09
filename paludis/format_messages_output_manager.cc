@@ -75,7 +75,7 @@ FormatMessagesOutputManager::FormatMessagesOutputManager(
         const std::string & format_error,
         const std::string & format_log,
         const FormatMessagesOutputManagerFormatFunction & f) :
-    Pimp<FormatMessagesOutputManager>(child, format_debug, format_info, format_warn, format_error, format_log, "", f)
+    _imp(child, format_debug, format_info, format_warn, format_error, format_log, "", f)
 {
 }
 
@@ -88,7 +88,7 @@ FormatMessagesOutputManager::FormatMessagesOutputManager(
         const std::string & format_log,
         const std::string & format_status,
         const FormatMessagesOutputManagerFormatFunction & f) :
-    Pimp<FormatMessagesOutputManager>(child, format_debug, format_info, format_warn, format_error, format_log, format_status, f)
+    _imp(child, format_debug, format_info, format_warn, format_error, format_log, format_status, f)
 {
 }
 

@@ -56,7 +56,7 @@ namespace paludis
 }
 
 GetConstraintsForPurgeHelper::GetConstraintsForPurgeHelper(const Environment * const e) :
-    Pimp<GetConstraintsForPurgeHelper>(e)
+    _imp(e)
 {
 }
 

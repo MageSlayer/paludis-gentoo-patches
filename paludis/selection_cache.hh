@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -29,9 +29,11 @@
 
 namespace paludis
 {
-    class PALUDIS_VISIBLE SelectionCache :
-        private Pimp<SelectionCache>
+    class PALUDIS_VISIBLE SelectionCache
     {
+        private:
+            Pimp<SelectionCache> _imp;
+
         public:
             SelectionCache();
             ~SelectionCache();
@@ -41,9 +43,11 @@ namespace paludis
                     const Selection &) const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
-    class PALUDIS_VISIBLE ScopedSelectionCache :
-        private Pimp<ScopedSelectionCache>
+    class PALUDIS_VISIBLE ScopedSelectionCache
     {
+        private:
+            Pimp<ScopedSelectionCache> _imp;
+
         public:
             ScopedSelectionCache(Environment * const);
             ~ScopedSelectionCache();

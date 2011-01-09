@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -28,9 +28,11 @@ namespace paludis
     namespace erepository
     {
         class EUnacceptedMask :
-            public UnacceptedMask,
-            private Pimp<EUnacceptedMask>
+            public UnacceptedMask
         {
+            private:
+                Pimp<EUnacceptedMask> _imp;
+
             public:
                 EUnacceptedMask(const char, const std::string &, const std::shared_ptr<const MetadataKey> &);
                 ~EUnacceptedMask();
@@ -41,9 +43,11 @@ namespace paludis
         };
 
         class EUnsupportedMask :
-            public UnsupportedMask,
-            private Pimp<EUnsupportedMask>
+            public UnsupportedMask
         {
+            private:
+                Pimp<EUnsupportedMask> _imp;
+
             public:
                 EUnsupportedMask(const char, const std::string &, const std::string &);
                 ~EUnsupportedMask();
@@ -54,9 +58,11 @@ namespace paludis
         };
 
         class ERepositoryMask :
-            public RepositoryMask,
-            private Pimp<ERepositoryMask>
+            public RepositoryMask
         {
+            private:
+                Pimp<ERepositoryMask> _imp;
+
             public:
                 ERepositoryMask(const char, const std::string &, const std::shared_ptr<const MetadataKey> &);
                 ~ERepositoryMask();

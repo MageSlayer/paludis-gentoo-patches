@@ -74,7 +74,7 @@ namespace paludis
 }
 
 GetInitialConstraintsForHelper::GetInitialConstraintsForHelper(const Environment * const e) :
-    Pimp<GetInitialConstraintsForHelper>(e)
+    _imp(e)
 {
 }
 

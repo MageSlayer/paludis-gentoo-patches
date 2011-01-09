@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -61,7 +61,7 @@ namespace paludis
 TeeOutputManager::TeeOutputManager(
         const std::shared_ptr<const OutputManagerSequence> & s,
         const std::shared_ptr<const OutputManagerSequence> & ss) :
-    Pimp<TeeOutputManager>(s, ss, make_null_shared_ptr(), make_null_shared_ptr())
+    _imp(s, ss, make_null_shared_ptr(), make_null_shared_ptr())
 {
     for (OutputManagerSequence::ConstIterator i(_imp->streams->begin()), i_end(_imp->streams->end()) ;
             i != i_end ; ++i)
@@ -76,7 +76,7 @@ TeeOutputManager::TeeOutputManager(
         const std::shared_ptr<const OutputManagerSequence> & ss,
         const std::shared_ptr<const OutputManagerSequence> & so,
         const std::shared_ptr<const OutputManagerSequence> & se) :
-    Pimp<TeeOutputManager>(s, ss, so, se)
+    _imp(s, ss, so, se)
 {
     for (OutputManagerSequence::ConstIterator i(_imp->streams->begin()), i_end(_imp->streams->end()) ;
             i != i_end ; ++i)

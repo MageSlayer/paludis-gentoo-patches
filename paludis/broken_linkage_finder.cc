@@ -141,7 +141,7 @@ namespace
 }
 
 BrokenLinkageFinder::BrokenLinkageFinder(const Environment * env, const std::shared_ptr<const Sequence<std::string>> & libraries) :
-    Pimp<BrokenLinkageFinder>(env, libraries)
+    _imp(env, libraries)
 {
     using namespace std::placeholders;
 

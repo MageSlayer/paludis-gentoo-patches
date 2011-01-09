@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -138,7 +138,7 @@ CreateOutputManagerForPackageIDActionInfo::CreateOutputManagerForPackageIDAction
         const Action & a,
         const OutputExclusivity e,
         const ClientOutputFeatures & c) :
-    Pimp<CreateOutputManagerForPackageIDActionInfo>(i, a.simple_name(), get_flags(a), e, c)
+    _imp(i, a.simple_name(), get_flags(a), e, c)
 {
 }
 
@@ -148,7 +148,7 @@ CreateOutputManagerForPackageIDActionInfo::CreateOutputManagerForPackageIDAction
         const std::shared_ptr<const Set<std::string> > & f,
         const OutputExclusivity e,
         const ClientOutputFeatures & c) :
-    Pimp<CreateOutputManagerForPackageIDActionInfo>(i, a, f, e, c)
+    _imp(i, a, f, e, c)
 {
 }
 
@@ -219,7 +219,7 @@ CreateOutputManagerForPackageIDActionInfo::deserialise(Deserialisation & d)
 
 CreateOutputManagerForRepositorySyncInfo::CreateOutputManagerForRepositorySyncInfo(
         const RepositoryName & r, const OutputExclusivity e, const ClientOutputFeatures & c) :
-    Pimp<CreateOutputManagerForRepositorySyncInfo>(r, e, c)
+    _imp(r, e, c)
 {
 }
 

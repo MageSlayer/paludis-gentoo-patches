@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -137,9 +137,11 @@ namespace paludis
      * \ingroup g_choices
      * \since 0.32
      */
-    class PALUDIS_VISIBLE Choices :
-        private Pimp<Choices>
+    class PALUDIS_VISIBLE Choices
     {
+        private:
+            Pimp<Choices> _imp;
+
         public:
             ///\name Basic operations
             ///\{
@@ -216,9 +218,11 @@ namespace paludis
      * \ingroup g_choices
      * \since 0.32
      */
-    class PALUDIS_VISIBLE Choice :
-        private Pimp<Choice>
+    class PALUDIS_VISIBLE Choice
     {
+        private:
+            Pimp<Choice> _imp;
+
         public:
             ///\name Basic operations
             ///\{

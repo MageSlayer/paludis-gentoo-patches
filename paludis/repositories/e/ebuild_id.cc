@@ -115,7 +115,7 @@ namespace paludis
     template <>
     struct Imp<EbuildID>
     {
-        Mutex mutex;
+        mutable Mutex mutex;
 
         const QualifiedPackageName name;
         const VersionSpec version;
@@ -207,8 +207,7 @@ EbuildID::EbuildID(const QualifiedPackageName & q, const VersionSpec & v,
         const std::string & g,
         const time_t t,
         const std::shared_ptr<const EclassMtimes> & m) :
-    Pimp<EbuildID>(q, v, e, r, f, guess_eapi(g, e, r), t, m),
-    _imp(Pimp<EbuildID>::_imp)
+    _imp(q, v, e, r, f, guess_eapi(g, e, r), t, m)
 {
 }
 

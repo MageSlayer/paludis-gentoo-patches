@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -57,11 +57,10 @@ namespace paludis
      */
     template <typename T_>
     class PALUDIS_VISIBLE LiteralMetadataValueKey :
-        public std::conditional<MetadataValueKeyIsPrettyPrintable<T_>::value, PrettyPrintableLiteralMetadataValueKey<T_>, MetadataValueKey<T_> >::type,
-        private Pimp<LiteralMetadataValueKey<T_> >
+        public std::conditional<MetadataValueKeyIsPrettyPrintable<T_>::value, PrettyPrintableLiteralMetadataValueKey<T_>, MetadataValueKey<T_> >::type
     {
         private:
-            typename Pimp<LiteralMetadataValueKey<T_> >::ImpPtr & _imp;
+            Pimp<LiteralMetadataValueKey<T_> > _imp;
 
         public:
             ///\name Basic operations
@@ -93,11 +92,10 @@ namespace paludis
      * \since 0.26
      */
     class PALUDIS_VISIBLE LiteralMetadataFSPathSequenceKey :
-        public MetadataCollectionKey<FSPathSequence>,
-        private Pimp<LiteralMetadataFSPathSequenceKey>
+        public MetadataCollectionKey<FSPathSequence>
     {
         private:
-            Pimp<LiteralMetadataFSPathSequenceKey>::ImpPtr & _imp;
+            Pimp<LiteralMetadataFSPathSequenceKey> _imp;
 
         public:
             ///\name Basic operations
@@ -128,11 +126,10 @@ namespace paludis
      * \since 0.26
      */
     class PALUDIS_VISIBLE LiteralMetadataStringSetKey :
-        public MetadataCollectionKey<Set<std::string> >,
-        private Pimp<LiteralMetadataStringSetKey>
+        public MetadataCollectionKey<Set<std::string> >
     {
         private:
-            Pimp<LiteralMetadataStringSetKey>::ImpPtr & _imp;
+            Pimp<LiteralMetadataStringSetKey> _imp;
 
         public:
             ///\name Basic operations
@@ -163,11 +160,10 @@ namespace paludis
      * \since 0.30
      */
     class PALUDIS_VISIBLE LiteralMetadataStringSequenceKey :
-        public MetadataCollectionKey<Sequence<std::string> >,
-        private Pimp<LiteralMetadataStringSequenceKey>
+        public MetadataCollectionKey<Sequence<std::string> >
     {
         private:
-            Pimp<LiteralMetadataStringSequenceKey>::ImpPtr & _imp;
+            Pimp<LiteralMetadataStringSequenceKey> _imp;
 
         public:
             ///\name Basic operations
@@ -199,11 +195,10 @@ namespace paludis
      * \since 0.44 Timestamp instead of time_t
      */
     class PALUDIS_VISIBLE LiteralMetadataTimeKey :
-        public MetadataTimeKey,
-        private Pimp<LiteralMetadataTimeKey>
+        public MetadataTimeKey
     {
         private:
-            Pimp<LiteralMetadataTimeKey>::ImpPtr & _imp;
+            Pimp<LiteralMetadataTimeKey> _imp;
 
         public:
             ///\name Basic operations
@@ -229,11 +224,10 @@ namespace paludis
      * \since 0.55
      */
     class PALUDIS_VISIBLE LiteralMetadataStringStringMapKey :
-        public MetadataCollectionKey<Map<std::string, std::string> >,
-        private Pimp<LiteralMetadataStringStringMapKey>
+        public MetadataCollectionKey<Map<std::string, std::string> >
     {
         private:
-            Pimp<LiteralMetadataStringStringMapKey>::ImpPtr & _imp;
+            Pimp<LiteralMetadataStringStringMapKey> _imp;
 
         public:
             ///\name Basic operations

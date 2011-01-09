@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  * Copyright (c) 2008 Fernando J. Pereda
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -83,7 +83,6 @@ FSMergerError::FSMergerError(const std::string & s) throw () :
 }
 
 FSMerger::FSMerger(const FSMergerParams & p) :
-    Pimp<FSMerger>(p),
     Merger(make_named_values<MergerParams>(
                 n::environment() = p.environment(),
                 n::fix_mtimes_before() = p.fix_mtimes_before(),
@@ -96,7 +95,7 @@ FSMerger::FSMerger(const FSMergerParams & p) :
                 n::options() = p.options(),
                 n::root() = p.root()
                 )),
-    _imp(Pimp<FSMerger>::_imp)
+    _imp(p)
 {
 }
 

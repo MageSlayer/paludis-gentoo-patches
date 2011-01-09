@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -127,8 +127,7 @@ namespace paludis
 
 LiteralMetadataFSPathSequenceKey::LiteralMetadataFSPathSequenceKey(const std::string & r, const std::string & h,
         const MetadataKeyType t, const std::shared_ptr<const FSPathSequence> & v) :
-    Pimp<LiteralMetadataFSPathSequenceKey>(r, h, t, v),
-    _imp(Pimp<LiteralMetadataFSPathSequenceKey>::_imp)
+    _imp(r, h, t, v)
 {
 }
 
@@ -169,8 +168,7 @@ LiteralMetadataFSPathSequenceKey::type() const
 
 LiteralMetadataStringSetKey::LiteralMetadataStringSetKey(const std::string & r, const std::string & h,
         const MetadataKeyType t, const std::shared_ptr<const Set<std::string> > & v) :
-    Pimp<LiteralMetadataStringSetKey>(r, h, t, v),
-    _imp(Pimp<LiteralMetadataStringSetKey>::_imp)
+    _imp(r, h, t, v)
 {
 }
 
@@ -186,8 +184,7 @@ LiteralMetadataStringSetKey::value() const
 
 LiteralMetadataStringStringMapKey::LiteralMetadataStringStringMapKey(const std::string & r, const std::string & h,
         const MetadataKeyType t, const std::shared_ptr<const Map<std::string, std::string> > & v) :
-    Pimp<LiteralMetadataStringStringMapKey>(r, h, t, v),
-    _imp(Pimp<LiteralMetadataStringStringMapKey>::_imp)
+    _imp(r, h, t, v)
 {
 }
 
@@ -203,8 +200,7 @@ LiteralMetadataStringStringMapKey::value() const
 
 LiteralMetadataStringSequenceKey::LiteralMetadataStringSequenceKey(const std::string & r, const std::string & h,
         const MetadataKeyType t, const std::shared_ptr<const Sequence<std::string> > & v) :
-    Pimp<LiteralMetadataStringSequenceKey>(r, h, t, v),
-    _imp(Pimp<LiteralMetadataStringSequenceKey>::_imp)
+    _imp(r, h, t, v)
 {
 }
 
@@ -324,8 +320,7 @@ LiteralMetadataValueKey<T_>::type() const
 template <typename T_>
 LiteralMetadataValueKey<T_>::LiteralMetadataValueKey(const std::string & r, const std::string & h,
         const MetadataKeyType t, const T_ & v) :
-    Pimp<LiteralMetadataValueKey<T_> >(r, h, t, v),
-    _imp(Pimp<LiteralMetadataValueKey<T_ > >::_imp)
+    _imp(r, h, t, v)
 {
 }
 
@@ -372,8 +367,7 @@ namespace paludis
 
 LiteralMetadataTimeKey::LiteralMetadataTimeKey(
         const std::string & r, const std::string & h, const MetadataKeyType k, const Timestamp v) :
-    Pimp<LiteralMetadataTimeKey>(r, h, k, v),
-    _imp(Pimp<LiteralMetadataTimeKey>::_imp)
+    _imp(r, h, k, v)
 {
 }
 

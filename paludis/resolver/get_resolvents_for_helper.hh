@@ -37,9 +37,11 @@ namespace paludis
 {
     namespace resolver
     {
-        class PALUDIS_VISIBLE GetResolventsForHelper :
-            private Pimp<GetResolventsForHelper>
+        class PALUDIS_VISIBLE GetResolventsForHelper
         {
+            private:
+                Pimp<GetResolventsForHelper> _imp;
+
             public:
                 explicit GetResolventsForHelper(const Environment * const);
                 ~GetResolventsForHelper();

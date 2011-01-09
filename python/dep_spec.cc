@@ -114,7 +114,7 @@ namespace paludis
 }
 
 PythonCompositeDepSpec::PythonCompositeDepSpec() :
-    Pimp<PythonCompositeDepSpec>()
+    _imp()
 {
 }
 
@@ -225,7 +225,7 @@ deep_copy(const std::shared_ptr<const T_> & x)
 
 PythonPackageDepSpec::PythonPackageDepSpec(const PackageDepSpec & p) :
     PythonStringDepSpec(p.text()),
-    Pimp<PythonPackageDepSpec>(
+    _imp(
             deep_copy(p.package_ptr()),
             deep_copy(p.category_name_part_ptr()),
             deep_copy(p.package_name_part_ptr()),
@@ -247,7 +247,7 @@ PythonPackageDepSpec::PythonPackageDepSpec(const PackageDepSpec & p) :
 
 PythonPackageDepSpec::PythonPackageDepSpec(const PythonPackageDepSpec & p) :
     PythonStringDepSpec(p.text()),
-    Pimp<PythonPackageDepSpec>(
+    _imp(
             deep_copy(p.package_ptr()),
             deep_copy(p.category_name_part_ptr()),
             deep_copy(p.package_name_part_ptr()),

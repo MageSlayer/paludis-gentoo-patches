@@ -45,7 +45,7 @@ namespace paludis
 }
 
 CanUseHelper::CanUseHelper(const Environment * const e) :
-    Pimp<CanUseHelper>(e)
+    _imp(e)
 {
 }
 

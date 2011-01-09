@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  * Copyright (c) 2006 Danny van Dyk
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -97,7 +97,7 @@ namespace paludis
 TraditionalLayout::TraditionalLayout(const ERepository * const repo, const FSPath & tree_root,
         const std::shared_ptr<const FSPathSequence> & f) :
     Layout(f),
-    Pimp<TraditionalLayout>(repo, tree_root)
+    _imp(repo, tree_root)
 {
     if (master_repositories_locations())
     {

@@ -90,7 +90,7 @@ namespace paludis
 }
 
 InfoVarsMetadataKey::InfoVarsMetadataKey(const std::shared_ptr<const FSPathSequence> & f) :
-    Pimp<InfoVarsMetadataKey>(f)
+    _imp(f)
 {
 }
 
@@ -145,8 +145,7 @@ InfoVarsMetadataKey::type() const
 InfoPkgsMetadataKey::InfoPkgsMetadataKey(const Environment * const e,
         const std::shared_ptr<const FSPathSequence> & f,
         const ERepository * const r) :
-    Pimp<InfoPkgsMetadataKey>(e, f, r),
-    _imp(Pimp<InfoPkgsMetadataKey>::_imp)
+    _imp(e, f, r)
 {
 }
 

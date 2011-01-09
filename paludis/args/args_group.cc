@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -48,7 +48,7 @@ namespace paludis
 
 ArgsGroup::ArgsGroup(ArgsSection * s, const std::string & our_name,
         const std::string & our_description) :
-    Pimp<ArgsGroup>(),
+    _imp(),
     _name(our_name),
     _description(our_description),
     _section(s)

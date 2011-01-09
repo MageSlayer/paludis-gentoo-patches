@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -113,12 +113,13 @@ namespace paludis
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE DistributionData :
-        private Pimp<DistributionData>,
         public Singleton<DistributionData>
     {
         friend class Singleton<DistributionData>;
 
         private:
+            Pimp<DistributionData> _imp;
+
             DistributionData();
             ~DistributionData();
 
@@ -140,12 +141,13 @@ namespace paludis
      */
     template <typename Data_>
     class PALUDIS_VISIBLE ExtraDistributionData :
-        private Pimp<ExtraDistributionData<Data_> >,
         public Singleton<ExtraDistributionData<Data_> >
     {
         friend class Singleton<ExtraDistributionData<Data_> >;
 
         private:
+            Pimp<ExtraDistributionData> _imp;
+
             ExtraDistributionData();
             ~ExtraDistributionData();
 

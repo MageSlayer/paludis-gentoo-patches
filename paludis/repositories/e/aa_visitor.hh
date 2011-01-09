@@ -41,9 +41,11 @@ namespace paludis
          *
          * \ingroup grpaavisitor
          */
-        class PALUDIS_VISIBLE AAVisitor :
-            private Pimp<AAVisitor>
+        class PALUDIS_VISIBLE AAVisitor
         {
+            private:
+                Pimp<AAVisitor> _imp;
+
             public:
                 ///\name Basic operations
                 ///\{

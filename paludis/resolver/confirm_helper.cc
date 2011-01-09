@@ -57,7 +57,7 @@ namespace paludis
 }
 
 ConfirmHelper::ConfirmHelper(const Environment * const e) :
-    Pimp<ConfirmHelper>(e)
+    _imp(e)
 {
 }
 

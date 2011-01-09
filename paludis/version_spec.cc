@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -87,7 +87,7 @@ namespace paludis
 }
 
 VersionSpec::VersionSpec(const std::string & text, const VersionSpecOptions & options) :
-    Pimp<VersionSpec>(options)
+    _imp(options)
 {
     Context c("When parsing version spec '" + text + "':");
 
@@ -325,7 +325,7 @@ VersionSpec::VersionSpec(const std::string & text, const VersionSpecOptions & op
 }
 
 VersionSpec::VersionSpec(const VersionSpec & other) :
-    Pimp<VersionSpec>(other._imp->options)
+    _imp(other._imp->options)
 {
     _imp->text = other._imp->text;
     _imp->parts = other._imp->parts;

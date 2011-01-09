@@ -44,9 +44,11 @@ namespace paludis
      * \ingroup g_tasks
      * \nosubgrouping
      */
-    class PALUDIS_VISIBLE ReportTask :
-        private Pimp<ReportTask>
+    class PALUDIS_VISIBLE ReportTask
     {
+        private:
+            Pimp<ReportTask> _imp;
+
         protected:
             ///\name Basic operations
             ///\{

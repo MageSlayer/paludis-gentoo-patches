@@ -156,8 +156,8 @@ namespace paludis
         mutable std::shared_ptr<EInstalledRepositoryIDKeys> keys;
 
         /* fs location and eapi are special */
-        std::shared_ptr<const MetadataValueKey<FSPath> > fs_location;
-        std::shared_ptr<const EAPI> eapi;
+        mutable std::shared_ptr<const MetadataValueKey<FSPath> > fs_location;
+        mutable std::shared_ptr<const EAPI> eapi;
 
         Imp(const QualifiedPackageName & q, const VersionSpec & v,
                 const Environment * const e,
@@ -176,8 +176,7 @@ EInstalledRepositoryID::EInstalledRepositoryID(const QualifiedPackageName & q, c
         const Environment * const e,
         const RepositoryName & r,
         const FSPath & f) :
-    Pimp<EInstalledRepositoryID>(q, v, e, r, f),
-    _imp(Pimp<EInstalledRepositoryID>::_imp)
+    _imp(q, v, e, r, f)
 {
 }
 

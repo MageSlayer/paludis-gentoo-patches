@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -119,8 +119,7 @@ namespace paludis
 UnpackagedID::UnpackagedID(const Environment * const e, const QualifiedPackageName & q,
         const VersionSpec & v, const SlotName & s, const RepositoryName & n, const FSPath & l,
         const std::string & b, const std::string & r, const std::string & d, const Tribool ds, const Tribool dw) :
-    Pimp<UnpackagedID>(e, q, v, s, n, l, b, r, d, ds, dw, this),
-    _imp(Pimp<UnpackagedID>::_imp)
+    _imp(e, q, v, s, n, l, b, r, d, ds, dw, this)
 {
     add_metadata_key(_imp->slot_key);
     add_metadata_key(_imp->fs_location_key);

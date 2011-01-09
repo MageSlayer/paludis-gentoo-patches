@@ -107,7 +107,7 @@ namespace
 }
 
 WildcardExpander::WildcardExpander(const std::string & pattern, const FSPath & root) :
-    Pimp<WildcardExpander>()
+    _imp()
 {
     // GLOB_NOCHECK seems to be buggy in glibc 2.5: fails
     //        TEST_CHECK_EQUAL(expand("/foo\\*"), "/foo*");
@@ -124,13 +124,13 @@ WildcardExpander::WildcardExpander(const std::string & pattern, const FSPath & r
 }
 
 WildcardExpander::WildcardExpander() :
-    Pimp<WildcardExpander>()
+    _imp()
 {
     _imp->it = _imp->files->end();
 }
 
 WildcardExpander::WildcardExpander(const WildcardExpander & other) :
-    Pimp<WildcardExpander>(other._imp->files, other._imp->it)
+    _imp(other._imp->files, other._imp->it)
 {
 }
 
@@ -180,4 +180,6 @@ WildcardExpander::operator== (const WildcardExpander & other) const
         return true;
     return _imp->files == other._imp->files && _imp->it == other._imp->it;
 }
+
+template class Pimp<WildcardExpander>;
 

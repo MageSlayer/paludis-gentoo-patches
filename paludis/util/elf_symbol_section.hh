@@ -81,12 +81,10 @@ namespace paludis
     template <typename ElfType_>
     class SymbolSection :
         public Section<ElfType_>,
-        public paludis::ImplementAcceptMethods<Section<ElfType_>, SymbolSection<ElfType_> >,
-        private paludis::Pimp<SymbolSection<ElfType_> >
+        public paludis::ImplementAcceptMethods<Section<ElfType_>, SymbolSection<ElfType_> >
     {
-        using paludis::Pimp<SymbolSection>::_imp;
-
         private:
+            Pimp<SymbolSection> _imp;
             std::string _type;
 
         public:

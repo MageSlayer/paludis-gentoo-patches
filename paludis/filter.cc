@@ -50,12 +50,12 @@ namespace paludis
 }
 
 Filter::Filter(const std::shared_ptr<const FilterHandler> & h) :
-    Pimp<Filter>(h)
+    _imp(h)
 {
 }
 
 Filter::Filter(const Filter & other) :
-    Pimp<Filter>(other._imp->handler)
+    _imp(other._imp->handler)
 {
 }
 

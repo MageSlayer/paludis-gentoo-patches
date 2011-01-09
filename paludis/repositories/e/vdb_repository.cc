@@ -179,8 +179,7 @@ VDBRepository::VDBRepository(const VDBRepositoryParams & p) :
                 n::provides_interface() = this,
                 n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
             )),
-    Pimp<VDBRepository>(this, p),
-    _imp(Pimp<VDBRepository>::_imp)
+    _imp(this, p)
 {
     _add_metadata_keys();
 }
