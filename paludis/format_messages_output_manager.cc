@@ -178,15 +178,17 @@ FormatMessagesOutputManager::factory_managers()
 
 namespace
 {
-    std::string format_message(
-            const OutputManagerFactory::ReplaceVarsFunc r,
-            const std::string & f,
-            const std::string & s)
+    struct FormatMessage
     {
-        std::shared_ptr<Map<std::string, std::string> > m(std::make_shared<Map<std::string, std::string>>());
-        m->insert("message", s);
-        return r(f, m);
-    }
+        const OutputManagerFactory::ReplaceVarsFunc r;
+
+        std::string operator() (const std::string & f, const std::string & s)
+        {
+            std::shared_ptr<Map<std::string, std::string> > m(std::make_shared<Map<std::string, std::string>>());
+            m->insert("message", s);
+            return r(f, m);
+        }
+    };
 }
 
 const std::shared_ptr<OutputManager>
@@ -205,11 +207,8 @@ FormatMessagesOutputManager::factory_create(
 
     std::shared_ptr<OutputManager> child(create_child_function(child_s));
 
-    FormatMessagesOutputManagerFormatFunction format_func(std::bind(
-                &format_message, std::cref(replace_vars_func), std::placeholders::_1, std::placeholders::_2));
-
     return std::make_shared<FormatMessagesOutputManager>(
-                child, format_debug_s, format_info_s, format_warn_s, format_error_s, format_log_s, format_status_s, format_func);
+            child, format_debug_s, format_info_s, format_warn_s, format_error_s, format_log_s, format_status_s, FormatMessage{replace_vars_func});
 }
 
 template class Pimp<FormatMessagesOutputManager>;
