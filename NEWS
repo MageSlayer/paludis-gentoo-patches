@@ -4,6 +4,13 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the Git log.
 
+0.58.0:
+    * The 'paludis' client is now deprecated in favour of 'cave'.
+
+    * New 'cave resolve' option: '--one-binary-per-slot'.
+
+    * Suggestions may now be controlled by 'suggestions.conf'.
+
 0.56.4:
     * Certain abusive || ( ) dependencies are now handled in the same way that
       Portage treats them.
