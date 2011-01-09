@@ -95,6 +95,12 @@ namespace paludis
                         const std::shared_ptr<const Reason> &,
                         const SpecInterest) const;
 
+                const std::shared_ptr<Constraint> _make_constraint_from_package_dependency(
+                        const std::shared_ptr<const Resolution> &,
+                        const SanitisedDependency &,
+                        const std::shared_ptr<const Reason> &,
+                        const SpecInterest) const;
+
                 const std::shared_ptr<ConstraintSequence> _make_constraints_from_blocker(
                         const std::shared_ptr<const Resolution> &,
                         const BlockDepSpec & dep,

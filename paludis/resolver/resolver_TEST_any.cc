@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
  * Copyright (c) 2009 David Leverton
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -228,5 +228,96 @@ namespace test_cases
            test_empty_preferences_it(indeterminate, true), test_empty_preferences_ii(indeterminate, indeterminate),
            test_empty_preferences_if(indeterminate, false), test_empty_preferences_ft(false, true),
            test_empty_preferences_fi(false, indeterminate), test_empty_preferences_ff(false, false);
+
+    struct TestSelfUseFirst : ResolverAnyTestCase
+    {
+        TestSelfUseFirst() :
+            ResolverAnyTestCase("self use first")
+        {
+        }
+
+        void run()
+        {
+            std::shared_ptr<const Resolved> resolved(get_resolved("self-use-first/target"));
+
+            check_resolved(resolved,
+                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .change(QualifiedPackageName("self-use-first/dep"))
+                        .change(QualifiedPackageName("self-use-first/target"))
+                        .finished()),
+                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished())
+                    );
+        }
+    } test_self_use_first;
+
+    struct TestSelfUseSecond : ResolverAnyTestCase
+    {
+        TestSelfUseSecond() :
+            ResolverAnyTestCase("self use second")
+        {
+        }
+
+        void run()
+        {
+            std::shared_ptr<const Resolved> resolved(get_resolved("self-use-second/target"));
+
+            check_resolved(resolved,
+                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .change(QualifiedPackageName("self-use-second/dep"))
+                        .change(QualifiedPackageName("self-use-second/target"))
+                        .finished()),
+                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished())
+                    );
+        }
+    } test_self_use_second;
+
+    struct TestSelfUseNeither : ResolverAnyTestCase
+    {
+        TestSelfUseNeither() :
+            ResolverAnyTestCase("self use neither")
+        {
+        }
+
+        void run()
+        {
+            std::shared_ptr<const Resolved> resolved(get_resolved("self-use-neither/target"));
+
+            check_resolved(resolved,
+                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .change(QualifiedPackageName("self-use-neither/dep"))
+                        .change(QualifiedPackageName("self-use-neither/target"))
+                        .finished()),
+                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
+                        .change(QualifiedPackageName("self-use-neither/dep"))
+                        .finished()),
+                    n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished())
+                    );
+        }
+    } test_self_use_neither;
 }
 
