@@ -1800,13 +1800,10 @@ namespace
         else
             cout << fuc(fs_display_errors());
 
-        bool any(false);
         for (Decisions<UnableToMakeDecision>::ConstIterator i(decisions->begin()),
                 i_end(decisions->end()) ;
                 i != i_end ; ++i)
         {
-            any = true;
-
             display_unable_to_make_decision(
                     env,
                     *resolved->resolutions_by_resolvent()->find((*i)->resolvent()),
