@@ -28,6 +28,7 @@ _cave()
   _cave_commands=(
     'config:Perform post-install configuration on a package'
     'contents:Display the contents of a package ID'
+    'digest:Generates a digest file for a particular package in a particular repository'
     "display-resolution:Displays a dependency resolution created using \'cave resolve\'"
     'dump-cave-formats-conf:Output a ~/.cave/formats.conf'
     'executables:Display executables belonging to an ID'
@@ -35,6 +36,8 @@ _cave()
     'find-candidates:Find a list of candidate packages for a search'
     'fix-cache:Fix on-disk caches'
     'fix-linkage:Identify packages with broken linkage that can be fixed by rebuilds'
+    "graph-jobs:Creates a Graphviz graph for jobs in a resolution created using \'cave resolve\'"
+    'has-version:Returns success if there is an installed package matching a particular spec'
     'help:Display help information'
     'import:Import a package from a directory containing its image'
     'info:Display a summary of configuration and package information'
@@ -61,6 +64,7 @@ _cave()
     'print-repository-metadata:Prints repository metadata'
     'print-set:Prints a list of known sets'
     'print-sets:Prints a list of sets'
+    'print-spec:Prints a dependency specification'
     'print-sync-protocols:Prints a list of sync protocols'
     'print-unused-distfiles:Prints all unused distfiles'
     'purge:Uninstall unused packages'
@@ -71,6 +75,7 @@ _cave()
     'show:Display a summary of a given object'
     'size:Prints the size of files installed by a package'
     'sync:Sync all or specified repositories'
+    'sync-protocol-options:Displays options for a given sync protocol'
     'uninstall:Uninstall one or more packages'
     'update-world:Updates the world set'
     "verify:Verify that an installed package\'s files haven\'t changed"
@@ -120,6 +125,16 @@ _cave_cmd_contents()
     '*:package depspec:_cave_packages' && return 0
 }
 
+(( ${+functions[_cave_digest]} )) ||
+_cave_digest()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '*:package depspec:_cave_packages' \
+    '*:repository:_cave_repositories' && return 0
+}
+
+
 (( ${+functions[_cave_cmd_display-resolution]} )) ||
 _cave_cmd_display-resolution()
 {
@@ -165,9 +180,11 @@ _cave_cmd_execute-resolution()
     '*--skip-until-phase[Skip every phase until a named phase is encountered]:Phase:((fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup))' \
     '*--change-phases-for[Control to which packages these phase options apply]:Which:((all first last))' \
     '--display-resolution-program[The program used to display the resolution]:Command: ' \
+    '--graph-jobs-resolution-program[The program used to graph jobs]:Command: ' \
     '--execute-resolution-program[The program used to execute the resolution]:Command: ' \
     '--perform-program[The program used to perform actions]:Command: ' \
     '--update-world-program[The program used to perform world updates]:Command: ' \
+    '--graph-program[The program used to create Graphviz graphs]:Command: ' \
     '--unpackaged-repository-params[Specifies the parameters used to construct an unpackaged repository]'
 }
 
@@ -207,6 +224,32 @@ _cave_cmd_fix-linkage()
     '(--execute -x --no-execute)'{--execute,-x,--no-execute}'[Execute the suggested actions]' \
     '*'{--library,-l}'[Only rebuild packages linked against this library, even if it exists]:Library: ' \
     '(--exact -e --no-exact)'{--exact,-e,--no-exact}'[Rebuild the same package version that is currently installed]'
+}
+
+(( ${+functions[_cave_cmd_graph-jobs]} )) ||
+_cave_cmd_graph-jobs()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '--graph-jobs-basename[Specify the basename (filename without extension) to be used when creating job graphs]:file:_files' \
+    '--graph-jobs-format[Specifies the desired output format for the Graphviz graph]:format: ' \
+    '(--graph-jobs-all-arrows --no-graph-jobs-all-arrows)'{--graph-jobs-all-arrows,--no-graph-jobs-all-arrows}'[Show all arrows]' \
+    '(--graph-jobs-full-names --no-graph-jobs-full-names)'{--graph-jobs-full-names,--no-graph-jobs-full-names}'[Show full names for graph jobs]' \
+    '--unpackaged-repository-params[Specifies the parameters used to construct an unpackaged repository]' \
+    '--display-resolution-program[The program used to display the resolution]:Command: ' \
+    '--graph-jobs-resolution-program[The program used to graph jobs]:Command: ' \
+    '--execute-resolution-program[The program used to execute the resolution]:Command: ' \
+    '--perform-program[The program used to perform actions]:Command: ' \
+    '--update-world-program[The program used to perform world updates]:Command: ' \
+    '--graph-program[The program used to create Graphviz graphs]:Command: '
+}
+
+(( ${+functions[_cave_cmd_has-version]} )) ||
+_cave_cmd_has-version()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '*:package depspec:_cave_packages' && return 0
 }
 
 (( ${+functions[_cave_cmd_help]} )) ||
@@ -280,6 +323,7 @@ _cave_cmd_owner()
                                                                                 basename\:"Basename match"
                                                                                 full\:"Full match"
                                                                                 partial\:"Partial match"))' \
+    '(--dereference -d)'{--dereference,-d}'[If the pattern is a path that exists and is a symbolic link, dereference it recursively, and then search for the real path]' \
     '*:file:_files'
 }
 
@@ -546,6 +590,26 @@ _cave_cmd_print-sets()
     '(--help -h)'{--help,-h}'[Display help messsage]'
 }
 
+(( ${+functions[_cave_cmd_print-spec]} )) ||
+_cave_cmd_print-spec()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '--package[Specify the cat/pkg requirement]:category-package name: ' \
+    '--slot[Specify the slot requirement]:slot: ' \
+    '--in-repository[Specify the in-repository requirement]:repository:_cave_repositories' \
+    '--from-repository[Specify the from-repository requirement]:repository:_cave_repositories' \
+    '--installable-to-repository[Specify the installable-to-repository requirement]:repository:_cave_repositories' \
+    '--installed-at-path[Specify the installed-at-path requirement]:dir:_files' \
+    '--installable-to-path[Specify the installable-to-path requirement]:dir:_files' \
+    '--package-part[Specify the /pkg requirement]:package name: ' \
+    '--category-part[Specify the cat/ requirement]:category name: ' \
+    '*--version-requirement[Specify a version requirement]:version: ' \
+    '--version-requirements-mode[Specify the mode of version requirements]:mode:((default and or))' \
+    '*--additional-requirement[Specify an additional requirement]:requirement: ' \
+    '*:package depspec:_cave_packages' && return 0
+}
+
 (( ${+functions[_cave_cmd_print-sync-protocols]} )) ||
 _cave_cmd_print-sync-protocols()
 {
@@ -557,7 +621,8 @@ _cave_cmd_print-sync-protocols()
 _cave_cmd_print-unused-distfiles()
 {
   _arguments -s : \
-    '(--help -h)'{--help,-h}'[Display help messsage]'
+    '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '*'{--include,-i}'[Treat all distfiles from IDs in the specified repository as used]:repository:_cave_repositories'
 }
 
 (( ${+functions[_cave_cmd_report]} )) ||
@@ -595,9 +660,9 @@ _cave_resolve_arguments=(
     '*'{--no-blockers-from,-!}'[Ignore blockers from packages matching the supplied specification]:Spec: ' \
     '--suggestions[How to treat suggestions and recommendations]:When:((ignore display take))' \
     '--recommendations[How to treat recommendations]:When:((ignore display take))' \
-    '*'{--take,-t}'[Take any suggestion matching the supplied package specification]:Spec: ' \
+    '*'{--take,-t}'[Take any suggestion matching the supplied package specification or group name]:Spec: ' \
     '*'{--take-from,-T}'[Take all suggestions made by any package matching the supplied package specification]:Spec: ' \
-    '*'{--ignore,-i}'[Discard any suggestion matching the supplied package specification]:Spec: ' \
+    '*'{--ignore,-i}'[Discard any suggestion matching the supplied package specification or group name]:Spec: ' \
     '*'{--ignore-from,-I}'[Discard all suggestions made by any package matching the supplied package specification]:Spec: ' \
     '*'{--favour,-F}'[If there is a choice, favour the specified package names]:Spec: ' \
     '*'{--avoid,-A}'[If there is a choice, avoid the specified package names]:Spec: ' \
@@ -608,6 +673,10 @@ _cave_resolve_arguments=(
     '(--make -m)'{--make,-m}'[Specify what to do with targets]:Make:((auto a install i binaries b chroot c))' \
     '(--make-dependencies -M)'{--make-dependencies,-M}'[Specify what to do with dependencies of targets]:When:((auto runtime r all a none n))' \
     '*'{--via-binary,-b}'[When building a package matching the supplied spec, create a binary package and use that for the install]' \
+    '(--dependencies-to-slash -/)'{--dependencies-to-slash,-/}'[Specify what to do with dependencies for the / filesystem when not working on /]:When:((all a runtime r build b none n))' \
+    '--one-binary-per-slot[When building a binary package, remove other versions in the same repository and slot]' \
+    '--ignore-unable-decisions[Ignore any resolvent for which we were unable to make a decision. Specifying this will break your system]' \
+    '--ignore-unorderable-jobs[Ignore any job we were unable to order. Specifying this will break your system]' \
     '(--dump --no-dump)'{--dump,--no-dump}'[Dump debug output]' \
     '(--dump-restarts --no-dump-restarts)'{--dump-restarts,--no-dump-restarts}'[Dump restarts]' \
     '(--preserve-world -1 --no-preserve-world)'{--preserve-world,-1,--no-preserve-world}'[Do not modify the world set]' \
@@ -622,10 +691,16 @@ _cave_resolve_arguments=(
     '--show-option-descriptions[Whether to display descriptions for package options]:Which:((none new changed all))' \
     '--show-descriptions[Whether to display package descriptions]:When:((none new all))' \
     '(--explain -X)'{--explain,-X}'[Explain why the resolver made a particular decision]:Spec: ' \
+    '--graph-jobs-basename[Specify the basename (filename without extension) to be used when creating job graphs]:file:_files' \
+    '--graph-jobs-format[Specifies the desired output format for the Graphviz graph]:format: ' \
+    '(--graph-jobs-all-arrows --no-graph-jobs-all-arrows)'{--graph-jobs-all-arrows,--no-graph-jobs-all-arrows}'[Show all arrows]' \
+    '(--graph-jobs-full-names --no-graph-jobs-full-names)'{--graph-jobs-full-names,--no-graph-jobs-full-names}'[Show full names for graph jobs]' \
     '--display-resolution-program[The program used to display the resolution]:Command: ' \
+    '--graph-jobs-resolution-program[The program used to graph jobs]:Command: ' \
     '--execute-resolution-program[The program used to execute the resolution]:Command: ' \
     '--perform-program[The program used to perform actions]:Command: ' \
-    '--update-world-program[The program used to perform world updates]:Command: '
+    '--update-world-program[The program used to perform world updates]:Command: ' \
+    '--graph-program[The program used to create Graphviz graphs]:Command: '
 )
 
 (( ${+functions[_cave_cmd_purge]} )) ||
@@ -661,9 +736,11 @@ _cave_cmd_resume()
     '*--skip-until-phase[Skip every phase until a named phase is encountered]:Phase:((fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup))' \
     '*--change-phases-for[Control to which packages these phase options apply]:Which:((all first last))' \
     '--display-resolution-program[The program used to display the resolution]:Command: ' \
+    '--graph-jobs-resolution-program[The program used to graph jobs]:Command: ' \
     '--execute-resolution-program[The program used to execute the resolution]:Command: ' \
     '--perform-program[The program used to perform actions]:Command: ' \
-    '--update-world-program[The program used to perform world updates]:Command: '
+    '--update-world-program[The program used to perform world updates]:Command: ' \
+    '--graph-program[The program used to create Graphviz graphs]:Command: '
 }
 
 (( ${+functions[_cave_cmd_search]} )) ||
@@ -690,14 +767,18 @@ _cave_cmd_show()
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
     '(--type -t)'{--type,-t}'[Specify the type of the specified objects]:object type:((auto a repository r set s wildcard w package p))' \
+    '(--no-keys -n)'{--no-keys,-n}'[Do not show any metadata keys]' \
     '(--complex-keys -c --no-complex-keys)'{--complex-keys,-c,--no-complex-keys}'[Show complex keys]' \
     '(--internal-keys -i --no-internal-keys)'{--internal-keys,-i,--no-internal-keys}'[Show keys marked as internal-only]' \
     '(--significant-keys-only -s --no-significant-keys-only)'{--significant-keys-only,-s,--no-significant-keys-only}'[Show only keys marked as significant]' \
     '*'{--key,-k}'[Show keys with the given name]' \
+    '(--description-keys -d)'{--description-keys,-d}'[Show description keys, regardless of other options]' \
     '(--flat -f --no-flat)'{--flat,-f,--no-flat}'[Do not spread key values over multiple lines]' \
     '(--raw-names -r --no-raw-names)'{--raw-names,-r,--no-raw-names}'[Display raw rather than human readable key names]' \
-    '(--one-version -1 --no-one-version --no-versions -0 --no-no-versions)'{--one-version,-1,--no-one-version}'[Display only a single version of any package, rather than all installed and the best installable package]' \
-    '(--one-version -1 --no-one-version --no-versions -0 --no-no-versions)'{--no-versions,-0,--no-no-versions}'[Don'\''t display any version-specific information]' \
+    '(--one-version -1 --no-one-version --all-versions -a --no-all-versions --no-versions -0 --no-no-versions)'{--one-version,-1,--no-one-version}'[Display only a single version of any package, rather than all installed and the best installable package]' \
+    '(--one-version -1 --no-one-version --all-versions -a --no-all-versions --no-versions -0 --no-no-versions)'{--all-versions,-a,--no-all-versions}'[Display all installed and the best installable packageversions of packages]' \
+    '(--one-version -1 --no-one-version --all-versions -a --no-all-versions --no-versions -0 --no-no-versions)'{--no-versions,-0,--no-no-versions}'[Don'\''t display any version-specific information]' \
+    '(--repository-at-a-time -R)'{--repository-at-a-time,-R}'[roup versions by repository, and then show details for each individual repository]' \
     '*:package depspec:_cave_packages' && return 0
 }
 
@@ -717,6 +798,14 @@ _cave_cmd_sync()
     '--sequential[Only perform one sync at a time]' \
     '(--suffix -s)'{--suffix,-s}'[Use the specified suffix for syncing]:Suffix: ' \
     '*:repository:_cave_repositories' && return 0
+}
+
+(( ${+functions[_cave_cmd_sync-protocol-options]} )) ||
+_cave_cmd_sync-protocol-options()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '*:sync protocol:_cave_protocols' && return 0
 }
 
 (( ${+functions[_cave_cmd_uninstall]} )) ||
@@ -751,6 +840,13 @@ _cave_cmd_verify()
 (( ${+functions[_cave_packages]} )) ||
 _cave_packages() {
   :
+}
+
+(( ${+functions[_cave_protocols]} )) ||
+_cave_protocols() {
+  local -a _cave_protocols
+  _cave_protocols=( $(cave print-sync-protocols) )
+  _describe -t protocol 'protocol' _cave_protocols
 }
 
 (( ${+functions[_cave_repositories]} )) ||
