@@ -96,8 +96,8 @@ const auto fs_package_heading = make_format_string_fetcher("show/package_heading
 const auto fs_package_version_installed = make_format_string_fetcher("show/package_version_installed", 1)
     << c::bold_green_or_pink() << param<'s'>() << c::normal();
 
-const auto fs_package_version_installable = make_format_string_fetcher("show/package_version_installable", 1)
-    << c::green_or_pink() << param<'s'>() << c::normal();
+const auto fs_package_version_installable = make_format_string_fetcher("show/package_version_installable", 2)
+    << c::green_or_pink() << param<'s'>() << param<'r'>() << c::normal();
 
 const auto fs_package_version_unavailable = make_format_string_fetcher("show/package_version_unavailable", 1)
     << c::red() << "(" << param<'s'>() << ")" << param<'r'>() << c::normal();

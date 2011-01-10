@@ -1196,7 +1196,7 @@ namespace
                         rr = "(" + rr + ")";
 
                     if (! (*i)->masked())
-                        header_out << fuc(fs_package_version_installable(), fv<'s'>(stringify((*i)->canonical_form(idcf_version))));
+                        header_out << fuc(fs_package_version_installable(), fv<'s'>(stringify((*i)->canonical_form(idcf_version))), fv<'r'>(rr));
                     else
                     {
                         std::string rs;
