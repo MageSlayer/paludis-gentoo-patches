@@ -1349,13 +1349,14 @@ Decider::find_any_score(
             return std::make_pair(acs_wrong_options_installed, operator_bias);
     }
 
-    const std::shared_ptr<DependencyReason> reason(std::make_shared<DependencyReason>(
-                our_id, make_null_shared_ptr(), our_resolution->resolvent(), dep, _already_met(dep.spec(), our_id)));
-    const std::shared_ptr<const Resolvents> resolvents(_get_resolvents_for(spec, reason).first);
-
-    /* next: will already be installing */
+    /* various things only if we're not a block... */
     if (! is_block)
     {
+        const std::shared_ptr<DependencyReason> reason(std::make_shared<DependencyReason>(
+                    our_id, make_null_shared_ptr(), our_resolution->resolvent(), dep, _already_met(dep.spec(), our_id)));
+        const std::shared_ptr<const Resolvents> resolvents(_get_resolvents_for(spec, reason).first);
+
+        /* next: will already be installing */
         for (Resolvents::ConstIterator r(resolvents->begin()), r_end(resolvents->end()) ;
                 r != r_end ; ++r)
         {
@@ -1376,11 +1377,7 @@ Decider::find_any_score(
             if (any && ! any_bad)
                 return std::make_pair(acs_will_be_installing, operator_bias);
         }
-    }
 
-    /* next: could install */
-    if (! is_block)
-    {
         for (Resolvents::ConstIterator r(resolvents->begin()), r_end(resolvents->end()) ;
                 r != r_end ; ++r)
         {
