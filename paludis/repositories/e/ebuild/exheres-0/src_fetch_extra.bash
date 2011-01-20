@@ -32,9 +32,9 @@ exheres_internal_fetch_extra()
     local old_sandbox_write="${SANDBOX_WRITE}"
     if [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]]; then
         SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${FETCHEDDIR}"
-        if sydboxcheck >/dev/null 2>&1; then
-            addwrite "${FETCHEDDIR}"
-            sydboxcmd sandunbox/net
+        if esandbox check >/dev/null 2>&1; then
+            esandbox allow "${FETCHEDDIR}"
+            esandbox disable_net
         fi
     fi
 
@@ -48,9 +48,9 @@ exheres_internal_fetch_extra()
 
     if [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]]; then
         SANDBOX_WRITE="${old_sandbox_write}"
-        if sydboxcheck >/dev/null 2>&1; then
-            rmwrite "${FETCHEDDIR}"
-            sydboxcmd sandbox/net
+        if esandbox check >/dev/null 2>&1; then
+            esandbox disallow "${FETCHEDDIR}"
+            esandbox enable_net
         fi
     fi
     true

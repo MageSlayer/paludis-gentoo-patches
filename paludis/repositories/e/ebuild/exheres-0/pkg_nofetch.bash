@@ -46,7 +46,7 @@ exheres_internal_nofetch()
     local old_sandbox_write="${SANDBOX_WRITE}"
     if [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]]; then
         SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${FETCHEDDIR}"
-        sydboxcheck >/dev/null 2>&1 && addwrite "${FETCHEDDIR}"
+        esandbox check >/dev/null 2>&1 && esandbox allow "${FETCHEDDIR}"
     fi
 
     if hasq "nofetch" ${SKIP_FUNCTIONS} ; then
@@ -59,7 +59,7 @@ exheres_internal_nofetch()
 
     if [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]]; then
         SANDBOX_WRITE="${old_sandbox_write}"
-        sydboxcheck >/dev/null 2>&1 && rmwrite "${FETCHEDDIR}"
+        esandbox check >/dev/null 2>&1 && esandbox disallow "${FETCHEDDIR}"
     fi
     true
 }
