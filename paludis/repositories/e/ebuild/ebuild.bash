@@ -498,7 +498,7 @@ ebuild_load_em_up_dan()
     if [[ -z ${PALUDIS_DO_NOTHING_SANDBOXY} ]] ; then
         if [[ -n ${CCACHE_DIR} ]]; then
             export SANDBOX_WRITE=${SANDBOX_WRITE}:${CCACHE_DIR}
-            sydboxcheck 2>/dev/null && addwrite "${CCACHE_DIR}"
+            esandbox check 2>/dev/null && esandbox allow "${CCACHE_DIR}"
         fi
     fi
 
@@ -517,12 +517,12 @@ perform_hook()
     ebuild_notice "debug" "Starting hook '${HOOK}'"
 
     local old_sandbox_on="${SANDBOX_ON}"
-    local old_sydbox_enabled
-    sydboxcmd enabled 2>/dev/null && old_sydbox_enabled=true || old_sydbox_enabled=false
+    local old_box_enabled
+    esandbox enabled 2>/dev/null && old_box_enabled=true || old_box_enabled=false
     if [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]]; then
         export SANDBOX_ON="0"
-        if sydboxcheck 2>/dev/null; then
-            sydboxcmd off || ebuild_notice "warning" "sydboxcmd off returned failure"
+        if esandbox check 2>/dev/null; then
+            esandbox disable || ebuild_notice "warning" "esandbox disable returned failure"
         fi
     fi
 
@@ -543,11 +543,11 @@ perform_hook()
 
     if [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]]; then
         export SANDBOX_ON="${old_sandbox_on}"
-        if sydboxcheck 2>/dev/null; then
-            if $old_sydbox_enabled; then
-                sydboxcmd on || ebuild_notice "warning" "sydboxcmd on returned failure"
+        if esandbox check 2>/dev/null; then
+            if $old_box_enabled; then
+                esandbox enable || ebuild_notice "warning" "esandbox enable returned failure"
             else
-                sydboxcmd off || ebuild_notice "warning" "sydboxcmd off returned failure"
+                esandbox disable || ebuild_notice "warning" "esandbox disable returned failure"
             fi
         fi
     fi
@@ -585,9 +585,9 @@ ebuild_main()
 
     ebuild_notice "debug" "Using ebuild '${EBUILD}', EAPI before source is '${EAPI}'"
 
-    # If we're running under sydbox lock magic commands when execve() is called.
-    if sydboxcheck 2>/dev/null; then
-        sydboxcmd exec_lock || ebuild_notice "warning" "sydboxcmd exec_lock returned failure"
+    # If we're running under sandbox lock magic commands when execve() is called.
+    if esandbox check 2>/dev/null; then
+        esandbox exec_lock || ebuild_notice "warning" "esandbox exec_lock returned failure"
     fi
 
     if [[ ${#@} -ge 2 ]] ; then
@@ -606,9 +606,9 @@ ebuild_main()
         export ${PALUDIS_EBUILD_PHASE_VAR}="${1}"
         perform_hook ebuild_${action}_pre
         if [[ $1 == metadata ]]; then
-            # Ban execve() calls if we're running under sydbox
-            if sydboxcheck 2>/dev/null; then
-                sydboxcmd sandbox/exec || ebuild_notice "warning" "sydboxcmd sandbox/exec returned failure"
+            # Ban execve() calls if we're running under sandbox
+            if esandbox check 2>/dev/null; then
+                esandbox enable_exec || ebuild_notice "warning" "esandbox enable_exec returned failure"
             else
                 for f in cut tr date ; do
                     eval "${f}() { ebuild_notice qa 'global scope ${f}' ; $(type -P ${f} ) \"\$@\" ; }"
@@ -616,14 +616,14 @@ ebuild_main()
             fi
             for f in locked_pipe_command ; do
                 eval "${f}() { $(type -P ${f} ) \"\$@\" ; }"
-                if sydboxcheck 2>/dev/null; then
-                    sydboxcmd addexec "$(type -P ${f})"
+                if esandbox check 2>/dev/null; then
+                    esandbox allow_exec "$(type -P ${f})"
                 fi
             done
             PATH="" ebuild_load_ebuild "${EBUILD}"
-            # Unban execve() calls if we're running under sydbox
-            if sydboxcheck 2>/dev/null; then
-                sydboxcmd sandunbox/exec || ebuild_notice "warning" "sydboxcmd sandunbox/exec returned failure"
+            # Unban execve() calls if we're running under sandbox
+            if esandbox check 2>/dev/null; then
+                esandbox disable_exec || ebuild_notice "warning" "esandbox disable_exec returned failure"
             fi
         else
             ebuild_load_em_up_dan
@@ -637,28 +637,24 @@ ebuild_main()
         for action in $@ ; do
             export ${PALUDIS_EBUILD_PHASE_VAR}="${action}"
             perform_hook ebuild_${action}_pre
-            # Restrict network access to local if running under sydbox
-            # We don't do sydboxcmd sand{un,}box/net here to allow the user set it in the configuration file.
+            # Restrict network access if running under sandbox
             if [[ $action != unpack ]] && [[ $action != fetch_extra ]] ; then
-                if sydboxcheck 2>/dev/null; then
-                    sydboxcmd net/local || ebuild_notice "warning" "sydboxcmd net/local returned failure"
-                    sydboxcmd net/restrict/connect || ebuild_notice "warning" "sydboxcmd net/restrict_connect return failure"
+                if esandbox check 2>/dev/null; then
+                    esandbox enable_net || ebuild_notice "warning" "esandbox enable_net returned failure"
                 fi
             fi
             if ! ${PALUDIS_F_FUNCTION_PREFIX:-ebuild_f}_${action} ; then
                 if [[ $action != unpack ]] && [[ $action != fetch_extra ]] ; then
-                    if sydboxcheck 2>/dev/null; then
-                        sydboxcmd net/allow || ebuild_notice "warning" "sydboxcmd net/allow returned failure"
-                        sydboxcmd net/unrestrict/connect || ebuild_notice "warning" "sydboxcmd net/unrestrict/connect returned failure"
+                    if esandbox check 2>/dev/null; then
+                        esandbox disable_net || ebuild_notice "warning" "esandbox disable_net returned failure"
                     fi
                 fi
                 perform_hook ebuild_${action}_fail
                 die "${action} failed"
             fi
             if [[ $action != unpack ]] && [[ $action != fetch_extra ]] ; then
-                if sydboxcheck 2>/dev/null; then
-                    sydboxcmd net/allow || ebuild_notice "warning" "sydboxcmd net/allow returned failure"
-                    sydboxcmd net/unrestrict/connect || ebuild_notice "warning" "sydboxcmd net/unrestrict/connect returned failure"
+                if esandbox check 2>/dev/null; then
+                    esandbox disable_net || ebuild_notice "warning" "esandbox disable_net returned failure"
                 fi
             fi
             perform_hook ebuild_${action}_post
