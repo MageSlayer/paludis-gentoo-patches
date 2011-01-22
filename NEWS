@@ -4,6 +4,13 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the Git log.
 
+0.58.1:
+    * When a package strongly blocks other installed slots of itself, the
+      resolver no longer fails to find an ordering if upgrading older slots
+      would make the blocker no longer met.
+
+    * 'cave show' now displays overridden masks on unmasked packages.
+
 0.58.0:
     * The 'paludis' client is now deprecated in favour of 'cave'.
 
