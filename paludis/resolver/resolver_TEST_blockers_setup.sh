@@ -223,7 +223,7 @@ DEPENDENCIES="
 END
 
 mkdir -p 'packages/upgrade-blocked-after/dep'
-cat <<END > packages/uninstall-blocked-after/dep/dep-2.exheres-0
+cat <<END > packages/upgrade-blocked-after/dep/dep-2.exheres-0
 SUMMARY="target"
 PLATFORMS="test"
 SLOT="0"
@@ -244,7 +244,7 @@ DEPENDENCIES="
 END
 
 mkdir -p 'packages/upgrade-blocked-before/dep'
-cat <<END > packages/uninstall-blocked-before/dep/dep-2.exheres-0
+cat <<END > packages/upgrade-blocked-before/dep/dep-2.exheres-0
 SUMMARY="target"
 PLATFORMS="test"
 SLOT="0"
