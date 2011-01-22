@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -134,6 +134,9 @@ namespace paludis
                     static bool check_change(const QualifiedPackageName & q, const std::shared_ptr<const Decision> & r);
                     static std::string check_change_msg(const QualifiedPackageName & q, const std::shared_ptr<const Decision> & r);
 
+                    static bool check_change_slot(const QualifiedPackageName & q, const SlotName &, const std::shared_ptr<const Decision> & r);
+                    static std::string check_change_slot_msg(const QualifiedPackageName & q, const SlotName &, const std::shared_ptr<const Decision> & r);
+
                     static bool check_remove(const QualifiedPackageName & q, const std::shared_ptr<const Decision> & r);
                     static std::string check_remove_msg(const QualifiedPackageName & q, const std::shared_ptr<const Decision> & r);
 
@@ -147,6 +150,7 @@ namespace paludis
                     static std::string check_finished_msg(const std::shared_ptr<const Decision> & r);
 
                     DecisionChecks & change(const QualifiedPackageName & q);
+                    DecisionChecks & change_slot(const QualifiedPackageName & q, const SlotName &);
                     DecisionChecks & remove(const QualifiedPackageName & q);
                     DecisionChecks & unable(const QualifiedPackageName & q);
                     DecisionChecks & breaking(const QualifiedPackageName & q);

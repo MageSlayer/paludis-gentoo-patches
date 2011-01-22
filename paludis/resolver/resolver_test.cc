@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -328,6 +328,16 @@ ResolverTestCase::DecisionChecks::breaking(const QualifiedPackageName & q)
 }
 
 ResolverTestCase::DecisionChecks &
+ResolverTestCase::DecisionChecks::change_slot(const QualifiedPackageName & q, const SlotName & s)
+{
+    checks.push_back(std::make_pair(
+                std::bind(&check_change_slot, q, s, std::placeholders::_1),
+                std::bind(&check_change_slot_msg, q, s, std::placeholders::_1)
+                ));
+    return *this;
+}
+
+ResolverTestCase::DecisionChecks &
 ResolverTestCase::DecisionChecks::change(const QualifiedPackageName & q)
 {
     checks.push_back(std::make_pair(
@@ -379,6 +389,16 @@ ResolverTestCase::DecisionChecks::check_change(const QualifiedPackageName & q, c
 }
 
 bool
+ResolverTestCase::DecisionChecks::check_change_slot(const QualifiedPackageName & q, const SlotName & s, const std::shared_ptr<const Decision> & d)
+{
+    if (! d)
+        return false;
+
+    return simple_visitor_cast<const ChangesToMakeDecision>(*d) && d->resolvent().package() == q &&
+        d->resolvent().slot().name_or_null() && *d->resolvent().slot().name_or_null() == s;
+}
+
+bool
 ResolverTestCase::DecisionChecks::check_breaking(const QualifiedPackageName & q, const std::shared_ptr<const Decision> & d)
 {
     if (! d)
@@ -409,6 +429,12 @@ std::string
 ResolverTestCase::DecisionChecks::check_change_msg(const QualifiedPackageName & q, const std::shared_ptr<const Decision> & r)
 {
     return check_generic_msg(stringify(q), r);
+}
+
+std::string
+ResolverTestCase::DecisionChecks::check_change_slot_msg(const QualifiedPackageName & q, const SlotName & s, const std::shared_ptr<const Decision> & r)
+{
+    return check_generic_msg(stringify(q) + ":" + stringify(s), r);
 }
 
 std::string
