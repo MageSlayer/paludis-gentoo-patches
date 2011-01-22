@@ -81,11 +81,11 @@ namespace paludis
         const std::shared_ptr<const ChangedChoices> changed_choices;
         const Resolvent from_resolvent;
         const SanitisedDependency dep;
-        const bool already_met;
+        const Tribool already_met;
 
         Imp(const std::shared_ptr<const PackageID> & i,
                 const std::shared_ptr<const ChangedChoices> & c,
-                const Resolvent & r, const SanitisedDependency & d, const bool a) :
+                const Resolvent & r, const SanitisedDependency & d, const Tribool a) :
             from_id(i),
             changed_choices(c),
             from_resolvent(r),
@@ -100,7 +100,7 @@ DependencyReason::DependencyReason(const std::shared_ptr<const PackageID> & i,
         const std::shared_ptr<const ChangedChoices> & c,
         const Resolvent & r,
         const SanitisedDependency & d,
-        const bool a) :
+        const Tribool a) :
     _imp(i, c, r, d, a)
 {
 }
@@ -133,7 +133,7 @@ DependencyReason::sanitised_dependency() const
     return _imp->dep;
 }
 
-bool
+Tribool
 DependencyReason::already_met() const
 {
     return _imp->already_met;
@@ -143,7 +143,7 @@ void
 DependencyReason::serialise(Serialiser & s) const
 {
     s.object("DependencyReason")
-        .member(SerialiserFlags<>(), "already_met", already_met())
+        .member(SerialiserFlags<>(), "already_met", std::string(already_met().is_true() ? "true" : already_met().is_false() ? "false" : "indeterminate"))
         .member(SerialiserFlags<serialise::might_be_null>(), "from_id", from_id())
         .member(SerialiserFlags<serialise::might_be_null>(), "from_id_changed_choices", from_id_changed_choices())
         .member(SerialiserFlags<>(), "from_resolvent", from_resolvent())
@@ -400,6 +400,20 @@ ViaBinaryReason::serialise(Serialiser & s) const
         ;
 }
 
+namespace
+{
+    Tribool destringify_tribool(const std::string & s)
+    {
+        if (s == "true")
+            return true;
+        if (s == "false")
+            return false;
+        if (s == "indeterminate")
+            return indeterminate;
+        throw InternalError(PALUDIS_HERE, "bad tribool " + s);
+    }
+}
+
 const std::shared_ptr<Reason>
 Reason::deserialise(Deserialisation & d)
 {
@@ -433,7 +447,7 @@ Reason::deserialise(Deserialisation & d)
                     v.member<std::shared_ptr<const ChangedChoices> >("from_id_changed_choices"),
                     v.member<Resolvent>("from_resolvent"),
                     SanitisedDependency::deserialise(*v.find_remove_member("sanitised_dependency"), from_id),
-                    v.member<bool>("already_met")
+                    destringify_tribool(v.member<std::string>("already_met"))
                 );
     }
     else if (d.class_name() == "DependentReason")

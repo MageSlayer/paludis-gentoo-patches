@@ -27,6 +27,7 @@
 #include <paludis/util/pimp.hh>
 #include <paludis/util/simple_visitor.hh>
 #include <paludis/util/type_list.hh>
+#include <paludis/util/tribool.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/serialise-fwd.hh>
@@ -80,7 +81,7 @@ namespace paludis
                         const std::shared_ptr<const ChangedChoices> &,
                         const Resolvent &,
                         const SanitisedDependency & s,
-                        const bool already_met);
+                        const Tribool already_met);
 
                 ~DependencyReason();
 
@@ -88,7 +89,7 @@ namespace paludis
                 const std::shared_ptr<const ChangedChoices> from_id_changed_choices() const;
                 const Resolvent from_resolvent() const;
                 const SanitisedDependency & sanitised_dependency() const;
-                bool already_met() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                Tribool already_met() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual void serialise(Serialiser &) const;
         };

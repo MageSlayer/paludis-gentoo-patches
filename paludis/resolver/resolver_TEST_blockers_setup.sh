@@ -293,5 +293,31 @@ SLOT="0"
 DEPENDENCIES=""
 END
 
+# other-slot-first
+echo 'other-slot-first' >> metadata/categories.conf
+
+mkdir -p 'packages/other-slot-first/target'
+cat <<END > packages/other-slot-first/target/target-1.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES="other-slot-first/dep:1 other-slot-first/dep:2"
+END
+
+mkdir -p 'packages/other-slot-first/dep'
+cat <<END > packages/other-slot-first/dep/dep-1.1.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="1"
+DEPENDENCIES=""
+END
+
+cat <<END > packages/other-slot-first/dep/dep-2.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="2"
+DEPENDENCIES="!other-slot-first/dep[<1.1]"
+END
+
 cd ..
 

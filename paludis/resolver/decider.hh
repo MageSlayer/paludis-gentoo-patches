@@ -248,9 +248,14 @@ namespace paludis
                         const std::shared_ptr<const PackageID> &,
                         const bool existing) const;
 
-                bool _already_met(
-                        const PackageOrBlockDepSpec &,
+                bool _package_dep_spec_already_met(
+                        const PackageDepSpec &,
                         const std::shared_ptr<const PackageID> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                bool _block_dep_spec_already_met(
+                        const BlockDepSpec &,
+                        const std::shared_ptr<const PackageID> &,
+                        const Resolvent &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 bool _installed_but_allowed_to_remove(
                         const std::shared_ptr<const Resolution> &) const PALUDIS_ATTRIBUTE((warn_unused_result));

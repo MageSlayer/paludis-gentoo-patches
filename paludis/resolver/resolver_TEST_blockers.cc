@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -542,5 +542,37 @@ namespace test_cases
                     );
         }
     } test_manual;
+
+    struct UpgradeOtherSlotFirst : ResolverBlockersTestCase
+    {
+        UpgradeOtherSlotFirst() :
+            ResolverBlockersTestCase("other-slot-first")
+        {
+            install("other-slot-first", "dep", "1")->set_slot(SlotName("1"));
+        }
+
+        void run()
+        {
+            std::shared_ptr<const Resolved> resolved(get_resolved("other-slot-first/target"));
+
+            check_resolved(resolved,
+                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .change_slot(QualifiedPackageName("other-slot-first/dep"), SlotName("1"))
+                        .change_slot(QualifiedPackageName("other-slot-first/dep"), SlotName("2"))
+                        .change(QualifiedPackageName("other-slot-first/target"))
+                        .finished()),
+                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                        .finished()),
+                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                        .finished())
+                    );
+        }
+    } test_upgrade_other_slot_first;
 }
 

@@ -634,7 +634,7 @@ Decider::_make_constraints_from_dependency(
 
 const std::shared_ptr<ConstraintSequence>
 Decider::_make_constraints_from_blocker(
-        const std::shared_ptr<const Resolution> &,
+        const std::shared_ptr<const Resolution> & resolution,
         const BlockDepSpec & spec,
         const std::shared_ptr<const Reason> & reason) const
 {
@@ -650,11 +650,11 @@ Decider::_make_constraints_from_blocker(
             break;
 
         case bk_manual:
-            force_unable = ! _already_met(spec, maybe_from_package_id_from_reason(reason));
+            force_unable = ! _block_dep_spec_already_met(spec, maybe_from_package_id_from_reason(reason), resolution->resolvent());
             break;
 
         case bk_upgrade_blocked_before:
-            nothing_is_fine_too = ! _already_met(spec, maybe_from_package_id_from_reason(reason));
+            nothing_is_fine_too = ! _block_dep_spec_already_met(spec, maybe_from_package_id_from_reason(reason), resolution->resolvent());
             break;
 
         case last_bk:
@@ -1189,8 +1189,9 @@ Decider::_add_dependencies_if_necessary(
                 break;
         }
 
-        const std::shared_ptr<DependencyReason> reason(std::make_shared<DependencyReason>(
-                    package_id, changed_choices, our_resolution->resolvent(), *s, _already_met(s->spec(), package_id)));
+        /* don't have an 'already met' initially, since already met varies between slots */
+        const std::shared_ptr<DependencyReason> nearly_reason(std::make_shared<DependencyReason>(
+                    package_id, changed_choices, our_resolution->resolvent(), *s, indeterminate));
 
         /* empty resolvents is always ok for blockers, since blocking on things
          * that don't exist is fine */
@@ -1198,16 +1199,22 @@ Decider::_add_dependencies_if_necessary(
         std::shared_ptr<const Resolvents> resolvents;
 
         if (s->spec().if_package())
-            std::tie(resolvents, empty_is_ok) = _get_resolvents_for(*s->spec().if_package(), reason);
+            std::tie(resolvents, empty_is_ok) = _get_resolvents_for(*s->spec().if_package(), nearly_reason);
         else
-            resolvents = _get_resolvents_for_blocker(*s->spec().if_block(), reason);
+            resolvents = _get_resolvents_for_blocker(*s->spec().if_block(), nearly_reason);
 
         if ((! empty_is_ok) && resolvents->empty())
-            resolvents = _get_error_resolvents_for(*s->spec().if_package(), reason);
+            resolvents = _get_error_resolvents_for(*s->spec().if_package(), nearly_reason);
 
         for (Resolvents::ConstIterator r(resolvents->begin()), r_end(resolvents->end()) ;
                 r != r_end ; ++r)
         {
+            /* now we can find out per-resolvent whether we're really already met */
+            const std::shared_ptr<DependencyReason> reason(std::make_shared<DependencyReason>(
+                        package_id, changed_choices, our_resolution->resolvent(), *s,
+                        s->spec().if_block() ? _block_dep_spec_already_met(*s->spec().if_block(), package_id, *r) :
+                        _package_dep_spec_already_met(*s->spec().if_package(), package_id)));
+
             const std::shared_ptr<Resolution> dep_resolution(_resolution_for_resolvent(*r, true));
             const std::shared_ptr<ConstraintSequence> constraints(_make_constraints_from_dependency(our_resolution, *s, reason, interest));
 
@@ -1353,7 +1360,7 @@ Decider::find_any_score(
     if (! is_block)
     {
         const std::shared_ptr<DependencyReason> reason(std::make_shared<DependencyReason>(
-                    our_id, make_null_shared_ptr(), our_resolution->resolvent(), dep, _already_met(dep.spec(), our_id)));
+                    our_id, make_null_shared_ptr(), our_resolution->resolvent(), dep, _package_dep_spec_already_met(*dep.spec().if_package(), our_id)));
         const std::shared_ptr<const Resolvents> resolvents(_get_resolvents_for(spec, reason).first);
 
         /* next: will already be installing */
@@ -2137,24 +2144,32 @@ Decider::resolve()
 }
 
 bool
-Decider::_already_met(const PackageOrBlockDepSpec & spec, const std::shared_ptr<const PackageID> & from_id) const
+Decider::_package_dep_spec_already_met(const PackageDepSpec & spec, const std::shared_ptr<const PackageID> & from_id) const
 {
     const std::shared_ptr<const PackageIDSequence> installed_ids((*_imp->env)[selection::AllVersionsUnsorted(
-                generator::Matches(spec.if_package() ?  *spec.if_package() : spec.if_block()->blocking(), from_id, { }) |
+                generator::Matches(spec, from_id, { }) |
                 filter::InstalledAtRoot(_imp->env->system_root_key()->value()))]);
     if (installed_ids->empty())
-        return bool(spec.if_block());
+        return false;
     else
     {
-        if (spec.if_block())
-            return false;
-
         if (installed_ids->end() == std::find_if(installed_ids->begin(), installed_ids->end(),
                     std::bind(&Decider::_can_use, this, std::placeholders::_1)))
             return false;
 
         return true;
     }
+}
+
+bool
+Decider::_block_dep_spec_already_met(const BlockDepSpec & spec, const std::shared_ptr<const PackageID> & from_id,
+        const Resolvent & resolvent) const
+{
+    const std::shared_ptr<const PackageIDSequence> installed_ids((*_imp->env)[selection::SomeArbitraryVersion(
+                generator::Matches(spec.blocking(), from_id, { }) |
+                make_slot_filter(resolvent) |
+                filter::InstalledAtRoot(_imp->env->system_root_key()->value()))]);
+    return installed_ids->empty();
 }
 
 bool

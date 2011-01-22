@@ -307,9 +307,9 @@ namespace
                             make_named_values<NAGEdgeProperties>(
                                 n::always() = false,
                                 n::build() = classifier.includes_buildish,
-                                n::build_all_met() = r.already_met() || ! classifier.includes_buildish,
+                                n::build_all_met() = r.already_met().is_true() || ! classifier.includes_buildish,
                                 n::run() = classifier.includes_non_post_runish,
-                                n::run_all_met() = r.already_met() || ! classifier.includes_non_post_runish
+                                n::run_all_met() = r.already_met().is_true() || ! classifier.includes_non_post_runish
                                 ));
                 }
                 else
