@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2010 Ciaran McCreesh
+ * Copyright (c) 2008, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -24,6 +24,7 @@
 #include <paludis/util/wrapped_value-fwd.hh>
 #include <paludis/util/fs_path-fwd.hh>
 #include <cstddef>
+#include <tuple>
 #include <utility>
 #include <string>
 #include <type_traits>
@@ -80,6 +81,43 @@ namespace paludis
         std::size_t operator() (const std::pair<T_, U_> & p) const
         {
             return Hash<T_>()(p.first) ^ Hash<U_>()(p.second);
+        }
+    };
+
+    template <unsigned n_, typename... Keys_>
+    std::size_t single_tuple_hash(const std::tuple<Keys_...> & p)
+    {
+        return Hash<typename std::tuple_element<n_, std::tuple<Keys_...> >::type>()(std::get<n_>(p));
+    }
+
+    struct FinishedHashingTuple
+    {
+    };
+
+    struct NotFinishedHashingTuple
+    {
+    };
+
+    template <unsigned n_, typename... Keys_>
+    std::size_t accumulate_tuple_hash(const std::tuple<Keys_...> &, std::size_t v, const FinishedHashingTuple &)
+    {
+        return v;
+    }
+
+    template <unsigned n_, typename... Keys_>
+    std::size_t accumulate_tuple_hash(const std::tuple<Keys_...> & p, std::size_t v, const NotFinishedHashingTuple &)
+    {
+        return accumulate_tuple_hash<n_ + 1, Keys_...>(p, (v << 8) ^ single_tuple_hash<n_>(p),
+                typename std::conditional<std::tuple_size<std::tuple<Keys_...> >::value == n_ + 1,
+                    FinishedHashingTuple, NotFinishedHashingTuple>::type());
+    }
+
+    template <typename... Keys_>
+    struct Hash<std::tuple<Keys_...> >
+    {
+        std::size_t operator() (const std::tuple<Keys_...> & p) const
+        {
+            return accumulate_tuple_hash<0, Keys_...>(p, 0, NotFinishedHashingTuple());
         }
     };
 
