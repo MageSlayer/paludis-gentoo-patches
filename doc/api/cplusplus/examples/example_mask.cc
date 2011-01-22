@@ -43,15 +43,13 @@ namespace
             void visit(const UnacceptedMask & mask)
             {
                 cout << left << setw(30) << "    Class:" << " " << "UnacceptedMask" << endl;
-                if (mask.unaccepted_key())
-                    cout << left << setw(30) << "    Unaccepted key:" << " " << mask.unaccepted_key()->raw_name() << endl;
+                cout << left << setw(30) << "    Unaccepted key:" << " " << mask.unaccepted_key_name() << endl;
             }
 
             void visit(const RepositoryMask & mask)
             {
                 cout << left << setw(30) << "    Class:" << " " << "RepositoryMask" << endl;
-                if (mask.mask_key())
-                    cout << left << setw(30) << "    Mask key:" << " " << mask.mask_key()->raw_name() << endl;
+                cout << left << setw(30) << "    Mask key:" << " " << mask.mask_key_name() << endl;
             }
 
             void visit(const UnsupportedMask & mask)
@@ -63,8 +61,7 @@ namespace
             void visit(const AssociationMask & mask)
             {
                 cout << left << setw(30) << "    Class:" << " " << "AssociationMask" << endl;
-                if (mask.associated_package())
-                    cout << left << setw(30) << "    Associated package:" << " " << *mask.associated_package() << endl;
+                cout << left << setw(30) << "    Associated package:" << " " << mask.associated_package_spec() << endl;
             }
     };
 }

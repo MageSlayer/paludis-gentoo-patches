@@ -103,33 +103,34 @@ namespace
 
     struct GetInfo
     {
-        const std::pair<std::shared_ptr<const MetadataKey>, std::string> visit(const UserMask &) const
+        const std::pair<std::string, std::string> visit(const UserMask &) const
         {
-            return std::make_pair(make_null_shared_ptr(), "");
+            return std::make_pair("", "");
         }
 
-        const std::pair<std::shared_ptr<const MetadataKey>, std::string> visit(const UnacceptedMask & m) const
+        const std::pair<std::string, std::string> visit(const UnacceptedMask & m) const
         {
-            return std::make_pair(m.unaccepted_key(), "");
+            return std::make_pair(m.unaccepted_key_name(), "");
         }
 
-        const std::pair<std::shared_ptr<const MetadataKey>, std::string> visit(const RepositoryMask & m) const
+        const std::pair<std::string, std::string> visit(const RepositoryMask & m) const
         {
-            return std::make_pair(m.mask_key(), "");
+            return std::make_pair(m.mask_key_name(), "");
         }
 
-        const std::pair<std::shared_ptr<const MetadataKey>, std::string> visit(const UnsupportedMask &) const
+        const std::pair<std::string, std::string> visit(const UnsupportedMask &) const
         {
-            return std::make_pair(make_null_shared_ptr(), "");
+            return std::make_pair("", "");
         }
 
-        const std::pair<std::shared_ptr<const MetadataKey>, std::string> visit(const AssociationMask & m) const
+        const std::pair<std::string, std::string> visit(const AssociationMask & m) const
         {
-            return std::make_pair(make_null_shared_ptr(), stringify(*m.associated_package()));
+            return std::make_pair("", stringify(m.associated_package_spec()));
         }
     };
 
     void do_one_mask(
+            const std::shared_ptr<const PackageID> & id,
             const std::shared_ptr<const Mask> & mask,
             const MaskOverrideReason & override,
             const PrintIDMasksCommandLine & cmdline
@@ -139,12 +140,15 @@ namespace
         m->insert('k', std::string(1, mask->key()));
         m->insert('d', mask->description());
 
-        std::pair<std::shared_ptr<const MetadataKey>, std::string> info(
-                mask->accept_returning<std::pair<std::shared_ptr<const MetadataKey>, std::string> >(GetInfo()));
-        m->insert('r', info.first ? info.first->raw_name() : "");
-        m->insert('=', info.first ? "=" : "");
-        m->insert('h', info.first ? info.first->human_name() : "");
-        m->insert('v', info.first ? format_plain_metadata_key_value(info.first) : info.second);
+        auto info(mask->accept_returning<std::pair<std::string, std::string> >(GetInfo()));
+        std::shared_ptr<const MetadataKey> info_key;
+        if (! info.first.empty())
+            info_key = *id->find_metadata(info.first);
+
+        m->insert('r', info_key ? info_key->raw_name() : "");
+        m->insert('=', info_key ? "=" : "");
+        m->insert('h', info_key ? info_key->human_name() : "");
+        m->insert('v', info_key ? format_plain_metadata_key_value(info_key) : info.second);
         m->insert('(', last_mro == override ? "" : "(");
         m->insert(')', last_mro == override ? "" : ")");
 
@@ -201,12 +205,12 @@ PrintIDMasksCommand::run(
         if (! cmdline.a_no_active.specified())
             for (PackageID::MasksConstIterator m((*i)->begin_masks()), m_end((*i)->end_masks()) ;
                     m != m_end ; ++m)
-                do_one_mask(*m, last_mro, cmdline);
+                do_one_mask(*i, *m, last_mro, cmdline);
 
         if (cmdline.a_overridden.specified())
             for (PackageID::OverriddenMasksConstIterator m((*i)->begin_overridden_masks()), m_end((*i)->end_overridden_masks()) ;
                     m != m_end ; ++m)
-                do_one_mask((*m)->mask(), (*m)->override_reason(), cmdline);
+                do_one_mask(*i, (*m)->mask(), (*m)->override_reason(), cmdline);
     }
 
     return EXIT_SUCCESS;

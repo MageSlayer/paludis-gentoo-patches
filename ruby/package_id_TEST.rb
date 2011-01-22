@@ -181,7 +181,7 @@ module Paludis
             assert_equal 1, masks.length
             mask = masks.first
             assert_kind_of RepositoryMask, mask
-            assert_equal "repository_mask", mask.mask_key.raw_name
+            assert_equal "repository_mask", mask.mask_key_name
         end
 
         def test_hash

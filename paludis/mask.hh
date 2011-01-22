@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,8 +21,8 @@
 #define PALUDIS_GUARD_PALUDIS_MASK_HH 1
 
 #include <paludis/mask-fwd.hh>
-#include <paludis/metadata_key-fwd.hh>
 #include <paludis/package_id-fwd.hh>
+#include <paludis/dep_spec-fwd.hh>
 #include <paludis/util/simple_visitor.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/fs_path.hh>
@@ -137,9 +137,11 @@ namespace paludis
     {
         public:
             /**
-             * Fetch the metadata key that is not accepted.
+             * Fetch the raw name of the metadata key that is not accepted.
+             *
+             * \since 0.59
              */
-            virtual const std::shared_ptr<const MetadataKey> unaccepted_key() const = 0;
+            virtual const std::string unaccepted_key_name() const = 0;
     };
 
     /**
@@ -156,10 +158,12 @@ namespace paludis
     {
         public:
             /**
-             * Fetch a metadata key explaining the mask. May return a zero
-             * pointer, if no more information is available.
+             * Fetch the raw name of a metadata key explaining the mask. May
+             * return a zero pointer, if no more information is available.
+             *
+             * \since 0.59
              */
-            virtual const std::shared_ptr<const MetadataKey> mask_key() const = 0;
+            virtual const std::string mask_key_name() const = 0;
     };
 
     /**
@@ -199,9 +203,11 @@ namespace paludis
     {
         public:
             /**
-             * Fetch the associated package.
+             * Fetch a spec identifying the associated package.
+             *
+             * \since 0.59
              */
-            virtual const std::shared_ptr<const PackageID> associated_package() const = 0;
+            virtual const PackageDepSpec associated_package_spec() const = 0;
     };
 
     /**

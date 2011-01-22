@@ -532,7 +532,7 @@ EbuildID::need_masks_added() const
         {
             add_mask(std::make_shared<EUnacceptedMask>('K',
                             DistributionData::get_instance()->distribution_from_string(
-                                _imp->environment->distribution())->concept_keyword(), keywords_key()));
+                                _imp->environment->distribution())->concept_keyword(), keywords_key()->raw_name()));
         }
         else if (keywords_key()->value()->end() == std::find_if(keywords_key()->value()->begin(),
                     keywords_key()->value()->end(), &is_stable_keyword))
@@ -541,7 +541,7 @@ EbuildID::need_masks_added() const
                             make_named_values<OverriddenMask>(
                                 n::mask() = std::make_shared<EUnacceptedMask>('~',
                                             DistributionData::get_instance()->distribution_from_string(
-                                                _imp->environment->distribution())->concept_keyword() + " (unstable accepted)", keywords_key()),
+                                                _imp->environment->distribution())->concept_keyword() + " (unstable accepted)", keywords_key()->raw_name()),
                                 n::override_reason() = mro_accepted_unstable
                                 )));
         }
@@ -554,18 +554,18 @@ EbuildID::need_masks_added() const
         if (! c.ok)
             add_mask(std::make_shared<EUnacceptedMask>('L',
                             DistributionData::get_instance()->distribution_from_string(
-                                _imp->environment->distribution())->concept_license(), license_key()));
+                                _imp->environment->distribution())->concept_license(), license_key()->raw_name()));
     }
 
     if (! _imp->environment->unmasked_by_user(shared_from_this()))
     {
         /* repo unless user */
         if (_imp->repository_mask->value())
-            add_mask(std::make_shared<ERepositoryMask>('R', "repository", _imp->repository_mask));
+            add_mask(std::make_shared<ERepositoryMask>('R', "repository", _imp->repository_mask->raw_name()));
 
         /* profile unless user */
         if (_imp->profile_mask->value())
-            add_mask(std::make_shared<ERepositoryMask>('P', "profile", _imp->profile_mask));
+            add_mask(std::make_shared<ERepositoryMask>('P', "profile", _imp->profile_mask->raw_name()));
 
         /* user */
         std::shared_ptr<const Mask> user_mask(_imp->environment->mask_for_user(shared_from_this(), false));
@@ -578,7 +578,7 @@ EbuildID::need_masks_added() const
         if (_imp->repository_mask->value())
             add_overridden_mask(std::make_shared<OverriddenMask>(
                             make_named_values<OverriddenMask>(
-                                n::mask() = std::make_shared<ERepositoryMask>('r', "repository (overridden)", _imp->repository_mask),
+                                n::mask() = std::make_shared<ERepositoryMask>('r', "repository (overridden)", _imp->repository_mask->raw_name()),
                                 n::override_reason() = mro_overridden_by_user
                                 )));
 
@@ -586,7 +586,7 @@ EbuildID::need_masks_added() const
         if (_imp->profile_mask->value())
             add_overridden_mask(std::make_shared<OverriddenMask>(
                             make_named_values<OverriddenMask>(
-                                n::mask() = std::make_shared<ERepositoryMask>('p', "profile (overridden)", _imp->profile_mask),
+                                n::mask() = std::make_shared<ERepositoryMask>('p', "profile (overridden)", _imp->profile_mask->raw_name()),
                                 n::override_reason() = mro_overridden_by_user
                                 )));
 

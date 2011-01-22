@@ -114,13 +114,13 @@ namespace mask
     void test_unaccepted_mask(UnacceptedMask & m)
     {
         test_mask(m);
-        m.unaccepted_key();
+        m.unaccepted_key_name();
     }
 
     void test_repository_mask(RepositoryMask & m)
     {
         test_mask(m);
-        m.mask_key();
+        m.mask_key_name();
     }
 
     void test_unsupported_mask(UnsupportedMask & m)
@@ -132,7 +132,7 @@ namespace mask
     void test_association_mask(AssociationMask & m)
     {
         test_mask(m);
-        m.associated_package();
+        m.associated_package_spec();
     }
 }
 

@@ -130,19 +130,19 @@ namespace
      * Document-method: unaccepted_key
      *
      * call-seq:
-     *     unaccepted_key -> MetadataKey or Nil
+     *     unaccepted_key -> String
      *
-     * Fetch the metadata key that is not accepted.
+     * Fetch the name of the metadata key that is not accepted.
      */
     /*
      * Document-method: mask_key
      *
      * call-seq:
-     *     mask_key -> MetadataKey or Nil
+     *     mask_key -> String
      *
-     * Fetch a metadata key explaining the mask.
+     * Fetch the name of a metadata key explaining the mask.
      */
-    template <typename T_, const std::shared_ptr<const MetadataKey> (T_::* m_) () const>
+    template <typename T_, const std::string (T_::* m_) () const>
     struct MaskMetadataKey
     {
         static VALUE
@@ -151,13 +151,13 @@ namespace
             std::shared_ptr<const Mask> * ptr;
             Data_Get_Struct(self, std::shared_ptr<const Mask>, ptr);
             std::shared_ptr<const T_> cast_ptr(std::static_pointer_cast<const T_>(*ptr));
-            return ((*cast_ptr).*m_)() ? metadata_key_to_value(((*cast_ptr).*m_)()) : Qnil;
+            return rb_str_new2(((*cast_ptr).*m_)().c_str());
         }
     };
 
     /*
      * call-seq:
-     *     associated_package -> PackageID or Nil
+     *     associated_package_spec -> PackageDepSpec
      *
      * Fetch the associated package.
      */
@@ -167,7 +167,7 @@ namespace
         std::shared_ptr<const Mask> * ptr;
         Data_Get_Struct(self, std::shared_ptr<const Mask>, ptr);
         std::shared_ptr<const AssociationMask> cast_ptr(std::static_pointer_cast<const AssociationMask>(*ptr));
-        return (cast_ptr)->associated_package() ? package_id_to_value((cast_ptr)->associated_package()) : Qnil;
+        return package_dep_spec_to_value((cast_ptr)->associated_package_spec());
     }
 
 
@@ -206,8 +206,8 @@ namespace
          * (for example) a MetadataCollectionKey or MetadataSpecTreeKey is not accepted by user configuration.
          */
         c_unaccepted_mask = rb_define_class_under(paludis_module(), "UnacceptedMask", c_mask);
-        rb_define_method(c_unaccepted_mask, "unaccepted_key",
-                RUBY_FUNC_CAST((&MaskMetadataKey<UnacceptedMask,&UnacceptedMask::unaccepted_key>::fetch)), 0);
+        rb_define_method(c_unaccepted_mask, "unaccepted_key_name",
+                RUBY_FUNC_CAST((&MaskMetadataKey<UnacceptedMask,&UnacceptedMask::unaccepted_key_name>::fetch)), 0);
 
         /*
          * Document-class: Paludis::RepositoryMask
@@ -215,8 +215,8 @@ namespace
          * A RepositoryMask is a Mask that signifies that a PackageID has been marked as masked by a Repository.
          */
         c_repository_mask = rb_define_class_under(paludis_module(), "RepositoryMask", c_mask);
-        rb_define_method(c_repository_mask, "mask_key",
-                RUBY_FUNC_CAST((&MaskMetadataKey<RepositoryMask,&RepositoryMask::mask_key>::fetch)), 0);
+        rb_define_method(c_repository_mask, "mask_key_name",
+                RUBY_FUNC_CAST((&MaskMetadataKey<RepositoryMask,&RepositoryMask::mask_key_name>::fetch)), 0);
 
         /*
          * Document-class: Paludis::UnsupportedMask
@@ -238,7 +238,7 @@ namespace
          * masked by association.
          */
         c_association_mask = rb_define_class_under(paludis_module(), "AssociationMask", c_mask);
-        rb_define_method(c_association_mask, "associated_package", RUBY_FUNC_CAST(&association_mask_associated_package), 0);
+        rb_define_method(c_association_mask, "associated_package_spec", RUBY_FUNC_CAST(&association_mask_associated_package), 0);
     }
 }
 

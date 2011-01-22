@@ -56,7 +56,7 @@ class TestCase_01_Masks(unittest.TestCase):
 
         self.assertEquals(m.key(), "K")
         self.assertEquals(m.description(), "keyword")
-        self.assert_(isinstance(m.unaccepted_key(), MetadataKeywordNameIterableKey))
+        self.assertEquals(m.unaccepted_key_name(), "KEYWORDS")
 
     def test_03_repository_mask(self):
         q = Selection.RequireExactlyOne(Generator.Matches(
@@ -72,8 +72,7 @@ class TestCase_01_Masks(unittest.TestCase):
 
         package_mask_path = os.path.realpath(os.path.join(os.getcwd(),
             "mask_TEST_dir/testrepo/profiles/package.mask"))
-        self.assertEquals(m.mask_key().value().mask_file, package_mask_path)
-        self.assert_(isinstance(m.mask_key().value().comment, StringIterable))
+        self.assertEquals(m.mask_key_name(), "repository_mask")
 
     def test_04_unsupported_mask(self):
         q = Selection.RequireExactlyOne(Generator.Matches(
@@ -100,7 +99,7 @@ class TestCase_01_Masks(unittest.TestCase):
 
             self.assertEquals(m.key(), "A")
             self.assertEquals(m.description(), "by association")
-            self.assertEquals(m.associated_package().name, "masked/repo")
+            self.assertEquals(m.associated_package_spec().package, "masked/repo")
         elif os.environ.get("PALUDIS_ENABLE_VIRTUALS_REPOSITORY") != "no":
             raise "oops"
 
@@ -123,8 +122,8 @@ class TestCase_02_Masks_subclassing(unittest.TestCase):
             def description(self):
                 return "test"
 
-            def unaccepted_key(self):
-                return MetadataStringKey()
+            def unaccepted_key_name(self):
+                return "monkey"
 
         test_unaccepted_mask(TestUnacceptedMask())
 
@@ -136,8 +135,8 @@ class TestCase_02_Masks_subclassing(unittest.TestCase):
             def description(self):
                 return "test"
 
-            def mask_key(self):
-                return MetadataStringKey()
+            def mask_key_name(self):
+                return "monkey"
 
         test_repository_mask(TestRepositoryMask())
 
@@ -162,12 +161,9 @@ class TestCase_02_Masks_subclassing(unittest.TestCase):
             def description(self):
                 return "test"
 
-            def associated_package(self):
+            def associated_package_spec(self):
                 e = EnvironmentFactory.instance.create("")
-                q = Selection.RequireExactlyOne(Generator.Matches(
-                    parse_user_package_dep_spec("=masked/user-1.0", e, []), []))
-                pid = iter(e[q]).next()
-                return pid
+                return parse_user_package_dep_spec("=masked/user-1.0", e, [])
 
         test_association_mask(TestAssociationMask())
 

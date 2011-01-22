@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -40,7 +40,11 @@ paludis::override_tilde_keywords(const Environment * const e, const std::shared_
     if (! mm)
         return false;
 
-    const MetadataCollectionKey<KeywordNameSet> * const k(simple_visitor_cast<const MetadataCollectionKey<KeywordNameSet> >(*mm->unaccepted_key()));
+    auto ki(id->find_metadata(mm->unaccepted_key_name()));
+    if (ki == id->end_metadata())
+        return false;
+
+    auto k(simple_visitor_cast<const MetadataCollectionKey<KeywordNameSet> >(**ki));
     if (! k)
         return false;
 
@@ -65,7 +69,11 @@ paludis::override_unkeyworded(const Environment * const e, const std::shared_ptr
     if (! mm)
         return false;
 
-    const MetadataCollectionKey<KeywordNameSet> * const k(simple_visitor_cast<const MetadataCollectionKey<KeywordNameSet> >(*mm->unaccepted_key()));
+    auto ki(id->find_metadata(mm->unaccepted_key_name()));
+    if (ki == id->end_metadata())
+        return false;
+
+    auto k(simple_visitor_cast<const MetadataCollectionKey<KeywordNameSet> >(**ki));
     if (! k)
         return false;
 
@@ -86,11 +94,18 @@ paludis::override_repository_masks(const Mask & m)
 }
 
 bool
-paludis::override_license(const Mask & m)
+paludis::override_license(const std::shared_ptr<const PackageID> & id, const Mask & m)
 {
     Context c("When working out whether mask is a license mask for override:");
     const UnacceptedMask * const mm(simple_visitor_cast<const UnacceptedMask>(m));
-    return mm && simple_visitor_cast<const MetadataSpecTreeKey<LicenseSpecTree> >(*mm->unaccepted_key());
+    if (! mm)
+        return false;
+
+    auto m_i(id->find_metadata(mm->unaccepted_key_name()));
+    if (m_i == id->end_metadata())
+        return false;
+
+    return simple_visitor_cast<const MetadataSpecTreeKey<LicenseSpecTree> >(**m_i);
 }
 
 

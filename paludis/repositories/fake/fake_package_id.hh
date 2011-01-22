@@ -182,12 +182,12 @@ namespace paludis
             Pimp<FakeUnacceptedMask> _imp;
 
         public:
-            FakeUnacceptedMask(const char, const std::string &, const std::shared_ptr<const MetadataKey> &);
+            FakeUnacceptedMask(const char, const std::string &, const std::string &);
             ~FakeUnacceptedMask();
 
             char key() const;
             const std::string description() const;
-            const std::shared_ptr<const MetadataKey> unaccepted_key() const;
+            const std::string unaccepted_key_name() const;
     };
 
     class PALUDIS_VISIBLE FakeUnsupportedMask :

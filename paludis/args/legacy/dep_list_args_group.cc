@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  * Copyright (c) 2007 David Leverton
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -233,7 +233,7 @@ DepListArgsGroup::populate_dep_list_options(const Environment * env, DepListOpti
     if (! options.override_masks())
         options.override_masks() = std::make_shared<DepListOverrideMasksFunctions>();
     options.override_masks()->push_back(std::bind(&override_tilde_keywords, env, _1, _2));
-    options.override_masks()->push_back(std::bind(&override_license, _2));
+    options.override_masks()->push_back(std::bind(&override_license, _1, _2));
 
     if (dl_override_masks.specified())
     {
@@ -252,7 +252,7 @@ DepListArgsGroup::populate_dep_list_options(const Environment * env, DepListOpti
             else if (*a == "repository")
                 options.override_masks()->push_back(std::bind(&override_repository_masks, _2));
             else if (*a == "license")
-                options.override_masks()->push_back(std::bind(&override_license, _2));
+                options.override_masks()->push_back(std::bind(&override_license, _1, _2));
             else if (*a == "none")
             {
             }

@@ -30,18 +30,18 @@ namespace paludis
     {
         const char key;
         const std::string description;
-        const std::shared_ptr<const MetadataKey> unaccepted_key;
+        const std::string unaccepted_key_name;
 
-        Imp(const char k, const std::string & d, const std::shared_ptr<const MetadataKey> & u) :
+        Imp(const char k, const std::string & d, const std::string & u) :
             key(k),
             description(d),
-            unaccepted_key(u)
+            unaccepted_key_name(u)
         {
         }
     };
 }
 
-EUnacceptedMask::EUnacceptedMask(const char k, const std::string & d, const std::shared_ptr<const MetadataKey> & u) :
+EUnacceptedMask::EUnacceptedMask(const char k, const std::string & d, const std::string & u) :
     _imp(k, d, u)
 {
 }
@@ -62,10 +62,10 @@ EUnacceptedMask::description() const
     return _imp->description;
 }
 
-const std::shared_ptr<const MetadataKey>
-EUnacceptedMask::unaccepted_key() const
+const std::string
+EUnacceptedMask::unaccepted_key_name() const
 {
-    return _imp->unaccepted_key;
+    return _imp->unaccepted_key_name;
 }
 
 namespace paludis
@@ -122,18 +122,18 @@ namespace paludis
     {
         const char key;
         const std::string description;
-        const std::shared_ptr<const MetadataKey> mask_key;
+        const std::string mask_key_name;
 
-        Imp(const char k, const std::string & d, const std::shared_ptr<const MetadataKey> & m) :
+        Imp(const char k, const std::string & d, const std::string & m) :
             key(k),
             description(d),
-            mask_key(m)
+            mask_key_name(m)
         {
         }
     };
 }
 
-ERepositoryMask::ERepositoryMask(const char k, const std::string & d, const std::shared_ptr<const MetadataKey> & m) :
+ERepositoryMask::ERepositoryMask(const char k, const std::string & d, const std::string & m) :
     _imp(k, d, m)
 {
 }
@@ -154,9 +154,9 @@ ERepositoryMask::description() const
     return _imp->description;
 }
 
-const std::shared_ptr<const MetadataKey>
-ERepositoryMask::mask_key() const
+const std::string
+ERepositoryMask::mask_key_name() const
 {
-    return _imp->mask_key;
+    return _imp->mask_key_name;
 }
 

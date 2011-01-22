@@ -123,7 +123,7 @@ namespace
     {
         std::shared_ptr<const DepTag> * ptr;
         Data_Get_Struct(self, std::shared_ptr<const DepTag>, ptr);
-        return package_dep_spec_to_value((std::static_pointer_cast<const DependencyDepTag>(*ptr))->dependency());
+        return package_dep_spec_to_value(*(std::static_pointer_cast<const DependencyDepTag>(*ptr))->dependency());
     }
 
     VALUE

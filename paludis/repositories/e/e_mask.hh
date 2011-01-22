@@ -34,12 +34,12 @@ namespace paludis
                 Pimp<EUnacceptedMask> _imp;
 
             public:
-                EUnacceptedMask(const char, const std::string &, const std::shared_ptr<const MetadataKey> &);
+                EUnacceptedMask(const char, const std::string &, const std::string &);
                 ~EUnacceptedMask();
 
                 char key() const;
                 const std::string description() const;
-                const std::shared_ptr<const MetadataKey> unaccepted_key() const;
+                const std::string unaccepted_key_name() const;
         };
 
         class EUnsupportedMask :
@@ -64,12 +64,12 @@ namespace paludis
                 Pimp<ERepositoryMask> _imp;
 
             public:
-                ERepositoryMask(const char, const std::string &, const std::shared_ptr<const MetadataKey> &);
+                ERepositoryMask(const char, const std::string &, const std::string &);
                 ~ERepositoryMask();
 
                 virtual char key() const;
                 const std::string description() const;
-                const std::shared_ptr<const MetadataKey> mask_key() const;
+                const std::string mask_key_name() const;
         };
     }
 }

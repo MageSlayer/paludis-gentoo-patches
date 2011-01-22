@@ -462,11 +462,11 @@ namespace
         public AssociationMask
     {
         private:
-            const std::shared_ptr<const PackageID> _id;
+            const PackageDepSpec _spec;
 
         public:
-            VirtualsAssociationMask(const std::shared_ptr<const PackageID> & i) :
-                _id(i)
+            VirtualsAssociationMask(const PackageDepSpec & s) :
+                _spec(s)
             {
             }
 
@@ -480,9 +480,9 @@ namespace
                 return "by association";
             }
 
-            const std::shared_ptr<const PackageID> associated_package() const
+            const PackageDepSpec associated_package_spec() const
             {
-                return _id;
+                return _spec;
             }
     };
 }
@@ -496,7 +496,7 @@ VirtualsPackageID::need_masks_added() const
         return;
 
     if (_imp->virtual_for->value()->masked())
-        add_mask(std::make_shared<VirtualsAssociationMask>(_imp->virtual_for->value()));
+        add_mask(std::make_shared<VirtualsAssociationMask>(_imp->virtual_for->value()->uniquely_identifying_spec()));
 
     _imp->has_masks = true;
 }

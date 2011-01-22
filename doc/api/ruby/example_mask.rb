@@ -32,16 +32,16 @@ ids.each do | id |
             puts "    Class: ".ljust(31) + 'UserMask'
         elsif mask.kind_of? UnacceptedMask
             puts "    Class: ".ljust(31) + 'UnacceptedMask'
-            puts "    Unaccepted key: ".ljust(31) + mask.unaccepted_key.raw_name unless mask.unaccepted_key.nil?
+            puts "    Unaccepted key: ".ljust(31) + mask.unaccepted_key_name
         elsif mask.kind_of? RepositoryMask
             puts "    Class: ".ljust(31) + 'RepositoryMask'
-            puts "    Mask key: ".ljust(31) + mask.mask_key.raw_name unless mask.mask_key.nil?
+            puts "    Mask key: ".ljust(31) + mask.mask_key_name
         elsif mask.kind_of? UnsupportedMask
             puts "    Class: ".ljust(31) + 'UnsupportedMask'
             puts "    Explanation: ".ljust(31) + mask.explanation
         elsif mask.kind_of? AssociationMask
             puts "    Class: ".ljust(31) + 'AssociationMask'
-            puts "    Associated package: ".ljust(31) + mask.associated_package.to_s unless mask.associated_package.nil?
+            puts "    Associated package: ".ljust(31) + mask.associated_package_spec.to_s
         else
             puts "    Class: ".ljust(31) + 'Unknown'
         end

@@ -22,6 +22,7 @@
 
 #include <paludis/mask.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/dep_spec.hh>
 
 using namespace paludis;
 using namespace paludis::python;
@@ -148,14 +149,14 @@ struct UnacceptedMaskWrapper :
     UnacceptedMask,
     bp::wrapper<UnacceptedMask>
 {
-    virtual const std::shared_ptr<const MetadataKey> unaccepted_key() const
+    virtual const std::string unaccepted_key_name() const
     {
         Lock l(get_mutex());
 
-        if (bp::override f = get_override("unaccepted_key"))
+        if (bp::override f = get_override("unaccepted_key_name"))
             return f();
         else
-            throw PythonMethodNotImplemented("UnacceptedMask", "unaccepted_key");
+            throw PythonMethodNotImplemented("UnacceptedMask", "unaccepted_key_name");
     }
 
     virtual char key() const
@@ -183,14 +184,14 @@ struct RepositoryMaskWrapper :
     RepositoryMask,
     bp::wrapper<RepositoryMask>
 {
-    virtual const std::shared_ptr<const MetadataKey> mask_key() const
+    virtual const std::string mask_key_name() const
     {
         Lock l(get_mutex());
 
-        if (bp::override f = get_override("mask_key"))
+        if (bp::override f = get_override("mask_key_name"))
             return f();
         else
-            throw PythonMethodNotImplemented("RepositoryMask", "mask_key");
+            throw PythonMethodNotImplemented("RepositoryMask", "mask_key_name");
     }
 
     virtual char key() const
@@ -252,14 +253,14 @@ struct AssociationMaskWrapper :
     AssociationMask,
     bp::wrapper<AssociationMask>
 {
-    virtual const std::shared_ptr<const PackageID> associated_package() const
+    virtual const PackageDepSpec associated_package_spec() const
     {
         Lock l(get_mutex());
 
-        if (bp::override f = get_override("associated_package"))
+        if (bp::override f = get_override("associated_package_spec"))
             return f();
         else
-            throw PythonMethodNotImplemented("AssociationMask", "associated_package");
+            throw PythonMethodNotImplemented("AssociationMask", "associated_package_spec");
     }
 
     virtual char key() const
@@ -392,9 +393,9 @@ void expose_mask()
          "Can be subclassed in Python.",
          bp::init<>()
         )
-        .def("unaccepted_key", bp::pure_virtual(&UnacceptedMask::unaccepted_key),
-                "unaccepted_key() -> MetadataKey\n"
-                "Fetch the metadata key that is not accepted."
+        .def("unaccepted_key_name", bp::pure_virtual(&UnacceptedMask::unaccepted_key_name),
+                "unaccepted_key_name() -> string\n"
+                "Fetch the name of the metadata key that is not accepted."
                 )
 
         .def("key", bp::pure_virtual(&Mask::key),
@@ -424,9 +425,9 @@ void expose_mask()
          "Can be subclassed in Python.",
          bp::init<>()
         )
-        .def("mask_key", bp::pure_virtual(&RepositoryMask::mask_key),
-                "mask_key() -> MetadataKey\n"
-                "Fetch a metadata key explaining the mask. May return None,\n"
+        .def("mask_key_name", bp::pure_virtual(&RepositoryMask::mask_key_name),
+                "mask_key_name() -> string\n"
+                "Fetch the name of a metadata key explaining the mask. May return None,\n"
                 "if no more information is available."
                 )
 
@@ -493,9 +494,9 @@ void expose_mask()
          "Can be subclassed in Python.",
          bp::init<>()
         )
-        .def("associated_package", bp::pure_virtual(&AssociationMask::associated_package),
-                "associated_package() -> PackageID\n"
-                "Fetch the associated package."
+        .def("associated_package_spec", bp::pure_virtual(&AssociationMask::associated_package_spec),
+                "associated_package_spec() -> PackageDepSpec\n"
+                "Fetch a spec for the associated package."
                 )
 
         .def("key", bp::pure_virtual(&Mask::key),

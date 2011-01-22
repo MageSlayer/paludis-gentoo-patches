@@ -29,6 +29,8 @@
 #include <paludis/util/timestamp.hh>
 #include <paludis/name.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/package_id.hh>
+#include <paludis/dep_spec.hh>
 #include <sstream>
 
 using namespace paludis;
@@ -241,10 +243,10 @@ MaskDisplayer::visit(const UnacceptedMask & m)
     if (_imp->want_description)
         _imp->s << m.description() << " (";
 
-    if (m.unaccepted_key())
+    if (! m.unaccepted_key_name().empty())
     {
         KeyPrettyPrinter k(_imp->env, _imp->id);
-        m.unaccepted_key()->accept(k);
+        (*_imp->id->find_metadata(m.unaccepted_key_name()))->accept(k);
         _imp->s << k.s.str();
     }
 
@@ -265,19 +267,19 @@ MaskDisplayer::visit(const RepositoryMask & m)
     {
         _imp->s << m.description();
 
-        if (m.mask_key())
+        if (! m.mask_key_name().empty())
         {
             KeyPrettyPrinter k(_imp->env, _imp->id);
-            m.mask_key()->accept(k);
+            (*_imp->id->find_metadata(m.mask_key_name()))->accept(k);
             _imp->s << " (" << k.s.str() << ")";
         }
     }
     else
     {
-        if (m.mask_key())
+        if (! m.mask_key_name().empty())
         {
             KeyPrettyPrinter k(_imp->env, _imp->id);
-            m.mask_key()->accept(k);
+            (*_imp->id->find_metadata(m.mask_key_name()))->accept(k);
             _imp->s << k.s.str();
         }
         else
@@ -298,8 +300,8 @@ void
 MaskDisplayer::visit(const AssociationMask & m)
 {
     if (_imp->want_description)
-        _imp->s << m.description() << " (associated package '" << *m.associated_package() << "')";
+        _imp->s << m.description() << " (associated package '" << m.associated_package_spec() << "')";
     else
-        _imp->s << *m.associated_package();
+        _imp->s << m.associated_package_spec();
 }
 

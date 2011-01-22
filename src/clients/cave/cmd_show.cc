@@ -967,12 +967,15 @@ namespace
     struct MaskDisplayer
     {
         const std::shared_ptr<const Environment> env;
+        const std::shared_ptr<const PackageID> id;
         const ShowCommandLine & cmdline;
         const int indent;
         std::ostream & out;
 
-        MaskDisplayer(const std::shared_ptr<const Environment> & e, const ShowCommandLine & c, const int i, std::ostream & o) :
+        MaskDisplayer(const std::shared_ptr<const Environment> & e,
+                const std::shared_ptr<const PackageID> & d, const ShowCommandLine & c, const int i, std::ostream & o) :
             env(e),
+            id(d),
             cmdline(c),
             indent(i),
             out(o)
@@ -981,10 +984,10 @@ namespace
 
         void visit(const UnacceptedMask & m)
         {
-            if (m.unaccepted_key())
+            if (! m.unaccepted_key_name().empty())
             {
                 InfoDisplayer i(env, cmdline, indent, false, make_null_shared_ptr(), make_null_shared_ptr(), false, out);
-                m.unaccepted_key()->accept(i);
+                (*id->find_metadata(m.unaccepted_key_name()))->accept(i);
             }
             else
             {
@@ -1016,7 +1019,7 @@ namespace
             out << fuc(
                     (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                     fv<'s'>(cmdline.a_raw_names.specified() ? stringify(m.key()) : "by " + m.description()),
-                    fv<'v'>(stringify(*m.associated_package())),
+                    fv<'v'>(stringify(m.associated_package_spec())),
                     fv<'i'>(std::string(indent, ' ')),
                     fv<'b'>(""),
                     fv<'p'>("")
@@ -1037,10 +1040,10 @@ namespace
 
         void visit(const RepositoryMask & m)
         {
-            if (m.mask_key())
+            if (! m.mask_key_name().empty())
             {
                 InfoDisplayer i(env, cmdline, indent, false, make_null_shared_ptr(), make_null_shared_ptr(), false, out);
-                m.mask_key()->accept(i);
+                (*id->find_metadata(m.mask_key_name()))->accept(i);
             }
             else
             {
@@ -1097,14 +1100,14 @@ namespace
         if (best->masked())
         {
             out << fuc(fs_package_id_masks(), fv<'s'>("Masked"));
-            MaskDisplayer d(env, cmdline, 2, out);
+            MaskDisplayer d(env, best, cmdline, 2, out);
             std::for_each(indirect_iterator(best->begin_masks()), indirect_iterator(best->end_masks()), accept_visitor(d));
         }
 
         if (best->begin_overridden_masks() != best->end_overridden_masks())
         {
             out << fuc(fs_package_id_masks_overridden(), fv<'s'>("Overridden Masks"));
-            MaskDisplayer d(env, cmdline, 2, out);
+            MaskDisplayer d(env, best, cmdline, 2, out);
             for (PackageID::OverriddenMasksConstIterator m(best->begin_overridden_masks()), m_end(best->end_overridden_masks()) ;
                     m != m_end ; ++m)
                 (*m)->mask()->accept(d);

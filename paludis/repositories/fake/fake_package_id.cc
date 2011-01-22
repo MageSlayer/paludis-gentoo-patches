@@ -529,18 +529,18 @@ namespace paludis
     {
         const char key;
         const std::string description;
-        const std::shared_ptr<const MetadataKey> unaccepted_key;
+        const std::string unaccepted_key_name;
 
-        Imp(const char k, const std::string & d, const std::shared_ptr<const MetadataKey> & u) :
+        Imp(const char k, const std::string & d, const std::string & u) :
             key(k),
             description(d),
-            unaccepted_key(u)
+            unaccepted_key_name(u)
         {
         }
     };
 }
 
-FakeUnacceptedMask::FakeUnacceptedMask(const char c, const std::string & s, const std::shared_ptr<const MetadataKey> & k) :
+FakeUnacceptedMask::FakeUnacceptedMask(const char c, const std::string & s, const std::string & k) :
     _imp(c, s, k)
 {
 }
@@ -561,10 +561,10 @@ FakeUnacceptedMask::description() const
     return _imp->description;
 }
 
-const std::shared_ptr<const MetadataKey>
-FakeUnacceptedMask::unaccepted_key() const
+const std::string
+FakeUnacceptedMask::unaccepted_key_name() const
 {
-    return _imp->unaccepted_key;
+    return _imp->unaccepted_key_name;
 }
 
 FakeUnsupportedMask::FakeUnsupportedMask()
@@ -1053,14 +1053,14 @@ FakePackageID::need_masks_added() const
 
     if (keywords_key())
         if (! _imp->env->accept_keywords(keywords_key()->value(), shared_from_this()))
-            add_mask(std::make_shared<FakeUnacceptedMask>('K', "keywords", keywords_key()));
+            add_mask(std::make_shared<FakeUnacceptedMask>('K', "keywords", keywords_key()->raw_name()));
 
     if (license_key())
     {
         LicenceChecker c(_imp->env, &Environment::accept_license, shared_from_this());
         license_key()->value()->top()->accept(c);
         if (! c.ok)
-            add_mask(std::make_shared<FakeUnacceptedMask>('L', "license", license_key()));
+            add_mask(std::make_shared<FakeUnacceptedMask>('L', "license", license_key()->raw_name()));
     }
 
     if (! _imp->env->unmasked_by_user(shared_from_this()))

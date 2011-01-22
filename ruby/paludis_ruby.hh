@@ -99,7 +99,7 @@ namespace paludis
 #endif
         template <typename T_> VALUE dep_tree_to_value(const std::shared_ptr<const T_> &);
         template <typename T_> std::shared_ptr<const T_> value_to_dep_tree(VALUE);
-        VALUE package_dep_spec_to_value(const std::shared_ptr<const PackageDepSpec> &);
+        VALUE package_dep_spec_to_value(const PackageDepSpec &);
         VALUE uri_label_to_value(const std::shared_ptr<const URILabel> &);
         VALUE dependencies_label_to_value(const std::shared_ptr<const DependenciesLabel> &);
         VALUE mask_to_value(std::shared_ptr<const Mask>);

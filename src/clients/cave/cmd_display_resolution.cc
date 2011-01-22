@@ -1026,16 +1026,16 @@ namespace
         {
             cout << fuc(fs_masked_by(), fv<'i'>(indent), fv<'c'>(colour), fv<'d'>(m.description()));
             MaskedByKeyVisitor v{env, id, indent + "    "};
-            if (m.mask_key())
-                m.mask_key()->accept(v);
+            if (! m.mask_key_name().empty())
+                (*id->find_metadata(m.mask_key_name()))->accept(v);
         }
 
         void visit(const UnacceptedMask & m) const
         {
             cout << fuc(fs_masked_by(), fv<'i'>(indent), fv<'c'>(colour), fv<'d'>(m.description()));
             MaskedByKeyVisitor v{env, id, indent + "    "};
-            if (m.unaccepted_key())
-                m.unaccepted_key()->accept(v);
+            if (! m.unaccepted_key_name().empty())
+                (*id->find_metadata(m.unaccepted_key_name()))->accept(v);
         }
 
         void visit(const UnsupportedMask & m) const
@@ -1046,7 +1046,7 @@ namespace
         void visit(const AssociationMask & m) const
         {
             cout << fuc(fs_masked_by_explanation(), fv<'i'>(indent), fv<'c'>(colour), fv<'d'>(m.description()),
-                    fv<'x'>("associated package '" + stringify(*m.associated_package()) + "'"));
+                    fv<'x'>("associated package '" + stringify(m.associated_package_spec()) + "'"));
         }
     };
 

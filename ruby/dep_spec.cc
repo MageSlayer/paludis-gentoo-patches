@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  * Copyright (c) 2006, 2007, 2008 Richard Brown
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -508,7 +508,7 @@ namespace
     {
         std::shared_ptr<WrappedSpecBase> * p;
         Data_Get_Struct(self, std::shared_ptr<WrappedSpecBase>, p);
-        return package_dep_spec_to_value(std::make_shared<PackageDepSpec>(
+        return package_dep_spec_to_value(*std::make_shared<PackageDepSpec>(
                     std::static_pointer_cast<const WrappedSpec<BlockDepSpec> >(*p)->spec()->blocking()));
     }
 
@@ -1348,10 +1348,10 @@ paludis::ruby::value_to_dep_tree(VALUE v)
 }
 
 VALUE
-paludis::ruby::package_dep_spec_to_value(const std::shared_ptr<const PackageDepSpec> & p)
+paludis::ruby::package_dep_spec_to_value(const PackageDepSpec & p)
 {
     std::shared_ptr<const WrappedSpecBase> * v_ptr(new std::shared_ptr<const WrappedSpecBase>(
-                std::make_shared<WrappedSpec<PackageDepSpec>>(std::static_pointer_cast<PackageDepSpec>(p->clone()))));
+                std::make_shared<WrappedSpec<PackageDepSpec>>(std::static_pointer_cast<PackageDepSpec>(p.clone()))));
     return Data_Wrap_Struct(c_package_dep_spec, 0, &Common<std::shared_ptr<const WrappedSpecBase> >::free, v_ptr);
 }
 

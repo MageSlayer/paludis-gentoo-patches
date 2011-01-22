@@ -1142,7 +1142,7 @@ namespace
             {
                 rb_raise(rb_eArgError, "Expected one argument, not %d", argc);
             }
-            (*p)->push_back(std::bind(&override_license, _2));
+            (*p)->push_back(std::bind(&override_license, _1, _2));
         }
         else
         {
