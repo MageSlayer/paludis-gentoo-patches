@@ -22,24 +22,25 @@
 
 #include <paludis/mask.hh>
 #include <paludis/util/pimp.hh>
+#include <paludis/util/singleton.hh>
 
 namespace paludis
 {
     namespace erepository
     {
-        class EUnacceptedMask :
-            public UnacceptedMask
+        class EUnacceptedMaskStore :
+            public Singleton<EUnacceptedMaskStore>
         {
+            friend class Singleton<EUnacceptedMaskStore>;
+
             private:
-                Pimp<EUnacceptedMask> _imp;
+                Pimp<EUnacceptedMaskStore> _imp;
+
+                EUnacceptedMaskStore();
+                ~EUnacceptedMaskStore();
 
             public:
-                EUnacceptedMask(const char, const std::string &, const std::string &);
-                ~EUnacceptedMask();
-
-                char key() const;
-                const std::string description() const;
-                const std::string unaccepted_key_name() const;
+                const std::shared_ptr<const UnacceptedMask> fetch(const char, const std::string &, const std::string &);
         };
 
         class EUnsupportedMask :
@@ -72,6 +73,9 @@ namespace paludis
                 const std::string mask_key_name() const;
         };
     }
+
+    extern template class Singleton<erepository::EUnacceptedMaskStore>;
+    extern template class Pimp<erepository::EUnacceptedMaskStore>;
 }
 
 #endif

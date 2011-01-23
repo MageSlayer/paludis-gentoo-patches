@@ -19,9 +19,30 @@
 
 #include <paludis/repositories/e/e_mask.hh>
 #include <paludis/util/pimp-impl.hh>
+#include <paludis/util/singleton-impl.hh>
+#include <paludis/util/hashes.hh>
+#include <unordered_map>
 
 using namespace paludis;
 using namespace paludis::erepository;
+
+namespace
+{
+    class EUnacceptedMask :
+        public UnacceptedMask
+    {
+        private:
+            Pimp<EUnacceptedMask> _imp;
+
+        public:
+            EUnacceptedMask(const char, const std::string &, const std::string &);
+            ~EUnacceptedMask();
+
+            char key() const;
+            const std::string description() const;
+            const std::string unaccepted_key_name() const;
+    };
+}
 
 namespace paludis
 {
@@ -159,4 +180,44 @@ ERepositoryMask::mask_key_name() const
 {
     return _imp->mask_key_name;
 }
+
+namespace
+{
+    typedef std::tuple<char, std::string, std::string> EUnacceptedMaskIndex;
+}
+
+namespace paludis
+{
+    template <>
+    struct Imp<EUnacceptedMaskStore>
+    {
+        mutable Mutex mutex;
+        mutable std::unordered_map<EUnacceptedMaskIndex, std::shared_ptr<const UnacceptedMask>, Hash<EUnacceptedMaskIndex> > store;
+    };
+}
+
+EUnacceptedMaskStore::EUnacceptedMaskStore() :
+    _imp()
+{
+}
+
+EUnacceptedMaskStore::~EUnacceptedMaskStore()
+{
+}
+
+const std::shared_ptr<const UnacceptedMask>
+EUnacceptedMaskStore::fetch(const char c, const std::string & s, const std::string & k)
+{
+    EUnacceptedMaskIndex index(c, s, k);
+
+    Lock lock(_imp->mutex);
+    auto i(_imp->store.find(index));
+    if (i == _imp->store.end())
+        i = _imp->store.insert(std::make_pair(index, std::make_shared<EUnacceptedMask>(c, s, k))).first;
+
+    return i->second;
+}
+
+template class Singleton<EUnacceptedMaskStore>;
+template class Pimp<EUnacceptedMaskStore>;
 

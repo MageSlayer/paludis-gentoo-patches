@@ -530,16 +530,16 @@ EbuildID::need_masks_added() const
     {
         if (! _imp->environment->accept_keywords(keywords_key()->value(), shared_from_this()))
         {
-            add_mask(std::make_shared<EUnacceptedMask>('K',
-                            DistributionData::get_instance()->distribution_from_string(
-                                _imp->environment->distribution())->concept_keyword(), keywords_key()->raw_name()));
+            add_mask(EUnacceptedMaskStore::get_instance()->fetch('K',
+                        DistributionData::get_instance()->distribution_from_string(
+                            _imp->environment->distribution())->concept_keyword(), keywords_key()->raw_name()));
         }
         else if (keywords_key()->value()->end() == std::find_if(keywords_key()->value()->begin(),
                     keywords_key()->value()->end(), &is_stable_keyword))
         {
             add_overridden_mask(std::make_shared<OverriddenMask>(
                             make_named_values<OverriddenMask>(
-                                n::mask() = std::make_shared<EUnacceptedMask>('~',
+                                n::mask() = EUnacceptedMaskStore::get_instance()->fetch('~',
                                             DistributionData::get_instance()->distribution_from_string(
                                                 _imp->environment->distribution())->concept_keyword() + " (unstable accepted)", keywords_key()->raw_name()),
                                 n::override_reason() = mro_accepted_unstable
@@ -552,9 +552,9 @@ EbuildID::need_masks_added() const
         LicenceChecker c(_imp->environment, &Environment::accept_license, shared_from_this());
         license_key()->value()->top()->accept(c);
         if (! c.ok)
-            add_mask(std::make_shared<EUnacceptedMask>('L',
-                            DistributionData::get_instance()->distribution_from_string(
-                                _imp->environment->distribution())->concept_license(), license_key()->raw_name()));
+            add_mask(EUnacceptedMaskStore::get_instance()->fetch('L',
+                        DistributionData::get_instance()->distribution_from_string(
+                            _imp->environment->distribution())->concept_license(), license_key()->raw_name()));
     }
 
     if (! _imp->environment->unmasked_by_user(shared_from_this()))
