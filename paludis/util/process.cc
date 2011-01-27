@@ -93,6 +93,12 @@ ProcessCommand::prepend_args(const std::initializer_list<std::string> & l)
 }
 
 void
+ProcessCommand::append_args(const std::initializer_list<std::string> & l)
+{
+    _imp->args.insert(_imp->args.end(), l);
+}
+
+void
 ProcessCommand::exec()
 {
     if (! _imp->args_string.empty())

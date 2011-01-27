@@ -69,6 +69,7 @@ namespace paludis
             ProcessCommand & operator= (const ProcessCommand &) = delete;
 
             void prepend_args(const std::initializer_list<std::string> &);
+            void append_args(const std::initializer_list<std::string> &);
 
             void echo_command_to(std::ostream &);
 
