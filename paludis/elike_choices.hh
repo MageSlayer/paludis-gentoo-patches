@@ -254,7 +254,8 @@ namespace paludis
 
         public:
             ELikeSymbolsChoiceValue(const std::shared_ptr<const PackageID> &,
-                    const Environment * const env, const std::shared_ptr<const Choice> &);
+                    const Environment * const env, const std::shared_ptr<const Choice> &,
+                    const ELikeSymbolsChoiceValueParameter _force);
 
             virtual const UnprefixedChoiceName unprefixed_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const ChoiceNameWithPrefix name_with_prefix() const PALUDIS_ATTRIBUTE((warn_unused_result));

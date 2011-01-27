@@ -734,9 +734,9 @@ namespace
 }
 
 ELikeSymbolsChoiceValue::ELikeSymbolsChoiceValue(const std::shared_ptr<const PackageID> & id,
-        const Environment * const env, const std::shared_ptr<const Choice> & choice) :
-    _enabled(env->want_choice_enabled(id, choice, canonical_unprefixed_name()).is_true()),
-    _param(get_symbols(id, env->value_for_choice_parameter(id, choice, canonical_unprefixed_name())))
+        const Environment * const env, const std::shared_ptr<const Choice> & choice, const ELikeSymbolsChoiceValueParameter _force) :
+    _enabled(! env->want_choice_enabled(id, choice, canonical_unprefixed_name()).is_false()),
+    _param(_force != last_escvp ? _force : get_symbols(id, env->value_for_choice_parameter(id, choice, canonical_unprefixed_name())))
 {
 }
 
