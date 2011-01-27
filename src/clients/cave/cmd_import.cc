@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -104,7 +104,7 @@ namespace
             a_strip(&g_contents_options, "strip", 's',
                     "Specify whether to strip and split objects being installed.",
                     args::EnumArg::EnumArgOptions
-                    ("config",       'c',   "Use build_options: split and build_options: strip from user configuration")
+                    ("config",       'c',   "Use build_options: symbols from user configuration")
                     ("always",       'a',   "Split and strip, regardless of user configuration")
                     ("never",        'n',   "Do not split or strip, regardless of user configuration"),
                     "config"),
