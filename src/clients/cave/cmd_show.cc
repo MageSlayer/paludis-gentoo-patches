@@ -346,6 +346,7 @@ namespace
     struct PermittedChoiceValueParameterValuesDisplayer
     {
         std::ostream & out;
+        const std::string actual_value;
 
         void visit(const PermittedChoiceValueParameterIntegerValue & v) const
         {
@@ -374,7 +375,9 @@ namespace
                 out << fuc(fs_permitted_choice_value_enum_values());
                 for (auto a(v.allowed_values_and_descriptions()->begin()), a_end(v.allowed_values_and_descriptions()->end()) ;
                         a != a_end ; ++a)
-                    out << fuc(fs_permitted_choice_value_enum_value(), fv<'v'>(a->first), fv<'d'>(a->second));
+                    out << fuc(
+                            actual_value == a->first ? fs_permitted_choice_value_enum_value_chosen() : fs_permitted_choice_value_enum_value(),
+                            fv<'v'>(a->first), fv<'d'>(a->second));
             }
         }
     };
@@ -965,7 +968,7 @@ namespace
 
                         if ((*v)->permitted_parameter_values())
                         {
-                            PermittedChoiceValueParameterValuesDisplayer d{out};
+                            PermittedChoiceValueParameterValuesDisplayer d{out, (*v)->parameter()};
                             (*v)->permitted_parameter_values()->accept(d);
                         }
                     }
