@@ -65,7 +65,7 @@ const auto fs_permitted_choice_value_enum_values = make_format_string_fetcher("s
     << "%{column 30}Permitted values:" << "\\n";
 
 const auto fs_permitted_choice_value_enum_value = make_format_string_fetcher("show/permitted_choice_value_enum_value", 1)
-    << "%{column 40}" << param<'v'>() << param_if<'d'>() << ": " << "%{column 55}" << param<'d'>() << param_endif<'d'>() << "\\n";
+    << "%{column 34}" << param<'v'>() << param_if<'d'>() << ": " << "%{column 45}" << param<'d'>() << param_endif<'d'>() << "\\n";
 
 const auto fs_metadata_value_raw = make_format_string_fetcher("show/metadata_value_raw", 2)
     << "    " << param<'i'>() << param<'i'>() << param<'i'>() << param<'i'>()
