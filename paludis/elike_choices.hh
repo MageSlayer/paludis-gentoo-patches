@@ -270,6 +270,10 @@ namespace paludis
 
             static const UnprefixedChoiceName canonical_unprefixed_name() PALUDIS_ATTRIBUTE((warn_unused_result));
             static const ChoiceNameWithPrefix canonical_name_with_prefix() PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            static bool should_split(const std::string &) PALUDIS_ATTRIBUTE((warn_unused_result));
+            static bool should_strip(const std::string &) PALUDIS_ATTRIBUTE((warn_unused_result));
+            static bool should_compress(const std::string &) PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }
 

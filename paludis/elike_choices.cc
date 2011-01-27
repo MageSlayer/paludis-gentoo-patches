@@ -806,3 +806,62 @@ ELikeSymbolsChoiceValue::canonical_name_with_prefix()
     return ChoiceNameWithPrefix(stringify(canonical_build_options_prefix()) + ":" + stringify(canonical_unprefixed_name()));
 }
 
+bool
+ELikeSymbolsChoiceValue::should_split(const std::string & v)
+{
+    switch (destringify<ELikeSymbolsChoiceValueParameter>(v))
+    {
+        case escvp_split:
+        case escvp_compress:
+            return true;
+
+        case escvp_preserve:
+        case escvp_strip:
+            return false;
+
+        case last_escvp:
+            break;
+    }
+
+    throw InternalError(PALUDIS_HERE, "Unhandled ELikeSymbolsChoiceValueParameter");
+}
+
+bool
+ELikeSymbolsChoiceValue::should_strip(const std::string & v)
+{
+    switch (destringify<ELikeSymbolsChoiceValueParameter>(v))
+    {
+        case escvp_split:
+        case escvp_compress:
+        case escvp_strip:
+            return true;
+
+        case escvp_preserve:
+            return false;
+
+        case last_escvp:
+            break;
+    }
+
+    throw InternalError(PALUDIS_HERE, "Unhandled ELikeSymbolsChoiceValueParameter");
+}
+
+bool
+ELikeSymbolsChoiceValue::should_compress(const std::string & v)
+{
+    switch (destringify<ELikeSymbolsChoiceValueParameter>(v))
+    {
+        case escvp_compress:
+            return true;
+
+        case escvp_split:
+        case escvp_preserve:
+        case escvp_strip:
+            return false;
+
+        case last_escvp:
+            break;
+    }
+
+    throw InternalError(PALUDIS_HERE, "Unhandled ELikeSymbolsChoiceValueParameter");
+}
