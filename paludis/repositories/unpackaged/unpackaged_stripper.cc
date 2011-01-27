@@ -42,6 +42,7 @@ namespace paludis
 
 UnpackagedStripper::UnpackagedStripper(const UnpackagedStripperOptions & options) :
     Stripper(make_named_values<StripperOptions>(
+                n::compress_splits() = false,
                 n::debug_dir() = options.debug_dir(),
                 n::image_dir() = options.image_dir(),
                 n::split() = options.split(),

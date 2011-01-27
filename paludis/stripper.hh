@@ -32,6 +32,7 @@ namespace paludis
 {
     namespace n
     {
+        typedef Name<struct name_compress_splits> compress_splits;
         typedef Name<struct name_debug_dir> debug_dir;
         typedef Name<struct name_image_dir> image_dir;
         typedef Name<struct name_split> split;
@@ -40,6 +41,7 @@ namespace paludis
 
     struct StripperOptions
     {
+        NamedValue<n::compress_splits, bool> compress_splits;
         NamedValue<n::debug_dir, FSPath> debug_dir;
         NamedValue<n::image_dir, FSPath> image_dir;
         NamedValue<n::split, bool> split;

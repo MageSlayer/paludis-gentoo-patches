@@ -267,8 +267,13 @@ Stripper::do_split(const FSPath & f, const FSPath & g)
         std::for_each(to_make.begin(), to_make.end(), std::bind(std::mem_fn(&FSPath::mkdir), _1, 0755, FSPathMkdirOptions() + fspmkdo_ok_if_exists));
     }
 
-    Process objcopy_copy_process(ProcessCommand({ "objcopy", "--only-keep-debug", stringify(f), stringify(g) }));
+    ProcessCommand objcopy_copy_process_args({ "objcopy", "--only-keep-debug", stringify(f), stringify(g) });
+    if (_imp->options.compress_splits())
+        objcopy_copy_process_args.append_args({ "--compress-debug-sections" });
+    Process objcopy_copy_process(std::move(objcopy_copy_process_args));
+
     Process objcopy_link_process(ProcessCommand({ "objcopy", "--add-gnu-debuglink=" + stringify(g), stringify(f) }));
+
     if (0 != objcopy_copy_process.run().wait())
         Log::get_instance()->message("strip.failure", ll_warning, lc_context) << "Couldn't copy debug information for '" << f << "'";
     else if (0 != objcopy_link_process.run().wait())
