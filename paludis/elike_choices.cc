@@ -26,9 +26,15 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/enum_iterator.hh>
+#include <paludis/util/map.hh>
 #include <limits>
+#include <istream>
+#include <ostream>
 
 using namespace paludis;
+
+#include <paludis/elike_choices-se.cc>
 
 namespace
 {
@@ -37,9 +43,37 @@ namespace
     {
         const std::shared_ptr<const PermittedChoiceValueParameterIntegerValue> permitted_jobs_values;
 
+        const std::shared_ptr<Map<std::string, std::string> > permitted_symbols;
+        const std::shared_ptr<const PermittedChoiceValueParameterEnumValue> permitted_symbols_values;
+
         CommonValues() :
-            permitted_jobs_values(new PermittedChoiceValueParameterIntegerValue(1, std::numeric_limits<int>::max()))
+            permitted_jobs_values(std::make_shared<PermittedChoiceValueParameterIntegerValue>(1, std::numeric_limits<int>::max())),
+            permitted_symbols(std::make_shared<Map<std::string, std::string> >()),
+            permitted_symbols_values(std::make_shared<PermittedChoiceValueParameterEnumValue>(permitted_symbols))
         {
+            for (EnumIterator<ELikeSymbolsChoiceValueParameter> e, e_end(last_escvp) ;
+                    e != e_end ; ++e)
+            {
+                switch (*e)
+                {
+                    case escvp_split:
+                        permitted_symbols->insert("split", "Split debug symbols");
+                        continue;
+                    case escvp_preserve:
+                        permitted_symbols->insert("preserve", "Preserve debug symbols");
+                        continue;
+                    case escvp_strip:
+                        permitted_symbols->insert("strip", "Strip debug symbols");
+                        continue;
+                    case escvp_compress:
+                        permitted_symbols->insert("compress", "Split and compress debug symbols");
+                        continue;
+                    case last_escvp:
+                        break;
+                }
+
+                throw InternalError(PALUDIS_HERE, "Unhandled ELikeSymbolsChoiceValueParameter");
+            }
         }
     };
 }
@@ -675,5 +709,100 @@ const std::shared_ptr<const PermittedChoiceValueParameterValues>
 ELikePreserveWorkChoiceValue::permitted_parameter_values() const
 {
     return make_null_shared_ptr();
+}
+
+namespace
+{
+    ELikeSymbolsChoiceValueParameter get_symbols(const std::shared_ptr<const PackageID> & id,
+            const std::string & env_value)
+    {
+        if (env_value.empty())
+            return escvp_split;
+
+        try
+        {
+            return destringify<ELikeSymbolsChoiceValueParameter>(env_value);
+        }
+        catch (const DestringifyError &)
+        {
+            Context context("When getting value of the symbols option for '" + stringify(*id) + "':");
+            Log::get_instance()->message("elike_symbols_choice_value.invalid", ll_warning, lc_context)
+                << "Value '" << env_value << "' is not a legal value, using \"split\" instead";
+            return escvp_split;
+        }
+    }
+}
+
+ELikeSymbolsChoiceValue::ELikeSymbolsChoiceValue(const std::shared_ptr<const PackageID> & id,
+        const Environment * const env, const std::shared_ptr<const Choice> & choice) :
+    _enabled(env->want_choice_enabled(id, choice, canonical_unprefixed_name()).is_true()),
+    _param(get_symbols(id, env->value_for_choice_parameter(id, choice, canonical_unprefixed_name())))
+{
+}
+
+const UnprefixedChoiceName
+ELikeSymbolsChoiceValue::unprefixed_name() const
+{
+    return canonical_unprefixed_name();
+}
+
+const ChoiceNameWithPrefix
+ELikeSymbolsChoiceValue::name_with_prefix() const
+{
+    return canonical_name_with_prefix();
+}
+
+bool
+ELikeSymbolsChoiceValue::enabled() const
+{
+    return _enabled;
+}
+
+bool
+ELikeSymbolsChoiceValue::enabled_by_default() const
+{
+    return true;
+}
+
+bool
+ELikeSymbolsChoiceValue::locked() const
+{
+    return false;
+}
+
+const std::string
+ELikeSymbolsChoiceValue::description() const
+{
+    return "How to handle debug symbols in installed files";
+}
+
+bool
+ELikeSymbolsChoiceValue::explicitly_listed() const
+{
+    return true;
+}
+
+const std::string
+ELikeSymbolsChoiceValue::parameter() const
+{
+    return stringify(_param);
+}
+
+const std::shared_ptr<const PermittedChoiceValueParameterValues>
+ELikeSymbolsChoiceValue::permitted_parameter_values() const
+{
+    return CommonValues::get_instance()->permitted_symbols_values;
+}
+
+const UnprefixedChoiceName
+ELikeSymbolsChoiceValue::canonical_unprefixed_name()
+{
+    return UnprefixedChoiceName("symbols");
+}
+
+const ChoiceNameWithPrefix
+ELikeSymbolsChoiceValue::canonical_name_with_prefix()
+{
+    return ChoiceNameWithPrefix(stringify(canonical_build_options_prefix()) + ":" + stringify(canonical_unprefixed_name()));
 }
 

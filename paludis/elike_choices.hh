@@ -244,6 +244,32 @@ namespace paludis
             static const UnprefixedChoiceName canonical_unprefixed_name() PALUDIS_ATTRIBUTE((warn_unused_result));
             static const ChoiceNameWithPrefix canonical_name_with_prefix() PALUDIS_ATTRIBUTE((warn_unused_result));
     };
+
+    class PALUDIS_VISIBLE ELikeSymbolsChoiceValue :
+        public ChoiceValue
+    {
+        private:
+            const bool _enabled;
+            const ELikeSymbolsChoiceValueParameter _param;
+
+        public:
+            ELikeSymbolsChoiceValue(const std::shared_ptr<const PackageID> &,
+                    const Environment * const env, const std::shared_ptr<const Choice> &);
+
+            virtual const UnprefixedChoiceName unprefixed_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual const ChoiceNameWithPrefix name_with_prefix() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual bool enabled() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual bool enabled_by_default() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual bool locked() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual const std::string description() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual bool explicitly_listed() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual const std::string parameter() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual const std::shared_ptr<const PermittedChoiceValueParameterValues> permitted_parameter_values() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            static const UnprefixedChoiceName canonical_unprefixed_name() PALUDIS_ATTRIBUTE((warn_unused_result));
+            static const ChoiceNameWithPrefix canonical_name_with_prefix() PALUDIS_ATTRIBUTE((warn_unused_result));
+    };
 }
 
 #endif

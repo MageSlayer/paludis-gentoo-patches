@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -23,6 +23,7 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/choice-fwd.hh>
 #include <string>
+#include <iosfwd>
 
 namespace paludis
 {
@@ -33,10 +34,14 @@ namespace paludis
     struct ELikeExpensiveTestsChoiceValue;
     struct ELikeJobsChoiceValue;
     struct ELikePreserveWorkChoiceValue;
+    struct ELikeSymbolsChoiceValue;
 
     const ChoicePrefixName canonical_build_options_prefix() PALUDIS_VISIBLE PALUDIS_ATTRIBUTE((warn_unused_result));
     const std::string canonical_build_options_raw_name() PALUDIS_VISIBLE PALUDIS_ATTRIBUTE((warn_unused_result));
     const std::string canonical_build_options_human_name() PALUDIS_VISIBLE PALUDIS_ATTRIBUTE((warn_unused_result));
+
+#include <paludis/elike_choices-se.hh>
+
 }
 
 #endif

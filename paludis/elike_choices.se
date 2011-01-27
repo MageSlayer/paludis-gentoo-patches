@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# vim: set sw=4 sts=4 et ft=sh :
+
+make_enum_ELikeSymbolsChoiceValueParameter()
+{
+    prefix escvp
+
+    key escvp_preserve           "Do not modify symbols"
+    key escvp_strip              "Strip symbols"
+    key escvp_split              "Split symbols into debug files"
+    key escvp_compress           "Split symbols into compressed debug files"
+
+    want_destringify
+}
+
