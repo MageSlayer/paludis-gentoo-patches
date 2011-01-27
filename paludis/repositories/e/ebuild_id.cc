@@ -1403,6 +1403,22 @@ EbuildID::slot_key() const
     return _imp->slot;
 }
 
+namespace
+{
+    std::string get_description(const std::shared_ptr<const UseDesc> & use_desc, const std::string & override_description,
+            const QualifiedPackageName & package, const ChoicePrefixName & prefix, const UnprefixedChoiceName & suffix)
+    {
+        if (! override_description.empty())
+            return override_description;
+
+        if (use_desc)
+            return use_desc->describe(package, prefix, suffix);
+        else
+            return "";
+    }
+}
+
+
 std::shared_ptr<ChoiceValue>
 EbuildID::make_choice_value(
         const std::shared_ptr<const Choice> & choice,
@@ -1482,9 +1498,16 @@ EbuildID::make_choice_value(
         }
     }
 
-    return std::make_shared<EChoiceValue>(choice->prefix(), value_name, ChoiceNameWithPrefix(name_with_prefix), name(),
-                e_repo->use_desc(),
-                enabled, enabled_by_default, force_locked || locked, explicitly_listed, override_description, "", make_null_shared_ptr());
+    return std::make_shared<EChoiceValue>(make_named_values<EChoiceValueParams>(
+                n::choice_name_with_prefix() = ChoiceNameWithPrefix(name_with_prefix),
+                n::choice_prefix_name() = choice->prefix(),
+                n::description() = get_description(e_repo->use_desc(), override_description, name(), choice->prefix(), value_name),
+                n::enabled() = enabled,
+                n::enabled_by_default() = enabled_by_default,
+                n::explicitly_listed() = explicitly_listed,
+                n::locked() = force_locked || locked,
+                n::unprefixed_choice_name() = value_name
+                ));
 }
 
 namespace

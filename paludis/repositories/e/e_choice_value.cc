@@ -19,84 +19,67 @@
 
 #include <paludis/repositories/e/e_choice_value.hh>
 #include <paludis/repositories/e/use_desc.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 
 using namespace paludis;
 using namespace paludis::erepository;
 
-EChoiceValue::EChoiceValue(const ChoicePrefixName & r, const UnprefixedChoiceName & v, const ChoiceNameWithPrefix & np, const QualifiedPackageName & p,
-        const std::shared_ptr<const UseDesc> & d,
-        bool b, bool def, bool l, bool x, const std::string & o,
-        const std::string & pv, const std::shared_ptr<const PermittedChoiceValueParameterValues> & e) :
-    _prefix(r),
-    _unprefixed_name(v),
-    _name_with_prefix(np),
-    _package_name(p),
-    _use_desc(d),
-    _enabled(b),
-    _enabled_by_default(def),
-    _locked(l),
-    _explicitly_listed(x),
-    _override_description(o),
-    _parameter(pv),
-    _permitted(e)
+EChoiceValue::EChoiceValue(const EChoiceValueParams & p) :
+    _params(p)
 {
 }
 
 const UnprefixedChoiceName
 EChoiceValue::unprefixed_name() const
 {
-    return _unprefixed_name;
+    return _params.unprefixed_choice_name();
 }
 
 const ChoiceNameWithPrefix
 EChoiceValue::name_with_prefix() const
 {
-    return _name_with_prefix;
+    return _params.choice_name_with_prefix();
 }
 
 const std::string
 EChoiceValue::description() const
 {
-    if (! _override_description.empty())
-        return _override_description;
-    if (! _use_desc)
-        return "";
-    return _use_desc->describe(_package_name, _prefix, _unprefixed_name);
+    return _params.description();
 }
 
 bool
 EChoiceValue::enabled() const
 {
-    return _enabled;
+    return _params.enabled();
 }
 
 bool
 EChoiceValue::enabled_by_default() const
 {
-    return _enabled_by_default;
+    return _params.enabled_by_default();
 }
 
 bool
 EChoiceValue::locked() const
 {
-    return _locked;
+    return _params.locked();
 }
 
 bool
 EChoiceValue::explicitly_listed() const
 {
-    return _explicitly_listed;
+    return _params.explicitly_listed();
 }
 
 const std::string
 EChoiceValue::parameter() const
 {
-    return _parameter;
+    return "";
 }
 
 const std::shared_ptr<const PermittedChoiceValueParameterValues>
 EChoiceValue::permitted_parameter_values() const
 {
-    return _permitted;
+    return make_null_shared_ptr();
 }
 

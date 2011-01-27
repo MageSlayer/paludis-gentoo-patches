@@ -1064,8 +1064,16 @@ EInstalledRepositoryID::make_choice_value(const std::shared_ptr<const Choice> & 
     if (raw_use_key())
         enabled = (raw_use_key()->value()->end() != raw_use_key()->value()->find(name_with_prefix));
 
-    return std::make_shared<EChoiceValue>(c->prefix(), v, ChoiceNameWithPrefix(name_with_prefix), name(), std::shared_ptr<const UseDesc>(),
-                enabled, enabled, true, explicitly_listed, override_description, "", make_null_shared_ptr());
+    return std::make_shared<EChoiceValue>(make_named_values<EChoiceValueParams>(
+                n::choice_name_with_prefix() = ChoiceNameWithPrefix(name_with_prefix),
+                n::choice_prefix_name() = c->prefix(),
+                n::description() = override_description,
+                n::enabled() = enabled,
+                n::enabled_by_default() = enabled,
+                n::explicitly_listed() = explicitly_listed,
+                n::locked() = true,
+                n::unprefixed_choice_name() = v
+                ));
 }
 
 void

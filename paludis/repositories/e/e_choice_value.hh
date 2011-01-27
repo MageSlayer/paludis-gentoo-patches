@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_E_CHOICE_VALUE_HH 1
 
 #include <paludis/util/attributes.hh>
+#include <paludis/util/named_value.hh>
 #include <paludis/choice.hh>
 #include <paludis/name.hh>
 #include <functional>
@@ -28,38 +29,40 @@
 
 namespace paludis
 {
-    struct UseDesc;
+    namespace n
+    {
+        typedef Name<struct name_choice_name_with_prefix> choice_name_with_prefix;
+        typedef Name<struct name_choice_prefix_name> choice_prefix_name;
+        typedef Name<struct name_description> description;
+        typedef Name<struct name_enabled> enabled;
+        typedef Name<struct name_enabled_by_default> enabled_by_default;
+        typedef Name<struct name_explicitly_listed> explicitly_listed;
+        typedef Name<struct name_locked> locked;
+        typedef Name<struct name_unprefixed_choice_name> unprefixed_choice_name;
+    }
 
     namespace erepository
     {
+        struct EChoiceValueParams
+        {
+            NamedValue<n::choice_name_with_prefix, ChoiceNameWithPrefix> choice_name_with_prefix;
+            NamedValue<n::choice_prefix_name, ChoicePrefixName> choice_prefix_name;
+            NamedValue<n::description, std::string> description;
+            NamedValue<n::enabled, bool> enabled;
+            NamedValue<n::enabled_by_default, bool> enabled_by_default;
+            NamedValue<n::explicitly_listed, bool> explicitly_listed;
+            NamedValue<n::locked, bool> locked;
+            NamedValue<n::unprefixed_choice_name, UnprefixedChoiceName> unprefixed_choice_name;
+        };
+
         class PALUDIS_VISIBLE EChoiceValue :
             public ChoiceValue
         {
             private:
-                const ChoicePrefixName _prefix;
-                const UnprefixedChoiceName _unprefixed_name;
-                const ChoiceNameWithPrefix _name_with_prefix;
-                const QualifiedPackageName _package_name;
-                const std::shared_ptr<const UseDesc> _use_desc;
-                const bool _enabled;
-                const bool _enabled_by_default;
-                const bool _locked;
-                const bool _explicitly_listed;
-                const std::string _override_description;
-                const std::string _parameter;
-                const std::shared_ptr<const PermittedChoiceValueParameterValues> _permitted;
+                const EChoiceValueParams _params;
 
             public:
-                EChoiceValue(const ChoicePrefixName & r,
-                        const UnprefixedChoiceName & n,
-                        const ChoiceNameWithPrefix & np,
-                        const QualifiedPackageName & p,
-                        const std::shared_ptr<const UseDesc> & d,
-                        bool b, bool def,
-                        bool l, bool x,
-                        const std::string & o,
-                        const std::string & pr,
-                        const std::shared_ptr<const PermittedChoiceValueParameterValues> & e);
+                EChoiceValue(const EChoiceValueParams &);
 
                 const UnprefixedChoiceName unprefixed_name() const;
                 const ChoiceNameWithPrefix name_with_prefix() const;
