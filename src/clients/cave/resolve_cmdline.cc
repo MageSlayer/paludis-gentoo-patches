@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -50,9 +50,12 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
     g_convenience_options(this, "Convenience Options", "Broad behaviour options. These options are simply "
             "a convenient way of selecting common groups of other options; see individual option descriptions "
             "for exact details."),
-    a_lazy(&g_convenience_options, "lazy", 'z', "Do as little work as possible.", true),
-    a_complete(&g_convenience_options, "complete", 'c', "Do all optional work.", true),
-    a_everything(&g_convenience_options, "everything", 'e', "Do all optional work, and also reinstall", true),
+    a_lazy(&g_convenience_options, "lazy", 'z', "Do as little work as possible. Shorthand for "
+            "'-Sb -sb -n'.", true),
+    a_complete(&g_convenience_options, "complete", 'c', "Do all optional work. This option is often used when updating 'world'. "
+            "Shorthand for '-ks -Rw -Sa -sa -D'.", true),
+    a_everything(&g_convenience_options, "everything", 'e', "Do all optional work, and also always reinstall. Shorthand for "
+            "'-kt -Sa -sa -D'.", true),
 
     g_resolution_options(this, "Resolution Options", "Resolution options."),
 //    a_permit_older_slot_uninstalls(&g_resolution_options, "permit-older-slot-uninstalls", '\0',
