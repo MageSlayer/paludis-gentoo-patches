@@ -49,6 +49,7 @@
 #include <paludis/choice.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
 #include <paludis/mask_utils.hh>
+#include <paludis/permitted_choice_value_parameter_values.hh>
 #include <cstdlib>
 #include <iostream>
 #include <algorithm>
@@ -341,6 +342,42 @@ namespace
 
         return "";
     }
+
+    struct PermittedChoiceValueParameterValuesDisplayer
+    {
+        std::ostream & out;
+
+        void visit(const PermittedChoiceValueParameterIntegerValue & v) const
+        {
+            std::string range;
+
+            if (v.minimum_allowed_value() != std::numeric_limits<int>::min())
+            {
+                if (v.maximum_allowed_value() != std::numeric_limits<int>::max())
+                    range = "between " + stringify(v.minimum_allowed_value()) + " and " + stringify(v.maximum_allowed_value());
+                else
+                    range = ">= " + stringify(v.minimum_allowed_value());
+            }
+            else if (v.maximum_allowed_value() != std::numeric_limits<int>::max())
+                range = "<= " + stringify(v.maximum_allowed_value());
+
+            out << fuc(
+                    fs_permitted_choice_value_int(),
+                    fv<'r'>(range)
+                    );
+        }
+
+        void visit(const PermittedChoiceValueParameterEnumValue & v) const
+        {
+            if (! v.allowed_values_and_descriptions()->empty())
+            {
+                out << fuc(fs_permitted_choice_value_enum_values());
+                for (auto a(v.allowed_values_and_descriptions()->begin()), a_end(v.allowed_values_and_descriptions()->end()) ;
+                        a != a_end ; ++a)
+                    out << fuc(fs_permitted_choice_value_enum_value(), fv<'v'>(a->first), fv<'d'>(a->second));
+            }
+        }
+    };
 
     struct InfoDisplayer
     {
@@ -924,6 +961,12 @@ namespace
                                         fv<'p'>((*v)->parameter())
                                         );
                             }
+                        }
+
+                        if ((*v)->permitted_parameter_values())
+                        {
+                            PermittedChoiceValueParameterValuesDisplayer d{out};
+                            (*v)->permitted_parameter_values()->accept(d);
                         }
                     }
                 }

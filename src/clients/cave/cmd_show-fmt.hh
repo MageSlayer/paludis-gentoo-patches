@@ -58,6 +58,15 @@ const auto fs_choice_disabled = make_format_string_fetcher("show/choice_disabled
 const auto fs_choice_parameter = make_format_string_fetcher("show/choice_parameter", 1)
     << "=" << param<'v'>();
 
+const auto fs_permitted_choice_value_int = make_format_string_fetcher("show/permitted_choice_value_int", 1)
+    << "%{column 30}Should be an integer" << param_if<'r'>() << " " << param<'r'>() << param_endif<'r'>() << "\\n";
+
+const auto fs_permitted_choice_value_enum_values = make_format_string_fetcher("show/permitted_choice_value_enum_values", 1)
+    << "%{column 30}Permitted values:" << "\\n";
+
+const auto fs_permitted_choice_value_enum_value = make_format_string_fetcher("show/permitted_choice_value_enum_value", 1)
+    << "%{column 40}" << param<'v'>() << param_if<'d'>() << ": " << "%{column 55}" << param<'d'>() << param_endif<'d'>() << "\\n";
+
 const auto fs_metadata_value_raw = make_format_string_fetcher("show/metadata_value_raw", 2)
     << "    " << param<'i'>() << param<'i'>() << param<'i'>() << param<'i'>()
     << param_if<'b'>() << c::bold_normal() << param_endif<'b'>() << param<'s'>() << c::normal()
