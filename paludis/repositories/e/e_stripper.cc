@@ -65,8 +65,10 @@ EStripper::on_strip(const FSPath & f)
 void
 EStripper::on_split(const FSPath & f, const FSPath & g)
 {
-    _imp->options.output_manager()->stdout_stream() << "spl " << f.strip_leading(_imp->options.image_dir()) <<
-        " -> " << g.strip_leading(_imp->options.image_dir()) << std::endl;
+    _imp->options.output_manager()->stdout_stream()
+        << ((_imp->options.compress_splits()) ? "spz " : "spl ")
+        << f.strip_leading(_imp->options.image_dir())
+        << " -> " << g.strip_leading(_imp->options.image_dir()) << std::endl;
 }
 
 void
