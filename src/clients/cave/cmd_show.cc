@@ -54,6 +54,7 @@
 #include <iostream>
 #include <algorithm>
 #include <set>
+#include <limits>
 
 #include "command_command_line.hh"
 
