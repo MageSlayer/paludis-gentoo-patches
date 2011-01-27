@@ -27,8 +27,6 @@
 
 namespace paludis
 {
-    struct ELikeStripChoiceValue;
-    struct ELikeSplitChoiceValue;
     struct ELikeOptionalTestsChoiceValue;
     struct ELikeRecommendedTestsChoiceValue;
     struct ELikeExpensiveTestsChoiceValue;
