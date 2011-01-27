@@ -507,8 +507,7 @@ ELikeJobsChoiceValue::locked() const
 const std::string
 ELikeJobsChoiceValue::description() const
 {
-    return "Set with an integer value to specify how many jobs the package's build "
-        "system should use, where supported";
+    return "How many jobs the package's build system should use, where supported";
 }
 
 bool
