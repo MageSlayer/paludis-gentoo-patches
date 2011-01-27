@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -318,19 +318,19 @@ paludis::erepository::do_install_action(
 
                 Log::get_instance()->message("e.ebuild.libdir", ll_debug, lc_context) << "Using '" << libdir << "' for libdir";
 
-                std::shared_ptr<const ChoiceValue> strip_choice(id->choices_key()->value()->find_by_name_with_prefix(
-                            ELikeStripChoiceValue::canonical_name_with_prefix()));
-                std::shared_ptr<const ChoiceValue> split_choice(id->choices_key()->value()->find_by_name_with_prefix(
-                            ELikeSplitChoiceValue::canonical_name_with_prefix()));
+                std::shared_ptr<const ChoiceValue> symbols_choice(id->choices_key()->value()->find_by_name_with_prefix(
+                            ELikeSymbolsChoiceValue::canonical_name_with_prefix()));
 
                 EStripper stripper(make_named_values<EStripperOptions>(
-                        n::debug_dir() = package_builddir / "image" / "usr" / libdir / "debug",
-                        n::image_dir() = package_builddir / "image",
-                        n::output_manager() = output_manager,
-                        n::package_id() = id,
-                        n::split() = split_choice && split_choice->enabled(),
-                        n::strip() = strip_choice && strip_choice->enabled()
-                        ));
+                            n::compress_splits() = symbols_choice && symbols_choice->enabled() && ELikeSymbolsChoiceValue::should_compress(
+                                symbols_choice->parameter()),
+                            n::debug_dir() = package_builddir / "image" / "usr" / libdir / "debug",
+                            n::image_dir() = package_builddir / "image",
+                            n::output_manager() = output_manager,
+                            n::package_id() = id,
+                            n::split() = symbols_choice && symbols_choice->enabled() && ELikeSymbolsChoiceValue::should_split(symbols_choice->parameter()),
+                            n::strip() = symbols_choice && symbols_choice->enabled() && ELikeSymbolsChoiceValue::should_strip(symbols_choice->parameter())
+                            ));
                 stripper.strip();
             }
         }

@@ -42,7 +42,7 @@ namespace paludis
 
 EStripper::EStripper(const EStripperOptions & options) :
     Stripper(make_named_values<StripperOptions>(
-                n::compress_splits() = false,
+                n::compress_splits() = options.compress_splits(),
                 n::debug_dir() = options.debug_dir(),
                 n::image_dir() = options.image_dir(),
                 n::split() = options.split(),

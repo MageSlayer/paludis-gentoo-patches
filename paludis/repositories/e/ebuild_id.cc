@@ -1579,12 +1579,9 @@ EbuildID::add_build_options(const std::shared_ptr<Choices> & choices) const
                     build_options->add(std::make_shared<ELikeExpensiveTestsChoiceValue>(shared_from_this(), _imp->environment, build_options, false));
             }
 
-            /* split, strip */
+            /* symbols */
             if (may_be_unrestricted_strip)
-            {
-                build_options->add(std::make_shared<ELikeSplitChoiceValue>(shared_from_this(), _imp->environment, build_options, indeterminate));
-                build_options->add(std::make_shared<ELikeStripChoiceValue>(shared_from_this(), _imp->environment, build_options, indeterminate));
-            }
+                build_options->add(std::make_shared<ELikeSymbolsChoiceValue>(shared_from_this(), _imp->environment, build_options, last_escvp));
 
             /* jobs */
             if (! eapi()->supported()->ebuild_environment_variables()->env_jobs().empty())
