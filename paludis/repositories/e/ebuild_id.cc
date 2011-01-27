@@ -1484,7 +1484,7 @@ EbuildID::make_choice_value(
 
     return std::make_shared<EChoiceValue>(choice->prefix(), value_name, ChoiceNameWithPrefix(name_with_prefix), name(),
                 e_repo->use_desc(),
-                enabled, enabled_by_default, force_locked || locked, explicitly_listed, override_description, "");
+                enabled, enabled_by_default, force_locked || locked, explicitly_listed, override_description, "", make_null_shared_ptr());
 }
 
 namespace

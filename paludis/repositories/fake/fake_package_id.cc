@@ -463,6 +463,11 @@ namespace
         {
             return env->value_for_choice_parameter(id, choice, value_name);
         }
+
+        virtual const std::shared_ptr<const PermittedChoiceValueParameterValues> permitted_parameter_values() const
+        {
+            return make_null_shared_ptr();
+        }
     };
 }
 

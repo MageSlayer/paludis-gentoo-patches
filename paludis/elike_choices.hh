@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -48,6 +48,8 @@ namespace paludis
             virtual const std::string description() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual bool explicitly_listed() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string parameter() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual const std::shared_ptr<const PermittedChoiceValueParameterValues> permitted_parameter_values() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             static const UnprefixedChoiceName canonical_unprefixed_name() PALUDIS_ATTRIBUTE((warn_unused_result));
             static const ChoiceNameWithPrefix canonical_name_with_prefix() PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -72,6 +74,8 @@ namespace paludis
             virtual const std::string description() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual bool explicitly_listed() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string parameter() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual const std::shared_ptr<const PermittedChoiceValueParameterValues> permitted_parameter_values() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             static const UnprefixedChoiceName canonical_unprefixed_name() PALUDIS_ATTRIBUTE((warn_unused_result));
             static const ChoiceNameWithPrefix canonical_name_with_prefix() PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -97,6 +101,8 @@ namespace paludis
             virtual const std::string description() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual bool explicitly_listed() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string parameter() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual const std::shared_ptr<const PermittedChoiceValueParameterValues> permitted_parameter_values() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             static const UnprefixedChoiceName canonical_unprefixed_name() PALUDIS_ATTRIBUTE((warn_unused_result));
             static const ChoiceNameWithPrefix canonical_name_with_prefix() PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -122,6 +128,8 @@ namespace paludis
             virtual const std::string description() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual bool explicitly_listed() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string parameter() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual const std::shared_ptr<const PermittedChoiceValueParameterValues> permitted_parameter_values() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             static const UnprefixedChoiceName canonical_unprefixed_name() PALUDIS_ATTRIBUTE((warn_unused_result));
             static const ChoiceNameWithPrefix canonical_name_with_prefix() PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -147,6 +155,8 @@ namespace paludis
             virtual const std::string description() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual bool explicitly_listed() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string parameter() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual const std::shared_ptr<const PermittedChoiceValueParameterValues> permitted_parameter_values() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             static const UnprefixedChoiceName canonical_unprefixed_name() PALUDIS_ATTRIBUTE((warn_unused_result));
             static const ChoiceNameWithPrefix canonical_name_with_prefix() PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -171,6 +181,8 @@ namespace paludis
             virtual const std::string description() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual bool explicitly_listed() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string parameter() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual const std::shared_ptr<const PermittedChoiceValueParameterValues> permitted_parameter_values() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             static const UnprefixedChoiceName canonical_unprefixed_name() PALUDIS_ATTRIBUTE((warn_unused_result));
             static const ChoiceNameWithPrefix canonical_name_with_prefix() PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -194,6 +206,8 @@ namespace paludis
             virtual const std::string description() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual bool explicitly_listed() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string parameter() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual const std::shared_ptr<const PermittedChoiceValueParameterValues> permitted_parameter_values() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             static const UnprefixedChoiceName canonical_unprefixed_name() PALUDIS_ATTRIBUTE((warn_unused_result));
             static const ChoiceNameWithPrefix canonical_name_with_prefix() PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -224,6 +238,8 @@ namespace paludis
             virtual const std::string description() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual bool explicitly_listed() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string parameter() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual const std::shared_ptr<const PermittedChoiceValueParameterValues> permitted_parameter_values() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             static const UnprefixedChoiceName canonical_unprefixed_name() PALUDIS_ATTRIBUTE((warn_unused_result));
             static const ChoiceNameWithPrefix canonical_name_with_prefix() PALUDIS_ATTRIBUTE((warn_unused_result));

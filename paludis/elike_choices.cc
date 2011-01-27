@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -19,12 +19,30 @@
 
 #include <paludis/elike_choices.hh>
 #include <paludis/environment.hh>
+#include <paludis/permitted_choice_value_parameter_values.hh>
 #include <paludis/util/tribool.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/singleton-impl.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
+#include <limits>
 
 using namespace paludis;
+
+namespace
+{
+    struct CommonValues :
+        Singleton<CommonValues>
+    {
+        const std::shared_ptr<const PermittedChoiceValueParameterIntegerValue> permitted_jobs_values;
+
+        CommonValues() :
+            permitted_jobs_values(new PermittedChoiceValueParameterIntegerValue(1, std::numeric_limits<int>::max()))
+        {
+        }
+    };
+}
 
 const UnprefixedChoiceName
 ELikeStripChoiceValue::canonical_unprefixed_name()
@@ -92,6 +110,12 @@ const std::string
 ELikeStripChoiceValue::parameter() const
 {
     return "";
+}
+
+const std::shared_ptr<const PermittedChoiceValueParameterValues>
+ELikeStripChoiceValue::permitted_parameter_values() const
+{
+    return make_null_shared_ptr();
 }
 
 const UnprefixedChoiceName
@@ -163,6 +187,12 @@ ELikeSplitChoiceValue::parameter() const
     return "";
 }
 
+const std::shared_ptr<const PermittedChoiceValueParameterValues>
+ELikeSplitChoiceValue::permitted_parameter_values() const
+{
+    return make_null_shared_ptr();
+}
+
 const UnprefixedChoiceName
 ELikeOptionalTestsChoiceValue::canonical_unprefixed_name()
 {
@@ -231,6 +261,12 @@ ELikeOptionalTestsChoiceValue::parameter() const
     return "";
 }
 
+const std::shared_ptr<const PermittedChoiceValueParameterValues>
+ELikeOptionalTestsChoiceValue::permitted_parameter_values() const
+{
+    return make_null_shared_ptr();
+}
+
 const UnprefixedChoiceName
 ELikeRecommendedTestsChoiceValue::canonical_unprefixed_name()
 {
@@ -297,6 +333,12 @@ const std::string
 ELikeRecommendedTestsChoiceValue::parameter() const
 {
     return "";
+}
+
+const std::shared_ptr<const PermittedChoiceValueParameterValues>
+ELikeRecommendedTestsChoiceValue::permitted_parameter_values() const
+{
+    return make_null_shared_ptr();
 }
 
 const ChoicePrefixName
@@ -383,6 +425,12 @@ const std::string
 ELikeExpensiveTestsChoiceValue::parameter() const
 {
     return "";
+}
+
+const std::shared_ptr<const PermittedChoiceValueParameterValues>
+ELikeExpensiveTestsChoiceValue::permitted_parameter_values() const
+{
+    return make_null_shared_ptr();
 }
 
 const UnprefixedChoiceName
@@ -475,6 +523,12 @@ ELikeJobsChoiceValue::parameter() const
     return _parameter;
 }
 
+const std::shared_ptr<const PermittedChoiceValueParameterValues>
+ELikeJobsChoiceValue::permitted_parameter_values() const
+{
+    return CommonValues::get_instance()->permitted_jobs_values;
+}
+
 const UnprefixedChoiceName
 ELikeTraceChoiceValue::canonical_unprefixed_name()
 {
@@ -540,6 +594,12 @@ const std::string
 ELikeTraceChoiceValue::parameter() const
 {
     return "";
+}
+
+const std::shared_ptr<const PermittedChoiceValueParameterValues>
+ELikeTraceChoiceValue::permitted_parameter_values() const
+{
+    return make_null_shared_ptr();
 }
 
 const UnprefixedChoiceName
@@ -610,5 +670,11 @@ const std::string
 ELikePreserveWorkChoiceValue::parameter() const
 {
     return "";
+}
+
+const std::shared_ptr<const PermittedChoiceValueParameterValues>
+ELikePreserveWorkChoiceValue::permitted_parameter_values() const
+{
+    return make_null_shared_ptr();
 }
 

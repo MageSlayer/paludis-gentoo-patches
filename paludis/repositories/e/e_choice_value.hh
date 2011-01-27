@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -47,6 +47,7 @@ namespace paludis
                 const bool _explicitly_listed;
                 const std::string _override_description;
                 const std::string _parameter;
+                const std::shared_ptr<const PermittedChoiceValueParameterValues> _permitted;
 
             public:
                 EChoiceValue(const ChoicePrefixName & r,
@@ -57,7 +58,8 @@ namespace paludis
                         bool b, bool def,
                         bool l, bool x,
                         const std::string & o,
-                        const std::string & pr);
+                        const std::string & pr,
+                        const std::shared_ptr<const PermittedChoiceValueParameterValues> & e);
 
                 const UnprefixedChoiceName unprefixed_name() const;
                 const ChoiceNameWithPrefix name_with_prefix() const;
@@ -67,6 +69,7 @@ namespace paludis
                 const std::string description() const;
                 bool explicitly_listed() const;
                 const std::string parameter() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::shared_ptr<const PermittedChoiceValueParameterValues> permitted_parameter_values() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 }

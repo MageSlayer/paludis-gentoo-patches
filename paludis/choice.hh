@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_CHOICE_HH 1
 
 #include <paludis/choice-fwd.hh>
+#include <paludis/permitted_choice_value_parameter_values-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/pimp.hh>
@@ -370,6 +371,14 @@ namespace paludis
              * \since 0.40
              */
             virtual const std::string parameter() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            /**
+             * Permitted values for this flag's parameter, or null if there is no parameter.
+             *
+             * \since 0.59
+             */
+            virtual const std::shared_ptr<const PermittedChoiceValueParameterValues> permitted_parameter_values() const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}
     };
