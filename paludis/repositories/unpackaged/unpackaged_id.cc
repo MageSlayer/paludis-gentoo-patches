@@ -397,10 +397,8 @@ UnpackagedID::perform_action(Action & action) const
 
     Log::get_instance()->message("unpackaged.libdir", ll_debug, lc_context) << "Using '" << libdir << "' for libdir";
 
-    std::shared_ptr<const ChoiceValue> strip_choice(choices_key()->value()->find_by_name_with_prefix(
-                ELikeStripChoiceValue::canonical_name_with_prefix()));
-    std::shared_ptr<const ChoiceValue> split_choice(choices_key()->value()->find_by_name_with_prefix(
-                ELikeSplitChoiceValue::canonical_name_with_prefix()));
+    std::shared_ptr<const ChoiceValue> symbols_choice(choices_key()->value()->find_by_name_with_prefix(
+                ELikeSymbolsChoiceValue::canonical_name_with_prefix()));
     std::shared_ptr<const ChoiceValue> preserve_work_choice(choices_key()->value()->find_by_name_with_prefix(
                 ELikePreserveWorkChoiceValue::canonical_name_with_prefix()));
 
@@ -411,12 +409,14 @@ UnpackagedID::perform_action(Action & action) const
         case wp_yes:
             {
                 UnpackagedStripper stripper(make_named_values<UnpackagedStripperOptions>(
+                            n::compress_splits() = symbols_choice && symbols_choice->enabled() && ELikeSymbolsChoiceValue::should_compress(
+                                symbols_choice->parameter()),
                             n::debug_dir() = fs_location_key()->value() / "usr" / libdir / "debug",
                             n::image_dir() = fs_location_key()->value(),
                             n::output_manager() = output_manager,
                             n::package_id() = shared_from_this(),
-                            n::split() = split_choice && split_choice->enabled(),
-                            n::strip() = strip_choice && strip_choice->enabled()
+                            n::split() = symbols_choice && symbols_choice->enabled() && ELikeSymbolsChoiceValue::should_split(symbols_choice->parameter()),
+                            n::strip() = symbols_choice && symbols_choice->enabled() && ELikeSymbolsChoiceValue::should_strip(symbols_choice->parameter())
                             ));
 
                 stripper.strip();

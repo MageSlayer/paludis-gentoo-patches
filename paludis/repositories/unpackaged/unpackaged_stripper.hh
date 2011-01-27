@@ -29,6 +29,7 @@ namespace paludis
 {
     namespace n
     {
+        typedef Name<struct name_compress_splits> compress_splits;
         typedef Name<struct name_debug_dir> debug_dir;
         typedef Name<struct name_image_dir> image_dir;
         typedef Name<struct name_output_manager> output_manager;
@@ -41,6 +42,7 @@ namespace paludis
     {
         struct UnpackagedStripperOptions
         {
+            NamedValue<n::compress_splits, bool> compress_splits;
             NamedValue<n::debug_dir, FSPath> debug_dir;
             NamedValue<n::image_dir, FSPath> image_dir;
             NamedValue<n::output_manager, std::shared_ptr<OutputManager> > output_manager;

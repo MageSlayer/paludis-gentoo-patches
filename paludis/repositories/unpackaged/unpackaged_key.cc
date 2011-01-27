@@ -168,8 +168,8 @@ UnpackagedChoicesKey::value() const
         if (_imp->id->strip_key())
             strip = _imp->id->strip_key()->value();
 
-        build_options->add(std::make_shared<ELikeSplitChoiceValue>(_imp->id->shared_from_this(), _imp->env, build_options, strip));
-        build_options->add(std::make_shared<ELikeStripChoiceValue>(_imp->id->shared_from_this(), _imp->env, build_options, strip));
+        build_options->add(std::make_shared<ELikeSymbolsChoiceValue>(_imp->id->shared_from_this(), _imp->env, build_options,
+                    strip.is_true() ? escvp_strip : strip.is_false() ? escvp_preserve : last_escvp));
 
         Tribool preserve_work(indeterminate);
         if (_imp->id->preserve_work_key())
