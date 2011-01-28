@@ -61,7 +61,9 @@ sydbox_internal_net()
             sydbox_internal_cmd "${cmd}/unix://${1##unix:}"
             ;;
         *)
-            die "${FUNCNAME}: unexpected argument \"${1}\""
+            # Expect network alias.
+            # Sydbox does input validation so we don't do any here.
+            sydbox_internal_cmd "${cmd}/${1}"
             ;;
         esac
         shift
