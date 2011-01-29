@@ -310,6 +310,15 @@ InterestInSpecHelper::operator() (
         if ((! spec_group.empty()) && _imp->ignore_groups.end() != _imp->ignore_groups.find(spec_group))
             return si_ignore;
 
+        if (dep.spec().if_package() && (suggestion || recommendation))
+        {
+            auto e(_imp->env->interest_in_suggestion(id, *dep.spec().if_package()));
+            if (e.is_true())
+                return si_take;
+            else if (e.is_false())
+                return si_ignore;
+        }
+
         if (suggestion)
         {
             if (_imp->take_suggestions.is_true())
@@ -335,15 +344,6 @@ InterestInSpecHelper::operator() (
                         filter::InstalledAtRoot(_imp->env->system_root_key()->value()))]);
             if (! installed_ids->empty())
                 return si_take;
-        }
-
-        if (dep.spec().if_package() && (suggestion || recommendation))
-        {
-            auto e(_imp->env->interest_in_suggestion(id, *dep.spec().if_package()));
-            if (e.is_true())
-                return si_take;
-            else if (e.is_false())
-                return si_ignore;
         }
 
         return si_untaken;
