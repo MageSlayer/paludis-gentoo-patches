@@ -217,7 +217,15 @@ namespace
                     const auto & cs(*r.sanitised_dependency().active_dependency_labels_classifier());
                     if (cs.includes_buildish && ! cs.includes_non_post_runish && ! cs.includes_post &&
                             ! cs.includes_non_test_buildish)
-                        ts = " (test)";
+                        ts.append(" (test)");
+
+                    if (! cs.is_requirement)
+                    {
+                        if (cs.is_recommendation)
+                            ts.append(" (rec)");
+                        else if (cs.is_suggestion)
+                            ts.append(" (sug)");
+                    }
 
                     return annotate(r.sanitised_dependency().spec().if_package()->maybe_annotations(),
                             std::make_pair(stringify(r.from_id()->name()) + ts, false), false);
