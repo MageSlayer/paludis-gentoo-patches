@@ -185,7 +185,7 @@ namespace
         }
     };
 
-    std::shared_ptr<ChoiceValue> make_myoption(
+    std::shared_ptr<const ChoiceValue> make_myoption(
             const std::shared_ptr<const ERepositoryID> & id,
             std::shared_ptr<Choice> & choice,
             const UnprefixedChoiceName & unprefixed,

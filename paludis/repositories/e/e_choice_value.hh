@@ -22,6 +22,7 @@
 
 #include <paludis/util/attributes.hh>
 #include <paludis/util/named_value.hh>
+#include <paludis/util/singleton.hh>
 #include <paludis/choice.hh>
 #include <paludis/name.hh>
 #include <functional>
@@ -55,26 +56,24 @@ namespace paludis
             NamedValue<n::unprefixed_choice_name, UnprefixedChoiceName> unprefixed_choice_name;
         };
 
-        class PALUDIS_VISIBLE EChoiceValue :
-            public ChoiceValue
+        class PALUDIS_VISIBLE EChoiceValueStore :
+            public Singleton<EChoiceValueStore>
         {
+            friend class Singleton<EChoiceValueStore>;
+
             private:
-                const EChoiceValueParams _params;
+                EChoiceValueStore();
+                ~EChoiceValueStore();
+
+                Pimp<EChoiceValueStore> _imp;
 
             public:
-                EChoiceValue(const EChoiceValueParams &);
-
-                const UnprefixedChoiceName unprefixed_name() const;
-                const ChoiceNameWithPrefix name_with_prefix() const;
-                bool enabled() const;
-                bool enabled_by_default() const;
-                bool locked() const;
-                const std::string description() const;
-                bool explicitly_listed() const;
-                const std::string parameter() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                const std::shared_ptr<const PermittedChoiceValueParameterValues> permitted_parameter_values() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::shared_ptr<const ChoiceValue> fetch(const EChoiceValueParams &) const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
+
+    extern template class Pimp<erepository::EChoiceValueStore>;
+    extern template class Singleton<erepository::EChoiceValueStore>;
 }
 
 #endif

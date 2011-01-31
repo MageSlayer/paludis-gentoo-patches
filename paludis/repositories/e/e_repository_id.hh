@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -48,7 +48,7 @@ namespace paludis
 
                 virtual std::shared_ptr<const Set<std::string> > breaks_portage() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::shared_ptr<ChoiceValue> make_choice_value(
+                virtual const std::shared_ptr<const ChoiceValue> make_choice_value(
                         const std::shared_ptr<const Choice> &, const UnprefixedChoiceName &, const Tribool,
                         const bool, const bool, const std::string &, const bool)
                     const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;

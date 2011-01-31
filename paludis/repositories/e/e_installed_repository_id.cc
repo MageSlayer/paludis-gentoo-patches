@@ -1042,7 +1042,7 @@ EInstalledRepositoryID::slot_key() const
     return _imp->keys->slot;
 }
 
-std::shared_ptr<ChoiceValue>
+const std::shared_ptr<const ChoiceValue>
 EInstalledRepositoryID::make_choice_value(const std::shared_ptr<const Choice> & c, const UnprefixedChoiceName & v,
         const Tribool, const bool, const bool explicitly_listed, const std::string & override_description, const bool) const
 {
@@ -1064,7 +1064,7 @@ EInstalledRepositoryID::make_choice_value(const std::shared_ptr<const Choice> & 
     if (raw_use_key())
         enabled = (raw_use_key()->value()->end() != raw_use_key()->value()->find(name_with_prefix));
 
-    return std::make_shared<EChoiceValue>(make_named_values<EChoiceValueParams>(
+    return EChoiceValueStore::get_instance()->fetch(make_named_values<EChoiceValueParams>(
                 n::choice_name_with_prefix() = ChoiceNameWithPrefix(name_with_prefix),
                 n::choice_prefix_name() = c->prefix(),
                 n::description() = override_description,

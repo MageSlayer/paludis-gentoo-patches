@@ -1419,7 +1419,7 @@ namespace
 }
 
 
-std::shared_ptr<ChoiceValue>
+const std::shared_ptr<const ChoiceValue>
 EbuildID::make_choice_value(
         const std::shared_ptr<const Choice> & choice,
         const UnprefixedChoiceName & value_name,
@@ -1498,7 +1498,7 @@ EbuildID::make_choice_value(
         }
     }
 
-    return std::make_shared<EChoiceValue>(make_named_values<EChoiceValueParams>(
+    return EChoiceValueStore::get_instance()->fetch(make_named_values<EChoiceValueParams>(
                 n::choice_name_with_prefix() = ChoiceNameWithPrefix(name_with_prefix),
                 n::choice_prefix_name() = choice->prefix(),
                 n::description() = get_description(e_repo->use_desc(), override_description, name(), choice->prefix(), value_name),

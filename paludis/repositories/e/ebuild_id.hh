@@ -158,7 +158,7 @@ namespace paludis
 
                 virtual void invalidate_masks() const;
 
-                virtual std::shared_ptr<ChoiceValue> make_choice_value(
+                virtual const std::shared_ptr<const ChoiceValue> make_choice_value(
                         const std::shared_ptr<const Choice> &, const UnprefixedChoiceName &, const Tribool,
                         const bool, const bool, const std::string &, const bool) const;
 
