@@ -32,9 +32,12 @@ int main(int argc, char *argv[])
     archive_read_support_compression_all(archive);
     archive_read_support_format_all(archive);
 
-    if (ARCHIVE_OK != archive_read_open_filename(archive, archive_file.c_str(), 10240))
+    int x;
+
+    if (ARCHIVE_OK != ((x = archive_read_open_filename(archive, archive_file.c_str(), 10240))))
     {
-        std::cerr << "Could not open '" << archive_file << "'" << std::endl;
+        std::cerr << "Could not open '" << archive_file << "': libarchive returned " <<
+            x << ", archive_errno " << archive_errno(archive) << ": " << archive_error_string(archive) << std::endl;
         return EXIT_FAILURE;
     }
 
@@ -56,18 +59,20 @@ int main(int argc, char *argv[])
         std::cout << out_filename << std::endl;
         archive_entry_set_pathname(entry, out_filename.c_str());
 
-        if (ARCHIVE_OK != archive_read_extract(archive, entry, ARCHIVE_EXTRACT_OWNER |
-                    ARCHIVE_EXTRACT_PERM | ARCHIVE_EXTRACT_TIME | ARCHIVE_EXTRACT_ACL |
-                    ARCHIVE_EXTRACT_FFLAGS | ARCHIVE_EXTRACT_XATTR | ARCHIVE_EXTRACT_SECURE_NODOTDOT))
+        if (ARCHIVE_OK != ((x = archive_read_extract(archive, entry, ARCHIVE_EXTRACT_OWNER |
+                            ARCHIVE_EXTRACT_PERM | ARCHIVE_EXTRACT_TIME | ARCHIVE_EXTRACT_ACL |
+                            ARCHIVE_EXTRACT_FFLAGS | ARCHIVE_EXTRACT_XATTR | ARCHIVE_EXTRACT_SECURE_NODOTDOT))))
         {
-            std::cerr << "Could not extract '" << out_filename << "' from '" << archive_file << "'" << std::endl;
+            std::cerr << "Could not extract '" << out_filename << "' from '" << archive_file << "': libarchive returned " <<
+                 x << ", archive_errno " << archive_errno(archive) << ": " << archive_error_string(archive) << std::endl;
             return EXIT_FAILURE;
         }
     }
 
-    if (ARCHIVE_OK != archive_read_finish(archive))
+    if (ARCHIVE_OK != ((x = archive_read_finish(archive))))
     {
-        std::cerr << "Could not finish reading '" << archive_file << "'" << std::endl;
+        std::cerr << "Could not finish reading '" << archive_file << "': libarchive returned " <<
+            x << ", archive_errno " << archive_errno(archive) << ": " << archive_error_string(archive) << std::endl;
         return EXIT_FAILURE;
     }
 
