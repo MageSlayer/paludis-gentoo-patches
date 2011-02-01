@@ -179,10 +179,6 @@ ExheresLayout::need_category_names() const
     bool found_one(false);
 
     std::list<FSPath> cats_list;
-    if (_imp->repository->params().master_repositories())
-        for (ERepositorySequence::ConstIterator e(_imp->repository->params().master_repositories()->begin()),
-                e_end(_imp->repository->params().master_repositories()->end()) ; e != e_end ; ++e)
-        cats_list.push_back((*e)->layout()->categories_file());
     cats_list.push_back(categories_file());
 
     for (std::list<FSPath>::const_iterator i(cats_list.begin()), i_end(cats_list.end()) ;
