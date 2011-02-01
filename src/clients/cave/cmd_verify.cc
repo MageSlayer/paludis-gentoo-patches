@@ -21,6 +21,7 @@
 #include "format_user_config.hh"
 #include "colours.hh"
 #include "exceptions.hh"
+#include "parse_spec_with_nice_error.hh"
 
 #include <paludis/args/args.hh>
 #include <paludis/args/do_help.hh>
@@ -210,7 +211,7 @@ VerifyCommand::run(
     if (1 != std::distance(cmdline.begin_parameters(), cmdline.end_parameters()))
         throw args::DoHelp("verify takes exactly one parameter");
 
-    PackageDepSpec spec(parse_user_package_dep_spec(*cmdline.begin_parameters(), env.get(),
+    PackageDepSpec spec(parse_spec_with_nice_error(*cmdline.begin_parameters(), env.get(),
                 { updso_allow_wildcards }, filter::InstalledAtRoot(env->preferred_root_key()->value())));
 
     std::shared_ptr<const PackageIDSequence> entries(

@@ -23,6 +23,7 @@
 #include "colours.hh"
 #include "exceptions.hh"
 #include "format_user_config.hh"
+#include "parse_spec_with_nice_error.hh"
 
 #include <paludis/args/args.hh>
 #include <paludis/args/do_help.hh>
@@ -373,7 +374,7 @@ namespace
             const std::shared_ptr<Environment> & env,
             const std::string & param)
     {
-        PackageDepSpec spec(parse_user_package_dep_spec(param, env.get(), { }));
+        PackageDepSpec spec(parse_spec_with_nice_error(param, env.get(), { }, filter::All()));
 
         const std::shared_ptr<const PackageIDSequence> installed_ids((*env)[selection::AllVersionsSorted(generator::Matches(
                         spec, make_null_shared_ptr(), { }) | filter::InstalledAtRoot(env->preferred_root_key()->value()))]);

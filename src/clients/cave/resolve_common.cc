@@ -25,6 +25,7 @@
 #include "cmd_graph_jobs.hh"
 #include "exceptions.hh"
 #include "command_command_line.hh"
+#include "parse_spec_with_nice_error.hh"
 
 #include <paludis/util/mutex.hh>
 #include <paludis/util/stringify.hh>
@@ -145,15 +146,14 @@ namespace
                 {
                     p_suggesion.erase(0, 1);
                     seen_packages = true;
-                    PackageDepSpec s(parse_user_package_dep_spec(p->first.substr(1), env.get(), { }));
+                    PackageDepSpec s(parse_spec_with_nice_error(p->first.substr(1), env.get(), { }, filter::All()));
                     BlockDepSpec bs("!" + stringify(s), s, bk_weak);
                     result->push_back(stringify(bs));
                     resolver->add_target(bs, p->second);
                 }
                 else
                 {
-                    PackageDepSpec s(parse_user_package_dep_spec(p->first, env.get(),
-                                { updso_throw_if_set }));
+                    PackageDepSpec s(parse_spec_with_nice_error(p->first, env.get(), { updso_throw_if_set }, filter::All()));
                     result->push_back(stringify(s));
                     resolver->add_target(s, p->second);
                     seen_packages = true;
@@ -167,10 +167,6 @@ namespace
                 resolver->add_target(SetName(p->first), p->second);
                 result->push_back(p->first);
                 seen_sets = true;
-            }
-            catch (const NoSuchPackageError &)
-            {
-                nothing_matching_error(env.get(), p_suggesion, filter::All());
             }
         }
 
@@ -725,36 +721,36 @@ paludis::cave::resolve_common(
     for (args::StringSetArg::ConstIterator i(resolution_options.a_permit_uninstall.begin_args()),
             i_end(resolution_options.a_permit_uninstall.end_args()) ;
             i != i_end ; ++i)
-        allowed_to_remove_helper.add_allowed_to_remove_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
+        allowed_to_remove_helper.add_allowed_to_remove_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
 
     AlwaysViaBinaryHelper always_via_binary_helper(env.get());
     for (args::StringSetArg::ConstIterator i(resolution_options.a_via_binary.begin_args()),
             i_end(resolution_options.a_via_binary.end_args()) ;
             i != i_end ; ++i)
-        always_via_binary_helper.add_always_via_binary_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
+        always_via_binary_helper.add_always_via_binary_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
 
     CanUseHelper can_use_helper(env.get());
     for (args::StringSetArg::ConstIterator i(resolution_options.a_not_usable.begin_args()),
             i_end(resolution_options.a_not_usable.end_args()) ;
             i != i_end ; ++i)
-        can_use_helper.add_cannot_use_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
+        can_use_helper.add_cannot_use_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
 
     ConfirmHelper confirm_helper(env.get());
     for (args::StringSetArg::ConstIterator i(resolution_options.a_permit_downgrade.begin_args()),
             i_end(resolution_options.a_permit_downgrade.end_args()) ;
             i != i_end ; ++i)
-        confirm_helper.add_permit_downgrade_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
+        confirm_helper.add_permit_downgrade_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
     for (args::StringSetArg::ConstIterator i(resolution_options.a_permit_old_version.begin_args()),
             i_end(resolution_options.a_permit_old_version.end_args()) ;
             i != i_end ; ++i)
-        confirm_helper.add_permit_old_version_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
+        confirm_helper.add_permit_old_version_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
     for (args::StringSetArg::ConstIterator i(resolution_options.a_uninstalls_may_break.begin_args()),
             i_end(resolution_options.a_uninstalls_may_break.end_args()) ;
             i != i_end ; ++i)
         if (*i == "system")
             confirm_helper.set_allowed_to_break_system(true);
         else
-            confirm_helper.add_allowed_to_break_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
+            confirm_helper.add_allowed_to_break_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
 
     FindReplacingHelper find_replacing_helper(env.get());
     find_replacing_helper.set_one_binary_per_slot(resolution_options.a_one_binary_per_slot.specified());
@@ -766,13 +762,13 @@ paludis::cave::resolve_common(
             i_end(resolution_options.a_less_restrictive_remove_blockers.end_args()) ;
             i != i_end ; ++i)
         get_constraints_for_dependent_helper.add_less_restrictive_remove_blockers_spec(
-                parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
+                parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
 
     GetConstraintsForPurgeHelper get_constraints_for_purge_helper(env.get());
     for (args::StringSetArg::ConstIterator i(resolution_options.a_purge.begin_args()),
             i_end(resolution_options.a_purge.end_args()) ;
             i != i_end ; ++i)
-        get_constraints_for_purge_helper.add_purge_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
+        get_constraints_for_purge_helper.add_purge_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
 
     GetConstraintsForViaBinaryHelper get_constraints_for_via_binary_helper(env.get());
 
@@ -786,12 +782,12 @@ paludis::cave::resolve_common(
     for (args::StringSetArg::ConstIterator i(resolution_options.a_without.begin_args()),
             i_end(resolution_options.a_without.end_args()) ;
             i != i_end ; ++i)
-        get_initial_constraints_for_helper.add_without_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
+        get_initial_constraints_for_helper.add_without_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_preset.begin_args()),
             i_end(resolution_options.a_preset.end_args()) ;
             i != i_end ; ++i)
-        get_initial_constraints_for_helper.add_preset_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }), make_null_shared_ptr());
+        get_initial_constraints_for_helper.add_preset_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()), make_null_shared_ptr());
 
     get_initial_constraints_for_helper.set_reinstall_scm_days(reinstall_scm_days(resolution_options));
 
@@ -882,12 +878,12 @@ paludis::cave::resolve_common(
     for (args::StringSetArg::ConstIterator i(resolution_options.a_without.begin_args()),
             i_end(resolution_options.a_without.end_args()) ;
             i != i_end ; ++i)
-        get_use_existing_nothing_helper.add_without_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
+        get_use_existing_nothing_helper.add_without_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_with.begin_args()),
             i_end(resolution_options.a_with.end_args()) ;
             i != i_end ; ++i)
-        get_use_existing_nothing_helper.add_with_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
+        get_use_existing_nothing_helper.add_with_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
 
     get_use_existing_nothing_helper.set_use_existing_for_dependencies(use_existing_from_arg(resolution_options.a_keep, false));
     get_use_existing_nothing_helper.set_use_existing_for_targets(use_existing_from_arg(resolution_options.a_keep_targets, false));
@@ -906,12 +902,12 @@ paludis::cave::resolve_common(
     for (args::StringSetArg::ConstIterator i(resolution_options.a_early.begin_args()),
             i_end(resolution_options.a_early.end_args()) ;
             i != i_end ; ++i)
-        order_early_helper.add_early_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
+        order_early_helper.add_early_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_late.begin_args()),
             i_end(resolution_options.a_late.end_args()) ;
             i != i_end ; ++i)
-        order_early_helper.add_late_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
+        order_early_helper.add_late_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
 
     PreferOrAvoidHelper prefer_or_avoid_helper(env.get());
     for (args::StringSetArg::ConstIterator i(resolution_options.a_favour.begin_args()),
@@ -927,7 +923,7 @@ paludis::cave::resolve_common(
     for (args::StringSetArg::ConstIterator i(resolution_options.a_remove_if_dependent.begin_args()),
             i_end(resolution_options.a_remove_if_dependent.end_args()) ;
             i != i_end ; ++i)
-        remove_if_dependent_helper.add_remove_if_dependent_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
+        remove_if_dependent_helper.add_remove_if_dependent_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
 
     InterestInSpecHelper interest_in_spec_helper(env.get());
     for (args::StringSetArg::ConstIterator i(resolution_options.a_take.begin_args()),
@@ -944,20 +940,20 @@ paludis::cave::resolve_common(
             interest_in_spec_helper.add_take_group(*i);
             try
             {
-                interest_in_spec_helper.add_take_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
+                interest_in_spec_helper.add_take_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
             }
             catch (const Exception &)
             {
             }
         }
         else
-            interest_in_spec_helper.add_take_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
+            interest_in_spec_helper.add_take_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
     }
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_take_from.begin_args()),
             i_end(resolution_options.a_take_from.end_args()) ;
             i != i_end ; ++i)
-        interest_in_spec_helper.add_take_from_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
+        interest_in_spec_helper.add_take_from_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_ignore.begin_args()),
             i_end(resolution_options.a_ignore.end_args()) ;
@@ -973,30 +969,30 @@ paludis::cave::resolve_common(
             interest_in_spec_helper.add_ignore_group(*i);
             try
             {
-                interest_in_spec_helper.add_ignore_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
+                interest_in_spec_helper.add_ignore_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
             }
             catch (const Exception &)
             {
             }
         }
         else
-            interest_in_spec_helper.add_ignore_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
+            interest_in_spec_helper.add_ignore_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
     }
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_ignore_from.begin_args()),
             i_end(resolution_options.a_ignore_from.end_args()) ;
             i != i_end ; ++i)
-        interest_in_spec_helper.add_ignore_from_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
+        interest_in_spec_helper.add_ignore_from_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_no_dependencies_from.begin_args()),
             i_end(resolution_options.a_no_dependencies_from.end_args()) ;
             i != i_end ; ++i)
-        interest_in_spec_helper.add_no_dependencies_from_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
+        interest_in_spec_helper.add_no_dependencies_from_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
 
     for (args::StringSetArg::ConstIterator i(resolution_options.a_no_blockers_from.begin_args()),
             i_end(resolution_options.a_no_blockers_from.end_args()) ;
             i != i_end ; ++i)
-        interest_in_spec_helper.add_no_blockers_from_spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
+        interest_in_spec_helper.add_no_blockers_from_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
 
     interest_in_spec_helper.set_follow_installed_dependencies(! resolution_options.a_no_follow_installed_dependencies.specified());
     interest_in_spec_helper.set_follow_installed_build_dependencies(resolution_options.a_follow_installed_build_dependencies.specified());
@@ -1078,7 +1074,7 @@ paludis::cave::resolve_common(
                                     t != t_end ; ++t)
                                 if ('!' != t->at(0) && std::string::npos != t->find('/'))
                                 {
-                                    PackageDepSpec ts(parse_user_package_dep_spec(*t, env.get(), { }));
+                                    PackageDepSpec ts(parse_spec_with_nice_error(*t, env.get(), { }, filter::All()));
                                     if (ts.version_requirements_ptr() && ! ts.version_requirements_ptr()->empty())
                                     {
                                         confirm_helper.add_permit_downgrade_spec(ts);

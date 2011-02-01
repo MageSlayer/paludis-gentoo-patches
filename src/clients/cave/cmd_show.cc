@@ -23,6 +23,8 @@
 #include "exceptions.hh"
 #include "select_format_for_spec.hh"
 #include "format_user_config.hh"
+#include "parse_spec_with_nice_error.hh"
+
 #include <paludis/args/args.hh>
 #include <paludis/args/do_help.hh>
 #include <paludis/name.hh>
@@ -1386,16 +1388,14 @@ ShowCommand::run(
         else if (cmdline.a_type.argument() == "repository")
             do_one_repository(cmdline, env, RepositoryName(*p));
         else if (cmdline.a_type.argument() == "wildcard")
-            do_one_wildcard(env, parse_user_package_dep_spec(
-                        *p, env.get(), { updso_allow_wildcards }));
+            do_one_wildcard(env, parse_spec_with_nice_error(*p, env.get(), { updso_allow_wildcards }, filter::All()));
         else if (cmdline.a_type.argument() == "package")
-            do_all_packages(cmdline, env, parse_user_package_dep_spec(
-                        *p, env.get(), { updso_allow_wildcards }));
+            do_all_packages(cmdline, env, parse_spec_with_nice_error(*p, env.get(), { updso_allow_wildcards }, filter::All()));
         else if (cmdline.a_type.argument() == "auto")
         {
             try
             {
-                PackageDepSpec spec(parse_user_package_dep_spec(*p, env.get(), { updso_throw_if_set, updso_allow_wildcards }));
+                PackageDepSpec spec(parse_spec_with_nice_error(*p, env.get(), { updso_throw_if_set, updso_allow_wildcards }, filter::All()));
                 if ((! spec.package_ptr()))
                     do_one_wildcard(env, spec);
                 else

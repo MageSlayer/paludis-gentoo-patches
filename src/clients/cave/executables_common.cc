@@ -20,6 +20,7 @@
 
 #include "executables_common.hh"
 #include "exceptions.hh"
+#include "parse_spec_with_nice_error.hh"
 #include <paludis/contents.hh>
 #include <paludis/environment.hh>
 #include <paludis/filter.hh>
@@ -112,7 +113,7 @@ paludis::cave::executables_common(
         const bool all,
         const bool best)
 {
-    PackageDepSpec spec(parse_user_package_dep_spec(param, env.get(), { updso_allow_wildcards },
+    PackageDepSpec spec(parse_spec_with_nice_error(param, env.get(), { updso_allow_wildcards },
                 filter::InstalledAtRoot(env->preferred_root_key()->value())));
 
     std::shared_ptr<const PackageIDSequence> entries(

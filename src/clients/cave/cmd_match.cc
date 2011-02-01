@@ -18,6 +18,7 @@
  */
 
 #include "cmd_match.hh"
+#include "parse_spec_with_nice_error.hh"
 #include <paludis/args/args.hh>
 #include <paludis/args/do_help.hh>
 #include <paludis/name.hh>
@@ -394,7 +395,7 @@ MatchCommand::run(
     if (capped_distance(cmdline.begin_parameters(), cmdline.end_parameters(), 2) < 2)
         throw args::DoHelp("match requires at least two parameters");
 
-    PackageDepSpec spec(parse_user_package_dep_spec(*cmdline.begin_parameters(), env.get(), { }));
+    PackageDepSpec spec(parse_spec_with_nice_error(*cmdline.begin_parameters(), env.get(), { }, filter::All()));
 
     const std::shared_ptr<Set<std::string> > patterns(std::make_shared<Set<std::string>>());
     std::copy(next(cmdline.begin_parameters()), cmdline.end_parameters(), patterns->inserter());

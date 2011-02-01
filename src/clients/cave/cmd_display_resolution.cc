@@ -24,6 +24,7 @@
 #include "colours.hh"
 #include "colour_pretty_printer.hh"
 #include "format_user_config.hh"
+#include "parse_spec_with_nice_error.hh"
 #include <paludis/args/do_help.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/system.hh>
@@ -488,7 +489,7 @@ namespace
                 i != i_end ; ++i)
         {
             bool any(false);
-            PackageDepSpec spec(parse_user_package_dep_spec(*i, env.get(), { updso_allow_wildcards }));
+            PackageDepSpec spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
             for (ResolutionsByResolvent::ConstIterator r(resolved->resolutions_by_resolvent()->begin()),
                     r_end(resolved->resolutions_by_resolvent()->end()) ;
                     r != r_end ; ++r)

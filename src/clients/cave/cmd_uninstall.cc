@@ -21,6 +21,7 @@
 #include "resolve_cmdline.hh"
 #include "resolve_common.hh"
 #include "exceptions.hh"
+#include "parse_spec_with_nice_error.hh"
 
 #include <paludis/util/stringify.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
@@ -140,7 +141,7 @@ UninstallCommand::run(
     for (UninstallCommandLine::ParametersConstIterator p(cmdline.begin_parameters()), p_end(cmdline.end_parameters()) ;
             p != p_end ; ++p)
     {
-        PackageDepSpec spec(parse_user_package_dep_spec(*p, env.get(), { updso_allow_wildcards }));
+        PackageDepSpec spec(parse_spec_with_nice_error(*p, env.get(), { updso_allow_wildcards }, filter::All()));
         const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(
                     generator::Matches(spec, make_null_shared_ptr(), { }) | filter::SupportsAction<UninstallAction>())]);
         if (ids->empty())

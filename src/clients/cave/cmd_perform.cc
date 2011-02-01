@@ -21,6 +21,7 @@
 #include "resolve_cmdline.hh"
 #include "exceptions.hh"
 #include "format_user_config.hh"
+#include "parse_spec_with_nice_error.hh"
 #include <paludis/args/args.hh>
 #include <paludis/args/do_help.hh>
 #include <paludis/name.hh>
@@ -412,7 +413,7 @@ PerformCommand::run(
     std::string action(*cmdline.begin_parameters());
 
     const auto spec_str(*next(cmdline.begin_parameters()));
-    const auto spec(parse_user_package_dep_spec(spec_str, env.get(), { }));
+    const auto spec(parse_spec_with_nice_error(spec_str, env.get(), { }, filter::All()));
     const auto ids((*env)[selection::AllVersionsUnsorted(generator::Matches(spec, make_null_shared_ptr(), { }))]);
     if (ids->empty())
         nothing_matching_error(env.get(), spec_str, filter::All());
@@ -432,7 +433,7 @@ PerformCommand::run(
             p_end(cmdline.a_replacing.end_args()) ;
             p != p_end ; ++p)
     {
-        PackageDepSpec rspec(parse_user_package_dep_spec(*p, env.get(), { }));
+        PackageDepSpec rspec(parse_spec_with_nice_error(*p, env.get(), { }, filter::All()));
         const std::shared_ptr<const PackageIDSequence> rids((*env)[selection::AllVersionsUnsorted(generator::Matches(rspec, make_null_shared_ptr(), { }))]);
         if (rids->empty())
             nothing_matching_error(env.get(), *p, filter::All());

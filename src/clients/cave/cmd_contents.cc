@@ -43,6 +43,7 @@
 #include <set>
 
 #include "command_command_line.hh"
+#include "parse_spec_with_nice_error.hh"
 
 using namespace paludis;
 using namespace cave;
@@ -126,7 +127,7 @@ ContentsCommand::run(
     if (1 != std::distance(cmdline.begin_parameters(), cmdline.end_parameters()))
         throw args::DoHelp("contents takes exactly one parameter");
 
-    PackageDepSpec spec(parse_user_package_dep_spec(*cmdline.begin_parameters(), env.get(),
+    PackageDepSpec spec(parse_spec_with_nice_error(*cmdline.begin_parameters(), env.get(),
                 { }, filter::InstalledAtRoot(env->preferred_root_key()->value())));
 
     std::shared_ptr<const PackageIDSequence> entries(

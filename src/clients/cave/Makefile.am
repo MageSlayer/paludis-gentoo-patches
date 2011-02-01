@@ -190,6 +190,7 @@ libcave_a_SOURCES = \
 	search_extras_handle.cc search_extras_handle.hh \
 	select_format_for_spec.cc select_format_for_spec.hh \
 	owner_common.cc owner_common.hh \
+	parse_spec_with_nice_error.cc parse_spec_with_nice_error.hh \
 	resolve_cmdline.cc resolve_cmdline.hh \
 	resolve_common.cc resolve_common.hh \
 	resume_data.cc resume_data.hh \

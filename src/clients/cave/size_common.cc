@@ -19,6 +19,7 @@
 
 #include "size_common.hh"
 #include "exceptions.hh"
+#include "parse_spec_with_nice_error.hh"
 #include <paludis/action.hh>
 #include <paludis/contents.hh>
 #include <paludis/environment.hh>
@@ -93,7 +94,7 @@ paludis::cave::size_common(
         const bool all,
         const bool best)
 {
-    PackageDepSpec spec(parse_user_package_dep_spec(q, env.get(), { }));
+    PackageDepSpec spec(parse_spec_with_nice_error(q, env.get(), { }, filter::All()));
     std::shared_ptr<const PackageIDSequence> entries((*env)[selection::AllVersionsSorted(generator::Matches(spec, make_null_shared_ptr(), { }) |
                 filter::InstalledAtRoot(env->preferred_root_key()->value()))]);
 
