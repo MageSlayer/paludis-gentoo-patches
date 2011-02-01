@@ -2,7 +2,7 @@
 
 /*
  * Copyright (c) 2008 Alexander Færøy
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -70,10 +70,10 @@ namespace
             g_owner_options(main_options_section(), "Owner options", "Alter how the search is performed."),
             a_match(&g_owner_options, "match", 'm', "Which match algorithm to use",
                     args::EnumArg::EnumArgOptions
-                    ("auto",          "If pattern starts with a /, full; if it contains a /, partial; otherwise, basename")
-                    ("basename",      "Basename match")
-                    ("full",          "Full match")
-                    ("partial",       "Partial match"),
+                    ("auto",          'a', "If pattern starts with a /, full; if it contains a /, partial; otherwise, basename")
+                    ("basename",      'b', "Basename match")
+                    ("full",          'f', "Full match")
+                    ("partial",       'p', "Partial match"),
                     "auto"),
             a_dereference(&g_owner_options, "dereference", 'd', "If the pattern is a path that exists and is a symbolic link, "
                     "dereference it recursively, and then search for the real path.", true)
