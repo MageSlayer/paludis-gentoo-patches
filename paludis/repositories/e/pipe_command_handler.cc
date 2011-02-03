@@ -220,6 +220,12 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                 }
             }
         }
+        else if (tokens[0] == "KEEP_LOGS")
+        {
+            if (maybe_output_manager)
+                maybe_output_manager->ignore_succeeded();
+            return "O0;";
+        }
         else if (tokens[0] == "MESSAGE")
         {
             if (tokens.size() == 3)
