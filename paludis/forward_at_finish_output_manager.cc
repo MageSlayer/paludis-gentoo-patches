@@ -38,6 +38,7 @@ namespace paludis
         const std::shared_ptr<OutputManager> child;
         bool success;
         bool nothing_more_to_come;
+        bool ignore_succeeded;
 
         Imp(
                 const bool s,
@@ -48,7 +49,8 @@ namespace paludis
             if_failure(f),
             child(m),
             success(false),
-            nothing_more_to_come(false)
+            nothing_more_to_come(false),
+            ignore_succeeded(false)
         {
         }
     };
@@ -90,7 +92,14 @@ ForwardAtFinishOutputManager::stderr_stream()
 void
 ForwardAtFinishOutputManager::succeeded()
 {
-    _imp->success = true;
+    if (! _imp->ignore_succeeded)
+        _imp->success = true;
+}
+
+void
+ForwardAtFinishOutputManager::ignore_succeeded()
+{
+    _imp->ignore_succeeded = true;
 }
 
 void

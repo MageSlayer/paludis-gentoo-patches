@@ -151,6 +151,12 @@ FormatMessagesOutputManager::succeeded()
 }
 
 void
+FormatMessagesOutputManager::ignore_succeeded()
+{
+    _imp->child->ignore_succeeded();
+}
+
+void
 FormatMessagesOutputManager::flush()
 {
     _imp->child->flush();

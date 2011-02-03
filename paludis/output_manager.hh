@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -77,8 +77,22 @@ namespace paludis
              *
              * Calls to this method are done by the caller, not by whatever
              * carries out the action in question.
+             *
+             * If ignore_succeeded() has previously been called, does nothing.
              */
             virtual void succeeded() = 0;
+
+            /**
+             * Instructs the output manager to ignore future calls to
+             * succeeded().
+             *
+             * Typically this is used to force log files to be kept even if
+             * an error has occurred, if the error does not trigger the usual
+             * failure mechanisms.
+             *
+             * \since 0.59
+             */
+            virtual void ignore_succeeded() = 0;
 
             /**
              * May be called to indicate that no further output or messages

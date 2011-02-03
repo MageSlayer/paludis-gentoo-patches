@@ -47,6 +47,7 @@ namespace paludis
             virtual std::ostream & stderr_stream() PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual void succeeded();
+            virtual void ignore_succeeded();
             virtual void flush();
             virtual bool want_to_flush() const;
             virtual void message(const MessageType, const std::string &);

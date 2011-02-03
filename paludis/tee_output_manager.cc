@@ -139,6 +139,26 @@ TeeOutputManager::succeeded()
 }
 
 void
+TeeOutputManager::ignore_succeeded()
+{
+    for (OutputManagerSequence::ConstIterator i(_imp->streams->begin()), i_end(_imp->streams->end()) ;
+            i != i_end ; ++i)
+        (*i)->ignore_succeeded();
+
+    for (OutputManagerSequence::ConstIterator i(_imp->messages_streams->begin()), i_end(_imp->messages_streams->end()) ;
+            i != i_end ; ++i)
+        (*i)->ignore_succeeded();
+
+    for (OutputManagerSequence::ConstIterator i(_imp->stdout_streams->begin()), i_end(_imp->stdout_streams->end()) ;
+            i != i_end ; ++i)
+        (*i)->ignore_succeeded();
+
+    for (OutputManagerSequence::ConstIterator i(_imp->stderr_streams->begin()), i_end(_imp->stderr_streams->end()) ;
+            i != i_end ; ++i)
+        (*i)->ignore_succeeded();
+}
+
+void
 TeeOutputManager::flush()
 {
     for (OutputManagerSequence::ConstIterator i(_imp->streams->begin()), i_end(_imp->streams->end()) ;

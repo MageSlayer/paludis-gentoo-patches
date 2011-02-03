@@ -151,6 +151,18 @@ IPCOutputManager::succeeded()
 }
 
 void
+IPCOutputManager::ignore_succeeded()
+{
+    *_imp->pipe_command_write_stream << "IGNORE_SUCCEEDED 1" << '\0' << std::flush;
+
+    std::string response;
+    if (! std::getline(*_imp->pipe_command_read_stream, response, '\0'))
+        throw InternalError(PALUDIS_HERE, "couldn't get a pipe command response");
+    if (response != "O")
+        throw InternalError(PALUDIS_HERE, "got response '" + response + "'");
+}
+
+void
 IPCOutputManager::flush()
 {
 }
@@ -290,6 +302,14 @@ IPCInputManager::_pipe_command_handler(const std::string & s)
         if (tokens.size() != 2 || tokens[1] != "1")
             return "Ebad SUCCEEDED subcommand";
         _imp->output_manager->succeeded();
+
+        return "O";
+    }
+    else if (tokens[0] == "IGNORE_SUCCEEDED")
+    {
+        if (tokens.size() != 2 || tokens[1] != "1")
+            return "Ebad IGNORE_SUCCEEDED subcommand";
+        _imp->output_manager->ignore_succeeded();
 
         return "O";
     }

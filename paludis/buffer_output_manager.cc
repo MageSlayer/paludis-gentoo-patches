@@ -73,6 +73,12 @@ BufferOutputManager::succeeded()
 }
 
 void
+BufferOutputManager::ignore_succeeded()
+{
+    _imp->child->ignore_succeeded();
+}
+
+void
 BufferOutputManager::message(const MessageType, const std::string &)
 {
 }

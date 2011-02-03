@@ -41,7 +41,7 @@ namespace paludis
         const std::shared_ptr<OutputManager> summary_output_manager;
         const std::string summary_output_message;
 
-        bool succeeded, unlinked, nothing_more_to_come;
+        bool succeeded, unlinked, nothing_more_to_come, ignore_succeeded;
 
         Imp(
                 const FSPath & o,
@@ -58,7 +58,8 @@ namespace paludis
             summary_output_message(s),
             succeeded(false),
             unlinked(false),
-            nothing_more_to_come(false)
+            nothing_more_to_come(false),
+            ignore_succeeded(false)
         {
         }
     };
@@ -102,6 +103,9 @@ FileOutputManager::message(const MessageType, const std::string &)
 void
 FileOutputManager::succeeded()
 {
+    if (_imp->ignore_succeeded)
+        return;
+
     _imp->succeeded = true;
 
     if (! _imp->keep_on_success)
@@ -109,6 +113,12 @@ FileOutputManager::succeeded()
         _imp->filename.unlink();
         _imp->unlinked = true;
     }
+}
+
+void
+FileOutputManager::ignore_succeeded()
+{
+    _imp->ignore_succeeded = true;
 }
 
 void

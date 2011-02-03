@@ -59,6 +59,7 @@ namespace paludis
         std::unique_ptr<SafeOFStream> stderr_stream;
 
         bool already_nothing_more_to_come;
+        bool ignore_succeeded;
 
         Imp(
                 const std::string & s,
@@ -74,7 +75,8 @@ namespace paludis
             stderr_command(se),
             succeeded_command(su),
             nothing_more_to_come_command(n),
-            already_nothing_more_to_come(false)
+            already_nothing_more_to_come(false),
+            ignore_succeeded(false)
         {
         }
     };
@@ -180,12 +182,18 @@ CommandOutputManager::message(const MessageType, const std::string &)
 void
 CommandOutputManager::succeeded()
 {
-    if (! _imp->succeeded_command.empty())
+    if ((! _imp->ignore_succeeded) && (! _imp->succeeded_command.empty()))
     {
         Process process(ProcessCommand(_imp->succeeded_command));
         if (0 != process.run().wait())
             throw CommandOutputManagerError("succeeded command returned non-zero");
     }
+}
+
+void
+CommandOutputManager::ignore_succeeded()
+{
+    _imp->ignore_succeeded = true;
 }
 
 void
