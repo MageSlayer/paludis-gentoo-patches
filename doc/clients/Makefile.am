@@ -156,16 +156,6 @@ $(CAVE_COMMANDS_HTML) : header.html.part footer.html.part
 	    fi ; } && \
 	    cat footer.html.part ; } > $@
 
-importare.html : header.html.part footer.html.part
-	{ cat header.html.part && { \
-	    if test -x $(top_builddir)/src/clients/importare/man-importare ; then \
-	        $(top_builddir)/src/clients/importare/man-importare --html ; \
-	    else \
-	        echo "<h1>importare</h1>"; \
-	        echo "<p>Sorry, documentation was generated without support for the importare client.</p>" ; \
-	    fi ; } && \
-	    cat footer.html.part ; } > $@
-
 instruo.html : header.html.part footer.html.part
 	{ cat header.html.part && { \
 	    if test -x $(top_builddir)/src/clients/instruo/man-instruo ; then \

@@ -1398,7 +1398,7 @@ AC_ARG_WITH([repositories],
 			  gemcutter       Gemcutter for Ruby
 			  repository      Automatic repository config generation (via 'unavailable')
 			  unavailable     Unavailable
-			  unpackaged      Unpackaged (for importare)
+			  unpackaged      Unpackaged (for cave import)
 			  unwritten       Unwritten
 			  virtuals        Old style Gentoo virtuals],
 			[repositories="`echo $with_repositories | tr ',' ' '`"],
@@ -1513,24 +1513,23 @@ AC_DEFINE_UNQUOTED([DEFAULT_DISTRIBUTION], "$DEFAULT_DISTRIBUTION", [Default dis
 dnl }}}
 
 dnl {{{ clients
-ALL_CLIENTS="accerso adjutrix appareo cave importare instruo paludis reconcilio"
+ALL_CLIENTS="accerso adjutrix appareo cave instruo paludis reconcilio"
 ALL_CLIENTS_HTML=""
 for a in $ALL_CLIENTS ; do
 	ALL_CLIENTS_HTML="$ALL_CLIENTS_HTML $a.html"
 done
-DEFAULT_CLIENTS="adjutrix cave importare paludis reconcilio"
+DEFAULT_CLIENTS="adjutrix cave paludis reconcilio"
 AC_MSG_CHECKING([which clients to build...])
 AC_ARG_WITH([clients],
 			[  --with-clients=foo,bar,...
 			  Build the specified clients:
 			  all             All available clients
-			  default         Equivalent to adjutrix,cave,importare,paludis,reconcilio
+			  default         Equivalent to adjutrix,cave,paludis,reconcilio
 
 			  accerso         A fetch / mirror client
 			  adjutrix        A tool for tree querying
 			  appareo         A tool for generating manifests
 			  cave            The modular Paludis client
-			  importare       On-the-fly unpackaged installer
 			  instruo         A metadata generation client
 			  paludis         The Paludis console client
 			  reconcilio      A linkage repair tool],
@@ -1800,7 +1799,6 @@ AC_OUTPUT(
 	src/clients/adjutrix/Makefile
 	src/clients/appareo/Makefile
 	src/clients/cave/Makefile
-	src/clients/importare/Makefile
 	src/clients/instruo/Makefile
 	src/clients/paludis/Makefile
 	src/clients/reconcilio/Makefile

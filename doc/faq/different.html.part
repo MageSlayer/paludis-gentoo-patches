@@ -96,4 +96,4 @@ for ebuilds.</p>
 <p>To use <code>cave import</code>, you will first have to configure an
 <a href="../configuration/repositories/installed_unpackaged.html"><code>installed_unpackaged</code></a> format repository.</p>
 
-<p>To get a more direct equivalent of package.provided, you can "install" an empty directory with importare.</p>
+<p>To get a more direct equivalent of package.provided, you can "install" an empty directory with cave import.</p>

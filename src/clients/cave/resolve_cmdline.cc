@@ -109,7 +109,7 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
             ("auto",                  'a', "If the target is a set, if-same, otherwise never")
             ("never",                 'n', "Never")
             ("if-transient",          't', "Only if the installed package is transient "
-                                           "(e.g. from 'importare')")
+                                           "(e.g. from 'cave import')")
             ("if-same",               's', "If it is the same as the proposed replacement (that is, if it has the same "
              "version, and no non-special use flags or choices have had their values changed)")
             ("if-same-version",       'v', "If it is the same version as the proposed replacement")
@@ -122,7 +122,7 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
             args::EnumArg::EnumArgOptions
             ("never",                 'n', "Never")
             ("if-transient",          't', "Only if the installed package is transient "
-                                           "(e.g. from 'importare') (default if --everything)")
+                                           "(e.g. from 'cave import') (default if --everything)")
             ("if-same",               's', "If it is the same as the proposed replacement (that is, if it has the same "
              "version, and no non-special use flags or choices have had their values changed) (default if --complete)")
             ("if-same-version",       'v', "If it is the same version as the proposed replacement")

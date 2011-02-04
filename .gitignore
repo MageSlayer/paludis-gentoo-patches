@@ -137,7 +137,6 @@ paludis-*.*.*.tar.bz2
 /doc/clients/contrarius.html
 /doc/clients/footer.html.part
 /doc/clients/header.html.part
-/doc/clients/importare.html
 /doc/clients/index.html
 /doc/clients/instruo.html
 /doc/clients/paludis.html
@@ -503,7 +502,6 @@ paludis-*.*.*.tar.bz2
 /src/clients/adjutrix/adjutrix
 /src/clients/appareo/appareo
 /src/clients/cave/cave
-/src/clients/importare/importare
 /src/clients/instruo/instruo
 /src/clients/paludis/paludis
 /src/clients/reconcilio/reconcilio

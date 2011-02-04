@@ -88,7 +88,6 @@ the exheres repository format.</p>
 
 <ul>
     <li><a href="clients/paludis.html">paludis</a>, the original console package management client.</li>
-    <li><a href="clients/importare.html">importare</a>, the unpackaged package installer.</li>
     <li><a href="clients/reconcilio.html">reconcilio</a>, a tool for rebuilding packages with broken linkage.</li>
 </ul>
 
