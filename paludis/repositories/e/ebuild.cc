@@ -552,7 +552,7 @@ EbuildMetadataCommand::load(const std::shared_ptr<const EbuildID> & id)
     {
         DependenciesRewriter rewriter;
         std::string dep_s(get(keys, m.dependencies()->name()));
-        parse_depend(dep_s, params.environment(), *id->eapi())->top()->accept(rewriter);
+        parse_depend(dep_s, params.environment(), *id->eapi(), id->is_installed())->top()->accept(rewriter);
         id->load_raw_depend(m.dependencies()->name(), m.dependencies()->description(), dep_s);
         id->load_build_depend(m.dependencies()->name() + ".DEPEND", m.dependencies()->description() + " (build)", rewriter.depend(), true);
         id->load_run_depend(m.dependencies()->name() + ".RDEPEND", m.dependencies()->description() + " (run)", rewriter.rdepend(), true);

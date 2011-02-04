@@ -1018,7 +1018,7 @@ void
 EbuildID::load_homepage(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->homepage = std::make_shared<ESimpleURIKey>(_imp->environment, m, eapi(), v, mkt_significant);
+    _imp->homepage = std::make_shared<ESimpleURIKey>(_imp->environment, m, eapi(), v, mkt_significant, is_installed());
     add_metadata_key(_imp->homepage);
 }
 
@@ -1026,7 +1026,7 @@ void
 EbuildID::load_license(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->license = std::make_shared<ELicenseKey>(_imp->environment, m, eapi(), v, mkt_internal);
+    _imp->license = std::make_shared<ELicenseKey>(_imp->environment, m, eapi(), v, mkt_internal, is_installed());
     add_metadata_key(_imp->license);
 }
 
@@ -1034,7 +1034,7 @@ void
 EbuildID::load_restrict(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->restrictions = std::make_shared<EPlainTextSpecKey>(_imp->environment, m, eapi(), v, mkt_internal);
+    _imp->restrictions = std::make_shared<EPlainTextSpecKey>(_imp->environment, m, eapi(), v, mkt_internal, is_installed());
     add_metadata_key(_imp->restrictions);
 }
 
@@ -1042,7 +1042,7 @@ void
 EbuildID::load_properties(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->properties = std::make_shared<EPlainTextSpecKey>(_imp->environment, m, eapi(), v, mkt_internal);
+    _imp->properties = std::make_shared<EPlainTextSpecKey>(_imp->environment, m, eapi(), v, mkt_internal, is_installed());
     add_metadata_key(_imp->properties);
 }
 
@@ -1050,7 +1050,7 @@ void
 EbuildID::load_provide(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->provide = std::make_shared<EProvideKey>(_imp->environment, m, eapi(), v, mkt_internal);
+    _imp->provide = std::make_shared<EProvideKey>(_imp->environment, m, eapi(), v, mkt_internal, is_installed());
     add_metadata_key(_imp->provide);
 }
 
@@ -1066,7 +1066,7 @@ void
 EbuildID::load_myoptions(const std::shared_ptr<const EAPIMetadataVariable> & h, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->raw_myoptions = std::make_shared<EMyOptionsKey>(_imp->environment, h, eapi(), v, mkt_internal);
+    _imp->raw_myoptions = std::make_shared<EMyOptionsKey>(_imp->environment, h, eapi(), v, mkt_internal, is_installed());
     add_metadata_key(_imp->raw_myoptions);
 }
 
@@ -1074,7 +1074,7 @@ void
 EbuildID::load_required_use(const std::shared_ptr<const EAPIMetadataVariable> & k, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->required_use = std::make_shared<ERequiredUseKey>(_imp->environment, k, eapi(), v, mkt_internal);
+    _imp->required_use = std::make_shared<ERequiredUseKey>(_imp->environment, k, eapi(), v, mkt_internal, is_installed());
     add_metadata_key(_imp->required_use);
 }
 
@@ -1117,7 +1117,7 @@ void
 EbuildID::load_upstream_changelog(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->upstream_changelog = std::make_shared<ESimpleURIKey>(_imp->environment, m, eapi(), v, mkt_normal);
+    _imp->upstream_changelog = std::make_shared<ESimpleURIKey>(_imp->environment, m, eapi(), v, mkt_normal, is_installed());
     add_metadata_key(_imp->upstream_changelog);
 }
 
@@ -1125,7 +1125,7 @@ void
 EbuildID::load_upstream_documentation(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->upstream_documentation = std::make_shared<ESimpleURIKey>(_imp->environment, m, eapi(), v, mkt_normal);
+    _imp->upstream_documentation = std::make_shared<ESimpleURIKey>(_imp->environment, m, eapi(), v, mkt_normal, is_installed());
     add_metadata_key(_imp->upstream_documentation);
 }
 
@@ -1133,7 +1133,7 @@ void
 EbuildID::load_upstream_release_notes(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->upstream_release_notes = std::make_shared<ESimpleURIKey>(_imp->environment, m, eapi(), v, mkt_normal);
+    _imp->upstream_release_notes = std::make_shared<ESimpleURIKey>(_imp->environment, m, eapi(), v, mkt_normal, is_installed());
     add_metadata_key(_imp->upstream_release_notes);
 }
 
@@ -1141,7 +1141,7 @@ void
 EbuildID::load_bugs_to(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->bugs_to = std::make_shared<EPlainTextSpecKey>(_imp->environment, m, eapi(), v, mkt_normal);
+    _imp->bugs_to = std::make_shared<EPlainTextSpecKey>(_imp->environment, m, eapi(), v, mkt_normal, is_installed());
     add_metadata_key(_imp->bugs_to);
 }
 
@@ -1149,7 +1149,7 @@ void
 EbuildID::load_remote_ids(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->remote_ids = std::make_shared<EPlainTextSpecKey>(_imp->environment, m, eapi(), v, mkt_internal);
+    _imp->remote_ids = std::make_shared<EPlainTextSpecKey>(_imp->environment, m, eapi(), v, mkt_internal, is_installed());
     add_metadata_key(_imp->remote_ids);
 }
 
@@ -1664,5 +1664,11 @@ EbuildID::might_be_binary() const
     }
     else
         return false;
+}
+
+bool
+EbuildID::is_installed() const
+{
+    return false;
 }
 

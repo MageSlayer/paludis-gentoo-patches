@@ -126,7 +126,8 @@ namespace paludis
                 ESimpleURIKey(const Environment * const,
                         const std::shared_ptr<const EAPIMetadataVariable> &,
                         const std::shared_ptr<const EAPI> &,
-                        const std::string &, const MetadataKeyType);
+                        const std::string &, const MetadataKeyType,
+                        const bool is_installed);
                 ~ESimpleURIKey();
 
                 virtual const std::shared_ptr<const SimpleURISpecTree> value() const
@@ -151,7 +152,8 @@ namespace paludis
                 EPlainTextSpecKey(const Environment * const,
                         const std::shared_ptr<const EAPIMetadataVariable> &,
                         const std::shared_ptr<const EAPI> &,
-                        const std::string &, const MetadataKeyType);
+                        const std::string &, const MetadataKeyType,
+                        bool is_installed);
                 ~EPlainTextSpecKey();
 
                 virtual const std::shared_ptr<const PlainTextSpecTree> value() const
@@ -176,7 +178,8 @@ namespace paludis
                 EMyOptionsKey(const Environment * const,
                         const std::shared_ptr<const EAPIMetadataVariable> &,
                         const std::shared_ptr<const EAPI> &,
-                        const std::string &, const MetadataKeyType);
+                        const std::string &, const MetadataKeyType,
+                        bool);
                 ~EMyOptionsKey();
 
                 virtual const std::shared_ptr<const PlainTextSpecTree> value() const
@@ -201,7 +204,8 @@ namespace paludis
                 ERequiredUseKey(const Environment * const,
                         const std::shared_ptr<const EAPIMetadataVariable> &,
                         const std::shared_ptr<const EAPI> &,
-                        const std::string &, const MetadataKeyType);
+                        const std::string &, const MetadataKeyType,
+                        bool i);
                 ~ERequiredUseKey();
 
                 virtual const std::shared_ptr<const RequiredUseSpecTree> value() const
@@ -226,7 +230,8 @@ namespace paludis
                 EProvideKey(const Environment * const,
                         const std::shared_ptr<const EAPIMetadataVariable> &,
                         const std::shared_ptr<const EAPI> &,
-                        const std::string &, const MetadataKeyType);
+                        const std::string &, const MetadataKeyType,
+                        const bool is_installed);
                 ~EProvideKey();
 
                 virtual const std::shared_ptr<const ProvideSpecTree> value() const
@@ -252,7 +257,8 @@ namespace paludis
                         const Environment * const,
                         const std::shared_ptr<const EAPIMetadataVariable> &,
                         const std::shared_ptr<const EAPI> &,
-                        const std::string &, const MetadataKeyType);
+                        const std::string &, const MetadataKeyType,
+                        bool is_installed);
                 ~ELicenseKey();
 
                 virtual const std::shared_ptr<const LicenseSpecTree> value() const

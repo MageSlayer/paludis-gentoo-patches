@@ -32,6 +32,8 @@ namespace paludis
             public PackageID
         {
             public:
+                virtual bool is_installed() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
                 virtual const std::shared_ptr<const EAPI> eapi() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
                 virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > inherited_key() const = 0;
                 virtual const std::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> > license_key() const = 0;

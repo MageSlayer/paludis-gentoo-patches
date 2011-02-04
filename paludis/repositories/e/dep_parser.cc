@@ -296,10 +296,11 @@ namespace
             typename ParseStackTypes<T_>::Stack & stack,
             const std::string & u,
             const Environment * const,
-            const EAPI & eapi)
+            const EAPI & eapi,
+            bool is_installed)
     {
         std::shared_ptr<ConditionalDepSpec> spec(std::make_shared<ConditionalDepSpec>(parse_elike_conditional_dep_spec(
-                        u, ! eapi.supported()->package_dep_spec_parse_options()[epdso_missing_use_deps_is_qa])));
+                        u, is_installed || ! eapi.supported()->package_dep_spec_parse_options()[epdso_missing_use_deps_is_qa])));
         stack.push_front(make_named_values<typename ParseStackTypes<T_>::Item>(
                     n::item() = stack.begin()->item()->append(spec),
                     n::spec() = spec
@@ -468,7 +469,7 @@ namespace
 }
 
 std::shared_ptr<DependencySpecTree>
-paludis::erepository::parse_depend(const std::string & s, const Environment * const env, const EAPI & eapi)
+paludis::erepository::parse_depend(const std::string & s, const Environment * const env, const EAPI & eapi, const bool is_installed)
 {
     using namespace std::placeholders;
 
@@ -503,7 +504,7 @@ paludis::erepository::parse_depend(const std::string & s, const Environment * co
                 n::on_string() = std::bind(&package_or_block_dep_spec_string_handler<DependencySpecTree>, std::ref(stack),
                     ParseStackTypes<DependencySpecTree>::AnnotationsGoHere(std::bind(
                             &set_thing_to_annotate_maybe_block, std::ref(thing_to_annotate), _1, std::ref(thing_to_annotate_if_block), _2)), _1, eapi),
-                n::on_use() = std::bind(&use_handler<DependencySpecTree>, std::ref(stack), _1, env, std::cref(eapi)),
+                n::on_use() = std::bind(&use_handler<DependencySpecTree>, std::ref(stack), _1, env, std::cref(eapi), is_installed),
                 n::on_use_under_any() = std::bind(&use_under_any_handler, s, std::cref(eapi))
             ));
 
@@ -513,7 +514,7 @@ paludis::erepository::parse_depend(const std::string & s, const Environment * co
 }
 
 std::shared_ptr<ProvideSpecTree>
-paludis::erepository::parse_provide(const std::string & s, const Environment * const env, const EAPI & eapi)
+paludis::erepository::parse_provide(const std::string & s, const Environment * const env, const EAPI & eapi, const bool is_installed)
 {
     using namespace std::placeholders;
 
@@ -542,7 +543,7 @@ paludis::erepository::parse_provide(const std::string & s, const Environment * c
                 n::on_string() = std::bind(&package_dep_spec_string_handler<ProvideSpecTree>, std::ref(stack),
                     ParseStackTypes<ProvideSpecTree>::AnnotationsGoHere(std::bind(
                             &set_thing_to_annotate, std::ref(thing_to_annotate), _1)), _1, std::cref(eapi)),
-                n::on_use() = std::bind(&use_handler<ProvideSpecTree>, std::ref(stack), _1, env, std::cref(eapi)),
+                n::on_use() = std::bind(&use_handler<ProvideSpecTree>, std::ref(stack), _1, env, std::cref(eapi), is_installed),
                 n::on_use_under_any() = std::bind(&use_under_any_handler, s, std::cref(eapi))
             ));
 
@@ -552,7 +553,7 @@ paludis::erepository::parse_provide(const std::string & s, const Environment * c
 }
 
 std::shared_ptr<FetchableURISpecTree>
-paludis::erepository::parse_fetchable_uri(const std::string & s, const Environment * const env, const EAPI & eapi)
+paludis::erepository::parse_fetchable_uri(const std::string & s, const Environment * const env, const EAPI & eapi, const bool is_installed)
 {
     using namespace std::placeholders;
 
@@ -585,7 +586,7 @@ paludis::erepository::parse_fetchable_uri(const std::string & s, const Environme
                 n::on_string() = std::bind(&arrow_handler<FetchableURISpecTree>, std::ref(stack),
                     ParseStackTypes<FetchableURISpecTree>::AnnotationsGoHere(std::bind(
                             &set_thing_to_annotate, std::ref(thing_to_annotate), _1)), s, _1, "", std::cref(eapi)),
-                n::on_use() = std::bind(&use_handler<FetchableURISpecTree>, std::ref(stack), _1, env, std::cref(eapi)),
+                n::on_use() = std::bind(&use_handler<FetchableURISpecTree>, std::ref(stack), _1, env, std::cref(eapi), is_installed),
                 n::on_use_under_any() = std::bind(&use_under_any_handler, s, std::cref(eapi))
             ));
 
@@ -595,7 +596,7 @@ paludis::erepository::parse_fetchable_uri(const std::string & s, const Environme
 }
 
 std::shared_ptr<SimpleURISpecTree>
-paludis::erepository::parse_simple_uri(const std::string & s, const Environment * const env, const EAPI & eapi)
+paludis::erepository::parse_simple_uri(const std::string & s, const Environment * const env, const EAPI & eapi, const bool is_installed)
 {
     using namespace std::placeholders;
 
@@ -624,7 +625,7 @@ paludis::erepository::parse_simple_uri(const std::string & s, const Environment 
                 n::on_string() = std::bind(&simple_uri_handler<SimpleURISpecTree>, std::ref(stack),
                     ParseStackTypes<SimpleURISpecTree>::AnnotationsGoHere(std::bind(
                             &set_thing_to_annotate, std::ref(thing_to_annotate), _1)), _1),
-                n::on_use() = std::bind(&use_handler<SimpleURISpecTree>, std::ref(stack), _1, env, std::cref(eapi)),
+                n::on_use() = std::bind(&use_handler<SimpleURISpecTree>, std::ref(stack), _1, env, std::cref(eapi), is_installed),
                 n::on_use_under_any() = &do_nothing
             ));
 
@@ -634,7 +635,7 @@ paludis::erepository::parse_simple_uri(const std::string & s, const Environment 
 }
 
 std::shared_ptr<LicenseSpecTree>
-paludis::erepository::parse_license(const std::string & s, const Environment * const env, const EAPI & eapi)
+paludis::erepository::parse_license(const std::string & s, const Environment * const env, const EAPI & eapi, const bool is_installed)
 {
     using namespace std::placeholders;
 
@@ -663,7 +664,7 @@ paludis::erepository::parse_license(const std::string & s, const Environment * c
                 n::on_string() = std::bind(&license_handler<LicenseSpecTree>, std::ref(stack),
                     ParseStackTypes<LicenseSpecTree>::AnnotationsGoHere(std::bind(
                             &set_thing_to_annotate, std::ref(thing_to_annotate), _1)), _1),
-                n::on_use() = std::bind(&use_handler<LicenseSpecTree>, std::ref(stack), _1, env, std::cref(eapi)),
+                n::on_use() = std::bind(&use_handler<LicenseSpecTree>, std::ref(stack), _1, env, std::cref(eapi), is_installed),
                 n::on_use_under_any() = std::bind(&use_under_any_handler, s, std::cref(eapi))
             ));
 
@@ -673,7 +674,7 @@ paludis::erepository::parse_license(const std::string & s, const Environment * c
 }
 
 std::shared_ptr<PlainTextSpecTree>
-paludis::erepository::parse_plain_text(const std::string & s, const Environment * const env, const EAPI & eapi)
+paludis::erepository::parse_plain_text(const std::string & s, const Environment * const env, const EAPI & eapi, const bool is_installed)
 {
     using namespace std::placeholders;
 
@@ -702,7 +703,7 @@ paludis::erepository::parse_plain_text(const std::string & s, const Environment 
                 n::on_string() = std::bind(&plain_text_handler<PlainTextSpecTree>, std::ref(stack),
                         ParseStackTypes<PlainTextSpecTree>::AnnotationsGoHere(std::bind(
                                 &set_thing_to_annotate, std::ref(thing_to_annotate), _1)), _1),
-                n::on_use() = std::bind(&use_handler<PlainTextSpecTree>, std::ref(stack), _1, env, std::cref(eapi)),
+                n::on_use() = std::bind(&use_handler<PlainTextSpecTree>, std::ref(stack), _1, env, std::cref(eapi), is_installed),
                 n::on_use_under_any() = &do_nothing
             ));
 
@@ -712,7 +713,7 @@ paludis::erepository::parse_plain_text(const std::string & s, const Environment 
 }
 
 std::shared_ptr<PlainTextSpecTree>
-paludis::erepository::parse_myoptions(const std::string & s, const Environment * const env, const EAPI & eapi)
+paludis::erepository::parse_myoptions(const std::string & s, const Environment * const env, const EAPI & eapi, const bool is_installed)
 {
     using namespace std::placeholders;
 
@@ -743,7 +744,7 @@ paludis::erepository::parse_myoptions(const std::string & s, const Environment *
                 n::on_string() = std::bind(&plain_text_handler<PlainTextSpecTree>, std::ref(stack),
                         ParseStackTypes<PlainTextSpecTree>::AnnotationsGoHere(std::bind(
                                 &set_thing_to_annotate, std::ref(thing_to_annotate), _1)), _1),
-                n::on_use() = std::bind(&use_handler<PlainTextSpecTree>, std::ref(stack), _1, env, std::cref(eapi)),
+                n::on_use() = std::bind(&use_handler<PlainTextSpecTree>, std::ref(stack), _1, env, std::cref(eapi), is_installed),
                 n::on_use_under_any() = &do_nothing
             ));
 
@@ -753,7 +754,7 @@ paludis::erepository::parse_myoptions(const std::string & s, const Environment *
 }
 
 std::shared_ptr<RequiredUseSpecTree>
-paludis::erepository::parse_required_use(const std::string & s, const Environment * const env, const EAPI & eapi)
+paludis::erepository::parse_required_use(const std::string & s, const Environment * const env, const EAPI & eapi, const bool is_installed)
 {
     using namespace std::placeholders;
 
@@ -782,7 +783,7 @@ paludis::erepository::parse_required_use(const std::string & s, const Environmen
                 n::on_string() = std::bind(&plain_text_handler<RequiredUseSpecTree>, std::ref(stack),
                         ParseStackTypes<RequiredUseSpecTree>::AnnotationsGoHere(std::bind(
                                 &set_thing_to_annotate, std::ref(thing_to_annotate), _1)), _1),
-                n::on_use() = std::bind(&use_handler<RequiredUseSpecTree>, std::ref(stack), _1, env, std::cref(eapi)),
+                n::on_use() = std::bind(&use_handler<RequiredUseSpecTree>, std::ref(stack), _1, env, std::cref(eapi), is_installed),
                 n::on_use_under_any() = &do_nothing
             ));
 

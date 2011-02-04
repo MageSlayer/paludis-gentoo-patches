@@ -83,7 +83,7 @@ namespace test_cases
                     *eapi, FSPath("fetch_visitor_TEST_dir/out"),
                     false, false, "test", std::make_shared<URIListedThenMirrorsLabel>("listed-then-mirrors"), false,
                     std::make_shared<StandardOutputManager>(), get_mirrors_fn);
-            parse_fetchable_uri("file:///" + stringify(FSPath("fetch_visitor_TEST_dir/in/input1").realpath()), &env, *eapi)->top()->accept(v);
+            parse_fetchable_uri("file:///" + stringify(FSPath("fetch_visitor_TEST_dir/in/input1").realpath()), &env, *eapi, false)->top()->accept(v);
 
             TEST_CHECK(FSPath("fetch_visitor_TEST_dir/out/input1").stat().is_regular_file());
             SafeIFStream f(FSPath("fetch_visitor_TEST_dir/out/input1"));

@@ -157,7 +157,7 @@ EDependenciesKey::value() const
         return _imp->value;
 
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
-    _imp->value = parse_depend(_imp->string_value, _imp->env, *_imp->id->eapi());
+    _imp->value = parse_depend(_imp->string_value, _imp->env, *_imp->id->eapi(), _imp->id->is_installed());
     return _imp->value;
 }
 
@@ -208,17 +208,20 @@ namespace paludis
         const std::shared_ptr<const EAPIMetadataVariable> variable;
         const std::shared_ptr<const EAPI> eapi;
         const MetadataKeyType type;
+        const bool is_installed;
 
         Imp(const Environment * const e,
                 const std::string & v,
                 const std::shared_ptr<const EAPIMetadataVariable> & m,
                 const std::shared_ptr<const EAPI> & p,
-                const MetadataKeyType t) :
+                const MetadataKeyType t,
+                bool i) :
             env(e),
             string_value(v),
             variable(m),
             eapi(p),
-            type(t)
+            type(t),
+            is_installed(i)
         {
         }
     };
@@ -228,8 +231,9 @@ ELicenseKey::ELicenseKey(
         const Environment * const e,
         const std::shared_ptr<const EAPIMetadataVariable> & m,
         const std::shared_ptr<const EAPI> & p,
-        const std::string & v, const MetadataKeyType t) :
-    _imp(e, v, m, p, t)
+        const std::string & v, const MetadataKeyType t,
+        const bool i) :
+    _imp(e, v, m, p, t, i)
 {
 }
 
@@ -245,7 +249,7 @@ ELicenseKey::value() const
         return _imp->value;
 
     Context context("When parsing metadata key '" + raw_name() + "':");
-    _imp->value = parse_license(_imp->string_value, _imp->env, *_imp->eapi);
+    _imp->value = parse_license(_imp->string_value, _imp->env, *_imp->eapi, _imp->is_installed);
     return _imp->value;
 }
 
@@ -325,7 +329,7 @@ EFetchableURIKey::value() const
         return _imp->value;
 
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
-    _imp->value = parse_fetchable_uri(_imp->string_value, _imp->env, *_imp->id->eapi());
+    _imp->value = parse_fetchable_uri(_imp->string_value, _imp->env, *_imp->id->eapi(), _imp->id->is_installed());
     return _imp->value;
 }
 
@@ -406,16 +410,18 @@ namespace paludis
         const std::shared_ptr<const EAPIMetadataVariable> variable;
         const std::shared_ptr<const EAPI> eapi;
         const MetadataKeyType type;
+        const bool is_installed;
 
         Imp(const Environment * const e, const std::string & v,
                 const std::shared_ptr<const EAPIMetadataVariable> & m,
                 const std::shared_ptr<const EAPI> & p,
-                const MetadataKeyType t) :
+                const MetadataKeyType t, bool i) :
             env(e),
             string_value(v),
             variable(m),
             eapi(p),
-            type(t)
+            type(t),
+            is_installed(i)
         {
         }
     };
@@ -424,8 +430,9 @@ namespace paludis
 ESimpleURIKey::ESimpleURIKey(const Environment * const e,
         const std::shared_ptr<const EAPIMetadataVariable> & m,
         const std::shared_ptr<const EAPI> & p,
-        const std::string & v, const MetadataKeyType t) :
-    _imp(e, v, m, p, t)
+        const std::string & v, const MetadataKeyType t,
+        const bool i) :
+    _imp(e, v, m, p, t, i)
 {
 }
 
@@ -442,7 +449,7 @@ ESimpleURIKey::value() const
         return _imp->value;
 
     Context context("When parsing metadata key '" + raw_name() + "':");
-    _imp->value = parse_simple_uri(_imp->string_value, _imp->env, *_imp->eapi);
+    _imp->value = parse_simple_uri(_imp->string_value, _imp->env, *_imp->eapi, _imp->is_installed);
     return _imp->value;
 }
 
@@ -487,16 +494,18 @@ namespace paludis
         const std::shared_ptr<const EAPIMetadataVariable> variable;
         const std::shared_ptr<const EAPI> eapi;
         const MetadataKeyType type;
+        const bool is_installed;
 
         Imp(const Environment * const e, const std::string & v,
                 const std::shared_ptr<const EAPIMetadataVariable> & m,
                 const std::shared_ptr<const EAPI> & p,
-                const MetadataKeyType t) :
+                const MetadataKeyType t, bool i) :
             env(e),
             string_value(v),
             variable(m),
             eapi(p),
-            type(t)
+            type(t),
+            is_installed(i)
         {
         }
     };
@@ -505,8 +514,8 @@ namespace paludis
 EPlainTextSpecKey::EPlainTextSpecKey(const Environment * const e,
         const std::shared_ptr<const EAPIMetadataVariable> & m,
         const std::shared_ptr<const EAPI> & p,
-        const std::string & v, const MetadataKeyType t) :
-    _imp(e, v, m, p, t)
+        const std::string & v, const MetadataKeyType t, bool i) :
+    _imp(e, v, m, p, t, i)
 {
 }
 
@@ -523,7 +532,7 @@ EPlainTextSpecKey::value() const
         return _imp->value;
 
     Context context("When parsing metadata key '" + raw_name() + "':");
-    _imp->value = parse_plain_text(_imp->string_value, _imp->env, *_imp->eapi);
+    _imp->value = parse_plain_text(_imp->string_value, _imp->env, *_imp->eapi, _imp->is_installed);
     return _imp->value;
 }
 
@@ -568,17 +577,19 @@ namespace paludis
         const std::shared_ptr<const EAPIMetadataVariable> variable;
         const std::shared_ptr<const EAPI> eapi;
         const MetadataKeyType type;
+        const bool is_installed;
 
         Imp(const Environment * const e,
                 const std::string & v,
                 const std::shared_ptr<const EAPIMetadataVariable> & m,
                 const std::shared_ptr<const EAPI> & p,
-                const MetadataKeyType t) :
+                const MetadataKeyType t, const bool i) :
             env(e),
             string_value(v),
             variable(m),
             eapi(p),
-            type(t)
+            type(t),
+            is_installed(i)
         {
         }
     };
@@ -588,8 +599,9 @@ EMyOptionsKey::EMyOptionsKey(
         const Environment * const e,
         const std::shared_ptr<const EAPIMetadataVariable> & m,
         const std::shared_ptr<const EAPI> & p,
-        const std::string & v, const MetadataKeyType t) :
-    _imp(e, v, m, p, t)
+        const std::string & v, const MetadataKeyType t,
+        const bool i) :
+    _imp(e, v, m, p, t, i)
 {
 }
 
@@ -605,7 +617,7 @@ EMyOptionsKey::value() const
         return _imp->value;
 
     Context context("When parsing metadata key '" + raw_name() + "':");
-    _imp->value = parse_myoptions(_imp->string_value, _imp->env, *_imp->eapi);
+    _imp->value = parse_myoptions(_imp->string_value, _imp->env, *_imp->eapi, _imp->is_installed);
     return _imp->value;
 }
 
@@ -650,17 +662,20 @@ namespace paludis
         const std::shared_ptr<const EAPIMetadataVariable> variable;
         const std::shared_ptr<const EAPI> eapi;
         const MetadataKeyType type;
+        const bool is_installed;
 
         Imp(const Environment * const e,
                 const std::string & v,
                 const std::shared_ptr<const EAPIMetadataVariable> & m,
                 const std::shared_ptr<const EAPI> & p,
-                const MetadataKeyType t) :
+                const MetadataKeyType t,
+                bool i) :
             env(e),
             string_value(v),
             variable(m),
             eapi(p),
-            type(t)
+            type(t),
+            is_installed(i)
         {
         }
     };
@@ -670,8 +685,9 @@ ERequiredUseKey::ERequiredUseKey(
         const Environment * const e,
         const std::shared_ptr<const EAPIMetadataVariable> & m,
         const std::shared_ptr<const EAPI> & p,
-        const std::string & v, const MetadataKeyType t) :
-    _imp(e, v, m, p, t)
+        const std::string & v, const MetadataKeyType t,
+        const bool i) :
+    _imp(e, v, m, p, t, i)
 {
 }
 
@@ -687,7 +703,7 @@ ERequiredUseKey::value() const
         return _imp->value;
 
     Context context("When parsing metadata key '" + raw_name() + "':");
-    _imp->value = parse_required_use(_imp->string_value, _imp->env, *_imp->eapi);
+    _imp->value = parse_required_use(_imp->string_value, _imp->env, *_imp->eapi, _imp->is_installed);
     return _imp->value;
 }
 
@@ -732,17 +748,19 @@ namespace paludis
         const std::shared_ptr<const EAPIMetadataVariable> variable;
         const std::shared_ptr<const EAPI> eapi;
         const MetadataKeyType type;
+        const bool is_installed;
 
         Imp(const Environment * const e,
                 const std::string & v,
                 const std::shared_ptr<const EAPIMetadataVariable> & m,
                 const std::shared_ptr<const EAPI> & p,
-                const MetadataKeyType t) :
+                const MetadataKeyType t, bool i) :
             env(e),
             string_value(v),
             variable(m),
             eapi(p),
-            type(t)
+            type(t),
+            is_installed(i)
         {
         }
     };
@@ -752,8 +770,8 @@ EProvideKey::EProvideKey(
         const Environment * const e,
         const std::shared_ptr<const EAPIMetadataVariable> & m,
         const std::shared_ptr<const EAPI> & p,
-        const std::string & v, const MetadataKeyType t) :
-    _imp(e, v, m, p, t)
+        const std::string & v, const MetadataKeyType t, const bool i) :
+    _imp(e, v, m, p, t, i)
 {
 }
 
@@ -769,7 +787,7 @@ EProvideKey::value() const
         return _imp->value;
 
     Context context("When parsing metadata key '" + raw_name() + "':");
-    _imp->value = parse_provide(_imp->string_value, _imp->env, *_imp->eapi);
+    _imp->value = parse_provide(_imp->string_value, _imp->env, *_imp->eapi, _imp->is_installed);
     return _imp->value;
 }
 

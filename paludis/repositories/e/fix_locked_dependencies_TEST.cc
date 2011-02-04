@@ -64,7 +64,7 @@ namespace test_cases
             std::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string("paludis-1"));
 
             std::shared_ptr<const DependencySpecTree> bb(parse_depend(
-                        "|| ( foo/bar ( bar/baz oink/squeak ) ) blah/blah", &env, *eapi)),
+                        "|| ( foo/bar ( bar/baz oink/squeak ) ) blah/blah", &env, *eapi, false)),
                 aa(fix_locked_dependencies(&env, *eapi, id, bb));
 
             UnformattedPrettyPrinter ff;
@@ -77,7 +77,7 @@ namespace test_cases
             TEST_CHECK_STRINGIFY_EQUAL(a, b);
 
             std::shared_ptr<const DependencySpecTree> cc(parse_depend(
-                        "foo/bar:= cat/installed:= >=cat/installed-1.2:= <=cat/installed-1.2:=", &env, *eapi)),
+                        "foo/bar:= cat/installed:= >=cat/installed-1.2:= <=cat/installed-1.2:=", &env, *eapi, false)),
                 dd(fix_locked_dependencies(&env, *eapi, id, cc));
 
             SpecTreePrettyPrinter

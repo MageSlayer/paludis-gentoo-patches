@@ -55,6 +55,7 @@ namespace paludis
                 virtual const VersionSpec version() const;
                 virtual const RepositoryName repository_name() const;
                 virtual const std::shared_ptr<const EAPI> eapi() const;
+                virtual bool is_installed() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual const std::shared_ptr<const MetadataValueKey<SlotName> > slot_key() const;
                 virtual const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > > virtual_for_key() const;

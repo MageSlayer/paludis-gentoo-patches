@@ -49,7 +49,7 @@ namespace test_cases
             std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
             AAVisitor p1;
-            parse_fetchable_uri("( a -> b c x? ( d e ) )", &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"))->top()->accept(p1);
+            parse_fetchable_uri("( a -> b c x? ( d e ) )", &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(p1);
             TEST_CHECK_EQUAL(join(p1.begin(), p1.end(), " "), "b c d e");
         }
     } test_aa_visitor;
