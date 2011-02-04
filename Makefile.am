@@ -12,7 +12,7 @@ DISTCHECK_CONFIGURE_FLAGS = --enable-ruby --enable-ruby-doc --enable-vim \
 	--with-hacked-log-dir='$${DESTDIR}$${prefix}/log_dir' \
 	--with-repositories=default,accounts,gemcutter \
 	--with-environments=default,portage \
-	--with-clients=default,accerso,appareo,cave,inquisitio,instruo \
+	--with-clients=default,accerso,appareo,cave,instruo \
 	--with-default-distribution=giant-space-monkey \
 	--enable-htmltidy --enable-search-index
 

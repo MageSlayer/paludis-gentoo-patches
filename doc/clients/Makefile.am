@@ -156,16 +156,6 @@ $(CAVE_COMMANDS_HTML) : header.html.part footer.html.part
 	    fi ; } && \
 	    cat footer.html.part ; } > $@
 
-inquisitio.html : header.html.part footer.html.part
-	{ cat header.html.part && { \
-	    if test -x $(top_builddir)/src/clients/inquisitio/man-inquisitio ; then \
-	        $(top_builddir)/src/clients/inquisitio/man-inquisitio --html ; \
-	    else \
-	        echo "<h1>inquisitio</h1>"; \
-	        echo "<p>Sorry, documentation was generated without support for the inquisitio client.</p>" ; \
-	    fi ; } && \
-	    cat footer.html.part ; } > $@
-
 importare.html : header.html.part footer.html.part
 	{ cat header.html.part && { \
 	    if test -x $(top_builddir)/src/clients/importare/man-importare ; then \

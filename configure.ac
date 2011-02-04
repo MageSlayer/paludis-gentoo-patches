@@ -1513,7 +1513,7 @@ AC_DEFINE_UNQUOTED([DEFAULT_DISTRIBUTION], "$DEFAULT_DISTRIBUTION", [Default dis
 dnl }}}
 
 dnl {{{ clients
-ALL_CLIENTS="accerso adjutrix appareo cave importare inquisitio instruo paludis reconcilio"
+ALL_CLIENTS="accerso adjutrix appareo cave importare instruo paludis reconcilio"
 ALL_CLIENTS_HTML=""
 for a in $ALL_CLIENTS ; do
 	ALL_CLIENTS_HTML="$ALL_CLIENTS_HTML $a.html"
@@ -1531,7 +1531,6 @@ AC_ARG_WITH([clients],
 			  appareo         A tool for generating manifests
 			  cave            The modular Paludis client
 			  importare       On-the-fly unpackaged installer
-			  inquisitio      A search client
 			  instruo         A metadata generation client
 			  paludis         The Paludis console client
 			  reconcilio      A linkage repair tool],
@@ -1546,10 +1545,6 @@ BUILD_CLIENTS="$clients"
 AC_SUBST([ALL_CLIENTS])
 AC_SUBST([ALL_CLIENTS_HTML])
 AC_SUBST([BUILD_CLIENTS])
-
-if echo $clients | tr ' ' '\n' | grep '^inquisitio$' >/dev/null ; then
-	need_pcrecpp_check=yes
-fi
 
 if echo $clients | tr ' ' '\n' | grep '^cave$' >/dev/null ; then
 	need_resolver=yes
@@ -1599,7 +1594,7 @@ dnl }}}
 dnl {{{ pcrecpp check
 if test "x$need_pcrecpp_check" = "xyes" ; then
 	PKG_CHECK_MODULES(PCRECPPDEPS, [libpcrecpp >= 7.8], [],
-		[AC_MSG_ERROR([pcrecpp (http://www.pcre.org/) is required if --with-clients=inquisitio or --with-clients=cave is used])])
+		[AC_MSG_ERROR([pcrecpp (http://www.pcre.org/) is required if --with-clients=cave is used])])
 	AC_SUBST(PCRECPPDEPS_CFLAGS)
 	AC_SUBST(PCRECPPDEPS_LIBS)
 fi
@@ -1806,7 +1801,6 @@ AC_OUTPUT(
 	src/clients/appareo/Makefile
 	src/clients/cave/Makefile
 	src/clients/importare/Makefile
-	src/clients/inquisitio/Makefile
 	src/clients/instruo/Makefile
 	src/clients/paludis/Makefile
 	src/clients/reconcilio/Makefile
