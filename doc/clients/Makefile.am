@@ -166,16 +166,6 @@ instruo.html : header.html.part footer.html.part
 	    fi ; } && \
 	    cat footer.html.part ; } > $@
 
-reconcilio.html : header.html.part footer.html.part
-	{ cat header.html.part && { \
-	    if test -x $(top_builddir)/src/clients/reconcilio/man-reconcilio ; then \
-	        $(top_builddir)/src/clients/reconcilio/man-reconcilio --html ; \
-	    else \
-	        echo "<h1>reconcilio</h1>"; \
-	        echo "<p>Sorry, documentation was generated without support for the reconcilio client.</p>" ; \
-	    fi ; } && \
-	    cat footer.html.part ; } > $@
-
 header.html.part : $(srcdir)/../header.html.part.in toplinks.html.part
 	sed \
 	    -e 's,###TOPURI###,../,g' \

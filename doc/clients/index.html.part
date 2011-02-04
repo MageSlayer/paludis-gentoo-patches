@@ -13,7 +13,6 @@
 
 <ul>
     <li><a href="paludis.html">paludis</a>, the original console package management client.</li>
-    <li><a href="reconcilio.html">reconcilio</a>, a tool for rebuilding packages with broken linkage.</li>
 </ul>
 
 <p>For ebuild developers and distribution maintainers:</p>

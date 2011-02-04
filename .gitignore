@@ -140,7 +140,6 @@ paludis-*.*.*.tar.bz2
 /doc/clients/index.html
 /doc/clients/instruo.html
 /doc/clients/paludis.html
-/doc/clients/reconcilio.html
 /doc/clients/toplinks.html.part
 /doc/configuration/bashrc.html
 /doc/configuration/bashrc.html.part
@@ -504,7 +503,6 @@ paludis-*.*.*.tar.bz2
 /src/clients/cave/cave
 /src/clients/instruo/instruo
 /src/clients/paludis/paludis
-/src/clients/reconcilio/reconcilio
 /stamp-h1
 /test/test_fail_TEST
 /test/test_pass_TEST

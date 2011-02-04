@@ -84,7 +84,7 @@ namespace
         std::string str(source.operator() (varname)); /* silly 4.3 ICE */
         if (! str.empty())
         {
-            Log::get_instance()->message("reconcilio.broken_linkage_finder.config", ll_debug, lc_context)
+            Log::get_instance()->message("broken_linkage_finder.config", ll_debug, lc_context)
                 << "Got " << varname << "=\"" + str << "\"";
             tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(str, ":", "", create_inserter<T_>(std::back_inserter(vec)));
         }
@@ -98,7 +98,7 @@ namespace
         std::string str(source.operator() (varname)); /* silly 4.3 ICE */
         if (! str.empty())
         {
-            Log::get_instance()->message("reconcilio.broken_linkage_finder.config", ll_debug, lc_context)
+            Log::get_instance()->message("broken_linkage_finder.config", ll_debug, lc_context)
                 << "Got " << varname << "=\"" << str << "\"";
             tokenise_whitespace(str, create_inserter<T_>(std::back_inserter(vec)));
         }
@@ -133,7 +133,7 @@ namespace
         std::sort(vec.begin(), vec.end(), comparator);
         vec.erase(std::unique(vec.begin(), vec.end()), vec.end());
 
-        Log::get_instance()->message("reconcilio.broken_linkage_finder.config",
+        Log::get_instance()->message("broken_linkage_finder.config",
                 ll_debug, lc_context) << "Final " << varname << "=\"" <<
             join(vec.begin(), vec.end(),  " ") << "\"";
     }
@@ -177,10 +177,10 @@ namespace
                 }
 
                 else if (equals_ci("hwdep", tokens.at(0))) // XXX
-                    Log::get_instance()->message("reconcilio.broken_linkage_finder.etc_ld_so_conf.hwdep", ll_warning, lc_context)
+                    Log::get_instance()->message("broken_linkage_finder.etc_ld_so_conf.hwdep", ll_warning, lc_context)
                         << "'hwdep' line in '" << file << "' is not supported";
                 else if (std::string::npos != it->find('='))
-                    Log::get_instance()->message("reconcilio.broken_linkage_finder.etc_ld_so_conf.equals", ll_warning, lc_context)
+                    Log::get_instance()->message("broken_linkage_finder.etc_ld_so_conf.equals", ll_warning, lc_context)
                         << "'=' line in '" << file << "' is not supported";
 
                 else
@@ -189,7 +189,7 @@ namespace
         }
 
         else if (file_stat.exists())
-            Log::get_instance()->message("reconcilio.broken_linkage_finder.etc_ld_so_conf.not_a_file", ll_warning, lc_context)
+            Log::get_instance()->message("broken_linkage_finder.etc_ld_so_conf.not_a_file", ll_warning, lc_context)
                 << "'" << file << "' exists but is not a regular file";
     }
 }
@@ -213,7 +213,7 @@ BrokenLinkageConfiguration::BrokenLinkageConfiguration(const FSPath & root) :
     std::sort(_imp->ld_so_conf.begin(), _imp->ld_so_conf.end(), FSPathComparator());
     _imp->ld_so_conf.erase(std::unique(_imp->ld_so_conf.begin(), _imp->ld_so_conf.end()),
                            _imp->ld_so_conf.end());
-    Log::get_instance()->message("reconcilio.broken_linkage_finder.config",
+    Log::get_instance()->message("broken_linkage_finder.config",
             ll_debug, lc_context) << "Final ld.so.conf contents is \"" <<
         join(_imp->ld_so_conf.begin(), _imp->ld_so_conf.end(), " ") << "\"";
 }
@@ -275,12 +275,12 @@ Imp<BrokenLinkageConfiguration>::load_from_etc_revdep_rebuild(const FSPath & roo
                 from_string(fromfile, "SEARCH_DIRS_MASK", search_dirs_mask);
             }
             else
-                Log::get_instance()->message("reconcilio.broken_linkage_finder.failure", ll_warning, lc_context)
+                Log::get_instance()->message("broken_linkage_finder.failure", ll_warning, lc_context)
                     << "'" << *it << "' is not a regular file";
         }
     }
     else if (etc_revdep_rebuild_stat.exists())
-        Log::get_instance()->message("reconcilio.broken_linkage_finder.etc_revdep_rebuild.not_a_directory", ll_warning, lc_context)
+        Log::get_instance()->message("broken_linkage_finder.etc_revdep_rebuild.not_a_directory", ll_warning, lc_context)
             << "'" << etc_revdep_rebuild << "' exists but is not a directory";
 }
 
@@ -310,7 +310,7 @@ Imp<BrokenLinkageConfiguration>::load_from_etc_profile_env(const FSPath & root)
         from_colon_string(fromfile, "ROOTPATH", search_dirs);
     }
     else if (etc_profile_env_stat.exists())
-        Log::get_instance()->message("reconcilio.broken_linkage_finder.etc_profile_env.not_a_file", ll_warning, lc_context)
+        Log::get_instance()->message("broken_linkage_finder.etc_profile_env.not_a_file", ll_warning, lc_context)
             << "'" << etc_profile_env << "' exists but is not a regular file";
 }
 
@@ -329,7 +329,7 @@ Imp<BrokenLinkageConfiguration>::load_from_etc_ld_so_conf(const FSPath & root)
 
     if (res.begin() != res.end())
     {
-        Log::get_instance()->message("reconcilio.broken_linkage_finder.got", ll_debug, lc_context)
+        Log::get_instance()->message("broken_linkage_finder.got", ll_debug, lc_context)
                 << "Got " << join(res.begin(), res.end(), " ");
         std::copy(res.begin(), res.end(), create_inserter<FSPath>(std::back_inserter(search_dirs)));
         std::copy(res.begin(), res.end(), create_inserter<FSPath>(std::back_inserter(ld_so_conf)));
@@ -349,22 +349,22 @@ Imp<BrokenLinkageConfiguration>::add_defaults()
         "/lib*/modules");
     static const std::string default_ld_so_conf("/lib /usr/lib");
 
-    Log::get_instance()->message("reconcilio.broken_linkage_finder.config", ll_debug, lc_context)
+    Log::get_instance()->message("broken_linkage_finder.config", ll_debug, lc_context)
         << "Got LD_LIBRARY_MASK=\"" << default_ld_library_mask << "\"";
     tokenise_whitespace(
             default_ld_library_mask, std::back_inserter(ld_library_mask));
 
-    Log::get_instance()->message("reconcilio.broken_linkage_finder.config", ll_debug, lc_context)
+    Log::get_instance()->message("broken_linkage_finder.config", ll_debug, lc_context)
         << "Got SEARCH_DIRS=\"" << default_search_dirs << "\"";
     tokenise_whitespace(
             default_search_dirs, create_inserter<FSPath>(std::back_inserter(search_dirs)));
 
-    Log::get_instance()->message("reconcilio.broken_linkage_finder.config", ll_debug, lc_context)
+    Log::get_instance()->message("broken_linkage_finder.config", ll_debug, lc_context)
         << "Got SEARCH_DIRS_MASK=\"" << default_search_dirs_mask << "\"";
     tokenise_whitespace(
             default_search_dirs_mask, create_inserter<FSPath>(std::back_inserter(search_dirs_mask)));
 
-    Log::get_instance()->message("reconcilio.broken_linkage_finder.config", ll_debug, lc_context)
+    Log::get_instance()->message("broken_linkage_finder.config", ll_debug, lc_context)
         << "Default ld.so.conf contents is \"" << default_ld_so_conf << "\"";
     tokenise_whitespace(
             default_ld_so_conf, create_inserter<FSPath>(std::back_inserter(ld_so_conf)));

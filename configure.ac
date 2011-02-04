@@ -1513,26 +1513,25 @@ AC_DEFINE_UNQUOTED([DEFAULT_DISTRIBUTION], "$DEFAULT_DISTRIBUTION", [Default dis
 dnl }}}
 
 dnl {{{ clients
-ALL_CLIENTS="accerso adjutrix appareo cave instruo paludis reconcilio"
+ALL_CLIENTS="accerso adjutrix appareo cave instruo paludis"
 ALL_CLIENTS_HTML=""
 for a in $ALL_CLIENTS ; do
 	ALL_CLIENTS_HTML="$ALL_CLIENTS_HTML $a.html"
 done
-DEFAULT_CLIENTS="adjutrix cave paludis reconcilio"
+DEFAULT_CLIENTS="adjutrix cave paludis"
 AC_MSG_CHECKING([which clients to build...])
 AC_ARG_WITH([clients],
 			[  --with-clients=foo,bar,...
 			  Build the specified clients:
 			  all             All available clients
-			  default         Equivalent to adjutrix,cave,paludis,reconcilio
+			  default         Equivalent to adjutrix,cave,paludis
 
 			  accerso         A fetch / mirror client
 			  adjutrix        A tool for tree querying
 			  appareo         A tool for generating manifests
 			  cave            The modular Paludis client
 			  instruo         A metadata generation client
-			  paludis         The Paludis console client
-			  reconcilio      A linkage repair tool],
+			  paludis         The Paludis console client],
 			[clients="`echo $with_clients | tr ',' ' '`"],
 			[clients="$DEFAULT_CLIENTS"])
 clients=`echo $clients | tr ' ' '\n' \
@@ -1801,7 +1800,6 @@ AC_OUTPUT(
 	src/clients/cave/Makefile
 	src/clients/instruo/Makefile
 	src/clients/paludis/Makefile
-	src/clients/reconcilio/Makefile
 	src/output/Makefile
 	test/Makefile
 	vim/Makefile
