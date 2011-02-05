@@ -1745,7 +1745,6 @@ AC_OUTPUT(
 	paludis/Makefile
 	paludis/about.hh
 	paludis/args/Makefile
-	paludis/args/legacy/Makefile
 	paludis/distributions/Makefile
 	paludis/distributions/exherbo/Makefile
 	paludis/distributions/gentoo/Makefile
