@@ -18,10 +18,6 @@
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###clients/paludis.html">paludis</a>
-            </td>
-
-            <td class="currentpage">
                 <a href="###TOPURI###clients/accerso.html">accerso</a>
             </td>
         </tr>
@@ -29,10 +25,6 @@
         <tr>
             <td>
                 <a href="http://trac.pioto.org/paludis/">Bugs, Requests, Support</a>
-            </td>
-
-            <td class="currentpage">
-                &nbsp;
             </td>
 
             <td class="currentpage">
@@ -54,10 +46,6 @@
             </td>
 
             <td class="currentpage">
-                &nbsp;
-            </td>
-
-            <td class="currentpage">
                 <a href="###TOPURI###clients/instruo.html">instruo</a>
             </td>
         </tr>
@@ -65,10 +53,6 @@
         <tr>
             <td>
                 <a href="###TOPURI###faq/index.html">FAQ</a>
-            </td>
-
-            <td class="currentpage">
-                &nbsp;
             </td>
 
             <td class="currentpage">
@@ -92,10 +76,6 @@
             <td class="currentpage">
                 &nbsp;
             </td>
-
-            <td class="currentpage">
-                &nbsp;
-            </td>
         </tr>
 
         <tr>
@@ -110,19 +90,11 @@
             <td class="currentpage">
                 &nbsp;
             </td>
-
-            <td class="currentpage">
-                &nbsp;
-            </td>
         </tr>
 
         <tr>
             <td>
                 <a href="###TOPURI###api/index.html">API</a>
-            </td>
-
-            <td class="currentpage">
-                &nbsp;
             </td>
 
             <td class="currentpage">

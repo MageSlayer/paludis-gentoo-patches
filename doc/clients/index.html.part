@@ -9,12 +9,6 @@
     client.</li>
 </ul>
 
-<p>And the old clients, which are being phased out:</p>
-
-<ul>
-    <li><a href="paludis.html">paludis</a>, the original console package management client.</li>
-</ul>
-
 <p>For ebuild developers and distribution maintainers:</p>
 
 <ul>

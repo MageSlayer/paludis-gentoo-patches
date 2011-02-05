@@ -1,7 +1,5 @@
 MAINTAINERCLEANFILES = Makefile.in
-noinst_DATA = paludis adjutrix \
-	      accerso instruo \
-	      cave
+noinst_DATA = adjutrix accerso instruo cave
 EXTRA_DIST = $(noinst_DATA)
 
 AUTOMAKE_OPTIONS = 1.11 parallel-tests

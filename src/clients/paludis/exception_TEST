@@ -1,6 +1,0 @@
-#!/usr/bin/env bash
-
-PALUDIS_HOME=./ \
-    ./paludis --environment :paludis-build-test -pi asdf 2>&1 \
-    | grep 'configuration error' >/dev/null
-

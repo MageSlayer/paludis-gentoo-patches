@@ -134,12 +134,10 @@ paludis-*.*.*.tar.bz2
 /doc/clients/cave-uninstall.html
 /doc/clients/cave-update-world.html
 /doc/clients/cave-verify.html
-/doc/clients/contrarius.html
 /doc/clients/footer.html.part
 /doc/clients/header.html.part
 /doc/clients/index.html
 /doc/clients/instruo.html
-/doc/clients/paludis.html
 /doc/clients/toplinks.html.part
 /doc/configuration/bashrc.html
 /doc/configuration/bashrc.html.part
@@ -502,7 +500,6 @@ paludis-*.*.*.tar.bz2
 /src/clients/appareo/appareo
 /src/clients/cave/cave
 /src/clients/instruo/instruo
-/src/clients/paludis/paludis
 /stamp-h1
 /test/test_fail_TEST
 /test/test_pass_TEST

@@ -94,16 +94,6 @@ HTML_LOG_COMPILER = $(LOG_COMPILER)
 index.html : header.html.part $(srcdir)/index.html.part footer.html.part
 	cat header.html.part $(srcdir)/index.html.part footer.html.part > $@
 
-paludis.html : header.html.part footer.html.part
-	{ cat header.html.part && { \
-	    if test -x $(top_builddir)/src/clients/paludis/man-paludis ; then \
-	        $(top_builddir)/src/clients/paludis/man-paludis --html ; \
-	    else \
-	        echo "<h1>paludis</h1>"; \
-	        echo "<p>Sorry, documentation was generated without support for the paludis client.</p>" ; \
-	    fi ; } && \
-	    cat footer.html.part ; } > $@
-
 accerso.html : header.html.part footer.html.part
 	{ cat header.html.part && { \
 	    if test -x $(top_builddir)/src/clients/accerso/man-accerso ; then \
