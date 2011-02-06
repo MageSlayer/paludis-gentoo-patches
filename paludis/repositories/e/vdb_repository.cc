@@ -57,7 +57,6 @@
 #include <paludis/unformatted_pretty_printer.hh>
 
 #include <paludis/util/accept_visitor.hh>
-#include <paludis/util/fast_unique_copy.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/log.hh>

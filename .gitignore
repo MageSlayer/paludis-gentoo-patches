@@ -439,8 +439,6 @@ paludis-*.*.*.tar.bz2
 /paludis/util/echo_functions.bash
 /paludis/util/enum_iterator_TEST
 /paludis/util/extract_host_from_url_TEST
-/paludis/util/fast_unique_copy_TEST
-/paludis/util/forward_parallel_for_each_TEST
 /paludis/util/fs_entry_TEST
 /paludis/util/fs_iterator_TEST
 /paludis/util/fs_path_TEST
