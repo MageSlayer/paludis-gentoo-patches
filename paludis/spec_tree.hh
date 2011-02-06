@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -22,9 +22,9 @@
 
 #include <paludis/spec_tree-fwd.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
-#include <paludis/util/select.hh>
 #include <paludis/util/simple_visitor.hh>
 #include <paludis/util/sequence.hh>
+#include <type_traits>
 
 namespace paludis
 {
@@ -154,15 +154,15 @@ namespace paludis
             template <typename Node_>
             struct NodeType
             {
-                typedef typename Select<
+                typedef typename std::conditional<
                     TypeListContains<VisitableTypeList, typename LeafNodeType<Node_>::Type>::value,
                     typename SpecTree::template LeafNodeType<Node_>::Type,
-                    typename Select<
+                    typename std::conditional<
                         TypeListContains<VisitableTypeList, typename InnerNodeType<Node_>::Type>::value,
                         typename InnerNodeType<Node_>::Type,
                         spec_tree_internals::TreeCannotContainNodeType<SpecTree, Node_>
-                            >::Type
-                    >::Type Type;
+                            >::type
+                    >::type Type;
             };
 
             explicit SpecTree(const std::shared_ptr<RootNode_> & spec);
