@@ -51,7 +51,6 @@
 #include <paludis/package_id.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/set_file.hh>
-#include <paludis/dep_tag.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/repository_factory.hh>
@@ -932,7 +931,6 @@ PortageEnvironment::_add_string_to_world(const std::string & s) const
                 n::file_name() = _imp->world_file,
                 n::parser() = std::bind(&parse_user_package_dep_spec, _1, this, UserPackageDepSpecOptions() + updso_no_disambiguation, filter::All()),
                 n::set_operator_mode() = sfsmo_natural,
-                n::tag() = std::shared_ptr<DepTag>(),
                 n::type() = sft_simple
             ));
     bool result(world.add(s));
@@ -959,7 +957,6 @@ PortageEnvironment::_remove_string_from_world(const std::string & s) const
                 n::parser() = std::bind(&parse_user_package_dep_spec, _1, this,
                         UserPackageDepSpecOptions() + updso_no_disambiguation, filter::All()),
                 n::set_operator_mode() = sfsmo_natural,
-                n::tag() = std::shared_ptr<DepTag>(),
                 n::type() = sft_simple
                 ));
 
@@ -1027,14 +1024,12 @@ namespace
             return std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>());
         }
 
-        const std::shared_ptr<GeneralSetDepTag> tag(std::make_shared<GeneralSetDepTag>(SetName("world::environment"), "Environment"));
         SetFile world(make_named_values<SetFileParams>(
                     n::environment() = env,
                     n::file_name() = f,
                     n::parser() = std::bind(&parse_user_package_dep_spec, std::placeholders::_1,
                             env, UserPackageDepSpecOptions() + updso_no_disambiguation, filter::All()),
                     n::set_operator_mode() = sfsmo_natural,
-                    n::tag() = tag,
                     n::type() = sft_simple
                     ));
         return world.contents();

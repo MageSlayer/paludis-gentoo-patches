@@ -45,7 +45,6 @@
 #include <paludis/environment.hh>
 #include <paludis/set_file.hh>
 #include <paludis/hook.hh>
-#include <paludis/dep_tag.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/generator.hh>
 #include <paludis/filter.hh>

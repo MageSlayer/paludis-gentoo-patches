@@ -23,7 +23,6 @@ IF_RUBY_TESTS = \
 	choice_TEST.rb \
 	contents_TEST.rb \
 	dep_spec_TEST.rb \
-	dep_tag_TEST.rb \
 	environment_TEST.rb \
 	filter_TEST.rb \
 	filtered_generator_TEST.rb \
@@ -43,7 +42,6 @@ IF_RUBY_SOURCES = \
 	contents.cc \
 	dep_label.cc \
 	dep_spec.cc \
-	dep_tag.cc \
 	environment.cc \
 	filter.cc \
 	filtered_generator.cc \
@@ -68,7 +66,6 @@ EXTRA_DIST = $(IF_RUBY_TESTS) $(IF_RUBY_SOURCES) \
 	paludis_ruby_so.cc \
 	choice_TEST_setup.sh choice_TEST_cleanup.sh \
 	dep_spec_TEST_setup.sh dep_spec_TEST_cleanup.sh \
-	dep_tag_TEST_setup.sh dep_tag_TEST_cleanup.sh \
 	environment_TEST_setup.sh environment_TEST_cleanup.sh \
 	generator_TEST_setup.sh generator_TEST_cleanup.sh \
 	nice_names.nn \

@@ -30,7 +30,6 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
-#include <paludis/dep_tag.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/action.hh>
 #include <paludis/package_id.hh>

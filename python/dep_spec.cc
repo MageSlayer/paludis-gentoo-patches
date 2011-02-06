@@ -23,7 +23,6 @@
 #include <python/options.hh>
 #include <python/nice_names-nn.hh>
 
-#include <paludis/dep_tag.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/environment.hh>
 #include <paludis/user_dep_spec.hh>
@@ -82,7 +81,6 @@ namespace paludis
         std::shared_ptr<const RepositoryName> in_repository;
         std::shared_ptr<const RepositoryName> from_repository;
         std::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements;
-        std::shared_ptr<const DepTag> tag;
         const std::string str;
 
         Imp(
@@ -95,7 +93,6 @@ namespace paludis
                 const std::shared_ptr<const RepositoryName> & ri,
                 const std::shared_ptr<const RepositoryName> & rf,
                 const std::shared_ptr<const AdditionalPackageDepSpecRequirements> & u,
-                const std::shared_ptr<const DepTag> & t,
                 const std::string & st) :
             package_ptr(q),
             category_name_part_ptr(c),
@@ -106,7 +103,6 @@ namespace paludis
             in_repository(ri),
             from_repository(rf),
             additional_requirements(u),
-            tag(t),
             str(st)
         {
         }
@@ -235,7 +231,6 @@ PythonPackageDepSpec::PythonPackageDepSpec(const PackageDepSpec & p) :
             deep_copy(p.in_repository_ptr()),
             deep_copy(p.from_repository_ptr()),
             p.additional_requirements_ptr(),
-            p.tag(),
             stringify(p))
 {
     if (p.version_requirements_ptr())
@@ -257,7 +252,6 @@ PythonPackageDepSpec::PythonPackageDepSpec(const PythonPackageDepSpec & p) :
             deep_copy(p.in_repository_ptr()),
             deep_copy(p.from_repository_ptr()),
             p.additional_requirements_ptr(),
-            p.tag(),
             p.py_str())
 {
     std::copy(p.version_requirements_ptr()->begin(), p.version_requirements_ptr()->end(),
@@ -375,22 +369,10 @@ PythonPackageDepSpec::additional_requirements_ptr() const
     return _imp->additional_requirements;
 }
 
-std::shared_ptr<const DepTag>
-PythonPackageDepSpec::tag() const
-{
-    return _imp->tag;
-}
-
 std::string
 PythonPackageDepSpec::py_str() const
 {
     return _imp->str;
-}
-
-void
-PythonPackageDepSpec::set_tag(const std::shared_ptr<const DepTag> & s)
-{
-    _imp->tag = s;
 }
 
 PythonPlainTextDepSpec::PythonPlainTextDepSpec(const std::string & s) :

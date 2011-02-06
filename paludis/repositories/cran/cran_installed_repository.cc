@@ -21,7 +21,6 @@
 #include <paludis/environment.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/dep_spec.hh>
-#include <paludis/dep_tag.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/set_file.hh>
 #include <paludis/action.hh>

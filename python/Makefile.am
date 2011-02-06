@@ -30,7 +30,6 @@ IF_PYTHON_TESTS = \
 	choices_TEST.py \
 	dep_label_TEST.py \
 	dep_spec_TEST.py \
-	dep_tag_TEST.py \
 	environment_TEST.py \
 	filter_TEST.py \
 	filtered_generator_TEST.py \
@@ -58,7 +57,6 @@ IF_PYTHON_SOURCES = \
 	contents.cc \
 	dep_label.cc \
 	dep_spec.hh dep_spec.cc \
-	dep_tag.cc \
 	environment.cc \
 	exception.hh exception.cc \
 	filter.cc \

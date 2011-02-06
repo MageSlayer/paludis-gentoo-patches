@@ -530,11 +530,9 @@ namespace paludis
     struct Imp<PackageDepSpec>
     {
         const std::shared_ptr<const PackageDepSpecData> data;
-        std::shared_ptr<const DepTag> tag;
 
-        Imp(const std::shared_ptr<const PackageDepSpecData> & d, const std::shared_ptr<const DepTag> & t) :
-            data(d),
-            tag(t)
+        Imp(const std::shared_ptr<const PackageDepSpecData> & d) :
+            data(d)
         {
         }
     };
@@ -543,7 +541,7 @@ namespace paludis
 PackageDepSpec::PackageDepSpec(const std::shared_ptr<const PackageDepSpecData> & d) :
     Cloneable<DepSpec>(),
     StringDepSpec(d->as_string()),
-    _imp(d, std::shared_ptr<const DepTag>())
+    _imp(d)
 {
 }
 
@@ -555,7 +553,7 @@ PackageDepSpec::PackageDepSpec(const PackageDepSpec & d) :
     Cloneable<DepSpec>(d),
     StringDepSpec(d._imp->data->as_string()),
     CloneUsingThis<DepSpec, PackageDepSpec>(d),
-    _imp(d._imp->data, d._imp->tag)
+    _imp(d._imp->data)
 {
     set_annotations(d.maybe_annotations());
 }
@@ -630,18 +628,6 @@ std::shared_ptr<const AdditionalPackageDepSpecRequirements>
 PackageDepSpec::additional_requirements_ptr() const
 {
     return _imp->data->additional_requirements_ptr();
-}
-
-std::shared_ptr<const DepTag>
-PackageDepSpec::tag() const
-{
-    return _imp->tag;
-}
-
-void
-PackageDepSpec::set_tag(const std::shared_ptr<const DepTag> & s)
-{
-    _imp->tag = s;
 }
 
 std::string

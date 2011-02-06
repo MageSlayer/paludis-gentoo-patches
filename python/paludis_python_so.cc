@@ -38,7 +38,6 @@ BOOST_PYTHON_MODULE(paludis)
     expose_contents();
     expose_filter(); /* must be before dep_spec */
     expose_dep_spec();
-    expose_dep_tag();
     expose_dep_label();
     expose_name();
     expose_log();

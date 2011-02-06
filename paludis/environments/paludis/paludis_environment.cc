@@ -33,7 +33,6 @@
 #include <paludis/hook.hh>
 #include <paludis/set_file.hh>
 #include <paludis/distribution.hh>
-#include <paludis/dep_tag.hh>
 #include <paludis/package_id.hh>
 #include <paludis/mask.hh>
 #include <paludis/user_dep_spec.hh>
@@ -526,15 +525,12 @@ namespace
     {
         Context context("When making set '" + stringify(f) + "':");
 
-        const std::shared_ptr<GeneralSetDepTag> tag(std::make_shared<GeneralSetDepTag>(n, stringify(f.basename())));
-
         SetFile s(make_named_values<SetFileParams>(
                     n::environment() = env,
                     n::file_name() = f,
                     n::parser() = std::bind(&parse_user_package_dep_spec, std::placeholders::_1, env,
                         UserPackageDepSpecOptions() + updso_allow_wildcards, filter::All()),
                     n::set_operator_mode() = mode,
-                    n::tag() = tag,
                     n::type() = type
                     ));
         return s.contents();

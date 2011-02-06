@@ -40,7 +40,6 @@
 #include <paludis/util/fs_stat.hh>
 
 #include <paludis/choice.hh>
-#include <paludis/dep_tag.hh>
 #include <paludis/environment.hh>
 #include <paludis/match_package.hh>
 #include <paludis/distribution.hh>
@@ -93,10 +92,9 @@ namespace paludis
         const std::shared_ptr<Set<std::string> > use_expand_values;
 
         const std::shared_ptr<SetSpecTree> system_packages;
-        const std::shared_ptr<GeneralSetDepTag> system_tag;
 
         Imp(const Environment * const e, const ERepository * const p,
-                const RepositoryName & name, const FSPathSequence &,
+                const RepositoryName &, const FSPathSequence &,
                 const std::string &, const bool) :
             env(e),
             repository(p),
@@ -114,8 +112,7 @@ namespace paludis
             use_expand_implicit(std::make_shared<Set<std::string>>()),
             iuse_implicit(std::make_shared<Set<std::string>>()),
             use_expand_values(std::make_shared<Set<std::string>>()),
-            system_packages(std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>())),
-            system_tag(std::make_shared<GeneralSetDepTag>(SetName("system"), stringify(name)))
+            system_packages(std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>()))
         {
             environment_variables["CONFIG_PROTECT"] = getenv_with_default("CONFIG_PROTECT", "/etc");
             environment_variables["CONFIG_PROTECT_MASK"] = getenv_with_default("CONFIG_PROTECT_MASK", "");
@@ -162,7 +159,6 @@ ExheresProfile::ExheresProfile(
                             i->first->supported()->package_dep_spec_parse_options(),
                             i->first->supported()->version_spec_options())));
 
-            spec->set_tag(_imp->system_tag);
             _imp->system_packages->top()->append(spec);
         }
 

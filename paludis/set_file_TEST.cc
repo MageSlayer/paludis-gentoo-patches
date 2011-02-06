@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -76,7 +76,6 @@ namespace test_cases
                         n::file_name() = FSPath("set_file_TEST_dir/simple1"),
                         n::parser() = std::bind(&parse_user_package_dep_spec, _1, &env, UserPackageDepSpecOptions(), filter::All()),
                         n::set_operator_mode() = sfsmo_natural,
-                        n::tag() = std::shared_ptr<DepTag>(),
                         n::type() = sft_simple
                         ));
 
@@ -143,7 +142,6 @@ namespace test_cases
                         n::file_name() = FSPath("set_file_TEST_dir/paludisconf1"),
                         n::parser() = std::bind(&parse_user_package_dep_spec, _1, &env, UserPackageDepSpecOptions(), filter::All()),
                         n::set_operator_mode() = sfsmo_natural,
-                        n::tag() = std::shared_ptr<DepTag>(),
                         n::type() = sft_paludis_conf
                         ));
 
@@ -213,7 +211,6 @@ namespace test_cases
                         n::file_name() = FSPath("set_file_TEST_dir/override"),
                         n::parser() = std::bind(&parse_user_package_dep_spec, _1, &env, UserPackageDepSpecOptions(), filter::All()),
                         n::set_operator_mode() = sfsmo_natural,
-                        n::tag() = std::shared_ptr<DepTag>(),
                         n::type() = sft_paludis_conf
                         ));
 
@@ -228,7 +225,6 @@ namespace test_cases
                         n::file_name() = FSPath("set_file_TEST_dir/override"),
                         n::parser() = std::bind(&parse_user_package_dep_spec, _1, &env, UserPackageDepSpecOptions(), filter::All()),
                         n::set_operator_mode() = sfsmo_star,
-                        n::tag() = std::shared_ptr<DepTag>(),
                         n::type() = sft_paludis_conf
                         ));
 

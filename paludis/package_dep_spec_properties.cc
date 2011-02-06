@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -51,7 +51,6 @@ paludis::package_dep_spec_has_properties(const PackageDepSpec & spec, const Pack
     result = result && check(bool(spec.package_ptr()), properties.has_package());
     result = result && check(bool(spec.package_name_part_ptr()), properties.has_package_name_part());
     result = result && check(bool(spec.slot_requirement_ptr()), properties.has_slot_requirement());
-    result = result && check(bool(spec.tag()), properties.has_tag());
     result = result && check(spec.version_requirements_ptr() && ! spec.version_requirements_ptr()->empty(), properties.has_version_requirements());
 
     return result;

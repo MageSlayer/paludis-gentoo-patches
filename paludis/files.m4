@@ -31,7 +31,6 @@ add(`dep_spec',                                    `hh', `cc', `test', `fwd', `s
 add(`dep_spec_annotations',                        `hh', `cc', `fwd', `se')
 add(`dep_spec_data',                               `hh', `cc', `fwd')
 add(`dep_spec_flattener',                          `hh', `cc')
-add(`dep_tag',                                     `hh', `cc', `fwd')
 add(`distribution',                                `hh', `cc', `impl', `fwd')
 add(`elf_linkage_checker',                         `hh', `cc')
 add(`elike_choices',                               `hh', `cc', `fwd', `se')

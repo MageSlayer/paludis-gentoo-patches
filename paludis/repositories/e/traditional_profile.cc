@@ -46,7 +46,6 @@
 #include <paludis/util/make_null_shared_ptr.hh>
 
 #include <paludis/choice.hh>
-#include <paludis/dep_tag.hh>
 #include <paludis/environment.hh>
 #include <paludis/match_package.hh>
 #include <paludis/distribution.hh>
@@ -151,7 +150,6 @@ namespace paludis
             ///\{
 
             std::shared_ptr<SetSpecTree> system_packages;
-            std::shared_ptr<GeneralSetDepTag> system_tag;
 
             ///\}
 
@@ -199,7 +197,6 @@ namespace paludis
                 repository(p),
                 profiles_with_parents(std::make_shared<FSPathSequence>()),
                 system_packages(std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>())),
-                system_tag(std::make_shared<GeneralSetDepTag>(SetName("system"), stringify(name))),
                 virtuals(std::make_shared<Map<QualifiedPackageName, PackageDepSpec>>()),
                 use_expand(std::make_shared<Set<std::string>>()),
                 use_expand_hidden(std::make_shared<Set<std::string>>()),
@@ -583,7 +580,6 @@ Imp<TraditionalProfile>::make_vars_from_file_vars()
                                 i->first->supported()->package_dep_spec_parse_options(),
                                 i->first->supported()->version_spec_options())));
 
-                spec->set_tag(system_tag);
                 system_packages->top()->append(spec);
             }
     }

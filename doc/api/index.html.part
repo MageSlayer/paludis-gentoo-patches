@@ -93,13 +93,6 @@ how concepts map on to different language bindings.</p>
         <td>How to use DepSpecFlattener</td>
     </tr>
     <tr>
-        <td>example_dep_tag</td>
-        <td><a href="cplusplus/examples.html">C++</a></td>
-        <td></td>
-        <td></td>
-        <td>How to handle dependency tags</td>
-    </tr>
-    <tr>
         <td>example_dep_tree</td>
         <td><a href="cplusplus/examples.html">C++</a></td>
         <td><a href="ruby/example_dep_tree.html">Ruby</a></td>

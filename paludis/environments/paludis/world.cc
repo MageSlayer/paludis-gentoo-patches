@@ -27,7 +27,6 @@
 #include <paludis/util/fs_stat.hh>
 #include <paludis/set_file.hh>
 #include <paludis/user_dep_spec.hh>
-#include <paludis/dep_tag.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
 #include <functional>
 
@@ -121,7 +120,6 @@ World::_add_string_to_world(const std::string & n) const
                 n::file_name() = *_imp->maybe_world_file,
                 n::parser() = std::bind(&parse_user_package_dep_spec, _1, _imp->env, UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set, filter::All()),
                 n::set_operator_mode() = sfsmo_natural,
-                n::tag() = std::shared_ptr<DepTag>(),
                 n::type() = sft_simple
                 ));
     bool result(world.add(n));
@@ -154,7 +152,6 @@ World::_remove_string_from_world(const std::string & n) const
                 n::file_name() = *_imp->maybe_world_file,
                 n::parser() = std::bind(&parse_user_package_dep_spec, _1, _imp->env, UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set, filter::All()),
                 n::set_operator_mode() = sfsmo_natural,
-                n::tag() = std::shared_ptr<DepTag>(),
                 n::type() = sft_simple
                 ));
 
@@ -177,8 +174,6 @@ World::world_set() const
 {
     using namespace std::placeholders;
 
-    std::shared_ptr<GeneralSetDepTag> tag(std::make_shared<GeneralSetDepTag>(SetName("world"), "Environment"));
-
     if (_imp->maybe_world_file)
     {
         if (_imp->maybe_world_file->stat().exists())
@@ -188,7 +183,6 @@ World::world_set() const
                     n::file_name() = *_imp->maybe_world_file,
                     n::parser() = std::bind(&parse_user_package_dep_spec, _1, _imp->env, UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set, filter::All()),
                     n::set_operator_mode() = sfsmo_natural,
-                    n::tag() = tag,
                     n::type() = sft_simple
                     ));
             return world.contents();

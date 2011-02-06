@@ -581,37 +581,6 @@ namespace
 
     /*
      * call-seq:
-     *     tag -> DepTag or Nil
-     *
-     * Fetch the dep tag.
-     */
-    VALUE
-    package_dep_spec_tag(VALUE self)
-    {
-        std::shared_ptr<WrappedSpecBase> * ptr;
-        Data_Get_Struct(self, std::shared_ptr<WrappedSpecBase>, ptr);
-        if (! bool(std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->tag()))
-            return Qnil;
-        return dep_tag_to_value(std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->tag());
-    }
-
-    /*
-     * call-seq:
-     *     tag=(dep_tag) -> Qnil
-     *
-     * Set the dep tag.
-     */
-    VALUE
-    package_dep_spec_set_tag(VALUE self, VALUE dep_tag)
-    {
-        std::shared_ptr<WrappedSpecBase> * ptr;
-        Data_Get_Struct(self, std::shared_ptr<WrappedSpecBase>, ptr);
-        (std::static_pointer_cast<WrappedSpec<PackageDepSpec> >(*ptr))->spec()->set_tag(value_to_dep_tag(dep_tag));
-        return Qnil;
-    }
-
-    /*
-     * call-seq:
      *     package -> QualifiedPackageName or Nil
      *
      * Fetch the package name.
@@ -1157,8 +1126,6 @@ namespace
 #ifdef CIARANM_REMOVED_THIS
         rb_define_method(c_package_dep_spec, "use_requirements", RUBY_FUNC_CAST(&package_dep_spec_use_requirements), 0);
 #endif
-        rb_define_method(c_package_dep_spec, "tag", RUBY_FUNC_CAST(&package_dep_spec_tag), 0);
-        rb_define_method(c_package_dep_spec, "tag=", RUBY_FUNC_CAST(&package_dep_spec_set_tag), 1);
         VALUE (* package_dep_spec_to_s) (VALUE) = &dep_spec_to_s<PackageDepSpec>;
         rb_define_method(c_package_dep_spec, "to_s", RUBY_FUNC_CAST(package_dep_spec_to_s), 0);
 

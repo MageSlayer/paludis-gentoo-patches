@@ -222,8 +222,6 @@ namespace
                 else
                 {
                     std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(params.parser()(tokens.at(1))));
-                    if (params.tag())
-                        spec->set_tag(params.tag());
                     result->top()->append(spec);
                 }
             }
@@ -237,9 +235,6 @@ namespace
                 }
 
                 std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(params.parser()(tokens.at(1))));
-                if (params.tag())
-                    spec->set_tag(params.tag());
-
                 if (spec->package_ptr())
                 {
                     if (! params.environment())
@@ -264,9 +259,6 @@ namespace
                 }
 
                 std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(params.parser()(tokens.at(1))));
-                if (params.tag())
-                    spec->set_tag(params.tag());
-
                 if (spec->package_ptr())
                 {
                     if (! params.environment())
@@ -346,8 +338,6 @@ SimpleHandler::_create_contents() const
             else
             {
                 std::shared_ptr<PackageDepSpec> p(std::make_shared<PackageDepSpec>(_p.parser()(stringify(*i))));
-                if (_p.tag())
-                    p->set_tag(_p.tag());
                 _contents->top()->append(p);
             }
         }

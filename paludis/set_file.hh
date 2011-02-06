@@ -28,7 +28,6 @@
 #include <paludis/name.hh>
 #include <paludis/spec_tree.hh>
 #include <paludis/dep_spec-fwd.hh>
-#include <paludis/dep_tag-fwd.hh>
 #include <functional>
 #include <iosfwd>
 
@@ -72,7 +71,6 @@ namespace paludis
         NamedValue<n::file_name, FSPath> file_name;
         NamedValue<n::parser, std::function<PackageDepSpec (const std::string &)> > parser;
         NamedValue<n::set_operator_mode, SetFileSetOperatorMode> set_operator_mode;
-        NamedValue<n::tag, std::shared_ptr<const DepTag> > tag;
         NamedValue<n::type, SetFileType> type;
     };
 

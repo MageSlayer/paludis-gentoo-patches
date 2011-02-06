@@ -38,7 +38,6 @@
 #include <paludis/util/fs_stat.hh>
 #include <paludis/action.hh>
 #include <paludis/environment.hh>
-#include <paludis/dep_tag.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/user_dep_spec.hh>

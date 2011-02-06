@@ -182,8 +182,6 @@ namespace paludis
                 std::shared_ptr<const RepositoryName> in_repository_ptr() const;
                 std::shared_ptr<const RepositoryName> from_repository_ptr() const;
                 std::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements_ptr() const;
-                std::shared_ptr<const DepTag> tag() const;
-                void set_tag(const std::shared_ptr<const DepTag> & s);
 
                 std::string py_str() const;
         };

@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # vim: set sw=4 sts=4 et tw=80 :
 #
-# Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+# Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
 # Copyright (c) 2007 Richard Brown
 #
 # This file is part of the Paludis package manager. Paludis is free software;
@@ -233,22 +233,6 @@ module Paludis
 ###            assert_equal 'b', pda.use_requirements[1][:flag]
 ###            assert_equal false, pda.use_requirements[1][:state]
 ###        end
-
-        def test_tag
-            assert_nil pda.tag
-            assert_nil pdb.tag
-            assert_nil pdc.tag
-            assert_nil pdd.tag
-            assert_nil pde.tag
-
-            my_pda = pda
-            my_pda.tag = TargetDepTag.new
-            assert_kind_of TargetDepTag, my_pda.tag
-
-            assert_raise TypeError do
-                pdb.tag = 42
-            end
-        end
     end
 
     class TestCase_PlainTextDepSpec < Test::Unit::TestCase

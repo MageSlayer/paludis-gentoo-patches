@@ -26,7 +26,6 @@
 
 #include <paludis/action-fwd.hh>
 #include <paludis/dep_spec.hh>
-#include <paludis/dep_tag.hh>
 #include <paludis/elike_slot_requirement.hh>
 #include <paludis/environment.hh>
 #include <paludis/filter.hh>
@@ -116,8 +115,6 @@ ERepositorySets::package_set(const SetName & ss) const
 
     if ((_imp->params.setsdir() / (stringify(s.first) + ".conf")).stat().exists())
     {
-        std::shared_ptr<GeneralSetDepTag> tag(std::make_shared<GeneralSetDepTag>(ss, stringify(_imp->e_repository->name())));
-
         FSPath ff(_imp->params.setsdir() / (stringify(s.first) + ".conf"));
         Context context("When loading package set '" + stringify(s.first) + "' from '" + stringify(ff) + "':");
 
@@ -126,7 +123,6 @@ ERepositorySets::package_set(const SetName & ss) const
                     n::file_name() = ff,
                     n::parser() = std::bind(&parse_user_package_dep_spec, _1, _imp->environment, UserPackageDepSpecOptions() + updso_no_disambiguation + updso_throw_if_set, filter::All()),
                     n::set_operator_mode() = s.second,
-                    n::tag() = tag,
                     n::type() = sft_paludis_conf
                     ));
 
@@ -258,8 +254,6 @@ ERepositorySets::security_set(bool insecurity) const
     if (!_imp->params.securitydir().stat().is_directory_or_symlink_to_directory())
         return security_packages;
 
-    std::map<std::string, std::shared_ptr<GLSADepTag> > glsa_tags;
-
     for (FSIterator f(_imp->params.securitydir(), { }), f_end ; f != f_end; ++f)
     {
         if (! is_file_with_prefix_extension(*f, "glsa-", ".xml", { }))
@@ -298,10 +292,6 @@ ERepositorySets::security_set(bool insecurity) const
                     if (! is_vulnerable(*glsa_pkg, **c, ver_options, pds_options))
                         continue;
 
-                    if (glsa_tags.end() == glsa_tags.find(glsa->id()))
-                        glsa_tags.insert(std::make_pair(glsa->id(), std::shared_ptr<GLSADepTag>(
-                                        std::make_shared<GLSADepTag>(glsa->id(), glsa->title(), *f))));
-
                     if (insecurity)
                     {
                         std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(
@@ -311,7 +301,6 @@ ERepositorySets::security_set(bool insecurity) const
                                             n::version_operator() = vo_equal,
                                             n::version_spec() = (*c)->version()))
                                     .in_repository((*c)->repository_name())));
-                        spec->set_tag(glsa_tags.find(glsa->id())->second);
                         security_packages->top()->append(spec);
                     }
                     else
@@ -344,7 +333,6 @@ ERepositorySets::security_set(bool insecurity) const
                                                 n::version_operator() = vo_equal,
                                                 n::version_spec() = (*r)->version()))
                                         .in_repository((*r)->repository_name())));
-                            spec->set_tag(glsa_tags.find(glsa->id())->second);
                             security_packages->top()->append(spec);
                             ok = true;
                             break;

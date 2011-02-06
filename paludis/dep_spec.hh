@@ -30,7 +30,6 @@
 #include <paludis/changed_choices-fwd.hh>
 #include <paludis/dep_label.hh>
 #include <paludis/dep_spec-fwd.hh>
-#include <paludis/dep_tag-fwd.hh>
 #include <paludis/name.hh>
 #include <paludis/version_operator-fwd.hh>
 #include <paludis/version_requirements-fwd.hh>
@@ -54,7 +53,6 @@
  *
  * - \ref example_dep_spec.cc "example_dep_spec.cc" (for specifications)
  * - \ref example_dep_label.cc "example_dep_label.cc" (for labels)
- * - \ref example_dep_tag.cc "example_dep_tag.cc" (for tags)
  */
 
 namespace paludis
@@ -413,16 +411,6 @@ namespace paludis
              * Fetch any additional requirements (may be a zero pointer).
              */
             std::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements_ptr() const;
-
-            /**
-             * Fetch our tag.
-             */
-            std::shared_ptr<const DepTag> tag() const;
-
-            /**
-             * Set our tag.
-             */
-            void set_tag(const std::shared_ptr<const DepTag> & s);
 
             /**
              * Access to our data.
