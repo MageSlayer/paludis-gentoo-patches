@@ -176,7 +176,6 @@ void expose_action() PALUDIS_VISIBLE;
 void expose_choices() PALUDIS_VISIBLE;
 void expose_contents() PALUDIS_VISIBLE;
 void expose_dep_label() PALUDIS_VISIBLE;
-void expose_dep_list() PALUDIS_VISIBLE;
 void expose_dep_spec() PALUDIS_VISIBLE;
 void expose_dep_tag() PALUDIS_VISIBLE;
 void expose_environment() PALUDIS_VISIBLE;

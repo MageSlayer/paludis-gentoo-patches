@@ -22,13 +22,13 @@
 #include <paludis/util/config_file.hh>
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/util/pimp-impl.hh>
-#include <paludis/legacy/dep_list_exceptions.hh>
 #include <paludis/match_package.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/version_operator.hh>
 #include <paludis/about.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/action.hh>
+#include <paludis/package_database.hh>
 #include <ruby.h>
 #include <list>
 #include <ctype.h>
@@ -63,13 +63,6 @@ namespace
     static VALUE c_no_such_repository_error;
     static VALUE c_configuration_error;
     static VALUE c_config_file_error;
-    static VALUE c_dep_list_error;
-    static VALUE c_all_masked_error;
-    static VALUE c_block_error;
-    static VALUE c_circular_dependency_error;
-    static VALUE c_additional_requirements_not_met_error;
-    static VALUE c_downgrade_not_allowed_error;
-    static VALUE c_no_destination_error;
     static VALUE c_action_failed_error;
     static VALUE c_action_aborted_error;
     static VALUE c_bad_version_operator_error;
@@ -196,8 +189,6 @@ void paludis::ruby::exception_to_ruby_exception(const std::exception & ee)
         rb_raise(c_name_error, dynamic_cast<const paludis::NameError *>(&ee)->message().c_str());
     else if (0 != dynamic_cast<const paludis::PackageDepSpecError *>(&ee))
         rb_raise(c_package_dep_spec_error, dynamic_cast<const paludis::PackageDepSpecError *>(&ee)->message().c_str());
-    else if (0 != dynamic_cast<const paludis::NoSuchRepositoryError *>(&ee))
-        rb_raise(c_no_such_repository_error, dynamic_cast<const paludis::NoSuchRepositoryError *>(&ee)->message().c_str());
     else if (0 != dynamic_cast<const paludis::AmbiguousPackageNameError *>(&ee))
     {
         VALUE ex_args[2];
@@ -211,29 +202,12 @@ void paludis::ruby::exception_to_ruby_exception(const std::exception & ee)
     }
     else if (0 != dynamic_cast<const paludis::NoSuchPackageError *>(&ee))
         rb_raise(c_no_such_package_error, dynamic_cast<const paludis::NoSuchPackageError *>(&ee)->message().c_str());
+    else if (0 != dynamic_cast<const paludis::NoSuchRepositoryError *>(&ee))
+        rb_raise(c_no_such_repository_error, dynamic_cast<const paludis::NoSuchRepositoryError *>(&ee)->message().c_str());
     else if (0 != dynamic_cast<const paludis::PackageDatabaseLookupError *>(&ee))
         rb_raise(c_package_database_lookup_error, dynamic_cast<const paludis::PackageDatabaseLookupError *>(&ee)->message().c_str());
     else if (0 != dynamic_cast<const paludis::PackageDatabaseError *>(&ee))
         rb_raise(c_package_database_error, dynamic_cast<const paludis::PackageDatabaseError *>(&ee)->message().c_str());
-    else if (0 != dynamic_cast<const paludis::AllMaskedError *>(&ee))
-    {
-        VALUE ex_args[2];
-        ex_args[0] = rb_str_new2(dynamic_cast<const paludis::AllMaskedError *>(&ee)->message().c_str());
-        ex_args[1] = rb_str_new2(stringify(dynamic_cast<const paludis::AllMaskedError *>(&ee)->query()).c_str());
-        rb_exc_raise(rb_class_new_instance(2, ex_args, c_all_masked_error));
-    }
-    else if (0 != dynamic_cast<const paludis::BlockError *>(&ee))
-        rb_raise(c_block_error, dynamic_cast<const paludis::BlockError *>(&ee)->message().c_str());
-    else if (0 != dynamic_cast<const paludis::CircularDependencyError *>(&ee))
-        rb_raise(c_circular_dependency_error, dynamic_cast<const paludis::CircularDependencyError *>(&ee)->message().c_str());
-    else if (0 != dynamic_cast<const paludis::AdditionalRequirementsNotMetError *>(&ee))
-        rb_raise(c_additional_requirements_not_met_error, dynamic_cast<const paludis::AdditionalRequirementsNotMetError *>(&ee)->message().c_str());
-    else if (0 != dynamic_cast<const paludis::DowngradeNotAllowedError *>(&ee))
-        rb_raise(c_downgrade_not_allowed_error, dynamic_cast<const paludis::DowngradeNotAllowedError *>(&ee)->message().c_str());
-    else if (0 != dynamic_cast<const paludis::NoDestinationError *>(&ee))
-        rb_raise(c_no_destination_error, dynamic_cast<const paludis::NoDestinationError *>(&ee)->message().c_str());
-    else if (0 != dynamic_cast<const paludis::DepListError *>(&ee))
-        rb_raise(c_dep_list_error, dynamic_cast<const paludis::DepListError *>(&ee)->message().c_str());
     else if (0 != dynamic_cast<const paludis::ConfigFileError *>(&ee))
         rb_raise(c_config_file_error, dynamic_cast<const paludis::ConfigFileError *>(&ee)->message().c_str());
     else if (0 != dynamic_cast<const paludis::ConfigurationError *>(&ee))
@@ -280,17 +254,6 @@ VALUE
 paludis::ruby::paludis_module()
 {
     return c_paludis_module;
-}
-
-static VALUE
-has_query_property_error_init(int argc, VALUE* argv, VALUE self)
-{
-    VALUE query;
-
-    query = (argc > 1) ? argv[--argc] : Qnil;
-    rb_call_super(argc, argv);
-    rb_iv_set(self, "query", query);
-    return self;
 }
 
 /*
@@ -358,41 +321,6 @@ void PALUDIS_VISIBLE paludis::ruby::init()
     c_no_such_repository_error = rb_define_class_under(c_paludis_module, "NoSuchRepositoryError", c_package_database_lookup_error);
     c_configuration_error = rb_define_class_under(c_paludis_module, "ConfigurationError", rb_eRuntimeError);
     c_config_file_error = rb_define_class_under(c_paludis_module, "ConfigFileError", c_configuration_error);
-    c_dep_list_error = rb_define_class_under(c_paludis_module, "DepListError", rb_eRuntimeError);
-
-    /*
-     * Document-class: Paludis::AllMaskedError
-     *
-     * Thrown if all versions of a particular spec are masked.
-     */
-    c_all_masked_error = rb_define_class_under(c_paludis_module, "AllMaskedError", c_dep_list_error);
-    rb_define_method(c_all_masked_error, "initialize", RUBY_FUNC_CAST(&has_query_property_error_init), -1);
-    rb_define_method(c_all_masked_error, "query", RUBY_FUNC_CAST(&has_query_property_error_query), 0);
-
-    /*
-     * Document-class: Paludis::BlockError
-     *
-     * Thrown if a block is encountered.
-     */
-    c_block_error = rb_define_class_under(c_paludis_module, "BlockError", c_dep_list_error);
-
-    /*
-     * Document-class: Paludis::CircularDependencyError
-     *
-     * Thrown if a circular dependency is encountered.
-     */
-    c_circular_dependency_error = rb_define_class_under(c_paludis_module, "CircularDependencyError", c_dep_list_error);
-
-    /*
-     * Document-class: Paludis::UseRequirementsNotMetError
-     *
-     * Thrown if all versions of a particular spec are masked, but would not be if use requirements were not in effect.
-     */
-    c_additional_requirements_not_met_error = rb_define_class_under(c_paludis_module, "UseRequirementsNotMetError", c_dep_list_error);
-    rb_define_method(c_additional_requirements_not_met_error, "initialize", RUBY_FUNC_CAST(&has_query_property_error_init), -1);
-    rb_define_method(c_additional_requirements_not_met_error, "query", RUBY_FUNC_CAST(&has_query_property_error_query), 0);
-    c_downgrade_not_allowed_error = rb_define_class_under(c_paludis_module, "DowngradeNotAllowedError", c_dep_list_error);
-    c_no_destination_error = rb_define_class_under(c_paludis_module, "NoDestinationError", c_dep_list_error);
 
     /*
      * Document-class: Paludis::ActionFailedError

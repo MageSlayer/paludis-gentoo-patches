@@ -1754,7 +1754,6 @@ AC_OUTPUT(
 	paludis/environments/test/Makefile
 	paludis/fetchers/Makefile
 	paludis/fetchers/demos/Makefile
-	paludis/legacy/Makefile
 	paludis/repositories/Makefile
 	paludis/repositories/accounts/Makefile
 	paludis/repositories/cran/Makefile

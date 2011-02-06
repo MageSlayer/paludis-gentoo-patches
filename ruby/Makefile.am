@@ -22,13 +22,11 @@ IF_RUBY_TESTS = \
 	action_TEST.rb \
 	choice_TEST.rb \
 	contents_TEST.rb \
-	dep_list_TEST.rb \
 	dep_spec_TEST.rb \
 	dep_tag_TEST.rb \
 	environment_TEST.rb \
 	filter_TEST.rb \
 	filtered_generator_TEST.rb \
-	find_unused_packages_task_TEST.rb \
 	generator_TEST.rb \
 	log_TEST.rb \
 	package_database_TEST.rb \
@@ -44,13 +42,11 @@ IF_RUBY_SOURCES = \
 	choice.cc \
 	contents.cc \
 	dep_label.cc \
-	dep_list.cc \
 	dep_spec.cc \
 	dep_tag.cc \
 	environment.cc \
 	filter.cc \
 	filtered_generator.cc \
-	find_unused_packages_task.cc \
 	generator.cc \
 	log.cc \
 	mask.cc \
@@ -73,9 +69,7 @@ EXTRA_DIST = $(IF_RUBY_TESTS) $(IF_RUBY_SOURCES) \
 	choice_TEST_setup.sh choice_TEST_cleanup.sh \
 	dep_spec_TEST_setup.sh dep_spec_TEST_cleanup.sh \
 	dep_tag_TEST_setup.sh dep_tag_TEST_cleanup.sh \
-	dep_list_TEST_setup.sh dep_list_TEST_cleanup.sh \
 	environment_TEST_setup.sh environment_TEST_cleanup.sh \
-	find_unused_packages_task_TEST_setup.sh find_unused_packages_task_TEST_cleanup.sh \
 	generator_TEST_setup.sh generator_TEST_cleanup.sh \
 	nice_names.nn \
 	package_database_TEST_setup.sh package_database_TEST_cleanup.sh \
@@ -106,7 +100,6 @@ libpaludisruby_@PALUDIS_PC_SLOT@_la_SOURCES = $(IF_RUBY_SOURCES)
 TESTS = $(IF_RUBY_TESTS)
 
 libpaludisruby_@PALUDIS_PC_SLOT@_la_LIBADD = \
-	$(top_builddir)/paludis/legacy/libpaludislegacy_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(PTHREAD_LIBS)

@@ -29,7 +29,6 @@ IF_PYTHON_TESTS = \
 	contents_TEST.py \
 	choices_TEST.py \
 	dep_label_TEST.py \
-	dep_list_TEST.py \
 	dep_spec_TEST.py \
 	dep_tag_TEST.py \
 	environment_TEST.py \
@@ -58,7 +57,6 @@ IF_PYTHON_SOURCES = \
 	choices.cc \
 	contents.cc \
 	dep_label.cc \
-	dep_list.cc \
 	dep_spec.hh dep_spec.cc \
 	dep_tag.cc \
 	environment.cc \
@@ -89,7 +87,6 @@ EXTRA_DIST = $(IF_PYTHON_TESTS) $(IF_PYTHON_SOURCES) \
 	paludis_python_so.cc \
 	additional_tests_so.cc \
 	choices_TEST_setup.sh choices_TEST_cleanup.sh \
-	dep_list_TEST_setup.sh dep_list_TEST_cleanup.sh \
 	environment_TEST_setup.sh environment_TEST_cleanup.sh \
 	mask_TEST_setup.sh mask_TEST_cleanup.sh \
 	metadata_key_TEST_setup.sh metadata_key_TEST_cleanup.sh \
@@ -134,7 +131,6 @@ libpaludispython_@PALUDIS_PC_SLOT@_la_SOURCES = $(IF_PYTHON_SOURCES)
 TESTS = $(IF_PYTHON_TESTS)
 
 libpaludispython_@PALUDIS_PC_SLOT@_la_LIBADD = \
-	$(top_builddir)/paludis/legacy/libpaludislegacy_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la
 

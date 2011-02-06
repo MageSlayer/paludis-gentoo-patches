@@ -260,10 +260,6 @@ paludis-*.*.*.tar.bz2
 /paludis/hooker_TEST
 /paludis/host_tuple_name_TEST
 /paludis/ihateautomake.cc
-/paludis/legacy/dep_list_TEST
-/paludis/legacy/dep_list_TEST_blockers
-/paludis/legacy/range_rewriter_TEST
-/paludis/legacy/uninstall_list_TEST
 /paludis/name_TEST
 /paludis/package_database_TEST
 /paludis/paludis.hh

@@ -6,11 +6,7 @@ AUTOMAKE_OPTIONS = 1.11 parallel-tests
 noinst_LIBRARIES = liboutput.a
 liboutput_a_SOURCES = \
 	colour.cc colour.hh \
-	colour_pretty_printer.cc colour_pretty_printer.hh \
-	console_task.cc console_task.hh \
-	console_install_task.cc console_install_task.hh \
-	console_query_task.cc console_query_task.hh \
-	mask_displayer.cc mask_displayer.hh
+	colour_pretty_printer.cc colour_pretty_printer.hh
 
 AM_CXXFLAGS = -I$(top_srcdir) -I$(top_srcdir)/src @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
 
