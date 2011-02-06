@@ -78,7 +78,6 @@ paludis-*.*.*.tar.bz2
 /doc/changelog.html.part
 /doc/changelog.subst
 /doc/clients/accerso.html
-/doc/clients/adjutrix.html
 /doc/clients/appareo.html
 /doc/clients/cave.html
 /doc/clients/cave-config.html
@@ -496,7 +495,6 @@ paludis-*.*.*.tar.bz2
 /paludis/version_spec_TEST
 /pkg-config/paludis.pc
 /src/clients/accerso/accerso
-/src/clients/adjutrix/adjutrix
 /src/clients/appareo/appareo
 /src/clients/cave/cave
 /src/clients/instruo/instruo

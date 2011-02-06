@@ -104,16 +104,6 @@ accerso.html : header.html.part footer.html.part
 	    fi ; } && \
 	    cat footer.html.part ; } > $@
 
-adjutrix.html : header.html.part footer.html.part
-	{ cat header.html.part && { \
-	    if test -x $(top_builddir)/src/clients/adjutrix/man-adjutrix ; then \
-	        $(top_builddir)/src/clients/adjutrix/man-adjutrix --html ; \
-	    else \
-	        echo "<h1>adjutrix</h1>"; \
-	        echo "<p>Sorry, documentation was generated without support for the adjutrix client.</p>" ; \
-	    fi ; } && \
-	    cat footer.html.part ; } > $@
-
 appareo.html : header.html.part footer.html.part
 	{ cat header.html.part && { \
 	    if test -x $(top_builddir)/src/clients/appareo/man-appareo ; then \

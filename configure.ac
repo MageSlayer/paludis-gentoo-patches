@@ -1394,7 +1394,7 @@ AC_ARG_WITH([repositories],
 			  accounts        Account management (requires distribution support)
 			  cran            The Comprehensive R Archive Network (unusable)
 			  e               Ebuild, Ebin, Exheres, VDB etc
-			  fake            A fake repository for test cases and adjutrix
+			  fake            A fake repository for test cases
 			  gemcutter       Gemcutter for Ruby
 			  repository      Automatic repository config generation (via 'unavailable')
 			  unavailable     Unavailable
@@ -1459,7 +1459,7 @@ AC_ARG_WITH([environments],
 			  all             All available environments
 			  default         Equivalent to no_config,paludis,test
 
-			  no_config       Configurationless environment, for adjutrix etc
+			  no_config       Configurationless environment, for accerso etc
 			  paludis         Standard Paludis environments
 			  portage         Portage configuration (dodgy)
 			  test            For test cases],
@@ -1513,21 +1513,20 @@ AC_DEFINE_UNQUOTED([DEFAULT_DISTRIBUTION], "$DEFAULT_DISTRIBUTION", [Default dis
 dnl }}}
 
 dnl {{{ clients
-ALL_CLIENTS="accerso adjutrix appareo cave instruo"
+ALL_CLIENTS="accerso appareo cave instruo"
 ALL_CLIENTS_HTML=""
 for a in $ALL_CLIENTS ; do
 	ALL_CLIENTS_HTML="$ALL_CLIENTS_HTML $a.html"
 done
-DEFAULT_CLIENTS="adjutrix cave"
+DEFAULT_CLIENTS="cave"
 AC_MSG_CHECKING([which clients to build...])
 AC_ARG_WITH([clients],
 			[  --with-clients=foo,bar,...
 			  Build the specified clients:
 			  all             All available clients
-			  default         Equivalent to adjutrix,cave
+			  default         Equivalent to cave
 
 			  accerso         A fetch / mirror client
-			  adjutrix        A tool for tree querying
 			  appareo         A tool for generating manifests
 			  cave            The modular Paludis client
 			  instruo         A metadata generation client],
@@ -1793,7 +1792,6 @@ AC_OUTPUT(
 	src/Makefile
 	src/clients/Makefile
 	src/clients/accerso/Makefile
-	src/clients/adjutrix/Makefile
 	src/clients/appareo/Makefile
 	src/clients/cave/Makefile
 	src/clients/instruo/Makefile
