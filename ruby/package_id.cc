@@ -402,6 +402,14 @@ namespace
      * What we are a virtual for
      */
     /*
+     * Document-method: dependencies_key
+     *
+     * call-seq:
+     *     dependencies_key -> MetadataDependencySpecTreeKey
+     *
+     * Our dependencies
+     */
+    /*
      * Document-method: build_dependencies_key
      *
      * call-seq:
@@ -514,6 +522,8 @@ namespace
         rb_define_method(c_package_id, "keywords_key", RUBY_FUNC_CAST((&KeyValue<MetadataCollectionKey<KeywordNameSet>,&PackageID::keywords_key>::fetch)), 0);
         rb_define_method(c_package_id, "provide_key", RUBY_FUNC_CAST((
                         &KeyValue<MetadataSpecTreeKey<ProvideSpecTree>, &PackageID::provide_key>::fetch)), 0);
+        rb_define_method(c_package_id, "dependencies_key", RUBY_FUNC_CAST((
+                        &KeyValue<MetadataSpecTreeKey<DependencySpecTree>, &PackageID::dependencies_key>::fetch)), 0);
         rb_define_method(c_package_id, "build_dependencies_key", RUBY_FUNC_CAST((
                         &KeyValue<MetadataSpecTreeKey<DependencySpecTree>, &PackageID::build_dependencies_key>::fetch)), 0);
         rb_define_method(c_package_id, "run_dependencies_key", RUBY_FUNC_CAST((

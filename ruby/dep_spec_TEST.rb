@@ -385,14 +385,14 @@ module Paludis
         end
 
         def spec_key
-            env[Selection::RequireExactlyOne.new(Generator::Package.new("bar/foo"))].last.build_dependencies_key
+            env[Selection::RequireExactlyOne.new(Generator::Package.new("bar/foo"))].last.dependencies_key
         end
 
         def test_initial_labels
             assert_kind_of Array, spec_key.initial_labels
             assert_kind_of DependenciesBuildLabel, spec_key.initial_labels[0]
-            assert_equal "DEPEND", spec_key.initial_labels[0].text
-            assert_equal "DEPEND", spec_key.initial_labels[0].to_s
+            assert_equal "build", spec_key.initial_labels[0].text
+            assert_equal "build", spec_key.initial_labels[0].to_s
         end
     end
 end

@@ -28,7 +28,6 @@ noinst_HEADERS = \
 	dep_parser.hh \
 	dep_parser-se.hh \
 	dep_parser-fwd.hh \
-	dependencies_rewriter.hh \
 	do_fetch_action.hh \
 	do_info_action.hh \
 	do_install_action.hh \
@@ -102,7 +101,6 @@ libpaludiserepository_la_SOURCES = \
 	check_fetched_files_visitor.cc \
 	check_userpriv.cc \
 	dep_parser.cc \
-	dependencies_rewriter.cc \
 	do_fetch_action.cc \
 	do_info_action.cc \
 	do_install_action.cc \
@@ -188,17 +186,6 @@ depend_rdepend_TEST_LDADD = \
 	$(DYNAMIC_LD_LIBS)
 
 depend_rdepend_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
-
-e_repository_TEST_dependencies_rewriter_SOURCES = e_repository_TEST_dependencies_rewriter.cc
-
-e_repository_TEST_dependencies_rewriter_LDADD = \
-	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/util/test_extras.o \
-	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/test/libtest.a \
-	$(DYNAMIC_LD_LIBS)
-
-e_repository_TEST_dependencies_rewriter_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 
 e_repository_TEST_ever_SOURCES = e_repository_TEST_ever.cc
 
@@ -454,9 +441,6 @@ EXTRA_DIST = \
 	e_repository_TEST.cc \
 	e_repository_TEST_setup.sh \
 	e_repository_TEST_cleanup.sh \
-	e_repository_TEST_dependencies_rewriter.cc \
-	e_repository_TEST_dependencies_rewriter_setup.sh \
-	e_repository_TEST_dependencies_rewriter_cleanup.sh \
 	e_repository_TEST_ever.cc \
 	e_repository_TEST_ever_setup.sh \
 	e_repository_TEST_ever_cleanup.sh \
@@ -537,7 +521,6 @@ BUILT_SOURCES = \
 check_SCRIPTS = \
 	depend_rdepend_TEST_setup.sh depend_rdepend_TEST_cleanup.sh \
 	e_repository_TEST_setup.sh e_repository_TEST_cleanup.sh \
-	e_repository_TEST_dependencies_rewriter_setup.sh e_repository_TEST_dependencies_rewriter_cleanup.sh \
 	e_repository_TEST_ever_setup.sh e_repository_TEST_ever_cleanup.sh \
 	e_repository_TEST_exheres_0_setup.sh e_repository_TEST_exheres_0_cleanup.sh \
 	e_repository_TEST_0_setup.sh e_repository_TEST_0_cleanup.sh \
@@ -629,7 +612,6 @@ TESTS = \
 	e_repository_TEST_2 \
 	e_repository_TEST_3 \
 	e_repository_TEST_4 \
-	e_repository_TEST_dependencies_rewriter \
 	e_repository_TEST_ever \
 	e_repository_TEST_exheres_0 \
 	e_repository_TEST_exlibs \

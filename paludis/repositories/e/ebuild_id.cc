@@ -135,7 +135,7 @@ namespace paludis
         mutable std::shared_ptr<const LiteralMetadataValueKey<std::string> > long_description;
         mutable std::shared_ptr<const LiteralMetadataValueKey<std::string> > captured_stdout_key;
         mutable std::shared_ptr<const LiteralMetadataValueKey<std::string> > captured_stderr_key;
-        mutable std::shared_ptr<const EDependenciesKey> raw_dependencies;
+        mutable std::shared_ptr<const EDependenciesKey> dependencies;
         mutable std::shared_ptr<const EDependenciesKey> build_dependencies;
         mutable std::shared_ptr<const EDependenciesKey> run_dependencies;
         mutable std::shared_ptr<const EDependenciesKey> post_dependencies;
@@ -787,7 +787,7 @@ const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 EbuildID::dependencies_key() const
 {
     need_keys_added();
-    return _imp->raw_dependencies;
+    return _imp->dependencies;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
@@ -968,12 +968,12 @@ EbuildID::load_long_description(const std::string & r, const std::string & h, co
 }
 
 void
-EbuildID::load_raw_depend(const std::string & r, const std::string & h, const std::string & v) const
+EbuildID::load_dependencies(const std::string & r, const std::string & h, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->raw_dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), r, h, v,
+    _imp->dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), r, h, v,
                 EbuildIDData::get_instance()->raw_dependencies_labels, mkt_dependencies);
-    add_metadata_key(_imp->raw_dependencies);
+    add_metadata_key(_imp->dependencies);
 }
 
 void

@@ -31,7 +31,6 @@
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/fs_error.hh>
 #include <paludis/repositories/e/dep_parser.hh>
-#include <paludis/repositories/e/dependencies_rewriter.hh>
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/spec_tree_pretty_printer.hh>
 #include <paludis/util/pimp-impl.hh>
@@ -179,15 +178,8 @@ namespace
             }
 
             if (-1 != m.dependencies()->flat_list_index() && ! m.dependencies()->name().empty())
-            {
-                DependenciesRewriter rewriter;
-                parse_depend(lines.at(m.dependencies()->flat_list_index()), _imp->env, *id->eapi(), false)->top()->accept(rewriter);
-                id->load_raw_depend(m.dependencies()->name(), m.dependencies()->description(),
+                id->load_dependencies(m.dependencies()->name(), m.dependencies()->description(),
                         lines.at(m.dependencies()->flat_list_index()));
-                id->load_build_depend(m.dependencies()->name() + ".DEPEND", m.dependencies()->description() + " (build)", rewriter.depend(), true);
-                id->load_run_depend(m.dependencies()->name() + ".RDEPEND", m.dependencies()->description() + " (run)", rewriter.rdepend(), true);
-                id->load_post_depend(m.dependencies()->name() + ".PDEPEND", m.dependencies()->description() + " (post)", rewriter.pdepend(), true);
-            }
 
             if (-1 != m.build_depend()->flat_list_index() && ! m.build_depend()->name().empty())
                 id->load_build_depend(m.build_depend()->name(), m.build_depend()->description(), lines.at(m.build_depend()->flat_list_index()), false);
@@ -522,15 +514,8 @@ EbuildFlatMetadataCache::load(const std::shared_ptr<const EbuildID> & id, const 
             }
 
             if (! m.dependencies()->name().empty())
-            {
-                DependenciesRewriter rewriter;
-                parse_depend(keys[m.dependencies()->name()], _imp->env, *id->eapi(), false)->top()->accept(rewriter);
-                id->load_raw_depend(m.dependencies()->name(), m.dependencies()->description(),
+                id->load_dependencies(m.dependencies()->name(), m.dependencies()->description(),
                         keys[m.dependencies()->name()]);
-                id->load_build_depend(m.dependencies()->name() + ".DEPEND", m.dependencies()->description() + " (build)", rewriter.depend(), true);
-                id->load_run_depend(m.dependencies()->name() + ".RDEPEND", m.dependencies()->description() + " (run)", rewriter.rdepend(), true);
-                id->load_post_depend(m.dependencies()->name() + ".PDEPEND", m.dependencies()->description() + " (post)", rewriter.pdepend(), true);
-            }
 
             if (! m.build_depend()->name().empty())
                 id->load_build_depend(m.build_depend()->name(), m.build_depend()->description(), keys[m.build_depend()->name()], false);

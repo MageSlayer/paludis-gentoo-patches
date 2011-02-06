@@ -258,47 +258,6 @@ namespace test_cases
         }
     } vdb_repository_contents_test;
 
-    struct VDBRepositoryDependenciesRewriterTest : TestCase
-    {
-        VDBRepositoryDependenciesRewriterTest() : TestCase("dependencies_rewriter") { }
-
-        void run()
-        {
-            TestEnvironment env;
-            env.set_paludis_command("/bin/false");
-            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
-            keys->insert("format", "vdb");
-            keys->insert("names_cache", "/var/empty");
-            keys->insert("provides_cache", "/var/empty");
-            keys->insert("location", stringify(FSPath::cwd() / "vdb_repository_TEST_dir" / "repo2"));
-            keys->insert("builddir", stringify(FSPath::cwd() / "vdb_repository_TEST_dir" / "build"));
-            std::shared_ptr<Repository> repo(VDBRepository::VDBRepository::repository_factory_create(&env,
-                        std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
-
-            const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                            PackageDepSpec(parse_user_package_dep_spec("category/package",
-                                    &env, { })), make_null_shared_ptr(), { }))]->begin());
-
-            UnformattedPrettyPrinter ff;
-
-            erepository::SpecTreePrettyPrinter pd(ff, { });
-            TEST_CHECK(bool(id->build_dependencies_key()));
-            id->build_dependencies_key()->value()->top()->accept(pd);
-            TEST_CHECK_STRINGIFY_EQUAL(pd, "( cat/pkg1 build: cat/pkg2 build+run: cat/pkg3 suggestion: post: )");
-
-            erepository::SpecTreePrettyPrinter pr(ff, { });
-            TEST_CHECK(bool(id->run_dependencies_key()));
-            id->run_dependencies_key()->value()->top()->accept(pr);
-            TEST_CHECK_STRINGIFY_EQUAL(pr, "( cat/pkg1 build: build+run: cat/pkg3 suggestion: post: )");
-
-            erepository::SpecTreePrettyPrinter pp(ff, { });
-            TEST_CHECK(bool(id->post_dependencies_key()));
-            id->post_dependencies_key()->value()->top()->accept(pp);
-            TEST_CHECK_STRINGIFY_EQUAL(pp, "( build: build+run: suggestion: cat/pkg4 post: cat/pkg5 )");
-        }
-    } test_vdb_repository_dependencies_rewriter;
-
     struct PhasesTest : TestCase
     {
         const std::string eapi;

@@ -23,7 +23,6 @@
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/dep_parser.hh>
 #include <paludis/repositories/e/pipe_command_handler.hh>
-#include <paludis/repositories/e/dependencies_rewriter.hh>
 
 #include <paludis/util/system.hh>
 #include <paludis/util/process.hh>
@@ -549,15 +548,7 @@ EbuildMetadataCommand::load(const std::shared_ptr<const EbuildID> & id)
     }
 
     if (! m.dependencies()->name().empty())
-    {
-        DependenciesRewriter rewriter;
-        std::string dep_s(get(keys, m.dependencies()->name()));
-        parse_depend(dep_s, params.environment(), *id->eapi(), id->is_installed())->top()->accept(rewriter);
-        id->load_raw_depend(m.dependencies()->name(), m.dependencies()->description(), dep_s);
-        id->load_build_depend(m.dependencies()->name() + ".DEPEND", m.dependencies()->description() + " (build)", rewriter.depend(), true);
-        id->load_run_depend(m.dependencies()->name() + ".RDEPEND", m.dependencies()->description() + " (run)", rewriter.rdepend(), true);
-        id->load_post_depend(m.dependencies()->name() + ".PDEPEND", m.dependencies()->description() + " (post)", rewriter.pdepend(), true);
-    }
+        id->load_dependencies(m.dependencies()->name(), m.dependencies()->description(), get(keys, m.dependencies()->name()));
     else
     {
         if (! m.build_depend()->name().empty())

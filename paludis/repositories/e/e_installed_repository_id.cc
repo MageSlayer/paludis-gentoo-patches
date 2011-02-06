@@ -24,7 +24,6 @@
 #include <paludis/repositories/e/vdb_repository.hh>
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/dep_parser.hh>
-#include <paludis/repositories/e/dependencies_rewriter.hh>
 #include <paludis/repositories/e/e_choice_value.hh>
 #include <paludis/repositories/e/e_string_set_key.hh>
 
@@ -82,7 +81,7 @@ namespace
         std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Choices> > > choices;
         std::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> > license;
         std::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> > provide;
-        std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > raw_dependencies;
+        std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > dependencies;
         std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies;
         std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies;
         std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > post_dependencies;
@@ -329,30 +328,10 @@ EInstalledRepositoryID::need_keys_added() const
     {
         if ((_imp->dir / vars->dependencies()->name()).stat().exists())
         {
-            DependenciesRewriter rewriter;
-            std::string raw_deps_str(file_contents(_imp->dir / vars->dependencies()->name()));
-            std::shared_ptr<DependencySpecTree> raw_deps(parse_depend(raw_deps_str, _imp->environment, *eapi(), false));
-            raw_deps->top()->accept(rewriter);
-
-            _imp->keys->raw_dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), vars->dependencies()->name(),
-                        vars->dependencies()->description(), raw_deps_str,
+            _imp->keys->dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), vars->dependencies()->name(),
+                        vars->dependencies()->description(), file_contents(_imp->dir / vars->dependencies()->name()),
                         EInstalledRepositoryIDData::get_instance()->build_dependencies_labels, mkt_dependencies);
-            add_metadata_key(_imp->keys->raw_dependencies);
-
-            _imp->keys->build_dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), vars->dependencies()->name() + ".DEPEND",
-                        vars->dependencies()->description() + " (build)", rewriter.depend(),
-                        EInstalledRepositoryIDData::get_instance()->build_dependencies_labels, mkt_internal);
-            add_metadata_key(_imp->keys->build_dependencies);
-
-            _imp->keys->run_dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), vars->dependencies()->name() + ".RDEPEND",
-                        vars->dependencies()->description() + " (run)", rewriter.rdepend(),
-                        EInstalledRepositoryIDData::get_instance()->run_dependencies_labels, mkt_internal);
-            add_metadata_key(_imp->keys->run_dependencies);
-
-            _imp->keys->post_dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), vars->dependencies()->name() + ".PDEPEND",
-                        vars->dependencies()->description() + " (post)", rewriter.pdepend(),
-                        EInstalledRepositoryIDData::get_instance()->post_dependencies_labels, mkt_internal);
-            add_metadata_key(_imp->keys->post_dependencies);
+            add_metadata_key(_imp->keys->dependencies);
         }
     }
     else
@@ -788,7 +767,7 @@ const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 EInstalledRepositoryID::dependencies_key() const
 {
     need_keys_added();
-    return _imp->keys->raw_dependencies;
+    return _imp->keys->dependencies;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
