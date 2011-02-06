@@ -519,7 +519,7 @@ namespace
     std::shared_ptr<const SetSpecTree> make_set(
             const Environment * const env,
             const FSPath & f,
-            const SetName & n,
+            const SetName &,
             SetFileSetOperatorMode mode,
             SetFileType type)
     {
