@@ -42,10 +42,12 @@
 #include <paludis/package_id.hh>
 #include <paludis/mask.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/notifier_callback.hh>
 #include <sys/sysinfo.h>
 #include <cstdlib>
 #include <iostream>
 #include <algorithm>
+#include <map>
 
 #include "command_command_line.hh"
 
@@ -101,7 +103,132 @@ namespace
         }
     };
 
-    void worker(Mutex & mutex, PackageIDSequence::ConstIterator & i, const PackageIDSequence::ConstIterator & i_end, bool & fail)
+    struct DoneOne
+    {
+    };
+
+    struct DisplayCallback
+    {
+        mutable Mutex mutex;
+        mutable std::map<std::string, int> metadata;
+        mutable int steps;
+        int total;
+        mutable std::string stage;
+        mutable unsigned width;
+
+        bool output;
+
+        DisplayCallback() :
+            steps(0),
+            total(-1),
+            stage("Generating"),
+            width(stage.length() + 2),
+            output(::isatty(1))
+        {
+            if (output)
+                cout << stage << ": " << std::flush;
+        }
+
+        ~DisplayCallback()
+        {
+            if (output)
+                cout << endl << endl;
+        }
+
+        void update() const
+        {
+            if (! output)
+                return;
+
+            std::string s(stage + ": ");
+            s.append(stringify(steps));
+            if (-1 != total)
+                s.append("/" + stringify(total));
+
+            if (! metadata.empty())
+            {
+                std::multimap<int, std::string> biggest;
+                for (std::map<std::string, int>::const_iterator i(metadata.begin()), i_end(metadata.end()) ;
+                        i != i_end ; ++i)
+                    biggest.insert(std::make_pair(i->second, i->first));
+
+                int t(0), n(0);
+                std::string ss;
+                for (std::multimap<int, std::string>::const_reverse_iterator i(biggest.rbegin()), i_end(biggest.rend()) ;
+                        i != i_end ; ++i)
+                {
+                    ++n;
+
+                    if (n == 4)
+                        ss.append(", ...");
+
+                    if (n < 4)
+                    {
+                        if (! ss.empty())
+                            ss.append(", ");
+
+                        ss.append(stringify(i->first) + " " + i->second);
+                    }
+
+                    t += i->first;
+                }
+
+                if (! s.empty())
+                    s.append(", ");
+                s.append(stringify(t) + " metadata (" + ss + ") ");
+            }
+
+            std::cout << std::string(width, '\010') << s;
+
+            if (width > s.length())
+                std::cout
+                    << std::string(width - s.length(), ' ')
+                    << std::string(width - s.length(), '\010');
+
+            width = s.length();
+            std::cout << std::flush;
+        }
+
+        void operator() (const NotifierCallbackEvent & event) const
+        {
+            event.accept(*this);
+        }
+
+        void operator() (const DoneOne &) const
+        {
+            if (! output)
+                return;
+
+            Lock lock(mutex);
+            ++steps;
+            update();
+        }
+
+        void visit(const NotifierCallbackGeneratingMetadataEvent & e) const
+        {
+            if (! output)
+                return;
+
+            Lock lock(mutex);
+            ++metadata.insert(std::make_pair(stringify(e.repository()), 0)).first->second;
+            update();
+        }
+
+        void visit(const NotifierCallbackResolverStepEvent &) const
+        {
+        }
+
+        void visit(const NotifierCallbackResolverStageEvent &) const
+        {
+        }
+
+        void visit(const NotifierCallbackLinkageStepEvent &) const
+        {
+        }
+    };
+
+    void worker(Mutex & mutex, PackageIDSequence::ConstIterator & i, const PackageIDSequence::ConstIterator & i_end, bool & fail,
+            DisplayCallback & display_callback)
     {
         while (true)
         {
@@ -132,6 +259,8 @@ namespace
                     fail = true;
                     break;
                 }
+
+                display_callback(DoneOne());
         }
     }
 }
@@ -172,6 +301,9 @@ GenerateMetadataCommand::run(
 
     PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end());
     {
+        DisplayCallback callback;
+        callback.total = std::distance(ids->begin(), ids->end());
+        ScopedNotifierCallback display_callback_holder(env.get(), NotifierCallbackFunction(std::cref(callback)));
         ThreadPool pool;
 
         int n_procs(get_nprocs());
@@ -179,7 +311,7 @@ GenerateMetadataCommand::run(
             n_procs = 1;
 
         for (int n(0), n_end(n_procs) ; n != n_end ; ++n)
-            pool.create_thread(std::bind(&worker, std::ref(mutex), std::ref(i), std::cref(i_end), std::ref(fail)));
+            pool.create_thread(std::bind(&worker, std::ref(mutex), std::ref(i), std::cref(i_end), std::ref(fail), std::ref(callback)));
     }
 
     return fail ? EXIT_FAILURE : EXIT_SUCCESS;
