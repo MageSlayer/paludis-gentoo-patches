@@ -36,6 +36,7 @@ CAVE_COMMANDS_HTML = \
 	cave-find-candidates.html \
 	cave-fix-cache.html \
 	cave-fix-linkage.html \
+	cave-generate-metadata.html \
 	cave-graph-jobs.html \
 	cave-has-version.html \
 	cave-help.html \

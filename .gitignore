@@ -90,6 +90,7 @@ paludis-*.*.*.tar.bz2
 /doc/clients/cave-find-candidates.html
 /doc/clients/cave-fix-cache.html
 /doc/clients/cave-fix-linkage.html
+/doc/clients/cave-generate-metadata.html
 /doc/clients/cave-graph-jobs.html
 /doc/clients/cave-has-version.html
 /doc/clients/cave-help.html

@@ -45,6 +45,7 @@
 #include "cmd_find_candidates.hh"
 #include "cmd_fix_cache.hh"
 #include "cmd_fix_linkage.hh"
+#include "cmd_generate_metadata.hh"
 #include "cmd_graph_jobs.hh"
 #include "cmd_has_version.hh"
 #include "cmd_help.hh"
@@ -162,6 +163,7 @@ CommandFactory::CommandFactory() :
     _imp->handlers.insert(std::make_pair("find-candidates", std::bind(&make_command<FindCandidatesCommand>)));
     _imp->handlers.insert(std::make_pair("fix-cache", std::bind(&make_command<FixCacheCommand>)));
     _imp->handlers.insert(std::make_pair("fix-linkage", std::bind(&make_command<FixLinkageCommand>)));
+    _imp->handlers.insert(std::make_pair("generate-metadata", std::bind(&make_command<GenerateMetadataCommand>)));
     _imp->handlers.insert(std::make_pair("graph-jobs", std::bind(&make_command<GraphJobsCommand>)));
     _imp->handlers.insert(std::make_pair("has-version", std::bind(&make_command<HasVersionCommand>)));
     _imp->handlers.insert(std::make_pair("help", std::bind(&make_command<HelpCommand>)));

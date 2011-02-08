@@ -32,6 +32,7 @@ command_MANS = \
 	cave-find-candidates.1 \
 	cave-fix-cache.1 \
 	cave-fix-linkage.1 \
+	cave-generate-metadata.1 \
 	cave-graph-jobs.1 \
 	cave-has-version.1 \
 	cave-help.1 \
@@ -133,6 +134,7 @@ libcave_a_SOURCES = \
 	cmd_find_candidates.cc cmd_find_candidates.hh \
 	cmd_fix_cache.cc cmd_fix_cache.hh cmd_fix_cache-fmt.hh \
 	cmd_fix_linkage.cc cmd_fix_linkage.hh \
+	cmd_generate_metadata.cc cmd_generate_metadata.hh \
 	cmd_graph_jobs.cc cmd_graph_jobs.hh \
 	cmd_has_version.cc cmd_has_version.hh \
 	cmd_help.cc cmd_help.hh \
