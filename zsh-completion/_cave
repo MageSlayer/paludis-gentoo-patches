@@ -36,6 +36,7 @@ _cave()
     'find-candidates:Find a list of candidate packages for a search'
     'fix-cache:Fix on-disk caches'
     'fix-linkage:Identify packages with broken linkage that can be fixed by rebuilds'
+    'generate-metadata:Pregenerate metadata for a set of IDs'
     "graph-jobs:Creates a Graphviz graph for jobs in a resolution created using \'cave resolve\'"
     'has-version:Returns success if there is an installed package matching a particular spec'
     'help:Display help information'
@@ -186,6 +187,14 @@ _cave_cmd_execute-resolution()
     '--update-world-program[The program used to perform world updates]:Command: ' \
     '--graph-program[The program used to create Graphviz graphs]:Command: ' \
     '--unpackaged-repository-params[Specifies the parameters used to construct an unpackaged repository]'
+}
+
+(( ${+functions[_cave_cmd_generate-metadata]} )) ||
+_cave_cmd_generate-metadata()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '(--matching -m)'{--matching,-m}'[Consider only IDs matching this spec]'
 }
 
 (( ${+functions[_cave_cmd_find-candidates]} )) ||
