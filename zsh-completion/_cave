@@ -320,9 +320,13 @@ _cave_cmd_owner()
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
     '(--match -m)'{--match,-m}'[Which match algorithm to use]:match algorithm:((auto\:"If pattern starts with a \/, full; if it contains a \/, partial; otherwise, basename"
-                                                                                basename\:"Basename match"
+                                                                                   a\:"If pattern starts with a \/, full; if it contains a \/, partial; otherwise, basename"
+                                                                            basename\:"Basename match"
+                                                                                   b\:"Basename match"
                                                                                 full\:"Full match"
-                                                                                partial\:"Partial match"))' \
+                                                                                   f\:"Full match"
+                                                                             partial\:"Partial match"
+                                                                                   p\:"Partial match"))' \
     '(--dereference -d)'{--dereference,-d}'[If the pattern is a path that exists and is a symbolic link, dereference it recursively, and then search for the real path]' \
     '*:file:_files'
 }
