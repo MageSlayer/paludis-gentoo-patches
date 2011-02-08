@@ -31,6 +31,8 @@
 #include <paludis/util/simple_visitor_cast.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/accept_visitor.hh>
+#include <paludis/util/thread_pool.hh>
+#include <paludis/util/mutex.hh>
 #include <paludis/generator.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/filter.hh>
@@ -40,6 +42,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/mask.hh>
 #include <paludis/metadata_key.hh>
+#include <sys/sysinfo.h>
 #include <cstdlib>
 #include <iostream>
 #include <algorithm>
@@ -97,6 +100,40 @@ namespace
             auto PALUDIS_ATTRIBUTE((unused)) v(k.value());
         }
     };
+
+    void worker(Mutex & mutex, PackageIDSequence::ConstIterator & i, const PackageIDSequence::ConstIterator & i_end, bool & fail)
+    {
+        while (true)
+        {
+            std::shared_ptr<const PackageID> id;
+            {
+                Lock lock(mutex);
+                if (i != i_end)
+                    id = *i++;
+            }
+
+            if (! id)
+                return;
+
+            for (PackageID::MetadataConstIterator m(id->begin_metadata()), m_end(id->end_metadata()); m_end != m; ++m)
+                try
+                {
+                    MetadataVisitor v;
+                    (*m)->accept(v);
+                }
+                catch (const InternalError &)
+                {
+                    throw;
+                }
+                catch (const Exception & e)
+                {
+                    Lock lock(mutex);
+                    std::cerr << "When processing '" << **i << "' got exception '" << e.message() << "' (" << e.what() << ")" << std::endl;
+                    fail = true;
+                    break;
+                }
+        }
+    }
 }
 
 int
@@ -131,25 +168,18 @@ GenerateMetadataCommand::run(
 
     const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(g)]);
     bool fail(false);
-    MetadataVisitor v;
-    for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
-            i != i_end ; ++i)
+    Mutex mutex;
+
+    PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end());
     {
-        for (PackageID::MetadataConstIterator m((*i)->begin_metadata()), m_end((*i)->end_metadata()); m_end != m; ++m)
-            try
-            {
-                (*m)->accept(v);
-            }
-            catch (const InternalError &)
-            {
-                throw;
-            }
-            catch (const Exception & e)
-            {
-                std::cerr << "When processing '" << **i << "' got exception '" << e.message() << "' (" << e.what() << ")" << std::endl;
-                fail = true;
-                break;
-            }
+        ThreadPool pool;
+
+        int n_procs(get_nprocs());
+        if (n_procs < 1)
+            n_procs = 1;
+
+        for (int n(0), n_end(n_procs) ; n != n_end ; ++n)
+            pool.create_thread(std::bind(&worker, std::ref(mutex), std::ref(i), std::cref(i_end), std::ref(fail)));
     }
 
     return fail ? EXIT_FAILURE : EXIT_SUCCESS;
