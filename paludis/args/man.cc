@@ -204,6 +204,51 @@ DocWriter::~DocWriter()
 {
 }
 
+namespace
+{
+    void escape_asciidoc(std::ostream & stream, const std::string & s)
+    {
+        // escape the n-th char unless n = 0 (start of string) or if n-1 = \s \t or \n
+        auto t(s.begin()), t_end(s.end());
+        char previous('\0');
+
+        if (t != t_end)
+        {
+            switch (*t)
+            {
+                case '\'':
+                    stream << "\\'";
+                    ++t;
+                    break;
+                case '*':
+                    stream << "\\*";
+                    ++t;
+                    break;
+            }
+        }
+
+        for ( ; t != t_end ; ++t)
+        {
+            switch (previous)
+            {
+                case ' ':
+                case '\n':
+                case '\t':
+                    if ('\'' == *t or '*' == *t)
+                        stream << '\\';
+                    break;
+                // Escape '*/*' -> \'\*/*'
+                case '\'':
+                    if ('*' == *t)
+                        stream << '\\';
+                    break;
+            }
+            stream << *t;
+            previous = *t;
+        }
+    }
+}
+
 AsciidocWriter::AsciidocWriter(std::ostream & os) :
     _os(os)
 {
@@ -235,7 +280,9 @@ AsciidocWriter::start_usage_lines()
 void
 AsciidocWriter::usage_line(const std::string & name, const std::string & line)
 {
-    _os << "*" << name << " " << line << "*" << endl << endl;
+    _os << "*" << name << " ";
+    escape_asciidoc(_os, line);
+    _os << "*" << endl << endl;
 }
 
 void
@@ -243,13 +290,15 @@ AsciidocWriter::start_description(const std::string & description)
 {
     _os << "DESCRIPTION" << endl;
     _os << "-----------" << endl;
-    _os << description << endl;
+    escape_asciidoc(_os, description);
+    _os << endl;
 }
 
 void
 AsciidocWriter::extra_description(const std::string & description)
 {
-    _os << description << endl << endl;
+    escape_asciidoc(_os, description);
+    _os << endl << endl;
 }
 
 void
@@ -272,7 +321,8 @@ AsciidocWriter::start_arg_group(const std::string & name, const std::string & de
 {
     _os << name << endl;
     _os << std::string(name.size(), char('~')) << endl;
-    _os << description << endl << endl;
+    escape_asciidoc(_os, description);
+    _os << endl << endl;
 }
 
 void
@@ -286,8 +336,9 @@ AsciidocWriter::arg_group_item(const char & short_name, const std::string & long
     if (! negated_long_name.empty())
         _os << " (" << "--" << negated_long_name << ")";
     _os << "*::" << endl;
-    _os << "        " << description << endl;
-    _os << endl;
+    _os << "        ";
+    escape_asciidoc(_os, description);
+    _os << endl << endl;
 }
 
 void
@@ -306,14 +357,17 @@ AsciidocWriter::extra_arg_enum(const AllowedEnumArg & e, const std::string & def
     if (e.short_name())
         _os << " (" << std::string(1, e.short_name()) << ")";
     _os << "*;;" << endl;
-    _os << "        " << e.description() << default_string << endl << endl;
+    _os << "        ";
+    escape_asciidoc(_os, e.description());
+    _os << default_string << endl << endl;
 }
 
 void
 AsciidocWriter::extra_arg_string_set(const std::string & first, const std::string & second)
 {
     _os << first << endl;
-    _os << second << endl;
+    escape_asciidoc(_os, second);
+    _os << endl;
 }
 
 void
@@ -345,7 +399,8 @@ void
 AsciidocWriter::environment_line(const std::string & first, const std::string & second)
 {
     _os << first << "::" << endl;
-    _os << second << endl;
+    escape_asciidoc(_os, second);
+    _os << endl;
 }
 
 void
@@ -365,7 +420,8 @@ void
 AsciidocWriter::example(const std::string & first, const std::string & second)
 {
     _os << first << "::" << endl;
-    _os << second << endl;
+    escape_asciidoc(_os, second);
+    _os << endl;
 }
 
 void
@@ -384,7 +440,9 @@ AsciidocWriter::start_notes()
 void
 AsciidocWriter::note(const std::string & s)
 {
-    _os << "* " << s << endl;
+    _os << "* ";
+    escape_asciidoc(_os, s);
+    _os << endl;
 }
 
 void
@@ -410,7 +468,8 @@ AsciidocWriter::subsection(const std::string & title)
 void
 AsciidocWriter::paragraph(const std::string & text)
 {
-    _os << text << endl;
+    escape_asciidoc(_os, text);
+    _os << endl;
 }
 
 void
@@ -423,7 +482,6 @@ AsciidocWriter::start_see_alsos()
 void
 AsciidocWriter::see_also(const std::string & page, const int s, const bool)
 {
-    // FIXME: Bold page
     _os << "*" << page << "*(" << s << ")" << endl;
 }
 
