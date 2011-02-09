@@ -204,7 +204,7 @@ UnwrittenRepositoryFile::_load(const FSPath & f)
     CategoryNamePart category("x");
     PackageNamePart package("x");
     std::shared_ptr<MetadataValueKey<SlotName> > slot;
-    VersionSpec version("0", { });
+    std::list<VersionSpec> versions;
     std::shared_ptr<UnwrittenRepositoryFileEntry> entry;
     while (std::getline(file, line))
     {
@@ -252,23 +252,33 @@ UnwrittenRepositoryFile::_load(const FSPath & f)
         {
             slot = std::make_shared<LiteralMetadataValueKey<SlotName>>("SLOT", "Slot", mkt_internal, SlotName(token));
 
-            if (line_parser.consume(
-                        (+simple_parser::any_except(" \t") >> token)
-                        ))
-                version = VersionSpec(token, user_version_spec_options());
-            else
-                throw UnwrittenRepositoryConfigurationError(
-                        "Cannot parse body slot+version line '" + line + " in '" + stringify(f) + "'");
-
-            if (! line_parser.eof())
-                throw UnwrittenRepositoryConfigurationError(
-                        "Cannot parse body slot+version line '" + line + " in '" + stringify(f) + "'");
-
             if (entry)
             {
-                _imp->entries.push_back(*entry);
+                for (std::list<VersionSpec>::const_iterator v(versions.begin()), v_end(versions.end()) ;
+                        v != v_end ; ++v)
+                {
+                    entry->version() = *v;
+                    _imp->entries.push_back(*entry);
+                }
+                versions.clear();
                 entry.reset();
             }
+
+            while (! line_parser.eof())
+            {
+                if (line_parser.consume(
+                            (+simple_parser::any_except(" \t") >> token) &
+                            (*simple_parser::any_of(" \t"))
+                            ))
+                    versions.push_back(VersionSpec(token, user_version_spec_options()));
+                else
+                    throw UnwrittenRepositoryConfigurationError(
+                            "Cannot parse body slot+version line '" + line + " in '" + stringify(f) + "'");
+            }
+
+            if (versions.empty())
+                throw UnwrittenRepositoryConfigurationError(
+                        "Cannot parse body slot+version line '" + line + " in '" + stringify(f) + "'");
         }
         else if (line_parser.consume(
                     (+simple_parser::any_of(" \t")) &
@@ -296,7 +306,7 @@ UnwrittenRepositoryFile::_load(const FSPath & f)
                                 n::removed_by() = std::shared_ptr<const MetadataValueKey<std::string> >(),
                                 n::removed_from() = std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >(),
                                 n::slot() = slot,
-                                n::version() = version
+                                n::version() = VersionSpec("0", { })
                                 ));
 
             if (token == "description")
@@ -356,7 +366,14 @@ UnwrittenRepositoryFile::_load(const FSPath & f)
     }
 
     if (entry)
-        _imp->entries.push_back(*entry);
+    {
+        for (std::list<VersionSpec>::const_iterator v(versions.begin()), v_end(versions.end()) ;
+                v != v_end ; ++v)
+        {
+            entry->version() = *v;
+            _imp->entries.push_back(*entry);
+        }
+    }
 }
 
 template class Pimp<UnwrittenRepositoryFile>;

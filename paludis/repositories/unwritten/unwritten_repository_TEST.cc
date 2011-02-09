@@ -30,6 +30,7 @@
 #include <paludis/filtered_generator.hh>
 #include <paludis/filter.hh>
 #include <paludis/package_id.hh>
+#include <paludis/metadata_key.hh>
 #include <paludis/package_database.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
@@ -38,6 +39,14 @@
 using namespace paludis;
 using namespace paludis::unwritten_repository;
 using namespace test;
+
+namespace
+{
+    std::string visit(const PackageID & id)
+    {
+        return id.short_description_key()->value();
+    }
+}
 
 namespace test_cases
 {
@@ -88,8 +97,29 @@ namespace test_cases
                     "cat-one/pkg-one-1:0::unwritten "
                     "cat-one/pkg-one-2:0::unwritten "
                     "cat-one/pkg-one-3:0::unwritten "
+                    "cat-one/pkg-three-1:1::unwritten "
+                    "cat-one/pkg-three-2:1::unwritten "
+                    "cat-one/pkg-three-3:1::unwritten "
+                    "cat-one/pkg-three-4:2::unwritten "
+                    "cat-one/pkg-three-5:2::unwritten "
+                    "cat-one/pkg-three-6:2::unwritten "
                     "cat-one/pkg-two-1:1::unwritten "
                     "cat-one/pkg-two-2:2::unwritten"
+                    );
+
+            TEST_CHECK_EQUAL(
+                    join(indirect_iterator(contents->begin()), indirect_iterator(contents->end()), " ", visit),
+                    "Description for pkg-one-1:0 "
+                    "Description for pkg-one-2:0 "
+                    "Description for pkg-one-3:0 "
+                    "Description for pkg-three:1 "
+                    "Description for pkg-three:1 "
+                    "Description for pkg-three:1 "
+                    "Description for pkg-three:2 "
+                    "Description for pkg-three:2 "
+                    "Description for pkg-three:2 "
+                    "Description for pkg-two-1:1 "
+                    "Description for pkg-two-2:2"
                     );
         }
     } test_contents;
