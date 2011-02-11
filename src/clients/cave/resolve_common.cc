@@ -70,6 +70,7 @@
 
 #include <paludis/resolver/allow_choice_changes_helper.hh>
 #include <paludis/resolver/allowed_to_remove_helper.hh>
+#include <paludis/resolver/allowed_to_restart_helper.hh>
 #include <paludis/resolver/always_via_binary_helper.hh>
 #include <paludis/resolver/can_use_helper.hh>
 #include <paludis/resolver/confirm_helper.hh>
@@ -723,6 +724,12 @@ paludis::cave::resolve_common(
             i != i_end ; ++i)
         allowed_to_remove_helper.add_allowed_to_remove_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
 
+    AllowedToRestartHelper allowed_to_restart_helper(env.get());
+    for (args::StringSetArg::ConstIterator i(resolution_options.a_no_restarts_for.begin_args()),
+            i_end(resolution_options.a_no_restarts_for.end_args()) ;
+            i != i_end ; ++i)
+        allowed_to_restart_helper.add_no_restarts_for_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
+
     AlwaysViaBinaryHelper always_via_binary_helper(env.get());
     for (args::StringSetArg::ConstIterator i(resolution_options.a_via_binary.begin_args()),
             i_end(resolution_options.a_via_binary.end_args()) ;
@@ -1020,6 +1027,7 @@ paludis::cave::resolve_common(
     ResolverFunctions resolver_functions(make_named_values<ResolverFunctions>(
                 n::allow_choice_changes_fn() = std::cref(allow_choice_changes_helper),
                 n::allowed_to_remove_fn() = std::cref(allowed_to_remove_helper),
+                n::allowed_to_restart_fn() = std::cref(allowed_to_restart_helper),
                 n::always_via_binary_fn() = std::cref(always_via_binary_helper),
                 n::can_use_fn() = std::cref(can_use_helper),
                 n::confirm_fn() = std::cref(confirm_helper),

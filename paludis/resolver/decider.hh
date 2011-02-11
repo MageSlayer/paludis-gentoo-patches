@@ -141,6 +141,9 @@ namespace paludis
                         const std::shared_ptr<Resolution> & resolution,
                         const std::shared_ptr<const Constraint> & constraint);
 
+                bool _allowed_to_restart(
+                        const std::shared_ptr<const Resolution> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
                 void _suggest_restart_with(
                         const std::shared_ptr<const Resolution> & resolution,
                         const std::shared_ptr<const Constraint> & constraint,

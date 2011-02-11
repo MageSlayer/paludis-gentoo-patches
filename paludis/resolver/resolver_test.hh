@@ -37,6 +37,7 @@
 
 #include <paludis/resolver/allow_choice_changes_helper.hh>
 #include <paludis/resolver/allowed_to_remove_helper.hh>
+#include <paludis/resolver/allowed_to_restart_helper.hh>
 #include <paludis/resolver/always_via_binary_helper.hh>
 #include <paludis/resolver/can_use_helper.hh>
 #include <paludis/resolver/confirm_helper.hh>
@@ -93,6 +94,7 @@ namespace paludis
 
                 AllowChoiceChangesHelper allow_choice_changes_helper;
                 AllowedToRemoveHelper allowed_to_remove_helper;
+                AllowedToRestartHelper allowed_to_restart_helper;
                 AlwaysViaBinaryHelper always_via_binary_helper;
                 CanUseHelper can_use_helper;
                 ConfirmHelper confirm_helper;

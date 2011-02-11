@@ -48,6 +48,7 @@ namespace paludis
     {
         typedef Name<struct name_allow_choice_changes_fn> allow_choice_changes_fn;
         typedef Name<struct name_allowed_to_remove_fn> allowed_to_remove_fn;
+        typedef Name<struct name_allowed_to_restart_fn> allowed_to_restart_fn;
         typedef Name<struct name_always_via_binary_fn> always_via_binary_fn;
         typedef Name<struct name_can_use_fn> can_use_fn;
         typedef Name<struct name_confirm_fn> confirm_fn;
@@ -80,6 +81,10 @@ namespace paludis
                 const std::shared_ptr<const Resolution> &,
                 const std::shared_ptr<const PackageID> &
                 )> AllowedToRemoveFunction;
+
+        typedef std::function<bool (
+                const std::shared_ptr<const Resolution> &
+                )> AllowedToRestartFunction;
 
         typedef std::function<bool (
                 const std::shared_ptr<const Resolution> &
@@ -183,6 +188,7 @@ namespace paludis
         {
             NamedValue<n::allow_choice_changes_fn, AllowChoiceChangesFunction> allow_choice_changes_fn;
             NamedValue<n::allowed_to_remove_fn, AllowedToRemoveFunction> allowed_to_remove_fn;
+            NamedValue<n::allowed_to_restart_fn, AllowedToRestartFunction> allowed_to_restart_fn;
             NamedValue<n::always_via_binary_fn, AlwaysViaBinaryFunction> always_via_binary_fn;
             NamedValue<n::can_use_fn, CanUseFunction> can_use_fn;
             NamedValue<n::confirm_fn, ConfirmFunction> confirm_fn;

@@ -82,6 +82,9 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
             "If otherwise unable to make a decision, unless this option is specified the resolver "
             "will try selecting packages using different options to the ones specified in the user's "
             "configuration.", true),
+    a_no_restarts_for(&g_resolution_options, "no-restarts-for", '\0',
+            "Do not restart if the problematic package has the specified package name. May be specified "
+            "multiple times. Use '*/*' to avoid all restarts."),
 
     g_dependent_options(this, "Dependent Options", "Dependent options. A package is dependent if it "
             "requires (or looks like it might require) a package which is being removed. By default, "

@@ -998,13 +998,18 @@ Decider::_made_wrong_decision(
     std::shared_ptr<Resolution> adapted_resolution(std::make_shared<Resolution>(*resolution));
     adapted_resolution->constraints()->add(constraint);
 
-    const std::shared_ptr<Decision> decision(_try_to_find_decision_for(
-                adapted_resolution, _allow_choice_changes_for(resolution), false, true, false, true));
-    if (decision)
+    if (_allowed_to_restart(adapted_resolution))
     {
-        resolution->decision()->accept(WrongDecisionVisitor(std::bind(
-                        &Decider::_suggest_restart_with, this, resolution, constraint, decision)));
-        resolution->decision() = decision;
+        const std::shared_ptr<Decision> decision(_try_to_find_decision_for(
+                    adapted_resolution, _allow_choice_changes_for(resolution), false, true, false, true));
+        if (decision)
+        {
+            resolution->decision()->accept(WrongDecisionVisitor(std::bind(
+                            &Decider::_suggest_restart_with, this, resolution, constraint, decision)));
+            resolution->decision() = decision;
+        }
+        else
+            resolution->decision() = _cannot_decide_for(adapted_resolution);
     }
     else
         resolution->decision() = _cannot_decide_for(adapted_resolution);
@@ -1018,6 +1023,13 @@ Decider::_suggest_restart_with(
 {
     throw SuggestRestart(resolution->resolvent(), resolution->decision(), constraint, decision,
             _make_constraint_for_preloading(decision, constraint));
+}
+
+bool
+Decider::_allowed_to_restart(
+        const std::shared_ptr<const Resolution> & resolution) const
+{
+    return _imp->fns.allowed_to_restart_fn()(resolution);
 }
 
 const std::shared_ptr<const Constraint>

@@ -31,6 +31,7 @@ noinst_HEADERS = \
 	accumulate_deps_and_provides.hh accumulate_deps_and_provides-fwd.hh \
 	allow_choice_changes_helper.hh allow_choice_changes_helper-fwd.hh \
 	allowed_to_remove_helper.hh allowed_to_remove_helper-fwd.hh \
+	allowed_to_restart_helper.hh allowed_to_restart_helper-fwd.hh \
 	always_via_binary_helper.hh always_via_binary_helper-fwd.hh \
 	any_child_score.hh any_child_score-fwd.hh any_child_score-se.hh \
 	can_use_helper.hh can_use_helper-fwd.hh \
@@ -101,6 +102,7 @@ libpaludisresolver_a_SOURCES = \
 	accumulate_deps_and_provides.cc \
 	allow_choice_changes_helper.cc \
 	allowed_to_remove_helper.cc \
+	allowed_to_restart_helper.cc \
 	always_via_binary_helper.cc \
 	any_child_score.cc \
 	can_use_helper.cc \
