@@ -78,14 +78,27 @@ namespace paludis
 IPCOutputManager::IPCOutputManager(const int r, const int w, const CreateOutputManagerInfo & i) :
     _imp(r, w)
 {
+    Log::get_instance()->message("ipc_output_manager.creating", ll_debug, lc_context)
+        << "Creating IPCOutputManager";
+
     std::stringstream ser_stream;
     Serialiser ser(ser_stream);
     i.serialise(ser);
+
+    Log::get_instance()->message("ipc_output_manager.create.send", ll_debug, lc_context)
+        << "Sending CREATE command";
+
     *_imp->pipe_command_write_stream << "CREATE 1 " << ser_stream.str() << '\0' << std::flush;
+
+    Log::get_instance()->message("ipc_output_manager.create.wait", ll_debug, lc_context)
+        << "Waiting for response to CREATE command";
 
     std::string response;
     if (! std::getline(*_imp->pipe_command_read_stream, response, '\0'))
         throw InternalError(PALUDIS_HERE, "couldn't get a pipe command response");
+
+    Log::get_instance()->message("ipc_output_manager.create.response", ll_debug, lc_context)
+        << "Response to CREATE command is '" << response << "'";
 
     std::vector<std::string> tokens;
     tokenise_whitespace(response, std::back_inserter(tokens));
@@ -93,14 +106,23 @@ IPCOutputManager::IPCOutputManager(const int r, const int w, const CreateOutputM
     if (tokens.size() != 4 || tokens[0] != "O" || tokens[1] != "1")
         throw InternalError(PALUDIS_HERE, "got response '" + response + "'");
 
+    Log::get_instance()->message("ipc_output_manager.making_streams", ll_debug, lc_context)
+        << "Creating streams";
+
     int stdout_fd(destringify<int>(tokens[2])), stderr_fd(destringify<int>(tokens[3]));
     _imp->stdout_stream = std::make_shared<SafeOFStream>(stdout_fd, false);
     _imp->stderr_stream = std::make_shared<SafeOFStream>(stderr_fd, false);
+
+    Log::get_instance()->message("ipc_output_manager.setting_stream_flags", ll_debug, lc_context)
+        << "Setting stream flags";
 
     if (0 != ::fcntl(stdout_fd, F_SETFD, FD_CLOEXEC))
         throw InternalError(PALUDIS_HERE, "fcntl failed");
     if (0 != ::fcntl(stderr_fd, F_SETFD, FD_CLOEXEC))
         throw InternalError(PALUDIS_HERE, "fcntl failed");
+
+    Log::get_instance()->message("ipc_output_manager.constructed", ll_debug, lc_context)
+        << "Constructed";
 }
 
 IPCOutputManager::~IPCOutputManager()
@@ -239,6 +261,9 @@ IPCInputManager::pipe_command_handler()
 std::string
 IPCInputManager::_pipe_command_handler(const std::string & s)
 {
+    Log::get_instance()->message("ipc_input_manager.pipe_command.called", ll_debug, lc_context)
+        << "Pipe command called: '" << s << "'";
+
     std::vector<std::string> tokens;
     tokenise_whitespace(s, std::back_inserter(tokens));
 
@@ -256,13 +281,23 @@ IPCInputManager::_pipe_command_handler(const std::string & s)
         if (tokens.size() != 3 || tokens[1] != "1")
             return "Ebad CREATE subcommand";
 
+        Log::get_instance()->message("ipc_input_manager.pipe_command.create_parsing", ll_debug, lc_context)
+            << "Got create command, parsing";
+
         std::stringstream stream(tokens[2]);
         Deserialiser deserialiser(_imp->env, stream);
         Deserialisation deserialisation("CreateOutputManagerInfo", deserialiser);
         const std::shared_ptr<CreateOutputManagerInfo> i(CreateOutputManagerInfo::deserialise(deserialisation));
 
+        Log::get_instance()->message("ipc_input_manager.pipe_command.create_wait", ll_debug, lc_context)
+            << "Got create command, waiting for lock";
+
         {
             Lock lock(_imp->mutex);
+
+            Log::get_instance()->message("ipc_input_manager.pipe_command.got_lock", ll_debug, lc_context)
+                << "Got create command, got lock";
+
             if (_imp->output_manager)
                 return "Ealready constructed";
 
@@ -271,6 +306,9 @@ IPCInputManager::_pipe_command_handler(const std::string & s)
                 _imp->output_manager = _imp->env->create_output_manager(*i);
                 if (_imp->on_create)
                     _imp->on_create(_imp->output_manager);
+
+                Log::get_instance()->message("ipc_input_manager.pipe_command.succeeeded", ll_debug, lc_context)
+                    << "Managed to create output manager";
             }
             catch (const Exception & e)
             {
@@ -278,11 +316,20 @@ IPCInputManager::_pipe_command_handler(const std::string & s)
                 if (_imp->on_create)
                     _imp->on_create(_imp->output_manager);
 
+                Log::get_instance()->message("ipc_input_manager.pipe_command.failed", ll_debug, lc_context)
+                    << "Couldn't create output manager";
+
                 return "Egot exception '" + e.message() + "' (" + e.what() + ") when creating output manager";
             }
         }
 
+        Log::get_instance()->message("ipc_input_manager.pipe_command.starting_thread", ll_debug, lc_context)
+            << "Starting copy thread";
+
         _imp->copy_thread = std::make_shared<Thread>(std::bind(&IPCInputManager::_copy_thread, this));
+
+        Log::get_instance()->message("ipc_input_manager.pipe_command.started_thread", ll_debug, lc_context)
+            << "Started copy thread";
 
         return "O 1 " + stringify(_imp->stdout_pipe.write_fd()) + " " + stringify(_imp->stderr_pipe.write_fd());
     }
