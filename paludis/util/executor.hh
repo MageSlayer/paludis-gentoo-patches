@@ -23,6 +23,7 @@
 #include <paludis/util/executor-fwd.hh>
 #include <paludis/util/pimp.hh>
 #include <paludis/util/attributes.hh>
+#include <paludis/util/mutex-fwd.hh>
 #include <string>
 #include <memory>
 
@@ -61,6 +62,8 @@ namespace paludis
             void add(const std::shared_ptr<Executive> & x);
 
             void execute();
+
+            Mutex & exclusivity_mutex() PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     extern template class Pimp<Executor>;

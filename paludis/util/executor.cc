@@ -165,5 +165,11 @@ Executor::execute()
     }
 }
 
+Mutex &
+Executor::exclusivity_mutex()
+{
+    return _imp->mutex;
+}
+
 template class Pimp<Executor>;
 
