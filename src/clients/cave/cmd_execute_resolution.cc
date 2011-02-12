@@ -78,6 +78,7 @@
 #include <paludis/selection.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/filter.hh>
+#include <paludis/package_database.hh>
 
 #include <set>
 #include <iterator>
@@ -142,6 +143,15 @@ namespace
                 "internal use; most users will not use this command directly.";
         }
     };
+
+    std::string lock_pipe_command(
+            Mutex & mutex,
+            ProcessPipeCommandFunction f,
+            const std::string & s)
+    {
+        Lock lock(mutex);
+        return f(s);
+    }
 
     std::string stringify_id_or_spec(
             const std::shared_ptr<Environment> & env,
@@ -391,7 +401,8 @@ namespace
             const PackageDepSpec & id_spec,
             const int x, const int y, const int f, const int s, bool normal_only,
             Mutex & job_mutex,
-            JobActiveState & active_state)
+            JobActiveState & active_state,
+            Mutex & executor_mutex)
     {
         Context context("When fetching for '" + stringify(id_spec) + "':");
 
@@ -447,7 +458,8 @@ namespace
                     std::ref(active_state), std::placeholders::_1));
 
         Process process(ProcessCommand({ "sh", "-c", command }));
-        process.pipe_command_handler("PALUDIS_IPC", input_manager.pipe_command_handler());
+        process.pipe_command_handler("PALUDIS_IPC", std::bind(lock_pipe_command,
+                    std::ref(executor_mutex), input_manager.pipe_command_handler(), std::placeholders::_1));
 
         int retcode(process.run().wait());
         return 0 == retcode;
@@ -464,7 +476,8 @@ namespace
             const int x, const int y,
             const int f, const int s,
             Mutex & job_mutex,
-            JobActiveState & active_state)
+            JobActiveState & active_state,
+            Mutex & executor_mutex)
     {
         Context context("When " + destination_string + " for '" + stringify(id_spec) + "':");
 
@@ -522,7 +535,8 @@ namespace
         IPCInputManager input_manager(env.get(), std::bind(&set_output_manager, std::ref(job_mutex),
                     std::ref(active_state), std::placeholders::_1));
         Process process(ProcessCommand({ "sh", "-c", command }));
-        process.pipe_command_handler("PALUDIS_IPC", input_manager.pipe_command_handler());
+        process.pipe_command_handler("PALUDIS_IPC", std::bind(lock_pipe_command,
+                    std::ref(executor_mutex), input_manager.pipe_command_handler(), std::placeholders::_1));
 
         int retcode(process.run().wait());
         const std::shared_ptr<OutputManager> output_manager(input_manager.underlying_output_manager_if_constructed());
@@ -537,7 +551,8 @@ namespace
             const int x, const int y,
             const int f, const int s,
             Mutex & job_mutex,
-            JobActiveState & active_state)
+            JobActiveState & active_state,
+            Mutex & executor_mutex)
     {
         Context context("When removing '" + stringify(id_spec) + "':");
 
@@ -591,7 +606,8 @@ namespace
                     std::ref(active_state), std::placeholders::_1));
 
         Process process(ProcessCommand({ "sh", "-c", command }));
-        process.pipe_command_handler("PALUDIS_IPC", input_manager.pipe_command_handler());
+        process.pipe_command_handler("PALUDIS_IPC", std::bind(lock_pipe_command,
+                    std::ref(executor_mutex), input_manager.pipe_command_handler(), std::placeholders::_1));
 
         int retcode(process.run().wait());
         const std::shared_ptr<OutputManager> output_manager(input_manager.underlying_output_manager_if_constructed());
@@ -825,6 +841,7 @@ namespace
         const int n_fetch_jobs;
         ExecuteCounts & counts;
         Mutex & job_mutex;
+        Mutex & executor_mutex;
         const ExecuteOneVisitorPart part;
         int retcode;
 
@@ -834,6 +851,7 @@ namespace
                 const int n,
                 ExecuteCounts & k,
                 Mutex & m,
+                Mutex & x,
                 ExecuteOneVisitorPart p,
                 int r) :
             env(e),
@@ -841,6 +859,7 @@ namespace
             n_fetch_jobs(n),
             counts(k),
             job_mutex(m),
+            executor_mutex(x),
             part(p),
             retcode(r)
         {
@@ -894,7 +913,7 @@ namespace
 
                         if (! do_fetch(env, cmdline, n_fetch_jobs, install_item.origin_id_spec(), counts.x_installs, counts.y_installs,
                                     counts.f_installs, counts.s_installs, false,
-                                    job_mutex, *active_state))
+                                    job_mutex, *active_state, executor_mutex))
                         {
                             Lock lock(job_mutex);
                             install_item.set_state(active_state->failed());
@@ -904,7 +923,7 @@ namespace
 
                         if (! do_install(env, cmdline, n_fetch_jobs, install_item.origin_id_spec(), install_item.destination_repository_name(),
                                     install_item.replacing_specs(), destination_string,
-                                    counts.x_installs, counts.y_installs, counts.f_installs, counts.s_installs, job_mutex, *active_state))
+                                    counts.x_installs, counts.y_installs, counts.f_installs, counts.s_installs, job_mutex, *active_state, executor_mutex))
                         {
                             Lock lock(job_mutex);
                             install_item.set_state(active_state->failed());
@@ -919,6 +938,7 @@ namespace
 
                 case x1_post:
                     done_action(env, action_string, ensequence(install_item.origin_id_spec()), install_item.replacing_specs(), 0 == retcode);
+                    env->package_database()->fetch_repository(install_item.destination_repository_name())->invalidate();
                     break;
             }
 
@@ -949,7 +969,7 @@ namespace
                                 i_end(uninstall_item.ids_to_remove_specs()->end()) ;
                                 i != i_end ; ++i)
                             if (! do_uninstall(env, cmdline, n_fetch_jobs, *i, counts.x_installs, counts.y_installs,
-                                        counts.f_installs, counts.s_installs, job_mutex, *active_state))
+                                        counts.f_installs, counts.s_installs, job_mutex, *active_state, executor_mutex))
                             {
                                 Lock lock(job_mutex);
                                 uninstall_item.set_state(active_state->failed());
@@ -991,7 +1011,7 @@ namespace
                         }
 
                         if (! do_fetch(env, cmdline, n_fetch_jobs, fetch_item.origin_id_spec(), counts.x_fetches, counts.y_fetches,
-                                    counts.f_fetches, counts.s_fetches, true, job_mutex, *active_state))
+                                    counts.f_fetches, counts.s_fetches, true, job_mutex, *active_state, executor_mutex))
                         {
                             Lock lock(job_mutex);
                             fetch_item.set_state(active_state->failed());
@@ -1236,7 +1256,7 @@ namespace
     {
         const std::shared_ptr<Environment> env;
         const ExecuteResolutionCommandLine & cmdline;
-        const Executor & executor;
+        Executor & executor;
         const int n_fetch_jobs;
         const std::shared_ptr<ExecuteJob> job;
         const std::shared_ptr<JobLists> lists;
@@ -1256,7 +1276,7 @@ namespace
         ExecuteJobExecutive(
                 const std::shared_ptr<Environment> & e,
                 const ExecuteResolutionCommandLine & c,
-                const Executor & x,
+                Executor & x,
                 const int n,
                 const std::shared_ptr<ExecuteJob> & j,
                 const std::shared_ptr<JobLists> & l,
@@ -1374,7 +1394,7 @@ namespace
 
             if (want)
             {
-                ExecuteOneVisitor execute(env, cmdline, n_fetch_jobs, counts, job_mutex, x1_pre, local_retcode);
+                ExecuteOneVisitor execute(env, cmdline, n_fetch_jobs, counts, job_mutex, executor.exclusivity_mutex(), x1_pre, local_retcode);
                 int job_retcode(job->accept_returning<int>(execute));
                 local_retcode |= job_retcode;
             }
@@ -1384,7 +1404,7 @@ namespace
         {
             if (want)
             {
-                ExecuteOneVisitor execute(env, cmdline, n_fetch_jobs, counts, job_mutex, x1_main, local_retcode);
+                ExecuteOneVisitor execute(env, cmdline, n_fetch_jobs, counts, job_mutex, executor.exclusivity_mutex(), x1_main, local_retcode);
                 int job_retcode(job->accept_returning<int>(execute));
                 local_retcode |= job_retcode;
             }
@@ -1466,7 +1486,7 @@ namespace
         {
             if (want)
             {
-                ExecuteOneVisitor execute(env, cmdline, n_fetch_jobs, counts, job_mutex, x1_post, local_retcode);
+                ExecuteOneVisitor execute(env, cmdline, n_fetch_jobs, counts, job_mutex, executor.exclusivity_mutex(), x1_post, local_retcode);
                 local_retcode |= job->accept_returning<int>(execute);
 
                 Lock lock(job_mutex);
