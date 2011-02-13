@@ -40,6 +40,7 @@ command_MANS = \
 	cave-info.1 \
 	cave-manage-search-index.1 \
 	cave-match.1 \
+	cave-mirror.1 \
 	cave-owner.1 \
 	cave-perform.1 \
 	cave-print-best-version.1 \
@@ -142,6 +143,7 @@ libcave_a_SOURCES = \
 	cmd_info.cc cmd_info.hh cmd_info-fmt.hh \
 	cmd_manage_search_index.cc cmd_manage_search_index.hh \
 	cmd_match.cc cmd_match.hh \
+	cmd_mirror.cc cmd_mirror.hh \
 	cmd_owner.cc cmd_owner.hh cmd_owner-fmt.hh \
 	cmd_perform.cc cmd_perform.hh cmd_perform-fmt.hh \
 	cmd_print_best_version.cc cmd_print_best_version.hh \

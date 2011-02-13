@@ -53,6 +53,7 @@
 #include "cmd_info.hh"
 #include "cmd_manage_search_index.hh"
 #include "cmd_match.hh"
+#include "cmd_mirror.hh"
 #include "cmd_owner.hh"
 #include "cmd_perform.hh"
 #include "cmd_print_best_version.hh"
@@ -171,6 +172,7 @@ CommandFactory::CommandFactory() :
     _imp->handlers.insert(std::make_pair("info", std::bind(&make_command<InfoCommand>)));
     _imp->handlers.insert(std::make_pair("manage-search-index", std::bind(&make_command<ManageSearchIndexCommand>)));
     _imp->handlers.insert(std::make_pair("match", std::bind(&make_command<MatchCommand>)));
+    _imp->handlers.insert(std::make_pair("mirror", std::bind(&make_command<MirrorCommand>)));
     _imp->handlers.insert(std::make_pair("owner", std::bind(&make_command<OwnerCommand>)));
     _imp->handlers.insert(std::make_pair("perform", std::bind(&make_command<PerformCommand>)));
     _imp->handlers.insert(std::make_pair("purge", std::bind(&make_command<PurgeCommand>)));

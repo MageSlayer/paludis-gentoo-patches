@@ -44,6 +44,7 @@ CAVE_COMMANDS_HTML = \
 	cave-info.html \
 	cave-manage-search-index.html \
 	cave-match.html \
+	cave-mirror.html \
 	cave-owner.html \
 	cave-perform.html \
 	cave-print-best-version.html \
