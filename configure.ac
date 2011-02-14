@@ -947,6 +947,22 @@ fi
 AC_SUBST([DOXYGEN_TAG_FILES])
 dnl }}}
 
+dnl {{{ asciidoc & xmlto
+AC_CHECK_PROG(HAVE_ASCIIDOC, [asciidoc], [yes], [no])
+AC_SUBST([HAVE_ASCIIDOC])
+AM_CONDITIONAL([HAVE_ASCIIDOC], test "x$HAVE_ASCIIDOC" = "xyes")
+if test "x$HAVE_ASCIIDOC" = xno ; then
+	AC_MSG_ERROR([asciidoc not found])
+fi
+
+AC_CHECK_PROG(HAVE_XMLTO, [xmlto], [yes], [no])
+AC_SUBST([HAVE_XMLTO])
+AM_CONDITIONAL([HAVE_XMLTO], test "x$HAVE_XMLTO" = "xyes")
+if test "x$HAVE_XMLTO" = xno ; then
+	AC_MSG_ERROR([xmlto not found])
+fi
+dnl }}}
+
 dnl {{{
 AC_MSG_CHECKING([whether to use htmltidy to verify documentation])
 AC_ARG_ENABLE([htmltidy],
