@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -39,14 +39,14 @@ namespace paludis
                         const std::shared_ptr<const Sequence<std::string > > & args
                         );
 
-                void run_hosted(
+                int run_hosted(
                         const std::shared_ptr<Environment> &,
                         const SearchCommandLineCandidateOptions &,
                         const SearchCommandLineMatchOptions &,
                         const SearchCommandLineIndexOptions &,
                         const std::string &,
                         const std::function<void (const PackageDepSpec &)> &,
-                        const std::function<void (const std::string &)> &);
+                        const std::function<void (const std::string &)> &) PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 std::shared_ptr<args::ArgsHandler> make_doc_cmdline();
         };

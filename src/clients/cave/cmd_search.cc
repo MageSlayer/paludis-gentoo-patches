@@ -278,6 +278,8 @@ SearchCommand::run(
     if (cmdline.begin_parameters() == cmdline.end_parameters())
         throw args::DoHelp("search requires at least one parameter");
 
+    int retcode(0);
+
     const std::shared_ptr<Sequence<std::string> > show_args(std::make_shared<Sequence<std::string>>());
 
     std::string name_description_substring_hint;
@@ -311,7 +313,7 @@ SearchCommand::run(
         MatchCommand match_command;
 
         std::shared_ptr<Set<QualifiedPackageName> > matches(std::make_shared<Set<QualifiedPackageName>>());
-        find_candidates_command.run_hosted(env, cmdline.search_options, cmdline.match_options,
+        retcode |= find_candidates_command.run_hosted(env, cmdline.search_options, cmdline.match_options,
                 cmdline.index_options, name_description_substring_hint, std::bind(
                     &found_candidate, env, std::ref(match_command), std::cref(cmdline.match_options),
                     std::placeholders::_1, patterns, std::function<void (const PackageDepSpec &)>(std::bind(
@@ -346,7 +348,7 @@ SearchCommand::run(
         show_args->push_back("--description-keys");
 
     ShowCommand show_command;
-    return show_command.run(env, show_args);
+    return show_command.run(env, show_args) | retcode;
 }
 
 std::shared_ptr<args::ArgsHandler>

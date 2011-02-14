@@ -141,17 +141,15 @@ FindCandidatesCommand::run(
     if (cmdline.begin_parameters() != cmdline.end_parameters())
         throw args::DoHelp("find-candidates takes no parameters");
 
-    run_hosted(env, cmdline.search_options, cmdline.match_options, cmdline.index_options,
+    return run_hosted(env, cmdline.search_options, cmdline.match_options, cmdline.index_options,
             cmdline.a_name_description_substring_hint.argument(), &print_spec, &no_step);
-
-    return EXIT_SUCCESS;
 }
 
 typedef std::set<RepositoryName> RepositoryNames;
 typedef std::set<CategoryNamePart> CategoryNames;
 typedef std::set<QualifiedPackageName> QualifiedPackageNames;
 
-void
+int
 FindCandidatesCommand::run_hosted(
         const std::shared_ptr<Environment> & env,
         const SearchCommandLineCandidateOptions & search_options,
@@ -161,6 +159,8 @@ FindCandidatesCommand::run_hosted(
         const std::function<void (const PackageDepSpec &)> & yield,
         const std::function<void (const std::string &)> & step)
 {
+    int retcode(0);
+
     if (index_options.a_index.specified())
     {
         step("Searching index");
@@ -247,39 +247,51 @@ FindCandidatesCommand::run_hosted(
         for (QualifiedPackageNames::const_iterator q(package_names.begin()), q_end(package_names.end()) ;
                 q != q_end ; ++q)
         {
-            if (search_options.a_all_versions.specified())
+            try
             {
-                if (search_options.a_visible.specified())
+                if (search_options.a_all_versions.specified())
                 {
-                    const auto ids((*env)[selection::AllVersionsUnsorted(generator::Package(*q) | filter::NotMasked())]);
-                    check_candidates(yield, step, ids);
+                    if (search_options.a_visible.specified())
+                    {
+                        const auto ids((*env)[selection::AllVersionsUnsorted(generator::Package(*q) | filter::NotMasked())]);
+                        check_candidates(yield, step, ids);
+                    }
+                    else
+                    {
+                        const auto ids((*env)[selection::AllVersionsUnsorted(generator::Package(*q))]);
+                        check_candidates(yield, step, ids);
+                    }
                 }
                 else
                 {
-                    const auto ids((*env)[selection::AllVersionsUnsorted(generator::Package(*q))]);
+                    std::shared_ptr<const PackageIDSequence> ids;
+
+                    ids = ((*env)[selection::BestVersionOnly(generator::Package(*q) | filter::SupportsAction<InstallAction>() | filter::NotMasked())]);
+
+                    if (search_options.a_visible.specified())
+                    {
+                        if (ids->empty())
+                            ids = ((*env)[selection::BestVersionOnly(generator::Package(*q) | filter::NotMasked())]);
+                    }
+                    else
+                    {
+                        if (ids->empty())
+                            ids = ((*env)[selection::BestVersionOnly(generator::Package(*q) | filter::SupportsAction<InstallAction>())]);
+                        if (ids->empty())
+                            ids = ((*env)[selection::BestVersionOnly(generator::Package(*q))]);
+                    }
+
                     check_candidates(yield, step, ids);
                 }
             }
-            else
+            catch (const InternalError &)
             {
-                std::shared_ptr<const PackageIDSequence> ids;
-
-                ids = ((*env)[selection::BestVersionOnly(generator::Package(*q) | filter::SupportsAction<InstallAction>() | filter::NotMasked())]);
-
-                if (search_options.a_visible.specified())
-                {
-                    if (ids->empty())
-                        ids = ((*env)[selection::BestVersionOnly(generator::Package(*q) | filter::NotMasked())]);
-                }
-                else
-                {
-                    if (ids->empty())
-                        ids = ((*env)[selection::BestVersionOnly(generator::Package(*q) | filter::SupportsAction<InstallAction>())]);
-                    if (ids->empty())
-                        ids = ((*env)[selection::BestVersionOnly(generator::Package(*q))]);
-                }
-
-                check_candidates(yield, step, ids);
+                throw;
+            }
+            catch (const Exception & e)
+            {
+                std::cerr << "When processing '" << *q << "' got exception '" << e.message() << "' (" << e.what() << ")" << std::endl;
+                retcode |= 1;
             }
         }
     }
@@ -320,6 +332,8 @@ FindCandidatesCommand::run_hosted(
             check_candidates(yield, step, ids);
         }
     }
+
+    return retcode;
 }
 
 std::shared_ptr<args::ArgsHandler>
