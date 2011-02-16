@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,6 +21,7 @@
 #include "command_factory.hh"
 #include "command_line.hh"
 #include <paludis/args/man.hh>
+#include <paludis/args/do_help.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
 
@@ -75,7 +76,7 @@ main(int argc, char * argv[])
     else if (cmdline.a_html.specified())
         w = std::make_shared<paludis::args::HtmlWriter>(cout);
     else
-        w = std::make_shared<paludis::args::ManWriter>(cout);
+        throw paludis::args::DoHelp("No format specified");
 
     if (cmdline.begin_parameters() == cmdline.end_parameters())
     {
