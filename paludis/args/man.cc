@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  * Copyright (c) 2011 Ingmar Vanhassel
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -297,6 +297,7 @@ AsciidocWriter::start_description(const std::string & description)
 void
 AsciidocWriter::extra_description(const std::string & description)
 {
+    _os << endl;
     escape_asciidoc(_os, description);
     _os << endl << endl;
 }
