@@ -494,6 +494,8 @@ paludis-*.*.*.tar.bz2
 /src/clients/accerso/*.txt
 /src/clients/accerso/*.xml
 /src/clients/appareo/appareo
+/src/clients/appareo/*.txt
+/src/clients/appareo/*.xml
 /src/clients/cave/cave
 /src/clients/cave/*.txt
 /src/clients/cave/*.xml

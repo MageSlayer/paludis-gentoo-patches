@@ -14,8 +14,20 @@ bin_PROGRAMS = appareo
 noinst_PROGRAMS = man-appareo
 man_MANS = appareo.1
 
-appareo.1 : man-appareo
-	./man-appareo > $@
+SUFFIXES = .1 .txt .xml
+
+man_MANS_txts = appareo.txt
+man_MANS_xmls = accerso.xml
+
+$(man_MANS_txts) : man-appareo
+	if ! ./man-appareo --asciidoc `echo $@ | sed -e 's.^appareo-*..' -e 's,\.txt$$,,'` > $@ ; then rm -f $@ ; exit 1 ; fi
+
+.txt.xml :
+	asciidoc --doctype=manpage --backend=docbook --out-file=$@ $<
+
+.xml.1 :
+	xmlto man $<
+	@: $@
 
 man_appareo_SOURCES = \
 	man_appareo.cc \
@@ -47,5 +59,9 @@ EXTRA_DIST = \
 	$(man_MANS) \
 	$(TESTS)
 
-DISTCLEANFILES = $(man_MANS) $(noinst_DATA)
+DISTCLEANFILES = \
+	$(man_MANS) \
+	$(noinst_DATA) \
+	$(man_MANS_txts) \
+	$(man_MANS_xmls)
 
