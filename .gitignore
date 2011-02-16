@@ -491,6 +491,8 @@ paludis-*.*.*.tar.bz2
 /paludis/version_spec_TEST
 /pkg-config/paludis.pc
 /src/clients/accerso/accerso
+/src/clients/accerso/*.txt
+/src/clients/accerso/*.xml
 /src/clients/appareo/appareo
 /src/clients/cave/cave
 /src/clients/cave/*.txt

@@ -14,8 +14,20 @@ bin_PROGRAMS = accerso
 noinst_PROGRAMS = man-accerso
 man_MANS = accerso.1
 
-accerso.1 : man-accerso
-	./man-accerso > $@
+SUFFIXES = .1 .txt .xml
+
+man_MANS_txts = accerso.txt
+man_MANS_xmls = accerso.xml
+
+$(man_MANS_txts) : man-accerso
+	if ! ./man-accerso --asciidoc `echo $@ | sed -e 's.^accerso-*..' -e 's,\.txt$$,,'` > $@ ; then rm -f $@ ; exit 1 ; fi
+
+.txt.xml :
+	asciidoc --doctype=manpage --backend=docbook --out-file=$@ $<
+
+.xml.1 :
+	xmlto man $<
+	@: $@
 
 man_accerso_SOURCES = \
 	man_accerso.cc \
@@ -47,5 +59,9 @@ EXTRA_DIST = \
 	$(man_MANS) \
 	$(TESTS)
 
-DISTCLEANFILES = $(man_MANS) $(noinst_DATA)
+DISTCLEANFILES = \
+	$(man_MANS) \
+	$(noinst_DATA) \
+	$(man_MANS_txts) \
+	$(man_MANS_xmls)
 
