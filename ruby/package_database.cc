@@ -69,8 +69,8 @@ namespace
             {
                 std::shared_ptr<PackageDatabase> * self_ptr;
                 Data_Get_Struct(self, std::shared_ptr<PackageDatabase>, self_ptr);
-                return rb_str_new2(stringify((*self_ptr)->fetch_unique_qualified_package_name(
-                                PackageNamePart(StringValuePtr(argv[0])), 2 == argc ? value_to_filter(argv[1]) : filter::All())).c_str());
+                return qualified_package_name_to_value((*self_ptr)->fetch_unique_qualified_package_name(
+                                PackageNamePart(StringValuePtr(argv[0])), 2 == argc ? value_to_filter(argv[1]) : filter::All()));
             }
             else
                 rb_raise(rb_eArgError, "fetch_unique_qualified_package_name expects one or two arguments, but got %d",argc);
