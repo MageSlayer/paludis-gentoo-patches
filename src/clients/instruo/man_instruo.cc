@@ -19,6 +19,7 @@
 
 #include "command_line.hh"
 #include <paludis/args/man.hh>
+#include <paludis/args/do_help.hh>
 
 #include <iostream>
 #include <cstdlib>
@@ -32,10 +33,12 @@ namespace
         paludis::args::ArgsHandler
     {
         paludis::args::ArgsGroup group;
+        paludis::args::SwitchArg a_asciidoc;
         paludis::args::SwitchArg a_html;
 
         ManCommandLine() :
             group(main_options_section(), "", ""),
+            a_asciidoc(&group, "asciidoc", '\0', "", false),
             a_html(&group, "html", '\0', "", false)
         {
         }
@@ -63,16 +66,15 @@ main(int argc, char * argv[])
     ManCommandLine cmdline;
     cmdline.run(argc, argv, "", "", "");
 
-    if (cmdline.a_html.specified())
-    {
-        paludis::args::HtmlWriter hw(cout);
-        paludis::args::generate_doc(hw, CommandLine::get_instance());
-    }
+    std::shared_ptr<paludis::args::DocWriter> w;
+    if (cmdline.a_asciidoc.specified())
+        w = std::make_shared<paludis::args::AsciidocWriter>(cout);
+    else if (cmdline.a_html.specified())
+        w = std::make_shared<paludis::args::HtmlWriter>(cout);
     else
-    {
-        paludis::args::ManWriter mw(cout);
-        paludis::args::generate_doc(mw, CommandLine::get_instance());
-    }
+        throw paludis::args::DoHelp("No format specified");
+
+    paludis::args::generate_doc(*w, CommandLine::get_instance());
 
     return EXIT_SUCCESS;
 }

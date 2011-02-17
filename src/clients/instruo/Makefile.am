@@ -14,8 +14,20 @@ bin_PROGRAMS = instruo
 noinst_PROGRAMS = man-instruo
 man_MANS = instruo.1
 
-instruo.1 : man-instruo
-	./man-instruo > $@
+SUFFIXES = .1 .txt .xml
+
+man_MANS_txts = instruo.txt
+man_MANS_xmls = instruo.xml
+
+$(man_MANS_txts) : man-instruo
+	if ! ./man-instruo --asciidoc `echo $@ | sed -e 's.^instruo-*..' -e 's,\.txt$$,,'` > $@ ; then rm -f $@ ; exit 1 ; fi
+
+.txt.xml :
+	asciidoc --doctype=manpage --backend=docbook --out-file=$@ $<
+
+.xml.1 :
+	xmlto man $<
+	@: $@
 
 man_instruo_SOURCES = \
 	man_instruo.cc \
@@ -47,5 +59,9 @@ EXTRA_DIST = \
 	$(man_MANS) \
 	$(TESTS)
 
-DISTCLEANFILES = $(man_MANS) $(noinst_DATA)
+DISTCLEANFILES = \
+	$(man_MANS) \
+	$(noinst_DATA) \
+	$(man_MANS_txts) \
+	$(man_MANS_xmls)
 
