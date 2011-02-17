@@ -500,6 +500,8 @@ paludis-*.*.*.tar.bz2
 /src/clients/cave/*.txt
 /src/clients/cave/*.xml
 /src/clients/instruo/instruo
+/src/clients/instruo/*.txt
+/src/clients/instruo/*.xml
 /stamp-h1
 /test/test_fail_TEST
 /test/test_pass_TEST
