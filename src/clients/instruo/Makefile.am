@@ -27,7 +27,6 @@ $(man_MANS_txts) : man-instruo
 
 .xml.1 : $(man_MANS_xmls)
 	xmlto man $<
-	@: $@
 
 man_instruo_SOURCES = \
 	man_instruo.cc \

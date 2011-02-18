@@ -98,7 +98,6 @@ $(man_MANS_txts) : man-cave
 
 .xml.1 : $(man_MANS_xmls)
 	xmlto man $<
-	@: $@
 
 cave_SOURCES = \
 	cave.cc
