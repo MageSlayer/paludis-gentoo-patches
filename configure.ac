@@ -1,7 +1,7 @@
 dnl vim: set sw=4 sts=4 ts=4 noet ft=config foldmethod=marker foldmarker={{{,}}} :
 
 dnl {{{ program, version
-AC_PREREQ([2.68])
+AC_PREREQ([2.65])
 AC_INIT
 AC_CONFIG_SRCDIR([paludis/paludis.hh])
 AC_CONFIG_AUX_DIR(config)
