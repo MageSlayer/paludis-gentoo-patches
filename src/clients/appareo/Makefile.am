@@ -17,7 +17,7 @@ man_MANS = appareo.1
 SUFFIXES = .1 .txt .xml
 
 man_MANS_txts = appareo.txt
-man_MANS_xmls = accerso.xml
+man_MANS_xmls = appareo.xml
 
 $(man_MANS_txts) : man-appareo
 	if ! ./man-appareo --asciidoc `echo $@ | sed -e 's.^appareo-*..' -e 's,\.txt$$,,'` > $@ ; then rm -f $@ ; exit 1 ; fi
