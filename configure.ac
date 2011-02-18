@@ -1,8 +1,9 @@
 dnl vim: set sw=4 sts=4 ts=4 noet ft=config foldmethod=marker foldmarker={{{,}}} :
 
 dnl {{{ program, version
-AC_PREREQ(2.59)
-AC_INIT([paludis/paludis.hh])
+AC_PREREQ([2.68])
+AC_INIT
+AC_CONFIG_SRCDIR([paludis/paludis.hh])
 AC_CONFIG_AUX_DIR(config)
 
 VERSION_MAJOR=0
@@ -75,7 +76,7 @@ dnl {{{ basic toolchain checks
 AC_PROG_CXX
 AC_PROG_INSTALL
 AC_PROG_LN_S
-AC_PROG_LIBTOOL
+LT_INIT
 AC_PROG_MAKE_SET
 dnl }}}
 
@@ -1737,8 +1738,8 @@ AC_SUBST([BUILDDATE])
 dnl }}}
 
 dnl {{{ output
-AM_CONFIG_HEADER(config.h)
-AC_OUTPUT(
+AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_FILES([
 	Makefile
 	bash-completion/Makefile
 	doc/Makefile
@@ -1816,6 +1817,7 @@ AC_OUTPUT(
 	vim/ftdetect/Makefile
 	vim/syntax/Makefile
 	zsh-completion/Makefile
-	)
+	])
+AC_OUTPUT
 dnl }}}
 
