@@ -93,10 +93,10 @@ $(man_MANS_txts) : man-cave
 	    CAVE_COMMANDS_PATH="" \
 	    ./man-cave --asciidoc `echo $@ | sed -e 's.^cave-*..' -e 's,\.txt$$,,'` > $@ ; then rm -f $@ ; exit 1 ; fi
 
-.txt.xml :
+.txt.xml : $(man_MANS_txts)
 	asciidoc --doctype=manpage --backend=docbook --out-file=$@ $<
 
-.xml.1 :
+.xml.1 : $(man_MANS_xmls)
 	xmlto man $<
 	@: $@
 
