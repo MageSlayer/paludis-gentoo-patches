@@ -22,10 +22,10 @@ man_MANS_xmls = instruo.xml
 $(man_MANS_txts) : man-instruo
 	if ! ./man-instruo --asciidoc `echo $@ | sed -e 's.^instruo-*..' -e 's,\.txt$$,,'` > $@ ; then rm -f $@ ; exit 1 ; fi
 
-.txt.xml :
+.txt.xml : $(man_MANS_txts)
 	asciidoc --doctype=manpage --backend=docbook --out-file=$@ $<
 
-.xml.1 :
+.xml.1 : $(man_MANS_xmls)
 	xmlto man $<
 	@: $@
 
