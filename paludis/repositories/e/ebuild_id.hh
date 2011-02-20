@@ -24,6 +24,7 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/repositories/e/eapi-fwd.hh>
 #include <paludis/repositories/e/e_repository_id.hh>
+#include <paludis/util/exception.hh>
 
 namespace paludis
 {
@@ -97,6 +98,7 @@ namespace paludis
                 virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_use_expand_hidden_key() const;
                 virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > defined_phases_key() const;
                 virtual const std::shared_ptr<const MetadataSpecTreeKey<RequiredUseSpecTree> > required_use_key() const;
+                virtual const std::shared_ptr<const MetadataValueKey<std::string> > scm_revision_key() const;
 
                 virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > behaviours_key() const;
 
@@ -168,6 +170,8 @@ namespace paludis
                 virtual void purge_invalid_cache() const;
 
                 bool might_be_binary() const;
+
+                virtual void set_scm_revision(const std::string &) const;
         };
     }
 }

@@ -1053,6 +1053,11 @@ WriteVDBEntryCommand::operator() ()
                     join(params.package_id()->raw_iuse_effective_key()->value()->begin(),
                         params.package_id()->raw_iuse_effective_key()->value()->end(), " "));
 
+    if (! params.package_id()->eapi()->supported()->ebuild_metadata_variables()->scm_revision()->name().empty())
+        if (params.package_id()->scm_revision_key())
+            process.setenv(params.package_id()->eapi()->supported()->ebuild_metadata_variables()->scm_revision()->name(),
+                    params.package_id()->scm_revision_key()->value());;
+
     if (params.maybe_output_manager())
         process
             .capture_stderr(params.maybe_output_manager()->stderr_stream())
@@ -1293,6 +1298,11 @@ WriteBinaryEbuildCommand::operator() ()
         .setenv("PALUDIS_PIPE_COMMANDS_STATUS_SUPPORTED", "yes")
         .pipe_command_handler("PALUDIS_PIPE_COMMAND", std::bind(&pipe_command_handler, params.environment(),
                     params.package_id(), false, _1, params.maybe_output_manager()));
+
+    if (! params.package_id()->eapi()->supported()->ebuild_metadata_variables()->scm_revision()->name().empty())
+        if (params.package_id()->scm_revision_key())
+            process.setenv(params.package_id()->eapi()->supported()->ebuild_metadata_variables()->scm_revision()->name(),
+                    params.package_id()->scm_revision_key()->value());;
 
     if (0 != process.run().wait())
         throw ActionFailedError("Write binary command failed");

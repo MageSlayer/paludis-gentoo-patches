@@ -90,10 +90,8 @@ namespace paludis
                 virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > defined_phases_key() const;
                 virtual const std::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> > license_key() const;
                 virtual const std::shared_ptr<const MetadataSpecTreeKey<RequiredUseSpecTree> > required_use_key() const;
-
-                virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > behaviours_key() const;
-
                 virtual const std::shared_ptr<const MetadataValueKey<std::string> > scm_revision_key() const;
+                virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > behaviours_key() const;
 
                 virtual bool supports_action(const SupportsActionTestBase &) const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual void perform_action(Action &) const;
@@ -117,6 +115,8 @@ namespace paludis
 
                 virtual void purge_invalid_cache() const;
                 virtual void can_drop_in_memory_cache() const;
+
+                virtual void set_scm_revision(const std::string &) const PALUDIS_ATTRIBUTE((noreturn));
         };
     }
 }

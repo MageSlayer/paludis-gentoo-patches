@@ -35,3 +35,8 @@ exlogfailure()
     paludis_pipe_command KEEP_LOGS "$EAPI" "$@" >/dev/null
 }
 
+exsetscmrevision()
+{
+    paludis_pipe_command SET_SCM_REVISION "$EAPI" "$@" >/dev/null
+}
+

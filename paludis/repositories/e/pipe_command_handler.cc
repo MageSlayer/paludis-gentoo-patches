@@ -23,6 +23,7 @@
 #include <paludis/repositories/e/fix_locked_dependencies.hh>
 #include <paludis/repositories/e/dep_parser.hh>
 #include <paludis/repositories/e/spec_tree_pretty_printer.hh>
+#include <paludis/repositories/e/e_repository_id.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/exception.hh>
@@ -158,7 +159,7 @@ namespace
 
 std::string
 paludis::erepository::pipe_command_handler(const Environment * const environment,
-        const std::shared_ptr<const PackageID> & package_id, bool in_metadata_generation,
+        const std::shared_ptr<const ERepositoryID> & package_id, bool in_metadata_generation,
         const std::string & s, const std::shared_ptr<OutputManager> & maybe_output_manager)
 {
     Context context("In ebuild pipe command handler:");
@@ -225,6 +226,26 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
             if (maybe_output_manager)
                 maybe_output_manager->ignore_succeeded();
             return "O0;";
+        }
+        else if (tokens[0] == "SET_SCM_REVISION")
+        {
+            if (tokens.size() != 3)
+            {
+                Log::get_instance()->message("e.pipe_commands.set_scm_revision.bad", ll_warning, lc_context) << "Got too short SET_SCM_REVISION pipe command";
+                return "Ebad SET_SCM_REVISION command";
+            }
+            else
+            {
+                try
+                {
+                    package_id->set_scm_revision(tokens[2]);
+                    return "O0;";
+                }
+                catch (const Exception & e)
+                {
+                    return "Egot error '" + e.message() + "' (" + e.what() + ") when trying to SET_SCM_REVISION";
+                }
+            }
         }
         else if (tokens[0] == "MESSAGE")
         {

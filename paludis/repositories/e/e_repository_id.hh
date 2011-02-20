@@ -22,12 +22,20 @@
 
 #include <paludis/package_id.hh>
 #include <paludis/util/tribool.hh>
+#include <paludis/util/exception.hh>
 #include <paludis/repositories/e/eapi-fwd.hh>
 
 namespace paludis
 {
     namespace erepository
     {
+        class PALUDIS_VISIBLE CannotChangeSCMRevision :
+            public Exception
+        {
+            public:
+                CannotChangeSCMRevision(const std::string & id_s, const std::string & revision) throw ();
+        };
+
         class ERepositoryID :
             public PackageID
         {
@@ -47,6 +55,7 @@ namespace paludis
                 virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_use_expand_hidden_key() const = 0;
                 virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > defined_phases_key() const = 0;
                 virtual const std::shared_ptr<const MetadataSpecTreeKey<RequiredUseSpecTree> > required_use_key() const = 0;
+                virtual const std::shared_ptr<const MetadataValueKey<std::string> > scm_revision_key() const = 0;
 
                 virtual std::shared_ptr<const Set<std::string> > breaks_portage() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -58,6 +67,8 @@ namespace paludis
                 virtual void add_build_options(const std::shared_ptr<Choices> &) const = 0;
 
                 virtual void purge_invalid_cache() const = 0;
+
+                virtual void set_scm_revision(const std::string &) const = 0;
         };
     }
 }

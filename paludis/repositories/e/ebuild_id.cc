@@ -167,7 +167,7 @@ namespace paludis
         mutable std::shared_ptr<const LiteralMetadataTimeKey> generated_time;
         mutable std::shared_ptr<const LiteralMetadataValueKey<std::string> > generated_using;
         mutable std::shared_ptr<const LiteralMetadataStringSetKey> behaviours;
-
+        mutable std::shared_ptr<const LiteralMetadataValueKey<std::string> > scm_revision;
 
         Imp(const QualifiedPackageName & q, const VersionSpec & v,
                 const Environment * const e,
@@ -1403,6 +1403,13 @@ EbuildID::slot_key() const
     return _imp->slot;
 }
 
+const std::shared_ptr<const MetadataValueKey<std::string> >
+EbuildID::scm_revision_key() const
+{
+    need_keys_added();
+    return _imp->scm_revision;
+}
+
 namespace
 {
     std::string get_description(const std::shared_ptr<const UseDesc> & use_desc, const std::string & override_description,
@@ -1670,5 +1677,26 @@ bool
 EbuildID::is_installed() const
 {
     return false;
+}
+
+void
+EbuildID::set_scm_revision(const std::string & s) const
+{
+    Lock l(_imp->mutex);
+
+    if ((! eapi()->supported()) ||
+            eapi()->supported()->ebuild_metadata_variables()->scm_revision()->name().empty() ||
+            _imp->scm_revision)
+        throw CannotChangeSCMRevision(stringify(*this), s);
+    else
+    {
+        _imp->scm_revision = std::make_shared<LiteralMetadataValueKey<std::string> >(
+                eapi()->supported()->ebuild_metadata_variables()->scm_revision()->name(),
+                eapi()->supported()->ebuild_metadata_variables()->scm_revision()->description(),
+                mkt_normal,
+                s);
+
+        add_metadata_key(_imp->scm_revision);
+    }
 }
 

@@ -1117,3 +1117,9 @@ EInstalledRepositoryID::is_installed() const
     return true;
 }
 
+void
+EInstalledRepositoryID::set_scm_revision(const std::string & s) const
+{
+    throw CannotChangeSCMRevision(stringify(*this), s);
+}
+

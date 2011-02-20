@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -30,8 +30,10 @@ namespace paludis
 {
     namespace erepository
     {
+        struct ERepositoryID;
+
         std::string pipe_command_handler(const Environment * const,
-                const std::shared_ptr<const PackageID> &,
+                const std::shared_ptr<const ERepositoryID> &,
                 bool in_metadata_generation,
                 const std::string & s,
                 const std::shared_ptr<OutputManager> & maybe_output_manager);
