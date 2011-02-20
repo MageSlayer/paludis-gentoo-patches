@@ -153,6 +153,7 @@ namespace paludis
                 void load_generated_from(const std::shared_ptr<const EAPIMetadataVariable> &, const std::string &) const;
                 void load_generated_using(const std::string &, const std::string &, const std::string &) const;
                 void load_generated_time(const std::string &, const std::string &, const std::string &) const;
+                void load_scm_revision(const std::string &, const std::string &, const std::string &) const;
 
                 virtual bool supports_action(const SupportsActionTestBase &) const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual void perform_action(Action &) const;

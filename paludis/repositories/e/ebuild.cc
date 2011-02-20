@@ -681,6 +681,13 @@ EbuildMetadataCommand::load(const std::shared_ptr<const EbuildID> & id)
             id->load_remote_ids(m.remote_ids(), value);
     }
 
+    if (id->eapi()->supported()->is_pbin() && ! m.scm_revision()->name().empty())
+    {
+        std::string value(get(keys, m.scm_revision()->name()));
+        if (! value.empty())
+            id->load_scm_revision(m.scm_revision()->name(), m.scm_revision()->description(), value);
+    }
+
     if (! m.defined_phases()->name().empty())
     {
         std::set<std::string> defined_phases, raw_values, ebuild_functions;

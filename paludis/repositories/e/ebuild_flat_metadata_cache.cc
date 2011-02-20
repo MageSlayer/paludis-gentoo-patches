@@ -288,6 +288,13 @@ namespace
                 if (! value.empty())
                     id->load_remote_ids(m.remote_ids(), value);
             }
+
+            if (id->eapi()->supported()->is_pbin() && -1 != m.scm_revision()->flat_list_index() && ! m.scm_revision()->name().empty())
+            {
+                std::string value(lines.at(m.scm_revision()->flat_list_index()));
+                if (! value.empty())
+                    id->load_scm_revision(m.scm_revision()->name(), m.scm_revision()->description(), value);
+            }
         }
 
         Log::get_instance()->message("e.cache.success", ll_debug, lc_context) << "Successfully loaded cache file";
@@ -624,6 +631,13 @@ EbuildFlatMetadataCache::load(const std::shared_ptr<const EbuildID> & id, const 
                 if (! value.empty())
                     id->load_remote_ids(m.remote_ids(), value);
             }
+
+            if (id->eapi()->supported()->is_pbin() && ! m.scm_revision()->name().empty())
+            {
+                std::string value(keys[m.scm_revision()->name()]);
+                if (! value.empty())
+                    id->load_scm_revision(m.scm_revision()->name(), m.scm_revision()->description(), value);
+            }
         }
 
         Log::get_instance()->message("e.cache.success", ll_debug, lc_context) << "Successfully loaded cache file";
@@ -848,6 +862,10 @@ EbuildFlatMetadataCache::save(const std::shared_ptr<const EbuildID> & id)
         if (! m.defined_phases()->name().empty() && id->defined_phases_key())
             write_kv(cache, m.defined_phases()->name(), join(id->defined_phases_key()->value()->begin(),
                         id->defined_phases_key()->value()->end(), " "));
+
+        if (! m.scm_revision()->name().empty() && id->scm_revision_key())
+            write_kv(cache, m.scm_revision()->name(), id->scm_revision_key()->value());
+
     }
     catch (const InternalError &)
     {

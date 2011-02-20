@@ -1185,6 +1185,14 @@ EbuildID::load_generated_using(const std::string & r, const std::string & h, con
     add_metadata_key(_imp->generated_using);
 }
 
+void
+EbuildID::load_scm_revision(const std::string & r, const std::string & h, const std::string & v) const
+{
+    Lock l(_imp->mutex);
+    _imp->scm_revision = std::make_shared<LiteralMetadataValueKey<std::string> >(r, h, mkt_normal, v);
+    add_metadata_key(_imp->scm_revision);
+}
+
 namespace
 {
     struct SupportsActionQuery
