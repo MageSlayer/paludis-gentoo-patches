@@ -141,6 +141,7 @@ namespace
             n::required_use() = make_metadata_variable(k, "required_use"),
             n::restrictions() = make_metadata_variable(k, "restrict"),
             n::run_depend() = make_metadata_variable(k, "run_depend"),
+            n::scm_revision() = make_metadata_variable(k, "scm_revision"),
             n::short_description() = make_metadata_variable(k, "short_description"),
             n::slot() = make_metadata_variable(k, "slot"),
             n::src_uri() = make_metadata_variable(k, "src_uri"),

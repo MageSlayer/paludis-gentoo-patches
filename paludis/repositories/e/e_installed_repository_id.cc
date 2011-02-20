@@ -100,6 +100,7 @@ namespace
         std::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > remote_ids;
         std::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > bugs_to;
         std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > defined_phases;
+        std::shared_ptr<const MetadataValueKey<std::string> > scm_revision;
 
         std::shared_ptr<const MetadataValueKey<std::string> > asflags;
         std::shared_ptr<const MetadataValueKey<std::string> > cbuild;
@@ -248,6 +249,18 @@ EInstalledRepositoryID::need_keys_added() const
                 _imp->keys->defined_phases = EStringSetKeyStore::get_instance()->fetch(vars->defined_phases(),
                         d, mkt_internal);
                 add_metadata_key(_imp->keys->defined_phases);
+            }
+        }
+
+    if (! vars->scm_revision()->name().empty())
+        if ((_imp->dir / vars->scm_revision()->name()).stat().exists())
+        {
+            std::string d(file_contents(_imp->dir / vars->scm_revision()->name()));
+            if (! d.empty())
+            {
+                _imp->keys->scm_revision = std::make_shared<LiteralMetadataValueKey<std::string> >(vars->scm_revision()->name(),
+                        vars->scm_revision()->description(), mkt_normal, d);
+                add_metadata_key(_imp->keys->scm_revision);
             }
         }
 
@@ -865,6 +878,13 @@ EInstalledRepositoryID::from_repositories_key() const
 {
     need_keys_added();
     return _imp->keys->from_repositories;
+}
+
+const std::shared_ptr<const MetadataValueKey<std::string> >
+EInstalledRepositoryID::scm_revision_key() const
+{
+    need_keys_added();
+    return _imp->keys->scm_revision;
 }
 
 const std::shared_ptr<const MetadataValueKey<FSPath> >

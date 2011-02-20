@@ -93,6 +93,8 @@ namespace paludis
 
                 virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > behaviours_key() const;
 
+                virtual const std::shared_ptr<const MetadataValueKey<std::string> > scm_revision_key() const;
+
                 virtual bool supports_action(const SupportsActionTestBase &) const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual void perform_action(Action &) const;
 

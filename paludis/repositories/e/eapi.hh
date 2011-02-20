@@ -180,6 +180,7 @@ namespace paludis
         typedef Name<struct name_save_base_variables> save_base_variables;
         typedef Name<struct name_save_unmodifiable_variables> save_unmodifiable_variables;
         typedef Name<struct name_save_variables> save_variables;
+        typedef Name<struct name_scm_revision> scm_revision;
         typedef Name<struct name_shell_options> shell_options;
         typedef Name<struct name_short_description> short_description;
         typedef Name<struct name_slot> slot;
@@ -378,6 +379,7 @@ namespace paludis
             NamedValue<n::required_use, std::shared_ptr<const EAPIMetadataVariable> > required_use;
             NamedValue<n::restrictions, std::shared_ptr<const EAPIMetadataVariable> > restrictions;
             NamedValue<n::run_depend, std::shared_ptr<const EAPIMetadataVariable> > run_depend;
+            NamedValue<n::scm_revision, std::shared_ptr<const EAPIMetadataVariable> > scm_revision;
             NamedValue<n::short_description, std::shared_ptr<const EAPIMetadataVariable> > short_description;
             NamedValue<n::slot, std::shared_ptr<const EAPIMetadataVariable> > slot;
             NamedValue<n::src_uri, std::shared_ptr<const EAPIMetadataVariable> > src_uri;
