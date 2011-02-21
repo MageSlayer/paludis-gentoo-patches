@@ -190,7 +190,7 @@ namespace paludis
             virtual const std::shared_ptr<const Mask> mask_for_user(const std::shared_ptr<const PackageID> &, const bool will_be_used_for_overridden) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool unmasked_by_user(const std::shared_ptr<const PackageID> &) const
+            virtual bool unmasked_by_user(const std::shared_ptr<const PackageID> &, const std::string &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual std::shared_ptr<const FSPathSequence> hook_dirs() const

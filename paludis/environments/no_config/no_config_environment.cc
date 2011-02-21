@@ -503,7 +503,7 @@ NoConfigEnvironment::remove_from_world(const SetName &) const
 }
 
 bool
-NoConfigEnvironment::unmasked_by_user(const std::shared_ptr<const PackageID> &) const
+NoConfigEnvironment::unmasked_by_user(const std::shared_ptr<const PackageID> &, const std::string &) const
 {
     return false;
 }

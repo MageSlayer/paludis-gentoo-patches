@@ -63,7 +63,8 @@ namespace paludis
                 /**
                  * Query a mask.
                  */
-                bool query(const std::shared_ptr<const PackageID> &) const;
+                bool query(const std::shared_ptr<const PackageID> &,
+                        const std::string &) const;
         };
     }
 }

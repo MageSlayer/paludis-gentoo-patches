@@ -238,9 +238,11 @@ namespace paludis
              * should be used rather than calling this directly.
              *
              * \since 0.58 takes id by shared_ptr
+             * \since 0.60 takes optional extra reason string
              */
             virtual bool unmasked_by_user(
-                    const std::shared_ptr<const PackageID> &) const
+                    const std::shared_ptr<const PackageID> &,
+                    const std::string &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}

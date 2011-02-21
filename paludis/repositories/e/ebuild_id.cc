@@ -566,7 +566,7 @@ EbuildID::need_masks_added() const
                             _imp->environment->distribution())->concept_license(), license_key()->raw_name()));
     }
 
-    if (! _imp->environment->unmasked_by_user(shared_from_this()))
+    if (! _imp->environment->unmasked_by_user(shared_from_this(), ""))
     {
         /* repo unless user */
         if (_imp->repository_mask->value())

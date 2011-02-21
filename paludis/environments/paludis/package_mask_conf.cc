@@ -98,7 +98,7 @@ PackageMaskConf::add(const FSPath & filename)
 }
 
 bool
-PackageMaskConf::query(const std::shared_ptr<const PackageID> & e) const
+PackageMaskConf::query(const std::shared_ptr<const PackageID> & e, const std::string &) const
 {
     using namespace std::placeholders;
     if (indirect_iterator(_imp->masks.end()) != std::find_if(

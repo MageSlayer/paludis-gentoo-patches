@@ -1068,7 +1068,7 @@ FakePackageID::need_masks_added() const
             add_mask(std::make_shared<FakeUnacceptedMask>('L', "license", license_key()->raw_name()));
     }
 
-    if (! _imp->env->unmasked_by_user(shared_from_this()))
+    if (! _imp->env->unmasked_by_user(shared_from_this(), ""))
     {
         std::shared_ptr<const Mask> user_mask(_imp->env->mask_for_user(shared_from_this(), false));
         if (user_mask)

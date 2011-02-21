@@ -192,9 +192,9 @@ PaludisEnvironment::accept_license(const std::string & license, const std::share
 }
 
 bool
-PaludisEnvironment::unmasked_by_user(const std::shared_ptr<const PackageID> & d) const
+PaludisEnvironment::unmasked_by_user(const std::shared_ptr<const PackageID> & d, const std::string & reason) const
 {
-    return _imp->config->package_unmask_conf()->query(d);
+    return _imp->config->package_unmask_conf()->query(d, reason);
 }
 
 std::shared_ptr<const FSPathSequence>
@@ -431,7 +431,7 @@ PaludisEnvironment::mask_for_breakage(const std::shared_ptr<const PackageID> & i
 const std::shared_ptr<const Mask>
 PaludisEnvironment::mask_for_user(const std::shared_ptr<const PackageID> & d, const bool o) const
 {
-    if (_imp->config->package_mask_conf()->query(d))
+    if (_imp->config->package_mask_conf()->query(d, ""))
         return std::make_shared<UserConfigMask>(o);
 
     return std::shared_ptr<const Mask>();

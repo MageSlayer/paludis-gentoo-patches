@@ -672,7 +672,7 @@ PortageEnvironment::accept_keywords(const std::shared_ptr <const KeywordNameSet>
 }
 
 bool
-PortageEnvironment::unmasked_by_user(const std::shared_ptr<const PackageID> & e) const
+PortageEnvironment::unmasked_by_user(const std::shared_ptr<const PackageID> & e, const std::string &) const
 {
     for (PackageUnmask::const_iterator i(_imp->package_unmask.begin()), i_end(_imp->package_unmask.end()) ;
             i != i_end ; ++i)

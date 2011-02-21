@@ -102,7 +102,7 @@ class TestCase_04_Environment_subclassingd(unittest.TestCase):
         def mask_for_user(self, pid, b):
             return UserMask()
 
-        def unmasked_by_user(self, pid):
+        def unmasked_by_user(self, pid, reason):
             return False
 
         def bashrc_files(self):

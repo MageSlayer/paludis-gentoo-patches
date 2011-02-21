@@ -108,13 +108,13 @@ class EnvironmentImplementationWrapper :
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "mask_for_user");
         }
 
-        virtual bool unmasked_by_user(const std::shared_ptr<const PackageID> & p) const
+        virtual bool unmasked_by_user(const std::shared_ptr<const PackageID> & p, const std::string & s) const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             Lock l(get_mutex());
 
             if (bp::override f = get_override("unmasked_by_user"))
-                return f(p);
+                return f(p, s);
             else
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "unmasked_by_user");
         }
@@ -611,7 +611,7 @@ void expose_environment()
             )
 
         .def("unmasked_by_user", bp::pure_virtual(&EnvImp::unmasked_by_user),
-                "unmasked_by_user(PackageID) -> bool\n"
+                "unmasked_by_user(PackageID, String) -> bool\n"
                 "Do we have a user unmask for a particular package?\n\n"
                 "This is only applied to repository and profile style masks, not\n"
                 "keywords, licences etc. If true, user_mask shouldn't be used."

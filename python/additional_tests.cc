@@ -62,7 +62,7 @@ namespace environment
 
         e.mask_for_user(pid, false);
 
-        bool PALUDIS_ATTRIBUTE((unused)) b4(e.unmasked_by_user(pid));
+        bool PALUDIS_ATTRIBUTE((unused)) b4(e.unmasked_by_user(pid, ""));
 
         e.package_database();
 

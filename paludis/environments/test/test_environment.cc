@@ -189,7 +189,7 @@ TestEnvironment::mask_for_user(const std::shared_ptr<const PackageID> &, const b
 }
 
 bool
-TestEnvironment::unmasked_by_user(const std::shared_ptr<const PackageID> &) const
+TestEnvironment::unmasked_by_user(const std::shared_ptr<const PackageID> &, const std::string &) const
 {
     return false;
 }
