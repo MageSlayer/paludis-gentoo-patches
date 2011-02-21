@@ -28,7 +28,7 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/cookie.hh>
-#include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/visitor_cast.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -279,7 +279,7 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
         Repository::MetadataConstIterator k(repo->find_metadata("install_under"));
         if (k == repo->end_metadata())
             throw ActionFailedError("Could not fetch install_under key from owning repository");
-        const MetadataValueKey<FSPath> * kk(simple_visitor_cast<const MetadataValueKey<FSPath> >(**k));
+        const MetadataValueKey<FSPath> * kk(visitor_cast<const MetadataValueKey<FSPath> >(**k));
         if (! kk)
             throw ActionFailedError("Fetched install_under key but did not get an FSPath key from owning repository");
         install_under = kk->value();
@@ -290,7 +290,7 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
         Repository::MetadataConstIterator k(repo->find_metadata("rewrite_ids_over_to_root"));
         if (k == repo->end_metadata())
             throw ActionFailedError("Could not fetch rewrite_ids_over_to_root key from owning repository");
-        const MetadataValueKey<long> * kk(simple_visitor_cast<const MetadataValueKey<long> >(**k));
+        const MetadataValueKey<long> * kk(visitor_cast<const MetadataValueKey<long> >(**k));
         if (! kk)
             throw ActionFailedError("Fetched rewrite_ids_over_to_root key but did not get a long key from owning repository");
         rewrite_ids_over_to_root = kk->value();

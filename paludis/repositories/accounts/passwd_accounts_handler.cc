@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,7 +20,7 @@
 #include <paludis/repositories/accounts/passwd_accounts_handler.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/visitor_cast.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/join.hh>
@@ -62,7 +62,7 @@ PasswdAccountsHandler::merge_user(const MergeParams & params)
         if (params.package_id()->end_metadata() == m)
             throw ActionFailedError("Key 'username' for '" + stringify(*params.package_id()) + "' does not exist");
 
-        const MetadataValueKey<std::string> * k(simple_visitor_cast<const MetadataValueKey<std::string> >(**m));
+        const MetadataValueKey<std::string> * k(visitor_cast<const MetadataValueKey<std::string> >(**m));
         if (! k)
             throw ActionFailedError("Key 'username' for '" + stringify(*params.package_id()) + "' is not a string key");
 
@@ -79,7 +79,7 @@ PasswdAccountsHandler::merge_user(const MergeParams & params)
         if (params.package_id()->end_metadata() == m)
             break;
 
-        const MetadataValueKey<std::string> * k(simple_visitor_cast<const MetadataValueKey<std::string> >(**m));
+        const MetadataValueKey<std::string> * k(visitor_cast<const MetadataValueKey<std::string> >(**m));
         if (! k)
             throw ActionFailedError("Key 'gecos' for '" + stringify(*params.package_id()) + "' is not a string key");
 
@@ -99,7 +99,7 @@ PasswdAccountsHandler::merge_user(const MergeParams & params)
         if (params.package_id()->end_metadata() == m)
             break;
 
-        const MetadataValueKey<std::string> * k(simple_visitor_cast<const MetadataValueKey<std::string> >(**m));
+        const MetadataValueKey<std::string> * k(visitor_cast<const MetadataValueKey<std::string> >(**m));
         if (! k)
             throw ActionFailedError("Key 'preferred_uid' for '" + stringify(*params.package_id()) + "' is not a string key");
 
@@ -126,7 +126,7 @@ PasswdAccountsHandler::merge_user(const MergeParams & params)
         if (params.package_id()->end_metadata() == m)
             break;
 
-        const MetadataValueKey<std::string> * k(simple_visitor_cast<const MetadataValueKey<std::string> >(**m));
+        const MetadataValueKey<std::string> * k(visitor_cast<const MetadataValueKey<std::string> >(**m));
         if (! k)
             throw ActionFailedError("Key 'primary_group' for '" + stringify(*params.package_id()) + "' is not a string key");
 
@@ -146,7 +146,7 @@ PasswdAccountsHandler::merge_user(const MergeParams & params)
         if (params.package_id()->end_metadata() == m)
             break;
 
-        const MetadataCollectionKey<Set<std::string> > * k(simple_visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**m));
+        const MetadataCollectionKey<Set<std::string> > * k(visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**m));
         if (! k)
             throw ActionFailedError("Key 'extra_groups' for '" + stringify(*params.package_id()) + "' is not a string set key");
 
@@ -166,7 +166,7 @@ PasswdAccountsHandler::merge_user(const MergeParams & params)
         if (params.package_id()->end_metadata() == m)
             break;
 
-        const MetadataValueKey<std::string> * k(simple_visitor_cast<const MetadataValueKey<std::string> >(**m));
+        const MetadataValueKey<std::string> * k(visitor_cast<const MetadataValueKey<std::string> >(**m));
         if (! k)
             throw ActionFailedError("Key 'shell' for '" + stringify(*params.package_id()) + "' is not a string key");
 
@@ -186,7 +186,7 @@ PasswdAccountsHandler::merge_user(const MergeParams & params)
         if (params.package_id()->end_metadata() == m)
             break;
 
-        const MetadataValueKey<std::string> * k(simple_visitor_cast<const MetadataValueKey<std::string> >(**m));
+        const MetadataValueKey<std::string> * k(visitor_cast<const MetadataValueKey<std::string> >(**m));
         if (! k)
             throw ActionFailedError("Key 'home' for '" + stringify(*params.package_id()) + "' is not a string key");
 
@@ -218,7 +218,7 @@ PasswdAccountsHandler::merge_group(const MergeParams & params)
         if (params.package_id()->end_metadata() == m)
             throw ActionFailedError("Key 'groupname' for '" + stringify(*params.package_id()) + "' does not exist");
 
-        const MetadataValueKey<std::string> * k(simple_visitor_cast<const MetadataValueKey<std::string> >(**m));
+        const MetadataValueKey<std::string> * k(visitor_cast<const MetadataValueKey<std::string> >(**m));
         if (! k)
             throw ActionFailedError("Key 'groupname' for '" + stringify(*params.package_id()) + "' is not a string key");
 
@@ -235,7 +235,7 @@ PasswdAccountsHandler::merge_group(const MergeParams & params)
         if (params.package_id()->end_metadata() == m)
             break;
 
-        const MetadataValueKey<std::string> * k(simple_visitor_cast<const MetadataValueKey<std::string> >(**m));
+        const MetadataValueKey<std::string> * k(visitor_cast<const MetadataValueKey<std::string> >(**m));
         if (! k)
             throw ActionFailedError("Key 'preferred_gid' for '" + stringify(*params.package_id()) + "' is not a string key");
 

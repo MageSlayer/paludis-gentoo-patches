@@ -26,7 +26,7 @@
 #include <paludis/repositories/fake/fake_package_id.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/system.hh>
-#include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/visitor_cast.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/set.hh>
@@ -172,7 +172,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/simple-1",
                                         &env, { })), make_null_shared_ptr(), { }))]->last());
                 TEST_CHECK(bool(id));
-                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), base_eapi);
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), base_eapi);
                 id->perform_action(bin_action);
             }
 
@@ -193,7 +193,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/simple-1::binrepo" + base_eapi,
                                         &env, { })), make_null_shared_ptr(), { }))]->last());
                 TEST_CHECK(bool(id));
-                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(),
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(),
                         "pbin-1+" + base_eapi);
                 id->perform_action(install_action);
             }

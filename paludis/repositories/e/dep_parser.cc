@@ -27,7 +27,7 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/return_literal_function.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/visitor_cast.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/singleton-impl.hh>

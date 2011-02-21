@@ -33,7 +33,7 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/member_iterator-impl.hh>
-#include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/visitor_cast.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/fs_path.hh>
@@ -184,13 +184,13 @@ Imp<ElfLinkageChecker>::check_elf(const FSPath & file, std::istream & stream)
         for (typename ElfObject<ElfType_>::SectionIterator sec_it(elf.section_begin()),
                  sec_it_end(elf.section_end()); sec_it_end != sec_it; ++sec_it)
         {
-            const DynamicSection<ElfType_> * dyn_sec(simple_visitor_cast<const DynamicSection<ElfType_> >(*sec_it));
+            const DynamicSection<ElfType_> * dyn_sec(visitor_cast<const DynamicSection<ElfType_> >(*sec_it));
 
             if (0 != dyn_sec)
                 for (typename DynamicSection<ElfType_>::EntryIterator ent_it(dyn_sec->entry_begin()),
                          ent_it_end(dyn_sec->entry_end()); ent_it_end != ent_it; ++ent_it)
                 {
-                    const DynamicEntryString<ElfType_> * ent_str(simple_visitor_cast<const DynamicEntryString<ElfType_> >(*ent_it));
+                    const DynamicEntryString<ElfType_> * ent_str(visitor_cast<const DynamicEntryString<ElfType_> >(*ent_it));
 
                     if (0 != ent_str && "NEEDED" == ent_str->tag_name())
                     {

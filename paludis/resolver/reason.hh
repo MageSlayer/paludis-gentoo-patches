@@ -25,7 +25,7 @@
 #include <paludis/resolver/sanitised_dependencies-fwd.hh>
 #include <paludis/resolver/change_by_resolvent-fwd.hh>
 #include <paludis/util/pimp.hh>
-#include <paludis/util/simple_visitor.hh>
+#include <paludis/util/visitor.hh>
 #include <paludis/util/type_list.hh>
 #include <paludis/util/tribool.hh>
 #include <paludis/name-fwd.hh>

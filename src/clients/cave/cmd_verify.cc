@@ -30,7 +30,7 @@
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/safe_ifstream.hh>
-#include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/visitor_cast.hh>
 #include <paludis/util/md5.hh>
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
@@ -121,7 +121,7 @@ namespace
             ContentsEntry::MetadataConstIterator k(e.find_metadata("mtime"));
             if (e.end_metadata() != k)
             {
-                const MetadataTimeKey * kk(simple_visitor_cast<const MetadataTimeKey>(**k));
+                const MetadataTimeKey * kk(visitor_cast<const MetadataTimeKey>(**k));
                 if (kk && (kk->value().seconds() != f.mtim().seconds()))
                 {
                     message(p, "Modification time changed");
@@ -137,7 +137,7 @@ namespace
             ContentsEntry::MetadataConstIterator k(e.find_metadata("md5"));
             if (e.end_metadata() != k)
             {
-                const MetadataValueKey<std::string> * kk(simple_visitor_cast<const MetadataValueKey<std::string> >(**k));
+                const MetadataValueKey<std::string> * kk(visitor_cast<const MetadataValueKey<std::string> >(**k));
                 if (kk)
                 {
                     SafeIFStream s(f);

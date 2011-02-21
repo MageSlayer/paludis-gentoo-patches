@@ -21,7 +21,7 @@
 #include <paludis/repositories/unwritten/unwritten_repository.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/visitor_cast.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
@@ -177,7 +177,7 @@ UnwrittenID::repository_name() const
 bool
 UnwrittenID::supports_action(const SupportsActionTestBase & a) const
 {
-    return simple_visitor_cast<const SupportsActionTest<InstallAction> >(a);
+    return visitor_cast<const SupportsActionTest<InstallAction> >(a);
 }
 
 void

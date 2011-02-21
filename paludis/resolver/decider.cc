@@ -49,7 +49,7 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/tribool.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/visitor_cast.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/environment.hh>
@@ -185,7 +185,7 @@ Decider::_resolve_vias()
         for (Constraints::ConstIterator c(binary_resolution->constraints()->begin()),
                 c_end(binary_resolution->constraints()->end()) ;
                 c != c_end ; ++c)
-            if (simple_visitor_cast<const ViaBinaryReason>(*(*c)->reason()))
+            if (visitor_cast<const ViaBinaryReason>(*(*c)->reason()))
             {
                 already = true;
                 break;

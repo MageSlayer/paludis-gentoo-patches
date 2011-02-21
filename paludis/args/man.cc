@@ -19,7 +19,7 @@
  */
 
 #include "man.hh"
-#include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/visitor_cast.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <functional>
 #include <ostream>
@@ -142,8 +142,8 @@ paludis::args::generate_doc(DocWriter & dw, const ArgsHandler * const h)
             for (paludis::args::ArgsGroup::ConstIterator b(a->begin()), b_end(a->end()) ;
                     b != b_end ; ++b)
             {
-                if (simple_visitor_cast<const paludis::args::AliasArg>(**b) &&
-                        simple_visitor_cast<const paludis::args::AliasArg>(**b)->hidden())
+                if (visitor_cast<const paludis::args::AliasArg>(**b) &&
+                        visitor_cast<const paludis::args::AliasArg>(**b)->hidden())
                     continue;
 
                 dw.arg_group_item((*b)->short_name(), (*b)->long_name(),

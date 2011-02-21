@@ -26,7 +26,7 @@
 #include <paludis/util/singleton.hh>
 #include <paludis/util/pimp.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
-#include <paludis/util/simple_visitor.hh>
+#include <paludis/util/visitor.hh>
 #include <paludis/util/type_list.hh>
 #include <memory>
 #include <string>

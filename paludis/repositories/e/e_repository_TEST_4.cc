@@ -27,7 +27,7 @@
 #include <paludis/repositories/fake/fake_package_id.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/system.hh>
-#include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/visitor_cast.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/set.hh>
@@ -148,7 +148,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/pkg_pretend-4",
                                         &env, { })), make_null_shared_ptr(), { }))]->last());
                 TEST_CHECK(bool(id));
-                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
                 id->perform_action(pretend_action);
                 TEST_CHECK(! pretend_action.failed());
             }
@@ -159,7 +159,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/pkg_pretend-failure-4",
                                         &env, { })), make_null_shared_ptr(), { }))]->last());
                 TEST_CHECK(bool(id));
-                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
                 id->perform_action(pretend_action);
                 TEST_CHECK(pretend_action.failed());
             }
@@ -170,7 +170,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/default_src_install-4",
                                         &env, { })), make_null_shared_ptr(), { }))]->last());
                 TEST_CHECK(bool(id));
-                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
                 id->perform_action(action);
             }
 
@@ -180,7 +180,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/docompress-4",
                                         &env, { })), make_null_shared_ptr(), { }))]->last());
                 TEST_CHECK(bool(id));
-                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
                 id->perform_action(action);
             }
 
@@ -190,7 +190,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/dodoc-r-4",
                                         &env, { })), make_null_shared_ptr(), { }))]->last());
                 TEST_CHECK(bool(id));
-                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
                 id->perform_action(action);
             }
 
@@ -200,7 +200,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/doins-symlink-4",
                                         &env, { })), make_null_shared_ptr(), { }))]->last());
                 TEST_CHECK(bool(id));
-                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
                 id->perform_action(action);
             }
 
@@ -210,7 +210,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/banned-functions-4",
                                         &env, { })), make_null_shared_ptr(), { }))]->last());
                 TEST_CHECK(bool(id));
-                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
                 TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
             }
 
@@ -220,7 +220,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/econf-disable-dependency-tracking-4",
                                         &env, { })), make_null_shared_ptr(), { }))]->last());
                 TEST_CHECK(bool(id));
-                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
                 id->perform_action(action);
             }
 
@@ -230,7 +230,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/global-scope-use-4",
                                         &env, { })), make_null_shared_ptr(), { }))]->last());
                 TEST_CHECK(bool(id));
-                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
                 id->perform_action(action);
             }
 
@@ -240,7 +240,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/doman-4",
                                         &env, { })), make_null_shared_ptr(), { }))]->last());
                 TEST_CHECK(bool(id));
-                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
                 id->perform_action(action);
             }
         }
@@ -306,7 +306,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/merge-type-4::test-repo",
                                         &env, { })), make_null_shared_ptr(), { }))]->last());
                 TEST_CHECK(bool(id));
-                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
                 id->perform_action(action);
             }
         }
@@ -393,7 +393,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/merge-type-bin-4::test-repo",
                                         &env, { })), make_null_shared_ptr(), { }))]->last());
                 TEST_CHECK(bool(id));
-                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
                 id->perform_action(action);
             }
 
@@ -412,7 +412,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/merge-type-bin-4::binrepo",
                                         &env, { })), make_null_shared_ptr(), { }))]->last());
                 TEST_CHECK(bool(id));
-                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "pbin-1+4");
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "pbin-1+4");
                 id->perform_action(action);
             }
         }
@@ -475,7 +475,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/required-use-all-good-4::test-repo",
                                         &env, { })), make_null_shared_ptr(), { }))]->last());
                 TEST_CHECK(bool(id));
-                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
                 id->perform_action(pretend_action);
                 TEST_CHECK(! pretend_action.failed());
             }
@@ -492,7 +492,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/required-use-all-empty-4::test-repo",
                                         &env, { })), make_null_shared_ptr(), { }))]->last());
                 TEST_CHECK(bool(id));
-                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
                 id->perform_action(pretend_action);
                 TEST_CHECK(! pretend_action.failed());
             }
@@ -509,7 +509,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/required-use-all-one-not-good-4::test-repo",
                                         &env, { })), make_null_shared_ptr(), { }))]->last());
                 TEST_CHECK(bool(id));
-                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
                 id->perform_action(pretend_action);
                 TEST_CHECK(pretend_action.failed());
             }
@@ -526,7 +526,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/required-use-any-good-4::test-repo",
                                         &env, { })), make_null_shared_ptr(), { }))]->last());
                 TEST_CHECK(bool(id));
-                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
                 id->perform_action(pretend_action);
                 TEST_CHECK(! pretend_action.failed());
             }
@@ -543,7 +543,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/required-use-any-empty-4::test-repo",
                                         &env, { })), make_null_shared_ptr(), { }))]->last());
                 TEST_CHECK(bool(id));
-                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
                 id->perform_action(pretend_action);
                 TEST_CHECK(! pretend_action.failed());
             }
@@ -560,7 +560,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/required-use-any-none-4::test-repo",
                                         &env, { })), make_null_shared_ptr(), { }))]->last());
                 TEST_CHECK(bool(id));
-                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
                 id->perform_action(pretend_action);
                 TEST_CHECK(pretend_action.failed());
             }
@@ -577,7 +577,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/required-use-one-none-4::test-repo",
                                         &env, { })), make_null_shared_ptr(), { }))]->last());
                 TEST_CHECK(bool(id));
-                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
                 id->perform_action(pretend_action);
                 TEST_CHECK(pretend_action.failed());
             }
@@ -594,7 +594,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/required-use-one-none-4::test-repo",
                                         &env, { })), make_null_shared_ptr(), { }))]->last());
                 TEST_CHECK(bool(id));
-                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
                 id->perform_action(pretend_action);
                 TEST_CHECK(pretend_action.failed());
             }
@@ -611,7 +611,7 @@ namespace test_cases
                                 PackageDepSpec(parse_user_package_dep_spec("=cat/required-use-one-good-4::test-repo",
                                         &env, { })), make_null_shared_ptr(), { }))]->last());
                 TEST_CHECK(bool(id));
-                TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
+                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), "4");
                 id->perform_action(pretend_action);
                 TEST_CHECK(! pretend_action.failed());
             }

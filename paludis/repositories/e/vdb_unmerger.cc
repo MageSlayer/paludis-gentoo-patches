@@ -21,8 +21,6 @@
 #include "vdb_unmerger.hh"
 #include "vdb_contents_tokeniser.hh"
 
-using namespace paludis;
-
 #include <paludis/util/destringify.hh>
 #include <paludis/util/md5.hh>
 #include <paludis/environment.hh>
@@ -38,7 +36,7 @@ using namespace paludis;
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/visitor_cast.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/timestamp.hh>
 #include <paludis/util/fs_stat.hh>
@@ -49,6 +47,8 @@ using namespace paludis;
 #include <list>
 #include <map>
 #include <vector>
+
+using namespace paludis;
 
 namespace paludis
 {
@@ -208,7 +208,7 @@ namespace
         if (m == h.end_metadata())
             throw InternalError(PALUDIS_HERE, "Expected key '" + r + "' not found");
 
-        const T_ * const c(simple_visitor_cast<const T_>(**m));
+        const T_ * const c(visitor_cast<const T_>(**m));
         if (! c)
             throw InternalError(PALUDIS_HERE, "Key '" + r + "' is of wrong type");
 

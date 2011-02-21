@@ -25,7 +25,7 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/visitor_cast.hh>
 #include <paludis/util/simple_parser.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/safe_ofstream.hh>
@@ -372,7 +372,7 @@ namespace
         if (id->end_metadata() == i)
             return "";
 
-        const MetadataValueKey<std::string> * const ii(simple_visitor_cast<const MetadataValueKey<std::string> >(**i));
+        const MetadataValueKey<std::string> * const ii(visitor_cast<const MetadataValueKey<std::string> >(**i));
         if (! ii)
             return "";
 

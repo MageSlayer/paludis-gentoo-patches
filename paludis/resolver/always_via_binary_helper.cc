@@ -25,7 +25,7 @@
 #include <paludis/resolver/decision.hh>
 #include <paludis/resolver/destination_utils.hh>
 #include <paludis/util/pimp-impl.hh>
-#include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/visitor_cast.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/package_id.hh>
@@ -67,7 +67,7 @@ AlwaysViaBinaryHelper::add_always_via_binary_spec(const PackageDepSpec & spec)
 bool
 AlwaysViaBinaryHelper::operator() (const std::shared_ptr<const Resolution> & resolution) const
 {
-    const ChangesToMakeDecision * changes_decision(simple_visitor_cast<const ChangesToMakeDecision>(*resolution->decision()));
+    const ChangesToMakeDecision * changes_decision(visitor_cast<const ChangesToMakeDecision>(*resolution->decision()));
     if (! changes_decision)
         return false;
 

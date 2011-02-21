@@ -37,7 +37,7 @@
 #include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/set-impl.hh>
 #include <paludis/util/tribool.hh>
-#include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/visitor_cast.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/repository_factory.hh>
 #include <paludis/package_database.hh>
@@ -387,7 +387,7 @@ ResolverTestCase::DecisionChecks::check_change(const QualifiedPackageName & q, c
     if (! d)
         return false;
 
-    return simple_visitor_cast<const ChangesToMakeDecision>(*d) && d->resolvent().package() == q;
+    return visitor_cast<const ChangesToMakeDecision>(*d) && d->resolvent().package() == q;
 }
 
 bool
@@ -396,7 +396,7 @@ ResolverTestCase::DecisionChecks::check_change_slot(const QualifiedPackageName &
     if (! d)
         return false;
 
-    return simple_visitor_cast<const ChangesToMakeDecision>(*d) && d->resolvent().package() == q &&
+    return visitor_cast<const ChangesToMakeDecision>(*d) && d->resolvent().package() == q &&
         d->resolvent().slot().name_or_null() && *d->resolvent().slot().name_or_null() == s;
 }
 
@@ -406,7 +406,7 @@ ResolverTestCase::DecisionChecks::check_breaking(const QualifiedPackageName & q,
     if (! d)
         return false;
 
-    return simple_visitor_cast<const BreakDecision>(*d) && d->resolvent().package() == q;
+    return visitor_cast<const BreakDecision>(*d) && d->resolvent().package() == q;
 }
 
 bool
@@ -415,7 +415,7 @@ ResolverTestCase::DecisionChecks::check_remove(const QualifiedPackageName & q, c
     if (! d)
         return false;
 
-    return simple_visitor_cast<const RemoveDecision>(*d) && d->resolvent().package() == q;
+    return visitor_cast<const RemoveDecision>(*d) && d->resolvent().package() == q;
 }
 
 bool
@@ -424,7 +424,7 @@ ResolverTestCase::DecisionChecks::check_unable(const QualifiedPackageName & q, c
     if (! d)
         return false;
 
-    return simple_visitor_cast<const UnableToMakeDecision>(*d) && d->resolvent().package() == q;
+    return visitor_cast<const UnableToMakeDecision>(*d) && d->resolvent().package() == q;
 }
 
 std::string

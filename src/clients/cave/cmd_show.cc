@@ -40,7 +40,7 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
-#include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/visitor_cast.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/pretty_print.hh>
 #include <paludis/util/timestamp.hh>
@@ -253,8 +253,8 @@ namespace
     {
         bool operator() (const std::shared_ptr<const MetadataKey> & a, const std::shared_ptr<const MetadataKey> & b) const
         {
-            bool a_is_section(simple_visitor_cast<const MetadataSectionKey>(*a));
-            bool b_is_section(simple_visitor_cast<const MetadataSectionKey>(*b));
+            bool a_is_section(visitor_cast<const MetadataSectionKey>(*a));
+            bool b_is_section(visitor_cast<const MetadataSectionKey>(*b));
             if (a_is_section != b_is_section)
                 return b_is_section;
             if (a->type() != b->type())

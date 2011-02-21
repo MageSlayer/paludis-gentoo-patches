@@ -27,7 +27,7 @@
 #include <paludis/repositories/fake/fake_package_id.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/system.hh>
-#include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/visitor_cast.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/set.hh>
@@ -500,8 +500,8 @@ namespace test_cases
                                             &env, { })), make_null_shared_ptr(), { }))]->begin());
 
                     TEST_CHECK(id1->end_metadata() != id1->find_metadata("EAPI"));
-                    TEST_CHECK(simple_visitor_cast<const MetadataValueKey<std::string> >(**id1->find_metadata("EAPI")));
-                    TEST_CHECK_EQUAL(simple_visitor_cast<const MetadataValueKey<std::string> >(**id1->find_metadata("EAPI"))->value(), "0");
+                    TEST_CHECK(visitor_cast<const MetadataValueKey<std::string> >(**id1->find_metadata("EAPI")));
+                    TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id1->find_metadata("EAPI"))->value(), "0");
                     TEST_CHECK(bool(id1->short_description_key()));
                     TEST_CHECK_EQUAL(id1->short_description_key()->value(), "The Description");
                     UnformattedPrettyPrinter ff;

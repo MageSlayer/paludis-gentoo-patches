@@ -28,7 +28,7 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/visitor_cast.hh>
 #include <paludis/util/fs_iterator.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/options.hh>
@@ -115,7 +115,7 @@ AccountsRepositoryStore::_load(const RepositoryName & repository_name)
             continue;
         }
 
-        const MetadataValueKey<FSPath> * k(simple_visitor_cast<const MetadataValueKey<FSPath> >(**k_iter));
+        const MetadataValueKey<FSPath> * k(visitor_cast<const MetadataValueKey<FSPath> >(**k_iter));
         if (! k)
         {
             Log::get_instance()->message("accounts.bad_key_from_repository", ll_warning, lc_context) <<

@@ -33,7 +33,7 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/tribool.hh>
-#include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/visitor_cast.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/simple_parser.hh>
 #include <paludis/util/make_null_shared_ptr.hh>

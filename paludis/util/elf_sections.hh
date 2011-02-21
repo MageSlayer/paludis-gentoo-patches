@@ -23,7 +23,7 @@
 
 #include <string>
 #include <iosfwd>
-#include <paludis/util/simple_visitor.hh>
+#include <paludis/util/visitor.hh>
 #include <paludis/util/type_list.hh>
 
 namespace paludis

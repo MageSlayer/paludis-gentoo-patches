@@ -23,7 +23,7 @@
 #include <paludis/repositories/e/myoption.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/visitor_cast.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/set.hh>

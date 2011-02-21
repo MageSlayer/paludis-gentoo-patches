@@ -2,7 +2,7 @@
 
 /*
  * Copyright (c) 2010 Stephan Friedrichs
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -40,7 +40,7 @@
 #include <paludis/util/fs_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/map.hh>
-#include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/visitor_cast.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 
 #include <iostream>
@@ -198,7 +198,7 @@ PrintUnusedDistfilesCommand::run(
         auto distdir_metadata((*repo)->find_metadata("distdir"));
         if (distdir_metadata != (*repo)->end_metadata())
         {
-            auto path_key(simple_visitor_cast<const MetadataValueKey<FSPath>>(**distdir_metadata));
+            auto path_key(visitor_cast<const MetadataValueKey<FSPath>>(**distdir_metadata));
             if (path_key)
                 distdirs.insert(path_key->value().realpath());
         }

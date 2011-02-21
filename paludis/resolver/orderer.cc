@@ -42,7 +42,7 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_shared_copy.hh>
-#include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/visitor_cast.hh>
 #include <paludis/util/tribool.hh>
 #include <paludis/util/enum_iterator.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
@@ -557,7 +557,7 @@ Orderer::_add_binary_cleverness(const std::shared_ptr<const Resolution> & resolu
     if (resolution->resolvent().destination_type() != dt_create_binary)
         return;
 
-    const ChangesToMakeDecision * changes_decision(simple_visitor_cast<const ChangesToMakeDecision>(*resolution->decision()));
+    const ChangesToMakeDecision * changes_decision(visitor_cast<const ChangesToMakeDecision>(*resolution->decision()));
     if (! changes_decision)
         return;
 
@@ -573,7 +573,7 @@ Orderer::_add_binary_cleverness(const std::shared_ptr<const Resolution> & resolu
         if (_imp->resolved->resolutions_by_resolvent()->end() == non_binary_resolution)
             continue;
 
-        ChangesToMakeDecision * non_binary_changes_decision(simple_visitor_cast<ChangesToMakeDecision>(*(*non_binary_resolution)->decision()));
+        ChangesToMakeDecision * non_binary_changes_decision(visitor_cast<ChangesToMakeDecision>(*(*non_binary_resolution)->decision()));
         if (! non_binary_changes_decision)
             continue;
 

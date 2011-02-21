@@ -22,7 +22,7 @@
 
 #include <paludis/create_output_manager_info-fwd.hh>
 #include <paludis/util/pimp.hh>
-#include <paludis/util/simple_visitor.hh>
+#include <paludis/util/visitor.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/type_list.hh>
 #include <paludis/package_id-fwd.hh>

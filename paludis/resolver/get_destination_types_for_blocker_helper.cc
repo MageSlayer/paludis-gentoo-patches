@@ -24,7 +24,7 @@
 #include <paludis/resolver/resolution.hh>
 #include <paludis/resolver/decision.hh>
 #include <paludis/util/pimp-impl.hh>
-#include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/visitor_cast.hh>
 #include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/stringify.hh>

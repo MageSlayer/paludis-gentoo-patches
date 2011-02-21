@@ -35,8 +35,8 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/options.hh>
-#include <paludis/util/simple_visitor_cast.hh>
-#include <paludis/util/simple_visitor-impl.hh>
+#include <paludis/util/visitor_cast.hh>
+#include <paludis/util/visitor-impl.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/hashes.hh>
@@ -169,7 +169,7 @@ namespace
     {
         bool operator() (const std::shared_ptr<const ExecuteJob> & job) const
         {
-            return (! job->state()) || ! simple_visitor_cast<const JobSucceededState>(*job->state());
+            return (! job->state()) || ! visitor_cast<const JobSucceededState>(*job->state());
         }
     };
 
@@ -1307,7 +1307,7 @@ namespace
         std::string queue_name() const
         {
             if (0 != n_fetch_jobs)
-                return simple_visitor_cast<const FetchJob>(*job) ? "fetch" : "execute";
+                return visitor_cast<const FetchJob>(*job) ? "fetch" : "execute";
             else
                 return "execute";
         }
@@ -1364,7 +1364,7 @@ namespace
             }
 
             if (want && cmdline.execution_options.a_fetch.specified())
-                want = simple_visitor_cast<const FetchJob>(*job);
+                want = visitor_cast<const FetchJob>(*job);
 
             int current_global_retcode;
             {
@@ -1687,7 +1687,7 @@ namespace
         void visit(const JobSucceededState & s) const
         {
             if ((s.output_manager() && s.output_manager()->want_to_flush())
-                    || (something_failed && ! simple_visitor_cast<const FetchJob>(*job)))
+                    || (something_failed && ! visitor_cast<const FetchJob>(*job)))
             {
                 need_heading();
                 cout << fuc(fs_summary_job_succeeded(), fv<'s'>(job->accept_returning<std::string>(SummaryNameVisitor(env))));
@@ -1702,7 +1702,7 @@ namespace
 
         void visit(const JobSkippedState &) const
         {
-            if (! simple_visitor_cast<const FetchJob>(*job))
+            if (! visitor_cast<const FetchJob>(*job))
             {
                 need_heading();
                 cout << fuc(fs_summary_job_skipped(), fv<'s'>(job->accept_returning<std::string>(SummaryNameVisitor(env))));

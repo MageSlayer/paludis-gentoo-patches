@@ -39,7 +39,7 @@
 #include <paludis/util/timestamp.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/make_shared_copy.hh>
-#include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/visitor_cast.hh>
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/set-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
@@ -621,11 +621,11 @@ namespace
     std::shared_ptr<const QualifiedPackageName> name_if_dependent_remove(
             const std::shared_ptr<const Resolution> & resolution)
     {
-        const RemoveDecision * const remove_decision(simple_visitor_cast<const RemoveDecision>(*resolution->decision()));
+        const RemoveDecision * const remove_decision(visitor_cast<const RemoveDecision>(*resolution->decision()));
         if (remove_decision)
             for (auto r(resolution->constraints()->begin()), r_end(resolution->constraints()->end()) ;
                     r != r_end ; ++r)
-                if (simple_visitor_cast<const DependentReason>(*(*r)->reason()))
+                if (visitor_cast<const DependentReason>(*(*r)->reason()))
                     return make_shared_copy((*remove_decision->ids()->begin())->name());
         return make_null_shared_ptr();
     }

@@ -25,7 +25,7 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/type_list.hh>
 #include <paludis/util/named_value.hh>
-#include <paludis/util/simple_visitor.hh>
+#include <paludis/util/visitor.hh>
 #include <paludis/util/sequence-fwd.hh>
 #include <memory>
 

@@ -29,7 +29,7 @@
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/set-impl.hh>
 #include <paludis/util/sequence-impl.hh>
-#include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/visitor_cast.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/member_iterator-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
@@ -341,7 +341,7 @@ Imp<BrokenLinkageFinder>::gather_package(const std::shared_ptr<const PackageID> 
     for (Contents::ConstIterator it(contents->begin()),
              it_end(contents->end()); it_end != it; ++it)
     {
-        const ContentsFileEntry * file(simple_visitor_cast<const ContentsFileEntry>(**it));
+        const ContentsFileEntry * file(visitor_cast<const ContentsFileEntry>(**it));
         if (0 != file)
         {
             Lock l(mutex);

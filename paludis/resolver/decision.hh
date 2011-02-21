@@ -28,7 +28,7 @@
 #include <paludis/resolver/required_confirmations-fwd.hh>
 #include <paludis/resolver/why_changed_choices-fwd.hh>
 #include <paludis/util/pimp.hh>
-#include <paludis/util/simple_visitor.hh>
+#include <paludis/util/visitor.hh>
 #include <paludis/util/type_list.hh>
 #include <paludis/serialise-fwd.hh>
 #include <paludis/package_id-fwd.hh>

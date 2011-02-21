@@ -22,7 +22,7 @@
 
 #include <paludis/notifier_callback-fwd.hh>
 #include <paludis/util/pimp.hh>
-#include <paludis/util/simple_visitor.hh>
+#include <paludis/util/visitor.hh>
 #include <paludis/util/type_list.hh>
 #include <paludis/util/fs_path.hh>
 #include <paludis/name.hh>

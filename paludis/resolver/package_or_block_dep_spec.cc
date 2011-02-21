@@ -18,7 +18,7 @@
  */
 
 #include <paludis/resolver/package_or_block_dep_spec.hh>
-#include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/visitor_cast.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/sequence-impl.hh>

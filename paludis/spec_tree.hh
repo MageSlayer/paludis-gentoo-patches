@@ -22,7 +22,7 @@
 
 #include <paludis/spec_tree-fwd.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
-#include <paludis/util/simple_visitor.hh>
+#include <paludis/util/visitor.hh>
 #include <paludis/util/sequence.hh>
 #include <type_traits>
 

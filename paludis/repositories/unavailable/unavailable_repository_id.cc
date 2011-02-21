@@ -21,7 +21,7 @@
 #include <paludis/repositories/unavailable/unavailable_repository.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/visitor_cast.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -180,7 +180,7 @@ UnavailableRepositoryID::repository_name() const
 bool
 UnavailableRepositoryID::supports_action(const SupportsActionTestBase & a) const
 {
-    return simple_visitor_cast<const SupportsActionTest<InstallAction> >(a);
+    return visitor_cast<const SupportsActionTest<InstallAction> >(a);
 }
 
 namespace
@@ -207,7 +207,7 @@ UnavailableRepositoryID::perform_action(Action & action) const
 {
     Timestamp build_start_time(Timestamp::now());
 
-    const InstallAction * const install_action(simple_visitor_cast<const InstallAction>(action));
+    const InstallAction * const install_action(visitor_cast<const InstallAction>(action));
     if (! install_action)
         throw ActionFailedError("Unsupported action: " + action.simple_name());
 

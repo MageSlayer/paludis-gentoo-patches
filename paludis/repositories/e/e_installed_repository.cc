@@ -24,7 +24,7 @@
 #include <paludis/repositories/e/eapi_phase.hh>
 #include <paludis/repositories/e/ebuild.hh>
 #include <paludis/repositories/e/e_repository.hh>
-#include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/visitor_cast.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/stringify.hh>
@@ -319,7 +319,7 @@ EInstalledRepository::perform_info(
                     if (r->end_metadata() != m)
                     {
                         const MetadataCollectionKey<Set<std::string> > * const mm(
-                                simple_visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**m));
+                                visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**m));
                         if (mm)
                         {
                             i = mm->value();
@@ -342,7 +342,7 @@ EInstalledRepository::perform_info(
                 if ((*r)->end_metadata() != m)
                 {
                     const MetadataCollectionKey<Set<std::string> > * const mm(
-                            simple_visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**m));
+                            visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**m));
                     if (mm)
                     {
                         i = mm->value();

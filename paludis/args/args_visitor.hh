@@ -21,7 +21,7 @@
 #ifndef PALUDIS_GUARD_ARGS_ARGS_VISITOR_HH
 #define PALUDIS_GUARD_ARGS_ARGS_VISITOR_HH 1
 
-#include <paludis/util/simple_visitor.hh>
+#include <paludis/util/visitor.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/pimp.hh>

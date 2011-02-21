@@ -25,7 +25,7 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/hashes.hh>
-#include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/visitor_cast.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/make_named_values.hh>
@@ -464,7 +464,7 @@ AccountsID::extra_hash_value() const
 bool
 AccountsID::supports_action(const SupportsActionTestBase & test) const
 {
-    return simple_visitor_cast<const SupportsActionTest<InstallAction> >(test);
+    return visitor_cast<const SupportsActionTest<InstallAction> >(test);
 }
 
 namespace
@@ -490,7 +490,7 @@ AccountsID::perform_action(Action & action) const
 {
     Timestamp build_start_time(Timestamp::now());
 
-    const InstallAction * const install_action(simple_visitor_cast<const InstallAction>(action));
+    const InstallAction * const install_action(visitor_cast<const InstallAction>(action));
     if (! install_action)
         throw ActionFailedError("Unsupported action: " + action.simple_name());
 

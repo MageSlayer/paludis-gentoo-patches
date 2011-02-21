@@ -2,7 +2,7 @@
 
 /*
  * Copyright (c) 2007, 2008 Richard Brown
- * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -25,7 +25,7 @@
 #include <paludis/mask.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
-#include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/visitor_cast.hh>
 #include <paludis/util/timestamp.hh>
 #include <ruby.h>
 
@@ -608,7 +608,7 @@ namespace
         {
             std::shared_ptr<const MetadataKey> * self_ptr;
             Data_Get_Struct(self, std::shared_ptr<const MetadataKey>, self_ptr);
-            const MetadataSpecTreeKey<DependencySpecTree> * real_self(simple_visitor_cast<
+            const MetadataSpecTreeKey<DependencySpecTree> * real_self(visitor_cast<
                     const MetadataSpecTreeKey<DependencySpecTree> >(**self_ptr));
 
             VALUE result(rb_ary_new());

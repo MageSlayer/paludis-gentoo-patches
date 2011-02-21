@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_RESOLVER_JOB_STATE_HH 1
 
 #include <paludis/resolver/job_state-fwd.hh>
-#include <paludis/util/simple_visitor.hh>
+#include <paludis/util/visitor.hh>
 #include <paludis/util/type_list.hh>
 #include <paludis/util/pimp.hh>
 #include <paludis/output_manager-fwd.hh>

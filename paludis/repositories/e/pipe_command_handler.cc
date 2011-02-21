@@ -32,7 +32,7 @@
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
-#include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/visitor_cast.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
@@ -424,9 +424,9 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                 Repository::MetadataConstIterator key(repo->find_metadata("location"));
                 if (repo->end_metadata() == key)
                     return "Einstalled repository has no location key";
-                if (! simple_visitor_cast<const MetadataValueKey<FSPath> >(**key))
+                if (! visitor_cast<const MetadataValueKey<FSPath> >(**key))
                     return "Einstalled repository location key is not a MetadataValueKey<FSPath> ";
-                return "O0;" + stringify(simple_visitor_cast<const MetadataValueKey<FSPath> >(**key)->value());
+                return "O0;" + stringify(visitor_cast<const MetadataValueKey<FSPath> >(**key)->value());
             }
         }
         else if (tokens[0] == "OPTIONQ")
@@ -490,7 +490,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                     throw InternalError(PALUDIS_HERE, "oops. can't find key '" + var + "'");
 
                 const MetadataSpecTreeKey<DependencySpecTree> * mm(
-                        simple_visitor_cast<const MetadataSpecTreeKey<DependencySpecTree> >(**m));
+                        visitor_cast<const MetadataSpecTreeKey<DependencySpecTree> >(**m));
                 if (! mm)
                     throw InternalError(PALUDIS_HERE, "oops. key '" + var + "' isn't a DependencySpecTree key");
 
@@ -511,7 +511,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                     throw InternalError(PALUDIS_HERE, "oops. can't find key '" + var + "'");
 
                 const MetadataSpecTreeKey<PlainTextSpecTree> * mm(
-                        simple_visitor_cast<const MetadataSpecTreeKey<PlainTextSpecTree> >(**m));
+                        visitor_cast<const MetadataSpecTreeKey<PlainTextSpecTree> >(**m));
                 if (! mm)
                     throw InternalError(PALUDIS_HERE, "oops. key '" + var + "' isn't a PlainTextSpecTree key");
 

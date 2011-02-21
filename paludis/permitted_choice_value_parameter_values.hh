@@ -22,7 +22,7 @@
 
 #include <paludis/permitted_choice_value_parameter_values-fwd.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/simple_visitor.hh>
+#include <paludis/util/visitor.hh>
 #include <paludis/util/type_list.hh>
 #include <paludis/util/map-fwd.hh>
 #include <memory>

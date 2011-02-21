@@ -19,7 +19,7 @@
 
 #include <paludis/resolver/collect_depped_upon.hh>
 #include <paludis/resolver/change_by_resolvent.hh>
-#include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/visitor_cast.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/accept_visitor.hh>
@@ -106,7 +106,7 @@ namespace
             {
                 auto spec(s.spec());
 
-                if (s.spec()->slot_requirement_ptr() && simple_visitor_cast<const SlotAnyUnlockedRequirement>(
+                if (s.spec()->slot_requirement_ptr() && visitor_cast<const SlotAnyUnlockedRequirement>(
                             *s.spec()->slot_requirement_ptr()))
                 {
                     auto best_eventual_id(best_eventual(env, *s.spec(), id, newly_available));

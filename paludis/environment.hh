@@ -23,7 +23,7 @@
 #include <paludis/environment-fwd.hh>
 #include <paludis/util/options-fwd.hh>
 #include <paludis/util/tribool-fwd.hh>
-#include <paludis/util/simple_visitor.hh>
+#include <paludis/util/visitor.hh>
 #include <paludis/output_manager-fwd.hh>
 #include <paludis/util/pimp.hh>
 #include <paludis/name-fwd.hh>

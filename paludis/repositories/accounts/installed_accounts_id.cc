@@ -24,7 +24,7 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/hashes.hh>
-#include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/visitor_cast.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/mutex.hh>

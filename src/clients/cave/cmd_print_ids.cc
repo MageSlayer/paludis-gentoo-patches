@@ -28,7 +28,7 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
-#include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/visitor_cast.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/generator.hh>
@@ -182,7 +182,7 @@ namespace
                 {
                     for (PackageID::MasksConstIterator m((*i)->begin_masks()), m_end((*i)->end_masks()) ;
                             m != m_end ; ++m)
-                        if (simple_visitor_cast<const UserMask>(**m))
+                        if (visitor_cast<const UserMask>(**m))
                         {
                             result->insert(*i);
                             break;
@@ -192,7 +192,7 @@ namespace
                 {
                     for (PackageID::MasksConstIterator m((*i)->begin_masks()), m_end((*i)->end_masks()) ;
                             m != m_end ; ++m)
-                        if (simple_visitor_cast<const UnacceptedMask>(**m))
+                        if (visitor_cast<const UnacceptedMask>(**m))
                         {
                             result->insert(*i);
                             break;
@@ -202,7 +202,7 @@ namespace
                 {
                     for (PackageID::MasksConstIterator m((*i)->begin_masks()), m_end((*i)->end_masks()) ;
                             m != m_end ; ++m)
-                        if (simple_visitor_cast<const RepositoryMask>(**m))
+                        if (visitor_cast<const RepositoryMask>(**m))
                         {
                             result->insert(*i);
                             break;
@@ -212,7 +212,7 @@ namespace
                 {
                     for (PackageID::MasksConstIterator m((*i)->begin_masks()), m_end((*i)->end_masks()) ;
                             m != m_end ; ++m)
-                        if (simple_visitor_cast<const UnsupportedMask>(**m))
+                        if (visitor_cast<const UnsupportedMask>(**m))
                         {
                             result->insert(*i);
                             break;
@@ -222,7 +222,7 @@ namespace
                 {
                     for (PackageID::MasksConstIterator m((*i)->begin_masks()), m_end((*i)->end_masks()) ;
                             m != m_end ; ++m)
-                        if (simple_visitor_cast<const AssociationMask>(**m))
+                        if (visitor_cast<const AssociationMask>(**m))
                         {
                             result->insert(*i);
                             break;

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -38,7 +38,7 @@
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/tribool.hh>
 #include <paludis/util/make_shared_copy.hh>
-#include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/visitor_cast.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/repository_factory.hh>
 #include <paludis/package_database.hh>
@@ -124,17 +124,17 @@ namespace test_cases
 
             TEST_CHECK_EQUAL(resolved->job_lists()->execute_job_list()->length(), 6);
 
-            const InstallJob * const direct_dep_job(simple_visitor_cast<const InstallJob>(**resolved->job_lists()->execute_job_list()->fetch(1)));
+            const InstallJob * const direct_dep_job(visitor_cast<const InstallJob>(**resolved->job_lists()->execute_job_list()->fetch(1)));
             TEST_CHECK(direct_dep_job);
             TEST_CHECK_EQUAL(join(direct_dep_job->requirements()->begin(), direct_dep_job->requirements()->end(), ", ", stringify_req),
                     "0 satisfied independent always");
 
-            const InstallJob * const indirect_dep_job(simple_visitor_cast<const InstallJob>(**resolved->job_lists()->execute_job_list()->fetch(3)));
+            const InstallJob * const indirect_dep_job(visitor_cast<const InstallJob>(**resolved->job_lists()->execute_job_list()->fetch(3)));
             TEST_CHECK(indirect_dep_job);
             TEST_CHECK_EQUAL(join(indirect_dep_job->requirements()->begin(), indirect_dep_job->requirements()->end(), ", ", stringify_req),
                     "2 satisfied independent always");
 
-            const InstallJob * const target_job(simple_visitor_cast<const InstallJob>(**resolved->job_lists()->execute_job_list()->fetch(5)));
+            const InstallJob * const target_job(visitor_cast<const InstallJob>(**resolved->job_lists()->execute_job_list()->fetch(5)));
             TEST_CHECK(target_job);
             if (direct_dep_installed)
                 TEST_CHECK_EQUAL(join(target_job->requirements()->begin(), target_job->requirements()->end(), ", ", stringify_req),
@@ -192,22 +192,22 @@ namespace test_cases
 
             TEST_CHECK_EQUAL(resolved->job_lists()->execute_job_list()->length(), 4);
 
-            const UninstallJob * const needs_target_job(simple_visitor_cast<const UninstallJob>(**resolved->job_lists()->execute_job_list()->fetch(0)));
+            const UninstallJob * const needs_target_job(visitor_cast<const UninstallJob>(**resolved->job_lists()->execute_job_list()->fetch(0)));
             TEST_CHECK(needs_target_job);
             TEST_CHECK_EQUAL(join(needs_target_job->requirements()->begin(), needs_target_job->requirements()->end(), ", ", stringify_req),
                     "");
 
-            const UninstallJob * const target_job(simple_visitor_cast<const UninstallJob>(**resolved->job_lists()->execute_job_list()->fetch(1)));
+            const UninstallJob * const target_job(visitor_cast<const UninstallJob>(**resolved->job_lists()->execute_job_list()->fetch(1)));
             TEST_CHECK(target_job);
             TEST_CHECK_EQUAL(join(target_job->requirements()->begin(), target_job->requirements()->end(), ", ", stringify_req),
                     "0 satisfied");
 
-            const UninstallJob * const dep_job(simple_visitor_cast<const UninstallJob>(**resolved->job_lists()->execute_job_list()->fetch(2)));
+            const UninstallJob * const dep_job(visitor_cast<const UninstallJob>(**resolved->job_lists()->execute_job_list()->fetch(2)));
             TEST_CHECK(dep_job);
             TEST_CHECK_EQUAL(join(dep_job->requirements()->begin(), dep_job->requirements()->end(), ", ", stringify_req),
                     "1 satisfied");
 
-            const UninstallJob * const dep_of_dep_job(simple_visitor_cast<const UninstallJob>(**resolved->job_lists()->execute_job_list()->fetch(3)));
+            const UninstallJob * const dep_of_dep_job(visitor_cast<const UninstallJob>(**resolved->job_lists()->execute_job_list()->fetch(3)));
             TEST_CHECK(dep_of_dep_job);
             TEST_CHECK_EQUAL(join(dep_of_dep_job->requirements()->begin(), dep_of_dep_job->requirements()->end(), ", ", stringify_req),
                     "2 satisfied");

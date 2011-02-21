@@ -70,7 +70,7 @@
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
-#include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/visitor_cast.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/safe_ofstream.hh>
@@ -1361,7 +1361,7 @@ VDBRepository::perform_updates()
                 continue;
             }
 
-            const MetadataValueKey<FSPath> * k(simple_visitor_cast<const MetadataValueKey<FSPath> >(**k_iter));
+            const MetadataValueKey<FSPath> * k(visitor_cast<const MetadataValueKey<FSPath> >(**k_iter));
             if (! k)
             {
                 Log::get_instance()->message("e.vdb.udpates.bad_key", ll_warning, lc_context) <<

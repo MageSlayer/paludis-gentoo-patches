@@ -24,7 +24,7 @@
 #include <paludis/repository-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/simple_visitor.hh>
+#include <paludis/util/visitor.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/pimp.hh>
 #include <paludis/util/sequence-fwd.hh>

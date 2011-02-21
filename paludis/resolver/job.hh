@@ -25,7 +25,7 @@
 #include <paludis/resolver/job_requirements-fwd.hh>
 #include <paludis/resolver/destination_types-fwd.hh>
 #include <paludis/util/pimp.hh>
-#include <paludis/util/simple_visitor.hh>
+#include <paludis/util/visitor.hh>
 #include <paludis/util/type_list.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/serialise-fwd.hh>

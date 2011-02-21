@@ -21,7 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_CONTENTS_HH 1
 
 #include <paludis/contents-fwd.hh>
-#include <paludis/util/simple_visitor.hh>
+#include <paludis/util/visitor.hh>
 #include <paludis/util/pimp.hh>
 #include <paludis/util/type_list.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>

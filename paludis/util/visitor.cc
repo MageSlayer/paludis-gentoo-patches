@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,15 +17,5 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_UTIL_SIMPLE_VISITOR_CAST_FWD_HH
-#define PALUDIS_GUARD_PALUDIS_UTIL_SIMPLE_VISITOR_CAST_FWD_HH 1
+#include <paludis/util/visitor-impl.hh>
 
-#include <paludis/util/attributes.hh>
-
-namespace paludis
-{
-    template <typename To_, typename From_>
-    To_ * simple_visitor_cast(From_ &) PALUDIS_ATTRIBUTE((warn_unused_result));
-}
-
-#endif

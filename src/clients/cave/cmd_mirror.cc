@@ -27,7 +27,7 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
-#include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/visitor_cast.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/make_named_values.hh>

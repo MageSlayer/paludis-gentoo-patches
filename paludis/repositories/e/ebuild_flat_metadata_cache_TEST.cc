@@ -29,7 +29,7 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
-#include <paludis/util/simple_visitor_cast.hh>
+#include <paludis/util/visitor_cast.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/timestamp.hh>
@@ -168,8 +168,8 @@ namespace test_cases
             TEST_CHECK(bool(id->short_description_key()));
             TEST_CHECK_EQUAL(id->short_description_key()->value(), "the-description-flat_list-eclass");
             TEST_CHECK_EQUAL(join(
-                simple_visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**id->find_metadata("INHERITED"))->value()->begin(),
-                simple_visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**id->find_metadata("INHERITED"))->value()->end(), " "), "foo");
+                visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**id->find_metadata("INHERITED"))->value()->begin(),
+                visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**id->find_metadata("INHERITED"))->value()->end(), " "), "foo");
         }
     } test_metadata_flat_list_eclass_cached;
 
@@ -621,8 +621,8 @@ namespace test_cases
             TEST_CHECK(bool(id->short_description_key()));
             TEST_CHECK_EQUAL(id->short_description_key()->value(), "the-description-flat_hash-eclass");
             TEST_CHECK_EQUAL(join(
-                simple_visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**id->find_metadata("INHERITED"))->value()->begin(),
-                simple_visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**id->find_metadata("INHERITED"))->value()->end(), " "), "foo");
+                visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**id->find_metadata("INHERITED"))->value()->begin(),
+                visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**id->find_metadata("INHERITED"))->value()->end(), " "), "foo");
         }
     } test_metadata_flat_hash_eclass;
 
@@ -735,8 +735,8 @@ namespace test_cases
             TEST_CHECK(bool(id->short_description_key()));
             TEST_CHECK_EQUAL(id->short_description_key()->value(), "the-description-flat_hash-full-eclass");
             TEST_CHECK_EQUAL(join(
-                simple_visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**id->find_metadata("INHERITED"))->value()->begin(),
-                simple_visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**id->find_metadata("INHERITED"))->value()->end(), " "), "foo");
+                visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**id->find_metadata("INHERITED"))->value()->begin(),
+                visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**id->find_metadata("INHERITED"))->value()->end(), " "), "foo");
         }
     } test_metadata_flat_hash_full_eclass;
 
@@ -766,8 +766,8 @@ namespace test_cases
             TEST_CHECK(bool(id->short_description_key()));
             TEST_CHECK_EQUAL(id->short_description_key()->value(), "the-description-flat_hash-full-eclass-nonstandard");
             TEST_CHECK_EQUAL(join(
-                simple_visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**id->find_metadata("INHERITED"))->value()->begin(),
-                simple_visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**id->find_metadata("INHERITED"))->value()->end(), " "), "bar foo");
+                visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**id->find_metadata("INHERITED"))->value()->begin(),
+                visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**id->find_metadata("INHERITED"))->value()->end(), " "), "bar foo");
         }
     } test_metadata_flat_hash_full_eclass_nonstandard;
 
@@ -973,8 +973,8 @@ namespace test_cases
             TEST_CHECK(bool(id->short_description_key()));
             TEST_CHECK_EQUAL(id->short_description_key()->value(), "the-description-flat_hash-exlib");
             TEST_CHECK_EQUAL(join(
-                simple_visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**id->find_metadata("INHERITED"))->value()->begin(),
-                simple_visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**id->find_metadata("INHERITED"))->value()->end(), " "), "foo");
+                visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**id->find_metadata("INHERITED"))->value()->begin(),
+                visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**id->find_metadata("INHERITED"))->value()->end(), " "), "foo");
         }
     } test_metadata_flat_hash_exlib;
 
@@ -1005,8 +1005,8 @@ namespace test_cases
             TEST_CHECK(bool(id->short_description_key()));
             TEST_CHECK_EQUAL(id->short_description_key()->value(), "the-description-flat_hash-exlib-percat");
             TEST_CHECK_EQUAL(join(
-                simple_visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**id->find_metadata("INHERITED"))->value()->begin(),
-                simple_visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**id->find_metadata("INHERITED"))->value()->end(), " "), "bar foo");
+                visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**id->find_metadata("INHERITED"))->value()->begin(),
+                visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**id->find_metadata("INHERITED"))->value()->end(), " "), "bar foo");
         }
     } test_metadata_flat_hash_exlib_per_category;
 
