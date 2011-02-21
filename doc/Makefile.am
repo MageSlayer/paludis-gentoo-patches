@@ -92,7 +92,7 @@ news.subst : $(top_srcdir)/NEWS
 	    < $(top_srcdir)/NEWS > news.subst
 
 changelog.subst :
-	git log | sed \
+	git --git-dir=$(top_srcdir)/.git log | sed \
 	    -e 's,&,\&amp;,g' \
 	    -e 's,<,\&lt;,g' \
 	    -e 's,>,\&gt;,g' \
