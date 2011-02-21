@@ -15,6 +15,10 @@ configuration files which may be bash files (<code>package_mask.bash</code> etc)
 specifications in <code>package_mask.conf</code>. If a package version is
 matched by entries in both files, it is unmasked.</p>
 
+<p>Exheres layout repositories allow masks to be categories by a token such as "security" or "scm". To unmask a package,
+but only if its token is of a particular kind, follow the specification by one or more whitespace separated token names.
+If token names are specified this way, an unmask is only taken if at least one of the tokens matches the mask.</p>
+
 <h2>Example</h2>
 
 <p>An example <code>package_mask.conf</code>:</p>
@@ -32,5 +36,8 @@ sys-apps/portage
 <pre>
 # Ignore repository and profile masks for things in the toolchain overlay
 */*::toolchain
+
+# (Exheres layout repositories only) ignore security masks for PHP
+dev-lang/php security
 </pre>
 

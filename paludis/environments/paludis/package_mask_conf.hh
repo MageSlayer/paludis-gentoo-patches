@@ -47,7 +47,7 @@ namespace paludis
                 ///\name Basic operations
                 ///\{
 
-                PackageMaskConf(const PaludisEnvironment * const);
+                PackageMaskConf(const PaludisEnvironment * const, const bool allow_reasons);
                 ~PackageMaskConf();
 
                 PackageMaskConf(const PackageMaskConf &) = delete;
