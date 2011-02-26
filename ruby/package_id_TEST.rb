@@ -164,7 +164,7 @@ module Paludis
                 assert keys.has_key?(key.raw_name), "no key #{key.raw_name} -> #{key.value}"
                 keys.delete key.raw_name
             end
-            assert keys.empty?, "keys are #{keys.map { | k, v | k + ' -> ' + pid_testrepo[k].value }.join ', '}"
+            assert keys.empty?, "keys are #{keys.map { | k, v | k }.join ', '}"
         end
 
         def test_masked?
