@@ -176,6 +176,8 @@ namespace
                         n::eclass_must_not_set_variables() = check_get(k, "eclass_must_not_set_variables"),
                         n::f_function_prefix() = check_get(k, "f_function_prefix"),
                         n::fix_mtimes() = destringify_key<bool>(k, "fix_mtimes"),
+                        n::fs_location_description() = check_get(k, "fs_location_description"),
+                        n::fs_location_name() = check_get(k, "fs_location_name"),
                         n::ignore_pivot_env_functions() = check_get(k, "ignore_pivot_env_functions"),
                         n::ignore_pivot_env_variables() = check_get(k, "ignore_pivot_env_variables"),
                         n::load_modules() = check_get(k, "load_modules"),

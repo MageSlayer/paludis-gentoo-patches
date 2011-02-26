@@ -123,6 +123,8 @@ namespace paludis
         typedef Name<struct name_fancy_test_flag> fancy_test_flag;
         typedef Name<struct name_fix_mtimes> fix_mtimes;
         typedef Name<struct name_flat_list_index> flat_list_index;
+        typedef Name<struct name_fs_location_description> fs_location_description;
+        typedef Name<struct name_fs_location_name> fs_location_name;
         typedef Name<struct name_general_description> general_description;
         typedef Name<struct name_general_lang> general_lang;
         typedef Name<struct name_general_note> general_note;
@@ -405,6 +407,8 @@ namespace paludis
             NamedValue<n::eclass_must_not_set_variables, std::string> eclass_must_not_set_variables;
             NamedValue<n::f_function_prefix, std::string> f_function_prefix;
             NamedValue<n::fix_mtimes, bool> fix_mtimes;
+            NamedValue<n::fs_location_description, std::string> fs_location_description;
+            NamedValue<n::fs_location_name, std::string> fs_location_name;
             NamedValue<n::ignore_pivot_env_functions, std::string> ignore_pivot_env_functions;
             NamedValue<n::ignore_pivot_env_variables, std::string> ignore_pivot_env_variables;
             NamedValue<n::load_modules, std::string> load_modules;

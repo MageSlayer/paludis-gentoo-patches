@@ -108,6 +108,21 @@ namespace
             post_dependencies_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesPostLabelTag> >("PDEPEND"));
         }
     };
+
+    std::shared_ptr<LiteralMetadataValueKey<FSPath> > make_fs_location(const std::string & e, const FSPath & p)
+    {
+        auto eapi(EAPIData::get_instance()->eapi_from_string(e));
+        if (eapi->supported())
+            return std::make_shared<LiteralMetadataValueKey<FSPath> >(
+                eapi->supported()->ebuild_options()->fs_location_name(),
+                eapi->supported()->ebuild_options()->fs_location_description(),
+                mkt_internal, p);
+        else
+            return std::make_shared<LiteralMetadataValueKey<FSPath> >(
+                "FS_LOCATION",
+                "FS Location",
+                mkt_internal, p);
+    }
 }
 
 namespace paludis
@@ -121,7 +136,6 @@ namespace paludis
         const VersionSpec version;
         const Environment * const environment;
         const RepositoryName repository_name;
-        const FSPath ebuild;
         mutable std::shared_ptr<const EAPI> eapi;
         const std::string guessed_eapi;
         const time_t master_mtime;
@@ -129,8 +143,9 @@ namespace paludis
         mutable bool has_keys;
         mutable bool has_masks;
 
+        const std::shared_ptr<const LiteralMetadataValueKey<FSPath> > fs_location;
+
         mutable std::shared_ptr<const MetadataValueKey<SlotName> > slot;
-        mutable std::shared_ptr<const LiteralMetadataValueKey<FSPath> > fs_location;
         mutable std::shared_ptr<const LiteralMetadataValueKey<std::string> > short_description;
         mutable std::shared_ptr<const LiteralMetadataValueKey<std::string> > long_description;
         mutable std::shared_ptr<const LiteralMetadataValueKey<std::string> > captured_stdout_key;
@@ -177,12 +192,12 @@ namespace paludis
             version(v),
             environment(e),
             repository_name(r),
-            ebuild(f),
             guessed_eapi(g),
             master_mtime(t),
             eclass_mtimes(m),
             has_keys(false),
-            has_masks(false)
+            has_masks(false),
+            fs_location(make_fs_location(guessed_eapi, f))
         {
         }
     };
@@ -225,15 +240,9 @@ EbuildID::need_keys_added() const
 
     _imp->has_keys = true;
 
-    // fs_location key could have been loaded by the ::fs_location_key() already.
-    if (! _imp->fs_location)
-    {
-        _imp->fs_location = std::make_shared<LiteralMetadataValueKey<FSPath> >("EBUILD", "Ebuild Location",
-                    mkt_internal, _imp->ebuild);
-        add_metadata_key(_imp->fs_location);
-    }
-
     Context context("When generating metadata for ID '" + canonical_form(idcf_full) + "':");
+
+    add_metadata_key(_imp->fs_location);
 
     auto repo(_imp->environment->package_database()->fetch_repository(repository_name()));
     auto e_repo(std::static_pointer_cast<const ERepository>(repo));
@@ -250,7 +259,7 @@ EbuildID::need_keys_added() const
     bool ok(false);
     if (e_repo->params().cache().basename() != "empty")
     {
-        EbuildFlatMetadataCache metadata_cache(_imp->environment, cache_file, _imp->ebuild, _imp->master_mtime, _imp->eclass_mtimes, false);
+        EbuildFlatMetadataCache metadata_cache(_imp->environment, cache_file, _imp->fs_location->value(), _imp->master_mtime, _imp->eclass_mtimes, false);
         if (metadata_cache.load(shared_from_this(), false))
             ok = true;
     }
@@ -258,7 +267,7 @@ EbuildID::need_keys_added() const
     if ((! ok) && e_repo->params().write_cache().basename() != "empty")
     {
         EbuildFlatMetadataCache write_metadata_cache(_imp->environment,
-                write_cache_file, _imp->ebuild, _imp->master_mtime, _imp->eclass_mtimes, true);
+                write_cache_file, _imp->fs_location->value(), _imp->master_mtime, _imp->eclass_mtimes, true);
         if (write_metadata_cache.load(shared_from_this(), false))
             ok = true;
         else if (write_cache_file.stat().exists())
@@ -303,7 +312,7 @@ EbuildID::need_keys_added() const
                     n::commands() = join(phases.begin_phases()->begin_commands(), phases.begin_phases()->end_commands(), " "),
                     n::distdir() = e_repo->params().distdir(),
                     n::ebuild_dir() = e_repo->layout()->package_directory(name()),
-                    n::ebuild_file() = _imp->ebuild,
+                    n::ebuild_file() = _imp->fs_location->value(),
                     n::eclassdirs() = e_repo->params().eclassdirs(),
                     n::environment() = _imp->environment,
                     n::exlibsdirs() = e_repo->layout()->exlibsdirs(name()),
@@ -331,7 +340,7 @@ EbuildID::need_keys_added() const
 
             if (e_repo->params().write_cache().basename() != "empty" && _imp->eapi->supported())
             {
-                EbuildFlatMetadataCache metadata_cache(_imp->environment, write_cache_file, _imp->ebuild, _imp->master_mtime,
+                EbuildFlatMetadataCache metadata_cache(_imp->environment, write_cache_file, _imp->fs_location->value(), _imp->master_mtime,
                         _imp->eclass_mtimes, false);
                 metadata_cache.save(shared_from_this());
             }
@@ -898,15 +907,6 @@ EbuildID::defined_phases_key() const
 const std::shared_ptr<const MetadataValueKey<FSPath> >
 EbuildID::fs_location_key() const
 {
-    Lock l(_imp->mutex);
-
-    // Avoid loading whole metadata
-    if (! _imp->fs_location)
-    {
-        _imp->fs_location = std::make_shared<LiteralMetadataValueKey<FSPath> >("EBUILD", "Ebuild Location", mkt_internal, _imp->ebuild);
-        add_metadata_key(_imp->fs_location);
-    }
-
     return _imp->fs_location;
 }
 
@@ -1659,7 +1659,7 @@ EbuildID::purge_invalid_cache() const
         if (e_repo->params().write_cache().basename() != "empty")
         {
             EbuildFlatMetadataCache write_metadata_cache(_imp->environment,
-                    write_cache_file, _imp->ebuild, _imp->master_mtime, _imp->eclass_mtimes, true);
+                    write_cache_file, _imp->fs_location->value(), _imp->master_mtime, _imp->eclass_mtimes, true);
             if (! write_metadata_cache.load(shared_from_this(), true))
                 write_cache_file.unlink();
         }
@@ -1669,7 +1669,7 @@ EbuildID::purge_invalid_cache() const
 bool
 EbuildID::might_be_binary() const
 {
-    auto path(stringify(_imp->ebuild));
+    auto path(stringify(_imp->fs_location->value()));
     auto dot_pos(path.rfind('.'));
 
     if (std::string::npos != dot_pos)
