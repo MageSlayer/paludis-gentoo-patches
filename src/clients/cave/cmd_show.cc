@@ -1089,22 +1089,20 @@ namespace
 
         void visit(const RepositoryMask & m)
         {
-            if (! m.mask_key_name().empty())
-            {
-                InfoDisplayer i(env, cmdline, indent, false, make_null_shared_ptr(), make_null_shared_ptr(), false, out);
-                (*id->find_metadata(m.mask_key_name()))->accept(i);
-            }
-            else
-            {
-                out << fuc(
-                        (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
-                        fv<'s'>(cmdline.a_raw_names.specified() ? stringify(m.key()) : "by " + m.description()),
-                        fv<'v'>(""),
-                        fv<'i'>(std::string(indent, ' ')),
-                        fv<'b'>(""),
-                        fv<'p'>("")
+            out << fuc(
+                    (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
+                    fv<'s'>(cmdline.a_raw_names.specified() ? stringify(m.key()) : "by " + m.description()),
+                    fv<'v'>(stringify(m.mask_file())),
+                    fv<'i'>(std::string(indent, ' ')),
+                    fv<'b'>(""),
+                    fv<'p'>("")
+                    );
+
+            if (! m.comment().empty())
+                out << fuc(fs_metadata_continued_value(),
+                        fv<'v'>(m.comment()),
+                        fv<'i'>(std::string(indent, ' '))
                         );
-            }
         }
     };
 

@@ -160,12 +160,26 @@ namespace paludis
     {
         public:
             /**
-             * Fetch the raw name of a metadata key explaining the mask. May
-             * return a zero pointer, if no more information is available.
+             * An associated comment. Might be empty.
              *
              * \since 0.59
              */
-            virtual const std::string mask_key_name() const = 0;
+            virtual const std::string comment() const = 0;
+
+            /**
+             * An associated token, for Environment::unmasked_by_user. Might be empty.
+             *
+             * \since 0.59
+             */
+            virtual const std::string token() const = 0;
+
+            /**
+             * The file whence the mask originates.
+             *
+             * \since 0.59
+             */
+            virtual const FSPath mask_file() const = 0;
+
     };
 
     /**

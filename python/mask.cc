@@ -214,7 +214,38 @@ struct RepositoryMaskWrapper :
         else
             throw PythonMethodNotImplemented("RepositoryMask", "description");
     }
+
+    virtual const std::string comment() const
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = get_override("comment"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("RepositoryMask", "comment");
+    }
+
+    virtual const std::string token() const
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = get_override("token"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("RepositoryMask", "token");
+    }
+
+    virtual const FSPath mask_file() const
+    {
+        Lock l(get_mutex());
+
+        if (bp::override f = get_override("mask_file"))
+            return f();
+        else
+            throw PythonMethodNotImplemented("RepositoryMask", "mask_file");
+    }
 };
+
 struct UnsupportedMaskWrapper :
     UnsupportedMask,
     bp::wrapper<UnsupportedMask>
@@ -426,12 +457,6 @@ void expose_mask()
          "Can be subclassed in Python.",
          bp::init<>()
         )
-        .def("mask_key_name", bp::pure_virtual(&RepositoryMask::mask_key_name),
-                "mask_key_name() -> string\n"
-                "Fetch the name of a metadata key explaining the mask. May return None,\n"
-                "if no more information is available."
-                )
-
         .def("key", bp::pure_virtual(&Mask::key),
                 "key() -> string\n"
                 "A single character key, which can be used by clients if they need\n"

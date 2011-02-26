@@ -215,8 +215,6 @@ namespace
          * A RepositoryMask is a Mask that signifies that a PackageID has been marked as masked by a Repository.
          */
         c_repository_mask = rb_define_class_under(paludis_module(), "RepositoryMask", c_mask);
-        rb_define_method(c_repository_mask, "mask_key_name",
-                RUBY_FUNC_CAST((&MaskMetadataKey<RepositoryMask,&RepositoryMask::mask_key_name>::fetch)), 0);
 
         /*
          * Document-class: Paludis::UnsupportedMask

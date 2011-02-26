@@ -120,7 +120,6 @@ namespace mask
     void test_repository_mask(RepositoryMask & m)
     {
         test_mask(m);
-        m.mask_key_name();
     }
 
     void test_unsupported_mask(UnsupportedMask & m)

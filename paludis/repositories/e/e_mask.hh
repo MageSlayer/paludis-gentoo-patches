@@ -65,12 +65,16 @@ namespace paludis
                 Pimp<ERepositoryMask> _imp;
 
             public:
-                ERepositoryMask(const char, const std::string &, const std::string &);
+                ERepositoryMask(const char, const std::string & description,
+                        const std::string & comment, const std::string & token, const FSPath &);
                 ~ERepositoryMask();
 
                 virtual char key() const;
                 const std::string description() const;
-                const std::string mask_key_name() const;
+
+                virtual const std::string comment() const;
+                virtual const std::string token() const;
+                virtual const FSPath mask_file() const;
         };
     }
 

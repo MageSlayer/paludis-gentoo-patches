@@ -143,19 +143,24 @@ namespace paludis
     {
         const char key;
         const std::string description;
-        const std::string mask_key_name;
+        const std::string comment;
+        const std::string token;
+        const FSPath mask_file;
 
-        Imp(const char k, const std::string & d, const std::string & m) :
+        Imp(const char k, const std::string & d, const std::string & c, const std::string & t, const FSPath & f) :
             key(k),
             description(d),
-            mask_key_name(m)
+            comment(c),
+            token(t),
+            mask_file(f)
         {
         }
     };
 }
 
-ERepositoryMask::ERepositoryMask(const char k, const std::string & d, const std::string & m) :
-    _imp(k, d, m)
+ERepositoryMask::ERepositoryMask(const char k, const std::string & d, const std::string & c,
+        const std::string & t, const FSPath & f) :
+    _imp(k, d, c, t, f)
 {
 }
 
@@ -176,9 +181,21 @@ ERepositoryMask::description() const
 }
 
 const std::string
-ERepositoryMask::mask_key_name() const
+ERepositoryMask::comment() const
 {
-    return _imp->mask_key_name;
+    return _imp->comment;
+}
+
+const std::string
+ERepositoryMask::token() const
+{
+    return _imp->token;
+}
+
+const FSPath
+ERepositoryMask::mask_file() const
+{
+    return _imp->mask_file;
 }
 
 namespace

@@ -570,11 +570,15 @@ EbuildID::need_masks_added() const
     {
         /* repo unless user */
         if (_imp->repository_mask->value())
-            add_mask(std::make_shared<ERepositoryMask>('R', "repository", _imp->repository_mask->raw_name()));
+            add_mask(std::make_shared<ERepositoryMask>('R', "repository",
+                        _imp->repository_mask->value()->comment() ? join(_imp->repository_mask->value()->comment()->begin(),
+                            _imp->repository_mask->value()->comment()->end(), " ") : "", "", _imp->repository_mask->value()->mask_file()));
 
         /* profile unless user */
         if (_imp->profile_mask->value())
-            add_mask(std::make_shared<ERepositoryMask>('P', "profile", _imp->profile_mask->raw_name()));
+            add_mask(std::make_shared<ERepositoryMask>('P', "profile",
+                        _imp->profile_mask->value()->comment() ? join(_imp->profile_mask->value()->comment()->begin(),
+                            _imp->profile_mask->value()->comment()->end(), " ") : "", "", _imp->profile_mask->value()->mask_file()));
 
         /* user */
         std::shared_ptr<const Mask> user_mask(_imp->environment->mask_for_user(shared_from_this(), false));
@@ -587,7 +591,9 @@ EbuildID::need_masks_added() const
         if (_imp->repository_mask->value())
             add_overridden_mask(std::make_shared<OverriddenMask>(
                             make_named_values<OverriddenMask>(
-                                n::mask() = std::make_shared<ERepositoryMask>('r', "repository (overridden)", _imp->repository_mask->raw_name()),
+                                n::mask() = std::make_shared<ERepositoryMask>('r', "repository (overridden)",
+                                    _imp->repository_mask->value()->comment() ? join(_imp->repository_mask->value()->comment()->begin(),
+                                        _imp->repository_mask->value()->comment()->end(), " ") : "", "", _imp->repository_mask->value()->mask_file()),
                                 n::override_reason() = mro_overridden_by_user
                                 )));
 
@@ -595,7 +601,9 @@ EbuildID::need_masks_added() const
         if (_imp->profile_mask->value())
             add_overridden_mask(std::make_shared<OverriddenMask>(
                             make_named_values<OverriddenMask>(
-                                n::mask() = std::make_shared<ERepositoryMask>('p', "profile (overridden)", _imp->profile_mask->raw_name()),
+                                n::mask() = std::make_shared<ERepositoryMask>('p', "profile (overridden)",
+                                    _imp->profile_mask->value()->comment() ? join(_imp->profile_mask->value()->comment()->begin(),
+                                        _imp->profile_mask->value()->comment()->end(), " ") : "", "", _imp->profile_mask->value()->mask_file()),
                                 n::override_reason() = mro_overridden_by_user
                                 )));
 

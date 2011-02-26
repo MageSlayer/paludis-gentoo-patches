@@ -1034,9 +1034,8 @@ namespace
         void visit(const RepositoryMask & m) const
         {
             cout << fuc(fs_masked_by(), fv<'i'>(indent), fv<'c'>(colour), fv<'d'>(m.description()));
-            MaskedByKeyVisitor v{env, id, indent + "    "};
-            if (! m.mask_key_name().empty())
-                (*id->find_metadata(m.mask_key_name()))->accept(v);
+            if (! m.comment().empty())
+                cout << fuc(fs_mask_by_repo_line(), fv<'i'>(indent + "    "), fv<'s'>(m.comment()));
         }
 
         void visit(const UnacceptedMask & m) const

@@ -72,7 +72,6 @@ class TestCase_01_Masks(unittest.TestCase):
 
         package_mask_path = os.path.realpath(os.path.join(os.getcwd(),
             "mask_TEST_dir/testrepo/profiles/package.mask"))
-        self.assertEquals(m.mask_key_name(), "repository_mask")
 
     def test_04_unsupported_mask(self):
         q = Selection.RequireExactlyOne(Generator.Matches(
@@ -134,9 +133,6 @@ class TestCase_02_Masks_subclassing(unittest.TestCase):
 
             def description(self):
                 return "test"
-
-            def mask_key_name(self):
-                return "monkey"
 
         test_repository_mask(TestRepositoryMask())
 

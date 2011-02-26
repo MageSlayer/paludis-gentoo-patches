@@ -49,7 +49,11 @@ namespace
             void visit(const RepositoryMask & mask)
             {
                 cout << left << setw(30) << "    Class:" << " " << "RepositoryMask" << endl;
-                cout << left << setw(30) << "    Mask key:" << " " << mask.mask_key_name() << endl;
+                cout << left << setw(30) << "    Mask file:" << " " << mask.mask_file() << endl;
+                if (! mask.comment().empty())
+                    cout << left << setw(30) << "    Comment:" << " " << mask.comment() << endl;
+                if (! mask.token().empty())
+                    cout << left << setw(30) << "    Token:" << " " << mask.token() << endl;
             }
 
             void visit(const UnsupportedMask & mask)

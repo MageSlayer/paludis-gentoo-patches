@@ -181,7 +181,6 @@ module Paludis
             assert_equal 1, masks.length
             mask = masks.first
             assert_kind_of RepositoryMask, mask
-            assert_equal "repository_mask", mask.mask_key_name
         end
 
         def test_hash
@@ -246,7 +245,6 @@ module Paludis
         def test_repository_mask_info_keys
             assert_kind_of MetadataRepositoryMaskInfoKey, pid_testrepo["repository_mask"]
             assert_kind_of RepositoryMaskInfo, pid_testrepo["repository_mask"].value
-            assert pid_testrepo["repository_mask"].value.mask_file =~ %r[package_id_TEST_dir/testrepo/profiles/package.mask$]
             assert_equal ["this is", "a test"], pid_testrepo["repository_mask"].value.comment
             assert_nil pid_testrepo["profile_mask"].value
         end

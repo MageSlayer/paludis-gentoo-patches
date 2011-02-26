@@ -113,9 +113,9 @@ namespace
             return std::make_pair(m.unaccepted_key_name(), "");
         }
 
-        const std::pair<std::string, std::string> visit(const RepositoryMask & m) const
+        const std::pair<std::string, std::string> visit(const RepositoryMask &) const
         {
-            return std::make_pair(m.mask_key_name(), "");
+            return std::make_pair("", "");
         }
 
         const std::pair<std::string, std::string> visit(const UnsupportedMask &) const
