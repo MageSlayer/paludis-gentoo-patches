@@ -567,14 +567,12 @@ EbuildID::need_masks_added() const
         /* repo unless user */
         if (repo_mask)
             add_mask(std::make_shared<ERepositoryMask>('R', "repository",
-                        repo_mask->comment() ? join(repo_mask->comment()->begin(), repo_mask->comment()->end(), " ") : "",
-                        "", repo_mask->mask_file()));
+                        repo_mask->comment(), "", repo_mask->mask_file()));
 
         /* profile unless user */
         if (profile_mask)
             add_mask(std::make_shared<ERepositoryMask>('P', "profile",
-                        profile_mask->comment() ? join(profile_mask->comment()->begin(), profile_mask->comment()->end(), " ") : "",
-                        "", profile_mask->mask_file()));
+                        profile_mask->comment(), "", profile_mask->mask_file()));
 
         /* user */
         std::shared_ptr<const Mask> user_mask(_imp->environment->mask_for_user(shared_from_this(), false));
@@ -588,8 +586,7 @@ EbuildID::need_masks_added() const
             add_overridden_mask(std::make_shared<OverriddenMask>(
                             make_named_values<OverriddenMask>(
                                 n::mask() = std::make_shared<ERepositoryMask>('r', "repository (overridden)",
-                                    repo_mask->comment() ? join(repo_mask->comment()->begin(), repo_mask->comment()->end(), " ") : "",
-                                    "", repo_mask->mask_file()),
+                                    repo_mask->comment(), "", repo_mask->mask_file()),
                                 n::override_reason() = mro_overridden_by_user
                                 )));
 
@@ -598,8 +595,7 @@ EbuildID::need_masks_added() const
             add_overridden_mask(std::make_shared<OverriddenMask>(
                             make_named_values<OverriddenMask>(
                                 n::mask() = std::make_shared<ERepositoryMask>('p', "profile (overridden)",
-                                    profile_mask->comment() ? join(profile_mask->comment()->begin(), profile_mask->comment()->end(), " ") : "",
-                                    "", profile_mask->mask_file()),
+                                    profile_mask->comment(), "", profile_mask->mask_file()),
                                 n::override_reason() = mro_overridden_by_user
                                 )));
 

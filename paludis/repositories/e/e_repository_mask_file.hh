@@ -25,6 +25,7 @@
 #include <paludis/util/config_file.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/mask-fwd.hh>
+#include <paludis/repositories/e/mask_info.hh>
 
 namespace paludis
 {
@@ -58,7 +59,7 @@ namespace paludis
 
                 struct ConstIteratorTag;
                 typedef WrappedForwardIterator<ConstIteratorTag,
-                        const std::pair<const std::string, std::shared_ptr<const RepositoryMaskInfo> > > ConstIterator;
+                        const std::pair<const std::string, std::shared_ptr<const MaskInfo> > > ConstIterator;
                 ConstIterator begin() const;
                 ConstIterator end() const;
 
@@ -67,7 +68,7 @@ namespace paludis
     }
 
     extern template class WrappedForwardIterator<erepository::MaskFile::ConstIteratorTag,
-             const std::pair<const std::string, std::shared_ptr<const RepositoryMaskInfo> > >;
+             const std::pair<const std::string, std::shared_ptr<const erepository::MaskInfo> > >;
 }
 
 #endif

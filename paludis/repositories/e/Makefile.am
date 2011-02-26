@@ -73,6 +73,7 @@ noinst_HEADERS = \
 	layout.hh \
 	make_use.hh \
 	manifest2_reader.hh \
+	mask_info.hh \
 	memoised_hashes.hh \
 	metadata_xml.hh \
 	myoption.hh \
@@ -143,6 +144,7 @@ libpaludiserepository_la_SOURCES = \
 	layout.cc \
 	make_use.cc \
 	manifest2_reader.cc \
+	mask_info.cc \
 	memoised_hashes.cc \
 	metadata_xml.cc \
 	myoption.cc \

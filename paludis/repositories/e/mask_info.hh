@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2011 Ciaran McCreesh
+ * Copyright (c) 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,31 +17,30 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_MASK_FWD_HH
-#define PALUDIS_GUARD_PALUDIS_MASK_FWD_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_MASK_INFO_HH
+#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_MASK_INFO_HH 1
 
-#include <paludis/util/attributes.hh>
-#include <iosfwd>
-
-/** \file
- * Forward declarations for paludis/mask.hh .
- *
- * \ingroup g_mask
- */
+#include <paludis/util/named_value.hh>
+#include <paludis/util/fs_path.hh>
 
 namespace paludis
 {
-    class Mask;
-    class UserMask;
-    class UnacceptedMask;
-    class RepositoryMask;
-    class UnsupportedMask;
-    class AssociationMask;
+    namespace n
+    {
+        typedef Name<struct name_comment> comment;
+        typedef Name<struct name_mask_file> mask_file;
+        typedef Name<struct name_token> token;
+    }
 
-    struct OverriddenMask;
-
-#include <paludis/mask-se.hh>
-
+    namespace erepository
+    {
+        struct MaskInfo
+        {
+            NamedValue<n::comment, std::string> comment;
+            NamedValue<n::mask_file, FSPath> mask_file;
+            NamedValue<n::token, std::string> token;
+        };
+    }
 }
 
 #endif

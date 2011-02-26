@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -33,6 +33,7 @@
 #include <paludis/util/map-fwd.hh>
 #include <paludis/util/singleton.hh>
 #include <paludis/repositories/e/e_repository_id.hh>
+#include <paludis/repositories/e/mask_info.hh>
 #include <string>
 
 namespace paludis
@@ -91,7 +92,7 @@ namespace paludis
 
                 virtual const std::string environment_variable(const std::string &) const = 0;
 
-                virtual const std::shared_ptr<const RepositoryMaskInfo> profile_masked(const std::shared_ptr<const PackageID> &) const = 0;
+                virtual const std::shared_ptr<const MaskInfo> profile_masked(const std::shared_ptr<const PackageID> &) const = 0;
 
                 virtual const std::shared_ptr<const SetSpecTree> system_packages() const = 0;
 

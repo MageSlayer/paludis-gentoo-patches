@@ -71,7 +71,7 @@ namespace
 {
     typedef std::unordered_map<std::string, std::string, Hash<std::string> > EnvironmentVariablesMap;
     typedef std::unordered_map<QualifiedPackageName,
-            std::list<std::pair<std::shared_ptr<const PackageDepSpec>, std::shared_ptr<const RepositoryMaskInfo> > >,
+            std::list<std::pair<std::shared_ptr<const PackageDepSpec>, std::shared_ptr<const MaskInfo> > >,
             Hash<QualifiedPackageName> > PackageMaskMap;
 
     typedef std::unordered_map<ChoiceNameWithPrefix, bool, Hash<ChoiceNameWithPrefix> > FlagStatusMap;
@@ -1029,21 +1029,21 @@ TraditionalProfile::virtuals() const
     return _imp->virtuals;
 }
 
-const std::shared_ptr<const RepositoryMaskInfo>
+const std::shared_ptr<const MaskInfo>
 TraditionalProfile::profile_masked(const std::shared_ptr<const PackageID> & id) const
 {
     PackageMaskMap::const_iterator rr(_imp->package_mask.find(id->name()));
     if (_imp->package_mask.end() == rr)
-        return std::shared_ptr<const RepositoryMaskInfo>();
+        return std::shared_ptr<const MaskInfo>();
     else
     {
-        for (std::list<std::pair<std::shared_ptr<const PackageDepSpec>, std::shared_ptr<const RepositoryMaskInfo> > >::const_iterator k(rr->second.begin()),
+        for (std::list<std::pair<std::shared_ptr<const PackageDepSpec>, std::shared_ptr<const MaskInfo> > >::const_iterator k(rr->second.begin()),
                 k_end(rr->second.end()) ; k != k_end ; ++k)
             if (match_package(*_imp->env, *k->first, id, make_null_shared_ptr(), { }))
                 return k->second;
     }
 
-    return std::shared_ptr<const RepositoryMaskInfo>();
+    return std::shared_ptr<const MaskInfo>();
 }
 
 const std::shared_ptr<const Set<std::string> >

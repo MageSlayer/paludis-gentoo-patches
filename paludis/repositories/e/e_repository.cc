@@ -128,7 +128,7 @@ using namespace paludis;
 using namespace paludis::erepository;
 
 typedef std::unordered_map<QualifiedPackageName,
-        std::list<std::pair<std::shared_ptr<const PackageDepSpec>, std::shared_ptr<const RepositoryMaskInfo> > >,
+        std::list<std::pair<std::shared_ptr<const PackageDepSpec>, std::shared_ptr<const MaskInfo> > >,
         Hash<QualifiedPackageName> > RepositoryMaskMap;
 typedef std::unordered_map<std::string, std::shared_ptr<MirrorsSequence> > MirrorMap;
 typedef std::unordered_map<QualifiedPackageName, std::shared_ptr<const PackageDepSpec>, Hash<QualifiedPackageName> > VirtualsMap;
@@ -615,7 +615,7 @@ ERepository::package_ids(const QualifiedPackageName & n) const
     return _imp->layout->package_ids(n);
 }
 
-std::shared_ptr<const RepositoryMaskInfo>
+std::shared_ptr<const MaskInfo>
 ERepository::repository_masked(const std::shared_ptr<const PackageID> & id) const
 {
     Lock l(_imp->mutexes->repo_mask_mutex);
@@ -664,14 +664,14 @@ ERepository::repository_masked(const std::shared_ptr<const PackageID> & id) cons
 
     RepositoryMaskMap::iterator r(_imp->repo_mask.find(id->name()));
     if (_imp->repo_mask.end() == r)
-        return std::shared_ptr<const RepositoryMaskInfo>();
+        return std::shared_ptr<const MaskInfo>();
     else
-        for (std::list<std::pair<std::shared_ptr<const PackageDepSpec>, std::shared_ptr<const RepositoryMaskInfo> > >::const_iterator
+        for (std::list<std::pair<std::shared_ptr<const PackageDepSpec>, std::shared_ptr<const MaskInfo> > >::const_iterator
                 k(r->second.begin()), k_end(r->second.end()) ; k != k_end ; ++k)
             if (match_package(*_imp->params.environment(), *k->first, id, make_null_shared_ptr(), { }))
                 return k->second;
 
-    return std::shared_ptr<const RepositoryMaskInfo>();
+    return std::shared_ptr<const MaskInfo>();
 }
 
 const std::shared_ptr<const Set<UnprefixedChoiceName> >

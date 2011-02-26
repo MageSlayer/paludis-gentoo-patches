@@ -30,6 +30,7 @@
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/join.hh>
 #include <paludis/mask.hh>
 
 #include <vector>
@@ -38,7 +39,7 @@
 using namespace paludis;
 using namespace paludis::erepository;
 
-typedef std::list<std::pair<const std::string, std::shared_ptr<const RepositoryMaskInfo> > > MaskFileLines;
+typedef std::list<std::pair<const std::string, std::shared_ptr<const erepository::MaskInfo> > > MaskFileLines;
 
 namespace paludis
 {
@@ -108,12 +109,12 @@ MaskFile::MaskFile(const FSPath & f, const LineConfigFileOptions & opts, const E
             continue;
         }
 
-        _imp->lines.push_back(std::make_pair(tokens.at(0), std::shared_ptr<RepositoryMaskInfo>(std::make_shared<RepositoryMaskInfo>(
-                            make_named_values<RepositoryMaskInfo>(
-                                n::comment() = comment,
-                                n::mask_file() = f,
-                                n::token() = tokens.size() < 2 ? "" : tokens.at(1)
-                                )))));
+        _imp->lines.push_back(std::make_pair(tokens.at(0), std::make_shared<erepository::MaskInfo>(
+                        make_named_values<erepository::MaskInfo>(
+                            n::comment() = join(comment->begin(), comment->end(), " "),
+                            n::mask_file() = f,
+                            n::token() = tokens.size() < 2 ? "" : tokens.at(1)
+                            ))));
         comment_used = true;
     }
 }
@@ -135,5 +136,5 @@ MaskFile::~MaskFile()
 }
 
 template class WrappedForwardIterator<MaskFile::ConstIteratorTag,
-         const std::pair<const std::string, std::shared_ptr<const RepositoryMaskInfo> > >;
+         const std::pair<const std::string, std::shared_ptr<const MaskInfo> > >;
 

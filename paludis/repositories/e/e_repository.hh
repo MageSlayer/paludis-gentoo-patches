@@ -28,6 +28,7 @@
 #include <paludis/repositories/e/e_repository_id.hh>
 #include <paludis/repositories/e/profile.hh>
 #include <paludis/repositories/e/layout.hh>
+#include <paludis/repositories/e/mask_info.hh>
 #include <memory>
 #include <string>
 
@@ -162,7 +163,7 @@ namespace paludis
             const std::shared_ptr<const erepository::Layout> layout() const;
             const std::shared_ptr<const erepository::Profile> profile() const;
 
-            std::shared_ptr<const RepositoryMaskInfo> repository_masked(const std::shared_ptr<const PackageID> &) const;
+            std::shared_ptr<const erepository::MaskInfo> repository_masked(const std::shared_ptr<const PackageID> &) const;
 
             void regenerate_cache() const;
 

@@ -28,19 +28,6 @@ using namespace paludis;
 using namespace paludis::python;
 namespace bp = boost::python;
 
-namespace
-{
-    std::shared_ptr<RepositoryMaskInfo>  make_repository_mask_info(
-            const std::shared_ptr<const Sequence<std::string> > & s, const FSPath & f, const std::string & t)
-    {
-        return std::make_shared<RepositoryMaskInfo>(make_named_values<RepositoryMaskInfo>(
-                        n::comment() = s,
-                        n::mask_file() = f,
-                        n::token() = t
-                        ));
-    }
-}
-
 class MaskSptrToPythonVisitor
 {
     private:
@@ -319,37 +306,6 @@ struct AssociationMaskWrapper :
 
 void expose_mask()
 {
-    /**
-     * RepositoryMaskInfo
-     */
-    register_shared_ptrs_to_python<RepositoryMaskInfo>(rsp_const);
-    bp::class_<RepositoryMaskInfo, std::shared_ptr<RepositoryMaskInfo> >
-        (
-         "RepositoryMaskInfo",
-         "Information about a RepositoryMask.",
-         bp::no_init
-        )
-
-        .def("__init__",
-                bp::make_constructor(&make_repository_mask_info),
-                "__init__(list of string, path_str, token_str)"
-            )
-
-        .add_property("mask_file",
-                &named_values_getter<RepositoryMaskInfo, n::mask_file, FSPath, &RepositoryMaskInfo::mask_file>,
-                &named_values_setter<RepositoryMaskInfo, n::mask_file, FSPath, &RepositoryMaskInfo::mask_file>,
-                "[ro] str\n"
-                "Holds the file whence the mask originates."
-                )
-
-        .add_property("comment",
-                &named_values_getter<RepositoryMaskInfo, n::comment, std::shared_ptr<const Sequence<std::string> >, &RepositoryMaskInfo::comment>,
-                &named_values_setter<RepositoryMaskInfo, n::comment, std::shared_ptr<const Sequence<std::string> >, &RepositoryMaskInfo::comment>,
-                "[ro] Iterable of str\n"
-                "Sequence of lines explaining the mask."
-                )
-        ;
-
     /**
      * Mask
      */

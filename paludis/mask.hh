@@ -53,24 +53,6 @@ namespace paludis
     }
 
     /**
-     * Information about a RepositoryMask.
-     *
-     * The mask_file key holds the file whence the mask originates.
-     *
-     * The comment key is a sequence of lines explaining the mask.
-     *
-     * \ingroup g_package_id
-     * \since 0.30
-     * \nosubgrouping
-     */
-    struct RepositoryMaskInfo
-    {
-        NamedValue<n::comment, std::shared_ptr<const Sequence<std::string> > > comment;
-        NamedValue<n::mask_file, FSPath> mask_file;
-        NamedValue<n::token, std::string> token;
-    };
-
-    /**
      * A Mask represents one reason why a PackageID is masked (not available to
      * be installed).
      *

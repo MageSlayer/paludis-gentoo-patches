@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2011 Ciaran McCreesh
+ * Copyright (c) 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,31 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_MASK_FWD_HH
-#define PALUDIS_GUARD_PALUDIS_MASK_FWD_HH 1
+#include <paludis/repositories/e/mask_info.hh>
 
-#include <paludis/util/attributes.hh>
-#include <iosfwd>
+using namespace paludis;
+using namespace paludis::erepository;
 
-/** \file
- * Forward declarations for paludis/mask.hh .
- *
- * \ingroup g_mask
- */
-
-namespace paludis
-{
-    class Mask;
-    class UserMask;
-    class UnacceptedMask;
-    class RepositoryMask;
-    class UnsupportedMask;
-    class AssociationMask;
-
-    struct OverriddenMask;
-
-#include <paludis/mask-se.hh>
-
-}
-
-#endif
