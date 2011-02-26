@@ -151,7 +151,7 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
                 MetadataRepositoryMaskInfoKey.__init__(self)
 
             def value(self):
-                return RepositoryMaskInfo(["comment"], "/foo")
+                return RepositoryMaskInfo(["comment"], "/foo", "")
 
             def raw_name(self):
                 return "raw"

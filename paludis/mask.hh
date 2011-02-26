@@ -49,6 +49,7 @@ namespace paludis
         typedef Name<struct name_mask> mask;
         typedef Name<struct name_mask_file> mask_file;
         typedef Name<struct name_override_reason> override_reason;
+        typedef Name<struct name_token> token;
     }
 
     /**
@@ -66,6 +67,7 @@ namespace paludis
     {
         NamedValue<n::comment, std::shared_ptr<const Sequence<std::string> > > comment;
         NamedValue<n::mask_file, FSPath> mask_file;
+        NamedValue<n::token, std::string> token;
     };
 
     /**

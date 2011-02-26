@@ -84,7 +84,11 @@ MaskFile::MaskFile(const FSPath & f, const LineConfigFileOptions & opts) :
         }
 
         _imp->lines.push_back(std::make_pair(*it, std::shared_ptr<RepositoryMaskInfo>(std::make_shared<RepositoryMaskInfo>(
-                            make_named_values<RepositoryMaskInfo>(n::comment() = comment, n::mask_file() = f)))));
+                            make_named_values<RepositoryMaskInfo>(
+                                n::comment() = comment,
+                                n::mask_file() = f,
+                                n::token() = ""
+                                )))));
         comment_used = true;
     }
 }

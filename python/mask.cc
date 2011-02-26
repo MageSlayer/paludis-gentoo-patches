@@ -31,11 +31,12 @@ namespace bp = boost::python;
 namespace
 {
     std::shared_ptr<RepositoryMaskInfo>  make_repository_mask_info(
-            const std::shared_ptr<const Sequence<std::string> > & s, const FSPath & f)
+            const std::shared_ptr<const Sequence<std::string> > & s, const FSPath & f, const std::string & t)
     {
         return std::make_shared<RepositoryMaskInfo>(make_named_values<RepositoryMaskInfo>(
                         n::comment() = s,
-                        n::mask_file() = f
+                        n::mask_file() = f,
+                        n::token() = t
                         ));
     }
 }
@@ -300,7 +301,7 @@ void expose_mask()
 
         .def("__init__",
                 bp::make_constructor(&make_repository_mask_info),
-                "__init__(list of string, path_str)"
+                "__init__(list of string, path_str, token_str)"
             )
 
         .add_property("mask_file",
