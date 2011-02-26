@@ -107,7 +107,6 @@ namespace paludis
                 MetadataValueKey<SlotName>,
                 MetadataValueKey<std::shared_ptr<const PackageID> >,
                 MetadataValueKey<std::shared_ptr<const Contents> >,
-                MetadataValueKey<std::shared_ptr<const RepositoryMaskInfo> >,
                 MetadataValueKey<std::shared_ptr<const Choices> >,
                 MetadataTimeKey,
                 MetadataSectionKey

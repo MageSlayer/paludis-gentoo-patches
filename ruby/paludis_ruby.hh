@@ -86,7 +86,6 @@ namespace paludis
         VALUE package_id_to_value(std::shared_ptr<const PackageID>);
         VALUE qualified_package_name_to_value(const QualifiedPackageName &);
         VALUE contents_to_value(std::shared_ptr<const Contents>);
-        VALUE repository_mask_info_to_value(std::shared_ptr<const RepositoryMaskInfo>);
         VALUE metadata_key_to_value(std::shared_ptr<const MetadataKey> m);
         VALUE fetch_action_failure_to_value(const FetchActionFailure &);
         VALUE generator_to_value(const Generator &);

@@ -42,7 +42,6 @@ namespace
     static VALUE c_metadata_time_key;
     static VALUE c_metadata_contents_key;
     static VALUE c_metadata_choices_key;
-    static VALUE c_metadata_repository_mask_info_key;
     static VALUE c_metadata_keyword_name_set_key;
     static VALUE c_metadata_string_set_key;
     static VALUE c_metadata_string_string_map_key;
@@ -58,7 +57,6 @@ namespace
     static VALUE c_metadata_dependency_spec_tree_key;
     static VALUE c_metadata_plain_text_spec_tree_key;
     static VALUE c_metadata_required_use_spec_tree_key;
-    static VALUE c_repository_mask_info;
     static VALUE c_metadata_section_key;
 
     /*
@@ -163,12 +161,6 @@ namespace
         void visit(const MetadataSectionKey &)
         {
             value = Data_Wrap_Struct(c_metadata_section_key, 0, &Common<std::shared_ptr<const MetadataKey> >::free,
-                    new std::shared_ptr<const MetadataKey>(mm));
-        }
-
-        void visit(const MetadataValueKey<std::shared_ptr<const RepositoryMaskInfo> > &)
-        {
-            value = Data_Wrap_Struct(c_metadata_repository_mask_info_key, 0, &Common<std::shared_ptr<const MetadataKey> >::free,
                     new std::shared_ptr<const MetadataKey>(mm));
         }
 
@@ -416,29 +408,6 @@ namespace
 
     /*
      * call-seq:
-     *     value -> RepositoryMaskInfo
-     *
-     * Our Value.
-     * */
-    VALUE
-    metadata_repository_mask_info_key_value(VALUE self)
-    {
-        try
-        {
-            std::shared_ptr<const MetadataKey> * self_ptr;
-            Data_Get_Struct(self, std::shared_ptr<const MetadataKey>, self_ptr);
-            if ((std::static_pointer_cast<const MetadataValueKey<std::shared_ptr<const RepositoryMaskInfo> > >(*self_ptr))->value())
-                return repository_mask_info_to_value(std::static_pointer_cast<const MetadataValueKey<std::shared_ptr<const RepositoryMaskInfo> > >(*self_ptr)->value());
-            return Qnil;
-        }
-        catch (const std::exception & e)
-        {
-            exception_to_ruby_exception(e);
-        }
-    }
-
-    /*
-     * call-seq:
      *     value -> Choices
      *
      * Our Value.
@@ -627,38 +596,6 @@ namespace
 
     /*
      * call-seq:
-     *     mask_file -> String
-     *
-     * Filename where the key was defined.
-     */
-    VALUE
-    repository_mask_info_mask_file(VALUE self)
-    {
-        std::shared_ptr<const RepositoryMaskInfo> * ptr;
-        Data_Get_Struct(self, std::shared_ptr<const RepositoryMaskInfo>, ptr);
-        return rb_str_new2(stringify((**ptr).mask_file()).c_str());
-    }
-
-    /*
-     * call-seq:
-     *     comment -> Array
-     *
-     * Array of lines explaining the mask.
-     */
-    VALUE
-    repository_mask_info_comment(VALUE self)
-    {
-        std::shared_ptr<const RepositoryMaskInfo> * ptr;
-        Data_Get_Struct(self, std::shared_ptr<const RepositoryMaskInfo>, ptr);
-        VALUE result(rb_ary_new());
-        for (Sequence<std::string>::ConstIterator it((**ptr).comment()->begin()),
-                 it_end((**ptr).comment()->end()); it_end != it; ++it)
-            rb_ary_push(result, rb_str_new2(it->c_str()));
-        return result;
-    }
-
-    /*
-     * call-seq:
      *     each_metadata {|key| block } -> Nil
      *
      * Our metadata.
@@ -773,14 +710,6 @@ namespace
          */
         c_metadata_choices_key = rb_define_class_under(paludis_module(), "MetadataChoicesKey", c_metadata_key);
         rb_define_method(c_metadata_choices_key, "value", RUBY_FUNC_CAST(&metadata_choices_key_value), 0);
-
-        /*
-         * Document-class: Paludis::MetadataRepositoryMaskInfoKey
-         *
-         * Metadata class for RepositoryMaskInfo.
-         */
-        c_metadata_repository_mask_info_key = rb_define_class_under(paludis_module(), "MetadataRepositoryMaskInfoKey", c_metadata_key);
-        rb_define_method(c_metadata_repository_mask_info_key, "value", RUBY_FUNC_CAST(&metadata_repository_mask_info_key_value), 0);
 
         /*
          * Document-class: Paludis::MetadataKeywordNameSetKey
@@ -909,32 +838,6 @@ namespace
             rb_define_const(c_metadata_key_type, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
 
         // cc_enum_special<paludis/metadata_key-se.hh, MetadataKeyType, c_metadata_key_type>
-
-        /*
-         * Document-class: Paludis::RepositoryMaskInfo
-         *
-         * Information about a RepositoryMask.
-         */
-        c_repository_mask_info = rb_define_class_under(paludis_module(), "RepositoryMaskInfo", rb_cObject);
-        rb_funcall(c_repository_mask_info, rb_intern("private_class_method"), 1, rb_str_new2("new"));
-        rb_define_method(c_repository_mask_info, "mask_file", RUBY_FUNC_CAST(&repository_mask_info_mask_file), 0);
-        rb_define_method(c_repository_mask_info, "comment", RUBY_FUNC_CAST(&repository_mask_info_comment), 0);
-    }
-}
-
-VALUE
-paludis::ruby::repository_mask_info_to_value(std::shared_ptr<const RepositoryMaskInfo> m)
-{
-    std::shared_ptr<const RepositoryMaskInfo> * m_ptr(0);
-    try
-    {
-        m_ptr = new std::shared_ptr<const RepositoryMaskInfo>(m);
-        return Data_Wrap_Struct(c_repository_mask_info, 0, &Common<std::shared_ptr<const RepositoryMaskInfo> >::free, m_ptr);
-    }
-    catch (const std::exception & e)
-    {
-        delete m_ptr;
-        exception_to_ruby_exception(e);
     }
 }
 

@@ -921,14 +921,6 @@ namespace
             cout << fuc(fs_mask_by_valueless(), fv<'i'>(indent), fv<'k'>(k.human_name()));
         }
 
-        void visit(const MetadataValueKey<std::shared_ptr<const RepositoryMaskInfo> > & k)
-        {
-            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.value()->mask_file())));
-            for (Sequence<std::string>::ConstIterator l(k.value()->comment()->begin()), l_end(k.value()->comment()->end()) ;
-                    l != l_end ; ++l)
-                cout << fuc(fs_mask_by_repo_line(), fv<'i'>(indent), fv<'s'>(*l));
-        }
-
         void visit(const MetadataValueKey<FSPath> & k)
         {
             cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.value())));

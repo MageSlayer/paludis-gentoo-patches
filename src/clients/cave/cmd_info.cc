@@ -281,10 +281,6 @@ namespace
         {
         }
 
-        void visit(const MetadataValueKey<std::shared_ptr<const RepositoryMaskInfo> > &)
-        {
-        }
-
         void visit(const MetadataTimeKey & k)
         {
             cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(pretty_print_time(k.value().seconds())));

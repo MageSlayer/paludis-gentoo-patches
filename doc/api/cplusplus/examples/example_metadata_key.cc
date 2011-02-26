@@ -116,32 +116,6 @@ namespace
                  * it has its own examples. */
             }
 
-            void visit(const MetadataValueKey<std::shared_ptr<const RepositoryMaskInfo> > & key)
-            {
-                cout << indent << left << setw(30) << "    Class:" << " " <<
-                    "MetadataValueKey<std::shared_ptr<const RepositoryMaskInfo> >" << endl;
-
-                /* MetadataValueKey<std::shared_ptr<const RepositoryMaskInfo> >::value()
-                 * can return a zero pointer. Other keys can't. */
-                if (key.value())
-                {
-                    cout << indent << left << setw(30) << "    Mask file:" << " " << key.value()->mask_file() << endl;
-                    /* Comment looks best if it's outputted over multiple lines,
-                     * as that's how it tends to be stored in package.mask. */
-                    cout << indent << left << setw(30) << "    Comment:" << " ";
-                    bool first(true);
-                    for (Sequence<std::string>::ConstIterator i(key.value()->comment()->begin()),
-                            i_end(key.value()->comment()->end()) ;
-                            i != i_end ; ++i)
-                    {
-                        if (! first)
-                            cout << indent << left << setw(30) << "        ..." << " ";
-                        cout << *i << endl;
-                        first = false;
-                    }
-                }
-            }
-
             void visit(const MetadataSpecTreeKey<PlainTextSpecTree> & key)
             {
                 cout << indent << left << setw(30) << "    Class:" << " " << "MetadataSpecTreeKey<PlainTextSpecTree>" << endl;

@@ -85,11 +85,6 @@ class MetadataKeySptrToPythonVisitor
             obj = bp::object(std::static_pointer_cast<const MetadataValueKey<std::shared_ptr<const Choices> > >(_m_ptr));
         }
 
-        void visit(const MetadataValueKey<std::shared_ptr<const RepositoryMaskInfo> > & k)
-        {
-            obj = bp::object(std::static_pointer_cast<const MetadataValueKey<std::shared_ptr<const RepositoryMaskInfo> > >(_m_ptr));
-        }
-
         void visit(const MetadataValueKey<FSPath> & k)
         {
             obj = bp::object(std::static_pointer_cast<const MetadataValueKey<FSPath> >(_m_ptr));
@@ -573,52 +568,6 @@ struct MetadataFSPathKeyWrapper :
             return f();
         else
             throw PythonMethodNotImplemented("MetadataFSPathKey", "type");
-    }
-};
-
-struct MetadataRepositoryMaskInfoKeyWrapper :
-    MetadataValueKey<std::shared_ptr<const RepositoryMaskInfo> > ,
-    bp::wrapper<MetadataValueKey<std::shared_ptr<const RepositoryMaskInfo> > >
-{
-    virtual const std::shared_ptr<const RepositoryMaskInfo> value() const
-        PALUDIS_ATTRIBUTE((warn_unused_result))
-    {
-        Lock l(get_mutex());
-
-        if (bp::override f = get_override("value"))
-            return f();
-        else
-            throw PythonMethodNotImplemented("MetadataRepositoryMaskInfoKey", "value");
-    }
-
-    virtual const std::string raw_name() const
-    {
-        Lock l(get_mutex());
-
-        if (bp::override f = get_override("raw_name"))
-            return f();
-        else
-            throw PythonMethodNotImplemented("MetadataRepositoryMaskInfoKey", "raw_name");
-    }
-
-    virtual const std::string human_name() const
-    {
-        Lock l(get_mutex());
-
-        if (bp::override f = get_override("human_name"))
-            return f();
-        else
-            throw PythonMethodNotImplemented("MetadataRepositoryMaskInfoKey", "human_name");
-    }
-
-    virtual MetadataKeyType type() const
-    {
-        Lock l(get_mutex());
-
-        if (bp::override f = get_override("type"))
-            return f();
-        else
-            throw PythonMethodNotImplemented("MetadataRepositoryMaskInfoKey", "type");
     }
 };
 
@@ -1274,30 +1223,6 @@ void expose_metadata_key()
                 )
         ;
 
-
-    /**
-     * MetadataRepositoryMaskInfoKey
-     */
-    bp::register_ptr_to_python<std::shared_ptr<const MetadataValueKey<std::shared_ptr<const RepositoryMaskInfo> > > >();
-    bp::implicitly_convertible<std::shared_ptr<MetadataRepositoryMaskInfoKeyWrapper>,
-            std::shared_ptr<MetadataKey> >();
-    bp::class_<MetadataRepositoryMaskInfoKeyWrapper, std::shared_ptr<MetadataRepositoryMaskInfoKeyWrapper>,
-            bp::bases<MetadataKey>, boost::noncopyable>
-        (
-         "MetadataRepositoryMaskInfoKey",
-         "A MetadataRepositoryMaskInfoKey is a MetadataKey that holds\n"
-         "RepositoryMaskInfo as its value.\n\n"
-
-         "This class can be subclassed in Python.",
-         bp::init<>(
-             "__init__()"
-             )
-        )
-        .def("value", bp::pure_virtual(&MetadataValueKey<std::shared_ptr<const RepositoryMaskInfo> > ::value),
-                "value() -> RepositoryMaskInfo\n"
-                "Fetch our value."
-                )
-        ;
 
     /**
      * MetadataCollectionKeys

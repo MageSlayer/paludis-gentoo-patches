@@ -577,11 +577,6 @@ namespace
             return false;
         }
 
-        bool visit(const MetadataValueKey<std::shared_ptr<const RepositoryMaskInfo> > &) const
-        {
-            return false;
-        }
-
         bool visit(const MetadataValueKey<std::shared_ptr<const Contents> > & s) const
         {
             switch (op)

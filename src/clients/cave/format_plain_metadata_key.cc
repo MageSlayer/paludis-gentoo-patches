@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -43,15 +43,6 @@ namespace
         void visit(const MetadataTimeKey & k)
         {
             s << k.value().seconds();
-        }
-
-        void visit(const MetadataValueKey<std::shared_ptr<const RepositoryMaskInfo> > & k)
-        {
-            if (k.value())
-            {
-                const std::shared_ptr<const Sequence<std::string> > c(k.value()->comment());
-                s << join(c->begin(), c->end(), " ") << " " << k.value()->mask_file();
-            }
         }
 
         void visit(const MetadataValueKey<std::shared_ptr<const Contents> > &)

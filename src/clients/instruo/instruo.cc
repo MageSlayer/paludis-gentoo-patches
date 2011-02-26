@@ -102,11 +102,6 @@ namespace
             const FSPath & PALUDIS_ATTRIBUTE((unused)) c(k.value());
         }
 
-        void visit(const MetadataValueKey<std::shared_ptr<const RepositoryMaskInfo> >  & k)
-        {
-            const std::shared_ptr<const RepositoryMaskInfo> & PALUDIS_ATTRIBUTE((unused)) i(k.value());
-        }
-
         void visit(const MetadataSpecTreeKey<PlainTextSpecTree> & k)
         {
             const std::shared_ptr<const PlainTextSpecTree> & PALUDIS_ATTRIBUTE((unused)) t(k.value());

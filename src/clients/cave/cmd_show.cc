@@ -979,27 +979,6 @@ namespace
             }
         }
 
-        void visit(const MetadataValueKey<std::shared_ptr<const RepositoryMaskInfo> > & k)
-        {
-            if (k.value())
-            {
-                out << fuc(
-                        (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
-                        fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
-                        fv<'v'>(stringify(k.value()->mask_file())),
-                        fv<'i'>(std::string(indent, ' ')),
-                        fv<'b'>(important ? "true" : ""),
-                        fv<'p'>("")
-                        );
-                for (Sequence<std::string>::ConstIterator i(k.value()->comment()->begin()), i_end(k.value()->comment()->end()) ;
-                        i != i_end ; ++i)
-                    out << fuc(fs_metadata_continued_value(),
-                            fv<'v'>(*i),
-                            fv<'i'>("")
-                            );
-            }
-        }
-
         void visit(const MetadataTimeKey & k)
         {
             out << fuc(

@@ -145,25 +145,6 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
 
         test_metadata_contents_key(TestKey())
 
-    def test_05_repository_mask_info(self):
-        class TestKey(MetadataRepositoryMaskInfoKey):
-            def __init__(self):
-                MetadataRepositoryMaskInfoKey.__init__(self)
-
-            def value(self):
-                return RepositoryMaskInfo(["comment"], "/foo", "")
-
-            def raw_name(self):
-                return "raw"
-
-            def human_name(self):
-                return "human"
-
-            def type(self):
-                return MetadataKeyType.NORMAL
-
-        test_metadata_repository_mask_info_key(TestKey())
-
     def test_06_keyword_name_iterable(self):
         class TestKey(MetadataKeywordNameIterableKey):
             def __init__(self):

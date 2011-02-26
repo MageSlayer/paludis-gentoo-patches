@@ -282,10 +282,6 @@ namespace
                     texts.push_back(stringify((*i)->name_with_prefix()));
         }
 
-        void visit(const MetadataValueKey<std::shared_ptr<const RepositoryMaskInfo> > &)
-        {
-        }
-
         void visit(const MetadataValueKey<std::shared_ptr<const Contents> > &)
         {
         }
