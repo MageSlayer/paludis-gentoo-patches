@@ -60,49 +60,6 @@
 using namespace paludis;
 using namespace paludis::erepository;
 
-EMutableRepositoryMaskInfoKey::EMutableRepositoryMaskInfoKey(const std::string & r, const std::string & h,
-        const std::shared_ptr<const RepositoryMaskInfo> & v, const MetadataKeyType t) :
-    _value(v),
-    _r(r),
-    _h(h),
-    _t(t)
-{
-}
-
-EMutableRepositoryMaskInfoKey::~EMutableRepositoryMaskInfoKey()
-{
-}
-
-const std::shared_ptr<const RepositoryMaskInfo>
-EMutableRepositoryMaskInfoKey::value() const
-{
-    return _value;
-}
-
-void
-EMutableRepositoryMaskInfoKey::set_value(const std::shared_ptr<const RepositoryMaskInfo> & v)
-{
-    _value = v;
-}
-
-const std::string
-EMutableRepositoryMaskInfoKey::raw_name() const
-{
-    return _r;
-}
-
-const std::string
-EMutableRepositoryMaskInfoKey::human_name() const
-{
-    return _h;
-}
-
-MetadataKeyType
-EMutableRepositoryMaskInfoKey::type() const
-{
-    return _t;
-}
-
 namespace paludis
 {
     template <>

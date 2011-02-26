@@ -169,8 +169,6 @@ namespace paludis
         mutable std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_use;
         mutable std::shared_ptr<const LiteralMetadataStringSetKey> raw_use_expand;
         mutable std::shared_ptr<const LiteralMetadataStringSetKey> raw_use_expand_hidden;
-        mutable std::shared_ptr<EMutableRepositoryMaskInfoKey> repository_mask;
-        mutable std::shared_ptr<EMutableRepositoryMaskInfoKey> profile_mask;
         mutable std::shared_ptr<const EPlainTextSpecKey> remote_ids;
         mutable std::shared_ptr<const EPlainTextSpecKey> bugs_to;
         mutable std::shared_ptr<const ESimpleURIKey> upstream_changelog;
@@ -354,13 +352,6 @@ EbuildID::need_keys_added() const
 
     add_metadata_key(std::make_shared<LiteralMetadataValueKey<std::string>>("EAPI", "EAPI", mkt_internal, _imp->eapi->name()));
 
-    _imp->repository_mask = std::make_shared<EMutableRepositoryMaskInfoKey>("repository_mask", "Repository masked",
-            e_repo->repository_masked(shared_from_this()), mkt_internal);
-    add_metadata_key(_imp->repository_mask);
-    _imp->profile_mask = std::make_shared<EMutableRepositoryMaskInfoKey>("profile_mask", "Profile masked",
-            e_repo->profile()->profile_masked(shared_from_this()), mkt_internal);
-    add_metadata_key(_imp->profile_mask);
-
     std::shared_ptr<const Map<ChoiceNameWithPrefix, std::string> > maybe_use_descriptions;
     if (_imp->eapi->supported())
     {
@@ -535,6 +526,9 @@ EbuildID::need_masks_added() const
         return;
     }
 
+    auto repo(_imp->environment->package_database()->fetch_repository(_imp->repository_name));
+    auto e_repo(std::static_pointer_cast<const ERepository>(repo));
+
     if (keywords_key())
     {
         if (! _imp->environment->accept_keywords(keywords_key()->value(), shared_from_this()))
@@ -566,19 +560,21 @@ EbuildID::need_masks_added() const
                             _imp->environment->distribution())->concept_license(), license_key()->raw_name()));
     }
 
+    auto repo_mask(e_repo->repository_masked(shared_from_this()));
+    auto profile_mask(e_repo->profile()->profile_masked(shared_from_this()));
     if (! _imp->environment->unmasked_by_user(shared_from_this(), ""))
     {
         /* repo unless user */
-        if (_imp->repository_mask->value())
+        if (repo_mask)
             add_mask(std::make_shared<ERepositoryMask>('R', "repository",
-                        _imp->repository_mask->value()->comment() ? join(_imp->repository_mask->value()->comment()->begin(),
-                            _imp->repository_mask->value()->comment()->end(), " ") : "", "", _imp->repository_mask->value()->mask_file()));
+                        repo_mask->comment() ? join(repo_mask->comment()->begin(), repo_mask->comment()->end(), " ") : "",
+                        "", repo_mask->mask_file()));
 
         /* profile unless user */
-        if (_imp->profile_mask->value())
+        if (profile_mask)
             add_mask(std::make_shared<ERepositoryMask>('P', "profile",
-                        _imp->profile_mask->value()->comment() ? join(_imp->profile_mask->value()->comment()->begin(),
-                            _imp->profile_mask->value()->comment()->end(), " ") : "", "", _imp->profile_mask->value()->mask_file()));
+                        profile_mask->comment() ? join(profile_mask->comment()->begin(), profile_mask->comment()->end(), " ") : "",
+                        "", profile_mask->mask_file()));
 
         /* user */
         std::shared_ptr<const Mask> user_mask(_imp->environment->mask_for_user(shared_from_this(), false));
@@ -588,22 +584,22 @@ EbuildID::need_masks_added() const
     else
     {
         /* repo overridden by user */
-        if (_imp->repository_mask->value())
+        if (repo_mask)
             add_overridden_mask(std::make_shared<OverriddenMask>(
                             make_named_values<OverriddenMask>(
                                 n::mask() = std::make_shared<ERepositoryMask>('r', "repository (overridden)",
-                                    _imp->repository_mask->value()->comment() ? join(_imp->repository_mask->value()->comment()->begin(),
-                                        _imp->repository_mask->value()->comment()->end(), " ") : "", "", _imp->repository_mask->value()->mask_file()),
+                                    repo_mask->comment() ? join(repo_mask->comment()->begin(), repo_mask->comment()->end(), " ") : "",
+                                    "", repo_mask->mask_file()),
                                 n::override_reason() = mro_overridden_by_user
                                 )));
 
         /* profile unless user */
-        if (_imp->profile_mask->value())
+        if (profile_mask)
             add_overridden_mask(std::make_shared<OverriddenMask>(
                             make_named_values<OverriddenMask>(
                                 n::mask() = std::make_shared<ERepositoryMask>('p', "profile (overridden)",
-                                    _imp->profile_mask->value()->comment() ? join(_imp->profile_mask->value()->comment()->begin(),
-                                        _imp->profile_mask->value()->comment()->end(), " ") : "", "", _imp->profile_mask->value()->mask_file()),
+                                    profile_mask->comment() ? join(profile_mask->comment()->begin(), profile_mask->comment()->end(), " ") : "",
+                                    "", profile_mask->mask_file()),
                                 n::override_reason() = mro_overridden_by_user
                                 )));
 
@@ -634,11 +630,6 @@ EbuildID::invalidate_masks() const
 
     _imp->has_masks = false;
     PackageID::invalidate_masks();
-
-    auto repo(_imp->environment->package_database()->fetch_repository(repository_name()));
-    auto e_repo(std::static_pointer_cast<const ERepository>(repo));
-    _imp->repository_mask->set_value(e_repo->repository_masked(shared_from_this()));
-    _imp->profile_mask->set_value(e_repo->profile()->profile_masked(shared_from_this()));
 }
 
 const std::string
