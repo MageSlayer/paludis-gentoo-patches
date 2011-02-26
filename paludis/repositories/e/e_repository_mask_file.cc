@@ -17,7 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "e_repository_mask_file.hh"
+#include <paludis/repositories/e/e_repository_mask_file.hh>
+#include <paludis/repositories/e/eapi.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/sequence.hh>
@@ -27,8 +28,11 @@
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/sequence-impl.hh>
+#include <paludis/util/tokeniser.hh>
+#include <paludis/util/log.hh>
 #include <paludis/mask.hh>
 
+#include <vector>
 #include <list>
 
 using namespace paludis;
@@ -51,7 +55,7 @@ namespace paludis
     };
 }
 
-MaskFile::MaskFile(const FSPath & f, const LineConfigFileOptions & opts, const EAPI &) :
+MaskFile::MaskFile(const FSPath & f, const LineConfigFileOptions & opts, const EAPI & eapi) :
     _imp()
 {
     LineConfigFileOptions myopts(opts);
@@ -83,11 +87,32 @@ MaskFile::MaskFile(const FSPath & f, const LineConfigFileOptions & opts, const E
             continue;
         }
 
-        _imp->lines.push_back(std::make_pair(*it, std::shared_ptr<RepositoryMaskInfo>(std::make_shared<RepositoryMaskInfo>(
+        std::vector<std::string> tokens;
+        tokenise_whitespace(*it, std::back_inserter(tokens));
+
+        if (tokens.size() == 0)
+            continue;
+        else if (tokens.size() == 1)
+        {
+        }
+        else if (tokens.size() == 2 && ! eapi.supported()->allow_tokens_in_mask_files())
+        {
+            Log::get_instance()->message("e.mask.malformed", ll_qa, lc_context)
+                << "Line '" << *it << "' in '" << f << "' contains tokens after the spec; ignoring";
+            continue;
+        }
+        else
+        {
+            Log::get_instance()->message("e.mask.malformed", ll_qa, lc_context)
+                << "Line '" << *it << "' in '" << f << "' contains multiple tokens; ignoring";
+            continue;
+        }
+
+        _imp->lines.push_back(std::make_pair(tokens.at(0), std::shared_ptr<RepositoryMaskInfo>(std::make_shared<RepositoryMaskInfo>(
                             make_named_values<RepositoryMaskInfo>(
                                 n::comment() = comment,
                                 n::mask_file() = f,
-                                n::token() = ""
+                                n::token() = tokens.size() < 2 ? "" : tokens.at(1)
                                 )))));
         comment_used = true;
     }

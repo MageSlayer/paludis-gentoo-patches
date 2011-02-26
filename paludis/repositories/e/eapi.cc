@@ -332,6 +332,7 @@ namespace
         }
 
         return std::make_shared<SupportedEAPI>(make_named_values<SupportedEAPI>(
+                        n::allow_tokens_in_mask_files() = destringify_key<bool>(k, "allow_tokens_in_mask_files"),
                         n::annotations() = make_annotations(k),
                         n::breaks_portage() = destringify_key<bool>(k, "breaks_portage"),
                         n::can_be_pbin() = destringify_key<bool>(k, "can_be_pbin"),

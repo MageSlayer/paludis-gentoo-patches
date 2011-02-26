@@ -37,6 +37,7 @@ namespace paludis
 {
     namespace n
     {
+        typedef Name<struct name_allow_tokens_in_mask_files> allow_tokens_in_mask_files;
         typedef Name<struct name_annotations> annotations;
         typedef Name<struct name_binary_from_env_variables> binary_from_env_variables;
         typedef Name<struct name_blocker_resolution> blocker_resolution;
@@ -281,6 +282,7 @@ namespace paludis
 
         struct SupportedEAPI
         {
+            NamedValue<n::allow_tokens_in_mask_files, bool> allow_tokens_in_mask_files;
             NamedValue<n::annotations, std::shared_ptr<const EAPIAnnotations> > annotations;
             NamedValue<n::breaks_portage, bool> breaks_portage;
             NamedValue<n::can_be_pbin, bool> can_be_pbin;
