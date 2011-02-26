@@ -42,6 +42,8 @@ int main(int argc, char *argv[])
     }
 
     archive_entry * entry;
+    bool done_any(false);
+
     while (ARCHIVE_OK == archive_read_next_header(archive, &entry))
     {
         std::string archive_filename(archive_entry_pathname(entry));
@@ -74,12 +76,19 @@ int main(int argc, char *argv[])
                  x << ", archive_errno " << archive_errno(archive) << ": " << archive_error_string(archive) << std::endl;
             return EXIT_FAILURE;
         }
+        done_any = true;
     }
 
     if (ARCHIVE_OK != ((x = archive_read_finish(archive))))
     {
         std::cerr << "Could not finish reading '" << archive_file << "': libarchive returned " <<
             x << ", archive_errno " << archive_errno(archive) << ": " << archive_error_string(archive) << std::endl;
+        return EXIT_FAILURE;
+    }
+
+    if (want_env && ! done_any)
+    {
+        std::cerr << "Could not find any environment in '" << archive_file << "'" << std::endl;
         return EXIT_FAILURE;
     }
 
