@@ -30,6 +30,8 @@ namespace paludis
 {
     namespace erepository
     {
+        class EAPI;
+
         /**
          * A file listing masks in an ERepository.
          *
@@ -46,7 +48,7 @@ namespace paludis
                 ///\name Basic operations
                 ///\{
 
-                MaskFile(const FSPath &, const LineConfigFileOptions &);
+                MaskFile(const FSPath &, const LineConfigFileOptions &, const EAPI &);
                 ~MaskFile();
 
                 ///\}

@@ -111,6 +111,24 @@ namespace paludis
         typedef std::list<std::pair<std::shared_ptr<const EAPI>,
                 const std::remove_reference<MaskFile::ConstIterator::value_type>::type> >::const_iterator UnderlyingIterator;
     };
+
+    template <typename T_>
+    struct MakeFile
+    {
+        static std::shared_ptr<T_> make(const FSPath & p, const LineConfigFileOptions & o, const EAPI & e)
+        {
+            return std::make_shared<T_>(p, o, e);
+        }
+    };
+
+    template <>
+    struct MakeFile<LineConfigFile>
+    {
+        static std::shared_ptr<LineConfigFile> make(const FSPath & p, const LineConfigFileOptions & o, const EAPI &)
+        {
+            return std::make_shared<LineConfigFile>(p, o);
+        }
+    };
 }
 
 template <typename F_>
@@ -128,8 +146,8 @@ ProfileFile<F_>::add_file(const FSPath & f)
         throw ERepositoryConfigurationError("Can't use profile file '" + stringify(f) +
                 "' because it uses an unsupported EAPI");
 
-    F_ file(f, { lcfo_disallow_continuations });
-    for (typename F_::ConstIterator line(file.begin()), line_end(file.end()) ; line != line_end ; ++line)
+    std::shared_ptr<F_> file(MakeFile<F_>::make(f, { lcfo_disallow_continuations }, *eapi));
+    for (typename F_::ConstIterator line(file->begin()), line_end(file->end()) ; line != line_end ; ++line)
     {
         const std::string key(FileEntryTraits<const typename std::remove_reference<typename F_::ConstIterator::value_type>::type>::extract_key(*line));
         if (0 == key.compare(0, 1, "-", 0, 1))

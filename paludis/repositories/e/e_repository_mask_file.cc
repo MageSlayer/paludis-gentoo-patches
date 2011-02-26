@@ -51,7 +51,7 @@ namespace paludis
     };
 }
 
-MaskFile::MaskFile(const FSPath & f, const LineConfigFileOptions & opts) :
+MaskFile::MaskFile(const FSPath & f, const LineConfigFileOptions & opts, const EAPI &) :
     _imp()
 {
     LineConfigFileOptions myopts(opts);
