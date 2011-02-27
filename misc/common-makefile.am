@@ -47,7 +47,6 @@ LOG_COMPILER = \
 		CAVE_SYNC_OPTIONS="" \
 		CAVE_UNINSTALL_OPTIONS="" \
 		CAVE_UPDATE_WORLD_OPTIONS="" \
-		CRAN_BASH_DIR="$(top_srcdir)/paludis/repositories/cran/cran/" \
 		INQUISITIO_OPTIONS="" \
 		LD_LIBRARY_PATH="`echo $$LD_LIBRARY_PATH: | sed -e 's,^:,,'`` \
 			$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/.libs/ \

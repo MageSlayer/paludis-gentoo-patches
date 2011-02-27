@@ -96,7 +96,6 @@ endif
 ')
 
 condrepo(accounts)
-condrepo(cran)
 condrepo(dummy)
 condrepo(e)
 condrepo(fake)

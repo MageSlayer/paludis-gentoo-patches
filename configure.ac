@@ -1398,7 +1398,7 @@ AC_SUBST([VIM_INSTALL_DIR])
 dnl }}}
 
 dnl {{{ repositories
-m4_define(ALL_REPOSITORIES_m4, [accounts,cran,e,fake,gemcutter,repository,unavailable,unpackaged,unwritten,virtuals])
+m4_define(ALL_REPOSITORIES_m4, [accounts,e,fake,gemcutter,repository,unavailable,unpackaged,unwritten,virtuals])
 ALL_REPOSITORIES=`echo ALL_REPOSITORIES_m4 | tr , ' '`
 DEFAULT_REPOSITORIES="e fake repository unavailable unpackaged unwritten virtuals"
 AC_MSG_CHECKING([which repositories to build...])
@@ -1409,7 +1409,6 @@ AC_ARG_WITH([repositories],
 			  default         Equivalent to e,fake,unavailable,unpackaged,unwritten,virtuals
 
 			  accounts        Account management (requires distribution support)
-			  cran            The Comprehensive R Archive Network (unusable)
 			  e               Ebuild, Ebin, Exheres, VDB etc
 			  fake            A fake repository for test cases
 			  gemcutter       Gemcutter for Ruby
@@ -1773,8 +1772,6 @@ AC_CONFIG_FILES([
 	paludis/fetchers/demos/Makefile
 	paludis/repositories/Makefile
 	paludis/repositories/accounts/Makefile
-	paludis/repositories/cran/Makefile
-	paludis/repositories/cran/cran/Makefile
 	paludis/repositories/e/Makefile
 	paludis/repositories/e/eapis/Makefile
 	paludis/repositories/e/ebuild/0/Makefile

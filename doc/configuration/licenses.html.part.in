@@ -37,8 +37,7 @@ any of:</p>
     <li><code>*</code>, which accepts all licenses.</li>
 </ul>
 
-<p>Any token may be quoted using either single or double quotes. Note that CRAN repository entries can use spaces in
-license names, so quoting would be required to explicitly accept those licenses.</p>
+<p>Any token may be quoted using either single or double quotes.</p>
 
 <p>License settings are cumulative. To <em>only</em> accept listed licenses for a given spec, include <code>-*</code> in
 the symbols list.</p>

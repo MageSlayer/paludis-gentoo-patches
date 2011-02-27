@@ -116,7 +116,6 @@ RepositoryFactory::RepositoryFactory() :
     using namespace repository_groups;
 
     register_repositories(static_cast<const TypeOrNoType<REPOSITORY_GROUP_IF_accounts>::Type *>(0), this);
-    register_repositories(static_cast<const TypeOrNoType<REPOSITORY_GROUP_IF_cran>::Type *>(0), this);
     register_repositories(static_cast<const TypeOrNoType<REPOSITORY_GROUP_IF_dummy>::Type *>(0), this);
     register_repositories(static_cast<const TypeOrNoType<REPOSITORY_GROUP_IF_e>::Type *>(0), this);
     register_repositories(static_cast<const TypeOrNoType<REPOSITORY_GROUP_IF_fake>::Type *>(0), this);
