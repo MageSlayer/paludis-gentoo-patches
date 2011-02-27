@@ -156,43 +156,43 @@ GemcutterRepository::invalidate_masks()
 }
 
 bool
-GemcutterRepository::has_category_named(const CategoryNamePart & c) const
+GemcutterRepository::has_category_named(const CategoryNamePart & c, const RepositoryContentMayExcludes &) const
 {
     return _imp->store->has_category_named(c);
 }
 
 bool
-GemcutterRepository::has_package_named(const QualifiedPackageName & q) const
+GemcutterRepository::has_package_named(const QualifiedPackageName & q, const RepositoryContentMayExcludes &) const
 {
     return _imp->store->has_package_named(q);
 }
 
 std::shared_ptr<const CategoryNamePartSet>
-GemcutterRepository::category_names() const
+GemcutterRepository::category_names(const RepositoryContentMayExcludes &) const
 {
     return _imp->store->category_names();
 }
 
 std::shared_ptr<const CategoryNamePartSet>
-GemcutterRepository::unimportant_category_names() const
+GemcutterRepository::unimportant_category_names(const RepositoryContentMayExcludes &) const
 {
     return _imp->store->unimportant_category_names();
 }
 
 std::shared_ptr<const CategoryNamePartSet>
-GemcutterRepository::category_names_containing_package(const PackageNamePart & p) const
+GemcutterRepository::category_names_containing_package(const PackageNamePart & p, const RepositoryContentMayExcludes & x) const
 {
-    return Repository::category_names_containing_package(p);
+    return Repository::category_names_containing_package(p, x);
 }
 
 std::shared_ptr<const QualifiedPackageNameSet>
-GemcutterRepository::package_names(const CategoryNamePart & c) const
+GemcutterRepository::package_names(const CategoryNamePart & c, const RepositoryContentMayExcludes &) const
 {
     return _imp->store->package_names(c);
 }
 
 std::shared_ptr<const PackageIDSequence>
-GemcutterRepository::package_ids(const QualifiedPackageName & p) const
+GemcutterRepository::package_ids(const QualifiedPackageName & p, const RepositoryContentMayExcludes &) const
 {
     return _imp->store->package_ids(p);
 }

@@ -120,15 +120,15 @@ namespace paludis
                 ///\{
 
                 virtual const bool is_unimportant() const;
-                virtual bool has_category_named(const CategoryNamePart & c) const;
-                virtual bool has_package_named(const QualifiedPackageName & q) const;
-                virtual std::shared_ptr<const CategoryNamePartSet> category_names() const;
-                virtual std::shared_ptr<const CategoryNamePartSet> unimportant_category_names() const;
+                virtual bool has_category_named(const CategoryNamePart & c, const RepositoryContentMayExcludes &) const;
+                virtual bool has_package_named(const QualifiedPackageName & q, const RepositoryContentMayExcludes &) const;
+                virtual std::shared_ptr<const CategoryNamePartSet> category_names(const RepositoryContentMayExcludes &) const;
+                virtual std::shared_ptr<const CategoryNamePartSet> unimportant_category_names(const RepositoryContentMayExcludes &) const;
                 virtual std::shared_ptr<const CategoryNamePartSet> category_names_containing_package(
-                        const PackageNamePart & p) const;
+                        const PackageNamePart & p, const RepositoryContentMayExcludes &) const;
                 virtual std::shared_ptr<const QualifiedPackageNameSet> package_names(
-                        const CategoryNamePart & c) const;
-                virtual std::shared_ptr<const PackageIDSequence> package_ids(const QualifiedPackageName & p) const;
+                        const CategoryNamePart & c, const RepositoryContentMayExcludes &) const;
+                virtual std::shared_ptr<const PackageIDSequence> package_ids(const QualifiedPackageName & p, const RepositoryContentMayExcludes &) const;
                 virtual bool some_ids_might_support_action(const SupportsActionTestBase &) const;
                 virtual bool some_ids_might_not_be_masked() const;
 

@@ -173,10 +173,10 @@ namespace test_cases
             {
                 TestMessageSuffix pass_suffix(stringify(pass), true);
 
-                TEST_CHECK(repo->has_category_named(CategoryNamePart("cat-one")));
-                TEST_CHECK(repo->has_category_named(CategoryNamePart("cat-two")));
-                TEST_CHECK(repo->has_category_named(CategoryNamePart("cat-three")));
-                TEST_CHECK(! repo->has_category_named(CategoryNamePart("cat-four")));
+                TEST_CHECK(repo->has_category_named(CategoryNamePart("cat-one"), { }));
+                TEST_CHECK(repo->has_category_named(CategoryNamePart("cat-two"), { }));
+                TEST_CHECK(repo->has_category_named(CategoryNamePart("cat-three"), { }));
+                TEST_CHECK(! repo->has_category_named(CategoryNamePart("cat-four"), { }));
             }
         }
     } test_e_repository_has_category_named;
@@ -202,7 +202,7 @@ namespace test_cases
             {
                 TestMessageSuffix pass_suffix(stringify(pass), true);
 
-                std::shared_ptr<const CategoryNamePartSet> c(repo->category_names());
+                std::shared_ptr<const CategoryNamePartSet> c(repo->category_names({ }));
                 TEST_CHECK(c->end() != c->find(CategoryNamePart("cat-one")));
                 TEST_CHECK(c->end() != c->find(CategoryNamePart("cat-two")));
                 TEST_CHECK(c->end() != c->find(CategoryNamePart("cat-three")));
@@ -233,18 +233,18 @@ namespace test_cases
             {
                 TestMessageSuffix pass_suffix(stringify(pass), true);
 
-                TEST_CHECK(repo->has_package_named(QualifiedPackageName("cat-one/pkg-one")));
-                TEST_CHECK(repo->has_package_named(QualifiedPackageName("cat-two/pkg-two")));
-                TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-one/pkg-two")));
-                TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-two/pkg-one")));
-                TEST_CHECK(repo->has_package_named(QualifiedPackageName("cat-one/pkg-both")));
-                TEST_CHECK(repo->has_package_named(QualifiedPackageName("cat-two/pkg-both")));
-                TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-one/pkg-neither")));
-                TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-two/pkg-neither")));
-                TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-three/pkg-one")));
-                TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-three/pkg-two")));
-                TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-three/pkg-both")));
-                TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-three/pkg-neither")));
+                TEST_CHECK(repo->has_package_named(QualifiedPackageName("cat-one/pkg-one"), { }));
+                TEST_CHECK(repo->has_package_named(QualifiedPackageName("cat-two/pkg-two"), { }));
+                TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-one/pkg-two"), { }));
+                TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-two/pkg-one"), { }));
+                TEST_CHECK(repo->has_package_named(QualifiedPackageName("cat-one/pkg-both"), { }));
+                TEST_CHECK(repo->has_package_named(QualifiedPackageName("cat-two/pkg-both"), { }));
+                TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-one/pkg-neither"), { }));
+                TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-two/pkg-neither"), { }));
+                TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-three/pkg-one"), { }));
+                TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-three/pkg-two"), { }));
+                TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-three/pkg-both"), { }));
+                TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-three/pkg-neither"), { }));
             }
         }
     } test_e_repository_has_package_named;
@@ -266,26 +266,26 @@ namespace test_cases
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
 
-            repo->package_names(CategoryNamePart("cat-one"));
-            repo->package_names(CategoryNamePart("cat-two"));
-            repo->package_names(CategoryNamePart("cat-three"));
+            repo->package_names(CategoryNamePart("cat-one"), { });
+            repo->package_names(CategoryNamePart("cat-two"), { });
+            repo->package_names(CategoryNamePart("cat-three"), { });
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
             {
                 TestMessageSuffix pass_suffix(stringify(pass), true);
 
-                TEST_CHECK(repo->has_package_named(QualifiedPackageName("cat-one/pkg-one")));
-                TEST_CHECK(repo->has_package_named(QualifiedPackageName("cat-two/pkg-two")));
-                TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-one/pkg-two")));
-                TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-two/pkg-one")));
-                TEST_CHECK(repo->has_package_named(QualifiedPackageName("cat-one/pkg-both")));
-                TEST_CHECK(repo->has_package_named(QualifiedPackageName("cat-two/pkg-both")));
-                TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-one/pkg-neither")));
-                TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-two/pkg-neither")));
-                TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-three/pkg-one")));
-                TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-three/pkg-two")));
-                TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-three/pkg-both")));
-                TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-three/pkg-neither")));
+                TEST_CHECK(repo->has_package_named(QualifiedPackageName("cat-one/pkg-one"), { }));
+                TEST_CHECK(repo->has_package_named(QualifiedPackageName("cat-two/pkg-two"), { }));
+                TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-one/pkg-two"), { }));
+                TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-two/pkg-one"), { }));
+                TEST_CHECK(repo->has_package_named(QualifiedPackageName("cat-one/pkg-both"), { }));
+                TEST_CHECK(repo->has_package_named(QualifiedPackageName("cat-two/pkg-both"), { }));
+                TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-one/pkg-neither"), { }));
+                TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-two/pkg-neither"), { }));
+                TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-three/pkg-one"), { }));
+                TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-three/pkg-two"), { }));
+                TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-three/pkg-both"), { }));
+                TEST_CHECK(! repo->has_package_named(QualifiedPackageName("cat-three/pkg-neither"), { }));
             }
         }
     } test_e_repository_has_package_named_cached;
@@ -313,7 +313,7 @@ namespace test_cases
             {
                 TestMessageSuffix pass_suffix(stringify(pass), true);
 
-                names = repo->package_names(CategoryNamePart("cat-one"));
+                names = repo->package_names(CategoryNamePart("cat-one"), { });
                 TEST_CHECK(! names->empty());
                 TEST_CHECK(names->end() != names->find(QualifiedPackageName("cat-one/pkg-one")));
                 TEST_CHECK(names->end() != names->find(QualifiedPackageName("cat-one/pkg-both")));
@@ -321,7 +321,7 @@ namespace test_cases
                 TEST_CHECK(names->end() == names->find(QualifiedPackageName("cat-one/pkg-neither")));
                 TEST_CHECK_EQUAL(2, std::distance(names->begin(), names->end()));
 
-                names = repo->package_names(CategoryNamePart("cat-two"));
+                names = repo->package_names(CategoryNamePart("cat-two"), { });
                 TEST_CHECK(! names->empty());
                 TEST_CHECK(names->end() == names->find(QualifiedPackageName("cat-two/pkg-one")));
                 TEST_CHECK(names->end() != names->find(QualifiedPackageName("cat-two/pkg-both")));
@@ -329,7 +329,7 @@ namespace test_cases
                 TEST_CHECK(names->end() == names->find(QualifiedPackageName("cat-two/pkg-neither")));
                 TEST_CHECK_EQUAL(2, std::distance(names->begin(), names->end()));
 
-                names = repo->package_names(CategoryNamePart("cat-three"));
+                names = repo->package_names(CategoryNamePart("cat-three"), { });
                 TEST_CHECK(names->empty());
                 TEST_CHECK(names->end() == names->find(QualifiedPackageName("cat-three/pkg-one")));
                 TEST_CHECK(names->end() == names->find(QualifiedPackageName("cat-three/pkg-both")));
@@ -363,7 +363,7 @@ namespace test_cases
             {
                 TestMessageSuffix pass_suffix(stringify(pass), true);
 
-                names = repo->package_names(CategoryNamePart("cat-one"));
+                names = repo->package_names(CategoryNamePart("cat-one"), { });
                 TEST_CHECK(! names->empty());
                 TEST_CHECK(names->end() != names->find(QualifiedPackageName("cat-one/pkg-one")));
                 TEST_CHECK_EQUAL(1, std::distance(names->begin(), names->end()));
@@ -397,7 +397,7 @@ namespace test_cases
 
                 std::shared_ptr<const PackageIDSequence> versions;
 
-                versions = repo->package_ids(QualifiedPackageName("cat-one/pkg-one"));
+                versions = repo->package_ids(QualifiedPackageName("cat-one/pkg-one"), { });
                 TEST_CHECK(! versions->empty());
                 TEST_CHECK_EQUAL(2, std::distance(versions->begin(), versions->end()));
                 TEST_CHECK(indirect_iterator(versions->end()) != std::find_if(
@@ -410,7 +410,7 @@ namespace test_cases
                             indirect_iterator(versions->begin()), indirect_iterator(versions->end()),
                             std::bind(std::equal_to<VersionSpec>(), std::bind(std::mem_fn(&PackageID::version), _1), VersionSpec("2", VersionSpecOptions()))));
 
-                versions = repo->package_ids(QualifiedPackageName("cat-one/pkg-neither"));
+                versions = repo->package_ids(QualifiedPackageName("cat-one/pkg-neither"), { });
                 TEST_CHECK(versions->empty());
                 TEST_CHECK_EQUAL(0, std::distance(versions->begin(), versions->end()));
             }
@@ -443,7 +443,7 @@ namespace test_cases
 
                 std::shared_ptr<const PackageIDSequence> versions;
 
-                versions = repo->package_ids(QualifiedPackageName("cat-one/pkg-one"));
+                versions = repo->package_ids(QualifiedPackageName("cat-one/pkg-one"), { });
                 TEST_CHECK(! versions->empty());
                 TEST_CHECK_EQUAL(2, std::distance(versions->begin(), versions->end()));
                 TEST_CHECK(indirect_iterator(versions->end()) != std::find_if(
@@ -456,7 +456,7 @@ namespace test_cases
                             indirect_iterator(versions->begin()), indirect_iterator(versions->end()),
                             std::bind(std::equal_to<VersionSpec>(), std::bind(std::mem_fn(&PackageID::version), _1), VersionSpec("2", VersionSpecOptions()))));
 
-                versions = repo->package_ids(QualifiedPackageName("cat-one/pkg-neither"));
+                versions = repo->package_ids(QualifiedPackageName("cat-one/pkg-neither"), { });
                 TEST_CHECK(versions->empty());
                 TEST_CHECK_EQUAL(0, std::distance(versions->begin(), versions->end()));
             }

@@ -59,11 +59,11 @@ int main(int argc, char * argv[])
 
             /* Repositories support various methods for querying categories,
              * packages, IDs and so on. These methods are used by
-             * PackageDatabase::query, but are also sometimes of direct use to
+             * Environment::operator[], but are also sometimes of direct use to
              * clients. */
-            std::shared_ptr<const CategoryNamePartSet> cats((*r)->category_names());
+            std::shared_ptr<const CategoryNamePartSet> cats((*r)->category_names({ }));
             cout << left << setw(30) << "    Number of categories:" << " " << cats->size() << endl;
-            std::shared_ptr<const PackageIDSequence> ids((*r)->package_ids(QualifiedPackageName("sys-apps/paludis")));
+            std::shared_ptr<const PackageIDSequence> ids((*r)->package_ids(QualifiedPackageName("sys-apps/paludis"), { }));
             cout << left << setw(30) << "    IDs for sys-apps/paludis:" << " " <<
                 join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), " ") << endl;
 

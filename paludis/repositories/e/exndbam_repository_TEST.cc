@@ -152,7 +152,7 @@ namespace test_cases
                         std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(0, exndbam_repo);
 
-            TEST_CHECK(exndbam_repo->package_ids(QualifiedPackageName("cat/pkg"))->empty());
+            TEST_CHECK(exndbam_repo->package_ids(QualifiedPackageName("cat/pkg"), { })->empty());
 
             {
                 TestMessageSuffix suffix("install eapi 1", true);
@@ -160,7 +160,7 @@ namespace test_cases
                 install(env, exndbam_repo, "=cat/pkg-0::postinsttest", "");
                 exndbam_repo->invalidate();
 
-                std::shared_ptr<const PackageIDSequence> ids(exndbam_repo->package_ids(QualifiedPackageName("cat/pkg")));
+                std::shared_ptr<const PackageIDSequence> ids(exndbam_repo->package_ids(QualifiedPackageName("cat/pkg"), { }));
                 TEST_CHECK_EQUAL(join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), " "), "cat/pkg-0::installed");
             }
 
@@ -170,7 +170,7 @@ namespace test_cases
                 install(env, exndbam_repo, "=cat/pkg-0::postinsttest", "");
                 exndbam_repo->invalidate();
 
-                std::shared_ptr<const PackageIDSequence> ids(exndbam_repo->package_ids(QualifiedPackageName("cat/pkg")));
+                std::shared_ptr<const PackageIDSequence> ids(exndbam_repo->package_ids(QualifiedPackageName("cat/pkg"), { }));
                 TEST_CHECK_EQUAL(join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), " "), "cat/pkg-0::installed");
             }
 
@@ -180,7 +180,7 @@ namespace test_cases
                 install(env, exndbam_repo, "=cat/pkg-0.1::postinsttest", "=cat/pkg-0::installed");
                 exndbam_repo->invalidate();
 
-                std::shared_ptr<const PackageIDSequence> ids2(exndbam_repo->package_ids(QualifiedPackageName("cat/pkg")));
+                std::shared_ptr<const PackageIDSequence> ids2(exndbam_repo->package_ids(QualifiedPackageName("cat/pkg"), { }));
                 TEST_CHECK_EQUAL(join(indirect_iterator(ids2->begin()), indirect_iterator(ids2->end()), " "), "cat/pkg-0.1::installed");
             }
 
@@ -201,7 +201,7 @@ namespace test_cases
                 install(env, exndbam_repo, "=cat/pkg-1::postinsttest", "");
                 exndbam_repo->invalidate();
 
-                std::shared_ptr<const PackageIDSequence> ids(exndbam_repo->package_ids(QualifiedPackageName("cat/pkg")));
+                std::shared_ptr<const PackageIDSequence> ids(exndbam_repo->package_ids(QualifiedPackageName("cat/pkg"), { }));
                 TEST_CHECK_EQUAL(join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), " "), "cat/pkg-1::installed");
             }
 
@@ -211,7 +211,7 @@ namespace test_cases
                 install(env, exndbam_repo, "=cat/pkg-1.1::postinsttest", "=cat/pkg-1::installed");
                 exndbam_repo->invalidate();
 
-                std::shared_ptr<const PackageIDSequence> ids(exndbam_repo->package_ids(QualifiedPackageName("cat/pkg")));
+                std::shared_ptr<const PackageIDSequence> ids(exndbam_repo->package_ids(QualifiedPackageName("cat/pkg"), { }));
                 TEST_CHECK_EQUAL(join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), " "), "cat/pkg-1.1::installed");
             }
 

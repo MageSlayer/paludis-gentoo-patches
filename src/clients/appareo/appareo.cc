@@ -259,7 +259,7 @@ main(int argc, char *argv[])
 
             unsigned success(0), total(0);
 
-            std::shared_ptr<const CategoryNamePartSet> cat_names(env.main_repository()->category_names());
+            std::shared_ptr<const CategoryNamePartSet> cat_names(env.main_repository()->category_names({ }));
             for (CategoryNamePartSet::ConstIterator c(cat_names->begin()), c_end(cat_names->end()) ;
                     c != c_end ; ++c)
             {
@@ -270,7 +270,7 @@ main(int argc, char *argv[])
                             stringify(*c)))
                         continue;
 
-                std::shared_ptr<const QualifiedPackageNameSet> pkg_names(env.main_repository()->package_names(*c));
+                std::shared_ptr<const QualifiedPackageNameSet> pkg_names(env.main_repository()->package_names(*c, { }));
                 for (QualifiedPackageNameSet::ConstIterator p(pkg_names->begin()), p_end(pkg_names->end()) ;
                         p != p_end ; ++p)
                 {

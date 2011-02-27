@@ -168,43 +168,43 @@ RepositoryRepository::invalidate_masks()
 }
 
 bool
-RepositoryRepository::has_category_named(const CategoryNamePart & c) const
+RepositoryRepository::has_category_named(const CategoryNamePart & c, const RepositoryContentMayExcludes &) const
 {
     return _imp->store->has_category_named(c);
 }
 
 bool
-RepositoryRepository::has_package_named(const QualifiedPackageName & q) const
+RepositoryRepository::has_package_named(const QualifiedPackageName & q, const RepositoryContentMayExcludes &) const
 {
     return _imp->store->has_package_named(q);
 }
 
 std::shared_ptr<const CategoryNamePartSet>
-RepositoryRepository::category_names() const
+RepositoryRepository::category_names(const RepositoryContentMayExcludes &) const
 {
     return _imp->store->category_names();
 }
 
 std::shared_ptr<const CategoryNamePartSet>
-RepositoryRepository::unimportant_category_names() const
+RepositoryRepository::unimportant_category_names(const RepositoryContentMayExcludes &) const
 {
     return _imp->store->unimportant_category_names();
 }
 
 std::shared_ptr<const CategoryNamePartSet>
-RepositoryRepository::category_names_containing_package(const PackageNamePart & p) const
+RepositoryRepository::category_names_containing_package(const PackageNamePart & p, const RepositoryContentMayExcludes & x) const
 {
-    return Repository::category_names_containing_package(p);
+    return Repository::category_names_containing_package(p, x);
 }
 
 std::shared_ptr<const QualifiedPackageNameSet>
-RepositoryRepository::package_names(const CategoryNamePart & c) const
+RepositoryRepository::package_names(const CategoryNamePart & c, const RepositoryContentMayExcludes &) const
 {
     return _imp->store->package_names(c);
 }
 
 std::shared_ptr<const PackageIDSequence>
-RepositoryRepository::package_ids(const QualifiedPackageName & p) const
+RepositoryRepository::package_ids(const QualifiedPackageName & p, const RepositoryContentMayExcludes &) const
 {
     return _imp->store->package_ids(p);
 }

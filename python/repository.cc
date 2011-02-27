@@ -18,6 +18,8 @@
  */
 
 #include <python/paludis_python.hh>
+#include <python/exception.hh>
+#include <python/options.hh>
 #include <python/iterable.hh>
 
 #include <paludis/repository.hh>
@@ -132,32 +134,32 @@ void expose_repository()
                 )
 
         .def("has_category_named", &Repository::has_category_named,
-                "has_category_named(CategoryNamePart) -> bool\n"
+                "has_category_named(CategoryNamePart, RepositoryContentMayExcludes) -> bool\n"
                 "Do we have a category with the given name?"
             )
 
         .def("has_package_named", &Repository::has_package_named,
-                "has_package_named(QualifiedPackageName) -> bool\n"
+                "has_package_named(QualifiedPackageName, RepositoryContentMayExcludes) -> bool\n"
                 "Do we have a package in the given category with the given name?"
             )
 
-        .add_property("category_names", &Repository::category_names,
-                "[ro] CategoryNamePartIterable\n"
+        .def("category_names", &Repository::category_names,
+                "category_names(RepositoryContentMayExcludes) -> CategoryNamePartIterable\n"
                 "Our category names."
                 )
 
         .def("category_names_containing_package", &Repository::category_names_containing_package,
-                "category_names_containing_package(PackageNamePart) -> CategoryNamePartIterable\n"
+                "category_names_containing_package(PackageNamePart, RepositoryContentMayExcludes) -> CategoryNamePartIterable\n"
                 "Fetch categories that contain a named package."
             )
 
         .def("package_names", &Repository::package_names,
-                "package_names(CategoryNamePart) -> QualifiedPackageNameIterable\n"
+                "package_names(CategoryNamePart, RepositoryContentMayExcludes) -> QualifiedPackageNameIterable\n"
                 "Fetch our package names."
             )
 
         .def("package_ids", &Repository::package_ids, bp::with_custodian_and_ward_postcall<0, 1>(),
-                "package_ids(QualifiedPackageName) -> PackageIDIterable\n"
+                "package_ids(QualifiedPackageName, RepositoryContentMayExcludes) -> PackageIDIterable\n"
                 "Fetch our versions."
             )
 
@@ -279,4 +281,11 @@ void expose_repository()
 
         .def("add_version", &FakeRepositoryWrapper::add_version)
         ;
+
+    enum_auto("RepositoryContentMayExclude", last_rcme,
+            "Tells repository it may exclude certain content from queries if doing so will be faster.");
+
+    class_options<RepositoryContentMayExcludes>("RepositoryContentMayExcludes", "RepositoryContentMayExclude",
+            "Options for various Repository methods.");
 }
+

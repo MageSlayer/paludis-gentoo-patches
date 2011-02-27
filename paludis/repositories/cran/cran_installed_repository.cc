@@ -187,7 +187,7 @@ CRANInstalledRepository::_add_metadata_keys() const
 }
 
 bool
-CRANInstalledRepository::has_category_named(const CategoryNamePart & c) const
+CRANInstalledRepository::has_category_named(const CategoryNamePart & c, const RepositoryContentMayExcludes &) const
 {
     return (CategoryNamePart("cran") == c);
 }
@@ -199,11 +199,11 @@ CRANInstalledRepository::is_unimportant() const
 }
 
 bool
-CRANInstalledRepository::has_package_named(const QualifiedPackageName & q) const
+CRANInstalledRepository::has_package_named(const QualifiedPackageName & q, const RepositoryContentMayExcludes & x) const
 {
     Context context("When checking for package '" + stringify(q) + "' in " + stringify(name()) + ":");
 
-    if (! has_category_named(q.category()))
+    if (! has_category_named(q.category(), x))
         return false;
 
     need_ids();
@@ -212,7 +212,7 @@ CRANInstalledRepository::has_package_named(const QualifiedPackageName & q) const
 }
 
 std::shared_ptr<const CategoryNamePartSet>
-CRANInstalledRepository::category_names() const
+CRANInstalledRepository::category_names(const RepositoryContentMayExcludes &) const
 {
     std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
     result->insert(CategoryNamePart("cran"));
@@ -220,13 +220,13 @@ CRANInstalledRepository::category_names() const
 }
 
 std::shared_ptr<const QualifiedPackageNameSet>
-CRANInstalledRepository::package_names(const CategoryNamePart & c) const
+CRANInstalledRepository::package_names(const CategoryNamePart & c, const RepositoryContentMayExcludes & x) const
 {
     Context context("When fetching package names in category '" + stringify(c)
             + "' in " + stringify(name()) + ":");
 
     std::shared_ptr<QualifiedPackageNameSet> result(std::make_shared<QualifiedPackageNameSet>());
-    if (! has_category_named(c))
+    if (! has_category_named(c, x))
         return result;
 
     need_ids();
@@ -238,13 +238,13 @@ CRANInstalledRepository::package_names(const CategoryNamePart & c) const
 }
 
 std::shared_ptr<const PackageIDSequence>
-CRANInstalledRepository::package_ids(const QualifiedPackageName & n) const
+CRANInstalledRepository::package_ids(const QualifiedPackageName & n, const RepositoryContentMayExcludes & x) const
 {
     Context context("When fetching versions of '" + stringify(n) + "' in "
             + stringify(name()) + ":");
 
     std::shared_ptr<PackageIDSequence> result(std::make_shared<PackageIDSequence>());
-    if (! has_package_named(n))
+    if (! has_package_named(n, x))
         return result;
 
     need_ids();

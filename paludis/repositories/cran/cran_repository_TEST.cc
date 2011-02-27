@@ -2,7 +2,7 @@
 
 /*
  * Copyright (c) 2006 Danny van Dyk
- * Copyright (c) 2007, 2008, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -62,9 +62,9 @@ namespace test_cases
             keys->insert("builddir", "cran_repository_TEST_dir/tmp");
             std::shared_ptr<Repository> repo(CRANRepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            TEST_CHECK(repo->has_category_named(CategoryNamePart("cran")));
-            TEST_CHECK(repo->has_package_named(QualifiedPackageName("cran/testpackage1")));
-            TEST_CHECK(repo->has_package_named(QualifiedPackageName("cran/testpackage2")));
+            TEST_CHECK(repo->has_category_named(CategoryNamePart("cran"), { }));
+            TEST_CHECK(repo->has_package_named(QualifiedPackageName("cran/testpackage1"), { }));
+            TEST_CHECK(repo->has_package_named(QualifiedPackageName("cran/testpackage2"), { }));
         }
     } test_cran_repository_packages;
 
@@ -82,9 +82,9 @@ namespace test_cases
             keys->insert("builddir", "cran_repository_TEST_dir/tmp");
             std::shared_ptr<Repository> repo(CRANRepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            TEST_CHECK(repo->has_package_named(QualifiedPackageName("cran/testbundle")));
-            TEST_CHECK(repo->has_package_named(QualifiedPackageName("cran/bundlepkg1")));
-            TEST_CHECK(repo->has_package_named(QualifiedPackageName("cran/bundlepkg2")));
+            TEST_CHECK(repo->has_package_named(QualifiedPackageName("cran/testbundle"), { }));
+            TEST_CHECK(repo->has_package_named(QualifiedPackageName("cran/bundlepkg1"), { }));
+            TEST_CHECK(repo->has_package_named(QualifiedPackageName("cran/bundlepkg2"), { }));
         }
     } test_cran_repository_bundle;
 }

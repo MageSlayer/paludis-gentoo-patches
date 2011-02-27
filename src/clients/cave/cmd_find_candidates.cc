@@ -223,7 +223,7 @@ FindCandidatesCommand::run_hosted(
                 r != r_end ; ++r)
         {
             const std::shared_ptr<const Repository> repo(env->package_database()->fetch_repository(*r));
-            const std::shared_ptr<const CategoryNamePartSet> cats(repo->category_names());
+            const std::shared_ptr<const CategoryNamePartSet> cats(repo->category_names({ }));
             std::copy(cats->begin(), cats->end(), std::inserter(category_names, category_names.end()));
         }
 
@@ -237,7 +237,7 @@ FindCandidatesCommand::run_hosted(
             for (CategoryNames::const_iterator c(category_names.begin()), c_end(category_names.end()) ;
                     c != c_end ; ++c)
             {
-                const std::shared_ptr<const QualifiedPackageNameSet> qpns(repo->package_names(*c));
+                const std::shared_ptr<const QualifiedPackageNameSet> qpns(repo->package_names(*c, { }));
                 std::copy(qpns->begin(), qpns->end(), std::inserter(package_names, package_names.end()));
             }
         }

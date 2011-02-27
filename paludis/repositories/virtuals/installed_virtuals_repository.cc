@@ -163,7 +163,7 @@ InstalledVirtualsRepository::need_ids() const
 }
 
 std::shared_ptr<const PackageIDSequence>
-InstalledVirtualsRepository::package_ids(const QualifiedPackageName & q) const
+InstalledVirtualsRepository::package_ids(const QualifiedPackageName & q, const RepositoryContentMayExcludes &) const
 {
     if (q.category().value() != "virtual")
         return std::make_shared<PackageIDSequence>();
@@ -178,7 +178,7 @@ InstalledVirtualsRepository::package_ids(const QualifiedPackageName & q) const
 }
 
 std::shared_ptr<const QualifiedPackageNameSet>
-InstalledVirtualsRepository::package_names(const CategoryNamePart & c) const
+InstalledVirtualsRepository::package_names(const CategoryNamePart & c, const RepositoryContentMayExcludes &) const
 {
     if (c.value() != "virtual")
         return std::make_shared<QualifiedPackageNameSet>();
@@ -193,7 +193,7 @@ InstalledVirtualsRepository::package_names(const CategoryNamePart & c) const
 }
 
 std::shared_ptr<const CategoryNamePartSet>
-InstalledVirtualsRepository::category_names() const
+InstalledVirtualsRepository::category_names(const RepositoryContentMayExcludes &) const
 {
     std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
     result->insert(CategoryNamePart("virtual"));
@@ -201,7 +201,7 @@ InstalledVirtualsRepository::category_names() const
 }
 
 bool
-InstalledVirtualsRepository::has_package_named(const QualifiedPackageName & q) const
+InstalledVirtualsRepository::has_package_named(const QualifiedPackageName & q, const RepositoryContentMayExcludes &) const
 {
     if (q.category().value() != "virtual")
         return false;
@@ -212,7 +212,7 @@ InstalledVirtualsRepository::has_package_named(const QualifiedPackageName & q) c
 }
 
 bool
-InstalledVirtualsRepository::has_category_named(const CategoryNamePart & c) const
+InstalledVirtualsRepository::has_category_named(const CategoryNamePart & c, const RepositoryContentMayExcludes &) const
 {
     return (c.value() == "virtual");
 }
@@ -304,7 +304,7 @@ InstalledVirtualsRepository::some_ids_might_not_be_masked() const
 }
 
 std::shared_ptr<const CategoryNamePartSet>
-InstalledVirtualsRepository::unimportant_category_names() const
+InstalledVirtualsRepository::unimportant_category_names(const RepositoryContentMayExcludes &) const
 {
     std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
     result->insert(CategoryNamePart("virtual"));

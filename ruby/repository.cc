@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  * Copyright (c) 2006, 2007, 2008 Richard Brown
  * Copyright (c) 2007 David Leverton
  *
@@ -96,7 +96,7 @@ namespace
         {
             std::shared_ptr<Repository> * self_ptr;
             Data_Get_Struct(self, std::shared_ptr<Repository>, self_ptr);
-            return (*self_ptr)->has_category_named(CategoryNamePart(StringValuePtr(cat))) ? Qtrue : Qfalse;
+            return (*self_ptr)->has_category_named(CategoryNamePart(StringValuePtr(cat)), { }) ? Qtrue : Qfalse;
         }
         catch (const std::exception & e)
         {
@@ -121,7 +121,7 @@ namespace
         {
             std::shared_ptr<Repository> * self_ptr;
             Data_Get_Struct(self, std::shared_ptr<Repository>, self_ptr);
-            return (*self_ptr)->has_package_named(value_to_qualified_package_name(name)) ? Qtrue : Qfalse;
+            return (*self_ptr)->has_package_named(value_to_qualified_package_name(name), { }) ? Qtrue : Qfalse;
         }
         catch (const std::exception & e)
         {
@@ -145,13 +145,13 @@ namespace
             Data_Get_Struct(self, std::shared_ptr<Repository>, self_ptr);
             if (rb_block_given_p())
             {
-                std::shared_ptr<const CategoryNamePartSet> c((*self_ptr)->category_names());
+                std::shared_ptr<const CategoryNamePartSet> c((*self_ptr)->category_names({ }));
                 for (CategoryNamePartSet::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                     rb_yield(rb_str_new2(stringify(*i).c_str()));
                 return Qnil;
             }
             VALUE result(rb_ary_new());
-            std::shared_ptr<const CategoryNamePartSet> c((*self_ptr)->category_names());
+            std::shared_ptr<const CategoryNamePartSet> c((*self_ptr)->category_names({ }));
             for (CategoryNamePartSet::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                 rb_ary_push(result, rb_str_new2(stringify(*i).c_str()));
             return result;
@@ -181,13 +181,13 @@ namespace
 
             if (rb_block_given_p())
             {
-                std::shared_ptr<const CategoryNamePartSet> c((*self_ptr)->category_names_containing_package(package));
+                std::shared_ptr<const CategoryNamePartSet> c((*self_ptr)->category_names_containing_package(package, { }));
                 for (CategoryNamePartSet::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                     rb_yield(rb_str_new2(stringify(*i).c_str()));
                 return Qnil;
             }
             VALUE result(rb_ary_new());
-            std::shared_ptr<const CategoryNamePartSet> c((*self_ptr)->category_names_containing_package(package));
+            std::shared_ptr<const CategoryNamePartSet> c((*self_ptr)->category_names_containing_package(package, { }));
             for (CategoryNamePartSet::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                 rb_ary_push(result, rb_str_new2(stringify(*i).c_str()));
             return result;
@@ -217,13 +217,13 @@ namespace
 
             if (rb_block_given_p())
             {
-                std::shared_ptr<const QualifiedPackageNameSet> c((*self_ptr)->package_names(category));
+                std::shared_ptr<const QualifiedPackageNameSet> c((*self_ptr)->package_names(category, { }));
                 for (QualifiedPackageNameSet::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                     rb_yield(qualified_package_name_to_value(*i));
                 return Qnil;
             }
             VALUE result(rb_ary_new());
-            std::shared_ptr<const QualifiedPackageNameSet> c((*self_ptr)->package_names(category));
+            std::shared_ptr<const QualifiedPackageNameSet> c((*self_ptr)->package_names(category, { }));
             for (QualifiedPackageNameSet::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                 rb_ary_push(result, qualified_package_name_to_value(*i));
             return result;
@@ -254,13 +254,13 @@ namespace
 
             if (rb_block_given_p())
             {
-                std::shared_ptr<const PackageIDSequence> c((*self_ptr)->package_ids(q));
+                std::shared_ptr<const PackageIDSequence> c((*self_ptr)->package_ids(q, { }));
                 for (PackageIDSequence::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                     rb_yield(package_id_to_value(*i));
                 return Qnil;
             }
             VALUE result(rb_ary_new());
-            std::shared_ptr<const PackageIDSequence> c((*self_ptr)->package_ids(q));
+            std::shared_ptr<const PackageIDSequence> c((*self_ptr)->package_ids(q, { }));
             for (PackageIDSequence::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                 rb_ary_push(result, package_id_to_value(*i));
             return result;

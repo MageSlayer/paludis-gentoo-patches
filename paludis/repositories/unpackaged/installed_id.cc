@@ -834,7 +834,7 @@ InstalledUnpackagedID::uninstall(const bool replace,
     bool last((! replace) && (! if_for_install_id));
     if (last)
     {
-        std::shared_ptr<const PackageIDSequence> ids(repo->package_ids(name()));
+        std::shared_ptr<const PackageIDSequence> ids(repo->package_ids(name(), { }));
         for (PackageIDSequence::ConstIterator v(ids->begin()), v_end(ids->end()) ;
                 v != v_end ; ++v)
             if (**v != *this)

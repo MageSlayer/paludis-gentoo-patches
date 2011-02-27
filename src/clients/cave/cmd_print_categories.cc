@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -109,13 +109,13 @@ PrintCategoriesCommand::run(
             for (args::StringSetArg::ConstIterator p(cmdline.a_containing.begin_args()), p_end(cmdline.a_containing.end_args()) ;
                     p != p_end ; ++p)
             {
-                std::shared_ptr<const CategoryNamePartSet> cats((*r)->category_names_containing_package(PackageNamePart(*p)));
+                std::shared_ptr<const CategoryNamePartSet> cats((*r)->category_names_containing_package(PackageNamePart(*p), { }));
                 std::copy(cats->begin(), cats->end(), std::inserter(categories, categories.begin()));
             }
         }
         else
         {
-            std::shared_ptr<const CategoryNamePartSet> cats((*r)->category_names());
+            std::shared_ptr<const CategoryNamePartSet> cats((*r)->category_names({ }));
             std::copy(cats->begin(), cats->end(), std::inserter(categories, categories.begin()));
         }
     }

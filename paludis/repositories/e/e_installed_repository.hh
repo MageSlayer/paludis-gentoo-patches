@@ -74,7 +74,8 @@ namespace paludis
 
                 /* Repository */
 
-                virtual std::shared_ptr<const CategoryNamePartSet> unimportant_category_names() const;
+                virtual std::shared_ptr<const CategoryNamePartSet> unimportant_category_names(
+                        const RepositoryContentMayExcludes &) const;
 
                 virtual const bool is_unimportant() const;
 

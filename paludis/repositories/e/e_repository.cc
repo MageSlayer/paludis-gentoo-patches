@@ -586,31 +586,31 @@ ERepository::_add_metadata_keys() const
 }
 
 bool
-ERepository::has_category_named(const CategoryNamePart & c) const
+ERepository::has_category_named(const CategoryNamePart & c, const RepositoryContentMayExcludes &) const
 {
     return _imp->layout->has_category_named(c);
 }
 
 bool
-ERepository::has_package_named(const QualifiedPackageName & q) const
+ERepository::has_package_named(const QualifiedPackageName & q, const RepositoryContentMayExcludes &) const
 {
     return _imp->layout->has_package_named(q);
 }
 
 std::shared_ptr<const CategoryNamePartSet>
-ERepository::category_names() const
+ERepository::category_names(const RepositoryContentMayExcludes &) const
 {
     return _imp->layout->category_names();
 }
 
 std::shared_ptr<const QualifiedPackageNameSet>
-ERepository::package_names(const CategoryNamePart & c) const
+ERepository::package_names(const CategoryNamePart & c, const RepositoryContentMayExcludes &) const
 {
     return _imp->layout->package_names(c);
 }
 
 std::shared_ptr<const PackageIDSequence>
-ERepository::package_ids(const QualifiedPackageName & n) const
+ERepository::package_ids(const QualifiedPackageName & n, const RepositoryContentMayExcludes &) const
 {
     return _imp->layout->package_ids(n);
 }
@@ -962,15 +962,16 @@ ERepository::regenerate_cache() const
 }
 
 std::shared_ptr<const CategoryNamePartSet>
-ERepository::category_names_containing_package(const PackageNamePart & p) const
+ERepository::category_names_containing_package(const PackageNamePart & p,
+        const RepositoryContentMayExcludes & x) const
 {
     if (! _imp->names_cache->usable())
-        return Repository::category_names_containing_package(p);
+        return Repository::category_names_containing_package(p, { });
 
     std::shared_ptr<const CategoryNamePartSet> result(
             _imp->names_cache->category_names_containing_package(p));
 
-    return result ? result : Repository::category_names_containing_package(p);
+    return result ? result : Repository::category_names_containing_package(p, x);
 }
 
 const ERepositoryParams &
@@ -1017,7 +1018,7 @@ ERepository::perform_hook(const Hook & hook, const std::shared_ptr<OutputManager
 }
 
 std::shared_ptr<const CategoryNamePartSet>
-ERepository::unimportant_category_names() const
+ERepository::unimportant_category_names(const RepositoryContentMayExcludes &) const
 {
     std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
     result->insert(CategoryNamePart("virtual"));
@@ -1126,7 +1127,7 @@ ERepository::make_manifest(const QualifiedPackageName & qpn)
     }
 
     std::shared_ptr<const PackageIDSequence> versions;
-    versions = package_ids(qpn);
+    versions = package_ids(qpn, { });
 
     std::set<std::string> done_files;
 
@@ -1865,7 +1866,7 @@ ERepository::merge(const MergeParams & m)
     if (! is_suitable_destination_for(m.package_id()))
         throw ActionFailedError("Not a suitable destination for '" + stringify(*m.package_id()) + "'");
 
-    auto is_replace(find_id(package_ids(m.package_id()->name()), m.package_id()->version()));
+    auto is_replace(find_id(package_ids(m.package_id()->name(), { }), m.package_id()->version()));
 
     bool fix_mtimes(std::static_pointer_cast<const ERepositoryID>(
                 m.package_id())->eapi()->supported()->ebuild_options()->fix_mtimes());
@@ -1995,7 +1996,7 @@ ERepository::merge(const MergeParams & m)
             }
         }
 
-    if (! has_category_named(m.package_id()->name().category()))
+    if (! has_category_named(m.package_id()->name().category(), { }))
     {
         SafeOFStream s(_imp->layout->categories_file(), O_CREAT | O_WRONLY | O_CLOEXEC | O_APPEND, true);
         s << m.package_id()->name().category() << std::endl;

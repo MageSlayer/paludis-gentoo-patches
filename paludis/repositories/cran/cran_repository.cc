@@ -145,18 +145,18 @@ CRANRepository::_add_metadata_keys() const
 }
 
 bool
-CRANRepository::has_category_named(const CategoryNamePart & c) const
+CRANRepository::has_category_named(const CategoryNamePart & c, const RepositoryContentMayExcludes &) const
 {
     return "cran" == stringify(c);
 }
 
 bool
-CRANRepository::has_package_named(const QualifiedPackageName & q) const
+CRANRepository::has_package_named(const QualifiedPackageName & q, const RepositoryContentMayExcludes & x) const
 {
     Context context("When checking for package '" + stringify(q) + "' in " + stringify(name()) + ":");
     Lock l(*_imp->big_nasty_mutex);
 
-    if (! has_category_named(q.category()))
+    if (! has_category_named(q.category(), x))
         return false;
 
     need_ids();
@@ -164,7 +164,7 @@ CRANRepository::has_package_named(const QualifiedPackageName & q) const
 }
 
 std::shared_ptr<const CategoryNamePartSet>
-CRANRepository::category_names() const
+CRANRepository::category_names(const RepositoryContentMayExcludes &) const
 {
     Context context("When fetching category names in " + stringify(name()) + ":");
     Lock l(*_imp->big_nasty_mutex);
@@ -176,14 +176,14 @@ CRANRepository::category_names() const
 }
 
 std::shared_ptr<const QualifiedPackageNameSet>
-CRANRepository::package_names(const CategoryNamePart & c) const
+CRANRepository::package_names(const CategoryNamePart & c, const RepositoryContentMayExcludes & x) const
 {
     Context context("When fetching package names in category '" + stringify(c)
             + "' in " + stringify(name()) + ":");
     Lock l(*_imp->big_nasty_mutex);
 
     std::shared_ptr<QualifiedPackageNameSet> result(std::make_shared<QualifiedPackageNameSet>());
-    if (! has_category_named(c))
+    if (! has_category_named(c, x))
         return result;
 
     need_ids();
@@ -195,14 +195,14 @@ CRANRepository::package_names(const CategoryNamePart & c) const
 }
 
 std::shared_ptr<const PackageIDSequence>
-CRANRepository::package_ids(const QualifiedPackageName & n) const
+CRANRepository::package_ids(const QualifiedPackageName & n, const RepositoryContentMayExcludes & x) const
 {
     Context context("When fetching versions of '" + stringify(n) + "' in "
             + stringify(name()) + ":");
     Lock l(*_imp->big_nasty_mutex);
 
     std::shared_ptr<PackageIDSequence> result(std::make_shared<PackageIDSequence>());
-    if (! has_package_named(n))
+    if (! has_package_named(n, x))
         return result;
 
     need_ids();

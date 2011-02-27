@@ -353,23 +353,29 @@ namespace paludis
 
             /**
              * Do we have a category with the given name?
+             *
+             * \since 0.59 takes repository_content_may_excludes
              */
-            virtual bool has_category_named(const CategoryNamePart & c) const = 0;
+            virtual bool has_category_named(const CategoryNamePart & c,
+                    const RepositoryContentMayExcludes & repository_content_may_excludes) const = 0;
 
             /**
              * Do we have a package in the given category with the given name?
              */
-            virtual bool has_package_named(const QualifiedPackageName & q) const = 0;
+            virtual bool has_package_named(const QualifiedPackageName & q,
+                    const RepositoryContentMayExcludes & repository_content_may_excludes) const = 0;
 
             /**
              * Fetch our category names.
              */
-            virtual std::shared_ptr<const CategoryNamePartSet> category_names() const = 0;
+            virtual std::shared_ptr<const CategoryNamePartSet> category_names(
+                    const RepositoryContentMayExcludes & repository_content_may_excludes) const = 0;
 
             /**
              * Fetch unimportant categories.
              */
-            virtual std::shared_ptr<const CategoryNamePartSet> unimportant_category_names() const;
+            virtual std::shared_ptr<const CategoryNamePartSet> unimportant_category_names(
+                    const RepositoryContentMayExcludes & repository_content_may_excludes) const;
 
             /**
              * Are we unimportant?
@@ -384,18 +390,21 @@ namespace paludis
              * Fetch categories that contain a named package.
              */
             virtual std::shared_ptr<const CategoryNamePartSet> category_names_containing_package(
-                    const PackageNamePart & p) const;
+                    const PackageNamePart & p,
+                    const RepositoryContentMayExcludes & repository_content_may_excludes) const;
 
             /**
              * Fetch our package names.
              */
             virtual std::shared_ptr<const QualifiedPackageNameSet> package_names(
-                    const CategoryNamePart & c) const = 0;
+                    const CategoryNamePart & c,
+                    const RepositoryContentMayExcludes & repository_content_may_excludes) const = 0;
 
             /**
              * Fetch our IDs.
              */
-            virtual std::shared_ptr<const PackageIDSequence> package_ids(const QualifiedPackageName & p) const = 0;
+            virtual std::shared_ptr<const PackageIDSequence> package_ids(const QualifiedPackageName & p,
+                    const RepositoryContentMayExcludes & repository_content_may_excludes) const = 0;
 
             /**
              * Might some of our IDs support a particular action?

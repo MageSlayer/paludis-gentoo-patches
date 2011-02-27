@@ -127,9 +127,9 @@ namespace test_cases
             std::shared_ptr<Repository> repo(VDBRepository::VDBRepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
 
-            TEST_CHECK(repo->has_category_named(CategoryNamePart("cat-one")));
-            TEST_CHECK(repo->has_category_named(CategoryNamePart("cat-two")));
-            TEST_CHECK(! repo->has_category_named(CategoryNamePart("cat-three")));
+            TEST_CHECK(repo->has_category_named(CategoryNamePart("cat-one"), { }));
+            TEST_CHECK(repo->has_category_named(CategoryNamePart("cat-two"), { }));
+            TEST_CHECK(! repo->has_category_named(CategoryNamePart("cat-three"), { }));
         }
     } test_vdb_repository_has_category_named;
 
@@ -1177,7 +1177,7 @@ namespace test_cases
                         n::want_phase() = &want_all_phases
                     ));
 
-            TEST_CHECK(vdb_repo->package_ids(QualifiedPackageName("cat/pkg"))->empty());
+            TEST_CHECK(vdb_repo->package_ids(QualifiedPackageName("cat/pkg"), { })->empty());
 
             {
                 TestMessageSuffix suffix("install", true);
@@ -1187,7 +1187,7 @@ namespace test_cases
                 id->perform_action(install_action);
                 vdb_repo->invalidate();
 
-                std::shared_ptr<const PackageIDSequence> ids(vdb_repo->package_ids(QualifiedPackageName("cat/pkg")));
+                std::shared_ptr<const PackageIDSequence> ids(vdb_repo->package_ids(QualifiedPackageName("cat/pkg"), { }));
                 TEST_CHECK_EQUAL(join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), " "), "cat/pkg-1::installed");
             }
 
@@ -1199,7 +1199,7 @@ namespace test_cases
                 id->perform_action(install_action);
                 vdb_repo->invalidate();
 
-                std::shared_ptr<const PackageIDSequence> ids(vdb_repo->package_ids(QualifiedPackageName("cat/pkg")));
+                std::shared_ptr<const PackageIDSequence> ids(vdb_repo->package_ids(QualifiedPackageName("cat/pkg"), { }));
                 TEST_CHECK_EQUAL(join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), " "), "cat/pkg-1::installed");
             }
 
@@ -1211,7 +1211,7 @@ namespace test_cases
                 id->perform_action(install_action);
                 vdb_repo->invalidate();
 
-                std::shared_ptr<const PackageIDSequence> ids(vdb_repo->package_ids(QualifiedPackageName("cat/pkg")));
+                std::shared_ptr<const PackageIDSequence> ids(vdb_repo->package_ids(QualifiedPackageName("cat/pkg"), { }));
                 TEST_CHECK_EQUAL(join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), " "), "cat/pkg-1-r0::installed");
             }
         }
@@ -1284,7 +1284,7 @@ namespace test_cases
                         std::bind(from_keys, keys, std::placeholders::_1)));
             env.package_database()->add_repository(0, vdb_repo);
 
-            TEST_CHECK(vdb_repo->package_ids(QualifiedPackageName("cat/pkg"))->empty());
+            TEST_CHECK(vdb_repo->package_ids(QualifiedPackageName("cat/pkg"), { })->empty());
 
             {
                 TestMessageSuffix suffix("install eapi 1", true);
@@ -1293,7 +1293,7 @@ namespace test_cases
                 install(env, vdb_repo, "=cat/pkg-0::postinsttest", "");
                 vdb_repo->invalidate();
 
-                std::shared_ptr<const PackageIDSequence> ids(vdb_repo->package_ids(QualifiedPackageName("cat/pkg")));
+                std::shared_ptr<const PackageIDSequence> ids(vdb_repo->package_ids(QualifiedPackageName("cat/pkg"), { }));
                 TEST_CHECK_EQUAL(join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), " "), "cat/pkg-0::installed");
             }
 
@@ -1304,7 +1304,7 @@ namespace test_cases
                 install(env, vdb_repo, "=cat/pkg-0::postinsttest", "");
                 vdb_repo->invalidate();
 
-                std::shared_ptr<const PackageIDSequence> ids(vdb_repo->package_ids(QualifiedPackageName("cat/pkg")));
+                std::shared_ptr<const PackageIDSequence> ids(vdb_repo->package_ids(QualifiedPackageName("cat/pkg"), { }));
                 TEST_CHECK_EQUAL(join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), " "), "cat/pkg-0::installed");
             }
 
@@ -1315,7 +1315,7 @@ namespace test_cases
                 install(env, vdb_repo, "=cat/pkg-0.1::postinsttest", "=cat/pkg-0::installed");
                 vdb_repo->invalidate();
 
-                std::shared_ptr<const PackageIDSequence> ids2(vdb_repo->package_ids(QualifiedPackageName("cat/pkg")));
+                std::shared_ptr<const PackageIDSequence> ids2(vdb_repo->package_ids(QualifiedPackageName("cat/pkg"), { }));
                 TEST_CHECK_EQUAL(join(indirect_iterator(ids2->begin()), indirect_iterator(ids2->end()), " "), "cat/pkg-0.1::installed");
             }
 
@@ -1338,7 +1338,7 @@ namespace test_cases
                 install(env, vdb_repo, "=cat/pkg-1::postinsttest", "");
                 vdb_repo->invalidate();
 
-                std::shared_ptr<const PackageIDSequence> ids(vdb_repo->package_ids(QualifiedPackageName("cat/pkg")));
+                std::shared_ptr<const PackageIDSequence> ids(vdb_repo->package_ids(QualifiedPackageName("cat/pkg"), { }));
                 TEST_CHECK_EQUAL(join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), " "), "cat/pkg-1::installed");
             }
 
@@ -1349,7 +1349,7 @@ namespace test_cases
                 install(env, vdb_repo, "=cat/pkg-1.1::postinsttest", "=cat/pkg-1::installed");
                 vdb_repo->invalidate();
 
-                std::shared_ptr<const PackageIDSequence> ids(vdb_repo->package_ids(QualifiedPackageName("cat/pkg")));
+                std::shared_ptr<const PackageIDSequence> ids(vdb_repo->package_ids(QualifiedPackageName("cat/pkg"), { }));
                 TEST_CHECK_EQUAL(join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), " "), "cat/pkg-1.1::installed");
             }
 

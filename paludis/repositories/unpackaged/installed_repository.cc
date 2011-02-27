@@ -118,7 +118,7 @@ InstalledUnpackagedRepository::_add_metadata_keys() const
 }
 
 std::shared_ptr<const PackageIDSequence>
-InstalledUnpackagedRepository::package_ids(const QualifiedPackageName & q) const
+InstalledUnpackagedRepository::package_ids(const QualifiedPackageName & q, const RepositoryContentMayExcludes &) const
 {
     std::shared_ptr<NDBAMEntrySequence> entries(_imp->ndbam.entries(q));
     std::shared_ptr<PackageIDSequence> result(std::make_shared<PackageIDSequence>());
@@ -137,32 +137,32 @@ InstalledUnpackagedRepository::package_ids(const QualifiedPackageName & q) const
 }
 
 std::shared_ptr<const QualifiedPackageNameSet>
-InstalledUnpackagedRepository::package_names(const CategoryNamePart & c) const
+InstalledUnpackagedRepository::package_names(const CategoryNamePart & c, const RepositoryContentMayExcludes &) const
 {
     return _imp->ndbam.package_names(c);
 }
 
 std::shared_ptr<const CategoryNamePartSet>
-InstalledUnpackagedRepository::category_names() const
+InstalledUnpackagedRepository::category_names(const RepositoryContentMayExcludes &) const
 {
     return _imp->ndbam.category_names();
 }
 
 std::shared_ptr<const CategoryNamePartSet>
 InstalledUnpackagedRepository::category_names_containing_package(
-        const PackageNamePart & p) const
+        const PackageNamePart & p, const RepositoryContentMayExcludes &) const
 {
     return _imp->ndbam.category_names_containing_package(p);
 }
 
 bool
-InstalledUnpackagedRepository::has_package_named(const QualifiedPackageName & q) const
+InstalledUnpackagedRepository::has_package_named(const QualifiedPackageName & q, const RepositoryContentMayExcludes &) const
 {
     return _imp->ndbam.has_package_named(q);
 }
 
 bool
-InstalledUnpackagedRepository::has_category_named(const CategoryNamePart & c) const
+InstalledUnpackagedRepository::has_category_named(const CategoryNamePart & c, const RepositoryContentMayExcludes &) const
 {
     return _imp->ndbam.has_category_named(c);
 }
@@ -298,7 +298,7 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
 
     std::shared_ptr<const PackageID> if_overwritten_id, if_same_name_id;
     {
-        std::shared_ptr<const PackageIDSequence> ids(package_ids(m.package_id()->name()));
+        std::shared_ptr<const PackageIDSequence> ids(package_ids(m.package_id()->name(), { }));
         for (PackageIDSequence::ConstIterator v(ids->begin()), v_end(ids->end()) ;
                 v != v_end ; ++v)
         {

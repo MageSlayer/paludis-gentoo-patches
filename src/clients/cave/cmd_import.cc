@@ -292,7 +292,7 @@ ImportCommand::run(
     std::shared_ptr<Repository> repo(RepositoryFactory::get_instance()->create(env.get(),
                 std::bind(from_keys, keys, std::placeholders::_1)));
     env->package_database()->add_repository(10, repo);
-    std::shared_ptr<const PackageIDSequence> ids(repo->package_ids(package));
+    std::shared_ptr<const PackageIDSequence> ids(repo->package_ids(package, { }));
     if (1 != std::distance(ids->begin(), ids->end()))
         throw InternalError(PALUDIS_HERE, "ids is '" + join(indirect_iterator(ids->begin()), indirect_iterator(
                         ids->end()), " ") + "'");

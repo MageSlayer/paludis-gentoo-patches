@@ -21,8 +21,10 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORY_FWD_HH 1
 
 #include <paludis/util/set-fwd.hh>
+#include <paludis/util/options-fwd.hh>
 #include <paludis/repository-fwd.hh>
 #include <memory>
+#include <iosfwd>
 
 /** \file
  * Forward declarations for paludis/repository.hh .
@@ -47,6 +49,10 @@ namespace paludis
     class RepositoryManifestInterface;
 
     struct MergeParams;
+
+#include <paludis/repository-se.hh>
+
+    typedef Options<RepositoryContentMayExclude> RepositoryContentMayExcludes;
 }
 
 #endif

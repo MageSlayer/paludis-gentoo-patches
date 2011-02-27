@@ -102,7 +102,7 @@ PrintPackagesCommand::run(
                         cmdline.a_repository.begin_args(), cmdline.a_repository.end_args(), stringify((*r)->name())))
                 continue;
 
-        std::shared_ptr<const CategoryNamePartSet> categories((*r)->category_names());
+        std::shared_ptr<const CategoryNamePartSet> categories((*r)->category_names({ }));
         for (CategoryNamePartSet::ConstIterator c(categories->begin()), c_end(categories->end());
                 c != c_end; ++c)
         {
@@ -111,7 +111,7 @@ PrintPackagesCommand::run(
                             cmdline.a_category.begin_args(), cmdline.a_category.end_args(), stringify(*c)))
                     continue;
 
-            std::shared_ptr<const QualifiedPackageNameSet> packages((*r)->package_names(*c));
+            std::shared_ptr<const QualifiedPackageNameSet> packages((*r)->package_names(*c, { }));
             std::copy(packages->begin(), packages->end(), std::inserter(all_packages, all_packages.begin()));
         }
     }

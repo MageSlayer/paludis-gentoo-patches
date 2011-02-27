@@ -205,7 +205,8 @@ ExndbamRepository::invalidate_masks()
 }
 
 std::shared_ptr<const PackageIDSequence>
-ExndbamRepository::package_ids(const QualifiedPackageName & q) const
+ExndbamRepository::package_ids(const QualifiedPackageName & q,
+        const RepositoryContentMayExcludes &) const
 {
     std::shared_ptr<NDBAMEntrySequence> entries(_imp->ndbam.entries(q));
     std::shared_ptr<PackageIDSequence> result(std::make_shared<PackageIDSequence>());
@@ -224,32 +225,37 @@ ExndbamRepository::package_ids(const QualifiedPackageName & q) const
 }
 
 std::shared_ptr<const QualifiedPackageNameSet>
-ExndbamRepository::package_names(const CategoryNamePart & c) const
+ExndbamRepository::package_names(const CategoryNamePart & c,
+        const RepositoryContentMayExcludes &) const
 {
     return _imp->ndbam.package_names(c);
 }
 
 std::shared_ptr<const CategoryNamePartSet>
-ExndbamRepository::category_names() const
+ExndbamRepository::category_names(
+        const RepositoryContentMayExcludes &) const
 {
     return _imp->ndbam.category_names();
 }
 
 std::shared_ptr<const CategoryNamePartSet>
 ExndbamRepository::category_names_containing_package(
-        const PackageNamePart & p) const
+        const PackageNamePart & p,
+        const RepositoryContentMayExcludes &) const
 {
     return _imp->ndbam.category_names_containing_package(p);
 }
 
 bool
-ExndbamRepository::has_package_named(const QualifiedPackageName & q) const
+ExndbamRepository::has_package_named(const QualifiedPackageName & q,
+        const RepositoryContentMayExcludes &) const
 {
     return _imp->ndbam.has_package_named(q);
 }
 
 bool
-ExndbamRepository::has_category_named(const CategoryNamePart & c) const
+ExndbamRepository::has_category_named(const CategoryNamePart & c,
+        const RepositoryContentMayExcludes &) const
 {
     return _imp->ndbam.has_category_named(c);
 }
@@ -339,7 +345,7 @@ ExndbamRepository::merge(const MergeParams & m)
 
     std::shared_ptr<const PackageID> if_overwritten_id, if_same_name_id;
     {
-        std::shared_ptr<const PackageIDSequence> ids(package_ids(m.package_id()->name()));
+        std::shared_ptr<const PackageIDSequence> ids(package_ids(m.package_id()->name(), { }));
         for (PackageIDSequence::ConstIterator v(ids->begin()), v_end(ids->end()) ;
                 v != v_end ; ++v)
         {
@@ -460,7 +466,7 @@ ExndbamRepository::merge(const MergeParams & m)
     if (std::static_pointer_cast<const ERepositoryID>(m.package_id())
             ->eapi()->supported()->ebuild_phases()->ebuild_new_upgrade_phase_order())
     {
-        const std::shared_ptr<const PackageIDSequence> & replace_candidates(package_ids(m.package_id()->name()));
+        const std::shared_ptr<const PackageIDSequence> & replace_candidates(package_ids(m.package_id()->name(), { }));
         for (PackageIDSequence::ConstIterator it(replace_candidates->begin()),
                  it_end(replace_candidates->end()); it_end != it; ++it)
         {

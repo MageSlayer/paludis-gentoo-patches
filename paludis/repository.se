@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# vim: set sw=4 sts=4 et ft=sh :
+
+make_enum_RepositoryContentMayExclude()
+{
+    prefix rcme
+
+    key rcme_masked          "The result may exclude masked entries"
+
+    doxygen_comment << "END"
+        /**
+         * Allow Repository to produce a partial set of results to certain
+         * queries, if doing so would save time.
+         *
+         * \see Repository
+         * \ingroup g_repository
+         * \since 0.59
+         */
+END
+}
+

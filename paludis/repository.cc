@@ -43,6 +43,8 @@
 
 using namespace paludis;
 
+#include <paludis/repository-se.cc>
+
 template class Set<std::shared_ptr<Repository> >;
 template class WrappedForwardIterator<Set<std::shared_ptr<Repository> >::ConstIteratorTag, const std::shared_ptr<Repository> >;
 template class WrappedOutputIterator<Set<std::shared_ptr<Repository> >::InserterTag, std::shared_ptr<Repository> >;
@@ -155,15 +157,15 @@ Repository::name() const
 }
 
 std::shared_ptr<const CategoryNamePartSet>
-Repository::category_names_containing_package(const PackageNamePart & p) const
+Repository::category_names_containing_package(const PackageNamePart & p, const RepositoryContentMayExcludes &) const
 {
     Context context("When finding category names containing package '" + stringify(p) + "':");
 
     std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
-    std::shared_ptr<const CategoryNamePartSet> cats(category_names());
+    std::shared_ptr<const CategoryNamePartSet> cats(category_names({ }));
     for (CategoryNamePartSet::ConstIterator c(cats->begin()), c_end(cats->end()) ;
             c != c_end ; ++c)
-        if (has_package_named(*c + p))
+        if (has_package_named(*c + p, { }))
             result->insert(*c);
 
     return result;
@@ -210,7 +212,7 @@ Repository::can_be_favourite_repository() const
 }
 
 std::shared_ptr<const CategoryNamePartSet>
-Repository::unimportant_category_names() const
+Repository::unimportant_category_names(const RepositoryContentMayExcludes &) const
 {
     return std::make_shared<CategoryNamePartSet>();
 }

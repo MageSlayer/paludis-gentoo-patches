@@ -34,8 +34,8 @@ class TestCase_01_MetadataKeys(unittest.TestCase):
     def setUp(self):
         self.e = NoConfigEnvironment(repo_path, "/var/empty")
         self.ie = NoConfigEnvironment(irepo_path)
-        self.pid = iter(self.e.package_database.fetch_repository("testrepo").package_ids("foo/bar")).next()
-        self.ipid = iter(self.ie.package_database.fetch_repository("installed").package_ids("cat-one/pkg-one")).next()
+        self.pid = iter(self.e.package_database.fetch_repository("testrepo").package_ids("foo/bar", [])).next()
+        self.ipid = iter(self.ie.package_database.fetch_repository("installed").package_ids("cat-one/pkg-one", [])).next()
 
     def test_01_contents(self):
         self.assertEquals(self.pid.find_metadata("CONTENTS"), None)
@@ -73,7 +73,7 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
 
             def value(self):
                 e = NoConfigEnvironment(repo_path, "/var/empty")
-                pid = iter(e.package_database.fetch_repository("testrepo").package_ids("foo/bar")).next()
+                pid = iter(e.package_database.fetch_repository("testrepo").package_ids("foo/bar", [])).next()
                 return pid
 
             def raw_name(self):

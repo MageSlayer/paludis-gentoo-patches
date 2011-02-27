@@ -127,37 +127,37 @@ UnpackagedRepository::_add_metadata_keys() const
 }
 
 std::shared_ptr<const PackageIDSequence>
-UnpackagedRepository::package_ids(const QualifiedPackageName & n) const
+UnpackagedRepository::package_ids(const QualifiedPackageName & n, const RepositoryContentMayExcludes &) const
 {
     return n == _imp->id->name() ? _imp->ids : std::make_shared<PackageIDSequence>();
 }
 
 std::shared_ptr<const QualifiedPackageNameSet>
-UnpackagedRepository::package_names(const CategoryNamePart & c) const
+UnpackagedRepository::package_names(const CategoryNamePart & c, const RepositoryContentMayExcludes &) const
 {
     return c == _imp->id->name().category() ? _imp->package_names : std::make_shared<QualifiedPackageNameSet>();
 }
 
 std::shared_ptr<const CategoryNamePartSet>
-UnpackagedRepository::category_names() const
+UnpackagedRepository::category_names(const RepositoryContentMayExcludes &) const
 {
     return _imp->category_names;
 }
 
 std::shared_ptr<const CategoryNamePartSet>
-UnpackagedRepository::category_names_containing_package(const PackageNamePart & p) const
+UnpackagedRepository::category_names_containing_package(const PackageNamePart & p, const RepositoryContentMayExcludes &) const
 {
     return p == _imp->id->name().package() ? _imp->category_names : std::make_shared<CategoryNamePartSet>();
 }
 
 bool
-UnpackagedRepository::has_package_named(const QualifiedPackageName & q) const
+UnpackagedRepository::has_package_named(const QualifiedPackageName & q, const RepositoryContentMayExcludes &) const
 {
     return q == _imp->id->name();
 }
 
 bool
-UnpackagedRepository::has_category_named(const CategoryNamePart & c) const
+UnpackagedRepository::has_category_named(const CategoryNamePart & c, const RepositoryContentMayExcludes &) const
 {
     return c == _imp->id->name().category();
 }

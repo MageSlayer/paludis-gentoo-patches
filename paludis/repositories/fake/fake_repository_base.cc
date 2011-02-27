@@ -73,30 +73,30 @@ FakeRepositoryBase::~FakeRepositoryBase()
 }
 
 bool
-FakeRepositoryBase::has_category_named(const CategoryNamePart & c) const
+FakeRepositoryBase::has_category_named(const CategoryNamePart & c, const RepositoryContentMayExcludes &) const
 {
     return (_imp->category_names->end() != _imp->category_names->find(c));
 }
 
 bool
-FakeRepositoryBase::has_package_named(const QualifiedPackageName & q) const
+FakeRepositoryBase::has_package_named(const QualifiedPackageName & q, const RepositoryContentMayExcludes & x) const
 {
-    return has_category_named(q.category()) &&
+    return has_category_named(q.category(), x) &&
         (_imp->package_names.find(q.category())->second->end() !=
          _imp->package_names.find(q.category())->second->find(q.package()));
 }
 
 std::shared_ptr<const CategoryNamePartSet>
-FakeRepositoryBase::category_names() const
+FakeRepositoryBase::category_names(const RepositoryContentMayExcludes &) const
 {
     return _imp->category_names;
 }
 
 std::shared_ptr<const QualifiedPackageNameSet>
-FakeRepositoryBase::package_names(const CategoryNamePart & c) const
+FakeRepositoryBase::package_names(const CategoryNamePart & c, const RepositoryContentMayExcludes & x) const
 {
     std::shared_ptr<QualifiedPackageNameSet> result(std::make_shared<QualifiedPackageNameSet>());
-    if (! has_category_named(c))
+    if (! has_category_named(c, x))
         return result;
 
     PackageNamePartSet::ConstIterator p(_imp->package_names.find(c)->second->begin()),
@@ -107,11 +107,11 @@ FakeRepositoryBase::package_names(const CategoryNamePart & c) const
 }
 
 std::shared_ptr<const PackageIDSequence>
-FakeRepositoryBase::package_ids(const QualifiedPackageName & n) const
+FakeRepositoryBase::package_ids(const QualifiedPackageName & n, const RepositoryContentMayExcludes & x) const
 {
-    if (! has_category_named(n.category()))
+    if (! has_category_named(n.category(), x))
         return std::make_shared<PackageIDSequence>();
-    if (! has_package_named(n))
+    if (! has_package_named(n, x))
         return std::make_shared<PackageIDSequence>();
     return _imp->ids.find(n)->second;
 }

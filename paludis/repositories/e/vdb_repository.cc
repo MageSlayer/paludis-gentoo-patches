@@ -200,7 +200,7 @@ VDBRepository::_add_metadata_keys() const
 }
 
 bool
-VDBRepository::has_category_named(const CategoryNamePart & c) const
+VDBRepository::has_category_named(const CategoryNamePart & c, const RepositoryContentMayExcludes &) const
 {
     Lock l(*_imp->big_nasty_mutex);
 
@@ -212,7 +212,7 @@ VDBRepository::has_category_named(const CategoryNamePart & c) const
 }
 
 bool
-VDBRepository::has_package_named(const QualifiedPackageName & q) const
+VDBRepository::has_package_named(const QualifiedPackageName & q, const RepositoryContentMayExcludes &) const
 {
     Lock l(*_imp->big_nasty_mutex);
 
@@ -237,7 +237,7 @@ VDBRepository::is_unimportant() const
 }
 
 std::shared_ptr<const CategoryNamePartSet>
-VDBRepository::category_names() const
+VDBRepository::category_names(const RepositoryContentMayExcludes &) const
 {
     Lock l(*_imp->big_nasty_mutex);
 
@@ -254,7 +254,7 @@ VDBRepository::category_names() const
 }
 
 std::shared_ptr<const QualifiedPackageNameSet>
-VDBRepository::package_names(const CategoryNamePart & c) const
+VDBRepository::package_names(const CategoryNamePart & c, const RepositoryContentMayExcludes & x) const
 {
     Lock l(*_imp->big_nasty_mutex);
 
@@ -264,7 +264,7 @@ VDBRepository::package_names(const CategoryNamePart & c) const
     std::shared_ptr<QualifiedPackageNameSet> result(std::make_shared<QualifiedPackageNameSet>());
 
     need_category_names();
-    if (! has_category_named(c))
+    if (! has_category_named(c, x))
         return std::make_shared<QualifiedPackageNameSet>();
 
     need_package_ids(c);
@@ -273,7 +273,7 @@ VDBRepository::package_names(const CategoryNamePart & c) const
 }
 
 std::shared_ptr<const PackageIDSequence>
-VDBRepository::package_ids(const QualifiedPackageName & n) const
+VDBRepository::package_ids(const QualifiedPackageName & n, const RepositoryContentMayExcludes & x) const
 {
     Lock l(*_imp->big_nasty_mutex);
 
@@ -282,11 +282,11 @@ VDBRepository::package_ids(const QualifiedPackageName & n) const
 
 
     need_category_names();
-    if (! has_category_named(n.category()))
+    if (! has_category_named(n.category(), x))
         return std::make_shared<PackageIDSequence>();
 
     need_package_ids(n.category());
-    if (! has_package_named(n))
+    if (! has_package_named(n, x))
         return std::make_shared<PackageIDSequence>();
 
     return _imp->ids.find(n)->second;
@@ -543,7 +543,7 @@ VDBRepository::perform_uninstall(
 
     if (! a.options.is_overwrite())
     {
-        std::shared_ptr<const PackageIDSequence> ids(package_ids(id->name()));
+        std::shared_ptr<const PackageIDSequence> ids(package_ids(id->name(), { }));
         bool only(true);
         for (PackageIDSequence::ConstIterator it(ids->begin()),
                  it_end(ids->end()); it_end != it; ++it)
@@ -852,17 +852,17 @@ VDBRepository::regenerate_provides_cache() const
 }
 
 std::shared_ptr<const CategoryNamePartSet>
-VDBRepository::category_names_containing_package(const PackageNamePart & p) const
+VDBRepository::category_names_containing_package(const PackageNamePart & p, const RepositoryContentMayExcludes & x) const
 {
     Lock l(*_imp->big_nasty_mutex);
 
     if (! _imp->names_cache->usable())
-        return Repository::category_names_containing_package(p);
+        return Repository::category_names_containing_package(p, x);
 
     std::shared_ptr<const CategoryNamePartSet> result(
             _imp->names_cache->category_names_containing_package(p));
 
-    return result ? result : Repository::category_names_containing_package(p);
+    return result ? result : Repository::category_names_containing_package(p, x);
 }
 
 namespace
@@ -1024,7 +1024,7 @@ VDBRepository::merge(const MergeParams & m)
     if (std::static_pointer_cast<const ERepositoryID>(m.package_id())
             ->eapi()->supported()->ebuild_phases()->ebuild_new_upgrade_phase_order())
     {
-        const std::shared_ptr<const PackageIDSequence> & replace_candidates(package_ids(m.package_id()->name()));
+        const std::shared_ptr<const PackageIDSequence> & replace_candidates(package_ids(m.package_id()->name(), { }));
         for (PackageIDSequence::ConstIterator it(replace_candidates->begin()),
                  it_end(replace_candidates->end()); it_end != it; ++it)
         {
@@ -1147,7 +1147,7 @@ VDBRepository::package_id_if_exists(const QualifiedPackageName & q, const Versio
 {
     Lock l(*_imp->big_nasty_mutex);
 
-    if (! has_package_named(q))
+    if (! has_package_named(q, { }))
         return std::shared_ptr<const ERepositoryID>();
 
     need_package_ids(q.category());

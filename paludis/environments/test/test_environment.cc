@@ -128,7 +128,7 @@ TestEnvironment::fetch_package_id(const QualifiedPackageName & q,
 {
     using namespace std::placeholders;
 
-    std::shared_ptr<const PackageIDSequence> ids(package_database()->fetch_repository(r)->package_ids(q));
+    std::shared_ptr<const PackageIDSequence> ids(package_database()->fetch_repository(r)->package_ids(q, { }));
     for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
             i != i_end ; ++i)
         if (v == (*i)->version())

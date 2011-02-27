@@ -175,7 +175,7 @@ EInstalledRepository::is_unimportant() const
 }
 
 std::shared_ptr<const CategoryNamePartSet>
-EInstalledRepository::unimportant_category_names() const
+EInstalledRepository::unimportant_category_names(const RepositoryContentMayExcludes &) const
 {
     std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
     result->insert(CategoryNamePart("virtual"));

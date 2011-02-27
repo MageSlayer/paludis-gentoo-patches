@@ -87,15 +87,15 @@ FakeInstalledRepository::provided_packages() const
 {
     std::shared_ptr<ProvidesSequence> result(std::make_shared<ProvidesSequence>());
 
-    std::shared_ptr<const CategoryNamePartSet> cats(category_names());
+    std::shared_ptr<const CategoryNamePartSet> cats(category_names({ }));
     for (CategoryNamePartSet::ConstIterator c(cats->begin()), c_end(cats->end()) ;
             c != c_end ; ++c)
     {
-        std::shared_ptr<const QualifiedPackageNameSet> pkgs(package_names(*c));
+        std::shared_ptr<const QualifiedPackageNameSet> pkgs(package_names(*c, { }));
         for (QualifiedPackageNameSet::ConstIterator p(pkgs->begin()), p_end(pkgs->end()) ;
                 p != p_end ; ++p)
         {
-            std::shared_ptr<const PackageIDSequence> vers(package_ids(*p));
+            std::shared_ptr<const PackageIDSequence> vers(package_ids(*p, { }));
             for (PackageIDSequence::ConstIterator v(vers->begin()), v_end(vers->end()) ;
                     v != v_end ; ++v)
             {

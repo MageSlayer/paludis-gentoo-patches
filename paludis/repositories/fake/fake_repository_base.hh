@@ -100,20 +100,20 @@ namespace paludis
             /* Repository */
 
             virtual std::shared_ptr<const PackageIDSequence> package_ids(
-                    const QualifiedPackageName &) const
+                    const QualifiedPackageName &, const RepositoryContentMayExcludes &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual std::shared_ptr<const QualifiedPackageNameSet> package_names(
-                    const CategoryNamePart &) const
+                    const CategoryNamePart &, const RepositoryContentMayExcludes &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::shared_ptr<const CategoryNamePartSet> category_names() const
+            virtual std::shared_ptr<const CategoryNamePartSet> category_names(const RepositoryContentMayExcludes &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool has_package_named(const QualifiedPackageName &) const
+            virtual bool has_package_named(const QualifiedPackageName &, const RepositoryContentMayExcludes &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool has_category_named(const CategoryNamePart &) const
+            virtual bool has_category_named(const CategoryNamePart &, const RepositoryContentMayExcludes &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual bool sync(const std::string &, const std::shared_ptr<OutputManager> &) const;

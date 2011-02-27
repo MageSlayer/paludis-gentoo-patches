@@ -292,7 +292,7 @@ PackageDatabase::fetch_unique_qualified_package_name(const PackageNamePart & p, 
             continue;
 
         auto repo(fetch_repository(it->repository_name()));
-        std::shared_ptr<const CategoryNamePartSet> unimportant_cats(repo->unimportant_category_names());
+        std::shared_ptr<const CategoryNamePartSet> unimportant_cats(repo->unimportant_category_names({ }));
         bool is_important(unimportant_cats->end() == unimportant_cats->find(it->name().category()));
         bool is_in_important_repo(! repo->is_unimportant());
         QPNIMap::iterator i(result->insert(std::make_pair(it->name(), std::make_pair(is_important, is_in_important_repo))).first);

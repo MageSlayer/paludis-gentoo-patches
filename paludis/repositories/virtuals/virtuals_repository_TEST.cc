@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -76,8 +76,8 @@ namespace test_cases
             TEST_CHECK(bool(repo->virtual_packages()));
             TEST_CHECK_EQUAL(std::distance(repo->virtual_packages()->begin(), repo->virtual_packages()->end()), 1);
 
-            TEST_CHECK(virtuals->has_category_named(CategoryNamePart("virtual")));
-            TEST_CHECK(virtuals->has_package_named(QualifiedPackageName("virtual/pkg")));
+            TEST_CHECK(virtuals->has_category_named(CategoryNamePart("virtual"), { }));
+            TEST_CHECK(virtuals->has_package_named(QualifiedPackageName("virtual/pkg"), { }));
 
             std::shared_ptr<const PackageIDSequence> r(env[selection::AllVersionsSorted(generator::All())]);
             TEST_CHECK_STRINGIFY_EQUAL(join(indirect_iterator(r->begin()), indirect_iterator(r->end()), " | "),
@@ -126,8 +126,8 @@ namespace test_cases
             repo2->add_virtual_package(QualifiedPackageName("virtual/foo"), std::make_shared<PackageDepSpec>(
                         parse_user_package_dep_spec("<=cat/pkg-1", &env, { })));
 
-            TEST_CHECK(virtuals->has_category_named(CategoryNamePart("virtual")));
-            TEST_CHECK(virtuals->has_package_named(QualifiedPackageName("virtual/pkg")));
+            TEST_CHECK(virtuals->has_category_named(CategoryNamePart("virtual"), { }));
+            TEST_CHECK(virtuals->has_package_named(QualifiedPackageName("virtual/pkg"), { }));
 
             std::shared_ptr<const PackageIDSequence> r(env[selection::AllVersionsSorted(generator::All())]);
             TEST_CHECK_STRINGIFY_EQUAL(join(indirect_iterator(r->begin()), indirect_iterator(r->end()), " | "),
@@ -167,8 +167,8 @@ namespace test_cases
             repo2->add_virtual_package(QualifiedPackageName("virtual/pkg"), std::make_shared<PackageDepSpec>(
                         parse_user_package_dep_spec("virtual/pkg", &env, { })));
 
-            TEST_CHECK(virtuals->has_category_named(CategoryNamePart("virtual")));
-            TEST_CHECK(virtuals->has_package_named(QualifiedPackageName("virtual/pkg")));
+            TEST_CHECK(virtuals->has_category_named(CategoryNamePart("virtual"), { }));
+            TEST_CHECK(virtuals->has_package_named(QualifiedPackageName("virtual/pkg"), { }));
 
             std::shared_ptr<const PackageIDSequence> r(env[selection::AllVersionsSorted(generator::All())]);
             TEST_CHECK_STRINGIFY_EQUAL(join(indirect_iterator(r->begin()), indirect_iterator(r->end()), " | "),

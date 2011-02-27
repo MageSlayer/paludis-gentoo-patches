@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2010 Ciaran McCreesh
+ * Copyright (c) 2008, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -55,7 +55,7 @@ AllGeneratorHandlerBase::categories(
     for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
             r != r_end ; ++r)
     {
-        std::shared_ptr<const CategoryNamePartSet> cats(env->package_database()->fetch_repository(*r)->category_names());
+        std::shared_ptr<const CategoryNamePartSet> cats(env->package_database()->fetch_repository(*r)->category_names({ }));
         std::copy(cats->begin(), cats->end(), result->inserter());
     }
 
@@ -77,7 +77,7 @@ AllGeneratorHandlerBase::packages(
                 c != c_end ; ++c)
         {
             std::shared_ptr<const QualifiedPackageNameSet> pkgs(
-                    env->package_database()->fetch_repository(*r)->package_names(*c));
+                    env->package_database()->fetch_repository(*r)->package_names(*c, { }));
             std::copy(pkgs->begin(), pkgs->end(), result->inserter());
         }
     }
@@ -100,7 +100,7 @@ AllGeneratorHandlerBase::ids(
                 q != q_end ; ++q)
         {
             std::shared_ptr<const PackageIDSequence> i(
-                    env->package_database()->fetch_repository(*r)->package_ids(*q));
+                    env->package_database()->fetch_repository(*r)->package_ids(*q, { }));
             std::copy(i->begin(), i->end(), result->inserter());
         }
     }
