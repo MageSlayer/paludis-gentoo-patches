@@ -60,6 +60,7 @@ namespace paludis
     {
         typedef Name<struct name_arch> arch;
         typedef Name<struct name_build_start_time> build_start_time;
+        typedef Name<struct name_check> check;
         typedef Name<struct name_destination_interface> destination_interface;
         typedef Name<struct name_environment_file> environment_file;
         typedef Name<struct name_environment_variable_interface> environment_variable_interface;
@@ -144,6 +145,15 @@ namespace paludis
          * \since 0.44
          */
         NamedValue<n::build_start_time, Timestamp> build_start_time;
+
+        /**
+         * Whether to check or perform the merge.
+         *
+         * A check must be performed before a merge.
+         *
+         * \since 0.59
+         */
+        NamedValue<n::check, bool> check;
 
         NamedValue<n::environment_file, FSPath> environment_file;
         NamedValue<n::image_dir, FSPath> image_dir;

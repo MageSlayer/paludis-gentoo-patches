@@ -893,44 +893,49 @@ VDBRepository::merge(const MergeParams & m)
 
     std::shared_ptr<const ERepositoryID> is_replace(package_id_if_exists(m.package_id()->name(), m.package_id()->version()));
 
-    FSPath tmp_vdb_dir(_imp->params.location());
-    if (! tmp_vdb_dir.stat().exists())
-        tmp_vdb_dir.mkdir(0755, { });
-    tmp_vdb_dir /= stringify(m.package_id()->name().category());
-    if (! tmp_vdb_dir.stat().exists())
-        tmp_vdb_dir.mkdir(0755, { });
-    tmp_vdb_dir /= ("-checking-" + stringify(m.package_id()->name().package()) + "-" + stringify(m.package_id()->version()));
-    tmp_vdb_dir.mkdir(0755, { });
-
-    WriteVDBEntryCommand write_vdb_entry_command(
-            make_named_values<WriteVDBEntryParams>(
-                n::environment() = _imp->params.environment(),
-                n::environment_file() = m.environment_file(),
-                n::maybe_output_manager() = m.output_manager(),
-                n::output_directory() = tmp_vdb_dir,
-                n::package_id() = std::static_pointer_cast<const ERepositoryID>(m.package_id())
-            ));
-
-    write_vdb_entry_command();
-
-    /* load CONFIG_PROTECT, CONFIG_PROTECT_MASK from vdb */
     std::string config_protect, config_protect_mask;
-    try
-    {
-        SafeIFStream c(tmp_vdb_dir / "CONFIG_PROTECT");
-        config_protect = std::string((std::istreambuf_iterator<char>(c)), std::istreambuf_iterator<char>());
-    }
-    catch (const SafeIFStreamError &)
-    {
-    }
 
-    try
+    FSPath tmp_vdb_dir(_imp->params.location());
+    tmp_vdb_dir /= stringify(m.package_id()->name().category());
+    tmp_vdb_dir /= ("-checking-" + stringify(m.package_id()->name().package()) + "-" + stringify(m.package_id()->version()));
+
+    if (! m.check())
     {
-        SafeIFStream c_m(tmp_vdb_dir / "CONFIG_PROTECT_MASK");
-        config_protect_mask = std::string((std::istreambuf_iterator<char>(c_m)), std::istreambuf_iterator<char>());
-    }
-    catch (const SafeIFStreamError &)
-    {
+        if (! tmp_vdb_dir.dirname().dirname().stat().exists())
+            tmp_vdb_dir.dirname().dirname().mkdir(0755, { });
+        if (! tmp_vdb_dir.dirname().stat().exists())
+            tmp_vdb_dir.dirname().mkdir(0755, { });
+        tmp_vdb_dir.mkdir(0755, { });
+
+        WriteVDBEntryCommand write_vdb_entry_command(
+                make_named_values<WriteVDBEntryParams>(
+                    n::environment() = _imp->params.environment(),
+                    n::environment_file() = m.environment_file(),
+                    n::maybe_output_manager() = m.output_manager(),
+                    n::output_directory() = tmp_vdb_dir,
+                    n::package_id() = std::static_pointer_cast<const ERepositoryID>(m.package_id())
+                ));
+
+        write_vdb_entry_command();
+
+        /* load CONFIG_PROTECT, CONFIG_PROTECT_MASK from vdb */
+        try
+        {
+            SafeIFStream c(tmp_vdb_dir / "CONFIG_PROTECT");
+            config_protect = std::string((std::istreambuf_iterator<char>(c)), std::istreambuf_iterator<char>());
+        }
+        catch (const SafeIFStreamError &)
+        {
+        }
+
+        try
+        {
+            SafeIFStream c_m(tmp_vdb_dir / "CONFIG_PROTECT_MASK");
+            config_protect_mask = std::string((std::istreambuf_iterator<char>(c_m)), std::istreambuf_iterator<char>());
+        }
+        catch (const SafeIFStreamError &)
+        {
+        }
     }
 
     FSPath vdb_dir(_imp->params.location());
@@ -957,12 +962,11 @@ VDBRepository::merge(const MergeParams & m)
 
     (m.used_this_for_config_protect())(config_protect);
 
-    if (! merger.check())
+    if (m.check())
     {
-        for (FSIterator d(tmp_vdb_dir, { fsio_include_dotfiles, fsio_inode_sort }), d_end ; d != d_end ; ++d)
-            d->unlink();
-        tmp_vdb_dir.rmdir();
-        throw ActionFailedError("Not proceeding with install due to merge sanity check failing");
+        if (! merger.check())
+            throw ActionFailedError("Not proceeding with install due to merge sanity check failing");
+        return;
     }
 
     if (is_replace)

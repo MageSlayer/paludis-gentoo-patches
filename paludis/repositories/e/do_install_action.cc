@@ -275,7 +275,7 @@ paludis::erepository::do_install_action(
             continue;
         }
 
-        if (phase->option("merge"))
+        if (phase->option("merge") || phase->option("check_merge"))
         {
             if (! (*install_action.options.destination()).destination_interface())
                 throw ActionFailedError("Can't install '" + stringify(*id)
@@ -290,6 +290,7 @@ paludis::erepository::do_install_action(
             (*install_action.options.destination()).destination_interface()->merge(
                     make_named_values<MergeParams>(
                         n::build_start_time() = build_start_time,
+                        n::check() = phase->option("check_merge"),
                         n::environment_file() = package_builddir / "temp" / "loadsaveenv",
                         n::image_dir() = package_builddir / "image",
                         n::merged_entries() = merged_entries,

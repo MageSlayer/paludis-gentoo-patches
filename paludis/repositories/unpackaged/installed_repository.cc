@@ -317,10 +317,14 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
     else
     {
         std::string uid(stringify(m.package_id()->name().category()) + "---" + stringify(m.package_id()->name().package()));
+
         uid_dir /= "data";
-        uid_dir.mkdir(0755, { fspmkdo_ok_if_exists });
+        if (! m.check())
+            uid_dir.mkdir(0755, { fspmkdo_ok_if_exists });
+
         uid_dir /= uid;
-        uid_dir.mkdir(0755, { fspmkdo_ok_if_exists });
+        if (! m.check())
+            uid_dir.mkdir(0755, { fspmkdo_ok_if_exists });
     }
 
     FSPath target_ver_dir(uid_dir);
@@ -329,29 +333,34 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
     if (target_ver_dir.stat().exists())
         throw ActionFailedError("Temporary merge directory '" + stringify(target_ver_dir) + "' already exists, probably "
                 "due to a previous failed install. If it is safe to do so, please remove this directory and try again.");
-    target_ver_dir.mkdir(0755, { });
 
-    {
-        SafeOFStream source_repository_file(target_ver_dir / "source_repository", -1, true);
-        source_repository_file << m.package_id()->repository_name() << std::endl;
-    }
+    if (! m.check())
+        target_ver_dir.mkdir(0755, { });
 
-    if (m.package_id()->short_description_key())
+    if (! m.check())
     {
-        SafeOFStream description_file(target_ver_dir / "description", -1, true);
-        description_file << m.package_id()->short_description_key()->value() << std::endl;
-    }
+        {
+            SafeOFStream source_repository_file(target_ver_dir / "source_repository", -1, true);
+            source_repository_file << m.package_id()->repository_name() << std::endl;
+        }
 
-    if (m.package_id()->build_dependencies_key())
-    {
-        SafeOFStream build_dependencies_file(target_ver_dir / "build_dependencies", -1, true);
-        build_dependencies_file << m.package_id()->build_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }) << std::endl;
-    }
+        if (m.package_id()->short_description_key())
+        {
+            SafeOFStream description_file(target_ver_dir / "description", -1, true);
+            description_file << m.package_id()->short_description_key()->value() << std::endl;
+        }
 
-    if (m.package_id()->run_dependencies_key())
-    {
-        SafeOFStream run_dependencies_file(target_ver_dir / "run_dependencies", -1, true);
-        run_dependencies_file << m.package_id()->run_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }) << std::endl;
+        if (m.package_id()->build_dependencies_key())
+        {
+            SafeOFStream build_dependencies_file(target_ver_dir / "build_dependencies", -1, true);
+            build_dependencies_file << m.package_id()->build_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }) << std::endl;
+        }
+
+        if (m.package_id()->run_dependencies_key())
+        {
+            SafeOFStream run_dependencies_file(target_ver_dir / "run_dependencies", -1, true);
+            run_dependencies_file << m.package_id()->run_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }) << std::endl;
+        }
     }
 
     NDBAMMerger merger(
@@ -372,12 +381,11 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
                 n::root() = installed_root_key()->value()
             ));
 
-    if (! merger.check())
+    if (m.check())
     {
-        for (FSIterator d(target_ver_dir, { fsio_include_dotfiles, fsio_inode_sort }), d_end ; d != d_end ; ++d)
-            d->unlink();
-        target_ver_dir.rmdir();
-        throw ActionFailedError("Not proceeding with install due to merge sanity check failing");
+        if (! merger.check())
+            throw ActionFailedError("Not proceeding with install due to merge sanity check failing");
+        return;
     }
 
     merger.merge();

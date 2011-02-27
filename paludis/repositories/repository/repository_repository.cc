@@ -442,6 +442,9 @@ RepositoryRepository::merge(const MergeParams & m)
     if (! is_suitable_destination_for(m.package_id()))
         throw ActionFailedError("Not a suitable destination for '" + stringify(*m.package_id()) + "'");
 
+    if (m.check())
+        return;
+
     std::string repo_sync(get_string_key(m.package_id(), "REPOSITORY_SYNC"));
     std::string repo_format(get_string_key(m.package_id(), "REPOSITORY_FORMAT"));
     std::string repo_name(stringify(m.package_id()->name().package()));

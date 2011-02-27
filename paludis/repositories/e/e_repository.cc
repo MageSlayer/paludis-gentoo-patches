@@ -1889,8 +1889,12 @@ ERepository::merge(const MergeParams & m)
                 n::tar_file() = _imp->params.binary_distdir() / (bin_dist_base + pbin_tar_extension)
             ));
 
-    if (! merger.check())
-        throw ActionFailedError("Not proceeding with install due to merge sanity check failing");
+    if (m.check())
+    {
+        if (! merger.check())
+            throw ActionFailedError("Not proceeding with install due to merge sanity check failing");
+        return;
+    }
 
     merger.merge();
 

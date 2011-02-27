@@ -359,9 +359,11 @@ ExndbamRepository::merge(const MergeParams & m)
     {
         std::string uid(stringify(m.package_id()->name().category()) + "---" + stringify(m.package_id()->name().package()));
         uid_dir /= "data";
-        uid_dir.mkdir(0755, { fspmkdo_ok_if_exists });
+        if (! m.check())
+            uid_dir.mkdir(0755, { fspmkdo_ok_if_exists });
         uid_dir /= uid;
-        uid_dir.mkdir(0755, { fspmkdo_ok_if_exists });
+        if (! m.check())
+            uid_dir.mkdir(0755, { fspmkdo_ok_if_exists });
     }
 
     FSPath target_ver_dir(uid_dir);
@@ -370,39 +372,43 @@ ExndbamRepository::merge(const MergeParams & m)
     if (target_ver_dir.stat().exists())
         throw ActionFailedError("Temporary merge directory '" + stringify(target_ver_dir) + "' already exists, probably "
                 "due to a previous failed install. If it is safe to do so, please remove this directory and try again.");
-    target_ver_dir.mkdir(0755, { });
+    if (! m.check())
+        target_ver_dir.mkdir(0755, { });
 
-    WriteVDBEntryCommand write_vdb_entry_command(
-            make_named_values<WriteVDBEntryParams>(
-                n::environment() = _imp->params.environment(),
-                n::environment_file() = m.environment_file(),
-                n::maybe_output_manager() = m.output_manager(),
-                n::output_directory() = target_ver_dir,
-                n::package_id() = std::static_pointer_cast<const ERepositoryID>(m.package_id())
-            ));
-
-    write_vdb_entry_command();
-
-    _imp->ndbam.add_entry(m.package_id()->name(), target_ver_dir);
-
-    /* load CONFIG_PROTECT, CONFIG_PROTECT_MASK back */
     std::string config_protect, config_protect_mask;
-    try
+    if (! m.check())
     {
-        SafeIFStream c(target_ver_dir / "CONFIG_PROTECT");
-        config_protect = std::string((std::istreambuf_iterator<char>(c)), std::istreambuf_iterator<char>());
-    }
-    catch (const SafeIFStreamError &)
-    {
-    }
+        WriteVDBEntryCommand write_vdb_entry_command(
+                make_named_values<WriteVDBEntryParams>(
+                    n::environment() = _imp->params.environment(),
+                    n::environment_file() = m.environment_file(),
+                    n::maybe_output_manager() = m.output_manager(),
+                    n::output_directory() = target_ver_dir,
+                    n::package_id() = std::static_pointer_cast<const ERepositoryID>(m.package_id())
+                ));
 
-    try
-    {
-        SafeIFStream c_m(target_ver_dir / "CONFIG_PROTECT_MASK");
-        config_protect_mask = std::string((std::istreambuf_iterator<char>(c_m)), std::istreambuf_iterator<char>());
-    }
-    catch (const SafeIFStreamError &)
-    {
+        write_vdb_entry_command();
+
+        _imp->ndbam.add_entry(m.package_id()->name(), target_ver_dir);
+
+        /* load CONFIG_PROTECT, CONFIG_PROTECT_MASK back */
+        try
+        {
+            SafeIFStream c(target_ver_dir / "CONFIG_PROTECT");
+            config_protect = std::string((std::istreambuf_iterator<char>(c)), std::istreambuf_iterator<char>());
+        }
+        catch (const SafeIFStreamError &)
+        {
+        }
+
+        try
+        {
+            SafeIFStream c_m(target_ver_dir / "CONFIG_PROTECT_MASK");
+            config_protect_mask = std::string((std::istreambuf_iterator<char>(c_m)), std::istreambuf_iterator<char>());
+        }
+        catch (const SafeIFStreamError &)
+        {
+        }
     }
 
     bool fix_mtimes(std::static_pointer_cast<const ERepositoryID>(
@@ -427,12 +433,11 @@ ExndbamRepository::merge(const MergeParams & m)
 
     (m.used_this_for_config_protect())(config_protect);
 
-    if (! merger.check())
+    if (m.check())
     {
-        for (FSIterator d(target_ver_dir, { fsio_inode_sort, fsio_include_dotfiles }), d_end ; d != d_end ; ++d)
-            d->unlink();
-        target_ver_dir.rmdir();
-        throw ActionFailedError("Not proceeding with install due to merge sanity check failing");
+        if (! merger.check())
+            throw ActionFailedError("Not proceeding with install due to merge sanity check failing");
+        return;
     }
 
     merger.merge();

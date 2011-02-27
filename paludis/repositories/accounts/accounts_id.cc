@@ -504,24 +504,46 @@ AccountsID::perform_action(Action & action) const
 
     std::string used_config_protect;
 
+    MergeParams merge_params(make_named_values<MergeParams>(
+                n::build_start_time() = build_start_time,
+                n::check() = true,
+                n::environment_file() = FSPath("/dev/null"),
+                n::image_dir() = fs_location_key()->value(),
+                n::merged_entries() = std::make_shared<FSPathSet>(),
+                n::options() = MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs,
+                n::output_manager() = output_manager,
+                n::package_id() = shared_from_this(),
+                n::perform_uninstall() = install_action->options.perform_uninstall(),
+                n::replacing() = install_action->options.replacing(),
+                n::used_this_for_config_protect() = std::bind(
+                    &used_this_for_config_protect, std::ref(used_config_protect), std::placeholders::_1)
+                ));
+
+    switch (install_action->options.want_phase()("check_merge"))
+    {
+        case wp_yes:
+            {
+                merge_params.check() = true;
+                (*install_action->options.destination()).destination_interface()->merge(merge_params);
+            }
+            break;
+
+        case wp_skip:
+            break;
+
+        case wp_abort:
+            throw ActionAbortedError("Told to abort install");
+
+        case last_wp:
+            throw InternalError(PALUDIS_HERE, "bad WantPhase");
+    }
+
     switch (install_action->options.want_phase()("merge"))
     {
         case wp_yes:
             {
-                (*install_action->options.destination()).destination_interface()->merge(
-                        make_named_values<MergeParams>(
-                            n::build_start_time() = build_start_time,
-                            n::environment_file() = FSPath("/dev/null"),
-                            n::image_dir() = fs_location_key()->value(),
-                            n::merged_entries() = std::make_shared<FSPathSet>(),
-                            n::options() = MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs,
-                            n::output_manager() = output_manager,
-                            n::package_id() = shared_from_this(),
-                            n::perform_uninstall() = install_action->options.perform_uninstall(),
-                            n::replacing() = install_action->options.replacing(),
-                            n::used_this_for_config_protect() = std::bind(
-                                &used_this_for_config_protect, std::ref(used_config_protect), std::placeholders::_1)
-                            ));
+                merge_params.check() = false;
+                (*install_action->options.destination()).destination_interface()->merge(merge_params);
             }
             break;
 

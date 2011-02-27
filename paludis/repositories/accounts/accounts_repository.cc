@@ -426,6 +426,9 @@ AccountsRepository::merge(const MergeParams & m)
     if (! _imp->handler_if_installed)
         throw ActionFailedError("Can't merge to here");
 
+    if (m.check())
+        return;
+
     _imp->handler_if_installed->merge(m);
 }
 
