@@ -286,8 +286,10 @@ namespace
                     for (std::list<PackageOrBlockDepSpec>::const_iterator h(g->begin()), h_end(g->end()) ;
                             h != h_end ; ++h)
                     {
-                        std::pair<AnyChildScore, OperatorScore> score(
-                                decider.find_any_score(our_resolution, our_id, make_sanitised(PackageOrBlockDepSpec(*h))));
+                        auto score(decider.find_any_score(our_resolution, our_id, make_sanitised(PackageOrBlockDepSpec(*h))));
+                        Log::get_instance()->message("resolver.sanitised_dependencies.any_score", ll_debug, lc_context)
+                            << "Scored " << *h << " as " << score.first << " " << score.second;
+
                         if (score < worst_score)
                             worst_score = score;
                     }
