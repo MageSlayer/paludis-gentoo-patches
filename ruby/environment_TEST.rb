@@ -219,12 +219,6 @@ module Paludis
         end
     end
 
-    class TestCase_EnvironmentDefaultDestinations < Test::Unit::TestCase
-        def test_default_destinations
-            assert_kind_of Array, env.default_destinations
-        end
-    end
-
     class TestCase_EnvironmentDistribution < Test::Unit::TestCase
         def env
             NoConfigEnvironment.new(Dir.getwd().to_s + "/environment_TEST_dir/testrepo")
@@ -233,16 +227,6 @@ module Paludis
         def test_distribution
             assert_kind_of String, env.distribution
             assert_equal "gentoo", env.distribution
-        end
-    end
-
-    class TestCase_EnvironmentDefaultDestinations < Test::Unit::TestCase
-        def env
-            NoConfigEnvironment.new(Dir.getwd().to_s + "/environment_TEST_dir/testrepo")
-        end
-
-        def test_default_destinations
-            assert_kind_of Array, env.default_destinations
         end
     end
 

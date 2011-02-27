@@ -163,21 +163,6 @@ EnvironmentImplementation::fetchers_dirs() const
     return result;
 }
 
-std::shared_ptr<const DestinationsSet>
-EnvironmentImplementation::default_destinations() const
-{
-    std::shared_ptr<DestinationsSet> result(std::make_shared<DestinationsSet>());
-
-    for (PackageDatabase::RepositoryConstIterator r(package_database()->begin_repositories()),
-            r_end(package_database()->end_repositories()) ;
-            r != r_end ; ++r)
-        if ((**r).destination_interface())
-            if ((**r).destination_interface()->is_default_destination())
-                result->insert(*r);
-
-    return result;
-}
-
 std::string
 EnvironmentImplementation::distribution() const
 {

@@ -78,9 +78,6 @@ namespace paludis
             virtual std::shared_ptr<const FSPathSequence> fetchers_dirs() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::shared_ptr<const DestinationsSet> default_destinations() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
             virtual std::string distribution() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 

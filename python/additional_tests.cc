@@ -88,8 +88,6 @@ namespace environment
 
         e.set(SetName("set"));
 
-        e.default_destinations();
-
         e.perform_hook(Hook("test"), make_null_shared_ptr());
 
         e.distribution();

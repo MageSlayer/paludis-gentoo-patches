@@ -275,22 +275,6 @@ class EnvironmentImplementationWrapper :
             return EnvironmentImplementation::set(s);
         }
 
-        virtual std::shared_ptr<const DestinationsSet> default_destinations() const
-            PALUDIS_ATTRIBUTE((warn_unused_result))
-        {
-            Lock l(get_mutex());
-
-            if (bp::override f = get_override("default_destinations"))
-                return f();
-            return EnvironmentImplementation::default_destinations();
-        }
-
-        std::shared_ptr<const DestinationsSet> default_default_destinations() const
-            PALUDIS_ATTRIBUTE((warn_unused_result))
-        {
-            return EnvironmentImplementation::default_destinations();
-        }
-
         // FIXME - Hooks are not exposed
         virtual HookResult perform_hook(const Hook & h, const std::shared_ptr<OutputManager> &) const
             PALUDIS_ATTRIBUTE((warn_unused_result))
@@ -544,11 +528,6 @@ void expose_environment()
          "and provides various methods for querying package visibility and options.",
          bp::no_init
         )
-        .add_property("default_destinations", &Environment::default_destinations,
-                "[ro] DestinationsIterable\n"
-                "Default destination candidates for installing packages."
-            )
-
         .add_property("package_database", bp::make_function(package_database,
                     bp::with_custodian_and_ward_postcall<0, 1>()),
                 "[ro] PackageDatabase\n"
@@ -672,11 +651,6 @@ void expose_environment()
                 "set(SetName) -> CompositeDepSpec\n"
                 "Return a named set.\n\n"
                 "If the named set is not known, returns None."
-            )
-
-        .def("default_destinations", &EnvImp::default_destinations, &EnvImpW::default_default_destinations,
-                "default_destinations() -> list of Repository\n"
-                "Default destination candidates for installing packages."
             )
 
         .def("distribution", &EnvImp::distribution, &EnvImpW::default_distribution,

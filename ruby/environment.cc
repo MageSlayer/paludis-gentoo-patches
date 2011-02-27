@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  * Copyright (c) 2007, 2008 Richard Brown
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -185,25 +185,6 @@ namespace
         {
             exception_to_ruby_exception(e);
         }
-    }
-
-    /*
-     * call-seq:
-     *     default_destinations -> Array
-     *
-     * Default: All repositories that provide RepositoryDestinationInterface and mark themselves
-     * as a default destination.
-     */
-    VALUE
-    environment_default_destinations(VALUE self)
-    {
-        std::shared_ptr<const DestinationsSet> dc (value_to_environment(self)->default_destinations());
-        VALUE result(rb_ary_new());
-        for (DestinationsSet::ConstIterator i(dc->begin()), i_end(dc->end()) ; i != i_end ; ++i)
-            rb_ary_push(result, repository_to_value(*i));
-
-        return result;
-
     }
 
     VALUE
@@ -485,7 +466,6 @@ namespace
         rb_funcall(c_environment, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_method(c_environment, "package_database", RUBY_FUNC_CAST(&environment_package_database), 0);
         rb_define_method(c_environment, "set", RUBY_FUNC_CAST(&environment_set), 1);
-        rb_define_method(c_environment, "default_destinations", RUBY_FUNC_CAST(&environment_default_destinations), 0);
         rb_define_method(c_environment, "distribution", RUBY_FUNC_CAST(&environment_distribution), 0);
         rb_define_method(c_environment, "accept_license", RUBY_FUNC_CAST(&environment_accept_license), 2);
         rb_define_method(c_environment, "accept_keywords", RUBY_FUNC_CAST(&environment_accept_keywords), 2);

@@ -70,10 +70,6 @@ class TestCase_01_Environments(unittest.TestCase):
         self.assert_(isinstance(nce2.main_repository, Repository))
         self.assert_(isinstance(nce2.master_repository, Repository))
 
-    def test_10_default_destinations(self):
-        self.assert_(isinstance(self.e.default_destinations, DestinationsIterable))
-        self.assert_(isinstance(self.nce.default_destinations, DestinationsIterable))
-
     def test_11_set_accept_unstable(self):
         self.nce.accept_unstable = True
         self.assertRaises(AttributeError, lambda: self.nce.accept_unstable)
@@ -137,10 +133,6 @@ class TestCase_04_Environment_subclassingd(unittest.TestCase):
 
         def set(self, set):
             return AllDepSpec()
-
-        def default_destinations(self):
-            e = EnvironmentFactory.instance.create("")
-            return [x for x in e.package_database.repositories]
 
         def distribution(self):
             return EnvironmentImplementation.distribution(self)

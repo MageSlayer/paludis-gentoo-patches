@@ -412,17 +412,6 @@ namespace paludis
 
             ///\}
 
-            ///\name Destination information
-            ///\{
-
-            /**
-             * Default destination candidates for installing packages.
-             */
-            virtual std::shared_ptr<const DestinationsSet> default_destinations() const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            ///\}
-
             ///\name Hook methods
             ///\{
 

@@ -116,16 +116,6 @@ namespace
 void expose_repository()
 {
     /**
-     * DestinationIterable
-     */
-    class_iterable<DestinationsSet>
-        (
-         "DestinationsIterable",
-         "Iterable of Repository.",
-         true
-        );
-
-    /**
      * Repository
      */
     register_shared_ptrs_to_python<Repository>(rsp_const);
