@@ -268,6 +268,8 @@ GetResolventsForHelper::operator() (
         const std::shared_ptr<const SlotName> & maybe_slot,
         const std::shared_ptr<const Reason> & reason) const
 {
+    Context context("When determining resolvents for '" + stringify(spec) + "':");
+
     auto result_ids(std::make_shared<PackageIDSequence>());
     std::shared_ptr<const PackageID> best;
 

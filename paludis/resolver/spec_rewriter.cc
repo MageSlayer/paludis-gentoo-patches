@@ -154,6 +154,8 @@ SpecRewriter::_need_rewrites() const
         return;
     _imp->has_rewrites = true;
 
+    Context context("When performing virtuals rewrites:");
+
     const std::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::AllVersionsSorted(
                 generator::InRepository(RepositoryName("virtuals")) +
                 generator::InRepository(RepositoryName("installed-virtuals"))

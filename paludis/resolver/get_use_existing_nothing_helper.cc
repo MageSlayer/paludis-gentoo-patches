@@ -214,6 +214,8 @@ GetUseExistingNothingHelper::operator() (
         const PackageDepSpec & spec,
         const std::shared_ptr<const Reason> & reason) const
 {
+    Context context("When determining use existing for '" + stringify(spec) + "':");
+
     if (spec.package_ptr())
     {
         if (use_existing_from_withish(_imp->env, *spec.package_ptr(), _imp->without_specs))

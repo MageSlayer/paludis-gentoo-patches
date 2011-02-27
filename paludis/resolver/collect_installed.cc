@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -36,6 +36,8 @@ paludis::resolver::collect_installed(
         const Environment * const env
         )
 {
+    Context context("When collecting installed packages:");
+
     const std::shared_ptr<const PackageIDSequence> q((*env)[selection::AllVersionsUnsorted(
                 generator::All() | filter::InstalledAtRoot(env->system_root_key()->value()))]);
     const std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());

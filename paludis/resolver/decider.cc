@@ -399,6 +399,8 @@ namespace
 const std::shared_ptr<const PackageIDSequence>
 Decider::_collect_staying(const std::shared_ptr<const ChangeByResolventSequence> & going_away) const
 {
+    Context context("When collecting staying packages:");
+
     const std::shared_ptr<const PackageIDSequence> existing((*_imp->env)[selection::AllVersionsUnsorted(
                 generator::All() | filter::InstalledAtRoot(_imp->env->system_root_key()->value()))]);
 
@@ -450,9 +452,11 @@ Decider::_make_destination_for(
 
 const ChangeType
 Decider::_make_change_type_for(
-        const std::shared_ptr<const Resolution> &,
+        const std::shared_ptr<const Resolution> & resolution,
         const ChangesToMakeDecision & decision) const
 {
+    Context context("When determining change type for '" + stringify(resolution->resolvent()) + "':");
+
     if (decision.destination()->replacing()->empty())
     {
         const std::shared_ptr<const PackageIDSequence> others((*_imp->env)[selection::AllVersionsUnsorted(
@@ -1834,6 +1838,8 @@ Decider::_remove_if_dependent(const std::shared_ptr<const PackageID> & id) const
 const std::shared_ptr<const PackageIDSequence>
 Decider::_installed_ids(const std::shared_ptr<const Resolution> & resolution) const
 {
+    Context context("When finding installed IDs for '" + stringify(resolution->resolvent()) + "':");
+
     return (*_imp->env)[selection::AllVersionsSorted(
             _make_destination_filtered_generator(generator::Package(resolution->resolvent().package()), resolution) |
             make_slot_filter(resolution->resolvent())
@@ -1847,6 +1853,8 @@ Decider::_find_installable_id_candidates_for(
         const bool include_errors,
         const bool include_unmaskable) const
 {
+    Context context("When finding installable ID candidates for '" + stringify(package) + "':");
+
     return (*_imp->env)[selection::AllVersionsSorted(
             _make_origin_filtered_generator(generator::Package(package)) |
             slot_filter |
@@ -2158,6 +2166,8 @@ Decider::resolve()
 bool
 Decider::_package_dep_spec_already_met(const PackageDepSpec & spec, const std::shared_ptr<const PackageID> & from_id) const
 {
+    Context context("When determining already met for '" + stringify(spec) + "':");
+
     const std::shared_ptr<const PackageIDSequence> installed_ids((*_imp->env)[selection::AllVersionsUnsorted(
                 generator::Matches(spec, from_id, { }) |
                 filter::InstalledAtRoot(_imp->env->system_root_key()->value()))]);
@@ -2177,6 +2187,8 @@ bool
 Decider::_block_dep_spec_already_met(const BlockDepSpec & spec, const std::shared_ptr<const PackageID> & from_id,
         const Resolvent & resolvent) const
 {
+    Context context("When determining already met for '" + stringify(spec) + "':");
+
     const std::shared_ptr<const PackageIDSequence> installed_ids((*_imp->env)[selection::SomeArbitraryVersion(
                 generator::Matches(spec.blocking(), from_id, { }) |
                 make_slot_filter(resolvent) |

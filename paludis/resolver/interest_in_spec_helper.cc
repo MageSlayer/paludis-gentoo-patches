@@ -253,6 +253,8 @@ InterestInSpecHelper::operator() (
         const std::shared_ptr<const PackageID> & id,
         const SanitisedDependency & dep) const
 {
+    Context context("When determining interest in '" + stringify(dep.spec()) + "':");
+
     CareAboutDepFnVisitor v{_imp->env, _imp->no_blockers_from_specs, _imp->no_dependencies_from_specs,
         _imp->follow_installed_build_dependencies, _imp->follow_installed_dependencies, dep};
 

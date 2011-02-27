@@ -20,6 +20,7 @@
 #include <paludis/resolver/collect_provided.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
+#include <paludis/util/stringify.hh>
 #include <paludis/dep_spec_flattener.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
@@ -39,6 +40,8 @@ paludis::resolver::collect_provided(
         const Environment * const env,
         const std::shared_ptr<const PackageID> & id)
 {
+    Context context("When collecting packages provided by '" + stringify(*id) + "':");
+
     const std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
     if (id->provide_key())

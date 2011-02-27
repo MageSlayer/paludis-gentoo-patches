@@ -89,6 +89,8 @@ GetInitialConstraintsForHelper::add_without_spec(const PackageDepSpec & spec)
 void
 GetInitialConstraintsForHelper::add_preset_spec(const PackageDepSpec & spec, const std::shared_ptr<const PackageID> & from_id)
 {
+    Context context("When adding preset for '" + stringify(spec) + "':");
+
     auto reason(std::make_shared<PresetReason>("preset", make_null_shared_ptr()));
 
     auto ids((*_imp->env)[selection::BestVersionInEachSlot(generator::Matches(spec, from_id, { }))]);
