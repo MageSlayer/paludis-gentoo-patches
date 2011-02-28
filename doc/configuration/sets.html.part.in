@@ -37,8 +37,20 @@ parts of the set defined by each individual repository can be accessed using <co
 ###PALUDISENVIRONMENTONLY###
 
 <p>When using the Paludis environment, the user can create their own sets. A set named <code>foo</code> is defined in
-the file <code>sets/foo.conf</code>, which is a standard configuration file, or in the file <code>sets/foo.bash</code>,
-which is a dynamic standard configuration file.</p>
+the file <code>foo.conf</code>, which is a standard configuration file, or in the file <code>foo.bash</code>,
+which is a dynamic standard configuration file. Sets may be specified in any of the following directories:</p>
+
+<ul>
+    <li><code><em>confdir</em>/sets/</code>, where
+    <code><em>confdir</em></code> is the directory in which <code>use.conf</code>
+    et al. reside.</li>
+
+    <li><code><em>DATADIR</em>/paludis/sets/</code>. On most
+    systems, <code><em>DATADIR</em></code> is <code>/usr/share</code>.</li>
+
+    <li><code><em>LIBDIR</em>/paludis/sets/</code>. On most
+    systems, <code><em>LIBDIR</em></code> is <code>/usr/lib</code> or <code>/usr/lib64</code>.</li>
+</ul>
 
 <div class="note">
     <p>Overriding built-in sets in this manner is not recommended. Strange things will happen.</p>
