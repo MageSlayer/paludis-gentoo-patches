@@ -64,7 +64,7 @@ namespace paludis
             std::shared_ptr<UnavailableRepositoryStore> > > store;
 
         const std::shared_ptr<CategoryNamePartSet> unmasked_category_names;
-        const std::shared_ptr<PackageIDSequence> unmasked_non_repository_package_ids;
+        const std::shared_ptr<PackageIDSequence> no_package_ids;
 
         Imp(const UnavailableRepository * const repo, const UnavailableRepositoryParams & p) :
             params(p),
@@ -81,7 +81,7 @@ namespace paludis
             store(DeferredConstructionPtr<std::shared_ptr<UnavailableRepositoryStore> > (
                         std::bind(&make_store, repo, std::cref(params)))),
             unmasked_category_names(std::make_shared<CategoryNamePartSet>()),
-            unmasked_non_repository_package_ids(std::make_shared<PackageIDSequence>())
+            no_package_ids(std::make_shared<PackageIDSequence>())
         {
             for (auto i(params.sync()->begin()), i_end(params.sync()->end()) ;
                     i != i_end ; ++i)
@@ -181,6 +181,9 @@ UnavailableRepository::has_category_named(const CategoryNamePart & c, const Repo
 {
     Context context("When checking for category named '" + stringify(c) + "' in '" + stringify(name()) + ":");
 
+    if (x[rcme_not_installed])
+        return false;
+
     if (x[rcme_masked])
     {
         /* we're only interested in unmasked packages, which are in repository/ */
@@ -194,6 +197,9 @@ bool
 UnavailableRepository::has_package_named(const QualifiedPackageName & q, const RepositoryContentMayExcludes & x) const
 {
     Context context("When checking for package named '" + stringify(q) + "' in '" + stringify(name()) + ":");
+
+    if (x[rcme_not_installed])
+        return false;
 
     if (x[rcme_masked])
     {
@@ -209,6 +215,12 @@ std::shared_ptr<const CategoryNamePartSet>
 UnavailableRepository::category_names(const RepositoryContentMayExcludes & x) const
 {
     Context context("When checking for categories in '" + stringify(name()) + ":");
+
+    if (x[rcme_not_installed])
+    {
+        /* nothing, but we're allowed to return extras */
+        return _imp->unmasked_category_names;
+    }
 
     if (x[rcme_masked])
         return _imp->unmasked_category_names;
@@ -243,8 +255,11 @@ UnavailableRepository::package_ids(const QualifiedPackageName & p, const Reposit
 {
     Context context("When checking for package IDs in '" + stringify(p) + "' in '" + stringify(name()) + ":");
 
+    if (x[rcme_not_installed])
+        return _imp->no_package_ids;
+
     if (x[rcme_masked] && p.category() != CategoryNamePart("repository"))
-        return _imp->unmasked_non_repository_package_ids;
+        return _imp->no_package_ids;
 
     return _imp->store->package_ids(p);
 }
