@@ -6,6 +6,7 @@ make_enum_RepositoryContentMayExclude()
     prefix rcme
 
     key rcme_masked          "The result may exclude masked entries"
+    key rcme_not_installed   "The result may exclude entries that are not installed"
 
     doxygen_comment << "END"
         /**
