@@ -1434,20 +1434,21 @@ Decider::find_any_score(
             return std::make_pair(acs_blocks_installed, operator_bias);
     }
 
-    /* next: exists */
+    /* next: installable not masked */
     if (! is_block)
     {
-        Context sub_context("When working out whether it's acs_exists:");
+        Context sub_context("When working out whether it's acs_installable:");
 
         const std::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::BestVersionOnly(
-                    generator::Matches(spec, our_id, { mpo_ignore_additional_requirements })
+                    generator::Matches(spec, our_id, { mpo_ignore_additional_requirements }) |
+                    filter::SupportsAction<InstallAction>() |
+                    filter::NotMasked()
                     )]);
         if (! ids->empty())
-            return std::make_pair(acs_exists, operator_bias);
+            return std::make_pair(acs_installable, operator_bias);
     }
 
-    /* yay, people are depping upon packages that don't exist again. I SMELL A LESSPIPE. */
-    return std::make_pair(acs_hate_hate_hate, operator_bias);
+    return std::make_pair(acs_not_installable, operator_bias);
 }
 
 namespace
