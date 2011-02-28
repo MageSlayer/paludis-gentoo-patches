@@ -226,6 +226,11 @@ namespace
         {
         }
 
+        virtual const RepositoryContentMayExcludes may_excludes() const
+        {
+            return { rcme_not_installed };
+        }
+
         virtual std::shared_ptr<const RepositoryNameSet> repositories(
                 const Environment * const env,
                 const std::shared_ptr<const RepositoryNameSet> & repos) const
