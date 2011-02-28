@@ -1345,6 +1345,8 @@ Decider::find_any_score(
     /* best: blocker that doesn't match anything */
     if (is_block)
     {
+        Context sub_context("When working out whether it's acs_vacuous_blocker:");
+
         const std::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::BestVersionOnly(
                     generator::Matches(spec, our_id, { mpo_ignore_additional_requirements })
                         | filter::SupportsAction<InstallAction>() | filter::NotMasked()
@@ -1355,6 +1357,8 @@ Decider::find_any_score(
 
     /* next: already installed */
     {
+        Context sub_context("When working out whether it's acs_already_installed:");
+
         const std::shared_ptr<const PackageIDSequence> installed_ids((*_imp->env)[selection::BestVersionOnly(
                     generator::Matches(spec, our_id, { }) |
                     filter::InstalledAtRoot(_imp->env->system_root_key()->value()))]);
@@ -1365,6 +1369,8 @@ Decider::find_any_score(
     /* next: already installed, except with the wrong options */
     if (! is_block && spec.additional_requirements_ptr())
     {
+        Context sub_context("When working out whether it's acs_wrong_options_installed:");
+
         const std::shared_ptr<const PackageIDSequence> installed_ids((*_imp->env)[selection::BestVersionOnly(
                     generator::Matches(spec, our_id, { mpo_ignore_additional_requirements }) |
                     filter::InstalledAtRoot(_imp->env->system_root_key()->value()))]);
@@ -1419,6 +1425,8 @@ Decider::find_any_score(
     /* next: blocks installed package */
     if (is_block)
     {
+        Context sub_context("When working out whether it's acs_blocks_installed:");
+
         const std::shared_ptr<const PackageIDSequence> installed_ids((*_imp->env)[selection::BestVersionOnly(
                     generator::Matches(spec, our_id, { }) |
                     filter::InstalledAtRoot(_imp->env->system_root_key()->value()))]);
@@ -1429,6 +1437,8 @@ Decider::find_any_score(
     /* next: exists */
     if (! is_block)
     {
+        Context sub_context("When working out whether it's acs_exists:");
+
         const std::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::BestVersionOnly(
                     generator::Matches(spec, our_id, { mpo_ignore_additional_requirements })
                     )]);
