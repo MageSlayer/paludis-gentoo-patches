@@ -543,29 +543,42 @@ PaludisEnvironment::populate_sets() const
     Lock lock(_imp->sets_mutex);
     add_set(SetName("world"), SetName("world::environment"), std::bind(&make_world_set, _imp->config->world()), true);
 
-    FSPath sets_dir(FSPath(_imp->config->config_dir()) / "sets");
-    Context context("When looking in sets directory '" + stringify(sets_dir) + "':");
+    std::list<FSPath> sets_dirs;
 
-    if (! sets_dir.stat().exists())
-        return;
-
-    for (FSIterator d(sets_dir, { fsio_inode_sort }), d_end ; d != d_end ; ++d)
+    sets_dirs.push_back(FSPath(_imp->config->config_dir()) / "sets");
+    if (getenv_with_default("PALUDIS_NO_GLOBAL_SETS", "").empty())
     {
-        if (is_file_with_extension(*d, ".bash", { }))
-        {
-            SetName n(strip_trailing_string(d->basename(), ".bash"));
-            add_set(n, n, std::bind(&make_set, this, *d, n, sfsmo_natural, sft_paludis_bash), false);
+        sets_dirs.push_back(FSPath(LIBEXECDIR) / "paludis" / "sets");
+        sets_dirs.push_back(FSPath(DATADIR) / "paludis" / "sets");
+        sets_dirs.push_back(FSPath(LIBDIR) / "paludis" / "sets");
+    }
 
-            SetName n_s(stringify(n) + "*");
-            add_set(n_s, n_s, std::bind(&make_set, this, *d, n_s, sfsmo_star, sft_paludis_bash), false);
-        }
-        else if (is_file_with_extension(*d, ".conf", { }))
-        {
-            SetName n(strip_trailing_string(d->basename(), ".conf"));
-            add_set(n, n, std::bind(&make_set, this, *d, n, sfsmo_natural, sft_paludis_conf), false);
+    for (auto sets_dir(sets_dirs.begin()), sets_dir_end(sets_dirs.end()) ;
+            sets_dir != sets_dir_end ; ++ sets_dir)
+    {
+        Context context("When looking in sets directory '" + stringify(*sets_dir) + "':");
 
-            SetName n_s(stringify(n) + "*");
-            add_set(n_s, n_s, std::bind(&make_set, this, *d, n_s, sfsmo_star, sft_paludis_conf), false);
+        if (! sets_dir->stat().exists())
+            continue;
+
+        for (FSIterator d(*sets_dir, { fsio_inode_sort }), d_end ; d != d_end ; ++d)
+        {
+            if (is_file_with_extension(*d, ".bash", { }))
+            {
+                SetName n(strip_trailing_string(d->basename(), ".bash"));
+                add_set(n, n, std::bind(&make_set, this, *d, n, sfsmo_natural, sft_paludis_bash), false);
+
+                SetName n_s(stringify(n) + "*");
+                add_set(n_s, n_s, std::bind(&make_set, this, *d, n_s, sfsmo_star, sft_paludis_bash), false);
+            }
+            else if (is_file_with_extension(*d, ".conf", { }))
+            {
+                SetName n(strip_trailing_string(d->basename(), ".conf"));
+                add_set(n, n, std::bind(&make_set, this, *d, n, sfsmo_natural, sft_paludis_conf), false);
+
+                SetName n_s(stringify(n) + "*");
+                add_set(n_s, n_s, std::bind(&make_set, this, *d, n_s, sfsmo_star, sft_paludis_conf), false);
+            }
         }
     }
 }

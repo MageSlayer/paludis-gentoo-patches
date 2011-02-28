@@ -43,6 +43,9 @@ can be dangerous and may break things; many of these variables exist mainly for 
     <dt><code>PALUDIS_NO_GLOBAL_HOOKS</code></dt>
     <dd>If set to a non-empty string, global hooks will be ignored.</dd>
 
+    <dt><code>PALUDIS_NO_GLOBAL_SETS</code></dt>
+    <dd>If set to a non-empty string, global sets will be ignored.</dd>
+
     <dt><code>PALUDIS_NO_GLOBAL_FETCHERS</code></dt>
     <dd>If set to a non-empty string, global fetchers will be ignored.</dd>
 
