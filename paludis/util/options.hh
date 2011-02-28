@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -83,6 +83,11 @@ namespace paludis
              * Unset any bit that is set in the parameter.
              */
             void subtract(const OptionsStore &);
+
+            /**
+             * Unset any bit that is not set in the parameter.
+             */
+            void intersect(const OptionsStore &);
 
             ///\}
 
@@ -186,6 +191,25 @@ namespace paludis
             Options & operator|= (const Options<E_> & e)
             {
                 _store.combine(e._store);
+                return *this;
+            }
+
+            /**
+             * Return a copy of ourself, bitwise 'and'ed with another Options set.
+             */
+            Options operator& (const Options<E_> & e) const
+            {
+                Options result(*this);
+                result._store.intersect(e._store);
+                return result;
+            }
+
+            /**
+             * Disable any bits that are not enabled in the parameter.
+             */
+            Options & operator&= (const Options<E_> & e)
+            {
+                _store.intersect(e._store);
                 return *this;
             }
 
