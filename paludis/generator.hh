@@ -30,6 +30,7 @@
 #include <paludis/package_id-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/match_package-fwd.hh>
+#include <paludis/repository-fwd.hh>
 #include <memory>
 
 /** \file
@@ -95,7 +96,8 @@ namespace paludis
              * repositories for consideration.
              */
             std::shared_ptr<const RepositoryNameSet> repositories(
-                    const Environment * const) const
+                    const Environment * const,
+                    const RepositoryContentMayExcludes &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
@@ -104,7 +106,8 @@ namespace paludis
              */
             std::shared_ptr<const CategoryNamePartSet> categories(
                     const Environment * const,
-                    const std::shared_ptr<const RepositoryNameSet> &) const
+                    const std::shared_ptr<const RepositoryNameSet> &,
+                    const RepositoryContentMayExcludes &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
@@ -114,7 +117,8 @@ namespace paludis
             std::shared_ptr<const QualifiedPackageNameSet> packages(
                     const Environment * const,
                     const std::shared_ptr<const RepositoryNameSet> &,
-                    const std::shared_ptr<const CategoryNamePartSet> &) const
+                    const std::shared_ptr<const CategoryNamePartSet> &,
+                    const RepositoryContentMayExcludes &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
@@ -124,7 +128,8 @@ namespace paludis
             std::shared_ptr<const PackageIDSet> ids(
                     const Environment * const,
                     const std::shared_ptr<const RepositoryNameSet> &,
-                    const std::shared_ptr<const QualifiedPackageNameSet> &) const
+                    const std::shared_ptr<const QualifiedPackageNameSet> &,
+                    const RepositoryContentMayExcludes &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\}

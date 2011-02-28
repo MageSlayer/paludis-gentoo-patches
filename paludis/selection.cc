@@ -120,15 +120,15 @@ namespace
             {
                 std::shared_ptr<PackageIDSequence> result(std::make_shared<PackageIDSequence>());
 
-                std::shared_ptr<const RepositoryNameSet> r(_fg.filter().repositories(env, _fg.generator().repositories(env)));
+                std::shared_ptr<const RepositoryNameSet> r(_fg.filter().repositories(env, _fg.generator().repositories(env, { })));
                 if (r->empty())
                     return result;
 
-                std::shared_ptr<const CategoryNamePartSet> c(_fg.filter().categories(env, r, _fg.generator().categories(env, r)));
+                std::shared_ptr<const CategoryNamePartSet> c(_fg.filter().categories(env, r, _fg.generator().categories(env, r, { })));
                 if (c->empty())
                     return result;
 
-                std::shared_ptr<const QualifiedPackageNameSet> p(_fg.filter().packages(env, r, _fg.generator().packages(env, r, c)));
+                std::shared_ptr<const QualifiedPackageNameSet> p(_fg.filter().packages(env, r, _fg.generator().packages(env, r, c, { })));
                 if (p->empty())
                     return result;
 
@@ -136,7 +136,7 @@ namespace
                 {
                     std::shared_ptr<QualifiedPackageNameSet> s(std::make_shared<QualifiedPackageNameSet>());
                     s->insert(*q);
-                    std::shared_ptr<const PackageIDSet> i(_fg.filter().ids(env, _fg.generator().ids(env, r, s)));
+                    std::shared_ptr<const PackageIDSet> i(_fg.filter().ids(env, _fg.generator().ids(env, r, s, { })));
                     if (! i->empty())
                     {
                         result->push_back(*i->begin());
@@ -168,15 +168,15 @@ namespace
 
                 std::shared_ptr<PackageIDSequence> result(std::make_shared<PackageIDSequence>());
 
-                std::shared_ptr<const RepositoryNameSet> r(_fg.filter().repositories(env, _fg.generator().repositories(env)));
+                std::shared_ptr<const RepositoryNameSet> r(_fg.filter().repositories(env, _fg.generator().repositories(env, { })));
                 if (r->empty())
                     return result;
 
-                std::shared_ptr<const CategoryNamePartSet> c(_fg.filter().categories(env, r, _fg.generator().categories(env, r)));
+                std::shared_ptr<const CategoryNamePartSet> c(_fg.filter().categories(env, r, _fg.generator().categories(env, r, { })));
                 if (c->empty())
                     return result;
 
-                std::shared_ptr<const QualifiedPackageNameSet> p(_fg.filter().packages(env, r, _fg.generator().packages(env, r, c)));
+                std::shared_ptr<const QualifiedPackageNameSet> p(_fg.filter().packages(env, r, _fg.generator().packages(env, r, c, { })));
                 if (p->empty())
                     return result;
 
@@ -184,7 +184,7 @@ namespace
                 {
                     std::shared_ptr<QualifiedPackageNameSet> s(std::make_shared<QualifiedPackageNameSet>());
                     s->insert(*q);
-                    std::shared_ptr<const PackageIDSet> i(_fg.filter().ids(env, _fg.generator().ids(env, r, s)));
+                    std::shared_ptr<const PackageIDSet> i(_fg.filter().ids(env, _fg.generator().ids(env, r, s, { })));
                     if (! i->empty())
                         result->push_back(*std::max_element(i->begin(), i->end(), PackageIDComparator(env->package_database().get())));
                 }
@@ -213,19 +213,19 @@ namespace
 
                 std::shared_ptr<PackageIDSequence> result(std::make_shared<PackageIDSequence>());
 
-                std::shared_ptr<const RepositoryNameSet> r(_fg.filter().repositories(env, _fg.generator().repositories(env)));
+                std::shared_ptr<const RepositoryNameSet> r(_fg.filter().repositories(env, _fg.generator().repositories(env, { })));
                 if (r->empty())
                     return result;
 
-                std::shared_ptr<const CategoryNamePartSet> c(_fg.filter().categories(env, r, _fg.generator().categories(env, r)));
+                std::shared_ptr<const CategoryNamePartSet> c(_fg.filter().categories(env, r, _fg.generator().categories(env, r, { })));
                 if (c->empty())
                     return result;
 
-                std::shared_ptr<const QualifiedPackageNameSet> p(_fg.filter().packages(env, r, _fg.generator().packages(env, r, c)));
+                std::shared_ptr<const QualifiedPackageNameSet> p(_fg.filter().packages(env, r, _fg.generator().packages(env, r, c, { })));
                 if (p->empty())
                     return result;
 
-                std::shared_ptr<const PackageIDSet> i(_fg.filter().ids(env, _fg.generator().ids(env, r, p)));
+                std::shared_ptr<const PackageIDSet> i(_fg.filter().ids(env, _fg.generator().ids(env, r, p, { })));
                 std::copy(i->begin(), i->end(), result->back_inserter());
                 result->sort(PackageIDComparator(env->package_database().get()));
 
@@ -253,19 +253,19 @@ namespace
 
                 std::shared_ptr<PackageIDSequence> result(std::make_shared<PackageIDSequence>());
 
-                std::shared_ptr<const RepositoryNameSet> r(_fg.filter().repositories(env, _fg.generator().repositories(env)));
+                std::shared_ptr<const RepositoryNameSet> r(_fg.filter().repositories(env, _fg.generator().repositories(env, { })));
                 if (r->empty())
                     return result;
 
-                std::shared_ptr<const CategoryNamePartSet> c(_fg.filter().categories(env, r, _fg.generator().categories(env, r)));
+                std::shared_ptr<const CategoryNamePartSet> c(_fg.filter().categories(env, r, _fg.generator().categories(env, r, { })));
                 if (c->empty())
                     return result;
 
-                std::shared_ptr<const QualifiedPackageNameSet> p(_fg.filter().packages(env, r, _fg.generator().packages(env, r, c)));
+                std::shared_ptr<const QualifiedPackageNameSet> p(_fg.filter().packages(env, r, _fg.generator().packages(env, r, c, { })));
                 if (p->empty())
                     return result;
 
-                std::shared_ptr<const PackageIDSet> i(_fg.filter().ids(env, _fg.generator().ids(env, r, p)));
+                std::shared_ptr<const PackageIDSet> i(_fg.filter().ids(env, _fg.generator().ids(env, r, p, { })));
                 std::copy(i->begin(), i->end(), result->back_inserter());
 
                 return result;
@@ -292,19 +292,19 @@ namespace
 
                 std::shared_ptr<PackageIDSequence> result(std::make_shared<PackageIDSequence>());
 
-                std::shared_ptr<const RepositoryNameSet> r(_fg.filter().repositories(env, _fg.generator().repositories(env)));
+                std::shared_ptr<const RepositoryNameSet> r(_fg.filter().repositories(env, _fg.generator().repositories(env, { })));
                 if (r->empty())
                     return result;
 
-                std::shared_ptr<const CategoryNamePartSet> c(_fg.filter().categories(env, r, _fg.generator().categories(env, r)));
+                std::shared_ptr<const CategoryNamePartSet> c(_fg.filter().categories(env, r, _fg.generator().categories(env, r, { })));
                 if (c->empty())
                     return result;
 
-                std::shared_ptr<const QualifiedPackageNameSet> p(_fg.filter().packages(env, r, _fg.generator().packages(env, r, c)));
+                std::shared_ptr<const QualifiedPackageNameSet> p(_fg.filter().packages(env, r, _fg.generator().packages(env, r, c, { })));
                 if (p->empty())
                     return result;
 
-                std::shared_ptr<const PackageIDSet> id(_fg.filter().ids(env, _fg.generator().ids(env, r, p)));
+                std::shared_ptr<const PackageIDSet> id(_fg.filter().ids(env, _fg.generator().ids(env, r, p, { })));
 
                 typedef std::map<std::pair<QualifiedPackageName, std::string>, std::shared_ptr<PackageIDSequence> > SlotMap;
                 SlotMap by_slot;
@@ -358,19 +358,19 @@ namespace
 
                 std::shared_ptr<PackageIDSequence> result(std::make_shared<PackageIDSequence>());
 
-                std::shared_ptr<const RepositoryNameSet> r(_fg.filter().repositories(env, _fg.generator().repositories(env)));
+                std::shared_ptr<const RepositoryNameSet> r(_fg.filter().repositories(env, _fg.generator().repositories(env, { })));
                 if (r->empty())
                     return result;
 
-                std::shared_ptr<const CategoryNamePartSet> c(_fg.filter().categories(env, r, _fg.generator().categories(env, r)));
+                std::shared_ptr<const CategoryNamePartSet> c(_fg.filter().categories(env, r, _fg.generator().categories(env, r, { })));
                 if (c->empty())
                     return result;
 
-                std::shared_ptr<const QualifiedPackageNameSet> p(_fg.filter().packages(env, r, _fg.generator().packages(env, r, c)));
+                std::shared_ptr<const QualifiedPackageNameSet> p(_fg.filter().packages(env, r, _fg.generator().packages(env, r, c, { })));
                 if (p->empty())
                     return result;
 
-                std::shared_ptr<const PackageIDSet> id(_fg.filter().ids(env, _fg.generator().ids(env, r, p)));
+                std::shared_ptr<const PackageIDSet> id(_fg.filter().ids(env, _fg.generator().ids(env, r, p, { })));
 
                 typedef std::map<std::pair<QualifiedPackageName, std::string>, std::shared_ptr<PackageIDSequence> > SlotMap;
                 SlotMap by_slot;
@@ -424,19 +424,19 @@ namespace
 
                 std::shared_ptr<PackageIDSequence> result(std::make_shared<PackageIDSequence>());
 
-                std::shared_ptr<const RepositoryNameSet> r(_fg.filter().repositories(env, _fg.generator().repositories(env)));
+                std::shared_ptr<const RepositoryNameSet> r(_fg.filter().repositories(env, _fg.generator().repositories(env, { })));
                 if (r->empty())
                     throw DidNotGetExactlyOneError(as_string(), std::make_shared<PackageIDSet>());
 
-                std::shared_ptr<const CategoryNamePartSet> c(_fg.filter().categories(env, r, _fg.generator().categories(env, r)));
+                std::shared_ptr<const CategoryNamePartSet> c(_fg.filter().categories(env, r, _fg.generator().categories(env, r, { })));
                 if (c->empty())
                     throw DidNotGetExactlyOneError(as_string(), std::make_shared<PackageIDSet>());
 
-                std::shared_ptr<const QualifiedPackageNameSet> p(_fg.filter().packages(env, r, _fg.generator().packages(env, r, c)));
+                std::shared_ptr<const QualifiedPackageNameSet> p(_fg.filter().packages(env, r, _fg.generator().packages(env, r, c, { })));
                 if (p->empty())
                     throw DidNotGetExactlyOneError(as_string(), std::make_shared<PackageIDSet>());
 
-                std::shared_ptr<const PackageIDSet> i(_fg.filter().ids(env, _fg.generator().ids(env, r, p)));
+                std::shared_ptr<const PackageIDSet> i(_fg.filter().ids(env, _fg.generator().ids(env, r, p, { })));
 
                 if (i->empty() || next(i->begin()) != i->end())
                     throw DidNotGetExactlyOneError(as_string(), i);

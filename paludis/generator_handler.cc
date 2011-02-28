@@ -36,7 +36,8 @@ GeneratorHandler::~GeneratorHandler()
 
 std::shared_ptr<const RepositoryNameSet>
 AllGeneratorHandlerBase::repositories(
-        const Environment * const env) const
+        const Environment * const env,
+        const RepositoryContentMayExcludes &) const
 {
     using namespace std::placeholders;
     std::shared_ptr<RepositoryNameSet> result(std::make_shared<RepositoryNameSet>());
@@ -48,14 +49,15 @@ AllGeneratorHandlerBase::repositories(
 std::shared_ptr<const CategoryNamePartSet>
 AllGeneratorHandlerBase::categories(
         const Environment * const env,
-        const std::shared_ptr<const RepositoryNameSet> & repos) const
+        const std::shared_ptr<const RepositoryNameSet> & repos,
+        const RepositoryContentMayExcludes & may_exclude) const
 {
     std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
 
     for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
             r != r_end ; ++r)
     {
-        std::shared_ptr<const CategoryNamePartSet> cats(env->package_database()->fetch_repository(*r)->category_names({ }));
+        std::shared_ptr<const CategoryNamePartSet> cats(env->package_database()->fetch_repository(*r)->category_names(may_exclude));
         std::copy(cats->begin(), cats->end(), result->inserter());
     }
 
@@ -66,7 +68,8 @@ std::shared_ptr<const QualifiedPackageNameSet>
 AllGeneratorHandlerBase::packages(
         const Environment * const env,
         const std::shared_ptr<const RepositoryNameSet> & repos,
-        const std::shared_ptr<const CategoryNamePartSet> & cats) const
+        const std::shared_ptr<const CategoryNamePartSet> & cats,
+        const RepositoryContentMayExcludes & may_exclude) const
 {
     std::shared_ptr<QualifiedPackageNameSet> result(std::make_shared<QualifiedPackageNameSet>());
 
@@ -77,7 +80,7 @@ AllGeneratorHandlerBase::packages(
                 c != c_end ; ++c)
         {
             std::shared_ptr<const QualifiedPackageNameSet> pkgs(
-                    env->package_database()->fetch_repository(*r)->package_names(*c, { }));
+                    env->package_database()->fetch_repository(*r)->package_names(*c, may_exclude));
             std::copy(pkgs->begin(), pkgs->end(), result->inserter());
         }
     }
@@ -89,7 +92,8 @@ std::shared_ptr<const PackageIDSet>
 AllGeneratorHandlerBase::ids(
         const Environment * const env,
         const std::shared_ptr<const RepositoryNameSet> & repos,
-        const std::shared_ptr<const QualifiedPackageNameSet> & qpns) const
+        const std::shared_ptr<const QualifiedPackageNameSet> & qpns,
+        const RepositoryContentMayExcludes & may_exclude) const
 {
     std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
@@ -100,7 +104,7 @@ AllGeneratorHandlerBase::ids(
                 q != q_end ; ++q)
         {
             std::shared_ptr<const PackageIDSequence> i(
-                    env->package_database()->fetch_repository(*r)->package_ids(*q, { }));
+                    env->package_database()->fetch_repository(*r)->package_ids(*q, may_exclude));
             std::copy(i->begin(), i->end(), result->inserter());
         }
     }

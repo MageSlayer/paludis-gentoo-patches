@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -24,6 +24,7 @@
 #include <paludis/name-fwd.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/package_id-fwd.hh>
+#include <paludis/repository-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <memory>
 
@@ -36,24 +37,28 @@ namespace paludis
 
         public:
             virtual std::shared_ptr<const RepositoryNameSet> repositories(
-                    const Environment * const) const
+                    const Environment * const,
+                    const RepositoryContentMayExcludes &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             virtual std::shared_ptr<const CategoryNamePartSet> categories(
                     const Environment * const,
-                    const std::shared_ptr<const RepositoryNameSet> &) const
+                    const std::shared_ptr<const RepositoryNameSet> &,
+                    const RepositoryContentMayExcludes &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             virtual std::shared_ptr<const QualifiedPackageNameSet> packages(
                     const Environment * const,
                     const std::shared_ptr<const RepositoryNameSet> &,
-                    const std::shared_ptr<const CategoryNamePartSet> &) const
+                    const std::shared_ptr<const CategoryNamePartSet> &,
+                    const RepositoryContentMayExcludes &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             virtual std::shared_ptr<const PackageIDSet> ids(
                     const Environment * const,
                     const std::shared_ptr<const RepositoryNameSet> &,
-                    const std::shared_ptr<const QualifiedPackageNameSet> &) const
+                    const std::shared_ptr<const QualifiedPackageNameSet> &,
+                    const RepositoryContentMayExcludes &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             virtual std::string as_string() const = 0;
@@ -64,21 +69,25 @@ namespace paludis
     {
         public:
             virtual std::shared_ptr<const RepositoryNameSet> repositories(
-                    const Environment * const env) const;
+                    const Environment * const env,
+                    const RepositoryContentMayExcludes &) const;
 
             virtual std::shared_ptr<const CategoryNamePartSet> categories(
                     const Environment * const env,
-                    const std::shared_ptr<const RepositoryNameSet> & repos) const;
+                    const std::shared_ptr<const RepositoryNameSet> & repos,
+                    const RepositoryContentMayExcludes &) const;
 
             virtual std::shared_ptr<const QualifiedPackageNameSet> packages(
                     const Environment * const env,
                     const std::shared_ptr<const RepositoryNameSet> & repos,
-                    const std::shared_ptr<const CategoryNamePartSet> & cats) const;
+                    const std::shared_ptr<const CategoryNamePartSet> & cats,
+                    const RepositoryContentMayExcludes &) const;
 
             virtual std::shared_ptr<const PackageIDSet> ids(
                     const Environment * const env,
                     const std::shared_ptr<const RepositoryNameSet> & repos,
-                    const std::shared_ptr<const QualifiedPackageNameSet> & qpns) const;
+                    const std::shared_ptr<const QualifiedPackageNameSet> & qpns,
+                    const RepositoryContentMayExcludes &) const;
     };
 }
 

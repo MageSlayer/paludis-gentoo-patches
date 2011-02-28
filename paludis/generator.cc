@@ -83,35 +83,39 @@ Generator::operator FilteredGenerator () const
 
 std::shared_ptr<const RepositoryNameSet>
 Generator::repositories(
-        const Environment * const env) const
+        const Environment * const env,
+        const RepositoryContentMayExcludes & x) const
 {
-    return _imp->handler->repositories(env);
+    return _imp->handler->repositories(env, x);
 }
 
 std::shared_ptr<const CategoryNamePartSet>
 Generator::categories(
         const Environment * const env,
-        const std::shared_ptr<const RepositoryNameSet> & r) const
+        const std::shared_ptr<const RepositoryNameSet> & r,
+        const RepositoryContentMayExcludes & x) const
 {
-    return _imp->handler->categories(env, r);
+    return _imp->handler->categories(env, r, x);
 }
 
 std::shared_ptr<const QualifiedPackageNameSet>
 Generator::packages(
         const Environment * const env,
         const std::shared_ptr<const RepositoryNameSet> & r,
-        const std::shared_ptr<const CategoryNamePartSet> & c) const
+        const std::shared_ptr<const CategoryNamePartSet> & c,
+        const RepositoryContentMayExcludes & x) const
 {
-    return _imp->handler->packages(env, r, c);
+    return _imp->handler->packages(env, r, c, x);
 }
 
 std::shared_ptr<const PackageIDSet>
 Generator::ids(
         const Environment * const env,
         const std::shared_ptr<const RepositoryNameSet> & r,
-        const std::shared_ptr<const QualifiedPackageNameSet> & q) const
+        const std::shared_ptr<const QualifiedPackageNameSet> & q,
+        const RepositoryContentMayExcludes & x) const
 {
-    return _imp->handler->ids(env, r, q);
+    return _imp->handler->ids(env, r, q, x);
 }
 
 std::string
@@ -133,7 +137,8 @@ namespace
         }
 
         virtual std::shared_ptr<const RepositoryNameSet> repositories(
-                const Environment * const env) const
+                const Environment * const env,
+                const RepositoryContentMayExcludes &) const
         {
             using namespace std::placeholders;
             std::shared_ptr<RepositoryNameSet> result(std::make_shared<RepositoryNameSet>());
@@ -161,7 +166,8 @@ namespace
         virtual std::shared_ptr<const PackageIDSet> ids(
                 const Environment * const env,
                 const std::shared_ptr<const RepositoryNameSet> & repos,
-                const std::shared_ptr<const QualifiedPackageNameSet> & qpns) const
+                const std::shared_ptr<const QualifiedPackageNameSet> & qpns,
+                const RepositoryContentMayExcludes & x) const
         {
             std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
@@ -172,7 +178,7 @@ namespace
                         q != q_end ; ++q)
                 {
                     std::shared_ptr<const PackageIDSequence> id(
-                            env->package_database()->fetch_repository(*r)->package_ids(*q, { }));
+                            env->package_database()->fetch_repository(*r)->package_ids(*q, x));
                     for (PackageIDSequence::ConstIterator i(id->begin()), i_end(id->end()) ;
                             i != i_end ; ++i)
                         if ((*i)->from_repositories_key() && ((*i)->from_repositories_key()->value()->end() !=
@@ -202,14 +208,15 @@ namespace
 
         virtual std::shared_ptr<const CategoryNamePartSet> categories(
                 const Environment * const env,
-                const std::shared_ptr<const RepositoryNameSet> & repos
+                const std::shared_ptr<const RepositoryNameSet> & repos,
+                const RepositoryContentMayExcludes & x
                 ) const
         {
             std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
 
             for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                     r != r_end ; ++r)
-                if (env->package_database()->fetch_repository(*r)->has_category_named(name, { }))
+                if (env->package_database()->fetch_repository(*r)->has_category_named(name, x))
                 {
                     result->insert(name);
                     break;
@@ -236,14 +243,15 @@ namespace
 
         virtual std::shared_ptr<const CategoryNamePartSet> categories(
                 const Environment * const env,
-                const std::shared_ptr<const RepositoryNameSet> & repos
+                const std::shared_ptr<const RepositoryNameSet> & repos,
+                const RepositoryContentMayExcludes & x
                 ) const
         {
             std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
 
             for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                     r != r_end ; ++r)
-                if (env->package_database()->fetch_repository(*r)->has_category_named(name.category(), { }))
+                if (env->package_database()->fetch_repository(*r)->has_category_named(name.category(), x))
                 {
                     result->insert(name.category());
                     break;
@@ -255,14 +263,15 @@ namespace
         virtual std::shared_ptr<const QualifiedPackageNameSet> packages(
                 const Environment * const env,
                 const std::shared_ptr<const RepositoryNameSet> & repos,
-                const std::shared_ptr<const CategoryNamePartSet> & cats) const
+                const std::shared_ptr<const CategoryNamePartSet> & cats,
+                const RepositoryContentMayExcludes & x) const
         {
             std::shared_ptr<QualifiedPackageNameSet> result(std::make_shared<QualifiedPackageNameSet>());
             for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                     r != r_end ; ++r)
                 for (CategoryNamePartSet::ConstIterator c(cats->begin()), c_end(cats->end()) ;
                         c != c_end ; ++c)
-                    if (env->package_database()->fetch_repository(*r)->has_package_named(name, { }))
+                    if (env->package_database()->fetch_repository(*r)->has_package_named(name, x))
                         result->insert(name);
 
             return result;
@@ -289,7 +298,8 @@ namespace
         }
 
         virtual std::shared_ptr<const RepositoryNameSet> repositories(
-                const Environment * const env) const
+                const Environment * const env,
+                const RepositoryContentMayExcludes & x) const
         {
             if (package_dep_spec_has_properties(spec, make_named_values<PackageDepSpecProperties>(
                             n::has_additional_requirements() = indeterminate,
@@ -305,7 +315,7 @@ namespace
                             n::has_tag() = indeterminate,
                             n::has_version_requirements() = indeterminate
                             )))
-                return AllGeneratorHandlerBase::repositories(env);
+                return AllGeneratorHandlerBase::repositories(env, x);
 
             std::shared_ptr<RepositoryNameSet> result(std::make_shared<RepositoryNameSet>());
 
@@ -343,7 +353,7 @@ namespace
                     }
                 }
                 else
-                    return AllGeneratorHandlerBase::repositories(env);
+                    return AllGeneratorHandlerBase::repositories(env, x);
             }
 
             return result;
@@ -351,14 +361,15 @@ namespace
 
         virtual std::shared_ptr<const CategoryNamePartSet> categories(
                 const Environment * const env,
-                const std::shared_ptr<const RepositoryNameSet> & repos) const
+                const std::shared_ptr<const RepositoryNameSet> & repos,
+                const RepositoryContentMayExcludes & x) const
         {
             if (spec.category_name_part_ptr())
             {
                 std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
                 for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                         r != r_end ; ++r)
-                    if (env->package_database()->fetch_repository(*r)->has_category_named(*spec.category_name_part_ptr(), { }))
+                    if (env->package_database()->fetch_repository(*r)->has_category_named(*spec.category_name_part_ptr(), x))
                     {
                         result->insert(*spec.category_name_part_ptr());
                         break;
@@ -374,7 +385,7 @@ namespace
                 {
                     std::shared_ptr<const CategoryNamePartSet> cats(
                         env->package_database()->fetch_repository(*r)
-                        ->category_names_containing_package(*spec.package_name_part_ptr(), { }));
+                        ->category_names_containing_package(*spec.package_name_part_ptr(), x));
                     std::copy(cats->begin(), cats->end(), result->inserter());
                 }
 
@@ -385,7 +396,7 @@ namespace
                 std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
                 for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                         r != r_end ; ++r)
-                    if (env->package_database()->fetch_repository(*r)->has_category_named(spec.package_ptr()->category(), { }))
+                    if (env->package_database()->fetch_repository(*r)->has_category_named(spec.package_ptr()->category(), x))
                     {
                         result->insert(spec.package_ptr()->category());
                         break;
@@ -394,13 +405,14 @@ namespace
                 return result;
             }
             else
-                return AllGeneratorHandlerBase::categories(env, repos);
+                return AllGeneratorHandlerBase::categories(env, repos, x);
         }
 
         virtual std::shared_ptr<const QualifiedPackageNameSet> packages(
                 const Environment * const env,
                 const std::shared_ptr<const RepositoryNameSet> & repos,
-                const std::shared_ptr<const CategoryNamePartSet> & cats) const
+                const std::shared_ptr<const CategoryNamePartSet> & cats,
+                const RepositoryContentMayExcludes & x) const
         {
             if (spec.package_name_part_ptr())
             {
@@ -409,7 +421,7 @@ namespace
                         r != r_end ; ++r)
                     for (CategoryNamePartSet::ConstIterator c(cats->begin()), c_end(cats->end()) ;
                             c != c_end ; ++c)
-                        if (env->package_database()->fetch_repository(*r)->has_package_named(*c + *spec.package_name_part_ptr(), { }))
+                        if (env->package_database()->fetch_repository(*r)->has_package_named(*c + *spec.package_name_part_ptr(), x))
                             result->insert(*c + *spec.package_name_part_ptr());
 
                 return result;
@@ -419,7 +431,7 @@ namespace
                 std::shared_ptr<QualifiedPackageNameSet> result(std::make_shared<QualifiedPackageNameSet>());
                 for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                         r != r_end ; ++r)
-                    if (env->package_database()->fetch_repository(*r)->has_package_named(*spec.package_ptr(), { }))
+                    if (env->package_database()->fetch_repository(*r)->has_package_named(*spec.package_ptr(), x))
                     {
                         result->insert(*spec.package_ptr());
                         break;
@@ -428,13 +440,14 @@ namespace
                 return result;
             }
             else
-                return AllGeneratorHandlerBase::packages(env, repos, cats);
+                return AllGeneratorHandlerBase::packages(env, repos, cats, x);
         }
 
         virtual std::shared_ptr<const PackageIDSet> ids(
                 const Environment * const env,
                 const std::shared_ptr<const RepositoryNameSet> & repos,
-                const std::shared_ptr<const QualifiedPackageNameSet> & qpns) const
+                const std::shared_ptr<const QualifiedPackageNameSet> & qpns,
+                const RepositoryContentMayExcludes & x) const
         {
             std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
@@ -445,7 +458,7 @@ namespace
                         q != q_end ; ++q)
                 {
                     std::shared_ptr<const PackageIDSequence> id(
-                            env->package_database()->fetch_repository(*r)->package_ids(*q, { }));
+                            env->package_database()->fetch_repository(*r)->package_ids(*q, x));
                     for (PackageIDSequence::ConstIterator i(id->begin()), i_end(id->end()) ;
                             i != i_end ; ++i)
                         if (match_package(*env, spec, *i, from_id, options))
@@ -478,13 +491,14 @@ namespace
         }
 
         virtual std::shared_ptr<const RepositoryNameSet> repositories(
-                const Environment * const env) const
+                const Environment * const env,
+                const RepositoryContentMayExcludes & x) const
         {
-            std::shared_ptr<const RepositoryNameSet> r1(g1.repositories(env));
+            std::shared_ptr<const RepositoryNameSet> r1(g1.repositories(env, x));
             if (r1->empty())
                 return r1;
 
-            std::shared_ptr<const RepositoryNameSet> r2(g2.repositories(env));
+            std::shared_ptr<const RepositoryNameSet> r2(g2.repositories(env, x));
             if (r2->empty())
                 return r2;
 
@@ -498,13 +512,14 @@ namespace
 
         virtual std::shared_ptr<const CategoryNamePartSet> categories(
                 const Environment * const env,
-                const std::shared_ptr<const RepositoryNameSet> & repos) const
+                const std::shared_ptr<const RepositoryNameSet> & repos,
+                const RepositoryContentMayExcludes & x) const
         {
-            std::shared_ptr<const CategoryNamePartSet> c1(g1.categories(env, repos));
+            std::shared_ptr<const CategoryNamePartSet> c1(g1.categories(env, repos, x));
             if (c1->empty())
                 return c1;
 
-            std::shared_ptr<const CategoryNamePartSet> c2(g2.categories(env, repos));
+            std::shared_ptr<const CategoryNamePartSet> c2(g2.categories(env, repos, x));
             if (c2->empty())
                 return c2;
 
@@ -519,13 +534,14 @@ namespace
         virtual std::shared_ptr<const QualifiedPackageNameSet> packages(
                 const Environment * const env,
                 const std::shared_ptr<const RepositoryNameSet> & repos,
-                const std::shared_ptr<const CategoryNamePartSet> & cats) const
+                const std::shared_ptr<const CategoryNamePartSet> & cats,
+                const RepositoryContentMayExcludes & x) const
         {
-            std::shared_ptr<const QualifiedPackageNameSet> q1(g1.packages(env, repos, cats));
+            std::shared_ptr<const QualifiedPackageNameSet> q1(g1.packages(env, repos, cats, x));
             if (q1->empty())
                 return q1;
 
-            std::shared_ptr<const QualifiedPackageNameSet> q2(g2.packages(env, repos, cats));
+            std::shared_ptr<const QualifiedPackageNameSet> q2(g2.packages(env, repos, cats, x));
             if (q2->empty())
                 return q2;
 
@@ -540,13 +556,14 @@ namespace
         virtual std::shared_ptr<const PackageIDSet> ids(
                 const Environment * const env,
                 const std::shared_ptr<const RepositoryNameSet> & repos,
-                const std::shared_ptr<const QualifiedPackageNameSet> & qpns) const
+                const std::shared_ptr<const QualifiedPackageNameSet> & qpns,
+                const RepositoryContentMayExcludes & x) const
         {
-            std::shared_ptr<const PackageIDSet> i1(g1.ids(env, repos, qpns));
+            std::shared_ptr<const PackageIDSet> i1(g1.ids(env, repos, qpns, x));
             if (i1->empty())
                 return i1;
 
-            std::shared_ptr<const PackageIDSet> i2(g2.ids(env, repos, qpns));
+            std::shared_ptr<const PackageIDSet> i2(g2.ids(env, repos, qpns, x));
             if (i2->empty())
                 return i2;
 
@@ -578,10 +595,11 @@ namespace
         }
 
         virtual std::shared_ptr<const RepositoryNameSet> repositories(
-                const Environment * const env) const
+                const Environment * const env,
+                const RepositoryContentMayExcludes & x) const
         {
-            std::shared_ptr<const RepositoryNameSet> r1(g1.repositories(env));
-            std::shared_ptr<const RepositoryNameSet> r2(g2.repositories(env));
+            std::shared_ptr<const RepositoryNameSet> r1(g1.repositories(env, x));
+            std::shared_ptr<const RepositoryNameSet> r2(g2.repositories(env, x));
             std::shared_ptr<RepositoryNameSet> result(std::make_shared<RepositoryNameSet>());
             std::set_union(
                     r1->begin(), r1->end(),
@@ -592,10 +610,11 @@ namespace
 
         virtual std::shared_ptr<const CategoryNamePartSet> categories(
                 const Environment * const env,
-                const std::shared_ptr<const RepositoryNameSet> & repos) const
+                const std::shared_ptr<const RepositoryNameSet> & repos,
+                const RepositoryContentMayExcludes & x) const
         {
-            std::shared_ptr<const CategoryNamePartSet> c1(g1.categories(env, repos));
-            std::shared_ptr<const CategoryNamePartSet> c2(g2.categories(env, repos));
+            std::shared_ptr<const CategoryNamePartSet> c1(g1.categories(env, repos, x));
+            std::shared_ptr<const CategoryNamePartSet> c2(g2.categories(env, repos, x));
             std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
             std::set_union(
                     c1->begin(), c1->end(),
@@ -607,10 +626,11 @@ namespace
         virtual std::shared_ptr<const QualifiedPackageNameSet> packages(
                 const Environment * const env,
                 const std::shared_ptr<const RepositoryNameSet> & repos,
-                const std::shared_ptr<const CategoryNamePartSet> & cats) const
+                const std::shared_ptr<const CategoryNamePartSet> & cats,
+                const RepositoryContentMayExcludes & x) const
         {
-            std::shared_ptr<const QualifiedPackageNameSet> q1(g1.packages(env, repos, cats));
-            std::shared_ptr<const QualifiedPackageNameSet> q2(g2.packages(env, repos, cats));
+            std::shared_ptr<const QualifiedPackageNameSet> q1(g1.packages(env, repos, cats, x));
+            std::shared_ptr<const QualifiedPackageNameSet> q2(g2.packages(env, repos, cats, x));
             std::shared_ptr<QualifiedPackageNameSet> result(std::make_shared<QualifiedPackageNameSet>());
             std::set_union(
                     q1->begin(), q1->end(),
@@ -622,10 +642,11 @@ namespace
         virtual std::shared_ptr<const PackageIDSet> ids(
                 const Environment * const env,
                 const std::shared_ptr<const RepositoryNameSet> & repos,
-                const std::shared_ptr<const QualifiedPackageNameSet> & qpns) const
+                const std::shared_ptr<const QualifiedPackageNameSet> & qpns,
+                const RepositoryContentMayExcludes & x) const
         {
-            std::shared_ptr<const PackageIDSet> i1(g1.ids(env, repos, qpns));
-            std::shared_ptr<const PackageIDSet> i2(g2.ids(env, repos, qpns));
+            std::shared_ptr<const PackageIDSet> i1(g1.ids(env, repos, qpns, x));
+            std::shared_ptr<const PackageIDSet> i2(g2.ids(env, repos, qpns, x));
             std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
             std::set_union(
                     i1->begin(), i1->end(),
@@ -655,7 +676,8 @@ namespace
         AllGeneratorHandlerBase
     {
         virtual std::shared_ptr<const RepositoryNameSet> repositories(
-                const Environment * const env) const
+                const Environment * const env,
+                const RepositoryContentMayExcludes &) const
         {
             std::shared_ptr<RepositoryNameSet> result(std::make_shared<RepositoryNameSet>());
             for (PackageDatabase::RepositoryConstIterator i(env->package_database()->begin_repositories()),
@@ -676,14 +698,16 @@ namespace
         GeneratorHandler
     {
         virtual std::shared_ptr<const RepositoryNameSet> repositories(
-                const Environment * const) const
+                const Environment * const,
+                const RepositoryContentMayExcludes &) const
         {
             return std::make_shared<RepositoryNameSet>();
         }
 
         virtual std::shared_ptr<const CategoryNamePartSet> categories(
                 const Environment * const,
-                const std::shared_ptr<const RepositoryNameSet> &) const
+                const std::shared_ptr<const RepositoryNameSet> &,
+                const RepositoryContentMayExcludes &) const
         {
             return std::make_shared<CategoryNamePartSet>();
         }
@@ -691,7 +715,8 @@ namespace
         virtual std::shared_ptr<const QualifiedPackageNameSet> packages(
                 const Environment * const,
                 const std::shared_ptr<const RepositoryNameSet> &,
-                const std::shared_ptr<const CategoryNamePartSet> &) const
+                const std::shared_ptr<const CategoryNamePartSet> &,
+                const RepositoryContentMayExcludes &) const
         {
             return std::make_shared<QualifiedPackageNameSet>();
         }
@@ -699,7 +724,8 @@ namespace
         virtual std::shared_ptr<const PackageIDSet> ids(
                 const Environment * const,
                 const std::shared_ptr<const RepositoryNameSet> &,
-                const std::shared_ptr<const QualifiedPackageNameSet> &) const
+                const std::shared_ptr<const QualifiedPackageNameSet> &,
+                const RepositoryContentMayExcludes &) const
         {
             return std::make_shared<PackageIDSet>();
         }
