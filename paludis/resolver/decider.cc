@@ -1262,7 +1262,7 @@ Decider::find_any_score(
         const std::shared_ptr<const PackageID> & our_id,
         const SanitisedDependency & dep) const
 {
-    Context context("When working out whether we'd like '" + stringify(dep.spec()) + "' because of '"
+    Context context("When working out whether we'd like || child '" + stringify(dep.spec()) + "' because of '"
             + stringify(our_resolution->resolvent()) + "':");
 
     const bool is_block(dep.spec().if_block());
